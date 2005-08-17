@@ -6,12 +6,12 @@ use strict;
 
 use Zimbra::Mon::Logger;
 use Zimbra::Mon::Cluster;
-use host;
+use Zimbra::Mon::Host;
 use Zimbra::Mon::shortInfo;
 use SOAP::Lite;
 
 use DBI;
-use account;
+use Zimbra::Mon::Account;
 
 require Exporter;
 

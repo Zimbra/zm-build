@@ -5,7 +5,7 @@ package Zimbra::Mon::Cluster;
 use strict;
 
 use Zimbra::Mon::Logger;
-use host;
+use Zimbra::Mon::Host;
 use Zimbra::Mon::shortInfo;
 use Zimbra::Mon::serviceInfo;
 use SOAP::Lite;

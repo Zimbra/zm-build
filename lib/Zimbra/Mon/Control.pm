@@ -9,9 +9,9 @@ use lib "/opt/zimbra/zimbramon/lib/Zimbra/Mon";
 
 use Zimbra::Mon::Logger;
 use Zimbra::Mon::Cluster;
-use host;
-use service;
-use application;
+use Zimbra::Mon::Host;
+use Zimbra::Mon::Service;
+use Zimbra::Mon::Application;
 use Net::Telnet;
 
 require Exporter;

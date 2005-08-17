@@ -3,7 +3,7 @@ package Zimbra::Mon::ProvTool;
 use strict;
 
 use Zimbra::Mon::Logger;
-use host;
+use Zimbra::Mon::Host;
 
 my $provTool = "$::Basedir/../bin/zmprov";
 
