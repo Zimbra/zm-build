@@ -2,7 +2,7 @@ package Zimbra::Failover::Bootstrap;
 
 use strict;
 
-my $LIQUID_HOME = $ENV{LIQUID_HOME} || $ENV{HOME} || '/opt/zimbra';
+my $ZIMBRA_HOME = $ENV{ZIMBRA_HOME} || $ENV{HOME} || '/opt/zimbra';
 
 my %DATA = (
     DB_USERNAME => '',

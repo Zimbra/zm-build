@@ -1,11 +1,11 @@
-LIQUID-TRAP-MIB DEFINITIONS ::= BEGIN
-        IMPORTS zimbra FROM LIQUID-MIB;
+ZIMBRA-TRAP-MIB DEFINITIONS ::= BEGIN
+        IMPORTS zimbra FROM ZIMBRA-MIB;
 
-lqtraps OBJECT IDENTIFIER ::= { zimbra 0 }
+zmtraps OBJECT IDENTIFIER ::= { zimbra 0 }
 
-lqServiceStatusTrap NOTIFICATION-TYPE
+zmServiceStatusTrap NOTIFICATION-TYPE
         STATUS current
         DESCRIPTION "Service Status Change"
-        ::= { lqtraps 0 }
+        ::= { zmtraps 0 }
 
 END               

@@ -7,9 +7,9 @@ perlcode 0 my $pwc="@@PHCEMAIL@@";
 
 perlcode 0 my $snmpargs="-v 2c -c zimbra localhost ''";
 perlcode 0 my $snmptrap="/opt/zimbra/snmp/bin/snmptrap $snmpargs";
-perlcode 0 my $snmpsvctrap="LIQUID-TRAP-MIB::lqServiceStatusTrap";
-perlcode 0 my $snmpsvcname="LIQUID-MIB::lqServiceName";
-perlcode 0 my $snmpsvcstatus="LIQUID-MIB::lqServiceStatus";
+perlcode 0 my $snmpsvctrap="ZIMBRA-TRAP-MIB::zmServiceStatusTrap";
+perlcode 0 my $snmpsvcname="ZIMBRA-MIB::zmServiceName";
+perlcode 0 my $snmpsvcstatus="ZIMBRA-MIB::zmServiceStatus";
 
 perlcode 0 my %statuses=('started'=>1,'stopped'=>0);
 

@@ -13,8 +13,8 @@ if [ -f /etc/bashrc ]; then
 	. /etc/bashrc
 fi
 
-LIQUID_HOME=/opt/zimbra
-export LIQUID_HOME
+ZIMBRA_HOME=/opt/zimbra
+export ZIMBRA_HOME
 
 JAVA_HOME=/opt/zimbra/java
 export JAVA_HOME

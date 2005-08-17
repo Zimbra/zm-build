@@ -13,7 +13,7 @@ my %LOCAL_ADDRESSES = ();
 
 my $IFCONFIG = 'ifconfig';
 my $ARPING = 'arping';
-my $SEND_ARP = Zimbra::Failover::Config::getLiquidHome() . '/libexec/send_arp';
+my $SEND_ARP = Zimbra::Failover::Config::getZimbraHome() . '/libexec/send_arp';
 my $PING = 'ping';
 
 #

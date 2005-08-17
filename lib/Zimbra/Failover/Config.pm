@@ -3,7 +3,7 @@ package Zimbra::Failover::Config;
 use strict;
 use Zimbra::Failover::Bootstrap;
 
-my $LIQUID_HOME = $ENV{LIQUID_HOME} || $ENV{HOME} || '/opt/zimbra';
+my $ZIMBRA_HOME = $ENV{ZIMBRA_HOME} || $ENV{HOME} || '/opt/zimbra';
 
 my %HEARTBEAT_CONFIG = (
     ADMIN_SOAP_PORT => 7070,        # admin SOAP servlet port
@@ -37,8 +37,8 @@ sub getConfig() {
     return $SINGLETON;
 }
 
-sub getLiquidHome {
-    return $LIQUID_HOME;
+sub getZimbraHome {
+    return $ZIMBRA_HOME;
 }
 
 sub getAdminSOAPPort() {

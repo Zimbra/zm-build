@@ -17,8 +17,8 @@ use Zimbra::Failover::Db;
 
 sub zmcontrol(;$) {
     my $args = shift || '';
-    my $cmd = Zimbra::Failover::Config::getLiquidHome() . "/zimbramon/zmcontrol $args";
-print "LQCONTROL: Invoking $cmd\n";
+    my $cmd = Zimbra::Failover::Config::getZimbraHome() . "/zimbramon/zmcontrol $args";
+print "ZMCONTROL: Invoking $cmd\n";
     `$cmd`;
     return $? >> 8 == 0 ? 1 : 0;
 }
@@ -57,7 +57,7 @@ sub abortService() {
 
 sub getServicePid() {
     my $pidfile =
-        Zimbra::Failover::Config::getLiquidHome() . "/log/tomcat.pid";
+        Zimbra::Failover::Config::getZimbraHome() . "/log/tomcat.pid";
     my $pid;
     if (open(FH, "< $pidfile")) {
         my $line = <FH>;
@@ -106,13 +106,13 @@ sub becomeMaster() {
         print "Sending BecomeMaster command to tomcat...\n";
     }
     my $cmd =
-        Zimbra::Failover::Config::getLiquidHome() .
-        "/libexec/lqreplcmd -c takeover";
+        Zimbra::Failover::Config::getZimbraHome() .
+        "/libexec/zmreplcmd -c takeover";
     my $rc = system($cmd);
     if ($rc != 0) {
         $rc >>= 8;
         print STDERR "Unable to send BecomeMaster command to tomcat: $!\n";
-        print STDERR "(lqreplcmd returned with $rc)\n";
+        print STDERR "(zmreplcmd returned with $rc)\n";
         return 0;
     }
 

@@ -3,7 +3,7 @@
 # Use to start appropriate failover script (client or server)
 
 use strict;
-use lib "$ENV{LIQUID_HOME}/zimbramon/lib";
+use lib "$ENV{ZIMBRA_HOME}/zimbramon/lib";
 use Getopt::Std;
 use Zimbra::Failover::Debug qw(setDebug);
 use Zimbra::Failover::Config;
@@ -54,8 +54,8 @@ sub control_service {
 		if (defined ($pids)) {
 			print STDERR "Service $service already running\n";
 		} else {
-			print STDERR "Starting $ENV{LIQUID_HOME}/bin/$service.pl\n";
-			system ("$ENV{LIQUID_HOME}/bin/$service.pl &");
+			print STDERR "Starting $ENV{ZIMBRA_HOME}/bin/$service.pl\n";
+			system ("$ENV{ZIMBRA_HOME}/bin/$service.pl &");
 		}
 	}
 }
@@ -70,9 +70,9 @@ usage() unless ($cmd eq "stop" || $cmd eq "start");
 
 my $role = $config->getCurrentRole();
 if ($role eq 'master') {
-	$service = 'lqhad';
+	$service = 'zmhad';
 } elsif ($role eq 'slave') {
-	$service = 'lqhac';
+	$service = 'zmhac';
 } elsif ($role eq 'standalone') {
 	exit(0);
 } else {

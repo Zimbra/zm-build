@@ -5,11 +5,11 @@ Summary: Liquid LDAP
 Name: zimbra-ldap
 Version: @@VERSION@@
 Release: @@RELEASE@@
-Copyright: Copyright 2004 Liquid Systems
+Copyright: Copyright 2005 Zimbra, Inc.
 Group: Applications/Messaging
 URL: http://www.zimbra.com
-Vendor: Liquid Systems, Inc.
-Packager: Liquid Systems, Inc.
+Vendor: Zimbra, Inc.
+Packager: Zimbra, Inc.
 BuildRoot: /opt/zimbra
 AutoReqProv: no
 requires: zimbra-core

@@ -75,8 +75,8 @@ sub isRunning($) {
 
 sub _getPidFilePath($) {
     my $appname = shift;
-    my $lqhome = Zimbra::Failover::Config::getLiquidHome();
-    return "$lqhome/log/$appname.pid";
+    my $zmhome = Zimbra::Failover::Config::getZimbraHome();
+    return "$zmhome/log/$appname.pid";
 }
 
 1;

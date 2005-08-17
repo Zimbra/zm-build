@@ -4,11 +4,11 @@ use strict;
 use DBI;
 use Zimbra::Failover::Bootstrap;
 
-my $LIQUID_HOME = $ENV{LIQUID_HOME} || $ENV{HOME} || '/opt/zimbra';
+my $ZIMBRA_HOME = $ENV{ZIMBRA_HOME} || $ENV{HOME} || '/opt/zimbra';
 
 sub connect {
     my $class = shift;
-    my $data_source = "dbi:mysql:database=zimbra;mysql_read_default_file=$LIQUID_HOME/conf/my.cnf";
+    my $data_source = "dbi:mysql:database=zimbra;mysql_read_default_file=$ZIMBRA_HOME/conf/my.cnf";
     my $username = Zimbra::Failover::Bootstrap::getDbUsername();
     my $password = Zimbra::Failover::Bootstrap::getDbPassword();
     my $dbh = DBI->connect($data_source, $username, $password);
