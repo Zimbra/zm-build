@@ -522,7 +522,7 @@ $(DEST_DIR)/$(TOMCAT_DIR): $(DEST_DIR)
 	cp $(SERVICE_DIR)/conf/tomcat-5.5/server.xml.production $(DEST_DIR)/$(TOMCAT_DIR)/conf/server.xml
 	cp $(SERVICE_DIR)/conf/zimbra.xml $(DEST_DIR)/$(TOMCAT_DIR)/conf/Catalina/localhost/zimbra.xml
 	mkdir -p $(DEST_DIR)/$(TOMCAT_DIR)/conf/AdminService/localhost
-	cp $(SERVICE_DIR)/conf/Admin.xml $(DEST_DIR)/$(TOMCAT_DIR)/conf/AdminService/localhost/Admin.xml
+	cp $(SERVICE_DIR)/conf/zimbraAdmin.xml $(DEST_DIR)/$(TOMCAT_DIR)/conf/AdminService/localhost/zimbraAdmin.xml
 	cp $(SERVICE_DIR)/conf/tomcat-5.5/tomcat-users.xml $(DEST_DIR)/$(TOMCAT_DIR)/conf
 	cp -f $(SERVICE_DIR)/conf/log4j.properties.production  $(DEST_DIR)/$(TOMCAT_DIR)/conf/log4j.properties
 	mkdir -p $(DEST_DIR)/$(TOMCAT_DIR)/temp
@@ -743,7 +743,7 @@ $(DEV_INSTALL_ROOT)/$(TOMCAT_DIR): $(DEV_INSTALL_ROOT) $(SERVICE_DIR)/build/dist
 	cp -f $(SERVICE_DIR)/conf/tomcat-5.5/server.xml.production $@/conf/server.xml
 	cp -f $(SERVICE_DIR)/conf/zimbra.xml $@/conf/Catalina/localhost/zimbra.xml
 	mkdir -p $@/conf/AdminService/localhost
-	cp -f $(SERVICE_DIR)/conf/Admin.xml $@/conf/AdminService/localhost/Admin.xml
+	cp -f $(SERVICE_DIR)/conf/zimbraAdmin.xml $@/conf/AdminService/localhost/zimbraAdmin.xml
 	cp -f $(SERVICE_DIR)/conf/tomcat-5.5/tomcat-users.xml $@/conf
 	cp -f $(SERVICE_DIR)/conf/log4j.properties.production  $@/conf/log4j.properties
 	mkdir -p $@/temp
