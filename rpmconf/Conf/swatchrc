@@ -5,8 +5,8 @@ perlcode 0 $notifications{snmp}=@@DOSNMPNOTIFICATIONS@@;
 perlcode 0 my $fr="@@ADMINEMAIL@@";
 perlcode 0 my $pwc="@@PHCEMAIL@@";
 
-perlcode 0 my $snmpargs="-v 2c -c liquid localhost ''";
-perlcode 0 my $snmptrap="/opt/liquid/snmp/bin/snmptrap $snmpargs";
+perlcode 0 my $snmpargs="-v 2c -c zimbra localhost ''";
+perlcode 0 my $snmptrap="/opt/zimbra/snmp/bin/snmptrap $snmpargs";
 perlcode 0 my $snmpsvctrap="LIQUID-TRAP-MIB::lqServiceStatusTrap";
 perlcode 0 my $snmpsvcname="LIQUID-MIB::lqServiceName";
 perlcode 0 my $snmpsvcstatus="LIQUID-MIB::lqServiceStatus";

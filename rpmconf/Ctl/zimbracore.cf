@@ -1,0 +1,5 @@
+APPLICATION mysql test_server "9999" normal "mysql server"
+
+CONTROL_SYNTAX zimbrasyntax mysql_start "/opt/zimbra/bin/mysql.server start"
+CONTROL_SYNTAX zimbrasyntax mysql_stop "/opt/zimbra/bin/mysql.server stop"
+CONTROL_SYNTAX zimbrasyntax mysql_status "/opt/zimbra/bin/mysqladmin status"

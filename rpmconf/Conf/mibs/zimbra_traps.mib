@@ -1,7 +1,7 @@
 LIQUID-TRAP-MIB DEFINITIONS ::= BEGIN
-        IMPORTS liquid FROM LIQUID-MIB;
+        IMPORTS zimbra FROM LIQUID-MIB;
 
-lqtraps OBJECT IDENTIFIER ::= { liquid 0 }
+lqtraps OBJECT IDENTIFIER ::= { zimbra 0 }
 
 lqServiceStatusTrap NOTIFICATION-TYPE
         STATUS current

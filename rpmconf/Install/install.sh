@@ -18,16 +18,16 @@ while [ $# -ne 0 ]; do
 	shift
 done
 
-CORE_PACKAGES="liquid-core"
+CORE_PACKAGES="zimbra-core"
 
-PACKAGES="liquid-ldap \
-liquid-mta \
-liquid-snmp \
-liquid-store"
+PACKAGES="zimbra-ldap \
+zimbra-mta \
+zimbra-snmp \
+zimbra-store"
 
 SERVICES=""
 
-OPTIONAL_PACKAGES="liquid-qatest"
+OPTIONAL_PACKAGES="zimbra-qatest"
 
 PACKAGE_DIR=`dirname $0`/packages
 
@@ -81,7 +81,7 @@ SMTPSOURCE="none"
 SMTPDEST="none"
 SNMPNOTIFY="0"
 SMTPNOTIFY="0"
-INSTALL_PACKAGES="liquid-core"
+INSTALL_PACKAGES="zimbra-core"
 STARTSERVERS="yes"
 LDAPROOTPW=""
 LDAPLIQUIDPW=""
@@ -276,18 +276,18 @@ checkExistingInstall() {
 	fi
 }
 
-runAsLiquid() {
-	# echo "Running as liquid: $1"
+runAsZimbra() {
+	# echo "Running as zimbra: $1"
 	echo "COMMAND: $1" >> $LOGFILE 2>&1
-	su - liquid -c "$1" >> $LOGFILE 2>&1
+	su - zimbra -c "$1" >> $LOGFILE 2>&1
 }
 
 shutDownSystem() {
-	runAsLiquid "lqcontrol shutdown"
+	runAsZimbra "zmcontrol shutdown"
 }
 
 getRunningSchemaVersion() {
-	RUNNINGSCHEMAVERSION=`su - liquid -c "echo \"select value from config where name='db.version';\" | mysql liquid --skip-column-names"`
+	RUNNINGSCHEMAVERSION=`su - zimbra -c "echo \"select value from config where name='db.version';\" | mysql zimbra --skip-column-names"`
 	if [ "x$RUNNINGSCHEMAVERSION" = "x" ]; then
 		RUNNINGSCHEMAVERSION=0
 	fi
@@ -298,7 +298,7 @@ getPackageSchemaVersion() {
 }
 
 getRunningIndexVersion() {
-	RUNNINGINDEXVERSION=`su - liquid -c "echo \"select value from config where name='index.version';\" | mysql liquid --skip-column-names"`
+	RUNNINGINDEXVERSION=`su - zimbra -c "echo \"select value from config where name='index.version';\" | mysql zimbra --skip-column-names"`
 	if [ "x$RUNNINGINDEXVERSION" = "x" ]; then
 		RUNNINGINDEXVERSION=0
 	fi
@@ -365,11 +365,11 @@ setRemove() {
 			fi
 			if [ $response = "no" ]; then
 				echo ""
-				echo $INSTALLED_PACKAGES | grep liquid-ldap > /dev/null 2>&1
+				echo $INSTALLED_PACKAGES | grep zimbra-ldap > /dev/null 2>&1
 				if [ $? = 0 ]; then
 					echo "*** WARNING - you are about to delete all existing users and mail"
 				else
-					echo $INSTALLED_PACKAGES | grep liquid-store > /dev/null 2>&1
+					echo $INSTALLED_PACKAGES | grep zimbra-store > /dev/null 2>&1
 					if [ $? = 0 ]; then
 						echo "*** WARNING - you are about to delete users and mail hosted on this server"
 					else
@@ -389,7 +389,7 @@ setRemove() {
 			fi
 		done
 	else 
-		# REMOVE = yes for non installed systems, to clean up /opt/liquid
+		# REMOVE = yes for non installed systems, to clean up /opt/zimbra
 		REMOVE="yes"
 	fi
 
@@ -401,7 +401,7 @@ setDefaultsFromExistingConfig() {
 	echo "Setting defaults from saved config in $SAVEDIR/config.save"
 	source $SAVEDIR/config.save
 
-	HOSTNAME=${liquid_server_hostname}
+	HOSTNAME=${zimbra_server_hostname}
 	LDAPHOST=${ldap_host}
 	LDAPPORT=${ldap_port}
 	SNMPTRAPHOST=${snmp_trap_host:-$SNMPTRAPHOST}
@@ -410,9 +410,9 @@ setDefaultsFromExistingConfig() {
 	SNMPNOTIFY=${snmp_notify:-0}
 	SMTPNOTIFY=${smtp_notify:-0}
 	LDAPROOTPW=${ldap_root_password}
-	LDAPLIQUIDPW=${liquid_ldap_password}
+	LDAPLIQUIDPW=${zimbra_ldap_password}
 
-	echo "   HOSTNAME=${liquid_server_hostname}"
+	echo "   HOSTNAME=${zimbra_server_hostname}"
 	echo "   LDAPHOST=${ldap_host}"
 	echo "   LDAPPORT=${ldap_port}"
 	echo "   SNMPTRAPHOST=${snmp_trap_host}"
@@ -421,7 +421,7 @@ setDefaultsFromExistingConfig() {
 	echo "   SNMPNOTIFY=${snmp_notify:-0}"
 	echo "   SMTPNOTIFY=${smtp_notify:-0}"
 	echo "   LDAPROOTPW=${ldap_root_password}"
-	echo "   LDAPLIQUIDPW=${liquid_ldap_password}"
+	echo "   LDAPLIQUIDPW=${zimbra_ldap_password}"
 
 }
 
@@ -432,40 +432,40 @@ restoreExistingConfig() {
 	echo -n "Restoring existing configuration file from $RF..."
 	while read i; do
 		# echo "Setting $i"
-		runAsLiquid "lqlocalconfig -f -e $i"
+		runAsZimbra "zmlocalconfig -f -e $i"
 	done < $RF
 	if [ -f $SAVEDIR/backup.save ]; then
-		runAsLiquid "cat $RESTORECONFIG/backup.save | xargs lqschedulebackup -R"
+		runAsZimbra "cat $RESTORECONFIG/backup.save | xargs lqschedulebackup -R"
 	fi
 	echo "done"
 }
 
 restoreCerts() {
-	cp $SAVEDIR/cacerts /opt/liquid/java/jre/lib/security/cacerts
-	cp $SAVEDIR/keystore /opt/liquid/tomcat/conf/keystore
-	cp $SAVEDIR/smtpd.key /opt/liquid/conf/smtpd.key 
-	cp $SAVEDIR/smtpd.crt /opt/liquid/conf/smtpd.crt 
-	chown liquid:liquid /opt/liquid/java/jre/lib/security/cacerts /opt/liquid/tomcat/conf/keystore /opt/liquid/conf/smtpd.key /opt/liquid/conf/smtpd.crt
+	cp $SAVEDIR/cacerts /opt/zimbra/java/jre/lib/security/cacerts
+	cp $SAVEDIR/keystore /opt/zimbra/tomcat/conf/keystore
+	cp $SAVEDIR/smtpd.key /opt/zimbra/conf/smtpd.key 
+	cp $SAVEDIR/smtpd.crt /opt/zimbra/conf/smtpd.crt 
+	chown zimbra:zimbra /opt/zimbra/java/jre/lib/security/cacerts /opt/zimbra/tomcat/conf/keystore /opt/zimbra/conf/smtpd.key /opt/zimbra/conf/smtpd.crt
 }
 
 saveExistingConfig() {
 	echo ""
 	echo "Saving existing configuration file to $SAVEDIR"
 	# yes, it needs massaging to be fed back in...
-	runAsLiquid "lqlocalconfig -s | sed -e \"s/ = \(.*\)/=\'\1\'/\" > $SAVEDIR/config.save"
-	cp /opt/liquid/java/jre/lib/security/cacerts $SAVEDIR
-	cp /opt/liquid/tomcat/conf/keystore $SAVEDIR
-	cp /opt/liquid/conf/smtpd.key $SAVEDIR
-	cp /opt/liquid/conf/smtpd.crt $SAVEDIR
-	if [ -x /opt/liquid/bin/lqschedulebackup ]; then
-		runAsLiquid "lqschedulebackup -s > $SAVEDIR/backup.save"
+	runAsZimbra "zmlocalconfig -s | sed -e \"s/ = \(.*\)/=\'\1\'/\" > $SAVEDIR/config.save"
+	cp /opt/zimbra/java/jre/lib/security/cacerts $SAVEDIR
+	cp /opt/zimbra/tomcat/conf/keystore $SAVEDIR
+	cp /opt/zimbra/conf/smtpd.key $SAVEDIR
+	cp /opt/zimbra/conf/smtpd.crt $SAVEDIR
+	if [ -x /opt/zimbra/bin/lqschedulebackup ]; then
+		runAsZimbra "lqschedulebackup -s > $SAVEDIR/backup.save"
 	fi
 }
 
 removeExistingInstall() {
 	if [ $INSTALLED = "yes" ]; then
 		echo ""
-		echo "Shutting down liquid mail"
+		echo "Shutting down zimbra mail"
 		shutDownSystem
 
 		echo ""
@@ -483,23 +483,23 @@ removeExistingInstall() {
 		rm -f /tmp/sudoers
 		echo ""
 		echo "Removing deployed webapp directories"
-		/bin/rm -rf /opt/liquid/tomcat/webapps/liquid
-		/bin/rm -rf /opt/liquid/tomcat/webapps/liquid.war
-		/bin/rm -rf /opt/liquid/tomcat/webapps/liquidAdmin
-		/bin/rm -rf /opt/liquid/tomcat/webapps/liquidAdmin.war
-		/bin/rm -rf /opt/liquid/tomcat/webapps/service
-		/bin/rm -rf /opt/liquid/tomcat/webapps/service.war
+		/bin/rm -rf /opt/zimbra/tomcat/webapps/zimbra
+		/bin/rm -rf /opt/zimbra/tomcat/webapps/zimbra.war
+		/bin/rm -rf /opt/zimbra/tomcat/webapps/Zimbra::Admin
+		/bin/rm -rf /opt/zimbra/tomcat/webapps/Zimbra::Admin.war
+		/bin/rm -rf /opt/zimbra/tomcat/webapps/service
+		/bin/rm -rf /opt/zimbra/tomcat/webapps/service.war
 	fi
 
 	if [ $REMOVE = "yes" ]; then
 		echo ""
-		echo "Removing /opt/liquid"
-		/bin/rm -rf /opt/liquid/*
+		echo "Removing /opt/zimbra"
+		/bin/rm -rf /opt/zimbra/*
 
 		echo ""
 		echo "Removing users/groups"
 		echo ""
-		userdel liquid > /dev/null 2>&1
+		userdel zimbra > /dev/null 2>&1
 		userdel postfix > /dev/null 2>&1
 		groupdel postdrop > /dev/null 2>&1
 	fi
@@ -548,7 +548,7 @@ findLatestPackage() {
 
 	files=`ls $PACKAGE_DIR/$package*.rpm 2> /dev/null`
 	for q in $files; do
-		# liquid-core-2.0_RHEL4-20050622123009_HEAD.i386.rpm
+		# zimbra-core-2.0_RHEL4-20050622123009_HEAD.i386.rpm
 
 		f=`basename $q`
 		id=`echo $f | awk -F_ '{print $1}'`
@@ -628,9 +628,9 @@ checkPackages() {
 
 cleanUp() {
 	# Dump all the config data to a file
-	runAsLiquid "lqlocalconfig -s > .localconfig.save.$$"
-	runAsLiquid "lqprov gs $HOSTNAME > .lqprov.$HOSTNAME.save.$$"
-	runAsLiquid "lqprov gacf $HOSTNAME > .lqprov.gacf.save.$$"
+	runAsZimbra "zmlocalconfig -s > .localconfig.save.$$"
+	runAsZimbra "zmprov gs $HOSTNAME > .zmprov.$HOSTNAME.save.$$"
+	runAsZimbra "zmprov gacf $HOSTNAME > .zmprov.gacf.save.$$"
 }
 
 verifyLdapServer() {
@@ -643,7 +643,7 @@ verifyLdapServer() {
 	echo ""
 	echo -n  "Contacting ldap server $LDAPHOST on $LDAPPORT..."
 
-	$MYLDAPSEARCH -h $LDAPHOST -p $LDAPPORT -w $LDAPLIQUIDPW -D "uid=liquid,cn=admins,cn=liquid" > /dev/null 2>&1
+	$MYLDAPSEARCH -h $LDAPHOST -p $LDAPPORT -w $LDAPLIQUIDPW -D "uid=zimbra,cn=admins,cn=zimbra" > /dev/null 2>&1
 	LDAPRESULT=$?
 
 	if [ $LDAPRESULT != 0 ]; then
@@ -659,7 +659,7 @@ getConfigOptions() {
 	echo ""
 	echo "Configuration section"
 	if [ $STORE_HERE = "yes" -a $POSTFIX_HERE = "no" ]; then
-		askNonBlank "Please enter the hostname for liquidSmtpHostname" \
+		askNonBlank "Please enter the hostname for zimbraSmtpHostname" \
 			"$SMTPHOST"
 		SMTPHOST=$response
 	fi
@@ -703,7 +703,7 @@ getConfigOptions() {
 				askNonBlank "Enter the root ldap password for $LDAPHOST:" \
 					"$LDAPROOTPW"
 				LDAPROOTPW=$response
-				askNonBlank "Enter the liquid ldap password for $LDAPHOST:" \
+				askNonBlank "Enter the zimbra ldap password for $LDAPHOST:" \
 					"$LDAPLIQUIDPW"
 				LDAPLIQUIDPW=$response
 			fi
@@ -805,7 +805,7 @@ getInstallPackages() {
 	echo ""
 	echo "Select the packages to install"
 	if [ $UPGRADE = "yes" ]; then
-		echo "    Upgrading liquid-core"
+		echo "    Upgrading zimbra-core"
 	fi
 
 	for i in $AVAILABLE_PACKAGES; do
@@ -814,7 +814,7 @@ getInstallPackages() {
 			echo $INSTALLED_PACKAGES | grep $i > /dev/null 2>&1
 			if [ $? = 0 ]; then
 				echo "    Upgrading $i"
-				if [ $i = "liquid-core" ]; then
+				if [ $i = "zimbra-core" ]; then
 					continue
 				fi
 				INSTALL_PACKAGES="$INSTALL_PACKAGES $i"
@@ -842,10 +842,10 @@ setHereFlags() {
 	SNMP_HERE="no"
 
 	for i in $INSTALL_PACKAGES; do
-		if [ $i = "liquid-store" ]; then
+		if [ $i = "zimbra-store" ]; then
 			STORE_HERE="yes"
 		fi
-		if [ $i = "liquid-mta" ]; then
+		if [ $i = "zimbra-mta" ]; then
 			POSTFIX_HERE="yes"
 			# Don't change it if we read in a value from an existing config.
 			if [ "x$RUNAV" = "x" ]; then
@@ -855,10 +855,10 @@ setHereFlags() {
 				RUNSA="yes"
 			fi
 		fi
-		if [ $i = "liquid-ldap" ]; then
+		if [ $i = "zimbra-ldap" ]; then
 			LDAP_HERE="yes"
 		fi
-		if [ $i = "liquid-snmp" ]; then
+		if [ $i = "zimbra-snmp" ]; then
 			SNMP_HERE="yes"
 		fi
 	done
@@ -866,8 +866,8 @@ setHereFlags() {
 
 startServers() {
 	echo -n "Starting servers..."
-	runAsLiquid "lqcontrol startup"
-	su - liquid -c "lqcontrol status"
+	runAsZimbra "zmcontrol startup"
+	su - zimbra -c "zmcontrol status"
 	echo "done"
 }
 
@@ -883,39 +883,39 @@ postInstallConfig() {
 
 	if [ $UPGRADE = "no" -a $STORE_HERE = "yes" ]; then
 		echo -n "Creating db..."
-		runAsLiquid "lqmyinit"
+		runAsZimbra "lqmyinit"
 		echo "done"
 	fi
 
 	echo -n "Setting convertd stub..."
-	runAsLiquid "lqlocalconfig -e convertd_stub_name=SocketTransformationStub"
+	runAsZimbra "zmlocalconfig -e convertd_stub_name=SocketTransformationStub"
 	echo "done"
 
 	echo -n "Setting the hostname to $HOSTNAME..."
-	runAsLiquid "lqlocalconfig -e liquid_server_hostname=${HOSTNAME}"
+	runAsZimbra "zmlocalconfig -e zimbra_server_hostname=${HOSTNAME}"
 	echo "done"
 
 	echo -n "Setting the LDAP host to $LDAPHOST..."
-	runAsLiquid "lqlocalconfig -e ldap_host=$LDAPHOST"
-	runAsLiquid "lqlocalconfig -e ldap_port=$LDAPPORT"
+	runAsZimbra "zmlocalconfig -e ldap_host=$LDAPHOST"
+	runAsZimbra "zmlocalconfig -e ldap_port=$LDAPPORT"
 	echo "done"
 
 	SERVERCREATED="no"
 	if [ $UPGRADE = "no" ]; then
 		if [ $LDAP_HERE = "yes" ]; then
 			echo -n "Initializing ldap..."
-			runAsLiquid "lqldapinit"
+			runAsZimbra "lqldapinit"
 			echo "done"
 		else
 			# set the ldap password in localconfig only
 			echo -n "Setting the ldap passwords..."
-			runAsLiquid "lqlocalconfig -f -e ldap_root_password=$LDAPROOTPW"
-			runAsLiquid "lqlocalconfig -f -e liquid_ldap_password=$LDAPLIQUIDPW"
+			runAsZimbra "zmlocalconfig -f -e ldap_root_password=$LDAPROOTPW"
+			runAsZimbra "zmlocalconfig -f -e zimbra_ldap_password=$LDAPLIQUIDPW"
 			echo "done"
 		fi
 
 		echo -n "Creating server $HOSTNAME..."
-		runAsLiquid "lqprov cs $HOSTNAME"
+		runAsZimbra "zmprov cs $HOSTNAME"
 		if [ $? = 0 ]; then
 			SERVERCREATED="yes"
 		fi
@@ -923,16 +923,16 @@ postInstallConfig() {
 
 		if [ x$CREATEDOMAIN != "x" ]; then
 			echo -n "Creating domain $CREATEDOMAIN..."
-			runAsLiquid "lqprov cd $CREATEDOMAIN"
-			runAsLiquid "lqprov mcf liquidDefaultDomainName $CREATEDOMAIN"
+			runAsZimbra "zmprov cd $CREATEDOMAIN"
+			runAsZimbra "zmprov mcf zimbraDefaultDomainName $CREATEDOMAIN"
 			echo "done"
 			if [ x$CREATEADMIN != "x" ]; then
 				echo -n "Creating admin account $CREATEADMIN..."
-				runAsLiquid "lqprov ca $CREATEADMIN $CREATEADMINPASS liquidIsAdminAccount TRUE"
+				runAsZimbra "zmprov ca $CREATEADMIN $CREATEADMINPASS zimbraIsAdminAccount TRUE"
 				LOCALHOSTNAME=`hostname --fqdn`
 				if [ $LOCALHOSTNAME = $CREATEDOMAIN ]; then
-					runAsLiquid "lqprov aaa $CREATEADMIN liquid@$HOSTNAME"
-					runAsLiquid "lqprov aaa $CREATEADMIN root@$HOSTNAME"
+					runAsZimbra "zmprov aaa $CREATEADMIN zimbra@$HOSTNAME"
+					runAsZimbra "zmprov aaa $CREATEADMIN root@$HOSTNAME"
 				fi
 				echo "done"
 			fi
@@ -940,85 +940,85 @@ postInstallConfig() {
 	else
 		if [ $LDAP_HERE = "yes" ]; then
 			echo -n "Starting ldap..."
-			runAsLiquid "ldap start"
-			runAsLiquid "lqldapapplyldif"
+			runAsZimbra "ldap start"
+			runAsZimbra "lqldapapplyldif"
 			echo "done"
 		fi
 	fi
 
 	if [ $LDAP_HERE = "yes" ]; then
-		SERVICES="liquidServiceInstalled ldap"
-		runAsLiquid "lqprov mcf liquidComponentAvailable convertd liquidComponentAvailable replication liquidComponentAvailable hotbackup"
+		SERVICES="zimbraServiceInstalled ldap"
+		runAsZimbra "zmprov mcf zimbraComponentAvailable convertd zimbraComponentAvailable replication zimbraComponentAvailable hotbackup"
 	fi
 
 	if [ $STORE_HERE = "yes" ]; then
 		if [ $SERVERCREATED = "yes" ]; then
 			echo -n "Setting smtp host to $SMTPHOST..."
-			runAsLiquid "lqprov ms $HOSTNAME liquidSmtpHostname $SMTPHOST"
+			runAsZimbra "zmprov ms $HOSTNAME zimbraSmtpHostname $SMTPHOST"
 			echo "done"
 		fi
-		SERVICES="$SERVICES liquidServiceInstalled mailbox"
+		SERVICES="$SERVICES zimbraServiceInstalled mailbox"
 	fi
 
 	if [ $POSTFIX_HERE = "yes" ]; then
 		echo -n "Initializing mta config..."
-		runAsLiquid "lqmtainit $LDAPHOST"
+		runAsZimbra "lqmtainit $LDAPHOST"
 		echo "done"
 
-		# lqprov isn't very friendly
+		# zmprov isn't very friendly
 
-		echo -n "Adding $HOSTNAME to liquidMailHostPool in default COS..."
-		runAsLiquid "id=\`lqprov gs $HOSTNAME | grep liquidId | awk '{print \$2}'\`; for i in \`lqprov gc default | grep liquidMailHostPool | sed 's/liquidMailHostPool: //'\`; do host=\"\$host liquidMailHostPool \$i\"; done; lqprov mc default \$host liquidMailHostPool \$id"
+		echo -n "Adding $HOSTNAME to zimbraMailHostPool in default COS..."
+		runAsZimbra "id=\`zmprov gs $HOSTNAME | grep zimbraId | awk '{print \$2}'\`; for i in \`zmprov gc default | grep zimbraMailHostPool | sed 's/zimbraMailHostPool: //'\`; do host=\"\$host zimbraMailHostPool \$i\"; done; zmprov mc default \$host zimbraMailHostPool \$id"
 		echo "done"
 
-		SERVICES="$SERVICES liquidServiceInstalled mta"
+		SERVICES="$SERVICES zimbraServiceInstalled mta"
 
 		if [ $RUNAV = "yes" ]; then
-			SERVICES="$SERVICES liquidServiceInstalled antivirus"
-			runAsLiquid "lqlocalconfig -e av_notify_user=$AVUSER"
-			runAsLiquid "lqlocalconfig -e av_notify_domain=$AVDOMAIN"
+			SERVICES="$SERVICES zimbraServiceInstalled antivirus"
+			runAsZimbra "zmlocalconfig -e av_notify_user=$AVUSER"
+			runAsZimbra "zmlocalconfig -e av_notify_domain=$AVDOMAIN"
 		fi
 		if [ $RUNSA = "yes" ]; then
-			SERVICES="$SERVICES liquidServiceInstalled antispam"
+			SERVICES="$SERVICES zimbraServiceInstalled antispam"
 		fi
 	fi
 
 	if [ $SNMP_HERE = "yes" ]; then
 		echo -n "Configuring SNMP..."
-		runAsLiquid "lqlocalconfig -e snmp_notify=$SNMPNOTIFY"
-		runAsLiquid "lqlocalconfig -e smtp_notify=$SMTPNOTIFY"
-		runAsLiquid \
-			"lqlocalconfig -e snmp_trap_host=$SNMPTRAPHOST"
-		runAsLiquid "lqlocalconfig -e smtp_source=$SMTPSOURCE"
-		runAsLiquid \
-			"lqlocalconfig -e smtp_destination=$SMTPDEST"
-		runAsLiquid "lqsnmpinit"
+		runAsZimbra "zmlocalconfig -e snmp_notify=$SNMPNOTIFY"
+		runAsZimbra "zmlocalconfig -e smtp_notify=$SMTPNOTIFY"
+		runAsZimbra \
+			"zmlocalconfig -e snmp_trap_host=$SNMPTRAPHOST"
+		runAsZimbra "zmlocalconfig -e smtp_source=$SMTPSOURCE"
+		runAsZimbra \
+			"zmlocalconfig -e smtp_destination=$SMTPDEST"
+		runAsZimbra "zmsnmpinit"
 		echo "done"
-		SERVICES="$SERVICES liquidServiceInstalled snmp"
+		SERVICES="$SERVICES zimbraServiceInstalled snmp"
 	fi
 
 	echo -n "Setting services on $HOSTNAME..."
-	runAsLiquid "lqprov ms $HOSTNAME $SERVICES"
+	runAsZimbra "zmprov ms $HOSTNAME $SERVICES"
 	if [ $UPGRADE = "no" ]; then
-		ENABLEDSERVICES=`echo $SERVICES | sed -e 's/liquidServiceInstalled/liquidServiceEnabled/g'`
-		runAsLiquid "lqprov ms $HOSTNAME $ENABLEDSERVICES"
+		ENABLEDSERVICES=`echo $SERVICES | sed -e 's/zimbraServiceInstalled/zimbraServiceEnabled/g'`
+		runAsZimbra "zmprov ms $HOSTNAME $ENABLEDSERVICES"
 	fi
-	LOCALSERVICES=`echo $SERVICES | sed -e 's/liquidServiceInstalled //g'`
-	runAsLiquid "lqlocalconfig -e liquid_services=\"$LOCALSERVICES\""
+	LOCALSERVICES=`echo $SERVICES | sed -e 's/zimbraServiceInstalled //g'`
+	runAsZimbra "zmlocalconfig -e zimbra_services=\"$LOCALSERVICES\""
 	echo "done"
 
 	if [ $STORE_HERE = "yes" -o $POSTFIX_HERE = "yes" ]; then
 		echo -n "Setting up SSL..."
-		runAsLiquid "lqcreatecert"
+		runAsZimbra "zmcreatecert"
 		if [ $STORE_HERE = "yes" ]; then
-			runAsLiquid "lqcertinstall mailbox"
-			runAsLiquid "lqtlsctl $MODE"
+			runAsZimbra "zmcertinstall mailbox"
+			runAsZimbra "zmtlsctl $MODE"
 		fi
 		if [ $POSTFIX_HERE = "yes" ]; then
-			runAsLiquid "lqcertinstall mta /opt/liquid/ssl/ssl/server/smtpd.crt /opt/liquid/ssl/ssl/ca/ca.key"
+			runAsZimbra "zmcertinstall mta /opt/zimbra/ssl/ssl/server/smtpd.crt /opt/zimbra/ssl/ssl/ca/ca.key"
 		fi
 
-		runAsLiquid "lqlocalconfig -e ssl_allow_untrusted_certs=$ALLOWSELFSIGNED"
+		runAsZimbra "zmlocalconfig -e ssl_allow_untrusted_certs=$ALLOWSELFSIGNED"
 		echo "done"
 		if [ $UPGRADE = "yes" ]; then
 			restoreCerts

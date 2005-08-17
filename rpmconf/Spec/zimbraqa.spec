@@ -1,18 +1,18 @@
 #
-# spec file for liquid.rpm
+# spec file for zimbra.rpm
 #
 Summary: Liquid QA Tests
-Name: liquid-qatest
+Name: zimbra-qatest
 Version: @@VERSION@@
 Release: @@RELEASE@@
 Copyright: Copyright 2004 Liquid Systems
 Group: Applications/Messaging
-URL: http://www.liquid.com
+URL: http://www.zimbra.com
 Vendor: Liquid Systems, Inc.
 Packager: Liquid Systems, Inc.
-BuildRoot: /opt/liquid
+BuildRoot: /opt/zimbra
 AutoReqProv: no
-requires: liquid-core
+requires: zimbra-core
 
 %description
 Best email money can buy
@@ -26,8 +26,8 @@ Best email money can buy
 %pre
 
 %post
-chown -R liquid:liquid /opt/liquid/qa
-chmod a+x /opt/liquid/qa/scripts/*
+chown -R zimbra:zimbra /opt/zimbra/qa
+chmod a+x /opt/zimbra/qa/scripts/*
 
 %preun
 

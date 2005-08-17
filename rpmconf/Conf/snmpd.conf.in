@@ -27,22 +27,22 @@
 # trapsink: A SNMPv1 trap receiver
 #   arguments: host [community] [portnum]
 
-trapsink  @@SNMPHOST@@ liquid 
+trapsink  @@SNMPHOST@@ zimbra 
 
 # trap2sink: A SNMPv2c trap receiver
 #   arguments: host [community] [portnum]
 
-trap2sink  @@SNMPHOST@@ liquid 
+trap2sink  @@SNMPHOST@@ zimbra 
 
 # informsink: A SNMPv2c inform (acknowledged trap) receiver
 #   arguments: host [community] [portnum]
 
-informsink  @@SNMPHOST@@ liquid 
+informsink  @@SNMPHOST@@ zimbra 
 
 # trapcommunity: Default trap sink community to use
 #   arguments: community-string
 
-trapcommunity  liquid
+trapcommunity  zimbra
 
 
 

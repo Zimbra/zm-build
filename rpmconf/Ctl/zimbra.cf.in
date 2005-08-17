@@ -1,0 +1,38 @@
+# Order is important.
+#
+# APPLICATION name executable "args" mode "label"
+#
+# mode = "normal"
+#
+# SERVICE name "label" appname monitor_port control_syntax
+#
+# CONTROL_SYNTAX name cmd "syntax"
+# CONTROL_SYNTAX proto "protocol-type" (text, http, soap)
+#
+# commands: start, restart, stop, exit, drain, status
+#	plus app specific stuff
+#
+# $nm, $ex, $args, $md, $label
+
+# exit_status_error_mappings 
+# log_message_alerts 
+#
+
+PORT 7777
+
+CONTROL_SYNTAX zimbrasyntax proto "text"
+CONTROL_SYNTAX zimbrasyntax start "START"
+CONTROL_SYNTAX zimbrasyntax restart "RESTART"
+CONTROL_SYNTAX zimbrasyntax stop "STOP"
+CONTROL_SYNTAX zimbrasyntax exit "EXIT"
+CONTROL_SYNTAX zimbrasyntax drain "DRAIN"
+CONTROL_SYNTAX zimbrasyntax status "STATUS"
+CONTROL_SYNTAX zimbrasyntax statuschange "STATUSCHANGE"
+CONTROL_SYNTAX zimbrasyntax events "EVENTS"
+CONTROL_SYNTAX zimbrasyntax addhost "ADDHOST"
+CONTROL_SYNTAX zimbrasyntax removehost "REMOVEHOST"
+CONTROL_SYNTAX zimbrasyntax updatecluster "UPDATECLUSTER"
+CONTROL_SYNTAX zimbrasyntax shutdown "SHUTDOWN"
+CONTROL_SYNTAX zimbrasyntax reload "RELOAD"
+CONTROL_SYNTAX zimbrasyntax newfetchref "NEWFETCHREF"
+CONTROL_SYNTAX zimbrasyntax getfetchref "GETFETCHREF"

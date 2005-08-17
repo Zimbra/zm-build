@@ -3,9 +3,9 @@ LIQUID-MIB DEFINITIONS ::= BEGIN
 		enterprises
 		FROM SNMPv2-SMI;
 
-liquid OBJECT IDENTIFIER ::= { enterprises 666 }
+zimbra OBJECT IDENTIFIER ::= { enterprises 666 }
 
-lqStatus OBJECT IDENTIFIER ::= { liquid 1 }
+lqStatus OBJECT IDENTIFIER ::= { zimbra 1 }
 
 lqServiceName OBJECT-TYPE
     SYNTAX      OCTET STRING (SIZE(1..32))

@@ -8,6 +8,6 @@ fi
 # User specific environment and startup programs
 
 BASH_ENV=$HOME/.bashrc
-USERNAME="liquid"
+USERNAME="zimbra"
 
 export USERNAME BASH_ENV 

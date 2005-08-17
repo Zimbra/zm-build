@@ -1,5 +1,0 @@
-APPLICATION mysql test_server "9999" normal "mysql server"
-
-CONTROL_SYNTAX liquidsyntax mysql_start "/opt/liquid/bin/mysql.server start"
-CONTROL_SYNTAX liquidsyntax mysql_stop "/opt/liquid/bin/mysql.server stop"
-CONTROL_SYNTAX liquidsyntax mysql_status "/opt/liquid/bin/mysqladmin status"
