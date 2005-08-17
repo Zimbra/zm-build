@@ -105,7 +105,7 @@ fi
 iptables -t nat -F
 /sbin/chkconfig iptables on
 
-/opt/zimbra/bin/lqiptables -i
+/opt/zimbra/bin/zmiptables -i
 
 cp /opt/zimbra/bin/zimbra /etc/init.d/zimbra
 chmod 755 /etc/init.d/zimbra
