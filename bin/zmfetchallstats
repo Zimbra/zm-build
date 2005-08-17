@@ -4,11 +4,11 @@
 
 use strict;
 
-use lib "/opt/liquid/liquidmon/lib/liquidpm";
-use lib "/opt/liquid/liquidmon/lib/liquidpm/SOAP";
-use lib "/opt/liquid/liquidmon/lib";
+use lib "/opt/zimbra/zimbramon/lib/Zimbra/Mon";
+use lib "/opt/zimbra/zimbramon/lib/Zimbra/Mon/SOAP";
+use lib "/opt/zimbra/zimbramon/lib";
 
-use liquidlog;
+use Zimbra::Logger;
 
 use Getopt::Std;
 
@@ -21,9 +21,9 @@ use Soap;
 
 use Time::Local;
 
-my $ACCTNS = "urn:liquidAccount";
-my $MAILNS = "urn:liquidMail";
-my $ADMINNS = "urn:liquidAdmin";
+my $ACCTNS = "urn:zimbraAccount";
+my $MAILNS = "urn:zimbraMail";
+my $ADMINNS = "urn:Zimbra::Admin";
 my $SOAP = $Soap::Soap12;
 
 my $authToken;
@@ -97,7 +97,7 @@ sub get_host_list {
 
 	my $url = "https://$h:7071/service/admin/soap/";
 
-	my $context = $SOAP->liquidContext($authToken, "");
+	my $context = $SOAP->zimbraContext($authToken, "");
 
 	my $d = new XmlDoc;
 	$d->start('GetAllServersRequest', $ADMINNS);
@@ -131,7 +131,7 @@ sub get_stats_from_host {
 
 	if (!defined ($authToken)) {return undef;}
 
-	my $context = $SOAP->liquidContext($authToken, "");
+	my $context = $SOAP->zimbraContext($authToken, "");
 
 	my $url = "https://$host:7071/service/admin/soap/";
 

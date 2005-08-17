@@ -1,12 +1,12 @@
 #!/bin/sh
 
-BASE=/opt/liquid/ssl/ssl
+BASE=/opt/zimbra/ssl/ssl
 
-JAVA_HOME=/opt/liquid/java
+JAVA_HOME=/opt/zimbra/java
 
-TOMCAT=/opt/liquid/tomcat/conf
+TOMCAT=/opt/zimbra/tomcat/conf
 
-CONF=/opt/liquid/conf
+CONF=/opt/zimbra/conf
 
 APP=$1
 shift
@@ -31,7 +31,7 @@ getHostInfo() {
 
 	H=`hostname --fqdn`
 
-	# $H=$H.liquidsys.com
+	# $H=$H.zimbrasys.com
 
 	HH=`echo $H | grep '\.'`
 
@@ -49,7 +49,7 @@ importCert() {
 
 	if [ $APP = "mailbox" ]; then
 		keytool -import -alias tomcat -keystore ${TOMCAT}/keystore \
-			-trustcacerts -file ${CERTFILE} -storepass liquid
+			-trustcacerts -file ${CERTFILE} -storepass zimbra
 	else
 		cp -f $CERTFILE ${CONF}/smtpd.crt
 		cp -f $KEYFILE ${CONF}/smtpd.key

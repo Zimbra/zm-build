@@ -1,3 +1,3 @@
 #!/bin/sh
 echo 0
-/opt/liquid/bin/mysql -E -u liquid -pliquid liquid -e "select value, time, name from server_stat where name = \"$1\" order by time desc limit 1 " | tail -3 | awk '{print $2}'
+/opt/zimbra/bin/mysql -E -u zimbra -pzimbra zimbra -e "select value, time, name from server_stat where name = \"$1\" order by time desc limit 1 " | tail -3 | awk '{print $2}'

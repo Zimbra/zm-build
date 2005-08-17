@@ -1,10 +1,10 @@
 #!/usr/bin/perl
 
-package diskSlice;
+package Zimbra::diskSlice;
 
 use strict;
 
-use liquidlog;
+use Zimbra::Logger;
 
 require Exporter;
 
@@ -12,7 +12,7 @@ my @ISA = qw(Exporter);
 
 sub new
 {
-	#new diskSlice($dev, $blk, $used, $avail, $cap, $mt);
+	#new Zimbra::diskSlice($dev, $blk, $used, $avail, $cap, $mt);
 	my ($class, $dev, $blk, $used, $avail, $cap, $mt) = @_;
 	return $class if ref ($class);
 	
@@ -25,7 +25,7 @@ sub new
 	$self->{cap} = $cap;
 	$self->{mt} = $mt;
 	
-	#liquidlog::Log ("info","Created diskSlice: $dev, $blk, $used, $avail, $cap, $mt");
+	#Zimbra::Logger::Log ("info","Created Zimbra::diskSlice: $dev, $blk, $used, $avail, $cap, $mt");
 	return $self;
 }
 

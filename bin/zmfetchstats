@@ -4,11 +4,11 @@
 
 use strict;
 
-use lib "/opt/liquid/liquidmon/lib/liquidpm";
-use lib "/opt/liquid/liquidmon/lib/liquidpm/SOAP";
-use lib "/opt/liquid/liquidmon/lib";
+use lib "/opt/zimbra/zimbramon/lib/Zimbra/Mon";
+use lib "/opt/zimbra/zimbramon/lib/Zimbra/Mon/SOAP";
+use lib "/opt/zimbra/zimbramon/lib";
 
-use liquidlog;
+use Zimbra::Logger;
 
 use Getopt::Std;
 
@@ -21,9 +21,9 @@ use Soap;
 
 use Time::Local;
 
-my $ACCTNS = "urn:liquidAccount";
-my $MAILNS = "urn:liquidMail";
-my $ADMINNS = "urn:liquidAdmin";
+my $ACCTNS = "urn:zimbraAccount";
+my $MAILNS = "urn:zimbraMail";
+my $ADMINNS = "urn:Zimbra::Admin";
 
 our %GlobalOpts;
 
@@ -77,7 +77,7 @@ $d->add('name', undef, { by => "name"}, "$GlobalOpts{u}");
 $d->add('password', undef, undef, "$GlobalOpts{p}");
 $d->end();
 
-# print "$url\nadmin\@$GlobalOpts{H}.liquidsys.com\n";
+# print "$url\nadmin\@$GlobalOpts{H}.zimbrasys.com\n";
 
 print "Fetching from host $GlobalOpts{H} $GlobalOpts{S} from $START till $END, period $GlobalOpts{P}\n\n";
 
@@ -94,7 +94,7 @@ my $authToken = $authResponse->find_child('authToken')->content;
 
 # print "authToken($authToken)\n";
 
-my $context = $SOAP->liquidContext($authToken, "");
+my $context = $SOAP->zimbraContext($authToken, "");
 
 $d = new XmlDoc;
 $d->start('GetServerAggregateStatsRequest', $ADMINNS);

@@ -1,4 +1,4 @@
-package Liquid::Failover::Tcp;
+package Zimbra::Failover::Tcp;
 
 require Exporter;
 @ISA = qw(Exporter);
@@ -6,8 +6,8 @@ require Exporter;
 use strict;
 use Net::Telnet();
 use IO::Socket::INET;
-use Liquid::Failover::Debug qw(debugOn);
-use Liquid::Failover::Dispatcher qw(dispatch shutdownSignalled);
+use Zimbra::Failover::Debug qw(debugOn);
+use Zimbra::Failover::Dispatcher qw(dispatch shutdownSignalled);
 
 sub connectTo($$) {
     my ($host, $port) = @_;

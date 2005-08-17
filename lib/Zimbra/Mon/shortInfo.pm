@@ -1,11 +1,11 @@
 #!/usr/bin/perl
 
-package shortInfo;
+package Zimbra::shortInfo;
 
 use strict;
 
-use liquidlog;
-use diskUsage;
+use Zimbra::Logger;
+use Zimbra::diskUsage;
 use FileHandle;
 
 my $NUM_ITEMS = 30;
@@ -35,7 +35,7 @@ sub new {
 
 sub readShortInfo {
 
-	# readShortInfo reads info written by liquidStatusMon
+	# readShortInfo reads info written by Zimbra::StatusMon
 	my $self = shift;
 
 	# Race condition fun - make sure the file we're reading doesn't get wiped.
@@ -63,13 +63,13 @@ sub readShortInfo {
 		}
 
 		$self->{load} = ();
-		$self->{df}   = new diskUsage;
+		$self->{df}   = new Zimbra::diskUsage;
 
 		foreach (@lines) {
 			my ( $key, $val ) = split ':', $_, 2;
 			if ( $key eq 'df' ) {
 				my @fields = split ' ', $val;
-				push( @{ $self->{df}->{slices} }, new diskSlice(@fields) );
+				push( @{ $self->{df}->{slices} }, new Zimbra::diskSlice(@fields) );
 			}
 			elsif ( $key eq 'load' ) {
 				push( @{ $self->{load} }, $val );
@@ -92,7 +92,7 @@ sub getLastFileName {
 
 	closedir DIR;
 
-	#	liquidlog::Log ("debug","getLastFileName ".$fns[$#fns]);
+	#	Zimbra::Logger::Log ("debug","getLastFileName ".$fns[$#fns]);
 
 	return $fns[$#fns];
 }
@@ -103,7 +103,7 @@ sub writeShortInfo {
 	my $t = time();
 
 	my $statusFileName = $self->getStatusFilename($t) . "tmp";
-	liquidlog::Log( "debug", "writeShortInfo " . $statusFileName );
+	Zimbra::Logger::Log( "debug", "writeShortInfo " . $statusFileName );
 
 	my $fh = new FileHandle;
 
@@ -126,7 +126,7 @@ sub getStatusFilename {
 	my $fn   = $self->{statusDir};
 	$fn .= "/status." . $t . "." . $$;
 
-	#	liquidlog::Log ("debug","getStatusFilename ".$fn);
+	#	Zimbra::Logger::Log ("debug","getStatusFilename ".$fn);
 
 	$self->{statusFileName} = $fn;
 
@@ -136,7 +136,7 @@ sub getStatusFilename {
 sub cleanupStatusDir {
 	my $self = shift;
 
-	#	liquidlog::Log ("debug","cleanupStatusDir ".$self->{lastFileName});
+	#	Zimbra::Logger::Log ("debug","cleanupStatusDir ".$self->{lastFileName});
 
 	if ( $self->{lastFileName} ne "" ) {
 		unlink( $self->{lastFileName} );
@@ -147,14 +147,14 @@ sub cleanupStatusDir {
 sub clearStatusDir {
 	my $self = shift;
 
-	#	liquidlog::Log ("debug","cleanupStatusDir ".$self->{lastFileName});
+	#	Zimbra::Logger::Log ("debug","cleanupStatusDir ".$self->{lastFileName});
 	opendir DIR, $self->{statusDir};
 
 	my @fns = grep !/tmp/, sort map { "$self->{statusDir}/$_" } readdir DIR;
 
 	closedir DIR;
 
-	#	liquidlog::Log ("debug","getLastFileName ".$fns[$#fns]);
+	#	Zimbra::Logger::Log ("debug","getLastFileName ".$fns[$#fns]);
 
 	foreach (@fns) {
 		unlink $_;
@@ -163,7 +163,7 @@ sub clearStatusDir {
 
 sub prettyPrint {
 
-	# getShortInfo gets info to be written by liquidStatusMon
+	# getShortInfo gets info to be written by Zimbra::StatusMon
 	my $self = shift;
 
 	my $s;
@@ -193,8 +193,8 @@ sub prettyPrint {
 
 sub getShortInfo {
 
-	#	liquidlog::Log ("debug","getShortInfo");
-	# getShortInfo gets info to be written by liquidStatusMon
+	#	Zimbra::Logger::Log ("debug","getShortInfo");
+	# getShortInfo gets info to be written by Zimbra::StatusMon
 	my $self = shift;
 
 	$self->{uts} = time();
@@ -203,7 +203,7 @@ sub getShortInfo {
 
 	chomp $self->{ts};
 
-	$self->{df} = new diskUsage;
+	$self->{df} = new Zimbra::diskUsage;
 
 	$self->{df}->get();
 
@@ -231,7 +231,7 @@ sub getLoad() {
 
 	my ( $a1, $a2, $a3 ) = ( $l =~ m/^([\d.]+)\s+([\d.]+)\s+([\d.]+).*/ );
 
-	#	liquidlog::Log ("debug","LOAD $a1 $a2 $a3");
+	#	Zimbra::Logger::Log ("debug","LOAD $a1 $a2 $a3");
 	push @{ $self->{load} }, "$self->{ts} $a1 $a2 $a3";
 
 	while ( $#{ $self->{load} } >= $NUM_ITEMS ) {

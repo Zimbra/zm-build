@@ -6,17 +6,17 @@
 # smtp_source <email address>
 # smtp_destination <email address>
 
-source "/opt/liquid/bin/lqshutil" || exit 1
+source "/opt/zimbra/bin/lqshutil" || exit 1
 lqsetvars \
-	liquid_server_hostname \
+	zimbra_server_hostname \
 	snmp_notify \
 	smtp_notify 
 
 if [ ${snmp_notify} = "1" ]; then
 	lqsetvars \
 		snmp_trap_host 
-	SOURCEFILE=/opt/liquid/snmp/share/snmp/snmpd.conf.in
-	FILE=/opt/liquid/conf/snmpd.conf
+	SOURCEFILE=/opt/zimbra/snmp/share/snmp/snmpd.conf.in
+	FILE=/opt/zimbra/conf/snmpd.conf
 	echo creating $FILE
 	cat ${SOURCEFILE} | sed -e "s/@@SNMPHOST@@/${snmp_trap_host}/g" > ${FILE}
 fi
@@ -33,7 +33,7 @@ if [ ${smtp_notify} = "1" ]; then
 	smtp_destination=`echo ${smtp_destination} | sed -e 's/@/\\\\\\\@/'`
 fi
 
-SWFILE=/opt/liquid/conf/swatchrc
+SWFILE=/opt/zimbra/conf/swatchrc
 
 echo creating $SWFILE
 cat ${SWFILE}.in | \
@@ -41,5 +41,5 @@ cat ${SWFILE}.in | \
 	-e "s/@@DOSMTPNOTIFICATIONS@@/${smtp_notify}/g" \
 	-e "s/@@ADMINEMAIL@@/${smtp_source}/g" \
 	-e "s/@@PHCEMAIL@@/${smtp_destination}/g" \
-	-e "s/@@HOSTNAME@@/${liquid_server_hostname}/g" \
+	-e "s/@@HOSTNAME@@/${zimbra_server_hostname}/g" \
 	> ${SWFILE}

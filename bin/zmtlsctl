@@ -1,10 +1,10 @@
 #!/bin/sh
 
-BASE=/opt/liquid/ssl/ssl
+BASE=/opt/zimbra/ssl/ssl
 
-JAVA_HOME=/opt/liquid/java
+JAVA_HOME=/opt/zimbra/java
 
-TOMCAT=/opt/liquid/tomcat/conf
+TOMCAT=/opt/zimbra/tomcat/conf
 
 MODE=$1
 
@@ -33,7 +33,7 @@ getHostInfo() {
 
 	H=`hostname --fqdn`
 
-	# $H=$H.liquidsys.com
+	# $H=$H.zimbrasys.com
 
 	HH=`echo $H | grep '\.'`
 
@@ -49,35 +49,35 @@ updateWebConfig() {
 	if [ $MODE = "http" ]; then
 		sed -e 's/\(.*HTTPSBEGIN\).*/\1/' -e 's/.*\(HTTPSEND.*\)/\1/' \
 			-e 's/\(.*HTTPBEGIN\).*/\1 -->/' -e 's/.*\(HTTPEND.*\)/<!-- \1/' \
-			/opt/liquid/tomcat/conf/server.xml > \
+			/opt/zimbra/tomcat/conf/server.xml > \
 			/tmp/server.xml.$$
 	else
 		if [ $MODE = "https" ]; then
 			sed -e 's/\(.*HTTPSBEGIN\).*/\1 -->/' -e 's/.*\(HTTPSEND.*\)/<!-- \1/' \
 				-e 's/\(.*HTTPBEGIN\).*/\1/' -e 's/.*\(HTTPEND.*\)/\1/' \
-				/opt/liquid/tomcat/conf/server.xml > \
+				/opt/zimbra/tomcat/conf/server.xml > \
 				/tmp/server.xml.$$
 		else
 			# MIXED - enable both
 			sed -e 's/\(.*HTTPSBEGIN\).*/\1 -->/' -e 's/.*\(HTTPSEND.*\)/<!-- \1/' \
 				-e 's/\(.*HTTPBEGIN\).*/\1 -->/' -e 's/.*\(HTTPEND.*\)/<!-- \1/' \
-				/opt/liquid/tomcat/conf/server.xml > \
+				/opt/zimbra/tomcat/conf/server.xml > \
 				/tmp/server.xml.$$
 		fi
 	fi
-	mv -f /tmp/server.xml.$$ /opt/liquid/tomcat/conf/server.xml
+	mv -f /tmp/server.xml.$$ /opt/zimbra/tomcat/conf/server.xml
 
 	sed -e "s/.*PROTOCOL MODE.*/<env-entry-value>$MODE<\/env-entry-value><!-- PROTOCOL MODE -->/" \
-		/opt/liquid/tomcat/webapps/liquid/WEB-INF/web.xml > /tmp/web.xml.$$
-	mv -f /tmp/web.xml.$$ /opt/liquid/tomcat/webapps/liquid/WEB-INF/web.xml
+		/opt/zimbra/tomcat/webapps/zimbra/WEB-INF/web.xml > /tmp/web.xml.$$
+	mv -f /tmp/web.xml.$$ /opt/zimbra/tomcat/webapps/zimbra/WEB-INF/web.xml
 	
 	if [ $MODE = "http" ]; then
-		lqprov mcf liquidMailPort 80 liquidMailSSLPort 0
+		lqprov mcf zimbraMailPort 80 zimbraMailSSLPort 0
 	else
 		if [ $MODE = "https" ]; then
-			lqprov mcf liquidMailPort 0 liquidMailSSLPort 443
+			lqprov mcf zimbraMailPort 0 zimbraMailSSLPort 443
 		else
-			lqprov mcf liquidMailPort 80 liquidMailSSLPort 443
+			lqprov mcf zimbraMailPort 80 zimbraMailSSLPort 443
 		fi
 	fi
 

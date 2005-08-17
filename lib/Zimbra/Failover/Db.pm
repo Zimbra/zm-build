@@ -1,16 +1,16 @@
-package Liquid::Failover::Db;
+package Zimbra::Failover::Db;
 
 use strict;
 use DBI;
-use Liquid::Failover::Bootstrap;
+use Zimbra::Failover::Bootstrap;
 
-my $LIQUID_HOME = $ENV{LIQUID_HOME} || $ENV{HOME} || '/opt/liquid';
+my $LIQUID_HOME = $ENV{LIQUID_HOME} || $ENV{HOME} || '/opt/zimbra';
 
 sub connect {
     my $class = shift;
-    my $data_source = "dbi:mysql:database=liquid;mysql_read_default_file=$LIQUID_HOME/conf/my.cnf";
-    my $username = Liquid::Failover::Bootstrap::getDbUsername();
-    my $password = Liquid::Failover::Bootstrap::getDbPassword();
+    my $data_source = "dbi:mysql:database=zimbra;mysql_read_default_file=$LIQUID_HOME/conf/my.cnf";
+    my $username = Zimbra::Failover::Bootstrap::getDbUsername();
+    my $password = Zimbra::Failover::Bootstrap::getDbPassword();
     my $dbh = DBI->connect($data_source, $username, $password);
     if (!$dbh) {
         print STDERR "Unable to connect to DB $data_source: $DBI::errstr";

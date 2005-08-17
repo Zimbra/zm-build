@@ -3,15 +3,15 @@
 # Use to start appropriate failover script (client or server)
 
 use strict;
-use lib "$ENV{LIQUID_HOME}/liquidmon/lib";
+use lib "$ENV{LIQUID_HOME}/zimbramon/lib";
 use Getopt::Std;
-use Liquid::Failover::Debug qw(setDebug);
-use Liquid::Failover::Config;
-use Liquid::Failover::Tcp;
-use Liquid::Failover::Serial;
-use Liquid::Failover::Pid;
+use Zimbra::Failover::Debug qw(setDebug);
+use Zimbra::Failover::Config;
+use Zimbra::Failover::Tcp;
+use Zimbra::Failover::Serial;
+use Zimbra::Failover::Pid;
 
-my $config = Liquid::Failover::Config->getConfig();
+my $config = Zimbra::Failover::Config->getConfig();
 
 my $service = "";
 
@@ -24,10 +24,10 @@ sub usage() {
 
 sub checkAlreadyRunning {
 	my $server = shift;
-    my @pids = Liquid::Failover::Pid::readPidFile($server);
+    my @pids = Zimbra::Failover::Pid::readPidFile($server);
     my $pid;
     foreach $pid (@pids) {
-        if (Liquid::Failover::Pid::isRunning($pid)) {
+        if (Zimbra::Failover::Pid::isRunning($pid)) {
 			return \@pids;
         }
     }

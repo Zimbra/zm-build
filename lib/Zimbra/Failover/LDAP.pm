@@ -1,11 +1,11 @@
-package Liquid::Failover::LDAP;
+package Zimbra::Failover::LDAP;
 
 use strict;
 use Net::LDAP;
-use Liquid::Failover::Bootstrap;
+use Zimbra::Failover::Bootstrap;
 
-my $CONFIG_BASE = 'cn=config,cn=liquid';
-my $SERVER_BASE = 'cn=servers,cn=liquid';
+my $CONFIG_BASE = 'cn=config,cn=zimbra';
+my $SERVER_BASE = 'cn=servers,cn=zimbra';
 
 sub new {
     my $class = shift;
@@ -21,9 +21,9 @@ sub getDirContext($) {
 
 sub bind($) {
     my $self = shift;
-    my $host = Liquid::Failover::Bootstrap::getLDAPHost();
-    my $username = Liquid::Failover::Bootstrap::getLDAPBindUsername();
-    my $password = Liquid::Failover::Bootstrap::getLDAPBindPassword();
+    my $host = Zimbra::Failover::Bootstrap::getLDAPHost();
+    my $username = Zimbra::Failover::Bootstrap::getLDAPBindUsername();
+    my $password = Zimbra::Failover::Bootstrap::getLDAPBindPassword();
     my $ldap = Net::LDAP->new($host);
     if (!$ldap) {
         print STDERR "Unable to create LDAP object: $@\n";
@@ -71,7 +71,7 @@ sub getGlobalServerConfig($%) {
     my $search = $self->{LDAP}->search(
         base => $CONFIG_BASE,
         scope => 'base',
-        filter => '(objectClass=liquidGlobalConfig)',
+        filter => '(objectClass=zimbraGlobalConfig)',
         attrs => ['*']
     );
     if ($search->code()) {
@@ -84,7 +84,7 @@ sub getGlobalServerConfig($%) {
         return 0;
     }
 
-    my $inherits = $entry->get_value('liquidServerInheritedAttr', asref => 1);
+    my $inherits = $entry->get_value('zimbraServerInheritedAttr', asref => 1);
     if (!defined($inherits)) {
         return 1;
     }
@@ -116,7 +116,7 @@ sub getServerByName($$) {
     my $search = $self->{LDAP}->search(
         base => "cn=$server,$SERVER_BASE",
         scope => 'base',
-        filter => "(objectClass=liquidServer)",
+        filter => "(objectClass=zimbraServer)",
         attrs => ['*']
     );
     if (_fetchServerAttrs($search, \%retval)) {
@@ -127,7 +127,7 @@ sub getServerByName($$) {
 }
 
 sub getServerById($$) {
-    my ($self, $liquidId) = @_;
+    my ($self, $zimbraId) = @_;
     my %retval = ();
     if (!$self->getGlobalServerConfig(\%retval)) {
         return undef;
@@ -136,7 +136,7 @@ sub getServerById($$) {
     my $search = $self->{LDAP}->search(
         base => $SERVER_BASE,
         scope => 'one',
-        filter => "(&(liquidId=$liquidId)(objectClass=liquidServer))",
+        filter => "(&(zimbraId=$zimbraId)(objectClass=zimbraServer))",
         attrs => ['*']
     );
     if (_fetchServerAttrs($search, \%retval)) {

@@ -1,4 +1,4 @@
-package Liquid::Failover::Monitoring;
+package Zimbra::Failover::Monitoring;
 
 require Exporter;
 @ISA = qw(Exporter);
@@ -7,13 +7,13 @@ require Exporter;
 use strict;
 use DBI;
 use SOAP::Lite;
-use Liquid::Failover::LDAP;
-use Liquid::Failover::Config;
-use Liquid::Failover::Control qw(lqcontrol isServiceRunning);
-use Liquid::Failover::SoapToTomcat;
+use Zimbra::Failover::LDAP;
+use Zimbra::Failover::Config;
+use Zimbra::Failover::Control qw(zmcontrol isServiceRunning);
+use Zimbra::Failover::SoapToTomcat;
 
 sub isServiceAvailable() {
-    #return lqcontrol('status');
+    #return zmcontrol('status');
     #return isServiceRunning();
     return checkAll();
 }
@@ -40,7 +40,7 @@ sub checkAll() {
 # Returns 1 if successful, 0 if error.
 #
 sub checkLDAP() {
-    my $ldap = new Liquid::Failover::LDAP();
+    my $ldap = new Zimbra::Failover::LDAP();
     $ldap->bind() or return 0;
     my %conf = ();
     my $success = $ldap->getGlobalServerConfig(\%conf);
@@ -49,9 +49,9 @@ sub checkLDAP() {
 
     my $attr = 'uid';
     my $search = $ldap->getDirContext()->search(
-        base => 'cn=admins,cn=liquid',
+        base => 'cn=admins,cn=zimbra',
         scope => 'one',
-        filter => "(&($attr=liquid)(objectClass=liquidAccount))",
+        filter => "(&($attr=zimbra)(objectClass=zimbraAccount))",
         attrs => [$attr]
     );
     if ($search->code()) {
@@ -82,7 +82,7 @@ sub checkLDAP() {
 #
 sub checkDB() {
 
-    my $db = Liquid::Failover::Db->connect();
+    my $db = Zimbra::Failover::Db->connect();
     if (!$db) {
         print STDERR "Unable to connect to database\n";
         return 0;
@@ -119,7 +119,7 @@ sub checkDB() {
 }
 
 sub checkTomcat() {
-    my $resp = Liquid::Failover::SoapToTomcat::checkHealth();
+    my $resp = Zimbra::Failover::SoapToTomcat::checkHealth();
     if (!defined($resp)) {
         print STDERR "No positive ping response from Tomcat\n";
         return 0;
@@ -133,19 +133,19 @@ sub checkTomcat() {
 # service IP and end users.
 #
 sub checkServiceIP() {
-    my $role = Liquid::Failover::Config::getCurrentRole();
+    my $role = Zimbra::Failover::Config::getCurrentRole();
     if (defined($role) && $role eq 'slave') {
         # Don't check on slave host, which doesn't own the service IP.
         return 1;
     }
-    my $serviceIP = Liquid::Failover::Config::getServiceIP();
-    my $routerIP = Liquid::Failover::Config::getRouterIP();
+    my $serviceIP = Zimbra::Failover::Config::getServiceIP();
+    my $routerIP = Zimbra::Failover::Config::getRouterIP();
     if (!defined($serviceIP) || !defined($routerIP)) {
         print STDERR
             "No local and/or router IP defined; Network check skipped.\n";
         return 1;
     }
-    return Liquid::Failover::IPUtil::isPingable($serviceIP, $routerIP);
+    return Zimbra::Failover::IPUtil::isPingable($serviceIP, $routerIP);
 }
 
 1;

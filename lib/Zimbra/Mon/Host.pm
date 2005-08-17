@@ -4,7 +4,7 @@ package host;
 
 use strict;
 
-use liquidlog;
+use Zimbra::Logger;
 
 require Exporter;
 
@@ -19,7 +19,7 @@ sub new
 	
 	$self->{name} = $name;
 	$self->{ip} = $ip;
-	#liquidlog::Log ("debug","Created host $name");
+	#Zimbra::Logger::Log ("debug","Created host $name");
 	return $self;
 }
 
@@ -33,13 +33,13 @@ sub isMonitor {
 
 	my $self = shift;
 
-	my $isMonitor = `lqprov gs $self->{name} 2> /dev/null | grep liquidIsMonitorHost`;
+	my $isMonitor = `lqprov gs $self->{name} 2> /dev/null | grep zimbraIsMonitorHost`;
 
 	chomp $isMonitor;
 
 	$self->{isMonitor} = $isMonitor;
 
-	if ($isMonitor eq "liquidIsMonitorHost: TRUE") {
+	if ($isMonitor eq "zimbraIsMonitorHost: TRUE") {
 		return "yes";
 	} else {
 		return undef;

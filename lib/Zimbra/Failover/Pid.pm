@@ -1,10 +1,10 @@
-package Liquid::Failover::Pid;
+package Zimbra::Failover::Pid;
 
 require Exporter;
 @ISA = qw(Exporter);
 @EXPORT_OK = qw(createPidFile appendPidFile deletePidFile);
 use strict;
-use Liquid::Failover::Config;
+use Zimbra::Failover::Config;
 
 sub createPidFile($) {
     my $appname = shift;
@@ -75,7 +75,7 @@ sub isRunning($) {
 
 sub _getPidFilePath($) {
     my $appname = shift;
-    my $lqhome = Liquid::Failover::Config::getLiquidHome();
+    my $lqhome = Zimbra::Failover::Config::getLiquidHome();
     return "$lqhome/log/$appname.pid";
 }
 

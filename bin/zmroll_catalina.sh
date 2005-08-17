@@ -1,11 +1,11 @@
 #!/bin/sh
 
 DATE=`date +%Y%m%d%H%M`
-cp -f /opt/liquid/tomcat/logs/catalina.out \
-	/opt/liquid/tomcat/logs/catalina.out.$DATE
+cp -f /opt/zimbra/tomcat/logs/catalina.out \
+	/opt/zimbra/tomcat/logs/catalina.out.$DATE
 
-cat /dev/null > /opt/liquid/tomcat/logs/catalina.out
+cat /dev/null > /opt/zimbra/tomcat/logs/catalina.out
 
-gzip /opt/liquid/tomcat/logs/catalina.out.$DATE
+gzip /opt/zimbra/tomcat/logs/catalina.out.$DATE
 
 

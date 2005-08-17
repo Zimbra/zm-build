@@ -5,17 +5,17 @@
 use strict;
 
 BEGIN {
-	our $Basedir = "/opt/liquid/liquidmon";
+	our $Basedir = "/opt/zimbra/zimbramon";
 };
-our $Basedir = "/opt/liquid/liquidmon";
+our $Basedir = "/opt/zimbra/zimbramon";
 
-my $configfile = "$Basedir/liquid.cf";
+my $configfile = "$Basedir/zimbra.cf";
 
-use lib "/opt/liquid/liquidmon/lib/liquidpm";
-use lib "/opt/liquid/liquidmon/lib";
+use lib "/opt/zimbra/zimbramon/lib/Zimbra/Mon";
+use lib "/opt/zimbra/zimbramon/lib";
 
-use liquidlog;
-use liquidControl;
+use Zimbra::Logger;
+use Zimbra::Control;
 
 use Getopt::Std;
 
@@ -142,27 +142,27 @@ sub displayResult {
 }
 
 sub doStartup {
-	liquidlog::Log ("crit", "doStartup");
+	Zimbra::Logger::Log ("crit", "doStartup");
 	
 	my ($dir) = ($0 =~ m/^(.*\/)/);
 	
-	my $cmd = "perl $dir"."lqmon &";
+	my $cmd = "perl $dir"."zmmon &";
 	print $cmd."\n\n";
 	system ("$cmd");
 }
 
 sub doStart {
-	liquidlog::Log ("crit", "doStart");
-	liquidControl::startServices();
+	Zimbra::Logger::Log ("crit", "doStart");
+	Zimbra::Control::startServices();
 }
 
 sub doStop {
-	liquidControl::stopServices();
+	Zimbra::Control::stopServices();
 }
 
 sub setMaintenanceMode {
 	my $mode = shift;
-	return liquidControl::setMaintenance($mode);
+	return Zimbra::Control::setMaintenance($mode);
 }
 
 sub clientCall {
@@ -175,7 +175,7 @@ sub clientCall {
 		if ($#Args >= 0 && $Args[0] ne "status") {
 			return setMaintenanceMode(@Args);
 		}
-		if (liquidControl::isMaintenanceMode()) {
+		if (Zimbra::Control::isMaintenanceMode()) {
 			print "Maintenance mode is ON\n";
 			return 1;
 		}else{
@@ -205,12 +205,12 @@ sub clientCall {
 	eval {
 		$resp =
 		  SOAP::Lite->proxy('http://localhost:7777/')
-		  ->uri('http://localhost:7777/liquidAdmin')->call( $Command => @Args );
+		  ->uri('http://localhost:7777/Zimbra::Admin')->call( $Command => @Args );
 
 	};
 
 	if ($@ && $Command ne "ShutDownRequest") {
-		if (liquidControl::isMaintenanceMode()) {
+		if (Zimbra::Control::isMaintenanceMode()) {
 			print "NOTE: This server is in maintenance mode\n\n";
 			exit (0);
 		}
@@ -226,7 +226,7 @@ sub clientCall {
 	#           print "r: ".$resp->result->{name}."\n";
 	my $p;
 	my @p = $resp->paramsall();
-	if (liquidControl::isMaintenanceMode()) {
+	if (Zimbra::Control::isMaintenanceMode()) {
 		print "NOTE: This server is in maintenance mode\n\n";
 	}
 	foreach $p (@p) {
@@ -250,7 +250,7 @@ sub clientCall {
 		getCommand("status");
 		return (clientCall());
 	}
-	if (liquidControl::isMaintenanceMode()) {
+	if (Zimbra::Control::isMaintenanceMode()) {
 		print "\nNOTE: This server is in maintenance mode\n\n";
 		$ret = 0;
 	}
@@ -278,7 +278,7 @@ sub getCommand {
 }
 
 sub getHostName {
-	my $h = `lqlocalconfig -m nokey liquid_server_hostname`;
+	my $h = `zmlocalconfig -m nokey zimbra_server_hostname`;
 	chomp $h;
 	return $h;
 }
@@ -296,8 +296,8 @@ sub getCommandLine {
 }
 
 sub displayVersion {
-	my $release = `rpm -q --queryformat "%{release}" liquid-core`;
-	my $inst = localtime (`rpm -q --queryformat "%{installtime}" liquid-core`);
+	my $release = `rpm -q --queryformat "%{release}" zimbra-core`;
+	my $inst = localtime (`rpm -q --queryformat "%{installtime}" zimbra-core`);
 	print "\nRelease $release installed $inst\n\n";
 }
 
@@ -319,7 +319,7 @@ sub usage {
 	exit 1;
 }
 
-liquidControl::loadConfig($configfile);
+Zimbra::Control::loadConfig($configfile);
 getCommandLine();
 exit (clientCall());
 

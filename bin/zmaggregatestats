@@ -1,40 +1,40 @@
 #!/usr/bin/perl
 
 use strict;
-use lib '/opt/liquid/liquidmon/lib';
-use lib '/opt/liquid/liquidmon/lib/liquidpm';
+use lib '/opt/zimbra/zimbramon/lib';
+use lib '/opt/zimbra/zimbramon/lib/Zimbra/Mon';
 
 my $DEBUG=1;
 
 use DBI;
 use Time::Local;
-use liquidlog;
+use Zimbra::Logger;
 
 my @DATANAMES=(
 	"LmtpRcvdData:total:bytes",
 	"LmtpRcvdMsgs:total:count",
 	"LmtpRcvdData:total:bytes",
 	"LmtpRcvdMsgs:total:count",
-	"Slice:/opt/liquid",
-	"Slice:/opt/liquid",
-	"Slice:/opt/liquid/db",
-	"Slice:/opt/liquid/db",
-	"Slice:/opt/liquid/index",
-	"Slice:/opt/liquid/index",
-	"Slice:/opt/liquid/log",
-	"Slice:/opt/liquid/log",
-	"Slice:/opt/liquid/redolog",
-	"Slice:/opt/liquid/redolog",
-	"Slice:/opt/liquid/store",
-	"Slice:/opt/liquid/store"
+	"Slice:/opt/zimbra",
+	"Slice:/opt/zimbra",
+	"Slice:/opt/zimbra/db",
+	"Slice:/opt/zimbra/db",
+	"Slice:/opt/zimbra/index",
+	"Slice:/opt/zimbra/index",
+	"Slice:/opt/zimbra/log",
+	"Slice:/opt/zimbra/log",
+	"Slice:/opt/zimbra/redolog",
+	"Slice:/opt/zimbra/redolog",
+	"Slice:/opt/zimbra/store",
+	"Slice:/opt/zimbra/store"
 	);
 
-my $baseDir = "/opt/liquid";
+my $baseDir = "/opt/zimbra";
 my $logDir = "$baseDir/log";
 
-my $data_source="dbi:mysql:database=liquid;mysql_read_default_file=/opt/liquid/conf/my.cnf;mysql_socket=/opt/liquid/db/mysql.sock";
-my $username="liquid";
-my $password = `/opt/liquid/bin/lqlocalconfig -s -m nokey liquid_mysql_password`;
+my $data_source="dbi:mysql:database=zimbra;mysql_read_default_file=/opt/zimbra/conf/my.cnf;mysql_socket=/opt/zimbra/db/mysql.sock";
+my $username="zimbra";
+my $password = `/opt/zimbra/bin/zmlocalconfig -s -m nokey zimbra_mysql_password`;
 chomp $password;
 
 my $dbh = DBI->connect($data_source, $username, $password);
@@ -42,7 +42,7 @@ my $dbh = DBI->connect($data_source, $username, $password);
 if (!$dbh) { 
 	print STDERR "DB: Can't connect to $data_source: $DBI::errstr\n";
 	exit 1;
-#	liquidlog::Log ("err", "DB: Can't connect to $data_source: $DBI::errstr");
+#	Zimbra::Logger::Log ("err", "DB: Can't connect to $data_source: $DBI::errstr");
 #	return undef;
 }
 
@@ -81,7 +81,7 @@ sub delete_timed_value {
 	my $sth = $dbh->prepare($statement);
 
 	if (!$sth->execute) {
-		liquidlog::Log ("err", "DB: $sth->errstr");
+		Zimbra::Logger::Log ("err", "DB: $sth->errstr");
 		return undef;
 	}
 
@@ -92,7 +92,7 @@ sub delete_timed_value {
 	$sth = $dbh->prepare($statement);
 
 	if (!$sth->execute) {
-		liquidlog::Log ("err", "DB: $sth->errstr");
+		Zimbra::Logger::Log ("err", "DB: $sth->errstr");
 		return undef;
 	}
 
@@ -110,7 +110,7 @@ sub fetch_timed_value {
 	my $sth = $dbh->prepare($statement);
 
 	if (!$sth->execute) {
-		liquidlog::Log ("err", "DB: $sth->errstr");
+		Zimbra::Logger::Log ("err", "DB: $sth->errstr");
 		return undef;
 	}
 
@@ -134,7 +134,7 @@ sub fetch_last_value {
 	my $sth = $dbh->prepare($statement);
 
 	if (!$sth->execute) {
-		liquidlog::Log ("err", "DB: $sth->errstr");
+		Zimbra::Logger::Log ("err", "DB: $sth->errstr");
 		return undef;
 	}
 
@@ -181,7 +181,7 @@ sub insert_current_agg_value {
 	my $sth = $dbh->prepare($statement);
 
 	if (!$sth->execute($ct, $nm, $ca, $p)) {
-		liquidlog::Log ("err", "DB: $sth->errstr");
+		Zimbra::Logger::Log ("err", "DB: $sth->errstr");
 		return undef;
 	}
 }

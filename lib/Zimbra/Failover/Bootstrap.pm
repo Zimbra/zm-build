@@ -1,8 +1,8 @@
-package Liquid::Failover::Bootstrap;
+package Zimbra::Failover::Bootstrap;
 
 use strict;
 
-my $LIQUID_HOME = $ENV{LIQUID_HOME} || $ENV{HOME} || '/opt/liquid';
+my $LIQUID_HOME = $ENV{LIQUID_HOME} || $ENV{HOME} || '/opt/zimbra';
 
 my %DATA = (
     DB_USERNAME => '',
@@ -53,16 +53,16 @@ sub _init() {
 sub _readBootstrapFile() {
     # TODO: Put real implementation.
 
-    $DATA{DB_USERNAME} = 'liquid';
-    $DATA{DB_PASSWORD} = 'liquid';
+    $DATA{DB_USERNAME} = 'zimbra';
+    $DATA{DB_PASSWORD} = 'zimbra';
 
     my $dbh = _dbConnect() or die "Can't connect to db!";
     $DATA{HOSTNAME} = _dbGetConfigKey($dbh, 'server.hostname');
     $DATA{LDAP_HOST} = _dbGetConfigKey($dbh, 'ldap.host');
     $dbh->disconnect();
 
-    $DATA{LDAP_BIND_USERNAME} = 'uid=liquid,cn=admins,cn=liquid';
-    $DATA{LDAP_BIND_PASSWORD} = 'liquid';
+    $DATA{LDAP_BIND_USERNAME} = 'uid=zimbra,cn=admins,cn=zimbra';
+    $DATA{LDAP_BIND_PASSWORD} = 'zimbra';
 
     $INITIALIZED = 1;
 }
@@ -73,7 +73,7 @@ sub _readBootstrapFile() {
 use DBI;
 
 sub _dbConnect() {
-    my $data_source = "dbi:mysql:database=liquid;host=localhost";
+    my $data_source = "dbi:mysql:database=zimbra;host=localhost";
     my $username = $DATA{DB_USERNAME};
     my $password = $DATA{DB_PASSWORD};
     my $dbh = DBI->connect($data_source, $username, $password);

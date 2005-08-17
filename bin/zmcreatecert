@@ -1,11 +1,11 @@
 #!/bin/sh
-CONF=/opt/liquid/conf
-B=/opt/liquid/ssl
+CONF=/opt/zimbra/conf
+B=/opt/zimbra/ssl
 BASE=${B}/ssl
 
-JAVA_HOME=/opt/liquid/java
+JAVA_HOME=/opt/zimbra/java
 
-TOMCAT=/opt/liquid/tomcat/conf
+TOMCAT=/opt/zimbra/tomcat/conf
 
 mkdir -p ${BASE}/ca
 mkdir -p ${BASE}/cert
@@ -15,7 +15,7 @@ getHostInfo() {
 
 	H=`hostname --fqdn`
 
-	# $H=$H.liquidsys.com
+	# $H=$H.zimbrasys.com
 
 	HH=`echo $H | grep '\.'`
 
@@ -83,7 +83,7 @@ createKeyStore() {
 
 	keytool -genkey -dname "CN=$H, OU=Liquid, O=Liquid, L=NA, S=NA, C=US" \
 		-alias tomcat -keyalg RSA -keysize 1024 -keystore ${TOMCAT}/keystore \
-		-storetype JKS -storepass liquid -keypass liquid
+		-storetype JKS -storepass zimbra -keypass zimbra
 
 }
 
@@ -94,7 +94,7 @@ createCertReq() {
 
 	keytool -certreq -keyalg RSA -alias tomcat -file \
 		${BASE}/server/server.csr -keystore \
-		${TOMCAT}/keystore -storepass liquid
+		${TOMCAT}/keystore -storepass zimbra
 
 	cp ${BASE}/server/server.csr /tmp/server.csr.$$
 	cat /tmp/server.csr.$$ | sed -e \

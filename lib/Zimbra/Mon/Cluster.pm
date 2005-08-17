@@ -1,15 +1,15 @@
 #!/usr/bin/perl
 
-package liquidCluster;
+package Zimbra::Cluster;
 
 use strict;
 
-use liquidlog;
+use Zimbra::Logger;
 use host;
-use shortInfo;
-use serviceInfo;
+use Zimbra::shortInfo;
+use Zimbra::serviceInfo;
 use SOAP::Lite;
-use liquidProvTool;
+use Zimbra::ProvTool;
 use Socket;
 
 my $statefile = "$::Basedir/state.cf";
@@ -36,38 +36,38 @@ sub new {
 
 	$self->{Syntaxes} = $syntaxes;
 
-	$self->{Prov} = new liquidProvTool();
+	$self->{Prov} = new Zimbra::ProvTool();
 
 	$self->readState();
 
-	#liquidlog::Log( "debug", "Created Cluster" );
+	#Zimbra::Logger::Log( "debug", "Created Cluster" );
 #	my $s;
 #	foreach $s ( @{ $self->{Applications} } ) {
-#		liquidlog::Log( "debug", "APP: $s->{name}" );
+#		Zimbra::Logger::Log( "debug", "APP: $s->{name}" );
 #	}
 
 	return $self;
 }
 
 sub getClusterInfo {
-	#liquidlog::Log( "debug", "liquidCluster::getClusterInfo" );
+	#Zimbra::Logger::Log( "debug", "Zimbra::Cluster::getClusterInfo" );
 	my $self = shift;
-	$self->{ShortInfo} = new shortInfo( $self->{LocalHost} );
+	$self->{ShortInfo} = new Zimbra::shortInfo( $self->{LocalHost} );
 	$self->setShortInfo();
-	$self->{ServiceInfo} = new serviceInfo( $self->{LocalHost} );
+	$self->{ServiceInfo} = new Zimbra::serviceInfo( $self->{LocalHost} );
 
 	#$self->setServiceInfo();
 }
 
 sub readState {
 	my $self = shift;
-	my $h = `lqlocalconfig -m nokey liquid_server_hostname`;
+	my $h = `zmlocalconfig -m nokey zimbra_server_hostname`;
 	chomp $h;
 	my $ip = gethostbyname($h);
 	if ($ip ne "") {
 		$ip = inet_ntoa($ip);
 	} else {
-		liquidlog::Log( "err", "Can't resolve host $h" );
+		Zimbra::Logger::Log( "err", "Can't resolve host $h" );
 	}
 	$self->{LocalHost} = $self->doAddHost( $h, $ip );
 }
@@ -75,19 +75,19 @@ sub readState {
 sub getHostsFromLdap {
 	my $self = shift;
 
-	liquidlog::Log( "debug", "Create host list from LDAP" );
+	Zimbra::Logger::Log( "debug", "Create host list from LDAP" );
 	my $hostlist = $self->{Prov}->gas();
 	$self->{Hosts}     = ();
 	foreach (@$hostlist) {
 		chomp;
-		liquidlog::Log( "debug", "Prov found host: $_" );
+		Zimbra::Logger::Log( "debug", "Prov found host: $_" );
 		$self->addProvHost($_);
 	}
 }
 
 sub writeState {
 	my $self = shift;
-	liquidlog::Log( "debug", "Started writing state" );
+	Zimbra::Logger::Log( "debug", "Started writing state" );
 	open CF, ">$statefile" or die "Can't open $statefile: $!";
 	print CF "LOCALHOST " . $self->{LocalHost}->prettyPrint() . "\n";
 #	my $h;
@@ -96,37 +96,37 @@ sub writeState {
 #		  unless ( $h == $self->{LocalHost} );
 #	}
 	close CF;
-	liquidlog::Log( "debug", "Finished writing state" );
+	Zimbra::Logger::Log( "debug", "Finished writing state" );
 }
 
 sub getClusterHosts {
 
 	# TODO - MEM - set up some sort of taint aging for this info
 	my $self = shift;
-#	liquidlog::Log( "debug", "liquidCluster::getClusterHosts" );
+#	Zimbra::Logger::Log( "debug", "Zimbra::Cluster::getClusterHosts" );
 	$self->readState();
 	$self->getHostsFromLdap();
 
-	#liquidlog::Log ("info",join " ", @{$self->{Hosts}});
+	#Zimbra::Logger::Log ("info",join " ", @{$self->{Hosts}});
 	return @{ $self->{Hosts} };
 
 }
 
 sub getLocalServices {
 	my $self = shift;
-#	liquidlog::Log( "debug", "liquidCluster::getLocalServices" );
+#	Zimbra::Logger::Log( "debug", "Zimbra::Cluster::getLocalServices" );
 	return $self->{Services};
 }
 
 sub getLocalApplications {
 	my $self = shift;
-#	liquidlog::Log( "debug", "liquidCluster::getLocalServices" );
+#	Zimbra::Logger::Log( "debug", "Zimbra::Cluster::getLocalServices" );
 	return $self->{Applications};
 }
 
 sub getLocalShortInfo {
 	my $self = shift;
-#	liquidlog::Log( "debug", "liquidCluster::getLocalShortInfo" );
+#	Zimbra::Logger::Log( "debug", "Zimbra::Cluster::getLocalShortInfo" );
 
 	my $MAX_AGE = 300;
 
@@ -145,7 +145,7 @@ sub getLocalServiceInfo {
 
 sub setServiceInfo {
 	my $self = shift;
-#	liquidlog::Log( "debug", "liquidCluster::setServiceInfo" );
+#	Zimbra::Logger::Log( "debug", "Zimbra::Cluster::setServiceInfo" );
 
 	my $TS = time();
 	$self->{ServiceInfo}->{cts} = $TS;
@@ -155,7 +155,7 @@ sub setServiceInfo {
 
 sub setShortInfo {
 	my $self = shift;
-#	liquidlog::Log( "debug", "liquidCluster::setShortInfo" );
+#	Zimbra::Logger::Log( "debug", "Zimbra::Cluster::setShortInfo" );
 
 	my $TS = time();
 	$self->{ShortInfo}->{cts} = $TS;
@@ -167,7 +167,7 @@ sub controlLocalService {
 	my $self = shift;
 	my $cmd  = shift;
 #	my $sn   = shift;
-#	liquidlog::Log( "debug", "liquidCluster::controlLocalService: $cmd $sn" );
+#	Zimbra::Logger::Log( "debug", "Zimbra::Cluster::controlLocalService: $cmd $sn" );
 
 	$self->sendFifo("$cmd");
 
@@ -177,8 +177,8 @@ sub controlLocalService {
 
 sub openFifo {
 	my $self = shift;
-#	liquidlog::Log( "debug", "liquidCluster::openFifo" );
-	open( CONTROL, "+< $::FifoPath" ) or warn("liquidCluster::openFifo Can't open $::FifoPath: $!");
+#	Zimbra::Logger::Log( "debug", "Zimbra::Cluster::openFifo" );
+	open( CONTROL, "+< $::FifoPath" ) or warn("Zimbra::Cluster::openFifo Can't open $::FifoPath: $!");
 
 	my $fh = select CONTROL;
 	$| = 1;
@@ -187,17 +187,17 @@ sub openFifo {
 
 sub openResponseFifo {
 	my $self = shift;
-#	liquidlog::Log( "debug", "liquidCluster::openResponseFifo" );
+#	Zimbra::Logger::Log( "debug", "Zimbra::Cluster::openResponseFifo" );
 	if ( open( RESPONSE, "+< $::FifoDir/$$.response" ) ) {
 	}
 	else {
-		liquidlog::Log( "debug", "Can't open $::FifoDir/$$.response: $!" );
+		Zimbra::Logger::Log( "debug", "Can't open $::FifoDir/$$.response: $!" );
 		sleep 4;
 		if ( !( open( RESPONSE, "+< $::FifoDir/$$.response" ) ) ) {
-			liquidlog::Log( "info", "Can't open $::FifoDir/$$.response: $!" );
+			Zimbra::Logger::Log( "info", "Can't open $::FifoDir/$$.response: $!" );
 			sleep 4;
 			if ( !( open( RESPONSE, "+< $::FifoDir/$$.response" ) ) ) {
-				liquidlog::Log( "err", "Can't open $::FifoDir/$$.response: $!" );
+				Zimbra::Logger::Log( "err", "Can't open $::FifoDir/$$.response: $!" );
 				return 0;
 			}
 		}
@@ -216,32 +216,32 @@ sub sendFifo {
 
 	my $args = join " ", @_;
 
-	#liquidlog::Log ("debug","sendFifo: $args");
+	#Zimbra::Logger::Log ("debug","sendFifo: $args");
 	my $msg = "$$ $args";
 	chomp $msg;
-	liquidlog::Log( "debug", "sendFifo: $msg" );
+	Zimbra::Logger::Log( "debug", "sendFifo: $msg" );
 	print CONTROL "$msg\n";
 	#$self->signalMainProcess();
 }
 
 sub readFifo {
 	my $self = shift;
-	liquidlog::Log( "debug", "liquidCluster::readFifo" );
+	Zimbra::Logger::Log( "debug", "Zimbra::Cluster::readFifo" );
 
 	if ( $self->openResponseFifo() ) {
 		my $resp = <RESPONSE>;
 		chomp $resp;
-		liquidlog::Log( "debug", "liquidCluster::readFifo: $resp" );
+		Zimbra::Logger::Log( "debug", "Zimbra::Cluster::readFifo: $resp" );
 		return $resp;
 	}
-	liquidlog::Log( "err", "liquidCluster::readFifo failed: $!" );
+	Zimbra::Logger::Log( "err", "Zimbra::Cluster::readFifo failed: $!" );
 	return undef;
 }
 
 sub signalMainProcess {
 	my $self = shift;
-#	liquidlog::Log( "debug",
-#		"liquidCluster::signalMainProcess $::mainProcessPid" );
+#	Zimbra::Logger::Log( "debug",
+#		"Zimbra::Cluster::signalMainProcess $::mainProcessPid" );
 
 	#kill( 'USR1', $::mainProcessPid );
 }
@@ -250,8 +250,8 @@ sub addHost {
 	my $self     = shift;
 	my $hostName = shift;
 	my $hostIp   = shift;
-	liquidlog::Log( "debug", "liquidCluster::addHost $hostName $hostIp" );
-	my $cmd = $::syntaxes{liquidsyntax}{addhost};
+	Zimbra::Logger::Log( "debug", "Zimbra::Cluster::addHost $hostName $hostIp" );
+	my $cmd = $::syntaxes{zimbrasyntax}{addhost};
 
 	$self->sendFifo("$cmd $hostName $hostIp");
 
@@ -265,17 +265,17 @@ sub addProvHost {
 	my $self = shift;
 	my $hn = shift;
 
-	liquidlog::Log( "debug", "liquidCluster::addProvHost $hn" );
+	Zimbra::Logger::Log( "debug", "Zimbra::Cluster::addProvHost $hn" );
 	my $info = $self->{Prov}->gs($hn);
 	my $ip = gethostbyname($hn);
 	if ($ip ne "") {
 		$ip = inet_ntoa($ip);
 	} else {
-		liquidlog::Log( "err", "Can't resolve host $hn" );
+		Zimbra::Logger::Log( "err", "Can't resolve host $hn" );
 	}
 	$self->doAddHost($hn, $ip); 
 
-#	liquidlog::Log( "debug", "liquidCluster::doAddHost $hn, $ip" );
+#	Zimbra::Logger::Log( "debug", "Zimbra::Cluster::doAddHost $hn, $ip" );
 	#my $H = new host( $hn, $ip, $partner, $mode );
 
 	#push( @{ $self->{Hosts} }, $H );
@@ -287,10 +287,10 @@ sub doAddHost {
 	my $self = shift;
 	my ( $hn, $ip ) = (@_);
 
-#	liquidlog::Log( "debug", "liquidCluster::doAddHost $hn, $ip" );
+#	Zimbra::Logger::Log( "debug", "Zimbra::Cluster::doAddHost $hn, $ip" );
 	my $H = new host( $hn, $ip );
 
-	#liquidlog::Log ("debug","Remote Host $h");
+	#Zimbra::Logger::Log ("debug","Remote Host $h");
 	push( @{ $self->{Hosts} }, $H );
 
 	return $H;
@@ -299,7 +299,7 @@ sub doAddHost {
 sub propagateClusterInfo {
 	my $self = shift;
 	my $H;
-	liquidlog::Log( "debug", "propagateClusterInfo" );
+	Zimbra::Logger::Log( "debug", "propagateClusterInfo" );
 	foreach $H ( @{ $self->{Hosts} } ) {
 		$self->sendClusterInfo($H);
 	}
@@ -311,20 +311,20 @@ sub sendClusterInfo {
 	if ( $H == $self->{LocalHost} ) { return 0; }
 	my $hn = $H->{name};
 	my $ip = $H->{ip};
-	liquidlog::Log( "debug", "sendClusterInfo: $hn ($ip)" );
+	Zimbra::Logger::Log( "debug", "sendClusterInfo: $hn ($ip)" );
 
 	eval {
 		my $resp =
 		  SOAP::Lite->proxy("http://${ip}:$::controlport/", timeout => 10)
-		  ->uri("http://${ip}:$::controlport/liquidAdmin")
+		  ->uri("http://${ip}:$::controlport/Zimbra::Admin")
 		  ->updateClusterInfoRequest( $self->{LocalHost}, $self->{Hosts} );
 	
 		if (!defined $resp->result()) {
-			liquidlog::Log("err", "Error contacting ${ip} ($hn): No response from server: ".$resp->faultstring);
+			Zimbra::Logger::Log("err", "Error contacting ${ip} ($hn): No response from server: ".$resp->faultstring);
 		}
 	};
 	if ($@) {
-		liquidlog::Log("err", "Error contacting ${ip} ($hn): $@");
+		Zimbra::Logger::Log("err", "Error contacting ${ip} ($hn): $@");
 	}
 }
 
@@ -332,8 +332,8 @@ sub removeHost {
 	my $self     = shift;
 	my $hostName = shift;
 	my $hostIp   = shift;
-	liquidlog::Log( "debug", "liquidCluster::remove $hostName $hostIp" );
-	my $cmd = $::syntaxes{liquidsyntax}{removehost};
+	Zimbra::Logger::Log( "debug", "Zimbra::Cluster::remove $hostName $hostIp" );
+	my $cmd = $::syntaxes{zimbrasyntax}{removehost};
 	$self->sendFifo("$cmd $hostName $hostIp");
 
 	sleep 3;
@@ -346,7 +346,7 @@ sub doRemoveHost {
 	my $self = shift;
 	my ( $hn, $ip ) = (@_);
 
-#	liquidlog::Log( "debug", "liquidCluster::doRemoveHost $hn, $ip" );
+#	Zimbra::Logger::Log( "debug", "Zimbra::Cluster::doRemoveHost $hn, $ip" );
 	if ( $hn eq $self->{LocalHost}->{name} || $ip eq $self->{LocalHost}->{ip} )
 	{
 		return "FAILURE";
@@ -368,14 +368,14 @@ sub updateClusterInfo {
 	my $self = shift;
 	my $sender = shift;
 	my $hostlist = shift;
-	my $cmd = $::syntaxes{liquidsyntax}{updatecluster};
+	my $cmd = $::syntaxes{zimbrasyntax}{updatecluster};
 	
-#	liquidlog::Log ("debug", "liquidCluster::updateClusterInfo");
+#	Zimbra::Logger::Log ("debug", "Zimbra::Cluster::updateClusterInfo");
 
 	my $cmdstr = $cmd." ".$sender->{name}." ".$sender->{ip};
 	
 	foreach (@{$hostlist}) {
-#		liquidlog::Log ("debug", "liquidCluster::updateClusterInfo: ".$_->{name}." ".$_->{ip});
+#		Zimbra::Logger::Log ("debug", "Zimbra::Cluster::updateClusterInfo: ".$_->{name}." ".$_->{ip});
 		$cmdstr .= " ".$_->{name}." ".$_->{ip};
 	}
 	$self->sendFifo("$cmdstr");
@@ -385,7 +385,7 @@ sub getFetchRef {
 	my $self = shift;
 	my $filter = shift;
 	
-	my $cmd = $::syntaxes{liquidsyntax}{getfetchref};
+	my $cmd = $::syntaxes{zimbrasyntax}{getfetchref};
 	my $f = $filter->{fetchref};
 	$self->sendFifo("$cmd $f");
 	
@@ -397,7 +397,7 @@ sub newFetchRef {
 	my $self = shift;
 	my $filter = shift;
 	
-	my $cmd = $::syntaxes{liquidsyntax}{newfetchref};
+	my $cmd = $::syntaxes{zimbrasyntax}{newfetchref};
 	my $h = $filter->{hostname};
 	my $st = $filter->{starttime};
 	my $et = $filter->{endtime};

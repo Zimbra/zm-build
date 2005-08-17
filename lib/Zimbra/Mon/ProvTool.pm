@@ -1,8 +1,8 @@
-package liquidProvTool;
+package Zimbra::ProvTool;
 
 use strict;
 
-use liquidlog;
+use Zimbra::Logger;
 use host;
 
 my $provTool = "$::Basedir/../bin/lqprov";
@@ -14,7 +14,7 @@ sub new {
 
 	my $self = bless {}, $class;
 
-	liquidlog::Log( "debug", "Created ProvTool" );
+	Zimbra::Logger::Log( "debug", "Created ProvTool" );
 
 	return $self;
 }
@@ -34,7 +34,7 @@ sub doProv {
 
 	my $cmdline = "$provTool $cmd @_";
 	if (!open(PT, "$cmdline |")) {
-		liquidlog::Log( "crit", "Unable to invoke \"$cmdline\": $!" );
+		Zimbra::Logger::Log( "crit", "Unable to invoke \"$cmdline\": $!" );
 		return undef;
 	}
 

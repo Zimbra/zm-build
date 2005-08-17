@@ -4,7 +4,7 @@ package service;
 
 use strict;
 
-use liquidlog;
+use Zimbra::Logger;
 
 require Exporter;
 
@@ -24,8 +24,8 @@ sub new
 
 	@{$self->{apps}} = split ",", $app;
 
-	$self->{syntax} = "liquidsyntax";
-#	liquidlog::Log ("debug","Created service $name $label $app $monport $syntax ");
+	$self->{syntax} = "zimbrasyntax";
+#	Zimbra::Logger::Log ("debug","Created service $name $label $app $monport $syntax ");
 	return $self;
 }
 

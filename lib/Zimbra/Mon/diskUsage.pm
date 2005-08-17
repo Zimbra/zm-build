@@ -1,11 +1,11 @@
 #!/usr/bin/perl
 
-package diskUsage;
+package Zimbra::diskUsage;
 
 use strict;
 
-use liquidlog;
-use diskSlice;
+use Zimbra::Logger;
+use Zimbra::diskSlice;
 
 require Exporter;
 
@@ -20,7 +20,7 @@ sub new
 	
 	$self->{slices} = ();
 	
-	#liquidlog::Log ("info","Created diskUsage");
+	#Zimbra::Logger::Log ("info","Created Zimbra::diskUsage");
 	return $self;
 }
 
@@ -31,12 +31,12 @@ sub get
 	#Filesystem              1K-blocks     Used    Avail Capacity  Mounted on
 	#/dev/disk0s5             58599900 44845764 13498136    77%    /
 
-	#liquidlog::Log ("debug","diskUsage->get");
+	#Zimbra::Logger::Log ("debug","Zimbra::diskUsage->get");
 	
 	my $cmd = "df -Pm ";
-	my @mounts = ("/opt/liquid","/opt/liquid/db","/opt/liquid/log","/opt/liquid/redolog","/opt/liquid/store","/opt/liquid/index");
+	my @mounts = ("/opt/zimbra","/opt/zimbra/db","/opt/zimbra/log","/opt/zimbra/redolog","/opt/zimbra/store","/opt/zimbra/index");
 	
-	#liquidlog::Log ("debug", "diskUsage->get: @$dfStr");
+	#Zimbra::Logger::Log ("debug", "Zimbra::diskUsage->get: @$dfStr");
 	
 	foreach my $m (@mounts)
 	{
@@ -48,7 +48,7 @@ sub get
 				my ($dev, $blk, $used, $avail, $cap, $mt) = split;
 				$cap =~ s/%//;
 				push (@{$self->{slices}}, 
-					new diskSlice($dev, $blk, $used, $avail, $cap, $m) );
+					new Zimbra::diskSlice($dev, $blk, $used, $avail, $cap, $m) );
 			}
 		}
 	}

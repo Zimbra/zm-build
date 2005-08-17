@@ -1,4 +1,4 @@
-package Liquid::Failover::Serial;
+package Zimbra::Failover::Serial;
 
 require Exporter;
 @ISA = qw(Exporter);
@@ -6,8 +6,8 @@ require Exporter;
                 runServerLoop);
 use strict;
 use Device::SerialPort;
-use Liquid::Failover::Debug qw(debugOn);
-use Liquid::Failover::Dispatcher qw(dispatch shutdownSignalled);
+use Zimbra::Failover::Debug qw(debugOn);
+use Zimbra::Failover::Dispatcher qw(dispatch shutdownSignalled);
 
 #
 # Opens serial port at given device (e.g. /dev/ttyS0) for read/write.

@@ -1,19 +1,19 @@
 #!/usr/bin/perl
 
 use strict;
-use lib '/opt/liquid/liquidmon/lib';
+use lib '/opt/zimbra/zimbramon/lib';
 
 my $DEBUG=0;
 
 use DBI;
 use Time::Local;
 
-my $baseDir = "/opt/liquid";
+my $baseDir = "/opt/zimbra";
 my $logDir = "$baseDir/log";
 
-my $data_source="dbi:mysql:database=liquid;mysql_read_default_file=/opt/liquid/conf/my.cnf;mysql_socket=/opt/liquid/db/mysql.sock";
-my $username="liquid";
-my $password = `/opt/liquid/bin/lqlocalconfig -s liquid_mysql_password`;
+my $data_source="dbi:mysql:database=zimbra;mysql_read_default_file=/opt/zimbra/conf/my.cnf;mysql_socket=/opt/zimbra/db/mysql.sock";
+my $username="zimbra";
+my $password = `/opt/zimbra/bin/zmlocalconfig -s zimbra_mysql_password`;
 chomp $password;
 $password = (split(' ',$password))[2];
 
@@ -22,7 +22,7 @@ my $dbh = DBI->connect($data_source, $username, $password);
 if (!$dbh) { 
 	print STDERR "DB: Can't connect to $data_source: $DBI::errstr\n";
 	exit 1;
-#	liquidlog::Log ("err", "DB: Can't connect to $data_source: $DBI::errstr");
+#	Zimbra::Logger::Log ("err", "DB: Can't connect to $data_source: $DBI::errstr");
 #	return undef;
 }
 
@@ -58,7 +58,7 @@ sub get_last_timestamp {
 	my $sth = $dbh->prepare($statement);
 
 	if (!$sth->execute) {
-		liquidlog::Log ("err", "DB: $sth->errstr");
+		Zimbra::Logger::Log ("err", "DB: $sth->errstr");
 		return undef;
 	}
 
@@ -72,17 +72,17 @@ sub get_file_list {
 	my $ts = shift;
 
 	opendir (DIR, $logDir);
-	my @files = grep /^liquidstats-\d+\.log/, readdir DIR;
+	my @files = grep /^zimbrastats-\d+\.log/, readdir DIR;
 	closedir DIR;
 
-	# logfiles are liquidstats.<create_time_stamp>.log 
+	# logfiles are zimbrastats.<create_time_stamp>.log 
 	# so we want all where create_time_stamp > ts, plus
 	# the first one previous.
 	@files = reverse sort @files;
 	my @list;
 	foreach (@files)
 	{
-		my ($ft) = ($_ =~ m/liquidstats-(\d+)\.log/);
+		my ($ft) = ($_ =~ m/zimbrastats-(\d+)\.log/);
 
 		push @list, $_;
 
@@ -132,7 +132,7 @@ sub read_files {
 				
 				($DEBUG) && print STDERR "$dt, $headers[$i], $fields[$i]\n";
 				if (!$sth->execute($dt, $headers[$i], $fields[$i]) ) {
-					liquidlog::Log ("err", "DB: $sth->errstr");
+					Zimbra::Logger::Log ("err", "DB: $sth->errstr");
 					return undef;
 				}
 

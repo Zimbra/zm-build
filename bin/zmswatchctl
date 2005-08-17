@@ -1,16 +1,16 @@
 #!/bin/sh
 
-BASE=/opt/liquid
+BASE=/opt/zimbra
 CONFIG=$BASE/conf/swatchrc
 
 case "$1" in 
 	start)
 		if [ ! -f $CONFIG ]; then
-			lqsnmpinit
+			zmsnmpinit
 		fi
 		if [ -f $CONFIG ]; then
 			$BASE/bin/swatch --config-file=$BASE/conf/swatchrc \
-			-t /var/log/liquid.log >/tmp/swatch.out 2>&1 &
+			-t /var/log/zimbra.log >/tmp/swatch.out 2>&1 &
 			chmod 777 /tmp/swatch.out
 		else
 			exit 1

@@ -1,14 +1,14 @@
 #!/usr/bin/perl
 
-package liquidControl;
+package Zimbra::Control;
 
 use strict;
 
-use lib "/opt/liquid/liquidmon/lib";
-use lib "/opt/liquid/liquidmon/lib/liquidpm";
+use lib "/opt/zimbra/zimbramon/lib";
+use lib "/opt/zimbra/zimbramon/lib/Zimbra/Mon";
 
-use liquidlog;
-use liquidCluster;
+use Zimbra::Logger;
+use Zimbra::Cluster;
 use host;
 use service;
 use application;
@@ -43,14 +43,14 @@ my %startorder = (
 );
 
 sub killChildren {
-	liquidlog::Log( "info", "SIGINT - kill children" );
+	Zimbra::Logger::Log( "info", "SIGINT - kill children" );
 	$SIG{CHLD} = 'IGNORE';
 	kill( 15, 0 );
 }
 
 sub ldapRunsHere {
-	my $ldaphost = `lqlocalconfig -m nokey ldap_host`;
-	my $hostname = `lqlocalconfig -m nokey liquid_server_hostname`;
+	my $ldaphost = `zmlocalconfig -m nokey ldap_host`;
+	my $hostname = `zmlocalconfig -m nokey zimbra_server_hostname`;
 	chomp $ldaphost;
 	chomp $hostname;
 
@@ -58,26 +58,26 @@ sub ldapRunsHere {
 }
 
 sub getLocalServices {
-	my $hostname = `lqlocalconfig -m nokey liquid_server_hostname`;
+	my $hostname = `zmlocalconfig -m nokey zimbra_server_hostname`;
 	chomp $hostname;
-	my $services = `lqprov gs $hostname 2> /dev/null | grep liquidServiceEnabled: `;
-	$services =~ s/liquidServiceEnabled://g;
+	my $services = `lqprov gs $hostname 2> /dev/null | grep zimbraServiceEnabled: `;
+	$services =~ s/zimbraServiceEnabled://g;
 	@::localservices = split (' ', $services);
 	@::localservices = sort { $servicestartorder{$a} <=> $servicestartorder{$b}} @::localservices;
 }
 
 sub setLocalServices {
-	my $hostname = `lqlocalconfig -m nokey liquid_server_hostname`;
+	my $hostname = `zmlocalconfig -m nokey zimbra_server_hostname`;
 	chomp $hostname;
-	my $serstr = join " liquidServiceEnabled ", @::localservices;
-	$serstr = "liquidServiceEnabled ".$serstr;
+	my $serstr = join " zimbraServiceEnabled ", @::localservices;
+	$serstr = "zimbraServiceEnabled ".$serstr;
 	`lqprov ms $hostname $serstr 2> /dev/null`;
 }
 
 sub isMaintenanceMode {
 	my $ret;
 
-	my $maint = `lqlocalconfig -m nokey liquid_maintenance_mode 2> /dev/null`;
+	my $maint = `zmlocalconfig -m nokey zimbra_maintenance_mode 2> /dev/null`;
 	chomp $maint;
 	if ($maint eq "" || $maint eq "false" ) {
 		$ret = 0;
@@ -97,10 +97,10 @@ sub setMaintenance {
 	getLocalServices();
 	my $mode = shift;
 	if ($mode eq "on" || $mode eq "true" || $mode == 1) {
-		`lqlocalconfig -e liquid_maintenance_mode=true`;
+		`zmlocalconfig -e zimbra_maintenance_mode=true`;
 		push @::localservices, "maintenance";
 	} elsif ($mode eq "off" || $mode eq "false" || $mode == 0) {
-		`lqlocalconfig -e liquid_maintenance_mode=false`;
+		`zmlocalconfig -e zimbra_maintenance_mode=false`;
 		@::localservices = grep !/maintenance/, @::localservices;
 	} else {
 		return 1;
@@ -116,22 +116,22 @@ sub startServices {
 	my $t = "Not Started";
 
 	if (ldapRunsHere()) {
-		liquidlog::Log( "crit", "STARTING ldap" );
+		Zimbra::Logger::Log( "crit", "STARTING ldap" );
 		if (startOneService("ldap")) {
 			$r = $r." ldap";
 		}
 		else {
 			$t = $t." ldap";
-			liquidlog::Log( "crit", "ldap FAILED to start - exiting" );
+			Zimbra::Logger::Log( "crit", "ldap FAILED to start - exiting" );
 			exit 1;
 		}
 		sleep 3;
 	}
 	getLocalServices();
-	liquidlog::Log( "crit", "STARTING services" );
+	Zimbra::Logger::Log( "crit", "STARTING services" );
 	foreach $s (@::localservices) {
 		if ($s eq "maintenance" || $s eq "ldap") { next; }
-		liquidlog::Log( "crit", "STARTING $s" );
+		Zimbra::Logger::Log( "crit", "STARTING $s" );
 		if (startOneService($s)) {
 			$r = $r." ".$s;
 		}
@@ -151,14 +151,14 @@ sub startServices {
 }
 
 sub stopServices {
-	liquidlog::Log( "crit", "STOPPING services" );
+	Zimbra::Logger::Log( "crit", "STOPPING services" );
 	my $r = "Stopped";
 	my $t = "Not Stopped";
 	getLocalServices();
 	foreach my $n (reverse @::localservices) {
 		my $s = getServiceByName ($n);
 		stopOneService( $s->{name} );
-		# liquidlog::Log( "crit", "Waiting for $s->{name} to stop" );
+		# Zimbra::Logger::Log( "crit", "Waiting for $s->{name} to stop" );
 	}
 }
 
@@ -166,7 +166,7 @@ sub isAppRunning {
 	my $appName = shift;
 	my $status  = $::StatusStopped;
 
-	my $retval = runSyntaxCommand( "liquidsyntax", "$appName" . "_status" );
+	my $retval = runSyntaxCommand( "zimbrasyntax", "$appName" . "_status" );
 	if ($retval) {
 		$status = $::StatusStopped;
 	}
@@ -183,23 +183,23 @@ sub killOneApplication {
 	my $name;
 	if ( ref($s) ) { $name = $s->{name}; }
 	else { $name = $s }
-	liquidlog::Log( "info", "kill app $name" );
+	Zimbra::Logger::Log( "info", "kill app $name" );
 
 	#	if ( isAppRunning($name) ) {
 	my $t = getDateStamp();
 	$::children{$name}{STOP} = $t;
 	delete $::children{$name}{START};
 
-	if (exists ($::syntaxes{"liquidsyntax"}{$name."_kill"})) {
-		runSyntaxCommand( "liquidsyntax", "$name" . "_kill" );
+	if (exists ($::syntaxes{"zimbrasyntax"}{$name."_kill"})) {
+		runSyntaxCommand( "zimbrasyntax", "$name" . "_kill" );
 	} else {
-		liquidlog::Log( "err", "No kill command defined for $name" );
+		Zimbra::Logger::Log( "err", "No kill command defined for $name" );
 		stopOneApplication ($name);
 	}
 
 	#	}
 	#	else {
-	#		liquidlog::Log( "err", "Can't stop unstarted app $name" );
+	#		Zimbra::Logger::Log( "err", "Can't stop unstarted app $name" );
 	#	}
 }
 
@@ -209,14 +209,14 @@ sub stopOneApplication {
 	my $name;
 	if ( ref($s) ) { $name = $s->{name}; }
 	else { $name = $s }
-	liquidlog::Log( "info", "stop app $name" );
+	Zimbra::Logger::Log( "info", "stop app $name" );
 
 	#	if ( isAppRunning($name) ) {
 	my $t = getDateStamp();
 	$::children{$name}{STOP} = $t;
 	delete $::children{$name}{START};
 
-	runSyntaxCommand( "liquidsyntax", "$name" . "_stop" );
+	runSyntaxCommand( "zimbrasyntax", "$name" . "_stop" );
 }
 
 sub getServiceByName {
@@ -234,7 +234,7 @@ sub stopOneService {
 	my $name;
 	if ( ref($s) ) { $name = $s->{name}; }
 	else { $name = $s; $s = getServiceByName ($name); }
-	liquidlog::Log( "info", "stop service $name" );
+	Zimbra::Logger::Log( "info", "stop service $name" );
 	foreach my $a (@{$s->{apps}}) {
 		stopOneApplication ($a);
 		if ( isAppRunning( $a ) ) {
@@ -250,9 +250,9 @@ sub stopOneService {
 			}
 		}
 		if (! isAppRunning( $a ) ) {
-			liquidlog::Log( "crit", "$a successfully stopped" );
+			Zimbra::Logger::Log( "crit", "$a successfully stopped" );
 		} else {
-			liquidlog::Log( "crit", "FAILED to stop $a" );
+			Zimbra::Logger::Log( "crit", "FAILED to stop $a" );
 		}
 	}
 	return 1;
@@ -264,7 +264,7 @@ sub startOneService {
 	my $name;
 	if ( ref($s) ) { $name = $s->{name}; }
 	else { $name = $s; $s = getServiceByName ($name); }
-	liquidlog::Log( "info", "start service $name" );
+	Zimbra::Logger::Log( "info", "start service $name" );
 	foreach my $a (@{$s->{apps}}) {
 		startOneApplication ($a);
 	}
@@ -277,15 +277,15 @@ sub startOneApplication {
 	my $name;
 	if ( ref($s) ) { $name = $s->{name}; }
 	else { $name = $s }
-	liquidlog::Log( "info", "start app $name" );
+	Zimbra::Logger::Log( "info", "start app $name" );
 	if ( isAppRunning($name) ) {
-		liquidlog::Log( "err", "Can't start running app $name" );
+		Zimbra::Logger::Log( "err", "Can't start running app $name" );
 		return;
 	}
 
 	my $t = getDateStamp();
-	liquidlog::Log( "info", "Starting child $name: ($t)" );
-	my $re = runSyntaxCommand( "liquidsyntax", "$name" . "_start" );
+	Zimbra::Logger::Log( "info", "Starting child $name: ($t)" );
+	my $re = runSyntaxCommand( "zimbrasyntax", "$name" . "_start" );
 	for (my $i = 0; $i < 100; $i++) {
 		if (isAppRunning($name)) {
 			return 1;
@@ -309,7 +309,7 @@ sub runSyntaxCommand {
 
 	my $monitorHost = shift;
 
-	liquidlog::Log( "debug", "::runSyntaxCommand $syn $cmd" );
+	Zimbra::Logger::Log( "debug", "::runSyntaxCommand $syn $cmd" );
 	my @syscmds = ();
 	my $retval  = "";
 
@@ -325,7 +325,7 @@ sub runSyntaxCommand {
 	my $syscmd;
 	foreach $syscmd (@syscmds) {
 
-		# liquidlog::Log ("crit", "RUN: $syscmd");
+		# Zimbra::Logger::Log ("crit", "RUN: $syscmd");
 		# Separate items by newline
 		if ( $retval ne "" ) { $retval .= "\n"; }
 
@@ -336,7 +336,7 @@ sub runSyntaxCommand {
 			if (defined $monitorHost) { $host =~ s/localhost/$monitorHost/; }
 			$realm =~ s/_/ /g;
 			my $uri = "http://$host$path";
-			liquidlog::Log( "debug", "HTTP REQUEST: $uri as $user with $pass in $realm");
+			Zimbra::Logger::Log( "debug", "HTTP REQUEST: $uri as $user with $pass in $realm");
 
 			my $r = HTTP::Request->new( $method, $uri );
 			my $ua = LWP::UserAgent->new();
@@ -352,7 +352,7 @@ sub runSyntaxCommand {
 					}
 				}
 				else {
-					liquidlog::Log( "debug",
+					Zimbra::Logger::Log( "debug",
 						"HTTP RESPONSE: FAILURE: " . $resp->status_line );
 					$retval = $::StatusStopped;
 				}
@@ -370,7 +370,7 @@ sub runSyntaxCommand {
 					}
 				}
 				else {
-					liquidlog::Log( "debug",
+					Zimbra::Logger::Log( "debug",
 						"HTTP RESPONSE: FAILURE: " . $resp->status_line );
 				}
 			}
@@ -385,7 +385,7 @@ sub runSyntaxCommand {
 				my ($prematch, $match) = $t->waitfor('/^220/');
 
 				if ($t->errmsg() ne "") {
-					liquidlog::Log( "err",
+					Zimbra::Logger::Log( "err",
 						"SMTP RESPONSE: FAILURE from $h: " . $t->errmsg() );
 				} else {
 					$t->print("quit\n");
@@ -396,7 +396,7 @@ sub runSyntaxCommand {
 			if (defined ($monitorHost) ) {
 				return undef;
 			}
-			# This overrides the handler in liquidDaemon.pm
+			# This overrides the handler in Zimbra::Daemon.pm
 			local $SIG{CHLD} = 'DEFAULT';
 			local $SIG{ALRM} = \&handleSignal;
 			alarm(23);
@@ -407,7 +407,7 @@ sub runSyntaxCommand {
 			$retval .= $f >> 8;
 		}
 	}
-		# liquidlog::Log ("crit", "RUN: $syscmd $retval");
+		# Zimbra::Logger::Log ("crit", "RUN: $syscmd $retval");
 	return $retval;
 }
 
@@ -455,7 +455,7 @@ sub loadConfig {
 			( undef, $::controlport ) = split;
 		}
 		else {
-			liquidlog::Log( "err", "Unknown config directive: $_" );
+			Zimbra::Logger::Log( "err", "Unknown config directive: $_" );
 		}
 	}
 	@::applications = sort { $startorder{lc($a->{name})} <=> $startorder{lc($b->{name})} } @::applications;

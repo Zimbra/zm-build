@@ -1,4 +1,4 @@
-package Liquid::Failover::IPUtil;
+package Zimbra::Failover::IPUtil;
 
 require Exporter;
 @ISA = qw(Exporter);
@@ -6,14 +6,14 @@ require Exporter;
                 getEntryByDevice getEntryByIP getEntryByMAC
                 getRemoteMACByARP isPingable);
 use strict;
-use Liquid::Failover::Debug qw(debugOn);
-use Liquid::Failover::Config;
+use Zimbra::Failover::Debug qw(debugOn);
+use Zimbra::Failover::Config;
 
 my %LOCAL_ADDRESSES = ();
 
 my $IFCONFIG = 'ifconfig';
 my $ARPING = 'arping';
-my $SEND_ARP = Liquid::Failover::Config::getLiquidHome() . '/libexec/send_arp';
+my $SEND_ARP = Zimbra::Failover::Config::getLiquidHome() . '/libexec/send_arp';
 my $PING = 'ping';
 
 #

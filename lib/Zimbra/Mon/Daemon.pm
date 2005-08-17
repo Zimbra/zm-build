@@ -1,4 +1,4 @@
-package liquidDaemon;
+package Zimbra::Daemon;
 
 use strict;
 use vars qw(@ISA);
@@ -21,14 +21,14 @@ sub handle {
  FORK:
 	if ($cpid = fork) { $c->close; next CLIENT }
 	if (!defined ($cpid)) {
-		liquidlog::Log ("crit","Fork error: $!");
+		Zimbra::Logger::Log ("crit","Fork error: $!");
 		if ($! == EAGAIN) {
-			liquidlog::Log ("err","Attempting recovery");
+			Zimbra::Logger::Log ("err","Attempting recovery");
 			sleep 5;
 			next FORK;
 		}
 		else {
-			liquidlog::Log ("crit","Unrecoverable fork error: $!");
+			Zimbra::Logger::Log ("crit","Unrecoverable fork error: $!");
 			next CLIENT;
 		}
 	}

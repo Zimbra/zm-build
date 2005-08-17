@@ -1,11 +1,11 @@
-package Liquid::Failover::Dispatcher;
+package Zimbra::Failover::Dispatcher;
 
 require Exporter;
 @ISA = qw(Exporter);
 @EXPORT_OK = qw(dispatch shutdownSignalled);
 use strict;
-use Liquid::Failover::Monitoring qw(isServiceAvailable);
-use Liquid::Failover::Control qw(relinquish
+use Zimbra::Failover::Monitoring qw(isServiceAvailable);
+use Zimbra::Failover::Control qw(relinquish
                                  stopFailedMaster
                                  abortFailedMaster);
 

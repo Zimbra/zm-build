@@ -1,23 +1,23 @@
-package Liquid::Failover::Control;
+package Zimbra::Failover::Control;
 
 require Exporter;
 @ISA = qw(Exporter);
 @EXPORT_OK = qw(relinquish
                 stopFailedMaster
                 abortFailedMaster
-                lqcontrol
+                zmcontrol
                 isServiceRunning);
 
 use strict;
-use Liquid::Failover::Debug qw(debugOn);
-use Liquid::Failover::Config;
-use Liquid::Failover::IPUtil;
-use Liquid::Failover::SoapToTomcat;
-use Liquid::Failover::Db;
+use Zimbra::Failover::Debug qw(debugOn);
+use Zimbra::Failover::Config;
+use Zimbra::Failover::IPUtil;
+use Zimbra::Failover::SoapToTomcat;
+use Zimbra::Failover::Db;
 
-sub lqcontrol(;$) {
+sub zmcontrol(;$) {
     my $args = shift || '';
-    my $cmd = Liquid::Failover::Config::getLiquidHome() . "/liquidmon/lqcontrol $args";
+    my $cmd = Zimbra::Failover::Config::getLiquidHome() . "/zimbramon/zmcontrol $args";
 print "LQCONTROL: Invoking $cmd\n";
     `$cmd`;
     return $? >> 8 == 0 ? 1 : 0;
@@ -27,7 +27,7 @@ sub startService() {
     if (debugOn()) {
         print "Starting service...\n";
     }
-    lqcontrol('start');
+    zmcontrol('start');
     # TODO: Wait until startup is complete.
     return 1;
 }
@@ -36,7 +36,7 @@ sub stopService() {
     if (debugOn()) {
         print "Stopping service...\n";
     }
-    lqcontrol('stop');
+    zmcontrol('stop');
     # TODO: Wait until service shutdown is complete.
     return 1;
 }
@@ -57,7 +57,7 @@ sub abortService() {
 
 sub getServicePid() {
     my $pidfile =
-        Liquid::Failover::Config::getLiquidHome() . "/log/tomcat.pid";
+        Zimbra::Failover::Config::getLiquidHome() . "/log/tomcat.pid";
     my $pid;
     if (open(FH, "< $pidfile")) {
         my $line = <FH>;
@@ -86,8 +86,8 @@ sub isServiceRunning() {
 }
 
 sub relinquish() {
-    my $ip = Liquid::Failover::Config::getServiceIP();
-    Liquid::Failover::IPUtil::relinquishIP($ip);
+    my $ip = Zimbra::Failover::Config::getServiceIP();
+    Zimbra::Failover::IPUtil::relinquishIP($ip);
     print "Released IP $ip\n";
 }
 
@@ -106,7 +106,7 @@ sub becomeMaster() {
         print "Sending BecomeMaster command to tomcat...\n";
     }
     my $cmd =
-        Liquid::Failover::Config::getLiquidHome() .
+        Zimbra::Failover::Config::getLiquidHome() .
         "/libexec/lqreplcmd -c takeover";
     my $rc = system($cmd);
     if ($rc != 0) {

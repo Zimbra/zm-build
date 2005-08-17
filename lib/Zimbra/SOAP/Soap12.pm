@@ -1,10 +1,10 @@
-package Liquid::SOAP::Soap12;
+package Zimbra::SOAP::Soap12;
 
 use strict;
 use warnings;
 
 use XML::Parser;
-use Liquid::SOAP::XmlElement;
+use Zimbra::SOAP::XmlElement;
 
 #use overload '""' => \&to_string;
 
@@ -14,7 +14,7 @@ BEGIN {
 
     # set the version for version checking
     $VERSION     = 1.00;
-    @ISA         = qw(Exporter Liquid::SOAP::Soap);
+    @ISA         = qw(Exporter Zimbra::SOAP::Soap);
     @EXPORT      = qw();
     %EXPORT_TAGS = ( );     # eg: TAG => [ qw!name1 name2! ],
 
@@ -42,13 +42,13 @@ sub soapEnvelope {
     my $self = shift;
     my $e = shift;
     my $context = shift;
-    my $env = new Liquid::SOAP::XmlElement("Envelope", $NS);
+    my $env = new Zimbra::SOAP::XmlElement("Envelope", $NS);
     if ($context) {
-	    my $header= new Liquid::SOAP::XmlElement("Header", $NS);
+	    my $header= new Zimbra::SOAP::XmlElement("Header", $NS);
 	    $header->add_child($context);
 	    $env->add_child($header);
     }
-    my $body = new Liquid::SOAP::XmlElement("Body", $NS);
+    my $body = new Zimbra::SOAP::XmlElement("Body", $NS);
     $body->add_child($e);
     $env->add_child($body);
     return $env;

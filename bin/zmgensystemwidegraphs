@@ -1,15 +1,15 @@
 #!/usr/bin/perl
 
 use strict;
-use lib '/opt/liquid/liquidmon/lib';
-use lib '/opt/liquid/liquidmon/lib/liquidpm';
+use lib '/opt/zimbra/zimbramon/lib';
+use lib '/opt/zimbra/zimbramon/lib/Zimbra/Mon';
 
 my $DEBUG=0;
 
 use Time::Local;
-use liquidlog;
+use Zimbra::Logger;
 
-my $baseDir = "/opt/liquid";
+my $baseDir = "/opt/zimbra";
 my $logDir = "$baseDir/log";
 
 my $pstring;
@@ -23,12 +23,12 @@ my %values = ();
 my @DATANAMES=(
 	"LmtpRcvdData:total:bytes",
 	"LmtpRcvdMsgs:total:count",
-	"Slice:/opt/liquid",
-	"Slice:/opt/liquid/db",
-	"Slice:/opt/liquid/index",
-	"Slice:/opt/liquid/log",
-	"Slice:/opt/liquid/redolog",
-	"Slice:/opt/liquid/store"
+	"Slice:/opt/zimbra",
+	"Slice:/opt/zimbra/db",
+	"Slice:/opt/zimbra/index",
+	"Slice:/opt/zimbra/log",
+	"Slice:/opt/zimbra/redolog",
+	"Slice:/opt/zimbra/store"
 	);
 
 sub datetime_to_timestamp {
@@ -147,9 +147,9 @@ foreach my $sn (@DATANAMES) {
 			$unit = "--unit MB -v MB";
 			$lower = "-l 0";
 			$name =~ s|.*/||g;
-			$keyname = "/opt/liquid/$name";
-			if ($keyname eq "/opt/liquid/liquid") {
-				$keyname = "/opt/liquid";
+			$keyname = "/opt/zimbra/$name";
+			if ($keyname eq "/opt/zimbra/zimbra") {
+				$keyname = "/opt/zimbra";
 			}
 		} else {
 			$name =~ s/:.*//g;
@@ -157,12 +157,12 @@ foreach my $sn (@DATANAMES) {
 		}
 
 
-		my $uname = "liquid";
-		my $pass = `/opt/liquid/bin/lqlocalconfig -s liquid_ldap_password`;
+		my $uname = "zimbra";
+		my $pass = `/opt/zimbra/bin/zmlocalconfig -s zimbra_ldap_password`;
 		$pass = (split (' ',$pass))[2];
 		chomp $pass;
 
-		my $fetch = "$baseDir/bin/lqfetchallstats";
+		my $fetch = "$baseDir/bin/zmfetchallstats";
 
 		`$fetch -S $sn -P $period -b "$startdate" -e "$date" -u $uname -p $pass >/tmp/fetch.$$`;
 
@@ -170,7 +170,7 @@ foreach my $sn (@DATANAMES) {
 
 		unlink "/tmp/fetch.$$";
 
-		my $base = "/opt/liquid/liquidmon/rrdtool";
+		my $base = "/opt/zimbra/zimbramon/rrdtool";
 		my $work = "${base}/work";
 		my $rrd = "${base}/bin/rrdtool";
 		my $db = "${work}/Systemwide_${name}.${period}.rrd";

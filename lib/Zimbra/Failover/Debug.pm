@@ -1,4 +1,4 @@
-package Liquid::Failover::Debug;
+package Zimbra::Failover::Debug;
 
 require Exporter;
 @ISA = qw(Exporter);

@@ -1,4 +1,4 @@
-package Liquid::SOAP::XmlElement;
+package Zimbra::SOAP::XmlElement;
 
 use strict;
 use warnings;
@@ -320,7 +320,7 @@ sub XPStart {
   my $expat = shift;
   my $tag = shift;
 
-  my $element = new Liquid::SOAP::XmlElement($tag, $expat->namespace($tag));
+  my $element = new Zimbra::SOAP::XmlElement($tag, $expat->namespace($tag));
 
   if ($#_ >= 0) {
       $element->attrs({@_});

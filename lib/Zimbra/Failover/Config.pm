@@ -1,9 +1,9 @@
-package Liquid::Failover::Config;
+package Zimbra::Failover::Config;
 
 use strict;
-use Liquid::Failover::Bootstrap;
+use Zimbra::Failover::Bootstrap;
 
-my $LIQUID_HOME = $ENV{LIQUID_HOME} || $ENV{HOME} || '/opt/liquid';
+my $LIQUID_HOME = $ENV{LIQUID_HOME} || $ENV{HOME} || '/opt/zimbra';
 
 my %HEARTBEAT_CONFIG = (
     ADMIN_SOAP_PORT => 7070,        # admin SOAP servlet port
@@ -12,7 +12,7 @@ my %HEARTBEAT_CONFIG = (
     SERIAL_ENABLED => 0,            # heartbeat over serial connection
     TCP_ENABLED => 0,               # heartbeat over TCP connection
     AUTO_FAILOVER => 0,             # automatic or manual failover
-    SERIAL_DEVICE => '/dev/ttyS0',  # must be owned by liquid user
+    SERIAL_DEVICE => '/dev/ttyS0',  # must be owned by zimbra user
     HEARTBEAT_TCP_PORT => 7778,
     HEARTBEAT_INTERVAL => 10,       # in seconds
     HEARTBEAT_MAX_FAILURES => 6,    # failover trigger threshold
@@ -31,7 +31,7 @@ sub _singleton {
     return $self;
 }
 
-my $SINGLETON = Liquid::Failover::Config->_singleton();
+my $SINGLETON = Zimbra::Failover::Config->_singleton();
 
 sub getConfig() {
     return $SINGLETON;
@@ -117,8 +117,8 @@ sub getLocalIP {
 }
 
 sub refresh {
-    my $localhost = Liquid::Failover::Bootstrap::getHostname();
-    my $ldap = new Liquid::Failover::LDAP();
+    my $localhost = Zimbra::Failover::Bootstrap::getHostname();
+    my $ldap = new Zimbra::Failover::LDAP();
     $ldap->bind() or return;
     my $confref = $ldap->getServerByName($localhost);
     if (!defined($confref)) {
@@ -130,9 +130,9 @@ sub refresh {
     # Convert LDAP attributes into our own hash values.
 
     $HEARTBEAT_CONFIG{CURRENT_ROLE} =
-        lc($confref->{uc('liquidReplicationCurrentRole')} || 'standalone');
+        lc($confref->{uc('zimbraReplicationCurrentRole')} || 'standalone');
 
-    my $method = $confref->{uc('liquidHeartbeatMethod')};
+    my $method = $confref->{uc('zimbraHeartbeatMethod')};
     if (defined($method)) {
         $method = lc($method);
         my ($serial, $tcp) = (0, 0);
@@ -148,40 +148,40 @@ sub refresh {
     }
 
     $HEARTBEAT_CONFIG{AUTO_FAILOVER} =
-        $confref->{uc('liquidHeartbeatAutomaticFailoverEnabled')} ? 1 : 0;
+        $confref->{uc('zimbraHeartbeatAutomaticFailoverEnabled')} ? 1 : 0;
 
     $HEARTBEAT_CONFIG{SERIAL_DEVICE} =
-        $confref->{uc('liquidHeartbeatSerialDevice')} || '/dev/ttyS0';
+        $confref->{uc('zimbraHeartbeatSerialDevice')} || '/dev/ttyS0';
 
     $HEARTBEAT_CONFIG{HEARTBEAT_TCP_PORT} =
-        $confref->{uc('liquidHeartbeatTcpPort')} || 7778;
+        $confref->{uc('zimbraHeartbeatTcpPort')} || 7778;
 
     $HEARTBEAT_CONFIG{HEARTBEAT_INTERVAL} =
-        $confref->{uc('liquidHeartbeatIntervalSec')} || 10;
+        $confref->{uc('zimbraHeartbeatIntervalSec')} || 10;
 
     $HEARTBEAT_CONFIG{HEARTBEAT_MAX_FAILURES} =
-        $confref->{uc('liquidHeartbeatMaxFailures')} || 6;
+        $confref->{uc('zimbraHeartbeatMaxFailures')} || 6;
 
     $HEARTBEAT_CONFIG{LOCAL_IPADDR} =
-        $confref->{uc('liquidServerIP')};
+        $confref->{uc('zimbraServerIP')};
 
     $HEARTBEAT_CONFIG{SERVICE_INTERFACE} =
-        $confref->{uc('liquidServiceIPInterface')};
+        $confref->{uc('zimbraServiceIPInterface')};
 
     $HEARTBEAT_CONFIG{SERVICE_IPADDR} =
-        $confref->{uc('liquidServiceIP')};
+        $confref->{uc('zimbraServiceIP')};
 
     $HEARTBEAT_CONFIG{ROUTER_IPADDR} =
-        $confref->{uc('liquidServiceIPRouterIP')};
+        $confref->{uc('zimbraServiceIPRouterIP')};
 
     # Get peer IP.
-    my $peerId = $confref->{uc('liquidReplicationPeerId')};
+    my $peerId = $confref->{uc('zimbraReplicationPeerId')};
     if (!defined($peerId)) {
         print STDERR "No replication peer defined\n";
     } else {
         my $peerref = $ldap->getServerById($peerId);
         if (defined($peerref)) {
-            $HEARTBEAT_CONFIG{PEER_IPADDR} = $peerref->{uc('liquidServerIP')};
+            $HEARTBEAT_CONFIG{PEER_IPADDR} = $peerref->{uc('zimbraServerIP')};
         }
     }
 
@@ -196,7 +196,7 @@ sub _init() {
 }
 
 sub _getConfiguredHostname() {
-    return Liquid::Failover::Bootstrap::getHostname();
+    return Zimbra::Failover::Bootstrap::getHostname();
 }
 
 1;

@@ -1,8 +1,8 @@
-package Liquid::SOAP::XmlDoc;
+package Zimbra::SOAP::XmlDoc;
 
 use strict;
 use warnings;
-use Liquid::SOAP::XmlElement;
+use Zimbra::SOAP::XmlElement;
 
 BEGIN {
     use Exporter   ();
@@ -37,7 +37,7 @@ sub start {
     my $self = shift;
     my $name = shift;
     my $ns = shift;
-    my $element = new Liquid::SOAP::XmlElement($name, $ns);
+    my $element = new Zimbra::SOAP::XmlElement($name, $ns);
     if (@_) {
 	my $attrs = shift;
 	$element->attrs($attrs) if defined($attrs);

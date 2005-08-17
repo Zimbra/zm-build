@@ -4,7 +4,7 @@ package account;
 
 use strict;
 
-use liquidlog;
+use Zimbra::Logger;
 
 require Exporter;
 

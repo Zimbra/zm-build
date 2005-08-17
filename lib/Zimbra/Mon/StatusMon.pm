@@ -1,14 +1,14 @@
 #!/usr/bin/perl
 
-package liquidStatusMon;
+package Zimbra::StatusMon;
 
 use strict;
 
-use liquidlog;
+use Zimbra::Logger;
 #use host;
-use shortInfo;
-use serviceInfo;
-use liquidAdmin;
+use Zimbra::shortInfo;
+use Zimbra::serviceInfo;
+use Zimbra::Admin;
 
 use DBI;
 
@@ -30,14 +30,14 @@ sub new
 	
 	$self->{Cluster} = $cluster;
 
-#	liquidlog::Log ("debug","Created StatusMon");
+#	Zimbra::Logger::Log ("debug","Created StatusMon");
 
 	return $self;
 }
 
 sub handle_usr2
 {
-#	liquidlog::Log ("debug","STATUS: USR2");
+#	Zimbra::Logger::Log ("debug","STATUS: USR2");
 	$Signalled = 1;
 	# We don't need to handle it, just enough to wake us from our sleep.
 }
@@ -53,22 +53,22 @@ sub run
 	
 	if ($self->{PID}) {return};
 
-	liquidlog::Log ("crit","Status monitor startup");
+	Zimbra::Logger::Log ("crit","Status monitor startup");
 
-	$::PROGRAM_NAME = "liquidStatusMon";
+	$::PROGRAM_NAME = "Zimbra::StatusMon";
 	
-	$self->{ShortInfo} = new shortInfo(undef);
+	$self->{ShortInfo} = new Zimbra::shortInfo(undef);
 	$self->{ShortInfo}->clearStatusDir();
-	$self->{ServiceInfo} = new serviceInfo($::Cluster->{LocalHost});
+	$self->{ServiceInfo} = new Zimbra::serviceInfo($::Cluster->{LocalHost});
 
 	sleep 10;
 
 	local $SIG{CHLD} = 'IGNORE';
 
-	$self->{sqlUser} = `lqlocalconfig liquid_mysql_user`;
+	$self->{sqlUser} = `zmlocalconfig zimbra_mysql_user`;
 	chomp $self->{sqlUser};
 	$self->{sqlUser} = (split(' ',$self->{sqlUser}))[2];
-	$self->{sqlPass} = `lqlocalconfig -s liquid_mysql_password`;
+	$self->{sqlPass} = `zmlocalconfig -s zimbra_mysql_password`;
 	chomp $self->{sqlPass};
 	$self->{sqlPass} = (split(' ',$self->{sqlPass}))[2];
 
@@ -80,26 +80,26 @@ sub run
 		}
 		$self->getData();
 		$SIG{USR2} = \&handle_usr2;
-#		liquidlog::Log ("debug","liquidStatusMon::run sleeping");
+#		Zimbra::Logger::Log ("debug","Zimbra::StatusMon::run sleeping");
 		if ($Signalled) {
 			$Signalled = 0;
 		} 
 
 		sleep $sleepInterval;
-#		liquidlog::Log ("debug","liquidStatusMon::run waking up");
+#		Zimbra::Logger::Log ("debug","Zimbra::StatusMon::run waking up");
 	}
 }
 
 sub getData
 {
-#	liquidlog::Log ("debug","liquidStatusMon::getData");
+#	Zimbra::Logger::Log ("debug","Zimbra::StatusMon::getData");
 	my $self = shift;
 	
 	$self->{ShortInfo}->getShortInfo();
 	
 	my $oldS = $self->{ServiceInfo};
 	
-	$self->{ServiceInfo} = new serviceInfo($::Cluster->{LocalHost});
+	$self->{ServiceInfo} = new Zimbra::serviceInfo($::Cluster->{LocalHost});
 	
 	$self->{ServiceInfo}->getServiceInfo();
 	
@@ -111,15 +111,15 @@ sub getData
 			$oldS->{ServiceStatus}{$sname}{status} ne $self->{ServiceInfo}{ServiceStatus}{$sname}{status} ) {
 				my $prevStatus = $oldS->{ServiceStatus}{$sname}{status};
 				my $curStatus = $self->{ServiceInfo}{ServiceStatus}{$sname}{status};
-				my $cmd = $::syntaxes{liquidsyntax}{statuschange};
-				liquidlog::Log ("err", "Service status change: $sname $prevStatus $curStatus");
+				my $cmd = $::syntaxes{zimbrasyntax}{statuschange};
+				Zimbra::Logger::Log ("err", "Service status change: $sname $prevStatus $curStatus");
 				$::Cluster->sendFifo("$cmd $sname $prevStatus $curStatus");
 		}
 	}
 
-	my $data_source="dbi:mysql:database=liquid;mysql_read_default_file=/opt/liquid/conf/my.cnf;mysql_socket=/opt/liquid/db/mysql.sock";
-	my $username="liquid";
-	my $password = `lqlocalconfig -s liquid_mysql_password`;
+	my $data_source="dbi:mysql:database=zimbra;mysql_read_default_file=/opt/zimbra/conf/my.cnf;mysql_socket=/opt/zimbra/db/mysql.sock";
+	my $username="zimbra";
+	my $password = `zmlocalconfig -s zimbra_mysql_password`;
 	chomp $password;
 	$password = (split(' ',$password))[2];
 
@@ -130,14 +130,14 @@ sub getData
 
 	foreach my $slice (@{$self->{ShortInfo}->{df}->{slices}}) {
 		if ($slice->{cap} > $::DISK_CRIT_THRESHOLD) {
-			liquidlog::Log ("crit",
+			Zimbra::Logger::Log ("crit",
 			"Disk warning: $slice->{mt} ($slice->{dev}) at $slice->{cap} percent capacity");
 		} elsif ($slice->{cap} > $::DISK_WARN_THRESHOLD) {
-			liquidlog::Log ("err",
+			Zimbra::Logger::Log ("err",
 			"Disk warning: $slice->{mt} ($slice->{dev}) at $slice->{cap} percent capacity");
 		}
 		if (!$dbh) {
-			liquidlog::Log ("debug", "No local db to store disk usage");
+			Zimbra::Logger::Log ("debug", "No local db to store disk usage");
 		} else {
 			my $ts = ::timestamp_to_datetime($self->{ShortInfo}->{uts});
 			my $name = "Slice:$slice->{mt}";
@@ -147,7 +147,7 @@ sub getData
 				"insert into server_stat(time, name, value) values (?,?,?)";
 			my $sth = $dbh->prepare($statement);
 			if (!$sth->execute($ts, $name, $val) ) {
-				liquidlog::Log ("err", "DB: $statement - $DBI::errstr");
+				Zimbra::Logger::Log ("err", "DB: $statement - $DBI::errstr");
 			}
 
 		}
@@ -158,7 +158,7 @@ sub getData
 
 sub setup
 {
-#	liquidlog::Log ("debug","liquidStatusMon::setup");
+#	Zimbra::Logger::Log ("debug","Zimbra::StatusMon::setup");
 	my $self = shift;
 	
 	if (!-d $statusDir)
@@ -166,8 +166,8 @@ sub setup
 		mkdir ($statusDir);
 		if (!-d $statusDir)
 		{
-			liquidlog::Log ("err", "Can't mkdir $statusDir: $!");
-			# We can exit here, because liquidmon.pl hasn't forked yet.
+			Zimbra::Logger::Log ("err", "Can't mkdir $statusDir: $!");
+			# We can exit here, because zimbramon.pl hasn't forked yet.
 			exit (1);
 		}
 	}
@@ -176,8 +176,8 @@ sub setup
 		mkdir ($serviceDir);
 		if (!-d $serviceDir)
 		{
-			liquidlog::Log ("err", "Can't mkdir $serviceDir: $!");
-			# We can exit here, because liquidmon.pl hasn't forked yet.
+			Zimbra::Logger::Log ("err", "Can't mkdir $serviceDir: $!");
+			# We can exit here, because zimbramon.pl hasn't forked yet.
 			exit (1);
 		}
 	}
@@ -186,7 +186,7 @@ sub setup
 sub monitorPartner {
 	my $self = shift;
 	
-	liquidlog::Log ("debug", "Monitoring cluster");
+	Zimbra::Logger::Log ("debug", "Monitoring cluster");
 	
 	# AppMon
 	# PingMon NOT NEEDED
@@ -194,14 +194,14 @@ sub monitorPartner {
 	
 	if ($self->appMon()) {
 	} else {
-		liquidlog::Log ("debug", "Monitoring of cluster completed successfully");
+		Zimbra::Logger::Log ("debug", "Monitoring of cluster completed successfully");
 	}
 }
 
 sub appMon {
 	my $self = shift;
 	
-	liquidlog::Log ("debug", "Monitoring cluster APPLICATIONS");
+	Zimbra::Logger::Log ("debug", "Monitoring cluster APPLICATIONS");
 	 
 	# TODO monitor mail, calendar, AB.
 	
@@ -214,11 +214,11 @@ sub monitorOneHost {
 	my $self = shift;
 	my $host = shift;
 
-	liquidlog::Log ("debug", "Monitoring host $host->{name}");
+	Zimbra::Logger::Log ("debug", "Monitoring host $host->{name}");
 
 	my $oldS = $self->{RemoteInfo}{$host->{name}}{ServiceInfo};
 
-	$self->{RemoteInfo}{$host->{name}}{ServiceInfo} = new serviceInfo($host);
+	$self->{RemoteInfo}{$host->{name}}{ServiceInfo} = new Zimbra::serviceInfo($host);
 	
 	$self->{RemoteInfo}{$host->{name}}{ServiceInfo}->getServiceInfo();
 	
@@ -229,13 +229,13 @@ sub monitorOneHost {
 	# TODO get service list for each host.
 	foreach $sname (keys %{ $rsi->{ServiceStatus} }) {
 		if (defined $rsi->{ServiceStatus}{$sname}{status}) {
-		liquidlog::Log ("info", 
+		Zimbra::Logger::Log ("info", 
 			"Monitored $sname on $host->{name}: $rsi->{ServiceStatus}{$sname}{status}");
 		}
 		my $prevStatus = $oldS->{ServiceStatus}{$sname}{status};
 		my $curStatus = $rsi->{ServiceStatus}{$sname}{status};
 		if ( $prevStatus ne $curStatus ) {
-			liquidlog::Log ("err", 
+			Zimbra::Logger::Log ("err", 
 				"Remote Service status change: $host->{name} $sname $prevStatus $curStatus");
 		}
 
@@ -249,7 +249,7 @@ sub monitorOneHost {
 		$statement = "delete from service_status where server = '".$host->{name}.
 			"' and service = '".$sname."';";
 
-		`/opt/liquid/bin/mysql liquid -e "$statement"`;
+		`/opt/zimbra/bin/mysql zimbra -e "$statement"`;
 
 		my $status = 1;
 		if ($curStatus == $::StatusStopped) {$status = 0;}
@@ -259,7 +259,7 @@ sub monitorOneHost {
 		$statement = "insert into service_status (server,service,time,status) ".
 			"values ('".$host->{name}."','".$sname."','".$t."',$status)";
 
-		`/opt/liquid/bin/mysql liquid -e "$statement"`;
+		`/opt/zimbra/bin/mysql zimbra -e "$statement"`;
 
 		next;
 

@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-package liquidlog;
+package Zimbra::Logger;
 
 use strict;
 
@@ -10,7 +10,7 @@ require Exporter;
 
 my @ISA = qw(Exporter);
 
-my $ident="liquidmon";
+my $ident="zimbramon";
 my $facility="local0";
 
 my @EXPORT = qw (Log);

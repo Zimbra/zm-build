@@ -4,7 +4,7 @@ package application;
 
 use strict;
 
-use liquidlog;
+use Zimbra::Logger;
 
 require Exporter;
 
@@ -22,7 +22,7 @@ sub new
 	$self->{args} = $args;
 	$self->{md} = $md;
 	$self->{lbl} = $lbl;
-	#liquidlog::Log ("info","Created application $name");
+	#Zimbra::Logger::Log ("info","Created application $name");
 	return $self;
 }
 
