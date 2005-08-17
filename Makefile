@@ -657,7 +657,7 @@ $(CORE_DEST_DIR)/bin:
 	cp $(ZIMBRA_BIN_DIR)/zmfetchallstats $@
 	cp $(ZIMBRA_BIN_DIR)/zmcreatecert $@
 	cp $(ZIMBRA_BIN_DIR)/zmcertinstall $@
-	cp $(ZIMBRA_BIN_DIR)/roll_catalina.sh $@
+	cp $(ZIMBRA_BIN_DIR)/zmroll_catalina.sh $@
 	cp $(ZIMBRA_BIN_DIR)/zmtlsctl $@
 	cp $(ZIMBRA_BIN_DIR)/zmfixperms.sh $@
 
@@ -828,7 +828,7 @@ $(DEV_INSTALL_ROOT)/bin:
 	cp -f $(ZIMBRA_BIN_DIR)/zmfetchstats $@
 	cp -f $(ZIMBRA_BIN_DIR)/zmfetchallstats $@
 	cp -f $(ZIMBRA_BIN_DIR)/zmcreatecert $@
-	cp -f $(ZIMBRA_BIN_DIR)/roll_catalina.sh $@
+	cp -f $(ZIMBRA_BIN_DIR)/zmroll_catalina.sh $@
 	cp -f $(ZIMBRA_BIN_DIR)/zmtlsctl $@
 	cp -f $(ZIMBRA_BIN_DIR)/zmfixperms.sh $@
 	chmod u+x $@/*
