@@ -27,7 +27,7 @@ getHostInfo() {
 }
 
 createConf() {
-	cat ${CONF}/liqssl.cnf.in | sed -e "s/@@HOSTNAME@@/$H/" > ${BASE}/liqssl.cnf
+	cat ${CONF}/zmssl.cnf.in | sed -e "s/@@HOSTNAME@@/$H/" > ${BASE}/zmssl.cnf
 }
 
 createKey() {
@@ -35,7 +35,7 @@ createKey() {
 	echo "** Creating CA private key"
 	echo
 
-	openssl req -batch -config ${BASE}/liqssl.cnf -new -newkey \
+	openssl req -batch -config ${BASE}/zmssl.cnf -new -newkey \
 		rsa:1024 -nodes -out ${BASE}/ca/ca.csr -keyout ${BASE}/ca/ca.key
 
 }

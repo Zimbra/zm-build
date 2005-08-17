@@ -72,12 +72,12 @@ updateWebConfig() {
 	mv -f /tmp/web.xml.$$ /opt/zimbra/tomcat/webapps/zimbra/WEB-INF/web.xml
 	
 	if [ $MODE = "http" ]; then
-		lqprov mcf zimbraMailPort 80 zimbraMailSSLPort 0
+		zmprov mcf zimbraMailPort 80 zimbraMailSSLPort 0
 	else
 		if [ $MODE = "https" ]; then
-			lqprov mcf zimbraMailPort 0 zimbraMailSSLPort 443
+			zmprov mcf zimbraMailPort 0 zimbraMailSSLPort 443
 		else
-			lqprov mcf zimbraMailPort 80 zimbraMailSSLPort 443
+			zmprov mcf zimbraMailPort 80 zimbraMailSSLPort 443
 		fi
 	fi
 

@@ -6,14 +6,14 @@
 # smtp_source <email address>
 # smtp_destination <email address>
 
-source "/opt/zimbra/bin/lqshutil" || exit 1
-lqsetvars \
+source "/opt/zimbra/bin/zmshutil" || exit 1
+zmsetvars \
 	zimbra_server_hostname \
 	snmp_notify \
 	smtp_notify 
 
 if [ ${snmp_notify} = "1" ]; then
-	lqsetvars \
+	zmsetvars \
 		snmp_trap_host 
 	SOURCEFILE=/opt/zimbra/snmp/share/snmp/snmpd.conf.in
 	FILE=/opt/zimbra/conf/snmpd.conf
@@ -24,7 +24,7 @@ fi
 # Many backslashes to make sure '@' gets quoted in final perl
 
 if [ ${smtp_notify} = "1" ]; then
-	lqsetvars \
+	zmsetvars \
 		smtp_source \
 		smtp_destination
 
