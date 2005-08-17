@@ -447,10 +447,6 @@ $(CORE_DEST_DIR)/zimbramon: $(CORE_DEST_DIR) perllibs
 	cp -R $(RPM_CONF_DIR)/Ctl/zimbramta.cf $@
 	cp -R $(RPM_CONF_DIR)/Ctl/zimbraldap.cf $@
 	cp -R $(RPM_CONF_DIR)/Ctl/zimbrasnmp.cf $@
-	mkdir -p $@/lib/Zimbra/Mon
-	@cp $(wildcard $(BUILD_ROOT)/lib/Zimbra/Mon/*.pm) $@/lib/Zimbra/Mon
-	mkdir -p $@/lib/Zimbra/Mon/SOAP
-	@cp -f $(wildcard $(SERVICE_DIR)/src/perl/soap/*.pm) $@/lib/Zimbra/Mon/SOAP
 	(cd $(CORE_DEST_DIR)/zimbramon; tar xzf $(MRTG_SOURCE).tgz)
 	mkdir -p $(CORE_DEST_DIR)/zimbramon/mrtg/work
 	mkdir -p $(CORE_DEST_DIR)/zimbramon/mrtg/conf
@@ -624,7 +620,7 @@ $(CORE_DEST_DIR)/conf:
 	cp $(RPM_CONF_DIR)/Conf/swatchrc $@/swatchrc.in
 	cp -R $(SERVICE_DIR)/conf/localconfig.xml $@/localconfig.xml
 	grep -vi stats $(SERVICE_DIR)/conf/log4j.properties.production > $@/log4j.properties
-	cp $(RPM_CONF_DIR)/Conf/liqssl.cnf.in $@
+	cp $(RPM_CONF_DIR)/Conf/zmssl.cnf.in $@
 	cp $(SERVICE_DIR)/conf/amavisd.conf.in $@
 	cp $(SERVICE_DIR)/conf/clamd.conf.in $@
 	cp $(SERVICE_DIR)/conf/freshclam.conf.in $@
@@ -838,7 +834,7 @@ $(DEV_INSTALL_ROOT)/conf:
 	cp -f $(RPM_CONF_DIR)/Conf/swatchrc $@/swatchrc.in
 	cp -f -R $(SERVICE_DIR)/conf/localconfig.xml $@/localconfig.xml
 	grep -vi stats $(SERVICE_DIR)/conf/log4j.properties.production > $@/log4j.properties
-	cp -f $(RPM_CONF_DIR)/Conf/liqssl.cnf.in $@
+	cp -f $(RPM_CONF_DIR)/Conf/zmssl.cnf.in $@
 	cp -f $(SERVICE_DIR)/conf/amavisd.conf.in $@
 	cp -f $(SERVICE_DIR)/conf/clamd.conf $@
 	cp -f $(SERVICE_DIR)/conf/freshclam.conf $@
