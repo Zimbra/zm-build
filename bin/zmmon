@@ -11,17 +11,17 @@ use lib "/opt/zimbra/zimbramon/lib";
 use lib "/opt/zimbra/zimbramon/lib/Zimbra/Mon";
 
 
-use Zimbra::Logger;
-use Zimbra::Cluster;
-use Zimbra::Daemon;
-use Zimbra::StatusMon;
+use Zimbra::Mon::Logger;
+use Zimbra::Mon::Cluster;
+use Zimbra::Mon::Daemon;
+use Zimbra::Mon::StatusMon;
 use host;
-use Zimbra::diskUsage;
+use Zimbra::Mon::diskUsage;
 use service;
 use application;
-use Zimbra::Admin;
-use Zimbra::shortInfo;
-use Zimbra::Control;
+use Zimbra::Mon::Admin;
+use Zimbra::Mon::shortInfo;
+use Zimbra::Mon::Control;
 
 use POSIX ":sys_wait_h";
 use SOAP::Lite;
@@ -79,17 +79,17 @@ our $mainProcessPid = $$;
 
 our $DEBUG = 0;
 
-Zimbra::Logger::Log( "info", "Liquid Monitor startup: $mainProcessPid" );
+Zimbra::Mon::Logger::Log( "info", "Zimbra Monitor startup: $mainProcessPid" );
 
 sub handleSignal {
 	my $sig = shift;
-	#Zimbra::Logger::Log( "err", "SIGNAL: $sig" );
+	#Zimbra::Mon::Logger::Log( "err", "SIGNAL: $sig" );
 }
 
 sub trapSignals {
 
 	$SIG{HUP} = \&handleSignal;
-	$SIG{INT} = \&Zimbra::Control::killChildren;
+	$SIG{INT} = \&Zimbra::Mon::Control::killChildren;
 
 	#$SIG{CHLD} = \&reaper;
 }
@@ -119,7 +119,7 @@ sub getAppByName {
 			return ($s);
 		}
 	}
-	Zimbra::Logger::Log( "debug", "Unknown application $n" );
+	Zimbra::Mon::Logger::Log( "debug", "Unknown application $n" );
 	return $n;
 }
 
@@ -135,7 +135,7 @@ sub getAppByServiceName {
 			return (@a);
 		}
 	}
-	Zimbra::Logger::Log( "debug", "Unknown service $n" );
+	Zimbra::Mon::Logger::Log( "debug", "Unknown service $n" );
 	return undef;
 }
 
@@ -152,36 +152,36 @@ sub waitLoop {
 
 sub bindControlPort {
 	while (1) {
-		Zimbra::Logger::Log( "crit", "Creating soap server on port $controlport" );
+		Zimbra::Mon::Logger::Log( "crit", "Creating soap server on port $controlport" );
 
 		eval {
-			$soap_server = Zimbra::Daemon->new(
+			$soap_server = Zimbra::Mon::Daemon->new(
 				Reuse     => 1,
 				KeepAlive => 0,
 				LocalAddr => 'localhost',
 				LocalPort => $controlport
-			  )->serializer( MySerializer->new )->dispatch_to('Zimbra::Admin')
-			  ->objects_by_reference(qw(Zimbra::Admin))
+			  )->serializer( MySerializer->new )->dispatch_to('Zimbra::Mon::Admin')
+			  ->objects_by_reference(qw(Zimbra::Mon::Admin))
 			  ->on_action( sub { @_[1] } );
 		};
 		if ($@) {
-			Zimbra::Logger::Log( "crit",
+			Zimbra::Mon::Logger::Log( "crit",
 				"Failed to bind to $controlport, trying again: $@" );
 			sleep 5;
 			eval {
-				$soap_server = Zimbra::Daemon->new(
+				$soap_server = Zimbra::Mon::Daemon->new(
 					Reuse     => 1,
 					KeepAlive => 0,
 					LocalAddr => 'localhost',
 					LocalPort => $controlport
-				  )->serializer( MySerializer->new )->dispatch_to('Zimbra::Admin')
-				  ->objects_by_reference(qw(Zimbra::Admin))
+				  )->serializer( MySerializer->new )->dispatch_to('Zimbra::Mon::Admin')
+				  ->objects_by_reference(qw(Zimbra::Mon::Admin))
 				  ->on_action( sub { @_[1] } );
 			};
 			if ($@) {
-				Zimbra::Logger::Log( "crit",
+				Zimbra::Mon::Logger::Log( "crit",
 					"Failed to bind to $controlport, exiting: $@" );
-				Zimbra::Control::killChildren();
+				Zimbra::Mon::Control::killChildren();
 			}
 		}
 
@@ -202,27 +202,27 @@ sub bindControlPort {
 }
 
 sub doShutdown {
-    Zimbra::Logger::Log( "crit", "Shutting down" );
-	Zimbra::Control::killChildren();
+    Zimbra::Mon::Logger::Log( "crit", "Shutting down" );
+	Zimbra::Mon::Control::killChildren();
 	removePid();
 	exit(0);
 }
 
 sub doReload {
-	Zimbra::Logger::Log( "crit",
-	"Liquid Monitor Reloading" );
+	Zimbra::Mon::Logger::Log( "crit",
+	"Zimbra Monitor Reloading" );
 	local $SIG{CHLD} = 'IGNORE';
 	killStatusMon();
 	killControlProcess();
 	removePid();
 	exec ("/opt/zimbra/zimbramon/zmmon");
-	Zimbra::Logger::Log( "crit",
-	"Liquid Monitor Reload FAILED" );
+	Zimbra::Mon::Logger::Log( "crit",
+	"Zimbra Monitor Reload FAILED" );
 	exit (1);
 }
 
 sub removePid {
-	my $pfile = "$::FifoDir/lq.pid";
+	my $pfile = "$::FifoDir/zm.pid";
 	if ( -f $pfile ) {
 		unlink $pfile;
 	}
@@ -251,11 +251,11 @@ sub handleControl {
 	my $f    = mkResponseFifo($cpid);
 
 	if ( $cmd eq $syntaxes{zimbrasyntax}{start} ) {
-		$resp = Zimbra::Control::startServices();
+		$resp = Zimbra::Mon::Control::startServices();
 		wakeStatusMon();
 	}
 	elsif ( $cmd eq $syntaxes{zimbrasyntax}{stop} ) {
-		$resp = Zimbra::Control::stopServices();
+		$resp = Zimbra::Mon::Control::stopServices();
 		wakeStatusMon();
 	}
 	elsif ( $cmd eq $syntaxes{zimbrasyntax}{status} ) {
@@ -328,7 +328,7 @@ sub handleControl {
 		for ( my $i = 2 ; $i <= $#items ; $i++ ) {
 			my $hn = $items[ $i++ ];
 			my $ip = $items[$i];
-			Zimbra::Logger::Log( "debug", "Updating cluster $hn $ip" );
+			Zimbra::Mon::Logger::Log( "debug", "Updating cluster $hn $ip" );
 			if ( $ip eq $::Cluster->{LocalHost}->{ip} ) { next; }
 			$::Cluster->doAddHost( $hn, $ip );
 		}
@@ -340,10 +340,10 @@ sub handleControl {
 		my ( $sname, $prev, $cur ) = split( ' ', $args );
 #		$EventList->addEvent( $Cluster->{LocalHost}->{name},
 #			$EventErr, "$EventMsgStatusChange $sname $prev $cur" );
-		Zimbra::Logger::Log( "debug",
+		Zimbra::Mon::Logger::Log( "debug",
 			"Reporting statuschange for $sname: $prev, $cur" );
 	} elsif ( $cmd eq $syntaxes{zimbrasyntax}{shutdown} ) {
-		$resp = Zimbra::Control::stopServices();
+		$resp = Zimbra::Mon::Control::stopServices();
 	} elsif ( $cmd eq $syntaxes{zimbrasyntax}{reload} ) {
 		$resp = doReload();
 	} elsif ($cmd eq $syntaxes{zimbrasyntax}{newfetchref} ) {
@@ -372,7 +372,7 @@ sub handleControl {
 sub getNewFetchRef {
 	my $args = shift;
 	
-	Zimbra::Logger::Log ("info", "newFetchRef $args");
+	Zimbra::Mon::Logger::Log ("info", "newFetchRef $args");
 	
 	my ($h, $st, $et) = split /,/. $args;
 	
@@ -385,12 +385,12 @@ sub getNewFetchRef {
 }
 
 sub killControlProcess {
-	Zimbra::Logger::Log("crit", "Killing $controlPid");
+	Zimbra::Mon::Logger::Log("crit", "Killing $controlPid");
 	kill ('TERM', $controlPid);
 }
 
 sub killStatusMon {
-	Zimbra::Logger::Log("crit", "Killing $Status->{PID}");
+	Zimbra::Mon::Logger::Log("crit", "Killing $Status->{PID}");
 	kill ('TERM', $Status->{PID});
 }
 
@@ -437,7 +437,7 @@ sub getDateStamp {
 }
 
 sub checkRunning {
-	my $pfile = "$FifoDir/lq.pid";
+	my $pfile = "$FifoDir/zm.pid";
 	if ( -f $pfile ) {
 		my $p = `cat $pfile`;
 		chomp $p;
@@ -446,12 +446,12 @@ sub checkRunning {
 		} else {
 			my $cnt = kill 0, $p;
 			if ($cnt) {
-				Zimbra::Logger::Log( "crit", 
+				Zimbra::Mon::Logger::Log( "crit", 
 					"zimbramon already running at pid $p - exiting" );
 				exit (1);
 			} else {
 				unlink $pfile;
-				Zimbra::Logger::Log( "info", 
+				Zimbra::Mon::Logger::Log( "info", 
 					"Process $p not found - removing $pfile" );
 			}
 		}
@@ -468,11 +468,11 @@ mkControlFifo();
 
 trapSignals();
 
-Zimbra::Control::loadConfig($configfile);
+Zimbra::Mon::Control::loadConfig($configfile);
 
-$Cluster = new Zimbra::Cluster( \@applications, \@services, \%syntaxes );
+$Cluster = new Zimbra::Mon::Cluster( \@applications, \@services, \%syntaxes );
 
-$Status = new Zimbra::StatusMon($Cluster);
+$Status = new Zimbra::Mon::StatusMon($Cluster);
 $Status->run();
 
 $Cluster->getClusterInfo();
@@ -481,4 +481,4 @@ $controlPid = startControlProcess();
 
 waitLoop();
 
-Zimbra::Logger::Log( "crit", "Liquid Monitor exit: $mainProcessPid" );
+Zimbra::Mon::Logger::Log( "crit", "Zimbra Monitor exit: $mainProcessPid" );

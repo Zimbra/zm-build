@@ -4,7 +4,7 @@ package application;
 
 use strict;
 
-use Zimbra::Logger;
+use Zimbra::Mon::Logger;
 
 require Exporter;
 
@@ -22,7 +22,7 @@ sub new
 	$self->{args} = $args;
 	$self->{md} = $md;
 	$self->{lbl} = $lbl;
-	#Zimbra::Logger::Log ("info","Created application $name");
+	#Zimbra::Mon::Logger::Log ("info","Created application $name");
 	return $self;
 }
 

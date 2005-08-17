@@ -1,13 +1,13 @@
 #!/usr/bin/perl
 
-package Zimbra::Admin;
+package Zimbra::Mon::Admin;
 
 use strict;
 
-use Zimbra::Logger;
-use Zimbra::Cluster;
+use Zimbra::Mon::Logger;
+use Zimbra::Mon::Cluster;
 use host;
-use Zimbra::shortInfo;
+use Zimbra::Mon::shortInfo;
 use SOAP::Lite;
 
 use DBI;
@@ -33,13 +33,13 @@ sub new {
 	# TODO MEM - not sure if I need to close this when done
 	$::Cluster->openFifo();
 
-	#Zimbra::Logger::Log( "debug", "Created admin" );
+	#Zimbra::Mon::Logger::Log( "debug", "Created admin" );
 	return $self;
 }
 
 sub GetLocalHostNameRequest {
 	my $self = shift->new;
-	#Zimbra::Logger::Log( "debug", "GetLocalHostNameRequest" );
+	#Zimbra::Mon::Logger::Log( "debug", "GetLocalHostNameRequest" );
 
 	return $::Cluster->{LocalHost};
 }
@@ -47,7 +47,7 @@ sub GetLocalHostNameRequest {
 sub GetHostListRequest {
 
 	my $self = shift->new;
-	#Zimbra::Logger::Log( "debug", "GetHostListRequest" );
+	#Zimbra::Mon::Logger::Log( "debug", "GetHostListRequest" );
 
 	return $::Cluster->getClusterHosts();
 }
@@ -56,15 +56,15 @@ sub GetServicesRequest {
 
 	my $self = shift->new;
 	my $hn   = shift;
-	#Zimbra::Logger::Log( "debug", "GetServicesRequest: $hn" );
+	#Zimbra::Mon::Logger::Log( "debug", "GetServicesRequest: $hn" );
 
 	if ( $hn eq $::Cluster->{LocalHost}->{name} ) {
 		my $ret = $::Cluster->getLocalServices();
 
-		#		Zimbra::Logger::Log ("debug","getLocalServices() returned");
+		#		Zimbra::Mon::Logger::Log ("debug","getLocalServices() returned");
 		#		foreach my $r(@{$ret})
 		#		{
-		#				Zimbra::Logger::Log ("debug",$r->prettyPrint());
+		#				Zimbra::Mon::Logger::Log ("debug",$r->prettyPrint());
 		#		}
 		return $ret;
 	}
@@ -73,27 +73,27 @@ sub GetServicesRequest {
 		my $H   = $self->getHostByName($hn);
 		my $ret = undef;
 		if ( !defined($H) ) {
-			#Zimbra::Logger::Log( "debug", "GetServicesRequest: Host $hn not found" );
+			#Zimbra::Mon::Logger::Log( "debug", "GetServicesRequest: Host $hn not found" );
 			return undef;
 		}
 		eval {
 			my $resp = SOAP::Lite->proxy( "http://$H->{ip}:$::controlport/",
 				timeout => 10 )
-			  ->uri("http://$H->{ip}:$::controlport/Zimbra::Admin")
+			  ->uri("http://$H->{ip}:$::controlport/Zimbra::Mon::Admin")
 			  ->GetServicesRequest( $H->{name} );
 
 			if ( !defined $resp->result ) {
-				Zimbra::Logger::Log( "err",
+				Zimbra::Mon::Logger::Log( "err",
 "Error contacting $H->{ip} ($H->{name}): No response from server: "
 					  . $resp->faultstring );
 			}
 
 			$ret = $resp->result;
-			Zimbra::Logger::Log( "debug",
+			Zimbra::Mon::Logger::Log( "debug",
 				"Response from $H->{ip} ($H->{name}): " . ref($ret) );
 		};
 		if ($@) {
-			Zimbra::Logger::Log( "err",
+			Zimbra::Mon::Logger::Log( "err",
 				"Error contacting $H->{ip} ($H->{name}): $@" );
 		}
 		return $ret;
@@ -105,24 +105,24 @@ sub GetShortInfoRequest {
 
 	my $self = shift->new;
 	my $hn   = shift;
-	Zimbra::Logger::Log( "debug", "GetShortInfoRequest: $hn" );
+	Zimbra::Mon::Logger::Log( "debug", "GetShortInfoRequest: $hn" );
 	my @si = ();
 
 	if ( $hn eq $::Cluster->{LocalHost}->{name} ) {
 		my $ret = $::Cluster->getLocalShortInfo();
 		$ret->{ServiceInfo} = $::Cluster->getLocalServiceInfo();
 		push @si, $ret;
-		#Zimbra::Logger::Log( "debug", "Returning info for $hn: " . ref($ret) );
+		#Zimbra::Mon::Logger::Log( "debug", "Returning info for $hn: " . ref($ret) );
 		return @si;
 	}
 	elsif ( $hn eq "All Hosts" ) {
 		my @hosts = $::Cluster->getClusterHosts();
-		#Zimbra::Logger::Log( "debug", "GetShortInfoRequest for all hosts" );
+		#Zimbra::Mon::Logger::Log( "debug", "GetShortInfoRequest for all hosts" );
 		foreach (@hosts) {
 			my @ret = $self->GetShortInfoRequest( $_->{name} );
 			if ( defined @ret[0] ) {
 
-			  #Zimbra::Logger::Log ("info","Got info for $_->{name}: ".ref(@ret[0]));
+			  #Zimbra::Mon::Logger::Log ("info","Got info for $_->{name}: ".ref(@ret[0]));
 				push @si, @ret[0];
 			}
 		}
@@ -132,27 +132,27 @@ sub GetShortInfoRequest {
 		my $H   = $self->getHostByName($hn);
 		my $ret = undef;
 		if ( !defined($H) ) {
-			Zimbra::Logger::Log( "err", "GetShortInfoRequest: Host $hn not found" );
+			Zimbra::Mon::Logger::Log( "err", "GetShortInfoRequest: Host $hn not found" );
 			return undef;
 		}
 		eval {
 			my $resp = SOAP::Lite->proxy( "http://$H->{ip}:$::controlport/",
 				timeout => 10 )
-			  ->uri("http://$H->{ip}:$::controlport/Zimbra::Admin")
+			  ->uri("http://$H->{ip}:$::controlport/Zimbra::Mon::Admin")
 			  ->GetShortInfoRequest( $H->{name} );
 
 			if ( !defined $resp->result ) {
-				Zimbra::Logger::Log( "err",
+				Zimbra::Mon::Logger::Log( "err",
 "Error contacting $H->{ip} ($H->{name}): No response from server: "
 					  . $resp->faultstring );
 			}
 
 			$ret = $resp->result;
-			#Zimbra::Logger::Log( "debug",
+			#Zimbra::Mon::Logger::Log( "debug",
 				#"Response from $H->{ip} ($H->{name}): " . ref($ret) );
 		};
 		if ($@) {
-			Zimbra::Logger::Log( "err",
+			Zimbra::Mon::Logger::Log( "err",
 				"Error contacting $H->{ip} ($H->{name}): $@" );
 		}
 		return $ret;
@@ -162,7 +162,7 @@ sub GetShortInfoRequest {
 sub GetServiceInfoRequest {
 	my $self = shift->new;
 	my $hn   = shift;
-	#Zimbra::Logger::Log( "debug", "GetServiceInfoRequest: $hn" );
+	#Zimbra::Mon::Logger::Log( "debug", "GetServiceInfoRequest: $hn" );
 
 	my @si = ();
 
@@ -173,12 +173,12 @@ sub GetServiceInfoRequest {
 	}
 	elsif ( $hn eq "All Hosts" ) {
 		my @hosts = $::Cluster->getClusterHosts();
-		#Zimbra::Logger::Log( "debug", "GetServiceInfoRequest for all hosts" );
+		#Zimbra::Mon::Logger::Log( "debug", "GetServiceInfoRequest for all hosts" );
 		foreach (@hosts) {
 			my @ret = $self->GetServiceInfoRequest( $_->{name} );
 			if ( defined @ret[0] ) {
 
-			  #Zimbra::Logger::Log ("info","Got info for $_->{name}: ".ref(@ret[0]));
+			  #Zimbra::Mon::Logger::Log ("info","Got info for $_->{name}: ".ref(@ret[0]));
 				push @si, @ret[0];
 			}
 		}
@@ -188,28 +188,28 @@ sub GetServiceInfoRequest {
 		my $H   = $self->getHostByName($hn);
 		my $ret = undef;
 		if ( !defined($H) ) {
-			#Zimbra::Logger::Log( "debug",
+			#Zimbra::Mon::Logger::Log( "debug",
 			#	"GetServiceInfoRequest: Host $hn not found" );
 			return undef;
 		}
 		eval {
 			my $resp = SOAP::Lite->proxy( "http://$H->{ip}:$::controlport/",
 				timeout => 10 )
-			  ->uri("http://$H->{ip}:$::controlport/Zimbra::Admin")
+			  ->uri("http://$H->{ip}:$::controlport/Zimbra::Mon::Admin")
 			  ->GetServiceInfoRequest( $H->{name} );
 
 			if ( !defined $resp->result ) {
-				Zimbra::Logger::Log( "err",
+				Zimbra::Mon::Logger::Log( "err",
 "Error contacting $H->{ip} ($H->{name}): No response from server: "
 					  . $resp->faultstring );
 			}
 
 			$ret = $resp->result;
-			#Zimbra::Logger::Log( "debug",
+			#Zimbra::Mon::Logger::Log( "debug",
 				#"Response from $H->{ip} ($H->{name}): " . ref($ret) );
 		};
 		if ($@) {
-			Zimbra::Logger::Log( "err",
+			Zimbra::Mon::Logger::Log( "err",
 				"Error contacting $H->{ip} ($H->{name}): $@" );
 		}
 		return $ret;
@@ -223,7 +223,7 @@ sub ServiceControlRequest {
 	my $hn     = shift;
 	my $action = shift;
 
-	Zimbra::Logger::Log( "info", "ServiceControlRequest: $action on $hn" );
+	Zimbra::Mon::Logger::Log( "info", "ServiceControlRequest: $action on $hn" );
 	if ( $hn eq $::Cluster->{LocalHost}->{name} ) {
 		my $ret = $::Cluster->controlLocalService( uc($action) );
 		return $ret;
@@ -232,28 +232,28 @@ sub ServiceControlRequest {
 		my $H   = $self->getHostByName($hn);
 		my $ret = undef;
 		if ( !defined($H) ) {
-			Zimbra::Logger::Log( "info",
+			Zimbra::Mon::Logger::Log( "info",
 				"ServiceControlRequest: Host $hn not found" );
 			return undef;
 		}
 		eval {
 			my $resp = SOAP::Lite->proxy( "http://$H->{ip}:$::controlport/",
 				timeout => 10 )
-			  ->uri("http://$H->{ip}:$::controlport/Zimbra::Admin")
+			  ->uri("http://$H->{ip}:$::controlport/Zimbra::Mon::Admin")
 			  ->ServiceControlRequest( $H->{name}, $action );
 
 			if ( !defined $resp->result ) {
-				Zimbra::Logger::Log( "err",
+				Zimbra::Mon::Logger::Log( "err",
 "Error contacting $H->{ip} ($H->{name}): No response from server: "
 					  . $resp->faultstring );
 			}
 
 			$ret = $resp->result;
-			#Zimbra::Logger::Log( "debug",
+			#Zimbra::Mon::Logger::Log( "debug",
 				#"Response from $H->{ip} ($H->{name}): " . ref($ret) );
 		};
 		if ($@) {
-			Zimbra::Logger::Log( "err",
+			Zimbra::Mon::Logger::Log( "err",
 				"Error contacting $H->{ip} ($H->{name}): $@" );
 		}
 		return $ret;
@@ -265,7 +265,7 @@ sub ServiceControlRequest {
 # 	my $firstEvent = shift;
 # 	my $lastEvent  = shift;
 # 
-# 	#Zimbra::Logger::Log( "debug", "GetEventsRequest: $firstEvent, $lastEvent" );
+# 	#Zimbra::Mon::Logger::Log( "debug", "GetEventsRequest: $firstEvent, $lastEvent" );
 # 	my $ret = $::Cluster->getEventList( $firstEvent . $lastEvent );
 # 
 # 	# TODO MEM - this always assumes a zero offset, which is probably busted.
@@ -291,11 +291,11 @@ sub ServiceControlRequest {
 # 	
 # 	if (!defined $filter->{hostname} || $filter->{hostname} eq "")
 # 	{ 
-# 		Zimbra::Logger::Log("err", "malformed GetEventsRequest (null host)");
+# 		Zimbra::Mon::Logger::Log("err", "malformed GetEventsRequest (null host)");
 # 		return undef;
 # 	}
 # 	
-# 	Zimbra::Logger::Log("info", "GetEventsRequest for $filter->{hostname} $filter->{starttime} - $filter->{endtime}");
+# 	Zimbra::Mon::Logger::Log("info", "GetEventsRequest for $filter->{hostname} $filter->{starttime} - $filter->{endtime}");
 # 	
 # 	my $fetchRef = '';
 # 	
@@ -320,11 +320,11 @@ sub ServiceControlRequest {
 # 		}
 # 		foreach my $h (@hl) {
 # 			if (defined ($h)) {
-# 				Zimbra::Logger::Log("info", "GetEventsRequest for $h->{name}");
+# 				Zimbra::Mon::Logger::Log("info", "GetEventsRequest for $h->{name}");
 # 				$ev = $self->getEventsFromHost( $filter, $h );
 # 				splice( @{ $ret->{Events} }, @{ $ret->{Events} }, 0, @{ $ev->{Events} } );
 # 			} else {
-# 				Zimbra::Logger::Log("err", "Unknown host $h");
+# 				Zimbra::Mon::Logger::Log("err", "Unknown host $h");
 # 			}
 # 		}
 # 
@@ -339,7 +339,7 @@ sub ServiceControlRequest {
 # 	my $H   = shift;
 # 	my $firstEvent = $filter->{starttime};
 # 	my $lastEvent = $filter->{endtime};
-# 	Zimbra::Logger::Log( "info", "getEventsFromHost $H->{name} on $::Cluster->{LocalHost}->{name}" );
+# 	Zimbra::Mon::Logger::Log( "info", "getEventsFromHost $H->{name} on $::Cluster->{LocalHost}->{name}" );
 # 
 # 	my $ret;
 # 
@@ -349,22 +349,22 @@ sub ServiceControlRequest {
 # 		eval {
 # 			my $resp =
 # 			  SOAP::Lite->proxy( "http://$H->{ip}:$::controlport/", timeout => 10 )
-# 			  ->uri("http://$H->{ip}:$::controlport/Zimbra::Admin")
+# 			  ->uri("http://$H->{ip}:$::controlport/Zimbra::Mon::Admin")
 # 			  ->GetLocalEventsRequest( $firstEvent, $lastEvent );
 # 	
 # 			if ( !defined $resp->result ) {
-# 				Zimbra::Logger::Log( "err",
+# 				Zimbra::Mon::Logger::Log( "err",
 # 	"Error contacting $H->{ip} ($H->{name}): No response from server: "
 # 					  . $resp->faultstring );
 # 				return undef;
 # 			}
 # 	
 # 			$ret = $resp->result;
-# 			#Zimbra::Logger::Log( "debug",
+# 			#Zimbra::Mon::Logger::Log( "debug",
 # 				#"Response from $H->{ip} ($H->{name}): " . ref($ret) );
 # 		};
 # 		if ($@) {
-# 			Zimbra::Logger::Log( "err", "Error contacting $H->{ip} ($H->{name}): $@" );
+# 			Zimbra::Mon::Logger::Log( "err", "Error contacting $H->{ip} ($H->{name}): $@" );
 # 		}
 # 	}
 # 	return $ret;
@@ -375,7 +375,7 @@ sub AddHostRequest {
 	my $hostName = shift;
 	my $hostIp   = shift;
 
-	Zimbra::Logger::Log( "debug", "AddHostRequest: $hostName, $hostIp" );
+	Zimbra::Mon::Logger::Log( "debug", "AddHostRequest: $hostName, $hostIp" );
 	my $ret = $::Cluster->addHost( $hostName, $hostIp );
 	my ($n, $i, $p) = split (' ', $ret, 3);
 	return new host ($n, $i, $p);
@@ -386,7 +386,7 @@ sub RemoveHostRequest {
 	my $hostName = shift;
 	my $hostIp   = shift;
 
-	Zimbra::Logger::Log( "info", "RemoveHostRequest: $hostName, $hostIp" );
+	Zimbra::Mon::Logger::Log( "info", "RemoveHostRequest: $hostName, $hostIp" );
 	my $ret = $::Cluster->removeHost( $hostName, $hostIp );
 	return $ret;
 }
@@ -395,7 +395,7 @@ sub updateClusterInfoRequest {
 	my $self     = shift;
 	my $sender   = shift;
 	my $hostlist = shift;
-	Zimbra::Logger::Log( "info", "updateClusterInfoRequest:" );
+	Zimbra::Mon::Logger::Log( "info", "updateClusterInfoRequest:" );
 
 	$::Cluster->updateClusterInfo( $sender, $hostlist );
 }
@@ -418,7 +418,7 @@ sub SearchUsersRequest
 	my $self = shift;
 	my $searchString = shift;
 	
-	Zimbra::Logger::Log ("err", "SearchUsersRequest: $searchString");
+	Zimbra::Mon::Logger::Log ("err", "SearchUsersRequest: $searchString");
 	
 	my $data_source="dbi:mysql:database=zimbra;mysql_read_default_file=/opt/zimbra/conf/my.cnf";
 	my $username="zimbra";
@@ -428,7 +428,7 @@ sub SearchUsersRequest
 	my $dbh = DBI->connect($data_source, $username, $password);
 	
 	if (!$dbh) { 
-		Zimbra::Logger::Log ("err", "DB: Can't connect to $data_source: $DBI::errstr");
+		Zimbra::Mon::Logger::Log ("err", "DB: Can't connect to $data_source: $DBI::errstr");
 		return undef;
 	}
 
@@ -438,7 +438,7 @@ sub SearchUsersRequest
 	my $sth = $dbh->prepare($statement);
 
 	if (!$sth->execute) {
-		Zimbra::Logger::Log ("err", "DB: $sth->errstr");
+		Zimbra::Mon::Logger::Log ("err", "DB: $sth->errstr");
 		return undef;
 	}
 
@@ -449,9 +449,9 @@ sub SearchUsersRequest
 	my $r;
 	foreach $r (keys %{$hsh}) {
 		my $row = $$hsh{$r};
-		push (@accounts, Zimbra::Accountcreate($row));
+		push (@accounts, Zimbra::Mon::Accountcreate($row));
 #		foreach (keys %{$row}) {
-#			Zimbra::Logger::Log ("debug", "DB: $r: $_ = $$row{$_}");
+#			Zimbra::Mon::Logger::Log ("debug", "DB: $r: $_ = $$row{$_}");
 #		}
 	}
 	return @accounts;
@@ -467,7 +467,7 @@ sub NewUserRequest
 sub ReloadRequest
 {
 	my $self = shift;
-	Zimbra::Logger::Log ("crit", "Reload request received");
+	Zimbra::Mon::Logger::Log ("crit", "Reload request received");
 	
 	$::Cluster->sendFifo($::syntaxes{zimbrasyntax}{reload});
 	return undef;
@@ -476,7 +476,7 @@ sub ReloadRequest
 sub ShutDownRequest
 {
 	my $self = shift;
-	Zimbra::Logger::Log ("crit", "Shutdown request received");
+	Zimbra::Mon::Logger::Log ("crit", "Shutdown request received");
 	
 	$::Cluster->sendFifo($::syntaxes{zimbrasyntax}{shutdown});
 	my $resp = $::Cluster->readFifo();

@@ -1,10 +1,10 @@
 #!/usr/bin/perl
 
-package Zimbra::serviceInfo;
+package Zimbra::Mon::serviceInfo;
 
 use strict;
 
-use Zimbra::Logger;
+use Zimbra::Mon::Logger;
 
 use FileHandle;
 
@@ -36,17 +36,17 @@ sub new
 	$self->{lastFileName} = "";
 	
 #	if (defined $host) {
-#		Zimbra::Logger::Log ("debug","Created Zimbra::serviceInfo for host ".$self->{host}->{name});
+#		Zimbra::Mon::Logger::Log ("debug","Created Zimbra::Mon::serviceInfo for host ".$self->{host}->{name});
 #	} else {
-#		Zimbra::Logger::Log ("debug","Created Zimbra::serviceInfo");
+#		Zimbra::Mon::Logger::Log ("debug","Created Zimbra::Mon::serviceInfo");
 #	}
 	return $self;
 }
 
 sub readServiceInfo
 {
-#	Zimbra::Logger::Log ("debug","readServiceInfo");
-	# readServiceInfo reads info written by Zimbra::StatusMon
+#	Zimbra::Mon::Logger::Log ("debug","readServiceInfo");
+	# readServiceInfo reads info written by Zimbra::Mon::StatusMon
 	my $self = shift;
 	
 	# Race condition fun - make sure the file we're reading doesn't get wiped.
@@ -105,10 +105,10 @@ sub getLastFileName
 	closedir DIR;
 	
 #	foreach (@fns) {
-#		Zimbra::Logger::Log ("debug","getLastFileName ".$_);
+#		Zimbra::Mon::Logger::Log ("debug","getLastFileName ".$_);
 #	}
 
-#	Zimbra::Logger::Log ("debug","getLastFileName ".$fns[$#fns]);
+#	Zimbra::Mon::Logger::Log ("debug","getLastFileName ".$fns[$#fns]);
 	
 	return $fns[$#fns];
 }
@@ -120,7 +120,7 @@ sub writeServiceInfo
 	my $t = time();
 	
 	my $serviceFileName = $self->getServiceFilename($t)."tmp";
-	Zimbra::Logger::Log ("info","writeServiceInfo ".$serviceFileName);
+	Zimbra::Mon::Logger::Log ("info","writeServiceInfo ".$serviceFileName);
 	
 	my $fh = new FileHandle;
 	
@@ -143,7 +143,7 @@ sub getServiceFilename
 	my $t = shift;
 	my $fn = $self->{serviceDir};
 	$fn .= "/service.".$t.".".$$;
-#	Zimbra::Logger::Log ("debug","getServiceFilename ".$fn);
+#	Zimbra::Mon::Logger::Log ("debug","getServiceFilename ".$fn);
 	
 	$self->{serviceFileName} = $fn;
 	
@@ -153,7 +153,7 @@ sub getServiceFilename
 sub cleanupServiceDir
 {
 	my $self = shift;
-#	Zimbra::Logger::Log ("debug","cleanupServiceDir ".$self->{lastFileName});
+#	Zimbra::Mon::Logger::Log ("debug","cleanupServiceDir ".$self->{lastFileName});
 
 	if ($self->{lastFileName} ne "")
 	{
@@ -164,8 +164,8 @@ sub cleanupServiceDir
 
 sub prettyPrint
 {
-#	Zimbra::Logger::Log ("debug","prettyPrint");
-	# getServiceInfo gets info to be written by Zimbra::StatusMon
+#	Zimbra::Mon::Logger::Log ("debug","prettyPrint");
+	# getServiceInfo gets info to be written by Zimbra::Mon::StatusMon
 	my $self = shift;
 	
 	my $s;
@@ -193,7 +193,7 @@ sub prettyPrint
 
 sub getServiceInfo
 {
-#	Zimbra::Logger::Log ("debug","getServiceInfo");
+#	Zimbra::Mon::Logger::Log ("debug","getServiceInfo");
 	my $self = shift;
 
 	$self->{uts} = time();
@@ -204,12 +204,12 @@ sub getServiceInfo
 	
 	my $s;
 	
-	Zimbra::Control::getLocalServices();
+	Zimbra::Mon::Control::getLocalServices();
 	
 	foreach $s (@::localservices)
 	{
-		$s = Zimbra::Control::getServiceByName($s);
-##		Zimbra::Logger::Log ("debug", "getServiceInfo: ".$s->prettyPrint());
+		$s = Zimbra::Mon::Control::getServiceByName($s);
+##		Zimbra::Mon::Logger::Log ("debug", "getServiceInfo: ".$s->prettyPrint());
 		$self->getServiceStatus(\$s);
 	}
 	
@@ -230,7 +230,7 @@ sub getServiceStatus
 	####
 	# instead of talking to the main server, we'll poll the apps directly
 	####
-#	Zimbra::Logger::Log ("debug", "STATUS: Zimbra::serviceInfo::getServiceStatus $sname from app directly");
+#	Zimbra::Mon::Logger::Log ("debug", "STATUS: Zimbra::Mon::serviceInfo::getServiceStatus $sname from app directly");
 	my @apps = ::getAppByServiceName ($sname);
 	my $status = $::StatusStopped;
 	my $info = "";
@@ -242,7 +242,7 @@ sub getServiceStatus
 			if (ref ($_)) {$name = $_->{name};}
 			else {$name = $_;}
 
-			Zimbra::Logger::Log("debug", 
+			Zimbra::Mon::Logger::Log("debug", 
 			"STATUS: $name monitor for $self->{host}->{name} from $::Cluster->{LocalHost}{name}");
 
 			my $hn = undef;
@@ -250,31 +250,31 @@ sub getServiceStatus
 				$hn = $self->{host}{name};
 			}
 
-			my $retval = Zimbra::Control::runSyntaxCommand("zimbrasyntax", "$name"."_status", $hn);
+			my $retval = Zimbra::Mon::Control::runSyntaxCommand("zimbrasyntax", "$name"."_status", $hn);
 			if ($retval) {
 				$status = $::StatusStopped;
 			} elsif (defined ($retval)) {
 				$status = $::StatusRunning;
 			} else {
 				$status = undef;
-				Zimbra::Logger::Log("debug", "STATUS: No network monitor for $name defined");
+				Zimbra::Mon::Logger::Log("debug", "STATUS: No network monitor for $name defined");
 			}
 			if ($self->{ServiceStatus}{$sname}{status} != $::StatusStopped) {
 					$self->{ServiceStatus}{$sname}{status} = $status;
 			}
 
-			$info = Zimbra::Control::runSyntaxCommand("zimbrasyntax", "$name"."_info", $hn);
-#			Zimbra::Logger::Log("debug", "STATUS: Reporting info for $sname: $info");
+			$info = Zimbra::Mon::Control::runSyntaxCommand("zimbrasyntax", "$name"."_info", $hn);
+#			Zimbra::Mon::Logger::Log("debug", "STATUS: Reporting info for $sname: $info");
 			if (defined $info) {
 				$self->{ServiceStatus}{$sname}{info} = $info;
 			} else {
-				Zimbra::Logger::Log("debug", "STATUS: No network info command for $name defined");
+				Zimbra::Mon::Logger::Log("debug", "STATUS: No network info command for $name defined");
 			}
-#			Zimbra::Logger::Log("debug", "STATUS: Reporting info for $sname:".$self->{ServiceStatus}{$sname}{info});
+#			Zimbra::Mon::Logger::Log("debug", "STATUS: Reporting info for $sname:".$self->{ServiceStatus}{$sname}{info});
 		}
 	}
-#	Zimbra::Logger::Log("debug", "STATUS: Reporting status for $sname: $status");
-#	Zimbra::Logger::Log("debug", "STATUS: Reporting info for $sname: $info");
+#	Zimbra::Mon::Logger::Log("debug", "STATUS: Reporting status for $sname: $status");
+#	Zimbra::Mon::Logger::Log("debug", "STATUS: Reporting info for $sname: $info");
 }
 
 1

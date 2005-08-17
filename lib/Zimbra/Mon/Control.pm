@@ -1,14 +1,14 @@
 #!/usr/bin/perl
 
-package Zimbra::Control;
+package Zimbra::Mon::Control;
 
 use strict;
 
 use lib "/opt/zimbra/zimbramon/lib";
 use lib "/opt/zimbra/zimbramon/lib/Zimbra/Mon";
 
-use Zimbra::Logger;
-use Zimbra::Cluster;
+use Zimbra::Mon::Logger;
+use Zimbra::Mon::Cluster;
 use host;
 use service;
 use application;
@@ -43,7 +43,7 @@ my %startorder = (
 );
 
 sub killChildren {
-	Zimbra::Logger::Log( "info", "SIGINT - kill children" );
+	Zimbra::Mon::Logger::Log( "info", "SIGINT - kill children" );
 	$SIG{CHLD} = 'IGNORE';
 	kill( 15, 0 );
 }
@@ -60,7 +60,7 @@ sub ldapRunsHere {
 sub getLocalServices {
 	my $hostname = `zmlocalconfig -m nokey zimbra_server_hostname`;
 	chomp $hostname;
-	my $services = `lqprov gs $hostname 2> /dev/null | grep zimbraServiceEnabled: `;
+	my $services = `zmprov gs $hostname 2> /dev/null | grep zimbraServiceEnabled: `;
 	$services =~ s/zimbraServiceEnabled://g;
 	@::localservices = split (' ', $services);
 	@::localservices = sort { $servicestartorder{$a} <=> $servicestartorder{$b}} @::localservices;
@@ -71,7 +71,7 @@ sub setLocalServices {
 	chomp $hostname;
 	my $serstr = join " zimbraServiceEnabled ", @::localservices;
 	$serstr = "zimbraServiceEnabled ".$serstr;
-	`lqprov ms $hostname $serstr 2> /dev/null`;
+	`zmprov ms $hostname $serstr 2> /dev/null`;
 }
 
 sub isMaintenanceMode {
@@ -116,22 +116,22 @@ sub startServices {
 	my $t = "Not Started";
 
 	if (ldapRunsHere()) {
-		Zimbra::Logger::Log( "crit", "STARTING ldap" );
+		Zimbra::Mon::Logger::Log( "crit", "STARTING ldap" );
 		if (startOneService("ldap")) {
 			$r = $r." ldap";
 		}
 		else {
 			$t = $t." ldap";
-			Zimbra::Logger::Log( "crit", "ldap FAILED to start - exiting" );
+			Zimbra::Mon::Logger::Log( "crit", "ldap FAILED to start - exiting" );
 			exit 1;
 		}
 		sleep 3;
 	}
 	getLocalServices();
-	Zimbra::Logger::Log( "crit", "STARTING services" );
+	Zimbra::Mon::Logger::Log( "crit", "STARTING services" );
 	foreach $s (@::localservices) {
 		if ($s eq "maintenance" || $s eq "ldap") { next; }
-		Zimbra::Logger::Log( "crit", "STARTING $s" );
+		Zimbra::Mon::Logger::Log( "crit", "STARTING $s" );
 		if (startOneService($s)) {
 			$r = $r." ".$s;
 		}
@@ -151,14 +151,14 @@ sub startServices {
 }
 
 sub stopServices {
-	Zimbra::Logger::Log( "crit", "STOPPING services" );
+	Zimbra::Mon::Logger::Log( "crit", "STOPPING services" );
 	my $r = "Stopped";
 	my $t = "Not Stopped";
 	getLocalServices();
 	foreach my $n (reverse @::localservices) {
 		my $s = getServiceByName ($n);
 		stopOneService( $s->{name} );
-		# Zimbra::Logger::Log( "crit", "Waiting for $s->{name} to stop" );
+		# Zimbra::Mon::Logger::Log( "crit", "Waiting for $s->{name} to stop" );
 	}
 }
 
@@ -183,7 +183,7 @@ sub killOneApplication {
 	my $name;
 	if ( ref($s) ) { $name = $s->{name}; }
 	else { $name = $s }
-	Zimbra::Logger::Log( "info", "kill app $name" );
+	Zimbra::Mon::Logger::Log( "info", "kill app $name" );
 
 	#	if ( isAppRunning($name) ) {
 	my $t = getDateStamp();
@@ -193,13 +193,13 @@ sub killOneApplication {
 	if (exists ($::syntaxes{"zimbrasyntax"}{$name."_kill"})) {
 		runSyntaxCommand( "zimbrasyntax", "$name" . "_kill" );
 	} else {
-		Zimbra::Logger::Log( "err", "No kill command defined for $name" );
+		Zimbra::Mon::Logger::Log( "err", "No kill command defined for $name" );
 		stopOneApplication ($name);
 	}
 
 	#	}
 	#	else {
-	#		Zimbra::Logger::Log( "err", "Can't stop unstarted app $name" );
+	#		Zimbra::Mon::Logger::Log( "err", "Can't stop unstarted app $name" );
 	#	}
 }
 
@@ -209,7 +209,7 @@ sub stopOneApplication {
 	my $name;
 	if ( ref($s) ) { $name = $s->{name}; }
 	else { $name = $s }
-	Zimbra::Logger::Log( "info", "stop app $name" );
+	Zimbra::Mon::Logger::Log( "info", "stop app $name" );
 
 	#	if ( isAppRunning($name) ) {
 	my $t = getDateStamp();
@@ -234,7 +234,7 @@ sub stopOneService {
 	my $name;
 	if ( ref($s) ) { $name = $s->{name}; }
 	else { $name = $s; $s = getServiceByName ($name); }
-	Zimbra::Logger::Log( "info", "stop service $name" );
+	Zimbra::Mon::Logger::Log( "info", "stop service $name" );
 	foreach my $a (@{$s->{apps}}) {
 		stopOneApplication ($a);
 		if ( isAppRunning( $a ) ) {
@@ -250,9 +250,9 @@ sub stopOneService {
 			}
 		}
 		if (! isAppRunning( $a ) ) {
-			Zimbra::Logger::Log( "crit", "$a successfully stopped" );
+			Zimbra::Mon::Logger::Log( "crit", "$a successfully stopped" );
 		} else {
-			Zimbra::Logger::Log( "crit", "FAILED to stop $a" );
+			Zimbra::Mon::Logger::Log( "crit", "FAILED to stop $a" );
 		}
 	}
 	return 1;
@@ -264,7 +264,7 @@ sub startOneService {
 	my $name;
 	if ( ref($s) ) { $name = $s->{name}; }
 	else { $name = $s; $s = getServiceByName ($name); }
-	Zimbra::Logger::Log( "info", "start service $name" );
+	Zimbra::Mon::Logger::Log( "info", "start service $name" );
 	foreach my $a (@{$s->{apps}}) {
 		startOneApplication ($a);
 	}
@@ -277,14 +277,14 @@ sub startOneApplication {
 	my $name;
 	if ( ref($s) ) { $name = $s->{name}; }
 	else { $name = $s }
-	Zimbra::Logger::Log( "info", "start app $name" );
+	Zimbra::Mon::Logger::Log( "info", "start app $name" );
 	if ( isAppRunning($name) ) {
-		Zimbra::Logger::Log( "err", "Can't start running app $name" );
+		Zimbra::Mon::Logger::Log( "err", "Can't start running app $name" );
 		return;
 	}
 
 	my $t = getDateStamp();
-	Zimbra::Logger::Log( "info", "Starting child $name: ($t)" );
+	Zimbra::Mon::Logger::Log( "info", "Starting child $name: ($t)" );
 	my $re = runSyntaxCommand( "zimbrasyntax", "$name" . "_start" );
 	for (my $i = 0; $i < 100; $i++) {
 		if (isAppRunning($name)) {
@@ -297,7 +297,7 @@ sub startOneApplication {
 }
 
 sub removePid {
-	my $pfile = "$::FifoDir/lq.pid";
+	my $pfile = "$::FifoDir/zm.pid";
 	if ( -f $pfile ) {
 		unlink $pfile;
 	}
@@ -309,7 +309,7 @@ sub runSyntaxCommand {
 
 	my $monitorHost = shift;
 
-	Zimbra::Logger::Log( "debug", "::runSyntaxCommand $syn $cmd" );
+	Zimbra::Mon::Logger::Log( "debug", "::runSyntaxCommand $syn $cmd" );
 	my @syscmds = ();
 	my $retval  = "";
 
@@ -325,7 +325,7 @@ sub runSyntaxCommand {
 	my $syscmd;
 	foreach $syscmd (@syscmds) {
 
-		# Zimbra::Logger::Log ("crit", "RUN: $syscmd");
+		# Zimbra::Mon::Logger::Log ("crit", "RUN: $syscmd");
 		# Separate items by newline
 		if ( $retval ne "" ) { $retval .= "\n"; }
 
@@ -336,7 +336,7 @@ sub runSyntaxCommand {
 			if (defined $monitorHost) { $host =~ s/localhost/$monitorHost/; }
 			$realm =~ s/_/ /g;
 			my $uri = "http://$host$path";
-			Zimbra::Logger::Log( "debug", "HTTP REQUEST: $uri as $user with $pass in $realm");
+			Zimbra::Mon::Logger::Log( "debug", "HTTP REQUEST: $uri as $user with $pass in $realm");
 
 			my $r = HTTP::Request->new( $method, $uri );
 			my $ua = LWP::UserAgent->new();
@@ -352,7 +352,7 @@ sub runSyntaxCommand {
 					}
 				}
 				else {
-					Zimbra::Logger::Log( "debug",
+					Zimbra::Mon::Logger::Log( "debug",
 						"HTTP RESPONSE: FAILURE: " . $resp->status_line );
 					$retval = $::StatusStopped;
 				}
@@ -370,7 +370,7 @@ sub runSyntaxCommand {
 					}
 				}
 				else {
-					Zimbra::Logger::Log( "debug",
+					Zimbra::Mon::Logger::Log( "debug",
 						"HTTP RESPONSE: FAILURE: " . $resp->status_line );
 				}
 			}
@@ -385,7 +385,7 @@ sub runSyntaxCommand {
 				my ($prematch, $match) = $t->waitfor('/^220/');
 
 				if ($t->errmsg() ne "") {
-					Zimbra::Logger::Log( "err",
+					Zimbra::Mon::Logger::Log( "err",
 						"SMTP RESPONSE: FAILURE from $h: " . $t->errmsg() );
 				} else {
 					$t->print("quit\n");
@@ -396,7 +396,7 @@ sub runSyntaxCommand {
 			if (defined ($monitorHost) ) {
 				return undef;
 			}
-			# This overrides the handler in Zimbra::Daemon.pm
+			# This overrides the handler in Zimbra::Mon::Daemon.pm
 			local $SIG{CHLD} = 'DEFAULT';
 			local $SIG{ALRM} = \&handleSignal;
 			alarm(23);
@@ -407,7 +407,7 @@ sub runSyntaxCommand {
 			$retval .= $f >> 8;
 		}
 	}
-		# Zimbra::Logger::Log ("crit", "RUN: $syscmd $retval");
+		# Zimbra::Mon::Logger::Log ("crit", "RUN: $syscmd $retval");
 	return $retval;
 }
 
@@ -455,7 +455,7 @@ sub loadConfig {
 			( undef, $::controlport ) = split;
 		}
 		else {
-			Zimbra::Logger::Log( "err", "Unknown config directive: $_" );
+			Zimbra::Mon::Logger::Log( "err", "Unknown config directive: $_" );
 		}
 	}
 	@::applications = sort { $startorder{lc($a->{name})} <=> $startorder{lc($b->{name})} } @::applications;

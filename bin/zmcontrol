@@ -14,8 +14,8 @@ my $configfile = "$Basedir/zimbra.cf";
 use lib "/opt/zimbra/zimbramon/lib/Zimbra/Mon";
 use lib "/opt/zimbra/zimbramon/lib";
 
-use Zimbra::Logger;
-use Zimbra::Control;
+use Zimbra::Mon::Logger;
+use Zimbra::Mon::Control;
 
 use Getopt::Std;
 
@@ -142,7 +142,7 @@ sub displayResult {
 }
 
 sub doStartup {
-	Zimbra::Logger::Log ("crit", "doStartup");
+	Zimbra::Mon::Logger::Log ("crit", "doStartup");
 	
 	my ($dir) = ($0 =~ m/^(.*\/)/);
 	
@@ -152,17 +152,17 @@ sub doStartup {
 }
 
 sub doStart {
-	Zimbra::Logger::Log ("crit", "doStart");
-	Zimbra::Control::startServices();
+	Zimbra::Mon::Logger::Log ("crit", "doStart");
+	Zimbra::Mon::Control::startServices();
 }
 
 sub doStop {
-	Zimbra::Control::stopServices();
+	Zimbra::Mon::Control::stopServices();
 }
 
 sub setMaintenanceMode {
 	my $mode = shift;
-	return Zimbra::Control::setMaintenance($mode);
+	return Zimbra::Mon::Control::setMaintenance($mode);
 }
 
 sub clientCall {
@@ -175,7 +175,7 @@ sub clientCall {
 		if ($#Args >= 0 && $Args[0] ne "status") {
 			return setMaintenanceMode(@Args);
 		}
-		if (Zimbra::Control::isMaintenanceMode()) {
+		if (Zimbra::Mon::Control::isMaintenanceMode()) {
 			print "Maintenance mode is ON\n";
 			return 1;
 		}else{
@@ -205,12 +205,12 @@ sub clientCall {
 	eval {
 		$resp =
 		  SOAP::Lite->proxy('http://localhost:7777/')
-		  ->uri('http://localhost:7777/Zimbra::Admin')->call( $Command => @Args );
+		  ->uri('http://localhost:7777/Zimbra::Mon::Admin')->call( $Command => @Args );
 
 	};
 
 	if ($@ && $Command ne "ShutDownRequest") {
-		if (Zimbra::Control::isMaintenanceMode()) {
+		if (Zimbra::Mon::Control::isMaintenanceMode()) {
 			print "NOTE: This server is in maintenance mode\n\n";
 			exit (0);
 		}
@@ -226,7 +226,7 @@ sub clientCall {
 	#           print "r: ".$resp->result->{name}."\n";
 	my $p;
 	my @p = $resp->paramsall();
-	if (Zimbra::Control::isMaintenanceMode()) {
+	if (Zimbra::Mon::Control::isMaintenanceMode()) {
 		print "NOTE: This server is in maintenance mode\n\n";
 	}
 	foreach $p (@p) {
@@ -250,7 +250,7 @@ sub clientCall {
 		getCommand("status");
 		return (clientCall());
 	}
-	if (Zimbra::Control::isMaintenanceMode()) {
+	if (Zimbra::Mon::Control::isMaintenanceMode()) {
 		print "\nNOTE: This server is in maintenance mode\n\n";
 		$ret = 0;
 	}
@@ -319,7 +319,7 @@ sub usage {
 	exit 1;
 }
 
-Zimbra::Control::loadConfig($configfile);
+Zimbra::Mon::Control::loadConfig($configfile);
 getCommandLine();
 exit (clientCall());
 

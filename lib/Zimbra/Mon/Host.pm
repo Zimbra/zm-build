@@ -4,7 +4,7 @@ package host;
 
 use strict;
 
-use Zimbra::Logger;
+use Zimbra::Mon::Logger;
 
 require Exporter;
 
@@ -19,7 +19,7 @@ sub new
 	
 	$self->{name} = $name;
 	$self->{ip} = $ip;
-	#Zimbra::Logger::Log ("debug","Created host $name");
+	#Zimbra::Mon::Logger::Log ("debug","Created host $name");
 	return $self;
 }
 
@@ -33,7 +33,7 @@ sub isMonitor {
 
 	my $self = shift;
 
-	my $isMonitor = `lqprov gs $self->{name} 2> /dev/null | grep zimbraIsMonitorHost`;
+	my $isMonitor = `zmprov gs $self->{name} 2> /dev/null | grep zimbraIsMonitorHost`;
 
 	chomp $isMonitor;
 

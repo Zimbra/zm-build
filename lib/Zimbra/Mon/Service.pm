@@ -4,7 +4,7 @@ package service;
 
 use strict;
 
-use Zimbra::Logger;
+use Zimbra::Mon::Logger;
 
 require Exporter;
 
@@ -25,7 +25,7 @@ sub new
 	@{$self->{apps}} = split ",", $app;
 
 	$self->{syntax} = "zimbrasyntax";
-#	Zimbra::Logger::Log ("debug","Created service $name $label $app $monport $syntax ");
+#	Zimbra::Mon::Logger::Log ("debug","Created service $name $label $app $monport $syntax ");
 	return $self;
 }
 

@@ -4,7 +4,7 @@ package account;
 
 use strict;
 
-use Zimbra::Logger;
+use Zimbra::Mon::Logger;
 
 require Exporter;
 

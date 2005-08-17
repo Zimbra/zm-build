@@ -1,14 +1,14 @@
 #!/usr/bin/perl
 
-package Zimbra::StatusMon;
+package Zimbra::Mon::StatusMon;
 
 use strict;
 
-use Zimbra::Logger;
+use Zimbra::Mon::Logger;
 #use host;
-use Zimbra::shortInfo;
-use Zimbra::serviceInfo;
-use Zimbra::Admin;
+use Zimbra::Mon::shortInfo;
+use Zimbra::Mon::serviceInfo;
+use Zimbra::Mon::Admin;
 
 use DBI;
 
@@ -30,14 +30,14 @@ sub new
 	
 	$self->{Cluster} = $cluster;
 
-#	Zimbra::Logger::Log ("debug","Created StatusMon");
+#	Zimbra::Mon::Logger::Log ("debug","Created StatusMon");
 
 	return $self;
 }
 
 sub handle_usr2
 {
-#	Zimbra::Logger::Log ("debug","STATUS: USR2");
+#	Zimbra::Mon::Logger::Log ("debug","STATUS: USR2");
 	$Signalled = 1;
 	# We don't need to handle it, just enough to wake us from our sleep.
 }
@@ -53,13 +53,13 @@ sub run
 	
 	if ($self->{PID}) {return};
 
-	Zimbra::Logger::Log ("crit","Status monitor startup");
+	Zimbra::Mon::Logger::Log ("crit","Status monitor startup");
 
-	$::PROGRAM_NAME = "Zimbra::StatusMon";
+	$::PROGRAM_NAME = "Zimbra::Mon::StatusMon";
 	
-	$self->{ShortInfo} = new Zimbra::shortInfo(undef);
+	$self->{ShortInfo} = new Zimbra::Mon::shortInfo(undef);
 	$self->{ShortInfo}->clearStatusDir();
-	$self->{ServiceInfo} = new Zimbra::serviceInfo($::Cluster->{LocalHost});
+	$self->{ServiceInfo} = new Zimbra::Mon::serviceInfo($::Cluster->{LocalHost});
 
 	sleep 10;
 
@@ -80,26 +80,26 @@ sub run
 		}
 		$self->getData();
 		$SIG{USR2} = \&handle_usr2;
-#		Zimbra::Logger::Log ("debug","Zimbra::StatusMon::run sleeping");
+#		Zimbra::Mon::Logger::Log ("debug","Zimbra::Mon::StatusMon::run sleeping");
 		if ($Signalled) {
 			$Signalled = 0;
 		} 
 
 		sleep $sleepInterval;
-#		Zimbra::Logger::Log ("debug","Zimbra::StatusMon::run waking up");
+#		Zimbra::Mon::Logger::Log ("debug","Zimbra::Mon::StatusMon::run waking up");
 	}
 }
 
 sub getData
 {
-#	Zimbra::Logger::Log ("debug","Zimbra::StatusMon::getData");
+#	Zimbra::Mon::Logger::Log ("debug","Zimbra::Mon::StatusMon::getData");
 	my $self = shift;
 	
 	$self->{ShortInfo}->getShortInfo();
 	
 	my $oldS = $self->{ServiceInfo};
 	
-	$self->{ServiceInfo} = new Zimbra::serviceInfo($::Cluster->{LocalHost});
+	$self->{ServiceInfo} = new Zimbra::Mon::serviceInfo($::Cluster->{LocalHost});
 	
 	$self->{ServiceInfo}->getServiceInfo();
 	
@@ -112,7 +112,7 @@ sub getData
 				my $prevStatus = $oldS->{ServiceStatus}{$sname}{status};
 				my $curStatus = $self->{ServiceInfo}{ServiceStatus}{$sname}{status};
 				my $cmd = $::syntaxes{zimbrasyntax}{statuschange};
-				Zimbra::Logger::Log ("err", "Service status change: $sname $prevStatus $curStatus");
+				Zimbra::Mon::Logger::Log ("err", "Service status change: $sname $prevStatus $curStatus");
 				$::Cluster->sendFifo("$cmd $sname $prevStatus $curStatus");
 		}
 	}
@@ -130,14 +130,14 @@ sub getData
 
 	foreach my $slice (@{$self->{ShortInfo}->{df}->{slices}}) {
 		if ($slice->{cap} > $::DISK_CRIT_THRESHOLD) {
-			Zimbra::Logger::Log ("crit",
+			Zimbra::Mon::Logger::Log ("crit",
 			"Disk warning: $slice->{mt} ($slice->{dev}) at $slice->{cap} percent capacity");
 		} elsif ($slice->{cap} > $::DISK_WARN_THRESHOLD) {
-			Zimbra::Logger::Log ("err",
+			Zimbra::Mon::Logger::Log ("err",
 			"Disk warning: $slice->{mt} ($slice->{dev}) at $slice->{cap} percent capacity");
 		}
 		if (!$dbh) {
-			Zimbra::Logger::Log ("debug", "No local db to store disk usage");
+			Zimbra::Mon::Logger::Log ("debug", "No local db to store disk usage");
 		} else {
 			my $ts = ::timestamp_to_datetime($self->{ShortInfo}->{uts});
 			my $name = "Slice:$slice->{mt}";
@@ -147,7 +147,7 @@ sub getData
 				"insert into server_stat(time, name, value) values (?,?,?)";
 			my $sth = $dbh->prepare($statement);
 			if (!$sth->execute($ts, $name, $val) ) {
-				Zimbra::Logger::Log ("err", "DB: $statement - $DBI::errstr");
+				Zimbra::Mon::Logger::Log ("err", "DB: $statement - $DBI::errstr");
 			}
 
 		}
@@ -158,7 +158,7 @@ sub getData
 
 sub setup
 {
-#	Zimbra::Logger::Log ("debug","Zimbra::StatusMon::setup");
+#	Zimbra::Mon::Logger::Log ("debug","Zimbra::Mon::StatusMon::setup");
 	my $self = shift;
 	
 	if (!-d $statusDir)
@@ -166,7 +166,7 @@ sub setup
 		mkdir ($statusDir);
 		if (!-d $statusDir)
 		{
-			Zimbra::Logger::Log ("err", "Can't mkdir $statusDir: $!");
+			Zimbra::Mon::Logger::Log ("err", "Can't mkdir $statusDir: $!");
 			# We can exit here, because zimbramon.pl hasn't forked yet.
 			exit (1);
 		}
@@ -176,7 +176,7 @@ sub setup
 		mkdir ($serviceDir);
 		if (!-d $serviceDir)
 		{
-			Zimbra::Logger::Log ("err", "Can't mkdir $serviceDir: $!");
+			Zimbra::Mon::Logger::Log ("err", "Can't mkdir $serviceDir: $!");
 			# We can exit here, because zimbramon.pl hasn't forked yet.
 			exit (1);
 		}
@@ -186,7 +186,7 @@ sub setup
 sub monitorPartner {
 	my $self = shift;
 	
-	Zimbra::Logger::Log ("debug", "Monitoring cluster");
+	Zimbra::Mon::Logger::Log ("debug", "Monitoring cluster");
 	
 	# AppMon
 	# PingMon NOT NEEDED
@@ -194,14 +194,14 @@ sub monitorPartner {
 	
 	if ($self->appMon()) {
 	} else {
-		Zimbra::Logger::Log ("debug", "Monitoring of cluster completed successfully");
+		Zimbra::Mon::Logger::Log ("debug", "Monitoring of cluster completed successfully");
 	}
 }
 
 sub appMon {
 	my $self = shift;
 	
-	Zimbra::Logger::Log ("debug", "Monitoring cluster APPLICATIONS");
+	Zimbra::Mon::Logger::Log ("debug", "Monitoring cluster APPLICATIONS");
 	 
 	# TODO monitor mail, calendar, AB.
 	
@@ -214,11 +214,11 @@ sub monitorOneHost {
 	my $self = shift;
 	my $host = shift;
 
-	Zimbra::Logger::Log ("debug", "Monitoring host $host->{name}");
+	Zimbra::Mon::Logger::Log ("debug", "Monitoring host $host->{name}");
 
 	my $oldS = $self->{RemoteInfo}{$host->{name}}{ServiceInfo};
 
-	$self->{RemoteInfo}{$host->{name}}{ServiceInfo} = new Zimbra::serviceInfo($host);
+	$self->{RemoteInfo}{$host->{name}}{ServiceInfo} = new Zimbra::Mon::serviceInfo($host);
 	
 	$self->{RemoteInfo}{$host->{name}}{ServiceInfo}->getServiceInfo();
 	
@@ -229,13 +229,13 @@ sub monitorOneHost {
 	# TODO get service list for each host.
 	foreach $sname (keys %{ $rsi->{ServiceStatus} }) {
 		if (defined $rsi->{ServiceStatus}{$sname}{status}) {
-		Zimbra::Logger::Log ("info", 
+		Zimbra::Mon::Logger::Log ("info", 
 			"Monitored $sname on $host->{name}: $rsi->{ServiceStatus}{$sname}{status}");
 		}
 		my $prevStatus = $oldS->{ServiceStatus}{$sname}{status};
 		my $curStatus = $rsi->{ServiceStatus}{$sname}{status};
 		if ( $prevStatus ne $curStatus ) {
-			Zimbra::Logger::Log ("err", 
+			Zimbra::Mon::Logger::Log ("err", 
 				"Remote Service status change: $host->{name} $sname $prevStatus $curStatus");
 		}
 

@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-package Zimbra::Logger;
+package Zimbra::Mon::Logger;
 
 use strict;
 

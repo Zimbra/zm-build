@@ -1,11 +1,11 @@
-package Zimbra::ProvTool;
+package Zimbra::Mon::ProvTool;
 
 use strict;
 
-use Zimbra::Logger;
+use Zimbra::Mon::Logger;
 use host;
 
-my $provTool = "$::Basedir/../bin/lqprov";
+my $provTool = "$::Basedir/../bin/zmprov";
 
 our $AUTOLOAD;
 
@@ -14,7 +14,7 @@ sub new {
 
 	my $self = bless {}, $class;
 
-	Zimbra::Logger::Log( "debug", "Created ProvTool" );
+	Zimbra::Mon::Logger::Log( "debug", "Created ProvTool" );
 
 	return $self;
 }
@@ -34,7 +34,7 @@ sub doProv {
 
 	my $cmdline = "$provTool $cmd @_";
 	if (!open(PT, "$cmdline |")) {
-		Zimbra::Logger::Log( "crit", "Unable to invoke \"$cmdline\": $!" );
+		Zimbra::Mon::Logger::Log( "crit", "Unable to invoke \"$cmdline\": $!" );
 		return undef;
 	}
 

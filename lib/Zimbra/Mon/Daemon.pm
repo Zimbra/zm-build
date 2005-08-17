@@ -1,4 +1,4 @@
-package Zimbra::Daemon;
+package Zimbra::Mon::Daemon;
 
 use strict;
 use vars qw(@ISA);
@@ -21,14 +21,14 @@ sub handle {
  FORK:
 	if ($cpid = fork) { $c->close; next CLIENT }
 	if (!defined ($cpid)) {
-		Zimbra::Logger::Log ("crit","Fork error: $!");
+		Zimbra::Mon::Logger::Log ("crit","Fork error: $!");
 		if ($! == EAGAIN) {
-			Zimbra::Logger::Log ("err","Attempting recovery");
+			Zimbra::Mon::Logger::Log ("err","Attempting recovery");
 			sleep 5;
 			next FORK;
 		}
 		else {
-			Zimbra::Logger::Log ("crit","Unrecoverable fork error: $!");
+			Zimbra::Mon::Logger::Log ("crit","Unrecoverable fork error: $!");
 			next CLIENT;
 		}
 	}
