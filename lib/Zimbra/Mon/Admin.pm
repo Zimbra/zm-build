@@ -449,7 +449,7 @@ sub SearchUsersRequest
 	my $r;
 	foreach $r (keys %{$hsh}) {
 		my $row = $$hsh{$r};
-		push (@accounts, account::create($row));
+		push (@accounts, Zimbra::Accountcreate($row));
 #		foreach (keys %{$row}) {
 #			Zimbra::Logger::Log ("debug", "DB: $r: $_ = $$row{$_}");
 #		}
