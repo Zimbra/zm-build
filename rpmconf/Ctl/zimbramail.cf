@@ -9,9 +9,9 @@ CONTROL_SYNTAX zimbrasyntax tomcat_status "/opt/zimbra/bin/tomcat status"
 
 APPLICATION convertd test_server "9999" normal "conversion server"
 
-CONTROL_SYNTAX zimbrasyntax convertd_start "/opt/zimbra/bin/lqconvertctl start"
-CONTROL_SYNTAX zimbrasyntax convertd_stop "/opt/zimbra/bin/lqconvertctl stop"
-CONTROL_SYNTAX zimbrasyntax convertd_status "/opt/zimbra/bin/lqconvertctl status"
+CONTROL_SYNTAX zimbrasyntax convertd_start "/opt/zimbra/bin/zmconvertctl start"
+CONTROL_SYNTAX zimbrasyntax convertd_stop "/opt/zimbra/bin/zmconvertctl stop"
+CONTROL_SYNTAX zimbrasyntax convertd_status "/opt/zimbra/bin/zmconvertctl status"
 
 APPLICATION mysql test_server "9999" normal "mysql server"
 
