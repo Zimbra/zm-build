@@ -135,7 +135,6 @@ RPM_DIR			:= $(BUILD_ROOT)/i386
 WEBAPP_DIR		:= $(DEST_ROOT)/opt/zimbra/$(TOMCAT_DIR)/webapps
 
 RPM_CONF_DIR		:= $(BUILD_ROOT)/rpmconf
-ZIMBRAMON_DIR		:= $(BUILD_ROOT)/zimbramon
 ZIMBRA_BIN_DIR		:= $(BUILD_ROOT)/bin
 
 PERL_LIB_SOURCE	:= $(THIRD_PARTY)/Perl
@@ -438,9 +437,9 @@ $(SNMP_DEST_DIR)/$(SNMP_DIR): $(SNMP_DEST_DIR)
 $(CORE_DEST_DIR)/zimbramon: $(CORE_DEST_DIR) perllibs
 	@echo "*** Creating zimbramon"
 	mkdir -p $@
-	cp -R $(ZIMBRAMON_DIR)/zmmon $@
+	cp -R $(ZIMBRA_BIN_DIR)/zmmon $@
 	chmod 755 $@/zmmon
-	cp -R $(ZIMBRAMON_DIR)/zmcontrol $@
+	cp -R $(ZIMBRA_BIN_DIR)/zmcontrol $@
 	chmod 755 $@/zmcontrol
 	cp -R $(RPM_CONF_DIR)/Ctl/zimbra.cf.in $@
 	cp -R $(RPM_CONF_DIR)/Ctl/zimbracore.cf $@
@@ -765,9 +764,9 @@ devperllibs:
 $(DEV_INSTALL_ROOT)/zimbramon: $(DEV_INSTALL_ROOT) devperllibs
 	@echo "*** Installing zimbramon"
 	mkdir -p $@
-	cp -f -R $(ZIMBRAMON_DIR)/zmmon $@
+	cp -f -R $(ZIMBRA_BIN_DIR)/zmmon $@
 	chmod 755 $@/zmmon
-	cp -f -R $(ZIMBRAMON_DIR)/zmcontrol $@
+	cp -f -R $(ZIMBRA_BIN_DIR)/zmcontrol $@
 	chmod 755 $@/zmcontrol
 	cp -f -R $(RPM_CONF_DIR)/Ctl/zimbra.cf.in $@
 	cp -f -R $(RPM_CONF_DIR)/Ctl/zimbracore.cf $@
