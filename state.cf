@@ -1,2 +1,0 @@
-LOCALHOST marcmac 10.10.130.100 dogfood master
-HOST dogfood 10.10.130.20 marcmac slave
