@@ -10,7 +10,7 @@ BUILD_PLATFORM := $(shell sh $(BUILD_ROOT)/rpmconf/get_plat_tag.sh)
 
 USER := $(shell id -un)
 
-DEV_INSTALL_ROOT := /opt/liquid
+DEV_INSTALL_ROOT := /opt/zimbra
 
 ifeq ($(TAG), )
 	TAG := HEAD
@@ -40,14 +40,14 @@ CLEAN_TARGETS	=	\
 		$(SNMP_DEST_ROOT) \
 		$(CORE_DEST_ROOT) \
 		$(TMPDIR) \
-		liquidmail \
-		liquidmail-2*.tgz \
-		liquid.rpmrc \
-		liquidcore.spec \
-		liquidsnmp.spec \
-		liquid.spec \
-		liquidmta.spec \
-		liquidldap.spec \
+		zimbramail \
+		zimbramail-2*.tgz \
+		zimbra.rpmrc \
+		zimbracore.spec \
+		zimbrasnmp.spec \
+		zimbra.spec \
+		zimbramta.spec \
+		zimbraldap.spec \
 		i386
 
 PERL 		:= $(shell which perl)
@@ -56,12 +56,12 @@ ANT		:= $(shell which ant)
 
 THIRD_PARTY	:= $(BUILD_ROOT)/../ThirdParty
 
-QA_DIR	:= $(BUILD_ROOT)/../LiquidQA
+QA_DIR	:= $(BUILD_ROOT)/../ZimbraQA
 
-BACKUP_DIR  := $(BUILD_ROOT)/../LiquidBackup
-CONVERT_DIR	:= $(BUILD_ROOT)/../LiquidConvertd
-SERVICE_DIR	:= $(BUILD_ROOT)/../LiquidArchive
-CONSOLE_DIR	:= $(BUILD_ROOT)/../LiquidConsole
+BACKUP_DIR  := $(BUILD_ROOT)/../ZimbraBackup
+CONVERT_DIR	:= $(BUILD_ROOT)/../ZimbraConvertd
+SERVICE_DIR	:= $(BUILD_ROOT)/../ZimbraArchive
+CONSOLE_DIR	:= $(BUILD_ROOT)/../ZimbraConsole
 
 LDAP_VERSION	:= 2.2.26
 LDAP_DIR	:= openldap-$(LDAP_VERSION)
@@ -108,35 +108,35 @@ AMAVISD_VERSION := 2.3.1
 AMAVISD_DIR :=  amavisd
 AMAVISD_SOURCE := $(THIRD_PARTY)/$(AMAVISD_DIR)/amavisd-new-$(AMAVISD_VERSION)
 
-SASL_VERSION := 2.1.21.LIQUID
+SASL_VERSION := 2.1.21.ZIMBRA
 SASL_DIR := cyrus-sasl
 SASL_SOURCE := $(THIRD_PARTY)/$(SASL_DIR)/builds/$(SASL_DIR)-$(SASL_VERSION)
 
 VERITY_SOURCE := $(THIRD_PARTY)/verity/linux
 
 MTA_DEST_ROOT		:= $(BUILD_ROOT)/mtabuild
-MTA_DEST_DIR		:= $(MTA_DEST_ROOT)/opt/liquid
+MTA_DEST_DIR		:= $(MTA_DEST_ROOT)/opt/zimbra
 
 LDAP_DEST_ROOT		:= $(BUILD_ROOT)/ldapbuild
-LDAP_DEST_DIR		:= $(LDAP_DEST_ROOT)/opt/liquid
+LDAP_DEST_DIR		:= $(LDAP_DEST_ROOT)/opt/zimbra
 
 CORE_DEST_ROOT		:= $(BUILD_ROOT)/corebuild
-CORE_DEST_DIR		:= $(CORE_DEST_ROOT)/opt/liquid
+CORE_DEST_DIR		:= $(CORE_DEST_ROOT)/opt/zimbra
 
 QA_DEST_ROOT		:= $(BUILD_ROOT)/qabuild
-QA_DEST_DIR			:= $(QA_DEST_ROOT)/opt/liquid/qa
+QA_DEST_DIR			:= $(QA_DEST_ROOT)/opt/zimbra/qa
 
 SNMP_DEST_ROOT		:= $(BUILD_ROOT)/snmpbuild
-SNMP_DEST_DIR		:= $(SNMP_DEST_ROOT)/opt/liquid
+SNMP_DEST_DIR		:= $(SNMP_DEST_ROOT)/opt/zimbra
 
 DEST_ROOT		:= $(BUILD_ROOT)/build
-DEST_DIR		:= $(DEST_ROOT)/opt/liquid
+DEST_DIR		:= $(DEST_ROOT)/opt/zimbra
 RPM_DIR			:= $(BUILD_ROOT)/i386
-WEBAPP_DIR		:= $(DEST_ROOT)/opt/liquid/$(TOMCAT_DIR)/webapps
+WEBAPP_DIR		:= $(DEST_ROOT)/opt/zimbra/$(TOMCAT_DIR)/webapps
 
 RPM_CONF_DIR		:= $(BUILD_ROOT)/rpmconf
-LIQUIDMON_DIR		:= $(BUILD_ROOT)/liquidmon
-LIQUID_BIN_DIR		:= $(BUILD_ROOT)/bin
+ZIMBRAMON_DIR		:= $(BUILD_ROOT)/zimbramon
+ZIMBRA_BIN_DIR		:= $(BUILD_ROOT)/bin
 
 PERL_LIB_SOURCE	:= $(THIRD_PARTY)/Perl
 
@@ -185,8 +185,8 @@ SA_PERL_LIBS = \
 
 WEBAPPS	:= \
 	$(WEBAPP_DIR)/service.war \
-	$(WEBAPP_DIR)/liquidAdmin.war \
-	$(WEBAPP_DIR)/liquid.war 
+	$(WEBAPP_DIR)/Zimbra::Admin.war \
+	$(WEBAPP_DIR)/zimbra.war 
 
 QA_COMPONENTS	:= \
 	$(QA_DEST_DIR) \
@@ -198,7 +198,7 @@ CORE_COMPONENTS	:= \
 	$(CORE_DEST_DIR)/db \
 	$(CORE_DEST_DIR)/lib \
 	$(CORE_DEST_DIR)/bin \
-	$(CORE_DEST_DIR)/liquidmon \
+	$(CORE_DEST_DIR)/zimbramon \
 	$(CORE_DEST_DIR)/$(JAVA_FILE)$(JAVA_VERSION) \
 	$(CORE_DEST_DIR)/conf
 
@@ -211,10 +211,10 @@ MTA_COMPONENTS	:= \
 
 MAIL_COMPONENTS := \
 	$(DEST_DIR)/$(TOMCAT_DIR) \
-	$(DEST_DIR)/$(TOMCAT_DIR)/common/lib/liquidos.jar \
+	$(DEST_DIR)/$(TOMCAT_DIR)/common/lib/zimbraos.jar \
 	$(DEST_DIR)/$(TOMCAT_DIR)/common/lib/KeyView.jar \
 	$(DEST_DIR)/$(TOMCAT_DIR)/common/lib/mail.jar \
-	$(DEST_DIR)/$(TOMCAT_DIR)/common/endorsed/liquidcharset.jar \
+	$(DEST_DIR)/$(TOMCAT_DIR)/common/endorsed/zimbracharset.jar \
 	$(DEST_DIR)/$(TOMCAT_DIR)/common/lib/activation.jar \
 	$(DEST_DIR)/$(MYSQL_DIR) \
 	$(DEST_DIR)/verity \
@@ -227,11 +227,11 @@ LDAP_COMPONENTS := \
 SNMP_COMPONENTS := \
 	$(SNMP_DEST_DIR)/$(SNMP_DIR) 
 
-PROFILE_SOURCE		:= $(RPM_CONF_DIR)/liquid.bash_profile
+PROFILE_SOURCE		:= $(RPM_CONF_DIR)/zimbra.bash_profile
 PROFILE_DEST		:= .bash_profile
-ENV_FILE_SOURCE		:= $(RPM_CONF_DIR)/liquid.bashrc
+ENV_FILE_SOURCE		:= $(RPM_CONF_DIR)/zimbra.bashrc
 ENV_FILE_DEST		:= .bashrc
-EXRC_SOURCE			:= $(RPM_CONF_DIR)/liquid.exrc
+EXRC_SOURCE			:= $(RPM_CONF_DIR)/zimbra.exrc
 EXRC_DEST			:= .exrc
 
 PERL_MM_USE_DEFAULT	:= 1
@@ -242,7 +242,7 @@ export JAVA_HOME
 
 TMPDIR	:= tmp
 
-all: rpms qa liquidmail-$(RELEASE).tgz
+all: rpms qa zimbramail-$(RELEASE).tgz
 
 showtag:
 	echo $(RELEASE)
@@ -251,146 +251,146 @@ showtag:
 qa: 
 	cd $(QA_DIR);  CLASSPATH=$(SERVICE_DIR)/build/classes $(ANT) jar; 
 
-liquidmail-$(RELEASE).tgz: rpms
-	mkdir -p liquidmail/packages
-	mkdir -p liquidmail/bin
-	mkdir -p liquidmail/data
-	cp -f $(SERVICE_DIR)/build/versions-init.sql liquidmail/data
-	cp $(LDAP_DEST_ROOT)/opt/liquid/$(LDAP_DIR)/bin/ldapsearch liquidmail/bin
-	cp $(RPM_CONF_DIR)/install.sh liquidmail
-	chmod 755 liquidmail/install.sh
-	cp $(RPM_DIR)/*rpm liquidmail/packages
-	rm -f liquidmail/packages/liquid-qatest*
-	tar czf liquidmail-$(MAJOR).$(MINOR)_$(BUILD_PLATFORM)_$(RELEASE).tgz liquidmail
-	cp liquidmail-$(MAJOR).$(MINOR)_$(BUILD_PLATFORM)_$(RELEASE).tgz $(RPM_DIR)
-	(cd $(RPM_DIR); ln -s liquidmail-$(MAJOR).$(MINOR)_$(BUILD_PLATFORM)_$(RELEASE).tgz liquidmail.tgz)
+zimbramail-$(RELEASE).tgz: rpms
+	mkdir -p zimbramail/packages
+	mkdir -p zimbramail/bin
+	mkdir -p zimbramail/data
+	cp -f $(SERVICE_DIR)/build/versions-init.sql zimbramail/data
+	cp $(LDAP_DEST_ROOT)/opt/zimbra/$(LDAP_DIR)/bin/ldapsearch zimbramail/bin
+	cp $(RPM_CONF_DIR)/install.sh zimbramail
+	chmod 755 zimbramail/install.sh
+	cp $(RPM_DIR)/*rpm zimbramail/packages
+	rm -f zimbramail/packages/zimbra-qatest*
+	tar czf zimbramail-$(MAJOR).$(MINOR)_$(BUILD_PLATFORM)_$(RELEASE).tgz zimbramail
+	cp zimbramail-$(MAJOR).$(MINOR)_$(BUILD_PLATFORM)_$(RELEASE).tgz $(RPM_DIR)
+	(cd $(RPM_DIR); ln -s zimbramail-$(MAJOR).$(MINOR)_$(BUILD_PLATFORM)_$(RELEASE).tgz zimbramail.tgz)
 	@echo "*** BUILD COMPLETED ***"
 
 rpms: core mta mail ldap snmp qatest
 	@echo "*** Creating RPMS in $(RPM_DIR)"
 
 qatest: $(RPM_DIR) qa_stage
-	cat $(RPM_CONF_DIR)/liquidqa.spec | sed -e 's/@@VERSION@@/$(MAJOR).$(MINOR)_$(BUILD_PLATFORM)/' \
-		| sed -e 's/@@RELEASE@@/$(RELEASE)/' > $(BUILD_ROOT)/liquidqa.spec
-	(cd $(QA_DEST_ROOT); find opt -type f -o -type l | sed -e 's|^|%attr(-, liquid, liquid) /|' >> \
-		$(BUILD_ROOT)/liquidqa.spec; \
+	cat $(RPM_CONF_DIR)/zimbraqa.spec | sed -e 's/@@VERSION@@/$(MAJOR).$(MINOR)_$(BUILD_PLATFORM)/' \
+		| sed -e 's/@@RELEASE@@/$(RELEASE)/' > $(BUILD_ROOT)/zimbraqa.spec
+	(cd $(QA_DEST_ROOT); find opt -type f -o -type l | sed -e 's|^|%attr(-, zimbra, zimbra) /|' >> \
+		$(BUILD_ROOT)/zimbraqa.spec; \
 		rpmbuild  --target i386 --quiet --define '_rpmdir $(BUILD_ROOT)' \
-		--buildroot=$(QA_DEST_ROOT) -bb $(BUILD_ROOT)/liquidqa.spec )
+		--buildroot=$(QA_DEST_ROOT) -bb $(BUILD_ROOT)/zimbraqa.spec )
 
 qa_stage: $(QA_COMPONENTS)
 
 core: $(RPM_DIR) core_stage
-	cat $(RPM_CONF_DIR)/liquidcore.spec | sed -e 's/@@VERSION@@/$(MAJOR).$(MINOR)_$(BUILD_PLATFORM)/' \
-		| sed -e 's/@@RELEASE@@/$(RELEASE)/' > $(BUILD_ROOT)/liquidcore.spec
+	cat $(RPM_CONF_DIR)/zimbracore.spec | sed -e 's/@@VERSION@@/$(MAJOR).$(MINOR)_$(BUILD_PLATFORM)/' \
+		| sed -e 's/@@RELEASE@@/$(RELEASE)/' > $(BUILD_ROOT)/zimbracore.spec
 	(cd $(CORE_DEST_ROOT); find opt -type f -o -type l -maxdepth 2 \
-		| sed -e 's|^|%attr(-, liquid, liquid) /|' >> \
-		$(BUILD_ROOT)/liquidcore.spec )
-	echo "%attr(755, liquid, liquid) /opt/liquid/bin" >> \
-		$(BUILD_ROOT)/liquidcore.spec
-	echo "%attr(-, liquid, liquid) /opt/liquid/conf" >> \
-		$(BUILD_ROOT)/liquidcore.spec
-	echo "%attr(-, liquid, liquid) /opt/liquid/db" >> \
-		$(BUILD_ROOT)/liquidcore.spec
-	echo "%attr(-, liquid, liquid) /opt/liquid/jdk1.5.0_04" >> \
-		$(BUILD_ROOT)/liquidcore.spec
-	echo "%attr(-, liquid, liquid) /opt/liquid/lib" >> \
-		$(BUILD_ROOT)/liquidcore.spec
-	echo "%attr(-, liquid, liquid) /opt/liquid/liquidmon" >> \
-		$(BUILD_ROOT)/liquidcore.spec
+		| sed -e 's|^|%attr(-, zimbra, zimbra) /|' >> \
+		$(BUILD_ROOT)/zimbracore.spec )
+	echo "%attr(755, zimbra, zimbra) /opt/zimbra/bin" >> \
+		$(BUILD_ROOT)/zimbracore.spec
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/conf" >> \
+		$(BUILD_ROOT)/zimbracore.spec
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/db" >> \
+		$(BUILD_ROOT)/zimbracore.spec
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/jdk1.5.0_04" >> \
+		$(BUILD_ROOT)/zimbracore.spec
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/lib" >> \
+		$(BUILD_ROOT)/zimbracore.spec
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/zimbramon" >> \
+		$(BUILD_ROOT)/zimbracore.spec
 	(cd $(CORE_DEST_ROOT);\
 		rpmbuild  --target i386 --quiet --define '_rpmdir $(BUILD_ROOT)' \
-		--buildroot=$(CORE_DEST_ROOT) -bb $(BUILD_ROOT)/liquidcore.spec )
+		--buildroot=$(CORE_DEST_ROOT) -bb $(BUILD_ROOT)/zimbracore.spec )
 
 core_stage: $(CORE_COMPONENTS)
 
 mta: $(RPM_DIR) mta_stage
-	cat $(RPM_CONF_DIR)/liquidmta.spec | sed -e 's/@@VERSION@@/$(MAJOR).$(MINOR)_$(BUILD_PLATFORM)/' \
-		| sed -e 's/@@RELEASE@@/$(RELEASE)/' > $(BUILD_ROOT)/liquidmta.spec
+	cat $(RPM_CONF_DIR)/zimbramta.spec | sed -e 's/@@VERSION@@/$(MAJOR).$(MINOR)_$(BUILD_PLATFORM)/' \
+		| sed -e 's/@@RELEASE@@/$(RELEASE)/' > $(BUILD_ROOT)/zimbramta.spec
 	(cd $(MTA_DEST_ROOT); find opt -type f -o -type l -maxdepth 2 \
-		| sed -e 's|^|%attr(-, liquid, liquid) /|' >> \
-		$(BUILD_ROOT)/liquidmta.spec )
-	echo "%attr(-, liquid, liquid) /opt/liquid/amavisd" >> \
-		$(BUILD_ROOT)/liquidmta.spec
-	echo "%attr(555, liquid, liquid) /opt/liquid/clamav-0.85.1/bin" >> \
-		$(BUILD_ROOT)/liquidmta.spec
-	echo "%attr(755, liquid, liquid) /opt/liquid/clamav-0.85.1/db" >> \
-		$(BUILD_ROOT)/liquidmta.spec
-	echo "%attr(-, liquid, liquid) /opt/liquid/clamav-0.85.1/etc/" >> \
-		$(BUILD_ROOT)/liquidmta.spec
-	echo "%attr(-, liquid, liquid) /opt/liquid/clamav-0.85.1/include" >> \
-		$(BUILD_ROOT)/liquidmta.spec
-	echo "%attr(-, liquid, liquid) /opt/liquid/clamav-0.85.1/lib" >> \
-		$(BUILD_ROOT)/liquidmta.spec
-	echo "%attr(-, liquid, liquid) /opt/liquid/clamav-0.85.1/man" >> \
-		$(BUILD_ROOT)/liquidmta.spec
-	echo "%attr(555, liquid, liquid) /opt/liquid/clamav-0.85.1/sbin" >> \
-		$(BUILD_ROOT)/liquidmta.spec
-	echo "%attr(-, liquid, liquid) /opt/liquid/clamav-0.85.1/share" >> \
-		$(BUILD_ROOT)/liquidmta.spec
-	echo "%attr(-, liquid, liquid) /opt/liquid/postfix-2.2.3" >> \
-		$(BUILD_ROOT)/liquidmta.spec
-	echo "%attr(-, liquid, liquid) /opt/liquid/sleepycat-4.2.52.2" >> \
-		$(BUILD_ROOT)/liquidmta.spec
-	echo "%attr(-, liquid, liquid) /opt/liquid/cyrus-sasl-2.1.21.LIQUID" >> \
-		$(BUILD_ROOT)/liquidmta.spec
+		| sed -e 's|^|%attr(-, zimbra, zimbra) /|' >> \
+		$(BUILD_ROOT)/zimbramta.spec )
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/amavisd" >> \
+		$(BUILD_ROOT)/zimbramta.spec
+	echo "%attr(555, zimbra, zimbra) /opt/zimbra/clamav-0.85.1/bin" >> \
+		$(BUILD_ROOT)/zimbramta.spec
+	echo "%attr(755, zimbra, zimbra) /opt/zimbra/clamav-0.85.1/db" >> \
+		$(BUILD_ROOT)/zimbramta.spec
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/clamav-0.85.1/etc/" >> \
+		$(BUILD_ROOT)/zimbramta.spec
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/clamav-0.85.1/include" >> \
+		$(BUILD_ROOT)/zimbramta.spec
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/clamav-0.85.1/lib" >> \
+		$(BUILD_ROOT)/zimbramta.spec
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/clamav-0.85.1/man" >> \
+		$(BUILD_ROOT)/zimbramta.spec
+	echo "%attr(555, zimbra, zimbra) /opt/zimbra/clamav-0.85.1/sbin" >> \
+		$(BUILD_ROOT)/zimbramta.spec
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/clamav-0.85.1/share" >> \
+		$(BUILD_ROOT)/zimbramta.spec
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/postfix-2.2.3" >> \
+		$(BUILD_ROOT)/zimbramta.spec
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/sleepycat-4.2.52.2" >> \
+		$(BUILD_ROOT)/zimbramta.spec
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/cyrus-sasl-2.1.21.ZIMBRA" >> \
+		$(BUILD_ROOT)/zimbramta.spec
 	(cd $(MTA_DEST_ROOT); \
 		rpmbuild  --target i386 --quiet --define '_rpmdir $(BUILD_ROOT)' \
-		--buildroot=$(MTA_DEST_ROOT) -bb $(BUILD_ROOT)/liquidmta.spec )
+		--buildroot=$(MTA_DEST_ROOT) -bb $(BUILD_ROOT)/zimbramta.spec )
 
 mta_stage: $(MTA_COMPONENTS)
 
 mail: $(RPM_DIR) mail_stage
-	cat $(RPM_CONF_DIR)/liquid.spec | sed -e 's/@@VERSION@@/$(MAJOR).$(MINOR)_$(BUILD_PLATFORM)/' \
-		| sed -e 's/@@RELEASE@@/$(RELEASE)/' > $(BUILD_ROOT)/liquid.spec
-	echo "%attr(-, liquid, liquid) /opt/liquid/jakarta-tomcat-5.5.7" >> \
-		$(BUILD_ROOT)/liquid.spec
-	echo "%attr(755, liquid, liquid) /opt/liquid/libexec" >> \
-		$(BUILD_ROOT)/liquid.spec
-	echo "%attr(-, liquid, liquid) /opt/liquid/mysql-standard-4.1.10a-pc-linux-gnu-i686" >> \
-		$(BUILD_ROOT)/liquid.spec
-	echo "%attr(-, liquid, liquid) /opt/liquid/verity/conf" >> \
-		$(BUILD_ROOT)/liquid.spec
-	echo "%attr(755, liquid, liquid) /opt/liquid/verity/ExportSDK/bin" >> \
-		$(BUILD_ROOT)/liquid.spec
-	echo "%attr(-, liquid, liquid) /opt/liquid/verity/ExportSDK/ini" >> \
-		$(BUILD_ROOT)/liquid.spec
-	echo "%attr(755, liquid, liquid) /opt/liquid/verity/FilterSDK/bin" >> \
-		$(BUILD_ROOT)/liquid.spec
+	cat $(RPM_CONF_DIR)/zimbra.spec | sed -e 's/@@VERSION@@/$(MAJOR).$(MINOR)_$(BUILD_PLATFORM)/' \
+		| sed -e 's/@@RELEASE@@/$(RELEASE)/' > $(BUILD_ROOT)/zimbra.spec
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/jakarta-tomcat-5.5.7" >> \
+		$(BUILD_ROOT)/zimbra.spec
+	echo "%attr(755, zimbra, zimbra) /opt/zimbra/libexec" >> \
+		$(BUILD_ROOT)/zimbra.spec
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/mysql-standard-4.1.10a-pc-linux-gnu-i686" >> \
+		$(BUILD_ROOT)/zimbra.spec
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/verity/conf" >> \
+		$(BUILD_ROOT)/zimbra.spec
+	echo "%attr(755, zimbra, zimbra) /opt/zimbra/verity/ExportSDK/bin" >> \
+		$(BUILD_ROOT)/zimbra.spec
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/verity/ExportSDK/ini" >> \
+		$(BUILD_ROOT)/zimbra.spec
+	echo "%attr(755, zimbra, zimbra) /opt/zimbra/verity/FilterSDK/bin" >> \
+		$(BUILD_ROOT)/zimbra.spec
 	(cd $(DEST_ROOT); \
 		rpmbuild  --target i386 --quiet --define '_rpmdir $(BUILD_ROOT)' \
-		--buildroot=$(DEST_ROOT) -bb $(BUILD_ROOT)/liquid.spec )
+		--buildroot=$(DEST_ROOT) -bb $(BUILD_ROOT)/zimbra.spec )
 
 mail_stage: $(MAIL_COMPONENTS)
 
 snmp: $(RPM_DIR) snmp_stage
-	cat $(RPM_CONF_DIR)/liquidsnmp.spec | sed -e 's/@@VERSION@@/$(MAJOR).$(MINOR)_$(BUILD_PLATFORM)/' \
-		| sed -e 's/@@RELEASE@@/$(RELEASE)/' > $(BUILD_ROOT)/liquidsnmp.spec
-	echo "%attr(-, liquid, liquid) /opt/liquid/snmp-5.1.2" >> \
-		$(BUILD_ROOT)/liquidsnmp.spec
+	cat $(RPM_CONF_DIR)/zimbrasnmp.spec | sed -e 's/@@VERSION@@/$(MAJOR).$(MINOR)_$(BUILD_PLATFORM)/' \
+		| sed -e 's/@@RELEASE@@/$(RELEASE)/' > $(BUILD_ROOT)/zimbrasnmp.spec
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/snmp-5.1.2" >> \
+		$(BUILD_ROOT)/zimbrasnmp.spec
 	(cd $(SNMP_DEST_ROOT); \
 		rpmbuild  --target i386 --quiet --define '_rpmdir $(BUILD_ROOT)' \
-		--buildroot=$(SNMP_DEST_ROOT) -bb $(BUILD_ROOT)/liquidsnmp.spec )
+		--buildroot=$(SNMP_DEST_ROOT) -bb $(BUILD_ROOT)/zimbrasnmp.spec )
 
 snmp_stage: $(SNMP_COMPONENTS)
 
 ldap: $(RPM_DIR) ldap_stage
-	cat $(RPM_CONF_DIR)/liquidldap.spec | sed -e 's/@@VERSION@@/$(MAJOR).$(MINOR)_$(BUILD_PLATFORM)/' \
-		| sed -e 's/@@RELEASE@@/$(RELEASE)/' > $(BUILD_ROOT)/liquidldap.spec
-	echo "%attr(-, liquid, liquid) /opt/liquid/openldap-$(LDAP_VERSION)" >> \
-		$(BUILD_ROOT)/liquidldap.spec
+	cat $(RPM_CONF_DIR)/zimbraldap.spec | sed -e 's/@@VERSION@@/$(MAJOR).$(MINOR)_$(BUILD_PLATFORM)/' \
+		| sed -e 's/@@RELEASE@@/$(RELEASE)/' > $(BUILD_ROOT)/zimbraldap.spec
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/openldap-$(LDAP_VERSION)" >> \
+		$(BUILD_ROOT)/zimbraldap.spec
 	(cd $(LDAP_DEST_ROOT); \
 		rpmbuild  --target i386 --quiet --define '_rpmdir $(BUILD_ROOT)' \
-		--buildroot=$(LDAP_DEST_ROOT) -bb $(BUILD_ROOT)/liquidldap.spec )
+		--buildroot=$(LDAP_DEST_ROOT) -bb $(BUILD_ROOT)/zimbraldap.spec )
 
 ldap_stage: $(LDAP_COMPONENTS)
 
 tars: $(RPM_DIR) mta_stage mail_stage ldap_stage
 		(cd $(MTA_DEST_ROOT); \
-		tar czf ../i386/liquid-mta-$(MAJOR).$(MINOR)-$(RELEASE).tgz opt)
+		tar czf ../i386/zimbra-mta-$(MAJOR).$(MINOR)-$(RELEASE).tgz opt)
 		(cd $(DEST_ROOT); \
-		tar czf ../i386/liquid-store-$(MAJOR).$(MINOR)-$(RELEASE).tgz opt)
+		tar czf ../i386/zimbra-store-$(MAJOR).$(MINOR)-$(RELEASE).tgz opt)
 		(cd $(LDAP_DEST_ROOT); \
-		tar czf ../i386/liquid-ldap-$(MAJOR).$(MINOR)-$(RELEASE).tgz opt)
+		tar czf ../i386/zimbra-ldap-$(MAJOR).$(MINOR)-$(RELEASE).tgz opt)
 
 $(RPM_DIR):
 	mkdir -p $(RPM_DIR)
@@ -435,35 +435,35 @@ $(SNMP_DEST_DIR)/$(SNMP_DIR): $(SNMP_DEST_DIR)
 	cp $(RPM_CONF_DIR)/snmp.conf $(SNMP_DEST_DIR)/$(SNMP_DIR)/share/snmp/snmp.conf
 	cp $(RPM_CONF_DIR)/mibs/*mib $(SNMP_DEST_DIR)/$(SNMP_DIR)/share/snmp/mibs
 
-$(CORE_DEST_DIR)/liquidmon: $(CORE_DEST_DIR) perllibs
-	@echo "*** Creating liquidmon"
+$(CORE_DEST_DIR)/zimbramon: $(CORE_DEST_DIR) perllibs
+	@echo "*** Creating zimbramon"
 	mkdir -p $@
-	cp -R $(LIQUIDMON_DIR)/lqmon $@
-	chmod 755 $@/lqmon
-	cp -R $(LIQUIDMON_DIR)/lqcontrol $@
-	chmod 755 $@/lqcontrol
-	cp -R $(RPM_CONF_DIR)/liquid.cf.in $@
-	cp -R $(RPM_CONF_DIR)/liquidcore.cf $@
-	cp -R $(RPM_CONF_DIR)/liquidmail.cf $@
-	cp -R $(RPM_CONF_DIR)/liquidmta.cf $@
-	cp -R $(RPM_CONF_DIR)/liquidldap.cf $@
-	cp -R $(RPM_CONF_DIR)/liquidsnmp.cf $@
-	mkdir -p $@/lib/liquidpm
-	@cp $(wildcard $(BUILD_ROOT)/lib/liquidpm/*.pm) $@/lib/liquidpm
-	mkdir -p $@/lib/liquidpm/SOAP
-	@cp -f $(wildcard $(SERVICE_DIR)/src/perl/soap/*.pm) $@/lib/liquidpm/SOAP
-	(cd $(CORE_DEST_DIR)/liquidmon; tar xzf $(MRTG_SOURCE).tgz)
-	mkdir -p $(CORE_DEST_DIR)/liquidmon/mrtg/work
-	mkdir -p $(CORE_DEST_DIR)/liquidmon/mrtg/conf
-	cp $(RPM_CONF_DIR)/mrtg.cfg $(CORE_DEST_DIR)/liquidmon/mrtg/conf
-	cp $(RPM_CONF_DIR)/crontab $(CORE_DEST_DIR)/liquidmon/crontab
-	(cd $(CORE_DEST_DIR)/liquidmon; tar xzf $(RRD_SOURCE).tar.gz)
+	cp -R $(ZIMBRAMON_DIR)/zmmon $@
+	chmod 755 $@/zmmon
+	cp -R $(ZIMBRAMON_DIR)/zmcontrol $@
+	chmod 755 $@/zmcontrol
+	cp -R $(RPM_CONF_DIR)/zimbra.cf.in $@
+	cp -R $(RPM_CONF_DIR)/zimbracore.cf $@
+	cp -R $(RPM_CONF_DIR)/zimbramail.cf $@
+	cp -R $(RPM_CONF_DIR)/zimbramta.cf $@
+	cp -R $(RPM_CONF_DIR)/zimbraldap.cf $@
+	cp -R $(RPM_CONF_DIR)/zimbrasnmp.cf $@
+	mkdir -p $@/lib/Zimbra/Mon
+	@cp $(wildcard $(BUILD_ROOT)/lib/Zimbra/Mon/*.pm) $@/lib/Zimbra/Mon
+	mkdir -p $@/lib/Zimbra/Mon/SOAP
+	@cp -f $(wildcard $(SERVICE_DIR)/src/perl/soap/*.pm) $@/lib/Zimbra/Mon/SOAP
+	(cd $(CORE_DEST_DIR)/zimbramon; tar xzf $(MRTG_SOURCE).tgz)
+	mkdir -p $(CORE_DEST_DIR)/zimbramon/mrtg/work
+	mkdir -p $(CORE_DEST_DIR)/zimbramon/mrtg/conf
+	cp $(RPM_CONF_DIR)/mrtg.cfg $(CORE_DEST_DIR)/zimbramon/mrtg/conf
+	cp $(RPM_CONF_DIR)/crontab $(CORE_DEST_DIR)/zimbramon/crontab
+	(cd $(CORE_DEST_DIR)/zimbramon; tar xzf $(RRD_SOURCE).tar.gz)
 
 perllibs: 
-	mkdir -p $(CORE_DEST_DIR)/liquidmon/lib
-	(cd $(CORE_DEST_DIR)/liquidmon/lib; \
+	mkdir -p $(CORE_DEST_DIR)/zimbramon/lib
+	(cd $(CORE_DEST_DIR)/zimbramon/lib; \
 	tar xzf $(PERL_LIB_SOURCE)/builds/perllib.tgz)
-	cp -R $(BUILD_ROOT)/lib/Liquid $(CORE_DEST_DIR)/liquidmon/lib
+	cp -R $(BUILD_ROOT)/lib/Zimbra $(CORE_DEST_DIR)/zimbramon/lib
 
 perllibsbuild: 
 	mkdir -p $(TMPDIR)
@@ -471,25 +471,25 @@ perllibsbuild:
 		echo "Compiling perl lib $$lib"; \
 		cp $(PERL_LIB_SOURCE)/$$lib.tar.gz $(TMPDIR); \
 		(cd $(TMPDIR); tar xzf $$lib.tar.gz; cd $$lib; \
-		$(PERL) -I$(CORE_DEST_DIR)/liquidmon/lib Makefile.PL PREFIX=$(CORE_DEST_DIR)/liquidmon/ LIB=$(CORE_DEST_DIR)/liquidmon/lib; \
+		$(PERL) -I$(CORE_DEST_DIR)/zimbramon/lib Makefile.PL PREFIX=$(CORE_DEST_DIR)/zimbramon/ LIB=$(CORE_DEST_DIR)/zimbramon/lib; \
 		make; make install;) \
 	done
 
 	@for lib in $(DBD_PERL_LIBS); do \
 		cp $(PERL_LIB_SOURCE)/$$lib.tar.gz $(TMPDIR); \
 		(cd $(TMPDIR); tar xzf $$lib.tar.gz; cd $$lib; \
-		$(PERL) -I$(CORE_DEST_DIR)/liquidmon/lib Makefile.PL PREFIX=$(CORE_DEST_DIR)/liquidmon/ LIB=$(CORE_DEST_DIR)/liquidmon/lib --mysql_config=/opt/liquid/mysql/bin/mysql_config --libs="-L/usr/lib -lmysqlclient -lz -lcrypt -lnsl -lm"; \
+		$(PERL) -I$(CORE_DEST_DIR)/zimbramon/lib Makefile.PL PREFIX=$(CORE_DEST_DIR)/zimbramon/ LIB=$(CORE_DEST_DIR)/zimbramon/lib --mysql_config=/opt/zimbra/mysql/bin/mysql_config --libs="-L/usr/lib -lmysqlclient -lz -lcrypt -lnsl -lm"; \
 		make; make install;) \
 	done	
 
 	@for lib in $(SA_PERL_LIBS); do \
 		cp $(PERL_LIB_SOURCE)/$$lib.tar.gz $(TMPDIR); \
 		(cd $(TMPDIR); tar xzf $$lib.tar.gz; cd $$lib; \
-		$(PERL) -I$(CORE_DEST_DIR)/liquidmon/lib Makefile.PL PREFIX=$(CORE_DEST_DIR)/liquidmon/ LIB=$(CORE_DEST_DIR)/liquidmon/lib DATADIR=$(CORE_DEST_DIR)/liquidmon/share CONFDIR=$(CORE_DEST_DIR)/liquidmon/spamassassin; \
+		$(PERL) -I$(CORE_DEST_DIR)/zimbramon/lib Makefile.PL PREFIX=$(CORE_DEST_DIR)/zimbramon/ LIB=$(CORE_DEST_DIR)/zimbramon/lib DATADIR=$(CORE_DEST_DIR)/zimbramon/share CONFDIR=$(CORE_DEST_DIR)/zimbramon/spamassassin; \
 		make; make install;) \
 	done	
 
-	(cd $(CORE_DEST_DIR)/liquidmon/lib; tar czf $(CORE_DEST_DIR)/perllib.tgz .)
+	(cd $(CORE_DEST_DIR)/zimbramon/lib; tar czf $(CORE_DEST_DIR)/perllib.tgz .)
 
 $(MTA_DEST_DIR)/$(POSTFIX_DIR): $(MTA_DEST_DIR)
 	@echo "*** Creating postfix"
@@ -520,9 +520,9 @@ $(DEST_DIR)/$(TOMCAT_DIR): $(DEST_DIR)
 	(cd $(DEST_DIR); tar xzf $(TOMCAT_SOURCE).tar.gz;)
 	cp $(THIRD_PARTY)/jakarta-tomcat/jmxri.jar $(DEST_DIR)/$(TOMCAT_DIR)/bin/jmx.jar
 	cp $(SERVICE_DIR)/conf/tomcat-5.5/server.xml.production $(DEST_DIR)/$(TOMCAT_DIR)/conf/server.xml
-	cp $(SERVICE_DIR)/conf/liquid.xml $(DEST_DIR)/$(TOMCAT_DIR)/conf/Catalina/localhost/liquid.xml
+	cp $(SERVICE_DIR)/conf/zimbra.xml $(DEST_DIR)/$(TOMCAT_DIR)/conf/Catalina/localhost/zimbra.xml
 	mkdir -p $(DEST_DIR)/$(TOMCAT_DIR)/conf/AdminService/localhost
-	cp $(SERVICE_DIR)/conf/liquidAdmin.xml $(DEST_DIR)/$(TOMCAT_DIR)/conf/AdminService/localhost/liquidAdmin.xml
+	cp $(SERVICE_DIR)/conf/Zimbra::Admin.xml $(DEST_DIR)/$(TOMCAT_DIR)/conf/AdminService/localhost/Zimbra::Admin.xml
 	cp $(SERVICE_DIR)/conf/tomcat-5.5/tomcat-users.xml $(DEST_DIR)/$(TOMCAT_DIR)/conf
 	cp -f $(SERVICE_DIR)/conf/log4j.properties.production  $(DEST_DIR)/$(TOMCAT_DIR)/conf/log4j.properties
 	mkdir -p $(DEST_DIR)/$(TOMCAT_DIR)/temp
@@ -540,10 +540,10 @@ $(LDAP_DEST_DIR)/$(LDAP_DIR): $(LDAP_DEST_DIR)
 	cp $(SERVICE_DIR)/conf/ldap/DB_CONFIG $(LDAP_DEST_DIR)/$(LDAP_DIR)/var/openldap-data
 	cp $(SERVICE_DIR)/conf/ldap/slapd.conf $(LDAP_DEST_DIR)/$(LDAP_DIR)/etc/openldap/slapd.conf
 	cp $(SERVICE_DIR)/conf/ldap/amavisd.schema $(LDAP_DEST_DIR)/$(LDAP_DIR)/etc/openldap/schema
-	cp $(SERVICE_DIR)/conf/ldap/liquid.schema $(LDAP_DEST_DIR)/$(LDAP_DIR)/etc/openldap/schema
-	cp $(SERVICE_DIR)/conf/ldap/liquid.ldif $(LDAP_DEST_DIR)/$(LDAP_DIR)/etc/openldap/liquid.ldif
-	cp $(SERVICE_DIR)/conf/ldap/liquid_opensrc_mimehandlers.ldif $(LDAP_DEST_DIR)/$(LDAP_DIR)/etc/openldap/liquid_opensrc_mimehandlers.ldif
-	cp $(SERVICE_DIR)/build/dist/openldap-2.2.17/etc/openldap/liquid_mimehandlers.ldif $(LDAP_DEST_DIR)/$(LDAP_DIR)/etc/openldap/liquid_mimehandlers.ldif
+	cp $(SERVICE_DIR)/conf/ldap/zimbra.schema $(LDAP_DEST_DIR)/$(LDAP_DIR)/etc/openldap/schema
+	cp $(SERVICE_DIR)/conf/ldap/zimbra.ldif $(LDAP_DEST_DIR)/$(LDAP_DIR)/etc/openldap/zimbra.ldif
+	cp $(SERVICE_DIR)/conf/ldap/zimbra_opensrc_mimehandlers.ldif $(LDAP_DEST_DIR)/$(LDAP_DIR)/etc/openldap/zimbra_opensrc_mimehandlers.ldif
+	cp $(SERVICE_DIR)/build/dist/openldap-2.2.17/etc/openldap/zimbra_mimehandlers.ldif $(LDAP_DEST_DIR)/$(LDAP_DIR)/etc/openldap/zimbra_mimehandlers.ldif
 	cp $(SERVICE_DIR)/conf/ldap/widgets.ldif $(LDAP_DEST_DIR)/$(LDAP_DIR)/etc/openldap/widgets.ldif
 
 $(MTA_DEST_DIR)/$(CLAMAV_DIR): $(MTA_DEST_DIR)
@@ -575,25 +575,25 @@ $(WEBAPP_DIR): $(DEST_DIR)/$(TOMCAT_DIR)
 	mkdir -p $@
 
 $(WEBAPP_DIR)/service.war: $(WEBAPP_DIR)
-	(cd $(CONVERT_DIR); $(ANT) -Dliquid.buildinfo.version=$(MAJOR).$(MINOR)_$(BUILD_PLATFORM) -Dliquid.buildinfo.release=$(RELEASE) -Dliquid.buildinfo.date=$(DATE) -Dliquid.buildinfo.host=$(HOST) dev-dist)
-	(cd $(BACKUP_DIR); $(ANT) -Dliquid.buildinfo.version=$(MAJOR).$(MINOR)_$(BUILD_PLATFORM) -Dliquid.buildinfo.release=$(RELEASE) -Dliquid.buildinfo.date=$(DATE) -Dliquid.buildinfo.host=$(HOST) dev-dist)
+	(cd $(CONVERT_DIR); $(ANT) -Dzimbra.buildinfo.version=$(MAJOR).$(MINOR)_$(BUILD_PLATFORM) -Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) -Dzimbra.buildinfo.host=$(HOST) dev-dist)
+	(cd $(BACKUP_DIR); $(ANT) -Dzimbra.buildinfo.version=$(MAJOR).$(MINOR)_$(BUILD_PLATFORM) -Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) -Dzimbra.buildinfo.host=$(HOST) dev-dist)
 	(cd $(SERVICE_DIR);  \
 	cp build/dist/jakarta-tomcat-5.0.28/webapps/service.war $@)
 
-$(WEBAPP_DIR)/liquidAdmin.war: $(WEBAPP_DIR)
+$(WEBAPP_DIR)/Zimbra::Admin.war: $(WEBAPP_DIR)
 	(cd $(CONSOLE_DIR); $(ANT) admin-war; \
-	cp build/dist/jakarta-tomcat-5.0.28/webapps/liquidAdmin.war $@)
+	cp build/dist/jakarta-tomcat-5.0.28/webapps/Zimbra::Admin.war $@)
 
-$(WEBAPP_DIR)/liquid.war: $(WEBAPP_DIR)
+$(WEBAPP_DIR)/zimbra.war: $(WEBAPP_DIR)
 	(cd $(CONSOLE_DIR); $(ANT) prod-war; \
-	cp build/dist/jakarta-tomcat-5.0.28/webapps/liquid.war $@)
+	cp build/dist/jakarta-tomcat-5.0.28/webapps/zimbra.war $@)
 
 $(DEST_DIR)/$(TOMCAT_DIR)/common/lib/mail.jar: $(DEST_DIR)/$(TOMCAT_DIR) $(WEBAPP_DIR)/service.war
 	mkdir -p $(DEST_DIR)/$(TOMCAT_DIR)/common/lib
 	cp $(SERVICE_DIR)/build/dist/lib/mail.jar $(DEST_DIR)/$(TOMCAT_DIR)/common/lib
 
-$(DEST_DIR)/$(TOMCAT_DIR)/common/endorsed/liquidcharset.jar: $(DEST_DIR)/$(TOMCAT_DIR) $(WEBAPP_DIR)/service.war
-	cp $(SERVICE_DIR)/build/dist/lib/liquidcharset.jar $(DEST_DIR)/$(TOMCAT_DIR)/common/endorsed
+$(DEST_DIR)/$(TOMCAT_DIR)/common/endorsed/zimbracharset.jar: $(DEST_DIR)/$(TOMCAT_DIR) $(WEBAPP_DIR)/service.war
+	cp $(SERVICE_DIR)/build/dist/lib/zimbracharset.jar $(DEST_DIR)/$(TOMCAT_DIR)/common/endorsed
 
 $(DEST_DIR)/$(TOMCAT_DIR)/common/lib/activation.jar: $(DEST_DIR)/$(TOMCAT_DIR) $(WEBAPP_DIR)/service.war
 	mkdir -p $(DEST_DIR)/$(TOMCAT_DIR)/common/lib
@@ -603,9 +603,9 @@ $(DEST_DIR)/$(TOMCAT_DIR)/common/lib/KeyView.jar: $(DEST_DIR)/$(TOMCAT_DIR) $(WE
 	mkdir -p $(DEST_DIR)/$(TOMCAT_DIR)/common/lib
 	cp $(SERVICE_DIR)/build/dist/lib/KeyView.jar $(DEST_DIR)/$(TOMCAT_DIR)/common/lib
 
-$(DEST_DIR)/$(TOMCAT_DIR)/common/lib/liquidos.jar: $(DEST_DIR)/$(TOMCAT_DIR) $(WEBAPP_DIR)/service.war
+$(DEST_DIR)/$(TOMCAT_DIR)/common/lib/zimbraos.jar: $(DEST_DIR)/$(TOMCAT_DIR) $(WEBAPP_DIR)/service.war
 	mkdir -p $(DEST_DIR)/$(TOMCAT_DIR)/common/lib
-	cp $(SERVICE_DIR)/build/dist/lib/liquidos.jar $(DEST_DIR)/$(TOMCAT_DIR)/common/lib
+	cp $(SERVICE_DIR)/build/dist/lib/zimbraos.jar $(DEST_DIR)/$(TOMCAT_DIR)/common/lib
 
 $(DEST_DIR)/libexec:
 	mkdir -p $@
@@ -643,23 +643,23 @@ $(CORE_DEST_DIR)/bin:
 	rm -f $(CORE_DEST_DIR)/bin/lqtransserver.bat
 	rm -f $(CORE_DEST_DIR)/bin/ldap
 	mv $(CORE_DEST_DIR)/bin/ldap.production $(CORE_DEST_DIR)/bin/ldap
-	cp $(LIQUID_BIN_DIR)/swatch $@
-	cp $(LIQUID_BIN_DIR)/swatchctl $@
-	cp $(LIQUID_BIN_DIR)/lqloadstats $@
-	cp $(LIQUID_BIN_DIR)/lqaggregatestats $@
-	cp $(LIQUID_BIN_DIR)/lqaggregatestatsdaily $@
-	cp $(LIQUID_BIN_DIR)/lqgetstats $@
-	cp $(LIQUID_BIN_DIR)/lqlogrotate $@
-	cp $(LIQUID_BIN_DIR)/lqsnmpinit $@
-	cp $(LIQUID_BIN_DIR)/lqgengraphs $@
-	cp $(LIQUID_BIN_DIR)/lqgensystemwidegraphs $@
-	cp $(LIQUID_BIN_DIR)/lqfetchstats $@
-	cp $(LIQUID_BIN_DIR)/lqfetchallstats $@
-	cp $(LIQUID_BIN_DIR)/lqcreatecert $@
-	cp $(LIQUID_BIN_DIR)/lqcertinstall $@
-	cp $(LIQUID_BIN_DIR)/roll_catalina.sh $@
-	cp $(LIQUID_BIN_DIR)/lqtlsctl $@
-	cp $(LIQUID_BIN_DIR)/lqfixperms.sh $@
+	cp $(ZIMBRA_BIN_DIR)/swatch $@
+	cp $(ZIMBRA_BIN_DIR)/swatchctl $@
+	cp $(ZIMBRA_BIN_DIR)/zmloadstats $@
+	cp $(ZIMBRA_BIN_DIR)/zmaggregatestats $@
+	cp $(ZIMBRA_BIN_DIR)/zmaggregatestatsdaily $@
+	cp $(ZIMBRA_BIN_DIR)/zmgetstats $@
+	cp $(ZIMBRA_BIN_DIR)/zmlogrotate $@
+	cp $(ZIMBRA_BIN_DIR)/zmsnmpinit $@
+	cp $(ZIMBRA_BIN_DIR)/zmgengraphs $@
+	cp $(ZIMBRA_BIN_DIR)/zmgensystemwidegraphs $@
+	cp $(ZIMBRA_BIN_DIR)/zmfetchstats $@
+	cp $(ZIMBRA_BIN_DIR)/zmfetchallstats $@
+	cp $(ZIMBRA_BIN_DIR)/zmcreatecert $@
+	cp $(ZIMBRA_BIN_DIR)/zmcertinstall $@
+	cp $(ZIMBRA_BIN_DIR)/roll_catalina.sh $@
+	cp $(ZIMBRA_BIN_DIR)/zmtlsctl $@
+	cp $(ZIMBRA_BIN_DIR)/zmfixperms.sh $@
 
 clean:
 	rm -rf $(CLEAN_TARGETS)
@@ -676,7 +676,7 @@ allclean: clean
 #
 
 dev-allclean:
-	-su - liquid -c lqcontrol shutdown
+	-su - zimbra -c zmcontrol shutdown
 	rm -rf $(DEV_INSTALL_ROOT)/*
 
 dev-clean: dev-stop
@@ -695,7 +695,7 @@ $(DEV_INSTALL_ROOT)/$(POSTFIX_DIR): $(DEV_INSTALL_ROOT)
 	(cd $(DEV_INSTALL_ROOT); tar xzf $(POSTFIX_SOURCE).tgz;)
 	cp -f $(SERVICE_DIR)/conf/postfix/main.cf $(DEV_INSTALL_ROOT)/$(POSTFIX_DIR)/conf/main.cf
 	cp -f $(SERVICE_DIR)/conf/postfix/master.cf $(DEV_INSTALL_ROOT)/$(POSTFIX_DIR)/conf/master.cf
-	sh -x $(LIQUID_BIN_DIR)/lqfixperms.sh
+	sh -x $(ZIMBRA_BIN_DIR)/zmfixperms.sh
 
 $(DEV_INSTALL_ROOT)/$(CLAMAV_DIR): $(DEV_INSTALL_ROOT)
 	@echo "*** Installing clamav"
@@ -704,7 +704,7 @@ $(DEV_INSTALL_ROOT)/$(CLAMAV_DIR): $(DEV_INSTALL_ROOT)
 	cp -f $(RPM_CONF_DIR)/main.cvd $(DEV_INSTALL_ROOT)/$(CLAMAV_DIR)-$(CLAMAV_VERSION)/db/main.cvd.init
 	cp -f $(RPM_CONF_DIR)/daily.cvd $(DEV_INSTALL_ROOT)/$(CLAMAV_DIR)-$(CLAMAV_VERSION)/db/daily.cvd.init
 
-dev-install: $(DEV_INSTALL_ROOT)/$(MYSQL_DIR) $(DEV_INSTALL_ROOT)/$(LDAP_DIR) $(DEV_INSTALL_ROOT)/$(TOMCAT_DIR) $(DEV_INSTALL_ROOT)/$(CLAMAV_DIR) $(DEV_INSTALL_ROOT)/$(AMAVISD_DIR) $(DEV_INSTALL_ROOT)/liquidmon $(DEV_INSTALL_ROOT)/db $(DEV_INSTALL_ROOT)/lib $(DEV_INSTALL_ROOT)/bin $(DEV_INSTALL_ROOT)/conf $(DEV_INSTALL_ROOT)/$(JAVA_FILE)$(JAVA_VERSION) $(DEV_INSTALL_ROOT)/$(BDB_DIR)
+dev-install: $(DEV_INSTALL_ROOT)/$(MYSQL_DIR) $(DEV_INSTALL_ROOT)/$(LDAP_DIR) $(DEV_INSTALL_ROOT)/$(TOMCAT_DIR) $(DEV_INSTALL_ROOT)/$(CLAMAV_DIR) $(DEV_INSTALL_ROOT)/$(AMAVISD_DIR) $(DEV_INSTALL_ROOT)/zimbramon $(DEV_INSTALL_ROOT)/db $(DEV_INSTALL_ROOT)/lib $(DEV_INSTALL_ROOT)/bin $(DEV_INSTALL_ROOT)/conf $(DEV_INSTALL_ROOT)/$(JAVA_FILE)$(JAVA_VERSION) $(DEV_INSTALL_ROOT)/$(BDB_DIR)
 	rm -f $(DEV_INSTALL_ROOT)/clamav $(DEV_INSTALL_ROOT)/tomcat $(DEV_INSTALL_ROOT)/mysql $(DEV_INSTALL_ROOT)/openlap
 	ln -s $(DEV_INSTALL_ROOT)/$(CLAMAV_DIR)-$(CLAMAV_VERSION) $(DEV_INSTALL_ROOT)/clamav
 	ln -s $(DEV_INSTALL_ROOT)/$(TOMCAT_DIR) $(DEV_INSTALL_ROOT)/tomcat
@@ -715,10 +715,10 @@ dev-install: $(DEV_INSTALL_ROOT)/$(MYSQL_DIR) $(DEV_INSTALL_ROOT)/$(LDAP_DIR) $(
 	@echo "*** Installation complete"
 
 $(SERVICE_DIR)/build/dist/jakarta-tomcat-5.0.28/webapps/service.war:
-	(cd $(CONVERT_DIR); $(ANT) -Dliquid.buildinfo.version=$(MAJOR).$(MINOR)_$(BUILD_PLATFORM) -Dliquid.buildinfo.release=$(RELEASE) -Dliquid.buildinfo.date=$(DATE) -Dliquid.buildinfo.host=$(HOST) dev-dist ; )
-	(cd $(BACKUP_DIR); $(ANT) -Dliquid.buildinfo.version=$(MAJOR).$(MINOR)_$(BUILD_PLATFORM) -Dliquid.buildinfo.release=$(RELEASE) -Dliquid.buildinfo.date=$(DATE) -Dliquid.buildinfo.host=$(HOST) dev-dist ; )
+	(cd $(CONVERT_DIR); $(ANT) -Dzimbra.buildinfo.version=$(MAJOR).$(MINOR)_$(BUILD_PLATFORM) -Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) -Dzimbra.buildinfo.host=$(HOST) dev-dist ; )
+	(cd $(BACKUP_DIR); $(ANT) -Dzimbra.buildinfo.version=$(MAJOR).$(MINOR)_$(BUILD_PLATFORM) -Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) -Dzimbra.buildinfo.host=$(HOST) dev-dist ; )
 
-$(CONSOLE_DIR)/build/dist/jakarta-tomcat-5.0.28/webapps/liquid.war: 
+$(CONSOLE_DIR)/build/dist/jakarta-tomcat-5.0.28/webapps/zimbra.war: 
 	(cd $(CONSOLE_DIR); $(ANT) clean)
 	(cd $(CONSOLE_DIR); $(ANT) prod-war; )
 
@@ -732,18 +732,18 @@ $(DEV_INSTALL_ROOT)/$(LDAP_DIR): $(DEV_INSTALL_ROOT)
 	cp -f $(SERVICE_DIR)/conf/ldap/DB_CONFIG $@/var/openldap-data
 	cp -f $(SERVICE_DIR)/conf/ldap/slapd.conf $@/etc/openldap/slapd.conf
 	cp -f $(SERVICE_DIR)/conf/ldap/amavisd.schema $@/etc/openldap/schema
-	cp -f $(SERVICE_DIR)/conf/ldap/liquid.schema $@/etc/openldap/schema
-	cp -f $(SERVICE_DIR)/conf/ldap/liquid.ldif $@/etc/openldap/liquid.ldif
+	cp -f $(SERVICE_DIR)/conf/ldap/zimbra.schema $@/etc/openldap/schema
+	cp -f $(SERVICE_DIR)/conf/ldap/zimbra.ldif $@/etc/openldap/zimbra.ldif
 	cp -f $(SERVICE_DIR)/conf/ldap/widgets.ldif $@/etc/openldap/widgets.ldif
 
-$(DEV_INSTALL_ROOT)/$(TOMCAT_DIR): $(DEV_INSTALL_ROOT) $(SERVICE_DIR)/build/dist/jakarta-tomcat-5.0.28/webapps/service.war  $(CONSOLE_DIR)/build/dist/jakarta-tomcat-5.0.28/webapps/liquid.war
+$(DEV_INSTALL_ROOT)/$(TOMCAT_DIR): $(DEV_INSTALL_ROOT) $(SERVICE_DIR)/build/dist/jakarta-tomcat-5.0.28/webapps/service.war  $(CONSOLE_DIR)/build/dist/jakarta-tomcat-5.0.28/webapps/zimbra.war
 	@echo "*** Installing tomcat"
 	(cd $(DEV_INSTALL_ROOT); tar xzf $(TOMCAT_SOURCE).tar.gz;)
 	cp -f $(THIRD_PARTY)/jakarta-tomcat/jmxri.jar $@/bin/jmx.jar
 	cp -f $(SERVICE_DIR)/conf/tomcat-5.5/server.xml.production $@/conf/server.xml
-	cp -f $(SERVICE_DIR)/conf/liquid.xml $@/conf/Catalina/localhost/liquid.xml
+	cp -f $(SERVICE_DIR)/conf/zimbra.xml $@/conf/Catalina/localhost/zimbra.xml
 	mkdir -p $@/conf/AdminService/localhost
-	cp -f $(SERVICE_DIR)/conf/liquidAdmin.xml $@/conf/AdminService/localhost/liquidAdmin.xml
+	cp -f $(SERVICE_DIR)/conf/Zimbra::Admin.xml $@/conf/AdminService/localhost/Zimbra::Admin.xml
 	cp -f $(SERVICE_DIR)/conf/tomcat-5.5/tomcat-users.xml $@/conf
 	cp -f $(SERVICE_DIR)/conf/log4j.properties.production  $@/conf/log4j.properties
 	mkdir -p $@/temp
@@ -757,34 +757,34 @@ $(DEV_INSTALL_ROOT)/$(AMAVISD_DIR): $(DEV_INSTALL_ROOT)
 	cp -f $(RPM_CONF_DIR)/bayes* $@/.spamassassin/init
 
 devperllibs: 
-	mkdir -p $(DEV_INSTALL_ROOT)/liquidmon/lib
-	(cd $(DEV_INSTALL_ROOT)/liquidmon/lib; \
+	mkdir -p $(DEV_INSTALL_ROOT)/zimbramon/lib
+	(cd $(DEV_INSTALL_ROOT)/zimbramon/lib; \
 	tar xzf $(PERL_LIB_SOURCE)/builds/perllib.tgz)
-	cp -fR $(BUILD_ROOT)/lib/Liquid $(DEV_INSTALL_ROOT)/liquidmon/lib
+	cp -fR $(BUILD_ROOT)/lib/Zimbra $(DEV_INSTALL_ROOT)/zimbramon/lib
 
-$(DEV_INSTALL_ROOT)/liquidmon: $(DEV_INSTALL_ROOT) devperllibs
-	@echo "*** Installing liquidmon"
+$(DEV_INSTALL_ROOT)/zimbramon: $(DEV_INSTALL_ROOT) devperllibs
+	@echo "*** Installing zimbramon"
 	mkdir -p $@
-	cp -f -R $(LIQUIDMON_DIR)/lqmon $@
-	chmod 755 $@/lqmon
-	cp -f -R $(LIQUIDMON_DIR)/lqcontrol $@
-	chmod 755 $@/lqcontrol
-	cp -f -R $(RPM_CONF_DIR)/liquid.cf.in $@
-	cp -f -R $(RPM_CONF_DIR)/liquidcore.cf $@
-	cp -f -R $(RPM_CONF_DIR)/liquidmail.cf $@
-	cp -f -R $(RPM_CONF_DIR)/liquidmta.cf $@
-	cp -f -R $(RPM_CONF_DIR)/liquidldap.cf $@
-	cp -f -R $(RPM_CONF_DIR)/liquidsnmp.cf $@
-	mkdir -p $@/lib/liquidpm
-	@cp -f $(wildcard $(BUILD_ROOT)/lib/liquidpm/*.pm) $@/lib/liquidpm
-	mkdir -p $@/lib/liquidpm/SOAP
-	@cp -f $(wildcard $(SERVICE_DIR)/src/perl/soap/*.pm) $@/lib/liquidpm/SOAP
-	(cd $(DEV_INSTALL_ROOT)/liquidmon; tar xzf $(MRTG_SOURCE).tgz)
-	mkdir -p $(DEV_INSTALL_ROOT)/liquidmon/mrtg/work
-	mkdir -p $(DEV_INSTALL_ROOT)/liquidmon/mrtg/conf
-	cp -f $(RPM_CONF_DIR)/mrtg.cfg $(DEV_INSTALL_ROOT)/liquidmon/mrtg/conf
-	cp -f $(RPM_CONF_DIR)/crontab $(DEV_INSTALL_ROOT)/liquidmon/crontab
-	(cd $(DEV_INSTALL_ROOT)/liquidmon; tar xzf $(RRD_SOURCE).tar.gz)
+	cp -f -R $(ZIMBRAMON_DIR)/zmmon $@
+	chmod 755 $@/zmmon
+	cp -f -R $(ZIMBRAMON_DIR)/zmcontrol $@
+	chmod 755 $@/zmcontrol
+	cp -f -R $(RPM_CONF_DIR)/zimbra.cf.in $@
+	cp -f -R $(RPM_CONF_DIR)/zimbracore.cf $@
+	cp -f -R $(RPM_CONF_DIR)/zimbramail.cf $@
+	cp -f -R $(RPM_CONF_DIR)/zimbramta.cf $@
+	cp -f -R $(RPM_CONF_DIR)/zimbraldap.cf $@
+	cp -f -R $(RPM_CONF_DIR)/zimbrasnmp.cf $@
+	mkdir -p $@/lib/Zimbra/Mon
+	@cp -f $(wildcard $(BUILD_ROOT)/lib/Zimbra/Mon/*.pm) $@/lib/Zimbra/Mon
+	mkdir -p $@/lib/Zimbra/Mon/SOAP
+	@cp -f $(wildcard $(SERVICE_DIR)/src/perl/soap/*.pm) $@/lib/Zimbra/Mon/SOAP
+	(cd $(DEV_INSTALL_ROOT)/zimbramon; tar xzf $(MRTG_SOURCE).tgz)
+	mkdir -p $(DEV_INSTALL_ROOT)/zimbramon/mrtg/work
+	mkdir -p $(DEV_INSTALL_ROOT)/zimbramon/mrtg/conf
+	cp -f $(RPM_CONF_DIR)/mrtg.cfg $(DEV_INSTALL_ROOT)/zimbramon/mrtg/conf
+	cp -f $(RPM_CONF_DIR)/crontab $(DEV_INSTALL_ROOT)/zimbramon/crontab
+	(cd $(DEV_INSTALL_ROOT)/zimbramon; tar xzf $(RRD_SOURCE).tar.gz)
 
 $(DEV_INSTALL_ROOT)/db:
 	@echo "*** Installing db"
@@ -815,22 +815,22 @@ $(DEV_INSTALL_ROOT)/bin:
 	rm -f $(DEV_INSTALL_ROOT)/bin/lqtransserver.bat
 	rm -f $(DEV_INSTALL_ROOT)/bin/ldap
 	mv $@/ldap.production $@/ldap
-	cp -f $(LIQUID_BIN_DIR)/swatch $@
-	cp -f $(LIQUID_BIN_DIR)/swatchctl $@
-	cp -f $(LIQUID_BIN_DIR)/lqloadstats $@
-	cp -f $(LIQUID_BIN_DIR)/lqaggregatestats $@
-	cp -f $(LIQUID_BIN_DIR)/lqaggregatestatsdaily $@
-	cp -f $(LIQUID_BIN_DIR)/lqgetstats $@
-	cp -f $(LIQUID_BIN_DIR)/lqlogrotate $@
-	cp -f $(LIQUID_BIN_DIR)/lqsnmpinit $@
-	cp -f $(LIQUID_BIN_DIR)/lqgengraphs $@
-	cp -f $(LIQUID_BIN_DIR)/lqgensystemwidegraphs $@
-	cp -f $(LIQUID_BIN_DIR)/lqfetchstats $@
-	cp -f $(LIQUID_BIN_DIR)/lqfetchallstats $@
-	cp -f $(LIQUID_BIN_DIR)/lqcreatecert $@
-	cp -f $(LIQUID_BIN_DIR)/roll_catalina.sh $@
-	cp -f $(LIQUID_BIN_DIR)/lqtlsctl $@
-	cp -f $(LIQUID_BIN_DIR)/lqfixperms.sh $@
+	cp -f $(ZIMBRA_BIN_DIR)/swatch $@
+	cp -f $(ZIMBRA_BIN_DIR)/swatchctl $@
+	cp -f $(ZIMBRA_BIN_DIR)/zmloadstats $@
+	cp -f $(ZIMBRA_BIN_DIR)/zmaggregatestats $@
+	cp -f $(ZIMBRA_BIN_DIR)/zmaggregatestatsdaily $@
+	cp -f $(ZIMBRA_BIN_DIR)/zmgetstats $@
+	cp -f $(ZIMBRA_BIN_DIR)/zmlogrotate $@
+	cp -f $(ZIMBRA_BIN_DIR)/zmsnmpinit $@
+	cp -f $(ZIMBRA_BIN_DIR)/zmgengraphs $@
+	cp -f $(ZIMBRA_BIN_DIR)/zmgensystemwidegraphs $@
+	cp -f $(ZIMBRA_BIN_DIR)/zmfetchstats $@
+	cp -f $(ZIMBRA_BIN_DIR)/zmfetchallstats $@
+	cp -f $(ZIMBRA_BIN_DIR)/zmcreatecert $@
+	cp -f $(ZIMBRA_BIN_DIR)/roll_catalina.sh $@
+	cp -f $(ZIMBRA_BIN_DIR)/zmtlsctl $@
+	cp -f $(ZIMBRA_BIN_DIR)/zmfixperms.sh $@
 	chmod u+x $@/*
 
 $(DEV_INSTALL_ROOT)/conf:
