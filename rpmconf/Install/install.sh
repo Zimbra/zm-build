@@ -84,7 +84,7 @@ SMTPNOTIFY="0"
 INSTALL_PACKAGES="zimbra-core"
 STARTSERVERS="yes"
 LDAPROOTPW=""
-LDAPLIQUIDPW=""
+LDAPZIMBRAPW=""
 CREATEDOMAIN=$HOSTNAME
 CREATEADMIN="admin@${CREATEDOMAIN}"
 CREATEADMINPASS=""
@@ -121,7 +121,7 @@ SMTPNOTIFY=$SMTPNOTIFY
 INSTALL_PACKAGES="$INSTALL_PACKAGES"
 STARTSERVERS=$STARTSERVERS
 LDAPROOTPW=$LDAPROOTPW
-LDAPLIQUIDPW=$LDAPLIQUIDPW
+LDAPZIMBRAPW=$LDAPZIMBRAPW
 CREATEDOMAIN=$CREATEDOMAIN
 CREATEADMIN=$CREATEADMIN
 CREATEADMINPASS=$CREATEADMINPASS
@@ -332,7 +332,7 @@ setRemove() {
 		checkVersionMatches
 
 		echo ""
-		echo "Liquid mail appears already to be installed."
+		echo "The Zimbra Collaboration Suite appears already to be installed."
 		if [ $VERSIONMATCH = "yes" ]; then
 			echo "It can be upgraded with no effect on existing accounts,"
 			echo "or the current installation can be completely removed prior"
@@ -410,7 +410,7 @@ setDefaultsFromExistingConfig() {
 	SNMPNOTIFY=${snmp_notify:-0}
 	SMTPNOTIFY=${smtp_notify:-0}
 	LDAPROOTPW=${ldap_root_password}
-	LDAPLIQUIDPW=${zimbra_ldap_password}
+	LDAPZIMBRAPW=${zimbra_ldap_password}
 
 	echo "   HOSTNAME=${zimbra_server_hostname}"
 	echo "   LDAPHOST=${ldap_host}"
@@ -421,7 +421,7 @@ setDefaultsFromExistingConfig() {
 	echo "   SNMPNOTIFY=${snmp_notify:-0}"
 	echo "   SMTPNOTIFY=${smtp_notify:-0}"
 	echo "   LDAPROOTPW=${ldap_root_password}"
-	echo "   LDAPLIQUIDPW=${zimbra_ldap_password}"
+	echo "   LDAPZIMBRAPW=${zimbra_ldap_password}"
 
 }
 
@@ -435,7 +435,7 @@ restoreExistingConfig() {
 		runAsZimbra "zmlocalconfig -f -e $i"
 	done < $RF
 	if [ -f $SAVEDIR/backup.save ]; then
-		runAsZimbra "cat $RESTORECONFIG/backup.save | xargs lqschedulebackup -R"
+		runAsZimbra "cat $RESTORECONFIG/backup.save | xargs zmschedulebackup -R"
 	fi
 	echo "done"
 }
@@ -457,8 +457,8 @@ saveExistingConfig() {
 	cp /opt/zimbra/tomcat/conf/keystore $SAVEDIR
 	cp /opt/zimbra/conf/smtpd.key $SAVEDIR
 	cp /opt/zimbra/conf/smtpd.crt $SAVEDIR
-	if [ -x /opt/zimbra/bin/lqschedulebackup ]; then
-		runAsZimbra "lqschedulebackup -s > $SAVEDIR/backup.save"
+	if [ -x /opt/zimbra/bin/zmschedulebackup ]; then
+		runAsZimbra "zmschedulebackup -s > $SAVEDIR/backup.save"
 	fi
 }
 
@@ -472,7 +472,7 @@ removeExistingInstall() {
 		echo "Removing existing packages"
 		echo ""
 
-		rpm -ev --noscripts --allmatches liquid-core liquid-snmp liquid-ldap liquid-mta liquid-store > /dev/null 2>&1
+		rpm -ev --noscripts --allmatches zimbra-core zimbra-snmp zimbra-ldap zimbra-mta zimbra-store > /dev/null 2>&1
 
 		for p in $INSTALLED_PACKAGES; do
 			echo -n "   $p..."
@@ -487,8 +487,8 @@ removeExistingInstall() {
 		echo "Removing deployed webapp directories"
 		/bin/rm -rf /opt/zimbra/tomcat/webapps/zimbra
 		/bin/rm -rf /opt/zimbra/tomcat/webapps/zimbra.war
-		/bin/rm -rf /opt/zimbra/tomcat/webapps/Zimbra::Admin
-		/bin/rm -rf /opt/zimbra/tomcat/webapps/Zimbra::Admin.war
+		/bin/rm -rf /opt/zimbra/tomcat/webapps/Zimbra::Mon::Admin
+		/bin/rm -rf /opt/zimbra/tomcat/webapps/Zimbra::Mon::Admin.war
 		/bin/rm -rf /opt/zimbra/tomcat/webapps/service
 		/bin/rm -rf /opt/zimbra/tomcat/webapps/service.war
 	fi
@@ -654,7 +654,7 @@ verifyLdapServer() {
 	echo ""
 	echo -n  "Contacting ldap server $LDAPHOST on $LDAPPORT..."
 
-	$MYLDAPSEARCH -h $LDAPHOST -p $LDAPPORT -w $LDAPLIQUIDPW -D "uid=zimbra,cn=admins,cn=zimbra" > /dev/null 2>&1
+	$MYLDAPSEARCH -h $LDAPHOST -p $LDAPPORT -w $LDAPZIMBRAPW -D "uid=zimbra,cn=admins,cn=zimbra" > /dev/null 2>&1
 	LDAPRESULT=$?
 
 	if [ $LDAPRESULT != 0 ]; then
@@ -715,8 +715,8 @@ getConfigOptions() {
 					"$LDAPROOTPW"
 				LDAPROOTPW=$response
 				askNonBlank "Enter the zimbra ldap password for $LDAPHOST:" \
-					"$LDAPLIQUIDPW"
-				LDAPLIQUIDPW=$response
+					"$LDAPZIMBRAPW"
+				LDAPZIMBRAPW=$response
 			fi
 
 			verifyLdapServer
@@ -894,7 +894,7 @@ postInstallConfig() {
 
 	if [ $UPGRADE = "no" -a $STORE_HERE = "yes" ]; then
 		echo -n "Creating db..."
-		runAsZimbra "lqmyinit"
+		runAsZimbra "zmmyinit"
 		echo "done"
 	fi
 
@@ -915,13 +915,13 @@ postInstallConfig() {
 	if [ $UPGRADE = "no" ]; then
 		if [ $LDAP_HERE = "yes" ]; then
 			echo -n "Initializing ldap..."
-			runAsZimbra "lqldapinit"
+			runAsZimbra "zmldapinit"
 			echo "done"
 		else
 			# set the ldap password in localconfig only
 			echo -n "Setting the ldap passwords..."
 			runAsZimbra "zmlocalconfig -f -e ldap_root_password=$LDAPROOTPW"
-			runAsZimbra "zmlocalconfig -f -e zimbra_ldap_password=$LDAPLIQUIDPW"
+			runAsZimbra "zmlocalconfig -f -e zimbra_ldap_password=$LDAPZIMBRAPW"
 			echo "done"
 		fi
 
@@ -952,7 +952,7 @@ postInstallConfig() {
 		if [ $LDAP_HERE = "yes" ]; then
 			echo -n "Starting ldap..."
 			runAsZimbra "ldap start"
-			runAsZimbra "lqldapapplyldif"
+			runAsZimbra "zmldapapplyldif"
 			echo "done"
 		fi
 	fi
@@ -973,7 +973,7 @@ postInstallConfig() {
 
 	if [ $POSTFIX_HERE = "yes" ]; then
 		echo -n "Initializing mta config..."
-		runAsZimbra "lqmtainit $LDAPHOST"
+		runAsZimbra "zmmtainit $LDAPHOST"
 		echo "done"
 
 		# zmprov isn't very friendly
