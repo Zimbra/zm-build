@@ -587,9 +587,17 @@ findLatestPackage() {
 
 checkSendmail() {
 	echo ""
-	echo "Checking for sendmail"
+	echo "Checking for sendmail/postfix"
 	echo ""
-	
+
+	if [ -f /var/lock/subsys/postfix ]; then
+		askYN "Postfix appears to be running.  Shut it down?" "Y"
+		if [ $response = "yes" ]; then
+			/etc/init.d/postfix stop
+			chkconfig postfix off
+		fi
+	fi
+
 	if [ -f /var/lock/subsys/sendmail ]; then
 		askYN "Sendmail appears to be running.  Shut it down?" "Y"
 		if [ $response = "yes" ]; then
@@ -597,6 +605,7 @@ checkSendmail() {
 			chkconfig sendmail off
 		fi
 	fi
+
 }
 
 checkPackages() {
