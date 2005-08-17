@@ -40,8 +40,8 @@ CLEAN_TARGETS	=	\
 		$(SNMP_DEST_ROOT) \
 		$(CORE_DEST_ROOT) \
 		$(TMPDIR) \
-		zimbramail \
-		zimbramail-2*.tgz \
+		zcs \
+		zcs-2*.tgz \
 		zimbra.rpmrc \
 		zimbracore.spec \
 		zimbrasnmp.spec \
@@ -184,7 +184,7 @@ SA_PERL_LIBS = \
 
 WEBAPPS	:= \
 	$(WEBAPP_DIR)/service.war \
-	$(WEBAPP_DIR)/Admin.war \
+	$(WEBAPP_DIR)/zimbraAdmin.war \
 	$(WEBAPP_DIR)/zimbra.war 
 
 QA_COMPONENTS	:= \
@@ -210,10 +210,10 @@ MTA_COMPONENTS	:= \
 
 MAIL_COMPONENTS := \
 	$(DEST_DIR)/$(TOMCAT_DIR) \
-	$(DEST_DIR)/$(TOMCAT_DIR)/common/lib/zimbraos.jar \
+	$(DEST_DIR)/$(TOMCAT_DIR)/common/lib/zimbra-native.jar \
 	$(DEST_DIR)/$(TOMCAT_DIR)/common/lib/KeyView.jar \
 	$(DEST_DIR)/$(TOMCAT_DIR)/common/lib/mail.jar \
-	$(DEST_DIR)/$(TOMCAT_DIR)/common/endorsed/zimbracharset.jar \
+	$(DEST_DIR)/$(TOMCAT_DIR)/common/endorsed/zimbra-charset.jar \
 	$(DEST_DIR)/$(TOMCAT_DIR)/common/lib/activation.jar \
 	$(DEST_DIR)/$(MYSQL_DIR) \
 	$(DEST_DIR)/verity \
@@ -241,7 +241,7 @@ export JAVA_HOME
 
 TMPDIR	:= tmp
 
-all: rpms qa zimbramail-$(RELEASE).tgz
+all: rpms qa zcs-$(RELEASE).tgz
 
 showtag:
 	echo $(RELEASE)
@@ -250,19 +250,19 @@ showtag:
 qa: 
 	cd $(QA_DIR);  CLASSPATH=$(SERVICE_DIR)/build/classes $(ANT) jar; 
 
-zimbramail-$(RELEASE).tgz: rpms
-	mkdir -p zimbramail/packages
-	mkdir -p zimbramail/bin
-	mkdir -p zimbramail/data
-	cp -f $(SERVICE_DIR)/build/versions-init.sql zimbramail/data
-	cp $(LDAP_DEST_ROOT)/opt/zimbra/$(LDAP_DIR)/bin/ldapsearch zimbramail/bin
-	cp $(RPM_CONF_DIR)/Install/install.sh zimbramail
-	chmod 755 zimbramail/install.sh
-	cp $(RPM_DIR)/*rpm zimbramail/packages
-	rm -f zimbramail/packages/zimbra-qatest*
-	tar czf zimbramail-$(MAJOR).$(MINOR)_$(BUILD_PLATFORM)_$(RELEASE).tgz zimbramail
-	cp zimbramail-$(MAJOR).$(MINOR)_$(BUILD_PLATFORM)_$(RELEASE).tgz $(RPM_DIR)
-	(cd $(RPM_DIR); ln -s zimbramail-$(MAJOR).$(MINOR)_$(BUILD_PLATFORM)_$(RELEASE).tgz zimbramail.tgz)
+zcs-$(RELEASE).tgz: rpms
+	mkdir -p zcs/packages
+	mkdir -p zcs/bin
+	mkdir -p zcs/data
+	cp -f $(SERVICE_DIR)/build/versions-init.sql zcs/data
+	cp $(LDAP_DEST_ROOT)/opt/zimbra/$(LDAP_DIR)/bin/ldapsearch zcs/bin
+	cp $(RPM_CONF_DIR)/Install/install.sh zcs
+	chmod 755 zcs/install.sh
+	cp $(RPM_DIR)/*rpm zcs/packages
+	rm -f zcs/packages/zimbra-qatest*
+	tar czf zcs-$(MAJOR).$(MINOR)_$(BUILD_PLATFORM)_$(RELEASE).tgz zcs
+	cp zcs-$(MAJOR).$(MINOR)_$(BUILD_PLATFORM)_$(RELEASE).tgz $(RPM_DIR)
+	(cd $(RPM_DIR); ln -s zcs-$(MAJOR).$(MINOR)_$(BUILD_PLATFORM)_$(RELEASE).tgz zcs.tgz)
 	@echo "*** BUILD COMPLETED ***"
 
 rpms: core mta mail ldap snmp qatest
@@ -575,9 +575,9 @@ $(WEBAPP_DIR)/service.war: $(WEBAPP_DIR)
 	(cd $(SERVICE_DIR);  \
 	cp build/dist/jakarta-tomcat-5.0.28/webapps/service.war $@)
 
-$(WEBAPP_DIR)/Admin.war: $(WEBAPP_DIR)
+$(WEBAPP_DIR)/zimbraAdmin.war: $(WEBAPP_DIR)
 	(cd $(CONSOLE_DIR); $(ANT) admin-war; \
-	cp build/dist/jakarta-tomcat-5.0.28/webapps/Admin.war $@)
+	cp build/dist/jakarta-tomcat-5.0.28/webapps/zimbraAdmin.war $@)
 
 $(WEBAPP_DIR)/zimbra.war: $(WEBAPP_DIR)
 	(cd $(CONSOLE_DIR); $(ANT) prod-war; \
@@ -587,8 +587,8 @@ $(DEST_DIR)/$(TOMCAT_DIR)/common/lib/mail.jar: $(DEST_DIR)/$(TOMCAT_DIR) $(WEBAP
 	mkdir -p $(DEST_DIR)/$(TOMCAT_DIR)/common/lib
 	cp $(SERVICE_DIR)/build/dist/lib/mail.jar $(DEST_DIR)/$(TOMCAT_DIR)/common/lib
 
-$(DEST_DIR)/$(TOMCAT_DIR)/common/endorsed/zimbracharset.jar: $(DEST_DIR)/$(TOMCAT_DIR) $(WEBAPP_DIR)/service.war
-	cp $(SERVICE_DIR)/build/dist/lib/zimbracharset.jar $(DEST_DIR)/$(TOMCAT_DIR)/common/endorsed
+$(DEST_DIR)/$(TOMCAT_DIR)/common/endorsed/zimbra-charset.jar: $(DEST_DIR)/$(TOMCAT_DIR) $(WEBAPP_DIR)/service.war
+	cp $(SERVICE_DIR)/build/dist/lib/zimbra-charset.jar $(DEST_DIR)/$(TOMCAT_DIR)/common/endorsed
 
 $(DEST_DIR)/$(TOMCAT_DIR)/common/lib/activation.jar: $(DEST_DIR)/$(TOMCAT_DIR) $(WEBAPP_DIR)/service.war
 	mkdir -p $(DEST_DIR)/$(TOMCAT_DIR)/common/lib
@@ -598,16 +598,16 @@ $(DEST_DIR)/$(TOMCAT_DIR)/common/lib/KeyView.jar: $(DEST_DIR)/$(TOMCAT_DIR) $(WE
 	mkdir -p $(DEST_DIR)/$(TOMCAT_DIR)/common/lib
 	cp $(SERVICE_DIR)/build/dist/lib/KeyView.jar $(DEST_DIR)/$(TOMCAT_DIR)/common/lib
 
-$(DEST_DIR)/$(TOMCAT_DIR)/common/lib/zimbraos.jar: $(DEST_DIR)/$(TOMCAT_DIR) $(WEBAPP_DIR)/service.war
+$(DEST_DIR)/$(TOMCAT_DIR)/common/lib/zimbra-native.jar: $(DEST_DIR)/$(TOMCAT_DIR) $(WEBAPP_DIR)/service.war
 	mkdir -p $(DEST_DIR)/$(TOMCAT_DIR)/common/lib
-	cp $(SERVICE_DIR)/build/dist/lib/zimbraos.jar $(DEST_DIR)/$(TOMCAT_DIR)/common/lib
+	cp $(SERVICE_DIR)/build/dist/lib/zimbra-native.jar $(DEST_DIR)/$(TOMCAT_DIR)/common/lib
 
 $(DEST_DIR)/libexec:
 	mkdir -p $@
 	cp -R $(SERVICE_DIR)/libexec/[a-z]* $@
 	cp -R $(SERVICE_DIR)/src/libexec/[a-z]* $@
-	#cp -R $(BUILD_ROOT)/lqhac.pl $@
-	#cp -R $(BUILD_ROOT)/lqhad.pl $@
+	#cp -R $(BUILD_ROOT)/zmhac.pl $@
+	#cp -R $(BUILD_ROOT)/zmhad.pl $@
 
 $(CORE_DEST_DIR)/db: $(WEBAPP_DIR)/service.war
 	mkdir -p $@
@@ -626,7 +626,7 @@ $(CORE_DEST_DIR)/conf:
 	cp $(SERVICE_DIR)/conf/freshclam.conf.in $@
 	cp $(SERVICE_DIR)/conf/postfix_header_checks.in $@
 	cp $(SERVICE_DIR)/conf/salocal.cf $@
-	cp $(SERVICE_DIR)/conf/lqmta.cf $@
+	cp $(SERVICE_DIR)/conf/zmmta.cf $@
 	cp $(SERVICE_DIR)/conf/postfix_recipient_restrictions.cf $@
 	mkdir -p $@/spamassassin
 	cp $(SERVICE_DIR)/conf/spamassassin/* $@/spamassassin
@@ -635,7 +635,7 @@ $(CORE_DEST_DIR)/bin:
 	mkdir -p $@
 	cp -R $(SERVICE_DIR)/build/dist/bin/[a-z]* $@
 	cp -R $(CONVERT_DIR)/src/bin/[a-z]* $@
-	rm -f $(CORE_DEST_DIR)/bin/lqtransserver.bat
+	rm -f $(CORE_DEST_DIR)/bin/zmtransserver.bat
 	rm -f $(CORE_DEST_DIR)/bin/ldap
 	mv $(CORE_DEST_DIR)/bin/ldap.production $(CORE_DEST_DIR)/bin/ldap
 	cp $(ZIMBRA_BIN_DIR)/swatch $@
@@ -807,7 +807,7 @@ $(DEV_INSTALL_ROOT)/bin:
 	@echo "*** Installing bin"
 	mkdir -p $@
 	cp -f -R $(SERVICE_DIR)/build/dist/bin/[a-z]* $@
-	rm -f $(DEV_INSTALL_ROOT)/bin/lqtransserver.bat
+	rm -f $(DEV_INSTALL_ROOT)/bin/zmtransserver.bat
 	rm -f $(DEV_INSTALL_ROOT)/bin/ldap
 	mv $@/ldap.production $@/ldap
 	cp -f $(ZIMBRA_BIN_DIR)/swatch $@
