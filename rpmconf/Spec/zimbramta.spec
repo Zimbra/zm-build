@@ -74,7 +74,7 @@ rm -f /opt/zimbra/sleepycat
 ln -s /opt/zimbra/sleepycat-4.2.52.2 /opt/zimbra/sleepycat
 
 rm -f /opt/zimbra/cyrus-sasl
-ln -s /opt/zimbra/cyrus-sasl-2.1.21.LIQUID /opt/zimbra/cyrus-sasl
+ln -s /opt/zimbra/cyrus-sasl-2.1.21.ZIMBRA /opt/zimbra/cyrus-sasl
 
 H=`hostname -s`
 I=`hostname -i`
