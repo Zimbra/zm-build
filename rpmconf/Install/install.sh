@@ -472,6 +472,8 @@ removeExistingInstall() {
 		echo "Removing existing packages"
 		echo ""
 
+		rpm -ev --noscripts --allmatches liquid-core liquid-snmp liquid-ldap liquid-mta liquid-store
+
 		for p in $INSTALLED_PACKAGES; do
 			echo -n "   $p..."
 			rpm -ev --noscripts --allmatches $p
