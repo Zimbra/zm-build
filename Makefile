@@ -644,7 +644,7 @@ $(CORE_DEST_DIR)/bin:
 	rm -f $(CORE_DEST_DIR)/bin/ldap
 	mv $(CORE_DEST_DIR)/bin/ldap.production $(CORE_DEST_DIR)/bin/ldap
 	cp $(ZIMBRA_BIN_DIR)/swatch $@
-	cp $(ZIMBRA_BIN_DIR)/swatchctl $@
+	cp $(ZIMBRA_BIN_DIR)/zmswatchctl $@
 	cp $(ZIMBRA_BIN_DIR)/zmloadstats $@
 	cp $(ZIMBRA_BIN_DIR)/zmaggregatestats $@
 	cp $(ZIMBRA_BIN_DIR)/zmaggregatestatsdaily $@
@@ -816,7 +816,7 @@ $(DEV_INSTALL_ROOT)/bin:
 	rm -f $(DEV_INSTALL_ROOT)/bin/ldap
 	mv $@/ldap.production $@/ldap
 	cp -f $(ZIMBRA_BIN_DIR)/swatch $@
-	cp -f $(ZIMBRA_BIN_DIR)/swatchctl $@
+	cp -f $(ZIMBRA_BIN_DIR)/zmswatchctl $@
 	cp -f $(ZIMBRA_BIN_DIR)/zmloadstats $@
 	cp -f $(ZIMBRA_BIN_DIR)/zmaggregatestats $@
 	cp -f $(ZIMBRA_BIN_DIR)/zmaggregatestatsdaily $@
