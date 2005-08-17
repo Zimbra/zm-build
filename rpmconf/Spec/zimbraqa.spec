@@ -1,7 +1,7 @@
 #
 # spec file for zimbra.rpm
 #
-Summary: Liquid QA Tests
+Summary: Zimbra QA Tests
 Name: zimbra-qatest
 Version: @@VERSION@@
 Release: @@RELEASE@@

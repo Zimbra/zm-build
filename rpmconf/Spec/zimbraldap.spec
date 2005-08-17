@@ -1,7 +1,7 @@
 #
 # spec file for zimbra.rpm
 #
-Summary: Liquid LDAP
+Summary: Zimbra LDAP
 Name: zimbra-ldap
 Version: @@VERSION@@
 Release: @@RELEASE@@

@@ -1,7 +1,7 @@
 #
 # spec file for zimbra.rpm
 #
-Summary: Liquid Mail
+Summary: Zimbra Mail
 Name: zimbra-store
 Version: @@VERSION@@
 Release: @@RELEASE@@

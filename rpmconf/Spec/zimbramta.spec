@@ -1,7 +1,7 @@
 #
 # spec file for zimbra.rpm
 #
-Summary: Liquid MTA
+Summary: Zimbra MTA
 Name: zimbra-mta
 Version: @@VERSION@@
 Release: @@RELEASE@@

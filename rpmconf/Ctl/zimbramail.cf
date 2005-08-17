@@ -1,4 +1,4 @@
-SERVICE mailbox "Liquid Mail Console" tomcat,mysql,convertd
+SERVICE mailbox "Zimbra Mail Console" tomcat,mysql,convertd
 
 APPLICATION tomcat test_server "9999" normal "tomcat server"
 

@@ -1,7 +1,7 @@
 #
 # spec file for zimbra.rpm
 #
-Summary: Liquid SNMP
+Summary: Zimbra SNMP
 Name: zimbra-snmp
 Version: @@VERSION@@
 Release: @@RELEASE@@

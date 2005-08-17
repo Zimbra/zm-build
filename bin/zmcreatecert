@@ -81,7 +81,7 @@ createKeyStore() {
 
 	rm -f ${TOMCAT}/keystore
 
-	keytool -genkey -dname "CN=$H, OU=Liquid, O=Liquid, L=NA, S=NA, C=US" \
+	keytool -genkey -dname "CN=$H, OU=Zimbra, O=Zimbra, L=NA, S=NA, C=US" \
 		-alias tomcat -keyalg RSA -keysize 1024 -keystore ${TOMCAT}/keystore \
 		-storetype JKS -storepass zimbra -keypass zimbra
 

@@ -1,7 +1,7 @@
 #
 # spec file for zimbra.rpm
 #
-Summary: Liquid Core
+Summary: Zimbra Core
 Name: zimbra-core
 Version: @@VERSION@@
 Release: @@RELEASE@@

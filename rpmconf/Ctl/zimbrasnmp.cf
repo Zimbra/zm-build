@@ -1,6 +1,6 @@
 # SNMP COMMANDS HERE
 APPLICATION swatch test_server "9999" normal "SNMP monitor"
-SERVICE snmp "Liquid MTA" swatch 
+SERVICE snmp "Zimbra MTA" swatch 
 
 CONTROL_SYNTAX zimbrasyntax swatch_start "/opt/zimbra/bin/zmswatchctl start"
 CONTROL_SYNTAX zimbrasyntax swatch_stop "/opt/zimbra/bin/zmswatchctl stop"

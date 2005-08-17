@@ -1,12 +1,12 @@
-SERVICE mta "Liquid MTA" postfix,saslauthd,mtaconfig
+SERVICE mta "Zimbra MTA" postfix,saslauthd,mtaconfig
 
 APPLICATION postfix test_server "9999" normal "Postfix mta"
 CONTROL_SYNTAX zimbrasyntax postfix_start "/opt/zimbra/bin/postfix start"
 CONTROL_SYNTAX zimbrasyntax postfix_stop "/opt/zimbra/bin/postfix stop"
 CONTROL_SYNTAX zimbrasyntax postfix_status "SMTP"
 
-SERVICE antispam "Liquid MTA" amavisd,mtaconfig
-SERVICE antivirus "Liquid MTA" amavisd,clamd,mtaconfig
+SERVICE antispam "Zimbra MTA" amavisd,mtaconfig
+SERVICE antivirus "Zimbra MTA" amavisd,clamd,mtaconfig
 
 APPLICATION amavisd test_server "9999" normal "Postfix mta"
 CONTROL_SYNTAX zimbrasyntax amavisd_start "/opt/zimbra/bin/zmamavisdctl start"

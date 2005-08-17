@@ -1,6 +1,6 @@
 APPLICATION ldap test_server "9999" normal "ldap server"
 
-SERVICE ldap "Liquid Directory" ldap 
+SERVICE ldap "Zimbra Directory" ldap 
 
 CONTROL_SYNTAX zimbrasyntax ldap_start "/opt/zimbra/bin/ldap start"
 CONTROL_SYNTAX zimbrasyntax ldap_stop "/opt/zimbra/bin/ldap stop"
