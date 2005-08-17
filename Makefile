@@ -6,7 +6,7 @@ BUILD_ROOT	:= $(shell pwd)
 
 MAJOR	:= 2
 MINOR	:= 0
-BUILD_PLATFORM := $(shell sh $(BUILD_ROOT)/rpmconf/get_plat_tag.sh)
+BUILD_PLATFORM := $(shell sh $(BUILD_ROOT)/rpmconf/Build/get_plat_tag.sh)
 
 USER := $(shell id -un)
 
@@ -60,8 +60,8 @@ QA_DIR	:= $(BUILD_ROOT)/../ZimbraQA
 
 BACKUP_DIR  := $(BUILD_ROOT)/../ZimbraBackup
 CONVERT_DIR	:= $(BUILD_ROOT)/../ZimbraConvertd
-SERVICE_DIR	:= $(BUILD_ROOT)/../ZimbraArchive
-CONSOLE_DIR	:= $(BUILD_ROOT)/../ZimbraConsole
+SERVICE_DIR	:= $(BUILD_ROOT)/../ZimbraServer
+CONSOLE_DIR	:= $(BUILD_ROOT)/../ZimbraWebClient
 
 LDAP_VERSION	:= 2.2.26
 LDAP_DIR	:= openldap-$(LDAP_VERSION)
@@ -185,7 +185,7 @@ SA_PERL_LIBS = \
 
 WEBAPPS	:= \
 	$(WEBAPP_DIR)/service.war \
-	$(WEBAPP_DIR)/Zimbra::Admin.war \
+	$(WEBAPP_DIR)/Admin.war \
 	$(WEBAPP_DIR)/zimbra.war 
 
 QA_COMPONENTS	:= \
@@ -227,11 +227,11 @@ LDAP_COMPONENTS := \
 SNMP_COMPONENTS := \
 	$(SNMP_DEST_DIR)/$(SNMP_DIR) 
 
-PROFILE_SOURCE		:= $(RPM_CONF_DIR)/zimbra.bash_profile
+PROFILE_SOURCE		:= $(RPM_CONF_DIR)/Env/zimbra.bash_profile
 PROFILE_DEST		:= .bash_profile
-ENV_FILE_SOURCE		:= $(RPM_CONF_DIR)/zimbra.bashrc
+ENV_FILE_SOURCE		:= $(RPM_CONF_DIR)/Env/zimbra.bashrc
 ENV_FILE_DEST		:= .bashrc
-EXRC_SOURCE			:= $(RPM_CONF_DIR)/zimbra.exrc
+EXRC_SOURCE			:= $(RPM_CONF_DIR)/Env/zimbra.exrc
 EXRC_DEST			:= .exrc
 
 PERL_MM_USE_DEFAULT	:= 1
@@ -257,7 +257,7 @@ zimbramail-$(RELEASE).tgz: rpms
 	mkdir -p zimbramail/data
 	cp -f $(SERVICE_DIR)/build/versions-init.sql zimbramail/data
 	cp $(LDAP_DEST_ROOT)/opt/zimbra/$(LDAP_DIR)/bin/ldapsearch zimbramail/bin
-	cp $(RPM_CONF_DIR)/install.sh zimbramail
+	cp $(RPM_CONF_DIR)/Install/install.sh zimbramail
 	chmod 755 zimbramail/install.sh
 	cp $(RPM_DIR)/*rpm zimbramail/packages
 	rm -f zimbramail/packages/zimbra-qatest*
@@ -270,7 +270,7 @@ rpms: core mta mail ldap snmp qatest
 	@echo "*** Creating RPMS in $(RPM_DIR)"
 
 qatest: $(RPM_DIR) qa_stage
-	cat $(RPM_CONF_DIR)/zimbraqa.spec | sed -e 's/@@VERSION@@/$(MAJOR).$(MINOR)_$(BUILD_PLATFORM)/' \
+	cat $(RPM_CONF_DIR)/Spec/zimbraqa.spec | sed -e 's/@@VERSION@@/$(MAJOR).$(MINOR)_$(BUILD_PLATFORM)/' \
 		| sed -e 's/@@RELEASE@@/$(RELEASE)/' > $(BUILD_ROOT)/zimbraqa.spec
 	(cd $(QA_DEST_ROOT); find opt -type f -o -type l | sed -e 's|^|%attr(-, zimbra, zimbra) /|' >> \
 		$(BUILD_ROOT)/zimbraqa.spec; \
@@ -280,7 +280,7 @@ qatest: $(RPM_DIR) qa_stage
 qa_stage: $(QA_COMPONENTS)
 
 core: $(RPM_DIR) core_stage
-	cat $(RPM_CONF_DIR)/zimbracore.spec | sed -e 's/@@VERSION@@/$(MAJOR).$(MINOR)_$(BUILD_PLATFORM)/' \
+	cat $(RPM_CONF_DIR)/Spec/zimbracore.spec | sed -e 's/@@VERSION@@/$(MAJOR).$(MINOR)_$(BUILD_PLATFORM)/' \
 		| sed -e 's/@@RELEASE@@/$(RELEASE)/' > $(BUILD_ROOT)/zimbracore.spec
 	(cd $(CORE_DEST_ROOT); find opt -type f -o -type l -maxdepth 2 \
 		| sed -e 's|^|%attr(-, zimbra, zimbra) /|' >> \
@@ -304,7 +304,7 @@ core: $(RPM_DIR) core_stage
 core_stage: $(CORE_COMPONENTS)
 
 mta: $(RPM_DIR) mta_stage
-	cat $(RPM_CONF_DIR)/zimbramta.spec | sed -e 's/@@VERSION@@/$(MAJOR).$(MINOR)_$(BUILD_PLATFORM)/' \
+	cat $(RPM_CONF_DIR)/Spec/zimbramta.spec | sed -e 's/@@VERSION@@/$(MAJOR).$(MINOR)_$(BUILD_PLATFORM)/' \
 		| sed -e 's/@@RELEASE@@/$(RELEASE)/' > $(BUILD_ROOT)/zimbramta.spec
 	(cd $(MTA_DEST_ROOT); find opt -type f -o -type l -maxdepth 2 \
 		| sed -e 's|^|%attr(-, zimbra, zimbra) /|' >> \
@@ -340,7 +340,7 @@ mta: $(RPM_DIR) mta_stage
 mta_stage: $(MTA_COMPONENTS)
 
 mail: $(RPM_DIR) mail_stage
-	cat $(RPM_CONF_DIR)/zimbra.spec | sed -e 's/@@VERSION@@/$(MAJOR).$(MINOR)_$(BUILD_PLATFORM)/' \
+	cat $(RPM_CONF_DIR)/Spec/zimbra.spec | sed -e 's/@@VERSION@@/$(MAJOR).$(MINOR)_$(BUILD_PLATFORM)/' \
 		| sed -e 's/@@RELEASE@@/$(RELEASE)/' > $(BUILD_ROOT)/zimbra.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/jakarta-tomcat-5.5.7" >> \
 		$(BUILD_ROOT)/zimbra.spec
@@ -363,7 +363,7 @@ mail: $(RPM_DIR) mail_stage
 mail_stage: $(MAIL_COMPONENTS)
 
 snmp: $(RPM_DIR) snmp_stage
-	cat $(RPM_CONF_DIR)/zimbrasnmp.spec | sed -e 's/@@VERSION@@/$(MAJOR).$(MINOR)_$(BUILD_PLATFORM)/' \
+	cat $(RPM_CONF_DIR)/Spec/zimbrasnmp.spec | sed -e 's/@@VERSION@@/$(MAJOR).$(MINOR)_$(BUILD_PLATFORM)/' \
 		| sed -e 's/@@RELEASE@@/$(RELEASE)/' > $(BUILD_ROOT)/zimbrasnmp.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/snmp-5.1.2" >> \
 		$(BUILD_ROOT)/zimbrasnmp.spec
@@ -374,7 +374,7 @@ snmp: $(RPM_DIR) snmp_stage
 snmp_stage: $(SNMP_COMPONENTS)
 
 ldap: $(RPM_DIR) ldap_stage
-	cat $(RPM_CONF_DIR)/zimbraldap.spec | sed -e 's/@@VERSION@@/$(MAJOR).$(MINOR)_$(BUILD_PLATFORM)/' \
+	cat $(RPM_CONF_DIR)/Spec/zimbraldap.spec | sed -e 's/@@VERSION@@/$(MAJOR).$(MINOR)_$(BUILD_PLATFORM)/' \
 		| sed -e 's/@@RELEASE@@/$(RELEASE)/' > $(BUILD_ROOT)/zimbraldap.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/openldap-$(LDAP_VERSION)" >> \
 		$(BUILD_ROOT)/zimbraldap.spec
@@ -429,11 +429,11 @@ $(SNMP_DEST_DIR):
 $(SNMP_DEST_DIR)/$(SNMP_DIR): $(SNMP_DEST_DIR)
 	@echo "*** Creating SNMP"
 	(cd $(SNMP_DEST_DIR); tar xzf $(SNMP_SOURCE).tar.gz;)
-	cp $(RPM_CONF_DIR)/snmpd.conf.in $(SNMP_DEST_DIR)/$(SNMP_DIR)/share/snmp/snmpd.conf.in
+	cp $(RPM_CONF_DIR)/Conf/snmpd.conf.in $(SNMP_DEST_DIR)/$(SNMP_DIR)/share/snmp/snmpd.conf.in
 	mkdir -p $(SNMP_DEST_DIR)/$(SNMP_DIR)/conf
-	cp $(RPM_CONF_DIR)/snmp.conf $(SNMP_DEST_DIR)/$(SNMP_DIR)/conf/snmp.conf
-	cp $(RPM_CONF_DIR)/snmp.conf $(SNMP_DEST_DIR)/$(SNMP_DIR)/share/snmp/snmp.conf
-	cp $(RPM_CONF_DIR)/mibs/*mib $(SNMP_DEST_DIR)/$(SNMP_DIR)/share/snmp/mibs
+	cp $(RPM_CONF_DIR)/Conf/snmp.conf $(SNMP_DEST_DIR)/$(SNMP_DIR)/conf/snmp.conf
+	cp $(RPM_CONF_DIR)/Conf/snmp.conf $(SNMP_DEST_DIR)/$(SNMP_DIR)/share/snmp/snmp.conf
+	cp $(RPM_CONF_DIR)/Conf/mibs/*mib $(SNMP_DEST_DIR)/$(SNMP_DIR)/share/snmp/mibs
 
 $(CORE_DEST_DIR)/zimbramon: $(CORE_DEST_DIR) perllibs
 	@echo "*** Creating zimbramon"
@@ -442,12 +442,12 @@ $(CORE_DEST_DIR)/zimbramon: $(CORE_DEST_DIR) perllibs
 	chmod 755 $@/zmmon
 	cp -R $(ZIMBRAMON_DIR)/zmcontrol $@
 	chmod 755 $@/zmcontrol
-	cp -R $(RPM_CONF_DIR)/zimbra.cf.in $@
-	cp -R $(RPM_CONF_DIR)/zimbracore.cf $@
-	cp -R $(RPM_CONF_DIR)/zimbramail.cf $@
-	cp -R $(RPM_CONF_DIR)/zimbramta.cf $@
-	cp -R $(RPM_CONF_DIR)/zimbraldap.cf $@
-	cp -R $(RPM_CONF_DIR)/zimbrasnmp.cf $@
+	cp -R $(RPM_CONF_DIR)/Ctl/zimbra.cf.in $@
+	cp -R $(RPM_CONF_DIR)/Ctl/zimbracore.cf $@
+	cp -R $(RPM_CONF_DIR)/Ctl/zimbramail.cf $@
+	cp -R $(RPM_CONF_DIR)/Ctl/zimbramta.cf $@
+	cp -R $(RPM_CONF_DIR)/Ctl/zimbraldap.cf $@
+	cp -R $(RPM_CONF_DIR)/Ctl/zimbrasnmp.cf $@
 	mkdir -p $@/lib/Zimbra/Mon
 	@cp $(wildcard $(BUILD_ROOT)/lib/Zimbra/Mon/*.pm) $@/lib/Zimbra/Mon
 	mkdir -p $@/lib/Zimbra/Mon/SOAP
@@ -455,8 +455,8 @@ $(CORE_DEST_DIR)/zimbramon: $(CORE_DEST_DIR) perllibs
 	(cd $(CORE_DEST_DIR)/zimbramon; tar xzf $(MRTG_SOURCE).tgz)
 	mkdir -p $(CORE_DEST_DIR)/zimbramon/mrtg/work
 	mkdir -p $(CORE_DEST_DIR)/zimbramon/mrtg/conf
-	cp $(RPM_CONF_DIR)/mrtg.cfg $(CORE_DEST_DIR)/zimbramon/mrtg/conf
-	cp $(RPM_CONF_DIR)/crontab $(CORE_DEST_DIR)/zimbramon/crontab
+	cp $(RPM_CONF_DIR)/Conf/mrtg.cfg $(CORE_DEST_DIR)/zimbramon/mrtg/conf
+	cp $(RPM_CONF_DIR)/Env/crontab $(CORE_DEST_DIR)/zimbramon/crontab
 	(cd $(CORE_DEST_DIR)/zimbramon; tar xzf $(RRD_SOURCE).tar.gz)
 
 perllibs: 
@@ -522,7 +522,7 @@ $(DEST_DIR)/$(TOMCAT_DIR): $(DEST_DIR)
 	cp $(SERVICE_DIR)/conf/tomcat-5.5/server.xml.production $(DEST_DIR)/$(TOMCAT_DIR)/conf/server.xml
 	cp $(SERVICE_DIR)/conf/zimbra.xml $(DEST_DIR)/$(TOMCAT_DIR)/conf/Catalina/localhost/zimbra.xml
 	mkdir -p $(DEST_DIR)/$(TOMCAT_DIR)/conf/AdminService/localhost
-	cp $(SERVICE_DIR)/conf/Zimbra::Admin.xml $(DEST_DIR)/$(TOMCAT_DIR)/conf/AdminService/localhost/Zimbra::Admin.xml
+	cp $(SERVICE_DIR)/conf/Admin.xml $(DEST_DIR)/$(TOMCAT_DIR)/conf/AdminService/localhost/Admin.xml
 	cp $(SERVICE_DIR)/conf/tomcat-5.5/tomcat-users.xml $(DEST_DIR)/$(TOMCAT_DIR)/conf
 	cp -f $(SERVICE_DIR)/conf/log4j.properties.production  $(DEST_DIR)/$(TOMCAT_DIR)/conf/log4j.properties
 	mkdir -p $(DEST_DIR)/$(TOMCAT_DIR)/temp
@@ -550,15 +550,15 @@ $(MTA_DEST_DIR)/$(CLAMAV_DIR): $(MTA_DEST_DIR)
 	@echo "*** Creating clamav"
 	(cd $(MTA_DEST_DIR); tar xzf $(CLAMAV_SOURCE).tgz;)
 	mkdir -p $(MTA_DEST_DIR)/$(CLAMAV_DIR)-$(CLAMAV_VERSION)/db
-	cp $(RPM_CONF_DIR)/main.cvd $(MTA_DEST_DIR)/$(CLAMAV_DIR)-$(CLAMAV_VERSION)/db/main.cvd.init
-	cp $(RPM_CONF_DIR)/daily.cvd $(MTA_DEST_DIR)/$(CLAMAV_DIR)-$(CLAMAV_VERSION)/db/daily.cvd.init
+	cp $(RPM_CONF_DIR)/ClamAv/main.cvd $(MTA_DEST_DIR)/$(CLAMAV_DIR)-$(CLAMAV_VERSION)/db/main.cvd.init
+	cp $(RPM_CONF_DIR)/ClamAv/daily.cvd $(MTA_DEST_DIR)/$(CLAMAV_DIR)-$(CLAMAV_VERSION)/db/daily.cvd.init
 
 $(MTA_DEST_DIR)/$(AMAVISD_DIR): $(MTA_DEST_DIR)
 	@echo "*** Creating amavisd"
 	mkdir -p $@/sbin
 	cp -f $(AMAVISD_SOURCE)/amavisd $@/sbin
 	mkdir -p $@/.spamassassin/init
-	cp -f $(RPM_CONF_DIR)/bayes* $@/.spamassassin/init
+	cp -f $(RPM_CONF_DIR)/SpamAssassin/bayes* $@/.spamassassin/init
 
 $(MTA_DEST_DIR)/$(SASL_DIR): $(MTA_DEST_DIR)
 	@echo "*** Creating cyrus-sasl"
@@ -580,9 +580,9 @@ $(WEBAPP_DIR)/service.war: $(WEBAPP_DIR)
 	(cd $(SERVICE_DIR);  \
 	cp build/dist/jakarta-tomcat-5.0.28/webapps/service.war $@)
 
-$(WEBAPP_DIR)/Zimbra::Admin.war: $(WEBAPP_DIR)
+$(WEBAPP_DIR)/Admin.war: $(WEBAPP_DIR)
 	(cd $(CONSOLE_DIR); $(ANT) admin-war; \
-	cp build/dist/jakarta-tomcat-5.0.28/webapps/Zimbra::Admin.war $@)
+	cp build/dist/jakarta-tomcat-5.0.28/webapps/Admin.war $@)
 
 $(WEBAPP_DIR)/zimbra.war: $(WEBAPP_DIR)
 	(cd $(CONSOLE_DIR); $(ANT) prod-war; \
@@ -622,10 +622,10 @@ $(CORE_DEST_DIR)/db: $(WEBAPP_DIR)/service.war
 
 $(CORE_DEST_DIR)/conf:
 	mkdir -p $@
-	cp $(RPM_CONF_DIR)/swatchrc $@/swatchrc.in
+	cp $(RPM_CONF_DIR)/Conf/swatchrc $@/swatchrc.in
 	cp -R $(SERVICE_DIR)/conf/localconfig.xml $@/localconfig.xml
 	grep -vi stats $(SERVICE_DIR)/conf/log4j.properties.production > $@/log4j.properties
-	cp $(RPM_CONF_DIR)/liqssl.cnf.in $@
+	cp $(RPM_CONF_DIR)/Conf/liqssl.cnf.in $@
 	cp $(SERVICE_DIR)/conf/amavisd.conf.in $@
 	cp $(SERVICE_DIR)/conf/clamd.conf.in $@
 	cp $(SERVICE_DIR)/conf/freshclam.conf.in $@
@@ -701,8 +701,8 @@ $(DEV_INSTALL_ROOT)/$(CLAMAV_DIR): $(DEV_INSTALL_ROOT)
 	@echo "*** Installing clamav"
 	(cd $(DEV_INSTALL_ROOT); tar xzf $(CLAMAV_SOURCE).tgz;)
 	mkdir -p $(DEV_INSTALL_ROOT)/$(CLAMAV_DIR)-$(CLAMAV_VERSION)/db
-	cp -f $(RPM_CONF_DIR)/main.cvd $(DEV_INSTALL_ROOT)/$(CLAMAV_DIR)-$(CLAMAV_VERSION)/db/main.cvd.init
-	cp -f $(RPM_CONF_DIR)/daily.cvd $(DEV_INSTALL_ROOT)/$(CLAMAV_DIR)-$(CLAMAV_VERSION)/db/daily.cvd.init
+	cp -f $(RPM_CONF_DIR)/ClamAv/main.cvd $(DEV_INSTALL_ROOT)/$(CLAMAV_DIR)-$(CLAMAV_VERSION)/db/main.cvd.init
+	cp -f $(RPM_CONF_DIR)/ClamAv/daily.cvd $(DEV_INSTALL_ROOT)/$(CLAMAV_DIR)-$(CLAMAV_VERSION)/db/daily.cvd.init
 
 dev-install: $(DEV_INSTALL_ROOT)/$(MYSQL_DIR) $(DEV_INSTALL_ROOT)/$(LDAP_DIR) $(DEV_INSTALL_ROOT)/$(TOMCAT_DIR) $(DEV_INSTALL_ROOT)/$(CLAMAV_DIR) $(DEV_INSTALL_ROOT)/$(AMAVISD_DIR) $(DEV_INSTALL_ROOT)/zimbramon $(DEV_INSTALL_ROOT)/db $(DEV_INSTALL_ROOT)/lib $(DEV_INSTALL_ROOT)/bin $(DEV_INSTALL_ROOT)/conf $(DEV_INSTALL_ROOT)/$(JAVA_FILE)$(JAVA_VERSION) $(DEV_INSTALL_ROOT)/$(BDB_DIR)
 	rm -f $(DEV_INSTALL_ROOT)/clamav $(DEV_INSTALL_ROOT)/tomcat $(DEV_INSTALL_ROOT)/mysql $(DEV_INSTALL_ROOT)/openlap
@@ -743,7 +743,7 @@ $(DEV_INSTALL_ROOT)/$(TOMCAT_DIR): $(DEV_INSTALL_ROOT) $(SERVICE_DIR)/build/dist
 	cp -f $(SERVICE_DIR)/conf/tomcat-5.5/server.xml.production $@/conf/server.xml
 	cp -f $(SERVICE_DIR)/conf/zimbra.xml $@/conf/Catalina/localhost/zimbra.xml
 	mkdir -p $@/conf/AdminService/localhost
-	cp -f $(SERVICE_DIR)/conf/Zimbra::Admin.xml $@/conf/AdminService/localhost/Zimbra::Admin.xml
+	cp -f $(SERVICE_DIR)/conf/Admin.xml $@/conf/AdminService/localhost/Admin.xml
 	cp -f $(SERVICE_DIR)/conf/tomcat-5.5/tomcat-users.xml $@/conf
 	cp -f $(SERVICE_DIR)/conf/log4j.properties.production  $@/conf/log4j.properties
 	mkdir -p $@/temp
@@ -754,7 +754,7 @@ $(DEV_INSTALL_ROOT)/$(AMAVISD_DIR): $(DEV_INSTALL_ROOT)
 	mkdir -p $@/sbin
 	cp -f $(AMAVISD_SOURCE)/amavisd $@/sbin
 	mkdir -p $@/.spamassassin/init
-	cp -f $(RPM_CONF_DIR)/bayes* $@/.spamassassin/init
+	cp -f $(RPM_CONF_DIR)/SpamAssassin/bayes* $@/.spamassassin/init
 
 devperllibs: 
 	mkdir -p $(DEV_INSTALL_ROOT)/zimbramon/lib
@@ -769,12 +769,12 @@ $(DEV_INSTALL_ROOT)/zimbramon: $(DEV_INSTALL_ROOT) devperllibs
 	chmod 755 $@/zmmon
 	cp -f -R $(ZIMBRAMON_DIR)/zmcontrol $@
 	chmod 755 $@/zmcontrol
-	cp -f -R $(RPM_CONF_DIR)/zimbra.cf.in $@
-	cp -f -R $(RPM_CONF_DIR)/zimbracore.cf $@
-	cp -f -R $(RPM_CONF_DIR)/zimbramail.cf $@
-	cp -f -R $(RPM_CONF_DIR)/zimbramta.cf $@
-	cp -f -R $(RPM_CONF_DIR)/zimbraldap.cf $@
-	cp -f -R $(RPM_CONF_DIR)/zimbrasnmp.cf $@
+	cp -f -R $(RPM_CONF_DIR)/Ctl/zimbra.cf.in $@
+	cp -f -R $(RPM_CONF_DIR)/Ctl/zimbracore.cf $@
+	cp -f -R $(RPM_CONF_DIR)/Ctl/zimbramail.cf $@
+	cp -f -R $(RPM_CONF_DIR)/Ctl/zimbramta.cf $@
+	cp -f -R $(RPM_CONF_DIR)/Ctl/zimbraldap.cf $@
+	cp -f -R $(RPM_CONF_DIR)/Ctl/zimbrasnmp.cf $@
 	mkdir -p $@/lib/Zimbra/Mon
 	@cp -f $(wildcard $(BUILD_ROOT)/lib/Zimbra/Mon/*.pm) $@/lib/Zimbra/Mon
 	mkdir -p $@/lib/Zimbra/Mon/SOAP
@@ -782,8 +782,8 @@ $(DEV_INSTALL_ROOT)/zimbramon: $(DEV_INSTALL_ROOT) devperllibs
 	(cd $(DEV_INSTALL_ROOT)/zimbramon; tar xzf $(MRTG_SOURCE).tgz)
 	mkdir -p $(DEV_INSTALL_ROOT)/zimbramon/mrtg/work
 	mkdir -p $(DEV_INSTALL_ROOT)/zimbramon/mrtg/conf
-	cp -f $(RPM_CONF_DIR)/mrtg.cfg $(DEV_INSTALL_ROOT)/zimbramon/mrtg/conf
-	cp -f $(RPM_CONF_DIR)/crontab $(DEV_INSTALL_ROOT)/zimbramon/crontab
+	cp -f $(RPM_CONF_DIR)/Conf/mrtg.cfg $(DEV_INSTALL_ROOT)/zimbramon/mrtg/conf
+	cp -f $(RPM_CONF_DIR)/Env/crontab $(DEV_INSTALL_ROOT)/zimbramon/crontab
 	(cd $(DEV_INSTALL_ROOT)/zimbramon; tar xzf $(RRD_SOURCE).tar.gz)
 
 $(DEV_INSTALL_ROOT)/db:
@@ -836,10 +836,10 @@ $(DEV_INSTALL_ROOT)/bin:
 $(DEV_INSTALL_ROOT)/conf:
 	@echo "*** Installing conf"
 	mkdir -p $@
-	cp -f $(RPM_CONF_DIR)/swatchrc $@/swatchrc.in
+	cp -f $(RPM_CONF_DIR)/Conf/swatchrc $@/swatchrc.in
 	cp -f -R $(SERVICE_DIR)/conf/localconfig.xml $@/localconfig.xml
 	grep -vi stats $(SERVICE_DIR)/conf/log4j.properties.production > $@/log4j.properties
-	cp -f $(RPM_CONF_DIR)/liqssl.cnf.in $@
+	cp -f $(RPM_CONF_DIR)/Conf/liqssl.cnf.in $@
 	cp -f $(SERVICE_DIR)/conf/amavisd.conf.in $@
 	cp -f $(SERVICE_DIR)/conf/clamd.conf $@
 	cp -f $(SERVICE_DIR)/conf/freshclam.conf $@
