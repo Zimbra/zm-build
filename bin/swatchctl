@@ -1,0 +1,33 @@
+#!/bin/sh
+
+BASE=/opt/liquid
+CONFIG=$BASE/conf/swatchrc
+
+case "$1" in 
+	start)
+		if [ ! -f $CONFIG ]; then
+			lqsnmpinit
+		fi
+		if [ -f $CONFIG ]; then
+			$BASE/bin/swatch --config-file=$BASE/conf/swatchrc \
+			-t /var/log/liquid.log >/tmp/swatch.out 2>&1 &
+			chmod 777 /tmp/swatch.out
+		else
+			exit 1
+		fi
+	;;
+	stop)
+		killall -TERM swatch
+	;;
+	reload)
+		killall -HUP swatch
+	;;
+	status)
+		killall -0 swatch
+		exit $?
+	;;
+	*)
+		echo "$0 start|stop|reload|status"
+		exit 1
+	;;
+esac

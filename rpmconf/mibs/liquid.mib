@@ -1,0 +1,27 @@
+LIQUID-MIB DEFINITIONS ::= BEGIN
+	IMPORTS
+		enterprises
+		FROM SNMPv2-SMI;
+
+liquid OBJECT IDENTIFIER ::= { enterprises 666 }
+
+lqStatus OBJECT IDENTIFIER ::= { liquid 1 }
+
+lqServiceName OBJECT-TYPE
+    SYNTAX      OCTET STRING (SIZE(1..32))
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+        "Service Name"
+    ::= { lqStatus 0 }
+
+lqServiceStatus OBJECT-TYPE
+    SYNTAX      INTEGEER
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+        "Service Status"
+    ::= { lqStatus 1 }
+
+
+END

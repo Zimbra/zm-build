@@ -1,0 +1,29 @@
+SERVICE mta "Liquid MTA" postfix,saslauthd,mtaconfig
+
+APPLICATION postfix test_server "9999" normal "Postfix mta"
+CONTROL_SYNTAX liquidsyntax postfix_start "/opt/liquid/bin/postfix start"
+CONTROL_SYNTAX liquidsyntax postfix_stop "/opt/liquid/bin/postfix stop"
+CONTROL_SYNTAX liquidsyntax postfix_status "SMTP"
+
+SERVICE antispam "Liquid MTA" amavisd,mtaconfig
+SERVICE antivirus "Liquid MTA" amavisd,clamd,mtaconfig
+
+APPLICATION amavisd test_server "9999" normal "Postfix mta"
+CONTROL_SYNTAX liquidsyntax amavisd_start "/opt/liquid/bin/lqamavisdctl start"
+CONTROL_SYNTAX liquidsyntax amavisd_stop "/opt/liquid/bin/lqamavisdctl stop"
+CONTROL_SYNTAX liquidsyntax amavisd_status "/opt/liquid/bin/lqamavisdctl status"
+
+APPLICATION clamd test_server "9999" normal "Postfix mta"
+CONTROL_SYNTAX liquidsyntax clamd_start "/opt/liquid/bin/lqclamdctl start"
+CONTROL_SYNTAX liquidsyntax clamd_stop "/opt/liquid/bin/lqclamdctl stop"
+CONTROL_SYNTAX liquidsyntax clamd_status "/opt/liquid/bin/lqclamdctl status"
+
+APPLICATION mtaconfig test_server "9999" normal "MTA Configuration Daemon"
+CONTROL_SYNTAX liquidsyntax mtaconfig_start "/opt/liquid/bin/lqmtaconfigctl start"
+CONTROL_SYNTAX liquidsyntax mtaconfig_stop "/opt/liquid/bin/lqmtaconfigctl stop"
+CONTROL_SYNTAX liquidsyntax mtaconfig_status "/opt/liquid/bin/lqmtaconfigctl status"
+
+APPLICATION saslauthd test_server "9999" normal "SASL Auth Daemon"
+CONTROL_SYNTAX liquidsyntax saslauthd_start "/opt/liquid/bin/lqsaslauthdctl start"
+CONTROL_SYNTAX liquidsyntax saslauthd_stop "/opt/liquid/bin/lqsaslauthdctl stop"
+CONTROL_SYNTAX liquidsyntax saslauthd_status "/opt/liquid/bin/lqsaslauthdctl status"

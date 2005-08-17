@@ -1,0 +1,8 @@
+# SNMP COMMANDS HERE
+APPLICATION swatch test_server "9999" normal "SNMP monitor"
+SERVICE snmp "Liquid MTA" swatch 
+
+CONTROL_SYNTAX liquidsyntax swatch_start "/opt/liquid/bin/swatchctl start"
+CONTROL_SYNTAX liquidsyntax swatch_stop "/opt/liquid/bin/swatchctl stop"
+CONTROL_SYNTAX liquidsyntax swatch_status "/opt/liquid/bin/swatchctl status"
+

@@ -1,0 +1,85 @@
+#!/usr/bin/perl -w
+
+# Use to start appropriate failover script (client or server)
+
+use strict;
+use lib "$ENV{LIQUID_HOME}/liquidmon/lib";
+use Getopt::Std;
+use Liquid::Failover::Debug qw(setDebug);
+use Liquid::Failover::Config;
+use Liquid::Failover::Tcp;
+use Liquid::Failover::Serial;
+use Liquid::Failover::Pid;
+
+my $config = Liquid::Failover::Config->getConfig();
+
+my $service = "";
+
+sub usage() {
+    print "Failover Control\n";
+    print "Usage: $0 [start|stop]\n";
+    print "\t-D: debug mode\n";
+    exit(-1);
+}
+
+sub checkAlreadyRunning {
+	my $server = shift;
+    my @pids = Liquid::Failover::Pid::readPidFile($server);
+    my $pid;
+    foreach $pid (@pids) {
+        if (Liquid::Failover::Pid::isRunning($pid)) {
+			return \@pids;
+        }
+    }
+	return undef;
+}
+
+sub control_service {
+	my $cmd = shift;
+	my $service = shift;
+	my $pids;
+
+	if ($cmd eq "stop") {
+		$pids = checkAlreadyRunning($service);
+		if (defined ($pids)) {
+			foreach (@$pids) {
+				print STDERR "Sending TERM signal to $_\n";
+				kill ('TERM', $_);
+			}
+		} else {
+			print STDERR "Service $service not running\n";
+		}
+	} else {
+		$pids = checkAlreadyRunning($service);
+		if (defined ($pids)) {
+			print STDERR "Service $service already running\n";
+		} else {
+			print STDERR "Starting $ENV{LIQUID_HOME}/bin/$service.pl\n";
+			system ("$ENV{LIQUID_HOME}/bin/$service.pl &");
+		}
+	}
+}
+
+my %opts;
+getopts("D", \%opts) or usage();
+setDebug($opts{D});
+
+my $cmd = lc($ARGV[0]);
+
+usage() unless ($cmd eq "stop" || $cmd eq "start");
+
+my $role = $config->getCurrentRole();
+if ($role eq 'master') {
+	$service = 'lqhad';
+} elsif ($role eq 'slave') {
+	$service = 'lqhac';
+} elsif ($role eq 'standalone') {
+	exit(0);
+} else {
+	print STDERR "Unknown role: $role\n";
+	exit (-1);
+}
+control_service($cmd, $service);
+
+exit (0);
+

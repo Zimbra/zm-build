@@ -1,0 +1,13 @@
+build
+corebuild
+ldapbuild
+mtabuild
+qabuild
+snmpbuild
+liquid.spec
+liquidcore.spec
+liquidldap.spec
+liquidmta.spec
+liquidqa.spec
+liquidsnmp.spec
+i386

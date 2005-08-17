@@ -1,0 +1,45 @@
+#!/bin/sh
+
+# snmp_notify 1|0
+# snmp_trap_host <hostname|ip>
+# smtp_notify 1|0
+# smtp_source <email address>
+# smtp_destination <email address>
+
+source "/opt/liquid/bin/lqshutil" || exit 1
+lqsetvars \
+	liquid_server_hostname \
+	snmp_notify \
+	smtp_notify 
+
+if [ ${snmp_notify} = "1" ]; then
+	lqsetvars \
+		snmp_trap_host 
+	SOURCEFILE=/opt/liquid/snmp/share/snmp/snmpd.conf.in
+	FILE=/opt/liquid/conf/snmpd.conf
+	echo creating $FILE
+	cat ${SOURCEFILE} | sed -e "s/@@SNMPHOST@@/${snmp_trap_host}/g" > ${FILE}
+fi
+
+# Many backslashes to make sure '@' gets quoted in final perl
+
+if [ ${smtp_notify} = "1" ]; then
+	lqsetvars \
+		smtp_source \
+		smtp_destination
+
+	smtp_source=`echo ${smtp_source} | sed -e 's/@/\\\\\\\@/'`
+
+	smtp_destination=`echo ${smtp_destination} | sed -e 's/@/\\\\\\\@/'`
+fi
+
+SWFILE=/opt/liquid/conf/swatchrc
+
+echo creating $SWFILE
+cat ${SWFILE}.in | \
+	sed -e "s/@@DOSNMPNOTIFICATIONS@@/${snmp_notify}/g" \
+	-e "s/@@DOSMTPNOTIFICATIONS@@/${smtp_notify}/g" \
+	-e "s/@@ADMINEMAIL@@/${smtp_source}/g" \
+	-e "s/@@PHCEMAIL@@/${smtp_destination}/g" \
+	-e "s/@@HOSTNAME@@/${liquid_server_hostname}/g" \
+	> ${SWFILE}

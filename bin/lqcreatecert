@@ -1,0 +1,137 @@
+#!/bin/sh
+CONF=/opt/liquid/conf
+B=/opt/liquid/ssl
+BASE=${B}/ssl
+
+JAVA_HOME=/opt/liquid/java
+
+TOMCAT=/opt/liquid/tomcat/conf
+
+mkdir -p ${BASE}/ca
+mkdir -p ${BASE}/cert
+mkdir -p ${BASE}/server
+
+getHostInfo() {
+
+	H=`hostname --fqdn`
+
+	# $H=$H.liquidsys.com
+
+	HH=`echo $H | grep '\.'`
+
+	if [ "x$HH" = "x" ]; then
+		echo "Error - fully qualified host name not found - please correct"
+		exit
+	fi
+
+}
+
+createConf() {
+	cat ${CONF}/liqssl.cnf.in | sed -e "s/@@HOSTNAME@@/$H/" > ${BASE}/liqssl.cnf
+}
+
+createKey() {
+
+	echo "** Creating CA private key"
+	echo
+
+	openssl req -batch -config ${BASE}/liqssl.cnf -new -newkey \
+		rsa:1024 -nodes -out ${BASE}/ca/ca.csr -keyout ${BASE}/ca/ca.key
+
+}
+
+createCert() {
+
+	echo "** Creating CA cert"
+	echo
+
+	openssl x509 -trustout -signkey ${BASE}/ca/ca.key -days 365 \
+		-req -in ${BASE}/ca/ca.csr -out ${BASE}/ca/ca.pem
+
+}
+
+createSerial() {
+	if [ -f ${BASE}/ca/ca.srl ]; then
+		SER=`cat ${BASE}/ca/ca.srl`
+		SER=`expr $SER + 1`
+		 if [ $SER -lt 10 ]; then
+		 	SER="0$SER"
+		 fi
+	else
+		SER="02"
+	fi
+	echo "$SER" > ${BASE}/ca/ca.srl
+}
+
+importCA() {
+	echo "** Importing CA"
+	echo
+
+	# rm -f ${JAVA_HOME}/jre/lib/security/cacerts
+
+	keytool -import -noprompt -keystore \
+		${JAVA_HOME}/jre/lib/security/cacerts -file \
+		${BASE}/ca/ca.pem -alias my_ca -storepass changeit
+}
+
+createKeyStore() {
+
+	echo "** Creating keystore"
+	echo
+
+	rm -f ${TOMCAT}/keystore
+
+	keytool -genkey -dname "CN=$H, OU=Liquid, O=Liquid, L=NA, S=NA, C=US" \
+		-alias tomcat -keyalg RSA -keysize 1024 -keystore ${TOMCAT}/keystore \
+		-storetype JKS -storepass liquid -keypass liquid
+
+}
+
+createCertReq() {
+
+	echo "** Creating server cert request"
+	echo
+
+	keytool -certreq -keyalg RSA -alias tomcat -file \
+		${BASE}/server/server.csr -keystore \
+		${TOMCAT}/keystore -storepass liquid
+
+	cp ${BASE}/server/server.csr /tmp/server.csr.$$
+	cat /tmp/server.csr.$$ | sed -e \
+		's/NEW CERTIFICATE REQUEST/CERTIFICATE REQUEST/' \
+		> ${BASE}/server/server.csr
+
+}
+
+signCertReq() {
+
+	echo "** Signing cert request"
+	echo
+
+	openssl x509 -CA ${BASE}/ca/ca.pem -CAkey ${BASE}/ca/ca.key -CAserial \
+		${BASE}/ca/ca.srl -req -in ${BASE}/server/server.csr -out \
+		${BASE}/server/server.crt -days 365
+
+	openssl x509 -req -days 365 -in ${BASE}/server/server.csr \
+		-signkey ${BASE}/ca/ca.key -out ${BASE}/server/smtpd.crt
+
+}
+
+getHostInfo
+
+createConf
+
+createKey
+
+createCert
+
+createSerial
+
+importCA
+
+createKeyStore
+
+createCertReq
+
+signCertReq
+

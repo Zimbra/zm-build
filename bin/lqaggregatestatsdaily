@@ -1,0 +1,191 @@
+#!/usr/bin/perl
+
+use strict;
+use lib '/opt/liquid/liquidmon/lib';
+use lib '/opt/liquid/liquidmon/lib/liquidpm';
+
+my $DEBUG=1;
+
+use DBI;
+use Time::Local;
+use liquidlog;
+
+my @DATANAMES=(
+	"LmtpRcvdData:total:bytes",
+	"LmtpRcvdMsgs:total:count",
+	"LmtpRcvdData:total:bytes",
+	"LmtpRcvdMsgs:total:count",
+	"Slice:/opt/liquid",
+	"Slice:/opt/liquid",
+	"Slice:/opt/liquid/db",
+	"Slice:/opt/liquid/db",
+	"Slice:/opt/liquid/index",
+	"Slice:/opt/liquid/index",
+	"Slice:/opt/liquid/log",
+	"Slice:/opt/liquid/log",
+	"Slice:/opt/liquid/redolog",
+	"Slice:/opt/liquid/redolog",
+	"Slice:/opt/liquid/store",
+	"Slice:/opt/liquid/store"
+	);
+
+my $baseDir = "/opt/liquid";
+my $logDir = "$baseDir/log";
+
+my $data_source="dbi:mysql:database=liquid;mysql_read_default_file=/opt/liquid/conf/my.cnf;mysql_socket=/opt/liquid/db/mysql.sock";
+my $username="liquid";
+my $password = `/opt/liquid/bin/lqlocalconfig -s liquid_mysql_password`;
+chomp $password;
+$password = (split(' ',$password))[2];
+
+my $dbh = DBI->connect($data_source, $username, $password);
+
+if (!$dbh) { 
+	print STDERR "DB: Can't connect to $data_source: $DBI::errstr\n";
+	exit 1;
+#	liquidlog::Log ("err", "DB: Can't connect to $data_source: $DBI::errstr");
+#	return undef;
+}
+
+sub datetime_to_timestamp {
+	my $dt = shift;
+	if ($dt eq "" || !defined ($dt)) {
+		return "0000000000";
+	}
+	my ($year,$mon,$mday,$hour,$min,$sec) = 
+		($dt =~ m/(\d+)-(\d+)-(\d+) (\d+):(\d+):(\d+)/);
+	my $ts = timelocal($sec,$min,$hour,$mday,$mon-1,$year);
+	return $ts;
+}
+
+sub timestamp_to_datetime {
+	my $ts = shift;
+	if ($ts eq "" || !defined($ts)) {
+		return '1000-01-01 00:00:00';
+	}
+	my @s= localtime($ts);
+
+ 	#'YYYY-MM-DD HH:MM:SS'
+	my $dt = sprintf ("%4d-%02d-%02d %02d:%02d:%02d",$s[5]+1900,$s[4]+1,$s[3],$s[2],$s[1],$s[0]);
+	return $dt;
+}
+
+sub fetch_timed_values {
+	my $sn = shift;
+	my $table = shift;
+	my $tm = shift;
+
+	my $statement = "select time, value from $table where name = '$sn' and time like '$tm%' order by time desc";
+
+	($DEBUG) && print STDERR "$statement\n";
+
+	my $sth = $dbh->prepare($statement);
+
+	if (!$sth->execute) {
+		liquidlog::Log ("err", "DB: $sth->errstr");
+		return undef;
+	}
+
+	my $ary = $sth->fetchall_arrayref;
+	return ($ary);
+}
+
+sub fetch_last_value {
+	my $sn = shift;
+	my $table = shift;
+
+	my $lim = shift;
+
+	$lim = 1 unless ($lim);
+
+	my $statement = "select time, value from $table where name = '$sn' order by time desc limit $lim";
+
+	($DEBUG) && print STDERR "$statement\n";
+
+	my $sth = $dbh->prepare($statement);
+
+	if (!$sth->execute) {
+		liquidlog::Log ("err", "DB: $sth->errstr");
+		return undef;
+	}
+
+	my @ary = $sth->fetchrow_array;
+	($DEBUG) && print STDERR "$sn $ary[0] $ary[1]\n";
+	return ($ary[0], $ary[1]);
+}
+
+sub get_previous_value {
+	my $sn = shift;
+	my $ct = shift;
+	my $p = shift;
+
+	# $ct is in timestamp format.
+	my $nts = timestamp_to_datetime( datetime_to_timestamp($ct) - ($p * 60 * 60));
+
+	# Strip the seconds value, replace with wildcard
+	$nts =~ s/:\d\d$/%/;
+
+	return (fetch_timed_value ($sn, "server_stat", $nts));
+}
+
+sub get_daily_stats {
+	my $sn = shift;
+	my $date = shift;
+	my $sum = 0;
+	my $vals = fetch_timed_values ($sn, "aggregate_stat", $date);
+	my $count = 0;
+	if ($sn !~ /^Slice/) {
+		foreach my $row (@$vals) {
+			$count++;
+			print STDERR "Found $$row[0] $$row[1]\n";
+			$sum += $$row[1];
+		}
+	} else {
+		my $v = ${@$vals}[$#$vals];
+		$sum = ${@$v}[1];
+	}
+	return $sum;
+}
+
+sub insert_current_agg_value {
+	my $ca = shift;
+	my $ct = shift;
+	my $nm = shift;
+
+    # Strip the time to the nearest day
+	$ct =~ s/ \d\d:\d\d:\d\d$/ 00:00:00/;
+
+	my $statement = "insert into aggregate_stat (time, name, value, period) values (?,?,?,?)";
+
+	($DEBUG) && print STDERR "$statement\n";
+
+	my $sth = $dbh->prepare($statement);
+
+	if (!$sth->execute($ct, $nm, $ca, 24)) {
+		liquidlog::Log ("err", "DB: $sth->errstr");
+		return undef;
+	}
+}
+
+# We grab the stats from the previous day and aggregate them.
+
+# Arguments are (optional) date
+my $date = $ARGV[0];
+
+foreach my $sn (@DATANAMES) {
+
+	# yesterday, please
+
+	if ($date eq "") {
+		$date = timestamp_to_datetime(time()-(60*60*24));
+		$date =~ s/ .*$//;
+	}
+	($DEBUG) && print STDERR "Aggregating $sn for $date\n\n";
+
+	my ($cv) = get_daily_stats ($sn,$date);
+
+	($DEBUG) && print STDERR "CV: $cv\n";
+
+	insert_current_agg_value ($cv, $date, $sn);
+
+}

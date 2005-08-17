@@ -1,0 +1,187 @@
+#!/usr/bin/perl
+
+#use strict;
+
+use strict;
+
+use lib "/opt/liquid/liquidmon/lib/liquidpm";
+use lib "/opt/liquid/liquidmon/lib/liquidpm/SOAP";
+use lib "/opt/liquid/liquidmon/lib";
+
+use liquidlog;
+
+use Getopt::Std;
+
+use POSIX ":sys_wait_h";
+use LWP::UserAgent;
+
+use XmlElement;
+use XmlDoc;
+use Soap;
+
+use Time::Local;
+
+my $ACCTNS = "urn:liquidAccount";
+my $MAILNS = "urn:liquidMail";
+my $ADMINNS = "urn:liquidAdmin";
+my $SOAP = $Soap::Soap12;
+
+my $authToken;
+my $START;
+my $END;
+my $PERIOD;
+
+our %GlobalOpts;
+
+sub usage { exit 1; }
+
+sub datetime_to_timestamp {
+        my $dt = shift;
+        if ($dt eq "" || !defined ($dt)) {
+                return "0000000000";
+        }
+        if ($dt =~ m/^\d\d\d\d-\d\d-\d\d$/) {
+                $dt .= " 00:00:00";
+        }
+
+        my ($year,$mon,$mday,$hour,$min,$sec) =
+                ($dt =~ m/(\d+)-(\d+)-(\d+) (\d+):(\d+):(\d+)/);
+        my $ts = timelocal($sec,$min,$hour,$mday,$mon-1,$year);
+        return $ts;
+}
+
+sub timestamp_to_datetime {
+        my $ts = shift;
+        if ($ts eq "" || !defined($ts)) {
+                return '1000-01-01 00:00:00';
+        }
+        my @s= localtime($ts);
+
+        #'YYYY-MM-DD HH:MM:SS'
+        my $dt = sprintf ("%4d-%02d-%02d %02d:%02d:%02d",$s[5]+1900,$s[4]+1,$s[3],$s[2],$s[1],$s[0]);
+        return $dt;
+}
+
+sub get_auth_token {
+	my $host = shift;
+	my $user = shift;
+	my $pass = shift;
+
+	# print "Authenticating to $host as $user/$pass\n";
+
+	my $url = "https://$host:7071/service/admin/soap/";
+
+	my $d = new XmlDoc;
+	$d->start('AuthRequest', $ADMINNS);
+	$d->add('name', undef, { by => "name"}, "$user");
+	$d->add('password', undef, undef, "$pass");
+	$d->end();
+
+	my $authResponse;
+	eval {
+		$authResponse = $SOAP->invoke($url, $d->root());
+	};
+
+	if (!$authResponse) {return undef;}
+	my $authToken = $authResponse->find_child('authToken')->content;
+
+	# print "authToken($authToken)\n";
+
+	return $authToken;
+
+}
+
+sub get_host_list {
+
+	my $h = "localhost";
+
+	my $url = "https://$h:7071/service/admin/soap/";
+
+	my $context = $SOAP->liquidContext($authToken, "");
+
+	my $d = new XmlDoc;
+	$d->start('GetAllServersRequest', $ADMINNS);
+	$d->end();
+
+	my $serverResponse = $SOAP->invoke($url, $d->root(), $context);
+
+	my @hosts;
+
+	# print $serverResponse->to_string("pretty"),"\n";
+	foreach (@{$serverResponse->children}) {
+		my $hname = $_->{attrs}->{name};
+		if ($hname eq "local") {$hname = "localhost"};
+		push @hosts, $_->{attrs}->{name};
+	}
+
+	return @hosts;
+
+}
+
+sub get_stats_from_host {
+	
+	my $host = shift;
+	if ($host eq "local") {$host = "localhost";}
+
+	# print "Fetching from host $host $GlobalOpts{S} from $START till $END, period $PERIOD\n\n";
+
+	my $USER = $GlobalOpts{u};
+
+	$authToken = get_auth_token ($host, $USER, "$GlobalOpts{p}" );
+
+	if (!defined ($authToken)) {return undef;}
+
+	my $context = $SOAP->liquidContext($authToken, "");
+
+	my $url = "https://$host:7071/service/admin/soap/";
+
+	my $d = new XmlDoc;
+	$d->start('GetServerAggregateStatsRequest', $ADMINNS);
+	$d->add('statName', undef, undef, "$GlobalOpts{S}");
+	$d->add('startTime', undef, undef, "$START");
+	$d->add('endTime', undef, undef, "$END");
+	$d->add('period', undef, undef, "$PERIOD");
+	$d->end();
+
+	my $statsResponse = $SOAP->invoke($url, $d->root(), $context);
+
+#	print $statsResponse->to_string("pretty"),"\n";
+
+	if ($statsResponse->{name} ne "GetServerAggregateStatsResponse") {
+		print STDERR "Error: ".$statsResponse->to_string("pretty")."\n";
+		return undef;
+	}
+
+	my %stats = ();
+
+	foreach my $child (@{$statsResponse->children}) {
+		$stats{$child->{attrs}->{t}} = $child->{content};
+	}
+
+	foreach (sort keys %stats) {
+		print "$host,$_,$stats{$_}\n";
+	}
+
+	return \%stats;
+
+}
+
+unless ( getopts( 'hb:e:S:P:u:p:', \%GlobalOpts ) ) { usage(); }
+
+$authToken = get_auth_token ('localhost', "$GlobalOpts{u}", "$GlobalOpts{p}" );
+
+if (!defined ($authToken)) {exit (1);}
+
+$START = datetime_to_timestamp($GlobalOpts{b});
+$END = datetime_to_timestamp($GlobalOpts{e});
+$PERIOD = 1;
+if ( $GlobalOpts{P} ne "d" ) { $PERIOD = 24; }
+
+if ( $GlobalOpts{h} ) { usage(); }
+
+my @hosts = get_host_list();
+
+foreach my $host (@hosts) {
+	
+	get_stats_from_host ($host);
+}

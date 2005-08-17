@@ -1,0 +1,229 @@
+#!/usr/bin/perl
+
+use strict;
+use lib '/opt/liquid/liquidmon/lib';
+use lib '/opt/liquid/liquidmon/lib/liquidpm';
+
+my $DEBUG=1;
+
+use DBI;
+use Time::Local;
+use liquidlog;
+
+my @DATANAMES=(
+	"LmtpRcvdData:total:bytes",
+	"LmtpRcvdMsgs:total:count",
+	"LmtpRcvdData:total:bytes",
+	"LmtpRcvdMsgs:total:count",
+	"Slice:/opt/liquid",
+	"Slice:/opt/liquid",
+	"Slice:/opt/liquid/db",
+	"Slice:/opt/liquid/db",
+	"Slice:/opt/liquid/index",
+	"Slice:/opt/liquid/index",
+	"Slice:/opt/liquid/log",
+	"Slice:/opt/liquid/log",
+	"Slice:/opt/liquid/redolog",
+	"Slice:/opt/liquid/redolog",
+	"Slice:/opt/liquid/store",
+	"Slice:/opt/liquid/store"
+	);
+
+my $baseDir = "/opt/liquid";
+my $logDir = "$baseDir/log";
+
+my $data_source="dbi:mysql:database=liquid;mysql_read_default_file=/opt/liquid/conf/my.cnf;mysql_socket=/opt/liquid/db/mysql.sock";
+my $username="liquid";
+my $password = `/opt/liquid/bin/lqlocalconfig -s -m nokey liquid_mysql_password`;
+chomp $password;
+
+my $dbh = DBI->connect($data_source, $username, $password);
+
+if (!$dbh) { 
+	print STDERR "DB: Can't connect to $data_source: $DBI::errstr\n";
+	exit 1;
+#	liquidlog::Log ("err", "DB: Can't connect to $data_source: $DBI::errstr");
+#	return undef;
+}
+
+sub datetime_to_timestamp {
+	my $dt = shift;
+	if ($dt eq "" || !defined ($dt)) {
+		return "0000000000";
+	}
+	my ($year,$mon,$mday,$hour,$min,$sec) = 
+		($dt =~ m/(\d+)-(\d+)-(\d+) (\d+):(\d+):(\d+)/);
+	my $ts = timelocal($sec,$min,$hour,$mday,$mon-1,$year);
+	return $ts;
+}
+
+sub timestamp_to_datetime {
+	my $ts = shift;
+	if ($ts eq "" || !defined($ts)) {
+		return '1000-01-01 00:00:00';
+	}
+	my @s= localtime($ts);
+
+ 	#'YYYY-MM-DD HH:MM:SS'
+	my $dt = sprintf ("%4d-%02d-%02d %02d:%02d:%02d",$s[5]+1900,$s[4]+1,$s[3],$s[2],$s[1],$s[0]);
+	return $dt;
+}
+
+sub delete_timed_value {
+	my $sn = shift;
+	my $table = shift;
+	my $tm = shift;
+
+	my $statement = "delete from $table where name = '$sn' and time < '$tm'";
+
+	($DEBUG) && print STDERR "$statement\n";
+
+	my $sth = $dbh->prepare($statement);
+
+	if (!$sth->execute) {
+		liquidlog::Log ("err", "DB: $sth->errstr");
+		return undef;
+	}
+
+	# Cleanup really old data
+	my $ots = timestamp_to_datetime( datetime_to_timestamp($tm) - (7 * 24 * 60 * 60));
+	($DEBUG) && print STDERR "$statement\n";
+	$statement = "delete from $table where time < '$ots'";
+	$sth = $dbh->prepare($statement);
+
+	if (!$sth->execute) {
+		liquidlog::Log ("err", "DB: $sth->errstr");
+		return undef;
+	}
+
+}
+
+sub fetch_timed_value {
+	my $sn = shift;
+	my $table = shift;
+	my $tm = shift;
+
+	my $statement = "select time, value from $table where name = '$sn' and time like '$tm' order by time desc limit 1";
+
+	($DEBUG) && print STDERR "$statement\n";
+
+	my $sth = $dbh->prepare($statement);
+
+	if (!$sth->execute) {
+		liquidlog::Log ("err", "DB: $sth->errstr");
+		return undef;
+	}
+
+	my @ary = $sth->fetchrow_array;
+	($DEBUG) && print STDERR "$sn $ary[0] $ary[1]\n";
+	return ($ary[0], $ary[1]);
+}
+
+sub fetch_last_value {
+	my $sn = shift;
+	my $table = shift;
+
+	my $lim = shift;
+
+	$lim = 1 unless ($lim);
+
+	my $statement = "select time, value from $table where name = '$sn' order by time desc limit $lim";
+
+	($DEBUG) && print STDERR "$statement\n";
+
+	my $sth = $dbh->prepare($statement);
+
+	if (!$sth->execute) {
+		liquidlog::Log ("err", "DB: $sth->errstr");
+		return undef;
+	}
+
+	my @ary = $sth->fetchrow_array;
+	($DEBUG) && print STDERR "$sn $ary[0] $ary[1]\n";
+	return ($ary[0], $ary[1]);
+}
+
+sub get_previous_value {
+	my $sn = shift;
+	my $ct = shift;
+	my $p = shift;
+
+	# $ct is in timestamp format.
+	my $nts = timestamp_to_datetime( datetime_to_timestamp($ct) - ($p * 60 * 60));
+
+	# Strip the seconds value, replace with wildcard
+	my $rts = $nts;
+	$nts =~ s/:\d\d$/%/;
+
+	my ($pt, $pv) = fetch_timed_value ($sn, "server_stat", $nts);
+	delete_timed_value ($sn, "server_stat", $rts);
+	return ($pt, $pv);
+}
+
+sub get_current_value {
+	my $sn = shift;
+	return (fetch_last_value ($sn, "server_stat"));
+}
+
+sub insert_current_agg_value {
+	my $ca = shift;
+	my $ct = shift;
+	my $nm = shift;
+	my $p  = shift;
+
+	# Strip the time to the nearest hour
+	$ct =~ s/:\d\d:\d\d$/:00:00/;
+
+	my $statement = "insert into aggregate_stat (time, name, value, period) values (?,?,?,?)";
+
+	($DEBUG) && print STDERR "$statement\n";
+
+	my $sth = $dbh->prepare($statement);
+
+	if (!$sth->execute($ct, $nm, $ca, $p)) {
+		liquidlog::Log ("err", "DB: $sth->errstr");
+		return undef;
+	}
+}
+
+sub compute_current_delta {
+	my ($ct, $cv, $pt, $pv) = (@_);
+	($DEBUG) && print STDERR "Computing current delta for $ct $cv and $pt $pv\n";
+
+	my $d;
+
+	if ($cv < $pv) {
+		$d = $cv;
+	}
+	else {
+		$d = $cv - $pv;
+	}
+	return $d;
+}
+
+# Stats table is a running count updated every minute
+
+# Grab the latest counts and subtract.
+
+my $p = 1;
+foreach my $sn (@DATANAMES) {
+	($DEBUG) && print STDERR "SN: $sn\nP: $p\n";
+
+	my ($ct, $cv) = get_current_value ($sn);
+	if (!defined ($ct)) {
+		($DEBUG) && print STDERR "No data available to aggregate\n\n";
+		next;
+	}
+	my ($pt, $pv) = get_previous_value ($sn, $ct, $p);
+
+	($DEBUG) && print STDERR "CUR: $ct $cv\nPRE: $pt $pv\n";
+	my $ca;
+
+	if ($sn !~ /^Slice/) {
+		$ca = compute_current_delta ($ct, $cv, $pt, $pv);
+	} else {
+		$ca = $cv;
+	}
+
+	insert_current_agg_value ($ca, $ct, $sn, $p);
+}

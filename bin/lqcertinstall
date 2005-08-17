@@ -1,0 +1,62 @@
+#!/bin/sh
+
+BASE=/opt/liquid/ssl/ssl
+
+JAVA_HOME=/opt/liquid/java
+
+TOMCAT=/opt/liquid/tomcat/conf
+
+CONF=/opt/liquid/conf
+
+APP=$1
+shift
+
+CERTFILE=$1
+KEYFILE=$2
+
+if [ "x$CERTFILE" = "x" ]; then
+	CERTFILE=${BASE}/server/server.crt
+fi
+
+if [ ! -f $CERTFILE ]; then
+	print STDERR "ERROR - $CERTFILE not found!"
+	exit 1
+fi
+
+mkdir -p ${BASE}/server
+mkdir -p ${BASE}/cert
+mkdir -p ${BASE}/ca
+
+getHostInfo() {
+
+	H=`hostname --fqdn`
+
+	# $H=$H.liquidsys.com
+
+	HH=`echo $H | grep '\.'`
+
+	if [ "x$HH" = "x" ]; then
+		echo "Error - fully qualified host name not found - please correct"
+		exit
+	fi
+
+}
+
+importCert() {
+
+	echo "** Importing server cert"
+	echo
+
+	if [ $APP = "mailbox" ]; then
+		keytool -import -alias tomcat -keystore ${TOMCAT}/keystore \
+			-trustcacerts -file ${CERTFILE} -storepass liquid
+	else
+		cp -f $CERTFILE ${CONF}/smtpd.crt
+		cp -f $KEYFILE ${CONF}/smtpd.key
+	fi
+
+}
+
+getHostInfo
+
+importCert

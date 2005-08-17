@@ -1,0 +1,7 @@
+APPLICATION ldap test_server "9999" normal "ldap server"
+
+SERVICE ldap "Liquid Directory" ldap 
+
+CONTROL_SYNTAX liquidsyntax ldap_start "/opt/liquid/bin/ldap start"
+CONTROL_SYNTAX liquidsyntax ldap_stop "/opt/liquid/bin/ldap stop"
+CONTROL_SYNTAX liquidsyntax ldap_status "/opt/liquid/bin/ldap status"

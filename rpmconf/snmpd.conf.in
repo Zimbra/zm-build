@@ -1,0 +1,48 @@
+###########################################################################
+#
+# snmpd.conf
+#
+#   - created by the snmpconf configuration program
+#
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+###########################################################################
+# SECTION: Trap Destinations
+#
+#   Here we define who the agent will send traps to.
+
+# trapsink: A SNMPv1 trap receiver
+#   arguments: host [community] [portnum]
+
+trapsink  @@SNMPHOST@@ liquid 
+
+# trap2sink: A SNMPv2c trap receiver
+#   arguments: host [community] [portnum]
+
+trap2sink  @@SNMPHOST@@ liquid 
+
+# informsink: A SNMPv2c inform (acknowledged trap) receiver
+#   arguments: host [community] [portnum]
+
+informsink  @@SNMPHOST@@ liquid 
+
+# trapcommunity: Default trap sink community to use
+#   arguments: community-string
+
+trapcommunity  liquid
+
+
+

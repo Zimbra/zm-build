@@ -1,0 +1,42 @@
+HOW TO RUN LIQUIDMON ON YOUR WORKSTATION
+----------------------------------------
+
+0. LiquidMon won't run on Windows with or without Cygwin.  Works on
+   Linux and Mac.
+
+1. Install expat and zlib libraries if not installed already.
+
+2. Install some Perl modules.  Newer versions are okay.
+
+	DBD-mysql-2.9004.tar.gz
+	DBI-1.43.tar.gz
+	HTML-Parser-3.36.tar.gz
+	HTML-Tagset-3.03.tar.gz
+	HTTP-Parser-0.02.tar.gz
+	IO-stringy-1.220.tar.gz
+	MIME-Lite-3.01.tar.gz
+	MIME-tools-5.411.tar.gz
+	MailTools-1.62.tar.gz
+	SOAP-Lite-0.55.tar.gz
+	URI-1.31.tar.gz
+	XML-Parser-2.34.tar.gz
+	libwww-perl-5.800.tar.gz
+	(are there more???)
+
+3. Edit the state.cf file and change the LOCALHOST line to contain the
+   IP address and hostname of your workstation.
+
+4. You may have to edit liquid.cf to set the paths correctly for Tomcat
+   and MySQL installations on your machine.
+
+5. Make sure Tomcat startup.sh and shutdown.sh set JAVA_HOME correctly.
+
+6. Run the server from shell in LiquidMon project root directory:
+
+	$ cd /workspace/LiquidMon
+	$ perl ./liquidmon.pl >& liquidmon.out
+
+   This command will try to start MySQL and Tomcat.  It's not a problem
+   if they are already running.
+
+LiquidMon includes a SOAP/HTTP server that listens on port 7777.

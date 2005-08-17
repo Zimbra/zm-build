@@ -1,0 +1,17 @@
+/var/log/liquid.log {
+    missingok
+    notifempty
+    create 0644 liquid liquid
+    postrotate
+	killall -HUP syslogd
+	killall -HUP swatch
+    endscript
+	compress
+}
+
+/opt/liquid/log/myslow.log {
+    missingok
+    notifempty
+    create 0644 liquid liquid
+	compress
+}

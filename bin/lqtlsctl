@@ -1,0 +1,88 @@
+#!/bin/sh
+
+BASE=/opt/liquid/ssl/ssl
+
+JAVA_HOME=/opt/liquid/java
+
+TOMCAT=/opt/liquid/tomcat/conf
+
+MODE=$1
+
+if [ "x$MODE" = "x" ]; then
+	MODE="mixed"
+else
+	shift
+fi
+
+CERTFILE=$1
+
+if [ "x$CERTFILE" = "x" ]; then
+	CERTFILE=${BASE}/server/server.crt
+fi
+
+if [ ! -f $CERTFILE ]; then
+	print STDERR "ERROR - $CERTFILE not found!"
+	exit 1
+fi
+
+mkdir -p ${BASE}/server
+mkdir -p ${BASE}/cert
+mkdir -p ${BASE}/ca
+
+getHostInfo() {
+
+	H=`hostname --fqdn`
+
+	# $H=$H.liquidsys.com
+
+	HH=`echo $H | grep '\.'`
+
+	if [ "x$HH" = "x" ]; then
+		echo "Error - fully qualified host name not found - please correct"
+		exit
+	fi
+
+}
+
+updateWebConfig() {
+
+	if [ $MODE = "http" ]; then
+		sed -e 's/\(.*HTTPSBEGIN\).*/\1/' -e 's/.*\(HTTPSEND.*\)/\1/' \
+			-e 's/\(.*HTTPBEGIN\).*/\1 -->/' -e 's/.*\(HTTPEND.*\)/<!-- \1/' \
+			/opt/liquid/tomcat/conf/server.xml > \
+			/tmp/server.xml.$$
+	else
+		if [ $MODE = "https" ]; then
+			sed -e 's/\(.*HTTPSBEGIN\).*/\1 -->/' -e 's/.*\(HTTPSEND.*\)/<!-- \1/' \
+				-e 's/\(.*HTTPBEGIN\).*/\1/' -e 's/.*\(HTTPEND.*\)/\1/' \
+				/opt/liquid/tomcat/conf/server.xml > \
+				/tmp/server.xml.$$
+		else
+			# MIXED - enable both
+			sed -e 's/\(.*HTTPSBEGIN\).*/\1 -->/' -e 's/.*\(HTTPSEND.*\)/<!-- \1/' \
+				-e 's/\(.*HTTPBEGIN\).*/\1 -->/' -e 's/.*\(HTTPEND.*\)/<!-- \1/' \
+				/opt/liquid/tomcat/conf/server.xml > \
+				/tmp/server.xml.$$
+		fi
+	fi
+	mv -f /tmp/server.xml.$$ /opt/liquid/tomcat/conf/server.xml
+
+	sed -e "s/.*PROTOCOL MODE.*/<env-entry-value>$MODE<\/env-entry-value><!-- PROTOCOL MODE -->/" \
+		/opt/liquid/tomcat/webapps/liquid/WEB-INF/web.xml > /tmp/web.xml.$$
+	mv -f /tmp/web.xml.$$ /opt/liquid/tomcat/webapps/liquid/WEB-INF/web.xml
+	
+	if [ $MODE = "http" ]; then
+		lqprov mcf liquidMailPort 80 liquidMailSSLPort 0
+	else
+		if [ $MODE = "https" ]; then
+			lqprov mcf liquidMailPort 0 liquidMailSSLPort 443
+		else
+			lqprov mcf liquidMailPort 80 liquidMailSSLPort 443
+		fi
+	fi
+
+}
+
+getHostInfo
+
+updateWebConfig

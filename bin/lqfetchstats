@@ -1,0 +1,120 @@
+#!/usr/bin/perl
+
+#use strict;
+
+use strict;
+
+use lib "/opt/liquid/liquidmon/lib/liquidpm";
+use lib "/opt/liquid/liquidmon/lib/liquidpm/SOAP";
+use lib "/opt/liquid/liquidmon/lib";
+
+use liquidlog;
+
+use Getopt::Std;
+
+use POSIX ":sys_wait_h";
+use LWP::UserAgent;
+
+use XmlElement;
+use XmlDoc;
+use Soap;
+
+use Time::Local;
+
+my $ACCTNS = "urn:liquidAccount";
+my $MAILNS = "urn:liquidMail";
+my $ADMINNS = "urn:liquidAdmin";
+
+our %GlobalOpts;
+
+sub usage { exit 1; }
+
+sub datetime_to_timestamp {
+        my $dt = shift;
+        if ($dt eq "" || !defined ($dt)) {
+                return "0000000000";
+        }
+        if ($dt =~ m/^\d\d\d\d-\d\d-\d\d$/) {
+                $dt .= " 00:00:00";
+        }
+
+        my ($year,$mon,$mday,$hour,$min,$sec) =
+                ($dt =~ m/(\d+)-(\d+)-(\d+) (\d+):(\d+):(\d+)/);
+        my $ts = timelocal($sec,$min,$hour,$mday,$mon-1,$year);
+        return $ts;
+}
+
+sub timestamp_to_datetime {
+        my $ts = shift;
+        if ($ts eq "" || !defined($ts)) {
+                return '1000-01-01 00:00:00';
+        }
+        my @s= localtime($ts);
+
+        #'YYYY-MM-DD HH:MM:SS'
+        my $dt = sprintf ("%4d-%02d-%02d %02d:%02d:%02d",$s[5]+1900,$s[4]+1,$s[3],$s[2],$s[1],$s[0]);
+        return $dt;
+}
+
+
+unless ( getopts( 'hb:e:S:H:P:u:p:', \%GlobalOpts ) ) { usage(); }
+
+my $START = datetime_to_timestamp($GlobalOpts{b});
+my $END = datetime_to_timestamp($GlobalOpts{e});
+
+if ( $GlobalOpts{h} ) { usage(); }
+
+if ( ! $GlobalOpts{H} || $GlobalOpts{H} eq "localhost" ) { 
+	$GlobalOpts{H} = `hostname -s`; chomp $GlobalOpts{H}; 
+}
+
+my $url = "https://$GlobalOpts{H}:7071/service/admin/soap/";
+
+my $SOAP = $Soap::Soap12;
+my $d = new XmlDoc;
+$d->start('AuthRequest', $ADMINNS);
+$d->add('name', undef, { by => "name"}, "$GlobalOpts{u}");
+$d->add('password', undef, undef, "$GlobalOpts{p}");
+$d->end();
+
+# print "$url\nadmin\@$GlobalOpts{H}.liquidsys.com\n";
+
+print "Fetching from host $GlobalOpts{H} $GlobalOpts{S} from $START till $END, period $GlobalOpts{P}\n\n";
+
+my $authResponse;
+eval {
+	$authResponse = $SOAP->invoke($url, $d->root());
+};
+
+if (!$authResponse) {
+	exit (1);
+}
+
+my $authToken = $authResponse->find_child('authToken')->content;
+
+# print "authToken($authToken)\n";
+
+my $context = $SOAP->liquidContext($authToken, "");
+
+$d = new XmlDoc;
+$d->start('GetServerAggregateStatsRequest', $ADMINNS);
+$d->add('statName', undef, undef, "$GlobalOpts{S}");
+$d->add('startTime', undef, undef, "$START");
+$d->add('endTime', undef, undef, "$END");
+$d->add('period', undef, undef, "$GlobalOpts{P}");
+$d->end();
+
+my $statsResponse = $SOAP->invoke($url, $d->root(), $context);
+
+#print $statsResponse->to_string("pretty"),"\n";
+
+my %stats = ();
+
+foreach my $child (@{$statsResponse->children}) {
+	$stats{$child->{attrs}->{t}} = $child->{content};
+	#push @hosts, $child->{attrs}->{name};
+}
+
+foreach (sort keys %stats) {
+	print "$_ = $stats{$_}\n";
+}

@@ -1,0 +1,484 @@
+#!/usr/bin/perl
+
+use strict;
+
+BEGIN {
+    our $Basedir = "/opt/liquid/liquidmon";
+};
+our $Basedir = "/opt/liquid/liquidmon";
+
+use lib "/opt/liquid/liquidmon/lib";
+use lib "/opt/liquid/liquidmon/lib/liquidpm";
+
+
+use liquidlog;
+use liquidCluster;
+use liquidDaemon;
+use liquidStatusMon;
+use host;
+use diskUsage;
+use service;
+use application;
+use liquidAdmin;
+use shortInfo;
+use liquidControl;
+
+use POSIX ":sys_wait_h";
+use SOAP::Lite;
+
+#use SOAP::Lite +trace;
+use SOAP::Transport::HTTP;
+use HTTP::Request;
+use LWP::UserAgent;
+use Mail::Mailer;
+
+our $DISK_CRIT_THRESHOLD = 90;
+our $DISK_WARN_THRESHOLD = 80;
+our $StatusRunning  = 0;
+our $StatusStarting = 1;
+our $StatusStopped  = 2;
+our $StatusStopping = 3;
+
+#my $EventDebug = "debug";
+#my $EventInfo  = "info";
+#my $EventErr   = "err";
+#my $EventCrit  = "crit";
+#
+#my $EventMsgAppStart      = "appstart: ";
+#my $EventMsgAppStop       = "appstop: ";
+#my $EventMsgAddHost       = "hostadd: ";
+#my $EventMsgRemoveHost    = "hostremove: ";
+#my $EventMsgUpdateCluster = "clusterupdate: ";
+#my $EventMsgStatusChange  = "statuschange: ";
+
+#my $EventList;
+
+our $VERSION = "0.3alphaRC327";
+
+my $controlPid;
+
+my $configfile = "$Basedir/liquid.cf";
+
+my %fetchRefs = ();
+our @applications = ();
+our @services     = ();
+our @localservices     = ();
+our %syntaxes = ();
+our %children = ();
+
+my $soap_server;
+our $controlport = 0;
+
+our $Cluster;
+our $Status;
+
+our $FifoDir  = "$Basedir/FIFO";
+our $FifoPath = "$FifoDir/control";
+
+our $mainProcessPid = $$;
+
+our $DEBUG = 0;
+
+liquidlog::Log( "info", "Liquid Monitor startup: $mainProcessPid" );
+
+sub handleSignal {
+	my $sig = shift;
+	#liquidlog::Log( "err", "SIGNAL: $sig" );
+}
+
+sub trapSignals {
+
+	$SIG{HUP} = \&handleSignal;
+	$SIG{INT} = \&liquidControl::killChildren;
+
+	#$SIG{CHLD} = \&reaper;
+}
+
+sub reaper {
+	1 until ( waitpid( -1, WNOHANG ) == -1 );
+}
+
+sub timestamp_to_datetime {
+	my $ts = shift;
+	if ($ts eq "" || !defined($ts)) {
+		return '1000-01-01 00:00:00';
+	}
+	my @s= localtime($ts);
+
+	#'YYYY-MM-DD HH:MM:SS'
+	my $dt = sprintf ("%4d-%02d-%02d %02d:%02d:%02d",$s[5]+1900,$s[4]+1,$s[3],$s[2],$s[1],$s[0]);
+	return $dt;
+}
+
+
+sub getAppByName {
+	my ($n) = (@_);
+	my $s;
+	foreach $s (@applications) {
+		if ( $s->{name} eq $n ) {
+			return ($s);
+		}
+	}
+	liquidlog::Log( "debug", "Unknown application $n" );
+	return $n;
+}
+
+sub getAppByServiceName {
+	my ($n) = (@_);
+	my $s;
+	foreach $s (@services) {
+		if ( $s->{name} eq $n ) {
+			my @a;
+			foreach ( @{ $s->{apps} } ) {
+				push @a, getAppByName($_);
+			}
+			return (@a);
+		}
+	}
+	liquidlog::Log( "debug", "Unknown service $n" );
+	return undef;
+}
+
+sub waitLoop {
+	my $pid;
+	my $c;
+
+	my $s;
+	while ( $s = <CONTROL> ) {
+		chomp $s;
+		handleControl($s);
+	}
+}
+
+sub bindControlPort {
+	while (1) {
+		liquidlog::Log( "crit", "Creating soap server on port $controlport" );
+
+		eval {
+			$soap_server = liquidDaemon->new(
+				Reuse     => 1,
+				KeepAlive => 0,
+				LocalAddr => 'localhost',
+				LocalPort => $controlport
+			  )->serializer( MySerializer->new )->dispatch_to('liquidAdmin')
+			  ->objects_by_reference(qw(liquidAdmin))
+			  ->on_action( sub { @_[1] } );
+		};
+		if ($@) {
+			liquidlog::Log( "crit",
+				"Failed to bind to $controlport, trying again: $@" );
+			sleep 5;
+			eval {
+				$soap_server = liquidDaemon->new(
+					Reuse     => 1,
+					KeepAlive => 0,
+					LocalAddr => 'localhost',
+					LocalPort => $controlport
+				  )->serializer( MySerializer->new )->dispatch_to('liquidAdmin')
+				  ->objects_by_reference(qw(liquidAdmin))
+				  ->on_action( sub { @_[1] } );
+			};
+			if ($@) {
+				liquidlog::Log( "crit",
+					"Failed to bind to $controlport, exiting: $@" );
+				liquidControl::killChildren();
+			}
+		}
+
+		BEGIN {
+
+			package MySerializer;
+			@MySerializer::ISA = 'SOAP::Serializer';
+
+			sub envelope {
+				$_[2]      =~ s/RequestResponse$/Response/
+				  if $_[1] =~ /^(?:method|response)$/;
+				shift->SUPER::envelope(@_);
+			}
+		}
+
+		eval { $soap_server->handle; };
+	}
+}
+
+sub doShutdown {
+    liquidlog::Log( "crit", "Shutting down" );
+	liquidControl::killChildren();
+	removePid();
+	exit(0);
+}
+
+sub doReload {
+	liquidlog::Log( "crit",
+	"Liquid Monitor Reloading" );
+	local $SIG{CHLD} = 'IGNORE';
+	killStatusMon();
+	killControlProcess();
+	removePid();
+	exec ("/opt/liquid/liquidmon/lqmon");
+	liquidlog::Log( "crit",
+	"Liquid Monitor Reload FAILED" );
+	exit (1);
+}
+
+sub removePid {
+	my $pfile = "$::FifoDir/lq.pid";
+	if ( -f $pfile ) {
+		unlink $pfile;
+	}
+}
+
+sub startControlProcess {
+	my $p;
+	if ( $p = fork() ) {
+		open( CONTROL, "+< $FifoPath" ) or die("Can't open $FifoPath: $!");
+		return $p;
+	}
+	else {
+		my $fh = select CONTROL;
+		$| = 1;
+		bindControlPort();
+		select $fh;
+	}
+}
+
+sub handleControl {
+	my $s = shift;
+
+	my ( $cpid, $cmd, $args ) = split ' ', $s, 3;
+
+	my $resp = "";
+	my $f    = mkResponseFifo($cpid);
+
+	if ( $cmd eq $syntaxes{liquidsyntax}{start} ) {
+		$resp = liquidControl::startServices();
+		wakeStatusMon();
+	}
+	elsif ( $cmd eq $syntaxes{liquidsyntax}{stop} ) {
+		$resp = liquidControl::stopServices();
+		wakeStatusMon();
+	}
+	elsif ( $cmd eq $syntaxes{liquidsyntax}{status} ) {
+		my @apps      = getAppByServiceName($args);
+		my $starttime = "N/A";
+		my $status    = $StatusStopped;
+		if ( defined(@apps) ) {
+			foreach (@apps) {
+
+				if ( isAppRunning( $_->{name} ) ) {
+					$status = $StatusRunning;
+				}
+
+				if ( defined( $children{ $_->{name} }{START} ) ) {
+					$starttime = $children{ $_->{name} }{START};
+				}
+				else {
+					$starttime = $children{ $_->{name} }{STOP};
+					last;
+				}
+			}
+		}
+		$resp = "$starttime $status";
+	}
+#	elsif ( $cmd eq $syntaxes{liquidsyntax}{events} ) {
+#		my $firstEvent = $args;
+#
+#		# We may get the full length ID, convert to int.
+#		$firstEvent = $firstEvent + 0;
+#
+#		$resp = "";
+#		for ( my $i = $firstEvent ; $i <= $EventList->{lastId} ; $i++ ) {
+#			if ( defined( $EventList->getEventById($i) ) ) {
+#				$resp = $resp . $EventList->{Events}[$i]->prettyPrint() . "XXX";
+#			}
+#		}
+#		chomp $resp;
+#		if ( $resp eq "" ) { $resp = "NO EVENTS"; }
+#	}
+	elsif ( $cmd eq $syntaxes{liquidsyntax}{addhost} ) {
+		my $H = $::Cluster->doAddHost( split( " ", $args ) );
+		$::Cluster->writeState();
+		$::Cluster->propagateClusterInfo();
+		$resp = $H->prettyPrint();
+#		$EventList->addEvent( $Cluster->{LocalHost}->{name},
+#			$EventInfo, "$EventMsgAddHost $args" );
+	}
+	elsif ( $cmd eq $syntaxes{liquidsyntax}{removehost} ) {
+		my $ret = $::Cluster->doRemoveHost( split( " ", $args ) );
+		$::Cluster->writeState();
+		if ( $ret eq "SUCCESS" ) {
+			$::Cluster->propagateClusterInfo();
+#			$EventList->addEvent( $Cluster->{LocalHost}->{name},
+#				$EventInfo, "$EventMsgRemoveHost $args" );
+		}
+#		else {
+#			$EventList->addEvent( $Cluster->{LocalHost}->{name},
+#				$EventErr, "$ret: $EventMsgRemoveHost $args $ret" );
+#		}
+		$resp = $ret;
+	}
+	elsif ( $cmd eq $syntaxes{liquidsyntax}{updatecluster} ) {
+		my @oldhosts = $::Cluster->{Hosts};
+		my @items    = split( " ", $args );
+
+		my $sn = $items[0];
+		my $si = $items[1];
+		$::Cluster->{Hosts} = ();
+		push @{ $::Cluster->{Hosts} }, $::Cluster->{LocalHost};
+		for ( my $i = 2 ; $i <= $#items ; $i++ ) {
+			my $hn = $items[ $i++ ];
+			my $ip = $items[$i];
+			liquidlog::Log( "debug", "Updating cluster $hn $ip" );
+			if ( $ip eq $::Cluster->{LocalHost}->{ip} ) { next; }
+			$::Cluster->doAddHost( $hn, $ip );
+		}
+		$::Cluster->writeState();
+#		$EventList->addEvent( $Cluster->{LocalHost}->{name},
+#			$EventInfo, "$EventMsgUpdateCluster $sn $si" );
+	}
+	elsif ( $cmd eq $syntaxes{liquidsyntax}{statuschange} ) {
+		my ( $sname, $prev, $cur ) = split( ' ', $args );
+#		$EventList->addEvent( $Cluster->{LocalHost}->{name},
+#			$EventErr, "$EventMsgStatusChange $sname $prev $cur" );
+		liquidlog::Log( "debug",
+			"Reporting statuschange for $sname: $prev, $cur" );
+	} elsif ( $cmd eq $syntaxes{liquidsyntax}{shutdown} ) {
+		$resp = liquidControl::stopServices();
+	} elsif ( $cmd eq $syntaxes{liquidsyntax}{reload} ) {
+		$resp = doReload();
+	} elsif ($cmd eq $syntaxes{liquidsyntax}{newfetchref} ) {
+		$resp = getNewFetchRef($args);
+	} elsif ($cmd eq $syntaxes{liquidsyntax}{getfetchref} ) {
+		if ($fetchRefs{$args}{low}) {
+			$resp = "$fetchRefs{$args}{low} $fetchRefs{$args}{high}";
+		} else {
+			$resp = "-1 -1";
+		}
+	} else {
+		$resp = "UNKNOWN";
+	}
+	if ( $resp ne "" ) {
+		open( RESPONSE, "+< $f" ) or die("Can't open $f: $!");
+		my $fh = select RESPONSE;
+		$| = 1;
+		select $fh;
+		print RESPONSE "$resp\n";
+	}
+	if ( $cmd eq $syntaxes{liquidsyntax}{shutdown} ) {
+		doShutdown();
+	}
+}
+
+sub getNewFetchRef {
+	my $args = shift;
+	
+	liquidlog::Log ("info", "newFetchRef $args");
+	
+	my ($h, $st, $et) = split /,/. $args;
+	
+	my $fr = $Cluster->{LocalHost}->{name}.time();
+	$fetchRefs{$fr} = ();
+	$fetchRefs{$fr}{host} = $h;
+	$fetchRefs{$fr}{starttime} = $st;
+	$fetchRefs{$fr}{endtime} = $et;
+	return $fr;
+}
+
+sub killControlProcess {
+	liquidlog::Log("crit", "Killing $controlPid");
+	kill ('TERM', $controlPid);
+}
+
+sub killStatusMon {
+	liquidlog::Log("crit", "Killing $Status->{PID}");
+	kill ('TERM', $Status->{PID});
+}
+
+sub wakeStatusMon {
+	kill( 'USR2', $Status->{PID} );
+}
+
+sub mkResponseFifo {
+	my $pid = shift;
+
+	my $f = "$FifoDir/$pid.response";
+	unless ( -p $f ) {
+		require POSIX;
+		POSIX::mkfifo( $f, 0666 );
+	}
+	return $f;
+}
+
+sub runShellCmd {
+	my ( $cmd, $args ) = (@_);
+
+	my @ret = `$cmd $args 2> /dev/null`;
+
+	return \@ret;
+}
+
+sub mkControlFifo {
+	if ( -d $FifoDir ) {
+		`rm -f $FifoDir/*.response`;
+	}
+	else {
+		mkdir $FifoDir;
+	}
+	unless ( -p $FifoPath ) {
+		require POSIX;
+		POSIX::mkfifo( $FifoPath, 0666 );
+	}
+}
+
+sub getDateStamp {
+	my $ds = `date +%Y%m%d%H%M%S`;
+	chomp $ds;
+	return $ds;
+}
+
+sub checkRunning {
+	my $pfile = "$FifoDir/lq.pid";
+	if ( -f $pfile ) {
+		my $p = `cat $pfile`;
+		chomp $p;
+		if ($p eq "") {
+			unlink $pfile;
+		} else {
+			my $cnt = kill 0, $p;
+			if ($cnt) {
+				liquidlog::Log( "crit", 
+					"liquidmon already running at pid $p - exiting" );
+				exit (1);
+			} else {
+				unlink $pfile;
+				liquidlog::Log( "info", 
+					"Process $p not found - removing $pfile" );
+			}
+		}
+	}
+	mkdir $FifoDir;
+	open PF, "> $pfile" or die "Can't open pid file $pfile: $!";
+	print PF $$;
+	close PF;
+}
+
+checkRunning();
+
+mkControlFifo();
+
+trapSignals();
+
+liquidControl::loadConfig($configfile);
+
+$Cluster = new liquidCluster( \@applications, \@services, \%syntaxes );
+
+$Status = new liquidStatusMon($Cluster);
+$Status->run();
+
+$Cluster->getClusterInfo();
+
+$controlPid = startControlProcess();
+
+waitLoop();
+
+liquidlog::Log( "crit", "Liquid Monitor exit: $mainProcessPid" );
