@@ -512,7 +512,7 @@ removeExistingInstall() {
 	if [ $REMOVE = "yes" ]; then
 		echo ""
 		echo "Removing /opt/zimbra"
-		umount /opt/zimbra/amavisd/tmp
+		umount /opt/zimbra/amavisd/tmp > /dev/null 2>&1
 		/bin/rm -rf /opt/zimbra/*
 
 		echo ""
