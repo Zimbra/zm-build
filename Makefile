@@ -538,7 +538,7 @@ $(LDAP_DEST_DIR)/$(LDAP_DIR): $(LDAP_DEST_DIR)
 	cp $(SERVICE_DIR)/conf/ldap/zimbra.schema $(LDAP_DEST_DIR)/$(LDAP_DIR)/etc/openldap/schema
 	cp $(SERVICE_DIR)/conf/ldap/zimbra.ldif $(LDAP_DEST_DIR)/$(LDAP_DIR)/etc/openldap/zimbra.ldif
 	cp $(SERVICE_DIR)/conf/ldap/zimbra_opensrc_mimehandlers.ldif $(LDAP_DEST_DIR)/$(LDAP_DIR)/etc/openldap/zimbra_opensrc_mimehandlers.ldif
-	cp $(SERVICE_DIR)/build/dist/openldap-2.2.17/etc/openldap/zimbra_mimehandlers.ldif $(LDAP_DEST_DIR)/$(LDAP_DIR)/etc/openldap/zimbra_mimehandlers.ldif
+	cp $(SERVICE_DIR)/build/dist/openldap/etc/openldap/zimbra_mimehandlers.ldif $(LDAP_DEST_DIR)/$(LDAP_DIR)/etc/openldap/zimbra_mimehandlers.ldif
 	cp $(SERVICE_DIR)/conf/ldap/widgets.ldif $(LDAP_DEST_DIR)/$(LDAP_DIR)/etc/openldap/widgets.ldif
 
 $(MTA_DEST_DIR)/$(CLAMAV_DIR): $(MTA_DEST_DIR)
@@ -573,15 +573,15 @@ $(WEBAPP_DIR)/service.war: $(WEBAPP_DIR)
 	(cd $(CONVERT_DIR); $(ANT) -Dzimbra.buildinfo.version=$(MAJOR).$(MINOR)_$(BUILD_PLATFORM) -Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) -Dzimbra.buildinfo.host=$(HOST) dev-dist)
 	(cd $(BACKUP_DIR); $(ANT) -Dzimbra.buildinfo.version=$(MAJOR).$(MINOR)_$(BUILD_PLATFORM) -Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) -Dzimbra.buildinfo.host=$(HOST) dev-dist)
 	(cd $(SERVICE_DIR);  \
-	cp build/dist/jakarta-tomcat-5.0.28/webapps/service.war $@)
+	cp build/dist/tomcat/webapps/service.war $@)
 
 $(WEBAPP_DIR)/zimbraAdmin.war: $(WEBAPP_DIR)
 	(cd $(CONSOLE_DIR); $(ANT) admin-war; \
-	cp build/dist/jakarta-tomcat-5.0.28/webapps/zimbraAdmin.war $@)
+	cp build/dist/tomcat/webapps/zimbraAdmin.war $@)
 
 $(WEBAPP_DIR)/zimbra.war: $(WEBAPP_DIR)
 	(cd $(CONSOLE_DIR); $(ANT) prod-war; \
-	cp build/dist/jakarta-tomcat-5.0.28/webapps/zimbra.war $@)
+	cp build/dist/tomcat/webapps/zimbra.war $@)
 
 $(DEST_DIR)/$(TOMCAT_DIR)/common/lib/mail.jar: $(DEST_DIR)/$(TOMCAT_DIR) $(WEBAPP_DIR)/service.war
 	mkdir -p $(DEST_DIR)/$(TOMCAT_DIR)/common/lib
@@ -709,11 +709,11 @@ dev-install: $(DEV_INSTALL_ROOT)/$(MYSQL_DIR) $(DEV_INSTALL_ROOT)/$(LDAP_DIR) $(
 	ln -s $(DEV_INSTALL_ROOT)/$(BDB_DIR) $(DEV_INSTALL_ROOT)/sleepycat
 	@echo "*** Installation complete"
 
-$(SERVICE_DIR)/build/dist/jakarta-tomcat-5.0.28/webapps/service.war:
+$(SERVICE_DIR)/build/dist/tomcat/webapps/service.war:
 	(cd $(CONVERT_DIR); $(ANT) -Dzimbra.buildinfo.version=$(MAJOR).$(MINOR)_$(BUILD_PLATFORM) -Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) -Dzimbra.buildinfo.host=$(HOST) dev-dist ; )
 	(cd $(BACKUP_DIR); $(ANT) -Dzimbra.buildinfo.version=$(MAJOR).$(MINOR)_$(BUILD_PLATFORM) -Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) -Dzimbra.buildinfo.host=$(HOST) dev-dist ; )
 
-$(CONSOLE_DIR)/build/dist/jakarta-tomcat-5.0.28/webapps/zimbra.war: 
+$(CONSOLE_DIR)/build/dist/tomcat/webapps/zimbra.war: 
 	(cd $(CONSOLE_DIR); $(ANT) clean)
 	(cd $(CONSOLE_DIR); $(ANT) prod-war; )
 
@@ -731,7 +731,7 @@ $(DEV_INSTALL_ROOT)/$(LDAP_DIR): $(DEV_INSTALL_ROOT)
 	cp -f $(SERVICE_DIR)/conf/ldap/zimbra.ldif $@/etc/openldap/zimbra.ldif
 	cp -f $(SERVICE_DIR)/conf/ldap/widgets.ldif $@/etc/openldap/widgets.ldif
 
-$(DEV_INSTALL_ROOT)/$(TOMCAT_DIR): $(DEV_INSTALL_ROOT) $(SERVICE_DIR)/build/dist/jakarta-tomcat-5.0.28/webapps/service.war  $(CONSOLE_DIR)/build/dist/jakarta-tomcat-5.0.28/webapps/zimbra.war
+$(DEV_INSTALL_ROOT)/$(TOMCAT_DIR): $(DEV_INSTALL_ROOT) $(SERVICE_DIR)/build/dist/tomcat/webapps/service.war  $(CONSOLE_DIR)/build/dist/tomcat/webapps/zimbra.war
 	@echo "*** Installing tomcat"
 	(cd $(DEV_INSTALL_ROOT); tar xzf $(TOMCAT_SOURCE).tar.gz;)
 	cp -f $(THIRD_PARTY)/jakarta-tomcat/jmxri.jar $@/bin/jmx.jar
