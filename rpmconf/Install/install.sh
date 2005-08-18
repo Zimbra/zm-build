@@ -29,6 +29,8 @@ SERVICES=""
 
 OPTIONAL_PACKAGES="zimbra-qatest"
 
+LEGACY_PACKAGES="liquid-snmp liquid-ldap liquid-mta liquid-store liquid-core"
+
 PACKAGE_DIR=`dirname $0`/packages
 
 LOGFILE="/tmp/install.log.$$"
@@ -469,10 +471,24 @@ removeExistingInstall() {
 		shutDownSystem
 
 		echo ""
-		echo "Removing existing packages"
+		echo "Removing legacy packages"
 		echo ""
 
-		rpm -ev --noscripts --allmatches liquid-core liquid-snmp liquid-ldap liquid-mta liquid-store > /dev/null 2>&1
+		if [ -f /opt/liquid/liquidmon/lqcontrol ]; then
+			su - liquid -c "lqcontrol shutdown"
+		fi
+		for i in $LEGACY_PACKAGES; do
+				rpm -q $i >/dev/null 2>&1
+				if [ $? = 0 ]; then
+					echo -n "   $i..."
+					rpm -ev --noscripts --allmatches $i
+					echo "done"
+				fi
+		done		    
+
+		echo ""
+		echo "Removing existing packages"
+		echo ""
 
 		for p in $INSTALLED_PACKAGES; do
 			echo -n "   $p..."
