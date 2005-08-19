@@ -671,7 +671,7 @@ verifyLdapServer() {
 	echo ""
 	echo -n  "Contacting ldap server $LDAPHOST on $LDAPPORT..."
 
-	$MYLDAPSEARCH -h $LDAPHOST -p $LDAPPORT -w $LDAPZIMBRAPW -D "uid=zimbra,cn=admins,cn=zimbra" > /dev/null 2>&1
+	$MYLDAPSEARCH -x -h $LDAPHOST -p $LDAPPORT -w $LDAPZIMBRAPW -D "uid=zimbra,cn=admins,cn=zimbra" > /dev/null 2>&1
 	LDAPRESULT=$?
 
 	if [ $LDAPRESULT != 0 ]; then
