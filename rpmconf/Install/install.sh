@@ -959,8 +959,7 @@ postInstallConfig() {
 				runAsZimbra "zmprov ca $CREATEADMIN $CREATEADMINPASS zimbraIsAdminAccount TRUE"
 				LOCALHOSTNAME=`hostname --fqdn`
 				if [ $LOCALHOSTNAME = $CREATEDOMAIN ]; then
-					runAsZimbra "zmprov aaa $CREATEADMIN zimbra@$HOSTNAME"
-					runAsZimbra "zmprov aaa $CREATEADMIN root@$HOSTNAME"
+					runAsZimbra "zmprov aaa $CREATEADMIN postmaster@$HOSTNAME"
 				fi
 				echo "done"
 			fi
