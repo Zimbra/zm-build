@@ -66,11 +66,11 @@ ANT		:= $(shell which ant)
 # SOURCE PATHS
 
 QA_DIR	:= $(BUILD_ROOT)/../ZimbraQA
+SERVICE_DIR	:= $(BUILD_ROOT)/../ZimbraServer
+CONSOLE_DIR	:= $(BUILD_ROOT)/../ZimbraWebClient
 
 BACKUP_DIR  := $(BUILD_ROOT)/../ZimbraBackup
 CONVERT_DIR	:= $(BUILD_ROOT)/../ZimbraConvertd
-SERVICE_DIR	:= $(BUILD_ROOT)/../ZimbraServer
-CONSOLE_DIR	:= $(BUILD_ROOT)/../ZimbraWebClient
 
 # 3rd PARTY INCLUDES
 
@@ -532,8 +532,6 @@ $(STORE_DEST_DIR)/libexec:
 	mkdir -p $@
 	cp -R $(SERVICE_DIR)/libexec/[a-z]* $@
 	cp -R $(SERVICE_DIR)/src/libexec/[a-z]* $@
-	#cp -R $(BUILD_ROOT)/zmhac.pl $@
-	#cp -R $(BUILD_ROOT)/zmhad.pl $@
 
 # __WAR 
 
@@ -656,7 +654,7 @@ allclean: clean
 	(cd $(CONSOLE_DIR); $(ANT) clean)
 	(cd $(QA_DIR); $(ANT) clean)
 
-# DEV TARGETS
+# __DEV TARGETS
 
 dev-allclean:
 	-su - zimbra -c zmcontrol shutdown
