@@ -904,6 +904,8 @@ postInstallConfig() {
 	echo "Post installation configuration"
 	echo ""
 
+	chmod 755 /opt/zimbra
+
 	if [ $UPGRADE = "yes" ]; then
 		#restore old config, then overwrite...
 		restoreExistingConfig
