@@ -46,6 +46,7 @@ CLEAN_TARGETS	=	\
 		zimbracore.spec \
 		zimbrasnmp.spec \
 		zimbra.spec \
+		zimbraqa.spec \
 		zimbramta.spec \
 		zimbraldap.spec \
 		i386
