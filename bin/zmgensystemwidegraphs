@@ -31,7 +31,7 @@ use lib '/opt/zimbra/zimbramon/lib/Zimbra/Mon';
 my $DEBUG=0;
 
 use Time::Local;
-use Zimbra::Logger;
+use Logger;
 
 my $baseDir = "/opt/zimbra";
 my $logDir = "$baseDir/log";
