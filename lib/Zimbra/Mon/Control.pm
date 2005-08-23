@@ -259,7 +259,7 @@ sub stopOneService {
 	if ( ref($s) ) { $name = $s->{name}; }
 	else { $name = $s; $s = getServiceByName ($name); }
 	Zimbra::Mon::Logger::Log( "info", "stop service $name" );
-	foreach my $a (@{$s->{apps}}) {
+	foreach my $a (reverse @{$s->{apps}}) {
 		stopOneApplication ($a);
 		if ( isAppRunning( $a ) ) {
 			sleep 2;
