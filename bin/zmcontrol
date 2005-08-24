@@ -320,7 +320,7 @@ sub getCommandLine {
 }
 
 sub displayVersion {
-	my $release = `rpm -q --queryformat "%{release}" zimbra-core`;
+	my $release = `rpm -q --queryformat "%{version}_%{release}" zimbra-core`;
 	my $inst = localtime (`rpm -q --queryformat "%{installtime}" zimbra-core`);
 	print "\nRelease $release installed $inst\n\n";
 }
