@@ -115,9 +115,6 @@ chmod 755 /etc/init.d/zimbra
 chkconfig --add zimbra 
 chkconfig zimbra on
 
-su - zimbra -c "cd /opt/zimbra/lib; tar xzf curl.tgz"
-su - zimbra -c "cd /opt/zimbra/lib; tar xzf idn.tgz"
-
 mkdir -p /opt/zimbra/log
 chown zimbra:zimbra /opt/zimbra/log
 chown zimbra:zimbra /opt/zimbra
