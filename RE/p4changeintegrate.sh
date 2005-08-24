@@ -27,7 +27,9 @@ while [ $# -gt 0 ]; do
 	shift
 done
 
-p4 resolve
+p4 diff -du | less
 
-p4 submit
+#p4 resolve
+
+#p4 submit
 
