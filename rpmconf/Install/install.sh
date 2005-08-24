@@ -337,6 +337,10 @@ getPackageIndexVersion() {
 checkVersionMatches() {
 	VERSIONMATCH="yes"
 
+	# This bombs when mysql isn't around, and was a really bad
+	# idea, anyway
+	return
+
 	getRunningSchemaVersion
 	getPackageSchemaVersion
 	getRunningIndexVersion
