@@ -5,7 +5,7 @@ Summary: Zimbra MTA
 Name: zimbra-mta
 Version: @@VERSION@@
 Release: @@RELEASE@@
-Copyright: Copyright 2005 Zimbra, Inc.
+Copyright: Various
 Group: Applications/Messaging
 URL: http://www.zimbra.com
 Vendor: Zimbra, Inc.

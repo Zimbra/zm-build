@@ -5,7 +5,7 @@ Summary: Zimbra QA Tests
 Name: zimbra-qatest
 Version: @@VERSION@@
 Release: @@RELEASE@@
-Copyright: Copyright 2005 Zimbra, Inc.
+Copyright: ZPL
 Group: Applications/Messaging
 URL: http://www.zimbra.com
 Vendor: Zimbra, Inc.
