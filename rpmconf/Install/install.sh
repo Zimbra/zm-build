@@ -51,6 +51,8 @@ zimbra-store"
 
 SERVICES=""
 
+PREREQ_PACKAGES="libidn curl fetchmail"
+
 OPTIONAL_PACKAGES="zimbra-qatest"
 
 LEGACY_PACKAGES="liquid-snmp liquid-ldap liquid-mta liquid-store liquid-core"
@@ -268,6 +270,34 @@ askInt() {
 checkUser() {
 	if [ x`whoami` != xroot ]; then
 		echo Error: must be run as root user
+		exit 1
+	fi
+}
+
+checkRequired() {
+	GOOD="yes"
+	echo "Checking for prerequisites..."
+	for i in $PREREQ_PACKAGES; do
+		echo -n "    $i..."
+		rpm -q $i >/dev/null 2>&1
+		if [ $? = 0 ]; then
+			version=`rpm -q $i 2> /dev/null`
+			echo "FOUND $version"
+		else
+			echo "MISSING"
+			GOOD="no"
+		fi
+	done
+
+	if [ $GOOD = "no" ]; then
+		echo ""
+		echo "###ERROR###"
+		echo ""
+		echo "One or more prerequisite packages are missing."
+		echo "Please install them before running this installer."
+		echo ""
+		echo "Installation cancelled."
+		echo ""
 		exit 1
 	fi
 }
@@ -582,7 +612,19 @@ installPackage() {
 	f=`basename $file`
 	echo -n "...$f..."
 	rpm -iv $file >> $LOGFILE 2>&1
-	echo "done"
+	if [ $? = 0 ]; then
+		echo "done"
+	else
+		echo -n "FAILED"
+		echo ""
+		echo "###ERROR###"
+		echo ""
+		echo "$f installation failed"
+		echo ""
+		echo "Installation cancelled"
+		echo ""
+		exit 1
+	fi
 }
 
 findLatestPackage() {
@@ -1101,6 +1143,8 @@ verifyExecute() {
 }
 
 checkUser
+
+checkRequired
 
 checkPackages
 
