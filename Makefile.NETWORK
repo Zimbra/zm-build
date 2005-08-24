@@ -162,8 +162,7 @@ WEBAPPS	:= \
 
 QA_COMPONENTS	:= \
 	$(QA_DEST_DIR) \
-	$(QA_DEST_DIR)/scripts \
-	$(QA_DEST_DIR)/TestMailRaw 
+	$(QA_DEST_DIR)/scripts 
 
 CORE_COMPONENTS	:= \
 	$(CORE_DEST_DIR) \
@@ -616,10 +615,6 @@ qatest: $(RPM_DIR) qa_stage
 		--buildroot=$(QA_DEST_ROOT) -bb $(BUILD_ROOT)/zimbraqa.spec )
 
 qa_stage: $(QA_COMPONENTS)
-
-$(QA_DEST_DIR)/TestMailRaw:
-	rm -rf $@
-	cp -Rf $(SERVICE_DIR)/data/TestMailRaw $@
 
 $(QA_DEST_DIR)/scripts:
 	mkdir -p $@
