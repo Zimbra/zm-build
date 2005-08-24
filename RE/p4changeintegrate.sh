@@ -16,9 +16,9 @@ while [ $# -gt 0 ]; do
 	else
 		while read i; do
 			SOURCEFILE=`echo $i | awk '{print $2}'`
-			DESTFILE=`echo $SOURCEFILE | sed -e "s|//depot/[^/]*|//depot/$TOBRANCH|"`
-			#echo "file $SOURCEFILE"
-			#cho "	$DESTFILE"
+			DESTFILE=`echo $SOURCEFILE | sed -e "s|//depot/[^/]*|//depot/$TOBRANCH|" -e 's/#[0-9]*$//'`
+			echo "file $SOURCEFILE"
+			echo "	$DESTFILE"
 			p4 integrate $SOURCEFILE $DESTFILE
 		done < /tmp/change.$$
 	fi
