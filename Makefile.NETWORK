@@ -189,7 +189,7 @@ STORE_COMPONENTS := \
 	$(STORE_DEST_DIR)/$(TOMCAT_DIR)/common/lib/activation.jar \
 	$(STORE_DEST_DIR)/$(MYSQL_DIR) \
 	$(STORE_DEST_DIR)/verity \
-	$(WEBAPPS)
+	$(WEBAPPS) 
 
 LDAP_COMPONENTS := \
 	$(LDAP_DEST_DIR)/$(LDAP_DIR)  
@@ -474,8 +474,6 @@ store: $(RPM_DIR) store_stage
 		| sed -e 's/@@RELEASE@@/$(RELEASE)/' > $(BUILD_ROOT)/zimbra.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/jakarta-tomcat-5.5.7" >> \
 		$(BUILD_ROOT)/zimbra.spec
-	echo "%attr(755, zimbra, zimbra) /opt/zimbra/libexec" >> \
-		$(BUILD_ROOT)/zimbra.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/mysql-standard-4.1.10a-pc-linux-gnu-i686" >> \
 		$(BUILD_ROOT)/zimbra.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/verity/conf" >> \
@@ -524,10 +522,6 @@ $(STORE_DEST_DIR)/verity:
 
 $(WEBAPP_DIR): $(STORE_DEST_DIR)/$(TOMCAT_DIR)
 	mkdir -p $@
-
-$(STORE_DEST_DIR)/libexec:
-	mkdir -p $@
-	cp -R $(SERVICE_DIR)/src/libexec/[a-z]* $@
 
 # __WAR 
 
