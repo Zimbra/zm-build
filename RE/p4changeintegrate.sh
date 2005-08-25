@@ -5,6 +5,7 @@ shift
 
 if [ x$TOBRANCH = "x" -o $# -eq 0 ]; then
 	echo $0 '<to branch> <change> [<change>...]'
+	exit 1
 fi
 
 while [ $# -gt 0 ]; do
