@@ -148,9 +148,11 @@ sub getData
 	$password = (split(' ',$password))[2];
 
 	my $dbh;
-	eval {
-		$dbh = DBI->connect($data_source, $username, $password);
-	};
+	if (-f "/opt/zimbra/db/mysql.sock") {
+		eval {
+			$dbh = DBI->connect($data_source, $username, $password);
+		};
+	}
 
 	foreach my $slice (@{$self->{ShortInfo}->{df}->{slices}}) {
 		if ($slice->{cap} > $::DISK_CRIT_THRESHOLD) {
