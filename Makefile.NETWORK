@@ -189,8 +189,7 @@ STORE_COMPONENTS := \
 	$(STORE_DEST_DIR)/$(TOMCAT_DIR)/common/lib/activation.jar \
 	$(STORE_DEST_DIR)/$(MYSQL_DIR) \
 	$(STORE_DEST_DIR)/verity \
-	$(WEBAPPS) \
-	$(STORE_DEST_DIR)/libexec 
+	$(WEBAPPS)
 
 LDAP_COMPONENTS := \
 	$(LDAP_DEST_DIR)/$(LDAP_DIR)  
@@ -221,9 +220,12 @@ zcs-$(RELEASE).tgz: rpms
 	mkdir -p zcs/packages
 	mkdir -p zcs/bin
 	mkdir -p zcs/data
+	mkdir -p zcs/docs
+	cp -f $(CONSOLE_DIR)/WebRoot/adminhelp/CS/pdf/* zcs/docs
 	cp -f $(SERVICE_DIR)/build/versions-init.sql zcs/data
 	cp $(LDAP_DEST_ROOT)/opt/zimbra/$(LDAP_DIR)/bin/ldapsearch zcs/bin
 	cp $(RPM_CONF_DIR)/Install/install.sh zcs
+	cp $(BUILD_ROOT)/RE/README.txt zcs
 	chmod 755 zcs/install.sh
 	cp $(RPM_DIR)/*rpm zcs/packages
 	rm -f zcs/packages/zimbra-qatest*
@@ -525,7 +527,6 @@ $(WEBAPP_DIR): $(STORE_DEST_DIR)/$(TOMCAT_DIR)
 
 $(STORE_DEST_DIR)/libexec:
 	mkdir -p $@
-	cp -R $(SERVICE_DIR)/libexec/[a-z]* $@
 	cp -R $(SERVICE_DIR)/src/libexec/[a-z]* $@
 
 # __WAR 
