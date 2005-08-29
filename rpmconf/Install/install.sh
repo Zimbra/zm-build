@@ -561,8 +561,8 @@ removeExistingInstall() {
 		echo "Removing deployed webapp directories"
 		/bin/rm -rf /opt/zimbra/tomcat/webapps/zimbra
 		/bin/rm -rf /opt/zimbra/tomcat/webapps/zimbra.war
-		/bin/rm -rf /opt/zimbra/tomcat/webapps/Zimbra::Mon::Admin
-		/bin/rm -rf /opt/zimbra/tomcat/webapps/Zimbra::Mon::Admin.war
+		/bin/rm -rf /opt/zimbra/tomcat/webapps/zimbraAdmin
+		/bin/rm -rf /opt/zimbra/tomcat/webapps/zimbraAdmin.war
 		/bin/rm -rf /opt/zimbra/tomcat/webapps/service
 		/bin/rm -rf /opt/zimbra/tomcat/webapps/service.war
 	fi
@@ -640,11 +640,12 @@ findLatestPackage() {
 		# zimbra-core-2.0_RHEL4-20050622123009_HEAD.i386.rpm
 
 		f=`basename $q`
-		id=`echo $f | awk -F_ '{print $1}'`
-		version=`echo $id | awk -F- '{print $3}'`
+		id=`echo $f | awk -F- '{print $3}'`
+		version=`echo $id | awk -F_ '{print $1}'`
 		major=`echo $version | awk -F. '{print $1}'`
 		minor=`echo $version | awk -F. '{print $2}'`
-		stamp=`echo $f | awk -F_ '{print $2}' | awk -F- '{print $2}'`
+		micro=`echo $version | awk -F. '{print $3}'`
+		stamp=`echo $f | awk -F_ '{print $2}' | awk -F. '{print $1}'`
 
 		if [ $major -gt $himajor ]; then
 			himajor=$major
@@ -815,45 +816,46 @@ getConfigOptions() {
 
 	fi
 
-	if [ $POSTFIX_HERE = "yes" ]; then
-		askYN "Enable Clam Anti-virus services?" "$RUNAV"
-		RUNAV=$response
-		if [ $RUNAV = "yes" ]; then
-			if [ "x$AVUSER" = "x" ]; then
-				AVUSER="notify@${HOSTNAME}"
-			fi
-			askNonBlank "Notification address for AV alerts?" "$AVUSER"
-			AVUSER=$response
-			AVDOMAIN=`echo $AVUSER | awk -F@ '{print $2}'`
-		fi
-		askYN "Enable SpamAssassin anti-spam services?" "$RUNSA"
-		RUNSA=$response
-	fi
-
-	if [ $SNMP_HERE = "yes" ]; then
-		askYN "Notify via SNMP?" "$SNMPNOTIFY"
-		SNMPNOTIFY=$response
-		if [ $SNMPNOTIFY = "yes" ]; then
-			askNonBlank "SNMP Trap host?" "$SNMPTRAPHOST"
-			SNMPTRAPHOST=$response
-			SNMPNOTIFY=1
-		else
-			SNMPNOTIFY=0
-		fi
-		askYN "Notify via SMTP?" "$SMTPNOTIFY"
-		SMTPNOTIFY=$response
-		if [ $SMTPNOTIFY = "yes" ]; then
-			askNonBlank "SMTP Source email address?" "$SMTPSOURCE"
-			SMTPSOURCE=$response
-			askNonBlank "SMTP Destination email address?" "$SMTPDEST"
-			SMTPDEST=$response
-			SMTPNOTIFY=1
-		else
-			SMTPNOTIFY=0
-		fi
-	fi
-
 	if [ $UPGRADE = "no" ]; then
+
+		if [ $POSTFIX_HERE = "yes" ]; then
+			askYN "Enable Clam Anti-virus services?" "$RUNAV"
+			RUNAV=$response
+			if [ $RUNAV = "yes" ]; then
+				if [ "x$AVUSER" = "x" ]; then
+					AVUSER="notify@${HOSTNAME}"
+				fi
+				askNonBlank "Notification address for AV alerts?" "$AVUSER"
+				AVUSER=$response
+				AVDOMAIN=`echo $AVUSER | awk -F@ '{print $2}'`
+			fi
+			askYN "Enable SpamAssassin anti-spam services?" "$RUNSA"
+			RUNSA=$response
+		fi
+
+		if [ $SNMP_HERE = "yes" ]; then
+			askYN "Notify via SNMP?" "$SNMPNOTIFY"
+			SNMPNOTIFY=$response
+			if [ $SNMPNOTIFY = "yes" ]; then
+				askNonBlank "SNMP Trap host?" "$SNMPTRAPHOST"
+				SNMPTRAPHOST=$response
+				SNMPNOTIFY=1
+			else
+				SNMPNOTIFY=0
+			fi
+			askYN "Notify via SMTP?" "$SMTPNOTIFY"
+			SMTPNOTIFY=$response
+			if [ $SMTPNOTIFY = "yes" ]; then
+				askNonBlank "SMTP Source email address?" "$SMTPSOURCE"
+				SMTPSOURCE=$response
+				askNonBlank "SMTP Destination email address?" "$SMTPDEST"
+				SMTPDEST=$response
+				SMTPNOTIFY=1
+			else
+				SMTPNOTIFY=0
+			fi
+		fi
+
 		askYN "Create a domain?" "Y"
 		if [ $response = "yes" ]; then
 			askNonBlank "Enter domain to create:" "$CREATEDOMAIN"
@@ -896,6 +898,7 @@ getConfigOptions() {
 			CREATEADMINPASS=""
 		fi
 	fi
+
 }
 
 getInstallPackages() {
@@ -983,7 +986,7 @@ postInstallConfig() {
 
 	if [ $UPGRADE = "no" -a $STORE_HERE = "yes" ]; then
 		echo -n "Creating db..."
-		runAsZimbra "zmmyinit"
+		runAsZimbra "/opt/zimbra/libexec/zmmyinit"
 		echo "done"
 	fi
 
@@ -1004,7 +1007,7 @@ postInstallConfig() {
 	if [ $UPGRADE = "no" ]; then
 		if [ $LDAP_HERE = "yes" ]; then
 			echo -n "Initializing ldap..."
-			runAsZimbra "zmldapinit"
+			runAsZimbra "/opt/zimbra/libexec/zmldapinit"
 			echo "done"
 		else
 			# set the ldap password in localconfig only
@@ -1056,19 +1059,20 @@ postInstallConfig() {
 			runAsZimbra "zmprov ms $HOSTNAME zimbraSmtpHostname $SMTPHOST"
 			echo "done"
 		fi
+
+		echo -n "Adding $HOSTNAME to zimbraMailHostPool in default COS..."
+		runAsZimbra "id=\`zmprov gs $HOSTNAME | grep zimbraId | awk '{print \$2}'\`; for i in \`zmprov gc default | grep zimbraMailHostPool | sed 's/zimbraMailHostPool: //'\`; do host=\"\$host zimbraMailHostPool \$i\"; done; zmprov mc default \$host zimbraMailHostPool \$id"
+		echo "done"
+
 		SERVICES="$SERVICES zimbraServiceInstalled mailbox"
 	fi
 
 	if [ $POSTFIX_HERE = "yes" ]; then
 		echo -n "Initializing mta config..."
-		runAsZimbra "zmmtainit $LDAPHOST"
+		runAsZimbra "/opt/zimbra/libexec/zmmtainit $LDAPHOST"
 		echo "done"
 
 		# zmprov isn't very friendly
-
-		echo -n "Adding $HOSTNAME to zimbraMailHostPool in default COS..."
-		runAsZimbra "id=\`zmprov gs $HOSTNAME | grep zimbraId | awk '{print \$2}'\`; for i in \`zmprov gc default | grep zimbraMailHostPool | sed 's/zimbraMailHostPool: //'\`; do host=\"\$host zimbraMailHostPool \$i\"; done; zmprov mc default \$host zimbraMailHostPool \$id"
-		echo "done"
 
 		SERVICES="$SERVICES zimbraServiceInstalled mta"
 
