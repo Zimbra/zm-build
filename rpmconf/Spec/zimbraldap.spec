@@ -52,7 +52,9 @@ rm -f /opt/zimbra/openldap
 ln -s /opt/zimbra/openldap-2.2.26 /opt/zimbra/openldap
 
 mkdir -p /opt/zimbra/openldap/var/openldap-data
+mkdir -p /opt/zimbra/openldap-data
 chown -R zimbra:zimbra /opt/zimbra/openldap/var
+chown -R zimbra:zimbra /opt/zimbra/openldap-data
 
 egrep -q 'ldap_start' /opt/zimbra/zimbramon/zimbra.cf
 if [ $? != 0 ]; then

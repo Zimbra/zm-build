@@ -581,6 +581,13 @@ removeExistingInstall() {
 		userdel zimbra > /dev/null 2>&1
 		userdel postfix > /dev/null 2>&1
 		groupdel postdrop > /dev/null 2>&1
+	else
+		if [ -d /opt/zimbra/openldap/var/openldap-data/ ]; then
+			if [ -d /opt/zimbra/openldap-data/ ]; then
+				mv -f /opt/zimbra/openldap-data/ /opt/zimbra/openldap-data.BAK
+			fi
+			mv -f /opt/zimbra/openldap/var/openldap-data/ /opt/zimbra/openldap-data/
+		fi
 	fi
 }
 
