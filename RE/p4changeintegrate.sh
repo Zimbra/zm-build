@@ -20,7 +20,7 @@ while [ $# -gt 0 ]; do
 			DESTFILE=`echo $SOURCEFILE | sed -e "s|//depot/[^/]*|//depot/$TOBRANCH|" -e 's/#[0-9]*$//'`
 			echo "file $SOURCEFILE"
 			echo "	$DESTFILE"
-			p4 integrate $SOURCEFILE $DESTFILE
+			p4 integrate -d $SOURCEFILE $DESTFILE
 		done < /tmp/change.$$
 	fi
 	rm /tmp/change.$$
