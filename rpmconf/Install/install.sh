@@ -554,6 +554,8 @@ removeExistingInstall() {
 			echo "done"
 		done
 
+		rm -f /etc/ld.so.conf.d/zimbra.ld.conf
+
 		cat /etc/sudoers | grep -v postfix | grep -v Cmnd_Alias > /tmp/sudoers
 		cat /tmp/sudoers > /etc/sudoers
 		rm -f /tmp/sudoers

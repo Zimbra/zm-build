@@ -5,7 +5,7 @@ Summary: Zimbra Core
 Name: zimbra-core
 Version: @@VERSION@@
 Release: @@RELEASE@@
-Copyright: Copyright 2005 Zimbra, Inc.
+Copyright: Various
 Group: Applications/Messaging
 URL: http://www.zimbra.com
 Vendor: Zimbra, Inc.
@@ -56,25 +56,7 @@ cat /opt/zimbra/zimbramon/zimbra.cf.in > /opt/zimbra/zimbramon/zimbra.cf
 echo "LOCALHOST $H" > /opt/zimbra/zimbramon/state.cf
 chown zimbra:zimbra /opt/zimbra/zimbramon/state.cf
 
-egrep -q '/opt/zimbra/lib' /etc/ld.so.conf
-if [ $? != 0 ]; then
-	echo "/opt/zimbra/lib" >> /etc/ld.so.conf
-fi  
-
-egrep -q '/opt/zimbra/sleepycat/lib' /etc/ld.so.conf
-if [ $? != 0 ]; then
-    echo "/opt/zimbra/sleepycat/lib" >> /etc/ld.so.conf
-fi  
-
-egrep -q '/opt/zimbra/openldap/lib' /etc/ld.so.conf
-if [ $? != 0 ]; then
-	echo "/opt/zimbra/openldap/lib" >> /etc/ld.so.conf
-fi  
-
-egrep -q '/opt/zimbra/cyrus-sasl/lib' /etc/ld.so.conf
-if [ $? != 0 ]; then
-	echo "/opt/zimbra/cyrus-sasl/lib" >> /etc/ld.so.conf
-fi  
+cp -f /opt/zimbra/conf/zimbra.ld.conf /etc/ld.so.conf.d
 
 crontab -u zimbra /opt/zimbra/zimbramon/crontab
 
