@@ -79,7 +79,7 @@ ln -s /opt/zimbra/cyrus-sasl-2.1.21.ZIMBRA /opt/zimbra/cyrus-sasl
 H=`hostname -s`
 I=`hostname -i`
 
-egrep -q '/opt/zimbra/postfix/' /etc/sudoers
+egrep -q '^%zimbra' /etc/sudoers
 if [ $? != 0 ]; then
 	echo "%zimbra   ALL=NOPASSWD:/opt/zimbra/postfix/sbin/postfix, /opt/zimbra/postfix/sbin/postalias, /opt/zimbra/postfix/sbin/qshape.pl" >> /etc/sudoers
 fi

@@ -5,7 +5,7 @@ Summary: Zimbra Mail
 Name: zimbra-store
 Version: @@VERSION@@
 Release: @@RELEASE@@
-Copyright: Copyright 2005 Zimbra, Inc.
+Copyright: ZPL and other
 Group: Applications/Messaging
 URL: http://www.zimbra.com
 Vendor: Zimbra, Inc.
@@ -81,6 +81,10 @@ egrep -q 'ARP_TOOLS' /etc/sudoers
 if [ $? != 0 ]; then
 	echo "Cmnd_Alias ARP_TOOLS=/sbin/arping,/opt/zimbra/libexec/send_arp" >> /etc/sudoers
 	echo "Cmnd_Alias IFCONFIG=/sbin/ifconfig" >> /etc/sudoers
+fi
+
+egrep -q '^%zimbra' /etc/sudoers
+if [ $? != 0 ]; then
 	echo "%zimbra ALL=NOPASSWD:ARP_TOOLS,IFCONFIG" >> /etc/sudoers
 fi
 
