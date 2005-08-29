@@ -554,7 +554,7 @@ removeExistingInstall() {
 			echo "done"
 		done
 
-		cat /etc/sudoers | grep -v postfix > /tmp/sudoers
+		cat /etc/sudoers | grep -v postfix | grep -v Cmnd_Alias > /tmp/sudoers
 		cat /tmp/sudoers > /etc/sudoers
 		rm -f /tmp/sudoers
 		echo ""
