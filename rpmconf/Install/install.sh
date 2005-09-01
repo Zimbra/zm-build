@@ -999,10 +999,6 @@ postInstallConfig() {
 		echo "done"
 	fi
 
-	echo -n "Setting convertd stub..."
-	runAsZimbra "zmlocalconfig -e convertd_stub_name=SocketTransformationStub"
-	echo "done"
-
 	echo -n "Setting the hostname to $HOSTNAME..."
 	runAsZimbra "zmlocalconfig -e zimbra_server_hostname=${HOSTNAME}"
 	echo "done"
@@ -1059,7 +1055,6 @@ postInstallConfig() {
 
 	if [ $LDAP_HERE = "yes" ]; then
 		SERVICES="zimbraServiceInstalled ldap"
-		runAsZimbra "zmprov mcf zimbraComponentAvailable convertd zimbraComponentAvailable replication zimbraComponentAvailable hotbackup"
 	fi
 
 	if [ $STORE_HERE = "yes" ]; then
