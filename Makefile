@@ -174,13 +174,13 @@ MTA_COMPONENTS	:= \
 	$(MTA_DEST_DIR)/$(SASL_DIR)
 
 STORE_COMPONENTS := \
+	$(WEBAPPS) \
 	$(STORE_DEST_DIR)/$(TOMCAT_DIR) \
 	$(STORE_DEST_DIR)/$(TOMCAT_DIR)/common/lib/zimbra-native.jar \
 	$(STORE_DEST_DIR)/$(TOMCAT_DIR)/common/lib/mail.jar \
 	$(STORE_DEST_DIR)/$(TOMCAT_DIR)/common/endorsed/zimbra-charset.jar \
 	$(STORE_DEST_DIR)/$(TOMCAT_DIR)/common/lib/activation.jar \
-	$(STORE_DEST_DIR)/$(MYSQL_DIR) \
-	$(WEBAPPS) 
+	$(STORE_DEST_DIR)/$(MYSQL_DIR) 
 
 LDAP_COMPONENTS := \
 	$(LDAP_DEST_DIR)/$(LDAP_DIR)  
@@ -492,17 +492,19 @@ $(STORE_DEST_DIR)/$(MYSQL_DIR):
 	@echo "*** Creating mysql"
 	(cd $(STORE_DEST_DIR); tar xzf $(MYSQL_SOURCE).tar.gz;)
 
-$(STORE_DEST_DIR)/$(TOMCAT_DIR): $(STORE_DEST_DIR)
-	@echo "*** Creating tomcat"
+$(STORE_DEST_DIR)/$(TOMCAT_DIR)/bin:
 	(cd $(STORE_DEST_DIR); tar xzf $(TOMCAT_SOURCE).tar.gz;)
-	cp $(SERVICE_DIR)/conf/tomcat-5.5/server.xml.production \
+
+$(STORE_DEST_DIR)/$(TOMCAT_DIR): $(STORE_DEST_DIR) $(STORE_DEST_DIR)/$(TOMCAT_DIR)/bin
+	@echo "*** Creating tomcat"
+	cp -f $(SERVICE_DIR)/conf/tomcat-5.5/server.xml.production \
 		$(STORE_DEST_DIR)/$(TOMCAT_DIR)/conf/server.xml
-	cp $(SERVICE_DIR)/conf/zimbra.xml \
+	cp -f $(SERVICE_DIR)/conf/zimbra.xml \
 		$(STORE_DEST_DIR)/$(TOMCAT_DIR)/conf/Catalina/localhost/zimbra.xml
 	mkdir -p $(STORE_DEST_DIR)/$(TOMCAT_DIR)/conf/AdminService/localhost
-	cp $(SERVICE_DIR)/conf/zimbraAdmin.xml \
+	cp -f $(SERVICE_DIR)/conf/zimbraAdmin.xml \
 		$(STORE_DEST_DIR)/$(TOMCAT_DIR)/conf/AdminService/localhost/zimbraAdmin.xml
-	cp $(SERVICE_DIR)/conf/tomcat-5.5/tomcat-users.xml $(STORE_DEST_DIR)/$(TOMCAT_DIR)/conf
+	cp -f $(SERVICE_DIR)/conf/tomcat-5.5/tomcat-users.xml $(STORE_DEST_DIR)/$(TOMCAT_DIR)/conf
 	cp -f $(SERVICE_DIR)/build/dist/conf/log4j.properties.production  \
 		$(STORE_DEST_DIR)/$(TOMCAT_DIR)/conf/log4j.properties
 	mkdir -p $(STORE_DEST_DIR)/$(TOMCAT_DIR)/temp
