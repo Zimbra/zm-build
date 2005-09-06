@@ -87,7 +87,7 @@ sub run
 
 	sleep 10;
 
-	local $SIG{CHLD} = 'IGNORE';
+	$SIG{CHLD} = 'IGNORE';
 
 	$self->{sqlUser} = `zmlocalconfig zimbra_mysql_user`;
 	chomp $self->{sqlUser};
