@@ -77,6 +77,13 @@ if [ $? != 0 ]; then
     cat /opt/zimbra/zimbramon/zimbramail.cf >> /opt/zimbra/zimbramon/zimbra.cf
 fi
 
+if [ -f /opt/zimbra/zimbramon/zimbraconv.cf ]; then
+	egrep -q 'convertd_start' /opt/zimbra/zimbramon/zimbra.cf
+	if [ $? != 0 ]; then
+		cat /opt/zimbra/zimbramon/zimbraconv.cf >> /opt/zimbra/zimbramon/zimbra.cf
+	fi
+fi
+
 egrep -q 'ARP_TOOLS' /etc/sudoers
 if [ $? != 0 ]; then
 	echo "Cmnd_Alias ARP_TOOLS=/sbin/arping,/opt/zimbra/libexec/send_arp" >> /etc/sudoers
