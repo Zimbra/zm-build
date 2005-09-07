@@ -166,7 +166,7 @@ sub displayResult {
 }
 
 sub doStartup {
-	Zimbra::Mon::Logger::Log ("crit", "doStartup");
+	Zimbra::Mon::Logger::Log ("info", "Doing startup");
 	
 	my ($dir) = ($0 =~ m/^(.*\/)/);
 	
@@ -176,7 +176,7 @@ sub doStartup {
 }
 
 sub doStart {
-	Zimbra::Mon::Logger::Log ("crit", "doStart");
+	Zimbra::Mon::Logger::Log ("info", "Starting services");
 	Zimbra::Mon::Control::startServices();
 }
 

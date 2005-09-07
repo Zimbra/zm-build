@@ -176,7 +176,7 @@ sub waitLoop {
 
 sub bindControlPort {
 	while (1) {
-		Zimbra::Mon::Logger::Log( "crit", "Creating soap server on port $controlport" );
+		Zimbra::Mon::Logger::Log( "info", "Creating soap server on port $controlport" );
 
 		eval {
 			$soap_server = Zimbra::Mon::Daemon->new(
@@ -396,7 +396,7 @@ sub handleControl {
 sub getNewFetchRef {
 	my $args = shift;
 	
-	Zimbra::Mon::Logger::Log ("info", "newFetchRef $args");
+	Zimbra::Mon::Logger::Log ("debug", "newFetchRef $args");
 	
 	my ($h, $st, $et) = split /,/. $args;
 	
@@ -414,7 +414,7 @@ sub killControlProcess {
 }
 
 sub killStatusMon {
-	Zimbra::Mon::Logger::Log("crit", "Killing $Status->{PID}");
+	Zimbra::Mon::Logger::Log("crit", "Killing StatusMon $Status->{PID}");
 	kill ('TERM', $Status->{PID});
 }
 

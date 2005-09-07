@@ -140,7 +140,7 @@ sub startServices {
 	my $t = "Not Started";
 
 	if (ldapRunsHere()) {
-		Zimbra::Mon::Logger::Log( "crit", "STARTING ldap" );
+		Zimbra::Mon::Logger::Log( "info", "STARTING ldap" );
 		if (startOneService("ldap")) {
 			$r = $r." ldap";
 		}
@@ -152,10 +152,10 @@ sub startServices {
 		sleep 3;
 	}
 	getLocalServices();
-	Zimbra::Mon::Logger::Log( "crit", "STARTING services" );
+	Zimbra::Mon::Logger::Log( "info", "STARTING services" );
 	foreach $s (@::localservices) {
 		if ($s eq "maintenance" || $s eq "ldap") { next; }
-		Zimbra::Mon::Logger::Log( "crit", "STARTING $s" );
+		Zimbra::Mon::Logger::Log( "info", "STARTING $s" );
 		if (startOneService($s)) {
 			$r = $r." ".$s;
 		}
@@ -175,14 +175,14 @@ sub startServices {
 }
 
 sub stopServices {
-	Zimbra::Mon::Logger::Log( "crit", "STOPPING services" );
+	Zimbra::Mon::Logger::Log( "info", "STOPPING services" );
 	my $r = "Stopped";
 	my $t = "Not Stopped";
 	getLocalServices();
 	foreach my $n (reverse @::localservices) {
 		my $s = getServiceByName ($n);
 		stopOneService( $s->{name} );
-		# Zimbra::Mon::Logger::Log( "crit", "Waiting for $s->{name} to stop" );
+		Zimbra::Mon::Logger::Log( "debug", "Waiting for $s->{name} to stop" );
 	}
 }
 
@@ -221,10 +221,6 @@ sub killOneApplication {
 		stopOneApplication ($name);
 	}
 
-	#	}
-	#	else {
-	#		Zimbra::Mon::Logger::Log( "err", "Can't stop unstarted app $name" );
-	#	}
 }
 
 sub stopOneApplication {
@@ -274,9 +270,9 @@ sub stopOneService {
 			}
 		}
 		if (! isAppRunning( $a ) ) {
-			Zimbra::Mon::Logger::Log( "crit", "$a successfully stopped" );
+			Zimbra::Mon::Logger::Log( "info", "$a successfully stopped" );
 		} else {
-			Zimbra::Mon::Logger::Log( "crit", "FAILED to stop $a" );
+			Zimbra::Mon::Logger::Log( "err", "FAILED to stop $a" );
 		}
 	}
 	return 1;
@@ -349,7 +345,6 @@ sub runSyntaxCommand {
 	my $syscmd;
 	foreach $syscmd (@syscmds) {
 
-		# Zimbra::Mon::Logger::Log ("crit", "RUN: $syscmd");
 		# Separate items by newline
 		if ( $retval ne "" ) { $retval .= "\n"; }
 
@@ -376,7 +371,7 @@ sub runSyntaxCommand {
 					}
 				}
 				else {
-					Zimbra::Mon::Logger::Log( "debug",
+					Zimbra::Mon::Logger::Log( "err",
 						"HTTP RESPONSE: FAILURE: " . $resp->status_line );
 					$retval = $::StatusStopped;
 				}
@@ -394,7 +389,7 @@ sub runSyntaxCommand {
 					}
 				}
 				else {
-					Zimbra::Mon::Logger::Log( "debug",
+					Zimbra::Mon::Logger::Log( "err",
 						"HTTP RESPONSE: FAILURE: " . $resp->status_line );
 				}
 			}
@@ -431,7 +426,6 @@ sub runSyntaxCommand {
 			$retval .= $f >> 8;
 		}
 	}
-		# Zimbra::Mon::Logger::Log ("crit", "RUN: $syscmd $retval");
 	return $retval;
 }
 
@@ -463,7 +457,20 @@ sub loadConfig {
 			my ( $name, $label, $app) =
 				(m/^SERVICE\s+(\S+)\s+"([^"]+)"\s+(\S+)/);
 			my $s = new service( $name, $label, $app);
-			push( @::services, $s );
+
+			# Should have used a hash...
+			my $found = 0;
+			for (my $S = 0; $S <= $#::services; $S++) {
+				if ($::services[$S]->{name} eq $s->{name}) {
+					$::services[$S] = $s;
+					$found = 1;
+					last;
+				}
+			}
+			if (!$found) {
+				push( @::services, $s );
+			}
+
 		}
 		elsif (/^CONTROL_SYNTAX/) {
 			my ( $name, $cmd, $args ) =

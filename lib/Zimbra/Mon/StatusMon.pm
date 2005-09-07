@@ -54,14 +54,11 @@ sub new
 	
 	$self->{Cluster} = $cluster;
 
-#	Zimbra::Mon::Logger::Log ("debug","Created StatusMon");
-
 	return $self;
 }
 
 sub handle_usr2
 {
-#	Zimbra::Mon::Logger::Log ("debug","STATUS: USR2");
 	$Signalled = 1;
 	# We don't need to handle it, just enough to wake us from our sleep.
 }
@@ -77,7 +74,7 @@ sub run
 	
 	if ($self->{PID}) {return};
 
-	Zimbra::Mon::Logger::Log ("crit","Status monitor startup");
+	Zimbra::Mon::Logger::Log ("info","Status monitor startup");
 
 	$::PROGRAM_NAME = "Zimbra::Mon::StatusMon";
 	
@@ -104,19 +101,16 @@ sub run
 		}
 		$self->getData();
 		$SIG{USR2} = \&handle_usr2;
-#		Zimbra::Mon::Logger::Log ("debug","Zimbra::Mon::StatusMon::run sleeping");
 		if ($Signalled) {
 			$Signalled = 0;
 		} 
 
 		sleep $sleepInterval;
-#		Zimbra::Mon::Logger::Log ("debug","Zimbra::Mon::StatusMon::run waking up");
 	}
 }
 
 sub getData
 {
-#	Zimbra::Mon::Logger::Log ("debug","Zimbra::Mon::StatusMon::getData");
 	my $self = shift;
 	
 	$self->{ShortInfo}->getShortInfo();
@@ -136,7 +130,7 @@ sub getData
 				my $prevStatus = $oldS->{ServiceStatus}{$sname}{status};
 				my $curStatus = $self->{ServiceInfo}{ServiceStatus}{$sname}{status};
 				my $cmd = $::syntaxes{zimbrasyntax}{statuschange};
-				Zimbra::Mon::Logger::Log ("err", "Service status change: $sname $prevStatus $curStatus");
+				Zimbra::Mon::Logger::Log ("info", "Service status change: $sname $prevStatus $curStatus");
 				$::Cluster->sendFifo("$cmd $sname $prevStatus $curStatus");
 		}
 	}
@@ -184,7 +178,6 @@ sub getData
 
 sub setup
 {
-#	Zimbra::Mon::Logger::Log ("debug","Zimbra::Mon::StatusMon::setup");
 	my $self = shift;
 	
 	if (!-d $statusDir)
@@ -192,7 +185,7 @@ sub setup
 		mkdir ($statusDir);
 		if (!-d $statusDir)
 		{
-			Zimbra::Mon::Logger::Log ("err", "Can't mkdir $statusDir: $!");
+			Zimbra::Mon::Logger::Log ("crit", "Can't mkdir $statusDir: $!");
 			# We can exit here, because zimbramon.pl hasn't forked yet.
 			exit (1);
 		}
@@ -202,7 +195,7 @@ sub setup
 		mkdir ($serviceDir);
 		if (!-d $serviceDir)
 		{
-			Zimbra::Mon::Logger::Log ("err", "Can't mkdir $serviceDir: $!");
+			Zimbra::Mon::Logger::Log ("crit", "Can't mkdir $serviceDir: $!");
 			# We can exit here, because zimbramon.pl hasn't forked yet.
 			exit (1);
 		}
@@ -255,13 +248,13 @@ sub monitorOneHost {
 	# TODO get service list for each host.
 	foreach $sname (keys %{ $rsi->{ServiceStatus} }) {
 		if (defined $rsi->{ServiceStatus}{$sname}{status}) {
-		Zimbra::Mon::Logger::Log ("info", 
+		Zimbra::Mon::Logger::Log ("debug", 
 			"Monitored $sname on $host->{name}: $rsi->{ServiceStatus}{$sname}{status}");
 		}
 		my $prevStatus = $oldS->{ServiceStatus}{$sname}{status};
 		my $curStatus = $rsi->{ServiceStatus}{$sname}{status};
 		if ( $prevStatus ne $curStatus ) {
-			Zimbra::Mon::Logger::Log ("err", 
+			Zimbra::Mon::Logger::Log ("info", 
 				"Remote Service status change: $host->{name} $sname $prevStatus $curStatus");
 		}
 

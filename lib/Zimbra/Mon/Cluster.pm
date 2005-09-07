@@ -64,23 +64,15 @@ sub new {
 
 	$self->readState();
 
-	#Zimbra::Mon::Logger::Log( "debug", "Created Cluster" );
-#	my $s;
-#	foreach $s ( @{ $self->{Applications} } ) {
-#		Zimbra::Mon::Logger::Log( "debug", "APP: $s->{name}" );
-#	}
-
 	return $self;
 }
 
 sub getClusterInfo {
-	#Zimbra::Mon::Logger::Log( "debug", "Zimbra::Mon::Cluster::getClusterInfo" );
+	Zimbra::Mon::Logger::Log( "debug", "Zimbra::Mon::Cluster::getClusterInfo" );
 	my $self = shift;
 	$self->{ShortInfo} = new Zimbra::Mon::shortInfo( $self->{LocalHost} );
 	$self->setShortInfo();
 	$self->{ServiceInfo} = new Zimbra::Mon::serviceInfo( $self->{LocalHost} );
-
-	#$self->setServiceInfo();
 }
 
 sub readState {
@@ -114,11 +106,6 @@ sub writeState {
 	Zimbra::Mon::Logger::Log( "debug", "Started writing state" );
 	open CF, ">$statefile" or die "Can't open $statefile: $!";
 	print CF "LOCALHOST " . $self->{LocalHost}->prettyPrint() . "\n";
-#	my $h;
-#	foreach $h ( @{ $self->{Hosts} } ) {
-#		print CF "HOST " . $h->prettyPrint() . "\n"
-#		  unless ( $h == $self->{LocalHost} );
-#	}
 	close CF;
 	Zimbra::Mon::Logger::Log( "debug", "Finished writing state" );
 }
@@ -127,30 +114,25 @@ sub getClusterHosts {
 
 	# TODO - MEM - set up some sort of taint aging for this info
 	my $self = shift;
-#	Zimbra::Mon::Logger::Log( "debug", "Zimbra::Mon::Cluster::getClusterHosts" );
 	$self->readState();
 	$self->getHostsFromLdap();
 
-	#Zimbra::Mon::Logger::Log ("info",join " ", @{$self->{Hosts}});
 	return @{ $self->{Hosts} };
 
 }
 
 sub getLocalServices {
 	my $self = shift;
-#	Zimbra::Mon::Logger::Log( "debug", "Zimbra::Mon::Cluster::getLocalServices" );
 	return $self->{Services};
 }
 
 sub getLocalApplications {
 	my $self = shift;
-#	Zimbra::Mon::Logger::Log( "debug", "Zimbra::Mon::Cluster::getLocalServices" );
 	return $self->{Applications};
 }
 
 sub getLocalShortInfo {
 	my $self = shift;
-#	Zimbra::Mon::Logger::Log( "debug", "Zimbra::Mon::Cluster::getLocalShortInfo" );
 
 	my $MAX_AGE = 300;
 
@@ -169,7 +151,6 @@ sub getLocalServiceInfo {
 
 sub setServiceInfo {
 	my $self = shift;
-#	Zimbra::Mon::Logger::Log( "debug", "Zimbra::Mon::Cluster::setServiceInfo" );
 
 	my $TS = time();
 	$self->{ServiceInfo}->{cts} = $TS;
@@ -179,7 +160,6 @@ sub setServiceInfo {
 
 sub setShortInfo {
 	my $self = shift;
-#	Zimbra::Mon::Logger::Log( "debug", "Zimbra::Mon::Cluster::setShortInfo" );
 
 	my $TS = time();
 	$self->{ShortInfo}->{cts} = $TS;
@@ -191,7 +171,6 @@ sub controlLocalService {
 	my $self = shift;
 	my $cmd  = shift;
 #	my $sn   = shift;
-#	Zimbra::Mon::Logger::Log( "debug", "Zimbra::Mon::Cluster::controlLocalService: $cmd $sn" );
 
 	$self->sendFifo("$cmd");
 
@@ -201,7 +180,6 @@ sub controlLocalService {
 
 sub openFifo {
 	my $self = shift;
-#	Zimbra::Mon::Logger::Log( "debug", "Zimbra::Mon::Cluster::openFifo" );
 	open( CONTROL, "+< $::FifoPath" ) or warn("Zimbra::Mon::Cluster::openFifo Can't open $::FifoPath: $!");
 
 	my $fh = select CONTROL;
@@ -211,7 +189,6 @@ sub openFifo {
 
 sub openResponseFifo {
 	my $self = shift;
-#	Zimbra::Mon::Logger::Log( "debug", "Zimbra::Mon::Cluster::openResponseFifo" );
 	if ( open( RESPONSE, "+< $::FifoDir/$$.response" ) ) {
 	}
 	else {
@@ -240,7 +217,6 @@ sub sendFifo {
 
 	my $args = join " ", @_;
 
-	#Zimbra::Mon::Logger::Log ("debug","sendFifo: $args");
 	my $msg = "$$ $args";
 	chomp $msg;
 	Zimbra::Mon::Logger::Log( "debug", "sendFifo: $msg" );
@@ -264,10 +240,7 @@ sub readFifo {
 
 sub signalMainProcess {
 	my $self = shift;
-#	Zimbra::Mon::Logger::Log( "debug",
-#		"Zimbra::Mon::Cluster::signalMainProcess $::mainProcessPid" );
 
-	#kill( 'USR1', $::mainProcessPid );
 }
 
 sub addHost {
@@ -299,22 +272,14 @@ sub addProvHost {
 	}
 	$self->doAddHost($hn, $ip); 
 
-#	Zimbra::Mon::Logger::Log( "debug", "Zimbra::Mon::Cluster::doAddHost $hn, $ip" );
-	#my $H = new host( $hn, $ip, $partner, $mode );
-
-	#push( @{ $self->{Hosts} }, $H );
-
-	#return $H;
 }
 
 sub doAddHost {
 	my $self = shift;
 	my ( $hn, $ip ) = (@_);
 
-#	Zimbra::Mon::Logger::Log( "debug", "Zimbra::Mon::Cluster::doAddHost $hn, $ip" );
 	my $H = new host( $hn, $ip );
 
-	#Zimbra::Mon::Logger::Log ("debug","Remote Host $h");
 	push( @{ $self->{Hosts} }, $H );
 
 	return $H;
@@ -370,7 +335,6 @@ sub doRemoveHost {
 	my $self = shift;
 	my ( $hn, $ip ) = (@_);
 
-#	Zimbra::Mon::Logger::Log( "debug", "Zimbra::Mon::Cluster::doRemoveHost $hn, $ip" );
 	if ( $hn eq $self->{LocalHost}->{name} || $ip eq $self->{LocalHost}->{ip} )
 	{
 		return "FAILURE";
@@ -394,12 +358,9 @@ sub updateClusterInfo {
 	my $hostlist = shift;
 	my $cmd = $::syntaxes{zimbrasyntax}{updatecluster};
 	
-#	Zimbra::Mon::Logger::Log ("debug", "Zimbra::Mon::Cluster::updateClusterInfo");
-
 	my $cmdstr = $cmd." ".$sender->{name}." ".$sender->{ip};
 	
 	foreach (@{$hostlist}) {
-#		Zimbra::Mon::Logger::Log ("debug", "Zimbra::Mon::Cluster::updateClusterInfo: ".$_->{name}." ".$_->{ip});
 		$cmdstr .= " ".$_->{name}." ".$_->{ip};
 	}
 	$self->sendFifo("$cmdstr");
