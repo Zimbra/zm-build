@@ -1,0 +1,72 @@
+#!/bin/bash
+#
+# ***** BEGIN LICENSE BLOCK *****
+# Version: ZPL 1.1
+# 
+# The contents of this file are subject to the Zimbra Public License
+# Version 1.1 ("License"); you may not use this file except in
+# compliance with the License. You may obtain a copy of the License at
+# http://www.zimbra.com/license
+# 
+# Software distributed under the License is distributed on an "AS IS"
+# basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See
+# the License for the specific language governing rights and limitations
+# under the License.
+# 
+# The Original Code is: Zimbra Collaboration Suite.
+# 
+# The Initial Developer of the Original Code is Zimbra, Inc.
+# Portions created by Zimbra are Copyright (C) 2005 Zimbra, Inc.
+# All Rights Reserved.
+# 
+# Contributor(s):
+# 
+# ***** END LICENSE BLOCK *****
+
+ID=`id -u`
+
+if [ $ID -ne 0 ]; then
+	echo "Run as root!"
+	echo ""
+	exit 1
+fi
+
+TYPE=${1:-"local"}
+
+usage() {
+	echo ""
+	echo "$0: set up syslog.conf for local or remote logging"
+	echo ""
+	echo "Usage:"
+	echo "	$0 [local|remote <hostname>]"
+	echo "		local - log locally (/var/log/zimbra.log)"
+	echo "		remote - log remotely to <hostname>"
+	echo ""
+	exit 1
+}
+
+if [ $TYPE != "local" -a $TYPE != "remote" ]; then
+	usage
+fi
+
+if [ $TYPE = "remote" ]; then
+	LOGHOST=${2:-"none"}
+	if [ $LOGHOST = "none" ]; then
+		usage
+	fi
+fi
+
+cp -f /etc/syslog.conf /etc/syslog.conf.bak
+
+#cat /etc/syslog.conf | sed -e 's:\(^local0.*\):#\1:' > /tmp/syslog.zimbra
+grep -v local0 /etc/syslog.conf > /tmp/syslog.zimbra
+
+if [ $TYPE = "remote" ]; then
+      echo "local0.info                @$LOGHOST" >> /tmp/syslog.zimbra
+else
+      echo "local0.info                /var/log/zimbra.log" >> /tmp/syslog.zimbra
+fi
+
+cp -f /tmp/syslog.zimbra /etc/syslog.conf
+
+killall -HUP syslogd

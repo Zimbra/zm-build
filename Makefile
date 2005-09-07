@@ -360,6 +360,7 @@ $(CORE_DEST_DIR)/bin:
 	cp $(ZIMBRA_BIN_DIR)/zmroll_catalina.sh $@
 	cp $(ZIMBRA_BIN_DIR)/zmtlsctl $@
 	cp $(ZIMBRA_BIN_DIR)/zmfixperms.sh $@
+	cp $(ZIMBRA_BIN_DIR)/zmsyslogsetup $@
 
 # __LDAP
 
@@ -800,6 +801,7 @@ $(DEV_INSTALL_ROOT)/bin:
 	cp -f $(ZIMBRA_BIN_DIR)/zmroll_catalina.sh $@
 	cp -f $(ZIMBRA_BIN_DIR)/zmtlsctl $@
 	cp -f $(ZIMBRA_BIN_DIR)/zmfixperms.sh $@
+	cp -f $(ZIMBRA_BIN_DIR)/zmsyslogsetup $@
 	chmod u+x $@/*
 
 $(DEV_INSTALL_ROOT)/conf: $(SERVICE_DIR)/$(WEBAPP_BUILD_DIR)/service.war

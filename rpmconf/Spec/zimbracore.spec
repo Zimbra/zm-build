@@ -75,16 +75,7 @@ if [ ! -f /etc/logrotate.d/zimbra ]; then
 	fi
 fi
 
-egrep -q '/var/log/zimbra.log' /etc/syslog.conf
-if [ $? != 0 ]; then
-	mv /etc/syslog.conf /etc/syslog.conf.zimbra
-	sed -e 's:\(.*[a-z*]\).*\(\t/var/log/messages\)$:\1;local0.none\t\2:' \
-		/etc/syslog.conf.zimbra > /etc/syslog.conf
-	echo "local0.info                /var/log/zimbra.log" >> /etc/syslog.conf
-	touch /var/log/zimbra.log
-	chown zimbra:zimbra /var/log/zimbra.log
-	killall -HUP syslogd
-fi
+/opt/zimbra/bin/zmsyslogsetup local
 
 # Setup iptables
 iptables -t nat -F
