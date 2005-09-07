@@ -90,7 +90,7 @@ if [ $? != 0 ]; then
 	echo "Cmnd_Alias IFCONFIG=/sbin/ifconfig" >> /etc/sudoers
 fi
 
-egrep -q '^%zimbra' /etc/sudoers
+egrep -q '^%zimbra.*ARP' /etc/sudoers
 if [ $? != 0 ]; then
 	echo "%zimbra ALL=NOPASSWD:ARP_TOOLS,IFCONFIG" >> /etc/sudoers
 fi
