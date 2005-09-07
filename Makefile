@@ -147,7 +147,7 @@ WEBAPP_BUILD_DIR := build/dist/tomcat/webapps
 
 RPM_DIR			:= $(BUILD_ROOT)/i386
 RPM_CONF_DIR		:= $(BUILD_ROOT)/rpmconf
-ZIMBRA_BIN_DIR		:= $(BUILD_ROOT)/bin
+ZIMBRA_BIN_DIR		:= $(BUILD_ROOT)/../ZimbraServer/src/bin
 
 # COMPONENTS
 
