@@ -214,13 +214,16 @@ zcs-$(RELEASE).tgz: rpms
 	mkdir -p zcs/bin
 	mkdir -p zcs/data
 	mkdir -p zcs/docs
+	mkdir -p zcs/util/modules
 	cp -f $(CONSOLE_DIR)/WebRoot/adminhelp/pdf/* zcs/docs
 	cp -f $(CONSOLE_DIR)/WebRoot/adminhelp/txt/readme_source.txt zcs
 	cp -f $(CONSOLE_DIR)/WebRoot/adminhelp/txt/readme_binary.txt zcs
 	cp -f $(SERVICE_DIR)/build/versions-init.sql zcs/data
 	cp $(LDAP_DEST_ROOT)/opt/zimbra/$(LDAP_DIR)/bin/ldapsearch zcs/bin
 	cp $(RPM_CONF_DIR)/Install/install.sh zcs
-	cp $(BUILD_ROOT)/RE/README.txt zcs
+	cp -f $(RPM_CONF_DIR)/Install/Util/*sh zcs/util
+	cp -f $(RPM_CONF_DIR)/Install/Util/modules/* zcs/util/modules
+	cp -f $(BUILD_ROOT)/RE/README.txt zcs
 	chmod 755 zcs/install.sh
 	cp $(RPM_DIR)/*rpm zcs/packages
 	tar czf zcs-$(VERSION_TAG).tgz zcs
@@ -287,6 +290,8 @@ $(CORE_DEST_DIR)/zimbramon: $(CORE_DEST_DIR)/zimbramon/lib $(CORE_DEST_DIR)
 	(cd $(CORE_DEST_DIR)/zimbramon; tar xzf $(RRD_SOURCE).tar.gz)
 	mkdir -p $(CORE_DEST_DIR)/zimbramon/rrdtool/work
 	mkdir -p $(CORE_DEST_DIR)/zimbramon/rrdtool/work
+	cp -f $(CONSOLE_DIR)/img/hiRes/non-web/connection_failed.gif \
+		$(CORE_DEST_DIR)/zimbramon/rrdtool/work
 	cp -f $(CONSOLE_DIR)/img/hiRes/non-web/data_not_available.gif \
 		$(CORE_DEST_DIR)/zimbramon/rrdtool/work
 
