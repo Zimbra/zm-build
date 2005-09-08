@@ -165,6 +165,8 @@ if [ $STARTSERVERS = "yes" ]; then
 	startServers
 fi
 
+/opt/zimbra/bin/zmsyslogsetup
+
 cleanUp
 
 echo ""
