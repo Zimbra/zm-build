@@ -682,7 +682,7 @@ findLatestPackage() {
 	file=$latest
 }
 
-checkConflicts() {
+checkSendmail() {
 	echo ""
 	echo "Checking for sendmail/postfix"
 	echo ""
@@ -703,32 +703,6 @@ checkConflicts() {
 		fi
 	fi
 
-	echo ""
-	echo "Checking for mysqld"
-	echo ""
-
-	if [ -f /var/lock/subsys/mysqld ]; then
-		while :; do
-			askYN "Mysql appears to be running.  Shut it down?" "Y"
-			if [ $response = "yes" ]; then
-				/etc/init.d/mysqld stop
-				chkconfig mysqld off
-				break
-			else
-				echo "Installation will probably fail with mysql running"
-				askYN "Install anyway?" "N"
-				if [ $response = "yes" ]; then
-					break
-				else
-					askYN "Exit?" "N"
-					if [ $response = "yes" ]; then
-						echo "Exiting - the system is unchanged"
-						exit 1
-					fi
-				fi
-			fi
-		done
-	fi
 }
 
 checkPackages() {
@@ -1182,7 +1156,7 @@ checkRequired
 
 checkPackages
 
-checkConflicts
+checkSendmail
 
 checkExistingInstall
 
