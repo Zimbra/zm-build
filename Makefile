@@ -213,7 +213,10 @@ export JAVA_HOME
 
 all: rpms zcs-$(RELEASE).tgz
 
-source: zcs-$(RELEASE)-src.tgz
+source: zcs-$(RELEASE)-src.tgz AjaxTK-$(RELEASE)-src.tgz
+
+AjaxTK-$(RELEASE)-src.tgz: $(RPM_DIR)
+	(cd $(BUILD_ROOT)/..; tar czf $(RPM_DIR)/AjaxTK-$(RELEASE)-src.tgz Ajax)
 
 zcs-$(RELEASE)-src.tgz: $(RPM_DIR)
 	(cd $(BUILD_ROOT)/..; tar czf $(RPM_DIR)/zcs-$(RELEASE)-src.tgz --exclude ZimbraBuild/i386 --exclude logs .)
