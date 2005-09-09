@@ -70,6 +70,7 @@ ANT		:= $(shell which ant)
 
 SERVICE_DIR	:= $(BUILD_ROOT)/../ZimbraServer
 CONSOLE_DIR	:= $(BUILD_ROOT)/../ZimbraWebClient
+LICENSE_DIR := $(BUILD_ROOT)/../ZimbraLicenses
 
 # 3rd PARTY INCLUDES
 
@@ -168,7 +169,8 @@ CORE_COMPONENTS	:= \
 	$(CORE_DEST_DIR)/bin \
 	$(CORE_DEST_DIR)/zimbramon \
 	$(CORE_DEST_DIR)/$(JAVA_FILE)$(JAVA_VERSION) \
-	$(CORE_DEST_DIR)/conf
+	$(CORE_DEST_DIR)/conf \
+	$(CORE_DEST_DIR)/doc
 
 MTA_COMPONENTS	:= \
 	$(MTA_DEST_DIR)/$(POSTFIX_DIR) \
@@ -222,7 +224,9 @@ zcs-$(RELEASE).tgz: rpms
 	mkdir -p zcs/data
 	mkdir -p zcs/docs
 	mkdir -p zcs/util/modules
+	cp -f $(LICENSE_DIR)/zimbra/zpl-full.txt zcs/ZPL.txt
 	cp -f $(CONSOLE_DIR)/WebRoot/adminhelp/pdf/* zcs/docs
+	cp -f $(LICENSE_DIR)/zimbra/zapl-full.txt docs/zapl.txt
 	cp -f $(CONSOLE_DIR)/WebRoot/adminhelp/txt/readme_source.txt zcs
 	cp -f $(CONSOLE_DIR)/WebRoot/adminhelp/txt/readme_binary.txt zcs
 	cp -f $(SERVICE_DIR)/build/versions-init.sql zcs/data
@@ -252,6 +256,8 @@ core: $(RPM_DIR) core_stage
 		$(BUILD_ROOT)/zimbracore.spec )
 	echo "%attr(755, zimbra, zimbra) /opt/zimbra/bin" >> \
 		$(BUILD_ROOT)/zimbracore.spec
+	echo "%attr(444, zimbra, zimbra) /opt/zimbra/doc" >> \
+		$(BUILD_ROOT)/zimbracore.spec
 	echo "%attr(755, zimbra, zimbra) /opt/zimbra/libexec" >> \
 		$(BUILD_ROOT)/zimbracore.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/conf" >> \
@@ -275,6 +281,11 @@ $(CORE_DEST_DIR):
 	cp $(ENV_FILE_SOURCE) $(CORE_DEST_DIR)/$(ENV_FILE_DEST)
 	cp $(PROFILE_SOURCE) $(CORE_DEST_DIR)/$(PROFILE_DEST)
 	cp $(EXRC_SOURCE) $(CORE_DEST_DIR)/$(EXRC_DEST)
+
+$(CORE_DEST_DIR)/doc:
+	mkdir -p $@
+	cp $(LICENSE_DIR)/zimbra/zpl-full.txt $@/ZPL.txt
+	cp $(LICENSE_DIR)/zimbra/zapl-full.txt $@/zapl.txt
 
 $(CORE_DEST_DIR)/zimbramon: $(CORE_DEST_DIR)/zimbramon/lib $(CORE_DEST_DIR) 
 	@echo "*** Creating zimbramon"
