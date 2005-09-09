@@ -206,7 +206,7 @@ ENV_FILE_DEST		:= .bashrc
 EXRC_SOURCE			:= $(RPM_CONF_DIR)/Env/zimbra.exrc
 EXRC_DEST			:= .exrc
 
-JAVA_HOME		:= /usr/local/java
+JAVA_HOME		?= /usr/local/java
 export JAVA_HOME
 
 # PACKAGE TARGETS
