@@ -1,0 +1,7 @@
+SERVICE logger "Zimbra Mail Console" logmysql
+
+APPLICATION logmysql test_server "9999" normal "mysql server"
+
+CONTROL_SYNTAX zimbrasyntax logmysql_start "/opt/zimbra/bin/logmysql.server start"
+CONTROL_SYNTAX zimbrasyntax logmysql_stop "/opt/zimbra/bin/logmysql.server stop"
+CONTROL_SYNTAX zimbrasyntax logmysql_status "/opt/zimbra/bin/logmysqladmin status"

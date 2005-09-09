@@ -49,6 +49,7 @@ CLEAN_TARGETS	=	\
 		$(LDAP_DEST_ROOT) \
 		$(SNMP_DEST_ROOT) \
 		$(CORE_DEST_ROOT) \
+		$(LOGGER_DEST_ROOT) \
 		zcs \
 		zcs-2*.tgz \
 		zimbra.rpmrc \
@@ -142,6 +143,9 @@ SNMP_DEST_DIR		:= $(SNMP_DEST_ROOT)/opt/zimbra
 STORE_DEST_ROOT		:= $(BUILD_ROOT)/storebuild
 STORE_DEST_DIR		:= $(STORE_DEST_ROOT)/opt/zimbra
 
+LOGGER_DEST_ROOT		:= $(BUILD_ROOT)/loggerbuild
+LOGGER_DEST_DIR		:= $(LOGGER_DEST_ROOT)/opt/zimbra/logger
+
 WEBAPP_DIR		:= $(STORE_DEST_ROOT)/opt/zimbra/$(TOMCAT_DIR)/webapps
 WEBAPP_BUILD_DIR := build/dist/tomcat/webapps
 
@@ -172,6 +176,9 @@ MTA_COMPONENTS	:= \
 	$(MTA_DEST_DIR)/$(AMAVISD_DIR) \
 	$(MTA_DEST_DIR)/$(CLAMAV_DIR)  \
 	$(MTA_DEST_DIR)/$(SASL_DIR)
+
+LOGGER_COMPONENTS := \
+	$(LOGGER_DEST_DIR)/$(MYSQL_DIR) 
 
 STORE_COMPONENTS := \
 	$(WEBAPPS) \
@@ -231,7 +238,7 @@ zcs-$(RELEASE).tgz: rpms
 	(cd $(RPM_DIR); ln -s zcs-$(VERSION_TAG).tgz zcs.tgz)
 	@echo "*** BUILD COMPLETED ***"
 
-rpms: core mta store ldap snmp 
+rpms: core mta store ldap snmp logger
 	@echo "*** Creating RPMS in $(RPM_DIR)"
 
 # __CORE
@@ -474,6 +481,27 @@ $(MTA_DEST_DIR)/$(SASL_DIR): $(MTA_DEST_DIR)
 $(MTA_DEST_DIR)/$(BDB_DIR): $(MTA_DEST_DIR)
 	@echo "*** Creating sleepycat"
 	(cd $(MTA_DEST_DIR); tar xzf $(BDB_SOURCE).tgz; chmod u+w $(BDB_DIR)/bin/*)
+
+# __LOGGER
+
+logger: $(RPM_DIR) logger_stage
+	cat $(RPM_CONF_DIR)/Spec/zimbralogger.spec | \
+		sed -e 's/@@VERSION@@/$(VERSION_TAG)/' \
+		| sed -e 's/@@RELEASE@@/$(RELEASE)/' > $(BUILD_ROOT)/zimbralogger.spec
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/logger/mysql-standard-4.1.10a-pc-linux-gnu-i686" >> \
+		$(BUILD_ROOT)/zimbralogger.spec
+	(cd $(LOGGER_DEST_ROOT); \
+		rpmbuild  --target i386 --quiet --define '_rpmdir $(BUILD_ROOT)' \
+		--buildroot=$(LOGGER_DEST_ROOT) -bb $(BUILD_ROOT)/zimbralogger.spec )
+
+logger_stage: $(LOGGER_COMPONENTS)
+
+$(LOGGER_DEST_DIR)/$(MYSQL_DIR): $(LOGGER_DEST_DIR)
+	@echo "*** Creating mysql"
+	(cd $(LOGGER_DEST_DIR); tar xzf $(MYSQL_SOURCE).tar.gz;)
+
+$(LOGGER_DEST_DIR):
+	mkdir -p $@
 
 # __STORE
 
