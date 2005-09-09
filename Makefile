@@ -323,6 +323,7 @@ $(CORE_DEST_DIR)/jdk1.5.0_04:
 $(CORE_DEST_DIR)/db: $(WEBAPP_DIR)/service.war
 	mkdir -p $@
 	cp -R $(SERVICE_DIR)/src/db/db.sql $@
+	cp -R $(SERVICE_DIR)/src/db/loggerdb.sql $@
 	cp -R $(SERVICE_DIR)/src/db/create_database.sql $@
 	cp -R $(SERVICE_DIR)/build/versions-init.sql $@
 
