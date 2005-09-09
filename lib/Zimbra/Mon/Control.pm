@@ -45,25 +45,27 @@ my @ISA = qw(Exporter);
 my %servicestartorder = (
 	'maintenance'		=>  0,
 	'ldap'      		=>  1,
-	'snmp'    			=>  2,
-	'antivirus' 		=>	3,
-	'antispam'  		=>	4,
-	'mailbox'   		=>  5,
-	'mta'     			=>  6
+	'logger'   			=>  2,
+	'snmp'    			=>  3,
+	'antivirus' 		=>	4,
+	'antispam'  		=>	5,
+	'mailbox'   		=>  6,
+	'mta'     			=>  7
 );
 
 my %startorder = (
 	'ldap'      	=>  1,
 	'swatch'    	=>  2,
 	'mysql'     	=>  3,
-	'amavisd'		=>	4,
-	'clamd'			=>	5,
-	'spamassassin'	=>	6,
-	'convertd'  	=>  7,
-	'tomcat'    	=>  8,
-	'saslauthd'   	=>  9,
-	'mtaconfig'   	=>  10,
-	'postfix'   	=>  11
+	'logmysql'     	=>  4,
+	'amavisd'		=>	5,
+	'clamd'			=>	6,
+	'spamassassin'	=>	7,
+	'convertd'  	=>  8,
+	'tomcat'    	=>  9,
+	'saslauthd'   	=>  10,
+	'mtaconfig'   	=>  11,
+	'postfix'   	=>  12
 );
 
 sub killChildren {

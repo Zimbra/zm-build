@@ -643,6 +643,7 @@ setHereFlags() {
 	POSTFIX_HERE="no"
 	STORE_HERE="no"
 	SNMP_HERE="no"
+	LOGGER_HERE="no"
 
 	for i in $INSTALL_PACKAGES; do
 		if [ $i = "zimbra-store" ]; then
@@ -663,6 +664,9 @@ setHereFlags() {
 		fi
 		if [ $i = "zimbra-snmp" ]; then
 			SNMP_HERE="yes"
+		fi
+		if [ $i = "zimbra-logger" ]; then
+			LOGGER_HERE="yes"
 		fi
 	done
 }
