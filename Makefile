@@ -245,7 +245,7 @@ zcs-$(RELEASE).tgz: rpms
 	(cd $(RPM_DIR); ln -s zcs-$(VERSION_TAG).tgz zcs.tgz)
 	@echo "*** BUILD COMPLETED ***"
 
-rpms: core mta store ldap snmp logger
+rpms: core mta store ldap snmp 
 	@echo "*** Creating RPMS in $(RPM_DIR)"
 
 # __CORE
