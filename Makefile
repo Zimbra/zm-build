@@ -8,16 +8,18 @@ BUILD_ROOT	:= $(shell pwd)
 
 BUILD_PLATFORM := $(shell sh $(BUILD_ROOT)/rpmconf/Build/get_plat_tag.sh)
 
+HOST    := $(shell hostname)
+DATE    := $(shell date +%Y%m%d%H%M%S)
 ifeq ($(RELEASE), )
-	DATE	:= $(shell date +%Y%m%d%H%M%S)
+    RELEASE := $(DATE)_$(TAG)
 else
-	DATE	:= $(RELEASE)
+	RELEASE := $(RELEASE)_$(TAG)
+	DATE   := $(RELEASE)
 endif
 
 MAJOR	:= $(shell cat RE/MAJOR)
 MINOR	:= $(shell cat RE/MINOR)
 MICRO	:= $(shell cat RE/MICRO)
-RELEASE	:= $(shell cat RE/RELEASE)
 BUILDNUM	:= $(shell cat RE/BUILD)
 
 VERSION_TAG := $(MAJOR).$(MINOR).$(MICRO)_$(BUILDNUM).$(BUILD_PLATFORM)
@@ -27,8 +29,6 @@ ifeq ($(TAG), )
 else
 	TAG	:= $(shell echo $$TAG)
 endif
-
-HOST	:= $(shell hostname)
 
 USER := $(shell id -un)
 
