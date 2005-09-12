@@ -56,6 +56,8 @@ chmod 777 $SAVEDIR
 echo ""
 echo "Operations logged to $LOGFILE"
 
+displayLicense
+
 checkUser
 
 checkRequired
