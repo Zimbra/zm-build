@@ -187,6 +187,31 @@ checkUser() {
 }
 
 checkRequired() {
+
+	if ! cat /etc/hosts | perl -ne 'if (/^\s*127\.0\.0\.1/ && !/^\s*127\.0\.0\.1\s+localhost/) { exit 11; }'; then
+	cat<<EOF
+
+	ERROR: Installation can not proceeed.  Please fix your /etc/hosts file
+	to contain:
+
+	127.0.0.1 localhost.localdomain localhost
+
+	Zimbra install grants mysql permissions only to localhost and
+	localhost.localdomain users.  But Fedora/RH installs leave lines such
+	as these in /etc/hosts:
+
+	127.0.0.1     myhost.mydomain.com myhost localhost.localdomain localhost
+
+	This causes MySQL to reject users coming from 127.0.0.1 as users from
+	myhost.mydomain.com.  You can read more details at:
+
+	http://bugs.mysql.com/bug.php?id=11822
+
+EOF
+
+	exit 1
+	fi
+
 	GOOD="yes"
 	echo "Checking for prerequisites..."
 	for i in $PREREQ_PACKAGES; do
