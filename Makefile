@@ -8,18 +8,21 @@ BUILD_ROOT	:= $(shell pwd)
 
 BUILD_PLATFORM := $(shell sh $(BUILD_ROOT)/rpmconf/Build/get_plat_tag.sh)
 
+HOST    := $(shell hostname)
+DATE    := $(shell date +%Y%m%d%H%M%S)
 ifeq ($(RELEASE), )
-	DATE	:= $(shell date +%Y%m%d%H%M%S)
+    RELEASE := $(DATE)_$(TAG)
 else
-	DATE	:= $(RELEASE)
+	RELEASE := $(RELEASE)_$(TAG)
+	DATE   := $(RELEASE)
 endif
 
 MAJOR	:= $(shell cat RE/MAJOR)
 MINOR	:= $(shell cat RE/MINOR)
 MICRO	:= $(shell cat RE/MICRO)
-RELEASE	:= $(shell cat RE/RELEASE)
 BUILDNUM	:= $(shell cat RE/BUILD)
 
+SOURCE_TAG := $(MAJOR).$(MINOR).$(MICRO)_$(BUILDNUM)
 VERSION_TAG := $(MAJOR).$(MINOR).$(MICRO)_$(BUILDNUM).$(BUILD_PLATFORM)
 
 ifeq ($(TAG), )
@@ -27,8 +30,6 @@ ifeq ($(TAG), )
 else
 	TAG	:= $(shell echo $$TAG)
 endif
-
-HOST	:= $(shell hostname)
 
 USER := $(shell id -un)
 
@@ -213,13 +214,13 @@ export JAVA_HOME
 
 all: rpms zcs-$(RELEASE).tgz
 
-source: zcs-$(RELEASE)-src.tgz AjaxTK-$(RELEASE)-src.tgz
+source: zcs-$(SOURCE_TAG)-src.tgz AjaxTK-$(SOURCE_TAG)-src.tgz
 
-AjaxTK-$(RELEASE)-src.tgz: $(RPM_DIR)
-	(cd $(BUILD_ROOT)/..; tar czf $(RPM_DIR)/AjaxTK-$(RELEASE)-src.tgz Ajax)
+AjaxTK-$(SOURCE_TAG)-src.tgz: $(RPM_DIR)
+	(cd $(BUILD_ROOT)/..; tar czf $(RPM_DIR)/AjaxTK-$(SOURCE_TAG)-src.tgz Ajax)
 
-zcs-$(RELEASE)-src.tgz: $(RPM_DIR)
-	(cd $(BUILD_ROOT)/..; tar czf $(RPM_DIR)/zcs-$(RELEASE)-src.tgz --exclude ZimbraBuild/i386 --exclude logs .)
+zcs-$(SOURCE_TAG)-src.tgz: $(RPM_DIR)
+	(cd $(BUILD_ROOT)/..; tar czf $(RPM_DIR)/zcs-$(SOURCE_TAG)-src.tgz --exclude ZimbraBuild/i386 --exclude logs .)
 
 zcs-$(RELEASE).tgz: rpms
 	mkdir -p zcs/packages
