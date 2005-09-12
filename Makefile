@@ -229,6 +229,8 @@ zcs-$(RELEASE).tgz: rpms
 	mkdir -p zcs/util/modules
 	cp -f $(LICENSE_DIR)/zimbra/zpl-full.txt zcs/ZPL.txt
 	cp -f $(CONSOLE_DIR)/WebRoot/adminhelp/pdf/* zcs/docs
+	cp -f $(LICENSE_DIR)/zimbra/zcl-full.txt zcs/docs/zcl-full.txt
+	cp -f $(LICENSE_DIR)/zimbra/zcl.txt zcs/docs/zcl.txt
 	cp -f $(LICENSE_DIR)/zimbra/zapl-full.txt zcs/docs/zapl.txt
 	cp -f $(CONSOLE_DIR)/WebRoot/adminhelp/txt/readme_source.txt zcs
 	cp -f $(CONSOLE_DIR)/WebRoot/adminhelp/txt/readme_binary.txt zcs
@@ -245,7 +247,7 @@ zcs-$(RELEASE).tgz: rpms
 	(cd $(RPM_DIR); ln -s zcs-$(VERSION_TAG).tgz zcs.tgz)
 	@echo "*** BUILD COMPLETED ***"
 
-rpms: core mta store ldap snmp logger
+rpms: core mta store ldap snmp 
 	@echo "*** Creating RPMS in $(RPM_DIR)"
 
 # __CORE

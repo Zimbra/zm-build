@@ -24,6 +24,12 @@
 # ***** END LICENSE BLOCK *****
 # 
 
+displayLicense() {
+	cat $MYDIR/docs/zcl.txt
+	echo ""
+	echo ""
+}
+
 isFQDN() {
 	#fqdn is > 2 dots.  because I said so.
 	if [ $1 = "dogfood" ]; then
