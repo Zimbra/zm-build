@@ -30,8 +30,8 @@ displayLicense() {
 	cat $MYDIR/docs/zcl.txt
 	echo ""
 	echo ""
-	#echo -n "Press Return to continue"
-	#read response
+	echo -n "Press Return to continue"
+	read response
 }
 
 isFQDN() {
