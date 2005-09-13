@@ -248,7 +248,7 @@ zcs-$(RELEASE).tgz: rpms
 	(cd $(RPM_DIR); ln -s zcs-$(VERSION_TAG).tgz zcs.tgz)
 	@echo "*** BUILD COMPLETED ***"
 
-rpms: core mta store ldap snmp 
+rpms: core mta store ldap snmp logger
 	@echo "*** Creating RPMS in $(RPM_DIR)"
 
 # __CORE
@@ -305,6 +305,7 @@ $(CORE_DEST_DIR)/zimbramon: $(CORE_DEST_DIR)/zimbramon/lib $(CORE_DEST_DIR)
 	cp -R $(RPM_CONF_DIR)/Ctl/zimbramail.cf $@
 	cp -R $(RPM_CONF_DIR)/Ctl/zimbramta.cf $@
 	cp -R $(RPM_CONF_DIR)/Ctl/zimbraldap.cf $@
+	cp -R $(RPM_CONF_DIR)/Ctl/zimbralogger.cf $@
 	cp -R $(RPM_CONF_DIR)/Ctl/zimbrasnmp.cf $@
 	(cd $(CORE_DEST_DIR)/zimbramon; tar xzf $(MRTG_SOURCE).tgz)
 	mkdir -p $(CORE_DEST_DIR)/zimbramon/mrtg/work
@@ -314,9 +315,9 @@ $(CORE_DEST_DIR)/zimbramon: $(CORE_DEST_DIR)/zimbramon/lib $(CORE_DEST_DIR)
 	(cd $(CORE_DEST_DIR)/zimbramon; tar xzf $(RRD_SOURCE).tar.gz)
 	mkdir -p $(CORE_DEST_DIR)/zimbramon/rrdtool/work
 	mkdir -p $(CORE_DEST_DIR)/zimbramon/rrdtool/work
-	cp -f $(CONSOLE_DIR)/img/hiRes/non-web/connection_failed.gif \
+	cp -f $(RPM_CONF_DIR)/Img/connection_failed.gif \
 		$(CORE_DEST_DIR)/zimbramon/rrdtool/work
-	cp -f $(CONSOLE_DIR)/img/hiRes/non-web/data_not_available.gif \
+	cp -f $(RPM_CONF_DIR)/Img/data_not_available.gif \
 		$(CORE_DEST_DIR)/zimbramon/rrdtool/work
 
 $(CORE_DEST_DIR)/zimbramon/lib:
@@ -506,7 +507,7 @@ logger: $(RPM_DIR) logger_stage
 	cat $(RPM_CONF_DIR)/Spec/zimbralogger.spec | \
 		sed -e 's/@@VERSION@@/$(VERSION_TAG)/' \
 		| sed -e 's/@@RELEASE@@/$(RELEASE)/' > $(BUILD_ROOT)/zimbralogger.spec
-	echo "%attr(-, zimbra, zimbra) /opt/zimbra/logger/mysql-standard-4.1.10a-pc-linux-gnu-i686" >> \
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/logger" >> \
 		$(BUILD_ROOT)/zimbralogger.spec
 	(cd $(LOGGER_DEST_ROOT); \
 		rpmbuild  --target i386 --quiet --define '_rpmdir $(BUILD_ROOT)' \
@@ -791,6 +792,7 @@ $(DEV_INSTALL_ROOT)/zimbramon: $(DEV_INSTALL_ROOT) devperllibs
 	cp -f -R $(RPM_CONF_DIR)/Ctl/zimbramail.cf $@
 	cp -f -R $(RPM_CONF_DIR)/Ctl/zimbramta.cf $@
 	cp -f -R $(RPM_CONF_DIR)/Ctl/zimbraldap.cf $@
+	cp -f -R $(RPM_CONF_DIR)/Ctl/zimbralogger.cf $@
 	cp -f -R $(RPM_CONF_DIR)/Ctl/zimbrasnmp.cf $@
 	mkdir -p $@/lib/Zimbra/Mon
 	@cp -f $(wildcard $(BUILD_ROOT)/lib/Zimbra/Mon/*.pm) $@/lib/Zimbra/Mon
