@@ -42,6 +42,12 @@ postInstallConfig() {
 		echo "done"
 	fi
 
+	if [ $UPGRADE = "no" -a $LOGGER_HERE = "yes" ]; then
+		echo -n "Creating logger db..."
+		runAsZimbra "/opt/zimbra/libexec/zmloggerinit"
+		echo "done"
+	fi
+
 	echo -n "Setting the hostname to $HOSTNAME..."
 	runAsZimbra "zmlocalconfig -e zimbra_server_hostname=${HOSTNAME}"
 	echo "done"
@@ -98,6 +104,10 @@ postInstallConfig() {
 
 	if [ $LDAP_HERE = "yes" ]; then
 		SERVICES="zimbraServiceInstalled ldap"
+	fi
+
+	if [ $LOGGER_HERE = "yes" ]; then
+		SERVICES="$SERVICES zimbraServiceInstalled logger"
 	fi
 
 	if [ $STORE_HERE = "yes" ]; then

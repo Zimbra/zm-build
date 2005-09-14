@@ -56,16 +56,6 @@ chmod 777 $SAVEDIR
 echo ""
 echo "Operations logged to $LOGFILE"
 
-displayLicense
-
-checkUser
-
-checkRequired
-
-checkPackages
-
-checkConflicts
-
 checkExistingInstall
 
 if [ x$UNINSTALL = "xyes" ]; then
@@ -76,6 +66,16 @@ if [ x$UNINSTALL = "xyes" ]; then
 	fi
 	exit 1
 fi
+
+displayLicense
+
+checkUser
+
+checkRequired
+
+checkPackages
+
+checkConflicts
 
 if [ x$DEFAULTFILE != "x" ]; then
 	AUTOINSTALL="yes"

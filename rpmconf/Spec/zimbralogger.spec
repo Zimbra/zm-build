@@ -61,16 +61,18 @@ H=`hostname -s`
 I=`hostname -i`
 
 #Symlinks
-rm -f /opt/zimbra/mysql
-ln -s /opt/zimbra/mysql-standard-4.1.10a-pc-linux-gnu-i686 /opt/zimbra/mysql
+rm -f /opt/zimbra/logger/mysql
+ln -s /opt/zimbra/logger/mysql-standard-4.1.10a-pc-linux-gnu-i686 /opt/zimbra/logger/mysql
 
-mv /opt/zimbra/db/db.sql /opt/zimbra/db/db.sql.in
-sed -e "/server.hostname/ s/local/$H/" /opt/zimbra/db/db.sql.in > /opt/zimbra/db/db.sql
+mv /opt/zimbra/db/loggerdb.sql /opt/zimbra/db/loggerdb.sql.in
+sed -e "/server.hostname/ s/local/$H/" /opt/zimbra/db/loggerdb.sql.in > /opt/zimbra/db/loggerdb.sql
 
 egrep -q 'logmysql_start' /opt/zimbra/zimbramon/zimbra.cf
 if [ $? != 0 ]; then
     cat /opt/zimbra/zimbramon/zimbralogger.cf >> /opt/zimbra/zimbramon/zimbra.cf
 fi
+
+chown zimbra:zimbra /opt/zimbra/logger
 
 %preun
 su - zimbra -c "zmcontrol shutdown"
