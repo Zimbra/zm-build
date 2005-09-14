@@ -108,6 +108,7 @@ postInstallConfig() {
 
 	if [ $LOGGER_HERE = "yes" ]; then
 		SERVICES="$SERVICES zimbraServiceInstalled logger"
+		runAsZimbra "zmprov mcf zimbraLogHostname $HOSTNAME"
 	fi
 
 	if [ $STORE_HERE = "yes" ]; then
