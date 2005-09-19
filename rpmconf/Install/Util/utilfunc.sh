@@ -451,10 +451,10 @@ restoreExistingConfig() {
 
 restoreCerts() {
 	cp $SAVEDIR/cacerts /opt/zimbra/java/jre/lib/security/cacerts
-	cp $SAVEDIR/keystore /opt/zimbra/tomcat/conf/keystore
+	cp $SAVEDIR/keystore /opt/zimbra/conf/keystore
 	cp $SAVEDIR/smtpd.key /opt/zimbra/conf/smtpd.key 
 	cp $SAVEDIR/smtpd.crt /opt/zimbra/conf/smtpd.crt 
-	chown zimbra:zimbra /opt/zimbra/java/jre/lib/security/cacerts /opt/zimbra/tomcat/conf/keystore /opt/zimbra/conf/smtpd.key /opt/zimbra/conf/smtpd.crt
+	chown zimbra:zimbra /opt/zimbra/java/jre/lib/security/cacerts /opt/zimbra/tomcat/keystore /opt/zimbra/conf/smtpd.key /opt/zimbra/conf/smtpd.crt
 }
 
 saveExistingConfig() {
@@ -463,7 +463,7 @@ saveExistingConfig() {
 	# yes, it needs massaging to be fed back in...
 	runAsZimbra "zmlocalconfig -s | sed -e \"s/ = \(.*\)/=\'\1\'/\" > $SAVEDIR/config.save"
 	cp /opt/zimbra/java/jre/lib/security/cacerts $SAVEDIR
-	cp /opt/zimbra/tomcat/conf/keystore $SAVEDIR
+	cp /opt/zimbra/conf/keystore $SAVEDIR
 	cp /opt/zimbra/conf/smtpd.key $SAVEDIR
 	cp /opt/zimbra/conf/smtpd.crt $SAVEDIR
 	if [ -x /opt/zimbra/bin/zmschedulebackup ]; then
