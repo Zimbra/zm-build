@@ -552,7 +552,7 @@ $(STORE_DEST_DIR)/$(TOMCAT_DIR): $(STORE_DEST_DIR)
 	@echo "*** Creating tomcat"
 	(cd $(STORE_DEST_DIR); tar xzf $(TOMCAT_SOURCE).tar.gz;)
 
-$(STORE_DEST_DIR)/$(TOMCAT_DIR)/conf:
+$(STORE_DEST_DIR)/$(TOMCAT_DIR)/conf: force
 	mkdir -p $@
 	cp -f $(SERVICE_DIR)/conf/tomcat-5.5/server.xml.production \
 		$(STORE_DEST_DIR)/$(TOMCAT_DIR)/conf/server.xml
@@ -565,7 +565,7 @@ $(STORE_DEST_DIR)/$(TOMCAT_DIR)/conf:
 	cp -f $(SERVICE_DIR)/build/dist/conf/log4j.properties.production  \
 		$(STORE_DEST_DIR)/$(TOMCAT_DIR)/conf/log4j.properties
 
-$(STORE_DEST_DIR)/$(TOMCAT_DIR)/temp:
+$(STORE_DEST_DIR)/$(TOMCAT_DIR)/temp: force
 	mkdir -p $(STORE_DEST_DIR)/$(TOMCAT_DIR)/temp
 	touch $(STORE_DEST_DIR)/$(TOMCAT_DIR)/temp/.emptyfile
 
@@ -900,3 +900,5 @@ dev-stop:
 showtag:
 	echo $(RELEASE)
 	echo $(TAG)
+
+force: ;
