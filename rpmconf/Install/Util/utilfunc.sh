@@ -524,12 +524,6 @@ removeExistingInstall() {
 		umount /opt/zimbra/amavisd/tmp > /dev/null 2>&1
 		/bin/rm -rf /opt/zimbra/*
 
-		echo ""
-		echo "Removing users/groups"
-		echo ""
-		userdel zimbra > /dev/null 2>&1
-		userdel postfix > /dev/null 2>&1
-		groupdel postdrop > /dev/null 2>&1
 	else
 		if [ -d /opt/zimbra/openldap/var/openldap-data/ ]; then
 			if [ -d /opt/zimbra/openldap-data/ ]; then

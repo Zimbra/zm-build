@@ -59,7 +59,7 @@ I=`hostname -i`
 rm -f /opt/zimbra/snmp
 ln -s /opt/zimbra/snmp-5.1.2 /opt/zimbra/snmp
 
-egrep -q 'swatch_start' /opt/zimbra/zimbramon/zimbra.cf
+egrep -q 'zmswatchctl' /opt/zimbra/zimbramon/zimbra.cf
 if [ $? != 0 ]; then
 	cat /opt/zimbra/zimbramon/zimbrasnmp.cf >> /opt/zimbra/zimbramon/zimbra.cf
 fi

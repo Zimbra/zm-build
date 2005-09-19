@@ -58,14 +58,15 @@ my %startorder = (
 	'swatch'    	=>  2,
 	'mysql'     	=>  3,
 	'logmysql'     	=>  4,
-	'amavisd'		=>	5,
-	'clamd'			=>	6,
-	'spamassassin'	=>	7,
-	'convertd'  	=>  8,
-	'tomcat'    	=>  9,
-	'saslauthd'   	=>  10,
-	'mtaconfig'   	=>  11,
-	'postfix'   	=>  12
+	'logswatch'     =>  5,
+	'amavisd'		=>	6,
+	'clamd'			=>	7,
+	'spamassassin'	=>	8,
+	'convertd'  	=>  9,
+	'tomcat'    	=>  10,
+	'saslauthd'   	=>  11,
+	'mtaconfig'   	=>  12,
+	'postfix'   	=>  13
 );
 
 sub killChildren {
@@ -299,9 +300,8 @@ sub startOneApplication {
 	my $name;
 	if ( ref($s) ) { $name = $s->{name}; }
 	else { $name = $s }
-	Zimbra::Mon::Logger::Log( "info", "start app $name" );
 	if ( isAppRunning($name) ) {
-		Zimbra::Mon::Logger::Log( "err", "Can't start running app $name" );
+		Zimbra::Mon::Logger::Log( "info", "Can't start running app $name" );
 		return;
 	}
 
@@ -424,6 +424,7 @@ sub runSyntaxCommand {
 			my $f = 256;
 			$f = system("$syscmd > /dev/null 2>&1");
 			alarm(0);
+			local $SIG{CHLD} = 'IGNORE';
 
 			$retval .= $f >> 8;
 		}

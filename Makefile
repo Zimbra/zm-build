@@ -348,6 +348,7 @@ $(CORE_DEST_DIR)/db: $(WEBAPP_DIR)/service.war
 $(CORE_DEST_DIR)/conf: $(WEBAPP_DIR)/service.war
 	mkdir -p $@
 	cp $(RPM_CONF_DIR)/Conf/swatchrc $@/swatchrc.in
+	cp $(RPM_CONF_DIR)/Conf/logswatchrc $@/logswatchrc
 	cp -R $(SERVICE_DIR)/conf/localconfig.xml $@/localconfig.xml
 	grep -vi stats $(SERVICE_DIR)/build/dist/conf/log4j.properties.production > $@/log4j.properties
 	cp $(RPM_CONF_DIR)/Conf/zmssl.cnf.in $@
@@ -375,7 +376,9 @@ $(CORE_DEST_DIR)/bin:
 	rm -f $(CORE_DEST_DIR)/bin/ldap
 	mv $(CORE_DEST_DIR)/bin/ldap.production $(CORE_DEST_DIR)/bin/ldap
 	cp $(ZIMBRA_BIN_DIR)/swatch $@
+	cp $(ZIMBRA_BIN_DIR)/swatch $@/logswatch
 	cp $(ZIMBRA_BIN_DIR)/zmswatchctl $@
+	cp $(ZIMBRA_BIN_DIR)/zmlogswatchctl $@
 	cp $(ZIMBRA_BIN_DIR)/zmloadstats $@
 	cp $(ZIMBRA_BIN_DIR)/zmaggregatestats $@
 	cp $(ZIMBRA_BIN_DIR)/zmaggregatestatsdaily $@
@@ -839,7 +842,9 @@ $(DEV_INSTALL_ROOT)/bin:
 	#rm -f $(DEV_INSTALL_ROOT)/bin/ldap
 	#mv $@/ldap $@/ldap
 	cp -f $(ZIMBRA_BIN_DIR)/swatch $@
+	cp -f $(ZIMBRA_BIN_DIR)/swatch $@/logswatch
 	cp -f $(ZIMBRA_BIN_DIR)/zmswatchctl $@
+	cp -f $(ZIMBRA_BIN_DIR)/zmlogswatchctl $@
 	cp -f $(ZIMBRA_BIN_DIR)/zmloadstats $@
 	cp -f $(ZIMBRA_BIN_DIR)/zmaggregatestats $@
 	cp -f $(ZIMBRA_BIN_DIR)/zmaggregatestatsdaily $@
@@ -861,6 +866,7 @@ $(DEV_INSTALL_ROOT)/conf: $(SERVICE_DIR)/$(WEBAPP_BUILD_DIR)/service.war
 	@echo "*** Installing conf"
 	mkdir -p $@
 	cp -f $(RPM_CONF_DIR)/Conf/swatchrc $@/swatchrc.in
+	cp -f $(RPM_CONF_DIR)/Conf/logswatchrc $@/logswatchrc
 	cp -f -R $(SERVICE_DIR)/conf/localconfig.xml $@/localconfig.xml
 	grep -vi stats $(SERVICE_DIR)/build/dist/conf/log4j.properties.production > $@/log4j.properties
 	cp -f $(RPM_CONF_DIR)/Conf/zmssl.cnf.in $@
