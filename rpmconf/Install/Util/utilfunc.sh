@@ -541,6 +541,7 @@ setServiceIP() {
 
 setHostName() {
 
+	OLD=$HOSTNAME
 	while :; do
 		askNonBlank "Please enter the logical hostname for this host" "$HOSTNAME"
 
@@ -554,6 +555,17 @@ setHostName() {
 			echo "Please enter a fully qualified hostname"
 		fi
 	done
+	if [ "x$OLD" != "x$HOSTNAME" ]; then
+		if [ "x$SMTPHOST" = "x$OLD" ]; then
+			SMTPHOST=$HOSTNAME
+		fi
+		if [ "x$SNMPTRAPHOST" = "x$OLD" ]; then
+			SNMPTRAPHOST=$HOSTNAME
+		fi
+		if [ "x$CREATEDOMAIN" = "x$OLD" ]; then
+			CREATEDOMAIN=$HOSTNAME
+		fi
+	fi
 }
 
 checkConflicts() {
