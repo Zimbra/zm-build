@@ -544,11 +544,9 @@ $(STORE_DEST_DIR)/$(MYSQL_DIR):
 	@echo "*** Creating mysql"
 	(cd $(STORE_DEST_DIR); tar xzf $(MYSQL_SOURCE).tar.gz;)
 
-$(STORE_DEST_DIR)/$(TOMCAT_DIR)/bin:
-	(cd $(STORE_DEST_DIR); tar xzf $(TOMCAT_SOURCE).tar.gz;)
-
-$(STORE_DEST_DIR)/$(TOMCAT_DIR): $(STORE_DEST_DIR) $(STORE_DEST_DIR)/$(TOMCAT_DIR)/bin
+$(STORE_DEST_DIR)/$(TOMCAT_DIR): $(STORE_DEST_DIR) 
 	@echo "*** Creating tomcat"
+	(cd $(STORE_DEST_DIR); tar xzf $(TOMCAT_SOURCE).tar.gz;)
 	cp -f $(SERVICE_DIR)/conf/tomcat-5.5/server.xml.production \
 		$(STORE_DEST_DIR)/$(TOMCAT_DIR)/conf/server.xml
 	cp -f $(SERVICE_DIR)/conf/zimbra.xml \
