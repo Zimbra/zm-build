@@ -548,11 +548,12 @@ $(STORE_DEST_DIR)/$(MYSQL_DIR):
 	@echo "*** Creating mysql"
 	(cd $(STORE_DEST_DIR); tar xzf $(MYSQL_SOURCE).tar.gz;)
 
-$(STORE_DEST_DIR)/$(TOMCAT_DIR)/bin:
+$(STORE_DEST_DIR)/$(TOMCAT_DIR): $(STORE_DEST_DIR) 
+	@echo "*** Creating tomcat"
 	(cd $(STORE_DEST_DIR); tar xzf $(TOMCAT_SOURCE).tar.gz;)
 
-$(STORE_DEST_DIR)/$(TOMCAT_DIR): $(STORE_DEST_DIR) $(STORE_DEST_DIR)/$(TOMCAT_DIR)/bin
-	@echo "*** Creating tomcat"
+$(STORE_DEST_DIR)/$(TOMCAT_DIR)/conf:
+	mkdir -p $@
 	cp -f $(SERVICE_DIR)/conf/tomcat-5.5/server.xml.production \
 		$(STORE_DEST_DIR)/$(TOMCAT_DIR)/conf/server.xml
 	cp -f $(SERVICE_DIR)/conf/zimbra.xml \
@@ -563,8 +564,12 @@ $(STORE_DEST_DIR)/$(TOMCAT_DIR): $(STORE_DEST_DIR) $(STORE_DEST_DIR)/$(TOMCAT_DI
 	cp -f $(SERVICE_DIR)/conf/tomcat-5.5/tomcat-users.xml $(STORE_DEST_DIR)/$(TOMCAT_DIR)/conf
 	cp -f $(SERVICE_DIR)/build/dist/conf/log4j.properties.production  \
 		$(STORE_DEST_DIR)/$(TOMCAT_DIR)/conf/log4j.properties
+
+$(STORE_DEST_DIR)/$(TOMCAT_DIR)/temp:
 	mkdir -p $(STORE_DEST_DIR)/$(TOMCAT_DIR)/temp
 	touch $(STORE_DEST_DIR)/$(TOMCAT_DIR)/temp/.emptyfile
+
+$(STORE_DEST_DIR)/$(TOMCAT_DIR): $(STORE_DEST_DIR) $(STORE_DEST_DIR)/$(TOMCAT_DIR)/bin $(STORE_DEST_DIR)/$(TOMCAT_DIR)/conf $(STORE_DEST_DIR)/$(TOMCAT_DIR)/temp
 
 $(WEBAPP_DIR): 
 	mkdir -p $@
