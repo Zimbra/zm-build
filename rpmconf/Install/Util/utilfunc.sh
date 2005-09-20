@@ -34,6 +34,7 @@ displayLicense() {
 		echo -n "Press Return to continue"
 		read response
 	fi
+	echo ""
 }
 
 isFQDN() {
@@ -192,8 +193,9 @@ askInt() {
 }
 
 checkUser() {
-	if [ x`whoami` != xroot ]; then
-		echo Error: must be run as root user
+	user=$1
+	if [ x`whoami` != x$user ]; then
+		echo Error: must be run as $user user
 		exit 1
 	fi
 }

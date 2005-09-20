@@ -365,8 +365,10 @@ $(CORE_DEST_DIR)/conf: $(WEBAPP_DIR)/service.war
 
 $(CORE_DEST_DIR)/libexec:
 	@echo "*** Installing libexec"
-	mkdir -p $@
+	mkdir -p $@/util/modules
 	cp -f -R $(SERVICE_DIR)/build/dist/libexec/zm*init $@
+	cp -f $(RPM_CONF_DIR)/Install/Util/*sh $@/util
+	cp -f $(RPM_CONF_DIR)/Install/Util/modules/* $@/util/modules
 
 $(CORE_DEST_DIR)/bin:
 	mkdir -p $@
@@ -835,8 +837,10 @@ $(DEV_INSTALL_ROOT)/lib: $(DEV_INSTALL_ROOT)/$(LDAP_DIR) $(DEV_INSTALL_ROOT)/$(B
 
 $(DEV_INSTALL_ROOT)/libexec:
 	@echo "*** Installing libexec"
-	mkdir -p $@
+	mkdir -p $@/util/modules
 	cp -f -R $(SERVICE_DIR)/build/dist/libexec/zm*init $@
+	cp -f $(RPM_CONF_DIR)/Install/Util/*sh $@/util
+	cp -f $(RPM_CONF_DIR)/Install/Util/modules/* $@/util/modules
 
 $(DEV_INSTALL_ROOT)/bin:
 	@echo "*** Installing bin"

@@ -69,13 +69,28 @@ fi
 
 displayLicense
 
-checkUser
+checkUser root
 
 checkRequired
 
 checkPackages
 
-checkConflicts
+if [ $AUTOINSTALL = "no" ]; then
+	setRemove
+	getInstallPackages
+fi
+
+removeExistingInstall
+
+echo "Installing packages"
+echo ""
+for i in $INSTALL_PACKAGES; do
+	installPackage "$i"
+done
+
+#
+# Installation complete, now configure
+#
 
 if [ x$DEFAULTFILE != "x" ]; then
 	AUTOINSTALL="yes"
@@ -116,9 +131,7 @@ if [ $AUTOINSTALL = "no" ]; then
 	fi
 
 	setHostName
-	# setServiceIP
-	setRemove
-	getInstallPackages
+
 fi
 
 setHereFlags
@@ -151,15 +164,6 @@ else
 		exit 1
 	fi
 fi
-
-
-removeExistingInstall
-
-echo "Installing packages"
-echo ""
-for i in $INSTALL_PACKAGES; do
-	installPackage "$i"
-done
 
 postInstallConfig
 
