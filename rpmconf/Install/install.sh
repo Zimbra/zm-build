@@ -56,6 +56,10 @@ chmod 777 $SAVEDIR
 echo ""
 echo "Operations logged to $LOGFILE"
 
+if [ x$DEFAULTFILE != "x" ]; then
+	AUTOINSTALL="yes"
+fi
+
 checkExistingInstall
 
 if [ x$UNINSTALL = "xyes" ]; then
@@ -93,7 +97,6 @@ done
 #
 
 if [ x$DEFAULTFILE != "x" ]; then
-	AUTOINSTALL="yes"
 	loadConfig $DEFAULTFILE
 
 	checkVersionMatches
