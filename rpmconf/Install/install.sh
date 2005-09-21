@@ -82,21 +82,7 @@ checkPackages
 if [ $AUTOINSTALL = "no" ]; then
 	setRemove
 	getInstallPackages
-fi
-
-removeExistingInstall
-
-echo "Installing packages"
-echo ""
-for i in $INSTALL_PACKAGES; do
-	installPackage "$i"
-done
-
-#
-# Installation complete, now configure
-#
-
-if [ x$DEFAULTFILE != "x" ]; then
+else
 	loadConfig $DEFAULTFILE
 
 	checkVersionMatches
@@ -114,8 +100,19 @@ if [ x$DEFAULTFILE != "x" ]; then
 			exit 1
 		fi
 	fi
-
 fi
+
+removeExistingInstall
+
+echo "Installing packages"
+echo ""
+for i in $INSTALL_PACKAGES; do
+	installPackage "$i"
+done
+
+#
+# Installation complete, now configure
+#
 
 if [ $AUTOINSTALL = "no" ]; then
 	if [ $INSTALLED = "yes" ]; then
