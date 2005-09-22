@@ -1,4 +1,8 @@
 #
+# process logs
+#
+0 * * * * /opt/zimbra/bin/logprocess > /tmp/logprocess.out 2>&1
+#
 # Purge messages
 #
 0 3 * * * /opt/zimbra/bin/zmpurgemessages > /dev/null 2>&1
