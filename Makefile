@@ -293,7 +293,7 @@ $(CORE_DEST_DIR)/doc:
 	cp $(LICENSE_DIR)/zimbra/zpl-full.txt $@/ZPL.txt
 	cp $(LICENSE_DIR)/zimbra/zapl-full.txt $@/zapl.txt
 
-$(CORE_DEST_DIR)/zimbramon: $(CORE_DEST_DIR)/zimbramon/lib $(CORE_DEST_DIR) 
+$(CORE_DEST_DIR)/zimbramon: $(CORE_DEST_DIR)/zimbramon/lib $(CORE_DEST_DIR)/zimbramon/crontabs $(CORE_DEST_DIR) 
 	@echo "*** Creating zimbramon"
 	mkdir -p $@
 	cp -R $(ZIMBRA_BIN_DIR)/zmmon $@
@@ -311,7 +311,6 @@ $(CORE_DEST_DIR)/zimbramon: $(CORE_DEST_DIR)/zimbramon/lib $(CORE_DEST_DIR)
 	mkdir -p $(CORE_DEST_DIR)/zimbramon/mrtg/work
 	mkdir -p $(CORE_DEST_DIR)/zimbramon/mrtg/conf
 	cp $(RPM_CONF_DIR)/Conf/mrtg.cfg $(CORE_DEST_DIR)/zimbramon/mrtg/conf
-	cp $(RPM_CONF_DIR)/Env/crontab $(CORE_DEST_DIR)/zimbramon/crontab
 	(cd $(CORE_DEST_DIR)/zimbramon; tar xzf $(RRD_SOURCE).tar.gz)
 	mkdir -p $(CORE_DEST_DIR)/zimbramon/rrdtool/work
 	mkdir -p $(CORE_DEST_DIR)/zimbramon/rrdtool/work
@@ -319,6 +318,10 @@ $(CORE_DEST_DIR)/zimbramon: $(CORE_DEST_DIR)/zimbramon/lib $(CORE_DEST_DIR)
 		$(CORE_DEST_DIR)/zimbramon/rrdtool/work
 	cp -f $(RPM_CONF_DIR)/Img/data_not_available.gif \
 		$(CORE_DEST_DIR)/zimbramon/rrdtool/work
+
+$(CORE_DEST_DIR)/zimbramon/crontabs:
+	mkdir -p $@
+	cp $(RPM_CONF_DIR)/Env/crontabs/* $(CORE_DEST_DIR)/zimbramon/crontabs
 
 $(CORE_DEST_DIR)/zimbramon/lib:
 	mkdir -p $(CORE_DEST_DIR)/zimbramon/lib

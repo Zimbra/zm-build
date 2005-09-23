@@ -186,4 +186,5 @@ postInstallConfig() {
 		fi
 	fi
 
+	setupCrontab
 }

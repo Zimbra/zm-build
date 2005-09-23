@@ -1,0 +1,16 @@
+#
+# crontab.logger
+#
+# process logs
+#
+00,10,20,30,40,50 * * * * /opt/zimbra/bin/zmlogprocess > /tmp/logprocess.out 2>&1
+#
+# Graph generation
+#
+10 * * * * /opt/zimbra/bin/zmgengraphs d >> /tmp/gengraphs.out 2>&1
+30 0 * * * /opt/zimbra/bin/zmgengraphs 3m 12m >> /tmp/gengraphs.3m.12m.out 2>&1
+#
+# Systemwide info
+#
+10 * * * * /opt/zimbra/bin/zmgensystemwidegraphs d >> /tmp/gensysgraphs.out 2>&1
+30 0 * * * /opt/zimbra/bin/zmgensystemwidegraphs 3m 12m >> /tmp/gensysgraphs.3m.12m.out 2>&1

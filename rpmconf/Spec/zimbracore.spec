@@ -58,8 +58,6 @@ chown zimbra:zimbra /opt/zimbra/zimbramon/state.cf
 
 cp -f /opt/zimbra/conf/zimbra.ld.conf /etc/ld.so.conf.d
 
-crontab -u zimbra /opt/zimbra/zimbramon/crontab
-
 if [ ! -d /opt/zimbra/zimbramon/mrtg/work/ ]; then
 	mkdir -p /opt/zimbra/zimbramon/mrtg/work/
 fi

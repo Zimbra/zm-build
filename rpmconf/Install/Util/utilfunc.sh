@@ -738,3 +738,33 @@ verifyExecute() {
 		fi
 	done
 }
+
+setupCrontab() {
+	crontab -u zimbra -l > /tmp/crontab.zimbra.orig
+	grep ZIMBRASTART /tmp/crontab.zimbra.orig > /dev/null 2>&1
+	if [ $? != 0 ]; then
+		cat /dev/null > /tmp/crontab.zimbra.orig
+	fi
+	grep ZIMBRAEND /tmp/crontab.zimbra.orig > /dev/null 2>&1
+	if [ $? != 0 ]; then
+		cat /dev/null > /tmp/crontab.zimbra.orig
+	fi
+	cat /tmp/crontab.zimbra.orig | sed -e '/# ZIMBRASTART/,/# ZIMBRAEND/d' > \
+		/tmp/crontab.zimbra.proc
+	cp -f /opt/zimbra/zimbramon/crontabs/crontab /tmp/crontab.zimbra
+
+	rpm -q zimbra-store >/dev/null 2>&1
+	if [ $? = 0 ]; then
+		cat /opt/zimbra/zimbramon/crontabs/crontab.store >> /tmp/crontab.zimbra
+	fi
+
+	rpm -q zimbra-logger >/dev/null 2>&1
+	if [ $? = 0 ]; then
+		cat /opt/zimbra/zimbramon/crontabs/crontab.logger >> /tmp/crontab.zimbra
+	fi
+
+	echo "# ZIMBRAEND -- DO NOT EDIT ANYTHING BETWEEN THIS LINE AND ZIMBRASTART" >> /tmp/crontab.zimbra
+	cat /tmp/crontab.zimbra.proc >> /tmp/crontab.zimbra
+
+	crontab -u zimbra /tmp/crontab.zimbra
+}
