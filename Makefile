@@ -384,16 +384,9 @@ $(CORE_DEST_DIR)/bin:
 	cp $(ZIMBRA_BIN_DIR)/swatch $@/logswatch
 	cp $(ZIMBRA_BIN_DIR)/zmswatchctl $@
 	cp $(ZIMBRA_BIN_DIR)/zmlogswatchctl $@
-	cp $(ZIMBRA_BIN_DIR)/zmloadstats $@
-	cp $(ZIMBRA_BIN_DIR)/zmaggregatestats $@
-	cp $(ZIMBRA_BIN_DIR)/zmaggregatestatsdaily $@
-	cp $(ZIMBRA_BIN_DIR)/zmgetstats $@
 	cp $(ZIMBRA_BIN_DIR)/zmlogrotate $@
 	cp $(ZIMBRA_BIN_DIR)/zmsnmpinit $@
 	cp $(ZIMBRA_BIN_DIR)/zmgengraphs $@
-	cp $(ZIMBRA_BIN_DIR)/zmgensystemwidegraphs $@
-	cp $(ZIMBRA_BIN_DIR)/zmfetchstats $@
-	cp $(ZIMBRA_BIN_DIR)/zmfetchallstats $@
 	cp $(ZIMBRA_BIN_DIR)/zmcreatecert $@
 	cp $(ZIMBRA_BIN_DIR)/zmcertinstall $@
 	cp $(ZIMBRA_BIN_DIR)/zmroll_catalina.sh $@
@@ -857,16 +850,9 @@ $(DEV_INSTALL_ROOT)/bin:
 	cp -f $(ZIMBRA_BIN_DIR)/swatch $@/logswatch
 	cp -f $(ZIMBRA_BIN_DIR)/zmswatchctl $@
 	cp -f $(ZIMBRA_BIN_DIR)/zmlogswatchctl $@
-	cp -f $(ZIMBRA_BIN_DIR)/zmloadstats $@
-	cp -f $(ZIMBRA_BIN_DIR)/zmaggregatestats $@
-	cp -f $(ZIMBRA_BIN_DIR)/zmaggregatestatsdaily $@
-	cp -f $(ZIMBRA_BIN_DIR)/zmgetstats $@
 	cp -f $(ZIMBRA_BIN_DIR)/zmlogrotate $@
 	cp -f $(ZIMBRA_BIN_DIR)/zmsnmpinit $@
 	cp -f $(ZIMBRA_BIN_DIR)/zmgengraphs $@
-	cp -f $(ZIMBRA_BIN_DIR)/zmgensystemwidegraphs $@
-	cp -f $(ZIMBRA_BIN_DIR)/zmfetchstats $@
-	cp -f $(ZIMBRA_BIN_DIR)/zmfetchallstats $@
 	cp -f $(ZIMBRA_BIN_DIR)/zmcreatecert $@
 	cp -f $(ZIMBRA_BIN_DIR)/zmroll_catalina.sh $@
 	cp -f $(ZIMBRA_BIN_DIR)/zmtlsctl $@
