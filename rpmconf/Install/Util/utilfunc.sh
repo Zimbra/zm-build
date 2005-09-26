@@ -524,7 +524,11 @@ removeExistingInstall() {
 		echo ""
 		echo "Removing /opt/zimbra"
 		umount /opt/zimbra/amavisd/tmp > /dev/null 2>&1
-		/bin/rm -rf /opt/zimbra/*
+		MOUNTPOINTS=`mount | awk '{print $3}' | grep /opt/zimbra`
+		for mp in $MOUNTPOINTS; do
+			/bin/rm -rf ${mp}/*
+		done
+		find /opt/zimbra -type f -exec /bin/rm -f {} \;
 
 	else
 		if [ -d /opt/zimbra/openldap/var/openldap-data/ ]; then
