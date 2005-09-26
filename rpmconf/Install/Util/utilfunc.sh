@@ -456,7 +456,7 @@ restoreCerts() {
 	cp $SAVEDIR/keystore /opt/zimbra/conf/keystore
 	cp $SAVEDIR/smtpd.key /opt/zimbra/conf/smtpd.key 
 	cp $SAVEDIR/smtpd.crt /opt/zimbra/conf/smtpd.crt 
-	chown zimbra:zimbra /opt/zimbra/java/jre/lib/security/cacerts /opt/zimbra/tomcat/keystore /opt/zimbra/conf/smtpd.key /opt/zimbra/conf/smtpd.crt
+	chown zimbra:zimbra /opt/zimbra/java/jre/lib/security/cacerts /opt/zimbra/conf/keystore /opt/zimbra/conf/smtpd.key /opt/zimbra/conf/smtpd.crt
 }
 
 saveExistingConfig() {
