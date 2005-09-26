@@ -15,6 +15,7 @@ AutoReqProv: no
 requires: libidn
 requires: curl
 requires: fetchmail
+requires: openssl
 
 %description
 Best email money can buy
