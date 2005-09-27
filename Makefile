@@ -56,6 +56,7 @@ CLEAN_TARGETS	=	\
 		zimbra.rpmrc \
 		zimbracore.spec \
 		zimbrasnmp.spec \
+		zimbralogger.spec \
 		zimbra.spec \
 		zimbramta.spec \
 		zimbraldap.spec \
@@ -204,10 +205,21 @@ rpms: core mta store ldap snmp logger
 
 # __CORE
 
-core: $(RPM_DIR) core_stage
+core: $(RPM_DIR) core_stage $(BUILD_ROOT)/zimbracore.spec
+	(cd $(CORE_DEST_ROOT);\
+		rpmbuild  --target i386 --quiet --define '_rpmdir $(BUILD_ROOT)' \
+		--buildroot=$(CORE_DEST_ROOT) -bb $(BUILD_ROOT)/zimbracore.spec )
+
+$(BUILD_ROOT)/zimbracore.spec:
+	cp $(RPM_CONF_DIR)/Spec/Scripts/zimbracore.pre $(BUILD_ROOT)
+	cp $(RPM_CONF_DIR)/Spec/Scripts/zimbracore.post $(BUILD_ROOT)
 	cat $(RPM_CONF_DIR)/Spec/zimbracore.spec | \
 		sed -e 's/@@VERSION@@/$(VERSION_TAG)/' \
-		| sed -e 's/@@RELEASE@@/$(RELEASE)/' > $(BUILD_ROOT)/zimbracore.spec
+		-e 's/@@RELEASE@@/$(RELEASE)/' \
+		-e '/^%pre$$/ r zimbracore.pre' \
+		-e '/^%post$$/ r zimbracore.post' > $(BUILD_ROOT)/zimbracore.spec
+	rm -f zimbracore.pre
+	rm -f zimbracore.post
 	(cd $(CORE_DEST_ROOT); find opt -type f -o -type l -maxdepth 2 \
 		| sed -e 's|^|%attr(-, zimbra, zimbra) /|' >> \
 		$(BUILD_ROOT)/zimbracore.spec )
@@ -227,9 +239,6 @@ core: $(RPM_DIR) core_stage
 		$(BUILD_ROOT)/zimbracore.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/zimbramon" >> \
 		$(BUILD_ROOT)/zimbracore.spec
-	(cd $(CORE_DEST_ROOT);\
-		rpmbuild  --target i386 --quiet --define '_rpmdir $(BUILD_ROOT)' \
-		--buildroot=$(CORE_DEST_ROOT) -bb $(BUILD_ROOT)/zimbracore.spec )
 
 core_stage: $(CORE_COMPONENTS)
 
@@ -347,15 +356,23 @@ $(CORE_DEST_DIR)/bin:
 
 # __LDAP
 
-ldap: $(RPM_DIR) ldap_stage
-	cat $(RPM_CONF_DIR)/Spec/zimbraldap.spec | \
-		sed -e 's/@@VERSION@@/$(VERSION_TAG)/' \
-		| sed -e 's/@@RELEASE@@/$(RELEASE)/' > $(BUILD_ROOT)/zimbraldap.spec
-	echo "%attr(-, zimbra, zimbra) /opt/zimbra/openldap-$(LDAP_VERSION)" >> \
-		$(BUILD_ROOT)/zimbraldap.spec
+ldap: $(RPM_DIR) ldap_stage $(BUILD_ROOT)/zimbraldap.spec
 	(cd $(LDAP_DEST_ROOT); \
 		rpmbuild  --target i386 --quiet --define '_rpmdir $(BUILD_ROOT)' \
 		--buildroot=$(LDAP_DEST_ROOT) -bb $(BUILD_ROOT)/zimbraldap.spec )
+
+$(BUILD_ROOT)/zimbraldap.spec:
+	cp $(RPM_CONF_DIR)/Spec/Scripts/zimbraldap.pre $(BUILD_ROOT)
+	cp $(RPM_CONF_DIR)/Spec/Scripts/zimbraldap.post $(BUILD_ROOT)
+	cat $(RPM_CONF_DIR)/Spec/zimbraldap.spec | \
+		sed -e 's/@@VERSION@@/$(VERSION_TAG)/' \
+		-e 's/@@RELEASE@@/$(RELEASE)/' \
+		-e '/^%pre$$/ r zimbraldap.pre' \
+		-e '/^%post$$/ r zimbraldap.post' > $(BUILD_ROOT)/zimbraldap.spec
+	rm -f zimbraldap.pre
+	rm -f zimbraldap.post
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/openldap-$(LDAP_VERSION)" >> \
+		$(BUILD_ROOT)/zimbraldap.spec
 
 ldap_stage: $(LDAP_COMPONENTS)
 
@@ -382,10 +399,21 @@ $(LDAP_DEST_DIR)/$(LDAP_DIR): $(LDAP_DEST_DIR)
 
 # __MTA
 
-mta: $(RPM_DIR) mta_stage
+mta: $(RPM_DIR) mta_stage $(BUILD_ROOT)/zimbramta.spec
+	(cd $(MTA_DEST_ROOT); \
+		rpmbuild  --target i386 --quiet --define '_rpmdir $(BUILD_ROOT)' \
+		--buildroot=$(MTA_DEST_ROOT) -bb $(BUILD_ROOT)/zimbramta.spec )
+
+$(BUILD_ROOT)/zimbramta.spec:
+	cp $(RPM_CONF_DIR)/Spec/Scripts/zimbramta.pre $(BUILD_ROOT)
+	cp $(RPM_CONF_DIR)/Spec/Scripts/zimbramta.post $(BUILD_ROOT)
 	cat $(RPM_CONF_DIR)/Spec/zimbramta.spec | \
 		sed -e 's/@@VERSION@@/$(VERSION_TAG)/' \
-		| sed -e 's/@@RELEASE@@/$(RELEASE)/' > $(BUILD_ROOT)/zimbramta.spec
+		-e 's/@@RELEASE@@/$(RELEASE)/' \
+		-e '/^%pre$$/ r zimbramta.pre' \
+		-e '/^%post$$/ r zimbramta.post' > $(BUILD_ROOT)/zimbramta.spec
+	rm -f zimbramta.pre
+	rm -f zimbramta.post
 	(cd $(MTA_DEST_ROOT); find opt -type f -o -type l -maxdepth 2 \
 		| sed -e 's|^|%attr(-, zimbra, zimbra) /|' >> \
 		$(BUILD_ROOT)/zimbramta.spec )
@@ -413,9 +441,6 @@ mta: $(RPM_DIR) mta_stage
 		$(BUILD_ROOT)/zimbramta.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/cyrus-sasl-2.1.21.ZIMBRA" >> \
 		$(BUILD_ROOT)/zimbramta.spec
-	(cd $(MTA_DEST_ROOT); \
-		rpmbuild  --target i386 --quiet --define '_rpmdir $(BUILD_ROOT)' \
-		--buildroot=$(MTA_DEST_ROOT) -bb $(BUILD_ROOT)/zimbramta.spec )
 
 mta_stage: $(MTA_COMPONENTS)
 
@@ -455,15 +480,23 @@ $(MTA_DEST_DIR)/$(BDB_DIR): $(MTA_DEST_DIR)
 
 # __LOGGER
 
-logger: $(RPM_DIR) logger_stage
-	cat $(RPM_CONF_DIR)/Spec/zimbralogger.spec | \
-		sed -e 's/@@VERSION@@/$(VERSION_TAG)/' \
-		| sed -e 's/@@RELEASE@@/$(RELEASE)/' > $(BUILD_ROOT)/zimbralogger.spec
-	echo "%attr(-, zimbra, zimbra) /opt/zimbra/logger" >> \
-		$(BUILD_ROOT)/zimbralogger.spec
+logger: $(RPM_DIR) logger_stage $(BUILD_ROOT)/zimbralogger.spec
 	(cd $(LOGGER_DEST_ROOT); \
 		rpmbuild  --target i386 --quiet --define '_rpmdir $(BUILD_ROOT)' \
 		--buildroot=$(LOGGER_DEST_ROOT) -bb $(BUILD_ROOT)/zimbralogger.spec )
+
+$(BUILD_ROOT)/zimbralogger.spec:
+	cp $(RPM_CONF_DIR)/Spec/Scripts/zimbralogger.pre $(BUILD_ROOT)
+	cp $(RPM_CONF_DIR)/Spec/Scripts/zimbralogger.post $(BUILD_ROOT)
+	cat $(RPM_CONF_DIR)/Spec/zimbralogger.spec | \
+		sed -e 's/@@VERSION@@/$(VERSION_TAG)/' \
+		-e 's/@@RELEASE@@/$(RELEASE)/' \
+		-e '/^%pre$$/ r zimbralogger.pre' \
+		-e '/^%post$$/ r zimbralogger.post' > $(BUILD_ROOT)/zimbralogger.spec
+	rm -f zimbralogger.pre
+	rm -f zimbralogger.post
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/logger" >> \
+		$(BUILD_ROOT)/zimbralogger.spec
 
 logger_stage: $(LOGGER_COMPONENTS)
 
@@ -476,17 +509,25 @@ $(LOGGER_DEST_DIR):
 
 # __STORE
 
-store: $(RPM_DIR) store_stage
+store: $(RPM_DIR) store_stage $(BUILD_ROOT)/zimbra.spec
+	(cd $(STORE_DEST_ROOT); \
+		rpmbuild  --target i386 --quiet --define '_rpmdir $(BUILD_ROOT)' \
+		--buildroot=$(STORE_DEST_ROOT) -bb $(BUILD_ROOT)/zimbra.spec )
+
+$(BUILD_ROOT)/zimbra.spec:
+	cp $(RPM_CONF_DIR)/Spec/Scripts/zimbra.pre $(BUILD_ROOT)
+	cp $(RPM_CONF_DIR)/Spec/Scripts/zimbra.post $(BUILD_ROOT)
 	cat $(RPM_CONF_DIR)/Spec/zimbra.spec | \
 		sed -e 's/@@VERSION@@/$(VERSION_TAG)/' \
-		| sed -e 's/@@RELEASE@@/$(RELEASE)/' > $(BUILD_ROOT)/zimbra.spec
+		-e 's/@@RELEASE@@/$(RELEASE)/' \
+		-e '/^%pre$$/ r zimbra.pre' \
+		-e '/^%post$$/ r zimbra.post' > $(BUILD_ROOT)/zimbra.spec
+	rm -f zimbra.pre
+	rm -f zimbra.post
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/jakarta-tomcat-5.5.7" >> \
 		$(BUILD_ROOT)/zimbra.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/mysql-standard-4.1.10a-pc-linux-gnu-i686" >> \
 		$(BUILD_ROOT)/zimbra.spec
-	(cd $(STORE_DEST_ROOT); \
-		rpmbuild  --target i386 --quiet --define '_rpmdir $(BUILD_ROOT)' \
-		--buildroot=$(STORE_DEST_ROOT) -bb $(BUILD_ROOT)/zimbra.spec )
 
 store_stage: $(STORE_COMPONENTS)
 
@@ -497,7 +538,7 @@ $(STORE_DEST_DIR)/$(MYSQL_DIR):
 	@echo "*** Creating mysql"
 	(cd $(STORE_DEST_DIR); tar xzf $(MYSQL_SOURCE).tar.gz;)
 
-$(STORE_DEST_DIR)/$(TOMCAT_DIR): $(STORE_DEST_DIR) 
+$(STORE_DEST_DIR)/$(TOMCAT_DIR)/bin: $(STORE_DEST_DIR) force
 	@echo "*** Creating tomcat"
 	(cd $(STORE_DEST_DIR); tar xzf $(TOMCAT_SOURCE).tar.gz;)
 
@@ -565,15 +606,23 @@ $(STORE_DEST_DIR)/$(TOMCAT_DIR)/common/lib/zimbra-native.jar: $(STORE_DEST_DIR)/
 
 # __SNMP
 
-snmp: $(RPM_DIR) snmp_stage
-	cat $(RPM_CONF_DIR)/Spec/zimbrasnmp.spec | \
-		sed -e 's/@@VERSION@@/$(VERSION_TAG)/' \
-		| sed -e 's/@@RELEASE@@/$(RELEASE)/' > $(BUILD_ROOT)/zimbrasnmp.spec
-	echo "%attr(-, zimbra, zimbra) /opt/zimbra/snmp-5.1.2" >> \
-		$(BUILD_ROOT)/zimbrasnmp.spec
+snmp: $(RPM_DIR) snmp_stage $(BUILD_ROOT)/zimbrasnmp.spec
 	(cd $(SNMP_DEST_ROOT); \
 		rpmbuild  --target i386 --quiet --define '_rpmdir $(BUILD_ROOT)' \
 		--buildroot=$(SNMP_DEST_ROOT) -bb $(BUILD_ROOT)/zimbrasnmp.spec )
+
+$(BUILD_ROOT)/zimbrasnmp.spec:
+	cp $(RPM_CONF_DIR)/Spec/Scripts/zimbrasnmp.pre $(BUILD_ROOT)
+	cp $(RPM_CONF_DIR)/Spec/Scripts/zimbrasnmp.post $(BUILD_ROOT)
+	cat $(RPM_CONF_DIR)/Spec/zimbrasnmp.spec | \
+		sed -e 's/@@VERSION@@/$(VERSION_TAG)/' \
+		-e 's/@@RELEASE@@/$(RELEASE)/' \
+		-e '/^%pre$$/ r zimbrasnmp.pre' \
+		-e '/^%post$$/ r zimbrasnmp.post' > $(BUILD_ROOT)/zimbrasnmp.spec
+	rm -f zimbrasnmp.pre
+	rm -f zimbrasnmp.post
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/snmp-5.1.2" >> \
+		$(BUILD_ROOT)/zimbrasnmp.spec
 
 snmp_stage: $(SNMP_COMPONENTS)
 

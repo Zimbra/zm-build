@@ -26,9 +26,9 @@ Best email money can buy
 %pre
 
 %post
-chown -R zimbra:zimbra /opt/zimbra/qa
-chmod a+x /opt/zimbra/qa/scripts/*
 
 %preun
+
+%postun
 
 %files

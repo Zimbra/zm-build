@@ -1,0 +1,72 @@
+#!/bin/bash
+# 
+# ***** BEGIN LICENSE BLOCK *****
+# Version: ZPL 1.1
+# 
+# The contents of this file are subject to the Zimbra Public License
+# Version 1.1 ("License"); you may not use this file except in
+# compliance with the License. You may obtain a copy of the License at
+# http://www.zimbra.com/license
+# 
+# Software distributed under the License is distributed on an "AS IS"
+# basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See
+# the License for the specific language governing rights and limitations
+# under the License.
+# 
+# The Original Code is: Zimbra Collaboration Suite.
+# 
+# The Initial Developer of the Original Code is Zimbra, Inc.
+# Portions created by Zimbra are Copyright (C) 2005 Zimbra, Inc.
+# All Rights Reserved.
+# 
+# Contributor(s):
+# 
+# ***** END LICENSE BLOCK *****
+# 
+# Create group, user for zimbra and postfix.
+
+H=`hostname --fqdn`
+I=`hostname -i`
+
+#Symlinks
+rm -f /opt/zimbra/java
+ln -s /opt/zimbra/jdk1.5.0_04 /opt/zimbra/java
+
+cat /opt/zimbra/zimbramon/zimbra.cf.in > /opt/zimbra/zimbramon/zimbra.cf
+
+echo "LOCALHOST $H" > /opt/zimbra/zimbramon/state.cf
+chown zimbra:zimbra /opt/zimbra/zimbramon/state.cf
+
+cp -f /opt/zimbra/conf/zimbra.ld.conf /etc/ld.so.conf.d
+
+if [ ! -d /opt/zimbra/zimbramon/mrtg/work/ ]; then
+	mkdir -p /opt/zimbra/zimbramon/mrtg/work/
+fi
+chown -R zimbra:zimbra /opt/zimbra/zimbramon/mrtg
+
+ldconfig
+
+# Setup syslog
+
+if [ ! -f /etc/logrotate.d/zimbra ]; then
+	if [ -d /etc/logrotate.d ]; then
+		cp /opt/zimbra/bin/zmlogrotate /etc/logrotate.d/zimbra
+	fi
+fi
+
+/opt/zimbra/bin/zmsyslogsetup local
+
+# Setup iptables
+iptables -t nat -F
+/sbin/chkconfig iptables on
+
+/opt/zimbra/bin/zmiptables -i
+
+cp /opt/zimbra/bin/zimbra /etc/init.d/zimbra
+chmod 755 /etc/init.d/zimbra
+chkconfig --add zimbra 
+chkconfig zimbra on
+
+mkdir -p /opt/zimbra/log
+chown zimbra:zimbra /opt/zimbra/log
+chown zimbra:zimbra /opt/zimbra

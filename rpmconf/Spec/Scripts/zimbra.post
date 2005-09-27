@@ -1,0 +1,66 @@
+#!/bin/bash
+# 
+# ***** BEGIN LICENSE BLOCK *****
+# Version: ZPL 1.1
+# 
+# The contents of this file are subject to the Zimbra Public License
+# Version 1.1 ("License"); you may not use this file except in
+# compliance with the License. You may obtain a copy of the License at
+# http://www.zimbra.com/license
+# 
+# Software distributed under the License is distributed on an "AS IS"
+# basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See
+# the License for the specific language governing rights and limitations
+# under the License.
+# 
+# The Original Code is: Zimbra Collaboration Suite.
+# 
+# The Initial Developer of the Original Code is Zimbra, Inc.
+# Portions created by Zimbra are Copyright (C) 2005 Zimbra, Inc.
+# All Rights Reserved.
+# 
+# Contributor(s):
+# 
+# ***** END LICENSE BLOCK *****
+# 
+
+H=`hostname -s`
+I=`hostname -i`
+
+#Symlinks
+rm -f /opt/zimbra/mysql
+ln -s /opt/zimbra/mysql-standard-4.1.10a-pc-linux-gnu-i686 /opt/zimbra/mysql
+
+mv /opt/zimbra/db/db.sql /opt/zimbra/db/db.sql.in
+sed -e "/server.hostname/ s/local/$H/" /opt/zimbra/db/db.sql.in > /opt/zimbra/db/db.sql
+
+rm -rf /opt/zimbra/tomcat
+ln -s /opt/zimbra/jakarta-tomcat-5.5.7 /opt/zimbra/tomcat
+mkdir -p /opt/zimbra/tomcat/logs
+chown zimbra:zimbra /opt/zimbra/tomcat/logs
+
+egrep -q 'tomcat_start' /opt/zimbra/zimbramon/zimbra.cf
+if [ $? != 0 ]; then
+    cat /opt/zimbra/zimbramon/zimbramail.cf >> /opt/zimbra/zimbramon/zimbra.cf
+fi
+
+if [ -f /opt/zimbra/zimbramon/zimbraconv.cf ]; then
+	egrep -q 'convertd_start' /opt/zimbra/zimbramon/zimbra.cf
+	if [ $? != 0 ]; then
+		cat /opt/zimbra/zimbramon/zimbraconv.cf >> /opt/zimbra/zimbramon/zimbra.cf
+	fi
+fi
+
+egrep -q 'ARP_TOOLS' /etc/sudoers
+if [ $? != 0 ]; then
+	echo "Cmnd_Alias ARP_TOOLS=/sbin/arping,/opt/zimbra/libexec/send_arp" >> /etc/sudoers
+	echo "Cmnd_Alias IFCONFIG=/sbin/ifconfig" >> /etc/sudoers
+fi
+
+egrep -q '^%zimbra.*ARP' /etc/sudoers
+if [ $? != 0 ]; then
+	echo "%zimbra ALL=NOPASSWD:ARP_TOOLS,IFCONFIG" >> /etc/sudoers
+fi
+
+su - zimbra -c "mkdir -p /opt/zimbra/tomcat/webapps/service; cd /opt/zimbra/tomcat/webapps/service; jar xf ../service.war"
+su - zimbra -c "mkdir -p /opt/zimbra/tomcat/webapps/zimbra; cd /opt/zimbra/tomcat/webapps/zimbra; jar xf ../zimbra.war"

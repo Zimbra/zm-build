@@ -1,0 +1,55 @@
+#!/bin/bash
+# 
+# ***** BEGIN LICENSE BLOCK *****
+# Version: ZPL 1.1
+# 
+# The contents of this file are subject to the Zimbra Public License
+# Version 1.1 ("License"); you may not use this file except in
+# compliance with the License. You may obtain a copy of the License at
+# http://www.zimbra.com/license
+# 
+# Software distributed under the License is distributed on an "AS IS"
+# basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See
+# the License for the specific language governing rights and limitations
+# under the License.
+# 
+# The Original Code is: Zimbra Collaboration Suite.
+# 
+# The Initial Developer of the Original Code is Zimbra, Inc.
+# Portions created by Zimbra are Copyright (C) 2005 Zimbra, Inc.
+# All Rights Reserved.
+# 
+# Contributor(s):
+# 
+# ***** END LICENSE BLOCK *****
+# 
+
+# Create group, user for zimbra and postfix.
+egrep -q '^zimbra:' /etc/group
+if [ $? != 0 ]; then
+	groupadd zimbra
+fi
+
+egrep -q '^postfix:' /etc/group
+if [ $? != 0 ]; then
+	groupadd postfix
+fi
+
+egrep -q '^postdrop:' /etc/group
+if [ $? != 0 ]; then
+	groupadd postdrop
+fi
+
+egrep -q '^zimbra:' /etc/passwd
+if [ $? != 0 ]; then
+	useradd -g zimbra -G postfix,tty -d /opt/zimbra -s /bin/bash zimbra
+fi
+
+# Fix incase the account existed but the groups were wrong
+usermod -g zimbra -G postfix,tty zimbra
+
+egrep -q '^postfix:' /etc/passwd
+if [ $? != 0 ]; then
+	useradd -g postfix -d /opt/zimbra/postfix postfix
+	/bin/rm -rf /opt/zimbra/postfix
+fi
