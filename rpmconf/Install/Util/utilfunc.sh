@@ -528,9 +528,18 @@ removeExistingInstall() {
 		for mp in $MOUNTPOINTS; do
 			if [ x$mp != "x/opt/zimbra"]; then
 				/bin/rm -rf ${mp}/*
+				umount -f ${mp}
 			fi
 		done
-		find /opt/zimbra -type f -exec /bin/rm -f {} \;
+
+		/bin/rm -rf /opt/zimbra/*
+
+		for mp in $MOUNTPOINTS; do
+			if [ x$mp != "x/opt/zimbra"]; then
+				mkdir -p ${mp}
+				mount ${mp}
+			fi
+		done
 
 	else
 		if [ -d /opt/zimbra/openldap/var/openldap-data/ ]; then
