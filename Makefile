@@ -286,7 +286,7 @@ $(CORE_DEST_DIR)/lib: $(WEBAPP_DIR)/service.war $(LDAP_DEST_DIR)/$(LDAP_DIR) $(M
 	cp -pr $(LDAP_DEST_DIR)/$(LDAP_DIR)/lib/* $@
 	cp -pr $(MTA_DEST_DIR)/$(BDB_DIR)/lib/* $@
 	cp -pr $(SERVICE_DIR)/build/dist/lib/* $@
-	(cd $@; tar xzf $(THIRD_PARTY)/mysql/mysql-standard-4.1.10a-clientlibs.tgz)
+	(cd $@; tar xzf $(THIRD_PARTY)/mysql/$(BUILD_PLATFORM)/mysql-standard-4.1.10a-clientlibs.tgz)
 
 $(CORE_DEST_DIR)/jdk1.5.0_04:
 	@echo "*** Creating java"
@@ -780,7 +780,7 @@ $(DEV_INSTALL_ROOT)/lib: $(DEV_INSTALL_ROOT)/$(LDAP_DIR) $(DEV_INSTALL_ROOT)/$(B
 	cp -f -pr $(DEV_INSTALL_ROOT)/$(LDAP_DIR)/lib/* $@
 	cp -f -pr $(DEV_INSTALL_ROOT)/$(BDB_DIR)/lib/* $@
 	cp -f -pr $(SERVICE_DIR)/build/dist/lib/* $@
-	(cd $@; tar xzf $(THIRD_PARTY)/mysql/mysql-standard-4.1.10a-clientlibs.tgz)
+	(cd $@; tar xzf $(THIRD_PARTY)/mysql/$(BUILD_PLATFORM)/mysql-standard-4.1.10a-clientlibs.tgz)
 
 $(DEV_INSTALL_ROOT)/libexec:
 	@echo "*** Installing libexec"
