@@ -77,7 +77,7 @@ LICENSE_DIR := $(BUILD_ROOT)/../ZimbraLicenses
 
 THIRD_PARTY	:= $(BUILD_ROOT)/../ThirdParty
 
-LDAP_VERSION	:= 2.2.26
+LDAP_VERSION	:= 2.2.28
 LDAP_DIR	:= openldap-$(LDAP_VERSION)
 LDAP_SOURCE	:= $(THIRD_PARTY)/openldap/builds/$(BUILD_PLATFORM)/$(LDAP_DIR)
 

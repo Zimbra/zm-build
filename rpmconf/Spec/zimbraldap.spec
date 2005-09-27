@@ -49,7 +49,7 @@ I=`hostname -i`
 #Symlinks
 
 rm -f /opt/zimbra/openldap
-ln -s /opt/zimbra/openldap-2.2.26 /opt/zimbra/openldap
+ln -s /opt/zimbra/openldap-2.2.28 /opt/zimbra/openldap
 
 mkdir -p /opt/zimbra/openldap/var/openldap-data
 mkdir -p /opt/zimbra/openldap-data
