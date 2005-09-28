@@ -52,7 +52,7 @@ CLEAN_TARGETS	=	\
 		$(CORE_DEST_ROOT) \
 		$(LOGGER_DEST_ROOT) \
 		zcs \
-		zcs-2*.tgz \
+		zcs-*.tgz \
 		zimbra.rpmrc \
 		zimbracore.spec \
 		zimbrasnmp.spec \
