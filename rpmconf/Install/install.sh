@@ -82,6 +82,9 @@ checkPackages
 if [ $AUTOINSTALL = "no" ]; then
 	setRemove
 	getInstallPackages
+
+	verifyExecute
+
 else
 	loadConfig $DEFAULTFILE
 
@@ -153,8 +156,6 @@ if [ $AUTOINSTALL = "no" ]; then
 		askYN "Start servers after installation?" "Y"
 		STARTSERVERS=$response
 	fi
-
-	verifyExecute
 
 else
 	verifyLdapServer

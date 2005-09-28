@@ -55,6 +55,14 @@ getConfigOptions() {
 	if [ $LDAP_HERE = "yes" ]; then
 		LDAPHOST=$HOSTNAME
 		LDAPPORT=389
+		if [ $UPGRADE = "no" ]; then
+			su - zimbra -c "zmlocalconfig -e -r startup_ldap_password"
+			LDAPROOTPW=`su - zimbra -c "zmlocalconfig -s -m nokey startup_ldap_password"`
+			askNonBlank "Enter the root ldap password for $LDAPHOST:" \
+				"$LDAPROOTPW"
+			LDAPROOTPW=$response
+			su - zimbra -c "zmlocalconfig -e startup_ldap_password=''"
+		fi
 	else
 		while :; do
 
@@ -67,8 +75,6 @@ getConfigOptions() {
 				askNonBlank "Enter the root ldap password for $LDAPHOST:" \
 					"$LDAPROOTPW"
 				LDAPROOTPW=$response
-				askNonBlank "Enter the zimbra ldap password for $LDAPHOST:" \
-					"$LDAPZIMBRAPW"
 				LDAPZIMBRAPW=$response
 			fi
 
