@@ -42,10 +42,12 @@ postInstallConfig() {
 		echo "done"
 	fi
 
-	if [ $UPGRADE = "no" -a $LOGGER_HERE = "yes" ]; then
-		echo -n "Creating logger db..."
-		runAsZimbra "/opt/zimbra/libexec/zmloggerinit"
-		echo "done"
+	if [ $LOGGER_HERE = "yes" ]; then
+		if [ ! -d "/opt/zimbra/logger/db/data" ]; then
+			echo -n "Creating logger db..."
+			runAsZimbra "/opt/zimbra/libexec/zmloggerinit"
+			echo "done"
+		fi
 	fi
 
 	echo -n "Setting the hostname to $HOSTNAME..."
