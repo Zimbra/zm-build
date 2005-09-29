@@ -1,0 +1,57 @@
+
+# __STORE
+
+store: $(RPM_DIR) store_stage $(BUILD_ROOT)/zimbra.spec
+	(cd $(STORE_DEST_ROOT); \
+		rpmbuild  --target i386 --quiet --define '_rpmdir $(BUILD_ROOT)' \
+		--buildroot=$(STORE_DEST_ROOT) -bb $(BUILD_ROOT)/zimbra.spec )
+
+$(BUILD_ROOT)/zimbra.spec:
+	cp $(RPM_CONF_DIR)/Spec/Scripts/zimbra.pre $(BUILD_ROOT)
+	cp $(RPM_CONF_DIR)/Spec/Scripts/zimbra.post $(BUILD_ROOT)
+	cat $(RPM_CONF_DIR)/Spec/zimbra.spec | \
+		sed -e 's/@@VERSION@@/$(VERSION_TAG)/' \
+		-e 's/@@RELEASE@@/$(RELEASE)/' \
+		-e '/^%pre$$/ r zimbra.pre' \
+		-e '/^%post$$/ r zimbra.post' > $(BUILD_ROOT)/zimbra.spec
+	rm -f zimbra.pre
+	rm -f zimbra.post
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/jakarta-tomcat-5.5.7" >> \
+		$(BUILD_ROOT)/zimbra.spec
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/mysql-standard-4.1.10a-pc-linux-gnu-i686" >> \
+		$(BUILD_ROOT)/zimbra.spec
+
+store_stage: $(STORE_COMPONENTS)
+
+$(STORE_DEST_DIR):
+	mkdir -p $@
+
+$(STORE_DEST_DIR)/$(MYSQL_DIR):
+	@echo "*** Creating mysql"
+	(cd $(STORE_DEST_DIR); tar xzf $(MYSQL_SOURCE).tar.gz;)
+
+$(STORE_DEST_DIR)/$(TOMCAT_DIR)/bin: $(STORE_DEST_DIR) force
+	@echo "*** Creating tomcat"
+	(cd $(STORE_DEST_DIR); tar xzf $(TOMCAT_SOURCE).tar.gz;)
+
+$(STORE_DEST_DIR)/$(TOMCAT_DIR)/conf: force
+	mkdir -p $@
+	cp -f $(SERVICE_DIR)/conf/tomcat-5.5/server.xml.production \
+		$(STORE_DEST_DIR)/$(TOMCAT_DIR)/conf/server.xml
+	cp -f $(SERVICE_DIR)/conf/zimbra.xml \
+		$(STORE_DEST_DIR)/$(TOMCAT_DIR)/conf/Catalina/localhost/zimbra.xml
+	mkdir -p $(STORE_DEST_DIR)/$(TOMCAT_DIR)/conf/AdminService/localhost
+	cp -f $(SERVICE_DIR)/conf/zimbraAdmin.xml \
+		$(STORE_DEST_DIR)/$(TOMCAT_DIR)/conf/AdminService/localhost/zimbraAdmin.xml
+	cp -f $(SERVICE_DIR)/conf/tomcat-5.5/tomcat-users.xml $(STORE_DEST_DIR)/$(TOMCAT_DIR)/conf
+	cp -f $(SERVICE_DIR)/build/dist/conf/log4j.properties.production  \
+		$(STORE_DEST_DIR)/$(TOMCAT_DIR)/conf/log4j.properties
+
+$(STORE_DEST_DIR)/$(TOMCAT_DIR)/temp: force
+	mkdir -p $(STORE_DEST_DIR)/$(TOMCAT_DIR)/temp
+	touch $(STORE_DEST_DIR)/$(TOMCAT_DIR)/temp/.emptyfile
+
+$(STORE_DEST_DIR)/$(TOMCAT_DIR): $(STORE_DEST_DIR) $(STORE_DEST_DIR)/$(TOMCAT_DIR)/bin $(STORE_DEST_DIR)/$(TOMCAT_DIR)/conf $(STORE_DEST_DIR)/$(TOMCAT_DIR)/temp
+
+$(WEBAPP_DIR): 
+	mkdir -p $@

@@ -1,0 +1,11 @@
+DEV_CLEAN_TARGETS := \
+	$(DEV_INSTALL_ROOT)/$(LDAP_DIR) \
+	$(DEV_INSTALL_ROOT)/$(MYSQL_DIR) \
+	$(DEV_INSTALL_ROOT)/$(TOMCAT_DIR) \
+
+dev-allclean:
+	-su - zimbra -c "zmcontrol shutdown"
+	rm -rf $(DEV_INSTALL_ROOT)
+
+dev-clean: dev-stop
+	rm -rf $(DEV_CLEAN_TARGETS)

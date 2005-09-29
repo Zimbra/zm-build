@@ -1,0 +1,226 @@
+# __DEV TARGETS
+
+DEV_INSTALL_COMPONENTS	:= \
+	$(DEV_INSTALL_ROOT)/$(MYSQL_DIR) \
+	$(DEV_INSTALL_ROOT)/$(LDAP_DIR) \
+	$(DEV_INSTALL_ROOT)/$(TOMCAT_DIR) \
+	$(DEV_INSTALL_ROOT)/$(CLAMAV_DIR) \
+	$(DEV_INSTALL_ROOT)/$(AMAVISD_DIR) \
+	$(DEV_INSTALL_ROOT)/zimbramon \
+	$(DEV_INSTALL_ROOT)/db \
+	$(DEV_INSTALL_ROOT)/lib \
+	$(DEV_INSTALL_ROOT)/libexec \
+	$(DEV_INSTALL_ROOT)/bin \
+	$(DEV_INSTALL_ROOT)/conf \
+	$(DEV_INSTALL_ROOT)/$(JAVA_FILE)$(JAVA_VERSION) \
+	$(DEV_INSTALL_ROOT)/$(POSTFIX_DIR) \
+	$(DEV_INSTALL_ROOT)/$(SASL_DIR) \
+	$(DEV_INSTALL_ROOT)/$(SNMP_DIR) 
+
+$(DEV_INSTALL_ROOT):
+	mkdir -p $@
+	cp $(ENV_FILE_SOURCE) $(DEV_INSTALL_ROOT)/$(ENV_FILE_DEST)
+	cp $(PROFILE_SOURCE) $(DEV_INSTALL_ROOT)/$(PROFILE_DEST)
+	cp $(EXRC_SOURCE) $(DEV_INSTALL_ROOT)/$(EXRC_DEST)
+
+dev-mta-install: $(DEV_INSTALL_ROOT)/$(POSTFIX_DIR) $(DEV_INSTALL_ROOT)/$(SASL_DIR)
+	rm -f $(DEV_INSTALL_ROOT)/postfix
+	ln -s $(DEV_INSTALL_ROOT)/$(POSTFIX_DIR) $(DEV_INSTALL_ROOT)/postfix
+	echo "*** MTA Install complete"
+
+$(DEV_INSTALL_ROOT)/$(SASL_DIR): $(DEV_INSTALL_ROOT)
+	@echo "*** Creating cyrus-sasl"
+	(cd $(DEV_INSTALL_ROOT); tar xzf $(SASL_SOURCE).tgz;)
+	mkdir -p $(DEV_INSTALL_ROOT)/$(SASL_DIR)-$(SASL_VERSION)/etc
+	cp -f $(SERVICE_DIR)/conf/saslauthd.conf.in \
+		$(DEV_INSTALL_ROOT)/$(SASL_DIR)-$(SASL_VERSION)/etc/
+	cp -f $(SERVICE_DIR)/conf/postfix_sasl_smtpd.conf \
+		$(DEV_INSTALL_ROOT)/$(SASL_DIR)-$(SASL_VERSION)/lib/sasl2/smtpd.conf
+
+$(DEV_INSTALL_ROOT)/$(SNMP_DIR): $(DEV_INSTALL_ROOT)
+	@echo "*** Creating SNMP"
+	(cd $(DEV_INSTALL_ROOT); tar xzf $(SNMP_SOURCE).tar.gz;)
+	cp $(RPM_CONF_DIR)/Conf/snmpd.conf.in $(DEV_INSTALL_ROOT)/$(SNMP_DIR)/share/snmp/snmpd.conf.in
+	mkdir -p $(DEV_INSTALL_ROOT)/$(SNMP_DIR)/conf
+	cp $(RPM_CONF_DIR)/Conf/snmp.conf $(DEV_INSTALL_ROOT)/$(SNMP_DIR)/conf/snmp.conf
+	cp $(RPM_CONF_DIR)/Conf/snmp.conf $(DEV_INSTALL_ROOT)/$(SNMP_DIR)/share/snmp/snmp.conf
+	cp $(RPM_CONF_DIR)/Conf/mibs/*mib $(DEV_INSTALL_ROOT)/$(SNMP_DIR)/share/snmp/mibs
+
+$(DEV_INSTALL_ROOT)/$(POSTFIX_DIR): $(DEV_INSTALL_ROOT)
+	@echo "*** Installing postfix"
+	(cd $(DEV_INSTALL_ROOT); tar xzf $(POSTFIX_SOURCE).tgz;)
+	cp -f $(SERVICE_DIR)/conf/postfix/main.cf \
+		$(DEV_INSTALL_ROOT)/$(POSTFIX_DIR)/conf/main.cf
+	sed 's/^7075/25/g' $(SERVICE_DIR)/conf/postfix/master.cf > \
+		$(DEV_INSTALL_ROOT)/$(POSTFIX_DIR)/conf/master.cf
+	#sh -x $(ZIMBRA_BIN_DIR)/zmfixperms.sh
+	(cd $(DEV_INSTALL_ROOT)/$(POSTFIX_DIR)/sbin; ln -s postdrop sendmail)
+
+$(DEV_INSTALL_ROOT)/$(CLAMAV_DIR): $(DEV_INSTALL_ROOT)
+	@echo "*** Installing clamav"
+	(cd $(DEV_INSTALL_ROOT); tar xzf $(CLAMAV_SOURCE).tgz;)
+	mkdir -p $(DEV_INSTALL_ROOT)/$(CLAMAV_DIR)-$(CLAMAV_VERSION)/db
+	cp -f $(RPM_CONF_DIR)/ClamAv/main.cvd \
+		$(DEV_INSTALL_ROOT)/$(CLAMAV_DIR)-$(CLAMAV_VERSION)/db/main.cvd.init
+	cp -f $(RPM_CONF_DIR)/ClamAv/daily.cvd \
+		$(DEV_INSTALL_ROOT)/$(CLAMAV_DIR)-$(CLAMAV_VERSION)/db/daily.cvd.init
+
+dev-install: $(DEV_INSTALL_COMPONENTS)
+	rm -f $(DEV_INSTALL_ROOT)/clamav $(DEV_INSTALL_ROOT)/tomcat \
+		$(DEV_INSTALL_ROOT)/mysql $(DEV_INSTALL_ROOT)/openlap
+	ln -s $(DEV_INSTALL_ROOT)/$(CLAMAV_DIR)-$(CLAMAV_VERSION) \
+		$(DEV_INSTALL_ROOT)/clamav
+	ln -s $(DEV_INSTALL_ROOT)/$(TOMCAT_DIR) $(DEV_INSTALL_ROOT)/tomcat
+	ln -s $(DEV_INSTALL_ROOT)/$(MYSQL_DIR) $(DEV_INSTALL_ROOT)/mysql
+	ln -s $(DEV_INSTALL_ROOT)/$(LDAP_DIR) $(DEV_INSTALL_ROOT)/openldap
+	ln -s $(DEV_INSTALL_ROOT)/$(JAVA_FILE)$(JAVA_VERSION) \
+		$(DEV_INSTALL_ROOT)/java
+	ln -s $(DEV_INSTALL_ROOT)/$(BDB_DIR) $(DEV_INSTALL_ROOT)/sleepycat
+	ln -s $(DEV_INSTALL_ROOT)/$(POSTFIX_DIR) $(DEV_INSTALL_ROOT)/postfix
+	ln -s $(DEV_INSTALL_ROOT)/$(SASL_DIR)-$(SASL_VERSION) \
+		$(DEV_INSTALL_ROOT)/cyrus-sasl
+	ln -s $(DEV_INSTALL_ROOT)/$(SNMP_DIR) $(DEV_INSTALL_ROOT)/snmp
+	@echo "*** Installation complete"
+
+$(DEV_INSTALL_ROOT)/$(MYSQL_DIR): $(DEV_INSTALL_ROOT)
+	@echo "*** Installing mysql"
+	(cd $(DEV_INSTALL_ROOT); tar xzf $(MYSQL_SOURCE).tar.gz;)
+
+$(DEV_INSTALL_ROOT)/$(LDAP_DIR): $(DEV_INSTALL_ROOT)
+	@echo "*** Installing openldap"
+	(cd $(DEV_INSTALL_ROOT); tar xzf $(LDAP_SOURCE).tgz;)
+	cp -f $(SERVICE_DIR)/conf/ldap/DB_CONFIG $@/var/openldap-data
+	cp -f $(SERVICE_DIR)/conf/ldap/slapd.conf.production $@/etc/openldap/slapd.conf
+	cp -f $(SERVICE_DIR)/conf/ldap/amavisd.schema $@/etc/openldap/schema
+	cp -f $(SERVICE_DIR)/conf/ldap/zimbra.schema $@/etc/openldap/schema
+	cp -f $(SERVICE_DIR)/conf/ldap/zimbra.ldif $@/etc/openldap/zimbra.ldif
+	cp -f $(SERVICE_DIR)/conf/ldap/widgets.ldif $@/etc/openldap/widgets.ldif
+	cp $(SERVICE_DIR)/conf/ldap/zimbra_mimehandlers.ldif \
+		$@/etc/openldap/zimbra_mimehandlers.ldif
+
+$(DEV_INSTALL_ROOT)/$(TOMCAT_DIR): $(DEV_INSTALL_ROOT) $(SERVICE_DIR)/$(WEBAPP_BUILD_DIR)/service.war  $(CONSOLE_DIR)/$(WEBAPP_BUILD_DIR)/zimbra.war
+	@echo "*** Installing tomcat"
+	(cd $(DEV_INSTALL_ROOT); tar xzf $(TOMCAT_SOURCE).tar.gz;)
+	cp -f $(SERVICE_DIR)/conf/tomcat-5.5/server.xml $@/conf/server.xml
+	cp -f $(SERVICE_DIR)/conf/zimbra.xml $@/conf/Catalina/localhost/zimbra.xml
+	mkdir -p $@/conf/AdminService/localhost
+	cp -f $(SERVICE_DIR)/conf/zimbraAdmin.xml $@/conf/AdminService/localhost/zimbraAdmin.xml
+	cp -f $(SERVICE_DIR)/conf/tomcat-5.5/tomcat-users.xml $@/conf
+	cp -f $(SERVICE_DIR)/build/dist/conf/log4j.properties.production  $@/conf/log4j.properties
+	mkdir -p $@/temp
+	touch $@/temp/.emptyfile
+
+$(DEV_INSTALL_ROOT)/$(AMAVISD_DIR): $(DEV_INSTALL_ROOT)
+	@echo "*** Installing amavisd"
+	mkdir -p $@/sbin
+	cp -f $(AMAVISD_SOURCE)/amavisd $@/sbin
+	mkdir -p $@/.spamassassin/init
+	cp -f $(RPM_CONF_DIR)/SpamAssassin/bayes* $@/.spamassassin/init
+
+devperllibs: 
+	mkdir -p $(DEV_INSTALL_ROOT)/zimbramon/lib
+	(cd $(DEV_INSTALL_ROOT)/zimbramon/lib; \
+	tar xzf $(PERL_LIB_SOURCE)/builds/perllib.tgz)
+	cp -fR $(BUILD_ROOT)/lib/Zimbra $(DEV_INSTALL_ROOT)/zimbramon/lib
+
+$(DEV_INSTALL_ROOT)/zimbramon: $(DEV_INSTALL_ROOT) devperllibs
+	@echo "*** Installing zimbramon"
+	mkdir -p $@
+	cp -f -R $(ZIMBRA_BIN_DIR)/zmmon $@
+	chmod 755 $@/zmmon
+	cp -f -R $(ZIMBRA_BIN_DIR)/zmcontrol $@
+	chmod 755 $@/zmcontrol
+	cp -f -R $(RPM_CONF_DIR)/Ctl/zimbra.cf.in $@/zimbra.cf
+	cp -f -R $(RPM_CONF_DIR)/Ctl/zimbracore.cf $@
+	cp -f -R $(RPM_CONF_DIR)/Ctl/zimbramail.cf $@
+	cp -f -R $(RPM_CONF_DIR)/Ctl/zimbramta.cf $@
+	cp -f -R $(RPM_CONF_DIR)/Ctl/zimbraldap.cf $@
+	cp -f -R $(RPM_CONF_DIR)/Ctl/zimbralogger.cf $@
+	cp -f -R $(RPM_CONF_DIR)/Ctl/zimbrasnmp.cf $@
+	mkdir -p $@/lib/Zimbra/Mon
+	@cp -f $(wildcard $(BUILD_ROOT)/lib/Zimbra/Mon/*.pm) $@/lib/Zimbra/Mon
+	mkdir -p $@/lib/Zimbra/Mon/SOAP
+	@cp -f $(wildcard $(SERVICE_DIR)/src/perl/soap/*.pm) $@/lib/Zimbra/Mon/SOAP
+	(cd $(DEV_INSTALL_ROOT)/zimbramon; tar xzf $(MRTG_SOURCE).tgz)
+	mkdir -p $(DEV_INSTALL_ROOT)/zimbramon/mrtg/work
+	mkdir -p $(DEV_INSTALL_ROOT)/zimbramon/mrtg/conf
+	cp -f $(RPM_CONF_DIR)/Conf/mrtg.cfg $(DEV_INSTALL_ROOT)/zimbramon/mrtg/conf
+	cp -f $(RPM_CONF_DIR)/Env/crontab $(DEV_INSTALL_ROOT)/zimbramon/crontab
+	(cd $(DEV_INSTALL_ROOT)/zimbramon; tar xzf $(RRD_SOURCE).tar.gz)
+
+$(DEV_INSTALL_ROOT)/db:
+	@echo "*** Installing db"
+	mkdir -p $@
+	cp -f -R $(SERVICE_DIR)/src/db/db.sql $@
+	cp -f -R $(SERVICE_DIR)/src/db/create_database.sql $@
+	cp -f -R $(SERVICE_DIR)/build/versions-init.sql $@
+
+$(DEV_INSTALL_ROOT)/$(BDB_DIR): $(DEV_INSTALL_ROOT)
+	@echo "*** Installing sleepycat"
+	(cd $(DEV_INSTALL_ROOT); tar xzf $(BDB_SOURCE).tgz; chmod u+w $(BDB_DIR)/bin/*)
+
+$(DEV_INSTALL_ROOT)/lib: $(DEV_INSTALL_ROOT)/$(LDAP_DIR) $(DEV_INSTALL_ROOT)/$(BDB_DIR)
+	@echo "*** Installing lib"
+	mkdir -p $@
+	cp -f -pr $(SERVICE_DIR)/build/dist/lib/* $@
+	cp -f -pr $(DEV_INSTALL_ROOT)/$(LDAP_DIR)/lib/* $@
+	cp -f -pr $(DEV_INSTALL_ROOT)/$(BDB_DIR)/lib/* $@
+	cp -f -pr $(SERVICE_DIR)/build/dist/lib/* $@
+	(cd $@; tar xzf $(THIRD_PARTY)/mysql/$(BUILD_PLATFORM)/mysql-standard-4.1.10a-clientlibs.tgz)
+
+$(DEV_INSTALL_ROOT)/libexec:
+	@echo "*** Installing libexec"
+	mkdir -p $@/util/modules
+	cp -f -R $(SERVICE_DIR)/build/dist/libexec/zm*init $@
+	cp -f $(RPM_CONF_DIR)/Install/Util/*sh $@/util
+	cp -f $(RPM_CONF_DIR)/Install/Util/modules/* $@/util/modules
+
+$(DEV_INSTALL_ROOT)/bin:
+	@echo "*** Installing bin"
+	mkdir -p $@
+	cp -f -R $(SERVICE_DIR)/build/dist/bin/[a-z]* $@
+	rm -f $@/zm*init
+	rm -f $(DEV_INSTALL_ROOT)/bin/zmtransserver.bat
+	#rm -f $(DEV_INSTALL_ROOT)/bin/ldap
+	#mv $@/ldap $@/ldap
+	cp -f $(ZIMBRA_BIN_DIR)/swatch $@
+	cp -f $(ZIMBRA_BIN_DIR)/swatch $@/logswatch
+	cp -f $(ZIMBRA_BIN_DIR)/zmswatchctl $@
+	cp -f $(ZIMBRA_BIN_DIR)/zmlogswatchctl $@
+	cp -f $(ZIMBRA_BIN_DIR)/zmlogrotate $@
+	cp -f $(ZIMBRA_BIN_DIR)/zmsnmpinit $@
+	cp -f $(ZIMBRA_BIN_DIR)/zmgengraphs $@
+	cp -f $(ZIMBRA_BIN_DIR)/zmcreatecert $@
+	cp -f $(ZIMBRA_BIN_DIR)/zmroll_catalina.sh $@
+	cp -f $(ZIMBRA_BIN_DIR)/zmtlsctl $@
+	cp -f $(ZIMBRA_BIN_DIR)/zmfixperms.sh $@
+	cp -f $(ZIMBRA_BIN_DIR)/zmsyslogsetup $@
+	chmod u+x $@/*
+
+$(DEV_INSTALL_ROOT)/conf: $(SERVICE_DIR)/$(WEBAPP_BUILD_DIR)/service.war
+	@echo "*** Installing conf"
+	mkdir -p $@
+	cp -f $(RPM_CONF_DIR)/Conf/swatchrc $@/swatchrc.in
+	cp -f $(RPM_CONF_DIR)/Conf/logswatchrc $@/logswatchrc
+	cp -f -R $(SERVICE_DIR)/conf/localconfig.xml $@/localconfig.xml
+	grep -vi stats $(SERVICE_DIR)/build/dist/conf/log4j.properties.production > $@/log4j.properties
+	cp -f $(RPM_CONF_DIR)/Conf/zmssl.cnf.in $@
+	cp -f $(SERVICE_DIR)/conf/amavisd.conf.in $@
+	cp -f $(SERVICE_DIR)/conf/clamd.conf $@
+	cp -f $(SERVICE_DIR)/conf/freshclam.conf $@
+	cp -f $(SERVICE_DIR)/conf/salocal.cf $@
+	cp $(SERVICE_DIR)/conf/postfix_header_checks.in $@
+	cp $(SERVICE_DIR)/conf/zmmta.cf $@
+	cp $(SERVICE_DIR)/conf/postfix_recipient_restrictions.cf $@
+	mkdir -p $@/spamassassin
+	cp -f $(SERVICE_DIR)/conf/spamassassin/* $@/spamassassin
+
+$(DEV_INSTALL_ROOT)/$(JAVA_FILE)$(JAVA_VERSION):
+	@echo "*** Installing $(JAVA_FILE)$(JAVA_VERSION)"
+	(cd $(DEV_INSTALL_ROOT); tar xzf $(JAVA_SOURCE).tgz;)
+
+dev-stop:
+	-$(DEV_INSTALL_ROOT)/bin/mysql.server stop
+	-$(DEV_INSTALL_ROOT)/bin/ldap stop
+	-$(DEV_INSTALL_ROOT)/bin/tomcat stop
+	-$(DEV_INSTALL_ROOT)/bin/postfix stop

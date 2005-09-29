@@ -1,0 +1,29 @@
+
+# __LOGGER
+
+logger: $(RPM_DIR) logger_stage $(BUILD_ROOT)/zimbralogger.spec
+	(cd $(LOGGER_DEST_ROOT); \
+		rpmbuild  --target i386 --quiet --define '_rpmdir $(BUILD_ROOT)' \
+		--buildroot=$(LOGGER_DEST_ROOT) -bb $(BUILD_ROOT)/zimbralogger.spec )
+
+$(BUILD_ROOT)/zimbralogger.spec:
+	cp $(RPM_CONF_DIR)/Spec/Scripts/zimbralogger.pre $(BUILD_ROOT)
+	cp $(RPM_CONF_DIR)/Spec/Scripts/zimbralogger.post $(BUILD_ROOT)
+	cat $(RPM_CONF_DIR)/Spec/zimbralogger.spec | \
+		sed -e 's/@@VERSION@@/$(VERSION_TAG)/' \
+		-e 's/@@RELEASE@@/$(RELEASE)/' \
+		-e '/^%pre$$/ r zimbralogger.pre' \
+		-e '/^%post$$/ r zimbralogger.post' > $(BUILD_ROOT)/zimbralogger.spec
+	rm -f zimbralogger.pre
+	rm -f zimbralogger.post
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/logger" >> \
+		$(BUILD_ROOT)/zimbralogger.spec
+
+logger_stage: $(LOGGER_COMPONENTS)
+
+$(LOGGER_DEST_DIR)/$(MYSQL_DIR): $(LOGGER_DEST_DIR)
+	@echo "*** Creating mysql"
+	(cd $(LOGGER_DEST_DIR); tar xzf $(MYSQL_SOURCE).tar.gz;)
+
+$(LOGGER_DEST_DIR):
+	mkdir -p $@

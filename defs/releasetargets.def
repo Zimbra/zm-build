@@ -1,0 +1,28 @@
+zcs-$(RELEASE).tgz: rpms
+	mkdir -p zcs/packages
+	mkdir -p zcs/bin
+	mkdir -p zcs/data
+	mkdir -p zcs/docs
+	mkdir -p zcs/util/modules
+	cp -f $(LICENSE_DIR)/zimbra/zpl-full.txt zcs/ZPL.txt
+	cp -f $(CONSOLE_DIR)/WebRoot/adminhelp/pdf/* zcs/docs
+	cp -f $(LICENSE_DIR)/zimbra/zcl-full.txt zcs/docs/zcl-full.txt
+	cp -f $(LICENSE_DIR)/zimbra/zcl.txt zcs/docs/zcl.txt
+	cp -f $(LICENSE_DIR)/zimbra/zapl-full.txt zcs/docs/zapl.txt
+	cp -f $(CONSOLE_DIR)/WebRoot/adminhelp/txt/readme_source.txt zcs
+	cp -f $(CONSOLE_DIR)/WebRoot/adminhelp/txt/readme_binary.txt zcs
+	cp -f $(SERVICE_DIR)/build/versions-init.sql zcs/data
+	cp $(LDAP_DEST_ROOT)/opt/zimbra/$(LDAP_DIR)/bin/ldapsearch zcs/bin
+	cp $(RPM_CONF_DIR)/Install/install.sh zcs
+	cp -f $(RPM_CONF_DIR)/Install/Util/*sh zcs/util
+	cp -f $(RPM_CONF_DIR)/Install/Util/modules/* zcs/util/modules
+	cp -f $(BUILD_ROOT)/RE/README.txt zcs
+	chmod 755 zcs/install.sh
+	cp $(RPM_DIR)/*rpm zcs/packages
+	tar czf zcs-$(VERSION_TAG).tgz zcs
+	cp zcs-$(VERSION_TAG).tgz $(RPM_DIR)
+	(cd $(RPM_DIR); ln -s zcs-$(VERSION_TAG).tgz zcs.tgz)
+	@echo "*** BUILD COMPLETED ***"
+
+rpms: core mta store ldap snmp logger
+	@echo "*** Creating RPMS in $(RPM_DIR)"

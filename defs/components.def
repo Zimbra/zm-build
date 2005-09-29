@@ -1,0 +1,40 @@
+WEBAPPS	:= \
+	$(WEBAPP_DIR)/service.war \
+	$(WEBAPP_DIR)/zimbraAdmin.war \
+	$(WEBAPP_DIR)/zimbra.war 
+
+CORE_COMPONENTS	:= \
+	$(CORE_DEST_DIR) \
+	$(CORE_DEST_DIR)/db \
+	$(CORE_DEST_DIR)/lib \
+	$(CORE_DEST_DIR)/libexec \
+	$(CORE_DEST_DIR)/bin \
+	$(CORE_DEST_DIR)/zimbramon \
+	$(CORE_DEST_DIR)/$(JAVA_FILE)$(JAVA_VERSION) \
+	$(CORE_DEST_DIR)/conf \
+	$(CORE_DEST_DIR)/doc
+
+MTA_COMPONENTS	:= \
+	$(MTA_DEST_DIR)/$(POSTFIX_DIR) \
+	$(MTA_DEST_DIR)/$(BDB_DIR) \
+	$(MTA_DEST_DIR)/$(AMAVISD_DIR) \
+	$(MTA_DEST_DIR)/$(CLAMAV_DIR)  \
+	$(MTA_DEST_DIR)/$(SASL_DIR)
+
+LOGGER_COMPONENTS := \
+	$(LOGGER_DEST_DIR)/$(MYSQL_DIR) 
+
+STORE_COMPONENTS := \
+	$(WEBAPPS) \
+	$(STORE_DEST_DIR)/$(TOMCAT_DIR) \
+	$(STORE_DEST_DIR)/$(TOMCAT_DIR)/common/lib/zimbra-native.jar \
+	$(STORE_DEST_DIR)/$(TOMCAT_DIR)/common/lib/mail.jar \
+	$(STORE_DEST_DIR)/$(TOMCAT_DIR)/common/endorsed/zimbra-charset.jar \
+	$(STORE_DEST_DIR)/$(TOMCAT_DIR)/common/lib/activation.jar \
+	$(STORE_DEST_DIR)/$(MYSQL_DIR) 
+
+LDAP_COMPONENTS := \
+	$(LDAP_DEST_DIR)/$(LDAP_DIR)  
+
+SNMP_COMPONENTS := \
+	$(SNMP_DEST_DIR)/$(SNMP_DIR) 

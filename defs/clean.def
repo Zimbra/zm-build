@@ -1,0 +1,26 @@
+CLEAN_TARGETS	=	\
+		$(MTA_DEST_ROOT) \
+		$(STORE_DEST_ROOT) \
+		$(LDAP_DEST_ROOT) \
+		$(SNMP_DEST_ROOT) \
+		$(CORE_DEST_ROOT) \
+		$(LOGGER_DEST_ROOT) \
+		zcs \
+		zcs-*.tgz \
+		zimbra.rpmrc \
+		zimbracore.spec \
+		zimbrasnmp.spec \
+		zimbralogger.spec \
+		zimbra.spec \
+		zimbramta.spec \
+		zimbraldap.spec \
+		i386
+
+# CLEAN
+
+clean:
+	rm -rf $(CLEAN_TARGETS)
+
+allclean: clean
+	(cd $(SERVICE_DIR); $(ANT) clean)
+	(cd $(CONSOLE_DIR); $(ANT) clean)

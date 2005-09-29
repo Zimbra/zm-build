@@ -1,0 +1,26 @@
+
+# DESTINATIONS
+
+MTA_DEST_ROOT		:= $(BUILD_ROOT)/mtabuild
+MTA_DEST_DIR		:= $(MTA_DEST_ROOT)/opt/zimbra
+
+LDAP_DEST_ROOT		:= $(BUILD_ROOT)/ldapbuild
+LDAP_DEST_DIR		:= $(LDAP_DEST_ROOT)/opt/zimbra
+
+CORE_DEST_ROOT		:= $(BUILD_ROOT)/corebuild
+CORE_DEST_DIR		:= $(CORE_DEST_ROOT)/opt/zimbra
+
+SNMP_DEST_ROOT		:= $(BUILD_ROOT)/snmpbuild
+SNMP_DEST_DIR		:= $(SNMP_DEST_ROOT)/opt/zimbra
+
+STORE_DEST_ROOT		:= $(BUILD_ROOT)/storebuild
+STORE_DEST_DIR		:= $(STORE_DEST_ROOT)/opt/zimbra
+
+LOGGER_DEST_ROOT		:= $(BUILD_ROOT)/loggerbuild
+LOGGER_DEST_DIR		:= $(LOGGER_DEST_ROOT)/opt/zimbra/logger
+
+WEBAPP_DIR		:= $(STORE_DEST_ROOT)/opt/zimbra/$(TOMCAT_DIR)/webapps
+WEBAPP_BUILD_DIR := build/dist/tomcat/webapps
+
+RPM_DIR			:= $(BUILD_ROOT)/i386
+ZIMBRA_BIN_DIR		:= $(BUILD_ROOT)/../ZimbraServer/src/bin

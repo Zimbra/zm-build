@@ -1,0 +1,54 @@
+
+BUILD_PLATFORM := $(shell sh $(BUILD_ROOT)/rpmconf/Build/get_plat_tag.sh)
+
+HOST    := $(shell hostname)
+DATE    := $(shell date +%Y%m%d%H%M%S)
+ifeq ($(RELEASE), )
+    RELEASE := $(DATE)_$(TAG)
+else
+	RELEASE := $(RELEASE)_$(TAG)
+	DATE   := $(RELEASE)
+endif
+
+MAJOR	:= $(shell cat RE/MAJOR)
+MINOR	:= $(shell cat RE/MINOR)
+MICRO	:= $(shell cat RE/MICRO)
+BUILDNUM	:= $(shell cat RE/BUILD)
+
+SOURCE_TAG := $(MAJOR).$(MINOR).$(MICRO)_$(BUILDNUM)
+VERSION_TAG := $(MAJOR).$(MINOR).$(MICRO)_$(BUILDNUM).$(BUILD_PLATFORM)
+
+ifeq ($(TAG), )
+	TAG := HEAD
+else
+	TAG	:= $(shell echo $$TAG)
+endif
+
+USER := $(shell id -un)
+
+# EXECUTABLES
+
+PERL 	:= $(shell which perl)
+
+ifeq ($(PERL), )
+	$(error perl not found - exiting)
+endif
+
+ANT		:= $(shell which ant)
+
+ifeq ($(ANT), )
+	$(error ant not found - exiting)
+endif
+
+RPM_CONF_DIR	:= $(BUILD_ROOT)/rpmconf
+
+PROFILE_SOURCE      := $(RPM_CONF_DIR)/Env/zimbra.bash_profile
+PROFILE_DEST        := .bash_profile
+ENV_FILE_SOURCE     := $(RPM_CONF_DIR)/Env/zimbra.bashrc
+ENV_FILE_DEST       := .bashrc
+EXRC_SOURCE         := $(RPM_CONF_DIR)/Env/zimbra.exrc
+EXRC_DEST           := .exrc
+
+JAVA_HOME       ?= /usr/local/java
+export JAVA_HOME
+

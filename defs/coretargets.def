@@ -1,0 +1,151 @@
+# __CORE
+
+core: $(RPM_DIR) core_stage $(BUILD_ROOT)/zimbracore.spec
+	(cd $(CORE_DEST_ROOT);\
+		rpmbuild  --target i386 --quiet --define '_rpmdir $(BUILD_ROOT)' \
+		--buildroot=$(CORE_DEST_ROOT) -bb $(BUILD_ROOT)/zimbracore.spec )
+
+$(BUILD_ROOT)/zimbracore.spec:
+	cp $(RPM_CONF_DIR)/Spec/Scripts/zimbracore.pre $(BUILD_ROOT)
+	cp $(RPM_CONF_DIR)/Spec/Scripts/zimbracore.post $(BUILD_ROOT)
+	cat $(RPM_CONF_DIR)/Spec/zimbracore.spec | \
+		sed -e 's/@@VERSION@@/$(VERSION_TAG)/' \
+		-e 's/@@RELEASE@@/$(RELEASE)/' \
+		-e '/^%pre$$/ r zimbracore.pre' \
+		-e '/^%post$$/ r zimbracore.post' > $(BUILD_ROOT)/zimbracore.spec
+	rm -f zimbracore.pre
+	rm -f zimbracore.post
+	(cd $(CORE_DEST_ROOT); find opt -type f -o -type l -maxdepth 2 \
+		| sed -e 's|^|%attr(-, zimbra, zimbra) /|' >> \
+		$(BUILD_ROOT)/zimbracore.spec )
+	echo "%attr(755, zimbra, zimbra) /opt/zimbra/bin" >> \
+		$(BUILD_ROOT)/zimbracore.spec
+	echo "%attr(444, zimbra, zimbra) /opt/zimbra/doc" >> \
+		$(BUILD_ROOT)/zimbracore.spec
+	echo "%attr(755, zimbra, zimbra) /opt/zimbra/libexec" >> \
+		$(BUILD_ROOT)/zimbracore.spec
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/conf" >> \
+		$(BUILD_ROOT)/zimbracore.spec
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/db" >> \
+		$(BUILD_ROOT)/zimbracore.spec
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/jdk1.5.0_04" >> \
+		$(BUILD_ROOT)/zimbracore.spec
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/lib" >> \
+		$(BUILD_ROOT)/zimbracore.spec
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/zimbramon" >> \
+		$(BUILD_ROOT)/zimbracore.spec
+
+core_stage: $(CORE_COMPONENTS)
+
+$(CORE_DEST_DIR):
+	mkdir -p $@
+	cp $(ENV_FILE_SOURCE) $(CORE_DEST_DIR)/$(ENV_FILE_DEST)
+	cp $(PROFILE_SOURCE) $(CORE_DEST_DIR)/$(PROFILE_DEST)
+	cp $(EXRC_SOURCE) $(CORE_DEST_DIR)/$(EXRC_DEST)
+
+$(CORE_DEST_DIR)/doc:
+	mkdir -p $@
+	cp $(LICENSE_DIR)/zimbra/zpl-full.txt $@/ZPL.txt
+	cp $(LICENSE_DIR)/zimbra/zapl-full.txt $@/zapl.txt
+
+$(CORE_DEST_DIR)/zimbramon: $(CORE_DEST_DIR)/zimbramon/lib $(CORE_DEST_DIR)/zimbramon/crontabs $(CORE_DEST_DIR) 
+	@echo "*** Creating zimbramon"
+	mkdir -p $@
+	cp -R $(ZIMBRA_BIN_DIR)/zmmon $@
+	chmod 755 $@/zmmon
+	cp -R $(ZIMBRA_BIN_DIR)/zmcontrol $@
+	chmod 755 $@/zmcontrol
+	cp -R $(RPM_CONF_DIR)/Ctl/zimbra.cf.in $@
+	cp -R $(RPM_CONF_DIR)/Ctl/zimbracore.cf $@
+	cp -R $(RPM_CONF_DIR)/Ctl/zimbramail.cf $@
+	cp -R $(RPM_CONF_DIR)/Ctl/zimbramta.cf $@
+	cp -R $(RPM_CONF_DIR)/Ctl/zimbraldap.cf $@
+	cp -R $(RPM_CONF_DIR)/Ctl/zimbralogger.cf $@
+	cp -R $(RPM_CONF_DIR)/Ctl/zimbrasnmp.cf $@
+	(cd $(CORE_DEST_DIR)/zimbramon; tar xzf $(MRTG_SOURCE).tgz)
+	mkdir -p $(CORE_DEST_DIR)/zimbramon/mrtg/work
+	mkdir -p $(CORE_DEST_DIR)/zimbramon/mrtg/conf
+	cp $(RPM_CONF_DIR)/Conf/mrtg.cfg $(CORE_DEST_DIR)/zimbramon/mrtg/conf
+	(cd $(CORE_DEST_DIR)/zimbramon; tar xzf $(RRD_SOURCE).tar.gz)
+	mkdir -p $(CORE_DEST_DIR)/zimbramon/rrdtool/work
+	mkdir -p $(CORE_DEST_DIR)/zimbramon/rrdtool/work
+	cp -f $(RPM_CONF_DIR)/Img/connection_failed.gif \
+		$(CORE_DEST_DIR)/zimbramon/rrdtool/work
+	cp -f $(RPM_CONF_DIR)/Img/data_not_available.gif \
+		$(CORE_DEST_DIR)/zimbramon/rrdtool/work
+
+$(CORE_DEST_DIR)/zimbramon/crontabs:
+	mkdir -p $@
+	cp $(RPM_CONF_DIR)/Env/crontabs/* $(CORE_DEST_DIR)/zimbramon/crontabs
+
+$(CORE_DEST_DIR)/zimbramon/lib:
+	mkdir -p $(CORE_DEST_DIR)/zimbramon/lib
+	(cd $(CORE_DEST_DIR)/zimbramon/lib; \
+	tar xzf $(PERL_LIB_SOURCE)/builds/perllib.tgz)
+	cp -R $(BUILD_ROOT)/lib/Zimbra $(CORE_DEST_DIR)/zimbramon/lib
+
+$(CORE_DEST_DIR)/lib: $(WEBAPP_DIR)/service.war $(LDAP_DEST_DIR)/$(LDAP_DIR) $(MTA_DEST_DIR)/$(BDB_DIR)
+	mkdir -p $@
+	cp -pr $(SERVICE_DIR)/build/dist/lib/* $@
+	cp -pr $(LDAP_DEST_DIR)/$(LDAP_DIR)/lib/* $@
+	cp -pr $(MTA_DEST_DIR)/$(BDB_DIR)/lib/* $@
+	cp -pr $(SERVICE_DIR)/build/dist/lib/* $@
+	(cd $@; tar xzf $(THIRD_PARTY)/mysql/$(BUILD_PLATFORM)/mysql-standard-4.1.10a-clientlibs.tgz)
+
+$(CORE_DEST_DIR)/jdk1.5.0_04:
+	@echo "*** Creating java"
+	(cd $(CORE_DEST_DIR); tar xzf $(JAVA_SOURCE).tgz;)
+
+$(CORE_DEST_DIR)/db: $(WEBAPP_DIR)/service.war
+	mkdir -p $@
+	cp -R $(SERVICE_DIR)/src/db/db.sql $@
+	cp -R $(SERVICE_DIR)/src/db/loggerdb.sql $@
+	cp -R $(SERVICE_DIR)/src/db/create_database.sql $@
+	cp -R $(SERVICE_DIR)/build/versions-init.sql $@
+
+$(CORE_DEST_DIR)/conf: $(WEBAPP_DIR)/service.war
+	mkdir -p $@
+	cp $(RPM_CONF_DIR)/Conf/swatchrc $@/swatchrc.in
+	cp $(RPM_CONF_DIR)/Conf/logswatchrc $@/logswatchrc
+	cp -R $(SERVICE_DIR)/conf/localconfig.xml $@/localconfig.xml
+	grep -vi stats $(SERVICE_DIR)/build/dist/conf/log4j.properties.production > $@/log4j.properties
+	cp $(RPM_CONF_DIR)/Conf/zmssl.cnf.in $@
+	cp $(SERVICE_DIR)/conf/amavisd.conf.in $@
+	cp $(SERVICE_DIR)/conf/clamd.conf.in $@
+	cp $(SERVICE_DIR)/conf/freshclam.conf.in $@
+	cp $(SERVICE_DIR)/conf/postfix_header_checks.in $@
+	cp $(SERVICE_DIR)/conf/salocal.cf $@
+	cp $(SERVICE_DIR)/conf/zmmta.cf $@
+	cp $(SERVICE_DIR)/conf/zimbra.ld.conf $@
+	cp $(SERVICE_DIR)/conf/my.logger.cnf $@
+	cp $(SERVICE_DIR)/conf/postfix_recipient_restrictions.cf $@
+	mkdir -p $@/spamassassin
+	cp $(SERVICE_DIR)/conf/spamassassin/* $@/spamassassin
+
+$(CORE_DEST_DIR)/libexec:
+	@echo "*** Installing libexec"
+	mkdir -p $@/util/modules
+	cp -f -R $(SERVICE_DIR)/build/dist/libexec/zm*init $@
+	cp -f $(RPM_CONF_DIR)/Install/Util/*sh $@/util
+	cp -f $(RPM_CONF_DIR)/Install/Util/modules/* $@/util/modules
+
+$(CORE_DEST_DIR)/bin:
+	mkdir -p $@
+	cp -R $(SERVICE_DIR)/build/dist/bin/[a-z]* $@
+	rm -f $@/zm*init
+	rm -f $(CORE_DEST_DIR)/bin/zmtransserver.bat
+	rm -f $(CORE_DEST_DIR)/bin/ldap
+	mv $(CORE_DEST_DIR)/bin/ldap.production $(CORE_DEST_DIR)/bin/ldap
+	cp $(ZIMBRA_BIN_DIR)/swatch $@
+	cp $(ZIMBRA_BIN_DIR)/swatch $@/logswatch
+	cp $(ZIMBRA_BIN_DIR)/zmswatchctl $@
+	cp $(ZIMBRA_BIN_DIR)/zmlogswatchctl $@
+	cp $(ZIMBRA_BIN_DIR)/zmlogrotate $@
+	cp $(ZIMBRA_BIN_DIR)/zmsnmpinit $@
+	cp $(ZIMBRA_BIN_DIR)/zmgengraphs $@
+	cp $(ZIMBRA_BIN_DIR)/zmcreatecert $@
+	cp $(ZIMBRA_BIN_DIR)/zmcertinstall $@
+	cp $(ZIMBRA_BIN_DIR)/zmroll_catalina.sh $@
+	cp $(ZIMBRA_BIN_DIR)/zmtlsctl $@
+	cp $(ZIMBRA_BIN_DIR)/zmfixperms.sh $@
+	cp $(ZIMBRA_BIN_DIR)/zmsyslogsetup $@

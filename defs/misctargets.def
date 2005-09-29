@@ -1,0 +1,16 @@
+
+# DIRS
+
+$(RPM_DIR):
+	mkdir -p $(RPM_DIR)
+
+perllibsbuild: 
+	make -C $(PERL_LIB_SOURCE)
+
+# MISC
+
+showtag:
+	echo $(RELEASE)
+	echo $(TAG)
+
+force: ;

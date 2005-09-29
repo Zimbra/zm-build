@@ -1,0 +1,81 @@
+
+# __MTA
+
+mta: $(RPM_DIR) mta_stage $(BUILD_ROOT)/zimbramta.spec
+	(cd $(MTA_DEST_ROOT); \
+		rpmbuild  --target i386 --quiet --define '_rpmdir $(BUILD_ROOT)' \
+		--buildroot=$(MTA_DEST_ROOT) -bb $(BUILD_ROOT)/zimbramta.spec )
+
+$(BUILD_ROOT)/zimbramta.spec:
+	cp $(RPM_CONF_DIR)/Spec/Scripts/zimbramta.pre $(BUILD_ROOT)
+	cp $(RPM_CONF_DIR)/Spec/Scripts/zimbramta.post $(BUILD_ROOT)
+	cat $(RPM_CONF_DIR)/Spec/zimbramta.spec | \
+		sed -e 's/@@VERSION@@/$(VERSION_TAG)/' \
+		-e 's/@@RELEASE@@/$(RELEASE)/' \
+		-e '/^%pre$$/ r zimbramta.pre' \
+		-e '/^%post$$/ r zimbramta.post' > $(BUILD_ROOT)/zimbramta.spec
+	rm -f zimbramta.pre
+	rm -f zimbramta.post
+	(cd $(MTA_DEST_ROOT); find opt -type f -o -type l -maxdepth 2 \
+		| sed -e 's|^|%attr(-, zimbra, zimbra) /|' >> \
+		$(BUILD_ROOT)/zimbramta.spec )
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/amavisd" >> \
+		$(BUILD_ROOT)/zimbramta.spec
+	echo "%attr(555, zimbra, zimbra) /opt/zimbra/clamav-0.85.1/bin" >> \
+		$(BUILD_ROOT)/zimbramta.spec
+	echo "%attr(755, zimbra, zimbra) /opt/zimbra/clamav-0.85.1/db" >> \
+		$(BUILD_ROOT)/zimbramta.spec
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/clamav-0.85.1/etc/" >> \
+		$(BUILD_ROOT)/zimbramta.spec
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/clamav-0.85.1/include" >> \
+		$(BUILD_ROOT)/zimbramta.spec
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/clamav-0.85.1/lib" >> \
+		$(BUILD_ROOT)/zimbramta.spec
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/clamav-0.85.1/man" >> \
+		$(BUILD_ROOT)/zimbramta.spec
+	echo "%attr(555, zimbra, zimbra) /opt/zimbra/clamav-0.85.1/sbin" >> \
+		$(BUILD_ROOT)/zimbramta.spec
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/clamav-0.85.1/share" >> \
+		$(BUILD_ROOT)/zimbramta.spec
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/postfix-2.2.3" >> \
+		$(BUILD_ROOT)/zimbramta.spec
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/sleepycat-4.2.52.2" >> \
+		$(BUILD_ROOT)/zimbramta.spec
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/cyrus-sasl-2.1.21.ZIMBRA" >> \
+		$(BUILD_ROOT)/zimbramta.spec
+
+mta_stage: $(MTA_COMPONENTS)
+
+$(MTA_DEST_DIR):
+	mkdir -p $@
+
+$(MTA_DEST_DIR)/$(POSTFIX_DIR): $(MTA_DEST_DIR)
+	@echo "*** Creating postfix"
+	(cd $(MTA_DEST_DIR); tar xzf $(POSTFIX_SOURCE).tgz;)
+	cp $(SERVICE_DIR)/conf/postfix/main.cf $(MTA_DEST_DIR)/$(POSTFIX_DIR)/conf/main.cf
+	cp $(SERVICE_DIR)/conf/postfix/master.cf $(MTA_DEST_DIR)/$(POSTFIX_DIR)/conf/master.cf
+
+$(MTA_DEST_DIR)/$(CLAMAV_DIR): $(MTA_DEST_DIR)
+	@echo "*** Creating clamav"
+	(cd $(MTA_DEST_DIR); tar xzf $(CLAMAV_SOURCE).tgz;)
+	mkdir -p $(MTA_DEST_DIR)/$(CLAMAV_DIR)-$(CLAMAV_VERSION)/db
+	cp $(RPM_CONF_DIR)/ClamAv/main.cvd $(MTA_DEST_DIR)/$(CLAMAV_DIR)-$(CLAMAV_VERSION)/db/main.cvd.init
+	cp $(RPM_CONF_DIR)/ClamAv/daily.cvd $(MTA_DEST_DIR)/$(CLAMAV_DIR)-$(CLAMAV_VERSION)/db/daily.cvd.init
+
+$(MTA_DEST_DIR)/$(AMAVISD_DIR): $(MTA_DEST_DIR)
+	@echo "*** Creating amavisd"
+	mkdir -p $@/sbin
+	cp -f $(AMAVISD_SOURCE)/amavisd $@/sbin
+	mkdir -p $@/.spamassassin/init
+	cp -f $(RPM_CONF_DIR)/SpamAssassin/bayes* $@/.spamassassin/init
+
+$(MTA_DEST_DIR)/$(SASL_DIR): $(MTA_DEST_DIR)
+	@echo "*** Creating cyrus-sasl"
+	(cd $(MTA_DEST_DIR); tar xzf $(SASL_SOURCE).tgz;)
+	mkdir -p $(MTA_DEST_DIR)/$(SASL_DIR)-$(SASL_VERSION)/etc
+	cp -f $(SERVICE_DIR)/conf/saslauthd.conf.in $(MTA_DEST_DIR)/$(SASL_DIR)-$(SASL_VERSION)/etc/
+	cp -f $(SERVICE_DIR)/conf/postfix_sasl_smtpd.conf $(MTA_DEST_DIR)/$(SASL_DIR)-$(SASL_VERSION)/lib/sasl2/smtpd.conf
+
+$(MTA_DEST_DIR)/$(BDB_DIR): $(MTA_DEST_DIR)
+	@echo "*** Creating sleepycat"
+	(cd $(MTA_DEST_DIR); tar xzf $(BDB_SOURCE).tgz; chmod u+w $(BDB_DIR)/bin/*)
