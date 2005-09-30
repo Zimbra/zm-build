@@ -408,6 +408,9 @@ setRemove() {
 
 setDefaultsFromExistingConfig() {
 
+	if [ ! -f "$SAVEDIR/config.save" ]; then
+		return
+	fi
 	echo ""
 	echo "Setting defaults from saved config in $SAVEDIR/config.save"
 	source $SAVEDIR/config.save
@@ -440,15 +443,17 @@ restoreExistingConfig() {
 	if [ -d $RESTORECONFIG ]; then
 		RF="$RESTORECONFIG/config.save"
 	fi
-	echo -n "Restoring existing configuration file from $RF..."
-	while read i; do
-		# echo "Setting $i"
-		runAsZimbra "zmlocalconfig -f -e $i"
-	done < $RF
-	if [ -f $SAVEDIR/backup.save ]; then
-		runAsZimbra "cat $RESTORECONFIG/backup.save | xargs zmschedulebackup -R"
+	if [ -f $RF ]; then
+		echo -n "Restoring existing configuration file from $RF..."
+		while read i; do
+			# echo "Setting $i"
+			runAsZimbra "zmlocalconfig -f -e $i"
+		done < $RF
+		if [ -f $SAVEDIR/backup.save ]; then
+			runAsZimbra "cat $RESTORECONFIG/backup.save | xargs zmschedulebackup -R"
+		fi
+		echo "done"
 	fi
-	echo "done"
 }
 
 restoreCerts() {
@@ -464,10 +469,16 @@ saveExistingConfig() {
 	echo "Saving existing configuration file to $SAVEDIR"
 	# yes, it needs massaging to be fed back in...
 	runAsZimbra "zmlocalconfig -s | sed -e \"s/ = \(.*\)/=\'\1\'/\" > $SAVEDIR/config.save"
-	cp /opt/zimbra/java/jre/lib/security/cacerts $SAVEDIR
-	cp /opt/zimbra/conf/keystore $SAVEDIR
-	cp /opt/zimbra/conf/smtpd.key $SAVEDIR
-	cp /opt/zimbra/conf/smtpd.crt $SAVEDIR
+	cp -f /opt/zimbra/java/jre/lib/security/cacerts $SAVEDIR
+	if [ -f "/opt/zimbra/conf/keystore" ]; then
+		cp -f /opt/zimbra/conf/keystore $SAVEDIR
+	fi
+	if [ -f "/opt/zimbra/conf/smtpd.key" ]; then
+		cp -f /opt/zimbra/conf/smtpd.key $SAVEDIR
+	fi
+	if [ -f "/opt/zimbra/conf/smtpd.crt" ]; then
+		cp -f /opt/zimbra/conf/smtpd.crt $SAVEDIR
+	fi
 	if [ -x /opt/zimbra/bin/zmschedulebackup ]; then
 		runAsZimbra "zmschedulebackup -s > $SAVEDIR/backup.save"
 	fi
@@ -698,7 +709,25 @@ getInstallPackages() {
 	done
 }
 
+setInstallPackages() {
+	for i in $OPTIONAL_PACKAGES; do
+		rpm -q $i >/dev/null 2>&1
+		if [ $? = 0 ]; then
+			INSTALL_PACKAGES="$INSTALL_PACKAGES $i"
+		fi
+	done
+	for i in $PACKAGES $CORE_PACKAGES; do
+		rpm -q $i >/dev/null 2>&1
+		if [ $? = 0 ]; then
+			INSTALL_PACKAGES="$INSTALL_PACKAGES $i"
+		fi
+	done
+}
+
 setHereFlags() {
+
+	setInstallPackages
+
 	LDAP_HERE="no"
 	POSTFIX_HERE="no"
 	STORE_HERE="no"

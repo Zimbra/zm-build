@@ -25,7 +25,6 @@
 # 
 
 MYDIR=`dirname $0`
-MYLDAPSEARCH="$MYDIR/bin/ldapsearch"
 
 . ./util/utilfunc.sh
 
@@ -34,6 +33,7 @@ for i in ./util/modules/*sh; do
 done
 
 UNINSTALL="no"
+SOFTWAREONLY="no"
 
 while [ $# -ne 0 ]; do
 	case $1 in
@@ -41,6 +41,8 @@ while [ $# -ne 0 ]; do
 			RESTORECONFIG=$1
 		;;
 		-u) UNINSTALL="yes"
+		;;
+		-s) SOFTWAREONLY="yes"
 		;;
 		*) DEFAULTFILE=$1
 		;;
@@ -113,73 +115,35 @@ for i in $INSTALL_PACKAGES; do
 	installPackage "$i"
 done
 
+if [ $SOFTWAREONLY = "yes" ]; then
+	
+	echo ""
+	echo "Software Installation complete!"
+	echo ""
+	echo "Operations logged to $LOGFILE"
+	echo ""
+	echo "Run /opt/zimbra/libexec/zmsetup.pl to configure the system"
+	echo ""
+
+	exit 0
+fi
+
 #
 # Installation complete, now configure
 #
 
-if [ $AUTOINSTALL = "no" ]; then
-	if [ $INSTALLED = "yes" ]; then
-		setDefaultsFromExistingConfig
-	fi
-
-	if [ $SNMPNOTIFY = "1" ]; then
-		SNMPNOTIFY="yes"
-	else
-		SNMPNOTIFY="no"
-	fi
-	if [ $SMTPNOTIFY = "1" ]; then
-		SMTPNOTIFY="yes"
-	else
-		SMTPNOTIFY="no"
-	fi
-
-	setHostName
-
+if [ x$RESTORECONFIG != "x" ]; then
+	SAVEDIR=$RESTORECONFIG
 fi
 
-setHereFlags
+if [ x$SAVEDIR != "x" -a x$REMOVE = "xno" ]; then
+    setDefaultsFromExistingConfig
+fi
 
-if [ $AUTOINSTALL = "no" ]; then
-	getConfigOptions
+restoreExistingConfig
 
-	echo ""
-	echo "System configuration section complete"
-	echo "Package installation ready"
-
-	askYN "Save installation configuration?" "Y"
-	if [ $response = "yes" ]; then
-		askNonBlank "Filename:" "/tmp/config.$$"
-		saveConfig $response
-	fi
-
-	if [ $AUTOINSTALL = "no" ]; then
-		askYN "Start servers after installation?" "Y"
-		STARTSERVERS=$response
-	fi
-
+if [ x$DEFAULTFILE != "x" ]; then
+	/opt/zimbra/libexec/zmsetup.pl -c $DEFAULTFILE
 else
-	verifyLdapServer
-
-	if [ $LDAPOK = "no" ]; then
-		echo "LDAP ERROR - auto install canceled"
-		exit 1
-	fi
+	/opt/zimbra/libexec/zmsetup.pl
 fi
-
-postInstallConfig
-
-if [ $STARTSERVERS = "yes" ]; then
-	startServers
-fi
-
-/opt/zimbra/bin/zmsyslogsetup
-
-cleanUp
-
-echo ""
-echo "Installation complete!"
-echo ""
-echo "Operations logged to $LOGFILE"
-echo ""
-
-exit 0

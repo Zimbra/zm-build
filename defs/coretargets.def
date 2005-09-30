@@ -126,8 +126,8 @@ $(CORE_DEST_DIR)/libexec:
 	@echo "*** Installing libexec"
 	mkdir -p $@/util/modules
 	cp -f -R $(SERVICE_DIR)/build/dist/libexec/zm*init $@
-	cp -f $(RPM_CONF_DIR)/Install/Util/*sh $@/util
-	cp -f $(RPM_CONF_DIR)/Install/Util/modules/* $@/util/modules
+	cp -f $(RPM_CONF_DIR)/Install/zmsetup.pl $@/zmsetup.pl
+	cp -f $(RPM_CONF_DIR)/Install/postinstall.pm $@/postinstall.pm
 
 $(CORE_DEST_DIR)/bin:
 	mkdir -p $@
