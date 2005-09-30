@@ -115,6 +115,10 @@ for i in $INSTALL_PACKAGES; do
 	installPackage "$i"
 done
 
+if [ "x$UPGRADE" = "xno" ]; then
+	touch /opt/zimbra/.newinstall
+fi
+
 if [ $SOFTWAREONLY = "yes" ]; then
 	
 	echo ""
@@ -141,10 +145,6 @@ if [ x$SAVEDIR != "x" -a x$REMOVE = "xno" ]; then
 fi
 
 restoreExistingConfig
-
-if [ "x$UPGRADE" = "xno" ]; then
-	touch /opt/zimbra/.newinstall
-fi
 
 if [ x$DEFAULTFILE != "x" ]; then
 	/opt/zimbra/libexec/zmsetup.pl -c $DEFAULTFILE
