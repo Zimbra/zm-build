@@ -142,6 +142,10 @@ fi
 
 restoreExistingConfig
 
+if [ "x$UPGRADE" = "xno" ]; then
+	touch /opt/zimbra/.newinstall
+fi
+
 if [ x$DEFAULTFILE != "x" ]; then
 	/opt/zimbra/libexec/zmsetup.pl -c $DEFAULTFILE
 else

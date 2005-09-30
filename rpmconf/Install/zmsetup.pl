@@ -203,7 +203,11 @@ sub setDefaults {
 	$config{CREATEADMINPASS} = "";
 	$config{LDAPPASS} = genRandomPass();
 
-	setDefaultsFromLocalConfig();
+	if ( -f "/opt/zimbra/.newinstall") {
+		unlink "/opt/zimbra/.newinstall";
+	} else {
+		setDefaultsFromLocalConfig();
+	}
 	print "Done\n";
 }
 
