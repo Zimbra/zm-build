@@ -305,6 +305,89 @@ sub setCreateAdmin {
 
 }
 
+sub initLdap {
+	print "Warning - re-initializing the ldap database will delete\n";
+	print "ALL USER ACCOUNTS, all server data, and all other system\n";
+	print "configuration\n\n";
+
+	if (askYN("Proceed with ldap initialization?","No") eq "no") { return (1); }
+
+	if (isEnabled("zimbra-store") && $sqlConfigured) {
+		print "Warning - the MySql database on this host is configured\n";
+		print "This must be re-initialized PRIOR to ldap re-initialization\n";
+		if (askYN("Delete MySql data now?","No") eq "no") { return (1); }
+		if (deleteSql()) { 
+			print "MySql removal failed!\n";
+			ask("Press any key to continue", "");
+			return (1); 
+		}
+	}
+	print "Stopping ldap...\n";
+	runAsZimbra ("/opt/zimbra/bin/ldap stop");
+	print "Done\n";
+	system ("/bin/rm -rf /opt/zimbra/openldap-data/*");
+	print "Initializing ldap...\n";
+	runAsZimbra ("/opt/zimbra/libexec/zmldapinit $config{LDAPPASS}");
+	print "Done\n";
+}
+
+sub getVolumes {
+	print "Getting volume list\n";
+	if (open V, 
+		"/opt/zimbra/bin/mysql -Bs zimbra -e 'select distinct(path) from volume' |") {
+		my @volumes = <V>;
+		close V;
+		chomp @volumes;
+		return \@volumes;
+	}
+	return undef;
+}
+
+sub deleteSql {
+
+	print "Warning - MySql initialization on this host will delete\n";
+	print "ALL MAIL ON THIS HOST.\n\n";
+	if (askYN("Proceed with MySql initialization?","No") eq "no") { return (1); }
+
+	if (!$sqlRunning) {
+		print "Starting mysql...\n";
+		runAsZimbra ("/opt/zimbra/bin/mysql.server start");
+		print "Done\n";
+	}
+	my $v = getVolumes();
+	if (!defined($v)) { print "Could not get volume list!\n"; return (1);}
+	foreach (@$v) {
+		print "Deleting volume $_...";
+		system ("/bin/rm -rf $_");
+		print "Done\n";
+	}
+	print "Stopping mysql...\n";
+	runAsZimbra ("/opt/zimbra/bin/mysql.server stop");
+	print "Done\n";
+
+	print "Removing mysql database...\n";
+	system ("/bin/rm -rf /opt/zimbra/db");
+	print "Done\n";
+
+	$sqlConfigured = 0;
+	return 0;
+
+}
+
+sub createSql {
+}
+
+sub initSql {
+	deleteSql();
+	createSql();
+}
+
+sub initLoggerSql {
+	print "Warning - Logger MySql initialization on this host will delete\n";
+	print "all processed logs on this host.\n\n";
+	if (askYN("Proceed with Logger MySql initialization?","No") eq "no") { return (1); }
+}
+
 sub setLdapPass {
 	while (1) {
 		my $new =
@@ -754,7 +837,8 @@ sub displaySubMenuItems {
 	}
 #	print "$indent$$items{title}\n";
 	foreach my $i (sort keys %{$$items{menuitems}}) {
-		if ($$items{menuitems}{$i}{var} == $parentmenuvar) {next;}
+		if (defined($$items{menuitems}{$i}{var}) &&
+			$$items{menuitems}{$i}{var} == $parentmenuvar) {next;}
 		my $len = 44-(length($indent));
 		my $v;
 		my $ind = $indent;
@@ -850,7 +934,7 @@ sub displayMenu {
 sub createControlMenu {
 	my %cm = ();
 	$cm{createsub} = \&createControlMenu;
-	$cm{title} = "Control menu";
+	$cm{title} = "Database Control menu";
 	$cm{default} = "r";
 	$cm{lastitem} = {
 		"selector" => "r",
@@ -874,6 +958,13 @@ sub createControlMenu {
 			"var" => \$config{LDAPRUNNING}, 
 			};
 		$i++;
+		if ($ldapConfigured) {
+			$cm{menuitems}{$i} = { 
+				"prompt" => "Re-initialize ldap...",
+				"callback" => \&initLdap
+				};
+			$i++;
+		}
 	}
 
 	if (isEnabled("zimbra-store")) {
@@ -889,6 +980,13 @@ sub createControlMenu {
 			"var" => \$config{SQLRUNNING}, 
 			};
 		$i++;
+		if ($sqlConfigured) {
+			$cm{menuitems}{$i} = { 
+				"prompt" => "Re-initialize sql database...",
+				"callback" => \&initSql
+				};
+			$i++;
+		}
 	}
 
 	if (isEnabled("zimbra-logger")) {
@@ -904,6 +1002,13 @@ sub createControlMenu {
 			"var" => \$config{LOGGERSQLRUNNING}, 
 			};
 		$i++;
+		if ($loggerSqlConfigured) {
+			$cm{menuitems}{$i} = { 
+				"prompt" => "Re-initialize logger sql database...",
+				"callback" => \&initLoggerSql
+				};
+			$i++;
+		}
 	}
 
 	return \%cm;
@@ -982,8 +1087,8 @@ sub createMainMenu {
 	}
 	my %cm = ();
 	$cm{createsub} = \&createControlMenu;
-	$mm{menuitems}{o} = { 
-		"prompt" => "Other controls", 
+	$mm{menuitems}{d} = { 
+		"prompt" => "Database controls", 
 		"submenu" => \%cm,
 	};
 	$mm{menuitems}{r} = { 
@@ -1129,6 +1234,7 @@ sub applyConfig {
 			print "Creating domain $config{CREATEDOMAIN}...\n";
 			print LOGFILE "Creating domain $config{CREATEDOMAIN}...\n";
 			runAsZimbra("/opt/zimbra/bin/zmprov cd $config{CREATEDOMAIN}");
+			runAsZimbra("/opt/zimbra/bin/zmprov mcf zimbraDefaultDomainName $config{CREATEDOMAIN}");
 			print "Done\n";
 			print LOGFILE "Done\n";
 			if ($config{DOCREATEADMIN} eq "yes") {
