@@ -169,7 +169,7 @@ sub getSystemStatus {
 
 sub setDefaults {
 	print "Setting defaults...";
-	$config{EXPANDMENU} = "yes";
+	$config{EXPANDMENU} = "no";
 	$config{REMOVE} = "no";
 	$config{UPGRADE} = "yes";
 	$config{LDAPPORT} = 389;
@@ -188,6 +188,7 @@ sub setDefaults {
 	if (isEnabled("zimbra-ldap")) {
 		$config{DOCREATEDOMAIN} = "yes";
 		$config{DOCREATEADMIN} = "yes";
+		$config{LDAPPASS} = genRandomPass();
 	}
 	$config{CREATEADMIN} = "admin\@$config{CREATEDOMAIN}";
 
@@ -201,7 +202,6 @@ sub setDefaults {
 	$config{MODE} = "http";
 
 	$config{CREATEADMINPASS} = "";
-	$config{LDAPPASS} = genRandomPass();
 
 	if ( -f "/opt/zimbra/.newinstall") {
 		unlink "/opt/zimbra/.newinstall";
@@ -246,6 +246,17 @@ sub askYN {
 		if ($v eq "y") {return "yes";}
 		if ($v eq "n") {return "no";}
 		print "A Yes/No answer is required\n";
+	}
+}
+
+sub askNum {
+	my $prompt = shift;
+	my $default = shift;
+	while (1) {
+		my $v = ask($prompt, $default);
+		my $i = int($v);
+		if ($v eq $i) { return $v; }
+		print "A numeric response is required!\n";
 	}
 }
 
@@ -492,6 +503,14 @@ sub setHostName {
 		my ($u,$d) = split ('@', $config{CREATEADMIN});
 		$config{CREATEADMIN} = $u.'@'.$config{CREATEDOMAIN};
 	}
+	my ($suser,$sdomain) = split ('@', $config{SMTPSOURCE}, 2);
+	if ($sdomain eq $old) {
+		$config{SMTPSOURCE} = $suser.'@'.$config{CREATEDOMAIN};
+	}
+	($suser,$sdomain) = split ('@', $config{SMTPDEST}, 2);
+	if ($sdomain eq $old) {
+		$config{SMTPDEST} = $suser.'@'.$config{CREATEDOMAIN};
+	}
 }
 
 sub setSmtpHost {
@@ -560,9 +579,9 @@ sub genPackageMenu {
 		"var" => \$enabledPackages{$package},
 		"callback" => \&toggleEnabled,
 		"arg" => $package};
-	$lm{lastitem} = { 
+	$lm{promptitem} = { 
 		"selector" => "r", 
-		"prompt" => "Return", 
+		"prompt" => "Select, or 'r' for previous menu ", 
 		"action" => "return"};
 	$lm{default} = "r";
 	return \%lm;
@@ -869,13 +888,11 @@ sub displayMenu {
 				$v = ${$$items{menuitems}{$i}{var}};
 				if ($v eq "" || $v eq "none" || $v eq "UNSET") { $v = "UNSET"; $ind="**"; }
 			}
+			my $subMenuCheck = 1;
 			if (defined ($$items{menuitems}{$i}{submenu}) || 
 				defined ($$items{menuitems}{$i}{callback}) ) {
 				if (defined ($$items{menuitems}{$i}{submenu})) {
-					if (!checkMenuConfig($$items{menuitems}{$i}{submenu}) &&
-						$config{EXPANDMENU} eq "no") {
-						$ind="**";
-					}
+					$subMenuCheck = checkMenuConfig($$items{menuitems}{$i}{submenu});
 				}
 				printf ("${ind}%2s) %-40s %-30s\n", $i, 
 					$$items{menuitems}{$i}{prompt}, $v);
@@ -884,7 +901,7 @@ sub displayMenu {
 				printf ("${ind}    %-40s %-30s\n", 
 					$$items{menuitems}{$i}{prompt}, $v);
 			}
-			if ($config{EXPANDMENU} eq "yes") {
+			if ($config{EXPANDMENU} eq "yes" || !$subMenuCheck) {
 				if (defined ($$items{menuitems}{$i}{submenu}) ) {
 					displaySubMenuItems($$items{menuitems}{$i}{submenu},
 						$$items{menuitems}{$i}{var},"       ");
@@ -892,11 +909,20 @@ sub displayMenu {
 				}
 			}
 		}
-		printf ("  %2s) %-40s\n", $$items{lastitem}{selector}, $$items{lastitem}{prompt});
-		print "\nSelect: ";
-		if (defined($$items{help})) {
-			print "(? - help) ";
+		if (defined($$items{lastitem})) {
+			printf ("  %2s) %-40s\n", $$items{lastitem}{selector}, 
+				$$items{lastitem}{prompt});
 		}
+		my $menuprompt = "\n";
+		if (defined($$items{promptitem})) {
+			$menuprompt .= $$items{promptitem}{prompt};
+		} else {
+			$menuprompt .= "Select ";
+		}
+		if (defined($$items{help})) {
+			$menuprompt .= " (? - help) ";
+		}
+		print "$menuprompt";
 		if (defined $$items{default}) {
 			print "[$$items{default}] ";
 		}
@@ -917,6 +943,18 @@ sub displayMenu {
 			print "\n";
 			ask("Press any key to continue", "");
 			print "\n\n";
+		} elsif (defined $$items{promptitem} && $r eq $$items{promptitem}{selector}) {
+			if (defined $$items{promptitem}{callback}) {
+				&{$$items{promptitem}{callback}}($$items{promptitem}{arg});
+			} elsif (defined $$items{promptitem}{action}) {
+				if ($$items{promptitem}{action} eq "quit") {
+					if (verifyQuit()) {
+						exit 0;
+					}
+				} elsif ($$items{promptitem}{action} eq "return") {
+					return;
+				}
+			}
 		} elsif (defined $$items{menuitems}{$r}) {
 			print "\n";
 			if (defined $$items{menuitems}{$r}{callback}) {
@@ -1116,10 +1154,19 @@ sub createMainMenu {
 		"callback" => \&saveConfig,
 		};
 	if (checkMenuConfig(\%mm)) {
-		$mm{menuitems}{a} = { 
-			"prompt" => "Apply config", 
+		$mm{promptitem} = { 
+			"selector" => "a",
+			"prompt" => "Select, or press A to apply config", 
 			"callback" => \&applyConfig,
 			};
+	} else {
+		$mm{promptitem} = { 
+			"prompt" => "Address unconfigured (**) items ", 
+			"callback" => \&applyConfig,
+			};
+		if (verifyLdap()) {
+			$mm{promptitem}{prompt} .= "or correct ldap configuration ";
+		}
 	}
 	return \%mm;
 }
@@ -1157,16 +1204,16 @@ sub checkMenuConfig {
 }
 
 sub verifyLdap {
-	if ($config{LDAPHOST} eq $config{HOSTNAME} && !$ldapConfigured) {
+	if (($config{LDAPHOST} eq $config{HOSTNAME}) && !$ldapConfigured) {
 		return 0;
 	}
 	print "Checking ldap on $config{LDAPHOST}:$config{LDAPPORT}...";
 
-	my $ldapsearch = "$zimbraHome/openldap/bin/ldapsearch";
+	my $ldapsearch = "$zimbraHome/bin/ldapsearch";
 	my $args = "-x -h $config{LDAPHOST} -p $config{LDAPPORT} ".
 		"-D 'uid=zimbra,cn=admins,cn=zimbra' -w $config{LDAPPASS}";
 
-	my $rc = 0xffff & system ("$ldapsearch $args > /dev/null 2>&1");
+	my $rc = 0xffff & system ("$ldapsearch $args > /tmp/zmsetup.ldap.out 2>&1");
 
 	if ($rc) { print "FAILED\n"; } 
 	else {print "Success\n";}
@@ -1213,20 +1260,13 @@ sub applyConfig {
 
 	setLocalConfig ("zimbra_server_hostname", $config{HOSTNAME});
 
+	setLocalConfig ("ldap_host", $config{LDAPHOST});
+	setLocalConfig ("ldap_port", $config{LDAPPORT});
+
 	if (!$ldapConfigured && isEnabled("zimbra-ldap")) {
 		print "Initializing ldap...\n";
 		print LOGFILE "Initializing ldap...\n";
-		setLocalConfig ("ldap_server", $config{LDAPHOST});
-		setLocalConfig ("ldap_port", $config{LDAPPORT});
 		runAsZimbra ("/opt/zimbra/libexec/zmldapinit $config{LDAPPASS}");
-		print "Done\n";
-		print LOGFILE "Done\n";
-
-		print "Creating server entry for $config{HOSTNAME}...";
-		print LOGFILE "Creating server entry for $config{HOSTNAME}...";
-		runAsZimbra("/opt/zimbra/bin/zmprov cs $config{HOSTNAME}");
-		runAsZimbra("/opt/zimbra/bin/zmprov ms $config{HOSTNAME} ".
-			"zimbraSmtpHostname $config{SMTPHOST}");
 		print "Done\n";
 		print LOGFILE "Done\n";
 
@@ -1272,9 +1312,18 @@ sub applyConfig {
 			print "Done\n";
 			print LOGFILE "Done\n";
 		}
+	} else {
+		setLocalConfig ("ldap_root_password", $config{LDAPPASS});
+		setLocalConfig ("zimbra_ldap_password", $config{LDAPPASS});
 	}
 
-	if (isEnabled("zimbra-ldap")) {
+	print "Creating server entry for $config{HOSTNAME}...";
+	print LOGFILE "Creating server entry for $config{HOSTNAME}...";
+	runAsZimbra("/opt/zimbra/bin/zmprov cs $config{HOSTNAME}");
+	print "Done\n";
+	print LOGFILE "Done\n";
+
+	if (isEnabled("zimbra-store")) {
 		addServerToHostPool();
 	}
 
@@ -1282,6 +1331,12 @@ sub applyConfig {
 		print "Initializing store sql database...\n";
 		print LOGFILE "Initializing store sql database...\n";
 		runAsZimbra ("/opt/zimbra/libexec/zmmyinit");
+		print "Done\n";
+		print LOGFILE "Done\n";
+		print "Setting zimbraSmtpHostname for $config{HOSTNAME}\n";
+		print LOGFILE "Setting zimbraSmtpHostname for $config{HOSTNAME}\n";
+		runAsZimbra("/opt/zimbra/bin/zmprov ms $config{HOSTNAME} ".
+			"zimbraSmtpHostname $config{SMTPHOST}");
 		print "Done\n";
 		print LOGFILE "Done\n";
 	}
@@ -1429,10 +1484,10 @@ sub setupCrontab {
 sub addServerToHostPool {
 	print "Adding $config{HOSTNAME} to zimbraMailHostPool in default COS\n";
 	print LOGFILE "Adding $config{HOSTNAME} to zimbraMailHostPool in default COS\n";
-	my $id = `/opt/zimbra/bin/zmprov gs $config{HOSTNAME} | grep zimbraId | sed -e 's/zimbraId: //' >> $logfile 2>&1`;
+	my $id = `/opt/zimbra/bin/zmprov gs $config{HOSTNAME} | grep zimbraId | sed -e 's/zimbraId: //'`;
 	chomp $id;
 
-	my $hp = `/opt/zimbra/bin/zmprov gc default | grep zimbraMailHostPool | sed 's/zimbraMailHostPool: //' >> $logfile 2>&1`;
+	my $hp = `/opt/zimbra/bin/zmprov gc default | grep zimbraMailHostPool | sed 's/zimbraMailHostPool: //'`;
 	chomp $hp;
 
 	my @HP = split (' ', $hp);
@@ -1445,7 +1500,7 @@ sub addServerToHostPool {
 		$n .= "zimbraMailHostPool $_ ";
 	}
 
-	$n .= "zimbraMailHostPool $config{HOSTNAME}";
+	$n .= "zimbraMailHostPool $id";
 
 	`/opt/zimbra/bin/zmprov mc default $n >> $logfile 2>&1`;
 	print "Done\n";
@@ -1459,9 +1514,9 @@ sub mainMenu {
 	displayMenu(\%mm);
 }
 
-setDefaults();
-
 getInstalledPackages();
+
+setDefaults();
 
 setEnabledDependencies();
 

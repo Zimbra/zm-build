@@ -4,9 +4,9 @@ BUILD_PLATFORM := $(shell sh $(BUILD_ROOT)/rpmconf/Build/get_plat_tag.sh)
 HOST    := $(shell hostname)
 DATE    := $(shell date +%Y%m%d%H%M%S)
 ifeq ($(RELEASE), )
-    RELEASE := $(DATE)_$(TAG)
+    RELEASE := $(DATE)$(TAG)
 else
-	RELEASE := $(RELEASE)_$(TAG)
+	RELEASE := $(RELEASE)$(TAG)
 	DATE   := $(RELEASE)
 endif
 

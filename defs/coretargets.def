@@ -149,3 +149,4 @@ $(CORE_DEST_DIR)/bin:
 	cp $(ZIMBRA_BIN_DIR)/zmtlsctl $@
 	cp $(ZIMBRA_BIN_DIR)/zmfixperms.sh $@
 	cp $(ZIMBRA_BIN_DIR)/zmsyslogsetup $@
+	$(LDAP_DEST_ROOT)/opt/zimbra/$(LDAP_DIR)/bin/ldapsearch $@

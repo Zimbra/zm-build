@@ -146,6 +146,8 @@ fi
 
 restoreExistingConfig
 
+restoreCerts
+
 if [ x$DEFAULTFILE != "x" ]; then
 	/opt/zimbra/libexec/zmsetup.pl -c $DEFAULTFILE
 else

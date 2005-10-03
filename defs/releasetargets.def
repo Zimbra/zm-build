@@ -12,7 +12,6 @@ zcs-$(RELEASE).tgz: rpms
 	cp -f $(CONSOLE_DIR)/WebRoot/adminhelp/txt/readme_source.txt zcs
 	cp -f $(CONSOLE_DIR)/WebRoot/adminhelp/txt/readme_binary.txt zcs
 	cp -f $(SERVICE_DIR)/build/versions-init.sql zcs/data
-	cp $(LDAP_DEST_ROOT)/opt/zimbra/$(LDAP_DIR)/bin/ldapsearch zcs/bin
 	cp $(RPM_CONF_DIR)/Install/install.sh zcs
 	cp -f $(RPM_CONF_DIR)/Install/Util/*sh zcs/util
 	cp -f $(RPM_CONF_DIR)/Install/Util/modules/* zcs/util/modules
