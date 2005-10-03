@@ -38,9 +38,8 @@ PREREQ_PACKAGES="libidn curl fetchmail gmp"
 
 OPTIONAL_PACKAGES="zimbra-qatest"
 
-LEGACY_PACKAGES="liquid-snmp liquid-ldap liquid-mta liquid-store liquid-core"
-
 PACKAGE_DIR=`dirname $0`/packages
+
 
 LOGFILE="/tmp/install.log.$$"
 SAVEDIR="/tmp/saveconfig.$$"

@@ -491,22 +491,6 @@ removeExistingInstall() {
 		shutDownSystem
 
 		echo ""
-		echo "Removing legacy packages"
-		echo ""
-
-		if [ -f /opt/liquid/liquidmon/lqcontrol ]; then
-			su - liquid -c "lqcontrol shutdown"
-		fi
-		for i in $LEGACY_PACKAGES; do
-				rpm -q $i >/dev/null 2>&1
-				if [ $? = 0 ]; then
-					echo -n "   $i..."
-					rpm -ev --noscripts --allmatches $i
-					echo "done"
-				fi
-		done		    
-
-		echo ""
 		echo "Removing existing packages"
 		echo ""
 
