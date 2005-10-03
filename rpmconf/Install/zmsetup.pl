@@ -369,18 +369,16 @@ sub deleteSql {
 	}
 	my $v = getVolumes();
 	if (!defined($v)) { print "Could not get volume list!\n"; return (1);}
+
+	print "Stopping mysql...\n";
+	runAsZimbra ("/opt/zimbra/bin/mysql.server stop");
+	print "Done\n";
+
 	foreach (@$v) {
 		print "Deleting volume $_...";
 		system ("/bin/rm -rf $_");
 		print "Done\n";
 	}
-	print "Stopping mysql...\n";
-	runAsZimbra ("/opt/zimbra/bin/mysql.server stop");
-	print "Done\n";
-
-	print "Removing mysql database...\n";
-	system ("/bin/rm -rf /opt/zimbra/db");
-	print "Done\n";
 
 	$sqlConfigured = 0;
 	return 0;
@@ -388,6 +386,12 @@ sub deleteSql {
 }
 
 sub createSql {
+
+	print "Initializing store sql database...\n";
+	runAsZimbra ("/opt/zimbra/libexec/zmmyinit $config{SQLROOTPASS}");
+	print "Done\n";
+	$sqlConfigured = 1;
+	return 0;
 }
 
 sub initSql {
@@ -399,6 +403,19 @@ sub initLoggerSql {
 	print "Warning - Logger MySql initialization on this host will delete\n";
 	print "all processed logs on this host.\n\n";
 	if (askYN("Proceed with Logger MySql initialization?","No") eq "no") { return (1); }
+
+	if ($loggerSqlRunning) {
+		print "Stopping mysql...\n";
+		runAsZimbra ("/opt/zimbra/bin/logmysql.server stop");
+		print "Done\n";
+	}
+
+	print "Removing logger mysql database...\n";
+	system ("/bin/rm -rf $zimbraHome/logger/db/data");
+	print "Done\n";
+
+	runAsZimbra ("/opt/zimbra/libexec/zmloggerinit");
+	return 0;
 }
 
 sub setLdapPass {
@@ -1020,13 +1037,11 @@ sub createControlMenu {
 			"var" => \$config{SQLRUNNING}, 
 			};
 		$i++;
-		if ($sqlConfigured) {
-			$cm{menuitems}{$i} = { 
-				"prompt" => "Re-initialize sql database...",
-				"callback" => \&initSql
-				};
-			$i++;
-		}
+		$cm{menuitems}{$i} = { 
+			"prompt" => "Re-initialize sql database...",
+			"callback" => \&initSql
+			};
+		$i++;
 	}
 
 	if (isEnabled("zimbra-logger")) {

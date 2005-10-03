@@ -16,6 +16,7 @@ requires: libidn
 requires: curl
 requires: fetchmail
 requires: openssl
+requires: gmp
 
 %description
 Best email money can buy

@@ -34,7 +34,7 @@ zimbra-store"
 
 SERVICES=""
 
-PREREQ_PACKAGES="libidn curl fetchmail"
+PREREQ_PACKAGES="libidn curl fetchmail gmp"
 
 OPTIONAL_PACKAGES="zimbra-qatest"
 
