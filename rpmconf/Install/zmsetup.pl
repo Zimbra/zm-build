@@ -1317,6 +1317,8 @@ sub applyConfig {
 		if ($ldapPassChanged) {
 			print "Setting ldap password...\n";
 			print LOGFILE "Setting ldap password...\n";
+			runAsZimbra 
+				("/opt/zimbra/openldap/sbin/slapindex -f /opt/zimbra/conf/slapd.conf");
 			runAsZimbra ("/opt/zimbra/bin/zmldappasswd --root $config{LDAPPASS}");
 			runAsZimbra ("/opt/zimbra/bin/zmldappasswd $config{LDAPPASS}");
 			print "Done\n";
@@ -1324,6 +1326,8 @@ sub applyConfig {
 		} else {
 			print "Starting ldap...\n";
 			print LOGFILE "Starting ldap...\n";
+			runAsZimbra 
+				("/opt/zimbra/openldap/sbin/slapindex -f /opt/zimbra/conf/slapd.conf");
 			runAsZimbra ("ldap start");
 			runAsZimbra ("zmldapapplyldif");
 			print "Done\n";
