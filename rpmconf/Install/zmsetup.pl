@@ -1015,13 +1015,11 @@ sub createControlMenu {
 			"var" => \$config{LDAPRUNNING}, 
 			};
 		$i++;
-		if ($ldapConfigured) {
-			$cm{menuitems}{$i} = { 
-				"prompt" => "Re-initialize ldap...",
-				"callback" => \&initLdap
-				};
-			$i++;
-		}
+		$cm{menuitems}{$i} = { 
+			"prompt" => "Re-initialize ldap...",
+			"callback" => \&initLdap
+			};
+		$i++;
 	}
 
 	if (isEnabled("zimbra-store")) {
@@ -1037,11 +1035,13 @@ sub createControlMenu {
 			"var" => \$config{SQLRUNNING}, 
 			};
 		$i++;
-		$cm{menuitems}{$i} = { 
-			"prompt" => "Re-initialize sql database...",
-			"callback" => \&initSql
-			};
-		$i++;
+		if ($ldapRunning) {
+			$cm{menuitems}{$i} = { 
+				"prompt" => "Re-initialize sql database...",
+				"callback" => \&initSql
+				};
+			$i++;
+		}
 	}
 
 	if (isEnabled("zimbra-logger")) {
@@ -1057,7 +1057,7 @@ sub createControlMenu {
 			"var" => \$config{LOGGERSQLRUNNING}, 
 			};
 		$i++;
-		if ($loggerSqlConfigured) {
+		if ($ldapRunning) {
 			$cm{menuitems}{$i} = { 
 				"prompt" => "Re-initialize logger sql database...",
 				"callback" => \&initLoggerSql
