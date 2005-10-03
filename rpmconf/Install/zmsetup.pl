@@ -206,6 +206,8 @@ sub setDefaults {
 	if ( -f "/opt/zimbra/.newinstall") {
 		unlink "/opt/zimbra/.newinstall";
 	} else {
+		$config{DOCREATEDOMAIN} = "no";
+		$config{DOCREATEADMIN} = "no";
 		setDefaultsFromLocalConfig();
 	}
 	print "Done\n";
