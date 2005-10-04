@@ -1,0 +1,43 @@
+
+# __SPELL
+
+spell: $(RPM_DIR) spell_stage $(BUILD_ROOT)/zimbraspell.spec
+	(cd $(SPELL_DEST_ROOT); \
+		rpmbuild  --target i386 --quiet --define '_rpmdir $(BUILD_ROOT)' \
+		--buildroot=$(SPELL_DEST_ROOT) -bb $(BUILD_ROOT)/zimbraspell.spec )
+
+$(BUILD_ROOT)/zimbraspell.spec:
+	cp $(RPM_CONF_DIR)/Spec/Scripts/zimbraspell.pre $(BUILD_ROOT)
+	cp $(RPM_CONF_DIR)/Spec/Scripts/zimbraspell.post $(BUILD_ROOT)
+	cat $(RPM_CONF_DIR)/Spec/zimbraspell.spec | \
+		sed -e 's/@@VERSION@@/$(VERSION_TAG)/' \
+		-e 's/@@RELEASE@@/$(RELEASE)/' \
+		-e '/^%pre$$/ r zimbraspell.pre' \
+		-e '/^%post$$/ r zimbraspell.post' > $(BUILD_ROOT)/zimbraspell.spec
+	rm -f zimbraspell.pre
+	rm -f zimbraspell.post
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/$(APACHE_DIR)/htdocs" >> \
+		$(BUILD_ROOT)/zimbraspell.spec
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/$(SPELL_DIR)" >> \
+		$(BUILD_ROOT)/zimbraspell.spec
+
+spell_stage: $(SPELL_COMPONENTS)
+
+$(SPELL_DEST_DIR):
+	mkdir -p $@
+
+$(SPELL_DEST_DIR)/$(SPELL_DIR): $(SPELL_DEST_DIR)
+	@echo "*** Creating SPELL"
+	(cd $(SPELL_DEST_DIR); tar xzf $(SPELL_SOURCE).tgz;)
+
+$(SPELL_DEST_DIR)/$(APACHE_DIR)/htdocs/aspell.php: $(SPELL_DEST_DIR)/$(APACHE_DIR)/htdocs
+	cp $(SERVICE_DIR)/src/php/aspell.php $@
+	
+$(SPELL_DEST_DIR)/$(APACHE_DIR)/htdocs:
+	mkdir -p $@
+
+$(SPELL_DEST_DIR)/$(APACHE_DIR)/htdocs/Zimbra:
+	cp -R $(SERVICE_DIR)/src/php/Zimbra $@
+
+$(SPELL_DEST_DIR)/$(PHP_DIR): $(SPELL_DEST_DIR)
+	(cd $(SPELL_DEST_DIR); tar xzf $(PHP_SOURCE).tgz)
