@@ -51,17 +51,6 @@ $(CORE_DEST_DIR)/doc:
 $(CORE_DEST_DIR)/zimbramon: $(CORE_DEST_DIR)/zimbramon/lib $(CORE_DEST_DIR)/zimbramon/crontabs $(CORE_DEST_DIR) 
 	@echo "*** Creating zimbramon"
 	mkdir -p $@
-	cp -R $(ZIMBRA_BIN_DIR)/zmmon $@
-	chmod 755 $@/zmmon
-	cp -R $(ZIMBRA_BIN_DIR)/zmcontrol $@
-	chmod 755 $@/zmcontrol
-	cp -R $(RPM_CONF_DIR)/Ctl/zimbra.cf.in $@
-	cp -R $(RPM_CONF_DIR)/Ctl/zimbracore.cf $@
-	cp -R $(RPM_CONF_DIR)/Ctl/zimbramail.cf $@
-	cp -R $(RPM_CONF_DIR)/Ctl/zimbramta.cf $@
-	cp -R $(RPM_CONF_DIR)/Ctl/zimbraldap.cf $@
-	cp -R $(RPM_CONF_DIR)/Ctl/zimbralogger.cf $@
-	cp -R $(RPM_CONF_DIR)/Ctl/zimbrasnmp.cf $@
 	(cd $(CORE_DEST_DIR)/zimbramon; tar xzf $(MRTG_SOURCE).tgz)
 	mkdir -p $(CORE_DEST_DIR)/zimbramon/mrtg/work
 	mkdir -p $(CORE_DEST_DIR)/zimbramon/mrtg/conf
@@ -150,3 +139,10 @@ $(CORE_DEST_DIR)/bin:
 	cp $(ZIMBRA_BIN_DIR)/zmfixperms.sh $@
 	cp $(ZIMBRA_BIN_DIR)/zmsyslogsetup $@
 	$(LDAP_DEST_ROOT)/opt/zimbra/$(LDAP_DIR)/bin/ldapsearch $@
+	cp $(ZIMBRA_BIN_DIR)/zmantispamctl $@
+	cp $(ZIMBRA_BIN_DIR)/zmantivirusctl $@
+	cp $(ZIMBRA_BIN_DIR)/zmcontrol $@
+	cp $(ZIMBRA_BIN_DIR)/zmloggerctl $@
+	cp $(ZIMBRA_BIN_DIR)/zmmailboxctl $@
+	cp $(ZIMBRA_BIN_DIR)/zmmtactl $@
+
