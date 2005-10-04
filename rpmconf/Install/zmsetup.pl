@@ -1537,6 +1537,17 @@ sub mainMenu {
 	displayMenu(\%mm);
 }
 
+sub startLdap {
+	print "Starting ldap...\n";
+	print LOGFILE "Starting ldap...\n";
+	runAsZimbra 
+		("/opt/zimbra/openldap/sbin/slapindex -f /opt/zimbra/conf/slapd.conf");
+	runAsZimbra ("ldap start");
+	runAsZimbra ("zmldapapplyldif");
+	print "Done\n";
+	print LOGFILE "Done\n";
+}
+
 getInstalledPackages();
 
 setDefaults();
@@ -1544,6 +1555,10 @@ setDefaults();
 setEnabledDependencies();
 
 getSystemStatus();
+
+if (!$ldapRunning && $ldapConfigured) {
+	startLdap();
+}
 
 if ($options{c}) {
 	loadConfig ($options{c});
