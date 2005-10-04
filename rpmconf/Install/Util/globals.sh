@@ -30,7 +30,9 @@ PACKAGES="zimbra-ldap \
 zimbra-logger \
 zimbra-mta \
 zimbra-snmp \
-zimbra-store"
+zimbra-store \
+zimbra-apache \
+zimbra-spell"
 
 SERVICES=""
 

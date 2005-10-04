@@ -495,6 +495,20 @@ removeExistingInstall() {
 		echo ""
 
 		for p in $INSTALLED_PACKAGES; do
+			if [ $p = "zimbra-core" ]; then
+				MOREPACKAGES="$MOREPACKAGES zimbra-core"
+				continue
+			fi
+			if [ $p = "zimbra-apache" ]; then
+				MOREPACKAGES="zimbra-apache $MOREPACKAGES"
+				continue
+			fi
+			echo -n "   $p..."
+			rpm -ev --noscripts --allmatches $p
+			echo "done"
+		done
+
+		for p in $MOREPACKAGES; do
 			echo -n "   $p..."
 			rpm -ev --noscripts --allmatches $p
 			echo "done"
@@ -666,6 +680,8 @@ getInstallPackages() {
 		echo "    Upgrading zimbra-core"
 	fi
 
+	APACHE_SELECTED="no"
+
 	for i in $AVAILABLE_PACKAGES; do
 		# If we're upgrading, and it's installed, don't ask stoopid questions
 		if [ $UPGRADE = "yes" ]; then
@@ -676,14 +692,26 @@ getInstallPackages() {
 					continue
 				fi
 				INSTALL_PACKAGES="$INSTALL_PACKAGES $i"
+				if [ $i = "zimbra-apache" ]; then
+					APACHE_SELECTED="yes"
+				fi
 				continue
 			fi
 		fi
 
+		if [ $i = "zimbra-apache" ]; then
+			continue
+		fi
+
 		askYN "Install $i" "Y"
 		if [ $response = "yes" ]; then
+			if [ $i = "zimbra-spell" -a $APACHE_SELECTED = "no" ]; then
+				APACHE_SELECTED="yes"
+				INSTALL_PACKAGES="$INSTALL_PACKAGES zimbra-apache"
+			fi
 			INSTALL_PACKAGES="$INSTALL_PACKAGES $i"
 		fi
+
 	done
 
 	echo ""

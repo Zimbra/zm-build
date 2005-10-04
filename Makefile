@@ -50,6 +50,10 @@ include $(DEFS_DIR)/snmptargets.def
 
 include $(DEFS_DIR)/sourcetargets.def
 
+include $(DEFS_DIR)/apachetargets.def
+
+include $(DEFS_DIR)/spelltargets.def
+
 include $(DEFS_DIR)/devtargets.def
 
 include $(DEFS_DIR)/clean.def

@@ -19,6 +19,12 @@ STORE_DEST_DIR		:= $(STORE_DEST_ROOT)/opt/zimbra
 LOGGER_DEST_ROOT		:= $(BUILD_ROOT)/loggerbuild
 LOGGER_DEST_DIR		:= $(LOGGER_DEST_ROOT)/opt/zimbra/logger
 
+APACHE_DEST_ROOT		:= $(BUILD_ROOT)/apachebuild
+APACHE_DEST_DIR		:= $(APACHE_DEST_ROOT)/opt/zimbra
+
+SPELL_DEST_ROOT		:= $(BUILD_ROOT)/spellbuild
+SPELL_DEST_DIR		:= $(SPELL_DEST_ROOT)/opt/zimbra
+
 WEBAPP_DIR		:= $(STORE_DEST_ROOT)/opt/zimbra/$(TOMCAT_DIR)/webapps
 WEBAPP_BUILD_DIR := build/dist/tomcat/webapps
 

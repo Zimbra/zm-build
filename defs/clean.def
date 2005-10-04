@@ -5,15 +5,12 @@ CLEAN_TARGETS	=	\
 		$(SNMP_DEST_ROOT) \
 		$(CORE_DEST_ROOT) \
 		$(LOGGER_DEST_ROOT) \
+		$(APACHE_DEST_ROOT) \
+		$(SPELL_DEST_ROOT) \
 		zcs \
 		zcs-*.tgz \
 		zimbra.rpmrc \
-		zimbracore.spec \
-		zimbrasnmp.spec \
-		zimbralogger.spec \
-		zimbra.spec \
-		zimbramta.spec \
-		zimbraldap.spec \
+		zimbra*.spec \
 		i386
 
 # CLEAN

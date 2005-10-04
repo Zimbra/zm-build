@@ -1173,7 +1173,7 @@ sub createMainMenu {
 	if (checkMenuConfig(\%mm)) {
 		$mm{promptitem} = { 
 			"selector" => "a",
-			"prompt" => "Select, or press A to apply config", 
+			"prompt" => "Select, or press 'a' to apply config", 
 			"callback" => \&applyConfig,
 			};
 	} else {
@@ -1286,32 +1286,6 @@ sub applyConfig {
 		runAsZimbra ("/opt/zimbra/libexec/zmldapinit $config{LDAPPASS}");
 		print "Done\n";
 		print LOGFILE "Done\n";
-
-		if ($config{DOCREATEDOMAIN} eq "yes") {
-			print "Creating domain $config{CREATEDOMAIN}...\n";
-			print LOGFILE "Creating domain $config{CREATEDOMAIN}...\n";
-			runAsZimbra("/opt/zimbra/bin/zmprov cd $config{CREATEDOMAIN}");
-			runAsZimbra("/opt/zimbra/bin/zmprov mcf zimbraDefaultDomainName $config{CREATEDOMAIN}");
-			print "Done\n";
-			print LOGFILE "Done\n";
-			if ($config{DOCREATEADMIN} eq "yes") {
-				print "Creating user $config{CREATEADMIN}...\n";
-				print LOGFILE "Creating user $config{CREATEADMIN}...\n";
-				runAsZimbra("/opt/zimbra/bin/zmprov ca ".
-					"$config{CREATEADMIN} $config{CREATEADMINPASS} ".
-					"zimbraIsAdminAccount TRUE");
-				print "Done\n";
-				print LOGFILE "Done\n";
-				if ($config{HOSTNAME} eq $config{CREATEDOMAIN}) {
-					print "Creating postmaster alias...\n";
-					print LOGFILE "Creating postmaster alias...\n";
-					runAsZimbra("/opt/zimbra/bin/zmprov aaa $config{CREATEADMIN} ".
-						"postmaster\@$config{CREATEDOMAIN}");
-					print "Done\n";
-					print LOGFILE "Done\n";
-				}
-			}
-		}
 	} elsif (isEnabled("zimbra-ldap")) {
 		# zmldappasswd starts ldap and re-applies the ldif
 		if ($ldapPassChanged) {
@@ -1346,6 +1320,34 @@ sub applyConfig {
 
 	if (isEnabled("zimbra-store")) {
 		addServerToHostPool();
+	}
+
+	if (!$ldapConfigured && isEnabled("zimbra-ldap")) {
+		if ($config{DOCREATEDOMAIN} eq "yes") {
+			print "Creating domain $config{CREATEDOMAIN}...\n";
+			print LOGFILE "Creating domain $config{CREATEDOMAIN}...\n";
+			runAsZimbra("/opt/zimbra/bin/zmprov cd $config{CREATEDOMAIN}");
+			runAsZimbra("/opt/zimbra/bin/zmprov mcf zimbraDefaultDomainName $config{CREATEDOMAIN}");
+			print "Done\n";
+			print LOGFILE "Done\n";
+			if ($config{DOCREATEADMIN} eq "yes") {
+				print "Creating user $config{CREATEADMIN}...\n";
+				print LOGFILE "Creating user $config{CREATEADMIN}...\n";
+				runAsZimbra("/opt/zimbra/bin/zmprov ca ".
+					"$config{CREATEADMIN} $config{CREATEADMINPASS} ".
+					"zimbraIsAdminAccount TRUE");
+				print "Done\n";
+				print LOGFILE "Done\n";
+				if ($config{HOSTNAME} eq $config{CREATEDOMAIN}) {
+					print "Creating postmaster alias...\n";
+					print LOGFILE "Creating postmaster alias...\n";
+					runAsZimbra("/opt/zimbra/bin/zmprov aaa $config{CREATEADMIN} ".
+						"postmaster\@$config{CREATEDOMAIN}");
+					print "Done\n";
+					print LOGFILE "Done\n";
+				}
+			}
+		}
 	}
 
 	if (!$sqlConfigured && isEnabled("zimbra-store")) {
