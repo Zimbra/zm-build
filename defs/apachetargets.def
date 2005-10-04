@@ -1,0 +1,40 @@
+
+# __APACHE
+
+apache: $(RPM_DIR) apache_stage $(BUILD_ROOT)/zimbraapache.spec
+	(cd $(APACHE_DEST_ROOT); \
+		rpmbuild  --target i386 --quiet --define '_rpmdir $(BUILD_ROOT)' \
+		--buildroot=$(APACHE_DEST_ROOT) -bb $(BUILD_ROOT)/zimbraapache.spec )
+
+$(BUILD_ROOT)/zimbraapache.spec:
+	cp $(RPM_CONF_DIR)/Spec/Scripts/zimbraapache.pre $(BUILD_ROOT)
+	cp $(RPM_CONF_DIR)/Spec/Scripts/zimbraapache.post $(BUILD_ROOT)
+	cat $(RPM_CONF_DIR)/Spec/zimbraapache.spec | \
+		sed -e 's/@@VERSION@@/$(VERSION_TAG)/' \
+		-e 's/@@RELEASE@@/$(RELEASE)/' \
+		-e '/^%pre$$/ r zimbraapache.pre' \
+		-e '/^%post$$/ r zimbraapache.post' > $(BUILD_ROOT)/zimbraapache.spec
+	rm -f zimbraapache.pre
+	rm -f zimbraapache.post
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/conf" >> \
+		$(BUILD_ROOT)/zimbraapache.spec
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/httpd-2.0.54" >> \
+		$(BUILD_ROOT)/zimbraapache.spec
+
+apache_stage: $(APACHE_COMPONENTS)
+
+$(APACHE_DEST_DIR):
+	mkdir -p $@
+
+$(APACHE_DEST_DIR)/$(APACHE_DIR): $(APACHE_DEST_DIR)
+	@echo "*** Creating APACHE"
+	(cd $(APACHE_DEST_DIR); tar xzf $(APACHE_SOURCE).tgz;)
+
+$(APACHE_DEST_DIR)/conf/php.ini: $(APACHE_DEST_DIR)/conf
+	cp $(SERVICE_DIR)/conf/php.ini $@
+
+$(APACHE_DEST_DIR)/conf/httpd.conf: $(APACHE_DEST_DIR)/conf
+	cp $(SERVICE_DIR)/conf/httpd.conf $@
+
+$(APACHE_DEST_DIR)/conf:
+	mkdir -p $@
