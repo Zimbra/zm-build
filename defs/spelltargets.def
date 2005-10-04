@@ -36,8 +36,6 @@ $(SPELL_DEST_DIR)/$(APACHE_DIR)/htdocs/aspell.php: $(SPELL_DEST_DIR)/$(APACHE_DI
 $(SPELL_DEST_DIR)/$(APACHE_DIR)/htdocs:
 	mkdir -p $@
 
-$(SPELL_DEST_DIR)/$(APACHE_DIR)/htdocs/Zimbra:
+$(SPELL_DEST_DIR)/$(APACHE_DIR)/htdocs/Zimbra: $(SPELL_DEST_DIR)/$(APACHE_DIR)/htdocs
 	cp -R $(SERVICE_DIR)/src/php/Zimbra $@
 
-$(SPELL_DEST_DIR)/$(PHP_DIR): $(SPELL_DEST_DIR)
-	(cd $(SPELL_DEST_DIR); tar xzf $(PHP_SOURCE).tgz)
