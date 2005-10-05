@@ -1450,7 +1450,7 @@ sub applyConfig {
 		setLocalConfig ("snmp_trap_host", $config{SNMPTRAPHOST});
 		setLocalConfig ("smtp_source", $config{SMTPSOURCE});
 		setLocalConfig ("smtp_destination", $config{SMTPDEST});
-		runAsZimbra ("zmsnmpinit");
+		runAsZimbra ("/opt/zimbra/libexec/zmsnmpinit");
 		print "Done\n";
 		print LOGFILE "Done\n";
 	}
