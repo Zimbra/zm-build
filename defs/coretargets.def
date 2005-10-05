@@ -145,4 +145,6 @@ $(CORE_DEST_DIR)/bin:
 	cp $(ZIMBRA_BIN_DIR)/zmloggerctl $@
 	cp $(ZIMBRA_BIN_DIR)/zmmailboxctl $@
 	cp $(ZIMBRA_BIN_DIR)/zmmtactl $@
+	cp $(ZIMBRA_BIN_DIR)/zmspellctl $@
+	cp $(ZIMBRA_BIN_DIR)/zmapachctl $@
 

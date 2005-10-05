@@ -43,6 +43,8 @@ my @packageList = (
 	"zimbra-mta",
 	"zimbra-snmp",
 	"zimbra-logger",
+	"zimbra-apache",
+	"zimbra-spell",
 	);
 
 my %installedPackages = ();
@@ -558,6 +560,8 @@ sub configurePackage {
 		configureMta($package);
 	} elsif ($package eq "zimbra-snmp") {
 		configureSnmp($package);
+	} elsif ($package eq "zimbra-spell") {
+		configureSpell($package);
 	} elsif ($package eq "zimbra-store") {
 		configureStore($package);
 	}
@@ -621,6 +625,8 @@ sub createPackageMenu {
 		return createMtaMenu($package);
 	} elsif ($package eq "zimbra-snmp") {
 		return createSnmpMenu($package);
+	} elsif ($package eq "zimbra-spell") {
+		return createSpellMenu($package);
 	} elsif ($package eq "zimbra-store") {
 		return createStoreMenu($package);
 	}
@@ -698,6 +704,37 @@ sub configureLdap {
 	my $package = shift;
 
 	my $lm = createLdapMenu($package);
+
+	displayMenu($lm);
+}
+
+sub createSpellMenu {
+	my $package = shift;
+	my $lm = genPackageMenu($package);
+
+	$$lm{title} = "Spell configuration";
+
+	$$lm{createsub} = \&createSpellMenu;
+	$$lm{createarg} = $package;
+
+	my $i = 2;
+
+	if (isEnabled($package)) {
+#		$$lm{menuitems}{$i} = { 
+#			"prompt" => "Enable SMTP notifications:", 
+#			"var" => \$config{SMTPNOTIFY}, 
+#			"callback" => \&toggleYN,
+#			"arg" => "SMTPNOTIFY",
+#			};
+#		$i++;
+	}
+	return $lm;
+}
+
+sub configureSpell {
+	my $package = shift;
+
+	my $lm = createSpellMenu($package);
 
 	displayMenu($lm);
 }
@@ -874,7 +911,7 @@ sub displaySubMenuItems {
 		$items = &{$$items{createsub}}($$items{createarg});
 	}
 #	print "$indent$$items{title}\n";
-	foreach my $i (sort keys %{$$items{menuitems}}) {
+	foreach my $i (sort menuSort keys %{$$items{menuitems}}) {
 		if (defined($$items{menuitems}{$i}{var}) &&
 			$$items{menuitems}{$i}{var} == $parentmenuvar) {next;}
 		my $len = 44-(length($indent));
@@ -892,6 +929,13 @@ sub displaySubMenuItems {
 	}
 }
 
+sub menuSort {
+	if ( ($a eq int($a)) && ($b eq int($b)) ) {
+		return $a <=> $b;
+	}
+	return $a cmp $b;
+}
+
 sub displayMenu {
 	my $items = shift;
 	while (1) {
@@ -900,7 +944,7 @@ sub displayMenu {
 		}
 
 		print "\n$$items{title}\n\n";
-		foreach my $i (sort keys %{$$items{menuitems}}) {
+		foreach my $i (sort menuSort keys %{$$items{menuitems}}) {
 			my $v;
 			my $ind = "  ";
 			if (defined $$items{menuitems}{$i}{var}) {
@@ -1119,6 +1163,7 @@ sub createMainMenu {
 	$i++;
 	foreach (@packageList) {
 		if ($_ eq "zimbra-core") {next;}
+		if ($_ eq "zimbra-apache") {next;}
 		if (defined($installedPackages{$_})) {
 			if ($_ eq "zimbra-logger") {
 				$mm{menuitems}{$i} = { 
@@ -1195,7 +1240,7 @@ sub checkMenuConfig {
 
 	my $needldapverified = 0;
 
-	foreach my $i (sort keys %{$$items{menuitems}}) {
+	foreach my $i (sort menuSort keys %{$$items{menuitems}}) {
 		my $v;
 		my $ind = "  ";
 		if (defined $$items{menuitems}{$i}{var}) {
@@ -1267,7 +1312,6 @@ sub setLocalConfig {
 }
 
 sub applyConfig {
-
 	if (!defined ($options{c})) {
 		if (askYN("Save configuration data?", "Yes") eq "yes") {saveConfig();}
 		if (askYN("The system will be modified - continue?", "No") eq "no") {return 1;}
@@ -1407,8 +1451,17 @@ sub applyConfig {
 		print LOGFILE "Done\n";
 	}
 
+	if (isEnabled("zimbra-spell")) {
+		print "Configuring Spell server...\n";
+		print LOGFILE "Configuring Spell server...\n";
+		$enabledServiceStr .= "zimbraServiceEnabled spell ";
+		print "Done\n";
+		print LOGFILE "Done\n";
+	}
+
 	foreach my $p (keys %installedPackages) {
 		if ($p eq "zimbra-core") {next;}
+		if ($p eq "zimbra-apache") {next;}
 		$p =~ s/zimbra-//;
 		if ($p eq "store") {$p = "mailbox";}
 		$installedServiceStr .= "zimbraServiceInstalled $p ";
@@ -1416,6 +1469,7 @@ sub applyConfig {
 
 	foreach my $p (keys %enabledPackages) {
 		if ($p eq "zimbra-core") {next;}
+		if ($p eq "zimbra-apache") {next;}
 		if ($enabledPackages{$p} eq "Enabled") {
 			$p =~ s/zimbra-//;
 			if ($p eq "store") {$p = "mailbox";}

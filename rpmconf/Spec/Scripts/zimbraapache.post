@@ -29,14 +29,5 @@ I=`hostname -i`
 
 #Symlinks
 
-rm -f /opt/zimbra/snmp
-ln -s /opt/zimbra/snmp-5.1.2 /opt/zimbra/snmp
-
-egrep -q 'zmswatchctl' /opt/zimbra/zimbramon/zimbra.cf
-if [ $? != 0 ]; then
-	cat /opt/zimbra/zimbramon/zimbrasnmp.cf >> /opt/zimbra/zimbramon/zimbra.cf
-fi
-
-if [ ! -d /opt/zimbra/zimbramon/mrtg/work/ ]; then
-	mkdir -p /opt/zimbra/zimbramon/mrtg/work/
-fi
+rm -f /opt/zimbra/httpd
+ln -s /opt/zimbra/httpd-2.0.54 /opt/zimbra/httpd
