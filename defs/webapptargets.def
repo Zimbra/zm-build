@@ -14,10 +14,16 @@ $(WEBAPP_DIR)/zimbraAdmin.war: $(WEBAPP_DIR) $(CONSOLE_DIR)/$(WEBAPP_BUILD_DIR)/
 	cp $(CONSOLE_DIR)/build/dist/tomcat/webapps/zimbraAdmin.war $@
 
 $(CONSOLE_DIR)/$(WEBAPP_BUILD_DIR)/zimbraAdmin.war:
-	(cd $(CONSOLE_DIR); $(ANT) clean admin-war;)
+	(cd $(CONSOLE_DIR); $(ANT) \
+		-Dzimbra.buildinfo.version=$(VERSION_TAG) \
+		-Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) \
+		-Dzimbra.buildinfo.host=$(HOST) clean admin-war ; )
 
 $(WEBAPP_DIR)/zimbra.war: $(WEBAPP_DIR) $(CONSOLE_DIR)/$(WEBAPP_BUILD_DIR)/zimbra.war
 	cp $(CONSOLE_DIR)/build/dist/tomcat/webapps/zimbra.war $@
 
 $(CONSOLE_DIR)/$(WEBAPP_BUILD_DIR)/zimbra.war: 
-	(cd $(CONSOLE_DIR); $(ANT) clean prod-war;)
+	(cd $(CONSOLE_DIR); $(ANT) \
+		-Dzimbra.buildinfo.version=$(VERSION_TAG) \
+		-Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) \
+		-Dzimbra.buildinfo.host=$(HOST) clean prod-war ; )
