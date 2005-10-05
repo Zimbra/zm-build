@@ -38,6 +38,11 @@ mkdir -p /opt/zimbra/openldap-data
 chown -R zimbra:zimbra /opt/zimbra/openldap/var
 chown -R zimbra:zimbra /opt/zimbra/openldap-data
 
+egrep -q '^%zimbra.*slapd' /etc/sudoers
+if [ $? != 0 ]; then
+	echo "%zimbra   ALL=NOPASSWD:/opt/zimbra/openldap/libexec/slapd" >> /etc/sudoers
+fi
+
 egrep -q 'ldap_start' /opt/zimbra/zimbramon/zimbra.cf
 if [ $? != 0 ]; then
 	cat /opt/zimbra/zimbramon/zimbraldap.cf >> /opt/zimbra/zimbramon/zimbra.cf
