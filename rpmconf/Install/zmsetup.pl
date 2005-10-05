@@ -167,6 +167,12 @@ sub getSystemStatus {
 			$loggerSqlRunning = ($loggerSqlRunning)?0:1;
 		}
 	}
+
+	if (isEnabled("zimbra-mta")) {
+		if ($config{SMTPHOST} eq "") {
+			$config{SMTPHOST} = $config{HOSTNAME};
+		}
+	}
 }
 
 sub setDefaults {
@@ -182,7 +188,7 @@ sub setDefaults {
 	$config{SERVICEIP} = `hostname -i`;
 	chomp $config{SERVICEIP};
 
-	$config{SMTPHOST} = $config{HOSTNAME};
+	$config{SMTPHOST} = "";
 	$config{SNMPTRAPHOST} = $config{HOSTNAME};
 	$config{DOCREATEDOMAIN} = "no";
 	$config{CREATEDOMAIN} = $config{HOSTNAME};
@@ -854,14 +860,12 @@ sub createStoreMenu {
 
 	my $i = 2;
 	if (isEnabled($package)) {
-		if (!isEnabled("zimbra-mta")) {
-			$$lm{menuitems}{$i} = { 
-				"prompt" => "SMTP host:", 
-				"var" => \$config{SMTPHOST}, 
-				"callback" => \&setSmtpHost,
-				};
-			$i++;
-		}
+		$$lm{menuitems}{$i} = { 
+			"prompt" => "SMTP host:", 
+			"var" => \$config{SMTPHOST}, 
+			"callback" => \&setSmtpHost,
+			};
+		$i++;
 		$$lm{menuitems}{$i} = { 
 			"prompt" => "Web server mode:", 
 			"var" => \$config{MODE}, 
