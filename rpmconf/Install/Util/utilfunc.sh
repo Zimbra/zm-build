@@ -458,10 +458,10 @@ restoreExistingConfig() {
 
 restoreCerts() {
 	cp $SAVEDIR/cacerts /opt/zimbra/java/jre/lib/security/cacerts
-	cp $SAVEDIR/keystore /opt/zimbra/conf/keystore
+	cp $SAVEDIR/keystore /opt/zimbra/tomcat/conf/keystore
 	cp $SAVEDIR/smtpd.key /opt/zimbra/conf/smtpd.key 
 	cp $SAVEDIR/smtpd.crt /opt/zimbra/conf/smtpd.crt 
-	chown zimbra:zimbra /opt/zimbra/java/jre/lib/security/cacerts /opt/zimbra/conf/keystore /opt/zimbra/conf/smtpd.key /opt/zimbra/conf/smtpd.crt
+	chown zimbra:zimbra /opt/zimbra/java/jre/lib/security/cacerts /opt/zimbra/tomcat/conf/keystore /opt/zimbra/conf/smtpd.key /opt/zimbra/conf/smtpd.crt
 }
 
 saveExistingConfig() {
@@ -470,8 +470,8 @@ saveExistingConfig() {
 	# yes, it needs massaging to be fed back in...
 	runAsZimbra "zmlocalconfig -s | sed -e \"s/ = \(.*\)/=\'\1\'/\" > $SAVEDIR/config.save"
 	cp -f /opt/zimbra/java/jre/lib/security/cacerts $SAVEDIR
-	if [ -f "/opt/zimbra/conf/keystore" ]; then
-		cp -f /opt/zimbra/conf/keystore $SAVEDIR
+	if [ -f "/opt/zimbra/tomcat/conf/keystore" ]; then
+		cp -f /opt/zimbra/tomcat/conf/keystore $SAVEDIR
 	fi
 	if [ -f "/opt/zimbra/conf/smtpd.key" ]; then
 		cp -f /opt/zimbra/conf/smtpd.key $SAVEDIR
