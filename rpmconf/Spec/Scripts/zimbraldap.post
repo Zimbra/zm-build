@@ -43,6 +43,9 @@ if [ $? != 0 ]; then
 	echo "%zimbra   ALL=NOPASSWD:/opt/zimbra/openldap/libexec/slapd" >> /etc/sudoers
 fi
 
+chown root:root /opt/zimbra/openldap/libexec/slapd
+chmod 755 /opt/zimbra/openldap/libexec/slapd
+
 egrep -q 'ldap_start' /opt/zimbra/zimbramon/zimbra.cf
 if [ $? != 0 ]; then
 	cat /opt/zimbra/zimbramon/zimbraldap.cf >> /opt/zimbra/zimbramon/zimbra.cf
