@@ -144,9 +144,13 @@ if [ x$SAVEDIR != "x" -a x$REMOVE = "xno" ]; then
     setDefaultsFromExistingConfig
 fi
 
-restoreExistingConfig
+if [ $UPGRADE = "yes" ]; then
 
-restoreCerts
+	restoreExistingConfig
+
+	restoreCerts
+
+fi
 
 if [ x$DEFAULTFILE != "x" ]; then
 	/opt/zimbra/libexec/zmsetup.pl -c $DEFAULTFILE

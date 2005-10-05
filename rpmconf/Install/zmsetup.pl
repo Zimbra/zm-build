@@ -1495,11 +1495,11 @@ sub applyConfig {
 			`chmod 777 /opt/zimbra/java/jre/lib/security/cacerts >> $logfile 2>&1`;
 		}
 		setLocalConfig ("ssl_allow_untrusted_certs", "TRUE");
-		if (!-f "/opt/zimbra/conf/keystore") {
+		if (!-f "/opt/zimbra/tomcat/conf/keystore") {
 			runAsZimbra("cd /opt/zimbra; zmcreatecert");
 		}
 		if (isEnabled("zimbra-store")) {
-			if (!-f "/opt/zimbra/conf/keystore") {
+			if (!-f "/opt/zimbra/tomcat/conf/keystore") {
 				runAsZimbra("cd /opt/zimbra; zmcertinstall mailbox");
 			}
 			runAsZimbra("cd /opt/zimbra; zmtlsctl $config{MODE}");
