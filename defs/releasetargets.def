@@ -19,7 +19,7 @@ zcs-$(RELEASE).tgz: rpms
 	chmod 755 zcs/install.sh
 	cp $(RPM_DIR)/*rpm zcs/packages
 	tar czf zcs-$(VERSION_TAG).tgz zcs
-	cp zcs-$(VERSION_TAG).tgz $(RPM_DIR)
+	mv zcs-$(VERSION_TAG).tgz $(RPM_DIR)
 	(cd $(RPM_DIR); ln -s zcs-$(VERSION_TAG).tgz zcs.tgz)
 	@echo "*** BUILD COMPLETED ***"
 
