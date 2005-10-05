@@ -948,6 +948,7 @@ sub displayMenu {
 		my $r = <>;
 		chomp $r;
 		if ($r eq "") { $r = $$items{default}; }
+		if ($r eq "") { next; }
 		if ($r eq $$items{lastitem}{selector}) {
 			if ($$items{lastitem}{action} eq "quit") {
 				if (verifyQuit()) {
@@ -1178,6 +1179,7 @@ sub createMainMenu {
 			};
 	} else {
 		$mm{promptitem} = { 
+			"selector" => "qqazyre",
 			"prompt" => "Address unconfigured (**) items ", 
 			"callback" => \&applyConfig,
 			};
