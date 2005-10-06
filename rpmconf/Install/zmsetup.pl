@@ -181,6 +181,8 @@ sub setDefaults {
 	$config{REMOVE} = "no";
 	$config{UPGRADE} = "yes";
 	$config{LDAPPORT} = 389;
+	$config{USESPELL} = "no";
+	$config{SPELLURL} = "";
 
 	$config{HOSTNAME} = `hostname --fqdn`;
 	chomp $config{HOSTNAME};
@@ -538,6 +540,9 @@ sub setHostName {
 	if ($sdomain eq $old) {
 		$config{SMTPDEST} = $suser.'@'.$config{CREATEDOMAIN};
 	}
+	if ($config{SPELLURL} eq "http://${old}:7780/aspell.php") {
+		$config{SPELLURL} = "http://$config{HOSTNAME}:7780/aspell.php";
+	}
 }
 
 sub setSmtpHost {
@@ -554,6 +559,11 @@ sub setLdapHost {
 sub setLdapPort {
 	changeLdapPort( askNum("Please enter the ldap server port",
 			$config{LDAPPORT}));
+}
+
+sub setSpellUrl {
+	$config{SPELLURL} = askNonBlank("Please enter the spell server URL", 
+		$config{SPELLURL});
 }
 
 sub configurePackage {
@@ -586,6 +596,11 @@ sub setEnabledDependencies {
 	if (isEnabled("zimbra-mta")) {
 		$config{RUNAV} = "yes";
 		$config{RUNSA} = "yes";
+	}
+
+	if (isEnabled("zimbra-spell")) {
+		$config{USESPELL} = "yes";
+		$config{SPELLURL} = "http://$config{HOSTNAME}:7780/aspell.php";
 	}
 }
 
@@ -872,6 +887,21 @@ sub createStoreMenu {
 			"callback" => \&setStoreMode,
 			};
 		$i++;
+		$$lm{menuitems}{$i} = { 
+			"prompt" => "Use spell check server:", 
+			"var" => \$config{USESPELL}, 
+			"callback" => \&toggleYN,
+			"arg" => "USESPELL",
+			};
+		$i++;
+		if ($config{USESPELL} eq "yes") {
+			$$lm{menuitems}{$i} = { 
+				"prompt" => "Spell server URL:", 
+				"var" => \$config{SPELLURL}, 
+				"callback" => \&setSpellUrl,
+				};
+			$i++;
+		}
 	}
 	return $lm;
 }
@@ -1369,6 +1399,14 @@ sub applyConfig {
 	print LOGFILE "Done\n";
 
 	if (isEnabled("zimbra-store")) {
+		if ($config{USESPELL} eq "yes") {
+			print "Setting spell check URL to $config{SPELLURL}...\n";
+			print LOGFILE "Setting spell check URL to $config{SPELLURL}...\n";
+			runAsZimbra("/opt/zimbra/bin/zmprov ms $config{HOSTNAME} ".
+				"zimbraSpellCheckURL $config{SPELLURL}");
+			print "Done\n";
+			print LOGFILE "Done\n";
+		}
 		addServerToHostPool();
 	}
 
