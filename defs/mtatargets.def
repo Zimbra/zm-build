@@ -12,6 +12,7 @@ $(BUILD_ROOT)/zimbramta.spec:
 	cat $(RPM_CONF_DIR)/Spec/zimbramta.spec | \
 		sed -e 's/@@VERSION@@/$(VERSION_TAG)/' \
 		-e 's/@@RELEASE@@/$(RELEASE)/' \
+		-e 's/^Copyright:/$(RPMCOPYRIGHTSTR):/' \
 		-e '/^%pre$$/ r zimbramta.pre' \
 		-e '/^%post$$/ r zimbramta.post' > $(BUILD_ROOT)/zimbramta.spec
 	rm -f zimbramta.pre

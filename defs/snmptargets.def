@@ -12,6 +12,7 @@ $(BUILD_ROOT)/zimbrasnmp.spec:
 	cat $(RPM_CONF_DIR)/Spec/zimbrasnmp.spec | \
 		sed -e 's/@@VERSION@@/$(VERSION_TAG)/' \
 		-e 's/@@RELEASE@@/$(RELEASE)/' \
+		-e 's/^Copyright:/$(RPMCOPYRIGHTSTR):/' \
 		-e '/^%pre$$/ r zimbrasnmp.pre' \
 		-e '/^%post$$/ r zimbrasnmp.post' > $(BUILD_ROOT)/zimbrasnmp.spec
 	rm -f zimbrasnmp.pre

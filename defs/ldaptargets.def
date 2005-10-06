@@ -12,6 +12,7 @@ $(BUILD_ROOT)/zimbraldap.spec:
 	cat $(RPM_CONF_DIR)/Spec/zimbraldap.spec | \
 		sed -e 's/@@VERSION@@/$(VERSION_TAG)/' \
 		-e 's/@@RELEASE@@/$(RELEASE)/' \
+		-e 's/^Copyright:/$(RPMCOPYRIGHTSTR):/' \
 		-e '/^%pre$$/ r zimbraldap.pre' \
 		-e '/^%post$$/ r zimbraldap.post' > $(BUILD_ROOT)/zimbraldap.spec
 	rm -f zimbraldap.pre

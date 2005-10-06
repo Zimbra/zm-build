@@ -12,6 +12,7 @@ $(BUILD_ROOT)/zimbraspell.spec:
 	cat $(RPM_CONF_DIR)/Spec/zimbraspell.spec | \
 		sed -e 's/@@VERSION@@/$(VERSION_TAG)/' \
 		-e 's/@@RELEASE@@/$(RELEASE)/' \
+		-e 's/^Copyright:/$(RPMCOPYRIGHTSTR):/' \
 		-e '/^%pre$$/ r zimbraspell.pre' \
 		-e '/^%post$$/ r zimbraspell.post' > $(BUILD_ROOT)/zimbraspell.spec
 	rm -f zimbraspell.pre

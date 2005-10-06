@@ -12,6 +12,7 @@ $(BUILD_ROOT)/zimbralogger.spec:
 	cat $(RPM_CONF_DIR)/Spec/zimbralogger.spec | \
 		sed -e 's/@@VERSION@@/$(VERSION_TAG)/' \
 		-e 's/@@RELEASE@@/$(RELEASE)/' \
+		-e 's/^Copyright:/$(RPMCOPYRIGHTSTR):/' \
 		-e '/^%pre$$/ r zimbralogger.pre' \
 		-e '/^%post$$/ r zimbralogger.post' > $(BUILD_ROOT)/zimbralogger.spec
 	rm -f zimbralogger.pre

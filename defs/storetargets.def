@@ -12,6 +12,7 @@ $(BUILD_ROOT)/zimbra.spec:
 	cat $(RPM_CONF_DIR)/Spec/zimbra.spec | \
 		sed -e 's/@@VERSION@@/$(VERSION_TAG)/' \
 		-e 's/@@RELEASE@@/$(RELEASE)/' \
+		-e 's/^Copyright:/$(RPMCOPYRIGHTSTR):/' \
 		-e '/^%pre$$/ r zimbra.pre' \
 		-e '/^%post$$/ r zimbra.post' > $(BUILD_ROOT)/zimbra.spec
 	rm -f zimbra.pre
