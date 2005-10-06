@@ -137,7 +137,7 @@ $(CORE_DEST_DIR)/bin:
 	cp $(ZIMBRA_BIN_DIR)/zmtlsctl $@
 	cp $(ZIMBRA_BIN_DIR)/zmfixperms.sh $@
 	cp $(ZIMBRA_BIN_DIR)/zmsyslogsetup $@
-	$(LDAP_DEST_ROOT)/opt/zimbra/$(LDAP_DIR)/bin/ldapsearch $@
+	cp $(LDAP_DEST_ROOT)/opt/zimbra/$(LDAP_DIR)/bin/ldapsearch $@
 	cp $(ZIMBRA_BIN_DIR)/zmantispamctl $@
 	cp $(ZIMBRA_BIN_DIR)/zmantivirusctl $@
 	cp $(ZIMBRA_BIN_DIR)/zmcontrol $@
@@ -145,5 +145,5 @@ $(CORE_DEST_DIR)/bin:
 	cp $(ZIMBRA_BIN_DIR)/zmmailboxctl $@
 	cp $(ZIMBRA_BIN_DIR)/zmmtactl $@
 	cp $(ZIMBRA_BIN_DIR)/zmspellctl $@
-	cp $(ZIMBRA_BIN_DIR)/zmapachctl $@
+	cp $(ZIMBRA_BIN_DIR)/zmapachectl $@
 
