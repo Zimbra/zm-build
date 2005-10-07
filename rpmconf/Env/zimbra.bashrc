@@ -28,5 +28,5 @@ export LD_LIBRARY_PATH
 SNMPCONFPATH=/opt/zimbra/conf
 export SNMPCONFPATH
 
-PERLLIB=/opt/zimbra/zimbramon/lib:/opt/zimbra/zimbramon/lib/i386-linux-thread-multi/; 
+PERLLIB=/opt/zimbra/zimbramon/lib:/opt/zimbra/zimbramon/lib/i386-linux-thread-multi:/opt/zimbra/zimbramon/lib/i586-linux-thread-multi
 export PERLLIB
