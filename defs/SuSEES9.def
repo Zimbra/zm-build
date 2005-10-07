@@ -1,0 +1,3 @@
+# Definitions for SuSEES9
+
+include $(DEFS_DIR)/plat_common.def
