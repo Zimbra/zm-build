@@ -1347,7 +1347,7 @@ sub setLocalConfig {
 
 sub applyConfig {
 	if (!defined ($options{c})) {
-		if (askYN("Save configuration data?", "Yes") eq "yes") {saveConfig();}
+		if (askYN("Save configuration data to a file?", "Yes") eq "yes") {saveConfig();}
 		if (askYN("The system will be modified - continue?", "No") eq "no") {return 1;}
 	}
 	print "Operations logged to $logfile\n";
