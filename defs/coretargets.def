@@ -71,7 +71,7 @@ $(CORE_DEST_DIR)/zimbramon/crontabs:
 $(CORE_DEST_DIR)/zimbramon/lib:
 	mkdir -p $(CORE_DEST_DIR)/zimbramon/lib
 	(cd $(CORE_DEST_DIR)/zimbramon/lib; \
-	tar xzf $(PERL_LIB_SOURCE)/builds/perllib.tgz)
+	tar xzf $(PERL_LIB_SOURCE)/builds/$(BUILD_PLATFORM)/perllib.tgz)
 	cp -R $(BUILD_ROOT)/lib/Zimbra $(CORE_DEST_DIR)/zimbramon/lib
 
 $(CORE_DEST_DIR)/lib: $(WEBAPP_DIR)/service.war $(LDAP_DEST_DIR)/$(LDAP_DIR) $(MTA_DEST_DIR)/$(BDB_DIR)
