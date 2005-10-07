@@ -29,5 +29,13 @@ if [ -f /etc/SuSE-release ]; then
 	fi
 fi
 
+if [ -f /etc/debian_version ]; then
+	grep "3.1" /etc/debian_version > /dev/null 2>&1
+	if [ $? = 0 ]; then
+		echo "DEBIAN3.1"
+		exit 0
+	fi
+fi
+
 echo "UNKNOWN"
 exit 1
