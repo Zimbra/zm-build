@@ -37,5 +37,11 @@ if [ -f /etc/debian_version ]; then
 	fi
 fi
 
+p=`uname -p`
+if [ "x$p" = "xpowerpc" ]; then
+	echo "MACOSX"
+	exit 0
+fi
+
 echo "UNKNOWN"
 exit 1
