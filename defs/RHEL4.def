@@ -3,7 +3,7 @@
 PACKAGING_COMMAND := rpmbuild
 
 PACKAGING_OPTIONS = --target $(ARCH) --quiet --define '_rpmdir $(BUILD_ROOT)' \
-	--buildroot=$(CUR_DEST_ROOT) -bb $(BUILD_ROOT)/$(CUR_PACKAGE_SPEC)
+	--buildroot=$(CUR_DEST_ROOT) -bb $(CUR_PACKAGE_SPEC)
 
 PACKAGE_EXT := rpm
 
