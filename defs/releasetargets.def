@@ -1,4 +1,4 @@
-zcs-$(RELEASE).tgz: rpms
+zcs-$(RELEASE).tgz: packages
 	mkdir -p zcs/packages
 	mkdir -p zcs/bin
 	mkdir -p zcs/data
@@ -12,16 +12,17 @@ zcs-$(RELEASE).tgz: rpms
 	cp -f $(CONSOLE_DIR)/WebRoot/adminhelp/txt/readme_source.txt zcs
 	cp -f $(CONSOLE_DIR)/WebRoot/adminhelp/txt/readme_binary.txt zcs
 	cp -f $(SERVICE_DIR)/build/versions-init.sql zcs/data
-	cp $(RPM_CONF_DIR)/Install/install.sh zcs
-	cp -f $(RPM_CONF_DIR)/Install/Util/*sh zcs/util
-	cp -f $(RPM_CONF_DIR)/Install/Util/modules/* zcs/util/modules
+	cp $(PACKAGE_CONF_DIR)/Install/install.sh zcs
+	cp -f $(PACKAGE_CONF_DIR)/Install/Util/*sh zcs/util
+	cp -f $(PACKAGE_CONF_DIR)/Install/Util/modules/* zcs/util/modules
 	cp -f $(BUILD_ROOT)/RE/README.txt zcs
+	cp -f $(BUILD_ROOT)/rpmconf/Build/get_plat_tag.sh zcs/bin
 	chmod 755 zcs/install.sh
-	cp $(RPM_DIR)/*rpm zcs/packages
+	cp $(PACKAGE_DIR)/*$(PACKAGE_EXT) zcs/packages
 	tar czf zcs-$(VERSION_TAG).tgz zcs
-	mv zcs-$(VERSION_TAG).tgz $(RPM_DIR)
-	(cd $(RPM_DIR); ln -s zcs-$(VERSION_TAG).tgz zcs.tgz)
+	mv zcs-$(VERSION_TAG).tgz $(PACKAGE_DIR)
+	(cd $(PACKAGE_DIR); ln -s zcs-$(VERSION_TAG).tgz zcs.tgz)
 	@echo "*** BUILD COMPLETED ***"
 
-rpms: core mta store ldap snmp logger apache spell
-	@echo "*** Creating RPMS in $(RPM_DIR)"
+packages: core mta store ldap snmp logger apache spell
+	@echo "*** Creating PACKAGES in $(PACKAGE_DIR)"

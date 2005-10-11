@@ -1,7 +1,7 @@
 source: zcs-$(SOURCE_TAG)-src.tgz AjaxTK-$(SOURCE_TAG)-src.tgz
 
-AjaxTK-$(SOURCE_TAG)-src.tgz: $(RPM_DIR)
-	(cd $(BUILD_ROOT)/..; tar czf $(RPM_DIR)/AjaxTK-$(SOURCE_TAG)-src.tgz Ajax)
+AjaxTK-$(SOURCE_TAG)-src.tgz: $(PACKAGE_DIR)
+	(cd $(BUILD_ROOT)/..; tar czf $(PACKAGE_DIR)/AjaxTK-$(SOURCE_TAG)-src.tgz Ajax)
 
-zcs-$(SOURCE_TAG)-src.tgz: $(RPM_DIR)
-	(cd $(BUILD_ROOT)/..; tar czf $(RPM_DIR)/zcs-$(SOURCE_TAG)-src.tgz --exclude ZimbraBuild/i386 --exclude logs .)
+zcs-$(SOURCE_TAG)-src.tgz: $(PACKAGE_DIR)
+	(cd $(BUILD_ROOT)/..; tar czf $(PACKAGE_DIR)/zcs-$(SOURCE_TAG)-src.tgz --exclude ZimbraBuild/$(ARCH) --exclude logs .)

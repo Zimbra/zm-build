@@ -27,11 +27,10 @@
 installPackage() {
 	PKG=$1
 	echo -n "    $PKG..."
-	# file=`ls $PACKAGE_DIR/$i*.rpm`
 	findLatestPackage $PKG
 	f=`basename $file`
 	echo -n "...$f..."
-	rpm -iv $file >> $LOGFILE 2>&1
+	$PACKAGEINST $file >> $LOGFILE 2>&1
 	if [ $? = 0 ]; then
 		echo "done"
 	else
@@ -55,17 +54,26 @@ findLatestPackage() {
 	himinor=0
 	histamp=0
 
-	files=`ls $PACKAGE_DIR/$package*.rpm 2> /dev/null`
+	files=`ls $PACKAGE_DIR/$package*.$PACKAGEEXT 2> /dev/null`
 	for q in $files; do
-		# zimbra-core-2.0_RHEL4-20050622123009_HEAD.i386.rpm
 
+		
 		f=`basename $q`
-		id=`echo $f | awk -F- '{print $3}'`
-		version=`echo $id | awk -F_ '{print $1}'`
-		major=`echo $version | awk -F. '{print $1}'`
-		minor=`echo $version | awk -F. '{print $2}'`
-		micro=`echo $version | awk -F. '{print $3}'`
-		stamp=`echo $f | awk -F_ '{print $2}' | awk -F. '{print $1}'`
+		if [ $PACKAGEEXT = "rpm" ]; then
+			id=`echo $f | awk -F- '{print $3}'`
+			version=`echo $id | awk -F_ '{print $1}'`
+			major=`echo $version | awk -F. '{print $1}'`
+			minor=`echo $version | awk -F. '{print $2}'`
+			micro=`echo $version | awk -F. '{print $3}'`
+			stamp=`echo $f | awk -F_ '{print $2}' | awk -F. '{print $1}'`
+		else
+			id=`echo $f | awk -F_ '{print $2}'`
+			version=`echo $id | awk -F_ '{print $1}'`
+			major=`echo $version | awk -F. '{print $1}'`
+			minor=`echo $version | awk -F. '{print $2}'`
+			micro=`echo $version | awk -F. '{print $3}'`
+			stamp=`echo $f | awk -F_ '{print $2}' | awk -F. '{print $1}'`
+		fi
 
 		if [ $major -gt $himajor ]; then
 			himajor=$major

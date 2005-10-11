@@ -28,5 +28,5 @@ SPELL_DEST_DIR		:= $(SPELL_DEST_ROOT)/opt/zimbra
 WEBAPP_DIR		:= $(STORE_DEST_ROOT)/opt/zimbra/$(TOMCAT_DIR)/webapps
 WEBAPP_BUILD_DIR := build/dist/tomcat/webapps
 
-RPM_DIR			:= $(BUILD_ROOT)/i386
+PACKAGE_DIR			:= $(BUILD_ROOT)/$(ARCH)
 ZIMBRA_BIN_DIR		:= $(BUILD_ROOT)/../ZimbraServer/src/bin

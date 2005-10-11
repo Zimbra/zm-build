@@ -17,6 +17,11 @@ BUILDNUM	:= $(shell cat RE/BUILD)
 
 SOURCE_TAG := $(MAJOR).$(MINOR).$(MICRO)_$(BUILDNUM)
 VERSION_TAG := $(MAJOR).$(MINOR).$(MICRO)_$(BUILDNUM).$(BUILD_PLATFORM)
+ifeq ($BUILD_PLATFORM, MacOS)
+	ARCH := ppc
+else
+	ARCH := i386
+endif
 
 ifeq ($(TAG), )
 	TAG := HEAD
@@ -40,13 +45,13 @@ ifeq ($(ANT), )
 	$(error ant not found - exiting)
 endif
 
-RPM_CONF_DIR	:= $(BUILD_ROOT)/rpmconf
+PACKAGE_CONF_DIR	:= $(BUILD_ROOT)/rpmconf
 
-PROFILE_SOURCE      := $(RPM_CONF_DIR)/Env/zimbra.bash_profile
+PROFILE_SOURCE      := $(PACKAGE_CONF_DIR)/Env/zimbra.bash_profile
 PROFILE_DEST        := .bash_profile
-ENV_FILE_SOURCE     := $(RPM_CONF_DIR)/Env/zimbra.bashrc
+ENV_FILE_SOURCE     := $(PACKAGE_CONF_DIR)/Env/zimbra.bashrc
 ENV_FILE_DEST       := .bashrc
-EXRC_SOURCE         := $(RPM_CONF_DIR)/Env/zimbra.exrc
+EXRC_SOURCE         := $(PACKAGE_CONF_DIR)/Env/zimbra.exrc
 EXRC_DEST           := .exrc
 
 JAVA_HOME       ?= /usr/local/java

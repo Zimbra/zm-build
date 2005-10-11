@@ -1,8 +1,8 @@
 
 # DIRS
 
-$(RPM_DIR):
-	mkdir -p $(RPM_DIR)
+$(PACKAGE_DIR):
+	mkdir -p $(PACKAGE_DIR)
 
 perllibsbuild: 
 	make -C $(PERL_LIB_SOURCE)

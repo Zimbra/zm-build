@@ -37,7 +37,12 @@ cat /opt/zimbra/zimbramon/zimbra.cf.in > /opt/zimbra/zimbramon/zimbra.cf
 echo "LOCALHOST $H" > /opt/zimbra/zimbramon/state.cf
 chown zimbra:zimbra /opt/zimbra/zimbramon/state.cf
 
-cp -f /opt/zimbra/conf/zimbra.ld.conf /etc/ld.so.conf.d
+if [ -f /etc/debian_version ]; then
+	cat /opt/zimbra/conf/zimbra.ld.conf /etc/ld.so.conf
+else
+	mkdir -p /etc/ld.so.conf.d
+	cp -f /opt/zimbra/conf/zimbra.ld.conf /etc/ld.so.conf.d
+fi
 
 if [ ! -d /opt/zimbra/zimbramon/mrtg/work/ ]; then
 	mkdir -p /opt/zimbra/zimbramon/mrtg/work/

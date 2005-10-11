@@ -1,15 +1,34 @@
 
 # __APACHE
 
-apache: $(RPM_DIR) apache_stage $(BUILD_ROOT)/zimbraapache.spec
-	(cd $(APACHE_DEST_ROOT); \
-		rpmbuild  --target i386 --quiet --define '_rpmdir $(BUILD_ROOT)' \
-		--buildroot=$(APACHE_DEST_ROOT) -bb $(BUILD_ROOT)/zimbraapache.spec )
+apache: CUR_DEST_ROOT := $(APACHE_DEST_ROOT)
+apache: CUR_PACKAGE_SPEC := $(BUILD_ROOT)/zimbraapache.spec
+apache: $(PACKAGE_DIR) apache_stage apache_pkg_spec_$(PACKAGE_EXT) 
+	(cd $(CUR_DEST_ROOT); \
+		$(PACKAGING_COMMAND) $(PACKAGING_OPTIONS) )
+
+apache_pkg_spec_deb: $(APACHE_DEST_ROOT)/DEBIAN/control
+
+$(APACHE_DEST_ROOT)/DEBIAN: force
+	mkdir -p $@
+	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbraapache.pre $@/preinst
+	echo "#!/bin/bash" > $@/postinst
+	echo "sh /opt/zimbra/bin/zmfixperms.sh" >> $@/postinst
+	cat $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbraapache.post >> $@/postinst
+	chmod 555 $@/*
+
+$(APACHE_DEST_ROOT)/DEBIAN/control: $(APACHE_DEST_ROOT)/DEBIAN force
+	cat $(PACKAGE_CONF_DIR)/Spec/zimbraapache.deb | \
+	sed -e 's/@@VERSION@@/$(VERSION_TAG)/' \
+	-e 's/@@RELEASE@@/$(RELEASE)/' \
+	-e 's/@@ARCH@@/$(ARCH)/' > $@
+
+apache_pkg_spec_rpm: $(BUILD_ROOT)/zimbraapache.spec
 
 $(BUILD_ROOT)/zimbraapache.spec:
-	cp $(RPM_CONF_DIR)/Spec/Scripts/zimbraapache.pre $(BUILD_ROOT)
-	cp $(RPM_CONF_DIR)/Spec/Scripts/zimbraapache.post $(BUILD_ROOT)
-	cat $(RPM_CONF_DIR)/Spec/zimbraapache.spec | \
+	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbraapache.pre $(BUILD_ROOT)
+	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbraapache.post $(BUILD_ROOT)
+	cat $(PACKAGE_CONF_DIR)/Spec/zimbraapache.spec | \
 		sed -e 's/@@VERSION@@/$(VERSION_TAG)/' \
 		-e 's/@@RELEASE@@/$(RELEASE)/' \
 		-e 's/^Copyright:/$(RPMCOPYRIGHTSTR):/' \

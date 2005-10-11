@@ -1,15 +1,34 @@
 
 # __SNMP
 
-snmp: $(RPM_DIR) snmp_stage $(BUILD_ROOT)/zimbrasnmp.spec
-	(cd $(SNMP_DEST_ROOT); \
-		rpmbuild  --target i386 --quiet --define '_rpmdir $(BUILD_ROOT)' \
-		--buildroot=$(SNMP_DEST_ROOT) -bb $(BUILD_ROOT)/zimbrasnmp.spec )
+snmp: CUR_DEST_ROOT := $(SNMP_DEST_ROOT)
+snmp: CUR_PACKAGE_SPEC := $(BUILD_ROOT)/zimbrasnmp.spec
+snmp: $(PACKAGE_DIR) snmp_stage snmp_pkg_spec_$(PACKAGE_EXT)
+	(cd $(CUR_DEST_ROOT); \
+		$(PACKAGING_COMMAND) $(PACKAGING_OPTIONS) )
+
+snmp_pkg_spec_deb: $(SNMP_DEST_ROOT)/DEBIAN/control
+
+$(SNMP_DEST_ROOT)/DEBIAN: force
+	mkdir -p $@
+	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbrasnmp.pre $@/preinst
+	echo "#!/bin/bash" > $@/postinst
+	echo "sh /opt/zimbra/bin/zmfixperms.sh" >> $@/postinst
+	cat $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbrasnmp.post >> $@/postinst
+	chmod 555 $@/*
+
+$(SNMP_DEST_ROOT)/DEBIAN/control: $(SNMP_DEST_ROOT)/DEBIAN force
+	cat $(PACKAGE_CONF_DIR)/Spec/zimbrasnmp.deb | \
+	sed -e 's/@@VERSION@@/$(VERSION_TAG)/' \
+	-e 's/@@RELEASE@@/$(RELEASE)/' \
+	-e 's/@@ARCH@@/$(ARCH)/' > $@
+
+snmp_pkg_spec_rpm: $(BUILD_ROOT)/zimbrasnmp.spec
 
 $(BUILD_ROOT)/zimbrasnmp.spec:
-	cp $(RPM_CONF_DIR)/Spec/Scripts/zimbrasnmp.pre $(BUILD_ROOT)
-	cp $(RPM_CONF_DIR)/Spec/Scripts/zimbrasnmp.post $(BUILD_ROOT)
-	cat $(RPM_CONF_DIR)/Spec/zimbrasnmp.spec | \
+	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbrasnmp.pre $(BUILD_ROOT)
+	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbrasnmp.post $(BUILD_ROOT)
+	cat $(PACKAGE_CONF_DIR)/Spec/zimbrasnmp.spec | \
 		sed -e 's/@@VERSION@@/$(VERSION_TAG)/' \
 		-e 's/@@RELEASE@@/$(RELEASE)/' \
 		-e 's/^Copyright:/$(RPMCOPYRIGHTSTR):/' \
@@ -28,8 +47,8 @@ $(SNMP_DEST_DIR):
 $(SNMP_DEST_DIR)/$(SNMP_DIR): $(SNMP_DEST_DIR)
 	@echo "*** Creating SNMP"
 	(cd $(SNMP_DEST_DIR); tar xzf $(SNMP_SOURCE).tar.gz;)
-	cp $(RPM_CONF_DIR)/Conf/snmpd.conf.in $(SNMP_DEST_DIR)/$(SNMP_DIR)/share/snmp/snmpd.conf.in
+	cp $(PACKAGE_CONF_DIR)/Conf/snmpd.conf.in $(SNMP_DEST_DIR)/$(SNMP_DIR)/share/snmp/snmpd.conf.in
 	mkdir -p $(SNMP_DEST_DIR)/$(SNMP_DIR)/conf
-	cp $(RPM_CONF_DIR)/Conf/snmp.conf $(SNMP_DEST_DIR)/$(SNMP_DIR)/conf/snmp.conf
-	cp $(RPM_CONF_DIR)/Conf/snmp.conf $(SNMP_DEST_DIR)/$(SNMP_DIR)/share/snmp/snmp.conf
-	cp $(RPM_CONF_DIR)/Conf/mibs/*mib $(SNMP_DEST_DIR)/$(SNMP_DIR)/share/snmp/mibs
+	cp $(PACKAGE_CONF_DIR)/Conf/snmp.conf $(SNMP_DEST_DIR)/$(SNMP_DIR)/conf/snmp.conf
+	cp $(PACKAGE_CONF_DIR)/Conf/snmp.conf $(SNMP_DEST_DIR)/$(SNMP_DIR)/share/snmp/snmp.conf
+	cp $(PACKAGE_CONF_DIR)/Conf/mibs/*mib $(SNMP_DEST_DIR)/$(SNMP_DIR)/share/snmp/mibs

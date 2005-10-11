@@ -28,7 +28,9 @@ include $(DEFS_DIR)/components.def
 
 # PACKAGE TARGETS
 
-all: rpms zcs-$(RELEASE).tgz
+all: packages zcs-$(RELEASE).tgz
+
+include $(DEFS_DIR)/misctargets.def
 
 include $(DEFS_DIR)/releasetargets.def
 
@@ -59,19 +61,3 @@ include $(DEFS_DIR)/devtargets.def
 include $(DEFS_DIR)/clean.def
 
 include $(DEFS_DIR)/devclean.def
-
-# DIRS
-
-$(RPM_DIR):
-	mkdir -p $(RPM_DIR)
-
-perllibsbuild: 
-	make -C $(PERL_LIB_SOURCE)
-
-# MISC
-
-showtag:
-	echo $(RELEASE)
-	echo $(TAG)
-
-force: ;

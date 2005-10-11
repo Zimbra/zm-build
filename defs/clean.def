@@ -11,7 +11,7 @@ CLEAN_TARGETS	=	\
 		zcs-*.tgz \
 		zimbra.rpmrc \
 		zimbra*.spec \
-		i386
+		$(ARCH)
 
 # CLEAN
 

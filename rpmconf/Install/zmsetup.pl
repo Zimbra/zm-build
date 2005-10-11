@@ -119,14 +119,35 @@ sub loadConfig {
 }
 
 sub getInstalledPackages {
+
 	foreach my $p (@packageList) {
-		my $rc = 0xffff & system ("rpm -q $p > /dev/null 2>&1");
-		if (!$rc) {
+		if (isInstalled($p)) {
 			$installedPackages{$p} = $p;
 			$enabledPackages{$p} = "Enabled";
 		}
 	}
 	
+}
+
+sub isInstalled {
+	my $pkg = shift;
+
+	my $platform = `/opt/zimbra/bin/get_plat_tag.sh`;
+	chomp $platform;
+	my $pkgQuery;
+
+	my $good = 1;
+	if ($platform eq "DEBIAN3.1") {
+		$pkgQuery = "dpkg -s $pkg | egrep '^Status: ' | grep 'not-installed'";
+	} else {
+		$pkgQuery = "rpm -q $pkg";
+		$good = 0;
+	}
+
+	my $rc = 0xffff & system ("$pkgQuery > /dev/null 2>&1");
+	$rc >>= 8;
+	return ($rc == $good);
+
 }
 
 sub genRandomPass {

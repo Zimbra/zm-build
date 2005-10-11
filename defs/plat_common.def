@@ -2,9 +2,9 @@
 
 # 3rd PARTY INCLUDES
 
-RPMBUILD_VERSION := $(shell rpmbuild --version)
+PACKAGING_VERSION := $(shell $(PACKAGING_COMMAND) --version)
 
-ifeq ($(RPMBUILD_VERSION), RPM version 4.4.1)
+ifeq ($(PACKAGING_VERSION), RPM version 4.4.1)
 	RPMCOPYRIGHTSTR := License
 else
 	RPMCOPYRIGHTSTR := Copyright

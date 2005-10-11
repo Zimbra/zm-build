@@ -230,10 +230,9 @@ EOF
 	echo "Checking for prerequisites..."
 	for i in $PREREQ_PACKAGES; do
 		echo -n "    $i..."
-		rpm -q $i >/dev/null 2>&1
-		if [ $? = 0 ]; then
-			version=`rpm -q $i 2> /dev/null`
-			echo "FOUND $version"
+		isInstalled $i
+		if [ x$PKGINSTALLED != "x" ]; then
+			echo "FOUND $PKGINSTALLED"
 		else
 			echo "MISSING"
 			GOOD="no"
@@ -257,25 +256,21 @@ checkExistingInstall() {
 
 	echo "Checking for existing installation..."
 	for i in $OPTIONAL_PACKAGES; do
-		rpm -q $i >/dev/null 2>&1
-		if [ $? = 0 ]; then
-			echo -n "    $i..."
-			version=`rpm -q $i 2> /dev/null`
-			echo "FOUND $version"
-			INSTALLED="yes"
+		isInstalled $i
+		if [ x$PKGINSTALLED != "x" ]; then
+			echo "    $i...FOUND $PKGINSTALLED"
 			INSTALLED_PACKAGES="$INSTALLED_PACKAGES $i"
 		fi
 	done
 	for i in $PACKAGES $CORE_PACKAGES; do
 		echo -n "    $i..."
-		rpm -q $i >/dev/null 2>&1
-		if [ $? != 0 ]; then
-			echo "not found"
-		else
-			version=`rpm -q $i 2> /dev/null`
-			echo "FOUND $version"
+		isInstalled $i
+		if [ x$PKGINSTALLED != "x" ]; then
+			echo "FOUND $PKGINSTALLED"
 			INSTALLED="yes"
 			INSTALLED_PACKAGES="$INSTALLED_PACKAGES $i"
+		else
+			echo "NOT FOUND"
 		fi
 	done
 	if [ $INSTALLED = "yes" ]; then
@@ -504,13 +499,13 @@ removeExistingInstall() {
 				continue
 			fi
 			echo -n "   $p..."
-			rpm -ev --noscripts --allmatches $p
+			$PACKAGERM $p > /dev/null 2>&1
 			echo "done"
 		done
 
 		for p in $MOREPACKAGES; do
 			echo -n "   $p..."
-			rpm -ev --noscripts --allmatches $p
+			$PACKAGERM $p > /dev/null 2>&1
 			echo "done"
 		done
 
@@ -723,14 +718,14 @@ getInstallPackages() {
 
 setInstallPackages() {
 	for i in $OPTIONAL_PACKAGES; do
-		rpm -q $i >/dev/null 2>&1
-		if [ $? = 0 ]; then
+		isInstalled $i
+		if [ x$PKGINSTALLED != "x" ]; then
 			INSTALL_PACKAGES="$INSTALL_PACKAGES $i"
 		fi
 	done
 	for i in $PACKAGES $CORE_PACKAGES; do
-		rpm -q $i >/dev/null 2>&1
-		if [ $? = 0 ]; then
+		isInstalled $i
+		if [ x$PKGINSTALLED != "x" ]; then
 			INSTALL_PACKAGES="$INSTALL_PACKAGES $i"
 		fi
 	done
@@ -809,13 +804,13 @@ setupCrontab() {
 		/tmp/crontab.zimbra.proc
 	cp -f /opt/zimbra/zimbramon/crontabs/crontab /tmp/crontab.zimbra
 
-	rpm -q zimbra-store >/dev/null 2>&1
-	if [ $? = 0 ]; then
+	isInstalled zimbra-store
+	if [ x$PKGINSTALLED != "x" ]; then
 		cat /opt/zimbra/zimbramon/crontabs/crontab.store >> /tmp/crontab.zimbra
 	fi
 
-	rpm -q zimbra-logger >/dev/null 2>&1
-	if [ $? = 0 ]; then
+	isInstalled zimbra-logger
+	if [ x$PKGINSTALLED != "x" ]; then
 		cat /opt/zimbra/zimbramon/crontabs/crontab.logger >> /tmp/crontab.zimbra
 	fi
 
@@ -823,4 +818,41 @@ setupCrontab() {
 	cat /tmp/crontab.zimbra.proc >> /tmp/crontab.zimbra
 
 	crontab -u zimbra /tmp/crontab.zimbra
+}
+
+isInstalled () {
+	pkg=$1
+	PKGINSTALLED=""
+	if [ $PACKAGEEXT = "rpm" ]; then
+		$PACKAGEQUERY $pkg >/dev/null 2>&1
+		if [ $? = 0 ]; then
+			PKGINSTALLED=`$PACKAGEQUERY $pkg 2> /dev/null`
+		fi
+	else
+		Q=`$PACKAGEQUERY $pkg 2>/dev/null | egrep '^Status: ' `
+		if [ "x$Q" != "x" ]; then
+			echo $Q | grep 'not-installed' > /dev/null 2>&1
+			if [ $? != 0 ]; then
+				version=`$PACKAGEQUERY $pkg | egrep '^Version: ' | sed -e 's/Version: //' 2> /dev/null`
+				PKGINSTALLED="${pkg}-${version}"
+			fi
+		fi
+	fi
+}
+
+getPlatformVars() {
+	PLATFORM=`bin/get_plat_tag.sh`
+	if [ $PLATFORM = "DEBIAN3.1" ]; then
+		PACKAGEINST='dpkg -i'
+		PACKAGERM='dpkg --purge'
+		PACKAGEQUERY='dpkg -s'
+		PACKAGEEXT='deb'
+		PREREQ_PACKAGES="libidn11 curl fetchmail libgmp3"
+	else
+		PACKAGEINST='rpm -iv'
+		PACKAGERM='rpm -ev --noscripts --allmatches'
+		PACKAGEQUERY='rpm -q'
+		PACKAGEEXT='rpm'
+		PREREQ_PACKAGES="libidn curl fetchmail gmp"
+	fi
 }

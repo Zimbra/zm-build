@@ -1,14 +1,37 @@
 # __CORE
 
-core: $(RPM_DIR) core_stage $(BUILD_ROOT)/zimbracore.spec
-	(cd $(CORE_DEST_ROOT);\
-		rpmbuild  --target i386 --quiet --define '_rpmdir $(BUILD_ROOT)' \
-		--buildroot=$(CORE_DEST_ROOT) -bb $(BUILD_ROOT)/zimbracore.spec )
+core: CUR_DEST_ROOT := $(CORE_DEST_ROOT) 
+core: CUR_PACKAGE_SPEC := $(BUILD_ROOT)/zimbracore.spec 
+core: CUR_PACKAGE_NAME := zimbra-core
+core: $(PACKAGE_DIR) core_stage core_pkg_spec_$(PACKAGE_EXT)
+	(cd $(CUR_DEST_ROOT); \
+		$(PACKAGING_COMMAND) $(PACKAGING_OPTIONS) )
+
+core_pkg_spec_deb: $(CORE_DEST_ROOT)/DEBIAN/control
+
+$(CORE_DEST_ROOT)/DEBIAN: force
+	mkdir -p $@
+	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbracore.pre $@/preinst
+	echo "#!/bin/bash" > $@/postinst
+	echo "sh /opt/zimbra/bin/zmfixperms.sh" >> $@/postinst
+	cat $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbracore.post >> $@/postinst
+	chmod 555 $@/*
+
+$(CORE_DEST_ROOT)/DEBIAN/control: $(CORE_DEST_ROOT)/DEBIAN force
+	cat $(PACKAGE_CONF_DIR)/Spec/zimbracore.deb | \
+		sed -e 's/@@VERSION@@/$(VERSION_TAG)/' \
+		-e 's/@@RELEASE@@/$(RELEASE)/' \
+		-e 's/@@ARCH@@/$(ARCH)/' \
+		-e 's/^Copyright:/$(RPMCOPYRIGHTSTR):/' \
+		-e '/^%pre$$/ r zimbracore.pre' \
+		-e '/^%post$$/ r zimbracore.post' > $@
+
+core_pkg_spec_rpm: $(BUILD_ROOT)/zimbracore.spec
 
 $(BUILD_ROOT)/zimbracore.spec:
-	cp $(RPM_CONF_DIR)/Spec/Scripts/zimbracore.pre $(BUILD_ROOT)
-	cp $(RPM_CONF_DIR)/Spec/Scripts/zimbracore.post $(BUILD_ROOT)
-	cat $(RPM_CONF_DIR)/Spec/zimbracore.spec | \
+	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbracore.pre $(BUILD_ROOT)
+	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbracore.post $(BUILD_ROOT)
+	cat $(PACKAGE_CONF_DIR)/Spec/zimbracore.spec | \
 		sed -e 's/@@VERSION@@/$(VERSION_TAG)/' \
 		-e 's/@@RELEASE@@/$(RELEASE)/' \
 		-e 's/^Copyright:/$(RPMCOPYRIGHTSTR):/' \
@@ -55,18 +78,18 @@ $(CORE_DEST_DIR)/zimbramon: $(CORE_DEST_DIR)/zimbramon/lib $(CORE_DEST_DIR)/zimb
 	(cd $(CORE_DEST_DIR)/zimbramon; tar xzf $(MRTG_SOURCE).tgz)
 	mkdir -p $(CORE_DEST_DIR)/zimbramon/mrtg/work
 	mkdir -p $(CORE_DEST_DIR)/zimbramon/mrtg/conf
-	cp $(RPM_CONF_DIR)/Conf/mrtg.cfg $(CORE_DEST_DIR)/zimbramon/mrtg/conf
+	cp $(PACKAGE_CONF_DIR)/Conf/mrtg.cfg $(CORE_DEST_DIR)/zimbramon/mrtg/conf
 	(cd $(CORE_DEST_DIR)/zimbramon; tar xzf $(RRD_SOURCE).tar.gz)
 	mkdir -p $(CORE_DEST_DIR)/zimbramon/rrdtool/work
 	mkdir -p $(CORE_DEST_DIR)/zimbramon/rrdtool/work
-	cp -f $(RPM_CONF_DIR)/Img/connection_failed.gif \
+	cp -f $(PACKAGE_CONF_DIR)/Img/connection_failed.gif \
 		$(CORE_DEST_DIR)/zimbramon/rrdtool/work
-	cp -f $(RPM_CONF_DIR)/Img/data_not_available.gif \
+	cp -f $(PACKAGE_CONF_DIR)/Img/data_not_available.gif \
 		$(CORE_DEST_DIR)/zimbramon/rrdtool/work
 
 $(CORE_DEST_DIR)/zimbramon/crontabs:
 	mkdir -p $@
-	cp $(RPM_CONF_DIR)/Env/crontabs/* $(CORE_DEST_DIR)/zimbramon/crontabs
+	cp $(PACKAGE_CONF_DIR)/Env/crontabs/* $(CORE_DEST_DIR)/zimbramon/crontabs
 
 $(CORE_DEST_DIR)/zimbramon/lib:
 	mkdir -p $(CORE_DEST_DIR)/zimbramon/lib
@@ -95,11 +118,11 @@ $(CORE_DEST_DIR)/db: $(WEBAPP_DIR)/service.war
 
 $(CORE_DEST_DIR)/conf: $(WEBAPP_DIR)/service.war
 	mkdir -p $@
-	cp $(RPM_CONF_DIR)/Conf/swatchrc $@/swatchrc.in
-	cp $(RPM_CONF_DIR)/Conf/logswatchrc $@/logswatchrc
+	cp $(PACKAGE_CONF_DIR)/Conf/swatchrc $@/swatchrc.in
+	cp $(PACKAGE_CONF_DIR)/Conf/logswatchrc $@/logswatchrc
 	cp -R $(SERVICE_DIR)/conf/localconfig.xml $@/localconfig.xml
 	grep -vi stats $(SERVICE_DIR)/build/dist/conf/log4j.properties.production > $@/log4j.properties
-	cp $(RPM_CONF_DIR)/Conf/zmssl.cnf.in $@
+	cp $(PACKAGE_CONF_DIR)/Conf/zmssl.cnf.in $@
 	cp $(SERVICE_DIR)/conf/amavisd.conf.in $@
 	cp $(SERVICE_DIR)/conf/clamd.conf.in $@
 	cp $(SERVICE_DIR)/conf/freshclam.conf.in $@
@@ -116,8 +139,8 @@ $(CORE_DEST_DIR)/libexec:
 	@echo "*** Installing libexec"
 	mkdir -p $@/util/modules
 	cp -f -R $(SERVICE_DIR)/build/dist/libexec/zm*init $@
-	cp -f $(RPM_CONF_DIR)/Install/zmsetup.pl $@/zmsetup.pl
-	cp -f $(RPM_CONF_DIR)/Install/postinstall.pm $@/postinstall.pm
+	cp -f $(PACKAGE_CONF_DIR)/Install/zmsetup.pl $@/zmsetup.pl
+	cp -f $(PACKAGE_CONF_DIR)/Install/postinstall.pm $@/postinstall.pm
 
 $(CORE_DEST_DIR)/bin:
 	mkdir -p $@
@@ -126,6 +149,7 @@ $(CORE_DEST_DIR)/bin:
 	rm -f $(CORE_DEST_DIR)/bin/zmtransserver.bat
 	rm -f $(CORE_DEST_DIR)/bin/ldap
 	mv $(CORE_DEST_DIR)/bin/ldap.production $(CORE_DEST_DIR)/bin/ldap
+	cp $(PACKAGE_CONF_DIR)/Build/get_plat_tag.sh $@
 	cp $(ZIMBRA_BIN_DIR)/swatch $@
 	cp $(ZIMBRA_BIN_DIR)/swatch $@/logswatch
 	cp $(ZIMBRA_BIN_DIR)/zmswatchctl $@

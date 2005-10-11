@@ -1,15 +1,34 @@
 
 # __LOGGER
 
-logger: $(RPM_DIR) logger_stage $(BUILD_ROOT)/zimbralogger.spec
-	(cd $(LOGGER_DEST_ROOT); \
-		rpmbuild  --target i386 --quiet --define '_rpmdir $(BUILD_ROOT)' \
-		--buildroot=$(LOGGER_DEST_ROOT) -bb $(BUILD_ROOT)/zimbralogger.spec )
+logger: CUR_DEST_ROOT := $(LOGGER_DEST_ROOT)
+logger: CUR_PACKAGE_SPEC := $(BUILD_ROOT)/zimbralogger.spec
+logger: $(PACKAGE_DIR) logger_stage logger_pkg_spec_$(PACKAGE_EXT)
+	(cd $(CUR_DEST_ROOT); \
+		$(PACKAGING_COMMAND) $(PACKAGING_OPTIONS) )
+
+logger_pkg_spec_deb: $(LOGGER_DEST_ROOT)/DEBIAN/control
+
+$(LOGGER_DEST_ROOT)/DEBIAN: force
+	mkdir -p $@
+	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbralogger.pre $@/preinst
+	echo "#!/bin/bash" > $@/postinst
+	echo "sh /opt/zimbra/bin/zmfixperms.sh" >> $@/postinst
+	cat $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbralogger.post >> $@/postinst
+	chmod 555 $@/*
+
+$(LOGGER_DEST_ROOT)/DEBIAN/control: $(LOGGER_DEST_ROOT)/DEBIAN force
+	cat $(PACKAGE_CONF_DIR)/Spec/zimbralogger.deb | \
+	sed -e 's/@@VERSION@@/$(VERSION_TAG)/' \
+	-e 's/@@RELEASE@@/$(RELEASE)/' \
+	-e 's/@@ARCH@@/$(ARCH)/' > $@
+
+logger_pkg_spec_rpm: $(BUILD_ROOT)/zimbralogger.spec
 
 $(BUILD_ROOT)/zimbralogger.spec:
-	cp $(RPM_CONF_DIR)/Spec/Scripts/zimbralogger.pre $(BUILD_ROOT)
-	cp $(RPM_CONF_DIR)/Spec/Scripts/zimbralogger.post $(BUILD_ROOT)
-	cat $(RPM_CONF_DIR)/Spec/zimbralogger.spec | \
+	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbralogger.pre $(BUILD_ROOT)
+	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbralogger.post $(BUILD_ROOT)
+	cat $(PACKAGE_CONF_DIR)/Spec/zimbralogger.spec | \
 		sed -e 's/@@VERSION@@/$(VERSION_TAG)/' \
 		-e 's/@@RELEASE@@/$(RELEASE)/' \
 		-e 's/^Copyright:/$(RPMCOPYRIGHTSTR):/' \

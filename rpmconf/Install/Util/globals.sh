@@ -36,8 +36,6 @@ zimbra-spell"
 
 SERVICES=""
 
-PREREQ_PACKAGES="libidn curl fetchmail gmp"
-
 OPTIONAL_PACKAGES="zimbra-qatest"
 
 PACKAGE_DIR=`dirname $0`/packages

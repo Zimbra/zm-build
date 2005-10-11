@@ -40,11 +40,11 @@ $(DEV_INSTALL_ROOT)/$(SASL_DIR): $(DEV_INSTALL_ROOT)
 $(DEV_INSTALL_ROOT)/$(SNMP_DIR): $(DEV_INSTALL_ROOT)
 	@echo "*** Creating SNMP"
 	(cd $(DEV_INSTALL_ROOT); tar xzf $(SNMP_SOURCE).tar.gz;)
-	cp $(RPM_CONF_DIR)/Conf/snmpd.conf.in $(DEV_INSTALL_ROOT)/$(SNMP_DIR)/share/snmp/snmpd.conf.in
+	cp $(PACKAGE_CONF_DIR)/Conf/snmpd.conf.in $(DEV_INSTALL_ROOT)/$(SNMP_DIR)/share/snmp/snmpd.conf.in
 	mkdir -p $(DEV_INSTALL_ROOT)/$(SNMP_DIR)/conf
-	cp $(RPM_CONF_DIR)/Conf/snmp.conf $(DEV_INSTALL_ROOT)/$(SNMP_DIR)/conf/snmp.conf
-	cp $(RPM_CONF_DIR)/Conf/snmp.conf $(DEV_INSTALL_ROOT)/$(SNMP_DIR)/share/snmp/snmp.conf
-	cp $(RPM_CONF_DIR)/Conf/mibs/*mib $(DEV_INSTALL_ROOT)/$(SNMP_DIR)/share/snmp/mibs
+	cp $(PACKAGE_CONF_DIR)/Conf/snmp.conf $(DEV_INSTALL_ROOT)/$(SNMP_DIR)/conf/snmp.conf
+	cp $(PACKAGE_CONF_DIR)/Conf/snmp.conf $(DEV_INSTALL_ROOT)/$(SNMP_DIR)/share/snmp/snmp.conf
+	cp $(PACKAGE_CONF_DIR)/Conf/mibs/*mib $(DEV_INSTALL_ROOT)/$(SNMP_DIR)/share/snmp/mibs
 
 $(DEV_INSTALL_ROOT)/$(POSTFIX_DIR): $(DEV_INSTALL_ROOT)
 	@echo "*** Installing postfix"
@@ -60,9 +60,9 @@ $(DEV_INSTALL_ROOT)/$(CLAMAV_DIR): $(DEV_INSTALL_ROOT)
 	@echo "*** Installing clamav"
 	(cd $(DEV_INSTALL_ROOT); tar xzf $(CLAMAV_SOURCE).tgz;)
 	mkdir -p $(DEV_INSTALL_ROOT)/$(CLAMAV_DIR)-$(CLAMAV_VERSION)/db
-	cp -f $(RPM_CONF_DIR)/ClamAv/main.cvd \
+	cp -f $(PACKAGE_CONF_DIR)/ClamAv/main.cvd \
 		$(DEV_INSTALL_ROOT)/$(CLAMAV_DIR)-$(CLAMAV_VERSION)/db/main.cvd.init
-	cp -f $(RPM_CONF_DIR)/ClamAv/daily.cvd \
+	cp -f $(PACKAGE_CONF_DIR)/ClamAv/daily.cvd \
 		$(DEV_INSTALL_ROOT)/$(CLAMAV_DIR)-$(CLAMAV_VERSION)/db/daily.cvd.init
 
 dev-install: $(DEV_INSTALL_COMPONENTS)
@@ -115,7 +115,7 @@ $(DEV_INSTALL_ROOT)/$(AMAVISD_DIR): $(DEV_INSTALL_ROOT)
 	mkdir -p $@/sbin
 	cp -f $(AMAVISD_SOURCE)/amavisd $@/sbin
 	mkdir -p $@/.spamassassin/init
-	cp -f $(RPM_CONF_DIR)/SpamAssassin/bayes* $@/.spamassassin/init
+	cp -f $(PACKAGE_CONF_DIR)/SpamAssassin/bayes* $@/.spamassassin/init
 
 devperllibs: 
 	mkdir -p $(DEV_INSTALL_ROOT)/zimbramon/lib
@@ -130,13 +130,13 @@ $(DEV_INSTALL_ROOT)/zimbramon: $(DEV_INSTALL_ROOT) devperllibs
 	chmod 755 $@/zmmon
 	cp -f -R $(ZIMBRA_BIN_DIR)/zmcontrol $@
 	chmod 755 $@/zmcontrol
-	cp -f -R $(RPM_CONF_DIR)/Ctl/zimbra.cf.in $@/zimbra.cf
-	cp -f -R $(RPM_CONF_DIR)/Ctl/zimbracore.cf $@
-	cp -f -R $(RPM_CONF_DIR)/Ctl/zimbramail.cf $@
-	cp -f -R $(RPM_CONF_DIR)/Ctl/zimbramta.cf $@
-	cp -f -R $(RPM_CONF_DIR)/Ctl/zimbraldap.cf $@
-	cp -f -R $(RPM_CONF_DIR)/Ctl/zimbralogger.cf $@
-	cp -f -R $(RPM_CONF_DIR)/Ctl/zimbrasnmp.cf $@
+	cp -f -R $(PACKAGE_CONF_DIR)/Ctl/zimbra.cf.in $@/zimbra.cf
+	cp -f -R $(PACKAGE_CONF_DIR)/Ctl/zimbracore.cf $@
+	cp -f -R $(PACKAGE_CONF_DIR)/Ctl/zimbramail.cf $@
+	cp -f -R $(PACKAGE_CONF_DIR)/Ctl/zimbramta.cf $@
+	cp -f -R $(PACKAGE_CONF_DIR)/Ctl/zimbraldap.cf $@
+	cp -f -R $(PACKAGE_CONF_DIR)/Ctl/zimbralogger.cf $@
+	cp -f -R $(PACKAGE_CONF_DIR)/Ctl/zimbrasnmp.cf $@
 	mkdir -p $@/lib/Zimbra/Mon
 	@cp -f $(wildcard $(BUILD_ROOT)/lib/Zimbra/Mon/*.pm) $@/lib/Zimbra/Mon
 	mkdir -p $@/lib/Zimbra/Mon/SOAP
@@ -144,8 +144,8 @@ $(DEV_INSTALL_ROOT)/zimbramon: $(DEV_INSTALL_ROOT) devperllibs
 	(cd $(DEV_INSTALL_ROOT)/zimbramon; tar xzf $(MRTG_SOURCE).tgz)
 	mkdir -p $(DEV_INSTALL_ROOT)/zimbramon/mrtg/work
 	mkdir -p $(DEV_INSTALL_ROOT)/zimbramon/mrtg/conf
-	cp -f $(RPM_CONF_DIR)/Conf/mrtg.cfg $(DEV_INSTALL_ROOT)/zimbramon/mrtg/conf
-	cp -f $(RPM_CONF_DIR)/Env/crontab $(DEV_INSTALL_ROOT)/zimbramon/crontab
+	cp -f $(PACKAGE_CONF_DIR)/Conf/mrtg.cfg $(DEV_INSTALL_ROOT)/zimbramon/mrtg/conf
+	cp -f $(PACKAGE_CONF_DIR)/Env/crontab $(DEV_INSTALL_ROOT)/zimbramon/crontab
 	(cd $(DEV_INSTALL_ROOT)/zimbramon; tar xzf $(RRD_SOURCE).tar.gz)
 
 $(DEV_INSTALL_ROOT)/db:
@@ -172,8 +172,8 @@ $(DEV_INSTALL_ROOT)/libexec:
 	@echo "*** Installing libexec"
 	mkdir -p $@/util/modules
 	cp -f -R $(SERVICE_DIR)/build/dist/libexec/zm*init $@
-	cp -f $(RPM_CONF_DIR)/Install/Util/*sh $@/util
-	cp -f $(RPM_CONF_DIR)/Install/Util/modules/* $@/util/modules
+	cp -f $(PACKAGE_CONF_DIR)/Install/Util/*sh $@/util
+	cp -f $(PACKAGE_CONF_DIR)/Install/Util/modules/* $@/util/modules
 
 $(DEV_INSTALL_ROOT)/bin:
 	@echo "*** Installing bin"
@@ -200,11 +200,11 @@ $(DEV_INSTALL_ROOT)/bin:
 $(DEV_INSTALL_ROOT)/conf: $(SERVICE_DIR)/$(WEBAPP_BUILD_DIR)/service.war
 	@echo "*** Installing conf"
 	mkdir -p $@
-	cp -f $(RPM_CONF_DIR)/Conf/swatchrc $@/swatchrc.in
-	cp -f $(RPM_CONF_DIR)/Conf/logswatchrc $@/logswatchrc
+	cp -f $(PACKAGE_CONF_DIR)/Conf/swatchrc $@/swatchrc.in
+	cp -f $(PACKAGE_CONF_DIR)/Conf/logswatchrc $@/logswatchrc
 	cp -f -R $(SERVICE_DIR)/conf/localconfig.xml $@/localconfig.xml
 	grep -vi stats $(SERVICE_DIR)/build/dist/conf/log4j.properties.production > $@/log4j.properties
-	cp -f $(RPM_CONF_DIR)/Conf/zmssl.cnf.in $@
+	cp -f $(PACKAGE_CONF_DIR)/Conf/zmssl.cnf.in $@
 	cp -f $(SERVICE_DIR)/conf/amavisd.conf.in $@
 	cp -f $(SERVICE_DIR)/conf/clamd.conf $@
 	cp -f $(SERVICE_DIR)/conf/freshclam.conf $@

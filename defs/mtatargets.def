@@ -1,15 +1,37 @@
 
 # __MTA
 
-mta: $(RPM_DIR) mta_stage $(BUILD_ROOT)/zimbramta.spec
-	(cd $(MTA_DEST_ROOT); \
-		rpmbuild  --target i386 --quiet --define '_rpmdir $(BUILD_ROOT)' \
-		--buildroot=$(MTA_DEST_ROOT) -bb $(BUILD_ROOT)/zimbramta.spec )
+mta: CUR_DEST_ROOT := $(MTA_DEST_ROOT)
+mta: CUR_PACKAGE_SPEC := $(BUILD_ROOT)/zimbramta.spec
+mta: $(PACKAGE_DIR) mta_stage mta_pkg_spec_$(PACKAGE_EXT)
+	(cd $(CUR_DEST_ROOT); \
+		$(PACKAGING_COMMAND) $(PACKAGING_OPTIONS) )
+
+mta_pkg_spec_deb: $(MTA_DEST_ROOT)/DEBIAN/control
+
+$(MTA_DEST_ROOT)/DEBIAN: force
+	mkdir -p $@
+	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbramta.pre $@/preinst
+	echo "#!/bin/bash" > $@/postinst
+	echo "sh /opt/zimbra/bin/zmfixperms.sh" >> $@/postinst
+	cat $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbramta.post >> $@/postinst
+	chmod 555 $@/*
+
+$(MTA_DEST_ROOT)/DEBIAN/control: $(MTA_DEST_ROOT)/DEBIAN force
+	cat $(PACKAGE_CONF_DIR)/Spec/zimbramta.deb | \
+	sed -e 's/@@VERSION@@/$(VERSION_TAG)/' \
+	-e 's/@@RELEASE@@/$(RELEASE)/' \
+	-e 's/@@ARCH@@/$(ARCH)/' \
+	-e 's/^Copyright:/$(RPMCOPYRIGHTSTR):/' \
+	-e '/^%pre$$/ r zimbramta.pre' \
+	-e '/^%post$$/ r zimbramta.post' > $@
+
+mta_pkg_spec_rpm: $(BUILD_ROOT)/zimbramta.spec
 
 $(BUILD_ROOT)/zimbramta.spec:
-	cp $(RPM_CONF_DIR)/Spec/Scripts/zimbramta.pre $(BUILD_ROOT)
-	cp $(RPM_CONF_DIR)/Spec/Scripts/zimbramta.post $(BUILD_ROOT)
-	cat $(RPM_CONF_DIR)/Spec/zimbramta.spec | \
+	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbramta.pre $(BUILD_ROOT)
+	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbramta.post $(BUILD_ROOT)
+	cat $(PACKAGE_CONF_DIR)/Spec/zimbramta.spec | \
 		sed -e 's/@@VERSION@@/$(VERSION_TAG)/' \
 		-e 's/@@RELEASE@@/$(RELEASE)/' \
 		-e 's/^Copyright:/$(RPMCOPYRIGHTSTR):/' \
@@ -60,15 +82,15 @@ $(MTA_DEST_DIR)/$(CLAMAV_DIR): $(MTA_DEST_DIR)
 	@echo "*** Creating clamav"
 	(cd $(MTA_DEST_DIR); tar xzf $(CLAMAV_SOURCE).tgz;)
 	mkdir -p $(MTA_DEST_DIR)/$(CLAMAV_DIR)-$(CLAMAV_VERSION)/db
-	cp $(RPM_CONF_DIR)/ClamAv/main.cvd $(MTA_DEST_DIR)/$(CLAMAV_DIR)-$(CLAMAV_VERSION)/db/main.cvd.init
-	cp $(RPM_CONF_DIR)/ClamAv/daily.cvd $(MTA_DEST_DIR)/$(CLAMAV_DIR)-$(CLAMAV_VERSION)/db/daily.cvd.init
+	cp $(PACKAGE_CONF_DIR)/ClamAv/main.cvd $(MTA_DEST_DIR)/$(CLAMAV_DIR)-$(CLAMAV_VERSION)/db/main.cvd.init
+	cp $(PACKAGE_CONF_DIR)/ClamAv/daily.cvd $(MTA_DEST_DIR)/$(CLAMAV_DIR)-$(CLAMAV_VERSION)/db/daily.cvd.init
 
 $(MTA_DEST_DIR)/$(AMAVISD_DIR): $(MTA_DEST_DIR)
 	@echo "*** Creating amavisd"
 	mkdir -p $@/sbin
 	cp -f $(AMAVISD_SOURCE)/amavisd $@/sbin
 	mkdir -p $@/.spamassassin/init
-	cp -f $(RPM_CONF_DIR)/SpamAssassin/bayes* $@/.spamassassin/init
+	cp -f $(PACKAGE_CONF_DIR)/SpamAssassin/bayes* $@/.spamassassin/init
 
 $(MTA_DEST_DIR)/$(SASL_DIR): $(MTA_DEST_DIR)
 	@echo "*** Creating cyrus-sasl"

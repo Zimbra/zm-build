@@ -52,6 +52,8 @@ done
 
 . ./util/globals.sh
 
+getPlatformVars
+
 mkdir -p $SAVEDIR
 chmod 777 $SAVEDIR
 
