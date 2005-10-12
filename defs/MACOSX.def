@@ -1,0 +1,9 @@
+# Definitions for MACOSX
+
+PACKAGING_COMMAND := packagemake
+
+PACKAGING_OPTIONS = -b $(CUR_DEST_ROOT) $(PACKAGE_DIR)/$(CUR_PKG_NAME)
+
+PACKAGE_EXT := pkg
+
+include $(DEFS_DIR)/plat_common.def
