@@ -1328,13 +1328,18 @@ sub checkMenuConfig {
 }
 
 sub verifyLdap {
+	# My laptop can't always find itself...
+	my $H = $config{LDAPHOST};
 	if (($config{LDAPHOST} eq $config{HOSTNAME}) && !$ldapConfigured) {
 		return 0;
 	}
-	print "Checking ldap on $config{LDAPHOST}:$config{LDAPPORT}...";
+	if ($config{LDAPHOST} eq $config{HOSTNAME}) {
+		$H = "localhost";
+	}
+	print "Checking ldap on ${H}:$config{LDAPPORT}...";
 
 	my $ldapsearch = "$zimbraHome/bin/ldapsearch";
-	my $args = "-x -h $config{LDAPHOST} -p $config{LDAPPORT} ".
+	my $args = "-x -h ${H} -p $config{LDAPPORT} ".
 		"-D 'uid=zimbra,cn=admins,cn=zimbra' -w $config{LDAPPASS}";
 
 	my $rc = 0xffff & system ("$ldapsearch $args > /tmp/zmsetup.ldap.out 2>&1");
