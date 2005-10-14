@@ -3,9 +3,43 @@
 
 store: CUR_DEST_ROOT := $(STORE_DEST_ROOT)
 store: CUR_PACKAGE_SPEC := $(BUILD_ROOT)/zimbra.spec
+store: CUR_PACKAGE_NAME := zimbra-store
 store: $(PACKAGE_DIR) store_stage store_pkg_spec_$(PACKAGE_EXT)
 	(cd $(CUR_DEST_ROOT); \
 		$(PACKAGING_COMMAND) $(PACKAGING_OPTIONS) )
+
+store_pkg_spec_pkg: $(BUILD_ROOT)/resources/zimbra-store $(BUILD_ROOT)/zimbra-store.Info.plist $(BUILD_ROOT)/zimbra-store.Description.plist $(STORE_DEST_DIR)/$(TOMCAT_DIR)/compat
+
+$(STORE_DEST_DIR)/$(TOMCAT_DIR)/compat: force
+	(cd $(STORE_DEST_DIR)/$(TOMCAT_DIR); tar xzf \
+	$(THIRD_PARTY)/jakarta-tomcat/apache-tomcat-5.5.12-compat.tar.gz; \
+	mv apache-tomcat-5.5.12/bin/* bin/; \
+	mv apache-tomcat-5.5.12/common/endorsed/* common/endorsed; \
+	rm -rf apache-tomcat-5.5.12;)
+
+$(BUILD_ROOT)/zimbra-store.Description.plist:
+	cat $(PACKAGE_CONF_DIR)/Spec/zimbra-store.Description.plist | \
+	sed -e 's/@@VERSION@@/$(VERSION_TAG)/' \
+	-e 's/@@RELEASE@@/$(RELEASE)/' \
+	-e 's/@@MAJOR@@/$(MAJOR)/' \
+	-e 's/@@MINOR@@/$(MINOR)/' > $@
+
+$(BUILD_ROOT)/zimbra-store.Info.plist:
+	cat $(PACKAGE_CONF_DIR)/Spec/zimbra-store.Info.plist | \
+	sed -e 's/@@VERSION@@/$(VERSION_TAG)/' \
+	-e 's/@@RELEASE@@/$(RELEASE)/' \
+	-e 's/@@MAJOR@@/$(MAJOR)/' \
+	-e 's/@@MINOR@@/$(MINOR)/' > $@
+
+$(BUILD_ROOT)/resources/zimbra-store:
+	mkdir -p $@
+	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-store.postflight $@/postflight
+	chmod 755 $@/postflight
+#       cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbrastore.pre $@/preinstall
+#       echo "#!/bin/bash" > $@/postinst
+#       echo "sh /opt/zimbra/bin/zmfixperms.sh" >> $@/postinst
+#       cat $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbrastore.post >> $@/postinstall
+#       chmod 555 $@/*
 
 store_pkg_spec_deb: $(STORE_DEST_ROOT)/DEBIAN/control
 

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<installer-gui-script minSpecVersion="1.0">
+    <title>Zimbra Collaboration Suite</title>
+	<welcome file="Welcome.txt"></welcome>
+	<license file="License.txt"></license>
+	<conclusion file="Conclusion.txt"></conclusion>
+    <background file="background.gif" scaling="none" alignment="right"></background>
+    <options allow-external-scripts="yes" customize="allow"></options>
+    <script>
+function installationCheckRAM()
+{
+	if (system.sysctl('hw.memsize') &lt; (128*1024*1024)) {
+		my.type = 'Warn';
+		my.title = 'Memory Warning';
+		my.message = 'You have less than 128MB of RAM.';
+	}
+}
+</script>
+    <script>
+function volumeCheckTiger()
+{
+	if (my.target.systemVersion.ProductVersion &lt; '10.4')
+		my.type = 'Fatal';
+}
+</script>
+    <script>
+function choiceIsADowngrade()
+{
+	var upgradeAction = my.choice.packageUpgradeAction;
+
+	if ((upgradeAction == 'downgrade') || (upgradeAction == 'mixed')) {
+		return true;
+	}
+
+	return false;
+}
+</script>
+    <choices-outline>
+        <line choice="choice3"></line>
+        <line choice="choice5"></line>
+        <line choice="choice12"></line>
+        <line choice="choice7"></line>
+        <line choice="choice10"></line>
+        <line choice="choice11"></line>
+        <line choice="choice6"></line>
+    </choices-outline>
+    <choice id="choice3" title="Core Utilities" start_selected="true" start_enabled="false" start_visible="true">
+        <pkg-ref id="com.zimbra.zcs.core"></pkg-ref>
+    </choice>
+    <choice id="choice5" title="Ldap" start_selected="true" start_enabled="true" start_visible="true">
+        <pkg-ref id="com.zimbra.zcs.ldap"></pkg-ref>
+    </choice>
+    <choice id="choice12" title="Mailbox" start_selected="true" start_enabled="true" start_visible="true">
+        <pkg-ref id="com.zimbra.zcs.store"></pkg-ref>
+    </choice>
+    <choice id="choice7" title="Mta" start_selected="true" start_enabled="true" start_visible="true">
+        <pkg-ref id="com.zimbra.zcs.mta"></pkg-ref>
+    </choice>
+    <choice id="choice10" title="Spell" start_selected="true" start_enabled="true" start_visible="true">
+        <pkg-ref id="com.zimbra.zcs.apache"></pkg-ref>
+        <pkg-ref id="com.zimbra.zcs.spell"></pkg-ref>
+    </choice>
+    <choice id="choice11" title="Snmp" start_selected="true" start_enabled="true" start_visible="true">
+        <pkg-ref id="com.zimbra.zcs.snmp"></pkg-ref>
+    </choice>
+    <choice id="choice6" title="Logger" start_selected="true" start_enabled="true" start_visible="true">
+        <pkg-ref id="com.zimbra.zcs.logger"></pkg-ref>
+    </choice>
+    <pkg-ref id="com.zimbra.zcs.core" version="3.0" installKBytes="@@CORESIZE@@" auth="Admin" onConclusion="None">file:./Contents/.Packages/zimbra-core.3.0.M2_336.pkg</pkg-ref>
+    <pkg-ref id="com.zimbra.zcs.ldap" version="3.0" installKBytes="@@LDAPSIZE@@" auth="Admin" onConclusion="None">file:./Contents/.Packages/zimbra-ldap.3.0.M2_336.pkg</pkg-ref>
+    <pkg-ref id="com.zimbra.zcs.store" version="3.0" installKBytes="@@STORESIZE@@" auth="Admin" onConclusion="None">file:./Contents/.Packages/zimbra-store.3.0.M2_336.pkg</pkg-ref>
+    <pkg-ref id="com.zimbra.zcs.mta" version="3.0" installKBytes="@@MTASIZE@@" auth="Admin" onConclusion="None">file:./Contents/.Packages/zimbra-mta.3.0.M2_336.pkg</pkg-ref>
+    <pkg-ref id="com.zimbra.zcs.apache" version="3.0" installKBytes="@@APACHESIZE@@" auth="Admin" onConclusion="None">file:./Contents/.Packages/zimbra-apache.3.0.M2_336.pkg</pkg-ref>
+    <pkg-ref id="com.zimbra.zcs.spell" version="3.0" installKBytes="@@SPELLSIZE@@" auth="Admin" onConclusion="None">file:./Contents/.Packages/zimbra-spell.3.0.M2_336.pkg</pkg-ref>
+    <pkg-ref id="com.zimbra.zcs.snmp" version="3.0" installKBytes="@@SNMPSIZE@@" auth="Admin" onConclusion="None">file:./Contents/.Packages/zimbra-snmp.3.0.M2_336.pkg</pkg-ref>
+    <pkg-ref id="com.zimbra.zcs.logger" version="3.0" installKBytes="@@LOGGERSIZE@@" auth="Admin" onConclusion="None">file:./Contents/.Packages/zimbra-logger.3.0.M2_336.pkg</pkg-ref>
+</installer-gui-script>

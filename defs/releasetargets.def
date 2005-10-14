@@ -1,4 +1,33 @@
-zcs-$(RELEASE).tgz: packages
+zcs-$(RELEASE).dmg: $(ARCH)/zcs.mpkg packages
+
+$(ARCH)/zcs.mpkg: $(ARCH)/zcs.mpkg/Contents
+	mkdir -p $@/Contents
+
+$(ARCH)/zcs.mpkg/Contents: $(ARCH)/zcs.mpkg/Contents/.Packages $(ARCH)/zcs.mpkg/Contents/Resources $(ARCH)/zcs.mpkg/Contents/distribution.dist
+	mkdir -p $@
+
+$(ARCH)/zcs.mpkg/Contents/.Packages:
+	mkdir -p $@
+	cp -R $(ARCH)/*.pkg $@
+
+$(ARCH)/zcs.mpkg/Contents/Resources: $(ARCH)/zcs.mpkg/Contents/Resources/English.lproj
+	mkdir -p $@
+
+$(ARCH)/zcs.mpkg/Contents/Resources/English.lproj: 
+	mkdir -p $@
+	cp -f $(LICENSE_DIR)/zimbra/zcl.txt $@/License.txt 
+	cp -f $(CONSOLE_DIR)/img/hiRes/logo/SplashScreen.gif $@/background.gif
+	echo "Welcome to the ZCS installer" > $@/Welcome.txt
+	echo "ZCS Installation complete" > $@/Conclusion.txt
+	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zcs.postflight $@/postflight
+	chmod 755 $@/postflight
+
+$(ARCH)/zcs.mpkg/Contents/distribution.dist:
+	sh $(PACKAGE_CONF_DIR)/Build/create_distribution.dist.sh $(ARCH) $(PACKAGE_CONF_DIR)/Spec/distribution.dist > $@
+
+zcs-$(RELEASE).tgz: zcs_stage packages
+
+zcs_stage:
 	mkdir -p zcs/packages
 	mkdir -p zcs/bin
 	mkdir -p zcs/data

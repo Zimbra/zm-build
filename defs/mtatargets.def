@@ -3,9 +3,36 @@
 
 mta: CUR_DEST_ROOT := $(MTA_DEST_ROOT)
 mta: CUR_PACKAGE_SPEC := $(BUILD_ROOT)/zimbramta.spec
+mta: CUR_PACKAGE_NAME := zimbra-mta
 mta: $(PACKAGE_DIR) mta_stage mta_pkg_spec_$(PACKAGE_EXT)
 	(cd $(CUR_DEST_ROOT); \
 		$(PACKAGING_COMMAND) $(PACKAGING_OPTIONS) )
+
+mta_pkg_spec_pkg: $(BUILD_ROOT)/resources/zimbra-mta $(BUILD_ROOT)/zimbra-mta.Info.plist $(BUILD_ROOT)/zimbra-mta.Description.plist
+
+$(BUILD_ROOT)/zimbra-mta.Description.plist:
+	cat $(PACKAGE_CONF_DIR)/Spec/zimbra-mta.Description.plist | \
+	sed -e 's/@@VERSION@@/$(VERSION_TAG)/' \
+	-e 's/@@RELEASE@@/$(RELEASE)/' \
+	-e 's/@@MAJOR@@/$(MAJOR)/' \
+	-e 's/@@MINOR@@/$(MINOR)/' > $@
+
+$(BUILD_ROOT)/zimbra-mta.Info.plist:
+	cat $(PACKAGE_CONF_DIR)/Spec/zimbra-mta.Info.plist | \
+	sed -e 's/@@VERSION@@/$(VERSION_TAG)/' \
+	-e 's/@@RELEASE@@/$(RELEASE)/' \
+	-e 's/@@MAJOR@@/$(MAJOR)/' \
+	-e 's/@@MINOR@@/$(MINOR)/' > $@
+
+$(BUILD_ROOT)/resources/zimbra-mta:
+	mkdir -p $@
+	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-mta.postflight $@/postflight
+	chmod 755 $@/postflight
+#       cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbramta.pre $@/preinstall
+#       echo "#!/bin/bash" > $@/postinst
+#       echo "sh /opt/zimbra/bin/zmfixperms.sh" >> $@/postinst
+#       cat $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbramta.post >> $@/postinstall
+#       chmod 555 $@/*
 
 mta_pkg_spec_deb: $(MTA_DEST_ROOT)/DEBIAN/control
 

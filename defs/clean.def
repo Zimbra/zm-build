@@ -11,6 +11,8 @@ CLEAN_TARGETS	=	\
 		zcs-*.tgz \
 		zimbra.rpmrc \
 		zimbra*.spec \
+		*.plist \
+		resources \
 		$(ARCH)
 
 # CLEAN

@@ -3,9 +3,36 @@
 
 ldap: CUR_DEST_ROOT := $(LDAP_DEST_ROOT)
 ldap: CUR_PACKAGE_SPEC := $(BUILD_ROOT)/zimbraldap.spec
+ldap: CUR_PACKAGE_NAME := zimbra-ldap
 ldap: $(PACKAGE_DIR) ldap_stage ldap_pkg_spec_$(PACKAGE_EXT)
 	(cd $(CUR_DEST_ROOT); \
 		$(PACKAGING_COMMAND) $(PACKAGING_OPTIONS) )
+
+ldap_pkg_spec_pkg: $(BUILD_ROOT)/resources/zimbra-ldap $(BUILD_ROOT)/zimbra-ldap.Info.plist $(BUILD_ROOT)/zimbra-ldap.Description.plist
+
+$(BUILD_ROOT)/zimbra-ldap.Description.plist:
+	cat $(PACKAGE_CONF_DIR)/Spec/zimbra-ldap.Description.plist | \
+	sed -e 's/@@VERSION@@/$(VERSION_TAG)/' \
+	-e 's/@@RELEASE@@/$(RELEASE)/' \
+	-e 's/@@MAJOR@@/$(MAJOR)/' \
+	-e 's/@@MINOR@@/$(MINOR)/' > $@
+
+$(BUILD_ROOT)/zimbra-ldap.Info.plist:
+	cat $(PACKAGE_CONF_DIR)/Spec/zimbra-ldap.Info.plist | \
+	sed -e 's/@@VERSION@@/$(VERSION_TAG)/' \
+	-e 's/@@RELEASE@@/$(RELEASE)/' \
+	-e 's/@@MAJOR@@/$(MAJOR)/' \
+	-e 's/@@MINOR@@/$(MINOR)/' > $@
+
+$(BUILD_ROOT)/resources/zimbra-ldap:
+	mkdir -p $@
+	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-ldap.postflight $@/postflight
+	chmod 755 $@/postflight
+#       cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbraldap.pre $@/preinstall
+#       echo "#!/bin/bash" > $@/postinst
+#       echo "sh /opt/zimbra/bin/zmfixperms.sh" >> $@/postinst
+#       cat $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbraldap.post >> $@/postinstall
+#       chmod 555 $@/*
 
 ldap_pkg_spec_deb: $(LDAP_DEST_ROOT)/DEBIAN/control
 

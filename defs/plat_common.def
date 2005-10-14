@@ -2,13 +2,17 @@
 
 # 3rd PARTY INCLUDES
 
-PACKAGING_VERSION := $(shell $(PACKAGING_COMMAND) --version)
+ifeq ($(PACKAGING_COMMAND), rpmbuild)
+	PACKAGING_VERSION := $(shell $(PACKAGING_COMMAND) --version)
+endif
 
 ifeq ($(PACKAGING_VERSION), RPM version 4.4.1)
 	RPMCOPYRIGHTSTR := License
 else
 	RPMCOPYRIGHTSTR := Copyright
 endif
+
+BUNDLE_EXT := tgz
 
 THIRD_PARTY	:= $(BUILD_ROOT)/../ThirdParty
 
@@ -25,8 +29,8 @@ TOMCAT_DIR	:= jakarta-tomcat-$(TOMCAT_VERSION)
 TOMCAT_SOURCE 	:= $(THIRD_PARTY)/jakarta-tomcat/$(TOMCAT_DIR)
 
 MYSQL_VERSION	:= standard-4.1.10a-pc-linux-gnu-i686
-MYSQL_DIR	:= mysql-$(MYSQL_VERSION)
-MYSQL_SOURCE 	:= $(THIRD_PARTY)/mysql/$(BUILD_PLATFORM)/$(MYSQL_DIR)
+MYSQL_DIR	= mysql-$(MYSQL_VERSION)
+MYSQL_SOURCE 	= $(THIRD_PARTY)/mysql/$(BUILD_PLATFORM)/$(MYSQL_DIR)
 
 POSTFIX_VERSION := 2.2.3
 POSTFIX_DIR	:= postfix-$(POSTFIX_VERSION)

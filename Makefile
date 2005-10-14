@@ -28,7 +28,7 @@ include $(DEFS_DIR)/components.def
 
 # PACKAGE TARGETS
 
-all: packages zcs-$(RELEASE).tgz
+all: packages zcs-$(RELEASE).$(BUNDLE_EXT)
 
 include $(DEFS_DIR)/misctargets.def
 

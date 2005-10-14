@@ -3,9 +3,36 @@
 
 snmp: CUR_DEST_ROOT := $(SNMP_DEST_ROOT)
 snmp: CUR_PACKAGE_SPEC := $(BUILD_ROOT)/zimbrasnmp.spec
+snmp: CUR_PACKAGE_NAME := zimbra-snmp
 snmp: $(PACKAGE_DIR) snmp_stage snmp_pkg_spec_$(PACKAGE_EXT)
 	(cd $(CUR_DEST_ROOT); \
 		$(PACKAGING_COMMAND) $(PACKAGING_OPTIONS) )
+
+snmp_pkg_spec_pkg: $(BUILD_ROOT)/resources/zimbra-snmp $(BUILD_ROOT)/zimbra-snmp.Info.plist $(BUILD_ROOT)/zimbra-snmp.Description.plist
+
+$(BUILD_ROOT)/zimbra-snmp.Description.plist:
+	cat $(PACKAGE_CONF_DIR)/Spec/zimbra-snmp.Description.plist | \
+	sed -e 's/@@VERSION@@/$(VERSION_TAG)/' \
+	-e 's/@@RELEASE@@/$(RELEASE)/' \
+	-e 's/@@MAJOR@@/$(MAJOR)/' \
+	-e 's/@@MINOR@@/$(MINOR)/' > $@
+
+$(BUILD_ROOT)/zimbra-snmp.Info.plist:
+	cat $(PACKAGE_CONF_DIR)/Spec/zimbra-snmp.Info.plist | \
+	sed -e 's/@@VERSION@@/$(VERSION_TAG)/' \
+	-e 's/@@RELEASE@@/$(RELEASE)/' \
+	-e 's/@@MAJOR@@/$(MAJOR)/' \
+	-e 's/@@MINOR@@/$(MINOR)/' > $@
+
+$(BUILD_ROOT)/resources/zimbra-snmp:
+	mkdir -p $@
+	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-snmp.postflight $@/postflight
+	chmod 755 $@/postflight
+#       cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbrasnmp.pre $@/preinstall
+#       echo "#!/bin/bash" > $@/postinst
+#       echo "sh /opt/zimbra/bin/zmfixperms.sh" >> $@/postinst
+#       cat $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbrasnmp.post >> $@/postinstall
+#       chmod 555 $@/*
 
 snmp_pkg_spec_deb: $(SNMP_DEST_ROOT)/DEBIAN/control
 
