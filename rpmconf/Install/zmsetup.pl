@@ -61,6 +61,9 @@ my $loggerSqlRunning = 0;
 
 my $ldapPassChanged = 0;
 
+my $platform = `/opt/zimbra/bin/get_plat_tag.sh`;
+chomp $platform;
+
 my $logfile = "/tmp/zmsetup.log.$$";
 
 open LOGFILE, ">$logfile" or die "Can't open $logfile: $!\n";
@@ -132,13 +135,14 @@ sub getInstalledPackages {
 sub isInstalled {
 	my $pkg = shift;
 
-	my $platform = `/opt/zimbra/bin/get_plat_tag.sh`;
-	chomp $platform;
 	my $pkgQuery;
 
 	my $good = 1;
 	if ($platform eq "DEBIAN3.1") {
 		$pkgQuery = "dpkg -s $pkg | egrep '^Status: ' | grep 'not-installed'";
+	} elsif ($platform eq "MACOSX") {
+		$pkgQuery = "test -d /Library/Receipts/${pkg}*";
+		$good = 0;
 	} else {
 		$pkgQuery = "rpm -q $pkg";
 		$good = 0;
@@ -205,11 +209,12 @@ sub setDefaults {
 	$config{USESPELL} = "no";
 	$config{SPELLURL} = "";
 
-	$config{HOSTNAME} = `hostname --fqdn`;
+	if ($platform eq "MACOSX") {
+		$config{HOSTNAME} = `hostname`;
+	} else {
+		$config{HOSTNAME} = `hostname --fqdn`;
+	}
 	chomp $config{HOSTNAME};
-
-	$config{SERVICEIP} = `hostname -i`;
-	chomp $config{SERVICEIP};
 
 	$config{SMTPHOST} = "";
 	$config{SNMPTRAPHOST} = $config{HOSTNAME};
@@ -1640,7 +1645,6 @@ sub addServerToHostPool {
 
 	foreach (@HP) {
 		chomp;
-		if ($_ eq "wolfowitz.liquidsys.com") {return;}
 		$n .= "zimbraMailHostPool $_ ";
 	}
 
