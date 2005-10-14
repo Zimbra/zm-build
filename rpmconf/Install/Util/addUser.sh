@@ -92,15 +92,13 @@ auxgroups=`echo $auxgroups | sed -e 's/,/ /g'`
 
 verifyAvailable "users" $name
 
-auxgids=""
 for g in $auxgroups; do
 	verifyExists groups $g
 	if [ $EXISTS = 0 ]; then
 		echo "Auxiliary group $g not found!"
 		exit 1
 	else
-		getGIDByName $g
-		auxgids="$auxgids,$GID"
+		/usr/bin/niutil -mergeprop / /groups/$g users $name
 	fi
 done
 
@@ -121,9 +119,15 @@ if [ $creategroup = 1 ]; then
 	/usr/bin/niutil -create / /groups/$maingroup
 	/usr/bin/niutil -createprop / /groups/$maingroup gid $maingid
 fi
+/usr/bin/niutil -mergeprop / /groups/$maingroup users $name
 
 niutil -create / /users/$name
 niutil -createprop / /users/$name uid $mainuid
-niutil -createprop / /users/$name gid ${maingid}${auxgids}
+niutil -createprop / /users/$name gid ${maingid}
+niutil -createprop / /users/$name shell /bin/bash
+
+if [ x$homedir != "x" ]; then
+	niutil -createprop / /users/$name home $homedir
+fi
 
 exit 0

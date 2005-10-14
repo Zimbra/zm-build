@@ -1,4 +1,8 @@
 zcs-$(RELEASE).dmg: $(ARCH)/zcs.mpkg packages
+	mkdir $(ARCH)/tmp
+	cp -R $(ARCH)/zcs.mpkg $(ARCH)/tmp
+	hdiutil create -srcfolder $(ARCH)/tmp $(ARCH)/zcs.dmg
+	rm -rf $(ARCH)/tmp
 
 $(ARCH)/zcs.mpkg: $(ARCH)/zcs.mpkg/Contents
 	mkdir -p $@/Contents
