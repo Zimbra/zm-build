@@ -228,6 +228,15 @@ EOF
 
 	GOOD="yes"
 	echo "Checking for prerequisites..."
+	echo -n "	NPTL..."
+	/usr/bin/getconf GNU_LIBPTHREAD_VERSION | grep NPTL > /dev/null 2>&1
+	if [ $? != 0 ]; then
+		echo "MISSING"
+		GOOD="no"
+	else
+		echo "FOUND"
+	fi
+
 	for i in $PREREQ_PACKAGES; do
 		echo -n "    $i..."
 		isInstalled $i
