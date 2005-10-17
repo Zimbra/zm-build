@@ -125,13 +125,27 @@ $(CORE_DEST_DIR)/zimbramon/lib:
 	tar xzf $(PERL_LIB_SOURCE)/builds/$(BUILD_PLATFORM)/perllib.tgz)
 	cp -R $(BUILD_ROOT)/lib/Zimbra $(CORE_DEST_DIR)/zimbramon/lib
 
-$(CORE_DEST_DIR)/lib: $(WEBAPP_DIR)/service.war $(LDAP_DEST_DIR)/$(LDAP_DIR) $(MTA_DEST_DIR)/$(BDB_DIR)
+$(CORE_DEST_DIR)/lib: $(WEBAPP_DIR)/service.war $(LDAP_DEST_DIR)/$(LDAP_DIR) $(MTA_DEST_DIR)/$(BDB_DIR) pcre_$(BUILD_PLATFORM)
 	mkdir -p $@
 	cp -pr $(SERVICE_DIR)/build/dist/lib/* $@
 	cp -pr $(LDAP_DEST_DIR)/$(LDAP_DIR)/lib/* $@
 	cp -pr $(MTA_DEST_DIR)/$(BDB_DIR)/lib/* $@
 	cp -pr $(SERVICE_DIR)/build/dist/lib/* $@
-	(cd $@; tar xzf $(THIRD_PARTY)/mysql/$(BUILD_PLATFORM)/mysql-standard-4.1.10a-clientlibs.tgz)
+	(cd $@; tar xzf $(THIRD_PARTY)/mysql/$(BUILD_PLATFORM)/mysql-$(MYSQL_CLIENT_VERSION).tgz)
+
+pcre_MACOSX: 
+	mkdir -p $(CORE_DEST_DIR)/lib
+	(cd $(CORE_DEST_DIR)/lib; tar xzf $(THIRD_PARTY)/pcre/builds/$(BUILD_PLATFORM)/pcre.tgz)
+
+pcre_FC4: ;
+
+pcre_FC3: ;
+
+pcre_RHEL4: ;
+
+pcre_DEBIAN3.1: ;
+
+pcre_SuSEES9: ;
 
 $(CORE_DEST_DIR)/jdk1.5.0_04:
 	@echo "*** Creating java"

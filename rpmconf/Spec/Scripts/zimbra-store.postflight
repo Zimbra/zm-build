@@ -26,6 +26,9 @@
 
 rm -f /opt/zimbra/mysql
 ln -s /opt/zimbra/mysql-standard-4.1.14-apple-darwin8.2.0-powerpc /opt/zimbra/mysql
+# Can't get the dylib to hold the correct path...
+ln -s /opt/zimbra/mysql-standard-4.1.14-apple-darwin8.2.0-powerpc/lib /opt/zimbra/mysql-standard-4.1.14-apple-darwin8.2.0-powerpc/lib/mysql
+
 
 H=`hostname -s`
 
