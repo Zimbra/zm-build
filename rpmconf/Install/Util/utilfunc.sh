@@ -226,9 +226,28 @@ EOF
 	exit 1
 	fi
 
+	if ! cat /etc/hosts | \
+		perl -ne 'if (/^\s*\d+\.\d+\.\d+\.\d+\s+(\S+)/ && !/^\s*127\.0\.0\.1/) { my @foo = split (/\./,$1); if ($#foo == "0") {exit 11;} }'; then
+
+	cat<<EOF
+
+	ERROR: Installation can not proceeed.  Please fix your /etc/hosts file
+	to contain:
+
+	<ip> <FQHN> <HN>
+
+	Where <IP> is the ip address of the host, 
+	<FQHN> is the FULLY QUALIFIED host name, and
+	<HN> is the (optional) hostname-only portion
+
+EOF
+
+	exit 1
+	fi
+
 	GOOD="yes"
 	echo "Checking for prerequisites..."
-	echo -n "	NPTL..."
+	echo -n "    NPTL..."
 	/usr/bin/getconf GNU_LIBPTHREAD_VERSION | grep NPTL > /dev/null 2>&1
 	if [ $? != 0 ]; then
 		echo "MISSING"
