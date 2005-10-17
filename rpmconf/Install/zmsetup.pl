@@ -244,10 +244,13 @@ sub setDefaults {
 	} else {
 		$config{DOCREATEDOMAIN} = "no";
 		$config{DOCREATEADMIN} = "no";
-		setDefaultsFromLocalConfig();
+		my $t = time()+(60*60*30);
+		my @d = localtime($t);
+		$config{EXPIRY} = sprintf ("%04d%02d%02d",$d[5]+1900,$d[4]+1,$d[3]);
 	}
 	print "Done\n";
 }
+
 
 sub setDefaultsFromLocalConfig {
 	$config{HOSTNAME} = getLocalConfig ("zimbra_server_hostname");
@@ -1390,6 +1393,10 @@ sub applyConfig {
 
 	setLocalConfig ("ldap_host", $config{LDAPHOST});
 	setLocalConfig ("ldap_port", $config{LDAPPORT});
+
+	if (defined $config{EXPIRY}) {
+		setLocalConfig ("trial_expiration_date", $config{EXPIRY});
+	}
 
 	if (!$ldapConfigured && isEnabled("zimbra-ldap")) {
 		print "Initializing ldap...\n";
