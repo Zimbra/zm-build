@@ -1457,14 +1457,12 @@ sub applyConfig {
 					"zimbraIsAdminAccount TRUE");
 				print "Done\n";
 				print LOGFILE "Done\n";
-				if ($config{HOSTNAME} eq $config{CREATEDOMAIN}) {
-					print "Creating postmaster alias...\n";
-					print LOGFILE "Creating postmaster alias...\n";
-					runAsZimbra("/opt/zimbra/bin/zmprov aaa $config{CREATEADMIN} ".
-						"postmaster\@$config{CREATEDOMAIN}");
-					print "Done\n";
-					print LOGFILE "Done\n";
-				}
+				print "Creating postmaster alias...\n";
+				print LOGFILE "Creating postmaster alias...\n";
+				runAsZimbra("/opt/zimbra/zmprov aaa $config{CREATEADMIN} root\@$config{CREATEDOMAIN}");
+				runAsZimbra("/opt/zimbra/zmprov aaa $config{CREATEADMIN} postmaster\@$config{CREATEDOMAIN}");
+				print "Done\n";
+				print LOGFILE "Done\n";
 			}
 		}
 	}
