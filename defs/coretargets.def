@@ -205,7 +205,7 @@ $(CORE_DEST_DIR)/bin:
 	cp $(ZIMBRA_BIN_DIR)/zmtlsctl $@
 	cp $(ZIMBRA_BIN_DIR)/zmfixperms.sh $@
 	cp $(ZIMBRA_BIN_DIR)/zmsyslogsetup $@
-	cp $(ZIMBRA_BIN_DIR)/zmstatuslog $@
+	cp $(SERVICE_DIR)/src/bin/zmstatuslog $@
 	cp $(LDAP_DEST_ROOT)/opt/zimbra/$(LDAP_DIR)/bin/ldapsearch $@
 	cp $(ZIMBRA_BIN_DIR)/zmantispamctl $@
 	cp $(ZIMBRA_BIN_DIR)/zmantivirusctl $@
