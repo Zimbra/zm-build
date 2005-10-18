@@ -8,4 +8,4 @@
 #
 # Status logging
 #
-*/10 * * * * /opt/zimbta/bin/zmstatuslog
+*/10 * * * * /opt/zimbra/bin/zmstatuslog
