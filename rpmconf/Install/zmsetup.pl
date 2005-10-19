@@ -241,12 +241,13 @@ sub setDefaults {
 
 	if ( -f "/opt/zimbra/.newinstall") {
 		unlink "/opt/zimbra/.newinstall";
-	} else {
-		$config{DOCREATEDOMAIN} = "no";
-		$config{DOCREATEADMIN} = "no";
 		my $t = time()+(60*60*30);
 		my @d = localtime($t);
 		$config{EXPIRY} = sprintf ("%04d%02d%02d",$d[5]+1900,$d[4]+1,$d[3]);
+	} else {
+		$config{DOCREATEDOMAIN} = "no";
+		$config{DOCREATEADMIN} = "no";
+		setDefaultsFromLocalConfig();
 	}
 	print "Done\n";
 }
