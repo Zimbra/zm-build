@@ -558,7 +558,7 @@ removeExistingInstall() {
 		umount /opt/zimbra/amavisd/tmp > /dev/null 2>&1
 		MOUNTPOINTS=`mount | awk '{print $3}' | grep /opt/zimbra`
 		for mp in $MOUNTPOINTS; do
-			if [ x$mp != "x/opt/zimbra"]; then
+			if [ x$mp != "x/opt/zimbra" ]; then
 				/bin/rm -rf ${mp}/*
 				umount -f ${mp}
 			fi
@@ -567,7 +567,7 @@ removeExistingInstall() {
 		/bin/rm -rf /opt/zimbra/*
 
 		for mp in $MOUNTPOINTS; do
-			if [ x$mp != "x/opt/zimbra"]; then
+			if [ x$mp != "x/opt/zimbra" ]; then
 				mkdir -p ${mp}
 				mount ${mp}
 			fi
