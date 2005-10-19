@@ -2,8 +2,8 @@ perlcode 0 my %notifications=();
 perlcode 0 $notifications{smtp}="@@DOSMTPNOTIFICATIONS@@";
 perlcode 0 $notifications{snmp}="@@DOSNMPNOTIFICATIONS@@";
 
-perlcode 0 my $fr="@@ADMINEMAIL@@";
-perlcode 0 my $pwc="@@PHCEMAIL@@";
+perlcode 0 my $fr='@@ADMINEMAIL@@';
+perlcode 0 my $pwc='@@PHCEMAIL@@';
 
 perlcode 0 my $snmpargs="-v 2c -c zimbra localhost ''";
 perlcode 0 my $snmptrap="/opt/zimbra/snmp/bin/snmptrap $snmpargs";
