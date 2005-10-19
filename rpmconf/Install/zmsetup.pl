@@ -1498,7 +1498,6 @@ sub applyConfig {
 
 	if (isEnabled("zimbra-logger")) {
 		runAsZimbra ("/opt/zimbra/bin/zmprov mcf zimbraLogHostname $config{HOSTNAME}");
-		runAsZimbra ("/opt/zimbra/bin/zmprov ms $config{HOSTNAME} zimbraIsMonitorHost TRUE");
 	}
 
 	if (isEnabled("zimbra-mta")) {
