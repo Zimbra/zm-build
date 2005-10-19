@@ -1395,6 +1395,12 @@ sub applyConfig {
 	setLocalConfig ("ldap_host", $config{LDAPHOST});
 	setLocalConfig ("ldap_port", $config{LDAPPORT});
 
+	if (defined $config{AVUSER}) {
+		setLocalConfig ("av_notify_user", $config{AVUSER})
+	}
+	if (defined $config{AVDOMAIN}) {
+		setLocalConfig ("av_notify_domain", $config{AVDOMAIN})
+	}
 	if (defined $config{EXPIRY}) {
 		setLocalConfig ("trial_expiration_date", $config{EXPIRY});
 	}
