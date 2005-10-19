@@ -1,0 +1,55 @@
+tools
+
+p4
+
+xcode tools
+
+environment
+	Add /opt/local/bin to the beginning of your PATH
+	(Add /opt/local/man to MANPATH)
+
+TOOLS:
+
+darwinports1.0
+
+install p4 (Make sure it's in your PATH)
+install ant (Make sure it's in your PATH)
+
+install ports:
+	autoconf 2.59_0 (active)
+	automake 1.9.5_0 (active)
+	expat 1.95.8_1 (active)
+	gawk 3.1.4_1 (active)
+	gmake 3.80_1 (active)
+	gmp 4.1.4_2 (active)
+	libtool 1.5.16_0 (active)
+	binutils 2.15_1 (active)
+
+
+create zimbra group
+
+create zimbra user:
+	shell: /bin/bash
+	home: /opt/zimbra
+	group: zimbra
+
+checkout zimbra source to <source_root>
+
+ThirdParty builds (perform as root)
+
+cd <source root>/Thirdparty
+
+make allclean
+make
+
+Zimbra build (perform as any user)
+
+cd <source_root>/ZimbraBuild
+make allclean
+make
+
+This will drop the install packages (and dmg) in:
+<source_root>/ZimbraBuild/ppc
+
+rm -rf /opt/zimbra/*
+install zcs.mpkg
