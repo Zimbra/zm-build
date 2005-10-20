@@ -1,4 +1,4 @@
-SERVICE mailbox "Zimbra Mail Console" tomcat,mysql,convertd
+SERVICE mailbox "Zimbra Mail Console" tomcat,mysql
 
 APPLICATION tomcat test_server "9999" normal "tomcat server"
 
@@ -6,12 +6,6 @@ CONTROL_SYNTAX zimbrasyntax tomcat_start "/opt/zimbra/bin/tomcat start"
 CONTROL_SYNTAX zimbrasyntax tomcat_stop "/opt/zimbra/bin/tomcat stop"
 CONTROL_SYNTAX zimbrasyntax tomcat_kill "/opt/zimbra/bin/tomcat kill"
 CONTROL_SYNTAX zimbrasyntax tomcat_status "/opt/zimbra/bin/tomcat status"
-
-APPLICATION convertd test_server "9999" normal "conversion server"
-
-CONTROL_SYNTAX zimbrasyntax convertd_start "/opt/zimbra/bin/zmconvertctl start"
-CONTROL_SYNTAX zimbrasyntax convertd_stop "/opt/zimbra/bin/zmconvertctl stop"
-CONTROL_SYNTAX zimbrasyntax convertd_status "/opt/zimbra/bin/zmconvertctl status"
 
 APPLICATION mysql test_server "9999" normal "mysql server"
 
