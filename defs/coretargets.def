@@ -80,7 +80,7 @@ $(BUILD_ROOT)/zimbracore.spec:
 		$(BUILD_ROOT)/zimbracore.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/db" >> \
 		$(BUILD_ROOT)/zimbracore.spec
-	echo "%attr(-, zimbra, zimbra) /opt/zimbra/jdk1.5.0_04" >> \
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/jdk1.5.0_05" >> \
 		$(BUILD_ROOT)/zimbracore.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/lib" >> \
 		$(BUILD_ROOT)/zimbracore.spec
@@ -147,7 +147,7 @@ pcre_DEBIAN3.1: ;
 
 pcre_SuSEES9: ;
 
-$(CORE_DEST_DIR)/jdk1.5.0_04:
+$(CORE_DEST_DIR)/jdk1.5.0_05:
 	@echo "*** Creating java"
 	(cd $(CORE_DEST_DIR); tar xzf $(JAVA_SOURCE).tgz;)
 

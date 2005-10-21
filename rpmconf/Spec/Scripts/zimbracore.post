@@ -30,7 +30,7 @@ I=`hostname -i`
 
 #Symlinks
 rm -f /opt/zimbra/java
-ln -s /opt/zimbra/jdk1.5.0_04 /opt/zimbra/java
+ln -s /opt/zimbra/jdk1.5.0_05 /opt/zimbra/java
 
 cat /opt/zimbra/zimbramon/zimbra.cf.in > /opt/zimbra/zimbramon/zimbra.cf
 
