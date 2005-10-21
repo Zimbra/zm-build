@@ -43,7 +43,7 @@ I=`hostname -i`
 
 egrep -q '^%zimbra.*postfix' /etc/sudoers
 if [ $? != 0 ]; then
-	echo "%zimbra   ALL=NOPASSWD:/opt/zimbra/postfix/sbin/postfix, /opt/zimbra/postfix/sbin/postalias, /opt/zimbra/postfix/sbin/qshape.pl" >> /etc/sudoers
+	echo "%zimbra   ALL=NOPASSWD:/opt/zimbra/postfix/sbin/postfix, /opt/zimbra/postfix/sbin/postalias, /opt/zimbra/postfix/sbin/qshape.pl, /opt/zimbra/postfix/sbin/postconf" >> /etc/sudoers
 fi
 
 egrep -q 'postfix_start' /opt/zimbra/zimbramon/zimbra.cf
