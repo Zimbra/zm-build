@@ -241,7 +241,7 @@ sub setDefaults {
 
 	if ( -f "/opt/zimbra/.newinstall") {
 		unlink "/opt/zimbra/.newinstall";
-		my $t = time()+(60*60*30);
+		my $t = time()+(60*60*24*60);
 		my @d = localtime($t);
 		$config{EXPIRY} = sprintf ("%04d%02d%02d",$d[5]+1900,$d[4]+1,$d[3]);
 	} else {
