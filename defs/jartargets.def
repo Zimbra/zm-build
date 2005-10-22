@@ -12,6 +12,10 @@ $(STORE_DEST_DIR)/$(TOMCAT_DIR)/common/lib/activation.jar: $(STORE_DEST_DIR)/$(T
 	mkdir -p $(STORE_DEST_DIR)/$(TOMCAT_DIR)/common/lib
 	cp $(SERVICE_DIR)/build/dist/lib/activation.jar $(STORE_DEST_DIR)/$(TOMCAT_DIR)/common/lib
 
-$(STORE_DEST_DIR)/$(TOMCAT_DIR)/common/lib/zimbra-native.jar: $(STORE_DEST_DIR)/$(TOMCAT_DIR) $(WEBAPP_DIR)/service.war
+$(STORE_DEST_DIR)/$(TOMCAT_DIR)/common/lib/zimbra-native.jar: $(NATIVE_DIR)/build/zimbra-native.jar
 	mkdir -p $(STORE_DEST_DIR)/$(TOMCAT_DIR)/common/lib
-	cp $(SERVICE_DIR)/build/dist/lib/zimbra-native.jar $(STORE_DEST_DIR)/$(TOMCAT_DIR)/common/lib
+	cp $(NATIVE_DIR)/build/zimbra-native.jar $(STORE_DEST_DIR)/$(TOMCAT_DIR)/common/lib
+
+$(NATIVE_DIR)/zimbra-native.jar:
+	(cd $(NATIVE_DIR); make TOMCAT_HOME=$(TOMCAT_HOME) JAVA_BINARY=$(JAVA_BINARY))
+
