@@ -210,6 +210,7 @@ sub setDefaults {
 	$config{SPELLURL} = "";
 
 	if ($platform eq "MACOSX") {
+		setLocalConfig ("zimbra_java_home", "/usr");
 		$config{HOSTNAME} = `hostname`;
 	} else {
 		$config{HOSTNAME} = `hostname --fqdn`;
@@ -1394,6 +1395,13 @@ sub applyConfig {
 
 	setLocalConfig ("ldap_host", $config{LDAPHOST});
 	setLocalConfig ("ldap_port", $config{LDAPPORT});
+	my $uid = `id -u zimbra`;
+	chomp $uid;
+	my $gid = `id -g zimbra`;
+	chomp $gid;
+	setLocalConfig ("zimbra_uid", $uid);
+	setLocalConfig ("zimbra_gid", $gid);
+	setLocalConfig ("zimbra_user", "zimbra");
 
 	if (defined $config{AVUSER}) {
 		setLocalConfig ("av_notify_user", $config{AVUSER})
@@ -1612,8 +1620,9 @@ sub applyConfig {
 	print "Operations logged to $logfile\n";
 	print "\n\n";
 	if (!defined ($options{c})) {
-		ask("Installation complete - press any key to continue", "");
+		ask("Configuration complete - press return to exit", "");
 		print "\n\n";
+		exit 0;
 	}
 }
 

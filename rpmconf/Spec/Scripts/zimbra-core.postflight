@@ -28,8 +28,8 @@
 
 /bin/sh /opt/zimbra/libexec/addUser.sh -g zimbra -G postfix -d /opt/zimbra zimbra
 
-rm -f /opt/zimbra/java
-ln -s /usr /opt/zimbra/java
+#rm -f /opt/zimbra/java
+#ln -s /usr /opt/zimbra/java
 
 /bin/sh /opt/zimbra/bin/zmfixperms.sh
 

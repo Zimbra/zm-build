@@ -196,6 +196,7 @@ $(CORE_DEST_DIR)/bin: $(NATIVE_DIR)/build/zmtomcatstart
 	mkdir -p $@
 	cp -R $(SERVICE_DIR)/build/dist/bin/[a-z]* $@
 	rm -f $@/zm*init
+	mv $@/tomcat.production $@/tomcat
 	rm -f $(CORE_DEST_DIR)/bin/zmtransserver.bat
 	rm -f $(CORE_DEST_DIR)/bin/ldap
 	mv $(CORE_DEST_DIR)/bin/ldap.production $(CORE_DEST_DIR)/bin/ldap
