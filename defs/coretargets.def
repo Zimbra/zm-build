@@ -70,19 +70,19 @@ $(BUILD_ROOT)/zimbracore.spec:
 	(cd $(CORE_DEST_ROOT); find opt -type f -o -type l -maxdepth 2 \
 		| sed -e 's|^|%attr(-, zimbra, zimbra) /|' >> \
 		$(BUILD_ROOT)/zimbracore.spec )
-	echo "%attr(755, zimbra, zimbra) /opt/zimbra/bin" >> \
+	echo "%attr(755, root, root) /opt/zimbra/bin" >> \
 		$(BUILD_ROOT)/zimbracore.spec
 	echo "%attr(444, zimbra, zimbra) /opt/zimbra/doc" >> \
 		$(BUILD_ROOT)/zimbracore.spec
-	echo "%attr(755, zimbra, zimbra) /opt/zimbra/libexec" >> \
+	echo "%attr(755, root, root) /opt/zimbra/libexec" >> \
 		$(BUILD_ROOT)/zimbracore.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/conf" >> \
 		$(BUILD_ROOT)/zimbracore.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/db" >> \
 		$(BUILD_ROOT)/zimbracore.spec
-	echo "%attr(-, zimbra, zimbra) /opt/zimbra/jdk1.5.0_05" >> \
+	echo "%attr(-, root, root) /opt/zimbra/jdk1.5.0_05" >> \
 		$(BUILD_ROOT)/zimbracore.spec
-	echo "%attr(-, zimbra, zimbra) /opt/zimbra/lib" >> \
+	echo "%attr(-, root, root) /opt/zimbra/lib" >> \
 		$(BUILD_ROOT)/zimbracore.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/zimbramon" >> \
 		$(BUILD_ROOT)/zimbracore.spec
