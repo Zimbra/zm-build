@@ -62,10 +62,10 @@ fi
 /opt/zimbra/bin/zmsyslogsetup local
 
 # Setup iptables
-iptables -t nat -F
-/sbin/chkconfig iptables on
+#iptables -t nat -F
+#/sbin/chkconfig iptables on
 
-/opt/zimbra/bin/zmiptables -i
+#/opt/zimbra/bin/zmiptables -i
 
 cp /opt/zimbra/bin/zimbra /etc/init.d/zimbra
 chmod 755 /etc/init.d/zimbra
