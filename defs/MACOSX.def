@@ -21,3 +21,4 @@ VERSION_TAG := $(MAJOR).$(MINOR).$(MICRO)_$(BUILDNUM)
 
 BUNDLE_EXT := dmg
 
+JNI_EXT := jnilib
