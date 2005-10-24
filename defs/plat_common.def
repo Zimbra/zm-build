@@ -75,7 +75,7 @@ SASL_DIR := cyrus-sasl
 SASL_SOURCE := $(THIRD_PARTY)/$(SASL_DIR)/builds/$(BUILD_PLATFORM)/$(SASL_DIR)-$(SASL_VERSION)
 
 TOMCAT_HOME := /opt/zimbra/$(TOMCAT_DIR)
-JAVA_BINARY := /opt/zimbra/$(JAVA_FILE)$(JAVA_VERSION)
+JAVA_BINARY := /opt/zimbra/$(JAVA_FILE)$(JAVA_VERSION)/bin/java
 
 JNI_EXT := so
 
