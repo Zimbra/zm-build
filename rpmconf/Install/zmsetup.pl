@@ -93,6 +93,8 @@ sub saveConfig {
 	if (open CONF, ">$fname") {
 		print "Saving config in $fname...";
 		foreach (sort keys %config) {
+			# Don't write passwords
+			if (/PASS/) {next;} 
 			print CONF "$_=$config{$_}\n";
 		}
 		print CONF "INSTALL_PACKAGES=\"";
@@ -208,6 +210,11 @@ sub setDefaults {
 	$config{LDAPPORT} = 389;
 	$config{USESPELL} = "no";
 	$config{SPELLURL} = "";
+
+	$config{IMAPPORT} = 143;
+	$config{IMAPSSLPORT} = 993;
+	$config{POPPORT} = 110;
+	$config{POPSSLPORT} = 995;
 
 	if ($platform eq "MACOSX") {
 		setLocalConfig ("zimbra_java_home", "/usr");
@@ -592,6 +599,26 @@ sub setLdapPort {
 			$config{LDAPPORT}));
 }
 
+sub setImapPort {
+	askNum("Please enter the IMAP server port",
+			$config{IMAPPORT});
+}
+
+sub setImapSSLPort {
+	askNum("Please enter the IMAP SSL server port",
+			$config{IMAPSSLPORT});
+}
+
+sub setPopPort {
+	askNum("Please enter the POP server port",
+			$config{POPPORT});
+}
+
+sub setPopSSLPort {
+	askNum("Please enter the POP SSL server port",
+			$config{POPSSLPORT});
+}
+
 sub setSpellUrl {
 	$config{SPELLURL} = askNonBlank("Please enter the spell server URL", 
 		$config{SPELLURL});
@@ -916,6 +943,30 @@ sub createStoreMenu {
 			"prompt" => "Web server mode:", 
 			"var" => \$config{MODE}, 
 			"callback" => \&setStoreMode,
+			};
+		$i++;
+		$$lm{menuitems}{$i} = { 
+			"prompt" => "IMAP server port:", 
+			"var" => \$config{IMAPPORT}, 
+			"callback" => \&setImapPort,
+			};
+		$i++;
+		$$lm{menuitems}{$i} = { 
+			"prompt" => "IMAP server SSL port:", 
+			"var" => \$config{IMAPSSLPORT}, 
+			"callback" => \&setImapSSLPort,
+			};
+		$i++;
+		$$lm{menuitems}{$i} = { 
+			"prompt" => "POP server port:", 
+			"var" => \$config{POPPORT}, 
+			"callback" => \&setPopPort,
+			};
+		$i++;
+		$$lm{menuitems}{$i} = { 
+			"prompt" => "POP server SSL port:", 
+			"var" => \$config{POPSSLPORT}, 
+			"callback" => \&setPopSSLPort,
 			};
 		$i++;
 		$$lm{menuitems}{$i} = { 
@@ -1251,12 +1302,12 @@ sub createMainMenu {
 			#push @mm, "$_ not installed";
 		}
 	}
-	my %cm = ();
-	$cm{createsub} = \&createControlMenu;
-	$mm{menuitems}{d} = { 
-		"prompt" => "Database controls", 
-		"submenu" => \%cm,
-	};
+#	my %cm = ();
+#	$cm{createsub} = \&createControlMenu;
+#	$mm{menuitems}{d} = { 
+#		"prompt" => "Database controls", 
+#		"submenu" => \%cm,
+#	};
 	$mm{menuitems}{r} = { 
 		"prompt" => "Start servers after configuration", 
 		"callback" => \&toggleYN,
@@ -1357,8 +1408,15 @@ sub verifyLdap {
 
 sub runAsZimbra {
 	my $cmd = shift;
-	print "*** Running as zimbra user: $cmd\n";
-	print LOGFILE "*** Running as zimbra user: $cmd\n";
+	if ($cmd =~ /init/) {
+		# Suppress passwords in log file
+		my $c = (split ' ', $cmd)[0];
+		print "*** Running as zimbra user: $c\n";
+		print LOGFILE "*** Running as zimbra user: $c\n";
+	} else {
+		print "*** Running as zimbra user: $cmd\n";
+		print LOGFILE "*** Running as zimbra user: $cmd\n";
+	}
 	my $rc;
 	$rc = 0xffff & system("su - zimbra -c \"$cmd\" >> $logfile 2>&1");
 	return $rc;
@@ -1460,6 +1518,13 @@ sub applyConfig {
 			print "Done\n";
 			print LOGFILE "Done\n";
 		}
+		print "Setting service ports on $config{HOSTNAME}...\n";
+		print LOGFILE "Setting service ports on $config{HOSTNAME}...\n";
+		runAsZimbra("/opt/zimbra/bin/zmprov ms $config{HOSTNAME} ".
+			"zimbraImapBindPort $config{IMAPPORT} zimbraImapSSLBindPort $config{IMAPSSLPORT} ".
+			"zimbraPop3BindPort $config{POPPORT} zimbraPop3SSLBindPort $config{POPSSLPORT}");
+		print "Done\n";
+		print LOGFILE "Done\n";
 		addServerToHostPool();
 	}
 
