@@ -41,7 +41,10 @@ chown zimbra:zimbra /opt/zimbra/tomcat/logs
 
 mkdir -p /opt/zimbra/convertd
 mkdir -p /opt/zimbra/redolog
-chown zimbra:zimbra /opt/zimbra/convertd /opt/zimbra/redolog
+mkdir -p /opt/zimbra/store
+mkdir -p /opt/zimbra/index
+mkdir -p /opt/zimbra/backup
+chown zimbra:zimbra /opt/zimbra/convertd /opt/zimbra/redolog /opt/zimbra/store /opt/zimbra/index /opt/zimbra/backup 
 
 egrep -q 'tomcat_start' /opt/zimbra/zimbramon/zimbra.cf
 if [ $? != 0 ]; then
