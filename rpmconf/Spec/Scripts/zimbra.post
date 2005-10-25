@@ -39,6 +39,10 @@ ln -s /opt/zimbra/jakarta-tomcat-5.5.7 /opt/zimbra/tomcat
 mkdir -p /opt/zimbra/tomcat/logs
 chown zimbra:zimbra /opt/zimbra/tomcat/logs
 
+mkdir -p /opt/zimbra/convertd
+mkdir -p /opt/zimbra/redolog
+chown zimbra:zimbra /opt/zimbra/convertd /opt/zimbra/redolog
+
 egrep -q 'tomcat_start' /opt/zimbra/zimbramon/zimbra.cf
 if [ $? != 0 ]; then
     cat /opt/zimbra/zimbramon/zimbramail.cf >> /opt/zimbra/zimbramon/zimbra.cf
