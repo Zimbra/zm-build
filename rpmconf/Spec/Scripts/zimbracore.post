@@ -74,4 +74,5 @@ chkconfig zimbra on
 
 mkdir -p /opt/zimbra/log
 chown zimbra:zimbra /opt/zimbra/log
-chown zimbra:zimbra /opt/zimbra
+mkdir /opt/zimbra/.ssh
+chown zimbra:zimbra /opt/zimbra/.ssh

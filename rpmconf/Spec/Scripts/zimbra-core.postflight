@@ -28,6 +28,9 @@
 
 /bin/sh /opt/zimbra/libexec/addUser.sh -g zimbra -G postfix -d /opt/zimbra zimbra
 
+mkdir /opt/zimbra/.ssh
+chown zimbra:zimbra /opt/zimbra/.ssh
+
 #rm -f /opt/zimbra/java
 #ln -s /usr /opt/zimbra/java
 
