@@ -27,4 +27,4 @@
 rm -f /opt/zimbra/snmp
 ln -s /opt/zimbra/snmp-5.1.2 /opt/zimbra/snmp
 
-/bin/sh /opt/zimbra/bin/zmfixperms.sh
+#/bin/sh /opt/zimbra/bin/zmfixperms.sh

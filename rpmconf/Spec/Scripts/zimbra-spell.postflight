@@ -24,4 +24,4 @@
 # ***** END LICENSE BLOCK *****
 # 
 
-/bin/sh /opt/zimbra/bin/zmfixperms.sh
+#/bin/sh /opt/zimbra/bin/zmfixperms.sh

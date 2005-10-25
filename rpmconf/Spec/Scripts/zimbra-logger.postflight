@@ -27,4 +27,4 @@
 rm -f /opt/zimbra/logger/mysql
 ln -s /opt/zimbra/logger/mysql-standard-4.1.14-apple-darwin8.2.0-powerpc /opt/zimbra/logger/mysql
 
-/bin/sh /opt/zimbra/bin/zmfixperms.sh
+#/bin/sh /opt/zimbra/bin/zmfixperms.sh

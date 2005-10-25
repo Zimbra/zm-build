@@ -40,7 +40,7 @@ ln -s /opt/zimbra/jakarta-tomcat-5.5.7 /opt/zimbra/tomcat
 mkdir -p /opt/zimbra/tomcat/logs
 chown zimbra:zimbra /opt/zimbra/tomcat/logs
 
-/bin/sh /opt/zimbra/bin/zmfixperms.sh
+#/bin/sh /opt/zimbra/bin/zmfixperms.sh
 
 egrep -q '^%zimbra.*tomcat' /etc/sudoers
 if [ $? != 0 ]; then

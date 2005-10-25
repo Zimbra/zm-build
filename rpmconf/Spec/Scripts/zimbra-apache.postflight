@@ -27,4 +27,4 @@
 rm -f /opt/zimbra/httpd
 ln -s /opt/zimbra/httpd-2.0.54 /opt/zimbra/httpd
 
-/bin/sh /opt/zimbra/bin/zmfixperms.sh
+#/bin/sh /opt/zimbra/bin/zmfixperms.sh
