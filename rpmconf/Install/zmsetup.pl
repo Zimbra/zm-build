@@ -1721,6 +1721,10 @@ sub setupCrontab {
 		`cat /opt/zimbra/zimbramon/crontabs/crontab.logger >> /tmp/crontab.zimbra`;
 	}
 
+	if (isEnabled("zimbra-mta")) {
+		`cat /opt/zimbra/zimbramon/crontabs/crontab.mta >> /tmp/crontab.zimbra`;
+	}
+
 	`echo "# ZIMBRAEND -- DO NOT EDIT ANYTHING BETWEEN THIS LINE AND ZIMBRASTART" >> /tmp/crontab.zimbra`;
 	`cat /tmp/crontab.zimbra.proc >> /tmp/crontab.zimbra`;
 

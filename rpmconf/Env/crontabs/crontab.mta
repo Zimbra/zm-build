@@ -1,0 +1,7 @@
+#
+# crontab.mta
+#
+#
+# Queue logging
+#
+*/10 * * * * /opt/zimbra/bin/zmqueuelog
