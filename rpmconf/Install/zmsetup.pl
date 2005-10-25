@@ -1540,7 +1540,7 @@ sub applyConfig {
 				print "Creating user $config{CREATEADMIN}...\n";
 				print LOGFILE "Creating user $config{CREATEADMIN}...\n";
 				runAsZimbra("/opt/zimbra/bin/zmprov ca ".
-					"$config{CREATEADMIN} $config{CREATEADMINPASS} ".
+					"$config{CREATEADMIN} \'$config{CREATEADMINPASS}\' ".
 					"zimbraIsAdminAccount TRUE");
 				print "Done\n";
 				print LOGFILE "Done\n";
