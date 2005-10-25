@@ -32,6 +32,8 @@ use postinstall;
 
 use Getopt::Std;
 
+my $newinstall = 0;
+
 my %options = ();
 
 my %config = ();
@@ -248,6 +250,7 @@ sub setDefaults {
 	$config{CREATEADMINPASS} = "";
 
 	if ( -f "/opt/zimbra/.newinstall") {
+		$newinstall = 1;
 		unlink "/opt/zimbra/.newinstall";
 		my $t = time()+(60*60*24*60);
 		my @d = localtime($t);
@@ -1677,6 +1680,11 @@ sub applyConfig {
 		runAsZimbra ("/opt/zimbra/bin/zmcontrol start");
 		# runAsZimbra swallows the output, so call status this way
 		`su - zimbra -c "/opt/zimbra/bin/zmcontrol status"`;
+	}
+
+	if ($newinstall) {
+		runAsZimbra ("/opt/zimbra/bin/zmsshkeygen");
+		runAsZimbra ("/opt/zimbra/bin/zmupdateauthkeys");
 	}
 
 	getSystemStatus();
