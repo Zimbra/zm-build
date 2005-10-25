@@ -29,6 +29,7 @@ ln -s /opt/zimbra/openldap-2.2.28 /opt/zimbra/openldap
 
 mkdir -p /opt/zimbra/openldap/var/openldap-data
 mkdir -p /opt/zimbra/openldap-data
+chown -R zimbra:zimbra /opt/zimbra/openldap-data
 
 #/bin/sh /opt/zimbra/bin/zmfixperms.sh
 
