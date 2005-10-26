@@ -17,7 +17,6 @@ requires: curl
 requires: fetchmail
 requires: openssl
 requires: gmp
-requires: compat-libstdc++-296
 
 %description
 Best email money can buy
