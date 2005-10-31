@@ -122,6 +122,7 @@ fi
 /usr/bin/niutil -mergeprop / /groups/$maingroup users $name
 
 niutil -create / /users/$name
+niutil -createprop / /users/$name realname $name
 niutil -createprop / /users/$name uid $mainuid
 niutil -createprop / /users/$name gid ${maingid}
 niutil -createprop / /users/$name shell /bin/bash
