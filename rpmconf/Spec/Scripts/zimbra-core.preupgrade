@@ -29,7 +29,8 @@ rm -rf $SAVEDIR
 mkdir -p $SAVEDIR
 chmod 777 $SAVEDIR
 # yes, it needs massaging to be fed back in...
-su - zimbra -c "zmlocalconfig -m shell > $SAVEDIR/config.save
+su - zimbra -c "/opt/zimbra/bin/zmcontrol stop"
+su - zimbra -c "/opt/zimbra/bin/zmlocalconfig -m shell > $SAVEDIR/config.save
 cp -f /opt/zimbra/java/jre/lib/security/cacerts $SAVEDIR
 if [ -f "/opt/zimbra/tomcat/conf/keystore" ]; then
 	cp -f /opt/zimbra/tomcat/conf/keystore $SAVEDIR
@@ -41,6 +42,6 @@ if [ -f "/opt/zimbra/conf/smtpd.crt" ]; then
 	cp -f /opt/zimbra/conf/smtpd.crt $SAVEDIR
 fi 
 if [ -x /opt/zimbra/bin/zmschedulebackup ]; then
-	su - zimbra -c "zmschedulebackup -s > $SAVEDIR/backup.save"
+	su - zimbra -c "/opt/zimbra/bin/zmschedulebackup -s > $SAVEDIR/backup.save"
 fi
 
