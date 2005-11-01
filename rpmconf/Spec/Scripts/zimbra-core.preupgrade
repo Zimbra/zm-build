@@ -24,18 +24,23 @@
 # ***** END LICENSE BLOCK *****
 # 
 
-/bin/sh /opt/zimbra/libexec/addUser.sh -g postfix -d /opt/zimbra/postfix-2.2.3 postfix
+SAVEDIR=/tmp/saveconfig
+rm -rf $SAVEDIR
+mkdir -p $SAVEDIR
+chmod 777 $SAVEDIR
+# yes, it needs massaging to be fed back in...
+su - zimbra -c "zmlocalconfig -m shell > $SAVEDIR/config.save
+cp -f /opt/zimbra/java/jre/lib/security/cacerts $SAVEDIR
+if [ -f "/opt/zimbra/tomcat/conf/keystore" ]; then
+	cp -f /opt/zimbra/tomcat/conf/keystore $SAVEDIR
+fi 
+if [ -f "/opt/zimbra/conf/smtpd.key" ]; then
+	cp -f /opt/zimbra/conf/smtpd.key $SAVEDIR
+fi 
+if [ -f "/opt/zimbra/conf/smtpd.crt" ]; then
+	cp -f /opt/zimbra/conf/smtpd.crt $SAVEDIR
+fi 
+if [ -x /opt/zimbra/bin/zmschedulebackup ]; then
+	su - zimbra -c "zmschedulebackup -s > $SAVEDIR/backup.save"
+fi
 
-/bin/sh /opt/zimbra/libexec/addUser.sh -g zimbra -G postfix -d /opt/zimbra zimbra
-
-mkdir /opt/zimbra/.ssh
-chown zimbra:zimbra /opt/zimbra/.ssh
-
-#rm -f /opt/zimbra/java
-#ln -s /usr /opt/zimbra/java
-
-/bin/sh /opt/zimbra/bin/zmfixperms.sh
-
-/opt/zimbra/bin/zmsyslogsetup local
-
-ln -s /opt/zimbra /Users/zimbra

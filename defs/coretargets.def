@@ -30,6 +30,10 @@ $(BUILD_ROOT)/resources/zimbra-core:
 	chmod 755 $@/postflight
 	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-core.postinstall $@/postinstall
 	chmod 755 $@/postinstall
+	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-core.preupgrade $@/preupgrade
+	chmod 755 $@/preupgrade
+	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-core.postupgrade $@/postupgrade
+	chmod 755 $@/postupgrade
 #	echo "#!/bin/bash" > $@/postinst
 #	echo "sh /opt/zimbra/bin/zmfixperms.sh" >> $@/postinst
 #	cat $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbracore.post >> $@/postinstall
