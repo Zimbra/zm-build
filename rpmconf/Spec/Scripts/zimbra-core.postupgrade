@@ -26,6 +26,8 @@
 
 SAVEDIR=/tmp/saveconfig
 
+chmod a+x /opt/zimbra/bin/*
+
 RF="$SAVEDIR/config.save"
 while read i; do
 	# echo "Setting $i"
