@@ -31,11 +31,13 @@
 mkdir /opt/zimbra/.ssh
 chown zimbra:zimbra /opt/zimbra/.ssh
 
-#rm -f /opt/zimbra/java
-#ln -s /usr /opt/zimbra/java
+rm -f /opt/zimbra/java
+ln -s /usr /opt/zimbra/java
 
 /bin/sh /opt/zimbra/bin/zmfixperms.sh
 
 /opt/zimbra/bin/zmsyslogsetup local
+
+rm -rf /Users/zimbra
 
 ln -s /opt/zimbra /Users/zimbra
