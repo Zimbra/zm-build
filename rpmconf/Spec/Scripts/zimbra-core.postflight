@@ -49,12 +49,4 @@ rm -rf /Users/zimbra
 ln -s /opt/zimbra /Users/zimbra
 
 echo "Launching ZmSetup.app"
-cat << EOF > /tmp/launch.scpt
-tell application "Finder"
-	set appPath to "/opt/zimbra/libexec/ZmSetup"
-	launch application appPath
-end tell 
-EOF
-
-/usr/bin/osascript /tmp/launch.scpt
-
+/opt/zimbra/libexec/ZmSetup.app/Contents/MacOS/ZmSetup
