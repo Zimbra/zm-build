@@ -25,7 +25,7 @@ $(ARCH)/zcs.mpkg/Contents/Resources/English.lproj:
 	cp -f $(CONSOLE_DIR)/img/hiRes/logo/SplashScreen.gif $@/background.gif
 	echo "Welcome to the ZCS installer" > $@/Welcome.txt
 	echo "ZCS Installation complete" > $@/Conclusion.txt
-	echo "Run /opt/zimbra/libexec/zmsetup.pl AS ROOT" >> $@/Conclusion.txt
+	echo "Run /opt/zimbra/libexec/ZmSetup AS ROOT" >> $@/Conclusion.txt
 	echo "to complete system configuration" >> $@/Conclusion.txt
 	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zcs.postflight $@/postflight
 	chmod 755 $@/postflight
