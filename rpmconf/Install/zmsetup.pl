@@ -1676,7 +1676,7 @@ sub applyConfig {
 	setupCrontab();
 	postinstall::configure();
 
-	if ($config{STARTSERVERS} = "yes") {
+	if ($config{STARTSERVERS} eq "yes") {
 		runAsZimbra ("/opt/zimbra/bin/zmcontrol start");
 		# runAsZimbra swallows the output, so call status this way
 		`su - zimbra -c "/opt/zimbra/bin/zmcontrol status"`;
