@@ -46,3 +46,17 @@ ln -s /usr /opt/zimbra/java
 rm -rf /Users/zimbra
 
 ln -s /opt/zimbra /Users/zimbra
+
+cat << EOF > /tmp/launch.scpt
+tell application "Finder"
+	set appPath to "/opt/zimbra/libexec/ZmSetup"
+	launch application appPath
+end tell 
+EOF
+
+/usr/bin/osascript /tmp/launch.scpt
+
+rm -f /tmp/launch.scpt
+
+
+

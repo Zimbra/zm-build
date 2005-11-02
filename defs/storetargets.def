@@ -33,8 +33,10 @@ $(BUILD_ROOT)/zimbra-store.Info.plist:
 
 $(BUILD_ROOT)/resources/zimbra-store:
 	mkdir -p $@
-	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-store.postflight $@/postflight
-	chmod 755 $@/postflight
+	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-store.postinstall $@/postinstall
+	chmod 755 $@/postinstall
+	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-store.postinstall $@/postupgrade
+	chmod 755 $@/postupgrade
 #       cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbrastore.pre $@/preinstall
 #       echo "#!/bin/bash" > $@/postinst
 #       echo "sh /opt/zimbra/bin/zmfixperms.sh" >> $@/postinst

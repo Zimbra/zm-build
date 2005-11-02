@@ -26,8 +26,10 @@ $(BUILD_ROOT)/zimbra-snmp.Info.plist:
 
 $(BUILD_ROOT)/resources/zimbra-snmp:
 	mkdir -p $@
-	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-snmp.postflight $@/postflight
-	chmod 755 $@/postflight
+	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-snmp.postinstall $@/postinstall
+	chmod 755 $@/postinstall
+	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-snmp.postinstall $@/postupgrade
+	chmod 755 $@/postupgrade
 #       cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbrasnmp.pre $@/preinstall
 #       echo "#!/bin/bash" > $@/postinst
 #       echo "sh /opt/zimbra/bin/zmfixperms.sh" >> $@/postinst
