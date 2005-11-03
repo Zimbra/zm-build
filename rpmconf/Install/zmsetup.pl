@@ -1470,9 +1470,6 @@ sub applyConfig {
 	if (defined $config{AVDOMAIN}) {
 		setLocalConfig ("av_notify_domain", $config{AVDOMAIN})
 	}
-	if (defined $config{EXPIRY}) {
-		setLocalConfig ("trial_expiration_date", $config{EXPIRY});
-	}
 
 	if (!$ldapConfigured && isEnabled("zimbra-ldap")) {
 		print "Initializing ldap...\n";
