@@ -672,7 +672,7 @@ sub toggleEnabled {
 }
 
 sub verifyQuit {
-	if (askYN("Really quit?", "No") eq "yes") {return 1;}
+	if (askYN("Quit without applying changes?", "No") eq "yes") {return 1;}
 	return 0;
 }
 
@@ -1338,7 +1338,7 @@ sub createMainMenu {
 	if (checkMenuConfig(\%mm)) {
 		$mm{promptitem} = { 
 			"selector" => "a",
-			"prompt" => "Select, or press 'a' to apply config", 
+			"prompt" => "***CONFIGURATION COMPLETE\nSelect from menu, or press 'a' to apply config", 
 			"callback" => \&applyConfig,
 			};
 	} else {
