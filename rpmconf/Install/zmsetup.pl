@@ -652,6 +652,7 @@ sub setEnabledDependencies {
 	} else {
 		if ($config{LDAPHOST} eq $config{HOSTNAME}) {
 			changeLdapHost("");
+			$config{LDAPPASS} = "";
 		}
 	}
 
