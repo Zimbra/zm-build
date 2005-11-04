@@ -1345,7 +1345,7 @@ sub createMainMenu {
 	if (checkMenuConfig(\%mm)) {
 		$mm{promptitem} = { 
 			"selector" => "a",
-			"prompt" => "***CONFIGURATION COMPLETE\nSelect from menu, or press 'a' to apply config", 
+			"prompt" => "*** CONFIGURATION COMPLETE - press 'a' to apply\nSelect from menu, or press 'a' to apply config", 
 			"callback" => \&applyConfig,
 			};
 	} else {
