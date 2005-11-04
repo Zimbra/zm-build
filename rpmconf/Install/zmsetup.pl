@@ -646,8 +646,14 @@ sub configurePackage {
 
 sub setEnabledDependencies {
 	if (isEnabled("zimbra-ldap")) {
-		changeLdapHost($config{HOSTNAME});
-	} 
+		if ($config{LDAPHOST} eq "") {
+			changeLdapHost($config{HOSTNAME});
+		}
+	} else {
+		if ($config{LDAPHOST} eq $config{HOSTNAME}) {
+			changeLdapHost("");
+		}
+	}
 
 	if (isEnabled("zimbra-store")) {
 		if (isEnabled("zimbra-mta")) {
@@ -1258,7 +1264,7 @@ sub createMainMenu {
 		};
 	my $i = 2;
 	$mm{menuitems}{$i} = { 
-		"prompt" => "Ldap host:", 
+		"prompt" => "Ldap master host:", 
 		"var" => \$config{LDAPHOST}, 
 		"callback" => \&setLdapHost
 		};
