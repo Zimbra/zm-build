@@ -35,8 +35,10 @@ ln -s /opt/zimbra/openldap-2.2.28 /opt/zimbra/openldap
 
 mkdir -p /opt/zimbra/openldap/var/openldap-data
 mkdir -p /opt/zimbra/openldap-data
+mkdir -p /opt/zimbra/openldap-replica
 chown -R zimbra:zimbra /opt/zimbra/openldap/var
 chown -R zimbra:zimbra /opt/zimbra/openldap-data
+chown -R zimbra:zimbra /opt/zimbra/openldap-replica
 
 egrep -q '^%zimbra.*slapd' /etc/sudoers
 if [ $? != 0 ]; then
