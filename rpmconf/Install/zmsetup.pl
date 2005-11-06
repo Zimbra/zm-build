@@ -251,7 +251,6 @@ sub setDefaults {
 
 	if ( -f "/opt/zimbra/.newinstall") {
 		$newinstall = 1;
-		unlink "/opt/zimbra/.newinstall";
 		my $t = time()+(60*60*24*60);
 		my @d = localtime($t);
 		$config{EXPIRY} = sprintf ("%04d%02d%02d",$d[5]+1900,$d[4]+1,$d[3]);
@@ -1687,6 +1686,7 @@ sub applyConfig {
 	}
 
 	if ($newinstall) {
+		unlink "/opt/zimbra/.newinstall";
 		runAsZimbra ("/opt/zimbra/bin/zmsshkeygen");
 		runAsZimbra ("/opt/zimbra/bin/zmupdateauthkeys");
 	}
