@@ -146,14 +146,15 @@ sub checkPortConflicts {
 		10025 => 'zimbra-mta',
 	);
 
-	open PORTS, "netstat -an | egrep '^tcp' | grep LISTEN | awk '{print $4}' | sed -e 's/.*://' |";
+	open PORTS, "netstat -an | egrep '^tcp' | grep LISTEN | awk '{print \$4}' | sed -e 's/.*://' |";
 	my @ports = <PORTS>;
 	close PORTS;
+	chomp @ports;
 
 	my $any = 0;
 	foreach (@ports) {
-		$any = 1;
 		if (defined ($needed{$_}) && isEnabled($needed{$_})) {
+			$any = 1;
 			print "Port conflict detected: $_ ($needed{$_})\n";
 		}
 	}
@@ -1902,13 +1903,13 @@ sub startLdap {
 	print LOGFILE "Done\n";
 }
 
-checkPortConflicts();
-
 getInstalledPackages();
 
 setDefaults();
 
 setEnabledDependencies();
+
+checkPortConflicts();
 
 getSystemStatus();
 
