@@ -1602,7 +1602,7 @@ sub applyConfig {
 			`chmod 777 /opt/zimbra/java/jre/lib/security/cacerts >> $logfile 2>&1`;
 		}
 		if (!-f "/opt/zimbra/tomcat/conf/keystore" || 
-			!-f "/opt/zimbra/tomcat/conf/slapd.crt") {
+			!-f "/opt/zimbra/conf/slapd.crt") {
 			runAsZimbra("cd /opt/zimbra; zmcreatecert");
 		}
 		if (isEnabled("zimbra-store")) {
