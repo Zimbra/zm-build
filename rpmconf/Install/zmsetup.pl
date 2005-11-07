@@ -125,6 +125,40 @@ sub loadConfig {
 	$config{ALLOWSELFSIGNED} = "true";
 }
 
+sub checkPortConflicts {
+	my %needed = (
+		25 => 'zimbra-mta',
+		80 => 'zimbra-store',
+		110 => 'zimbra-store',
+		143 => 'zimbra-store',
+		389 => 'zimbra-ldap',
+		443 => 'zimbra-store',
+		636 => 'zimbra-ldap',
+		993 => 'zimbra-store',
+		995 => 'zimbra-store',
+		7025 => 'zimbra-store',
+		7306 => 'zimbra-store',
+		7307 => 'zimbra-store',
+		7780 => 'zimbra-spell',
+		10024 => 'zimbra-mta',
+		10025 => 'zimbra-mta',
+	);
+
+	open PORTS, "netstat -an | egrep '^tcp' | grep LISTEN | awk '{print $4}' | sed -e 's/.*://' |";
+	my @ports = <PORTS>;
+	close PORTS;
+
+	my $any = 0;
+	foreach (@ports) {
+		$any = 1;
+		if (defined ($needed{$_}) && isEnabled($needed{$_})) {
+			print "Port conflict detected: $_ ($needed{$_})\n";
+		}
+	}
+
+	if ($any) { ask("Port conflicts detected! - Any key to continue", ""); }
+}
+
 sub getInstalledPackages {
 
 	foreach my $p (@packageList) {
@@ -1865,6 +1899,8 @@ sub startLdap {
 	print "Done\n";
 	print LOGFILE "Done\n";
 }
+
+checkPortConflicts();
 
 getInstalledPackages();
 
