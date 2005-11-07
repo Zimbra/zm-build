@@ -1528,7 +1528,7 @@ sub applyConfig {
 	#
 	# non-ldap - fetch CA, create cert
 
-	if (isEnabled("zimbra-ldap")) {
+	if (isEnabled("zimbra-ldap") && ! -f /opt/zimbra/conf/ca/ca.key ) {
 		print "Setting up CA...\n";
 		print LOGFILE "Setting up CA...\n";
 		runAsZimbra("cd /opt/zimbra; zmcreateca");
@@ -1544,7 +1544,7 @@ sub applyConfig {
 			`chmod 777 /opt/zimbra/java/jre/lib/security/cacerts >> $logfile 2>&1`;
 		}
 		if (!-f "/opt/zimbra/tomcat/conf/keystore" || 
-			!-f "/opt/zimbra/tomcat/conf/slapd.crt") {
+			!-f "/opt/zimbra/conf/slapd.crt") {
 			runAsZimbra("cd /opt/zimbra; zmcreatecert");
 		}
 		if (isEnabled("zimbra-store")) {
