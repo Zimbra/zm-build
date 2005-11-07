@@ -484,7 +484,12 @@ restoreCerts() {
 	cp $SAVEDIR/keystore /opt/zimbra/tomcat/conf/keystore
 	cp $SAVEDIR/smtpd.key /opt/zimbra/conf/smtpd.key 
 	cp $SAVEDIR/smtpd.crt /opt/zimbra/conf/smtpd.crt 
-	chown zimbra:zimbra /opt/zimbra/java/jre/lib/security/cacerts /opt/zimbra/tomcat/conf/keystore /opt/zimbra/conf/smtpd.key /opt/zimbra/conf/smtpd.crt
+	cp $SAVEDIR/slapd.crt /opt/zimbra/conf/slapd.crt 
+	mkdir -p /opt/zimbra/conf/ca
+	cp $SAVEDIR/ca.key /opt/zimbra/conf/ca/ca.key 
+	cp $SAVEDIR/ca.pem /opt/zimbra/conf/ca/ca.pem 
+	chown zimbra:zimbra /opt/zimbra/java/jre/lib/security/cacerts /opt/zimbra/tomcat/conf/keystore /opt/zimbra/conf/smtpd.key /opt/zimbra/conf/smtpd.crt /opt/zimbra/conf/slapd.crt
+	chown -R zimbra:zimbra /opt/zimbra/conf/ca
 }
 
 saveExistingConfig() {
@@ -502,6 +507,16 @@ saveExistingConfig() {
 	if [ -f "/opt/zimbra/conf/smtpd.crt" ]; then
 		cp -f /opt/zimbra/conf/smtpd.crt $SAVEDIR
 	fi
+	if [ -f "/opt/zimbra/conf/slapd.crt" ]; then
+		cp -f /opt/zimbra/conf/slapd.crt $SAVEDIR
+	fi
+	if [ -f "/opt/zimbra/conf/ca/ca.key" ]; then
+		cp -f /opt/zimbra/conf/ca/ca.key $SAVEDIR
+	fi
+	if [ -f "/opt/zimbra/conf/ca/ca.pem" ]; then
+		cp -f /opt/zimbra/conf/ca/ca.pem $SAVEDIR
+	fi
+
 	if [ -x /opt/zimbra/bin/zmschedulebackup ]; then
 		runAsZimbra "zmschedulebackup -s > $SAVEDIR/backup.save"
 	fi
