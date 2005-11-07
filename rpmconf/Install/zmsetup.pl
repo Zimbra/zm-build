@@ -1477,6 +1477,57 @@ sub applyConfig {
 		setLocalConfig ("av_notify_domain", $config{AVDOMAIN})
 	}
 
+	setLocalConfig ("ssl_allow_untrusted_certs", "TRUE");
+
+	# About SSL
+	# 
+	# On the master ldap server, create a ca and a ceert
+	# On store and MTA servers, just create a cert.
+	#
+	# Non-ldap masters use the master CA, which they get from ldap
+	# but ldap won't start without a cert.
+	#
+	# so - ldap - create CA, create cert, init ldap, store CA in ldap
+	#
+	# non-ldap - fetch CA, create cert
+
+	if (isEnabled("zimbra-ldap")) {
+		print "Setting up CA...\n";
+		print LOGFILE "Setting up CA...\n";
+		runAsZimbra("cd /opt/zimbra; zmcreateca");
+
+		print "Done\n";
+		print LOGFILE "Done\n";
+	}
+
+	if (isEnabled("zimbra-ldap")) {
+		print "Setting up SSL...\n";
+		print LOGFILE "Setting up SSL...\n";
+		if (-f "/opt/zimbra/java/jre/lib/security/cacerts") {
+			`chmod 777 /opt/zimbra/java/jre/lib/security/cacerts >> $logfile 2>&1`;
+		}
+		if (!-f "/opt/zimbra/tomcat/conf/keystore" || 
+			!-f "/opt/zimbra/tomcat/conf/slapd.crt") {
+			runAsZimbra("cd /opt/zimbra; zmcreatecert");
+		}
+		if (isEnabled("zimbra-store")) {
+			if (!-f "/opt/zimbra/tomcat/conf/keystore") {
+				runAsZimbra("cd /opt/zimbra; zmcertinstall mailbox");
+			}
+			runAsZimbra("cd /opt/zimbra; zmtlsctl $config{MODE}");
+		}
+		if (isEnabled("zimbra-mta")) {
+			if (! (-f "/opt/zimbra/conf/smtpd.key" || 
+				-f "/opt/zimbra/conf/smtpd.crt")) {
+				runAsZimbra("cd /opt/zimbra; zmcertinstall mta ".
+					"/opt/zimbra/ssl/ssl/server/smtpd.crt ".
+					"/opt/zimbra/ssl/ssl/ca/ca.key");
+			}
+		}
+		print "Done\n";
+		print LOGFILE "Done\n";
+	}
+
 	if (!$ldapConfigured && isEnabled("zimbra-ldap")) {
 		print "Initializing ldap...\n";
 		print LOGFILE "Initializing ldap...\n";
@@ -1507,6 +1558,69 @@ sub applyConfig {
 	} else {
 		setLocalConfig ("ldap_root_password", $config{LDAPPASS});
 		setLocalConfig ("zimbra_ldap_password", $config{LDAPPASS});
+	}
+
+	if (isEnabled("zimbra-ldap")) {
+		print "Saving CA in ldap...\n";
+		print LOGFILE "Saving CA in ldap...\n";
+
+		my $cert=`cat /opt/zimbra/ssl/ssl/ca/ca.pem`;
+		my $key=`cat /opt/zimbra/ssl/ssl/ca/ca.key`;
+		chomp $cert;
+		chomp $key;
+
+		runAsZimbra("zmprov mcf zimbraSslCaCert \\\"$cert\\\"");
+		runAsZimbra("zmprov mcf zimbraSslCaKey \\\"$key\\\"");
+
+		print "Done\n";
+		print LOGFILE "Done\n";
+	} else {
+		# Fetch it from ldap
+
+		print "Fetching CA from ldap...\n";
+		print LOGFILE "Fetching CA from ldap...\n";
+
+		runAsZimbra("mkdir -p /opt/zimbra/ssl/ssl/ca");
+
+		# Don't use runAsZimbra since it swallows output
+		my $rc;
+
+		$rc = 0xffff & system('su - zimbra -c "zmprov gacf | sed -ne \'/-----BEGIN RSA PRIVATE KEY-----/,/-----END RSA PRIVATE KEY-----/ p\'| sed  -e \'s/^zimbraSslCaKey: //\' > /opt/zimbra/ssl/ssl/ca/ca.key"');
+
+		$rc = 0xffff & system('su - zimbra -c "zmprov gacf | sed -ne \'/-----BEGIN TRUSTED CERTIFICATE-----/,/-----END TRUSTED CERTIFICATE-----/ p\'| sed  -e \'s/^zimbraSslCaCert: //\' > /opt/zimbra/ssl/ssl/ca/ca.pem"');
+
+		print "Done\n";
+		print LOGFILE "Done\n";
+	}
+
+	if ((isEnabled("zimbra-store") || 
+		isEnabled("zimbra-mta")) &&
+		!isEnabled("zimbra-ldap")) {
+		print "Setting up SSL...\n";
+		print LOGFILE "Setting up SSL...\n";
+		if (-f "/opt/zimbra/java/jre/lib/security/cacerts") {
+			`chmod 777 /opt/zimbra/java/jre/lib/security/cacerts >> $logfile 2>&1`;
+		}
+		if (!-f "/opt/zimbra/tomcat/conf/keystore" || 
+			!-f "/opt/zimbra/tomcat/conf/slapd.crt") {
+			runAsZimbra("cd /opt/zimbra; zmcreatecert");
+		}
+		if (isEnabled("zimbra-store")) {
+			if (!-f "/opt/zimbra/tomcat/conf/keystore") {
+				runAsZimbra("cd /opt/zimbra; zmcertinstall mailbox");
+			}
+			runAsZimbra("cd /opt/zimbra; zmtlsctl $config{MODE}");
+		}
+		if (isEnabled("zimbra-mta")) {
+			if (! (-f "/opt/zimbra/conf/smtpd.key" || 
+				-f "/opt/zimbra/conf/smtpd.crt")) {
+				runAsZimbra("cd /opt/zimbra; zmcertinstall mta ".
+					"/opt/zimbra/ssl/ssl/server/smtpd.crt ".
+					"/opt/zimbra/ssl/ssl/ca/ca.key");
+			}
+		}
+		print "Done\n";
+		print LOGFILE "Done\n";
 	}
 
 	print "Creating server entry for $config{HOSTNAME}...";
@@ -1647,34 +1761,6 @@ sub applyConfig {
 	runAsZimbra ("/opt/zimbra/bin/zmprov ms $config{HOSTNAME} $enabledServiceStr");
 	print "Done\n";
 	print LOGFILE "Done\n";
-
-	if (isEnabled("zimbra-store") || isEnabled("zimbra-mta")) {
-		print "Setting up SSL...\n";
-		print LOGFILE "Setting up SSL...\n";
-		if (-f "/opt/zimbra/java/jre/lib/security/cacerts") {
-			`chmod 777 /opt/zimbra/java/jre/lib/security/cacerts >> $logfile 2>&1`;
-		}
-		setLocalConfig ("ssl_allow_untrusted_certs", "TRUE");
-		if (!-f "/opt/zimbra/tomcat/conf/keystore") {
-			runAsZimbra("cd /opt/zimbra; zmcreatecert");
-		}
-		if (isEnabled("zimbra-store")) {
-			if (!-f "/opt/zimbra/tomcat/conf/keystore") {
-				runAsZimbra("cd /opt/zimbra; zmcertinstall mailbox");
-			}
-			runAsZimbra("cd /opt/zimbra; zmtlsctl $config{MODE}");
-		}
-		if (isEnabled("zimbra-mta")) {
-			if (! (-f "/opt/zimbra/conf/smtpd.key" || 
-				-f "/opt/zimbra/conf/smtpd.crt")) {
-				runAsZimbra("cd /opt/zimbra; zmcertinstall mta ".
-					"/opt/zimbra/ssl/ssl/server/smtpd.crt ".
-					"/opt/zimbra/ssl/ssl/ca/ca.key");
-			}
-		}
-		print "Done\n";
-		print LOGFILE "Done\n";
-	}
 
 	setupCrontab();
 	postinstall::configure();
