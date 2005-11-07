@@ -188,7 +188,7 @@ $(CORE_DEST_DIR)/conf: $(WEBAPP_DIR)/service.war
 	mkdir -p $@/spamassassin
 	cp $(SERVICE_DIR)/conf/spamassassin/* $@/spamassassin
 
-$(CORE_DEST_DIR)/libexec: $(NATIVE_DIR)/build/zmtomcatstart zmsetup_$(BUILD_PLATFORM)
+$(CORE_DEST_DIR)/libexec: $(NATIVE_DIR)/build/zmtomcatstart 
 	@echo "*** Installing libexec"
 	mkdir -p $@/util/modules
 	cp -f -R $(SERVICE_DIR)/build/dist/libexec/zm*init $@
@@ -196,20 +196,6 @@ $(CORE_DEST_DIR)/libexec: $(NATIVE_DIR)/build/zmtomcatstart zmsetup_$(BUILD_PLAT
 	cp -f $(PACKAGE_CONF_DIR)/Install/postinstall.pm $@/postinstall.pm
 	cp -f $(PACKAGE_CONF_DIR)/Install/Util/addUser.sh $@/addUser.sh
 	cp $(NATIVE_DIR)/build/zmtomcatstart $@
-
-zmsetup_DEBIAN3.1: ;
-
-zmsetup_FC3: ;
-
-zmsetup_FC4: ;
-
-zmsetup_SuSEES9: ;
-
-zmsetup_RHEL4: ;
-
-zmsetup_MACOSX:
-	mkdir -p $(CORE_DEST_DIR)/libexec
-	cp -Rf $(PACKAGE_CONF_DIR)/Install/ZmSetup.app $(CORE_DEST_DIR)/libexec/ZmSetup.app
 
 $(CORE_DEST_DIR)/bin:
 	mkdir -p $@
