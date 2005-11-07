@@ -126,6 +126,8 @@ sub loadConfig {
 }
 
 sub checkPortConflicts {
+
+	print "Checking for port conflicts\n";
 	my %needed = (
 		25 => 'zimbra-mta',
 		80 => 'zimbra-store',
