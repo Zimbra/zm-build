@@ -1528,7 +1528,7 @@ sub applyConfig {
 	#
 	# non-ldap - fetch CA, create cert
 
-	if (isEnabled("zimbra-ldap") && ! -f /opt/zimbra/conf/ca/ca.key ) {
+	if (isEnabled("zimbra-ldap") && ( ! -f "/opt/zimbra/conf/ca/ca.key") ) {
 		print "Setting up CA...\n";
 		print LOGFILE "Setting up CA...\n";
 		runAsZimbra("cd /opt/zimbra; zmcreateca");
