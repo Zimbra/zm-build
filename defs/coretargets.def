@@ -122,7 +122,10 @@ $(CORE_DEST_DIR)/zimbramon: $(CORE_DEST_DIR)/zimbramon/lib $(CORE_DEST_DIR)/zimb
 
 $(CORE_DEST_DIR)/zimbramon/crontabs:
 	mkdir -p $@
-	cp $(PACKAGE_CONF_DIR)/Env/crontabs/* $(CORE_DEST_DIR)/zimbramon/crontabs
+	cp $(PACKAGE_CONF_DIR)/Env/crontabs/crontab $(CORE_DEST_DIR)/zimbramon/crontabs/
+	cp $(PACKAGE_CONF_DIR)/Env/crontabs/crontab.logger $(CORE_DEST_DIR)/zimbramon/crontabs/
+	cp $(PACKAGE_CONF_DIR)/Env/crontabs/crontab.mta $(CORE_DEST_DIR)/zimbramon/crontabs/
+	cp $(PACKAGE_CONF_DIR)/Env/crontabs/crontab.store $(CORE_DEST_DIR)/zimbramon/crontabs/
 
 $(CORE_DEST_DIR)/zimbramon/lib:
 	mkdir -p $(CORE_DEST_DIR)/zimbramon/lib
