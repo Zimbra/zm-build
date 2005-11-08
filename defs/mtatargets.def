@@ -91,7 +91,7 @@ $(BUILD_ROOT)/zimbramta.spec:
 		$(BUILD_ROOT)/zimbramta.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/postfix-2.2.3" >> \
 		$(BUILD_ROOT)/zimbramta.spec
-	echo "%attr(-, zimbra, zimbra) /opt/zimbra/sleepycat-4.2.52.2" >> \
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/sleepycat-4.2.52.4" >> \
 		$(BUILD_ROOT)/zimbramta.spec
 	echo "%attr(-, root, zimbra) /opt/zimbra/cyrus-sasl-2.1.21.ZIMBRA" >> \
 		$(BUILD_ROOT)/zimbramta.spec
