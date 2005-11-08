@@ -190,7 +190,7 @@ $(CORE_DEST_DIR)/conf: $(WEBAPP_DIR)/service.war
 	cp $(SERVICE_DIR)/conf/my.logger.cnf $@
 	cp $(SERVICE_DIR)/conf/postfix_recipient_restrictions.cf $@
 	mkdir -p $@/spamassassin
-	cp $(SERVICE_DIR)/conf/spamassassin/* $@/spamassassin
+	cp $(SERVICE_DIR)/conf/spamassassin/[^C]* $@/spamassassin
 
 $(CORE_DEST_DIR)/libexec: $(NATIVE_DIR)/build/zmtomcatstart 
 	@echo "*** Installing libexec"
