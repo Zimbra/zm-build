@@ -1,0 +1,115 @@
+cvs -d :pserver:anonymous:@72.3.250.100:/usr/local/cvsroot login
+cvs -d :pserver:anonymous:@72.3.250.100:/usr/local/cvsroot co main
+
+cd main/ThirdParty/apache-httpd
+wget http://archive.apache.org/dist/httpd/httpd-2.0.54.tar.gz
+
+cd ../amavisd
+wget http://www.ijs.si/software/amavisd/amavisd-new-2.3.1.tar.gz
+tar xzf amavisd-new-2.3.1.tar.gz
+cd amavisd-new-2.3.1
+patch -p0 < ../amavisd.patch
+
+mkdir ../snmp
+get snmp-5.1.2.tar.gz
+
+cd ../aspell
+wget ftp://ftp.gnu.org/gnu/aspell/dict/en/aspell6-en-6.0-0.tar.bz2
+wget ftp://ftp.gnu.org/gnu/aspell/aspell-0.60.3.tar.gz
+
+cd ../clamav
+wget http://cogent.dl.sourceforge.net/sourceforge/clamav/clamav-0.85.1.tar.gz
+
+mkdir ../jakarta-tomcat
+cd ../jakarta-tomcat
+wget http://archive.apache.org/dist/tomcat/tomcat-5/archive/v5.5.7/bin/jakarta-tomcat-5.5.7.tar.gz
+
+cd ../mysql
+mkdir $(BUILD_PLATFORM) (RHEL4, FC3, FC4, MACOSX, SuSEES9, DEBIAN3.1)
+cd $(BUILD_PLATFORM)
+# download mysql 4.1.10a for your platform (binary) or 4.1.14(source) if MACOSX
+# Also grab client libraries (unless MACOSX)
+
+cd ../../openldap
+wget ftp://ftp.openldap.org/pub/OpenLDAP/openldap-release/openldap-2.2.28.tgz
+
+cd ../php
+wget http://us2.php.net/get/php-5.0.5.tar.gz/from/this/mirror
+
+cd ../PostFix/Postfix-2.2.3
+wget http://www.tigertech.net/mirrors/postfix-release/official/postfix-2.2.3.tar.gz
+
+cd ../../sleepycat
+wget http://downloads.sleepycat.com/db-4.2.52.tar.gz
+wget http://www.sleepycat.com/update/4.2.52/patch.4.2.52.1
+wget http://www.sleepycat.com/update/4.2.52/patch.4.2.52.2
+wget http://www.sleepycat.com/update/4.2.52/patch.4.2.52.3
+wget http://www.sleepycat.com/update/4.2.52/patch.4.2.52.4
+
+cd ../openldap
+tar xzf openldap-2.2.28.tgz 
+cp openldap-2.2.28/build/BerkeleyDB42.patch ../sleepycat
+
+cd ../sleepycat
+tar xzf db-4.2.52.tar.gz
+cd db-4.2.52
+patch -p0 < ../patch.4.2.52.1
+patch -p0 < ../patch.4.2.52.2
+patch -p0 < ../patch.4.2.52.3
+patch -p0 < ../patch.4.2.52.4
+patch -p0 < ../BerkeleyDB42.patch
+mv db-4.2.52 db-4.2.52.4
+tar czf db-4.2.52.4.tar.gz db-4.2.52.4
+
+cd ../perdition
+get from http://www.vergenet.net/linux/perdition/download/1.17/
+	vanessa_adt-0.0.7.tar.gz
+	vanessa_socket-0.0.7.tar.gz
+	perdition-1.17.tar.gz
+get from http://www.vergenet.net/linux/vanessa/download/vanessa_logger/
+	vanessa_logger-0.0.7.tar.gz
+
+mkdir -p Thirdparty/mrtg/builds
+get mrtg-2.10.15.tgz and put in mrtg/builds
+
+mkdir Thirdparty/rrdtool
+get rrdtool-1.0.49.tar.gz and put in rrdtool
+
+mkdir Thirdparty/java
+grab jdk-1_5_0_05-linux-i586.bin and install somewhere.
+tar czf Thirdparty/java/jdk1.5.0_05.tgz <install_dir>
+
+# You need to be root, here, and have all the build tools in your path...
+#
+# If you got different versions of the 3rd party stuff, edit the Makefile
+
+# From main/Thirdparty
+
+# As root (everything in thirdparty should be done as 
+# root, including the make)
+
+add /opt/zimbra/mysql/lib to /etc/ld.so.conf
+ldconfig
+export LD_LIBRARY_PATH=/opt/zimbra/mysql/lib:${LD_LIBRARY_PATH}
+make allclean all
+
+# From main/Thirdparty/Perl (as root)
+
+# install LWP for convenience: perl -MCPAN -e 'install "LWP"'
+mkdir -p ~/.cpan/CPAN
+cp MyConfig.pm ~/.cpan/CPAN/MyConfig.pm
+# edit ~/.cpan/CPAN/MyConfig.pm, replacing BUILD_ROOT with path 
+# to Thirdparty/Perl and (possibly) blanking our urllist param
+#
+# Also verify paths to tar and gzip in config
+#
+
+download swatch-3.1.1.tar.gz
+
+make clean
+make
+
+# From main/ZimbraBuild (as any user)
+make allclean all
+
+packages are in ZimbraBuild/i368 (or ppc, if Mac)
