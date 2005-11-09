@@ -1606,8 +1606,8 @@ sub applyConfig {
 		chomp $cert;
 		chomp $key;
 
-		runAsZimbra("zmprov mcf zimbraSslCaCert \\\"$cert\\\"");
-		runAsZimbra("zmprov mcf zimbraSslCaKey \\\"$key\\\"");
+		runAsZimbra("zmprov mcf zimbraCertAuthorityCertSelfSigned \\\"$cert\\\"");
+		runAsZimbra("zmprov mcf zimbraCertAuthorityKeySelfSigned \\\"$key\\\"");
 
 		print "Done\n";
 		print LOGFILE "Done\n";
@@ -1622,9 +1622,9 @@ sub applyConfig {
 		# Don't use runAsZimbra since it swallows output
 		my $rc;
 
-		$rc = 0xffff & system('su - zimbra -c "zmprov gacf | sed -ne \'/-----BEGIN RSA PRIVATE KEY-----/,/-----END RSA PRIVATE KEY-----/ p\'| sed  -e \'s/^zimbraSslCaKey: //\' > /opt/zimbra/ssl/ssl/ca/ca.key"');
+		$rc = 0xffff & system('su - zimbra -c "zmprov gacf | sed -ne \'/-----BEGIN RSA PRIVATE KEY-----/,/-----END RSA PRIVATE KEY-----/ p\'| sed  -e \'s/^zimbraCertAuthorityKeySelfSigned: //\' > /opt/zimbra/ssl/ssl/ca/ca.key"');
 
-		$rc = 0xffff & system('su - zimbra -c "zmprov gacf | sed -ne \'/-----BEGIN TRUSTED CERTIFICATE-----/,/-----END TRUSTED CERTIFICATE-----/ p\'| sed  -e \'s/^zimbraSslCaCert: //\' > /opt/zimbra/ssl/ssl/ca/ca.pem"');
+		$rc = 0xffff & system('su - zimbra -c "zmprov gacf | sed -ne \'/-----BEGIN TRUSTED CERTIFICATE-----/,/-----END TRUSTED CERTIFICATE-----/ p\'| sed  -e \'s/^zimbraCertAuthorityCertSelfSigned: //\' > /opt/zimbra/ssl/ssl/ca/ca.pem"');
 
 		print "Done\n";
 		print LOGFILE "Done\n";
