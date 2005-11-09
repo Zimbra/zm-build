@@ -42,7 +42,7 @@ zcs_stage:
 	mkdir -p zcs/docs
 	mkdir -p zcs/util/modules
 	cp -f $(LICENSE_DIR)/zimbra/zpl-full.txt zcs/ZPL.txt
-	cp -f $(CONSOLE_DIR)/WebRoot/adminhelp/pdf/* zcs/docs
+	cp -f $(CONSOLE_DIR)/WebRoot/adminhelp/pdf/*pdf zcs/docs
 	cp -f $(LICENSE_DIR)/zimbra/zcl-full.txt zcs/docs/zcl-full.txt
 	cp -f $(LICENSE_DIR)/zimbra/zcl.txt zcs/docs/zcl.txt
 	cp -f $(LICENSE_DIR)/zimbra/zapl-full.txt zcs/docs/zapl.txt
@@ -51,7 +51,7 @@ zcs_stage:
 	cp -f $(SERVICE_DIR)/build/versions-init.sql zcs/data
 	cp $(PACKAGE_CONF_DIR)/Install/install.sh zcs
 	cp -f $(PACKAGE_CONF_DIR)/Install/Util/*sh zcs/util
-	cp -f $(PACKAGE_CONF_DIR)/Install/Util/modules/* zcs/util/modules
+	cp -f $(PACKAGE_CONF_DIR)/Install/Util/modules/*sh zcs/util/modules
 	cp -f $(BUILD_ROOT)/RE/README.txt zcs
 	cp -f $(BUILD_ROOT)/rpmconf/Build/get_plat_tag.sh zcs/bin
 	chmod 755 zcs/install.sh
