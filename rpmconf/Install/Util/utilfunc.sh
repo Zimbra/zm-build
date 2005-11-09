@@ -527,9 +527,9 @@ removeExistingInstall() {
 		echo ""
 		echo "Shutting down zimbra mail"
 		shutDownSystem
-		if ( -f "/opt/zimbra/bin/zmiptables" ) {
-			`/opt/zimbra/bin/zmiptables -u`;
-		}
+		if [ -f "/opt/zimbra/bin/zmiptables" ]; then
+			/opt/zimbra/bin/zmiptables -u
+		fi
 
 		echo ""
 		echo "Removing existing packages"
