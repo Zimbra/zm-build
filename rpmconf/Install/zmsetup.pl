@@ -1454,7 +1454,7 @@ sub verifyLdap {
 
 sub runAsZimbra {
 	my $cmd = shift;
-	if ($cmd =~ /init/) {
+	if ($cmd =~ /init/ || $cmd =~ /zmprov ca/) {
 		# Suppress passwords in log file
 		my $c = (split ' ', $cmd)[0];
 		print "*** Running as zimbra user: $c\n";
