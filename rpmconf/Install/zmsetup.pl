@@ -1497,8 +1497,12 @@ sub applyConfig {
 
 	setLocalConfig ("zimbra_server_hostname", $config{HOSTNAME});
 
-	setLocalConfig ("ldap_host", $config{LDAPHOST});
-	setLocalConfig ("ldap_port", $config{LDAPPORT});
+	setLocalConfig ("ldap_master_url", "ldap://$config{LDAPHOST}:$config{LDAPPORT}");
+
+	setLocalConfig ("ldap_url", "ldap://$config{LDAPHOST}:$config{LDAPPORT}");
+
+	# setLocalConfig ("ldap_host", $config{LDAPHOST});
+	# setLocalConfig ("ldap_port", $config{LDAPPORT});
 	my $uid = `id -u zimbra`;
 	chomp $uid;
 	my $gid = `id -g zimbra`;
