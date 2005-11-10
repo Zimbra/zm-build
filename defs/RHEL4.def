@@ -8,3 +8,6 @@ PACKAGING_OPTIONS = --target $(ARCH) --quiet --define '_rpmdir $(BUILD_ROOT)' \
 PACKAGE_EXT := rpm
 
 include $(DEFS_DIR)/plat_common.def
+
+COMPAT_LIBSTDC := compat-libstdc++
+
