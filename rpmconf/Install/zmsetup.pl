@@ -1497,9 +1497,14 @@ sub applyConfig {
 
 	setLocalConfig ("zimbra_server_hostname", $config{HOSTNAME});
 
-	setLocalConfig ("ldap_master_url", "ldap://$config{LDAPHOST}:$config{LDAPPORT}");
+	if ($config{LDAPPORT} == 636) {
+		setLocalConfig ("ldap_master_url", "ldaps://$config{LDAPHOST}:$config{LDAPPORT}");
+	} else {
+		setLocalConfig ("ldap_master_url", "ldap://$config{LDAPHOST}:$config{LDAPPORT}");
+	}
 
-	setLocalConfig ("ldap_url", "ldap://$config{LDAPHOST}:$config{LDAPPORT}");
+	setLocalConfig ("ldap_url", "ldap://$config{LDAPHOST}");
+
 
 	# setLocalConfig ("ldap_host", $config{LDAPHOST});
 	# setLocalConfig ("ldap_port", $config{LDAPPORT});
