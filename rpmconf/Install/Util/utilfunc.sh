@@ -902,7 +902,7 @@ getPlatformVars() {
 		if [ $PLATFORM = "RHEL4" ]; then
 			PREREQ_PACKAGES="libidn curl fetchmail gmp compat-libstdc++-33"
 		else
-			PREREQ_PACKAGES="libidn curl fetchmail gmp compat-libstdc++-8"
+			PREREQ_PACKAGES="libidn curl fetchmail gmp compat-libstdc++"
 		fi
 	fi
 }
