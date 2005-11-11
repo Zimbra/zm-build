@@ -267,6 +267,16 @@ EOF
 		fi
 	done
 
+	for i in $PREREQ_LIBS; do
+		echo -n "    $i..."
+		if [ -L $i -o -f $i ]; then
+			echo "FOUND"
+		else
+			echo "MISSING"
+			GOOD="no"
+		fi
+	done
+
 	if [ $GOOD = "no" ]; then
 		echo ""
 		echo "###ERROR###"
@@ -901,8 +911,12 @@ getPlatformVars() {
 		PACKAGEEXT='rpm'
 		if [ $PLATFORM = "RHEL4" ]; then
 			PREREQ_PACKAGES="libidn curl fetchmail gmp"
+			PREREQ_LIBS="/usr/lib/libstdc++.so.5"
 		else
 			PREREQ_PACKAGES="libidn curl fetchmail gmp"
+			if [ $PLATFORM = "FC3" -o $PLATFORM = "FC4" ]; then
+				PREREQ_LIBS="/usr/lib/libstdc++.so.5"
+			fi
 		fi
 	fi
 }
