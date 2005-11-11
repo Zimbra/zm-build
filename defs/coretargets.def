@@ -103,7 +103,6 @@ $(CORE_DEST_DIR):
 $(CORE_DEST_DIR)/doc:
 	mkdir -p $@
 	cp $(LICENSE_DIR)/zimbra/zpl-full.txt $@/ZPL.txt
-	cp $(LICENSE_DIR)/zimbra/zapl-full.txt $@/zapl.txt
 	cp $(SERVICE_DIR)/docs/soap*txt $@
 
 $(CORE_DEST_DIR)/zimbramon: $(CORE_DEST_DIR)/zimbramon/lib $(CORE_DEST_DIR)/zimbramon/crontabs $(CORE_DEST_DIR) 
