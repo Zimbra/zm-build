@@ -12,7 +12,7 @@ else
 	RPMCOPYRIGHTSTR := Copyright
 endif
 
-COMPAT_LIBSTDC := compat-libstdc++-8
+COMPAT_LIBSTDC := compat-libstdc++
 
 BUNDLE_EXT := tgz
 
