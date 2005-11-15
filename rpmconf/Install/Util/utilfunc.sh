@@ -259,7 +259,7 @@ EOF
 	for i in $PREREQ_PACKAGES; do
 		echo -n "    $i..."
 		isInstalled $i
-		if [ x$PKGINSTALLED != "x" ]; then
+		if [ "x$PKGINSTALLED" != "x" ]; then
 			echo "FOUND $PKGINSTALLED"
 		else
 			echo "MISSING"
