@@ -55,7 +55,7 @@ ldconfig
 
 if [ ! -f /etc/logrotate.d/zimbra ]; then
 	if [ -d /etc/logrotate.d ]; then
-		cp /opt/zimbra/bin/zmlogrotate /etc/logrotate.d/zimbra
+		cp /opt/zimbra/conf/zmlogrotate /etc/logrotate.d/zimbra
 	fi
 fi
 

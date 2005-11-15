@@ -181,6 +181,7 @@ $(CORE_DEST_DIR)/conf: $(WEBAPP_DIR)/service.war
 	grep -vi stats $(SERVICE_DIR)/build/dist/conf/log4j.properties.production > $@/log4j.properties
 	cp $(PACKAGE_CONF_DIR)/Conf/zmssl.cnf.in $@
 	cp $(SERVICE_DIR)/conf/amavisd.conf.in $@
+	cp $(SERVICE_DIR)/conf/zmlogrotate $@
 	cp $(SERVICE_DIR)/conf/clamd.conf.in $@
 	cp $(SERVICE_DIR)/conf/freshclam.conf.in $@
 	cp $(SERVICE_DIR)/conf/postfix_header_checks.in $@
