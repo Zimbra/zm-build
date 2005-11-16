@@ -215,7 +215,6 @@ $(CORE_DEST_DIR)/bin:
 	cp $(ZIMBRA_BIN_DIR)/swatch $@/logswatch
 	cp $(ZIMBRA_BIN_DIR)/zmswatchctl $@
 	cp $(ZIMBRA_BIN_DIR)/zmlogswatchctl $@
-	cp $(ZIMBRA_BIN_DIR)/zmlogrotate $@
 	cp $(ZIMBRA_BIN_DIR)/zmgengraphs $@
 	cp $(ZIMBRA_BIN_DIR)/zmcreatecert $@
 	cp $(ZIMBRA_BIN_DIR)/zmcertinstall $@
