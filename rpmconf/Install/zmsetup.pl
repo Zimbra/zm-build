@@ -127,6 +127,15 @@ sub loadConfig {
 
 sub checkPortConflicts {
 
+	if ($platform eq "MACOSX") {
+		# Shutdown postfix in launchd
+		if (-f "/System/Library/LaunchDaemons/org.postfix.master.plist") {
+			print "Disabling postfix in launchd\n";
+			system ("/bin/launchctl unload /System/Library/LaunchDaemons/org.postfix.master.plist");
+			system ("mkdir /System/Library/LaunchDaemons.disabled");
+			system ("mv -f /System/Library/LaunchDaemons/org.postfix.master.plist /System/Library/LaunchDaemons.disabled/org.postfix.master.plist");
+		}
+	}
 	print "Checking for port conflicts\n";
 	my %needed = (
 		25 => 'zimbra-mta',
