@@ -1701,6 +1701,23 @@ sub applyConfig {
 		print "Done\n";
 		print LOGFILE "Done\n";
 		addServerToHostPool();
+
+		# Install zimlets
+		if (opendir DIR, "/opt/zimbra/zimlets") {
+			print "Installing zimlets... ";
+			print LOGFILE "Installing zimlets... ";
+			my @zimlets = grep { !/^\./ } readdir(DIR);
+			foreach my $zimletfile (@zimlets) {
+				my $zimlet = $zimletfile;
+				$zimlet =~ s/.zip//;
+				print "$zimlet ";
+				print LOGFILE "$zimlet ";
+				runAsZimbra ("/opt/zimbra/bin/zimlet install /opt/zimbra/zimlets/$zimletfile");
+				runAsZimbra ("/opt/zimbra/bin/zimlet ldapDeploy /opt/zimbra/zimlets/$zimlet");
+			}
+			print "Done\n";
+			print LOGFILE "Done\n";
+		}
 	}
 
 	if (!$ldapConfigured && isEnabled("zimbra-ldap")) {
