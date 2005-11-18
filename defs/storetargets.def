@@ -72,6 +72,8 @@ $(BUILD_ROOT)/zimbra.spec:
 		-e '/^%post$$/ r zimbra.post' > $(BUILD_ROOT)/zimbra.spec
 	rm -f zimbra.pre
 	rm -f zimbra.post
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/zimlets" >> \
+		$(BUILD_ROOT)/zimbra.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/jakarta-tomcat-5.5.7" >> \
 		$(BUILD_ROOT)/zimbra.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/mysql-standard-4.1.10a-pc-linux-gnu-i686" >> \
@@ -113,3 +115,14 @@ $(STORE_DEST_DIR)/$(TOMCAT_DIR): $(STORE_DEST_DIR) $(STORE_DEST_DIR)/$(TOMCAT_DI
 
 $(WEBAPP_DIR): 
 	mkdir -p $@
+
+$(SERVICE_DIR)/build/dist/zimlets/phone.zip:
+	(cd $(SERVICE_DIR); $(ANT) \
+		-Dplat.tag=$(BUILD_PLATFORM) \
+		-Dzimbra.buildinfo.version=$(VERSION_TAG) \
+		-Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) \
+		-Dzimbra.buildinfo.host=$(HOST) package-zimlets ; )
+
+$(STORE_DEST_DIR)/zimlets: $(SERVICE_DIR)/build/dist/zimlets/phone.zip
+	mkdir -p $@
+	cp $(SERVICE_DIR)/build/dist/zimlets/* $@
