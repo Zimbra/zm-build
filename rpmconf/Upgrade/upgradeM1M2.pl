@@ -20,6 +20,9 @@
 # All Rights Reserved.
 # 
 # Contributor(s):
+#
+# Please reference this URL for additional license terms:
+# http://www.zimbra.com/license/migration_wizard_evaluation_license.html
 # 
 # ***** END LICENSE BLOCK *****
 # 
