@@ -32,11 +32,6 @@ I=`hostname -i`
 rm -f /opt/zimbra/java
 ln -s /opt/zimbra/jdk1.5.0_05 /opt/zimbra/java
 
-cat /opt/zimbra/zimbramon/zimbra.cf.in > /opt/zimbra/zimbramon/zimbra.cf
-
-echo "LOCALHOST $H" > /opt/zimbra/zimbramon/state.cf
-chown zimbra:zimbra /opt/zimbra/zimbramon/state.cf
-
 if [ -f /etc/debian_version ]; then
 	cat /opt/zimbra/conf/zimbra.ld.conf /etc/ld.so.conf
 else

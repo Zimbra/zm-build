@@ -46,18 +46,6 @@ mkdir -p /opt/zimbra/index
 mkdir -p /opt/zimbra/backup
 chown zimbra:zimbra /opt/zimbra/convertd /opt/zimbra/redolog /opt/zimbra/store /opt/zimbra/index /opt/zimbra/backup 
 
-egrep -q 'tomcat_start' /opt/zimbra/zimbramon/zimbra.cf
-if [ $? != 0 ]; then
-    cat /opt/zimbra/zimbramon/zimbramail.cf >> /opt/zimbra/zimbramon/zimbra.cf
-fi
-
-if [ -f /opt/zimbra/zimbramon/zimbraconv.cf ]; then
-	egrep -q 'convertd_start' /opt/zimbra/zimbramon/zimbra.cf
-	if [ $? != 0 ]; then
-		cat /opt/zimbra/zimbramon/zimbraconv.cf >> /opt/zimbra/zimbramon/zimbra.cf
-	fi
-fi
-
 egrep -q '^%zimbra.*tomcat' /etc/sudoers
 if [ $? != 0 ]; then
 	echo "%zimbra ALL=NOPASSWD:/opt/zimbra/libexec/zmtomcatstart" >> /etc/sudoers

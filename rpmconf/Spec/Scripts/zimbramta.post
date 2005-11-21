@@ -46,11 +46,6 @@ if [ $? != 0 ]; then
 	echo "%zimbra   ALL=NOPASSWD:/opt/zimbra/postfix-2.2.3/sbin/postfix, /opt/zimbra/postfix-2.2.3/sbin/postalias, /opt/zimbra/postfix-2.2.3/sbin/qshape.pl, /opt/zimbra/postfix-2.2.3/sbin/postconf" >> /etc/sudoers
 fi
 
-egrep -q 'postfix_start' /opt/zimbra/zimbramon/zimbra.cf
-if [ $? != 0 ]; then
-	cat /opt/zimbra/zimbramon/zimbramta.cf >> /opt/zimbra/zimbramon/zimbra.cf
-fi
-
 chown postfix /opt/zimbra/postfix/conf/master.cf
 chmod 644 /opt/zimbra/postfix/conf/master.cf
 

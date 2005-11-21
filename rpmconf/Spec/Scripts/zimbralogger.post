@@ -34,9 +34,4 @@ ln -s /opt/zimbra/logger/mysql-standard-4.1.10a-pc-linux-gnu-i686 /opt/zimbra/lo
 mv /opt/zimbra/db/loggerdb.sql /opt/zimbra/db/loggerdb.sql.in
 sed -e "/server.hostname/ s/local/$H/" /opt/zimbra/db/loggerdb.sql.in > /opt/zimbra/db/loggerdb.sql
 
-egrep -q 'zmlogswatchctl' /opt/zimbra/zimbramon/zimbra.cf
-if [ $? != 0 ]; then
-    cat /opt/zimbra/zimbramon/zimbralogger.cf >> /opt/zimbra/zimbramon/zimbra.cf
-fi
-
 chown zimbra:zimbra /opt/zimbra/logger
