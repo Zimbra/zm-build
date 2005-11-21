@@ -321,28 +321,24 @@ sub setDefaults {
 sub getInstallStatus {
 
 	if (open H, "/opt/zimbra/.install_history") {
-		$newinstall = 1;
-		my $t = time()+(60*60*24*60);
-		my @d = localtime($t);
-		$config{EXPIRY} = sprintf ("%04d%02d%02d",$d[5]+1900,$d[4]+1,$d[3]);
-	} else {
+
 		my @history = <H>;
 		close H;
 		foreach my $h (@history) {
-			if (/INSTALL SESSION COMPLETE/) {
+			if ($h =~ /INSTALL SESSION COMPLETE/) {
 				next;
 			}
-			if (/INSTALL SESSION START/) {
+			if ($h =~ /INSTALL SESSION START/) {
 				%installStatus = ();
 				next;
 			}
-			my ($d, $op, $pkg) = split;
+			my ($d, $op, $pkg) = split ' ', $h;
 			$pkg =~ s/-\d.*//;
 			$installStatus{$pkg}{op} = $op;
 			$installStatus{$pkg}{date} = $d;
 		}
 
-		if ($installStatus{"zimbra-core"} eq "INSTALLED") {
+		if ($installStatus{"zimbra-core"}{op} eq "INSTALLED") {
 			$newinstall = 1;
 		} else {
 			$newinstall = 0;
@@ -350,13 +346,42 @@ sub getInstallStatus {
 			$config{DOCREATEADMIN} = "no";
 			setDefaultsFromLocalConfig();
 		}
+	} else {
+		$newinstall = 1;
+		my $t = time()+(60*60*24*60);
+		my @d = localtime($t);
+		$config{EXPIRY} = sprintf ("%04d%02d%02d",$d[5]+1900,$d[4]+1,$d[3]);
+
 	}
 }
 
 sub setDefaultsFromLocalConfig {
+	progress ("Setting defaults from existing config...");
 	$config{HOSTNAME} = getLocalConfig ("zimbra_server_hostname");
-	$config{LDAPPORT} = getLocalConfig ("ldap_port");
-	$config{LDAPHOST} = getLocalConfig ("ldap_host");
+	my $ldapUrl = getLocalConfig ("ldap_url");
+	my $ld = (split ' ', $ldapUrl)[0];
+	my $p = $ld;
+	$p =~ s/ldaps?:\/\///;
+	$p =~ s/.*:?//;
+	if ($p ne "") {
+		$config{LDAPPORT} = $p;
+	} else {
+		$p = getLocalConfig ("ldap_port");
+		if ($p ne "") {
+			$config{LDAPPORT} = $p;
+		}
+	}
+	my $h = $ld;
+	$h =~ s/ldaps?:\/\///;
+	$h =~ s/:\d*$//;
+	if ($h ne "") {
+		$config{LDAPHOST} = $h;
+	} else {
+		$h = getLocalConfig ("ldap_host");
+		if ($h ne "") {
+			$config{LDAPHOST} = $h;
+		}
+	}
 	$config{LDAPPASS} = getLocalConfig ("ldap_root_password");
 	$config{SQLROOTPASS} = getLocalConfig ("mysql_root_password");
 	$config{LOGSQLROOTPASS} = getLocalConfig ("mysql_logger_root_password");
@@ -1571,7 +1596,7 @@ sub configInitSql {
 
 sub configInitLogger {
 	if (!$loggerSqlConfigured && isEnabled("zimbra-logger")) {
-		progress ( "Initializing store sql database..." );
+		progress ( "Initializing logger sql database..." );
 		runAsZimbra ("/opt/zimbra/libexec/zmloggerinit");
 		progress ( "Done\n" );
 	} 
@@ -1595,6 +1620,46 @@ sub configInitMta {
 			$enabledServiceStr .= "zimbraServiceEnabled antispam ";
 		}
 	}
+}
+
+sub configInitSnmp {
+	if (isEnabled("zimbra-snmp")) {
+		progress ( "Configuring SNMP..." );
+		setLocalConfig ("snmp_notify", $config{SNMPNOTIFY});
+		setLocalConfig ("smtp_notify", $config{SMTPNOTIFY});
+		setLocalConfig ("snmp_trap_host", $config{SNMPTRAPHOST});
+		setLocalConfig ("smtp_source", $config{SMTPSOURCE});
+		setLocalConfig ("smtp_destination", $config{SMTPDEST});
+		runAsZimbra ("/opt/zimbra/libexec/zmsnmpinit");
+		progress ( "Done\n" );
+	}
+}
+
+sub configSetEnabledServices {
+
+	foreach my $p (keys %installedPackages) {
+		if ($p eq "zimbra-core") {next;}
+		if ($p eq "zimbra-apache") {next;}
+		$p =~ s/zimbra-//;
+		if ($p eq "store") {$p = "mailbox";}
+		$installedServiceStr .= "zimbraServiceInstalled $p ";
+	}
+
+	foreach my $p (keys %enabledPackages) {
+		if ($p eq "zimbra-core") {next;}
+		if ($p eq "zimbra-apache") {next;}
+		if ($enabledPackages{$p} eq "Enabled") {
+			$p =~ s/zimbra-//;
+			if ($p eq "store") {$p = "mailbox";}
+			$enabledServiceStr .= "zimbraServiceEnabled $p ";
+		}
+	}
+
+	progress ( "Setting services on $config{HOSTNAME}..." );
+	runAsZimbra ("/opt/zimbra/bin/zmprov ms $config{HOSTNAME} $installedServiceStr");
+	runAsZimbra ("/opt/zimbra/bin/zmprov ms $config{HOSTNAME} $enabledServiceStr");
+	progress ( "Done\n" );
+
 }
 
 sub applyConfig {
@@ -1651,45 +1716,9 @@ sub applyConfig {
 
 	configInitMta();
 
-	if (isEnabled("zimbra-snmp")) {
-		progress ( "Configuring SNMP..." );
-		setLocalConfig ("snmp_notify", $config{SNMPNOTIFY});
-		setLocalConfig ("smtp_notify", $config{SMTPNOTIFY});
-		setLocalConfig ("snmp_trap_host", $config{SNMPTRAPHOST});
-		setLocalConfig ("smtp_source", $config{SMTPSOURCE});
-		setLocalConfig ("smtp_destination", $config{SMTPDEST});
-		runAsZimbra ("/opt/zimbra/libexec/zmsnmpinit");
-		progress ( "Done\n" );
-	}
+	configInitSnmp();
 
-	if (isEnabled("zimbra-spell")) {
-		progress ( "Configuring Spell server..." );
-		$enabledServiceStr .= "zimbraServiceEnabled spell ";
-		progress ( "Done\n" );
-	}
-
-	foreach my $p (keys %installedPackages) {
-		if ($p eq "zimbra-core") {next;}
-		if ($p eq "zimbra-apache") {next;}
-		$p =~ s/zimbra-//;
-		if ($p eq "store") {$p = "mailbox";}
-		$installedServiceStr .= "zimbraServiceInstalled $p ";
-	}
-
-	foreach my $p (keys %enabledPackages) {
-		if ($p eq "zimbra-core") {next;}
-		if ($p eq "zimbra-apache") {next;}
-		if ($enabledPackages{$p} eq "Enabled") {
-			$p =~ s/zimbra-//;
-			if ($p eq "store") {$p = "mailbox";}
-			$enabledServiceStr .= "zimbraServiceEnabled $p ";
-		}
-	}
-
-	progress ( "Setting services on $config{HOSTNAME}..." );
-	runAsZimbra ("/opt/zimbra/bin/zmprov ms $config{HOSTNAME} $installedServiceStr");
-	runAsZimbra ("/opt/zimbra/bin/zmprov ms $config{HOSTNAME} $enabledServiceStr");
-	progress ( "Done\n" );
+	configSetEnabledServices();
 
 	setupCrontab();
 	postinstall::configure();
@@ -1784,7 +1813,7 @@ sub mainMenu {
 }
 
 sub startLdap {
-	progress ( "Starting ldap...\n" );
+	progress ( "Starting ldap..." );
 	runAsZimbra 
 		("/opt/zimbra/openldap/sbin/slapindex -f /opt/zimbra/conf/slapd.conf");
 	runAsZimbra ("ldap start");
