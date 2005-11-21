@@ -26,6 +26,8 @@ $(BUILD_ROOT)/zimbra-core.Info.plist:
 	
 $(BUILD_ROOT)/resources/zimbra-core:
 	mkdir -p $@
+	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-core.preflight $@/preflight
+	chmod 755 $@/preflight
 	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-core.postflight $@/postflight
 	chmod 755 $@/postflight
 	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-core.postinstall $@/postinstall
