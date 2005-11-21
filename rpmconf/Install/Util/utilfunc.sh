@@ -517,6 +517,9 @@ saveExistingConfig() {
 	if [ -f "/opt/zimbra/conf/smtpd.crt" ]; then
 		cp -f /opt/zimbra/conf/smtpd.crt $SAVEDIR
 	fi
+	if [ -f "/opt/zimbra/conf/slapd.key" ]; then
+		cp -f /opt/zimbra/conf/slapd.key $SAVEDIR
+	fi
 	if [ -f "/opt/zimbra/conf/slapd.crt" ]; then
 		cp -f /opt/zimbra/conf/slapd.crt $SAVEDIR
 	fi
@@ -882,7 +885,7 @@ isInstalled () {
 	if [ $PACKAGEEXT = "rpm" ]; then
 		$PACKAGEQUERY $pkg >/dev/null 2>&1
 		if [ $? = 0 ]; then
-			PKGINSTALLED=`$PACKAGEQUERY $pkg 2> /dev/null`
+			PKGINSTALLED=`$PACKAGEQUERY $pkg | sed -e 's/\.[a-zA-Z].*$//' 2> /dev/null`
 		fi
 	else
 		Q=`$PACKAGEQUERY $pkg 2>/dev/null | egrep '^Status: ' `

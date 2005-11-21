@@ -42,7 +42,7 @@ PACKAGE_DIR=`dirname $0`/packages
 
 
 LOGFILE="/tmp/install.log.$$"
-SAVEDIR="/tmp/saveconfig.$$"
+SAVEDIR="/opt/zimbra/.saveconfig"
 
 if [ x$RESTORECONFIG = "x" ]; then
 	RESTORECONFIG=$SAVEDIR

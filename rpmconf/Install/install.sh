@@ -113,13 +113,13 @@ removeExistingInstall
 
 echo "Installing packages"
 echo ""
+D=`date +%s`
+echo "${D}: INSTALL SESSION START" >> /opt/zimbra/.install_history
 for i in $INSTALL_PACKAGES; do
 	installPackage "$i"
 done
-
-if [ "x$UPGRADE" = "xno" ]; then
-	touch /opt/zimbra/.newinstall
-fi
+D=`date +%s`
+echo "${D}: INSTALL SESSION COMPLETE" >> /opt/zimbra/.install_history
 
 if [ $SOFTWAREONLY = "yes" ]; then
 	

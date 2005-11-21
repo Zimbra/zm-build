@@ -31,8 +31,10 @@ installPackage() {
 	f=`basename $file`
 	echo -n "...$f..."
 	$PACKAGEINST $file >> $LOGFILE 2>&1
+	D=`date +%s`
 	if [ $? = 0 ]; then
 		echo "done"
+		echo "${D}: INSTALLED $f" >> /opt/zimbra/.install_history
 	else
 		echo -n "FAILED"
 		echo ""
@@ -65,6 +67,7 @@ findLatestPackage() {
 			major=`echo $version | awk -F. '{print $1}'`
 			minor=`echo $version | awk -F. '{print $2}'`
 			micro=`echo $version | awk -F. '{print $3}'`
+			micro=${micro}_`echo $version | awk -F_ '{print $3}'`
 			stamp=`echo $f | awk -F_ '{print $2}' | awk -F. '{print $1}'`
 		else
 			id=`echo $f | awk -F_ '{print $2}'`
@@ -72,6 +75,7 @@ findLatestPackage() {
 			major=`echo $version | awk -F. '{print $1}'`
 			minor=`echo $version | awk -F. '{print $2}'`
 			micro=`echo $version | awk -F. '{print $3}'`
+			micro=${micro}_`echo $version | awk -F_ '{print $3}'`
 			stamp=`echo $f | awk -F_ '{print $2}' | awk -F. '{print $1}'`
 		fi
 
