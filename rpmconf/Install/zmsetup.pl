@@ -1387,6 +1387,11 @@ sub setLocalConfig {
 
 sub configLCValues {
 
+	if ($configStatus{configLCValues} eq "CONFIGURED") {
+		configLog("configLCValues");
+		return 0;
+	}
+
 	progress ("Setting local config values...");
 	setLocalConfig ("zimbra_server_hostname", $config{HOSTNAME});
 
@@ -1425,6 +1430,11 @@ sub configLCValues {
 
 sub configCASetup {
 
+	if ($configStatus{configCASetup} eq "CONFIGURED") {
+		configLog("configCASetup");
+		return 0;
+	}
+
 	if (isEnabled("zimbra-ldap") && ( ! -f "/opt/zimbra/conf/ca/ca.key") ) {
 		progress ( "Setting up CA..." );
 		runAsZimbra("cd /opt/zimbra; zmcreateca");
@@ -1436,10 +1446,19 @@ sub configCASetup {
 
 sub configSetupLdap {
 
+	if ($configStatus{configSetupLdap} eq "CONFIGURED") {
+		configLog("configSetupLdap");
+		return 0;
+	}
+
 	if (!$ldapConfigured && isEnabled("zimbra-ldap")) {
 		progress ( "Initializing ldap..." ) ;
-		runAsZimbra ("/opt/zimbra/libexec/zmldapinit $config{LDAPPASS}");
-		progress ( "Done\n" );
+		if (my $rc = runAsZimbra ("/opt/zimbra/libexec/zmldapinit $config{LDAPPASS}")) {
+			progress ( "FAILED ($rc)\n" );
+			failConfig();
+		} else {
+			progress ( "Done\n" );
+		}
 	} elsif (isEnabled("zimbra-ldap")) {
 		# zmldappasswd starts ldap and re-applies the ldif
 		if ($ldapPassChanged) {
@@ -1462,10 +1481,17 @@ sub configSetupLdap {
 		setLocalConfig ("zimbra_ldap_password", $config{LDAPPASS});
 	}
 	configLog("configSetupLdap");
+	return 0;
 
 }
 
 sub configSaveCA {
+
+	if ($configStatus{configSaveCA} eq "CONFIGURED") {
+		configLog("configSaveCA");
+		return 0;
+	}
+
 	if (isEnabled("zimbra-ldap")) {
 		progress ( "Saving CA in ldap..." );
 
@@ -1499,6 +1525,11 @@ sub configSaveCA {
 
 sub configCreateCert {
 
+	if ($configStatus{configCreateCert} eq "CONFIGURED") {
+		configLog("configCreateCert");
+		return 0;
+	}
+
 	if (isEnabled("zimbra-ldap") || isEnabled("zimbra-store") || isEnabled("zimbra-mta")) {
 
 		progress ( "Creating SSL certificate..." );
@@ -1518,6 +1549,12 @@ sub configCreateCert {
 }
 
 sub configInstallCert {
+
+	if ($configStatus{configInstallCert} eq "CONFIGURED") {
+		configLog("configInstallCert");
+		return 0;
+	}
+
 	if (isEnabled("zimbra-store") || isEnabled("zimbra-mta")) {
 		progress ("Installing SSL certificate...");
 		if (isEnabled("zimbra-store")) {
@@ -1540,6 +1577,12 @@ sub configInstallCert {
 }
 
 sub configCreateServerEntry {
+
+	if ($configStatus{configCreateServerEntry} eq "CONFIGURED") {
+		configLog("configCreateServerEntry");
+		return 0;
+	}
+
 	progress ( "Creating server entry for $config{HOSTNAME}..." );
 	runAsZimbra("/opt/zimbra/bin/zmprov cs $config{HOSTNAME}");
 	progress ( "Done\n" );
@@ -1547,6 +1590,11 @@ sub configCreateServerEntry {
 }
 
 sub configSpellServer {
+
+	if ($configStatus{configSpellServer} eq "CONFIGURED") {
+		configLog("configSpellServer");
+		return 0;
+	}
 
 	if ($config{USESPELL} eq "yes") {
 		progress ( "Setting spell check URL..." );
@@ -1559,6 +1607,12 @@ sub configSpellServer {
 }
 
 sub configSetServicePorts {
+
+	if ($configStatus{configSetServicePorts} eq "CONFIGURED") {
+		configLog("configSetServicePorts");
+		return 0;
+	}
+
 	progress ( "Setting service ports on $config{HOSTNAME}..." );
 	runAsZimbra("/opt/zimbra/bin/zmprov ms $config{HOSTNAME} ".
 		"zimbraImapBindPort $config{IMAPPORT} zimbraImapSSLBindPort $config{IMAPSSLPORT} ".
@@ -1568,6 +1622,12 @@ sub configSetServicePorts {
 }
 
 sub configInstallZimlets {
+
+	if ($configStatus{configInstallZimlets} eq "CONFIGURED") {
+		configLog("configInstallZimlets");
+		return 0;
+	}
+
 	# Install zimlets
 	if (opendir DIR, "/opt/zimbra/zimlets") {
 		progress ( "Installing zimlets... " );
@@ -1585,6 +1645,12 @@ sub configInstallZimlets {
 }
 
 sub configCreateDomain {
+
+	if ($configStatus{configCreateDomain} eq "CONFIGURED") {
+		configLog("configCreateDomain");
+		return 0;
+	}
+
 	if (!$ldapConfigured && isEnabled("zimbra-ldap")) {
 		if ($config{DOCREATEDOMAIN} eq "yes") {
 			progress ( "Creating domain $config{CREATEDOMAIN}..." );
@@ -1608,6 +1674,12 @@ sub configCreateDomain {
 }
 
 sub configInitSql {
+
+	if ($configStatus{configInitSql} eq "CONFIGURED") {
+		configLog("configInitSql");
+		return 0;
+	}
+
 	if (!$sqlConfigured && isEnabled("zimbra-store")) {
 		progress ( "Initializing store sql database..." );
 		runAsZimbra ("/opt/zimbra/libexec/zmmyinit");
@@ -1621,6 +1693,12 @@ sub configInitSql {
 }
 
 sub configInitLogger {
+
+	if ($configStatus{configInitLogger} eq "CONFIGURED") {
+		configLog("configInitLogger");
+		return 0;
+	}
+
 	if (!$loggerSqlConfigured && isEnabled("zimbra-logger")) {
 		progress ( "Initializing logger sql database..." );
 		runAsZimbra ("/opt/zimbra/libexec/zmloggerinit");
@@ -1634,6 +1712,12 @@ sub configInitLogger {
 }
 
 sub configInitMta {
+
+	if ($configStatus{configInitMta} eq "CONFIGURED") {
+		configLog("configInitMta");
+		return 0;
+	}
+
 	if (isEnabled("zimbra-mta")) {
 		progress ( "Initializing mta config..." );
 		runAsZimbra ("/opt/zimbra/libexec/zmmtainit $config{LDAPHOST}");
@@ -1651,6 +1735,12 @@ sub configInitMta {
 }
 
 sub configInitSnmp {
+
+	if ($configStatus{configInitSnmp} eq "CONFIGURED") {
+		configLog("configInitSnmp");
+		return 0;
+	}
+
 	if (isEnabled("zimbra-snmp")) {
 		progress ( "Configuring SNMP..." );
 		setLocalConfig ("snmp_notify", $config{SNMPNOTIFY});
@@ -1665,6 +1755,11 @@ sub configInitSnmp {
 }
 
 sub configSetEnabledServices {
+
+	if ($configStatus{configSetEnabledServices} eq "CONFIGURED") {
+		configLog("configSetEnabledServices");
+		return 0;
+	}
 
 	foreach my $p (keys %installedPackages) {
 		if ($p eq "zimbra-core") {next;}
@@ -1690,6 +1785,13 @@ sub configSetEnabledServices {
 	progress ( "Done\n" );
 
 	configLog("configSetEnabledServices");
+}
+
+sub failConfig {
+	progress ("\n\nERROR\n\n");
+	progress ("\n\nConfiguration failed\n\n");
+	progress ("Please address the error and re-run /opt/zimbra/libexec/zmsetup.pl to\n");
+	progress ("complete the configuration");
 }
 
 sub applyConfig {
