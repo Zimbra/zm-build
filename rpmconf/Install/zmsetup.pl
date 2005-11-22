@@ -53,6 +53,7 @@ my %enabledPackages = ();
 my $zimbraHome = "/opt/zimbra";
 
 my %installStatus = ();
+my %configStatus = ();
 
 my $newinstall = 1;
 
@@ -325,17 +326,29 @@ sub getInstallStatus {
 		my @history = <H>;
 		close H;
 		foreach my $h (@history) {
+			if ($h =~ /CONFIG SESSION COMPLETE/) {
+				next;
+			}
+			if ($h =~ /CONFIG SESSION START/) {
+				%configStatus = ();
+				next;
+			}
 			if ($h =~ /INSTALL SESSION COMPLETE/) {
 				next;
 			}
 			if ($h =~ /INSTALL SESSION START/) {
 				%installStatus = ();
+				%configStatus = ();
 				next;
 			}
-			my ($d, $op, $pkg) = split ' ', $h;
-			$pkg =~ s/-\d.*//;
-			$installStatus{$pkg}{op} = $op;
-			$installStatus{$pkg}{date} = $d;
+			my ($d, $op, $stage) = split ' ', $h;
+			if ($op eq "INSTALLED" || $op eq "UPGRADED") {
+				$stage =~ s/-\d.*//;
+				$installStatus{$stage}{op} = $op;
+				$installStatus{$stage}{date} = $d;
+			} elsif ($op eq "CONFIGURED") {
+				$configStatus{$stage} = $op;
+			}
 		}
 
 		if ($installStatus{"zimbra-core"}{op} eq "INSTALLED") {
@@ -1404,6 +1417,8 @@ sub configLCValues {
 
 	setLocalConfig ("ssl_allow_untrusted_certs", "TRUE");
 
+	configLog ("configLCValues");
+
 	progress ("Done\n");
 
 }
@@ -1416,6 +1431,7 @@ sub configCASetup {
 
 		progress ( "Done\n" );
 	}
+	configLog("configCASetup");
 }
 
 sub configSetupLdap {
@@ -1445,6 +1461,7 @@ sub configSetupLdap {
 		setLocalConfig ("ldap_root_password", $config{LDAPPASS});
 		setLocalConfig ("zimbra_ldap_password", $config{LDAPPASS});
 	}
+	configLog("configSetupLdap");
 
 }
 
@@ -1477,6 +1494,7 @@ sub configSaveCA {
 
 		progress ( "Done\n" );
 	}
+	configLog("configSaveCA");
 }
 
 sub configCreateCert {
@@ -1496,6 +1514,7 @@ sub configCreateCert {
 
 	}
 
+	configLog("configCreateCert");
 }
 
 sub configInstallCert {
@@ -1517,23 +1536,26 @@ sub configInstallCert {
 		}
 		progress ( "Done\n" );
 	}
+	configLog("configInstallCert");
 }
 
 sub configCreateServerEntry {
 	progress ( "Creating server entry for $config{HOSTNAME}..." );
 	runAsZimbra("/opt/zimbra/bin/zmprov cs $config{HOSTNAME}");
 	progress ( "Done\n" );
+	configLog("configCreateServerEntry");
 }
 
 sub configSpellServer {
 
 	if ($config{USESPELL} eq "yes") {
-		progress ( "Setting spell check URL to $config{SPELLURL}..." );
+		progress ( "Setting spell check URL..." );
 		runAsZimbra("/opt/zimbra/bin/zmprov ms $config{HOSTNAME} ".
 			"zimbraSpellCheckURL $config{SPELLURL}");
 		progress ( "Done\n" );
 	}
 
+	configLog("configSpellServer");
 }
 
 sub configSetServicePorts {
@@ -1542,6 +1564,7 @@ sub configSetServicePorts {
 		"zimbraImapBindPort $config{IMAPPORT} zimbraImapSSLBindPort $config{IMAPSSLPORT} ".
 		"zimbraPop3BindPort $config{POPPORT} zimbraPop3SSLBindPort $config{POPSSLPORT}");
 	progress ( "Done\n" );
+	configLog("configSetServicePorts");
 }
 
 sub configInstallZimlets {
@@ -1558,6 +1581,7 @@ sub configInstallZimlets {
 		}
 		progress ( "Done\n" );
 	}
+	configLog("configInstallZimlets");
 }
 
 sub configCreateDomain {
@@ -1580,6 +1604,7 @@ sub configCreateDomain {
 			}
 		}
 	}
+	configLog("configCreateDomain");
 }
 
 sub configInitSql {
@@ -1592,6 +1617,7 @@ sub configInitSql {
 			"zimbraSmtpHostname $config{SMTPHOST}");
 		progress ( "Done\n" );
 	}
+	configLog("configInitSql");
 }
 
 sub configInitLogger {
@@ -1604,6 +1630,7 @@ sub configInitLogger {
 	if (isEnabled("zimbra-logger")) {
 		runAsZimbra ("/opt/zimbra/bin/zmprov mcf zimbraLogHostname $config{HOSTNAME}");
 	}
+	configLog("configInitLogger");
 }
 
 sub configInitMta {
@@ -1620,6 +1647,7 @@ sub configInitMta {
 			$enabledServiceStr .= "zimbraServiceEnabled antispam ";
 		}
 	}
+	configLog("configInitMta");
 }
 
 sub configInitSnmp {
@@ -1633,6 +1661,7 @@ sub configInitSnmp {
 		runAsZimbra ("/opt/zimbra/libexec/zmsnmpinit");
 		progress ( "Done\n" );
 	}
+	configLog("configInitSnmp");
 }
 
 sub configSetEnabledServices {
@@ -1660,16 +1689,26 @@ sub configSetEnabledServices {
 	runAsZimbra ("/opt/zimbra/bin/zmprov ms $config{HOSTNAME} $enabledServiceStr");
 	progress ( "Done\n" );
 
+	configLog("configSetEnabledServices");
 }
 
 sub applyConfig {
 	if (!defined ($options{c})) {
-		if (askYN("Save configuration data to a file?", "Yes") eq "yes") {saveConfig();}
-		if (askYN("The system will be modified - continue?", "No") eq "no") {return 1;}
+		if (askYN("Save configuration data to a file?", "Yes") eq "yes") {
+			saveConfig();
+		}
+		if (askYN("The system will be modified - continue?", "No") eq "no") {
+			return 1;
+		}
 	}
 	progress ( "Operations logged to $logfile\n" );
 
+	open (H, ">>/opt/zimbra/.install_history");
+
+	print H time(),": CONFIG SESSION START\n";
 	# This is the postinstall config
+
+	configLog ("BEGIN");
 
 	configLCValues();
 
@@ -1734,6 +1773,12 @@ sub applyConfig {
 		runAsZimbra ("/opt/zimbra/bin/zmupdateauthkeys");
 	}
 
+	configLog ("END");
+
+	print H time(),": CONFIG SESSION COMPLETE\n";
+
+	close H;
+
 	getSystemStatus();
 
 	progress ( "\n\n" );
@@ -1744,6 +1789,11 @@ sub applyConfig {
 		print "\n\n";
 		exit 0;
 	}
+}
+
+sub configLog {
+	my $stage = shift;
+	print H time(),": CONFIGURED $stage\n";
 }
 
 sub setupCrontab {
@@ -1778,6 +1828,7 @@ sub setupCrontab {
 
 	`crontab -u zimbra /tmp/crontab.zimbra`;
 	progress ("Done\n");
+	configLog("setupCrontab");
 
 }
 
@@ -1821,6 +1872,16 @@ sub startLdap {
 	progress ( "Done\n" );
 }
 
+sub resumeConfiguration {
+	progress ( "\n\nNote\n\n" );
+	progress ( "The previous configuration appears to have failed to complete\n\n");
+	if (askYN ("Attempt to complete configuration now?", "yes") eq "yes") {
+		applyConfig();
+	} else {
+		%configStatus = ();
+	}
+}
+
 getInstalledPackages();
 
 setDefaults();
@@ -1839,6 +1900,10 @@ if ($options{c}) {
 	loadConfig ($options{c});
 	applyConfig();
 } else {
+	if ($configStatus{BEGIN} eq "CONFIGURED" &&
+		$configStatus{END}  ne "CONFIGURED") {
+		resumeConfiguration();
+	}
 	mainMenu();
 }
 
