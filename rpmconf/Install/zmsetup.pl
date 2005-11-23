@@ -289,7 +289,7 @@ sub setDefaults {
 	$config{POPSSLPORT} = 995;
 
 	if ($platform eq "MACOSX") {
-		setLocalConfig ("zimbra_java_home", "/usr");
+		setLocalConfig ("zimbra_java_home", "/System/Library/Frameworks/JavaVM.framework/Versions/1.5/Home");
 		$config{HOSTNAME} = `hostname`;
 	} else {
 		$config{HOSTNAME} = `hostname --fqdn`;
