@@ -429,6 +429,19 @@ setRemove() {
 					break
 				fi
 			else
+				# Check for a history file - create it if it's not there
+				isInstalled "zimbra-core"
+				if [ ! -f "/opt/zimbra/.install_history" ]; then
+					cat > /opt/zimbra/.install_history << EOF
+0000000000: INSTALL SESSION START
+0000000000: INSTALLED $PKGVERSION
+0000000000: INSTALL SESSION COMPLETE
+0000000000: CONFIG SESSION START
+0000000000: CONFIGURED BEGIN
+0000000000: CONFIGURED END
+0000000000: CONFIG SESSION COMPLETE
+EOF
+				fi
 				break
 			fi
 		done
@@ -885,6 +898,7 @@ isInstalled () {
 	if [ $PACKAGEEXT = "rpm" ]; then
 		$PACKAGEQUERY $pkg >/dev/null 2>&1
 		if [ $? = 0 ]; then
+			PKGVERSION=`$PACKAGEQUERY $pkg 2> /dev/null`
 			PKGINSTALLED=`$PACKAGEQUERY $pkg | sed -e 's/\.[a-zA-Z].*$//' 2> /dev/null`
 		fi
 	else

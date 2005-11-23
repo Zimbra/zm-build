@@ -30,6 +30,8 @@ use lib "/opt/zimbra/libexec";
 
 use postinstall;
 
+use zmupgrade;
+
 use Getopt::Std;
 
 my %options = ();
@@ -54,6 +56,9 @@ my $zimbraHome = "/opt/zimbra";
 
 my %installStatus = ();
 my %configStatus = ();
+
+my $prevVersion = "";
+my $curVersion = "";
 
 my $newinstall = 1;
 
@@ -343,11 +348,22 @@ sub getInstallStatus {
 			}
 			my ($d, $op, $stage) = split ' ', $h;
 			if ($op eq "INSTALLED" || $op eq "UPGRADED") {
+				my $v = $stage;
 				$stage =~ s/-\d.*//;
 				$installStatus{$stage}{op} = $op;
 				$installStatus{$stage}{date} = $d;
+				if ($stage eq "zimbra-core") {
+					$prevVersion = $curVersion;
+					$v =~ s/_HEAD.*//;
+					$v =~ s/^zimbra-core-//;
+					$v =~ s/_[^_]*$//;
+					$curVersion = $v;
+				}
 			} elsif ($op eq "CONFIGURED") {
 				$configStatus{$stage} = $op;
+				if ($stage eq "END") {
+					$prevVersion = $curVersion;
+				}
 			}
 		}
 
@@ -1987,6 +2003,22 @@ sub resumeConfiguration {
 getInstalledPackages();
 
 setDefaults();
+
+# if we're an upgrade, run the upgrader...
+
+if (! $newinstall && ($prevVersion ne $curVersion )) {
+	progress ("Upgrading from $prevVersion to $curVersion\n");
+	if (askYN("Proceed with upgrade?", "No") eq "no") {
+		progress ("Upgrade cancelled - exiting\n\n");
+		exit 1;
+	}
+	if (zmupgrade::upgrade($prevVersion, $curVersion)){
+		progress ("UPGRADE FAILED - exiting\n");
+		exit 1;
+	} else {
+		progress ("Upgrade complete\n");
+	}
+}
 
 setEnabledDependencies();
 

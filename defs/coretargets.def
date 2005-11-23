@@ -200,6 +200,10 @@ $(CORE_DEST_DIR)/libexec: $(NATIVE_DIR)/build/zmtomcatstart
 	mkdir -p $@/util/modules
 	cp -f -R $(SERVICE_DIR)/build/dist/libexec/zm*init $@
 	cp -f $(PACKAGE_CONF_DIR)/Install/zmsetup.pl $@/zmsetup.pl
+	cp -f $(PACKAGE_CONF_DIR)/Upgrade/zmupgrade.pm $@/zmupgrade.pm
+	mkdir -p $@/scripts
+	cp -f $(SERVICE_DIR)/src/db/Migrate.pm $@/scripts
+	cp -f $(SERVICE_DIR)/src/db/migrate*pl $@/scripts
 	cp -f $(PACKAGE_CONF_DIR)/Install/postinstall.pm $@/postinstall.pm
 	cp -f $(PACKAGE_CONF_DIR)/Install/Util/addUser.sh $@/addUser.sh
 	cp $(NATIVE_DIR)/build/zmtomcatstart $@
