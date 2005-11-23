@@ -4,7 +4,6 @@
 	<welcome file="Welcome.txt"></welcome>
 	<license file="License.txt"></license>
 	<conclusion file="Conclusion.txt"></conclusion>
-    <background file="background.gif" scaling="none" alignment="right"></background>
     <options allow-external-scripts="yes" customize="allow"></options>
     <script>
 function installationCheckRAM()
