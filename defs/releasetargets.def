@@ -1,7 +1,7 @@
 zcs-$(RELEASE).dmg: $(ARCH)/zcs.mpkg packages
 	mkdir $(ARCH)/tmp
 	cp -R $(ARCH)/zcs.mpkg $(ARCH)/tmp
-	hdiutil create -srcfolder $(ARCH)/tmp -volname zcs-$(RELEASE) $(ARCH)/zcs-$(RELEASE).dmg
+	hdiutil create -srcfolder $(ARCH)/tmp -volname zcs-$(VERSION_TAG) $(ARCH)/zcs-$(VERSION_TAG).dmg
 	rm -rf $(ARCH)/tmp
 
 $(ARCH)/zcs.mpkg: $(ARCH)/zcs.mpkg/Contents
