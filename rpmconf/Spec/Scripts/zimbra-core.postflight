@@ -44,5 +44,7 @@ rm -rf /Users/zimbra
 
 ln -s /opt/zimbra /Users/zimbra
 
+rm -f /opt/zimbra/.install_history
+
 # echo "Launching ZmSetup.app"
 # /opt/zimbra/libexec/ZmSetup.app/Contents/MacOS/ZmSetup
