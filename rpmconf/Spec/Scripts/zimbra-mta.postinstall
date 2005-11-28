@@ -53,7 +53,7 @@ chown -R zimbra:zimbra /opt/zimbra/clamav/db
 
 /bin/sh /opt/zimbra/bin/zmfixperms.sh
 
-egrep -q '^%zimbra.*postfix' /etc/sudoers
+egrep -q '^%zimbra.*postfix-2.2.5' /etc/sudoers
 if [ $? != 0 ]; then
 	echo "%zimbra   ALL=NOPASSWD:/opt/zimbra/postfix-2.2.5/sbin/postfix, /opt/zimbra/postfix-2.2.5/sbin/postalias, /opt/zimbra/postfix-2.2.5/sbin/qshape.pl, /opt/zimbra/postfix-2.2.5/sbin/postconf" >> /etc/sudoers
 fi
