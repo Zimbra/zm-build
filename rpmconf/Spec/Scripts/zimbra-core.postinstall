@@ -24,4 +24,6 @@
 # ***** END LICENSE BLOCK *****
 # 
 
-touch /opt/zimbra/.newinstall
+D=`date +%s`
+echo "${D}: INSTALLED zimbra-core" >> /opt/zimbra/.install_history
+

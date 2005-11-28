@@ -54,3 +54,6 @@ if [ -f $SAVEDIR/smtpd.crt ]; then
 	chown zimbra:zimbra /opt/zimbra/conf/smtpd.crt
 fi
 
+D=`date +%s`
+echo "${D}: UPGRADED zimbra-core" >> /opt/zimbra/.install_history
+

@@ -112,4 +112,8 @@ auxgroups="postfix"
 homedir="/opt/zimbra"
 name="zimbra"
 addUser
+
+D=`date +%s`
+echo "${D}: INSTALL SESSION START" >> /opt/zimbra/.install_history
+
 exit 0
