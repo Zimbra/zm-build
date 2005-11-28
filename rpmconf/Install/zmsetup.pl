@@ -1808,6 +1808,7 @@ sub failConfig {
 	progress ("\n\nConfiguration failed\n\n");
 	progress ("Please address the error and re-run /opt/zimbra/libexec/zmsetup.pl to\n");
 	progress ("complete the configuration");
+	exit 1;
 }
 
 sub applyConfig {
