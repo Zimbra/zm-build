@@ -47,5 +47,5 @@ ln -s /opt/zimbra /Users/zimbra
 # echo "Launching ZmSetup.app"
 # /opt/zimbra/libexec/ZmSetup.app/Contents/MacOS/ZmSetup
 D=`date +%s`
-echo "${D}: INSTALL SESSION START" >> /opt/zimbra/.install_history
+echo "${D}: INSTALL SESSION COMPLETE" >> /opt/zimbra/.install_history
 
