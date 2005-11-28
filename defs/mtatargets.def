@@ -89,7 +89,7 @@ $(BUILD_ROOT)/zimbramta.spec:
 		$(BUILD_ROOT)/zimbramta.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/clamav-0.85.1/share" >> \
 		$(BUILD_ROOT)/zimbramta.spec
-	echo "%attr(-, zimbra, zimbra) /opt/zimbra/postfix-2.2.3" >> \
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/postfix-2.2.5" >> \
 		$(BUILD_ROOT)/zimbramta.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/sleepycat-4.2.52.4" >> \
 		$(BUILD_ROOT)/zimbramta.spec
