@@ -19,7 +19,7 @@ export ZIMBRA_HOME
 JAVA_HOME=/opt/zimbra/java
 export JAVA_HOME
 
-PATH=/opt/zimbra/bin:/opt/zimbra/zimbramon:/opt/zimbra/postfix-2.2.3/sbin:/opt/zimbra/openldap/bin:${JAVA_HOME}/bin:/opt/zimbra/snmp/bin:${PATH}
+PATH=/opt/zimbra/bin:/opt/zimbra/zimbramon:/opt/zimbra/postfix-2.2.5/sbin:/opt/zimbra/openldap/bin:${JAVA_HOME}/bin:/opt/zimbra/snmp/bin:${PATH}
 export PATH
 
 LD_LIBRARY_PATH=/opt/zimbra/lib:${LD_LIBRARY_PATH}

@@ -27,7 +27,7 @@
 #Symlinks
 
 rm -f /opt/zimbra/postfix
-ln -s /opt/zimbra/postfix-2.2.3 /opt/zimbra/postfix
+ln -s /opt/zimbra/postfix-2.2.5 /opt/zimbra/postfix
 
 rm -f /opt/zimbra/clamav
 ln -s /opt/zimbra/clamav-0.85.1 /opt/zimbra/clamav
@@ -43,7 +43,7 @@ I=`hostname -i`
 
 egrep -q '^%zimbra.*postfix' /etc/sudoers
 if [ $? != 0 ]; then
-	echo "%zimbra   ALL=NOPASSWD:/opt/zimbra/postfix-2.2.3/sbin/postfix, /opt/zimbra/postfix-2.2.3/sbin/postalias, /opt/zimbra/postfix-2.2.3/sbin/qshape.pl, /opt/zimbra/postfix-2.2.3/sbin/postconf" >> /etc/sudoers
+	echo "%zimbra   ALL=NOPASSWD:/opt/zimbra/postfix-2.2.5/sbin/postfix, /opt/zimbra/postfix-2.2.5/sbin/postalias, /opt/zimbra/postfix-2.2.5/sbin/qshape.pl, /opt/zimbra/postfix-2.2.5/sbin/postconf" >> /etc/sudoers
 fi
 
 chown postfix /opt/zimbra/postfix/conf/master.cf
