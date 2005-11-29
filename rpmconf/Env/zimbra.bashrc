@@ -19,6 +19,9 @@ export ZIMBRA_HOME
 JAVA_HOME=/opt/zimbra/java
 export JAVA_HOME
 
+JAVA_JVM_VERSION=1.5
+export JAVA_JVM_VERSION
+
 PATH=/opt/zimbra/bin:/opt/zimbra/zimbramon:/opt/zimbra/postfix-2.2.5/sbin:/opt/zimbra/openldap/bin:${JAVA_HOME}/bin:/opt/zimbra/snmp/bin:${PATH}
 export PATH
 
