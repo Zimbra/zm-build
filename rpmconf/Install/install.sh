@@ -24,6 +24,13 @@
 # ***** END LICENSE BLOCK *****
 # 
 
+ID=`id -u`
+
+if [ "x$ID" != "x0" ]; then
+	echo "Run as root!"
+	exit 1
+fi
+
 MYDIR=`dirname $0`
 
 . ./util/utilfunc.sh
