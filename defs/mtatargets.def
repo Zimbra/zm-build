@@ -73,21 +73,21 @@ $(BUILD_ROOT)/zimbramta.spec:
 		$(BUILD_ROOT)/zimbramta.spec )
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/amavisd" >> \
 		$(BUILD_ROOT)/zimbramta.spec
-	echo "%attr(555, zimbra, zimbra) /opt/zimbra/clamav-0.85.1/bin" >> \
+	echo "%attr(555, zimbra, zimbra) /opt/zimbra/clamav-0.87.1/bin" >> \
 		$(BUILD_ROOT)/zimbramta.spec
-	echo "%attr(755, zimbra, zimbra) /opt/zimbra/clamav-0.85.1/db" >> \
+	echo "%attr(755, zimbra, zimbra) /opt/zimbra/clamav-0.87.1/db" >> \
 		$(BUILD_ROOT)/zimbramta.spec
-	echo "%attr(-, zimbra, zimbra) /opt/zimbra/clamav-0.85.1/etc/" >> \
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/clamav-0.87.1/etc/" >> \
 		$(BUILD_ROOT)/zimbramta.spec
-	echo "%attr(-, zimbra, zimbra) /opt/zimbra/clamav-0.85.1/include" >> \
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/clamav-0.87.1/include" >> \
 		$(BUILD_ROOT)/zimbramta.spec
-	echo "%attr(-, zimbra, zimbra) /opt/zimbra/clamav-0.85.1/lib" >> \
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/clamav-0.87.1/lib" >> \
 		$(BUILD_ROOT)/zimbramta.spec
-	echo "%attr(-, zimbra, zimbra) /opt/zimbra/clamav-0.85.1/man" >> \
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/clamav-0.87.1/man" >> \
 		$(BUILD_ROOT)/zimbramta.spec
-	echo "%attr(555, zimbra, zimbra) /opt/zimbra/clamav-0.85.1/sbin" >> \
+	echo "%attr(555, zimbra, zimbra) /opt/zimbra/clamav-0.87.1/sbin" >> \
 		$(BUILD_ROOT)/zimbramta.spec
-	echo "%attr(-, zimbra, zimbra) /opt/zimbra/clamav-0.85.1/share" >> \
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/clamav-0.87.1/share" >> \
 		$(BUILD_ROOT)/zimbramta.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/postfix-2.2.5" >> \
 		$(BUILD_ROOT)/zimbramta.spec
