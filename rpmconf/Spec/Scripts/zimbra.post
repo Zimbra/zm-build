@@ -37,6 +37,7 @@ sed -e "/server.hostname/ s/local/$H/" /opt/zimbra/db/db.sql.in > /opt/zimbra/db
 rm -rf /opt/zimbra/perdition
 ln -s /opt/zimbra/perdition-1.17 /opt/zimbra/perdition
 mkdir -p /opt/zimbra/perdition/var/run
+chown -R zimbra:zimbra /opt/zimbra/perdition/var
 
 rm -rf /opt/zimbra/tomcat
 ln -s /opt/zimbra/jakarta-tomcat-5.5.7 /opt/zimbra/tomcat

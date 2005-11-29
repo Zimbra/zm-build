@@ -27,6 +27,7 @@
 rm -f /opt/zimbra/perdition
 ln -s /opt/zimbra/perdition-1.17 /opt/zimbra/perdition
 mkdir -p /opt/zimbra/perdition/var/run
+chown -R zimbra:zimbra /opt/zimbra/perdition/var
 
 rm -f /opt/zimbra/mysql
 ln -s /opt/zimbra/mysql-standard-4.1.14-apple-darwin8.2.0-powerpc /opt/zimbra/mysql
