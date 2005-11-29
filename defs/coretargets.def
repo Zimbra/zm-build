@@ -167,6 +167,17 @@ pcre_SuSEES9: ;
 $(CORE_DEST_DIR)/jdk1.5.0_05:
 	@echo "*** Creating java"
 	(cd $(CORE_DEST_DIR); tar xzf $(JAVA_SOURCE).tgz;)
+	rm -rf $@/jre/lsrc.zip
+	rm -rf $@/demo
+	rm -rf $@/sample
+	rm -rf $@/jre/lib/audio/soundbank.gm
+	rm -rf $@/jre/bin/rmid
+	rm -rf $@/jre/bin/tnameserv
+	rm -rf $@/jre/bin/orbd
+	rm -rf $@/jre/bin/javaws
+	rm -rf $@/jre/lib/javaws
+	rm -rf $@/jre/lib/javaws.jar
+	rm -rf $@/jre/lib/i386/client/classes.jsa
 
 $(CORE_DEST_DIR)/db: $(WEBAPP_DIR)/service.war
 	mkdir -p $@
