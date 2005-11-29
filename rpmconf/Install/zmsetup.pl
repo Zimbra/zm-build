@@ -274,6 +274,20 @@ sub getSystemStatus {
 	}
 }
 
+sub setLdapDefaults {
+	progress ( "Setting defaults from ldap..." );
+	my $sslport=`zmprov gs $config{HOSTNAME} | zimbraMailSSLPort | sed -e 's/zimbraMailSSLPort: //'`
+	my $mailport=`zmprov gs $config{HOSTNAME} | zimbraMailPort | sed -e 's/zimbraMailPort: //'`
+	if ($sslport == 0 && $mailport != 0) {
+		$config{MODE} = "http";
+	} elsif ($sslport != 0 && $mailport == 0) {
+		$config{MODE} = "https";
+	} else {
+		$config{MODE} = "mixed";
+	}
+	progress ( "Done\n" );
+}
+
 sub setDefaults {
 	progress ( "Setting defaults..." );
 	$config{EXPANDMENU} = "no";
@@ -2029,6 +2043,7 @@ getSystemStatus();
 
 if (!$ldapRunning && $ldapConfigured) {
 	startLdap();
+	setLdapDefaults();
 }
 
 if ($options{c}) {
