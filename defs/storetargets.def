@@ -89,6 +89,9 @@ $(STORE_DEST_DIR)/$(MYSQL_DIR):
 	(cd $(STORE_DEST_DIR); tar xzf $(MYSQL_SOURCE).tar.gz;)
 	(cd $(STORE_DEST_DIR)/$(MYSQL_DIR)/lib; tar xzf $(THIRD_PARTY)/mysql/$(BUILD_PLATFORM)/mysql-$(MYSQL_CLIENT_VERSION).tgz)
 
+$(STORE_DEST_DIR)/$(PERDITION_DIR)-$(PERDITION_VERSION): $(STORE_DEST_DIR)
+	@echo "*** Creating perdition"
+	(cd $(STORE_DEST_DIR); tar xzf $(PERDITION_SOURCE).tgz;)
 
 $(STORE_DEST_DIR)/$(TOMCAT_DIR)/bin: $(STORE_DEST_DIR) force
 	@echo "*** Creating tomcat"
