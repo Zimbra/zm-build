@@ -278,12 +278,19 @@ sub setLdapDefaults {
 	progress ( "Setting defaults from ldap..." );
 	my $sslport=`zmprov gs $config{HOSTNAME} | zimbraMailSSLPort | sed -e 's/zimbraMailSSLPort: //'`;
 	my $mailport=`zmprov gs $config{HOSTNAME} | zimbraMailPort | sed -e 's/zimbraMailPort: //'`;
+	chomp $sslport;
+	chomp $mailport;
 	if ($sslport == 0 && $mailport != 0) {
 		$config{MODE} = "http";
 	} elsif ($sslport != 0 && $mailport == 0) {
 		$config{MODE} = "https";
 	} else {
 		$config{MODE} = "mixed";
+	}
+	my $smtphost=`zmprov gs $config{HOSTNAME} | zimbraSmtpHostname | sed -e 's/zimbraSmtpHostname: //'`;
+	chomp $smtphost;
+	if ( $smtphost ne "") {
+		$config{SMTPHOST} = $smtphost;
 	}
 	progress ( "Done\n" );
 }
