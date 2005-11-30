@@ -1604,8 +1604,8 @@ sub configInstallCert {
 			if (! (-f "/opt/zimbra/conf/smtpd.key" || 
 				-f "/opt/zimbra/conf/smtpd.crt")) {
 				runAsZimbra("cd /opt/zimbra; zmcertinstall mta ".
-					"/opt/zimbra/ssl/ssl/server/smtpd.crt ".
-					"/opt/zimbra/ssl/ssl/ca/ca.key");
+					"/opt/zimbra/ssl/ssl/server/server.crt ".
+					"/opt/zimbra/ssl/ssl/server/server.key");
 			}
 		}
 		progress ( "Done\n" );
