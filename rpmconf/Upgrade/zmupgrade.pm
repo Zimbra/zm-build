@@ -147,6 +147,7 @@ sub upgradeBM1 {
 	`su - zimbra -c "zmlocalconfig -e zimbra_index_idle_flush_time=600"`;
 	`su - zimbra -c "zmlocalconfig -e zimbra_index_lru_size=100"`;
 	`su - zimbra -c "zmlocalconfig -e zimbra_index_max_uncommitted_operations=200"`;
+	`su - zimbra -c "zmlocalconfig -e logger_mysql_port=7307"`;
 
 	Migrate::log("Updating zimbra user configuration");
 	`su - zimbra -c "zmlocalconfig -e zimbra_user=zimbra"`;
