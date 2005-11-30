@@ -27,6 +27,10 @@
 package postinstall;
 
 sub configure {
+
+	if (main::isEnabled("zimbra-ldap")) {
+		main::runAsZimbra ("zmprov mcf zimbraComponentAvailable ''");
+	}
 }
 
 1
