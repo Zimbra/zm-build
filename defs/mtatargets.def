@@ -131,3 +131,4 @@ $(MTA_DEST_DIR)/$(SASL_DIR): $(MTA_DEST_DIR)
 $(MTA_DEST_DIR)/$(BDB_DIR): $(MTA_DEST_DIR)
 	@echo "*** Creating sleepycat"
 	(cd $(MTA_DEST_DIR); tar xzf $(BDB_SOURCE).tgz; chmod u+w $(BDB_DIR)/bin/*)
+	rm -rf $(MTA_DEST_DIR)/$(BDB_DIR)/docs/java
