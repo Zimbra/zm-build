@@ -215,7 +215,9 @@ sub isInstalled {
 	if ($platform eq "DEBIAN3.1") {
 		$pkgQuery = "dpkg -s $pkg | egrep '^Status: ' | grep 'not-installed'";
 	} elsif ($platform eq "MACOSX") {
-		$pkgQuery = "test -d /Library/Receipts/${pkg}*";
+		my @l = sort glob ("/Library/Receipts/${pkg}*");
+		if ( $#l < 0 ) { return 0; }
+		$pkgQuery = "test -d $l[$#l]";
 		$good = 0;
 	} else {
 		$pkgQuery = "rpm -q $pkg";
