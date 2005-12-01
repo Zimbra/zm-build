@@ -24,7 +24,10 @@
 # ***** END LICENSE BLOCK *****
 # 
 
-SAVEDIR=/tmp/saveconfig
+SAVEDIR=/opt/zimbra/.saveconfig
+if [ -d ${SAVEDIR} ]; then
+	mv $SAVEDIR ${SAVEDIR}.$$
+fi
 rm -rf $SAVEDIR
 mkdir -p $SAVEDIR
 chmod 777 $SAVEDIR

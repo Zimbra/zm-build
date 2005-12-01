@@ -62,4 +62,9 @@ fi
 
 su - zimbra -c "mkdir -p /opt/zimbra/tomcat/webapps/service; cd /opt/zimbra/tomcat/webapps/service; jar xf ../service.war"
 su - zimbra -c "mkdir -p /opt/zimbra/tomcat/webapps/zimbra; cd /opt/zimbra/tomcat/webapps/zimbra; jar xf ../zimbra.war"
+
+PKG=`echo ${RECEIPT_PATH} | sed -e 's|.*/\(zimbra-store.[^/]*pkg\)/.*|\1|' | sed -e 's/\./-/'`
+D=`date +%s`
+echo "${D}: INSTALLED ${PKG}" >> /opt/zimbra/.install_history
+
 exit 0

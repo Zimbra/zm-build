@@ -28,7 +28,7 @@ $(BUILD_ROOT)/zimbra-apache.Info.plist:
 $(BUILD_ROOT)/resources/zimbra-apache:
 	mkdir -p $@
 	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-apache.postinstall $@/postinstall
-	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-apache.postinstall $@/postupgrade
+	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-apache.postupgrade $@/postupgrade
 	chmod 755 $@/postinstall
 	chmod 755 $@/postupgrade
 #       cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbraapache.pre $@/preinstall

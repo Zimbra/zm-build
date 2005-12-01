@@ -24,7 +24,7 @@
 # ***** END LICENSE BLOCK *****
 # 
 
-SAVEDIR=/tmp/saveconfig
+SAVEDIR=/opt/zimbra/.saveconfig
 
 /bin/sh /opt/zimbra/bin/zmfixperms.sh
 
@@ -54,6 +54,8 @@ if [ -f $SAVEDIR/smtpd.crt ]; then
 	chown zimbra:zimbra /opt/zimbra/conf/smtpd.crt
 fi
 
+PKG=`echo ${RECEIPT_PATH} | sed -e 's|.*/\(zimbra-core.[^/]*pkg\)/.*|\1|' | sed -e 's/\./-/'`
 D=`date +%s`
-echo "${D}: UPGRADED zimbra-core ${RECEIPT_PATH}" >> /opt/zimbra/.install_history
+echo "${D}: UPGRADED ${PKG}" >> /opt/zimbra/.install_history
 
+exit 0

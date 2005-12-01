@@ -278,8 +278,13 @@ sub getSystemStatus {
 
 sub setLdapDefaults {
 	progress ( "Setting defaults from ldap..." );
-	my $sslport=`zmprov gs $config{HOSTNAME} | zimbraMailSSLPort | sed -e 's/zimbraMailSSLPort: //'`;
-	my $mailport=`zmprov gs $config{HOSTNAME} | zimbraMailPort | sed -e 's/zimbraMailPort: //'`;
+
+	my $rc = 0xffff & system('su - zimbra -c "zmprov gs $config{HOSTNAME} | grep zimbraMailSSLPort | sed -e \'s/zimbraMailSSLPort: //\' > /tmp/ld.out"');
+
+	my $sslport=`cat /tmp/ld.out`;
+	$rc = 0xffff & system('su - zimbra -c "zmprov gs $config{HOSTNAME} | grep zimbraMailPort | sed -e \'s/zimbraMailPort: //\' > /tmp/ld.out"');
+	my $mailport=`cat /tmp/ld.out`;
+
 	chomp $sslport;
 	chomp $mailport;
 	if ($sslport == 0 && $mailport != 0) {
@@ -289,11 +294,15 @@ sub setLdapDefaults {
 	} else {
 		$config{MODE} = "mixed";
 	}
-	my $smtphost=`zmprov gs $config{HOSTNAME} | zimbraSmtpHostname | sed -e 's/zimbraSmtpHostname: //'`;
+	$rc = 0xffff & system('su - zimbra -c "zmprov gs $config{HOSTNAME} | grep zimbraSmtpHostname | sed -e \'s/zimbraSmtpHostname: //\' > /tmp/ld.out"');
+
+	my $smtphost=`cat /tmp/ld.out`;
 	chomp $smtphost;
 	if ( $smtphost ne "") {
 		$config{SMTPHOST} = $smtphost;
 	}
+
+	unlink "/tmp/ld.out";
 	progress ( "Done\n" );
 }
 
@@ -1675,8 +1684,7 @@ sub configInstallZimlets {
 			my $zimlet = $zimletfile;
 			$zimlet =~ s/.zip//;
 			progress  ("$zimlet... ");
-			runAsZimbra ("/opt/zimbra/bin/zimlet install /opt/zimbra/zimlets/$zimletfile");
-			runAsZimbra ("/opt/zimbra/bin/zimlet ldapDeploy /opt/zimbra/zimlets/$zimlet");
+			runAsZimbra ("/opt/zimbra/bin/zimlet deploy zimlets/$zimletfile");
 		}
 		progress ( "Done\n" );
 	}
@@ -1703,8 +1711,8 @@ sub configCreateDomain {
 					"zimbraIsAdminAccount TRUE");
 				progress ( "Done\n" );
 				progress ( "Creating postmaster alias..." );
-				runAsZimbra("/opt/zimbra/zmprov aaa $config{CREATEADMIN} root\@$config{CREATEDOMAIN}");
-				runAsZimbra("/opt/zimbra/zmprov aaa $config{CREATEADMIN} postmaster\@$config{CREATEDOMAIN}");
+				runAsZimbra("/opt/zimbra/bin/zmprov aaa $config{CREATEADMIN} root\@$config{CREATEDOMAIN}");
+				runAsZimbra("/opt/zimbra/bin/zmprov aaa $config{CREATEADMIN} postmaster\@$config{CREATEDOMAIN}");
 				progress ( "Done\n" );
 			}
 		}

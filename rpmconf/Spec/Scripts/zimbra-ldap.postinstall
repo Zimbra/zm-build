@@ -40,3 +40,8 @@ if [ $? != 0 ]; then
 	echo "%zimbra   ALL=NOPASSWD:/opt/zimbra/openldap-2.2.28/libexec/slapd" >> /etc/sudoers
 fi
 
+PKG=`echo ${RECEIPT_PATH} | sed -e 's|.*/\(zimbra-ldap.[^/]*pkg\)/.*|\1|' | sed -e 's/\./-/'`
+D=`date +%s`
+echo "${D}: INSTALLED ${PKG}" >> /opt/zimbra/.install_history
+
+exit 0

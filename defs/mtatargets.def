@@ -29,7 +29,7 @@ $(BUILD_ROOT)/resources/zimbra-mta:
 	mkdir -p $@
 	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-mta.postinstall $@/postinstall
 	chmod 755 $@/postinstall
-	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-mta.postinstall $@/postupgrade
+	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-mta.postupgrade $@/postupgrade
 	chmod 755 $@/postupgrade
 #       cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbramta.pre $@/preinstall
 #       echo "#!/bin/bash" > $@/postinst

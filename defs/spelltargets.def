@@ -29,7 +29,7 @@ $(BUILD_ROOT)/resources/zimbra-spell:
 	mkdir -p $@
 	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-spell.postinstall $@/postinstall
 	chmod 755 $@/postinstall
-	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-spell.postinstall $@/postupgrade
+	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-spell.postupgrade $@/postupgrade
 	chmod 755 $@/postupgrade
 #       cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbraspell.pre $@/preinstall
 #       echo "#!/bin/bash" > $@/postinst

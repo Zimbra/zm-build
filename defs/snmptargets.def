@@ -29,7 +29,7 @@ $(BUILD_ROOT)/resources/zimbra-snmp:
 	mkdir -p $@
 	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-snmp.postinstall $@/postinstall
 	chmod 755 $@/postinstall
-	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-snmp.postinstall $@/postupgrade
+	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-snmp.postupgrade $@/postupgrade
 	chmod 755 $@/postupgrade
 #       cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbrasnmp.pre $@/preinstall
 #       echo "#!/bin/bash" > $@/postinst
