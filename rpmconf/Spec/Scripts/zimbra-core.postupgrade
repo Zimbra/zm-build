@@ -55,5 +55,5 @@ if [ -f $SAVEDIR/smtpd.crt ]; then
 fi
 
 D=`date +%s`
-echo "${D}: UPGRADED zimbra-core" >> /opt/zimbra/.install_history
+echo "${D}: UPGRADED zimbra-core ${RECEIPT_PATH}" >> /opt/zimbra/.install_history
 
