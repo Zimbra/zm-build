@@ -1905,9 +1905,11 @@ sub applyConfig {
 	postinstall::configure();
 
 	if ($config{STARTSERVERS} eq "yes") {
+		progress ( "Starting servers..." );
 		runAsZimbra ("/opt/zimbra/bin/zmcontrol start");
 		# runAsZimbra swallows the output, so call status this way
 		`su - zimbra -c "/opt/zimbra/bin/zmcontrol status"`;
+		progress ( "Done.\n" );
 	}
 
 	if ($newinstall) {
