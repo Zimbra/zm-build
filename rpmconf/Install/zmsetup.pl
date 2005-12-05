@@ -339,9 +339,9 @@ sub setDefaults {
 		$config{DOCREATEADMIN} = "yes";
 		$config{LDAPPASS} = genRandomPass();
 		$config{DOTRAINSA} = "yes";
-		$config{TRAINSASPAM} = genRandomPass();
+		$config{TRAINSASPAM} = lc(genRandomPass());
 		$config{TRAINSASPAM} .= '@'.$config{CREATEDOMAIN};
-		$config{TRAINSAHAM} = genRandomPass();
+		$config{TRAINSAHAM} = lc(genRandomPass());
 		$config{TRAINSAHAM} .= '@'.$config{CREATEDOMAIN};
 	}
 	$config{CREATEADMIN} = "admin\@$config{CREATEDOMAIN}";
