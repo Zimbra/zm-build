@@ -249,6 +249,7 @@ sub getSystemStatus {
 		} else {
 			$config{DOCREATEDOMAIN} = "yes";
 			$config{DOCREATEADMIN} = "yes";
+			$config{DOTRAINSA} = "yes";
 		}
 	}
 
@@ -337,6 +338,11 @@ sub setDefaults {
 		$config{DOCREATEDOMAIN} = "yes";
 		$config{DOCREATEADMIN} = "yes";
 		$config{LDAPPASS} = genRandomPass();
+		$config{DOTRAINSA} = "yes";
+		$config{TRAINSASPAM} = genRandomPass();
+		$config{TRAINSASPAM} .= '@'.$config{CREATEDOMAIN};
+		$config{TRAINSAHAM} = genRandomPass();
+		$config{TRAINSAHAM} .= '@'.$config{CREATEDOMAIN};
 	}
 	$config{CREATEADMIN} = "admin\@$config{CREATEDOMAIN}";
 
@@ -499,6 +505,7 @@ sub askNonBlank {
 }
 
 sub setCreateDomain {
+	my $oldDomain = $config{CREATEDOMAIN};
 	$config{CREATEDOMAIN} =
 		ask("Create Domain:",
 			$config{CREATEDOMAIN});
@@ -514,6 +521,44 @@ sub setCreateDomain {
 	}
 	if ($old eq $config{SMTPSOURCE}) {
 		$config{SMTPSOURCE} = $config{CREATEADMIN};
+	}
+	my ($spamUser, $spamDomain) = split ('@', $config{TRAINSASPAM});
+	my ($hamUser, $hamDomain) = split ('@', $config{TRAINSAHAM});
+	if ($spamDomain eq $oldDomain) {
+		$config{TRAINSASPAM} = $spamUser.'@'.$config{CREATEDOMAIN};
+	}
+	if ($hamDomain eq $oldDomain) {
+		$config{TRAINSAHAM} = $hamUser.'@'.$config{CREATEDOMAIN};
+	}
+}
+
+sub setTrainSASpam {
+	while (1) {
+		my $new = 
+			ask("Spam training user:",
+				$config{TRAINSASPAM});
+		my ($u,$d) = split ('@', $new);
+		if ($d ne $config{CREATEDOMAIN}) {
+			progress ( "You must create the user under the domain $config{CREATEDOMAIN}\n" );
+		} else {
+			$config{TRAINSASPAM} = $new;
+			last;
+		}
+	}
+}
+
+sub setTrainSAHam {
+	while (1) {
+		my $new = 
+			ask("Ham training user:",
+				$config{TRAINSAHAM});
+		my ($u,$d) = split ('@', $new);
+		if ($d ne $config{CREATEDOMAIN}) {
+			progress ( "You must create the user under the domain $config{CREATEDOMAIN}\n" );
+		} else {
+			$config{TRAINSAHAM} = $new;
+			last;
+		}
 	}
 }
 
@@ -857,6 +902,27 @@ sub createLdapMenu {
 				"prompt" => "Admin Password", 
 				"var" => \$config{ADMINPASSSET},
 				"callback" => \&setAdminPass
+				};
+			$i++;
+		}
+		$$lm{menuitems}{$i} = { 
+			"prompt" => "Enable automated spam training:", 
+			"var" => \$config{DOTRAINSA}, 
+			"callback" => \&toggleYN,
+			"arg" => "DOTRAINSA",
+			};
+		$i++;
+		if ($config{DOTRAINSA} eq "yes") {
+			$$lm{menuitems}{$i} = { 
+				"prompt" => "Spam training user:", 
+				"var" => \$config{TRAINSASPAM}, 
+				"callback" => \&setTrainSASpam
+				};
+			$i++;
+			$$lm{menuitems}{$i} = { 
+				"prompt" => "Non-spam(Ham) training user:", 
+				"var" => \$config{TRAINSAHAM}, 
+				"callback" => \&setTrainSAHam
 				};
 			$i++;
 		}
@@ -1711,8 +1777,26 @@ sub configCreateDomain {
 					"zimbraIsAdminAccount TRUE");
 				progress ( "Done\n" );
 				progress ( "Creating postmaster alias..." );
-				runAsZimbra("/opt/zimbra/bin/zmprov aaa $config{CREATEADMIN} root\@$config{CREATEDOMAIN}");
-				runAsZimbra("/opt/zimbra/bin/zmprov aaa $config{CREATEADMIN} postmaster\@$config{CREATEDOMAIN}");
+				runAsZimbra("/opt/zimbra/bin/zmprov aaa ".
+					"$config{CREATEADMIN} root\@$config{CREATEDOMAIN}");
+				runAsZimbra("/opt/zimbra/bin/zmprov aaa ".
+					"$config{CREATEADMIN} postmaster\@$config{CREATEDOMAIN}");
+				progress ( "Done\n" );
+			}
+			if ($config{DOTRAINSA} eq "yes") {
+				progress ( "Creating user $config{TRAINSASPAM}..." );
+				my $pass = genRandomPass();
+				runAsZimbra("/opt/zimbra/bin/zmprov ca ".
+					"$config{TRAINSASPAM} \'$pass\' ");
+				progress ( "Done\n" );
+				progress ( "Creating user $config{TRAINSAHAM}..." );
+				runAsZimbra("/opt/zimbra/bin/zmprov ca ".
+					"$config{TRAINSAHAM} \'$pass\' ");
+				progress ( "Done\n" );
+				progress ( "Setting spam training accounts..." );
+				runAsZimbra("/opt/zimbra/bin/zmprov mcf ".
+					"zimbraSpamIsSpamAccount $config{TRAINSASPAM} ".
+					"zimbraSpamIsNotSpamAccount $config{TRAINSAHAM}");
 				progress ( "Done\n" );
 			}
 		}
