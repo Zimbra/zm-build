@@ -165,6 +165,16 @@ sub upgradeBM1 {
 sub upgradeBM2 {
 	Migrate::log("Updating from 3.0.0_M2");
 
+	if ( -d "/opt/zimbra/postfix-2.2.3/spool" ) {
+		Migrate::log("Moving postfix queues");
+		my @dirs = qw /active bounce corrupt defer deferred flush hold incoming maildrop private public saved trace/;
+		foreach my $d (@dirs) {
+			`cp -f /opt/zimbra/postfix-2.2.3/spool/$d/* /opt/zimbra/postfix-2.2.5/spool/$d`;
+			`chown postfix:postfix /opt/zimbra/postfix-2.2.5/spool/$d`;
+		}
+
+	}
+
 	return 0;
 }
 
