@@ -33,4 +33,6 @@ fi
 egrep -q '^zimbra:' /etc/passwd
 if [ $? != 0 ]; then
 	useradd -g zimbra -G tty -d /opt/zimbra -s /bin/bash zimbra
+else
+	usermod -g zimbra -d /opt/zimbra -s /bin/bash zimbra
 fi
