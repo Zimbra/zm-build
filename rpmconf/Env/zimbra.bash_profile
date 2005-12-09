@@ -11,3 +11,5 @@ BASH_ENV=$HOME/.bashrc
 USERNAME="zimbra"
 
 export USERNAME BASH_ENV 
+
+export LANG=C
