@@ -42,12 +42,18 @@ my $scriptDir = "$rundir/scripts";
 
 my $lowVersion = 18;
 my $hiVersion = 21;
+my $hiLoggerVersion = 1;
 
 my %updateScripts = (
 	'18' => "migrate20050916-Volume.pl",
 	'19' => "migrate20050920-CompressionThreshold.pl",
 	'20' => "migrate20050927-DropRedologSequence.pl",
 	'21' => "migrate20051021-UniqueVolume.pl",
+);
+
+my %loggerUpdateScripts = (
+	'0' => "migrateLogger1-index.pl",
+	'1' => "migrateLogger2-config.pl",
 );
 
 my %updateFuncs = (
@@ -65,12 +71,28 @@ my $targetVersion;
 sub upgrade {
 	$startVersion = shift;
 	$targetVersion = shift;
+	my $startBuild = $startVersion;
+	$startBuild =~ s/.*_//;
+	my $targetBuild = $targetVersion;
+	$targetBuild =~ s/.*_//;
+
+	$startVersion =~ s/_$startBuild//;
+	$targetVersion =~ s/_$targetBuild//;
 
 	if (stopZimbra()) { return 1; }
 
 	if (startSql()) { return 1; }
+	if (startLoggerSql()) { return 1; }
 
 	my $curSchemaVersion = Migrate::getSchemaVersion();
+	my $curLoggerSchemaVersion;
+	if ($startVersion eq "3.0.0_M2") {
+		$curLoggerSchemaVersion = 0;
+	} elsif ($startVersion eq "3.0.0_M3" && $startBuild < 285) {
+		$curLoggerSchemaVersion = 1;
+	} else {
+		$curLoggerSchemaVersion = Migrate::getLoggerSchemaVersion();
+	}
 
 	if ($startVersion eq "3.0.M1" && $curSchemaVersion < 21) {
 		print "This appears to be an non-upgraded version of 3.0.M1\n";
@@ -82,8 +104,13 @@ sub upgrade {
 	} elsif ($startVersion eq "3.0.0_M2" && $curSchemaVersion >= 21) {
 		print "This appears to be 3.0.0_M2, with no schema upgrade needed\n";
 		$curSchemaVersion = 22;
+	} elsif ($startVersion eq "3.0.0_M3") {
+		print "This appears to be 3.0.0_M3, with no schema upgrade needed\n";
+		if ($curSchemaVersion < 22) {
+			$curSchemaVersion = 22;
+		}
 	} else {
-		print "I can't upgrade this version\n\n";
+		print "I can't upgrade version $startVersion\n\n";
 		return 1;
 	}
 
@@ -92,7 +119,17 @@ sub upgrade {
 		$curSchemaVersion++;
 	}
 
+	if ($curLoggerSchemaVersion <= $hiLoggerVersion) {
+		print "An upgrade of the logger schema is necessary from version $curLoggerSchemaVersion\n";
+	}
+
+	while ($curLoggerSchemaVersion <= $hiLoggerVersion) {
+		if (runLoggerSchemaUpgrade ($curLoggerSchemaVersion)) { return 1; }
+		$curLoggerSchemaVersion++;
+	}
+
 	stopSql();
+	stopLoggerSql();
 
 	my $found = 0;
 
@@ -106,7 +143,7 @@ sub upgrade {
 		}
 		if ($found) {
 			if (defined ($updateFuncs{$v}) ) {
-				if (&{$updateFuncs{$v}}()) {
+				if (&{$updateFuncs{$v}}($startBuild, $targetVersion, $targetBuild)) {
 					return 1;
 				}
 			} else {
@@ -203,6 +240,17 @@ sub stopSql {
 	return 0;
 }
 
+sub stopLoggerSql {
+	Migrate::log("Stopping logger mysql");
+	my $rc = 0xffff & system("su - zimbra -c \"/opt/zimbra/bin/logmysql.server stop > /dev/null 2>&1\"");
+	$rc = $rc >> 8;
+	if ($rc) {
+		Migrate::log("logger mysql stop failed with exit code $rc");
+		return $rc;
+	}
+	return 0;
+}
+
 sub startSql {
 	Migrate::log("Checking mysql status");
 	my $rc = 0xffff & system("su - zimbra -c \"/opt/zimbra/bin/mysqladmin status > /dev/null 2>&1\"");
@@ -213,6 +261,22 @@ sub startSql {
 		$rc = $rc >> 8;
 		if ($rc) {
 			Migrate::log("mysql startup failed with exit code $rc");
+			return $rc;
+		}
+	}
+	return 0;
+}
+
+sub startLoggerSql {
+	Migrate::log("Checking logger mysql status");
+	my $rc = 0xffff & system("su - zimbra -c \"/opt/zimbra/bin/logmysqladmin status > /dev/null 2>&1\"");
+	$rc = $rc >> 8;
+	if ($rc) {
+		Migrate::log("Starting logger mysql");
+		$rc = 0xffff & system("su - zimbra -c \"/opt/zimbra/bin/logmysql.server start > /dev/null 2>&1\"");
+		$rc = $rc >> 8;
+		if ($rc) {
+			Migrate::log("logger mysql startup failed with exit code $rc");
 			return $rc;
 		}
 	}
@@ -234,6 +298,29 @@ sub runSchemaUpgrade {
 
 	Migrate::log ("Running ${scriptDir}/$updateScripts{$curVersion}");
 	my $rc = 0xffff & system("su - zimbra -c \"perl -I${scriptDir} ${scriptDir}/$updateScripts{$curVersion}\"");
+	$rc = $rc >> 8;
+	if ($rc) {
+		Migrate::log ("Script failed with code $rc - exiting");
+		return $rc;
+	}
+	return 0;
+}
+
+sub runLoggerSchemaUpgrade {
+	my $curVersion = shift;
+
+	if (! defined ($loggerUpdateScripts{$curVersion})) {
+		Migrate::log ("Can't upgrade from version $curVersion - no script!");
+		return 1;
+	}
+
+	if (! -x "${scriptDir}/$loggerUpdateScripts{$curVersion}" ) {
+		Migrate::log ("Can't run ${scriptDir}/$loggerUpdateScripts{$curVersion} - no script!");
+		return 1;
+	}
+
+	Migrate::log ("Running ${scriptDir}/$loggerUpdateScripts{$curVersion}");
+	my $rc = 0xffff & system("su - zimbra -c \"perl -I${scriptDir} ${scriptDir}/$loggerUpdateScripts{$curVersion}\"");
 	$rc = $rc >> 8;
 	if ($rc) {
 		Migrate::log ("Script failed with code $rc - exiting");

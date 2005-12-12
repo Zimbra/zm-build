@@ -394,7 +394,7 @@ sub getInstallStatus {
 					$prevVersion = $curVersion;
 					$v =~ s/_HEAD.*//;
 					$v =~ s/^zimbra-core-//;
-					$v =~ s/_[^_]*$//;
+					$v =~ s/^(\d+\.\d+\.[^_]*_[^_]+_[^.]+).*/\1/;
 					$curVersion = $v;
 				}
 			} elsif ($op eq "CONFIGURED") {
