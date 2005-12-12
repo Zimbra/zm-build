@@ -2034,7 +2034,12 @@ sub configLog {
 
 sub setupCrontab {
 
+	my $backupSchedule;
 	progress ("Setting up zimbra crontab...");
+	if ( -f "/opt/zimbra/bin/zmschedulebackup") {
+		$backupSchedule = `su - zimbra -c "zmschedulebackup -s"`;
+		chomp $backupSchedule;
+	}
 	`crontab -u zimbra -l > /tmp/crontab.zimbra.orig`;
 	my $rc = 0xffff & system("grep ZIMBRASTART /tmp/crontab.zimbra.orig > /dev/null 2>&1");
 	if ($rc) {
@@ -2063,6 +2068,10 @@ sub setupCrontab {
 	`cat /tmp/crontab.zimbra.proc >> /tmp/crontab.zimbra`;
 
 	`crontab -u zimbra /tmp/crontab.zimbra`;
+	if ( -f "/opt/zimbra/bin/zmschedulebackup" && $backupSchedule ne "") {
+		$backupSchedule =~ s/"/\\"/g;
+		`su - zimbra -c "/opt/zimbra/bin/zmschedulebackup -R $backupSchedule"`;
+	}
 	progress ("Done\n");
 	configLog("setupCrontab");
 
