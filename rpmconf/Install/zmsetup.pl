@@ -2135,9 +2135,11 @@ setDefaults();
 
 if (! $newinstall && ($prevVersion ne $curVersion )) {
 	progress ("Upgrading from $prevVersion to $curVersion\n");
-	if (askYN("Proceed with upgrade?", "No") eq "no") {
-		progress ("Upgrade cancelled - exiting\n\n");
-		exit 1;
+	if ($options{c} ne "") {
+		if (askYN("Proceed with upgrade?", "No") eq "no") {
+			progress ("Upgrade cancelled - exiting\n\n");
+			exit 1;
+		}
 	}
 	if (zmupgrade::upgrade($prevVersion, $curVersion)){
 		progress ("UPGRADE FAILED - exiting\n");
