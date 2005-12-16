@@ -20,6 +20,6 @@ $(STORE_DEST_DIR)/$(TOMCAT_DIR)/common/lib/zimbra-native.jar: $(NATIVE_DIR)/buil
 	mkdir -p $(STORE_DEST_DIR)/$(TOMCAT_DIR)/common/lib
 	cp $(NATIVE_DIR)/build/zimbra-native.jar $(STORE_DEST_DIR)/$(TOMCAT_DIR)/common/lib
 
-$(NATIVE_DIR)/zimbra-native.jar:
+$(NATIVE_DIR)/build/zimbra-native.jar:
 	(cd $(NATIVE_DIR); make TOMCAT_HOME=$(TOMCAT_HOME) JAVA_BINARY=$(JAVA_BINARY))
 
