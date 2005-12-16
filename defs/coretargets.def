@@ -218,6 +218,7 @@ $(CORE_DEST_DIR)/libexec: $(NATIVE_DIR)/build/zmtomcatstart
 	cp -f $(SERVICE_DIR)/src/db/Migrate.pm $@/scripts
 	cp -f $(SERVICE_DIR)/src/db/migrate*pl $@/scripts
 	cp -f $(SERVICE_DIR)/src/bin/zmsetservername $@
+	cp -f $(SERVICE_DIR)/src/bin/zmnotifyinstall $@
 	cp -f $(PACKAGE_CONF_DIR)/Install/postinstall.pm $@/postinstall.pm
 	cp -f $(PACKAGE_CONF_DIR)/Install/Util/addUser.sh $@/addUser.sh
 	cp $(NATIVE_DIR)/build/zmtomcatstart $@
@@ -230,6 +231,7 @@ $(CORE_DEST_DIR)/bin:
 	rm -f $(CORE_DEST_DIR)/bin/zmtransserver.bat
 	rm -f $(CORE_DEST_DIR)/bin/ldap
 	rm -f $(CORE_DEST_DIR)/bin/zmsetservername
+	rm -f $(CORE_DEST_DIR)/bin/zmnotifyinstall
 	mv $(CORE_DEST_DIR)/bin/ldap.production $(CORE_DEST_DIR)/bin/ldap
 	cp $(PACKAGE_CONF_DIR)/Build/get_plat_tag.sh $@
 	cp $(ZIMBRA_BIN_DIR)/swatch $@
