@@ -405,7 +405,8 @@ sub getInstallStatus {
 			}
 		}
 
-		if ($installStatus{"zimbra-core"}{op} eq "INSTALLED") {
+		if ( ($installStatus{"zimbra-core"}{op} eq "INSTALLED") &&
+			($configStatus{"END"} ne "CONFIGURED") ){
 			$newinstall = 1;
 		} else {
 			$newinstall = 0;
