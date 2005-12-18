@@ -55,7 +55,7 @@ chown -R zimbra:zimbra /opt/zimbra/clamav/db
 
 egrep -q '^%zimbra.*postfix-2.2.5' /etc/sudoers
 if [ $? != 0 ]; then
-	echo "%zimbra   ALL=NOPASSWD:/opt/zimbra/postfix-2.2.5/sbin/postfix, /opt/zimbra/postfix-2.2.5/sbin/postalias, /opt/zimbra/postfix-2.2.5/sbin/qshape.pl, /opt/zimbra/postfix-2.2.5/sbin/postconf" >> /etc/sudoers
+	echo "%zimbra   ALL=NOPASSWD:/opt/zimbra/postfix-2.2.5/sbin/postfix, /opt/zimbra/postfix-2.2.5/sbin/postalias, /opt/zimbra/postfix-2.2.5/sbin/qshape.pl, /opt/zimbra/postfix-2.2.5/sbin/postconf,/opt/zimbra/postfix-2.2.5/sbin/postsuper" >> /etc/sudoers
 fi
 
 PKG=`echo ${RECEIPT_PATH} | sed -e 's|.*/\(zimbra-mta.[^/]*pkg\)/.*|\1|' | sed -e 's/\./-/'`
