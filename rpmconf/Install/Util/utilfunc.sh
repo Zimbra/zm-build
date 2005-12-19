@@ -934,17 +934,17 @@ getPlatformVars() {
 		PACKAGERM='dpkg --purge'
 		PACKAGEQUERY='dpkg -s'
 		PACKAGEEXT='deb'
-		PREREQ_PACKAGES="libidn11 curl fetchmail libgmp3"
+		PREREQ_PACKAGES="sudo libidn11 curl fetchmail libgmp3"
 	else
 		PACKAGEINST='rpm -iv'
 		PACKAGERM='rpm -ev --noscripts --allmatches'
 		PACKAGEQUERY='rpm -q'
 		PACKAGEEXT='rpm'
 		if [ $PLATFORM = "RHEL4" ]; then
-			PREREQ_PACKAGES="libidn curl fetchmail gmp"
+			PREREQ_PACKAGES="sudo libidn curl fetchmail gmp"
 			PREREQ_LIBS="/usr/lib/libstdc++.so.5"
 		else
-			PREREQ_PACKAGES="libidn curl fetchmail gmp"
+			PREREQ_PACKAGES="sudo libidn curl fetchmail gmp"
 			if [ $PLATFORM = "FC3" -o $PLATFORM = "FC4" ]; then
 				PREREQ_LIBS="/usr/lib/libstdc++.so.5"
 			fi
