@@ -289,10 +289,14 @@ sub setLdapDefaults {
 	chomp $sslport;
 	chomp $mailport;
 	if ($sslport == 0 && $mailport != 0) {
+		$config{HTTPPORT} = $mailport;
 		$config{MODE} = "http";
 	} elsif ($sslport != 0 && $mailport == 0) {
+		$config{HTTPSPORT} = $sslport;
 		$config{MODE} = "https";
 	} else {
+		$config{HTTPSPORT} = $sslport;
+		$config{HTTPPORT} = $mailport;
 		$config{MODE} = "mixed";
 	}
 	$rc = 0xffff & system("su - zimbra -c \"zmprov gs $config{HOSTNAME} | grep zimbraSmtpHostname | sed -e 's/zimbraSmtpHostname: //' > /tmp/ld.out\"");
@@ -320,6 +324,8 @@ sub setDefaults {
 	$config{IMAPSSLPORT} = 993;
 	$config{POPPORT} = 110;
 	$config{POPSSLPORT} = 995;
+	$config{HTTPPORT} = 80;
+	$config{HTTPSPORT} = 443;
 
 	if ($platform eq "MACOSX") {
 		setLocalConfig ("zimbra_java_home", "/System/Library/Frameworks/JavaVM.framework/Versions/1.5/Home");
@@ -723,6 +729,16 @@ sub setLdapPort {
 			$config{LDAPPORT}));
 }
 
+sub setHttpPort {
+	askNum("Please enter the HTTP server port",
+			$config{HTTPPORT});
+}
+
+sub setHttpsPort {
+	askNum("Please enter the HTTPS server port",
+			$config{HTTPSPORT});
+}
+
 sub setImapPort {
 	askNum("Please enter the IMAP server port",
 			$config{IMAPPORT});
@@ -1091,6 +1107,18 @@ sub createStoreMenu {
 			"callback" => \&setSmtpHost,
 			};
 		$i++;
+#		$$lm{menuitems}{$i} = { 
+#			"prompt" => "Web server HTTP port:", 
+#			"var" => \$config{HTTPPORT}, 
+#			"callback" => \&setHttpPort,
+#			};
+#		$i++;
+#		$$lm{menuitems}{$i} = { 
+#			"prompt" => "Web server HTTPS port:", 
+#			"var" => \$config{HTTPSPORT}, 
+#			"callback" => \&setHttpsPort,
+#			};
+#		$i++;
 		$$lm{menuitems}{$i} = { 
 			"prompt" => "Web server mode:", 
 			"var" => \$config{MODE}, 
@@ -1731,7 +1759,9 @@ sub configSetServicePorts {
 	progress ( "Setting service ports on $config{HOSTNAME}..." );
 	runAsZimbra("/opt/zimbra/bin/zmprov ms $config{HOSTNAME} ".
 		"zimbraImapBindPort $config{IMAPPORT} zimbraImapSSLBindPort $config{IMAPSSLPORT} ".
-		"zimbraPop3BindPort $config{POPPORT} zimbraPop3SSLBindPort $config{POPSSLPORT}");
+		"zimbraPop3BindPort $config{POPPORT} zimbraPop3SSLBindPort $config{POPSSLPORT} ");
+#		"zimbraMailPort $config{HTTPPORT} zimbraMailSSLPort $config{HTTPSPORT}");
+
 	progress ( "Done\n" );
 	configLog("configSetServicePorts");
 }
