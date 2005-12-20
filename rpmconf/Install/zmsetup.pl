@@ -2182,7 +2182,7 @@ setDefaults();
 
 if (! $newinstall && ($prevVersion ne $curVersion )) {
 	progress ("Upgrading from $prevVersion to $curVersion\n");
-	if ($options{c} ne "") {
+	if ($options{c} eq "") {
 		if (askYN("Proceed with upgrade?", "No") eq "no") {
 			progress ("Upgrade cancelled - exiting\n\n");
 			exit 1;

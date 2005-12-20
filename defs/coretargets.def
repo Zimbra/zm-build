@@ -165,6 +165,8 @@ pcre_DEBIAN3.1: ;
 
 pcre_SuSEES9: ;
 
+pcre_SuSE10: ;
+
 $(CORE_DEST_DIR)/jdk1.5.0_05:
 	@echo "*** Creating java"
 	(cd $(CORE_DEST_DIR); tar xzf $(JAVA_SOURCE).tgz;)
