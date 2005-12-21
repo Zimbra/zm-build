@@ -25,7 +25,7 @@
 # 
 
 
-egrep -v '^%zimbra.*postfix-2.2.5' /etc/sudoers > /tmp/sudoers
+egrep -v '^%zimbra.*postfix' /etc/sudoers > /tmp/sudoers
 mv -f /tmp/sudoers /etc/sudoers
 echo "%zimbra   ALL=NOPASSWD:/opt/zimbra/postfix-2.2.5/sbin/postfix, /opt/zimbra/postfix-2.2.5/sbin/postalias, /opt/zimbra/postfix-2.2.5/sbin/qshape.pl, /opt/zimbra/postfix-2.2.5/sbin/postconf,/opt/zimbra/postfix-2.2.5/sbin/postsuper" >> /etc/sudoers
 
