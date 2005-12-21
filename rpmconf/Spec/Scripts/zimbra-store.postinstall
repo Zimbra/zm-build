@@ -63,6 +63,13 @@ fi
 su - zimbra -c "mkdir -p /opt/zimbra/tomcat/webapps/service; cd /opt/zimbra/tomcat/webapps/service; jar xf ../service.war"
 su - zimbra -c "mkdir -p /opt/zimbra/tomcat/webapps/zimbra; cd /opt/zimbra/tomcat/webapps/zimbra; jar xf ../zimbra.war"
 
+cp -f /opt/zimbra/openldap/etc/openldap/slapd.conf /opt/zimbra/openldap/etc/openldap/slapd.conf.fcs
+sed -e 's/TLSCACertificateFile/#TLSCACertificateFile/g' \
+	/opt/zimbra/openldap/etc/openldap/slapd.conf.fcs > \
+	/opt/zimbra/openldap/etc/openldap/slapd.conf
+chown zimbra:zimbra /opt/zimbra/openldap/etc/openldap/slapd.conf
+
+
 PKG=`echo ${RECEIPT_PATH} | sed -e 's|.*/\(zimbra-store.[^/]*pkg\)/.*|\1|' | sed -e 's/\./-/'`
 D=`date +%s`
 echo "${D}: INSTALLED ${PKG}" >> /opt/zimbra/.install_history
