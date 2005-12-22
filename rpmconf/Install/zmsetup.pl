@@ -290,21 +290,32 @@ sub setLdapDefaults {
 	chomp $mailport;
 	if ($sslport == 0 && $mailport != 0) {
 		$config{HTTPPORT} = $mailport;
+		$config{HTTPSPORT} = 443;
 		$config{MODE} = "http";
 	} elsif ($sslport != 0 && $mailport == 0) {
+		$config{HTTPPORT} = 80;
 		$config{HTTPSPORT} = $sslport;
 		$config{MODE} = "https";
 	} else {
 		$config{HTTPSPORT} = $sslport;
 		$config{HTTPPORT} = $mailport;
-		$config{MODE} = "mixed";
+		$config{MODE} = "both";
 	}
+
 	$rc = 0xffff & system("su - zimbra -c \"zmprov gs $config{HOSTNAME} | grep zimbraSmtpHostname | sed -e 's/zimbraSmtpHostname: //' > /tmp/ld.out\"");
 
 	my $smtphost=`cat /tmp/ld.out`;
 	chomp $smtphost;
 	if ( $smtphost ne "") {
 		$config{SMTPHOST} = $smtphost;
+	}
+
+	$rc = 0xffff & system("su - zimbra -c \"zmprov gs $config{HOSTNAME} | grep zimbraMtaAuthHost | sed -e 's/zimbraMtaAuthHost: //' > /tmp/ld.out\"");
+
+	my $mtaauthhost=`cat /tmp/ld.out`;
+	chomp $mtaauthhost;
+	if ( $mtaauthhost ne "") {
+		$config{MTAAUTHHOST} = $mtaauthhost;
 	}
 
 	unlink "/tmp/ld.out";
@@ -340,6 +351,9 @@ sub setDefaults {
 	$config{DOCREATEDOMAIN} = "no";
 	$config{CREATEDOMAIN} = $config{HOSTNAME};
 	$config{DOCREATEADMIN} = "no";
+	if (isEnabled("zimbra-store")) {
+		$config{MTAAUTHHOST} = $config{HOSTNAME};
+	}
 	if (isEnabled("zimbra-ldap")) {
 		$config{DOCREATEDOMAIN} = "yes";
 		$config{DOCREATEADMIN} = "yes";
@@ -663,9 +677,9 @@ sub toggleYN {
 sub setStoreMode {
 	while (1) {
 		my $m = 
-			askNonBlank("Please enter the web server mode (http,https,mixed)",
+			askNonBlank("Please enter the web server mode (http,https,both,mixed)",
 				$config{MODE});
-		if ($m eq "http" || $m eq "https" || $m eq "mixed") {
+		if ($m eq "http" || $m eq "https" || $m eq "mixed" || $m eq "both") {
 			$config{MODE} = $m;
 			return;
 		}
@@ -695,6 +709,9 @@ sub setHostName {
 	if ($config{LDAPHOST} eq $old) {
 		changeLdapHost($config{HOSTNAME});
 	}
+	if ($config{MTAAUTHHOST} eq $old) {
+		$config{MTAAUTHHOST} = $config{HOSTNAME};
+	}
 	if ($config{CREATEDOMAIN} eq $old) {
 		$config{CREATEDOMAIN} = $config{HOSTNAME};
 		my ($u,$d) = split ('@', $config{CREATEADMIN});
@@ -717,6 +734,11 @@ sub setSmtpHost {
 	$config{SMTPHOST} = 
 		askNonBlank("Please enter the SMTP server hostname",
 			$config{SMTPHOST});
+}
+
+sub setMtaAuthHost {
+	changeLdapHost( askNonBlank("Please enter the mta authentication server hostname",
+			$config{MTAAUTHHOST}));
 }
 
 sub setLdapHost {
@@ -1056,6 +1078,13 @@ sub createMtaMenu {
 
 	my $i = 2;
 	if (isEnabled($package)) {
+		$$lm{menuitems}{$i} = { 
+			"prompt" => "MTA Auth host:", 
+			"var" => \$config{MTAAUTHHOST}, 
+			"callback" => \&setMtaAuthHost,
+			"arg" => "MTAAUTHHOST",
+			};
+		$i++;
 		$$lm{menuitems}{$i} = { 
 			"prompt" => "Enable Spamassassin:", 
 			"var" => \$config{RUNSA}, 
@@ -1749,6 +1778,23 @@ sub configSpellServer {
 	configLog("configSpellServer");
 }
 
+sub configSetMtaAuthHost {
+
+	if ($configStatus{configSetMtaAuthHost} eq "CONFIGURED") {
+		configLog("configSetMtaAuthHost");
+		return 0;
+	}
+
+	if ($config{MTAAUTHHOST} ne "") {
+		progress ( "Setting MTA auth host..." );
+		runAsZimbra("/opt/zimbra/bin/zmprov ms $config{HOSTNAME} ".
+			"zimbraMtaAuthHost $config{MTAAUTHHOST}");
+		progress ( "Done\n" );
+	}
+
+	configLog("configSetMtaAuthHost");
+}
+
 sub configSetServicePorts {
 
 	if ($configStatus{configSetServicePorts} eq "CONFIGURED") {
@@ -1759,8 +1805,9 @@ sub configSetServicePorts {
 	progress ( "Setting service ports on $config{HOSTNAME}..." );
 	runAsZimbra("/opt/zimbra/bin/zmprov ms $config{HOSTNAME} ".
 		"zimbraImapBindPort $config{IMAPPORT} zimbraImapSSLBindPort $config{IMAPSSLPORT} ".
-		"zimbraPop3BindPort $config{POPPORT} zimbraPop3SSLBindPort $config{POPSSLPORT} ");
-#		"zimbraMailPort $config{HTTPPORT} zimbraMailSSLPort $config{HTTPSPORT}");
+		"zimbraPop3BindPort $config{POPPORT} zimbraPop3SSLBindPort $config{POPSSLPORT} ".
+		"zimbraMailPort $config{HTTPPORT} zimbraMailSSLPort $config{HTTPSPORT} ".
+		"zimbraMailMode $config{MODE}");
 
 	progress ( "Done\n" );
 	configLog("configSetServicePorts");
@@ -2010,6 +2057,10 @@ sub applyConfig {
 
 		configInstallZimlets();
 
+	}
+
+	if (isEnabled("zimbra-mta")) {
+		configSetMtaAuthHost();
 	}
 
 	configCreateDomain();

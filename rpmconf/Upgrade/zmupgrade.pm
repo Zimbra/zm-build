@@ -44,6 +44,9 @@ my $lowVersion = 18;
 my $hiVersion = 21;
 my $hiLoggerVersion = 1;
 
+my $hn = `su - zimbra -c "zmlocalconfig -m nokey zimbra_server_hostname"`;
+chomp $hn;
+
 my %updateScripts = (
 	'18' => "migrate20050916-Volume.pl",
 	'19' => "migrate20050920-CompressionThreshold.pl",
@@ -59,9 +62,10 @@ my %loggerUpdateScripts = (
 my %updateFuncs = (
 	"3.0.M1" => \&upgradeBM1,
 	"3.0.0_M2" => \&upgradeBM2,
+	"3.0.0_M3" => \&upgradeBM3,
 );
 
-my @versionOrder = ("3.0.M1", "3.0.0_M2");
+my @versionOrder = ("3.0.M1", "3.0.0_M2", "3.0.0_M3");
 
 my $startVersion;
 my $targetVersion;
@@ -92,6 +96,10 @@ sub upgrade {
 		$curLoggerSchemaVersion = 1;
 	} else {
 		$curLoggerSchemaVersion = Migrate::getLoggerSchemaVersion();
+	}
+
+	if ($curLoggerSchemaVersion eq "") {
+		$curLoggerSchemaVersion = 1;
 	}
 
 	if ($startVersion eq "3.0.M1" && $curSchemaVersion < 21) {
@@ -138,9 +146,6 @@ sub upgrade {
 		if ($v eq $startVersion) {
 			$found = 1;
 		}
-		if ($v eq $targetVersion) {
-			last;
-		}
 		if ($found) {
 			if (defined ($updateFuncs{$v}) ) {
 				if (&{$updateFuncs{$v}}($startBuild, $targetVersion, $targetBuild)) {
@@ -150,6 +155,9 @@ sub upgrade {
 				Migrate::log("I don't know how to update $v - exiting");
 				return 1;
 			}
+		}
+		if ($v eq $targetVersion) {
+			last;
 		}
 	}
 
@@ -173,8 +181,6 @@ sub upgradeBM1 {
 	`su - zimbra -c "zmlocalconfig -e ldap_url=ldap://${ldh}:${ldp}"`;
 	`su - zimbra -c "zmlocalconfig -e ldap_master_url=ldap://${ldh}:${ldp}"`;
 
-	my $hn = `su - zimbra -c "zmlocalconfig -m nokey zimbra_server_hostname"`;
-	chomp $hn;
 	if ($hn eq $ldh) {
 		Migrate::log("Setting ldap master to true");
 		`su - zimbra -c "zmlocalconfig -e ldap_is_master=true"`;
@@ -218,6 +224,21 @@ sub upgradeBM2 {
 	return 0;
 }
 
+sub upgradeBM3 {
+	my ($startBuild, $targetVersion, $targetBuild) = (@_);
+	Migrate::log("Updating from 3.0.0_M3");
+
+	if (startLdap()) {return 1;}
+	# $startBuild -> $targetBuild
+	if ($startBuild <= 346) {
+		# Set mode and authhost
+		`su - zimbra -c "/opt/zimbra/bin/zmprov ms $hn zimbraMailMode http"`;
+		`su - zimbra -c "/opt/zimbra/bin/zmprov ms $hn zimbraMtaAuthHost $hn"`;
+	}
+
+	return 0;
+}
+
 sub stopZimbra {
 	Migrate::log("Stopping zimbra services");
 	my $rc = 0xffff & system("su - zimbra -c \"/opt/zimbra/bin/zmcontrol stop > /dev/null 2>&1\"");
@@ -246,6 +267,38 @@ sub stopLoggerSql {
 	$rc = $rc >> 8;
 	if ($rc) {
 		Migrate::log("logger mysql stop failed with exit code $rc");
+		return $rc;
+	}
+	return 0;
+}
+
+sub startLdap {
+	Migrate::log("Checking ldap status");
+	my $rc = 0xffff & system("su - zimbra -c \"/opt/zimbra/bin/ldap status > /dev/null 2>&1\"");
+	$rc = $rc >> 8;
+	if ($rc) {
+		Migrate::log("Starting ldap");
+		$rc = 0xffff & system("su - zimbra -c \"/opt/zimbra/bin/zmldapapplyldif > /dev/null 2>&1\"");
+		$rc = 0xffff & system("su - zimbra -c \"/opt/zimbra/bin/ldap status > /dev/null 2>&1\"");
+		$rc = $rc >> 8;
+		if ($rc) {
+			$rc = 0xffff & system("su - zimbra -c \"/opt/zimbra/bin/ldap start > /dev/null 2>&1\"");
+			$rc = $rc >> 8;
+			if ($rc) {
+				Migrate::log("ldap startup failed with exit code $rc");
+				return $rc;
+			}
+		}
+	}
+	return 0;
+}
+
+sub stopLdap {
+	Migrate::log("Stopping ldap");
+	my $rc = 0xffff & system("su - zimbra -c \"/opt/zimbra/bin/ldap stop > /dev/null 2>&1\"");
+	$rc = $rc >> 8;
+	if ($rc) {
+		Migrate::log("LDAP stop failed with exit code $rc");
 		return $rc;
 	}
 	return 0;
