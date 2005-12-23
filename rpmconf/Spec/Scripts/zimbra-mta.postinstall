@@ -24,7 +24,9 @@
 # ***** END LICENSE BLOCK *****
 # 
 
+umount -f /opt/zimbra/amavisd/tmp
 rm -rf /opt/zimbra/amavisd
+mv -f /opt/zimbra/amavisd /opt/zimbra/amavisd.old
 ln -s /opt/zimbra/amavisd-new-2.3.3 /opt/zimbra/amavisd
 
 rm -f /opt/zimbra/postfix
