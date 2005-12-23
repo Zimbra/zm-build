@@ -80,21 +80,37 @@ sub putKey {
 	return undef;
 }
 
+sub toText {
+	my $self = shift;
+	my $verbose = shift;
+
+	my $txt = "";
+	if ($self->{is_expired}) {
+		$txt .= "KEY EXPIRED\n\n";
+	}
+	$txt .= "ID: ";
+	if (defined($self->{id})) {
+		$txt .= $self->{id};
+	} else {
+		$txt .= "NULL";
+	}
+	$txt .= "\n";
+	$txt .= "Created: ". Zimbra::LicensingDB::tsToSqlTime($self->{gendate}). "\n";
+	$txt .= "Expires: ". Zimbra::LicensingDB::tsToSqlTime($self->{expiredate}). "\n";
+	if ($verbose) {
+		$txt .= "Private Key: \n";
+		$txt .= "".Zimbra::LicenseKey::keyToString($self->{privkey});
+		$txt .= "Public Key: \n";
+		$txt .= "".Zimbra::LicenseKey::keyToString($self->{pubkey});
+	}
+	return $txt;
+}
+
 sub display {
 	my $self = shift;
 	my $verbose = shift;
-	if ($self->{is_expired}) {
-		print "KEY EXPIRED\n\n";
-	}
-	print "ID: ",defined($self->{id})?$self->{id}:"NULL","\n";
-	print "Created: ", Zimbra::LicensingDB::tsToSqlTime($self->{gendate}), "\n";
-	print "Expires: ", Zimbra::LicensingDB::tsToSqlTime($self->{expiredate}), "\n";
-	if ($verbose) {
-		print "Private Key: \n";
-		print "",Zimbra::LicenseKey::keyToString($self->{privkey});
-		print "Public Key: \n";
-		print "",Zimbra::LicenseKey::keyToString($self->{pubkey});
-	}
+
+	print $self->toText($verbose);
 }
 
 sub keyToString {

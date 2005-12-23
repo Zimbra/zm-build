@@ -60,16 +60,30 @@ sub updateLicense {
 	return undef;
 }
 
+sub toText {
+	my $self = shift;
+	my $verbose = shift;
+	return ($self->licenseToText($verbose));
+}
+
 sub licenseToText {
 	my $self = shift;
+	my $verbose = shift;
 
 	my $txt = "";
-	$txt .= sprintf ("License ID: %d\n", $self->{id});
-	$txt .= sprintf ("License Version: %d\n", $self->{license_version});
-	$txt .= sprintf ("Customer ID: %d\n", $self->{customer_id});
-	$txt .= sprintf ("Expiration: %s\n", $self->{expiration});
-	foreach (sort keys %{$self->{options}}) {
-		$txt .= sprintf ("OPTION: %s %s\n", $_, $self->{options}{$_});
+	if ($self->{is_deleted}) {
+		$txt .= "THIS LICENSE IS DELETED\n";
+	}
+	if ($verbose) {
+		$txt .= $self->{license_text},"\n";
+	} else {
+		$txt .= sprintf ("License ID: %d\n", $self->{id});
+		$txt .= sprintf ("License Version: %d\n", $self->{license_version});
+		$txt .= sprintf ("Customer ID: %d\n", $self->{customer_id});
+		$txt .= sprintf ("Expiration: %s\n", $self->{expiration});
+		foreach (sort keys %{$self->{options}}) {
+			$txt .= sprintf ("OPTION: %s %s\n", $_, $self->{options}{$_});
+		}
 	}
 	return $txt;
 }
@@ -89,14 +103,7 @@ sub generate {
 sub display {
 	my $self = shift;
 	my $verbose = shift;
-	if ($self->{is_deleted}) {
-		print "THIS LICENSE IS DELETED\n";
-	}
-	if ($verbose) {
-		print $self->{license_text},"\n";
-	} else {
-		print $self->licenseToText();
-	}
+	print $self->toText($verbose);
 }
 
 sub licenseSignature {

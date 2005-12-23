@@ -44,10 +44,18 @@ sub putCustomer {
 	return undef;
 }
 
+sub toText {
+	my $self = shift;
+	my $verbose = shift;
+	my $txt = "ID: $self->{id}\n";
+	$txt .= "Name: $self->{name}\n";
+	return $txt;
+}
+
 sub display {
 	my $self = shift;
-	print "ID: $self->{id}\n";
-	print "Name: $self->{name}\n";
+	my $verbose = shift;
+	print $self->toText($verbose);
 }
 
 1;
