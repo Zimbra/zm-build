@@ -26,6 +26,17 @@
 
 #Symlinks
 
+if [ -d "/opt/zimbra/amavisd/.spamassassin" ]; then
+	mv /opt/zimbra/amavisd/.spamassassin /opt/zimbra/.spamassassin.tmp
+fi
+rm -rf /opt/zimbra/amavisd
+ln -s /opt/zimbra/amavisd-new-2.3.3 /opt/zimbra/amavisd
+if [ -d "/opt/zimbra/.spamassassin.tmp" ]; then
+	rm -f /opt/zimbra/amavisd/.spamassassin
+	mv /opt/zimbra/.spamassassin.tmp /opt/zimbra/amavisd/.spamassassin
+	chown -R zimbra:zimbra /opt/zimbra/amavisd/.spamassassin
+fi
+
 rm -f /opt/zimbra/postfix
 ln -s /opt/zimbra/postfix-2.2.5 /opt/zimbra/postfix
 

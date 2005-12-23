@@ -72,7 +72,7 @@ $(BUILD_ROOT)/zimbramta.spec:
 	(cd $(MTA_DEST_ROOT); find opt -type f -o -type l -maxdepth 2 \
 		| sed -e 's|^|%attr(-, zimbra, zimbra) /|' >> \
 		$(BUILD_ROOT)/zimbramta.spec )
-	echo "%attr(-, zimbra, zimbra) /opt/zimbra/amavisd" >> \
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/amavisd-new-2.3.3" >> \
 		$(BUILD_ROOT)/zimbramta.spec
 	echo "%attr(555, zimbra, zimbra) /opt/zimbra/clamav-0.87.1/bin" >> \
 		$(BUILD_ROOT)/zimbramta.spec
@@ -115,7 +115,7 @@ $(MTA_DEST_DIR)/$(CLAMAV_DIR): $(MTA_DEST_DIR)
 	cp $(PACKAGE_CONF_DIR)/ClamAv/main.cvd $(MTA_DEST_DIR)/$(CLAMAV_DIR)-$(CLAMAV_VERSION)/db/main.cvd.init
 	cp $(PACKAGE_CONF_DIR)/ClamAv/daily.cvd $(MTA_DEST_DIR)/$(CLAMAV_DIR)-$(CLAMAV_VERSION)/db/daily.cvd.init
 
-$(MTA_DEST_DIR)/$(AMAVISD_DIR): $(MTA_DEST_DIR)
+$(MTA_DEST_DIR)/$(AMAVISD_DIR)-new-$(AMAVISD_VERSION): $(MTA_DEST_DIR)
 	@echo "*** Creating amavisd"
 	mkdir -p $@/sbin
 	cp -f $(AMAVISD_SOURCE)/amavisd $@/sbin

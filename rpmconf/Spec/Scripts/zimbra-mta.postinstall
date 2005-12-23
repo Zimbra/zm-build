@@ -24,6 +24,9 @@
 # ***** END LICENSE BLOCK *****
 # 
 
+rm -rf /opt/zimbra/amavisd
+ln -s /opt/zimbra/amavisd-new-2.3.3 /opt/zimbra/amavisd
+
 rm -f /opt/zimbra/postfix
 ln -s /opt/zimbra/postfix-2.2.5 /opt/zimbra/postfix
 
