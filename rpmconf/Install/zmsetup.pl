@@ -1,9 +1,9 @@
 #!/usr/bin/perl
 # 
 # ***** BEGIN LICENSE BLOCK *****
-# Version: ZPL 1.1
+# Version: MPL 1.1
 # 
-# The contents of this file are subject to the Zimbra Public License
+# The contents of this file are subject to the Mozilla Public License
 # Version 1.1 ("License"); you may not use this file except in
 # compliance with the License. You may obtain a copy of the License at
 # http://www.zimbra.com/license
@@ -13,7 +13,7 @@
 # the License for the specific language governing rights and limitations
 # under the License.
 # 
-# The Original Code is: Zimbra Collaboration Suite.
+# The Original Code is: Zimbra Collaboration Suite Server.
 # 
 # The Initial Developer of the Original Code is Zimbra, Inc.
 # Portions created by Zimbra are Copyright (C) 2005 Zimbra, Inc.
@@ -29,6 +29,8 @@ use strict;
 use lib "/opt/zimbra/libexec";
 
 use postinstall;
+
+use zmupgrade;
 
 use Getopt::Std;
 
@@ -52,12 +54,22 @@ my %enabledPackages = ();
 
 my $zimbraHome = "/opt/zimbra";
 
+my %installStatus = ();
+my %configStatus = ();
+
+my $prevVersion = "";
+my $curVersion = "";
+
+my $newinstall = 1;
+
 my $ldapConfigured = 0;
 my $ldapRunning = 0;
 my $sqlConfigured = 0;
 my $sqlRunning = 0;
 my $loggerSqlConfigured = 0;
 my $loggerSqlRunning = 0;
+my $installedServiceStr = "";
+my $enabledServiceStr = "";
 
 my $ldapPassChanged = 0;
 
@@ -86,12 +98,26 @@ sub usage {
 	exit 1;
 }
 
+sub progress {
+	my $msg = shift;
+	print $msg;
+	detail ($msg);
+}
+
+sub status {
+}
+
+sub detail {
+	my $msg = shift;
+	print LOGFILE $msg;
+}
+
 sub saveConfig {
 	my $fname = "/opt/zimbra/config.$$";
 	$fname = askNonBlank ("Save config in file:", $fname);
 
 	if (open CONF, ">$fname") {
-		print "Saving config in $fname...";
+		progress ("Saving config in $fname...");
 		foreach (sort keys %config) {
 			# Don't write passwords
 			if (/PASS/) {next;} 
@@ -103,9 +129,9 @@ sub saveConfig {
 		}
 		print CONF "\"\n";
 		close CONF;
-		print "Done\n";
+		progress ("Done\n");
 	} else {
-		print "Can't open $fname: $!\n";
+		progress( "Can't open $fname: $!\n");
 	}
 }
 
@@ -121,6 +147,52 @@ sub loadConfig {
 	}
 
 	$config{ALLOWSELFSIGNED} = "true";
+}
+
+sub checkPortConflicts {
+
+	if ($platform eq "MACOSX") {
+		# Shutdown postfix in launchd
+		if (-f "/System/Library/LaunchDaemons/org.postfix.master.plist") {
+			progress ( "Disabling postfix in launchd\n");
+			system ("/bin/launchctl unload /System/Library/LaunchDaemons/org.postfix.master.plist");
+			system ("mkdir /System/Library/LaunchDaemons.disabled");
+			system ("mv -f /System/Library/LaunchDaemons/org.postfix.master.plist /System/Library/LaunchDaemons.disabled/org.postfix.master.plist");
+		}
+	}
+	progress ( "Checking for port conflicts\n" );
+	my %needed = (
+		25 => 'zimbra-mta',
+		80 => 'zimbra-store',
+		110 => 'zimbra-store',
+		143 => 'zimbra-store',
+		389 => 'zimbra-ldap',
+		443 => 'zimbra-store',
+		636 => 'zimbra-ldap',
+		993 => 'zimbra-store',
+		995 => 'zimbra-store',
+		7025 => 'zimbra-store',
+		7306 => 'zimbra-store',
+		7307 => 'zimbra-store',
+		7780 => 'zimbra-spell',
+		10024 => 'zimbra-mta',
+		10025 => 'zimbra-mta',
+	);
+
+	open PORTS, "netstat -an | egrep '^tcp' | grep LISTEN | awk '{print \$4}' | sed -e 's/.*://' |";
+	my @ports = <PORTS>;
+	close PORTS;
+	chomp @ports;
+
+	my $any = 0;
+	foreach (@ports) {
+		if (defined ($needed{$_}) && isEnabled($needed{$_})) {
+			$any = 1;
+			progress ( "Port conflict detected: $_ ($needed{$_})\n" );
+		}
+	}
+
+	if ($any) { ask("Port conflicts detected! - Any key to continue", ""); }
 }
 
 sub getInstalledPackages {
@@ -143,7 +215,9 @@ sub isInstalled {
 	if ($platform eq "DEBIAN3.1") {
 		$pkgQuery = "dpkg -s $pkg | egrep '^Status: ' | grep 'not-installed'";
 	} elsif ($platform eq "MACOSX") {
-		$pkgQuery = "test -d /Library/Receipts/${pkg}*";
+		my @l = sort glob ("/Library/Receipts/${pkg}*");
+		if ( $#l < 0 ) { return 0; }
+		$pkgQuery = "test -d $l[$#l]";
 		$good = 0;
 	} else {
 		$pkgQuery = "rpm -q $pkg";
@@ -175,6 +249,7 @@ sub getSystemStatus {
 		} else {
 			$config{DOCREATEDOMAIN} = "yes";
 			$config{DOCREATEADMIN} = "yes";
+			$config{DOTRAINSA} = "yes";
 		}
 	}
 
@@ -202,8 +277,53 @@ sub getSystemStatus {
 	}
 }
 
+sub setLdapDefaults {
+	progress ( "Setting defaults from ldap..." );
+
+	my $rc = 0xffff & system("su - zimbra -c \"zmprov gs $config{HOSTNAME} | grep zimbraMailSSLPort | sed -e 's/zimbraMailSSLPort: //' > /tmp/ld.out\"");
+
+	my $sslport=`cat /tmp/ld.out`;
+	$rc = 0xffff & system("su - zimbra -c \"zmprov gs $config{HOSTNAME} | grep zimbraMailPort | sed -e 's/zimbraMailPort: //' > /tmp/ld.out\"");
+	my $mailport=`cat /tmp/ld.out`;
+
+	chomp $sslport;
+	chomp $mailport;
+	if ($sslport == 0 && $mailport != 0) {
+		$config{HTTPPORT} = $mailport;
+		$config{HTTPSPORT} = 443;
+		$config{MODE} = "http";
+	} elsif ($sslport != 0 && $mailport == 0) {
+		$config{HTTPPORT} = 80;
+		$config{HTTPSPORT} = $sslport;
+		$config{MODE} = "https";
+	} else {
+		$config{HTTPSPORT} = $sslport;
+		$config{HTTPPORT} = $mailport;
+		$config{MODE} = "both";
+	}
+
+	$rc = 0xffff & system("su - zimbra -c \"zmprov gs $config{HOSTNAME} | grep zimbraSmtpHostname | sed -e 's/zimbraSmtpHostname: //' > /tmp/ld.out\"");
+
+	my $smtphost=`cat /tmp/ld.out`;
+	chomp $smtphost;
+	if ( $smtphost ne "") {
+		$config{SMTPHOST} = $smtphost;
+	}
+
+	$rc = 0xffff & system("su - zimbra -c \"zmprov gs $config{HOSTNAME} | grep zimbraMtaAuthHost | sed -e 's/zimbraMtaAuthHost: //' > /tmp/ld.out\"");
+
+	my $mtaauthhost=`cat /tmp/ld.out`;
+	chomp $mtaauthhost;
+	if ( $mtaauthhost ne "") {
+		$config{MTAAUTHHOST} = $mtaauthhost;
+	}
+
+	unlink "/tmp/ld.out";
+	progress ( "Done\n" );
+}
+
 sub setDefaults {
-	print "Setting defaults...";
+	progress ( "Setting defaults..." );
 	$config{EXPANDMENU} = "no";
 	$config{REMOVE} = "no";
 	$config{UPGRADE} = "yes";
@@ -215,9 +335,11 @@ sub setDefaults {
 	$config{IMAPSSLPORT} = 993;
 	$config{POPPORT} = 110;
 	$config{POPSSLPORT} = 995;
+	$config{HTTPPORT} = 80;
+	$config{HTTPSPORT} = 443;
 
 	if ($platform eq "MACOSX") {
-		setLocalConfig ("zimbra_java_home", "/usr");
+		setLocalConfig ("zimbra_java_home", "/System/Library/Frameworks/JavaVM.framework/Versions/1.5/Home");
 		$config{HOSTNAME} = `hostname`;
 	} else {
 		$config{HOSTNAME} = `hostname --fqdn`;
@@ -229,10 +351,18 @@ sub setDefaults {
 	$config{DOCREATEDOMAIN} = "no";
 	$config{CREATEDOMAIN} = $config{HOSTNAME};
 	$config{DOCREATEADMIN} = "no";
+	if (isEnabled("zimbra-store")) {
+		$config{MTAAUTHHOST} = $config{HOSTNAME};
+	}
 	if (isEnabled("zimbra-ldap")) {
 		$config{DOCREATEDOMAIN} = "yes";
 		$config{DOCREATEADMIN} = "yes";
 		$config{LDAPPASS} = genRandomPass();
+		$config{DOTRAINSA} = "yes";
+		$config{TRAINSASPAM} = lc(genRandomPass());
+		$config{TRAINSASPAM} .= '@'.$config{CREATEDOMAIN};
+		$config{TRAINSAHAM} = lc(genRandomPass());
+		$config{TRAINSAHAM} .= '@'.$config{CREATEDOMAIN};
 	}
 	$config{CREATEADMIN} = "admin\@$config{CREATEDOMAIN}";
 
@@ -247,24 +377,99 @@ sub setDefaults {
 
 	$config{CREATEADMINPASS} = "";
 
-	if ( -f "/opt/zimbra/.newinstall") {
-		unlink "/opt/zimbra/.newinstall";
+	getInstallStatus();
+
+	progress ( "Done\n" );
+}
+
+sub getInstallStatus {
+
+	if (open H, "/opt/zimbra/.install_history") {
+
+		my @history = <H>;
+		close H;
+		foreach my $h (@history) {
+			if ($h =~ /CONFIG SESSION COMPLETE/) {
+				next;
+			}
+			if ($h =~ /CONFIG SESSION START/) {
+				%configStatus = ();
+				next;
+			}
+			if ($h =~ /INSTALL SESSION COMPLETE/) {
+				next;
+			}
+			if ($h =~ /INSTALL SESSION START/) {
+				%installStatus = ();
+				%configStatus = ();
+				next;
+			}
+			my ($d, $op, $stage) = split ' ', $h;
+			if ($op eq "INSTALLED" || $op eq "UPGRADED") {
+				my $v = $stage;
+				$stage =~ s/-\d.*//;
+				$installStatus{$stage}{op} = $op;
+				$installStatus{$stage}{date} = $d;
+				if ($stage eq "zimbra-core") {
+					$prevVersion = $curVersion;
+					$v =~ s/_HEAD.*//;
+					$v =~ s/^zimbra-core-//;
+					$v =~ s/^(\d+\.\d+\.[^_]*_[^_]+_[^.]+).*/\1/;
+					$curVersion = $v;
+				}
+			} elsif ($op eq "CONFIGURED") {
+				$configStatus{$stage} = $op;
+				if ($stage eq "END") {
+					$prevVersion = $curVersion;
+				}
+			}
+		}
+
+		if ( ($installStatus{"zimbra-core"}{op} eq "INSTALLED") &&
+			($configStatus{"END"} ne "CONFIGURED") ){
+			$newinstall = 1;
+		} else {
+			$newinstall = 0;
+			$config{DOCREATEDOMAIN} = "no";
+			$config{DOCREATEADMIN} = "no";
+			setDefaultsFromLocalConfig();
+		}
+	} else {
+		$newinstall = 1;
 		my $t = time()+(60*60*24*60);
 		my @d = localtime($t);
 		$config{EXPIRY} = sprintf ("%04d%02d%02d",$d[5]+1900,$d[4]+1,$d[3]);
-	} else {
-		$config{DOCREATEDOMAIN} = "no";
-		$config{DOCREATEADMIN} = "no";
-		setDefaultsFromLocalConfig();
+
 	}
-	print "Done\n";
 }
 
-
 sub setDefaultsFromLocalConfig {
+	progress ("Setting defaults from existing config...");
 	$config{HOSTNAME} = getLocalConfig ("zimbra_server_hostname");
-	$config{LDAPPORT} = getLocalConfig ("ldap_port");
-	$config{LDAPHOST} = getLocalConfig ("ldap_host");
+	my $ldapUrl = getLocalConfig ("ldap_url");
+	my $ld = (split ' ', $ldapUrl)[0];
+	my $p = $ld;
+	$p =~ s/ldaps?:\/\///;
+	$p =~ s/.*:?//;
+	if ($p ne "") {
+		$config{LDAPPORT} = $p;
+	} else {
+		$p = getLocalConfig ("ldap_port");
+		if ($p ne "") {
+			$config{LDAPPORT} = $p;
+		}
+	}
+	my $h = $ld;
+	$h =~ s/ldaps?:\/\///;
+	$h =~ s/:\d*$//;
+	if ($h ne "") {
+		$config{LDAPHOST} = $h;
+	} else {
+		$h = getLocalConfig ("ldap_host");
+		if ($h ne "") {
+			$config{LDAPHOST} = $h;
+		}
+	}
 	$config{LDAPPASS} = getLocalConfig ("ldap_root_password");
 	$config{SQLROOTPASS} = getLocalConfig ("mysql_root_password");
 	$config{LOGSQLROOTPASS} = getLocalConfig ("mysql_logger_root_password");
@@ -321,6 +526,7 @@ sub askNonBlank {
 }
 
 sub setCreateDomain {
+	my $oldDomain = $config{CREATEDOMAIN};
 	$config{CREATEDOMAIN} =
 		ask("Create Domain:",
 			$config{CREATEDOMAIN});
@@ -337,6 +543,44 @@ sub setCreateDomain {
 	if ($old eq $config{SMTPSOURCE}) {
 		$config{SMTPSOURCE} = $config{CREATEADMIN};
 	}
+	my ($spamUser, $spamDomain) = split ('@', $config{TRAINSASPAM});
+	my ($hamUser, $hamDomain) = split ('@', $config{TRAINSAHAM});
+	if ($spamDomain eq $oldDomain) {
+		$config{TRAINSASPAM} = $spamUser.'@'.$config{CREATEDOMAIN};
+	}
+	if ($hamDomain eq $oldDomain) {
+		$config{TRAINSAHAM} = $hamUser.'@'.$config{CREATEDOMAIN};
+	}
+}
+
+sub setTrainSASpam {
+	while (1) {
+		my $new = 
+			ask("Spam training user:",
+				$config{TRAINSASPAM});
+		my ($u,$d) = split ('@', $new);
+		if ($d ne $config{CREATEDOMAIN}) {
+			progress ( "You must create the user under the domain $config{CREATEDOMAIN}\n" );
+		} else {
+			$config{TRAINSASPAM} = $new;
+			last;
+		}
+	}
+}
+
+sub setTrainSAHam {
+	while (1) {
+		my $new = 
+			ask("Ham training user:",
+				$config{TRAINSAHAM});
+		my ($u,$d) = split ('@', $new);
+		if ($d ne $config{CREATEDOMAIN}) {
+			progress ( "You must create the user under the domain $config{CREATEDOMAIN}\n" );
+		} else {
+			$config{TRAINSAHAM} = $new;
+			last;
+		}
+	}
 }
 
 sub setCreateAdmin {
@@ -346,7 +590,7 @@ sub setCreateAdmin {
 				$config{CREATEADMIN});
 		my ($u,$d) = split ('@', $new);
 		if ($d ne $config{CREATEDOMAIN}) {
-			print "You must create the admin user under the domain $config{CREATEDOMAIN}\n";
+			progress ( "You must create the admin user under the domain $config{CREATEDOMAIN}\n" );
 		} else {
 			if ($config{CREATEADMIN} eq $config{AVUSER}) {
 				$config{AVUSER} = $new;
@@ -364,106 +608,6 @@ sub setCreateAdmin {
 
 	setAdminPass();
 
-}
-
-sub initLdap {
-	print "Warning - re-initializing the ldap database will delete\n";
-	print "ALL USER ACCOUNTS, all server data, and all other system\n";
-	print "configuration\n\n";
-
-	if (askYN("Proceed with ldap initialization?","No") eq "no") { return (1); }
-
-	if (isEnabled("zimbra-store") && $sqlConfigured) {
-		print "Warning - the MySql database on this host is configured\n";
-		print "This must be re-initialized PRIOR to ldap re-initialization\n";
-		if (askYN("Delete MySql data now?","No") eq "no") { return (1); }
-		if (deleteSql()) { 
-			print "MySql removal failed!\n";
-			ask("Press any key to continue", "");
-			return (1); 
-		}
-	}
-	print "Stopping ldap...\n";
-	runAsZimbra ("/opt/zimbra/bin/ldap stop");
-	print "Done\n";
-	system ("/bin/rm -rf /opt/zimbra/openldap-data/*");
-	print "Initializing ldap...\n";
-	runAsZimbra ("/opt/zimbra/libexec/zmldapinit $config{LDAPPASS}");
-	print "Done\n";
-}
-
-sub getVolumes {
-	print "Getting volume list\n";
-	if (open V, 
-		"/opt/zimbra/bin/mysql -Bs zimbra -e 'select distinct(path) from volume' |") {
-		my @volumes = <V>;
-		close V;
-		chomp @volumes;
-		return \@volumes;
-	}
-	return undef;
-}
-
-sub deleteSql {
-
-	print "Warning - MySql initialization on this host will delete\n";
-	print "ALL MAIL ON THIS HOST.\n\n";
-	if (askYN("Proceed with MySql initialization?","No") eq "no") { return (1); }
-
-	if (!$sqlRunning) {
-		print "Starting mysql...\n";
-		runAsZimbra ("/opt/zimbra/bin/mysql.server start");
-		print "Done\n";
-	}
-	my $v = getVolumes();
-	if (!defined($v)) { print "Could not get volume list!\n"; return (1);}
-
-	print "Stopping mysql...\n";
-	runAsZimbra ("/opt/zimbra/bin/mysql.server stop");
-	print "Done\n";
-
-	foreach (@$v) {
-		print "Deleting volume $_...";
-		system ("/bin/rm -rf $_");
-		print "Done\n";
-	}
-
-	$sqlConfigured = 0;
-	return 0;
-
-}
-
-sub createSql {
-
-	print "Initializing store sql database...\n";
-	runAsZimbra ("/opt/zimbra/libexec/zmmyinit $config{SQLROOTPASS}");
-	print "Done\n";
-	$sqlConfigured = 1;
-	return 0;
-}
-
-sub initSql {
-	deleteSql();
-	createSql();
-}
-
-sub initLoggerSql {
-	print "Warning - Logger MySql initialization on this host will delete\n";
-	print "all processed logs on this host.\n\n";
-	if (askYN("Proceed with Logger MySql initialization?","No") eq "no") { return (1); }
-
-	if ($loggerSqlRunning) {
-		print "Stopping mysql...\n";
-		runAsZimbra ("/opt/zimbra/bin/logmysql.server stop");
-		print "Done\n";
-	}
-
-	print "Removing logger mysql database...\n";
-	system ("/bin/rm -rf $zimbraHome/logger/db/data");
-	print "Done\n";
-
-	runAsZimbra ("/opt/zimbra/libexec/zmloggerinit");
-	return 0;
 }
 
 sub setLdapPass {
@@ -533,9 +677,9 @@ sub toggleYN {
 sub setStoreMode {
 	while (1) {
 		my $m = 
-			askNonBlank("Please enter the web server mode (http,https,mixed)",
+			askNonBlank("Please enter the web server mode (http,https,both,mixed)",
 				$config{MODE});
-		if ($m eq "http" || $m eq "https" || $m eq "mixed") {
+		if ($m eq "http" || $m eq "https" || $m eq "mixed" || $m eq "both") {
 			$config{MODE} = $m;
 			return;
 		}
@@ -565,6 +709,9 @@ sub setHostName {
 	if ($config{LDAPHOST} eq $old) {
 		changeLdapHost($config{HOSTNAME});
 	}
+	if ($config{MTAAUTHHOST} eq $old) {
+		$config{MTAAUTHHOST} = $config{HOSTNAME};
+	}
 	if ($config{CREATEDOMAIN} eq $old) {
 		$config{CREATEDOMAIN} = $config{HOSTNAME};
 		my ($u,$d) = split ('@', $config{CREATEADMIN});
@@ -589,6 +736,11 @@ sub setSmtpHost {
 			$config{SMTPHOST});
 }
 
+sub setMtaAuthHost {
+	changeLdapHost( askNonBlank("Please enter the mta authentication server hostname",
+			$config{MTAAUTHHOST}));
+}
+
 sub setLdapHost {
 	changeLdapHost( askNonBlank("Please enter the ldap server hostname",
 			$config{LDAPHOST}));
@@ -597,6 +749,16 @@ sub setLdapHost {
 sub setLdapPort {
 	changeLdapPort( askNum("Please enter the ldap server port",
 			$config{LDAPPORT}));
+}
+
+sub setHttpPort {
+	askNum("Please enter the HTTP server port",
+			$config{HTTPPORT});
+}
+
+sub setHttpsPort {
+	askNum("Please enter the HTTPS server port",
+			$config{HTTPSPORT});
 }
 
 sub setImapPort {
@@ -643,8 +805,15 @@ sub configurePackage {
 
 sub setEnabledDependencies {
 	if (isEnabled("zimbra-ldap")) {
-		changeLdapHost($config{HOSTNAME});
-	} 
+		if ($config{LDAPHOST} eq "") {
+			changeLdapHost($config{HOSTNAME});
+		}
+	} else {
+		if ($config{LDAPHOST} eq $config{HOSTNAME}) {
+			changeLdapHost("");
+			$config{LDAPPASS} = "";
+		}
+	}
 
 	if (isEnabled("zimbra-store")) {
 		if (isEnabled("zimbra-mta")) {
@@ -669,7 +838,7 @@ sub toggleEnabled {
 }
 
 sub verifyQuit {
-	if (askYN("Really quit?", "No") eq "yes") {return 1;}
+	if (askYN("Quit without applying changes?", "No") eq "yes") {return 1;}
 	return 0;
 }
 
@@ -772,6 +941,27 @@ sub createLdapMenu {
 				"prompt" => "Admin Password", 
 				"var" => \$config{ADMINPASSSET},
 				"callback" => \&setAdminPass
+				};
+			$i++;
+		}
+		$$lm{menuitems}{$i} = { 
+			"prompt" => "Enable automated spam training:", 
+			"var" => \$config{DOTRAINSA}, 
+			"callback" => \&toggleYN,
+			"arg" => "DOTRAINSA",
+			};
+		$i++;
+		if ($config{DOTRAINSA} eq "yes") {
+			$$lm{menuitems}{$i} = { 
+				"prompt" => "Spam training user:", 
+				"var" => \$config{TRAINSASPAM}, 
+				"callback" => \&setTrainSASpam
+				};
+			$i++;
+			$$lm{menuitems}{$i} = { 
+				"prompt" => "Non-spam(Ham) training user:", 
+				"var" => \$config{TRAINSAHAM}, 
+				"callback" => \&setTrainSAHam
 				};
 			$i++;
 		}
@@ -889,6 +1079,13 @@ sub createMtaMenu {
 	my $i = 2;
 	if (isEnabled($package)) {
 		$$lm{menuitems}{$i} = { 
+			"prompt" => "MTA Auth host:", 
+			"var" => \$config{MTAAUTHHOST}, 
+			"callback" => \&setMtaAuthHost,
+			"arg" => "MTAAUTHHOST",
+			};
+		$i++;
+		$$lm{menuitems}{$i} = { 
 			"prompt" => "Enable Spamassassin:", 
 			"var" => \$config{RUNSA}, 
 			"callback" => \&toggleYN,
@@ -939,6 +1136,18 @@ sub createStoreMenu {
 			"callback" => \&setSmtpHost,
 			};
 		$i++;
+#		$$lm{menuitems}{$i} = { 
+#			"prompt" => "Web server HTTP port:", 
+#			"var" => \$config{HTTPPORT}, 
+#			"callback" => \&setHttpPort,
+#			};
+#		$i++;
+#		$$lm{menuitems}{$i} = { 
+#			"prompt" => "Web server HTTPS port:", 
+#			"var" => \$config{HTTPSPORT}, 
+#			"callback" => \&setHttpsPort,
+#			};
+#		$i++;
 		$$lm{menuitems}{$i} = { 
 			"prompt" => "Web server mode:", 
 			"var" => \$config{MODE}, 
@@ -1149,87 +1358,6 @@ sub displayMenu {
 	}
 }
 
-sub createControlMenu {
-	my %cm = ();
-	$cm{createsub} = \&createControlMenu;
-	$cm{title} = "Database Control menu";
-	$cm{default} = "r";
-	$cm{lastitem} = {
-		"selector" => "r",
-		"prompt" => "Return",
-		"action" => "return",
-		};
-
-	my $i = 1;
-
-	my $prompt;
-	if (isEnabled("zimbra-ldap")) {
-		if (!$ldapConfigured) {
-			$prompt = "Ldap configured?";
-			$config{LDAPRUNNING} = ($ldapConfigured)?"yes":"no";
-		} else {
-			$prompt = "Ldap Running?";
-			$config{LDAPRUNNING} = ($ldapRunning)?"yes":"no";
-		}
-		$cm{menuitems}{$i} = { 
-			"prompt" => $prompt,
-			"var" => \$config{LDAPRUNNING}, 
-			};
-		$i++;
-		$cm{menuitems}{$i} = { 
-			"prompt" => "Re-initialize ldap...",
-			"callback" => \&initLdap
-			};
-		$i++;
-	}
-
-	if (isEnabled("zimbra-store")) {
-		if (!$sqlConfigured) {
-			$prompt = "MySql configured?";
-			$config{SQLRUNNING} = ($sqlConfigured)?"yes":"no";
-		} else {
-			$prompt = "MySql Running?";
-			$config{SQLRUNNING} = ($sqlRunning)?"yes":"no";
-		}
-		$cm{menuitems}{$i} = { 
-			"prompt" => $prompt,
-			"var" => \$config{SQLRUNNING}, 
-			};
-		$i++;
-		if ($ldapRunning) {
-			$cm{menuitems}{$i} = { 
-				"prompt" => "Re-initialize sql database...",
-				"callback" => \&initSql
-				};
-			$i++;
-		}
-	}
-
-	if (isEnabled("zimbra-logger")) {
-		if (!$loggerSqlConfigured) {
-			$prompt = "Logger MySql configured?";
-			$config{LOGGERSQLRUNNING} = ($loggerSqlConfigured)?"yes":"no";
-		} else {
-			$prompt = "Logger MySql Running?";
-			$config{LOGGERSQLRUNNING} = ($loggerSqlRunning)?"yes":"no";
-		}
-		$cm{menuitems}{$i} = { 
-			"prompt" => $prompt,
-			"var" => \$config{LOGGERSQLRUNNING}, 
-			};
-		$i++;
-		if ($ldapRunning) {
-			$cm{menuitems}{$i} = { 
-				"prompt" => "Re-initialize logger sql database...",
-				"callback" => \&initLoggerSql
-				};
-			$i++;
-		}
-	}
-
-	return \%cm;
-}
-
 sub createMainMenu {
 	my %mm = ();
 	$mm{createsub} = \&createMainMenu;
@@ -1255,7 +1383,7 @@ sub createMainMenu {
 		};
 	my $i = 2;
 	$mm{menuitems}{$i} = { 
-		"prompt" => "Ldap host:", 
+		"prompt" => "Ldap master host:", 
 		"var" => \$config{LDAPHOST}, 
 		"callback" => \&setLdapHost
 		};
@@ -1302,12 +1430,6 @@ sub createMainMenu {
 			#push @mm, "$_ not installed";
 		}
 	}
-#	my %cm = ();
-#	$cm{createsub} = \&createControlMenu;
-#	$mm{menuitems}{d} = { 
-#		"prompt" => "Database controls", 
-#		"submenu" => \%cm,
-#	};
 	$mm{menuitems}{r} = { 
 		"prompt" => "Start servers after configuration", 
 		"callback" => \&toggleYN,
@@ -1335,7 +1457,7 @@ sub createMainMenu {
 	if (checkMenuConfig(\%mm)) {
 		$mm{promptitem} = { 
 			"selector" => "a",
-			"prompt" => "Select, or press 'a' to apply config", 
+			"prompt" => "*** CONFIGURATION COMPLETE - press 'a' to apply\nSelect from menu, or press 'a' to apply config", 
 			"callback" => \&applyConfig,
 			};
 	} else {
@@ -1392,7 +1514,7 @@ sub verifyLdap {
 	if ($config{LDAPHOST} eq $config{HOSTNAME}) {
 		$H = "localhost";
 	}
-	print "Checking ldap on ${H}:$config{LDAPPORT}...";
+	progress ( "Checking ldap on ${H}:$config{LDAPPORT}..." );
 
 	my $ldapsearch = "$zimbraHome/bin/ldapsearch";
 	my $args = "-x -h ${H} -p $config{LDAPPORT} ".
@@ -1400,22 +1522,20 @@ sub verifyLdap {
 
 	my $rc = 0xffff & system ("$ldapsearch $args > /tmp/zmsetup.ldap.out 2>&1");
 
-	if ($rc) { print "FAILED\n"; } 
-	else {print "Success\n";}
+	if ($rc) { progress ("FAILED\n"); } 
+	else {progress ( "Success\n");}
 	return $rc;
 
 }
 
 sub runAsZimbra {
 	my $cmd = shift;
-	if ($cmd =~ /init/) {
+	if ($cmd =~ /init/ || $cmd =~ /zmprov ca/) {
 		# Suppress passwords in log file
 		my $c = (split ' ', $cmd)[0];
-		print "*** Running as zimbra user: $c\n";
-		print LOGFILE "*** Running as zimbra user: $c\n";
+		detail ( "*** Running as zimbra user: $c\n" );
 	} else {
-		print "*** Running as zimbra user: $cmd\n";
-		print LOGFILE "*** Running as zimbra user: $cmd\n";
+		detail ( "*** Running as zimbra user: $cmd\n" );
 	}
 	my $rc;
 	$rc = 0xffff & system("su - zimbra -c \"$cmd\" >> $logfile 2>&1");
@@ -1424,8 +1544,7 @@ sub runAsZimbra {
 
 sub getLocalConfig {
 	my $key = shift;
-	print "Getting local config $key\n";
-	print LOGFILE "Getting local config $key\n";
+	detail ( "Getting local config $key\n" );
 	my $val = `/opt/zimbra/bin/zmlocalconfig -s -m nokey ${key}`;
 	chomp $val;
 	return $val;
@@ -1434,25 +1553,30 @@ sub getLocalConfig {
 sub setLocalConfig {
 	my $key = shift;
 	my $val = shift;
-	print "Setting local config $key to $val\n";
-	print LOGFILE "Setting local config $key to $val\n";
+	detail ( "Setting local config $key to $val\n" );
 	runAsZimbra("/opt/zimbra/bin/zmlocalconfig -f -e ${key}=${val}");
 }
 
-sub applyConfig {
-	if (!defined ($options{c})) {
-		if (askYN("Save configuration data to a file?", "Yes") eq "yes") {saveConfig();}
-		if (askYN("The system will be modified - continue?", "No") eq "no") {return 1;}
-	}
-	print "Operations logged to $logfile\n";
-	# This is the postinstall config
-	my $installedServiceStr = "";
-	my $enabledServiceStr = "";
+sub configLCValues {
 
+	if ($configStatus{configLCValues} eq "CONFIGURED") {
+		configLog("configLCValues");
+		return 0;
+	}
+
+	progress ("Setting local config values...");
 	setLocalConfig ("zimbra_server_hostname", $config{HOSTNAME});
 
-	setLocalConfig ("ldap_host", $config{LDAPHOST});
-	setLocalConfig ("ldap_port", $config{LDAPPORT});
+	if ($config{LDAPPORT} == 636) {
+		setLocalConfig ("ldap_master_url", "ldaps://$config{LDAPHOST}:$config{LDAPPORT}");
+	} else {
+		setLocalConfig ("ldap_master_url", "ldap://$config{LDAPHOST}:$config{LDAPPORT}");
+	}
+
+	setLocalConfig ("ldap_url", "ldap://$config{LDAPHOST}");
+
+	# setLocalConfig ("ldap_host", $config{LDAPHOST});
+	# setLocalConfig ("ldap_port", $config{LDAPPORT});
 	my $uid = `id -u zimbra`;
 	chomp $uid;
 	my $gid = `id -g zimbra`;
@@ -1467,125 +1591,346 @@ sub applyConfig {
 	if (defined $config{AVDOMAIN}) {
 		setLocalConfig ("av_notify_domain", $config{AVDOMAIN})
 	}
-	if (defined $config{EXPIRY}) {
-		setLocalConfig ("trial_expiration_date", $config{EXPIRY});
+
+	setLocalConfig ("ssl_allow_untrusted_certs", "TRUE");
+
+	configLog ("configLCValues");
+
+	progress ("Done\n");
+
+}
+
+sub configCASetup {
+
+	if ($configStatus{configCASetup} eq "CONFIGURED") {
+		configLog("configCASetup");
+		return 0;
+	}
+
+	if (isEnabled("zimbra-ldap") && ( ! -f "/opt/zimbra/conf/ca/ca.key") ) {
+		progress ( "Setting up CA..." );
+		runAsZimbra("cd /opt/zimbra; zmcreateca");
+
+		progress ( "Done\n" );
+	}
+	configLog("configCASetup");
+}
+
+sub configSetupLdap {
+
+	if ($configStatus{configSetupLdap} eq "CONFIGURED") {
+		configLog("configSetupLdap");
+		return 0;
 	}
 
 	if (!$ldapConfigured && isEnabled("zimbra-ldap")) {
-		print "Initializing ldap...\n";
-		print LOGFILE "Initializing ldap...\n";
-		runAsZimbra ("/opt/zimbra/libexec/zmldapinit $config{LDAPPASS}");
-		print "Done\n";
-		print LOGFILE "Done\n";
+		progress ( "Initializing ldap..." ) ;
+		if (my $rc = runAsZimbra ("/opt/zimbra/libexec/zmldapinit $config{LDAPPASS}")) {
+			progress ( "FAILED ($rc)\n" );
+			failConfig();
+		} else {
+			progress ( "Done\n" );
+		}
 	} elsif (isEnabled("zimbra-ldap")) {
 		# zmldappasswd starts ldap and re-applies the ldif
 		if ($ldapPassChanged) {
-			print "Setting ldap password...\n";
-			print LOGFILE "Setting ldap password...\n";
+			progress ( "Setting ldap password..." );
 			runAsZimbra 
 				("/opt/zimbra/openldap/sbin/slapindex -f /opt/zimbra/conf/slapd.conf");
 			runAsZimbra ("/opt/zimbra/bin/zmldappasswd --root $config{LDAPPASS}");
 			runAsZimbra ("/opt/zimbra/bin/zmldappasswd $config{LDAPPASS}");
-			print "Done\n";
-			print LOGFILE "Done\n";
+			progress ( "Done\n" );
 		} else {
-			print "Starting ldap...\n";
-			print LOGFILE "Starting ldap...\n";
+			progress ( "Starting ldap..." );
 			runAsZimbra 
 				("/opt/zimbra/openldap/sbin/slapindex -f /opt/zimbra/conf/slapd.conf");
 			runAsZimbra ("ldap start");
 			runAsZimbra ("zmldapapplyldif");
-			print "Done\n";
-			print LOGFILE "Done\n";
+			progress ( "Done\n" );
 		}
 	} else {
 		setLocalConfig ("ldap_root_password", $config{LDAPPASS});
 		setLocalConfig ("zimbra_ldap_password", $config{LDAPPASS});
 	}
+	configLog("configSetupLdap");
+	return 0;
 
-	print "Creating server entry for $config{HOSTNAME}...";
-	print LOGFILE "Creating server entry for $config{HOSTNAME}...";
-	runAsZimbra("/opt/zimbra/bin/zmprov cs $config{HOSTNAME}");
-	print "Done\n";
-	print LOGFILE "Done\n";
+}
 
-	if (isEnabled("zimbra-store")) {
-		if ($config{USESPELL} eq "yes") {
-			print "Setting spell check URL to $config{SPELLURL}...\n";
-			print LOGFILE "Setting spell check URL to $config{SPELLURL}...\n";
-			runAsZimbra("/opt/zimbra/bin/zmprov ms $config{HOSTNAME} ".
-				"zimbraSpellCheckURL $config{SPELLURL}");
-			print "Done\n";
-			print LOGFILE "Done\n";
+sub configSaveCA {
+
+	if ($configStatus{configSaveCA} eq "CONFIGURED") {
+		configLog("configSaveCA");
+		return 0;
+	}
+
+	if (isEnabled("zimbra-ldap")) {
+		progress ( "Saving CA in ldap..." );
+
+		my $cert=`cat /opt/zimbra/ssl/ssl/ca/ca.pem`;
+		my $key=`cat /opt/zimbra/ssl/ssl/ca/ca.key`;
+		chomp $cert;
+		chomp $key;
+
+		runAsZimbra("zmprov mcf zimbraCertAuthorityCertSelfSigned \\\"$cert\\\"");
+		runAsZimbra("zmprov mcf zimbraCertAuthorityKeySelfSigned \\\"$key\\\"");
+
+		progress ( "Done\n" );
+	} else {
+		# Fetch it from ldap
+
+		progress ( "Fetching CA from ldap..." );
+
+		runAsZimbra("mkdir -p /opt/zimbra/ssl/ssl/ca");
+
+		# Don't use runAsZimbra since it swallows output
+		my $rc;
+
+		$rc = 0xffff & system('su - zimbra -c "zmprov gacf | sed -ne \'/-----BEGIN RSA PRIVATE KEY-----/,/-----END RSA PRIVATE KEY-----/ p\'| sed  -e \'s/^zimbraCertAuthorityKeySelfSigned: //\' > /opt/zimbra/ssl/ssl/ca/ca.key"');
+
+		$rc = 0xffff & system('su - zimbra -c "zmprov gacf | sed -ne \'/-----BEGIN TRUSTED CERTIFICATE-----/,/-----END TRUSTED CERTIFICATE-----/ p\'| sed  -e \'s/^zimbraCertAuthorityCertSelfSigned: //\' > /opt/zimbra/ssl/ssl/ca/ca.pem"');
+
+		progress ( "Done\n" );
+	}
+	configLog("configSaveCA");
+}
+
+sub configCreateCert {
+
+	if ($configStatus{configCreateCert} eq "CONFIGURED") {
+		configLog("configCreateCert");
+		return 0;
+	}
+
+	if (isEnabled("zimbra-ldap") || isEnabled("zimbra-store") || isEnabled("zimbra-mta")) {
+
+		progress ( "Creating SSL certificate..." );
+		if (-f "/opt/zimbra/java/jre/lib/security/cacerts") {
+			`chmod 777 /opt/zimbra/java/jre/lib/security/cacerts >> $logfile 2>&1`;
 		}
-		print "Setting service ports on $config{HOSTNAME}...\n";
-		print LOGFILE "Setting service ports on $config{HOSTNAME}...\n";
+		if (!-f "/opt/zimbra/tomcat/conf/keystore" || 
+			!-f "/opt/zimbra/conf/smtpd.crt" ||
+			!-f "/opt/zimbra/conf/slapd.crt") {
+			runAsZimbra("cd /opt/zimbra; zmcreatecert");
+		}
+		progress ( "Done\n" );
+
+	}
+
+	configLog("configCreateCert");
+}
+
+sub configInstallCert {
+
+	if ($configStatus{configInstallCert} eq "CONFIGURED") {
+		configLog("configInstallCert");
+		return 0;
+	}
+
+	if (isEnabled("zimbra-store") || isEnabled("zimbra-mta")) {
+		progress ("Installing SSL certificate...");
+		if (isEnabled("zimbra-store")) {
+			if (!-f "/opt/zimbra/tomcat/conf/keystore") {
+				runAsZimbra("cd /opt/zimbra; zmcertinstall mailbox");
+			}
+			runAsZimbra("cd /opt/zimbra; zmtlsctl $config{MODE}");
+		}
+		if (isEnabled("zimbra-mta")) {
+			if (! (-f "/opt/zimbra/conf/smtpd.key" || 
+				-f "/opt/zimbra/conf/smtpd.crt")) {
+				runAsZimbra("cd /opt/zimbra; zmcertinstall mta ".
+					"/opt/zimbra/ssl/ssl/server/server.crt ".
+					"/opt/zimbra/ssl/ssl/server/server.key");
+			}
+		}
+		progress ( "Done\n" );
+	}
+	configLog("configInstallCert");
+}
+
+sub configCreateServerEntry {
+
+	if ($configStatus{configCreateServerEntry} eq "CONFIGURED") {
+		configLog("configCreateServerEntry");
+		return 0;
+	}
+
+	progress ( "Creating server entry for $config{HOSTNAME}..." );
+	runAsZimbra("/opt/zimbra/bin/zmprov cs $config{HOSTNAME}");
+	progress ( "Done\n" );
+	configLog("configCreateServerEntry");
+}
+
+sub configSpellServer {
+
+	if ($configStatus{configSpellServer} eq "CONFIGURED") {
+		configLog("configSpellServer");
+		return 0;
+	}
+
+	if ($config{USESPELL} eq "yes") {
+		progress ( "Setting spell check URL..." );
 		runAsZimbra("/opt/zimbra/bin/zmprov ms $config{HOSTNAME} ".
-			"zimbraImapBindPort $config{IMAPPORT} zimbraImapSSLBindPort $config{IMAPSSLPORT} ".
-			"zimbraPop3BindPort $config{POPPORT} zimbraPop3SSLBindPort $config{POPSSLPORT}");
-		print "Done\n";
-		print LOGFILE "Done\n";
-		addServerToHostPool();
+			"zimbraSpellCheckURL $config{SPELLURL}");
+		progress ( "Done\n" );
+	}
+
+	configLog("configSpellServer");
+}
+
+sub configSetMtaAuthHost {
+
+	if ($configStatus{configSetMtaAuthHost} eq "CONFIGURED") {
+		configLog("configSetMtaAuthHost");
+		return 0;
+	}
+
+	if ($config{MTAAUTHHOST} ne "") {
+		progress ( "Setting MTA auth host..." );
+		runAsZimbra("/opt/zimbra/bin/zmprov ms $config{HOSTNAME} ".
+			"zimbraMtaAuthHost $config{MTAAUTHHOST}");
+		progress ( "Done\n" );
+	}
+
+	configLog("configSetMtaAuthHost");
+}
+
+sub configSetServicePorts {
+
+	if ($configStatus{configSetServicePorts} eq "CONFIGURED") {
+		configLog("configSetServicePorts");
+		return 0;
+	}
+
+	progress ( "Setting service ports on $config{HOSTNAME}..." );
+	runAsZimbra("/opt/zimbra/bin/zmprov ms $config{HOSTNAME} ".
+		"zimbraImapBindPort $config{IMAPPORT} zimbraImapSSLBindPort $config{IMAPSSLPORT} ".
+		"zimbraPop3BindPort $config{POPPORT} zimbraPop3SSLBindPort $config{POPSSLPORT} ".
+		"zimbraMailPort $config{HTTPPORT} zimbraMailSSLPort $config{HTTPSPORT} ".
+		"zimbraMailMode $config{MODE}");
+
+	progress ( "Done\n" );
+	configLog("configSetServicePorts");
+}
+
+sub configInstallZimlets {
+
+	if ($configStatus{configInstallZimlets} eq "CONFIGURED") {
+		configLog("configInstallZimlets");
+		return 0;
+	}
+
+	# Install zimlets
+	if (opendir DIR, "/opt/zimbra/zimlets") {
+		progress ( "Installing zimlets... " );
+		my @zimlets = grep { !/^\./ } readdir(DIR);
+		foreach my $zimletfile (@zimlets) {
+			my $zimlet = $zimletfile;
+			$zimlet =~ s/.zip//;
+			progress  ("$zimlet... ");
+			runAsZimbra ("/opt/zimbra/bin/zimlet deploy zimlets/$zimletfile");
+		}
+		progress ( "Done\n" );
+	}
+	configLog("configInstallZimlets");
+}
+
+sub configCreateDomain {
+
+	if ($configStatus{configCreateDomain} eq "CONFIGURED") {
+		configLog("configCreateDomain");
+		return 0;
 	}
 
 	if (!$ldapConfigured && isEnabled("zimbra-ldap")) {
 		if ($config{DOCREATEDOMAIN} eq "yes") {
-			print "Creating domain $config{CREATEDOMAIN}...\n";
-			print LOGFILE "Creating domain $config{CREATEDOMAIN}...\n";
+			progress ( "Creating domain $config{CREATEDOMAIN}..." );
 			runAsZimbra("/opt/zimbra/bin/zmprov cd $config{CREATEDOMAIN}");
 			runAsZimbra("/opt/zimbra/bin/zmprov mcf zimbraDefaultDomainName $config{CREATEDOMAIN}");
-			print "Done\n";
-			print LOGFILE "Done\n";
+			progress ( "Done\n" );
 			if ($config{DOCREATEADMIN} eq "yes") {
-				print "Creating user $config{CREATEADMIN}...\n";
-				print LOGFILE "Creating user $config{CREATEADMIN}...\n";
+				progress ( "Creating user $config{CREATEADMIN}..." );
 				runAsZimbra("/opt/zimbra/bin/zmprov ca ".
-					"$config{CREATEADMIN} $config{CREATEADMINPASS} ".
+					"$config{CREATEADMIN} \'$config{CREATEADMINPASS}\' ".
 					"zimbraIsAdminAccount TRUE");
-				print "Done\n";
-				print LOGFILE "Done\n";
-				print "Creating postmaster alias...\n";
-				print LOGFILE "Creating postmaster alias...\n";
-				runAsZimbra("/opt/zimbra/zmprov aaa $config{CREATEADMIN} root\@$config{CREATEDOMAIN}");
-				runAsZimbra("/opt/zimbra/zmprov aaa $config{CREATEADMIN} postmaster\@$config{CREATEDOMAIN}");
-				print "Done\n";
-				print LOGFILE "Done\n";
+				progress ( "Done\n" );
+				progress ( "Creating postmaster alias..." );
+				runAsZimbra("/opt/zimbra/bin/zmprov aaa ".
+					"$config{CREATEADMIN} root\@$config{CREATEDOMAIN}");
+				runAsZimbra("/opt/zimbra/bin/zmprov aaa ".
+					"$config{CREATEADMIN} postmaster\@$config{CREATEDOMAIN}");
+				progress ( "Done\n" );
+			}
+			if ($config{DOTRAINSA} eq "yes") {
+				progress ( "Creating user $config{TRAINSASPAM}..." );
+				my $pass = genRandomPass();
+				runAsZimbra("/opt/zimbra/bin/zmprov ca ".
+					"$config{TRAINSASPAM} \'$pass\' ");
+				progress ( "Done\n" );
+				progress ( "Creating user $config{TRAINSAHAM}..." );
+				runAsZimbra("/opt/zimbra/bin/zmprov ca ".
+					"$config{TRAINSAHAM} \'$pass\' ");
+				progress ( "Done\n" );
+				progress ( "Setting spam training accounts..." );
+				runAsZimbra("/opt/zimbra/bin/zmprov mcf ".
+					"zimbraSpamIsSpamAccount $config{TRAINSASPAM} ".
+					"zimbraSpamIsNotSpamAccount $config{TRAINSAHAM}");
+				progress ( "Done\n" );
 			}
 		}
 	}
+	configLog("configCreateDomain");
+}
+
+sub configInitSql {
+
+	if ($configStatus{configInitSql} eq "CONFIGURED") {
+		configLog("configInitSql");
+		return 0;
+	}
 
 	if (!$sqlConfigured && isEnabled("zimbra-store")) {
-		print "Initializing store sql database...\n";
-		print LOGFILE "Initializing store sql database...\n";
+		progress ( "Initializing store sql database..." );
 		runAsZimbra ("/opt/zimbra/libexec/zmmyinit");
-		print "Done\n";
-		print LOGFILE "Done\n";
-		print "Setting zimbraSmtpHostname for $config{HOSTNAME}\n";
-		print LOGFILE "Setting zimbraSmtpHostname for $config{HOSTNAME}\n";
+		progress ( "Done\n" );
+		progress ( "Setting zimbraSmtpHostname for $config{HOSTNAME}..." );
 		runAsZimbra("/opt/zimbra/bin/zmprov ms $config{HOSTNAME} ".
 			"zimbraSmtpHostname $config{SMTPHOST}");
-		print "Done\n";
-		print LOGFILE "Done\n";
+		progress ( "Done\n" );
+	}
+	configLog("configInitSql");
+}
+
+sub configInitLogger {
+
+	if ($configStatus{configInitLogger} eq "CONFIGURED") {
+		configLog("configInitLogger");
+		return 0;
 	}
 
 	if (!$loggerSqlConfigured && isEnabled("zimbra-logger")) {
-		print "Initializing store sql database...\n";
-		print LOGFILE "Initializing store sql database...\n";
+		progress ( "Initializing logger sql database..." );
 		runAsZimbra ("/opt/zimbra/libexec/zmloggerinit");
-		print "Done\n";
-		print LOGFILE "Done\n";
+		progress ( "Done\n" );
 	} 
 
 	if (isEnabled("zimbra-logger")) {
 		runAsZimbra ("/opt/zimbra/bin/zmprov mcf zimbraLogHostname $config{HOSTNAME}");
 	}
+	configLog("configInitLogger");
+}
+
+sub configInitMta {
+
+	if ($configStatus{configInitMta} eq "CONFIGURED") {
+		configLog("configInitMta");
+		return 0;
+	}
 
 	if (isEnabled("zimbra-mta")) {
-		print "Initializing mta config...\n";
-		print LOGFILE "Initializing mta config...\n";
+		progress ( "Initializing mta config..." );
 		runAsZimbra ("/opt/zimbra/libexec/zmmtainit $config{LDAPHOST}");
-		print "Done\n";
-		print LOGFILE "Done\n";
+		progress ( "Done\n" );
 		$installedServiceStr .= "zimbraServiceInstalled antivirus ";
 		$installedServiceStr .= "zimbraServiceInstalled antispam ";
 		if ($config{RUNAV} eq "yes") {
@@ -1595,26 +1940,34 @@ sub applyConfig {
 			$enabledServiceStr .= "zimbraServiceEnabled antispam ";
 		}
 	}
+	configLog("configInitMta");
+}
+
+sub configInitSnmp {
+
+	if ($configStatus{configInitSnmp} eq "CONFIGURED") {
+		configLog("configInitSnmp");
+		return 0;
+	}
 
 	if (isEnabled("zimbra-snmp")) {
-		print "Configuring SNMP...\n";
-		print LOGFILE "Configuring SNMP...\n";
+		progress ( "Configuring SNMP..." );
 		setLocalConfig ("snmp_notify", $config{SNMPNOTIFY});
 		setLocalConfig ("smtp_notify", $config{SMTPNOTIFY});
 		setLocalConfig ("snmp_trap_host", $config{SNMPTRAPHOST});
 		setLocalConfig ("smtp_source", $config{SMTPSOURCE});
 		setLocalConfig ("smtp_destination", $config{SMTPDEST});
 		runAsZimbra ("/opt/zimbra/libexec/zmsnmpinit");
-		print "Done\n";
-		print LOGFILE "Done\n";
+		progress ( "Done\n" );
 	}
+	configLog("configInitSnmp");
+}
 
-	if (isEnabled("zimbra-spell")) {
-		print "Configuring Spell server...\n";
-		print LOGFILE "Configuring Spell server...\n";
-		$enabledServiceStr .= "zimbraServiceEnabled spell ";
-		print "Done\n";
-		print LOGFILE "Done\n";
+sub configSetEnabledServices {
+
+	if ($configStatus{configSetEnabledServices} eq "CONFIGURED") {
+		configLog("configSetEnabledServices");
+		return 0;
 	}
 
 	foreach my $p (keys %installedPackages) {
@@ -1635,55 +1988,136 @@ sub applyConfig {
 		}
 	}
 
-	print "Setting services on $config{HOSTNAME}\n";
-	print LOGFILE "Setting services on $config{HOSTNAME}\n";
+	progress ( "Setting services on $config{HOSTNAME}..." );
 	runAsZimbra ("/opt/zimbra/bin/zmprov ms $config{HOSTNAME} $installedServiceStr");
 	runAsZimbra ("/opt/zimbra/bin/zmprov ms $config{HOSTNAME} $enabledServiceStr");
-	print "Done\n";
-	print LOGFILE "Done\n";
+	progress ( "Done\n" );
 
-	if (isEnabled("zimbra-store") || isEnabled("zimbra-mta")) {
-		print "Setting up SSL...\n";
-		print LOGFILE "Setting up SSL...\n";
-		if (-f "/opt/zimbra/java/jre/lib/security/cacerts") {
-			`chmod 777 /opt/zimbra/java/jre/lib/security/cacerts >> $logfile 2>&1`;
+	configLog("configSetEnabledServices");
+}
+
+sub failConfig {
+	progress ("\n\nERROR\n\n");
+	progress ("\n\nConfiguration failed\n\n");
+	progress ("Please address the error and re-run /opt/zimbra/libexec/zmsetup.pl to\n");
+	progress ("complete the configuration");
+	exit 1;
+}
+
+sub applyConfig {
+	if (!defined ($options{c})) {
+		if (askYN("Save configuration data to a file?", "Yes") eq "yes") {
+			saveConfig();
 		}
-		setLocalConfig ("ssl_allow_untrusted_certs", "TRUE");
-		if (!-f "/opt/zimbra/tomcat/conf/keystore") {
-			runAsZimbra("cd /opt/zimbra; zmcreatecert");
+		if (askYN("The system will be modified - continue?", "No") eq "no") {
+			return 1;
 		}
-		if (isEnabled("zimbra-store")) {
-			if (!-f "/opt/zimbra/tomcat/conf/keystore") {
-				runAsZimbra("cd /opt/zimbra; zmcertinstall mailbox");
-			}
-			runAsZimbra("cd /opt/zimbra; zmtlsctl $config{MODE}");
-		}
-		if (isEnabled("zimbra-mta")) {
-			if (! (-f "/opt/zimbra/conf/smtpd.key" || 
-				-f "/opt/zimbra/conf/smtpd.crt")) {
-				runAsZimbra("cd /opt/zimbra; zmcertinstall mta ".
-					"/opt/zimbra/ssl/ssl/server/smtpd.crt ".
-					"/opt/zimbra/ssl/ssl/ca/ca.key");
-			}
-		}
-		print "Done\n";
-		print LOGFILE "Done\n";
 	}
+	progress ( "Operations logged to $logfile\n" );
+
+	open (H, ">>/opt/zimbra/.install_history");
+
+	print H time(),": CONFIG SESSION START\n";
+	# This is the postinstall config
+
+	configLog ("BEGIN");
+
+	configLCValues();
+
+	# About SSL
+	# 
+	# On the master ldap server, create a ca and a ceert
+	# On store and MTA servers, just create a cert.
+	#
+	# Non-ldap masters use the master CA, which they get from ldap
+	# but ldap won't start without a cert.
+	#
+	# so - ldap - create CA, create cert, init ldap, store CA in ldap
+	#
+	# non-ldap - fetch CA, create cert
+
+	configCASetup();
+
+	configCreateCert();
+
+	configSetupLdap();
+
+	configSaveCA();
+
+	configInstallCert();
+
+	configCreateServerEntry();
+
+	if (isEnabled("zimbra-store")) {
+		configSpellServer();
+
+		configSetServicePorts();
+
+		addServerToHostPool();
+
+		configInstallZimlets();
+
+	}
+
+	if (isEnabled("zimbra-mta")) {
+		configSetMtaAuthHost();
+	}
+
+	configCreateDomain();
+
+	configInitSql();
+
+	configInitLogger();
+
+	configInitMta();
+
+	configInitSnmp();
+
+	configSetEnabledServices();
 
 	setupCrontab();
 	postinstall::configure();
 
-	if ($config{STARTSERVERS} = "yes") {
+	if ($config{STARTSERVERS} eq "yes") {
+		progress ( "Starting servers..." );
 		runAsZimbra ("/opt/zimbra/bin/zmcontrol start");
 		# runAsZimbra swallows the output, so call status this way
 		`su - zimbra -c "/opt/zimbra/bin/zmcontrol status"`;
+		progress ( "Done.\n" );
 	}
+
+	if ($newinstall) {
+		runAsZimbra ("/opt/zimbra/bin/zmsshkeygen");
+		runAsZimbra ("/opt/zimbra/bin/zmupdateauthkeys");
+	}
+
+	configLog ("END");
+
+	print H time(),": CONFIG SESSION COMPLETE\n";
+
+	close H;
 
 	getSystemStatus();
 
-	print "\n\n";
-	print "Operations logged to $logfile\n";
-	print "\n\n";
+	if (!defined ($options{c}) && 0) {
+		if (askYN("\nYou have the option of notifying Zimbra of your installation.\nThis helps us to track the uptake of the Zimbra Collaboration Suite.\nThe only information that will be transmitted is:\n\tThe VERSION of zcs you've installed($curVersion)\n\tthe admin email address you've created ($config{CREATEADMIN})\n\nNotify Zimbra of your installation?", "Yes") eq "yes") {
+			if (open NOTIFY, "/opt/zimbra/libexec/zmnotifyinstall $curVersion $config{CREATEADMIN} |") {
+				while (<NOTIFY>) {
+					progress ("$_");
+				}
+				close NOTIFY;
+				progress ("Notification complete!\n");
+			} else {
+				progress ("ERROR: Notification failed!\n\n");
+			}
+		} else {
+			progress ("Notification skipped\n");
+		}
+	}
+
+	progress ( "\n\n" );
+	progress ( "Operations logged to $logfile\n" );
+	progress ( "\n\n" );
 	if (!defined ($options{c})) {
 		ask("Configuration complete - press return to exit", "");
 		print "\n\n";
@@ -1691,8 +2125,19 @@ sub applyConfig {
 	}
 }
 
+sub configLog {
+	my $stage = shift;
+	print H time(),": CONFIGURED $stage\n";
+}
+
 sub setupCrontab {
 
+	my $backupSchedule;
+	progress ("Setting up zimbra crontab...");
+	if ( -f "/opt/zimbra/bin/zmschedulebackup") {
+		$backupSchedule = `su - zimbra -c "zmschedulebackup -s"`;
+		chomp $backupSchedule;
+	}
 	`crontab -u zimbra -l > /tmp/crontab.zimbra.orig`;
 	my $rc = 0xffff & system("grep ZIMBRASTART /tmp/crontab.zimbra.orig > /dev/null 2>&1");
 	if ($rc) {
@@ -1713,17 +2158,26 @@ sub setupCrontab {
 		`cat /opt/zimbra/zimbramon/crontabs/crontab.logger >> /tmp/crontab.zimbra`;
 	}
 
+	if (isEnabled("zimbra-mta")) {
+		`cat /opt/zimbra/zimbramon/crontabs/crontab.mta >> /tmp/crontab.zimbra`;
+	}
+
 	`echo "# ZIMBRAEND -- DO NOT EDIT ANYTHING BETWEEN THIS LINE AND ZIMBRASTART" >> /tmp/crontab.zimbra`;
 	`cat /tmp/crontab.zimbra.proc >> /tmp/crontab.zimbra`;
 
 	`crontab -u zimbra /tmp/crontab.zimbra`;
+	if ( -f "/opt/zimbra/bin/zmschedulebackup" && $backupSchedule ne "") {
+		$backupSchedule =~ s/"/\\"/g;
+		`su - zimbra -c "/opt/zimbra/bin/zmschedulebackup -R $backupSchedule"`;
+	}
+	progress ("Done\n");
+	configLog("setupCrontab");
 
 }
 
 
 sub addServerToHostPool {
-	print "Adding $config{HOSTNAME} to zimbraMailHostPool in default COS\n";
-	print LOGFILE "Adding $config{HOSTNAME} to zimbraMailHostPool in default COS\n";
+	progress ( "Adding $config{HOSTNAME} to zimbraMailHostPool in default COS..." );
 	my $id = `/opt/zimbra/bin/zmprov gs $config{HOSTNAME} | grep zimbraId | sed -e 's/zimbraId: //'`;
 	chomp $id;
 
@@ -1742,8 +2196,7 @@ sub addServerToHostPool {
 	$n .= "zimbraMailHostPool $id";
 
 	`/opt/zimbra/bin/zmprov mc default $n >> $logfile 2>&1`;
-	print "Done\n";
-	print LOGFILE "Done\n";
+	progress ( "Done\n" );
 }
 
 sub mainMenu {
@@ -1754,32 +2207,65 @@ sub mainMenu {
 }
 
 sub startLdap {
-	print "Starting ldap...\n";
-	print LOGFILE "Starting ldap...\n";
+	progress ( "Starting ldap..." );
 	runAsZimbra 
 		("/opt/zimbra/openldap/sbin/slapindex -f /opt/zimbra/conf/slapd.conf");
 	runAsZimbra ("ldap start");
 	runAsZimbra ("zmldapapplyldif");
-	print "Done\n";
-	print LOGFILE "Done\n";
+	progress ( "Done\n" );
+}
+
+sub resumeConfiguration {
+	progress ( "\n\nNote\n\n" );
+	progress ( "The previous configuration appears to have failed to complete\n\n");
+	if (askYN ("Attempt to complete configuration now?", "yes") eq "yes") {
+		applyConfig();
+	} else {
+		%configStatus = ();
+	}
 }
 
 getInstalledPackages();
 
 setDefaults();
 
+# if we're an upgrade, run the upgrader...
+
+if (! $newinstall && ($prevVersion ne $curVersion )) {
+	progress ("Upgrading from $prevVersion to $curVersion\n");
+	if ($options{c} eq "") {
+		if (askYN("Proceed with upgrade?", "No") eq "no") {
+			progress ("Upgrade cancelled - exiting\n\n");
+			exit 1;
+		}
+	}
+	if (zmupgrade::upgrade($prevVersion, $curVersion)){
+		progress ("UPGRADE FAILED - exiting\n");
+		exit 1;
+	} else {
+		progress ("Upgrade complete\n");
+	}
+}
+
 setEnabledDependencies();
+
+checkPortConflicts();
 
 getSystemStatus();
 
 if (!$ldapRunning && $ldapConfigured) {
 	startLdap();
+	setLdapDefaults();
 }
 
 if ($options{c}) {
 	loadConfig ($options{c});
 	applyConfig();
 } else {
+	if ($configStatus{BEGIN} eq "CONFIGURED" &&
+		$configStatus{END}  ne "CONFIGURED") {
+		resumeConfiguration();
+	}
 	mainMenu();
 }
 

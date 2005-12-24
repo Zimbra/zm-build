@@ -1,9 +1,9 @@
 #!/bin/bash
 # 
 # ***** BEGIN LICENSE BLOCK *****
-# Version: ZPL 1.1
+# Version: MPL 1.1
 # 
-# The contents of this file are subject to the Zimbra Public License
+# The contents of this file are subject to the Mozilla Public License
 # Version 1.1 ("License"); you may not use this file except in
 # compliance with the License. You may obtain a copy of the License at
 # http://www.zimbra.com/license
@@ -13,7 +13,7 @@
 # the License for the specific language governing rights and limitations
 # under the License.
 # 
-# The Original Code is: Zimbra Collaboration Suite.
+# The Original Code is: Zimbra Collaboration Suite Server.
 # 
 # The Initial Developer of the Original Code is Zimbra, Inc.
 # Portions created by Zimbra are Copyright (C) 2005 Zimbra, Inc.
@@ -24,14 +24,28 @@
 # ***** END LICENSE BLOCK *****
 # 
 
-/bin/sh /opt/zimbra/libexec/addUser.sh -g postfix -d /opt/zimbra/postfix-2.2.3 postfix
+mkdir -p /opt/zimbra/log
+chown zimbra:zimbra /opt/zimbra/log
 
-/bin/sh /opt/zimbra/libexec/addUser.sh -g zimbra -G postfix -d /opt/zimbra zimbra
+mkdir /opt/zimbra/ssl
+chown zimbra:zimbra /opt/zimbra/ssl
+mkdir /opt/zimbra/.ssh
+chown zimbra:zimbra /opt/zimbra/.ssh
 
-#rm -f /opt/zimbra/java
-#ln -s /usr /opt/zimbra/java
+rm -f /opt/zimbra/java
+ln -s /usr /opt/zimbra/java
 
 /bin/sh /opt/zimbra/bin/zmfixperms.sh
 
+echo "Setting up syslog"
 /opt/zimbra/bin/zmsyslogsetup local
+
+rm -rf /Users/zimbra
+
+ln -s /opt/zimbra /Users/zimbra
+
+# echo "Launching ZmSetup.app"
+# /opt/zimbra/libexec/ZmSetup.app/Contents/MacOS/ZmSetup
+D=`date +%s`
+echo "${D}: INSTALL SESSION COMPLETE" >> /opt/zimbra/.install_history
 

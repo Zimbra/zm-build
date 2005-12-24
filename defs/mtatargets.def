@@ -22,12 +22,15 @@ $(BUILD_ROOT)/zimbra-mta.Info.plist:
 	sed -e 's/@@VERSION@@/$(VERSION_TAG)/' \
 	-e 's/@@RELEASE@@/$(RELEASE)/' \
 	-e 's/@@MAJOR@@/$(MAJOR)/' \
+	-e 's/@@BUILDNUM@@/$(BUILDNUM)/' \
 	-e 's/@@MINOR@@/$(MINOR)/' > $@
 
 $(BUILD_ROOT)/resources/zimbra-mta:
 	mkdir -p $@
-	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-mta.postflight $@/postflight
-	chmod 755 $@/postflight
+	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-mta.postinstall $@/postinstall
+	chmod 755 $@/postinstall
+	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-mta.postupgrade $@/postupgrade
+	chmod 755 $@/postupgrade
 #       cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbramta.pre $@/preinstall
 #       echo "#!/bin/bash" > $@/postinst
 #       echo "sh /opt/zimbra/bin/zmfixperms.sh" >> $@/postinst
@@ -69,29 +72,29 @@ $(BUILD_ROOT)/zimbramta.spec:
 	(cd $(MTA_DEST_ROOT); find opt -type f -o -type l -maxdepth 2 \
 		| sed -e 's|^|%attr(-, zimbra, zimbra) /|' >> \
 		$(BUILD_ROOT)/zimbramta.spec )
-	echo "%attr(-, zimbra, zimbra) /opt/zimbra/amavisd" >> \
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/amavisd-new-2.3.3" >> \
 		$(BUILD_ROOT)/zimbramta.spec
-	echo "%attr(555, zimbra, zimbra) /opt/zimbra/clamav-0.85.1/bin" >> \
+	echo "%attr(555, zimbra, zimbra) /opt/zimbra/clamav-0.87.1/bin" >> \
 		$(BUILD_ROOT)/zimbramta.spec
-	echo "%attr(755, zimbra, zimbra) /opt/zimbra/clamav-0.85.1/db" >> \
+	echo "%attr(755, zimbra, zimbra) /opt/zimbra/clamav-0.87.1/db" >> \
 		$(BUILD_ROOT)/zimbramta.spec
-	echo "%attr(-, zimbra, zimbra) /opt/zimbra/clamav-0.85.1/etc/" >> \
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/clamav-0.87.1/etc/" >> \
 		$(BUILD_ROOT)/zimbramta.spec
-	echo "%attr(-, zimbra, zimbra) /opt/zimbra/clamav-0.85.1/include" >> \
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/clamav-0.87.1/include" >> \
 		$(BUILD_ROOT)/zimbramta.spec
-	echo "%attr(-, zimbra, zimbra) /opt/zimbra/clamav-0.85.1/lib" >> \
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/clamav-0.87.1/lib" >> \
 		$(BUILD_ROOT)/zimbramta.spec
-	echo "%attr(-, zimbra, zimbra) /opt/zimbra/clamav-0.85.1/man" >> \
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/clamav-0.87.1/man" >> \
 		$(BUILD_ROOT)/zimbramta.spec
-	echo "%attr(555, zimbra, zimbra) /opt/zimbra/clamav-0.85.1/sbin" >> \
+	echo "%attr(555, zimbra, zimbra) /opt/zimbra/clamav-0.87.1/sbin" >> \
 		$(BUILD_ROOT)/zimbramta.spec
-	echo "%attr(-, zimbra, zimbra) /opt/zimbra/clamav-0.85.1/share" >> \
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/clamav-0.87.1/share" >> \
 		$(BUILD_ROOT)/zimbramta.spec
-	echo "%attr(-, zimbra, zimbra) /opt/zimbra/postfix-2.2.3" >> \
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/postfix-2.2.5" >> \
 		$(BUILD_ROOT)/zimbramta.spec
-	echo "%attr(-, zimbra, zimbra) /opt/zimbra/sleepycat-4.2.52.2" >> \
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/sleepycat-4.2.52.4" >> \
 		$(BUILD_ROOT)/zimbramta.spec
-	echo "%attr(-, zimbra, zimbra) /opt/zimbra/cyrus-sasl-2.1.21.ZIMBRA" >> \
+	echo "%attr(-, root, zimbra) /opt/zimbra/cyrus-sasl-2.1.21.ZIMBRA" >> \
 		$(BUILD_ROOT)/zimbramta.spec
 
 mta_stage: $(MTA_COMPONENTS)
@@ -112,7 +115,7 @@ $(MTA_DEST_DIR)/$(CLAMAV_DIR): $(MTA_DEST_DIR)
 	cp $(PACKAGE_CONF_DIR)/ClamAv/main.cvd $(MTA_DEST_DIR)/$(CLAMAV_DIR)-$(CLAMAV_VERSION)/db/main.cvd.init
 	cp $(PACKAGE_CONF_DIR)/ClamAv/daily.cvd $(MTA_DEST_DIR)/$(CLAMAV_DIR)-$(CLAMAV_VERSION)/db/daily.cvd.init
 
-$(MTA_DEST_DIR)/$(AMAVISD_DIR): $(MTA_DEST_DIR)
+$(MTA_DEST_DIR)/$(AMAVISD_DIR)-new-$(AMAVISD_VERSION): $(MTA_DEST_DIR)
 	@echo "*** Creating amavisd"
 	mkdir -p $@/sbin
 	cp -f $(AMAVISD_SOURCE)/amavisd $@/sbin
@@ -129,3 +132,4 @@ $(MTA_DEST_DIR)/$(SASL_DIR): $(MTA_DEST_DIR)
 $(MTA_DEST_DIR)/$(BDB_DIR): $(MTA_DEST_DIR)
 	@echo "*** Creating sleepycat"
 	(cd $(MTA_DEST_DIR); tar xzf $(BDB_SOURCE).tgz; chmod u+w $(BDB_DIR)/bin/*)
+	rm -rf $(MTA_DEST_DIR)/$(BDB_DIR)/docs/java

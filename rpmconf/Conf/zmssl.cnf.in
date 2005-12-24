@@ -34,14 +34,14 @@ default_ca	= CA_default		# The default ca section
 ####################################################################
 [ CA_default ]
 
-dir		= ./demoCA		# Where everything is kept
+dir		= /opt/zimbra/ssl/ssl/newCA		# Where everything is kept
 certs		= $dir/certs		# Where the issued certs are kept
 crl_dir		= $dir/crl		# Where the issued crl are kept
 database	= $dir/index.txt	# database index file.
 new_certs_dir	= $dir/newcerts		# default place for new certs.
 
 certificate	= $dir/cacert.pem 	# The CA certificate
-serial		= $dir/serial 		# The current serial number
+serial		= /opt/zimbra/ssl/ssl/ca/ca.srl 		# The current serial number
 crl		= $dir/crl.pem 		# The current CRL
 private_key	= $dir/private/cakey.pem# The private key
 RANDFILE	= $dir/private/.rand	# private random number file

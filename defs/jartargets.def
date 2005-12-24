@@ -1,6 +1,10 @@
 
 # __JAR
 
+$(STORE_DEST_DIR)/$(TOMCAT_DIR)/common/lib/ical4j-0.9.16-patched.jar: $(STORE_DEST_DIR)/$(TOMCAT_DIR) $(WEBAPP_DIR)/service.war
+	mkdir -p $(STORE_DEST_DIR)/$(TOMCAT_DIR)/common/lib
+	cp $(SERVICE_DIR)/build/dist/lib/ical4j-0.9.16-patched.jar $(STORE_DEST_DIR)/$(TOMCAT_DIR)/common/lib
+
 $(STORE_DEST_DIR)/$(TOMCAT_DIR)/common/lib/mail.jar: $(STORE_DEST_DIR)/$(TOMCAT_DIR) $(WEBAPP_DIR)/service.war
 	mkdir -p $(STORE_DEST_DIR)/$(TOMCAT_DIR)/common/lib
 	cp $(SERVICE_DIR)/build/dist/lib/mail.jar $(STORE_DEST_DIR)/$(TOMCAT_DIR)/common/lib
@@ -16,6 +20,6 @@ $(STORE_DEST_DIR)/$(TOMCAT_DIR)/common/lib/zimbra-native.jar: $(NATIVE_DIR)/buil
 	mkdir -p $(STORE_DEST_DIR)/$(TOMCAT_DIR)/common/lib
 	cp $(NATIVE_DIR)/build/zimbra-native.jar $(STORE_DEST_DIR)/$(TOMCAT_DIR)/common/lib
 
-$(NATIVE_DIR)/zimbra-native.jar:
+$(NATIVE_DIR)/build/zimbra-native.jar:
 	(cd $(NATIVE_DIR); make TOMCAT_HOME=$(TOMCAT_HOME) JAVA_BINARY=$(JAVA_BINARY))
 

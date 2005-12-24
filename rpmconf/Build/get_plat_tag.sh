@@ -19,12 +19,22 @@ if [ -f /etc/redhat-release ]; then
 		exit 0
 	fi
 
+	grep "CentOS release 4" /etc/redhat-release > /dev/null 2>&1
+	if [ $? = 0 ]; then
+		echo "CentOS4"
+		exit 0
+	fi
 fi
 
 if [ -f /etc/SuSE-release ]; then
 	grep "SUSE LINUX Enterprise Server 9" /etc/SuSE-release > /dev/null 2>&1
 	if [ $? = 0 ]; then
 		echo "SuSEES9"
+		exit 0
+	fi
+	grep "SUSE LINUX 10.0" /etc/SuSE-release > /dev/null 2>&1
+	if [ $? = 0 ]; then
+		echo "SuSE10"
 		exit 0
 	fi
 fi

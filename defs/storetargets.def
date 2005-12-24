@@ -29,12 +29,15 @@ $(BUILD_ROOT)/zimbra-store.Info.plist:
 	sed -e 's/@@VERSION@@/$(VERSION_TAG)/' \
 	-e 's/@@RELEASE@@/$(RELEASE)/' \
 	-e 's/@@MAJOR@@/$(MAJOR)/' \
+	-e 's/@@BUILDNUM@@/$(BUILDNUM)/' \
 	-e 's/@@MINOR@@/$(MINOR)/' > $@
 
 $(BUILD_ROOT)/resources/zimbra-store:
 	mkdir -p $@
-	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-store.postflight $@/postflight
-	chmod 755 $@/postflight
+	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-store.postinstall $@/postinstall
+	chmod 755 $@/postinstall
+	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-store.postupgrade $@/postupgrade
+	chmod 755 $@/postupgrade
 #       cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbrastore.pre $@/preinstall
 #       echo "#!/bin/bash" > $@/postinst
 #       echo "sh /opt/zimbra/bin/zmfixperms.sh" >> $@/postinst
@@ -70,7 +73,11 @@ $(BUILD_ROOT)/zimbra.spec:
 		-e '/^%post$$/ r zimbra.post' > $(BUILD_ROOT)/zimbra.spec
 	rm -f zimbra.pre
 	rm -f zimbra.post
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/zimlets" >> \
+		$(BUILD_ROOT)/zimbra.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/jakarta-tomcat-5.5.7" >> \
+		$(BUILD_ROOT)/zimbra.spec
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/perdition-1.17" >> \
 		$(BUILD_ROOT)/zimbra.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/mysql-standard-4.1.10a-pc-linux-gnu-i686" >> \
 		$(BUILD_ROOT)/zimbra.spec
@@ -84,7 +91,16 @@ $(STORE_DEST_DIR)/$(MYSQL_DIR):
 	@echo "*** Creating mysql"
 	(cd $(STORE_DEST_DIR); tar xzf $(MYSQL_SOURCE).tar.gz;)
 	(cd $(STORE_DEST_DIR)/$(MYSQL_DIR)/lib; tar xzf $(THIRD_PARTY)/mysql/$(BUILD_PLATFORM)/mysql-$(MYSQL_CLIENT_VERSION).tgz)
+	rm -f $(STORE_DEST_DIR)/$(MYSQL_DIR)/bin/mysqltest_embedded
+	rm -f $(STORE_DEST_DIR)/$(MYSQL_DIR)/bin/mysql_client_test_embedded
+	rm -rf $(STORE_DEST_DIR)/$(MYSQL_DIR)/mysql-test
+	rm -rf $(STORE_DEST_DIR)/$(MYSQL_DIR)/sql-bench
+	rm -rf $(STORE_DEST_DIR)/$(MYSQL_DIR)/docs/mysql.info
+	rm -rf $(STORE_DEST_DIR)/$(MYSQL_DIR)/docs/manual.txt
 
+$(STORE_DEST_DIR)/$(PERDITION_DIR)-$(PERDITION_VERSION): $(STORE_DEST_DIR)
+	@echo "*** Creating perdition"
+	(cd $(STORE_DEST_DIR); tar xzf $(PERDITION_SOURCE).tgz;)
 
 $(STORE_DEST_DIR)/$(TOMCAT_DIR)/bin: $(STORE_DEST_DIR) force
 	@echo "*** Creating tomcat"
@@ -111,3 +127,14 @@ $(STORE_DEST_DIR)/$(TOMCAT_DIR): $(STORE_DEST_DIR) $(STORE_DEST_DIR)/$(TOMCAT_DI
 
 $(WEBAPP_DIR): 
 	mkdir -p $@
+
+$(SERVICE_DIR)/build/dist/zimlets/phone.zip:
+	(cd $(SERVICE_DIR); $(ANT) \
+		-Dplat.tag=$(BUILD_PLATFORM) \
+		-Dzimbra.buildinfo.version=$(VERSION_TAG) \
+		-Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) \
+		-Dzimbra.buildinfo.host=$(HOST) package-zimlets ; )
+
+$(STORE_DEST_DIR)/zimlets: $(SERVICE_DIR)/build/dist/zimlets/phone.zip
+	mkdir -p $@
+	cp $(SERVICE_DIR)/build/dist/zimlets/* $@

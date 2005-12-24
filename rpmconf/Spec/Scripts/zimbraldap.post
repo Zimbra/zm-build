@@ -1,9 +1,9 @@
 #!/bin/bash
 # 
 # ***** BEGIN LICENSE BLOCK *****
-# Version: ZPL 1.1
+# Version: MPL 1.1
 # 
-# The contents of this file are subject to the Zimbra Public License
+# The contents of this file are subject to the Mozilla Public License
 # Version 1.1 ("License"); you may not use this file except in
 # compliance with the License. You may obtain a copy of the License at
 # http://www.zimbra.com/license
@@ -13,7 +13,7 @@
 # the License for the specific language governing rights and limitations
 # under the License.
 # 
-# The Original Code is: Zimbra Collaboration Suite.
+# The Original Code is: Zimbra Collaboration Suite Server.
 # 
 # The Initial Developer of the Original Code is Zimbra, Inc.
 # Portions created by Zimbra are Copyright (C) 2005 Zimbra, Inc.
@@ -35,8 +35,10 @@ ln -s /opt/zimbra/openldap-2.2.28 /opt/zimbra/openldap
 
 mkdir -p /opt/zimbra/openldap/var/openldap-data
 mkdir -p /opt/zimbra/openldap-data
+mkdir -p /opt/zimbra/openldap-replica
 chown -R zimbra:zimbra /opt/zimbra/openldap/var
 chown -R zimbra:zimbra /opt/zimbra/openldap-data
+chown -R zimbra:zimbra /opt/zimbra/openldap-replica
 
 egrep -q '^%zimbra.*slapd' /etc/sudoers
 if [ $? != 0 ]; then
@@ -45,10 +47,5 @@ fi
 
 chown root:root /opt/zimbra/openldap/libexec/slapd
 chmod 755 /opt/zimbra/openldap/libexec/slapd
-
-egrep -q 'ldap_start' /opt/zimbra/zimbramon/zimbra.cf
-if [ $? != 0 ]; then
-	cat /opt/zimbra/zimbramon/zimbraldap.cf >> /opt/zimbra/zimbramon/zimbra.cf
-fi
 
 ldconfig

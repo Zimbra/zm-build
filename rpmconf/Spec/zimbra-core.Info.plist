@@ -10,6 +10,10 @@
 	<string>zimbra-core</string>
 	<key>CFBundleShortVersionString</key>
 	<string>@@MAJOR@@.@@MINOR@@</string>
+	<key>BuildVersion</key>
+	<string>@@BUILDNUM@@</string>
+	<key>SourceVersion</key>
+	<string>@@MICRO@@</string>
 	<key>IFPkgFlagAllowBackRev</key>
 	<false/>
 	<key>IFPkgFlagAuthorizationAction</key>

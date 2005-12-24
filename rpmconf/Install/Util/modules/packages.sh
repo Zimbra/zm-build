@@ -1,9 +1,9 @@
 #!/bin/bash
 # 
 # ***** BEGIN LICENSE BLOCK *****
-# Version: ZPL 1.1
+# Version: MPL 1.1
 # 
-# The contents of this file are subject to the Zimbra Public License
+# The contents of this file are subject to the Mozilla Public License
 # Version 1.1 ("License"); you may not use this file except in
 # compliance with the License. You may obtain a copy of the License at
 # http://www.zimbra.com/license
@@ -13,7 +13,7 @@
 # the License for the specific language governing rights and limitations
 # under the License.
 # 
-# The Original Code is: Zimbra Collaboration Suite.
+# The Original Code is: Zimbra Collaboration Suite Server.
 # 
 # The Initial Developer of the Original Code is Zimbra, Inc.
 # Portions created by Zimbra are Copyright (C) 2005 Zimbra, Inc.
@@ -31,8 +31,15 @@ installPackage() {
 	f=`basename $file`
 	echo -n "...$f..."
 	$PACKAGEINST $file >> $LOGFILE 2>&1
+	if [ $UPGRADE = "yes" ]; then
+		ST="UPGRADED"
+	else
+		ST="INSTALLED"
+	fi
+	D=`date +%s`
 	if [ $? = 0 ]; then
 		echo "done"
+		echo "${D}: $ST $f" >> /opt/zimbra/.install_history
 	else
 		echo -n "FAILED"
 		echo ""
@@ -65,6 +72,7 @@ findLatestPackage() {
 			major=`echo $version | awk -F. '{print $1}'`
 			minor=`echo $version | awk -F. '{print $2}'`
 			micro=`echo $version | awk -F. '{print $3}'`
+			micro=${micro}_`echo $version | awk -F_ '{print $3}'`
 			stamp=`echo $f | awk -F_ '{print $2}' | awk -F. '{print $1}'`
 		else
 			id=`echo $f | awk -F_ '{print $2}'`
@@ -72,6 +80,7 @@ findLatestPackage() {
 			major=`echo $version | awk -F. '{print $1}'`
 			minor=`echo $version | awk -F. '{print $2}'`
 			micro=`echo $version | awk -F. '{print $3}'`
+			micro=${micro}_`echo $version | awk -F_ '{print $3}'`
 			stamp=`echo $f | awk -F_ '{print $2}' | awk -F. '{print $1}'`
 		fi
 

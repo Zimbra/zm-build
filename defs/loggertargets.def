@@ -26,8 +26,10 @@ $(BUILD_ROOT)/zimbra-logger.Info.plist:
 
 $(BUILD_ROOT)/resources/zimbra-logger:
 	mkdir -p $@
-	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-logger.postflight $@/postflight
-	chmod 755 $@/postflight
+	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-logger.postinstall $@/postinstall
+	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-logger.postupgrade $@/postupgrade
+	chmod 755 $@/postinstall
+	chmod 755 $@/postupgrade
 #       cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbralogger.pre $@/preinstall
 #       echo "#!/bin/bash" > $@/postinst
 #       echo "sh /opt/zimbra/bin/zmfixperms.sh" >> $@/postinst

@@ -1,9 +1,9 @@
 #!/bin/bash
 # 
 # ***** BEGIN LICENSE BLOCK *****
-# Version: ZPL 1.1
+# Version: MPL 1.1
 # 
-# The contents of this file are subject to the Zimbra Public License
+# The contents of this file are subject to the Mozilla Public License
 # Version 1.1 ("License"); you may not use this file except in
 # compliance with the License. You may obtain a copy of the License at
 # http://www.zimbra.com/license
@@ -13,7 +13,7 @@
 # the License for the specific language governing rights and limitations
 # under the License.
 # 
-# The Original Code is: Zimbra Collaboration Suite.
+# The Original Code is: Zimbra Collaboration Suite Server.
 # 
 # The Initial Developer of the Original Code is Zimbra, Inc.
 # Portions created by Zimbra are Copyright (C) 2005 Zimbra, Inc.
@@ -259,8 +259,18 @@ EOF
 	for i in $PREREQ_PACKAGES; do
 		echo -n "    $i..."
 		isInstalled $i
-		if [ x$PKGINSTALLED != "x" ]; then
+		if [ "x$PKGINSTALLED" != "x" ]; then
 			echo "FOUND $PKGINSTALLED"
+		else
+			echo "MISSING"
+			GOOD="no"
+		fi
+	done
+
+	for i in $PREREQ_LIBS; do
+		echo -n "    $i..."
+		if [ -L $i -o -f $i ]; then
+			echo "FOUND"
 		else
 			echo "MISSING"
 			GOOD="no"
@@ -419,6 +429,19 @@ setRemove() {
 					break
 				fi
 			else
+				# Check for a history file - create it if it's not there
+				isInstalled "zimbra-core"
+				if [ ! -f "/opt/zimbra/.install_history" ]; then
+					cat > /opt/zimbra/.install_history << EOF
+0000000000: INSTALL SESSION START
+0000000000: INSTALLED $PKGVERSION
+0000000000: INSTALL SESSION COMPLETE
+0000000000: CONFIG SESSION START
+0000000000: CONFIGURED BEGIN
+0000000000: CONFIGURED END
+0000000000: CONFIG SESSION COMPLETE
+EOF
+				fi
 				break
 			fi
 		done
@@ -472,7 +495,7 @@ restoreExistingConfig() {
 			# echo "Setting $i"
 			runAsZimbra "zmlocalconfig -f -e $i"
 		done < $RF
-		if [ -f $SAVEDIR/backup.save ]; then
+		if [ -f $RESTORECONFIG/backup.save ]; then
 			runAsZimbra "cat $RESTORECONFIG/backup.save | xargs zmschedulebackup -R"
 		fi
 		echo "done"
@@ -480,11 +503,30 @@ restoreExistingConfig() {
 }
 
 restoreCerts() {
-	cp $SAVEDIR/cacerts /opt/zimbra/java/jre/lib/security/cacerts
-	cp $SAVEDIR/keystore /opt/zimbra/tomcat/conf/keystore
-	cp $SAVEDIR/smtpd.key /opt/zimbra/conf/smtpd.key 
-	cp $SAVEDIR/smtpd.crt /opt/zimbra/conf/smtpd.crt 
-	chown zimbra:zimbra /opt/zimbra/java/jre/lib/security/cacerts /opt/zimbra/tomcat/conf/keystore /opt/zimbra/conf/smtpd.key /opt/zimbra/conf/smtpd.crt
+	if [ -f "$SAVEDIR/cacerts" ]; then
+		cp $SAVEDIR/cacerts /opt/zimbra/java/jre/lib/security/cacerts
+	fi
+	if [ -f "$SAVEDIR/keystore" ]; then
+		cp $SAVEDIR/keystore /opt/zimbra/tomcat/conf/keystore
+	fi
+	if [ -f "$SAVEDIR/smtpd.key" ]; then
+		cp $SAVEDIR/smtpd.key /opt/zimbra/conf/smtpd.key 
+	fi
+	if [ -f "$SAVEDIR/smtpd.crt" ]; then
+		cp $SAVEDIR/smtpd.crt /opt/zimbra/conf/smtpd.crt 
+	fi
+	if [ -f "$SAVEDIR/slapd.crt" ]; then
+		cp $SAVEDIR/slapd.crt /opt/zimbra/conf/slapd.crt 
+	fi
+	mkdir -p /opt/zimbra/conf/ca
+	if [ -f "$SAVEDIR/ca.key" ]; then
+		cp $SAVEDIR/ca.key /opt/zimbra/conf/ca/ca.key 
+	fi
+	if [ -f "$SAVEDIR/ca.pem" ]; then
+		cp $SAVEDIR/ca.pem /opt/zimbra/conf/ca/ca.pem 
+	fi
+	chown zimbra:zimbra /opt/zimbra/java/jre/lib/security/cacerts /opt/zimbra/tomcat/conf/keystore /opt/zimbra/conf/smtpd.key /opt/zimbra/conf/smtpd.crt /opt/zimbra/conf/slapd.crt
+	chown -R zimbra:zimbra /opt/zimbra/conf/ca
 }
 
 saveExistingConfig() {
@@ -502,6 +544,19 @@ saveExistingConfig() {
 	if [ -f "/opt/zimbra/conf/smtpd.crt" ]; then
 		cp -f /opt/zimbra/conf/smtpd.crt $SAVEDIR
 	fi
+	if [ -f "/opt/zimbra/conf/slapd.key" ]; then
+		cp -f /opt/zimbra/conf/slapd.key $SAVEDIR
+	fi
+	if [ -f "/opt/zimbra/conf/slapd.crt" ]; then
+		cp -f /opt/zimbra/conf/slapd.crt $SAVEDIR
+	fi
+	if [ -f "/opt/zimbra/conf/ca/ca.key" ]; then
+		cp -f /opt/zimbra/conf/ca/ca.key $SAVEDIR
+	fi
+	if [ -f "/opt/zimbra/conf/ca/ca.pem" ]; then
+		cp -f /opt/zimbra/conf/ca/ca.pem $SAVEDIR
+	fi
+
 	if [ -x /opt/zimbra/bin/zmschedulebackup ]; then
 		runAsZimbra "zmschedulebackup -s > $SAVEDIR/backup.save"
 	fi
@@ -512,7 +567,9 @@ removeExistingInstall() {
 		echo ""
 		echo "Shutting down zimbra mail"
 		shutDownSystem
-		`/opt/zimbra/bin/zmiptables -u`;
+		if [ -f "/opt/zimbra/bin/zmiptables" ]; then
+			/opt/zimbra/bin/zmiptables -u
+		fi
 
 		echo ""
 		echo "Removing existing packages"
@@ -855,7 +912,8 @@ isInstalled () {
 	if [ $PACKAGEEXT = "rpm" ]; then
 		$PACKAGEQUERY $pkg >/dev/null 2>&1
 		if [ $? = 0 ]; then
-			PKGINSTALLED=`$PACKAGEQUERY $pkg 2> /dev/null`
+			PKGVERSION=`$PACKAGEQUERY $pkg 2> /dev/null`
+			PKGINSTALLED=`$PACKAGEQUERY $pkg | sed -e 's/\.[a-zA-Z].*$//' 2> /dev/null`
 		fi
 	else
 		Q=`$PACKAGEQUERY $pkg 2>/dev/null | egrep '^Status: ' `
@@ -876,12 +934,20 @@ getPlatformVars() {
 		PACKAGERM='dpkg --purge'
 		PACKAGEQUERY='dpkg -s'
 		PACKAGEEXT='deb'
-		PREREQ_PACKAGES="libidn11 curl fetchmail libgmp3"
+		PREREQ_PACKAGES="sudo libidn11 curl fetchmail libgmp3"
 	else
 		PACKAGEINST='rpm -iv'
 		PACKAGERM='rpm -ev --noscripts --allmatches'
 		PACKAGEQUERY='rpm -q'
 		PACKAGEEXT='rpm'
-		PREREQ_PACKAGES="libidn curl fetchmail gmp"
+		if [ $PLATFORM = "RHEL4" ]; then
+			PREREQ_PACKAGES="sudo libidn curl fetchmail gmp"
+			PREREQ_LIBS="/usr/lib/libstdc++.so.5"
+		else
+			PREREQ_PACKAGES="sudo libidn curl fetchmail gmp"
+			if [ $PLATFORM = "FC3" -o $PLATFORM = "FC4" ]; then
+				PREREQ_LIBS="/usr/lib/libstdc++.so.5"
+			fi
+		fi
 	fi
 }

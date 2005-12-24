@@ -17,7 +17,7 @@ CORE_COMPONENTS	:= \
 MTA_COMPONENTS	:= \
 	$(MTA_DEST_DIR)/$(POSTFIX_DIR) \
 	$(MTA_DEST_DIR)/$(BDB_DIR) \
-	$(MTA_DEST_DIR)/$(AMAVISD_DIR) \
+	$(MTA_DEST_DIR)/$(AMAVISD_DIR)-new-$(AMAVISD_VERSION) \
 	$(MTA_DEST_DIR)/$(CLAMAV_DIR)  \
 	$(MTA_DEST_DIR)/$(SASL_DIR)
 
@@ -27,6 +27,9 @@ LOGGER_COMPONENTS := \
 STORE_COMPONENTS := \
 	$(WEBAPPS) \
 	$(STORE_DEST_DIR)/$(TOMCAT_DIR) \
+	$(STORE_DEST_DIR)/zimlets \
+	$(STORE_DEST_DIR)/$(PERDITION_DIR)-$(PERDITION_VERSION) \
+	$(STORE_DEST_DIR)/$(TOMCAT_DIR)/common/lib/ical4j-0.9.16-patched.jar \
 	$(STORE_DEST_DIR)/$(TOMCAT_DIR)/common/lib/zimbra-native.jar \
 	$(STORE_DEST_DIR)/$(TOMCAT_DIR)/common/lib/mail.jar \
 	$(STORE_DEST_DIR)/$(TOMCAT_DIR)/common/endorsed/zimbra-charset.jar \

@@ -1,9 +1,9 @@
 #!/bin/bash
 # 
 # ***** BEGIN LICENSE BLOCK *****
-# Version: ZPL 1.1
+# Version: MPL 1.1
 # 
-# The contents of this file are subject to the Zimbra Public License
+# The contents of this file are subject to the Mozilla Public License
 # Version 1.1 ("License"); you may not use this file except in
 # compliance with the License. You may obtain a copy of the License at
 # http://www.zimbra.com/license
@@ -13,7 +13,7 @@
 # the License for the specific language governing rights and limitations
 # under the License.
 # 
-# The Original Code is: Zimbra Collaboration Suite.
+# The Original Code is: Zimbra Collaboration Suite Server.
 # 
 # The Initial Developer of the Original Code is Zimbra, Inc.
 # Portions created by Zimbra are Copyright (C) 2005 Zimbra, Inc.
@@ -23,6 +23,13 @@
 # 
 # ***** END LICENSE BLOCK *****
 # 
+
+ID=`id -u`
+
+if [ "x$ID" != "x0" ]; then
+	echo "Run as root!"
+	exit 1
+fi
 
 MYDIR=`dirname $0`
 
@@ -113,13 +120,13 @@ removeExistingInstall
 
 echo "Installing packages"
 echo ""
+D=`date +%s`
+echo "${D}: INSTALL SESSION START" >> /opt/zimbra/.install_history
 for i in $INSTALL_PACKAGES; do
 	installPackage "$i"
 done
-
-if [ "x$UPGRADE" = "xno" ]; then
-	touch /opt/zimbra/.newinstall
-fi
+D=`date +%s`
+echo "${D}: INSTALL SESSION COMPLETE" >> /opt/zimbra/.install_history
 
 if [ $SOFTWAREONLY = "yes" ]; then
 	

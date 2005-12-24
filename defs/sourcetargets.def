@@ -1,4 +1,8 @@
-source: zcs-$(SOURCE_TAG)-src.tgz AjaxTK-$(SOURCE_TAG)-src.tgz
+source: sourcetar ajaxtar
+
+sourcetar: zcs-$(SOURCE_TAG)-src.tgz 
+
+ajaxtar: AjaxTK-$(SOURCE_TAG)-src.tgz
 
 AjaxTK-$(SOURCE_TAG)-src.tgz: $(PACKAGE_DIR)
 	(cd $(BUILD_ROOT)/..; tar czf $(PACKAGE_DIR)/AjaxTK-$(SOURCE_TAG)-src.tgz Ajax)
