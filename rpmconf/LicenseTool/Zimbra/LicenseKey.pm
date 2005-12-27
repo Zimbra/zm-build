@@ -8,8 +8,7 @@ package Zimbra::LicenseKey;
 # is_expired      BOOL NOT NULL DEFAULT 0
 
 use strict;
-
-use Zimbra::LicensingDB;
+use Time::Local;
 
 sub new {
 	my $class = shift;
@@ -19,8 +18,8 @@ sub new {
 	$self->{is_expired} = 0;
 	if (defined $attrs) {
 		$self->{is_expired} = $$attrs{is_expired};
-		$self->{gendate} = Zimbra::LicensingDB::sqlTimeToTs($$attrs{gendate});
-		$self->{expiredate} = Zimbra::LicensingDB::sqlTimeToTs($$attrs{expiredate});
+		$self->{gendate} = sqlTimeToTs($$attrs{gendate});
+		$self->{expiredate} = sqlTimeToTs($$attrs{expiredate});
 		@{$self->{pubkey}} = ();
 		foreach (split /\n/, $$attrs{pubkey}) {
 			push @{$self->{pubkey}}, $_."\n";
@@ -32,52 +31,6 @@ sub new {
 		$self->{id} = $$attrs{id};
 	}
 	return $self;
-}
-
-sub getKeyIds {
-	my $ids = Zimbra::LicensingDB::getKeyIds();
-	return $ids;
-}
-
-sub getKey {
-	my $keyId = shift;
-	#print "Fetching key $keyId from database...";
-	my $attrs = Zimbra::LicensingDB::getKey($keyId);
-	if (defined ($attrs)) {
-		my $key = new Zimbra::LicenseKey($attrs);
-		#print "Done\n";
-		return $key;
-	}
-	#print "FAILED\n";
-	return undef;
-}
-
-sub getCurrentKeyId {
-	my $ids = getKeyIds();
-	if ($#$ids < 0) {return undef;}
-	my $curId = $$ids[$#$ids][0];
-	return $curId;
-}
-
-sub getCurrentKey {
-	my $id = getCurrentKeyId;
-	if (!defined ($id)) {
-		return undef;
-	}
-	return (getKey($id));
-}
-
-sub putKey {
-	my $self = shift;
-
-	#print "Storing key in database...";
-	$self->{id} = Zimbra::LicensingDB::putKey($self);
-	if (defined($self->{id})) {
-		#print "Key ID $self->{id}...Done\n";
-		return 1;
-	}
-	#print "FAILED\n";
-	return undef;
 }
 
 sub toText {
@@ -95,8 +48,8 @@ sub toText {
 		$txt .= "NULL";
 	}
 	$txt .= "\n";
-	$txt .= "Created: ". Zimbra::LicensingDB::tsToSqlTime($self->{gendate}). "\n";
-	$txt .= "Expires: ". Zimbra::LicensingDB::tsToSqlTime($self->{expiredate}). "\n";
+	$txt .= "Created: ". tsToSqlTime($self->{gendate}). "\n";
+	$txt .= "Expires: ". tsToSqlTime($self->{expiredate}). "\n";
 	if ($verbose) {
 		$txt .= "Private Key: \n";
 		$txt .= "".Zimbra::LicenseKey::keyToString($self->{privkey});
@@ -257,4 +210,29 @@ sub sign {
 
 }
 
+sub tsToSqlTime {
+	my $ts = shift;
+	my $dayTrunc = shift;
+	# 2005-09-18 04:03:33
+	my @tm = localtime($ts);
+
+	# Truncate at hours.
+	if (defined($dayTrunc)) {
+		return sprintf ("%4d-%02d-%02d %02d:%02d:%02d",
+		$tm[5]+1900,$tm[4]+1,$tm[3],0,0,0);
+	} else {
+		return sprintf ("%4d-%02d-%02d %02d:%02d:%02d",
+		$tm[5]+1900,$tm[4]+1,$tm[3],$tm[2],0,0);
+	}
+}
+
+sub sqlTimeToTs { 
+	my $sqlTime = shift;
+	# 2005-09-18 04:03:33
+	return timelocal(substr($sqlTime,17,2),substr($sqlTime,14,2),
+	substr($sqlTime,11,2),substr($sqlTime,8,2),
+	(substr($sqlTime,5,2)-1),substr($sqlTime,0,4));
+}
+
 1;
+
