@@ -248,7 +248,6 @@ sub getSystemStatus {
 			$ldapRunning = ($ldapRunning)?0:1;
 		} else {
 			$config{DOCREATEDOMAIN} = "yes";
-			$config{DOCREATEADMIN} = "yes";
 			$config{DOTRAINSA} = "yes";
 		}
 	}
@@ -259,6 +258,7 @@ sub getSystemStatus {
 			$sqlRunning = 0xffff & system("/opt/zimbra/bin/mysqladmin status > /dev/null 2>&1");
 			$sqlRunning = ($sqlRunning)?0:1;
 		}
+		$config{DOCREATEADMIN} = "yes";
 	}
 
 	if (isEnabled("zimbra-logger")) {
@@ -353,10 +353,10 @@ sub setDefaults {
 	$config{DOCREATEADMIN} = "no";
 	if (isEnabled("zimbra-store")) {
 		$config{MTAAUTHHOST} = $config{HOSTNAME};
+		$config{DOCREATEADMIN} = "yes";
 	}
 	if (isEnabled("zimbra-ldap")) {
 		$config{DOCREATEDOMAIN} = "yes";
-		$config{DOCREATEADMIN} = "yes";
 		$config{LDAPPASS} = genRandomPass();
 		$config{DOTRAINSA} = "yes";
 		$config{TRAINSASPAM} = lc(genRandomPass());
@@ -919,32 +919,6 @@ sub createLdapMenu {
 			$i++;
 		}
 		$$lm{menuitems}{$i} = { 
-			"prompt" => "Create Admin User:", 
-			"var" => \$config{DOCREATEADMIN}, 
-			"callback" => \&toggleYN,
-			"arg" => "DOCREATEADMIN",
-			};
-		$i++;
-		if ($config{DOCREATEADMIN} eq "yes") {
-			$$lm{menuitems}{$i} = { 
-				"prompt" => "Admin user to create:", 
-				"var" => \$config{CREATEADMIN}, 
-				"callback" => \&setCreateAdmin
-				};
-			$i++;
-			if ($config{CREATEADMINPASS} ne "") {
-				$config{ADMINPASSSET} = "set";
-			} else {
-				$config{ADMINPASSSET} = "UNSET";
-			}
-			$$lm{menuitems}{$i} = { 
-				"prompt" => "Admin Password", 
-				"var" => \$config{ADMINPASSSET},
-				"callback" => \&setAdminPass
-				};
-			$i++;
-		}
-		$$lm{menuitems}{$i} = { 
 			"prompt" => "Enable automated spam training:", 
 			"var" => \$config{DOTRAINSA}, 
 			"callback" => \&toggleYN,
@@ -1130,6 +1104,32 @@ sub createStoreMenu {
 
 	my $i = 2;
 	if (isEnabled($package)) {
+		$$lm{menuitems}{$i} = { 
+			"prompt" => "Create Admin User:", 
+			"var" => \$config{DOCREATEADMIN}, 
+			"callback" => \&toggleYN,
+			"arg" => "DOCREATEADMIN",
+			};
+		$i++;
+		if ($config{DOCREATEADMIN} eq "yes") {
+			$$lm{menuitems}{$i} = { 
+				"prompt" => "Admin user to create:", 
+				"var" => \$config{CREATEADMIN}, 
+				"callback" => \&setCreateAdmin
+				};
+			$i++;
+			if ($config{CREATEADMINPASS} ne "") {
+				$config{ADMINPASSSET} = "set";
+			} else {
+				$config{ADMINPASSSET} = "UNSET";
+			}
+			$$lm{menuitems}{$i} = { 
+				"prompt" => "Admin Password", 
+				"var" => \$config{ADMINPASSSET},
+				"callback" => \&setAdminPass
+				};
+			$i++;
+		}
 		$$lm{menuitems}{$i} = { 
 			"prompt" => "SMTP host:", 
 			"var" => \$config{SMTPHOST}, 
