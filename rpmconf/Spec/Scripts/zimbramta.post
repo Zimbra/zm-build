@@ -39,6 +39,9 @@ if [ -d "/opt/zimbra/.spamassassin.tmp" ]; then
 	chown -R zimbra:zimbra /opt/zimbra/amavisd/.spamassassin
 fi
 
+rm -f /opt/zimbra/dspam
+ln -s /opt/zimbra/dspam-3.6.2 /opt/zimbra/dspam
+
 rm -f /opt/zimbra/postfix
 ln -s /opt/zimbra/postfix-2.2.5 /opt/zimbra/postfix
 

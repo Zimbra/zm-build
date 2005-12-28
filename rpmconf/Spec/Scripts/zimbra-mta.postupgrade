@@ -37,6 +37,9 @@ if [ -d "/opt/zimbra/.spamassassin.tmp" ]; then
 	chown -R zimbra:zimbra /opt/zimbra/amavisd/.spamassassin
 fi
 
+rm -f /opt/zimbra/dspam
+ln -s /opt/zimbra/dspam-3.6.2 /opt/zimbra/dspam
+
 egrep -v '^%zimbra.*postfix' /etc/sudoers > /tmp/sudoers
 mv -f /tmp/sudoers /etc/sudoers
 echo "%zimbra   ALL=NOPASSWD:/opt/zimbra/postfix-2.2.5/sbin/postfix, /opt/zimbra/postfix-2.2.5/sbin/postalias, /opt/zimbra/postfix-2.2.5/sbin/qshape.pl, /opt/zimbra/postfix-2.2.5/sbin/postconf,/opt/zimbra/postfix-2.2.5/sbin/postsuper" >> /etc/sudoers
