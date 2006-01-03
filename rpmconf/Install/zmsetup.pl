@@ -258,7 +258,9 @@ sub getSystemStatus {
 			$sqlRunning = 0xffff & system("/opt/zimbra/bin/mysqladmin status > /dev/null 2>&1");
 			$sqlRunning = ($sqlRunning)?0:1;
 		}
-		$config{DOCREATEADMIN} = "yes";
+		if ($newinstall) {
+			$config{DOCREATEADMIN} = "yes";
+		}
 	}
 
 	if (isEnabled("zimbra-logger")) {
@@ -1848,19 +1850,6 @@ sub configCreateDomain {
 			runAsZimbra("/opt/zimbra/bin/zmprov cd $config{CREATEDOMAIN}");
 			runAsZimbra("/opt/zimbra/bin/zmprov mcf zimbraDefaultDomainName $config{CREATEDOMAIN}");
 			progress ( "Done\n" );
-			if ($config{DOCREATEADMIN} eq "yes") {
-				progress ( "Creating user $config{CREATEADMIN}..." );
-				runAsZimbra("/opt/zimbra/bin/zmprov ca ".
-					"$config{CREATEADMIN} \'$config{CREATEADMINPASS}\' ".
-					"zimbraIsAdminAccount TRUE");
-				progress ( "Done\n" );
-				progress ( "Creating postmaster alias..." );
-				runAsZimbra("/opt/zimbra/bin/zmprov aaa ".
-					"$config{CREATEADMIN} root\@$config{CREATEDOMAIN}");
-				runAsZimbra("/opt/zimbra/bin/zmprov aaa ".
-					"$config{CREATEADMIN} postmaster\@$config{CREATEDOMAIN}");
-				progress ( "Done\n" );
-			}
 			if ($config{DOTRAINSA} eq "yes") {
 				progress ( "Creating user $config{TRAINSASPAM}..." );
 				my $pass = genRandomPass();
@@ -1877,6 +1866,21 @@ sub configCreateDomain {
 					"zimbraSpamIsNotSpamAccount $config{TRAINSAHAM}");
 				progress ( "Done\n" );
 			}
+		}
+	}
+	if (isEnabled("zimbra-store")) {
+		if ($config{DOCREATEADMIN} eq "yes") {
+			progress ( "Creating user $config{CREATEADMIN}..." );
+			runAsZimbra("/opt/zimbra/bin/zmprov ca ".
+				"$config{CREATEADMIN} \'$config{CREATEADMINPASS}\' ".
+				"zimbraIsAdminAccount TRUE");
+			progress ( "Done\n" );
+			progress ( "Creating postmaster alias..." );
+			runAsZimbra("/opt/zimbra/bin/zmprov aaa ".
+				"$config{CREATEADMIN} root\@$config{CREATEDOMAIN}");
+			runAsZimbra("/opt/zimbra/bin/zmprov aaa ".
+				"$config{CREATEADMIN} postmaster\@$config{CREATEDOMAIN}");
+			progress ( "Done\n" );
 		}
 	}
 	configLog("configCreateDomain");
