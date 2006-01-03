@@ -242,6 +242,12 @@ sub upgradeBM3 {
 	return 0;
 }
 
+sub upgradeBM4 {
+	my ($startBuild, $targetVersion, $targetBuild) = (@_);
+	Migrate::log("Updating from 3.0.0_M4");
+
+	return 0;
+}
 sub stopZimbra {
 	Migrate::log("Stopping zimbra services");
 	my $rc = 0xffff & system("su - zimbra -c \"/opt/zimbra/bin/zmcontrol stop > /dev/null 2>&1\"");
