@@ -737,8 +737,8 @@ sub setSmtpHost {
 }
 
 sub setMtaAuthHost {
-	changeLdapHost( askNonBlank("Please enter the mta authentication server hostname",
-			$config{MTAAUTHHOST}));
+	$config{MTAAUTHHOST} = askNonBlank("Please enter the mta authentication server hostname",
+			$config{MTAAUTHHOST});
 }
 
 sub setLdapHost {
