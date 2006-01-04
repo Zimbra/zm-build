@@ -31,6 +31,25 @@ sub configure {
 	if (main::isEnabled("zimbra-ldap")) {
 		main::runAsZimbra ("zmprov mcf zimbraComponentAvailable ''");
 	}
+
+	if (!defined ($main::options{c}) && 1) {
+		if (askYN("\nYou have the option of notifying Zimbra of your installation.\nThis helps us to track the uptake of the Zimbra Collaboration Suite.\nThe only information that will be transmitted is:\n\tThe VERSION of zcs you've installed($main::curVersion)\n\tThe ADMIN EMAIL ADDRESS you've created ($main::config{CREATEADMIN})\n\nNotify Zimbra of your installation?", "Yes") eq "yes") {
+			if (open NOTIFY, "/opt/zimbra/libexec/zmnotifyinstall $main::curVersion $main::config{CREATEADMIN} |") {
+				while (<NOTIFY>) {
+					progress ("$_");
+				}
+				close NOTIFY;
+				progress ("Notification complete!\n");
+			} else {
+				progress ("ERROR: Notification failed!\n\n");
+			}
+		} else {
+		progress ("Notification skipped\n");
+	}
+
+}
+
+
 }
 
 1
