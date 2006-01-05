@@ -237,10 +237,13 @@ sub upgradeBM3 {
 	}
 	if ($startBuild <= 427) {
 
+		Migrate::log ("Updating ldap GAL attributes");
 		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraGalLdapAttrMap zimbraId=zimbraId +zimbraGalLdapAttrMap objectClass=objectClass +zimbraGalLdapAttrMap zimbraMailForwardingAddress=zimbraMailForwardingAddress"`;
 
+		Migrate::log ("Updating ldap CLIENT attributes");
 		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraAccountClientAttr zimbraIsDomainAdminAccount +zimbraAccountClientAttr zimbraFeatureIMEnabled"`;
 		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraCOSInheritedAttr zimbraFeatureIMEnabled"`;
+		Migrate::log ("Updating ldap domain admin attributes");
 		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr zimbraAccountStatus"`;
 		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr company"`;
 		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr cn"`;
@@ -339,6 +342,8 @@ sub upgradeBM3 {
 		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr st"`;
 		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr telephoneNumber"`;
 		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr title"`;
+
+		Migrate::log ("Updating ldap server attributes");
 
 		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf zimbraLmtpNumThreads 20 "`;
 		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf zimbraMessageCacheSize 1671168 "`;
