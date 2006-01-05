@@ -36,7 +36,7 @@ use Getopt::Std;
 
 my %options = ();
 
-my %config = ();
+our %config = ();
 
 my @packageList = (
 	"zimbra-core",
@@ -58,7 +58,7 @@ my %installStatus = ();
 my %configStatus = ();
 
 my $prevVersion = "";
-my $curVersion = "";
+our $curVersion = "";
 
 my $newinstall = 1;
 
