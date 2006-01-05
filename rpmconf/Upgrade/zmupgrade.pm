@@ -236,6 +236,8 @@ sub upgradeBM3 {
 		`su - zimbra -c "/opt/zimbra/bin/zmprov ms $hn zimbraMtaAuthHost $hn"`;
 	}
 
+	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraAccountClientAttr zimbraIsDomainAdmin"`;
+
 	return 0;
 }
 
