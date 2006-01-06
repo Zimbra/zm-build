@@ -144,4 +144,3 @@ $(STORE_DEST_DIR)/zimlets: $(SERVICE_DIR)/build/dist/zimlets/phone.zip
 $(STORE_DEST_DIR)/migration:
 	mkdir -p $@
 	cp $(SERVICE_DIR)/src/windows/*exe $@
-
