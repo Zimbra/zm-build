@@ -34,7 +34,7 @@ use zmupgrade;
 
 use Getopt::Std;
 
-my %options = ();
+our %options = ();
 
 our %config = ();
 
