@@ -912,7 +912,7 @@ isInstalled () {
 	if [ $PACKAGEEXT = "rpm" ]; then
 		$PACKAGEQUERY $pkg >/dev/null 2>&1
 		if [ $? = 0 ]; then
-			PKGVERSION=`$PACKAGEQUERY $pkg 2> /dev/null`
+			PKGVERSION=`$PACKAGEQUERY $pkg 2> /dev/null | sort -u`
 			PKGINSTALLED=`$PACKAGEQUERY $pkg | sed -e 's/\.[a-zA-Z].*$//' 2> /dev/null`
 		fi
 	else
