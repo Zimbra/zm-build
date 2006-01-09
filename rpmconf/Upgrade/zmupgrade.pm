@@ -350,6 +350,9 @@ sub upgradeBM3 {
 		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraServerInheritedAttr zimbraMessageCacheSize +zimbraServerInheritedAttr zimbraMtaAuthHost +zimbraServerInheritedAttr zimbraMtaAuthURL +zimbraServerInheritedAttr zimbraMailMode"`;
 		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf -zimbraMtaRestriction reject_non_fqdn_hostname"`;
 	}
+	if ($startBuild <= 436) {
+		`su - zimbra -c "${scriptDir}/fixConversationCounts.pl"`;
+	}
 	return 0;
 }
 

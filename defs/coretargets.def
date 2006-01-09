@@ -219,6 +219,7 @@ $(CORE_DEST_DIR)/libexec: $(NATIVE_DIR)/build/zmtomcatstart
 	mkdir -p $@/scripts
 	cp -f $(SERVICE_DIR)/src/db/Migrate.pm $@/scripts
 	cp -f $(SERVICE_DIR)/src/db/migrate*pl $@/scripts
+	cp -f $(SERVICE_DIR)/src/db/fixConversationCounts.pl $@/scripts
 	cp -f $(SERVICE_DIR)/src/bin/zmsetservername $@
 	cp -f $(SERVICE_DIR)/src/bin/zmnotifyinstall $@
 	cp -f $(PACKAGE_CONF_DIR)/Install/postinstall.pm $@/postinstall.pm
