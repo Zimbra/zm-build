@@ -351,7 +351,9 @@ sub upgradeBM3 {
 		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf -zimbraMtaRestriction reject_non_fqdn_hostname"`;
 	}
 	if ($startBuild <= 436) {
+		if (startSql()) { return 1; }
 		`su - zimbra -c "${scriptDir}/fixConversationCounts.pl"`;
+		stopSql();
 	}
 	return 0;
 }
