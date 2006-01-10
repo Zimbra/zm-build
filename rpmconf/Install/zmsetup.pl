@@ -248,7 +248,6 @@ sub getSystemStatus {
 			$ldapRunning = ($ldapRunning)?0:1;
 		} else {
 			$config{DOCREATEDOMAIN} = "yes";
-			$config{DOCREATEADMIN} = "yes";
 			$config{DOTRAINSA} = "yes";
 		}
 	}
@@ -258,6 +257,9 @@ sub getSystemStatus {
 			$sqlConfigured = 1;
 			$sqlRunning = 0xffff & system("/opt/zimbra/bin/mysqladmin status > /dev/null 2>&1");
 			$sqlRunning = ($sqlRunning)?0:1;
+		}
+		if ($newinstall) {
+			$config{DOCREATEADMIN} = "yes";
 		}
 	}
 
@@ -353,10 +355,10 @@ sub setDefaults {
 	$config{DOCREATEADMIN} = "no";
 	if (isEnabled("zimbra-store")) {
 		$config{MTAAUTHHOST} = $config{HOSTNAME};
+		$config{DOCREATEADMIN} = "yes";
 	}
 	if (isEnabled("zimbra-ldap")) {
 		$config{DOCREATEDOMAIN} = "yes";
-		$config{DOCREATEADMIN} = "yes";
 		$config{LDAPPASS} = genRandomPass();
 		$config{DOTRAINSA} = "yes";
 		$config{TRAINSASPAM} = lc(genRandomPass());
@@ -752,32 +754,32 @@ sub setLdapPort {
 }
 
 sub setHttpPort {
-	askNum("Please enter the HTTP server port",
+	$config{HTTPPORT} = askNum("Please enter the HTTP server port",
 			$config{HTTPPORT});
 }
 
 sub setHttpsPort {
-	askNum("Please enter the HTTPS server port",
+	$config{HTTPSPORT} = askNum("Please enter the HTTPS server port",
 			$config{HTTPSPORT});
 }
 
 sub setImapPort {
-	askNum("Please enter the IMAP server port",
+	$config{IMAPPORT} = askNum("Please enter the IMAP server port",
 			$config{IMAPPORT});
 }
 
 sub setImapSSLPort {
-	askNum("Please enter the IMAP SSL server port",
+	$config{IMAPSSLPORT} = askNum("Please enter the IMAP SSL server port",
 			$config{IMAPSSLPORT});
 }
 
 sub setPopPort {
-	askNum("Please enter the POP server port",
+	$config{POPPORT} = askNum("Please enter the POP server port",
 			$config{POPPORT});
 }
 
 sub setPopSSLPort {
-	askNum("Please enter the POP SSL server port",
+	$config{POPSSLPORT} = askNum("Please enter the POP SSL server port",
 			$config{POPSSLPORT});
 }
 
@@ -915,32 +917,6 @@ sub createLdapMenu {
 				"prompt" => "Domain to create:", 
 				"var" => \$config{CREATEDOMAIN}, 
 				"callback" => \&setCreateDomain,
-				};
-			$i++;
-		}
-		$$lm{menuitems}{$i} = { 
-			"prompt" => "Create Admin User:", 
-			"var" => \$config{DOCREATEADMIN}, 
-			"callback" => \&toggleYN,
-			"arg" => "DOCREATEADMIN",
-			};
-		$i++;
-		if ($config{DOCREATEADMIN} eq "yes") {
-			$$lm{menuitems}{$i} = { 
-				"prompt" => "Admin user to create:", 
-				"var" => \$config{CREATEADMIN}, 
-				"callback" => \&setCreateAdmin
-				};
-			$i++;
-			if ($config{CREATEADMINPASS} ne "") {
-				$config{ADMINPASSSET} = "set";
-			} else {
-				$config{ADMINPASSSET} = "UNSET";
-			}
-			$$lm{menuitems}{$i} = { 
-				"prompt" => "Admin Password", 
-				"var" => \$config{ADMINPASSSET},
-				"callback" => \&setAdminPass
 				};
 			$i++;
 		}
@@ -1131,23 +1107,49 @@ sub createStoreMenu {
 	my $i = 2;
 	if (isEnabled($package)) {
 		$$lm{menuitems}{$i} = { 
+			"prompt" => "Create Admin User:", 
+			"var" => \$config{DOCREATEADMIN}, 
+			"callback" => \&toggleYN,
+			"arg" => "DOCREATEADMIN",
+			};
+		$i++;
+		if ($config{DOCREATEADMIN} eq "yes") {
+			$$lm{menuitems}{$i} = { 
+				"prompt" => "Admin user to create:", 
+				"var" => \$config{CREATEADMIN}, 
+				"callback" => \&setCreateAdmin
+				};
+			$i++;
+			if ($config{CREATEADMINPASS} ne "") {
+				$config{ADMINPASSSET} = "set";
+			} else {
+				$config{ADMINPASSSET} = "UNSET";
+			}
+			$$lm{menuitems}{$i} = { 
+				"prompt" => "Admin Password", 
+				"var" => \$config{ADMINPASSSET},
+				"callback" => \&setAdminPass
+				};
+			$i++;
+		}
+		$$lm{menuitems}{$i} = { 
 			"prompt" => "SMTP host:", 
 			"var" => \$config{SMTPHOST}, 
 			"callback" => \&setSmtpHost,
 			};
 		$i++;
-#		$$lm{menuitems}{$i} = { 
-#			"prompt" => "Web server HTTP port:", 
-#			"var" => \$config{HTTPPORT}, 
-#			"callback" => \&setHttpPort,
-#			};
-#		$i++;
-#		$$lm{menuitems}{$i} = { 
-#			"prompt" => "Web server HTTPS port:", 
-#			"var" => \$config{HTTPSPORT}, 
-#			"callback" => \&setHttpsPort,
-#			};
-#		$i++;
+		$$lm{menuitems}{$i} = { 
+			"prompt" => "Web server HTTP port:", 
+			"var" => \$config{HTTPPORT}, 
+			"callback" => \&setHttpPort,
+			};
+		$i++;
+		$$lm{menuitems}{$i} = { 
+			"prompt" => "Web server HTTPS port:", 
+			"var" => \$config{HTTPSPORT}, 
+			"callback" => \&setHttpsPort,
+			};
+		$i++;
 		$$lm{menuitems}{$i} = { 
 			"prompt" => "Web server mode:", 
 			"var" => \$config{MODE}, 
@@ -1848,19 +1850,6 @@ sub configCreateDomain {
 			runAsZimbra("/opt/zimbra/bin/zmprov cd $config{CREATEDOMAIN}");
 			runAsZimbra("/opt/zimbra/bin/zmprov mcf zimbraDefaultDomainName $config{CREATEDOMAIN}");
 			progress ( "Done\n" );
-			if ($config{DOCREATEADMIN} eq "yes") {
-				progress ( "Creating user $config{CREATEADMIN}..." );
-				runAsZimbra("/opt/zimbra/bin/zmprov ca ".
-					"$config{CREATEADMIN} \'$config{CREATEADMINPASS}\' ".
-					"zimbraIsAdminAccount TRUE");
-				progress ( "Done\n" );
-				progress ( "Creating postmaster alias..." );
-				runAsZimbra("/opt/zimbra/bin/zmprov aaa ".
-					"$config{CREATEADMIN} root\@$config{CREATEDOMAIN}");
-				runAsZimbra("/opt/zimbra/bin/zmprov aaa ".
-					"$config{CREATEADMIN} postmaster\@$config{CREATEDOMAIN}");
-				progress ( "Done\n" );
-			}
 			if ($config{DOTRAINSA} eq "yes") {
 				progress ( "Creating user $config{TRAINSASPAM}..." );
 				my $pass = genRandomPass();
@@ -1877,6 +1866,21 @@ sub configCreateDomain {
 					"zimbraSpamIsNotSpamAccount $config{TRAINSAHAM}");
 				progress ( "Done\n" );
 			}
+		}
+	}
+	if (isEnabled("zimbra-store")) {
+		if ($config{DOCREATEADMIN} eq "yes") {
+			progress ( "Creating user $config{CREATEADMIN}..." );
+			runAsZimbra("/opt/zimbra/bin/zmprov ca ".
+				"$config{CREATEADMIN} \'$config{CREATEADMINPASS}\' ".
+				"zimbraIsAdminAccount TRUE");
+			progress ( "Done\n" );
+			progress ( "Creating postmaster alias..." );
+			runAsZimbra("/opt/zimbra/bin/zmprov aaa ".
+				"$config{CREATEADMIN} root\@$config{CREATEDOMAIN}");
+			runAsZimbra("/opt/zimbra/bin/zmprov aaa ".
+				"$config{CREATEADMIN} postmaster\@$config{CREATEDOMAIN}");
+			progress ( "Done\n" );
 		}
 	}
 	configLog("configCreateDomain");

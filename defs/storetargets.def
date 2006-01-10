@@ -111,7 +111,7 @@ $(STORE_DEST_DIR)/$(TOMCAT_DIR)/bin: $(STORE_DEST_DIR) force
 $(STORE_DEST_DIR)/$(TOMCAT_DIR)/conf: force
 	mkdir -p $@
 	cp -f $(SERVICE_DIR)/conf/tomcat-5.5/server.xml.production \
-		$(STORE_DEST_DIR)/$(TOMCAT_DIR)/conf/server.xml
+		$(STORE_DEST_DIR)/$(TOMCAT_DIR)/conf/server.xml.in
 	cp -f $(SERVICE_DIR)/conf/zimbra.xml \
 		$(STORE_DEST_DIR)/$(TOMCAT_DIR)/conf/Catalina/localhost/zimbra.xml
 	mkdir -p $(STORE_DEST_DIR)/$(TOMCAT_DIR)/conf/AdminService/localhost
@@ -120,6 +120,10 @@ $(STORE_DEST_DIR)/$(TOMCAT_DIR)/conf: force
 	cp -f $(SERVICE_DIR)/conf/tomcat-5.5/tomcat-users.xml $(STORE_DEST_DIR)/$(TOMCAT_DIR)/conf
 	cp -f $(SERVICE_DIR)/build/dist/conf/log4j.properties.production  \
 		$(STORE_DEST_DIR)/$(TOMCAT_DIR)/conf/log4j.properties
+	cp -f $(SERVICE_DIR)/conf/production/web.xml \
+		$(STORE_DEST_DIR)/$(TOMCAT_DIR)/conf/service.web.xml.in
+	cp -f $(CONSOLE_DIR)/build/WebRoot/WEB-INF/web.xml \
+		$(STORE_DEST_DIR)/$(TOMCAT_DIR)/conf/zimbra.web.xml.in
 
 $(STORE_DEST_DIR)/$(TOMCAT_DIR)/temp: force
 	mkdir -p $(STORE_DEST_DIR)/$(TOMCAT_DIR)/temp
