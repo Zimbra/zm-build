@@ -352,7 +352,7 @@ sub upgradeBM3 {
 	}
 	if ($startBuild <= 436) {
 		if (startSql()) { return 1; }
-		`su - zimbra -c "${scriptDir}/fixConversationCounts.pl"`;
+		`su - zimbra -c "perl -I${scriptDir} ${scriptDir}/fixConversationCounts.pl"`;
 		stopSql();
 	}
 	return 0;
