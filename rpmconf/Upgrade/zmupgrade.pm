@@ -360,6 +360,7 @@ sub upgradeBM3 {
 		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr zimbraNewMailNotificationSubject"`;
 		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr zimbraNewMailNotificationFrom"`;
 		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr zimbraNewMailNotificationBody"`;
+		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraServerInheritedAttr zimbraMtaMyNetworks"`;
 	}
 	return 0;
 }
