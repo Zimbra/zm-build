@@ -586,27 +586,21 @@ sub setTrainSAHam {
 }
 
 sub setCreateAdmin {
-	while (1) {
-		my $new = 
-			ask("Create admin user:",
-				$config{CREATEADMIN});
-		my ($u,$d) = split ('@', $new);
-		if ($d ne $config{CREATEDOMAIN}) {
-			progress ( "You must create the admin user under the domain $config{CREATEDOMAIN}\n" );
-		} else {
-			if ($config{CREATEADMIN} eq $config{AVUSER}) {
-				$config{AVUSER} = $new;
-			}
-			if ($config{CREATEADMIN} eq $config{SMTPDEST}) {
-				$config{SMTPDEST} = $new;
-			}
-			if ($config{CREATEADMIN} eq $config{SMTPSOURCE}) {
-				$config{SMTPSOURCE} = $new;
-			}
-			$config{CREATEADMIN} = $new;
-			last;
-		}
+
+	my $new = 
+		ask("Create admin user:",
+			$config{CREATEADMIN});
+	my ($u,$d) = split ('@', $new);
+	if ($config{CREATEADMIN} eq $config{AVUSER}) {
+		$config{AVUSER} = $new;
 	}
+	if ($config{CREATEADMIN} eq $config{SMTPDEST}) {
+		$config{SMTPDEST} = $new;
+	}
+	if ($config{CREATEADMIN} eq $config{SMTPSOURCE}) {
+		$config{SMTPSOURCE} = $new;
+	}
+	$config{CREATEADMIN} = $new;
 
 	setAdminPass();
 
