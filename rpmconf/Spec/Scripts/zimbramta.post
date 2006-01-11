@@ -78,11 +78,11 @@ chown -R zimbra:zimbra /opt/zimbra/clamav/db
 
 /opt/zimbra/bin/zmfixperms.sh
 
-egrep -q '/opt/zimbra/amavisd/tmp' /etc/fstab
+egrep -q '/opt/zimbra/amavisd-new-2.3.3/tmp' /etc/fstab
 if [ $? != 0 ]; then
 	uid=`id -u zimbra`
 	gid=`id -g zimbra`
-	echo "/dev/shm	/opt/zimbra/amavisd/tmp	tmpfs	defaults,users,size=150m,mode=777 0 0" >> /etc/fstab
+	echo "/dev/shm	/opt/zimbra/amavisd-new-2.3.3/tmp	tmpfs	defaults,users,size=150m,mode=777 0 0" >> /etc/fstab
 fi
 
 ldconfig
