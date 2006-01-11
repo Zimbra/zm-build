@@ -73,7 +73,7 @@ my $enabledServiceStr = "";
 
 my $ldapPassChanged = 0;
 
-my $platform = `/opt/zimbra/bin/get_plat_tag.sh`;
+our $platform = `/opt/zimbra/bin/get_plat_tag.sh`;
 chomp $platform;
 
 my $logfile = "/tmp/zmsetup.log.$$";
