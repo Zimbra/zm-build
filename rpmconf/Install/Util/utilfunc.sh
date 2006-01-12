@@ -947,6 +947,9 @@ getPlatformVars() {
 		else
 			PREREQ_PACKAGES="sudo libidn curl fetchmail gmp"
 			if [ $PLATFORM = "FC3" -o $PLATFORM = "FC4" ]; then
+				if [ $PLATFORM = "FC3" ]; then
+					PREREQ_PACKAGES="sudo libidn curl fetchmail gmp bind-libs"
+				fi
 				PREREQ_LIBS="/usr/lib/libstdc++.so.5"
 			fi
 		fi
