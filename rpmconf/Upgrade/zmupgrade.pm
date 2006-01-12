@@ -63,9 +63,10 @@ my %updateFuncs = (
 	"3.0.M1" => \&upgradeBM1,
 	"3.0.0_M2" => \&upgradeBM2,
 	"3.0.0_M3" => \&upgradeBM3,
+	"3.0.0_M3" => \&upgradeBM4,
 );
 
-my @versionOrder = ("3.0.M1", "3.0.0_M2", "3.0.0_M3");
+my @versionOrder = ("3.0.M1", "3.0.0_M2", "3.0.0_M3", "3.0.0_M4");
 
 my $startVersion;
 my $targetVersion;
@@ -117,6 +118,8 @@ sub upgrade {
 		if ($curSchemaVersion < 22) {
 			$curSchemaVersion = 22;
 		}
+	} elsif ($startVersion eq "3.0.0_M4") {
+		print "This appears to be 3.0.0_M4, with no schema upgrade needed\n";
 	} else {
 		print "I can't upgrade version $startVersion\n\n";
 		return 1;
@@ -363,6 +366,12 @@ sub upgradeBM3 {
 		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraServerInheritedAttr zimbraMtaMyNetworks"`;
 	}
 	return 0;
+}
+
+sub upgradeBM4 {
+	my ($startBuild, $targetVersion, $targetBuild) = (@_);
+	Migrate::log("Updating from 3.0.0_M4");
+
 }
 
 sub stopZimbra {
