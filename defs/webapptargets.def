@@ -24,6 +24,9 @@ $(CONSOLE_DIR)/$(WEBAPP_BUILD_DIR)/zimbraAdmin.war:
 		-Dzimbra.buildinfo.version=$(VERSION_TAG) \
 		-Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) \
 		-Dzimbra.buildinfo.host=$(HOST) clean admin-war ; )
+	rm -rf zimbraAdminConf
+	mkdir zimbraAdminConf
+	cp $(CONSOLE_DIR)/build/WebRoot/WEB-INF/web.xml zimbraAdminConf
 
 $(WEBAPP_DIR)/zimbra.war: $(WEBAPP_DIR) $(CONSOLE_DIR)/$(WEBAPP_BUILD_DIR)/zimbra.war
 	mkdir $(WEBAPP_DIR)/zimbra
@@ -36,3 +39,6 @@ $(CONSOLE_DIR)/$(WEBAPP_BUILD_DIR)/zimbra.war:
 		-Dzimbra.buildinfo.version=$(VERSION_TAG) \
 		-Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) \
 		-Dzimbra.buildinfo.host=$(HOST) clean prod-war ; )
+	rm -rf zimbraConf
+	mkdir zimbraConf
+	cp $(CONSOLE_DIR)/build/WebRoot/WEB-INF/web.xml zimbraConf
