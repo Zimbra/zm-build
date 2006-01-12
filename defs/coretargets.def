@@ -144,6 +144,8 @@ $(CORE_DEST_DIR)/lib: $(WEBAPP_DIR)/service.war $(LDAP_DEST_DIR)/$(LDAP_DIR) $(M
 	cp -pr $(SERVICE_DIR)/build/dist/lib/* $@
 	cp -pr $(NATIVE_DIR)/build/libzimbra-native.$(JNI_EXT) $@
 	(cd $@; tar xzf $(THIRD_PARTY)/mysql/$(BUILD_PLATFORM)/mysql-$(MYSQL_CLIENT_VERSION).tgz)
+	mkdir $(CORE_DEST_DIR)/lib/jars
+	mv -f $(CORE_DEST_DIR)/lib/*jar $(CORE_DEST_DIR)/lib/jars
 
 $(NATIVE_DIR)/build/libzimbra-native.$(JNI_EXT):
 	(cd $(NATIVE_DIR); make TOMCAT_HOME=$(TOMCAT_HOME) JAVA_BINARY=$(JAVA_BINARY))
