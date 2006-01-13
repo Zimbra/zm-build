@@ -372,6 +372,7 @@ sub upgradeBM4 {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
 	Migrate::log("Updating from 3.0.0_M4");
 
+	return 0;
 }
 
 sub stopZimbra {
