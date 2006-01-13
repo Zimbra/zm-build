@@ -84,7 +84,7 @@ $(BUILD_ROOT)/zimbra.spec:
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/mysql-standard-4.1.10a-pc-linux-gnu-i686" >> \
 		$(BUILD_ROOT)/zimbra.spec
 
-store_stage: $(STORE_COMPONENTS)
+store_stage: $(STORE_COMPONENTS) $(ZIMLET_COMPONENTS)
 
 $(STORE_DEST_DIR):
 	mkdir -p $@
@@ -150,3 +150,17 @@ $(STORE_DEST_DIR)/zimlets: $(SERVICE_DIR)/build/dist/zimlets/phone.zip
 $(STORE_DEST_DIR)/migration:
 	mkdir -p $@
 	cp $(SERVICE_DIR)/src/windows/*exe $@
+
+$(STORE_DEST_DIR)/$(TOMCAT_DIR)/webapps/service/WEB-INF/lib/zimbrataglib.jar: $(ZIMLET_DIR)/build/dist/lib/zimbrataglib.jar
+	mkdir -p $(STORE_DEST_DIR)/$(TOMCAT_DIR)/webapps/service/WEB-INF/lib
+	cp $(ZIMLET_DIR)/build/dist/lib/zimbrataglib.jar $@
+
+$(ZIMLET_DIR)/build/dist/lib/zimbrataglib.jar:
+	(cd $(ZIMLET_DIR); ant package)
+
+$(STORE_DEST_DIR)/$(TOMCAT_DIR)/webapps/service/WEB-INF/zimbra.tld: $(ZIMLET_DIR)/build/dist/conf/zimbra.tld
+	mkdir -p $(STORE_DEST_DIR)/$(TOMCAT_DIR)/webapps/service/WEB-INF
+	cp $(ZIMLET_DIR)/build/dist/conf/zimbra.tld $@
+
+$(ZIMLET_DIR)/build/dist/conf/zimbra.tld:
+	(cd $(ZIMLET_DIR); ant package)
