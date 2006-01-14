@@ -120,6 +120,9 @@ sub upgrade {
 		}
 	} elsif ($startVersion eq "3.0.0_M4") {
 		print "This appears to be 3.0.0_M4, with no schema upgrade needed\n";
+		if ($curSchemaVersion < 22) {
+			$curSchemaVersion = 22;
+		}
 	} else {
 		print "I can't upgrade version $startVersion\n\n";
 		return 1;
