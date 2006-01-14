@@ -63,7 +63,7 @@ my %updateFuncs = (
 	"3.0.M1" => \&upgradeBM1,
 	"3.0.0_M2" => \&upgradeBM2,
 	"3.0.0_M3" => \&upgradeBM3,
-	"3.0.0_M3" => \&upgradeBM4,
+	"3.0.0_M4" => \&upgradeBM4,
 );
 
 my @versionOrder = ("3.0.M1", "3.0.0_M2", "3.0.0_M3", "3.0.0_M4");
