@@ -109,7 +109,7 @@ sub status {
 
 sub detail {
 	my $msg = shift;
-	`echo "$msg" >> $logfile`;
+	#`echo "$msg" >> $logfile`;
 }
 
 sub saveConfig {
