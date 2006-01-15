@@ -1865,7 +1865,7 @@ sub configCreateDomain {
 	if (isEnabled("zimbra-store")) {
 		if ($config{DOCREATEADMIN} eq "yes") {
 			progress ( "Creating user $config{CREATEADMIN}..." );
-			my ($u,$d) = split ('@', $config{CREATEDOMAIN});
+			my ($u,$d) = split ('@', $config{CREATEADMIN});
 			runAsZimbra("/opt/zimbra/bin/zmprov cd $d");
 			runAsZimbra("/opt/zimbra/bin/zmprov ca ".
 				"$config{CREATEADMIN} \'$config{CREATEADMINPASS}\' ".
