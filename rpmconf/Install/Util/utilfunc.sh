@@ -609,6 +609,7 @@ removeExistingInstall() {
 		/bin/rm -rf /opt/zimbra/tomcat/webapps/zimbraAdmin.war
 		/bin/rm -rf /opt/zimbra/tomcat/webapps/service
 		/bin/rm -rf /opt/zimbra/tomcat/webapps/service.war
+		/bin/rm -rf /opt/zimbra/tomcat/work
 	fi
 
 	if [ $REMOVE = "yes" ]; then
