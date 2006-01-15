@@ -415,7 +415,7 @@ sub getInstallStatus {
 				if ($stage eq "zimbra-core") {
 					$prevVersion = $curVersion;
 					$v =~ s/_HEAD.*//;
-					$v =~ s/^zimbra-core-//;
+					$v =~ s/^zimbra-core[-_]//;
 					$v =~ s/^(\d+\.\d+\.[^_]*_[^_]+_[^.]+).*/\1/;
 					$curVersion = $v;
 				}
