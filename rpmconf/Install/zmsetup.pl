@@ -409,7 +409,7 @@ sub getInstallStatus {
 			my ($d, $op, $stage) = split ' ', $h;
 			if ($op eq "INSTALLED" || $op eq "UPGRADED") {
 				my $v = $stage;
-				$stage =~ s/-\d.*//;
+				$stage =~ s/[-_]\d.*//;
 				$installStatus{$stage}{op} = $op;
 				$installStatus{$stage}{date} = $d;
 				if ($stage eq "zimbra-core") {
