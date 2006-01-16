@@ -2,31 +2,43 @@
 # __WAR 
 
 $(WEBAPP_DIR)/service.war: $(WEBAPP_DIR) $(SERVICE_DIR)/$(WEBAPP_BUILD_DIR)/service.war
-	cp $(SERVICE_DIR)/build/dist/tomcat/webapps/service.war $@
+	mkdir $(WEBAPP_DIR)/service
+	(cd $(WEBAPP_DIR)/service; jar xf $(SERVICE_DIR)/build/dist/tomcat/webapps/service.war)
 
 $(SERVICE_DIR)/$(WEBAPP_BUILD_DIR)/service.war:
 	(cd $(SERVICE_DIR); $(ANT) \
 		-Dplat.tag=$(BUILD_PLATFORM) \
+		-Dis-production=1 \
 		-Dzimbra.buildinfo.version=$(VERSION_TAG) \
 		-Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) \
 		-Dzimbra.buildinfo.host=$(HOST) dev-dist ; )
 
 $(WEBAPP_DIR)/zimbraAdmin.war: $(WEBAPP_DIR) $(CONSOLE_DIR)/$(WEBAPP_BUILD_DIR)/zimbraAdmin.war
-	cp $(CONSOLE_DIR)/build/dist/tomcat/webapps/zimbraAdmin.war $@
+	mkdir $(WEBAPP_DIR)/zimbraAdmin
+	(cd $(WEBAPP_DIR)/zimbraAdmin; jar xf $(CONSOLE_DIR)/build/dist/tomcat/webapps/zimbraAdmin.war)
 
 $(CONSOLE_DIR)/$(WEBAPP_BUILD_DIR)/zimbraAdmin.war:
 	(cd $(CONSOLE_DIR); $(ANT) \
 		-Dplat.tag=$(BUILD_PLATFORM) \
+		-Dis-production=1 \
 		-Dzimbra.buildinfo.version=$(VERSION_TAG) \
 		-Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) \
 		-Dzimbra.buildinfo.host=$(HOST) clean admin-war ; )
+	rm -rf zimbraAdminConf
+	mkdir zimbraAdminConf
+	cp $(CONSOLE_DIR)/build/WebRoot/WEB-INF/web.xml zimbraAdminConf
 
 $(WEBAPP_DIR)/zimbra.war: $(WEBAPP_DIR) $(CONSOLE_DIR)/$(WEBAPP_BUILD_DIR)/zimbra.war
-	cp $(CONSOLE_DIR)/build/dist/tomcat/webapps/zimbra.war $@
+	mkdir $(WEBAPP_DIR)/zimbra
+	(cd $(WEBAPP_DIR)/zimbra; jar xf $(CONSOLE_DIR)/build/dist/tomcat/webapps/zimbra.war)
 
 $(CONSOLE_DIR)/$(WEBAPP_BUILD_DIR)/zimbra.war: 
 	(cd $(CONSOLE_DIR); $(ANT) \
 		-Dplat.tag=$(BUILD_PLATFORM) \
+		-Dis-production=1 \
 		-Dzimbra.buildinfo.version=$(VERSION_TAG) \
 		-Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) \
 		-Dzimbra.buildinfo.host=$(HOST) clean prod-war ; )
+	rm -rf zimbraConf
+	mkdir zimbraConf
+	cp $(CONSOLE_DIR)/build/WebRoot/WEB-INF/web.xml zimbraConf

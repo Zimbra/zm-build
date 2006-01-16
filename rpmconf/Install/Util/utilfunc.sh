@@ -496,6 +496,7 @@ restoreExistingConfig() {
 			runAsZimbra "zmlocalconfig -f -e $i"
 		done < $RF
 		if [ -f $RESTORECONFIG/backup.save ]; then
+			echo -n "Restoring backup schedule..."
 			runAsZimbra "cat $RESTORECONFIG/backup.save | xargs zmschedulebackup -R"
 		fi
 		echo "done"
@@ -608,6 +609,7 @@ removeExistingInstall() {
 		/bin/rm -rf /opt/zimbra/tomcat/webapps/zimbraAdmin.war
 		/bin/rm -rf /opt/zimbra/tomcat/webapps/service
 		/bin/rm -rf /opt/zimbra/tomcat/webapps/service.war
+		/bin/rm -rf /opt/zimbra/tomcat/work
 	fi
 
 	if [ $REMOVE = "yes" ]; then
@@ -912,7 +914,7 @@ isInstalled () {
 	if [ $PACKAGEEXT = "rpm" ]; then
 		$PACKAGEQUERY $pkg >/dev/null 2>&1
 		if [ $? = 0 ]; then
-			PKGVERSION=`$PACKAGEQUERY $pkg 2> /dev/null`
+			PKGVERSION=`$PACKAGEQUERY $pkg 2> /dev/null | sort -u`
 			PKGINSTALLED=`$PACKAGEQUERY $pkg | sed -e 's/\.[a-zA-Z].*$//' 2> /dev/null`
 		fi
 	else
@@ -946,6 +948,9 @@ getPlatformVars() {
 		else
 			PREREQ_PACKAGES="sudo libidn curl fetchmail gmp"
 			if [ $PLATFORM = "FC3" -o $PLATFORM = "FC4" ]; then
+				if [ $PLATFORM = "FC3" ]; then
+					PREREQ_PACKAGES="sudo libidn curl fetchmail gmp bind-libs"
+				fi
 				PREREQ_LIBS="/usr/lib/libstdc++.so.5"
 			fi
 		fi

@@ -73,7 +73,7 @@ my $enabledServiceStr = "";
 
 my $ldapPassChanged = 0;
 
-my $platform = `/opt/zimbra/bin/get_plat_tag.sh`;
+our $platform = `/opt/zimbra/bin/get_plat_tag.sh`;
 chomp $platform;
 
 my $logfile = "/tmp/zmsetup.log.$$";
@@ -109,7 +109,7 @@ sub status {
 
 sub detail {
 	my $msg = shift;
-	print LOGFILE $msg;
+	#`echo "$msg" >> $logfile`;
 }
 
 sub saveConfig {
@@ -409,13 +409,13 @@ sub getInstallStatus {
 			my ($d, $op, $stage) = split ' ', $h;
 			if ($op eq "INSTALLED" || $op eq "UPGRADED") {
 				my $v = $stage;
-				$stage =~ s/-\d.*//;
+				$stage =~ s/[-_]\d.*//;
 				$installStatus{$stage}{op} = $op;
 				$installStatus{$stage}{date} = $d;
 				if ($stage eq "zimbra-core") {
 					$prevVersion = $curVersion;
 					$v =~ s/_HEAD.*//;
-					$v =~ s/^zimbra-core-//;
+					$v =~ s/^zimbra-core[-_]//;
 					$v =~ s/^(\d+\.\d+\.[^_]*_[^_]+_[^.]+).*/\1/;
 					$curVersion = $v;
 				}
@@ -586,27 +586,21 @@ sub setTrainSAHam {
 }
 
 sub setCreateAdmin {
-	while (1) {
-		my $new = 
-			ask("Create admin user:",
-				$config{CREATEADMIN});
-		my ($u,$d) = split ('@', $new);
-		if ($d ne $config{CREATEDOMAIN}) {
-			progress ( "You must create the admin user under the domain $config{CREATEDOMAIN}\n" );
-		} else {
-			if ($config{CREATEADMIN} eq $config{AVUSER}) {
-				$config{AVUSER} = $new;
-			}
-			if ($config{CREATEADMIN} eq $config{SMTPDEST}) {
-				$config{SMTPDEST} = $new;
-			}
-			if ($config{CREATEADMIN} eq $config{SMTPSOURCE}) {
-				$config{SMTPSOURCE} = $new;
-			}
-			$config{CREATEADMIN} = $new;
-			last;
-		}
+
+	my $new = 
+		ask("Create admin user:",
+			$config{CREATEADMIN});
+	my ($u,$d) = split ('@', $new);
+	if ($config{CREATEADMIN} eq $config{AVUSER}) {
+		$config{AVUSER} = $new;
 	}
+	if ($config{CREATEADMIN} eq $config{SMTPDEST}) {
+		$config{SMTPDEST} = $new;
+	}
+	if ($config{CREATEADMIN} eq $config{SMTPSOURCE}) {
+		$config{SMTPSOURCE} = $new;
+	}
+	$config{CREATEADMIN} = $new;
 
 	setAdminPass();
 
@@ -754,32 +748,32 @@ sub setLdapPort {
 }
 
 sub setHttpPort {
-	askNum("Please enter the HTTP server port",
+	$config{HTTPPORT} = askNum("Please enter the HTTP server port",
 			$config{HTTPPORT});
 }
 
 sub setHttpsPort {
-	askNum("Please enter the HTTPS server port",
+	$config{HTTPSPORT} = askNum("Please enter the HTTPS server port",
 			$config{HTTPSPORT});
 }
 
 sub setImapPort {
-	askNum("Please enter the IMAP server port",
+	$config{IMAPPORT} = askNum("Please enter the IMAP server port",
 			$config{IMAPPORT});
 }
 
 sub setImapSSLPort {
-	askNum("Please enter the IMAP SSL server port",
+	$config{IMAPSSLPORT} = askNum("Please enter the IMAP SSL server port",
 			$config{IMAPSSLPORT});
 }
 
 sub setPopPort {
-	askNum("Please enter the POP server port",
+	$config{POPPORT} = askNum("Please enter the POP server port",
 			$config{POPPORT});
 }
 
 sub setPopSSLPort {
-	askNum("Please enter the POP SSL server port",
+	$config{POPSSLPORT} = askNum("Please enter the POP SSL server port",
 			$config{POPSSLPORT});
 }
 
@@ -1138,18 +1132,18 @@ sub createStoreMenu {
 			"callback" => \&setSmtpHost,
 			};
 		$i++;
-#		$$lm{menuitems}{$i} = { 
-#			"prompt" => "Web server HTTP port:", 
-#			"var" => \$config{HTTPPORT}, 
-#			"callback" => \&setHttpPort,
-#			};
-#		$i++;
-#		$$lm{menuitems}{$i} = { 
-#			"prompt" => "Web server HTTPS port:", 
-#			"var" => \$config{HTTPSPORT}, 
-#			"callback" => \&setHttpsPort,
-#			};
-#		$i++;
+		$$lm{menuitems}{$i} = { 
+			"prompt" => "Web server HTTP port:", 
+			"var" => \$config{HTTPPORT}, 
+			"callback" => \&setHttpPort,
+			};
+		$i++;
+		$$lm{menuitems}{$i} = { 
+			"prompt" => "Web server HTTPS port:", 
+			"var" => \$config{HTTPSPORT}, 
+			"callback" => \&setHttpsPort,
+			};
+		$i++;
 		$$lm{menuitems}{$i} = { 
 			"prompt" => "Web server mode:", 
 			"var" => \$config{MODE}, 
@@ -1871,6 +1865,8 @@ sub configCreateDomain {
 	if (isEnabled("zimbra-store")) {
 		if ($config{DOCREATEADMIN} eq "yes") {
 			progress ( "Creating user $config{CREATEADMIN}..." );
+			my ($u,$d) = split ('@', $config{CREATEADMIN});
+			runAsZimbra("/opt/zimbra/bin/zmprov cd $d");
 			runAsZimbra("/opt/zimbra/bin/zmprov ca ".
 				"$config{CREATEADMIN} \'$config{CREATEADMINPASS}\' ".
 				"zimbraIsAdminAccount TRUE");

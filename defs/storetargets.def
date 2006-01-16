@@ -84,7 +84,7 @@ $(BUILD_ROOT)/zimbra.spec:
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/mysql-standard-4.1.10a-pc-linux-gnu-i686" >> \
 		$(BUILD_ROOT)/zimbra.spec
 
-store_stage: $(STORE_COMPONENTS)
+store_stage: $(STORE_COMPONENTS) $(ZIMLET_COMPONENTS)
 
 $(STORE_DEST_DIR):
 	mkdir -p $@
@@ -111,7 +111,7 @@ $(STORE_DEST_DIR)/$(TOMCAT_DIR)/bin: $(STORE_DEST_DIR) force
 $(STORE_DEST_DIR)/$(TOMCAT_DIR)/conf: force
 	mkdir -p $@
 	cp -f $(SERVICE_DIR)/conf/tomcat-5.5/server.xml.production \
-		$(STORE_DEST_DIR)/$(TOMCAT_DIR)/conf/server.xml
+		$(STORE_DEST_DIR)/$(TOMCAT_DIR)/conf/server.xml.in
 	cp -f $(SERVICE_DIR)/conf/zimbra.xml \
 		$(STORE_DEST_DIR)/$(TOMCAT_DIR)/conf/Catalina/localhost/zimbra.xml
 	mkdir -p $(STORE_DEST_DIR)/$(TOMCAT_DIR)/conf/AdminService/localhost
@@ -120,6 +120,12 @@ $(STORE_DEST_DIR)/$(TOMCAT_DIR)/conf: force
 	cp -f $(SERVICE_DIR)/conf/tomcat-5.5/tomcat-users.xml $(STORE_DEST_DIR)/$(TOMCAT_DIR)/conf
 	cp -f $(SERVICE_DIR)/build/dist/conf/log4j.properties.production  \
 		$(STORE_DEST_DIR)/$(TOMCAT_DIR)/conf/log4j.properties
+	cp -f $(SERVICE_DIR)/conf/production/web.xml \
+		$(STORE_DEST_DIR)/$(TOMCAT_DIR)/conf/service.web.xml.in
+	cp -f zimbraConf/web.xml \
+		$(STORE_DEST_DIR)/$(TOMCAT_DIR)/conf/zimbra.web.xml.in
+	cp -f zimbraAdminConf/web.xml \
+		$(STORE_DEST_DIR)/$(TOMCAT_DIR)/conf/zimbraAdmin.web.xml.in
 
 $(STORE_DEST_DIR)/$(TOMCAT_DIR)/temp: force
 	mkdir -p $(STORE_DEST_DIR)/$(TOMCAT_DIR)/temp
@@ -145,3 +151,16 @@ $(STORE_DEST_DIR)/migration:
 	mkdir -p $@
 	cp $(SERVICE_DIR)/src/windows/*exe $@
 
+$(STORE_DEST_DIR)/$(TOMCAT_DIR)/webapps/service/WEB-INF/lib/zimbrataglib.jar: $(ZIMLET_DIR)/build/dist/lib/zimbrataglib.jar
+	mkdir -p $(STORE_DEST_DIR)/$(TOMCAT_DIR)/webapps/service/WEB-INF/lib
+	cp $(ZIMLET_DIR)/build/dist/lib/zimbrataglib.jar $@
+
+$(ZIMLET_DIR)/build/dist/lib/zimbrataglib.jar:
+	(cd $(ZIMLET_DIR); ant package)
+
+$(STORE_DEST_DIR)/$(TOMCAT_DIR)/webapps/service/WEB-INF/zimbra.tld: $(ZIMLET_DIR)/build/dist/conf/zimbra.tld
+	mkdir -p $(STORE_DEST_DIR)/$(TOMCAT_DIR)/webapps/service/WEB-INF
+	cp $(ZIMLET_DIR)/build/dist/conf/zimbra.tld $@
+
+$(ZIMLET_DIR)/build/dist/conf/zimbra.tld:
+	(cd $(ZIMLET_DIR); ant package)

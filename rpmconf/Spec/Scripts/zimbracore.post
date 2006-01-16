@@ -48,10 +48,8 @@ ldconfig
 
 # Setup syslog
 
-if [ ! -f /etc/logrotate.d/zimbra ]; then
-	if [ -d /etc/logrotate.d ]; then
-		cp /opt/zimbra/conf/zmlogrotate /etc/logrotate.d/zimbra
-	fi
+if [ -d /etc/logrotate.d ]; then
+	cp -f /opt/zimbra/conf/zmlogrotate /etc/logrotate.d/zimbra
 fi
 
 /opt/zimbra/bin/zmsyslogsetup local
