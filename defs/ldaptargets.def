@@ -66,6 +66,8 @@ $(BUILD_ROOT)/zimbraldap.spec:
 		-e '/^%post$$/ r zimbraldap.post' > $(BUILD_ROOT)/zimbraldap.spec
 	rm -f zimbraldap.pre
 	rm -f zimbraldap.post
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/lib" >> \
+		$(BUILD_ROOT)/zimbraldap.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/openldap-$(LDAP_VERSION)" >> \
 		$(BUILD_ROOT)/zimbraldap.spec
 
@@ -85,9 +87,18 @@ $(LDAP_DEST_DIR)/$(LDAP_DIR): $(LDAP_DEST_DIR)
 		$(LDAP_DEST_DIR)/$(LDAP_DIR)/etc/openldap/schema
 	cp $(SERVICE_DIR)/conf/ldap/zimbra.schema \
 		$(LDAP_DEST_DIR)/$(LDAP_DIR)/etc/openldap/schema
+	cp $(SERVICE_DIR)/conf/ldap/zimbra-hsm.schema \
+		$(LDAP_DEST_DIR)/$(LDAP_DIR)/etc/openldap/schema
 	cp $(SERVICE_DIR)/conf/ldap/zimbra.ldif \
 		$(LDAP_DEST_DIR)/$(LDAP_DIR)/etc/openldap/zimbra.ldif
 	cp $(SERVICE_DIR)/conf/ldap/zimbra_mimehandlers.ldif \
 		$(LDAP_DEST_DIR)/$(LDAP_DIR)/etc/openldap/zimbra_mimehandlers.ldif
 	cp $(SERVICE_DIR)/conf/ldap/widgets.ldif \
 		$(LDAP_DEST_DIR)/$(LDAP_DIR)/etc/openldap/widgets.ldif
+
+$(LDAP_DEST_DIR)/lib/conf/zimbra-hsm.schema: $(LDAP_DEST_DIR)/lib/conf
+	cp -f $(SERVICE_DIR)/conf/ldap/zimbra-hsm.schema $(LDAP_DEST_DIR)/lib/conf/zimbra-hsm.schema
+
+$(LDAP_DEST_DIR)/lib/conf:
+	mkdir -p $@
+
