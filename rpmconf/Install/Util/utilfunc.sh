@@ -936,7 +936,7 @@ getPlatformVars() {
 		PACKAGERM='dpkg --purge'
 		PACKAGEQUERY='dpkg -s'
 		PACKAGEEXT='deb'
-		PREREQ_PACKAGES="sudo libidn11 curl fetchmail libgmp3 libxml2"
+		PREREQ_PACKAGES="sudo libidn11 curl fetchmail libgmp3 libxml2 libstdc++6"
 	else
 		PACKAGEINST='rpm -iv'
 		PACKAGERM='rpm -ev --noscripts --allmatches'
