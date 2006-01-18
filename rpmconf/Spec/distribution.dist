@@ -65,12 +65,12 @@ function choiceIsADowngrade()
     <choice id="choice6" title="Logger" start_selected="true" start_enabled="true" start_visible="true">
         <pkg-ref id="com.zimbra.zcs.logger"></pkg-ref>
     </choice>
-    <pkg-ref id="com.zimbra.zcs.core" version="3.0" installKBytes="@@CORESIZE@@" auth="Admin" onConclusion="None">file:./Contents/.Packages/zimbra-core.3.0.0_M3_@@BUILDNUM@@.pkg</pkg-ref>
-    <pkg-ref id="com.zimbra.zcs.ldap" version="3.0" installKBytes="@@LDAPSIZE@@" auth="Admin" onConclusion="None">file:./Contents/.Packages/zimbra-ldap.3.0.0_M3_@@BUILDNUM@@.pkg</pkg-ref>
-    <pkg-ref id="com.zimbra.zcs.store" version="3.0" installKBytes="@@STORESIZE@@" auth="Admin" onConclusion="None">file:./Contents/.Packages/zimbra-store.3.0.0_M3_@@BUILDNUM@@.pkg</pkg-ref>
-    <pkg-ref id="com.zimbra.zcs.mta" version="3.0" installKBytes="@@MTASIZE@@" auth="Admin" onConclusion="None">file:./Contents/.Packages/zimbra-mta.3.0.0_M3_@@BUILDNUM@@.pkg</pkg-ref>
-    <pkg-ref id="com.zimbra.zcs.apache" version="3.0" installKBytes="@@APACHESIZE@@" auth="Admin" onConclusion="None">file:./Contents/.Packages/zimbra-apache.3.0.0_M3_@@BUILDNUM@@.pkg</pkg-ref>
-    <pkg-ref id="com.zimbra.zcs.spell" version="3.0" installKBytes="@@SPELLSIZE@@" auth="Admin" onConclusion="None">file:./Contents/.Packages/zimbra-spell.3.0.0_M3_@@BUILDNUM@@.pkg</pkg-ref>
-    <pkg-ref id="com.zimbra.zcs.snmp" version="3.0" installKBytes="@@SNMPSIZE@@" auth="Admin" onConclusion="None">file:./Contents/.Packages/zimbra-snmp.3.0.0_M3_@@BUILDNUM@@.pkg</pkg-ref>
-    <pkg-ref id="com.zimbra.zcs.logger" version="3.0" installKBytes="@@LOGGERSIZE@@" auth="Admin" onConclusion="None">file:./Contents/.Packages/zimbra-logger.3.0.0_M3_@@BUILDNUM@@.pkg</pkg-ref>
+    <pkg-ref id="com.zimbra.zcs.core" version="3.0" installKBytes="@@CORESIZE@@" auth="Admin" onConclusion="None">file:./Contents/.Packages/zimbra-core.3.0.0_M4_@@BUILDNUM@@.pkg</pkg-ref>
+    <pkg-ref id="com.zimbra.zcs.ldap" version="3.0" installKBytes="@@LDAPSIZE@@" auth="Admin" onConclusion="None">file:./Contents/.Packages/zimbra-ldap.3.0.0_M4_@@BUILDNUM@@.pkg</pkg-ref>
+    <pkg-ref id="com.zimbra.zcs.store" version="3.0" installKBytes="@@STORESIZE@@" auth="Admin" onConclusion="None">file:./Contents/.Packages/zimbra-store.3.0.0_M4_@@BUILDNUM@@.pkg</pkg-ref>
+    <pkg-ref id="com.zimbra.zcs.mta" version="3.0" installKBytes="@@MTASIZE@@" auth="Admin" onConclusion="None">file:./Contents/.Packages/zimbra-mta.3.0.0_M4_@@BUILDNUM@@.pkg</pkg-ref>
+    <pkg-ref id="com.zimbra.zcs.apache" version="3.0" installKBytes="@@APACHESIZE@@" auth="Admin" onConclusion="None">file:./Contents/.Packages/zimbra-apache.3.0.0_M4_@@BUILDNUM@@.pkg</pkg-ref>
+    <pkg-ref id="com.zimbra.zcs.spell" version="3.0" installKBytes="@@SPELLSIZE@@" auth="Admin" onConclusion="None">file:./Contents/.Packages/zimbra-spell.3.0.0_M4_@@BUILDNUM@@.pkg</pkg-ref>
+    <pkg-ref id="com.zimbra.zcs.snmp" version="3.0" installKBytes="@@SNMPSIZE@@" auth="Admin" onConclusion="None">file:./Contents/.Packages/zimbra-snmp.3.0.0_M4_@@BUILDNUM@@.pkg</pkg-ref>
+    <pkg-ref id="com.zimbra.zcs.logger" version="3.0" installKBytes="@@LOGGERSIZE@@" auth="Admin" onConclusion="None">file:./Contents/.Packages/zimbra-logger.3.0.0_M4_@@BUILDNUM@@.pkg</pkg-ref>
 </installer-gui-script>
