@@ -1781,6 +1781,17 @@ sub configSetMtaAuthHost {
 		return 0;
 	}
 
+	if (isEnabled ("zimbra-ldap") && ! isEnabled ("zimbra-store")) {
+		progress ( "WARNING\n\nYou are configuring this host as an MTA server, but there are no\n");
+		progress ( "currently configured mailstore servers.  This will cause smtp authentication\n");
+		progress ( "to fail.\n");
+		progress ( "To correct this - after installing a mailstore server, reset the zimbraMtaAuthHost\n");
+		progress ( "attribute for this server:\n");
+		progress ( "/opt/zimbra/bin/zmprov ms $config{HOSTNAME} zimbraMtaAuthHost $config{MTAAUTHHOST}\n\n");
+		if (!$options{c})
+			ask ("Press return to continue\n","");
+		}
+	}
 	if ($config{MTAAUTHHOST} ne "") {
 		progress ( "Setting MTA auth host..." );
 		runAsZimbra("/opt/zimbra/bin/zmprov ms $config{HOSTNAME} ".
