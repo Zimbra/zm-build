@@ -2122,7 +2122,11 @@ sub setupCrontab {
 		$backupSchedule = `su - zimbra -c "zmschedulebackup -s"`;
 		chomp $backupSchedule;
 	}
-	`crontab -u zimbra -l > /tmp/crontab.zimbra.orig`;
+	if ($platform =~ /SUSE/) {
+		`cp -f "/var/spool/cron/tabs/zimbra /tmp/crontab.zimbra.orig"`;
+	} else {
+		`crontab -u zimbra -l > /tmp/crontab.zimbra.orig`;
+	}
 	my $rc = 0xffff & system("grep ZIMBRASTART /tmp/crontab.zimbra.orig > /dev/null 2>&1");
 	if ($rc) {
 		`cat /dev/null > /tmp/crontab.zimbra.orig`;
