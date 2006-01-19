@@ -38,7 +38,7 @@ else {$type = "NETWORK";}
 
 my $rundir = `dirname $0`;
 chomp $rundir;
-my $scriptDir = "$rundir/scripts";
+my $scriptDir = "/opt/zimbra/libexec/scripts";
 
 my $lowVersion = 18;
 my $hiVersion = 21;
