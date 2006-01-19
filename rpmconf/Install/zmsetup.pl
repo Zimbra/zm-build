@@ -2167,7 +2167,7 @@ sub setupCrontab {
 	`crontab -u zimbra /tmp/crontab.zimbra`;
 	if ( -f "/opt/zimbra/bin/zmschedulebackup" && $backupSchedule ne "") {
 		$backupSchedule =~ s/"/\\"/g;
-		`su - zimbra -c "/opt/zimbra/bin/zmschedulebackup -R $backupSchedule"`;
+		`su - zimbra -c "/opt/zimbra/bin/zmschedulebackup -R $backupSchedule" > /dev/null 2>&1`;
 	}
 	progress ("Done\n");
 	configLog("setupCrontab");
