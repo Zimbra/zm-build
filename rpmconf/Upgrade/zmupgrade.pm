@@ -502,6 +502,8 @@ sub upgradeBM3 {
 		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr telephoneNumber"`;
 		print ".";
 		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr title"`;
+		print ".";
+		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr zimbraMailStatus"`;
 		print "\n";
 
 		Migrate::log ("Updating ldap server attributes");
@@ -534,6 +536,9 @@ sub upgradeBM3 {
 sub upgradeBM4 {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
 	Migrate::log("Updating from 3.0.0_M4");
+	if (isInstalled("zimbra-ldap")) {
+		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr zimbraMailStatus"`;
+	}
 
 	return 0;
 }
