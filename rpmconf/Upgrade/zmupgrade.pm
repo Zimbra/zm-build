@@ -542,6 +542,7 @@ sub upgradeBM4 {
 			$startBuild <= 41) {
 			`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraAccountClientAttr zimbraFeatureViewInHtmlEnabled"`;
 			`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr zimbraFeatureViewInHtmlEnabled"`;
+			`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraCOSInheritedAttr zimbraFeatureViewInHtmlEnabled"`;
 			`su - zimbra -c "/opt/zimbra/bin/zmprov mc default zimbraFeatureViewInHtmlEnabled FALSE"`;
 		}
 	}
