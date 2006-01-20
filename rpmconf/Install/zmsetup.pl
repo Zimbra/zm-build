@@ -28,6 +28,23 @@ use strict;
 
 use lib "/opt/zimbra/libexec";
 
+our $platform = `/opt/zimbra/bin/get_plat_tag.sh`;
+chomp $platform;
+
+if ($platform eq "MACOSX") {
+	progress ("Checking java version...");
+	my $rc = 0xffff & system("su - zimbra -c \"java -version 2>&1 | grep 'java version' | grep -q 1.5\"");
+	if ($rc) {
+		progress ("\n\nERROR\n\n");
+		progress ("Java version 1.5 required - please update your java version\n");
+		progress ("and set the default version to be 1.5 before proceeding\n\n");
+		ask ("Press any key to exit","");
+		exit (1);
+	} else {
+		progress ("1.5 found\n");
+	}
+}
+
 use postinstall;
 
 use zmupgrade;
@@ -72,9 +89,6 @@ my $installedServiceStr = "";
 my $enabledServiceStr = "";
 
 my $ldapPassChanged = 0;
-
-our $platform = `/opt/zimbra/bin/get_plat_tag.sh`;
-chomp $platform;
 
 my $logfile = "/tmp/zmsetup.log.$$";
 
