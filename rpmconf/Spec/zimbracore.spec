@@ -12,12 +12,6 @@ Vendor: Zimbra, Inc.
 Packager: Zimbra, Inc.
 BuildRoot: /opt/zimbra
 AutoReqProv: no
-requires: sudo
-requires: libidn
-requires: curl
-requires: fetchmail
-requires: openssl
-requires: gmp
 
 %description
 Best email money can buy
