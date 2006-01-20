@@ -72,6 +72,14 @@ if [ -f /etc/debian_version ]; then
 	fi
 fi
 
+if [ -f /etc/mandriva-release ]; then
+	grep "2006" /etc/mandriva-release > /dev/null 2>&1
+	if [ $? = 0 ]; then
+		echo "MANDRIVA2006"
+		exit 0
+	fi
+fi
+
 p=`uname -p`
 if [ "x$p" = "xpowerpc" ]; then
 	echo "MACOSX"
