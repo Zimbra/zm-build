@@ -538,6 +538,12 @@ sub upgradeBM4 {
 	Migrate::log("Updating from 3.0.0_M4");
 	if (isInstalled("zimbra-ldap")) {
 		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr zimbraMailStatus"`;
+		if ($startVersion eq "3.0.0_M2" || $startVersion eq "3.0.M1" || $startVersion eq "3.0.0_M3" ||
+			$startBuild <= 41) {
+			`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraAccountClientAttr zimbraFeatureViewInHtmlEnabled"`;
+			`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr zimbraFeatureViewInHtmlEnabled"`;
+			`su - zimbra -c "/opt/zimbra/bin/zmprov mc default zimbraFeatureViewInHtmlEnabled FALSE"`;
+		}
 	}
 
 	return 0;
