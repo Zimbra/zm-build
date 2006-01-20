@@ -2256,6 +2256,8 @@ getSystemStatus();
 
 if (!$ldapRunning && $ldapConfigured) {
 	startLdap();
+}
+if ($ldapConfigured) {
 	setLdapDefaults();
 }
 
