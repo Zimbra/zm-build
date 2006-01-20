@@ -1788,6 +1788,8 @@ sub configSetMtaAuthHost {
 		progress ( "To correct this - after installing a mailstore server, reset the zimbraMtaAuthHost\n");
 		progress ( "attribute for this server:\n");
 		progress ( "/opt/zimbra/bin/zmprov ms $config{HOSTNAME} zimbraMtaAuthHost $config{MTAAUTHHOST}\n\n");
+		progress ( "\nOnce done, start the MTA:\n");
+		progress ( "zmmtactl start\n\n");
 		if (!$options{c}) {
 			ask ("Press return to continue\n","");
 		}
