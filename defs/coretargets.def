@@ -260,3 +260,11 @@ $(CORE_DEST_DIR)/bin:
 	cp $(ZIMBRA_BIN_DIR)/zmspellctl $@
 	cp $(ZIMBRA_BIN_DIR)/zmapachectl $@
 
+$(CORE_DEST_DIR)/lib/libpopt.0.dylib: $(CORE_DEST_DIR)/lib
+	(cd $(CORE_DEST_DIR); tar xzf $(THIRD_PARTY)/expat/builds/$(BUILD_PLATFORM)/expat.tgz)
+	rm -rf $(CORE_DEST_DIR)/include
+
+$(CORE_DEST_DIR)/lib/libexpat.dylib: $(CORE_DEST_DIR)/lib
+	(cd $(CORE_DEST_DIR); tar xzf $(THIRD_PARTY)/popt/builds/$(BUILD_PLATFORM)/popt.tgz)
+	rm -rf $(CORE_DEST_DIR)/include
+

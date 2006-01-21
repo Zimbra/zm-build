@@ -10,7 +10,7 @@ PACKAGING_OPTIONS = -build -v -p $(PACKAGE_DIR)/$(CUR_PACKAGE_NAME).$(VERSION_TA
 
 PACKAGE_EXT := pkg
 
-PLATFORM_CORE_COMPONENTS := \
+PLATFORM_CORE_COMPONENTS = \
 	$(CORE_DEST_DIR)/lib/libexpat.dylib \
 	$(CORE_DEST_DIR)/lib/libpopt.0.dylib
 
@@ -27,10 +27,3 @@ BUNDLE_EXT := dmg
 
 JNI_EXT := jnilib
 
-$(CORE_DEST_DIR)/lib/libpopt.0.dylib: $(CORE_DEST_DIR)/lib 
-	(cd $(CORE_DEST_DIR); tar czf $(THIRD_PARTY)/expat/builds/$(BUILD_PLATFORM)/expat.tgz)
-	rm -rf $(CORE_DEST_DIR)/include
-
-$(CORE_DEST_DIR)/lib/libexpat.dylib: $(CORE_DEST_DIR)/lib 
-	(cd $(CORE_DEST_DIR); tar czf $(THIRD_PARTY)/popt/builds/$(BUILD_PLATFORM)/popt.tgz)
-	rm -rf $(CORE_DEST_DIR)/include
