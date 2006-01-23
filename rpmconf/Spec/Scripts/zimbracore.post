@@ -72,4 +72,4 @@ chown zimbra:zimbra /opt/zimbra/ssl
 mkdir /opt/zimbra/.ssh
 chown zimbra:zimbra /opt/zimbra/.ssh
 
-/opt/zimbra/java/bin/java -Xshare:dump
+/opt/zimbra/java/bin/java -client -Xshare:dump
