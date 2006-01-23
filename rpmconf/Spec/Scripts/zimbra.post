@@ -55,7 +55,3 @@ egrep -q '^%zimbra.*tomcat' /etc/sudoers
 if [ $? != 0 ]; then
 	echo "%zimbra ALL=NOPASSWD:/opt/zimbra/libexec/zmtomcatstart" >> /etc/sudoers
 fi
-
-
-su - zimbra -c "mkdir -p /opt/zimbra/tomcat/webapps/service; cd /opt/zimbra/tomcat/webapps/service; jar xf ../service.war"
-su - zimbra -c "mkdir -p /opt/zimbra/tomcat/webapps/zimbra; cd /opt/zimbra/tomcat/webapps/zimbra; jar xf ../zimbra.war"

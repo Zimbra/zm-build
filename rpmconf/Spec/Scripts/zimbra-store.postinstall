@@ -60,9 +60,6 @@ if [ $? != 0 ]; then
 	echo "%zimbra ALL=NOPASSWD:/opt/zimbra/libexec/zmtomcatstart" >> /etc/sudoers
 fi
 
-su - zimbra -c "mkdir -p /opt/zimbra/tomcat/webapps/service; cd /opt/zimbra/tomcat/webapps/service; jar xf ../service.war"
-su - zimbra -c "mkdir -p /opt/zimbra/tomcat/webapps/zimbra; cd /opt/zimbra/tomcat/webapps/zimbra; jar xf ../zimbra.war"
-
 cp -f /opt/zimbra/openldap/etc/openldap/slapd.conf /opt/zimbra/openldap/etc/openldap/slapd.conf.fcs
 sed -e 's/TLSCACertificateFile/#TLSCACertificateFile/g' \
 	/opt/zimbra/openldap/etc/openldap/slapd.conf.fcs > \

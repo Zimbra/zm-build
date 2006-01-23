@@ -58,16 +58,12 @@ fi
 
 /opt/zimbra/bin/zmsyslogsetup local
 
-# Setup iptables
-#iptables -t nat -F
-#/sbin/chkconfig iptables on
-
-#/opt/zimbra/bin/zmiptables -i
-
 cp /opt/zimbra/bin/zimbra /etc/init.d/zimbra
 chmod 755 /etc/init.d/zimbra
-chkconfig --add zimbra 
-chkconfig zimbra on
+if [ -x /sbin/chkconfig ]; then
+	chkconfig --add zimbra 
+	chkconfig zimbra on
+fi
 
 mkdir -p /opt/zimbra/log
 chown zimbra:zimbra /opt/zimbra/log
