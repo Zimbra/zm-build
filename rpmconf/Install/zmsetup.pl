@@ -1851,7 +1851,7 @@ sub configInstallZimlets {
 			my $zimlet = $zimletfile;
 			$zimlet =~ s/.zip//;
 			progress  ("$zimlet... ");
-			runAsZimbra ("/opt/zimbra/bin/zimlet deploy zimlets/$zimletfile");
+			runAsZimbra ("/opt/zimbra/bin/zmzimletctl deploy zimlets/$zimletfile");
 		}
 		progress ( "Done\n" );
 	}
