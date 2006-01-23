@@ -31,13 +31,14 @@ installPackage() {
 	f=`basename $file`
 	echo -n "...$f..."
 	$PACKAGEINST $file >> $LOGFILE 2>&1
+	INSTRESULT=$?
 	if [ $UPGRADE = "yes" ]; then
 		ST="UPGRADED"
 	else
 		ST="INSTALLED"
 	fi
 	D=`date +%s`
-	if [ $? = 0 ]; then
+	if [ $INSTRESULT = 0 ]; then
 		echo "done"
 		echo "${D}: $ST $f" >> /opt/zimbra/.install_history
 	else
