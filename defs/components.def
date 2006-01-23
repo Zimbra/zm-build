@@ -1,7 +1,8 @@
 WEBAPPS	:= \
 	$(WEBAPP_DIR)/service.war \
-	$(WEBAPP_DIR)/zimbraAdmin.war \
-	$(WEBAPP_DIR)/zimbra.war 
+	$(WEBAPP_DIR)/zimbra.war \
+	$(WEBAPP_DIR)/zimbra/downloads \
+	$(WEBAPP_DIR)/zimbraAdmin.war
 
 CORE_COMPONENTS	:= \
 	$(CORE_DEST_DIR) \
@@ -35,8 +36,7 @@ STORE_COMPONENTS := \
 	$(STORE_DEST_DIR)/$(TOMCAT_DIR)/common/lib/mail.jar \
 	$(STORE_DEST_DIR)/$(TOMCAT_DIR)/common/endorsed/zimbra-charset.jar \
 	$(STORE_DEST_DIR)/$(TOMCAT_DIR)/common/lib/activation.jar \
-	$(STORE_DEST_DIR)/$(MYSQL_DIR) \
-	$(STORE_DEST_DIR)/migration
+	$(STORE_DEST_DIR)/$(MYSQL_DIR) 
 
 ZIMLET_COMPONENTS := \
 	$(STORE_DEST_DIR)/$(TOMCAT_DIR)/webapps/service/WEB-INF/lib/zimbrataglib.jar \

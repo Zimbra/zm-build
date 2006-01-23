@@ -75,8 +75,6 @@ $(BUILD_ROOT)/zimbra.spec:
 	rm -f zimbra.post
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/zimlets" >> \
 		$(BUILD_ROOT)/zimbra.spec
-	echo "%attr(-, zimbra, zimbra) /opt/zimbra/migration" >> \
-		$(BUILD_ROOT)/zimbra.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/jakarta-tomcat-5.5.7" >> \
 		$(BUILD_ROOT)/zimbra.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/perdition-1.17" >> \
@@ -147,7 +145,7 @@ $(STORE_DEST_DIR)/zimlets: $(SERVICE_DIR)/build/dist/zimlets/phone.zip
 	mkdir -p $@
 	cp $(SERVICE_DIR)/build/dist/zimlets/* $@
 
-$(STORE_DEST_DIR)/migration:
+$(WEBAPP_DIR)/zimbra/downloads:
 	mkdir -p $@
 	cp $(SERVICE_DIR)/src/windows/*exe $@
 
