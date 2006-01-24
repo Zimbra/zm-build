@@ -546,6 +546,11 @@ sub upgradeBM4 {
 			`su - zimbra -c "/opt/zimbra/bin/zmprov mc default zimbraFeatureViewInHtmlEnabled FALSE"`;
 		}
 	}
+	if ($startVersion eq "3.0.0_M4" && $startBuild == 41) {
+		if (isInstalled("zimbra-store")) {
+			`su - zimbra -c "perl -I${scriptDir} ${scriptDir}/migrate20060120-Appointment.pl"`;
+		}
+	}
 
 	return 0;
 }
