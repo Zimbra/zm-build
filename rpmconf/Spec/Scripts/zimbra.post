@@ -29,7 +29,7 @@ I=`hostname -i`
 
 #Symlinks
 rm -f /opt/zimbra/mysql
-ln -s /opt/zimbra/mysql-standard-4.1.10a-pc-linux-gnu-i686 /opt/zimbra/mysql
+ln -s /opt/zimbra/mysql-standard-4.1.16-pc-linux-gnu-i686-glibc23 /opt/zimbra/mysql
 
 mv /opt/zimbra/db/db.sql /opt/zimbra/db/db.sql.in
 sed -e "/server.hostname/ s/local/$H/" /opt/zimbra/db/db.sql.in > /opt/zimbra/db/db.sql
