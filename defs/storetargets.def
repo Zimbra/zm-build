@@ -79,7 +79,7 @@ $(BUILD_ROOT)/zimbra.spec:
 		$(BUILD_ROOT)/zimbra.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/perdition-1.17" >> \
 		$(BUILD_ROOT)/zimbra.spec
-	echo "%attr(-, zimbra, zimbra) /opt/zimbra/mysql-standard-4.1.10a-pc-linux-gnu-i686" >> \
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/mysql-standard-4.1.16-pc-linux-gnu-i686-glibc23" >> \
 		$(BUILD_ROOT)/zimbra.spec
 
 store_stage: $(STORE_COMPONENTS) $(ZIMLET_COMPONENTS)
@@ -162,3 +162,4 @@ $(STORE_DEST_DIR)/$(TOMCAT_DIR)/webapps/service/WEB-INF/zimbra.tld: $(ZIMLET_DIR
 
 $(ZIMLET_DIR)/build/dist/conf/zimbra.tld:
 	(cd $(ZIMLET_DIR); ant package)
+
