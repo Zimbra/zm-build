@@ -27,6 +27,10 @@
 use strict;
 
 use lib "/opt/zimbra/libexec";
+use lib "/opt/zimbra/zimbramon/lib";
+use lib "/opt/zimbra/zimbramon/lib/i386-linux-thread-multi";
+use lib "/opt/zimbra/zimbramon/lib/i586-linux-thread-multi";
+use lib "/opt/zimbra/zimbramon/lib/darwin-thread-multi-2level";
 
 our $platform = `/opt/zimbra/bin/get_plat_tag.sh`;
 chomp $platform;
@@ -50,6 +54,8 @@ use postinstall;
 use zmupgrade;
 
 use Getopt::Std;
+
+use Net::DNS::Resolver;
 
 our %options = ();
 
@@ -395,6 +401,24 @@ sub setDefaults {
 
 	getInstallStatus();
 
+	if (lookupHostName ($config{HOSTNAME}, 'A')) {
+		progress("\n\nDNS ERROR resolving $config{HOSTNAME}\n");
+		progress("It is suggested that the hostname be resolveable via DNS\n");
+		if (askYN("Change hostname","Yes") eq "yes") {
+			setHostName();
+		}
+	}
+
+	if ($config{DOCREATEDOMAIN} = "yes") {
+		if (lookupHostName ($config{CREATEDOMAIN}, 'MX')) {
+			progress("\n\nDNS ERROR resolving MX for $config{CREATEDOMAIN}\n");
+			progress("It is suggested that the domain name have an MX record configured in DNS\n");
+			if (askYN("Change domain name?","Yes") eq "yes") {
+				setCreateDomain();
+			}
+		} 
+	}
+
 	progress ( "Done\n" );
 }
 
@@ -543,9 +567,19 @@ sub askNonBlank {
 
 sub setCreateDomain {
 	my $oldDomain = $config{CREATEDOMAIN};
-	$config{CREATEDOMAIN} =
-		ask("Create Domain:",
-			$config{CREATEDOMAIN});
+	while (1) {
+		$config{CREATEDOMAIN} =
+			ask("Create Domain:",
+				$config{CREATEDOMAIN});
+		if (lookupHostName ($config{CREATEDOMAIN}, 'MX')) {
+			progress("\n\nDNS ERROR resolving MX for $config{CREATEDOMAIN}\n");
+			progress("It is suggested that the domain name have an MX record configured in DNS\n");
+			if (askYN("Re-Enter domain name?","Yes") eq "no") {
+				last;
+			}
+			$config{CREATEDOMAIN} = $oldDomain;
+		} else {last;}
+	}
 	my ($u,$d) = split ('@', $config{CREATEADMIN});
 	my $old = $config{CREATEADMIN};
 	$config{CREATEADMIN} = $u.'@'.$config{CREATEDOMAIN};
@@ -705,11 +739,42 @@ sub changeLdapPort {
 	$config{LDAPPORT} = shift;
 }
 
+sub lookupHostName { 
+	my $name = shift;
+	my $qtype = shift;
+
+	my $res = Net::DNS::Resolver->new;
+	my @servers = $res->nameservers();
+	my $ans = $res->search ($name, $qtype);
+	if (!defined ($ans)) {
+		progress ("No results returned for $qtype lookup of $name\n");
+		progress ("Checked nameservers:\n");
+		foreach (@servers) {
+			progress ("\t$_\n");
+		}
+		return 1;
+	} else {
+		#progress ("Received answer:\n");
+		#progress ($ans->string()."\n");
+		return 0;
+	}
+}
+
 sub setHostName {
 	my $old = $config{HOSTNAME};
-	$config{HOSTNAME} = 
-		askNonBlank("Please enter the logical hostname for this host",
-			$config{HOSTNAME});
+	while (1) {
+		$config{HOSTNAME} = 
+			askNonBlank("Please enter the logical hostname for this host",
+				$config{HOSTNAME});
+		if (lookupHostName ($config{HOSTNAME}, 'A')) {
+			progress("\n\nDNS ERROR resolving $config{HOSTNAME}\n");
+			progress("It is suggested that the hostname be resolveable via DNS\n");
+			if (askYN("Re-Enter hostname","Yes") eq "no") {
+				last;
+			}
+			$config{HOSTNAME} = $old;
+		} else {last;}
+	}
 	if ($config{SMTPHOST} eq $old) {
 		$config{SMTPHOST} = $config{HOSTNAME};
 	}
