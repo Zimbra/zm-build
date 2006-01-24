@@ -18,8 +18,8 @@ include $(DEFS_DIR)/plat_common.def
 
 JAVA_BINARY := /usr/bin/java
 
-MYSQL_VERSION   := standard-4.1.14-apple-darwin8.2.0-powerpc
-MYSQL_CLIENT_VERSION := standard-4.1.14-clientlibs
+MYSQL_VERSION   := standard-4.1.16-apple-darwin8.2.0-powerpc
+MYSQL_CLIENT_VERSION := standard-4.1.16-clientlibs
 
 VERSION_TAG := $(MAJOR).$(MINOR).$(MICRO)_$(BUILDNUM)
 
