@@ -83,7 +83,7 @@ my %configStatus = ();
 my $prevVersion = "";
 our $curVersion = "";
 
-my $newinstall = 1;
+our $newinstall = 1;
 
 my $ldapConfigured = 0;
 my $ldapRunning = 0;
@@ -476,10 +476,6 @@ sub getInstallStatus {
 		}
 	} else {
 		$newinstall = 1;
-		my $t = time()+(60*60*24*60);
-		my @d = localtime($t);
-		$config{EXPIRY} = sprintf ("%04d%02d%02d",$d[5]+1900,$d[4]+1,$d[3]);
-
 	}
 }
 
