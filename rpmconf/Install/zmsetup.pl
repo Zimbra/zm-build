@@ -212,7 +212,9 @@ sub checkPortConflicts {
 		}
 	}
 
-	if ($any) { ask("Port conflicts detected! - Any key to continue", ""); }
+	if (!$options{c}) {
+		if ($any) { ask("Port conflicts detected! - Any key to continue", ""); }
+	}
 }
 
 sub getInstalledPackages {
@@ -401,22 +403,25 @@ sub setDefaults {
 
 	getInstallStatus();
 
-	if (lookupHostName ($config{HOSTNAME}, 'A')) {
-		progress("\n\nDNS ERROR resolving $config{HOSTNAME}\n");
-		progress("It is suggested that the hostname be resolveable via DNS\n");
-		if (askYN("Change hostname","Yes") eq "yes") {
-			setHostName();
-		}
-	}
+	if (!$options{c}) {
 
-	if ($config{DOCREATEDOMAIN} = "yes") {
-		if (lookupHostName ($config{CREATEDOMAIN}, 'MX')) {
-			progress("\n\nDNS ERROR resolving MX for $config{CREATEDOMAIN}\n");
-			progress("It is suggested that the domain name have an MX record configured in DNS\n");
-			if (askYN("Change domain name?","Yes") eq "yes") {
-				setCreateDomain();
+		if (lookupHostName ($config{HOSTNAME}, 'A')) {
+			progress("\n\nDNS ERROR resolving $config{HOSTNAME}\n");
+			progress("It is suggested that the hostname be resolveable via DNS\n");
+			if (askYN("Change hostname","Yes") eq "yes") {
+				setHostName();
 			}
-		} 
+		}
+
+		if ($config{DOCREATEDOMAIN} = "yes") {
+			if (lookupHostName ($config{CREATEDOMAIN}, 'MX')) {
+				progress("\n\nDNS ERROR resolving MX for $config{CREATEDOMAIN}\n");
+				progress("It is suggested that the domain name have an MX record configured in DNS\n");
+				if (askYN("Change domain name?","Yes") eq "yes") {
+					setCreateDomain();
+				}
+			} 
+		}
 	}
 
 	progress ( "Done\n" );
