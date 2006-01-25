@@ -22,16 +22,16 @@ $(WEBAPP_DIR)/zimbraAdmin.war: $(WEBAPP_DIR) $(CONSOLE_DIR)/$(WEBAPP_BUILD_DIR)/
 	mkdir $(WEBAPP_DIR)/zimbraAdmin
 	(cd $(WEBAPP_DIR)/zimbraAdmin; jar xf $(CONSOLE_DIR)/build/dist/tomcat/webapps/zimbraAdmin.war)
 	for download in $(IWDOWNLOAD); do \
-		echo "IMPORT_WIZ_DOWNLOAD_LINK = <A HREF=\"/zimbra/downloads/$$download\">Import Wizard</A>" >> $(WEBAPP_DIR)/zimbraAdmin/WEB-INF/classes/msgs/ZaMsg.properties; \
+		echo "IMPORT_WIZ_DOWNLOAD_LINK = <A HREF=\"/zimbra/downloads/$$download\" target=_blank>Import Wizard</A>" >> $(WEBAPP_DIR)/zimbraAdmin/WEB-INF/classes/msgs/ZaMsg.properties; \
 	done
 	for download in $(MWDOWNLOAD); do \
-		echo "MIG_WIZ_DOWNLOAD_LINK = <A HREF=\"/zimbra/downloads/$$download\">Migration Wizard</A>" >> $(WEBAPP_DIR)/zimbraAdmin/WEB-INF/classes/msgs/ZaMsg.properties; \
+		echo "MIG_WIZ_DOWNLOAD_LINK = <A HREF=\"/zimbra/downloads/$$download\" target=_blank>Migration Wizard</A>" >> $(WEBAPP_DIR)/zimbraAdmin/WEB-INF/classes/msgs/ZaMsg.properties; \
 	done
 	for download in $(CNDOWNLOAD); do \
-		echo "CONNECTOR_DOWNLOAD_LINK = <A HREF=\"/zimbra/downloads/$$download\">Connector for Outlook</A>" >> $(WEBAPP_DIR)/zimbraAdmin/WEB-INF/classes/msgs/ZaMsg.properties; \
+		echo "CONNECTOR_DOWNLOAD_LINK = <A HREF=\"/zimbra/downloads/$$download\" target=_blank>Connector for Outlook</A>" >> $(WEBAPP_DIR)/zimbraAdmin/WEB-INF/classes/msgs/ZaMsg.properties; \
 	done
 	for download in $(CMDOWNLOAD); do \
-		echo "CONNECTOR_MSI_DOWNLOAD_LINK = <A HREF=\"/zimbra/downloads/$$download\">Connector for Outlook MSI Customizer</A>" >> $(WEBAPP_DIR)/zimbraAdmin/WEB-INF/classes/msgs/ZaMsg.properties; \
+		echo "CONNECTOR_MSI_DOWNLOAD_LINK = <A HREF=\"/zimbra/downloads/$$download\" target=_blank>Connector for Outlook MSI Customizer</A>" >> $(WEBAPP_DIR)/zimbraAdmin/WEB-INF/classes/msgs/ZaMsg.properties; \
 	done
 
 
