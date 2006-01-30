@@ -34,4 +34,7 @@ export SNMPCONFPATH
 PERLLIB=/opt/zimbra/zimbramon/lib:/opt/zimbra/zimbramon/lib/i386-linux-thread-multi:/opt/zimbra/zimbramon/lib/i586-linux-thread-multi:/opt/zimbra/zimbramon/lib/darwin-thread-multi-2level
 export PERLLIB
 
+PERL5LIB=$PERLLIB
+export PERL5LIB
+
 ulimit -n 10000 > /dev/null 2>&1
