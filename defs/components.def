@@ -24,7 +24,9 @@ MTA_COMPONENTS	:= \
 	$(MTA_DEST_DIR)/$(SASL_DIR)
 
 LOGGER_COMPONENTS := \
-	$(LOGGER_DEST_DIR)/$(MYSQL_DIR) 
+	$(LOGGER_DEST_DIR)/$(MYSQL_DIR) \
+	$(LOGGER_DEST_DIR)/../bin/zmmsgtrace \
+	$(LOGGER_DEST_DIR)/../bin/zmmtareport
 
 STORE_COMPONENTS := \
 	$(WEBAPPS) \

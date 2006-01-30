@@ -65,6 +65,8 @@ $(BUILD_ROOT)/zimbralogger.spec:
 		-e '/^%post$$/ r zimbralogger.post' > $(BUILD_ROOT)/zimbralogger.spec
 	rm -f zimbralogger.pre
 	rm -f zimbralogger.post
+	echo "%attr(755, root, root) /opt/zimbra/bin" >> \
+		$(BUILD_ROOT)/zimbralogger.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/logger" >> \
 		$(BUILD_ROOT)/zimbralogger.spec
 
@@ -73,6 +75,14 @@ logger_stage: $(LOGGER_COMPONENTS)
 $(LOGGER_DEST_DIR)/$(MYSQL_DIR): $(LOGGER_DEST_DIR)
 	@echo "*** Creating mysql"
 	(cd $(LOGGER_DEST_DIR); tar xzf $(MYSQL_SOURCE).tar.gz;)
+
+$(LOGGER_DEST_DIR)/../bin/zmmsgtrace:
+	mkdir -p $(LOGGER_DEST_DIR)/../bin
+	cp -R $(SERVICE_DIR)/build/dist/bin/zmmsgtrace $@
+
+$(LOGGER_DEST_DIR)/../bin/zmmtareport:
+	mkdir -p $(LOGGER_DEST_DIR)/../bin
+	cp -R $(SERVICE_DIR)/build/dist/bin/zmmtareport $@
 
 $(LOGGER_DEST_DIR):
 	mkdir -p $@

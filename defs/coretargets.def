@@ -259,6 +259,8 @@ $(CORE_DEST_DIR)/bin:
 	cp $(ZIMBRA_BIN_DIR)/zmmtactl $@
 	cp $(ZIMBRA_BIN_DIR)/zmspellctl $@
 	cp $(ZIMBRA_BIN_DIR)/zmapachectl $@
+	rm -f $@/zmmsgtrace
+	rm -f $@/zmmtareport
 
 $(CORE_DEST_DIR)/lib/libpopt.0.dylib: $(CORE_DEST_DIR)/lib
 	(cd $(CORE_DEST_DIR); tar xzf $(THIRD_PARTY)/expat/builds/$(BUILD_PLATFORM)/expat.tgz)
