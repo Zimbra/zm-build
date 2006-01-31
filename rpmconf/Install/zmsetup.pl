@@ -1921,6 +1921,20 @@ sub configInstallZimlets {
 		}
 		progress ( "Done\n" );
 	}
+
+	# Install zimlets
+	if (opendir DIR, "/opt/zimbra/zimlets-network") {
+		progress ( "Installing network zimlets... " );
+		my @zimlets = grep { !/^\./ } readdir(DIR);
+		foreach my $zimletfile (@zimlets) {
+			my $zimlet = $zimletfile;
+			$zimlet =~ s/.zip//;
+			progress  ("$zimlet... ");
+			runAsZimbra ("/opt/zimbra/bin/zmzimletctl deploy zimlets-network/$zimletfile");
+		}
+		progress ( "Done\n" );
+	}
+
 	configLog("configInstallZimlets");
 }
 
