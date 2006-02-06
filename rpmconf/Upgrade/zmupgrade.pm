@@ -64,9 +64,10 @@ my %updateFuncs = (
 	"3.0.0_M2" => \&upgradeBM2,
 	"3.0.0_M3" => \&upgradeBM3,
 	"3.0.0_M4" => \&upgradeBM4,
+	"3.0.0_GA" => \&upgradeBGA,
 );
 
-my @versionOrder = ("3.0.M1", "3.0.0_M2", "3.0.0_M3", "3.0.0_M4");
+my @versionOrder = ("3.0.M1", "3.0.0_M2", "3.0.0_M3", "3.0.0_M4", "3.0.0_GA");
 
 my $startVersion;
 my $targetVersion;
@@ -147,6 +148,11 @@ sub upgrade {
 		if ($curSchemaVersion < 22) {
 			$curSchemaVersion = 22;
 		}
+	} elsif ($startVersion eq "3.0.0_GA") {
+		print "This appears to be 3.0.0_GA\n";
+		if ($curSchemaVersion < 22) {
+			$curSchemaVersion = 22;
+		}
 	} else {
 		print "I can't upgrade version $startVersion\n\n";
 		return 1;
@@ -168,6 +174,11 @@ sub upgrade {
 				$curSchemaVersion = 22;
 			}
 		} elsif ($startVersion eq "3.0.0_M4") {
+			print "No schema upgrade needed\n";
+			if ($curSchemaVersion < 22) {
+				$curSchemaVersion = 22;
+			}
+		} elsif ($startVersion eq "3.0.0_GA") {
 			print "No schema upgrade needed\n";
 			if ($curSchemaVersion < 22) {
 				$curSchemaVersion = 22;
@@ -552,6 +563,11 @@ sub upgradeBM4 {
 		}
 	}
 
+	return 0;
+}
+sub upgradeBGA {
+	my ($startBuild, $targetVersion, $targetBuild) = (@_);
+	Migrate::log("Updating from 3.0.0_GA");
 	return 0;
 }
 
