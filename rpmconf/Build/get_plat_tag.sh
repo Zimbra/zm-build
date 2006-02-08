@@ -97,7 +97,7 @@ fi
 a=`uname -a | awk '{print $1}'`
 if [ "x$a" = "xDarwin" ]; then
 	if [ "x$p" = "xi386" ]; then
-		echo "MACOSX"
+		echo "MACOSXx86"
 		exit 0
 	fi
 fi
