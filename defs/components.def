@@ -1,7 +1,8 @@
 WEBAPPS	:= \
 	$(WEBAPP_DIR)/service.war \
-	$(WEBAPP_DIR)/zimbraAdmin.war \
-	$(WEBAPP_DIR)/zimbra.war 
+	$(WEBAPP_DIR)/zimbra.war \
+	$(WEBAPP_DIR)/zimbra/downloads \
+	$(WEBAPP_DIR)/zimbraAdmin.war
 
 CORE_COMPONENTS	:= \
 	$(CORE_DEST_DIR) \
@@ -12,7 +13,8 @@ CORE_COMPONENTS	:= \
 	$(CORE_DEST_DIR)/zimbramon \
 	$(CORE_DEST_DIR)/$(JAVA_FILE)$(JAVA_VERSION) \
 	$(CORE_DEST_DIR)/conf \
-	$(CORE_DEST_DIR)/doc
+	$(CORE_DEST_DIR)/doc \
+	$(PLATFORM_CORE_COMPONENTS)
 
 MTA_COMPONENTS	:= \
 	$(MTA_DEST_DIR)/$(POSTFIX_DIR) \
@@ -22,27 +24,30 @@ MTA_COMPONENTS	:= \
 	$(MTA_DEST_DIR)/$(SASL_DIR)
 
 LOGGER_COMPONENTS := \
-	$(LOGGER_DEST_DIR)/$(MYSQL_DIR) 
+	$(LOGGER_DEST_DIR)/$(MYSQL_DIR) \
+	$(LOGGER_DEST_DIR)/../bin/zmmsgtrace \
+	$(LOGGER_DEST_DIR)/../bin/zmmtareport
 
 STORE_COMPONENTS := \
 	$(WEBAPPS) \
 	$(STORE_DEST_DIR)/$(TOMCAT_DIR) \
 	$(STORE_DEST_DIR)/zimlets \
+	$(STORE_DEST_DIR)/zimlets-extra \
 	$(STORE_DEST_DIR)/$(PERDITION_DIR)-$(PERDITION_VERSION) \
 	$(STORE_DEST_DIR)/$(TOMCAT_DIR)/common/lib/ical4j-0.9.16-patched.jar \
 	$(STORE_DEST_DIR)/$(TOMCAT_DIR)/common/lib/zimbra-native.jar \
 	$(STORE_DEST_DIR)/$(TOMCAT_DIR)/common/lib/mail.jar \
 	$(STORE_DEST_DIR)/$(TOMCAT_DIR)/common/endorsed/zimbra-charset.jar \
 	$(STORE_DEST_DIR)/$(TOMCAT_DIR)/common/lib/activation.jar \
-	$(STORE_DEST_DIR)/$(MYSQL_DIR) \
-	$(STORE_DEST_DIR)/migration
+	$(STORE_DEST_DIR)/$(MYSQL_DIR) 
 
 ZIMLET_COMPONENTS := \
 	$(STORE_DEST_DIR)/$(TOMCAT_DIR)/webapps/service/WEB-INF/lib/zimbrataglib.jar \
 	$(STORE_DEST_DIR)/$(TOMCAT_DIR)/webapps/service/WEB-INF/zimbra.tld
 
 LDAP_COMPONENTS := \
-	$(LDAP_DEST_DIR)/$(LDAP_DIR)  
+	$(LDAP_DEST_DIR)/$(LDAP_DIR) \
+	$(LDAP_DEST_DIR)/lib/conf/zimbra-hsm.schema
 
 APACHE_COMPONENTS := \
 	$(APACHE_DEST_DIR)/$(APACHE_DIR) \

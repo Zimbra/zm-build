@@ -27,12 +27,35 @@
 use strict;
 
 use lib "/opt/zimbra/libexec";
+use lib "/opt/zimbra/zimbramon/lib";
+use lib "/opt/zimbra/zimbramon/lib/i386-linux-thread-multi";
+use lib "/opt/zimbra/zimbramon/lib/i586-linux-thread-multi";
+use lib "/opt/zimbra/zimbramon/lib/darwin-thread-multi-2level";
+
+our $platform = `/opt/zimbra/bin/get_plat_tag.sh`;
+chomp $platform;
+
+if ($platform eq "MACOSX") {
+	progress ("Checking java version...");
+	my $rc = 0xffff & system("su - zimbra -c \"java -version 2>&1 | grep 'java version' | grep -q 1.5\"");
+	if ($rc) {
+		progress ("\n\nERROR\n\n");
+		progress ("Java version 1.5 required - please update your java version\n");
+		progress ("and set the default version to be 1.5 before proceeding\n\n");
+		ask ("Press any key to exit","");
+		exit (1);
+	} else {
+		progress ("1.5 found\n");
+	}
+}
 
 use postinstall;
 
 use zmupgrade;
 
 use Getopt::Std;
+
+use Net::DNS::Resolver;
 
 our %options = ();
 
@@ -60,7 +83,7 @@ my %configStatus = ();
 my $prevVersion = "";
 our $curVersion = "";
 
-my $newinstall = 1;
+our $newinstall = 1;
 
 my $ldapConfigured = 0;
 my $ldapRunning = 0;
@@ -72,9 +95,6 @@ my $installedServiceStr = "";
 my $enabledServiceStr = "";
 
 my $ldapPassChanged = 0;
-
-our $platform = `/opt/zimbra/bin/get_plat_tag.sh`;
-chomp $platform;
 
 my $logfile = "/tmp/zmsetup.log.$$";
 
@@ -192,7 +212,9 @@ sub checkPortConflicts {
 		}
 	}
 
-	if ($any) { ask("Port conflicts detected! - Any key to continue", ""); }
+	if (!$options{c}) {
+		if ($any) { ask("Port conflicts detected! - Any key to continue", ""); }
+	}
 }
 
 sub getInstalledPackages {
@@ -381,6 +403,27 @@ sub setDefaults {
 
 	getInstallStatus();
 
+	if (!$options{c}) {
+
+		if (lookupHostName ($config{HOSTNAME}, 'A')) {
+			progress("\n\nDNS ERROR resolving $config{HOSTNAME}\n");
+			progress("It is suggested that the hostname be resolveable via DNS\n");
+			if (askYN("Change hostname","Yes") eq "yes") {
+				setHostName();
+			}
+		}
+
+		if ($config{DOCREATEDOMAIN} = "yes") {
+			if (lookupHostName ($config{CREATEDOMAIN}, 'MX')) {
+				progress("\n\nDNS ERROR resolving MX for $config{CREATEDOMAIN}\n");
+				progress("It is suggested that the domain name have an MX record configured in DNS\n");
+				if (askYN("Change domain name?","Yes") eq "yes") {
+					setCreateDomain();
+				}
+			} 
+		}
+	}
+
 	progress ( "Done\n" );
 }
 
@@ -438,10 +481,6 @@ sub getInstallStatus {
 		}
 	} else {
 		$newinstall = 1;
-		my $t = time()+(60*60*24*60);
-		my @d = localtime($t);
-		$config{EXPIRY} = sprintf ("%04d%02d%02d",$d[5]+1900,$d[4]+1,$d[3]);
-
 	}
 }
 
@@ -529,9 +568,19 @@ sub askNonBlank {
 
 sub setCreateDomain {
 	my $oldDomain = $config{CREATEDOMAIN};
-	$config{CREATEDOMAIN} =
-		ask("Create Domain:",
-			$config{CREATEDOMAIN});
+	while (1) {
+		$config{CREATEDOMAIN} =
+			ask("Create Domain:",
+				$config{CREATEDOMAIN});
+		if (lookupHostName ($config{CREATEDOMAIN}, 'MX')) {
+			progress("\n\nDNS ERROR resolving MX for $config{CREATEDOMAIN}\n");
+			progress("It is suggested that the domain name have an MX record configured in DNS\n");
+			if (askYN("Re-Enter domain name?","Yes") eq "no") {
+				last;
+			}
+			$config{CREATEDOMAIN} = $oldDomain;
+		} else {last;}
+	}
 	my ($u,$d) = split ('@', $config{CREATEADMIN});
 	my $old = $config{CREATEADMIN};
 	$config{CREATEADMIN} = $u.'@'.$config{CREATEDOMAIN};
@@ -691,11 +740,42 @@ sub changeLdapPort {
 	$config{LDAPPORT} = shift;
 }
 
+sub lookupHostName { 
+	my $name = shift;
+	my $qtype = shift;
+
+	my $res = Net::DNS::Resolver->new;
+	my @servers = $res->nameservers();
+	my $ans = $res->search ($name, $qtype);
+	if (!defined ($ans)) {
+		progress ("No results returned for $qtype lookup of $name\n");
+		progress ("Checked nameservers:\n");
+		foreach (@servers) {
+			progress ("\t$_\n");
+		}
+		return 1;
+	} else {
+		#progress ("Received answer:\n");
+		#progress ($ans->string()."\n");
+		return 0;
+	}
+}
+
 sub setHostName {
 	my $old = $config{HOSTNAME};
-	$config{HOSTNAME} = 
-		askNonBlank("Please enter the logical hostname for this host",
-			$config{HOSTNAME});
+	while (1) {
+		$config{HOSTNAME} = 
+			askNonBlank("Please enter the logical hostname for this host",
+				$config{HOSTNAME});
+		if (lookupHostName ($config{HOSTNAME}, 'A')) {
+			progress("\n\nDNS ERROR resolving $config{HOSTNAME}\n");
+			progress("It is suggested that the hostname be resolveable via DNS\n");
+			if (askYN("Re-Enter hostname","Yes") eq "no") {
+				last;
+			}
+			$config{HOSTNAME} = $old;
+		} else {last;}
+	}
 	if ($config{SMTPHOST} eq $old) {
 		$config{SMTPHOST} = $config{HOSTNAME};
 	}
@@ -1518,7 +1598,7 @@ sub verifyLdap {
 
 	my $rc = 0xffff & system ("$ldapsearch $args > /tmp/zmsetup.ldap.out 2>&1");
 
-	if ($rc) { progress ("FAILED\n"); } 
+	if ($rc) { my $foo = `cat /tmp/zmsetup.ldap.out`; chomp $foo; progress ("FAILED ( $foo )\n"); } 
 	else {progress ( "Success\n");}
 	return $rc;
 
@@ -1781,6 +1861,19 @@ sub configSetMtaAuthHost {
 		return 0;
 	}
 
+	if (isEnabled ("zimbra-ldap") && ! isEnabled ("zimbra-store")) {
+		progress ( "WARNING\n\nYou are configuring this host as an MTA server, but there are no\n");
+		progress ( "currently configured mailstore servers.  This will cause smtp authentication\n");
+		progress ( "to fail.\n");
+		progress ( "To correct this - after installing a mailstore server, reset the zimbraMtaAuthHost\n");
+		progress ( "attribute for this server:\n");
+		progress ( "/opt/zimbra/bin/zmprov ms $config{HOSTNAME} zimbraMtaAuthHost $config{MTAAUTHHOST}\n\n");
+		progress ( "\nOnce done, start the MTA:\n");
+		progress ( "zmmtactl start\n\n");
+		if (!$options{c}) {
+			ask ("Press return to continue\n","");
+		}
+	}
 	if ($config{MTAAUTHHOST} ne "") {
 		progress ( "Setting MTA auth host..." );
 		runAsZimbra("/opt/zimbra/bin/zmprov ms $config{HOSTNAME} ".
@@ -1824,10 +1917,24 @@ sub configInstallZimlets {
 			my $zimlet = $zimletfile;
 			$zimlet =~ s/.zip//;
 			progress  ("$zimlet... ");
-			runAsZimbra ("/opt/zimbra/bin/zimlet deploy zimlets/$zimletfile");
+			runAsZimbra ("/opt/zimbra/bin/zmzimletctl deploy zimlets/$zimletfile");
 		}
 		progress ( "Done\n" );
 	}
+
+	# Install zimlets
+	if (opendir DIR, "/opt/zimbra/zimlets-network") {
+		progress ( "Installing network zimlets... " );
+		my @zimlets = grep { !/^\./ } readdir(DIR);
+		foreach my $zimletfile (@zimlets) {
+			my $zimlet = $zimletfile;
+			$zimlet =~ s/.zip//;
+			progress  ("$zimlet... ");
+			runAsZimbra ("/opt/zimbra/bin/zmzimletctl deploy zimlets-network/$zimletfile");
+		}
+		progress ( "Done\n" );
+	}
+
 	configLog("configInstallZimlets");
 }
 
@@ -2122,7 +2229,11 @@ sub setupCrontab {
 		$backupSchedule = `su - zimbra -c "zmschedulebackup -s"`;
 		chomp $backupSchedule;
 	}
-	`crontab -u zimbra -l > /tmp/crontab.zimbra.orig`;
+	if ($platform =~ /SUSE/) {
+		`cp -f "/var/spool/cron/tabs/zimbra /tmp/crontab.zimbra.orig"`;
+	} else {
+		`crontab -u zimbra -l > /tmp/crontab.zimbra.orig`;
+	}
 	my $rc = 0xffff & system("grep ZIMBRASTART /tmp/crontab.zimbra.orig > /dev/null 2>&1");
 	if ($rc) {
 		`cat /dev/null > /tmp/crontab.zimbra.orig`;
@@ -2152,7 +2263,7 @@ sub setupCrontab {
 	`crontab -u zimbra /tmp/crontab.zimbra`;
 	if ( -f "/opt/zimbra/bin/zmschedulebackup" && $backupSchedule ne "") {
 		$backupSchedule =~ s/"/\\"/g;
-		`su - zimbra -c "/opt/zimbra/bin/zmschedulebackup -R $backupSchedule"`;
+		`su - zimbra -c "/opt/zimbra/bin/zmschedulebackup -R $backupSchedule" > /dev/null 2>&1`;
 	}
 	progress ("Done\n");
 	configLog("setupCrontab");
@@ -2239,6 +2350,8 @@ getSystemStatus();
 
 if (!$ldapRunning && $ldapConfigured) {
 	startLdap();
+}
+if ($ldapConfigured) {
 	setLdapDefaults();
 }
 

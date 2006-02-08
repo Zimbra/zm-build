@@ -75,13 +75,13 @@ $(BUILD_ROOT)/zimbra.spec:
 	rm -f zimbra.post
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/zimlets" >> \
 		$(BUILD_ROOT)/zimbra.spec
-	echo "%attr(-, zimbra, zimbra) /opt/zimbra/migration" >> \
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/zimlets-extra" >> \
 		$(BUILD_ROOT)/zimbra.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/jakarta-tomcat-5.5.7" >> \
 		$(BUILD_ROOT)/zimbra.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/perdition-1.17" >> \
 		$(BUILD_ROOT)/zimbra.spec
-	echo "%attr(-, zimbra, zimbra) /opt/zimbra/mysql-standard-4.1.10a-pc-linux-gnu-i686" >> \
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/mysql-standard-4.1.16-pc-linux-gnu-i686-glibc23" >> \
 		$(BUILD_ROOT)/zimbra.spec
 
 store_stage: $(STORE_COMPONENTS) $(ZIMLET_COMPONENTS)
@@ -136,18 +136,45 @@ $(STORE_DEST_DIR)/$(TOMCAT_DIR): $(STORE_DEST_DIR) $(STORE_DEST_DIR)/$(TOMCAT_DI
 $(WEBAPP_DIR): 
 	mkdir -p $@
 
-$(SERVICE_DIR)/build/dist/zimlets/phone.zip:
+$(SERVICE_DIR)/build/dist/zimlets-extra/nofile:
 	(cd $(SERVICE_DIR); $(ANT) \
 		-Dplat.tag=$(BUILD_PLATFORM) \
 		-Dzimbra.buildinfo.version=$(VERSION_TAG) \
 		-Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) \
 		-Dzimbra.buildinfo.host=$(HOST) package-zimlets ; )
 
-$(STORE_DEST_DIR)/zimlets: $(SERVICE_DIR)/build/dist/zimlets/phone.zip
+$(SERVICE_DIR)/build/dist/zimlets/nofile:
+	(cd $(SERVICE_DIR); $(ANT) \
+		-Dplat.tag=$(BUILD_PLATFORM) \
+		-Dzimbra.buildinfo.version=$(VERSION_TAG) \
+		-Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) \
+		-Dzimbra.buildinfo.host=$(HOST) package-zimlets ; )
+
+$(ZIMLET_DIR)/build/dist/zimlets/nofile:
+	(cd $(ZIMLET_DIR); $(ANT) \
+		-Dplat.tag=$(BUILD_PLATFORM) \
+		-Dzimbra.buildinfo.version=$(VERSION_TAG) \
+		-Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) \
+		-Dzimbra.buildinfo.host=$(HOST) package-zimlets ; )
+
+$(ZIMLET_DIR)/build/dist/zimlets-extra/nofile:
+	(cd $(ZIMLET_DIR); $(ANT) \
+		-Dplat.tag=$(BUILD_PLATFORM) \
+		-Dzimbra.buildinfo.version=$(VERSION_TAG) \
+		-Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) \
+		-Dzimbra.buildinfo.host=$(HOST) package-zimlets ; )
+
+$(STORE_DEST_DIR)/zimlets: $(SERVICE_DIR)/build/dist/zimlets/nofile $(ZIMLET_DIR)/build/dist/zimlets/nofile
 	mkdir -p $@
 	cp $(SERVICE_DIR)/build/dist/zimlets/* $@
+	cp $(ZIMLET_DIR)/build/dist/zimlets/* $@
 
-$(STORE_DEST_DIR)/migration:
+$(STORE_DEST_DIR)/zimlets-extra: $(SERVICE_DIR)/build/dist/zimlets-extra/nofile $(ZIMLET_DIR)/build/dist/zimlets-extra/nofile
+	mkdir -p $@
+	cp $(SERVICE_DIR)/build/dist/zimlets-extra/* $@
+	cp $(ZIMLET_DIR)/build/dist/zimlets-extra/* $@
+
+$(WEBAPP_DIR)/zimbra/downloads:
 	mkdir -p $@
 	cp $(SERVICE_DIR)/src/windows/*exe $@
 
@@ -164,3 +191,4 @@ $(STORE_DEST_DIR)/$(TOMCAT_DIR)/webapps/service/WEB-INF/zimbra.tld: $(ZIMLET_DIR
 
 $(ZIMLET_DIR)/build/dist/conf/zimbra.tld:
 	(cd $(ZIMLET_DIR); ant package)
+

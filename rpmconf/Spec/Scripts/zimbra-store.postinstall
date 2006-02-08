@@ -30,10 +30,10 @@ mkdir -p /opt/zimbra/perdition/var/run
 chown -R zimbra:zimbra /opt/zimbra/perdition/var
 
 rm -f /opt/zimbra/mysql
-ln -s /opt/zimbra/mysql-standard-4.1.14-apple-darwin8.2.0-powerpc /opt/zimbra/mysql
+ln -s /opt/zimbra/mysql-standard-4.1.16-apple-darwin8.2.0-powerpc /opt/zimbra/mysql
 # Can't get the dylib to hold the correct path...
-rm -f /opt/zimbra/mysql-standard-4.1.14-apple-darwin8.2.0-powerpc/lib/mysql
-ln -s /opt/zimbra/mysql-standard-4.1.14-apple-darwin8.2.0-powerpc/lib /opt/zimbra/mysql-standard-4.1.14-apple-darwin8.2.0-powerpc/lib/mysql
+rm -f /opt/zimbra/mysql-standard-4.1.16-apple-darwin8.2.0-powerpc/lib/mysql
+ln -s /opt/zimbra/mysql-standard-4.1.16-apple-darwin8.2.0-powerpc/lib /opt/zimbra/mysql-standard-4.1.14-apple-darwin8.2.0-powerpc/lib/mysql
 
 
 H=`hostname -s`
@@ -59,9 +59,6 @@ egrep -q '^%zimbra.*tomcat' /etc/sudoers
 if [ $? != 0 ]; then
 	echo "%zimbra ALL=NOPASSWD:/opt/zimbra/libexec/zmtomcatstart" >> /etc/sudoers
 fi
-
-su - zimbra -c "mkdir -p /opt/zimbra/tomcat/webapps/service; cd /opt/zimbra/tomcat/webapps/service; jar xf ../service.war"
-su - zimbra -c "mkdir -p /opt/zimbra/tomcat/webapps/zimbra; cd /opt/zimbra/tomcat/webapps/zimbra; jar xf ../zimbra.war"
 
 cp -f /opt/zimbra/openldap/etc/openldap/slapd.conf /opt/zimbra/openldap/etc/openldap/slapd.conf.fcs
 sed -e 's/TLSCACertificateFile/#TLSCACertificateFile/g' \

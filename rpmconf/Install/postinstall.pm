@@ -30,6 +30,7 @@ sub configure {
 
 	if (main::isEnabled("zimbra-ldap")) {
 		main::runAsZimbra ("zmprov mcf zimbraComponentAvailable ''");
+		main::runAsZimbra ("zmlocalconfig -u trial_expiration_date");
 	}
 
 	if (!defined ($main::options{c}) && 1) {
@@ -39,9 +40,9 @@ sub configure {
 					main::progress ("$_");
 				}
 				close NOTIFY;
-				main::progress ("Notification complete!\n");
+				#main::progress ("Notification complete!\n");
 			} else {
-				main::progress ("ERROR: Notification failed!\n\n");
+				#main::progress ("ERROR: Notification failed!\n\n");
 			}
 		} else {
 		main::progress ("Notification skipped\n");

@@ -144,8 +144,6 @@ $(CORE_DEST_DIR)/lib: $(WEBAPP_DIR)/service.war $(LDAP_DEST_DIR)/$(LDAP_DIR) $(M
 	cp -pr $(SERVICE_DIR)/build/dist/lib/* $@
 	cp -pr $(NATIVE_DIR)/build/libzimbra-native.$(JNI_EXT) $@
 	(cd $@; tar xzf $(THIRD_PARTY)/mysql/$(BUILD_PLATFORM)/mysql-$(MYSQL_CLIENT_VERSION).tgz)
-	mkdir $(CORE_DEST_DIR)/lib/jars
-	mv -f $(CORE_DEST_DIR)/lib/*jar $(CORE_DEST_DIR)/lib/jars
 	cp -f $(CORE_DEST_DIR)/lib/libzimbra* $(CORE_DEST_DIR)/lib/jars
 
 $(NATIVE_DIR)/build/libzimbra-native.$(JNI_EXT):
@@ -262,4 +260,14 @@ $(CORE_DEST_DIR)/bin:
 	cp $(ZIMBRA_BIN_DIR)/zmmtactl $@
 	cp $(ZIMBRA_BIN_DIR)/zmspellctl $@
 	cp $(ZIMBRA_BIN_DIR)/zmapachectl $@
+	rm -f $@/zmmsgtrace
+	rm -f $@/zmmtareport
+
+$(CORE_DEST_DIR)/lib/libpopt.0.dylib: $(CORE_DEST_DIR)/lib
+	(cd $(CORE_DEST_DIR); tar xzf $(THIRD_PARTY)/expat/builds/$(BUILD_PLATFORM)/expat.tgz)
+	rm -rf $(CORE_DEST_DIR)/include
+
+$(CORE_DEST_DIR)/lib/libexpat.dylib: $(CORE_DEST_DIR)/lib
+	(cd $(CORE_DEST_DIR); tar xzf $(THIRD_PARTY)/popt/builds/$(BUILD_PLATFORM)/popt.tgz)
+	rm -rf $(CORE_DEST_DIR)/include
 
