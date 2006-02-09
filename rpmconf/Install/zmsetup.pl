@@ -305,26 +305,24 @@ sub setLdapDefaults {
 	progress ( "Setting defaults from ldap..." );
 
 	my $rc = 0xffff & system("su - zimbra -c \"zmprov gs $config{HOSTNAME} | grep zimbraMailSSLPort | sed -e 's/zimbraMailSSLPort: //' > /tmp/ld.out\"");
-
 	my $sslport=`cat /tmp/ld.out`;
+
 	$rc = 0xffff & system("su - zimbra -c \"zmprov gs $config{HOSTNAME} | grep zimbraMailPort | sed -e 's/zimbraMailPort: //' > /tmp/ld.out\"");
 	my $mailport=`cat /tmp/ld.out`;
 
+	$rc = 0xffff & system("su - zimbra -c \"zmprov gs $config{HOSTNAME} | grep zimbraMailMode | sed -e 's/zimbraMailMode: //' > /tmp/ld.out\"");
+	my $mailmode=`cat /tmp/ld.out`;
+
 	chomp $sslport;
 	chomp $mailport;
-	if ($sslport == 0 && $mailport != 0) {
-		$config{HTTPPORT} = $mailport;
-		$config{HTTPSPORT} = 443;
-		$config{MODE} = "http";
-	} elsif ($sslport != 0 && $mailport == 0) {
-		$config{HTTPPORT} = 80;
-		$config{HTTPSPORT} = $sslport;
-		$config{MODE} = "https";
-	} else {
-		$config{HTTPSPORT} = $sslport;
-		$config{HTTPPORT} = $mailport;
-		$config{MODE} = "both";
-	}
+	chomp $mailmode;
+
+	$config{HTTPPORT} = $mailport;
+	$config{HTTPSPORT} = $sslport;
+	$config{MODE} = $mailmode;
+	if ($config{HTTPPORT} eq 0) { $config{HTTPPORT} = 80; }
+	if ($config{HTTPSPORT} eq 0) { $config{HTTPSPORT} = 443; }
+	if ($config{MODE} eq "") { $config{MODE} = "mixed"; }
 
 	$rc = 0xffff & system("su - zimbra -c \"zmprov gs $config{HOSTNAME} | grep zimbraSmtpHostname | sed -e 's/zimbraSmtpHostname: //' > /tmp/ld.out\"");
 
