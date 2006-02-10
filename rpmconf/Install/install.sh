@@ -94,6 +94,25 @@ if [ $AUTOINSTALL = "no" ]; then
 	setRemove
 	getInstallPackages
 
+    findLatestPackage zimbra-core
+	f=`basename $file`
+	p=`bin/get_plat_tag.sh`
+	echo $f | grep -q $p > /dev/null 2>&1
+	if [ $? -ne 0 ]; then
+		echo "You appear to be installing packages on a platform different"
+		echo "than the platform for which they were built"
+		echo ""
+		echo "This platform is $p"
+		echo "Packages found: $f"
+		echo "This may or may not work"
+		echo ""
+		askYN "Install anyway?" "N"
+		if [ $response = "no" ]; then
+			echo "Exiting..."
+			exit 1
+		fi
+	fi
+
 	verifyExecute
 
 else
