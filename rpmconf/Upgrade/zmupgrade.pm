@@ -297,6 +297,7 @@ sub upgradeBM2 {
 	if ( -d "/opt/zimbra/postfix-2.2.3/spool" ) {
 		Migrate::log("Moving postfix queues");
 		my @dirs = qw /active bounce corrupt defer deferred flush hold incoming maildrop/;
+		`mkdir -p /opt/zimbra/postfix-2.2.5/spool`;
 		foreach my $d (@dirs) {
 			if (-d "/opt/zimbra/postfix-2.2.3/spool/$d/") {
 				Migrate::log("Moving $d");
@@ -304,7 +305,6 @@ sub upgradeBM2 {
 				`chown -R postfix:postdrop /opt/zimbra/postfix-2.2.5/spool/$d`;
 			}
 		}
-
 	}
 
 	return 0;
@@ -577,17 +577,24 @@ sub upgradeBM4 {
 
 	return 0;
 }
+
 sub upgradeBGA {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
 	Migrate::log("Updating from 3.0.0_GA");
 	return 0;
-}
 
-sub upgradeBM4 {
-	my ($startBuild, $targetVersion, $targetBuild) = (@_);
-	Migrate::log("Updating from 3.0.0_M4");
-
-	return 0;
+	if ( -d "/opt/zimbra/postfix-2.2.5/spool" ) {
+		Migrate::log("Moving postfix queues");
+		my @dirs = qw /active bounce corrupt defer deferred flush hold incoming maildrop/;
+		`mkdir -p /opt/zimbra/postfix-2.2.8/spool`;
+		foreach my $d (@dirs) {
+			if (-d "/opt/zimbra/postfix-2.2.5/spool/$d/") {
+				Migrate::log("Moving $d");
+				`cp -Rf /opt/zimbra/postfix-2.2.5/spool/$d/* /opt/zimbra/postfix-2.2.8/spool/$d`;
+				`chown -R postfix:postdrop /opt/zimbra/postfix-2.2.8/spool/$d`;
+			}
+		}
+	}
 }
 
 sub upgrade35M1 {
