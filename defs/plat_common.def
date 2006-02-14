@@ -28,7 +28,7 @@ BDB_SOURCE	:= $(THIRD_PARTY)/sleepycat/builds/$(BUILD_PLATFORM)/$(BDB_DIR)
 
 TOMCAT_VERSION	:= 5.5.15
 TOMCAT_DIR	:= apache-tomcat-$(TOMCAT_VERSION)
-TOMCAT_SOURCE 	:= $(THIRD_PARTY)/apache-tomcat/$(TOMCAT_DIR)
+TOMCAT_SOURCE 	:= $(THIRD_PARTY)/jakarta-tomcat/$(TOMCAT_DIR)
 
 MYSQL_VERSION	:= standard-4.1.16-pc-linux-gnu-i686-glibc23
 MYSQL_CLIENT_VERSION := standard-4.1.16-clientlibs
