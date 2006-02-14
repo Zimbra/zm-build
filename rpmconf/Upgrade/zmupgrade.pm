@@ -583,6 +583,10 @@ sub upgradeBGA {
 	Migrate::log("Updating from 3.0.0_GA");
 	return 0;
 
+	if ( -d "/opt/zimbra/clamav-0.87.1/db" && -d "/opt/zimbra/clamav-0.88" &&
+		! -d "/opt/zimbra/clamav-0.88/db" )  {
+			`cp -fR /opt/zimbra/clamav-0.87.1/db /opt/zimbra/clamav-0.88`;
+	}
 	if ( -d "/opt/zimbra/postfix-2.2.5/spool" ) {
 		Migrate::log("Moving postfix queues");
 		my @dirs = qw /active bounce corrupt defer deferred flush hold incoming maildrop/;
@@ -595,6 +599,7 @@ sub upgradeBGA {
 			}
 		}
 	}
+	`/opt/zimbra/bin/zmfixperms.sh`;
 }
 
 sub upgrade35M1 {
