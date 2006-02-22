@@ -81,6 +81,11 @@ chown -R zimbra:zimbra /opt/zimbra/clamav/db
 
 /opt/zimbra/bin/zmfixperms.sh
 
+if [ ! -f /opt/zimbra/postfix/conf/main.cf ]; then
+	touch /opt/zimbra/postfix/conf/main.cf
+	chown zimbra:zimbra /opt/zimbra/postfix/conf/main.cf
+fi
+
 egrep -q '/opt/zimbra/amavisd-new-2.3.3/tmp' /etc/fstab
 if [ $? != 0 ]; then
 	uid=`id -u zimbra`

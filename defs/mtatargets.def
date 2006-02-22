@@ -107,7 +107,7 @@ $(MTA_DEST_DIR):
 $(MTA_DEST_DIR)/$(POSTFIX_DIR): $(MTA_DEST_DIR)
 	@echo "*** Creating postfix"
 	(cd $(MTA_DEST_DIR); tar xzf $(POSTFIX_SOURCE).tgz;)
-	cp $(SERVICE_DIR)/conf/postfix/main.cf $(MTA_DEST_DIR)/$(POSTFIX_DIR)/conf/main.cf
+	rm -f $(MTA_DEST_DIR)/$(POSTFIX_DIR)/conf/main.cf
 	cp $(SERVICE_DIR)/conf/postfix/master.cf $(MTA_DEST_DIR)/$(POSTFIX_DIR)/conf/master.cf
 	cp -f $(THIRD_PARTY)/PostFix/PostFix-$(POSTFIX_VERSION)/builds/qshape.pl $(MTA_DEST_DIR)/$(POSTFIX_DIR)/sbin/qshape.pl
 

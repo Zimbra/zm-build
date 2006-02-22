@@ -61,6 +61,11 @@ chown -R zimbra:zimbra /opt/zimbra/clamav/db
 
 /bin/sh /opt/zimbra/bin/zmfixperms.sh
 
+if [ ! -f /opt/zimbra/postfix/conf/main.cf ]; then
+	touch /opt/zimbra/postfix/conf/main.cf
+	chown zimbra:zimbra /opt/zimbra/postfix/conf/main.cf
+fi
+
 egrep -v '^%zimbra.*postfix' /etc/sudoers > /tmp/sudoers
 mv -f /tmp/sudoers /etc/sudoers
 echo "%zimbra   ALL=NOPASSWD:/opt/zimbra/postfix-2.2.8/sbin/postfix, /opt/zimbra/postfix-2.2.8/sbin/postalias, /opt/zimbra/postfix-2.2.8/sbin/qshape.pl, /opt/zimbra/postfix-2.2.8/sbin/postconf,/opt/zimbra/postfix-2.2.8/sbin/postsuper" >> /etc/sudoers

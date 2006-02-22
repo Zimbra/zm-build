@@ -45,6 +45,11 @@ mv -f /tmp/sudoers /etc/sudoers
 echo "%zimbra   ALL=NOPASSWD:/opt/zimbra/postfix-2.2.8/sbin/postfix, /opt/zimbra/postfix-2.2.8/sbin/postalias, /opt/zimbra/postfix-2.2.8/sbin/qshape.pl, /opt/zimbra/postfix-2.2.8/sbin/postconf,/opt/zimbra/postfix-2.2.8/sbin/postsuper" >> /etc/sudoers
 chmod 440 /etc/sudoers
 
+if [ ! -f /opt/zimbra/postfix/conf/main.cf ]; then
+	touch /opt/zimbra/postfix/conf/main.cf
+	chown zimbra:zimbra /opt/zimbra/postfix/conf/main.cf
+fi
+
 PKG=`echo ${RECEIPT_PATH} | sed -e 's|.*/\(zimbra-mta.[^/]*pkg\)/.*|\1|' | sed -e 's/\./-/'`
 D=`date +%s`
 echo "${D}: UPGRADED ${PKG}" >> /opt/zimbra/.install_history
