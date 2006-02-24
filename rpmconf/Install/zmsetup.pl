@@ -35,7 +35,7 @@ use lib "/opt/zimbra/zimbramon/lib/darwin-thread-multi-2level";
 our $platform = `/opt/zimbra/bin/get_plat_tag.sh`;
 chomp $platform;
 
-if ($platform eq "MACOSX") {
+if ($platform =~ /MACOSX/) {
 	progress ("Checking java version...");
 	my $rc = 0xffff & system("su - zimbra -c \"java -version 2>&1 | grep 'java version' | grep -q 1.5\"");
 	if ($rc) {
@@ -173,7 +173,7 @@ sub loadConfig {
 
 sub checkPortConflicts {
 
-	if ($platform eq "MACOSX") {
+	if ($platform =~ /MACOSX/) {
 		# Shutdown postfix in launchd
 		if (-f "/System/Library/LaunchDaemons/org.postfix.master.plist") {
 			progress ( "Disabling postfix in launchd\n");
@@ -239,7 +239,7 @@ sub isInstalled {
 	my $good = 1;
 	if ($platform eq "DEBIAN3.1") {
 		$pkgQuery = "dpkg -s $pkg | egrep '^Status: ' | grep 'not-installed'";
-	} elsif ($platform eq "MACOSX") {
+	} elsif ($platform =~ /MACOSX/) {
 		my @l = sort glob ("/Library/Receipts/${pkg}*");
 		if ( $#l < 0 ) { return 0; }
 		$pkgQuery = "test -d $l[$#l]";
@@ -376,7 +376,7 @@ sub setDefaults {
 	$config{HTTPPORT} = 80;
 	$config{HTTPSPORT} = 443;
 
-	if ($platform eq "MACOSX") {
+	if ($platform =~ /MACOSX/) {
 		setLocalConfig ("zimbra_java_home", "/System/Library/Frameworks/JavaVM.framework/Versions/1.5/Home");
 		$config{HOSTNAME} = `hostname`;
 	} else {
