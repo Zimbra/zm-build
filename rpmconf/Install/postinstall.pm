@@ -46,6 +46,7 @@ sub configure {
 			}
 		} else {
 		main::progress ("Notification skipped\n");
+		}
 	}
 }
 
