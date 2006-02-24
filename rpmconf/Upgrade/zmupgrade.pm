@@ -67,10 +67,11 @@ my %updateFuncs = (
 	"3.0.0_M3" => \&upgradeBM3,
 	"3.0.0_M4" => \&upgradeBM4,
 	"3.0.0_GA" => \&upgradeBGA,
+	"3.0.1_GA" => \&upgrade301GA,
 	"3.5.0_M1" => \&upgrade35M1,
 );
 
-my @versionOrder = ("3.0.M1", "3.0.0_M2", "3.0.0_M3", "3.0.0_M4", "3.0.0_GA", "3.5.0_M1");
+my @versionOrder = ("3.0.M1", "3.0.0_M2", "3.0.0_M3", "3.0.0_M4", "3.0.0_GA", "3.0.1_GA", "3.5.0_M1");
 
 my $startVersion;
 my $targetVersion;
@@ -156,6 +157,11 @@ sub upgrade {
 		if ($curSchemaVersion < 22) {
 			$curSchemaVersion = 22;
 		}
+	} elsif ($startVersion eq "3.0.1_GA") {
+		print "This appears to be 3.0.1_GA\n";
+		if ($curSchemaVersion < 22) {
+			$curSchemaVersion = 22;
+		}
 	} elsif ($startVersion eq "3.5.0_M1") {
 		print "This appears to be 3.5.0_M1\n";
 		if ($curSchemaVersion < 22) {
@@ -187,6 +193,11 @@ sub upgrade {
 				$curSchemaVersion = 22;
 			}
 		} elsif ($startVersion eq "3.0.0_GA") {
+			print "No schema upgrade needed\n";
+			if ($curSchemaVersion < 22) {
+				$curSchemaVersion = 22;
+			}
+		} elsif ($startVersion eq "3.0.1_GA") {
 			print "No schema upgrade needed\n";
 			if ($curSchemaVersion < 22) {
 				$curSchemaVersion = 22;
@@ -611,6 +622,12 @@ sub upgrade35M1 {
 	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraGalLdapFilterDef 'zimbraResources:(&(|(cn=*%s*)(sn=*%s*)(gn=*%s*)(mail=*%s*)(zimbraMailDeliveryAddress=*%s*)(zimbraMailAlias=*%s*)(zimbraMailAddress=*%s*))(objectclass=zimbraCalendarResource))'"`;
 	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraGalLdapFilterDef 'ad:(&(|(cn=*%s*)(sn=*%s*)(gn=*%s*)(mail=*%s*))(!(msExchHideFromAddressLists=TRUE))(mailnickname=*)(|(&(objectCategory=person)(objectClass=user)(!(homeMDB=*))(!(msExchHomeServerName=*)))(&(objectCategory=person)(objectClass=user)(|(homeMDB=*)(msExchHomeServerName=*)))(&(objectCategory=person)(objectClass=contact))(objectCategory=group)(objectCategory=publicFolder)(objectCategory=msExchDynamicDistributionList)))'"`;
 
+	return 0;
+}
+
+sub upgrade301GA {
+	my ($startBuild, $targetVersion, $targetBuild) = (@_);
+	Migrate::log("Updating from 3.0.1_GA");
 	return 0;
 }
 
