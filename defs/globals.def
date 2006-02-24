@@ -23,9 +23,6 @@ ARCH := i386
 ifeq ($(BUILD_PLATFORM), MACOSX)
 	ARCH := ppc
 endif
-ifeq ($(BUILD_PLATFORM), MACOSXx86)
-	ARCH := ppc
-endif
 
 ifeq ($(TAG), )
 	TAG := HEAD
