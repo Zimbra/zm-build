@@ -1,5 +1,6 @@
 zcs-$(RELEASE).dmg: $(ARCH)/zcs.mpkg packages
 	mkdir $(ARCH)/tmp
+	cp -f $(WEBAPP_DIR)/zimbra/downloads/* $(ARCH)
 	cp -R $(ARCH)/zcs.mpkg $(ARCH)/tmp
 	hdiutil create -srcfolder $(ARCH)/tmp -volname zcs-$(VERSION_TAG).$(BUILD_PLATFORM) $(ARCH)/zcs-$(VERSION_TAG).$(BUILD_PLATFORM).dmg
 	rm -rf $(ARCH)/tmp
@@ -59,6 +60,7 @@ zcs_stage:
 	tar czf zcs-$(VERSION_TAG).tgz zcs
 	mv zcs-$(VERSION_TAG).tgz $(PACKAGE_DIR)
 	(cd $(PACKAGE_DIR); ln -s zcs-$(VERSION_TAG).tgz zcs.tgz)
+	cp -f $(WEBAPP_DIR)/zimbra/downloads/* $(PACKAGE_DIR)
 	@echo "*** BUILD COMPLETED ***"
 
 packages: core mta store ldap snmp logger apache spell
