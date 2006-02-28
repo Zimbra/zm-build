@@ -3,8 +3,8 @@
 #
 # process logs
 #
-00,10,20,30,40,50 * * * * /opt/zimbra/bin/zmlogprocess > /tmp/logprocess.out 2>&1
+00,10,20,30,40,50 * * * * /opt/zimbra/libexec/zmlogprocess > /tmp/logprocess.out 2>&1
 #
 # Graph generation
 #
-10 * * * * /opt/zimbra/bin/zmgengraphs >> /tmp/gengraphs.out 2>&1
+10 * * * * /opt/zimbra/libexec/zmgengraphs >> /tmp/gengraphs.out 2>&1

@@ -26,7 +26,7 @@
 
 SAVEDIR=/opt/zimbra/.saveconfig
 
-/bin/sh /opt/zimbra/bin/zmfixperms.sh
+/bin/sh /opt/zimbra/libexec/zmfixperms
 
 RF="$SAVEDIR/config.save"
 while read i; do

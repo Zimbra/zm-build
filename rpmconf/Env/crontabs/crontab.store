@@ -4,11 +4,11 @@
 # Log pruning
 #
 30 2 * * * find /opt/zimbra/tomcat/logs/ -type f -name \*log\* -mtime +8 -exec rm {} \; > /dev/null 2>&1
-0 2 * * * /opt/zimbra/bin/zmroll_catalina.sh > /dev/null 2>&1
+0 2 * * * /opt/zimbra/libexec/zmroll_catalina > /dev/null 2>&1
 #
 # Purge messages
 #
-0 3 * * * /opt/zimbra/bin/zmpurgemessages > /dev/null 2>&1
+0 3 * * * /opt/zimbra/libexec/zmpurgemessages > /dev/null 2>&1
 #
 # Clean up the quarantine dir
 #
@@ -16,6 +16,6 @@
 #
 # Table maintenance
 #
-30 1 * * * /opt/zimbra/bin/zmmaintaintables >> /dev/null 2>&1
+30 1 * * * /opt/zimbra/libexec/zmmaintaintables >> /dev/null 2>&1
 # BACKUP BEGIN
 # BACKUP END

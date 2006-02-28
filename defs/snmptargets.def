@@ -31,11 +31,6 @@ $(BUILD_ROOT)/resources/zimbra-snmp:
 	chmod 755 $@/postinstall
 	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-snmp.postupgrade $@/postupgrade
 	chmod 755 $@/postupgrade
-#       cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbrasnmp.pre $@/preinstall
-#       echo "#!/bin/bash" > $@/postinst
-#       echo "sh /opt/zimbra/bin/zmfixperms.sh" >> $@/postinst
-#       cat $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbrasnmp.post >> $@/postinstall
-#       chmod 555 $@/*
 
 snmp_pkg_spec_deb: $(SNMP_DEST_ROOT)/DEBIAN/control
 
@@ -43,7 +38,7 @@ $(SNMP_DEST_ROOT)/DEBIAN: force
 	mkdir -p $@
 	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbrasnmp.pre $@/preinst
 	echo "#!/bin/bash" > $@/postinst
-	echo "sh /opt/zimbra/bin/zmfixperms.sh" >> $@/postinst
+	echo "sh /opt/zimbra/libexec/zmfixperms" >> $@/postinst
 	cat $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbrasnmp.post >> $@/postinst
 	chmod 555 $@/*
 

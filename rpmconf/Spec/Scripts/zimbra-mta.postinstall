@@ -56,7 +56,7 @@ chown -R zimbra:zimbra /opt/zimbra/amavisd/*
 mkdir -p /opt/zimbra/clamav/db
 chown -R zimbra:zimbra /opt/zimbra/clamav/db
 
-/bin/sh /opt/zimbra/bin/zmfixperms.sh
+/bin/sh /opt/zimbra/libexec/zmfixperms
 
 egrep -v '^%zimbra.*postfix' /etc/sudoers > /tmp/sudoers
 mv -f /tmp/sudoers /etc/sudoers

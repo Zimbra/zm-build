@@ -85,7 +85,7 @@ my @packageList = (
 	);
 
 my %installedPackages = ();
-my $platform = `/opt/zimbra/bin/get_plat_tag.sh`;
+my $platform = `/opt/zimbra/libexec/get_plat_tag.sh`;
 chomp $platform;
 
 #####################
@@ -628,7 +628,7 @@ sub startLdap {
 	$rc = $rc >> 8;
 	if ($rc) {
 		Migrate::log("Starting ldap");
-		$rc = 0xffff & system("su - zimbra -c \"/opt/zimbra/bin/zmldapapplyldif > /dev/null 2>&1\"");
+		$rc = 0xffff & system("su - zimbra -c \"/opt/zimbra/libexec/zmldapapplyldif > /dev/null 2>&1\"");
 		$rc = 0xffff & system("su - zimbra -c \"/opt/zimbra/bin/ldap status > /dev/null 2>&1\"");
 		$rc = $rc >> 8;
 		if ($rc) {

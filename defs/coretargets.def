@@ -37,10 +37,6 @@ $(BUILD_ROOT)/resources/zimbra-core:
 	chmod 755 $@/preupgrade
 	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-core.postupgrade $@/postupgrade
 	chmod 755 $@/postupgrade
-#	echo "#!/bin/bash" > $@/postinst
-#	echo "sh /opt/zimbra/bin/zmfixperms.sh" >> $@/postinst
-#	cat $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbracore.post >> $@/postinstall
-#	chmod 555 $@/*
 
 core_pkg_spec_deb: $(CORE_DEST_ROOT)/DEBIAN/control
 
@@ -48,7 +44,7 @@ $(CORE_DEST_ROOT)/DEBIAN: force
 	mkdir -p $@
 	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbracore.pre $@/preinst
 	echo "#!/bin/bash" > $@/postinst
-	echo "sh /opt/zimbra/bin/zmfixperms.sh" >> $@/postinst
+	echo "sh /opt/zimbra/libexec/zmfixperms" >> $@/postinst
 	cat $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbracore.post >> $@/postinst
 	chmod 555 $@/*
 
@@ -81,6 +77,8 @@ $(BUILD_ROOT)/zimbracore.spec:
 	echo "%attr(755, root, root) /opt/zimbra/bin" >> \
 		$(BUILD_ROOT)/zimbracore.spec
 	echo "%attr(755, zimbra, zimbra) /opt/zimbra/doc" >> \
+		$(BUILD_ROOT)/zimbracore.spec
+	echo "%attr(755, root, root) /opt/zimbra/contrib" >> \
 		$(BUILD_ROOT)/zimbracore.spec
 	echo "%attr(755, root, root) /opt/zimbra/libexec" >> \
 		$(BUILD_ROOT)/zimbracore.spec
@@ -214,42 +212,32 @@ $(CORE_DEST_DIR)/conf: $(WEBAPP_DIR)/service.war
 $(CORE_DEST_DIR)/libexec: $(NATIVE_DIR)/build/zmtomcatstart 
 	@echo "*** Installing libexec"
 	mkdir -p $@/util/modules
-	cp -f -R $(SERVICE_DIR)/build/dist/libexec/zm*init $@
 	cp -f $(PACKAGE_CONF_DIR)/Install/zmsetup.pl $@/zmsetup.pl
 	cp -f $(PACKAGE_CONF_DIR)/Upgrade/zmupgrade.pm $@/zmupgrade.pm
 	mkdir -p $@/scripts
 	cp -f $(SERVICE_DIR)/src/db/Migrate.pm $@/scripts
 	cp -f $(SERVICE_DIR)/src/db/migrate*pl $@/scripts
 	cp -f $(SERVICE_DIR)/src/db/fixConversationCounts.pl $@/scripts
-	cp -f $(SERVICE_DIR)/src/bin/zmsetservername $@
-	cp -f $(SERVICE_DIR)/src/bin/zmnotifyinstall $@
 	cp -f $(PACKAGE_CONF_DIR)/Install/postinstall.pm $@/postinstall.pm
 	cp -f $(PACKAGE_CONF_DIR)/Install/Util/addUser.sh $@/addUser.sh
-	cp $(NATIVE_DIR)/build/zmtomcatstart $@
+	cp -f $(NATIVE_DIR)/build/zmtomcatstart $@
+	cp $(SERVICE_DIR)/src/libexec/* $@
+	cp $@/swatch $@/logswatch
+	cp -f $(BUILD_ROOT)/rpmconf/Build/get_plat_tag.sh $@
 
 $(CORE_DEST_DIR)/bin:
 	mkdir -p $@
 	cp -R $(SERVICE_DIR)/build/dist/bin/[a-z]* $@
-	rm -f $@/zm*init
 	mv $@/tomcat.production $@/tomcat
 	rm -f $(CORE_DEST_DIR)/bin/zmtransserver.bat
 	rm -f $(CORE_DEST_DIR)/bin/ldap
-	rm -f $(CORE_DEST_DIR)/bin/zmsetservername
-	rm -f $(CORE_DEST_DIR)/bin/zmnotifyinstall
 	mv $(CORE_DEST_DIR)/bin/ldap.production $(CORE_DEST_DIR)/bin/ldap
-	cp $(PACKAGE_CONF_DIR)/Build/get_plat_tag.sh $@
-	cp $(ZIMBRA_BIN_DIR)/swatch $@
-	cp $(ZIMBRA_BIN_DIR)/swatch $@/logswatch
 	cp $(ZIMBRA_BIN_DIR)/zmswatchctl $@
 	cp $(ZIMBRA_BIN_DIR)/zmlogswatchctl $@
-	cp $(ZIMBRA_BIN_DIR)/zmgengraphs $@
 	cp $(ZIMBRA_BIN_DIR)/zmcreatecert $@
 	cp $(ZIMBRA_BIN_DIR)/zmcertinstall $@
-	cp $(ZIMBRA_BIN_DIR)/zmroll_catalina.sh $@
 	cp $(ZIMBRA_BIN_DIR)/zmtlsctl $@
-	cp $(ZIMBRA_BIN_DIR)/zmfixperms.sh $@
 	cp $(ZIMBRA_BIN_DIR)/zmsyslogsetup $@
-	cp $(SERVICE_DIR)/src/bin/zmstatuslog $@
 	cp $(LDAP_DEST_ROOT)/opt/zimbra/$(LDAP_DIR)/bin/ldapsearch $@
 	cp $(ZIMBRA_BIN_DIR)/zmantispamctl $@
 	cp $(ZIMBRA_BIN_DIR)/zmantivirusctl $@
@@ -261,6 +249,10 @@ $(CORE_DEST_DIR)/bin:
 	cp $(ZIMBRA_BIN_DIR)/zmapachectl $@
 	rm -f $@/zmmsgtrace
 	rm -f $@/zmmtareport
+
+$(CORE_DEST_DIR)/contrib:
+	mkdir -p $@
+	cp -R $(SERVICE_DIR)/src/contrib/* $@
 
 $(CORE_DEST_DIR)/lib/libpopt.0.dylib: $(CORE_DEST_DIR)/lib
 	(cd $(CORE_DEST_DIR); tar xzf $(THIRD_PARTY)/expat/builds/$(BUILD_PLATFORM)/expat.tgz)

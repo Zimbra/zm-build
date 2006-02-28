@@ -76,7 +76,7 @@ chown -R zimbra:zimbra /opt/zimbra/amavisd/*
 mkdir -p /opt/zimbra/clamav/db
 chown -R zimbra:zimbra /opt/zimbra/clamav/db
 
-/opt/zimbra/bin/zmfixperms.sh
+/opt/zimbra/libexec/zmfixperms
 
 egrep -q '/opt/zimbra/amavisd-new-2.3.3/tmp' /etc/fstab
 if [ $? != 0 ]; then

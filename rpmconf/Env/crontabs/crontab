@@ -6,5 +6,5 @@
 #
 # Status logging
 #
-* * * * * /opt/zimbra/bin/zmstatuslog
-*/10 * * * * /opt/zimbra/bin/zmdisklog
+*/2 * * * * /opt/zimbra/libexec/zmstatuslog
+*/10 * * * * /opt/zimbra/libexec/zmdisklog

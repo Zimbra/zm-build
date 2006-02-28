@@ -32,7 +32,7 @@ use lib "/opt/zimbra/zimbramon/lib/i386-linux-thread-multi";
 use lib "/opt/zimbra/zimbramon/lib/i586-linux-thread-multi";
 use lib "/opt/zimbra/zimbramon/lib/darwin-thread-multi-2level";
 
-our $platform = `/opt/zimbra/bin/get_plat_tag.sh`;
+our $platform = `/opt/zimbra/libexec/get_plat_tag.sh`;
 chomp $platform;
 
 if ($platform eq "MACOSX") {
