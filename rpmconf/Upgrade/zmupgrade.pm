@@ -586,6 +586,7 @@ sub upgradeBGA {
 sub upgrade301GA {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
 	Migrate::log("Updating from 3.0.1_GA");
+	zmprov mcf `zmprov gcf zimbraGalLdapFilterDef | sed -e 's/(zimbraMailAddress\=\*\%s\*)//' -e 's/zimbraGalLdapFilterDef: /zimbraGalLdapFilterDef /'` 
 	return 0;
 }
 
