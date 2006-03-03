@@ -31,11 +31,6 @@ $(BUILD_ROOT)/resources/zimbra-store:
 	chmod 755 $@/postinstall
 	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-store.postupgrade $@/postupgrade
 	chmod 755 $@/postupgrade
-#       cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbrastore.pre $@/preinstall
-#       echo "#!/bin/bash" > $@/postinst
-#       echo "sh /opt/zimbra/bin/zmfixperms.sh" >> $@/postinst
-#       cat $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbrastore.post >> $@/postinstall
-#       chmod 555 $@/*
 
 store_pkg_spec_deb: $(STORE_DEST_ROOT)/DEBIAN/control
 
@@ -43,7 +38,7 @@ $(STORE_DEST_ROOT)/DEBIAN: force
 	mkdir -p $@
 	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra.pre $@/preinst
 	echo "#!/bin/bash" > $@/postinst
-	echo "sh /opt/zimbra/bin/zmfixperms.sh" >> $@/postinst
+	echo "sh /opt/zimbra/libexec/zmfixperms" >> $@/postinst
 	cat $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra.post >> $@/postinst
 	chmod 555 $@/*
 

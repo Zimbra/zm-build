@@ -88,7 +88,7 @@ my @packageList = (
 	);
 
 my %installedPackages = ();
-my $platform = `/opt/zimbra/bin/get_plat_tag.sh`;
+my $platform = `/opt/zimbra/libexec/get_plat_tag.sh`;
 chomp $platform;
 
 #####################
@@ -628,6 +628,7 @@ sub upgrade35M1 {
 sub upgrade301GA {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
 	Migrate::log("Updating from 3.0.1_GA");
+	zmprov mcf `zmprov gcf zimbraGalLdapFilterDef | sed -e 's/(zimbraMailAddress\=\*\%s\*)//' -e 's/zimbraGalLdapFilterDef: /zimbraGalLdapFilterDef /'`;
 	return 0;
 }
 
@@ -670,7 +671,7 @@ sub startLdap {
 	$rc = $rc >> 8;
 	if ($rc) {
 		Migrate::log("Starting ldap");
-		$rc = 0xffff & system("su - zimbra -c \"/opt/zimbra/bin/zmldapapplyldif > /dev/null 2>&1\"");
+		$rc = 0xffff & system("su - zimbra -c \"/opt/zimbra/libexec/zmldapapplyldif > /dev/null 2>&1\"");
 		$rc = 0xffff & system("su - zimbra -c \"/opt/zimbra/bin/ldap status > /dev/null 2>&1\"");
 		$rc = $rc >> 8;
 		if ($rc) {

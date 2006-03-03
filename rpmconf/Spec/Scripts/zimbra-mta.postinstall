@@ -59,7 +59,7 @@ chown -R zimbra:zimbra /opt/zimbra/amavisd/*
 mkdir -p /opt/zimbra/clamav/db
 chown -R zimbra:zimbra /opt/zimbra/clamav/db
 
-/bin/sh /opt/zimbra/bin/zmfixperms.sh
+/bin/sh /opt/zimbra/libexec/zmfixperms
 
 if [ ! -f /opt/zimbra/postfix/conf/main.cf ]; then
 	touch /opt/zimbra/postfix/conf/main.cf

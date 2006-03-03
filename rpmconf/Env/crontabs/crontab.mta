@@ -4,4 +4,4 @@
 #
 # Queue logging
 #
-*/10 * * * * /opt/zimbra/bin/zmqueuelog
+*/10 * * * * /opt/zimbra/libexec/zmqueuelog

@@ -31,11 +31,6 @@ $(BUILD_ROOT)/resources/zimbra-mta:
 	chmod 755 $@/postinstall
 	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-mta.postupgrade $@/postupgrade
 	chmod 755 $@/postupgrade
-#       cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbramta.pre $@/preinstall
-#       echo "#!/bin/bash" > $@/postinst
-#       echo "sh /opt/zimbra/bin/zmfixperms.sh" >> $@/postinst
-#       cat $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbramta.post >> $@/postinstall
-#       chmod 555 $@/*
 
 mta_pkg_spec_deb: $(MTA_DEST_ROOT)/DEBIAN/control
 
@@ -43,7 +38,7 @@ $(MTA_DEST_ROOT)/DEBIAN: force
 	mkdir -p $@
 	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbramta.pre $@/preinst
 	echo "#!/bin/bash" > $@/postinst
-	echo "sh /opt/zimbra/bin/zmfixperms.sh" >> $@/postinst
+	echo "sh /opt/zimbra/libexec/zmfixperms" >> $@/postinst
 	cat $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbramta.post >> $@/postinst
 	chmod 555 $@/*
 

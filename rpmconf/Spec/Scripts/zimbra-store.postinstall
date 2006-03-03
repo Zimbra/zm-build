@@ -59,7 +59,7 @@ mkdir -p /opt/zimbra/index
 mkdir -p /opt/zimbra/backup
 chown zimbra:zimbra /opt/zimbra/convertd /opt/zimbra/redolog /opt/zimbra/store /opt/zimbra/index /opt/zimbra/backup 
 
-/bin/sh /opt/zimbra/bin/zmfixperms.sh
+/bin/sh /opt/zimbra/libexec/zmfixperms
 
 egrep -q '^%zimbra.*tomcat' /etc/sudoers
 if [ $? != 0 ]; then
