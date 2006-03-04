@@ -248,7 +248,6 @@ $(CORE_DEST_DIR)/bin:
 	cp $(ZIMBRA_BIN_DIR)/zmspellctl $@
 	cp $(ZIMBRA_BIN_DIR)/zmapachectl $@
 	rm -f $@/zmmsgtrace
-	rm -f $@/zmmtareport
 
 $(CORE_DEST_DIR)/contrib:
 	mkdir -p $@
