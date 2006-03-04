@@ -11,4 +11,4 @@
 #
 # Daily reports
 #
-10 1 * * * /opt/zimbra/libexec/zmdailyreport | mail root
+10 1 * * * /opt/zimbra/libexec/zmdailyreport | mailx -s "Zimbra daily mail report" root
