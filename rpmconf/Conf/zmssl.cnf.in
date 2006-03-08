@@ -54,7 +54,7 @@ name_opt 	= ca_default		# Subject Name options
 cert_opt 	= ca_default		# Certificate field options
 
 # Extension copying option: use with caution.
-# copy_extensions = copy
+copy_extensions = copy
 
 # Extensions to add to a CRL. Note: Netscape communicator chokes on V2 CRLs
 # so this is commented out by default to leave a V1 CRL.
@@ -113,7 +113,7 @@ x509_extensions	= v3_ca	# The extentions to add to the self signed cert
 # so use this option with caution!
 string_mask = nombstr
 
-# req_extensions = v3_req # The extensions to add to a certificate request
+req_extensions = v3_req # The extensions to add to a certificate request
 
 [ req_distinguished_name ]
 countryName			= Country Name (2 letter code)
@@ -210,6 +210,7 @@ authorityKeyIdentifier=keyid,issuer:always
 
 basicConstraints = CA:FALSE
 keyUsage = nonRepudiation, digitalSignature, keyEncipherment
+@@ALTNAMES@@
 
 [ v3_ca ]
 
