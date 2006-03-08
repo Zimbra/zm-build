@@ -124,13 +124,6 @@ $(STORE_DEST_DIR)/$(TOMCAT_DIR): $(STORE_DEST_DIR) $(STORE_DEST_DIR)/$(TOMCAT_DI
 $(WEBAPP_DIR): 
 	mkdir -p $@
 
-$(SERVICE_DIR)/build/dist/zimlets-extra/nofile:
-	(cd $(SERVICE_DIR); $(ANT) \
-		-Dplat.tag=$(BUILD_PLATFORM) \
-		-Dzimbra.buildinfo.version=$(VERSION_TAG) \
-		-Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) \
-		-Dzimbra.buildinfo.host=$(HOST) package-zimlets ; )
-
 $(SERVICE_DIR)/build/dist/zimlets/nofile:
 	(cd $(SERVICE_DIR); $(ANT) \
 		-Dplat.tag=$(BUILD_PLATFORM) \
@@ -157,9 +150,8 @@ $(STORE_DEST_DIR)/zimlets: $(SERVICE_DIR)/build/dist/zimlets/nofile $(ZIMLET_DIR
 	cp $(SERVICE_DIR)/build/dist/zimlets/* $@
 	cp $(ZIMLET_DIR)/build/dist/zimlets/* $@
 
-$(STORE_DEST_DIR)/zimlets-extra: $(SERVICE_DIR)/build/dist/zimlets-extra/nofile $(ZIMLET_DIR)/build/dist/zimlets-extra/nofile
+$(STORE_DEST_DIR)/zimlets-extra: $(ZIMLET_DIR)/build/dist/zimlets-extra/nofile
 	mkdir -p $@
-	cp $(SERVICE_DIR)/build/dist/zimlets-extra/* $@
 	cp $(ZIMLET_DIR)/build/dist/zimlets-extra/* $@
 
 $(WEBAPP_DIR)/zimbra/downloads:
