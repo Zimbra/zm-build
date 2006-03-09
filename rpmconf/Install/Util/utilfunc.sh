@@ -507,7 +507,7 @@ restoreCerts() {
 	if [ -f "$SAVEDIR/cacerts" ]; then
 		cp $SAVEDIR/cacerts /opt/zimbra/java/jre/lib/security/cacerts
 	fi
-	if [ -f "$SAVEDIR/keystore" ]; then
+	if [ -f "$SAVEDIR/keystore" -a -d "/opt/zimbra/tomcat/conf" ]; then
 		cp $SAVEDIR/keystore /opt/zimbra/tomcat/conf/keystore
 	fi
 	if [ -f "$SAVEDIR/smtpd.key" ]; then

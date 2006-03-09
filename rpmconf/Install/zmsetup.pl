@@ -417,7 +417,7 @@ sub setDefaults {
 
 	getInstallStatus();
 
-	if (!$options{c}) {
+	if (!$options{c} && $newinstall) {
 
 		if (lookupHostName ($config{HOSTNAME}, 'A')) {
 			progress("\n\nDNS ERROR resolving $config{HOSTNAME}\n");
@@ -2238,7 +2238,7 @@ sub failConfig {
 }
 
 sub applyConfig {
-	if (!defined ($options{c})) {
+	if (!(defined ($options{c})) && $newinstall ) {
 		if (askYN("Save configuration data to a file?", "Yes") eq "yes") {
 			saveConfig();
 		}
@@ -2489,6 +2489,12 @@ if ($options{c}) {
 		$configStatus{END}  ne "CONFIGURED") {
 		resumeConfiguration();
 	}
+	if (!$newinstall) {
+		my $m = createMainMenu();
+		if (checkMenuConfig($m)) {
+			applyConfig();
+		}
+	} 
 	mainMenu();
 }
 
