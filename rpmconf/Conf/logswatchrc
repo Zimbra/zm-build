@@ -1,2 +1,2 @@
 watchfor /.*/
-	pipe /opt/zimbra/bin/zmlogger,MESSAGE=$_\n,KEEP_OPEN=1
+	pipe /opt/zimbra/libexec/zmlogger,MESSAGE=$_\n,KEEP_OPEN=1
