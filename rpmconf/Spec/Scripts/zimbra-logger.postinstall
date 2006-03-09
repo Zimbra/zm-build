@@ -24,7 +24,7 @@
 # ***** END LICENSE BLOCK *****
 # 
 
-PLAT=`/opt/zimbra/bin/get_plat_tag.sh`
+PLAT=`/opt/zimbra/libexec/get_plat_tag.sh`
 ARCH=powerpc
 if [ "x$PLAT" = "xMACOSXx86" ]; then
 	ARCH=i686
