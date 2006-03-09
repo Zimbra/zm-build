@@ -103,7 +103,7 @@ addUser() {
 }
 
 maingroup="postfix"
-homedir="/opt/zimbra/postfix-2.2.8"
+homedir="/opt/zimbra/postfix-2.2.9"
 name="postfix"
 addUser
 

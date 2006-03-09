@@ -306,18 +306,7 @@ sub upgradeBM1 {
 sub upgradeBM2 {
 	Migrate::log("Updating from 3.0.0_M2");
 
-	if ( -d "/opt/zimbra/postfix-2.2.3/spool" ) {
-		Migrate::log("Moving postfix queues");
-		my @dirs = qw /active bounce corrupt defer deferred flush hold incoming maildrop/;
-		`mkdir -p /opt/zimbra/postfix-2.2.5/spool`;
-		foreach my $d (@dirs) {
-			if (-d "/opt/zimbra/postfix-2.2.3/spool/$d/") {
-				Migrate::log("Moving $d");
-				`cp -Rf /opt/zimbra/postfix-2.2.3/spool/$d/* /opt/zimbra/postfix-2.2.5/spool/$d`;
-				`chown -R postfix:postdrop /opt/zimbra/postfix-2.2.5/spool/$d`;
-			}
-		}
-	}
+	movePostfixQueue ("2.2.3","2.2.5");
 
 	return 0;
 }
@@ -601,30 +590,10 @@ sub upgradeBGA {
 		! -d "/opt/zimbra/clamav-0.88/db" )  {
 			`cp -fR /opt/zimbra/clamav-0.87.1/db /opt/zimbra/clamav-0.88`;
 	}
-	if ( -d "/opt/zimbra/postfix-2.2.5/spool" ) {
-		Migrate::log("Moving postfix queues");
-		my @dirs = qw /active bounce corrupt defer deferred flush hold incoming maildrop/;
-		`mkdir -p /opt/zimbra/postfix-2.2.8/spool`;
-		foreach my $d (@dirs) {
-			if (-d "/opt/zimbra/postfix-2.2.5/spool/$d/") {
-				Migrate::log("Moving $d");
-				`cp -Rf /opt/zimbra/postfix-2.2.5/spool/$d/* /opt/zimbra/postfix-2.2.8/spool/$d`;
-				`chown -R postfix:postdrop /opt/zimbra/postfix-2.2.8/spool/$d`;
-			}
-		}
-	}
-	`/opt/zimbra/bin/zmfixperms.sh`;
-}
 
-sub upgrade35M1 {
-	my ($startBuild, $targetVersion, $targetBuild) = (@_);
-	Migrate::log("Updating from 3.5.0_M1");
+	movePostfixQueue ("2.2.5","2.2.8");
 
-	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf zimbraGalLdapFilterDef 'zimbraAccounts:(&(|(cn=*%s*)(sn=*%s*)(gn=*%s*)(mail=*%s*)(zimbraMailDeliveryAddress=*%s*)(zimbraMailAlias=*%s*)(zimbraMailAddress=*%s*))(|(objectclass=zimbraAccount)(objectclass=zimbraDistributionList))(!(objectclass=zimbraCalendarResource)))'"`;
-	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraGalLdapFilterDef 'zimbraResources:(&(|(cn=*%s*)(sn=*%s*)(gn=*%s*)(mail=*%s*)(zimbraMailDeliveryAddress=*%s*)(zimbraMailAlias=*%s*)(zimbraMailAddress=*%s*))(objectclass=zimbraCalendarResource))'"`;
-	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraGalLdapFilterDef 'ad:(&(|(cn=*%s*)(sn=*%s*)(gn=*%s*)(mail=*%s*))(!(msExchHideFromAddressLists=TRUE))(mailnickname=*)(|(&(objectCategory=person)(objectClass=user)(!(homeMDB=*))(!(msExchHomeServerName=*)))(&(objectCategory=person)(objectClass=user)(|(homeMDB=*)(msExchHomeServerName=*)))(&(objectCategory=person)(objectClass=contact))(objectCategory=group)(objectCategory=publicFolder)(objectCategory=msExchDynamicDistributionList)))'"`;
 
-	return 0;
 }
 
 sub upgrade301GA {
@@ -638,6 +607,39 @@ sub upgrade301GA {
 		s/zimbraGalLdapFilterDef: //;
 		`/opt/zimbra/bin/zmprov mcf +zimbraGalLdapFilterDef \'$_\'`;
 	}
+
+	# This change was made in both main and CRAY
+	# CRAY build 202
+	# MAIN build 223
+	if ( ($startVersion eq "3.0.0_GA" && $startBuild <= 202) ||
+		($startVersion eq "3.0.0_M2" || $startVersion eq "3.0.M1" || 
+		$startVersion eq "3.0.0_M3" || $startVersion eq "3.0.0_M4")
+		) {
+		movePostfixQueue ("2.2.8","2.2.9");
+	}
+
+	return 0;
+}
+
+sub upgrade35M1 {
+	my ($startBuild, $targetVersion, $targetBuild) = (@_);
+	Migrate::log("Updating from 3.5.0_M1");
+
+	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf zimbraGalLdapFilterDef 'zimbraAccounts:(&(|(cn=*%s*)(sn=*%s*)(gn=*%s*)(mail=*%s*)(zimbraMailDeliveryAddress=*%s*)(zimbraMailAlias=*%s*)(zimbraMailAddress=*%s*))(|(objectclass=zimbraAccount)(objectclass=zimbraDistributionList))(!(objectclass=zimbraCalendarResource)))'"`;
+	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraGalLdapFilterDef 'zimbraResources:(&(|(cn=*%s*)(sn=*%s*)(gn=*%s*)(mail=*%s*)(zimbraMailDeliveryAddress=*%s*)(zimbraMailAlias=*%s*)(zimbraMailAddress=*%s*))(objectclass=zimbraCalendarResource))'"`;
+	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraGalLdapFilterDef 'ad:(&(|(cn=*%s*)(sn=*%s*)(gn=*%s*)(mail=*%s*))(!(msExchHideFromAddressLists=TRUE))(mailnickname=*)(|(&(objectCategory=person)(objectClass=user)(!(homeMDB=*))(!(msExchHomeServerName=*)))(&(objectCategory=person)(objectClass=user)(|(homeMDB=*)(msExchHomeServerName=*)))(&(objectCategory=person)(objectClass=contact))(objectCategory=group)(objectCategory=publicFolder)(objectCategory=msExchDynamicDistributionList)))'"`;
+
+	# This change was made in both main and CRAY
+	# CRAY build 202
+	# MAIN build 223
+	#
+	# In main, only move them if the previous function wasn't called
+	#
+
+	if ($startVersion eq "3.5.0_M1" && $startBuild <= 223) {
+		movePostfixQueue ("2.2.8","2.2.9");
+	}
+
 	return 0;
 }
 
@@ -818,5 +820,25 @@ sub isInstalled {
 
 }
 
+sub movePostfixQueues {
+
+	my $fromVersion = shift;
+	my $toVersion = shift;
+
+	if ( -d "/opt/zimbra/postfix-$fromVersion/spool" ) {
+		Migrate::log("Moving postfix queues");
+		my @dirs = qw /active bounce corrupt defer deferred flush hold incoming maildrop/;
+		`mkdir -p /opt/zimbra/postfix-$toVersion/spool`;
+		foreach my $d (@dirs) {
+			if (-d "/opt/zimbra/postfix-$fromVersion/spool/$d/") {
+				Migrate::log("Moving $d");
+				`cp -Rf /opt/zimbra/postfix-$fromVersion/spool/$d/* /opt/zimbra/postfix-$toVersion/spool/$d`;
+				`chown -R postfix:postdrop /opt/zimbra/postfix-$toVersion/spool/$d`;
+			}
+		}
+	}
+
+	`/opt/zimbra/bin/zmfixperms.sh`;
+}
 
 1

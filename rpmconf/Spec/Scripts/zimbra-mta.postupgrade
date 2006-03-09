@@ -42,7 +42,7 @@ ln -s /opt/zimbra/dspam-3.6.2 /opt/zimbra/dspam
 
 egrep -v '^%zimbra.*postfix' /etc/sudoers > /tmp/sudoers
 mv -f /tmp/sudoers /etc/sudoers
-echo "%zimbra   ALL=NOPASSWD:/opt/zimbra/postfix-2.2.8/sbin/postfix, /opt/zimbra/postfix-2.2.8/sbin/postalias, /opt/zimbra/postfix-2.2.8/sbin/qshape.pl, /opt/zimbra/postfix-2.2.8/sbin/postconf,/opt/zimbra/postfix-2.2.8/sbin/postsuper" >> /etc/sudoers
+echo "%zimbra   ALL=NOPASSWD:/opt/zimbra/postfix-2.2.9/sbin/postfix, /opt/zimbra/postfix-2.2.9/sbin/postalias, /opt/zimbra/postfix-2.2.9/sbin/qshape.pl, /opt/zimbra/postfix-2.2.9/sbin/postconf,/opt/zimbra/postfix-2.2.9/sbin/postsuper" >> /etc/sudoers
 chmod 440 /etc/sudoers
 
 if [ ! -f /opt/zimbra/postfix/conf/main.cf ]; then
