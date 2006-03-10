@@ -600,6 +600,7 @@ removeExistingInstall() {
 
 		cat /etc/sudoers | grep -v zimbra > /tmp/sudoers
 		cat /tmp/sudoers > /etc/sudoers
+		chmod 440 /etc/sudoers
 		rm -f /tmp/sudoers
 		echo ""
 		echo "Removing deployed webapp directories"
