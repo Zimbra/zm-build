@@ -57,7 +57,7 @@ ln -s /opt/zimbra/cyrus-sasl-2.1.21.ZIMBRA /opt/zimbra/cyrus-sasl
 H=`hostname -s`
 I=`hostname -i`
 
-egrep '^%zimbra.*postfix' /etc/sudoers > /tmp/sudoers
+egrep -v '^%zimbra.*postfix' /etc/sudoers > /tmp/sudoers
 echo "%zimbra   ALL=NOPASSWD:/opt/zimbra/postfix-2.2.9/sbin/postfix, /opt/zimbra/postfix-2.2.9/sbin/postalias, /opt/zimbra/postfix-2.2.9/sbin/qshape.pl, /opt/zimbra/postfix-2.2.9/sbin/postconf,/opt/zimbra/postfix-2.2.9/sbin/postsuper" >> /tmp/sudoers
 mv -f /tmp/sudoers /etc/sudoers
 chmod 440 /etc/sudoers
