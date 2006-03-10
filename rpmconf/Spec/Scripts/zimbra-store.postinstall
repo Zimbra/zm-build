@@ -42,7 +42,7 @@ mv /opt/zimbra/db/db.sql /opt/zimbra/db/db.sql.in
 sed -e "/server.hostname/ s/local/$H/" /opt/zimbra/db/db.sql.in > /opt/zimbra/db/db.sql
 
 rm -rf /opt/zimbra/tomcat
-ln -s /opt/zimbra/jakarta-tomcat-5.5.7 /opt/zimbra/tomcat
+ln -s /opt/zimbra/apache-tomcat-5.5.15 /opt/zimbra/tomcat
 mkdir -p /opt/zimbra/tomcat/logs
 chown zimbra:zimbra /opt/zimbra/tomcat/logs
 
