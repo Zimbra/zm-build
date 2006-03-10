@@ -29,11 +29,14 @@ rm -rf /opt/zimbra/amavisd
 mv -f /opt/zimbra/amavisd /opt/zimbra/amavisd.old
 ln -s /opt/zimbra/amavisd-new-2.3.3 /opt/zimbra/amavisd
 
+rm -f /opt/zimbra/dspam
+ln -s /opt/zimbra/dspam-3.6.2 /opt/zimbra/dspam
+
 rm -f /opt/zimbra/postfix
-ln -s /opt/zimbra/postfix-2.2.5 /opt/zimbra/postfix
+ln -s /opt/zimbra/postfix-2.2.9 /opt/zimbra/postfix
 
 rm -f /opt/zimbra/clamav
-ln -s /opt/zimbra/clamav-0.87.1 /opt/zimbra/clamav
+ln -s /opt/zimbra/clamav-0.88 /opt/zimbra/clamav
 
 rm -f /opt/zimbra/sleepycat
 ln -s /opt/zimbra/sleepycat-4.2.52.4 /opt/zimbra/sleepycat
@@ -58,9 +61,14 @@ chown -R zimbra:zimbra /opt/zimbra/clamav/db
 
 /bin/sh /opt/zimbra/libexec/zmfixperms
 
+if [ ! -f /opt/zimbra/postfix/conf/main.cf ]; then
+	touch /opt/zimbra/postfix/conf/main.cf
+	chown zimbra:zimbra /opt/zimbra/postfix/conf/main.cf
+fi
+
 egrep -v '^%zimbra.*postfix' /etc/sudoers > /tmp/sudoers
 mv -f /tmp/sudoers /etc/sudoers
-echo "%zimbra   ALL=NOPASSWD:/opt/zimbra/postfix-2.2.5/sbin/postfix, /opt/zimbra/postfix-2.2.5/sbin/postalias, /opt/zimbra/postfix-2.2.5/sbin/qshape.pl, /opt/zimbra/postfix-2.2.5/sbin/postconf,/opt/zimbra/postfix-2.2.5/sbin/postsuper" >> /etc/sudoers
+echo "%zimbra   ALL=NOPASSWD:/opt/zimbra/postfix-2.2.9/sbin/postfix, /opt/zimbra/postfix-2.2.9/sbin/postalias, /opt/zimbra/postfix-2.2.9/sbin/qshape.pl, /opt/zimbra/postfix-2.2.9/sbin/postconf,/opt/zimbra/postfix-2.2.9/sbin/postsuper" >> /etc/sudoers
 chmod 440 /etc/sudoers
 
 PKG=`echo ${RECEIPT_PATH} | sed -e 's|.*/\(zimbra-mta.[^/]*pkg\)/.*|\1|' | sed -e 's/\./-/'`

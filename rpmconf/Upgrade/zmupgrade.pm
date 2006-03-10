@@ -57,6 +57,8 @@ my %updateScripts = (
 my %loggerUpdateScripts = (
 	'0' => "migrateLogger1-index.pl",
 	'1' => "migrateLogger2-config.pl",
+	'2' => "migrateLogger3-diskindex.pl",
+	'3' => "migrateLogger4-loghostname.pl",
 );
 
 my %updateFuncs = (
@@ -66,9 +68,10 @@ my %updateFuncs = (
 	"3.0.0_M4" => \&upgradeBM4,
 	"3.0.0_GA" => \&upgradeBGA,
 	"3.0.1_GA" => \&upgrade301GA,
+	"3.5.0_M1" => \&upgrade35M1,
 );
 
-my @versionOrder = ("3.0.M1", "3.0.0_M2", "3.0.0_M3", "3.0.0_M4", "3.0.0_GA", "3.0.1_GA");
+my @versionOrder = ("3.0.M1", "3.0.0_M2", "3.0.0_M3", "3.0.0_M4", "3.0.0_GA", "3.0.1_GA", "3.5.0_M1");
 
 my $startVersion;
 my $targetVersion;
@@ -159,6 +162,11 @@ sub upgrade {
 		if ($curSchemaVersion < 22) {
 			$curSchemaVersion = 22;
 		}
+	} elsif ($startVersion eq "3.5.0_M1") {
+		print "This appears to be 3.5.0_M1\n";
+		if ($curSchemaVersion < 22) {
+			$curSchemaVersion = 22;
+		}
 	} else {
 		print "I can't upgrade version $startVersion\n\n";
 		return 1;
@@ -190,6 +198,11 @@ sub upgrade {
 				$curSchemaVersion = 22;
 			}
 		} elsif ($startVersion eq "3.0.1_GA") {
+			print "No schema upgrade needed\n";
+			if ($curSchemaVersion < 22) {
+				$curSchemaVersion = 22;
+			}
+		} elsif ($startVersion eq "3.5.0_M1") {
 			print "No schema upgrade needed\n";
 			if ($curSchemaVersion < 22) {
 				$curSchemaVersion = 22;
@@ -293,18 +306,7 @@ sub upgradeBM1 {
 sub upgradeBM2 {
 	Migrate::log("Updating from 3.0.0_M2");
 
-	if ( -d "/opt/zimbra/postfix-2.2.3/spool" ) {
-		Migrate::log("Moving postfix queues");
-		my @dirs = qw /active bounce corrupt defer deferred flush hold incoming maildrop/;
-		foreach my $d (@dirs) {
-			if (-d "/opt/zimbra/postfix-2.2.3/spool/$d/") {
-				Migrate::log("Moving $d");
-				`cp -Rf /opt/zimbra/postfix-2.2.3/spool/$d/* /opt/zimbra/postfix-2.2.5/spool/$d`;
-				`chown -R postfix:postdrop /opt/zimbra/postfix-2.2.5/spool/$d`;
-			}
-		}
-
-	}
+	movePostfixQueue ("2.2.3","2.2.5");
 
 	return 0;
 }
@@ -583,6 +585,15 @@ sub upgradeBGA {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
 	Migrate::log("Updating from 3.0.0_GA");
 	return 0;
+
+	if ( -d "/opt/zimbra/clamav-0.87.1/db" && -d "/opt/zimbra/clamav-0.88" &&
+		! -d "/opt/zimbra/clamav-0.88/db" )  {
+			`cp -fR /opt/zimbra/clamav-0.87.1/db /opt/zimbra/clamav-0.88`;
+	}
+
+	movePostfixQueue ("2.2.5","2.2.8");
+
+
 }
 
 sub upgrade301GA {
@@ -596,6 +607,39 @@ sub upgrade301GA {
 		s/zimbraGalLdapFilterDef: //;
 		`/opt/zimbra/bin/zmprov mcf +zimbraGalLdapFilterDef \'$_\'`;
 	}
+
+	# This change was made in both main and CRAY
+	# CRAY build 202
+	# MAIN build 223
+	if ( ($startVersion eq "3.0.0_GA" && $startBuild <= 202) ||
+		($startVersion eq "3.0.0_M2" || $startVersion eq "3.0.M1" || 
+		$startVersion eq "3.0.0_M3" || $startVersion eq "3.0.0_M4")
+		) {
+		movePostfixQueue ("2.2.8","2.2.9");
+	}
+
+	return 0;
+}
+
+sub upgrade35M1 {
+	my ($startBuild, $targetVersion, $targetBuild) = (@_);
+	Migrate::log("Updating from 3.5.0_M1");
+
+	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf zimbraGalLdapFilterDef 'zimbraAccounts:(&(|(cn=*%s*)(sn=*%s*)(gn=*%s*)(mail=*%s*)(zimbraMailDeliveryAddress=*%s*)(zimbraMailAlias=*%s*)(zimbraMailAddress=*%s*))(|(objectclass=zimbraAccount)(objectclass=zimbraDistributionList))(!(objectclass=zimbraCalendarResource)))'"`;
+	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraGalLdapFilterDef 'zimbraResources:(&(|(cn=*%s*)(sn=*%s*)(gn=*%s*)(mail=*%s*)(zimbraMailDeliveryAddress=*%s*)(zimbraMailAlias=*%s*)(zimbraMailAddress=*%s*))(objectclass=zimbraCalendarResource))'"`;
+	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraGalLdapFilterDef 'ad:(&(|(cn=*%s*)(sn=*%s*)(gn=*%s*)(mail=*%s*))(!(msExchHideFromAddressLists=TRUE))(mailnickname=*)(|(&(objectCategory=person)(objectClass=user)(!(homeMDB=*))(!(msExchHomeServerName=*)))(&(objectCategory=person)(objectClass=user)(|(homeMDB=*)(msExchHomeServerName=*)))(&(objectCategory=person)(objectClass=contact))(objectCategory=group)(objectCategory=publicFolder)(objectCategory=msExchDynamicDistributionList)))'"`;
+
+	# This change was made in both main and CRAY
+	# CRAY build 202
+	# MAIN build 223
+	#
+	# In main, only move them if the previous function wasn't called
+	#
+
+	if ($startVersion eq "3.5.0_M1" && $startBuild <= 223) {
+		movePostfixQueue ("2.2.8","2.2.9");
+	}
+
 	return 0;
 }
 
@@ -776,5 +820,25 @@ sub isInstalled {
 
 }
 
+sub movePostfixQueues {
+
+	my $fromVersion = shift;
+	my $toVersion = shift;
+
+	if ( -d "/opt/zimbra/postfix-$fromVersion/spool" ) {
+		Migrate::log("Moving postfix queues");
+		my @dirs = qw /active bounce corrupt defer deferred flush hold incoming maildrop/;
+		`mkdir -p /opt/zimbra/postfix-$toVersion/spool`;
+		foreach my $d (@dirs) {
+			if (-d "/opt/zimbra/postfix-$fromVersion/spool/$d/") {
+				Migrate::log("Moving $d");
+				`cp -Rf /opt/zimbra/postfix-$fromVersion/spool/$d/* /opt/zimbra/postfix-$toVersion/spool/$d`;
+				`chown -R postfix:postdrop /opt/zimbra/postfix-$toVersion/spool/$d`;
+			}
+		}
+	}
+
+	`/opt/zimbra/bin/zmfixperms.sh`;
+}
 
 1

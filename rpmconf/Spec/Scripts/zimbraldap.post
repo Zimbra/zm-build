@@ -31,7 +31,7 @@ I=`hostname -i`
 #Symlinks
 
 rm -f /opt/zimbra/openldap
-ln -s /opt/zimbra/openldap-2.2.28 /opt/zimbra/openldap
+ln -s /opt/zimbra/openldap-2.3.20 /opt/zimbra/openldap
 
 mkdir -p /opt/zimbra/openldap/var/openldap-data
 mkdir -p /opt/zimbra/openldap-data
@@ -40,10 +40,9 @@ chown -R zimbra:zimbra /opt/zimbra/openldap/var
 chown -R zimbra:zimbra /opt/zimbra/openldap-data
 chown -R zimbra:zimbra /opt/zimbra/openldap-replica
 
-egrep -q '^%zimbra.*slapd' /etc/sudoers
-if [ $? != 0 ]; then
-	echo "%zimbra   ALL=NOPASSWD:/opt/zimbra/openldap-2.2.28/libexec/slapd" >> /etc/sudoers
-fi
+egrep -v '^%zimbra.*slapd' /etc/sudoers > /tmp/sudoers
+echo "%zimbra   ALL=NOPASSWD:/opt/zimbra/openldap-2.3.20/libexec/slapd" >> /tmp/sudoers
+mv -f /tmp/sudoers /etc/sudoers
 
 chown root:root /opt/zimbra/openldap/libexec/slapd
 chmod 755 /opt/zimbra/openldap/libexec/slapd

@@ -39,11 +39,14 @@ if [ -d "/opt/zimbra/.spamassassin.tmp" ]; then
 	chown -R zimbra:zimbra /opt/zimbra/amavisd/.spamassassin
 fi
 
+rm -f /opt/zimbra/dspam
+ln -s /opt/zimbra/dspam-3.6.2 /opt/zimbra/dspam
+
 rm -f /opt/zimbra/postfix
-ln -s /opt/zimbra/postfix-2.2.5 /opt/zimbra/postfix
+ln -s /opt/zimbra/postfix-2.2.9 /opt/zimbra/postfix
 
 rm -f /opt/zimbra/clamav
-ln -s /opt/zimbra/clamav-0.87.1 /opt/zimbra/clamav
+ln -s /opt/zimbra/clamav-0.88 /opt/zimbra/clamav
 
 rm -f /opt/zimbra/sleepycat
 ln -s /opt/zimbra/sleepycat-4.2.52.4 /opt/zimbra/sleepycat
@@ -54,10 +57,9 @@ ln -s /opt/zimbra/cyrus-sasl-2.1.21.ZIMBRA /opt/zimbra/cyrus-sasl
 H=`hostname -s`
 I=`hostname -i`
 
-egrep -q '^%zimbra.*postfix-2.2.5' /etc/sudoers
-if [ $? != 0 ]; then
-	echo "%zimbra   ALL=NOPASSWD:/opt/zimbra/postfix-2.2.5/sbin/postfix, /opt/zimbra/postfix-2.2.5/sbin/postalias, /opt/zimbra/postfix-2.2.5/sbin/qshape.pl, /opt/zimbra/postfix-2.2.5/sbin/postconf,/opt/zimbra/postfix-2.2.5/sbin/postsuper" >> /etc/sudoers
-fi
+egrep '^%zimbra.*postfix' /etc/sudoers > /tmp/sudoers
+echo "%zimbra   ALL=NOPASSWD:/opt/zimbra/postfix-2.2.9/sbin/postfix, /opt/zimbra/postfix-2.2.9/sbin/postalias, /opt/zimbra/postfix-2.2.9/sbin/qshape.pl, /opt/zimbra/postfix-2.2.9/sbin/postconf,/opt/zimbra/postfix-2.2.9/sbin/postsuper" >> /tmp/sudoers
+mv -f /tmp/sudoers /etc/sudoers
 
 chown postfix /opt/zimbra/postfix/conf/master.cf
 chmod 644 /opt/zimbra/postfix/conf/master.cf
@@ -77,6 +79,11 @@ mkdir -p /opt/zimbra/clamav/db
 chown -R zimbra:zimbra /opt/zimbra/clamav/db
 
 /opt/zimbra/libexec/zmfixperms
+
+if [ ! -f /opt/zimbra/postfix/conf/main.cf ]; then
+	touch /opt/zimbra/postfix/conf/main.cf
+	chown zimbra:zimbra /opt/zimbra/postfix/conf/main.cf
+fi
 
 egrep -q '/opt/zimbra/amavisd-new-2.3.3/tmp' /etc/fstab
 if [ $? != 0 ]; then

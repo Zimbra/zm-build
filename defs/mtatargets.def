@@ -69,23 +69,25 @@ $(BUILD_ROOT)/zimbramta.spec:
 		$(BUILD_ROOT)/zimbramta.spec )
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/amavisd-new-2.3.3" >> \
 		$(BUILD_ROOT)/zimbramta.spec
-	echo "%attr(555, zimbra, zimbra) /opt/zimbra/clamav-0.87.1/bin" >> \
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/dspam-3.6.2" >> \
 		$(BUILD_ROOT)/zimbramta.spec
-	echo "%attr(755, zimbra, zimbra) /opt/zimbra/clamav-0.87.1/db" >> \
+	echo "%attr(555, zimbra, zimbra) /opt/zimbra/clamav-0.88/bin" >> \
 		$(BUILD_ROOT)/zimbramta.spec
-	echo "%attr(-, zimbra, zimbra) /opt/zimbra/clamav-0.87.1/etc/" >> \
+	echo "%attr(755, zimbra, zimbra) /opt/zimbra/clamav-0.88/db" >> \
 		$(BUILD_ROOT)/zimbramta.spec
-	echo "%attr(-, zimbra, zimbra) /opt/zimbra/clamav-0.87.1/include" >> \
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/clamav-0.88/etc/" >> \
 		$(BUILD_ROOT)/zimbramta.spec
-	echo "%attr(-, zimbra, zimbra) /opt/zimbra/clamav-0.87.1/lib" >> \
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/clamav-0.88/include" >> \
 		$(BUILD_ROOT)/zimbramta.spec
-	echo "%attr(-, zimbra, zimbra) /opt/zimbra/clamav-0.87.1/man" >> \
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/clamav-0.88/lib" >> \
 		$(BUILD_ROOT)/zimbramta.spec
-	echo "%attr(555, zimbra, zimbra) /opt/zimbra/clamav-0.87.1/sbin" >> \
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/clamav-0.88/man" >> \
 		$(BUILD_ROOT)/zimbramta.spec
-	echo "%attr(-, zimbra, zimbra) /opt/zimbra/clamav-0.87.1/share" >> \
+	echo "%attr(555, zimbra, zimbra) /opt/zimbra/clamav-0.88/sbin" >> \
 		$(BUILD_ROOT)/zimbramta.spec
-	echo "%attr(-, zimbra, zimbra) /opt/zimbra/postfix-2.2.5" >> \
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/clamav-0.88/share" >> \
+		$(BUILD_ROOT)/zimbramta.spec
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/postfix-2.2.9" >> \
 		$(BUILD_ROOT)/zimbramta.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/sleepycat-4.2.52.4" >> \
 		$(BUILD_ROOT)/zimbramta.spec
@@ -100,8 +102,9 @@ $(MTA_DEST_DIR):
 $(MTA_DEST_DIR)/$(POSTFIX_DIR): $(MTA_DEST_DIR)
 	@echo "*** Creating postfix"
 	(cd $(MTA_DEST_DIR); tar xzf $(POSTFIX_SOURCE).tgz;)
-	cp $(SERVICE_DIR)/conf/postfix/main.cf $(MTA_DEST_DIR)/$(POSTFIX_DIR)/conf/main.cf
+	rm -f $(MTA_DEST_DIR)/$(POSTFIX_DIR)/conf/main.cf
 	cp $(SERVICE_DIR)/conf/postfix/master.cf $(MTA_DEST_DIR)/$(POSTFIX_DIR)/conf/master.cf
+	cp -f $(THIRD_PARTY)/PostFix/PostFix-$(POSTFIX_VERSION)/builds/qshape.pl $(MTA_DEST_DIR)/$(POSTFIX_DIR)/sbin/qshape.pl
 
 $(MTA_DEST_DIR)/$(CLAMAV_DIR): $(MTA_DEST_DIR)
 	@echo "*** Creating clamav"
@@ -116,6 +119,10 @@ $(MTA_DEST_DIR)/$(AMAVISD_DIR)-new-$(AMAVISD_VERSION): $(MTA_DEST_DIR)
 	cp -f $(AMAVISD_SOURCE)/amavisd $@/sbin
 	mkdir -p $@/.spamassassin/init
 	cp -f $(PACKAGE_CONF_DIR)/SpamAssassin/bayes* $@/.spamassassin/init
+
+$(MTA_DEST_DIR)/$(DSPAM_DIR)-$(DSPAM_VERSION): $(MTA_DEST_DIR)
+	@echo "*** Creating dspam"
+	(cd $(MTA_DEST_DIR); tar xzf $(DSPAM_SOURCE).tgz;)
 
 $(MTA_DEST_DIR)/$(SASL_DIR): $(MTA_DEST_DIR)
 	@echo "*** Creating cyrus-sasl"
