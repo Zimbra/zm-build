@@ -38,6 +38,7 @@ chown -R zimbra:zimbra /opt/zimbra/openldap-replica
 egrep -v '^%zimbra.*slapd' /etc/sudoers > /tmp/sudoers
 echo "%zimbra   ALL=NOPASSWD:/opt/zimbra/openldap-2.3.20/libexec/slapd" >> /tmp/sudoers
 mv -f /tmp/sudoers /etc/sudoers
+chmod 440 /etc/sudoers
 
 PKG=`echo ${RECEIPT_PATH} | sed -e 's|.*/\(zimbra-ldap.[^/]*pkg\)/.*|\1|' | sed -e 's/\./-/'`
 D=`date +%s`
