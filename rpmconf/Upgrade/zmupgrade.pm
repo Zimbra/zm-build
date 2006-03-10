@@ -615,6 +615,7 @@ sub upgrade301GA {
 		($startVersion eq "3.0.0_M2" || $startVersion eq "3.0.M1" || 
 		$startVersion eq "3.0.0_M3" || $startVersion eq "3.0.0_M4")
 		) {
+		`su - zimbra -c "zmlocalconfig -e postfix_version=2.2.9"`;
 		movePostfixQueue ("2.2.8","2.2.9");
 	}
 
@@ -637,6 +638,7 @@ sub upgrade35M1 {
 	#
 
 	if ($startVersion eq "3.5.0_M1" && $startBuild <= 223) {
+		`su - zimbra -c "zmlocalconfig -e postfix_version=2.2.9"`;
 		movePostfixQueue ("2.2.8","2.2.9");
 	}
 
