@@ -313,6 +313,32 @@ checkExistingInstall() {
 	done
 	if [ $INSTALLED = "yes" ]; then
 		saveExistingConfig
+	else
+		checkUserInfo
+	fi
+}
+
+checkUserInfo() {
+	#Verify that the zimbra user either:
+	#  Doesn't exist OR
+	#  Exists with:
+	#     home: /opt/zimbra
+	#     shell: bash
+	id zimbra > /dev/null 2>&1
+	if [ $? -ne 0 ]; then
+		return
+	fi
+	ZH=`awk -F: '/^zimbra:/ {print $6}' /etc/passwd`
+	ZS=`awk -F: '/^zimbra:/ {print $7}' /etc/passwd | sed -e s'|.*/||'`
+	if [ x$ZH != "x/opt/zimbra" ]; then
+		echo "Error - zimbra user exists with incorrect home directory: $ZH"
+		echo "Exiting"
+		exit 1
+	fi
+	if [ x$ZS != "bash" ]; then
+		echo "Error - zimbra user exists with incorrect shell: $ZS"
+		echo "Exiting"
+		exit 1
 	fi
 }
 
