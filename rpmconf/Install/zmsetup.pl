@@ -1725,7 +1725,9 @@ sub verifyLdap {
 	my $rc = 0xffff & system ("$ldapsearch $args > /tmp/zmsetup.ldap.out 2>&1");
 
 	if ($rc) { my $foo = `cat /tmp/zmsetup.ldap.out`; chomp $foo; progress ("FAILED ( $foo )\n"); } 
-	else {progress ( "Success\n");}
+	else {
+		progress ( "Success\n"); 
+	}
 	return $rc;
 
 }
@@ -2477,7 +2479,7 @@ getSystemStatus();
 if (!$ldapRunning && $ldapConfigured) {
 	startLdap();
 }
-if ($ldapConfigured) {
+if ($ldapConfigured || !verifyLdap()) {
 	setLdapDefaults();
 }
 
