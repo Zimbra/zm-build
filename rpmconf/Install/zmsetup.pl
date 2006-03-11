@@ -2479,7 +2479,9 @@ getSystemStatus();
 if (!$ldapRunning && $ldapConfigured) {
 	startLdap();
 }
-if ($ldapConfigured || !verifyLdap()) {
+
+if ($ldapConfigured || 
+	(($config{LDAPHOST} ne $config{HOSTNAME}) && !verifyLdap()) {
 	setLdapDefaults();
 }
 
