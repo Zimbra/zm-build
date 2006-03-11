@@ -35,7 +35,7 @@ use lib "/opt/zimbra/zimbramon/lib/darwin-thread-multi-2level";
 our $platform = `/opt/zimbra/libexec/get_plat_tag.sh`;
 chomp $platform;
 
-if ($platform eq "MACOSX") {
+if ($platform =~ /MACOSX/) {
 	progress ("Checking java version...");
 	my $rc = 0xffff & system("su - zimbra -c \"java -version 2>&1 | grep 'java version' | grep -q 1.5\"");
 	if ($rc) {
@@ -97,6 +97,8 @@ my $enabledServiceStr = "";
 my $ldapPassChanged = 0;
 
 my $logfile = "/tmp/zmsetup.log.$$";
+
+my @interfaces = ();
 
 open LOGFILE, ">$logfile" or die "Can't open $logfile: $!\n";
 
@@ -171,7 +173,7 @@ sub loadConfig {
 
 sub checkPortConflicts {
 
-	if ($platform eq "MACOSX") {
+	if ($platform =~ /MACOSX/) {
 		# Shutdown postfix in launchd
 		if (-f "/System/Library/LaunchDaemons/org.postfix.master.plist") {
 			progress ( "Disabling postfix in launchd\n");
@@ -215,6 +217,7 @@ sub checkPortConflicts {
 	if (!$options{c}) {
 		if ($any) { ask("Port conflicts detected! - Any key to continue", ""); }
 	}
+
 }
 
 sub getInstalledPackages {
@@ -236,7 +239,7 @@ sub isInstalled {
 	my $good = 1;
 	if ($platform eq "DEBIAN3.1") {
 		$pkgQuery = "dpkg -s $pkg | egrep '^Status: ' | grep 'not-installed'";
-	} elsif ($platform eq "MACOSX") {
+	} elsif ($platform =~ /MACOSX/) {
 		my @l = sort glob ("/Library/Receipts/${pkg}*");
 		if ( $#l < 0 ) { return 0; }
 		$pkgQuery = "test -d $l[$#l]";
@@ -346,6 +349,19 @@ sub setLdapDefaults {
 
 sub setDefaults {
 	progress ( "Setting defaults..." );
+
+	# Get the interfaces.
+	# Do this in perl, since it's the same on all platforms.
+	open INTS, "/sbin/ifconfig | grep 'inet ' |";
+	foreach (<INTS>) {
+		chomp;
+		s/.*inet //;
+		s/\s.*//;
+		s/[a-zA-Z:]//g;
+		push @interfaces, $_;
+	}
+	close INTS;
+
 	$config{EXPANDMENU} = "no";
 	$config{REMOVE} = "no";
 	$config{UPGRADE} = "yes";
@@ -360,7 +376,7 @@ sub setDefaults {
 	$config{HTTPPORT} = 80;
 	$config{HTTPSPORT} = 443;
 
-	if ($platform eq "MACOSX") {
+	if ($platform =~ /MACOSX/) {
 		setLocalConfig ("zimbra_java_home", "/System/Library/Frameworks/JavaVM.framework/Versions/1.5/Home");
 		$config{HOSTNAME} = `hostname`;
 	} else {
@@ -401,7 +417,7 @@ sub setDefaults {
 
 	getInstallStatus();
 
-	if (!$options{c}) {
+	if (!$options{c} && $newinstall) {
 
 		if (lookupHostName ($config{HOSTNAME}, 'A')) {
 			progress("\n\nDNS ERROR resolving $config{HOSTNAME}\n");
@@ -411,15 +427,64 @@ sub setDefaults {
 			}
 		}
 
+		my $good = 0;
+
 		if ($config{DOCREATEDOMAIN} = "yes") {
-			if (lookupHostName ($config{CREATEDOMAIN}, 'MX')) {
+			my $ans = getDnsRecords($config{CREATEDOMAIN}, 'MX');
+			if (!defined($ans)) {
 				progress("\n\nDNS ERROR resolving MX for $config{CREATEDOMAIN}\n");
 				progress("It is suggested that the domain name have an MX record configured in DNS\n");
 				if (askYN("Change domain name?","Yes") eq "yes") {
 					setCreateDomain();
 				}
-			} 
+			} elsif (isEnabled("zimbra-mta")) {
+
+				my @answer = $ans->answer;
+				foreach my $a (@answer) {
+					if ($a->type eq "MX") {
+						my $h = getDnsRecords ($a->exchange,'A');
+						my @ha = $h->answer;
+						foreach $h (@ha) {
+							if ($h->type eq 'A') {
+								progress "\tMX: ".$a->exchange." (".$h->address.")\n";
+							}
+						}
+					}
+				}
+				progress "\n";
+				foreach my $i (@interfaces) {
+					progress "\tInterface: $i\n";
+				}
+				foreach my $a (@answer) {
+					foreach my $i (@interfaces) {
+						if ($a->type eq "MX") {
+							my $h = getDnsRecords ($a->exchange,'A');
+							my @ha = $h->answer;
+							foreach $h (@ha) {
+								if ($h->type eq 'A') {
+									print "\t\t".$h->address."\n";
+									if ($h->address eq $i) {
+										$good = 1;
+										last;
+									}
+								}
+							}
+							if ($good) { last; }
+						}
+					}
+					if ($good) {last;}
+				}
+				if (!$good) { 
+					progress ("\n\nDNS ERROR - none of the MX records for $config{CREATEDOMAIN}\n");
+					progress ("resolve to this host\n");
+					if (askYN("Change domain name?","Yes") eq "yes") {
+						setCreateDomain();
+					}
+				}
+
+			}
 		}
+
 	}
 
 	progress ( "Done\n" );
@@ -566,18 +631,70 @@ sub askNonBlank {
 
 sub setCreateDomain {
 	my $oldDomain = $config{CREATEDOMAIN};
+	my $good = 0;
 	while (1) {
 		$config{CREATEDOMAIN} =
 			ask("Create Domain:",
 				$config{CREATEDOMAIN});
-		if (lookupHostName ($config{CREATEDOMAIN}, 'MX')) {
+		my $ans = getDnsRecords($config{CREATEDOMAIN}, 'MX');
+		if (!defined ($ans)) {
 			progress("\n\nDNS ERROR resolving MX for $config{CREATEDOMAIN}\n");
 			progress("It is suggested that the domain name have an MX record configured in DNS\n");
 			if (askYN("Re-Enter domain name?","Yes") eq "no") {
 				last;
 			}
 			$config{CREATEDOMAIN} = $oldDomain;
-		} else {last;}
+			next;
+		} elsif (isEnabled("zimbra-mta")) {
+
+			my @answer = $ans->answer;
+			foreach my $a (@answer) {
+				if ($a->type eq "MX") {
+					my $h = getDnsRecords ($a->exchange,'A');
+					my @ha = $h->answer;
+					foreach $h (@ha) {
+						if ($h->type eq 'A') {
+							progress "\tMX: ".$a->exchange." (".$h->address.")\n";
+						}
+					}
+				}
+			}
+			progress "\n";
+			foreach my $i (@interfaces) {
+				progress "\tInterface: $i\n";
+			}
+			foreach my $a (@answer) {
+				foreach my $i (@interfaces) {
+					if ($a->type eq "MX") {
+						my $h = getDnsRecords ($a->exchange,'A');
+						my @ha = $h->answer;
+						foreach $h (@ha) {
+							if ($h->type eq 'A') {
+								if ($h->address eq $i) {
+									$good = 1;
+									last;
+								}
+							}
+						}
+						if ($good) { last; }
+					}
+				}
+				if ($good) { last; }
+			}
+			if ($good) { last; }
+			else {
+				progress ("\n\nDNS ERROR - none of the MX records for $config{CREATEDOMAIN}\n");
+				progress ("resolve to this host\n");
+				progress ("It is suggested that the MX record resolve to this host\n");
+				if (askYN("Re-Enter domain name?","Yes") eq "no") {
+					last;
+				}
+				$config{CREATEDOMAIN} = $oldDomain;
+				next;
+			}
+
+		}
+		last;
 	}
 	my ($u,$d) = split ('@', $config{CREATEADMIN});
 	my $old = $config{CREATEADMIN};
@@ -736,6 +853,17 @@ sub changeLdapHost {
 
 sub changeLdapPort {
 	$config{LDAPPORT} = shift;
+}
+
+sub getDnsRecords {
+	my $name = shift;
+	my $qtype = shift;
+
+	my $res = Net::DNS::Resolver->new;
+	my @servers = $res->nameservers();
+	my $ans = $res->search ($name, $qtype);
+
+	return $ans;
 }
 
 sub lookupHostName { 
@@ -2112,7 +2240,7 @@ sub failConfig {
 }
 
 sub applyConfig {
-	if (!defined ($options{c})) {
+	if (!(defined ($options{c})) && $newinstall ) {
 		if (askYN("Save configuration data to a file?", "Yes") eq "yes") {
 			saveConfig();
 		}
@@ -2351,7 +2479,9 @@ getSystemStatus();
 if (!$ldapRunning && $ldapConfigured) {
 	startLdap();
 }
-if ($ldapConfigured || !verifyLdap()) {
+
+if ($ldapConfigured || 
+	(($config{LDAPHOST} ne $config{HOSTNAME}) && !verifyLdap()) {
 	setLdapDefaults();
 }
 
@@ -2363,6 +2493,12 @@ if ($options{c}) {
 		$configStatus{END}  ne "CONFIGURED") {
 		resumeConfiguration();
 	}
+	if (!$newinstall) {
+		my $m = createMainMenu();
+		if (checkMenuConfig($m)) {
+			applyConfig();
+		}
+	} 
 	mainMenu();
 }
 
