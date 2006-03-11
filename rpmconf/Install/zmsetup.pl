@@ -2481,7 +2481,7 @@ if (!$ldapRunning && $ldapConfigured) {
 }
 
 if ($ldapConfigured || 
-	(($config{LDAPHOST} ne $config{HOSTNAME}) && !verifyLdap()) {
+	(($config{LDAPHOST} ne $config{HOSTNAME}) && !verifyLdap())) {
 	setLdapDefaults();
 }
 
