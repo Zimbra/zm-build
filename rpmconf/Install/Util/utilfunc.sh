@@ -335,7 +335,7 @@ checkUserInfo() {
 		echo "Exiting"
 		exit 1
 	fi
-	if [ x$ZS != "bash" ]; then
+	if [ x$ZS != "xbash" ]; then
 		echo "Error - zimbra user exists with incorrect shell: $ZS"
 		echo "Exiting"
 		exit 1
