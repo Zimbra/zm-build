@@ -335,7 +335,7 @@ checkUserInfo() {
 		echo "Exiting"
 		exit 1
 	fi
-	if [ x$ZS != "bash" ]; then
+	if [ x$ZS != "xbash" ]; then
 		echo "Error - zimbra user exists with incorrect shell: $ZS"
 		echo "Exiting"
 		exit 1
@@ -533,7 +533,7 @@ restoreCerts() {
 	if [ -f "$SAVEDIR/cacerts" ]; then
 		cp $SAVEDIR/cacerts /opt/zimbra/java/jre/lib/security/cacerts
 	fi
-	if [ -f "$SAVEDIR/keystore" ]; then
+	if [ -f "$SAVEDIR/keystore" -a -d "/opt/zimbra/tomcat/conf" ]; then
 		cp $SAVEDIR/keystore /opt/zimbra/tomcat/conf/keystore
 	fi
 	if [ -f "$SAVEDIR/smtpd.key" ]; then
@@ -970,7 +970,7 @@ getPlatformVars() {
 		PACKAGEQUERY='rpm -q'
 		PACKAGEEXT='rpm'
 		if [ $PLATFORM = "RHEL4" ]; then
-			PREREQ_PACKAGES="sudo libidn curl fetchmail gmp"
+			PREREQ_PACKAGES="sudo libidn curl fetchmail gmp compat-libstdc++-296 compat-libstdc++-33"
 			PREREQ_LIBS="/usr/lib/libstdc++.so.5"
 		else
 			PREREQ_PACKAGES="sudo libidn curl fetchmail gmp"
