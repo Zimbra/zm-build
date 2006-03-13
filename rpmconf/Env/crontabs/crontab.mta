@@ -5,3 +5,7 @@
 # Queue logging
 #
 */10 * * * * /opt/zimbra/libexec/zmqueuelog
+#
+# Spam training
+#
+0 23 * * * /opt/zimbra/bin/zmtrainsa >> /opt/zimbra/log/spamtrain.log 2>&1

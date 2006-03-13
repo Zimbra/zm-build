@@ -1,0 +1,7 @@
+#
+# crontab.ldap
+#
+#
+# Spam training cleanup
+#
+45 23 * * * /opt/zimbra/bin/zmtrainsa --cleanup >> /opt/zimbra/log/spamtrain.log 2>&1
