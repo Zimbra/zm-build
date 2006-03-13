@@ -2373,6 +2373,10 @@ sub setupCrontab {
 	`cat /tmp/crontab.zimbra.orig | sed -e '/# ZIMBRASTART/,/# ZIMBRAEND/d' > /tmp/crontab.zimbra.proc`;
 	`cp -f /opt/zimbra/zimbramon/crontabs/crontab /tmp/crontab.zimbra`;
 
+	if (isEnabled("zimbra-ldap")) {
+		`cat /opt/zimbra/zimbramon/crontabs/crontab.ldap >> /tmp/crontab.zimbra`;
+	}
+
 	if (isEnabled("zimbra-store")) {
 		`cat /opt/zimbra/zimbramon/crontabs/crontab.store >> /tmp/crontab.zimbra`;
 	}
