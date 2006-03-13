@@ -49,3 +49,8 @@ ln -s /opt/zimbra /Users/zimbra
 D=`date +%s`
 echo "${D}: INSTALL SESSION COMPLETE" >> /opt/zimbra/.install_history
 
+# Fix perdition.conf.in dylib/so for mac
+sed -i .bak -e 's/\.so$/.dylib/' /opt/zimbra/conf/perdition.conf.in 
+sed -i .bak -e 's/\.so$/.dylib/' /opt/zimbra/conf/dspam.conf
+
+
