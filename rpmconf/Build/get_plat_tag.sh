@@ -80,10 +80,26 @@ if [ -f /etc/mandriva-release ]; then
 	fi
 fi
 
+if [ -f /etc/release ]; then
+	egrep 'Solaris 10.*X86' /etc/release > /dev/null 2>&1
+	if [ $? = 0 ]; then
+		echo "SOLARISX86"
+		exit 0
+	fi
+fi
+
 p=`uname -p`
 if [ "x$p" = "xpowerpc" ]; then
 	echo "MACOSX"
 	exit 0
+fi
+
+a=`uname -a | awk '{print $1}'`
+if [ "x$a" = "xDarwin" ]; then
+	if [ "x$p" = "xi386" ]; then
+		echo "MACOSXx86"
+		exit 0
+	fi
 fi
 
 echo "UNKNOWN"

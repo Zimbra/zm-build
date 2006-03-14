@@ -150,6 +150,10 @@ $(NATIVE_DIR)/build/libzimbra-native.$(JNI_EXT):
 $(NATIVE_DIR)/build/zmtomcatstart:
 	(cd $(NATIVE_DIR); make TOMCAT_HOME=$(TOMCAT_HOME) JAVA_BINARY=$(JAVA_BINARY) )
 
+pcre_MACOSXx86: 
+	mkdir -p $(CORE_DEST_DIR)/lib
+	(cd $(CORE_DEST_DIR)/lib; tar xzf $(THIRD_PARTY)/pcre/builds/$(BUILD_PLATFORM)/pcre.tgz)
+
 pcre_MACOSX: 
 	mkdir -p $(CORE_DEST_DIR)/lib
 	(cd $(CORE_DEST_DIR)/lib; tar xzf $(THIRD_PARTY)/pcre/builds/$(BUILD_PLATFORM)/pcre.tgz)
@@ -197,6 +201,7 @@ $(CORE_DEST_DIR)/conf: $(WEBAPP_DIR)/service.war
 	cp $(PACKAGE_CONF_DIR)/Conf/zmssl.cnf.in $@
 	cp $(SERVICE_DIR)/conf/dspam.conf $@
 	cp $(SERVICE_DIR)/conf/amavisd.conf.in $@
+	cp $(SERVICE_DIR)/conf/dspam.conf $@
 	cp $(SERVICE_DIR)/conf/zmlogrotate $@
 	cp $(SERVICE_DIR)/conf/clamd.conf.in $@
 	cp $(SERVICE_DIR)/conf/freshclam.conf.in $@
