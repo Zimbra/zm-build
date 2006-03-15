@@ -42,7 +42,7 @@ my $scriptDir = "/opt/zimbra/libexec/scripts";
 
 my $lowVersion = 18;
 my $hiVersion = 21;
-my $hiLoggerVersion = 2;
+my $hiLoggerVersion = 4;
 
 my $hn = `su - zimbra -c "zmlocalconfig -m nokey zimbra_server_hostname"`;
 chomp $hn;
