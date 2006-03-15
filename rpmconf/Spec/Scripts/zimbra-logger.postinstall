@@ -38,4 +38,9 @@ PKG=`echo ${RECEIPT_PATH} | sed -e 's|.*/\(zimbra-logger.[^/]*pkg\)/.*|\1|' | se
 D=`date +%s`
 echo "${D}: INSTALLED ${PKG}" >> /opt/zimbra/.install_history
 
+egrep -q '^%zimbra.*zmqstat' /etc/sudoers
+if [ $? != 0 ]; then
+    echo "%zimbra   ALL=NOPASSWD:/opt/zimbra/libexec/zmqstat" >> /etc/sudoers
+fi
+
 exit 0
