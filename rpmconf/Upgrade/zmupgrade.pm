@@ -68,10 +68,11 @@ my %updateFuncs = (
 	"3.0.0_M4" => \&upgradeBM4,
 	"3.0.0_GA" => \&upgradeBGA,
 	"3.0.1_GA" => \&upgrade301GA,
+	"3.1.0_GA" => \&upgrade310GA,
 	"3.5.0_M1" => \&upgrade35M1,
 );
 
-my @versionOrder = ("3.0.M1", "3.0.0_M2", "3.0.0_M3", "3.0.0_M4", "3.0.0_GA", "3.0.1_GA", "3.5.0_M1");
+my @versionOrder = ("3.0.M1", "3.0.0_M2", "3.0.0_M3", "3.0.0_M4", "3.0.0_GA", "3.0.1_GA", ,"3.1.0_GA", "3.5.0_M1");
 
 my $startVersion;
 my $targetVersion;
@@ -162,6 +163,11 @@ sub upgrade {
 		if ($curSchemaVersion < 22) {
 			$curSchemaVersion = 22;
 		}
+	} elsif ($startVersion eq "3.1.0_GA") {
+		print "This appears to be 3.1.0_GA\n";
+		if ($curSchemaVersion < 22) {
+			$curSchemaVersion = 22;
+		}
 	} elsif ($startVersion eq "3.5.0_M1") {
 		print "This appears to be 3.5.0_M1\n";
 		if ($curSchemaVersion < 22) {
@@ -174,42 +180,8 @@ sub upgrade {
 
 	if (isInstalled("zimbra-store")) {
 
-		if ($startVersion eq "3.0.M1" && $curSchemaVersion >= 21) {
-			print "No schema upgrade needed\n";
-			$curSchemaVersion = 22;
-		} elsif ($startVersion eq "3.0.0_M2" && $curSchemaVersion < 21) {
+		if ($curSchemaVersion <= $hiVersion) {
 			print "Schema upgrade required\n";
-		} elsif ($startVersion eq "3.0.0_M2" && $curSchemaVersion >= 21) {
-			print "No schema upgrade needed\n";
-			$curSchemaVersion = 22;
-		} elsif ($startVersion eq "3.0.0_M3") {
-			print "No schema upgrade needed\n";
-			if ($curSchemaVersion < 22) {
-				$curSchemaVersion = 22;
-			}
-		} elsif ($startVersion eq "3.0.0_M4") {
-			print "No schema upgrade needed\n";
-			if ($curSchemaVersion < 22) {
-				$curSchemaVersion = 22;
-			}
-		} elsif ($startVersion eq "3.0.0_GA") {
-			print "No schema upgrade needed\n";
-			if ($curSchemaVersion < 22) {
-				$curSchemaVersion = 22;
-			}
-		} elsif ($startVersion eq "3.0.1_GA") {
-			print "No schema upgrade needed\n";
-			if ($curSchemaVersion < 22) {
-				$curSchemaVersion = 22;
-			}
-		} elsif ($startVersion eq "3.5.0_M1") {
-			print "No schema upgrade needed\n";
-			if ($curSchemaVersion < 22) {
-				$curSchemaVersion = 22;
-			}
-		} else {
-			print "I can't upgrade version $startVersion\n\n";
-			return 1;
 		}
 
 		while ($curSchemaVersion >= $lowVersion && $curSchemaVersion <= $hiVersion) {
@@ -617,7 +589,25 @@ sub upgrade301GA {
 		) {
 		`su - zimbra -c "zmlocalconfig -e postfix_version=2.2.9"`;
 		movePostfixQueue ("2.2.8","2.2.9");
+
+		if (isInstalled ("zimbra-ldap")) {
+			Migrate::log("Migrating ldap data");
+			stopLdap();
+			`mv /opt/zimbra/openldap-data /opt/zimbra/openldap-data.prev`;
+			`mkdir /opt/zimbra/openldap-data`;
+			`chown zimbra:zimbra /opt/zimbra/openldap-data`;
+			`su - zimbra -c "/opt/zimbra/openldap/sbin/slapadd -f /opt/zimbra/conf/slapd.conf -l /opt/zimbra/openldap-data/ldap.bak`;
+			if (startLdap()) {return 1;}
+		}
+
 	}
+
+	return 0;
+}
+
+sub upgrade310GA {
+	my ($startBuild, $targetVersion, $targetBuild) = (@_);
+	Migrate::log("Updating from 3.1.0_GA");
 
 	return 0;
 }
@@ -640,6 +630,17 @@ sub upgrade35M1 {
 	if ($startVersion eq "3.5.0_M1" && $startBuild <= 223) {
 		`su - zimbra -c "zmlocalconfig -e postfix_version=2.2.9"`;
 		movePostfixQueue ("2.2.8","2.2.9");
+
+		if (isInstalled ("zimbra-ldap")) {
+			Migrate::log("Migrating ldap data");
+			stopLdap();
+			`mv /opt/zimbra/openldap-data /opt/zimbra/openldap-data.prev`;
+			`mkdir /opt/zimbra/openldap-data`;
+			`chown zimbra:zimbra /opt/zimbra/openldap-data`;
+			`su - zimbra -c "/opt/zimbra/openldap/sbin/slapadd -f /opt/zimbra/conf/slapd.conf -l /opt/zimbra/openldap-data/ldap.bak`;
+			if (startLdap()) {return 1;}
+		}
+
 	}
 
 	return 0;
