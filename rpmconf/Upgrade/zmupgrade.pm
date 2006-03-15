@@ -206,8 +206,15 @@ sub upgrade {
 	my $found = 0;
 
 	if (isInstalled ("zimbra-ldap")) {
+		Migrate::log("Migrating ldap data");
+		`mv /opt/zimbra/openldap-data /opt/zimbra/openldap-data.prev`;
+		`mkdir /opt/zimbra/openldap-data`;
+		`touch /opt/zimbra/openldap-data/DB_CONFIG`;
+		`chown -R zimbra:zimbra /opt/zimbra/openldap-data`;
+		`su - zimbra -c "/opt/zimbra/openldap/sbin/slapadd -f /opt/zimbra/conf/slapd.conf -l /opt/zimbra/openldap-data.prev/ldap.bak"`;
 		if (startLdap()) {return 1;}
 	}
+
 	foreach my $v (@versionOrder) {
 		print "Checking $v\n\n";
 		if ($v eq $startVersion) {
@@ -571,6 +578,7 @@ sub upgradeBGA {
 sub upgrade301GA {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
 	Migrate::log("Updating from 3.0.1_GA");
+
 	open (G, "/opt/zimbra/bin/zmprov gcf zimbraGalLdapFilterDef |") or die "Can't open zmprov: $!";
 	`/opt/zimbra/bin/zmprov mcf zimbraGalLdapFilterDef ''`;
 	while (<G>) {
@@ -589,16 +597,6 @@ sub upgrade301GA {
 		) {
 		`su - zimbra -c "zmlocalconfig -e postfix_version=2.2.9"`;
 		movePostfixQueue ("2.2.8","2.2.9");
-
-		if (isInstalled ("zimbra-ldap")) {
-			Migrate::log("Migrating ldap data");
-			stopLdap();
-			`mv /opt/zimbra/openldap-data /opt/zimbra/openldap-data.prev`;
-			`mkdir /opt/zimbra/openldap-data`;
-			`chown zimbra:zimbra /opt/zimbra/openldap-data`;
-			`su - zimbra -c "/opt/zimbra/openldap/sbin/slapadd -f /opt/zimbra/conf/slapd.conf -l /opt/zimbra/openldap-data.prev/ldap.bak`;
-			if (startLdap()) {return 1;}
-		}
 
 	}
 	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraCOSInheritedAttr zimbraFeatureSharingEnabled"`;
@@ -621,6 +619,7 @@ sub upgrade310GA {
 sub upgrade35M1 {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
 	Migrate::log("Updating from 3.5.0_M1");
+
 	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraCOSInheritedAttr zimbraFeatureSharingEnabled"`;
 	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainInheritedAttr zimbraFeatureSharingEnabled"`;
 	`su - zimbra -c "/opt/zimbra/bin/zmprov mc default zimbraFeatureSharingEnabled TRUE"`;
@@ -639,16 +638,6 @@ sub upgrade35M1 {
 	if ($startVersion eq "3.5.0_M1" && $startBuild <= 223) {
 		`su - zimbra -c "zmlocalconfig -e postfix_version=2.2.9"`;
 		movePostfixQueue ("2.2.8","2.2.9");
-
-		if (isInstalled ("zimbra-ldap")) {
-			Migrate::log("Migrating ldap data");
-			stopLdap();
-			`mv /opt/zimbra/openldap-data /opt/zimbra/openldap-data.prev`;
-			`mkdir /opt/zimbra/openldap-data`;
-			`chown zimbra:zimbra /opt/zimbra/openldap-data`;
-			`su - zimbra -c "/opt/zimbra/openldap/sbin/slapadd -f /opt/zimbra/conf/slapd.conf -l /opt/zimbra/openldap-data.prev/ldap.bak`;
-			if (startLdap()) {return 1;}
-		}
 
 	}
 
