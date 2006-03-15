@@ -596,7 +596,7 @@ sub upgrade301GA {
 			`mv /opt/zimbra/openldap-data /opt/zimbra/openldap-data.prev`;
 			`mkdir /opt/zimbra/openldap-data`;
 			`chown zimbra:zimbra /opt/zimbra/openldap-data`;
-			`su - zimbra -c "/opt/zimbra/openldap/sbin/slapadd -f /opt/zimbra/conf/slapd.conf -l /opt/zimbra/openldap-data/ldap.bak`;
+			`su - zimbra -c "/opt/zimbra/openldap/sbin/slapadd -f /opt/zimbra/conf/slapd.conf -l /opt/zimbra/openldap-data.prev/ldap.bak`;
 			if (startLdap()) {return 1;}
 		}
 
@@ -637,7 +637,7 @@ sub upgrade35M1 {
 			`mv /opt/zimbra/openldap-data /opt/zimbra/openldap-data.prev`;
 			`mkdir /opt/zimbra/openldap-data`;
 			`chown zimbra:zimbra /opt/zimbra/openldap-data`;
-			`su - zimbra -c "/opt/zimbra/openldap/sbin/slapadd -f /opt/zimbra/conf/slapd.conf -l /opt/zimbra/openldap-data/ldap.bak`;
+			`su - zimbra -c "/opt/zimbra/openldap/sbin/slapadd -f /opt/zimbra/conf/slapd.conf -l /opt/zimbra/openldap-data.prev/ldap.bak`;
 			if (startLdap()) {return 1;}
 		}
 
