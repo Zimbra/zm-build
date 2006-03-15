@@ -589,6 +589,17 @@ sub upgrade301GA {
 		) {
 		`su - zimbra -c "zmlocalconfig -e postfix_version=2.2.9"`;
 		movePostfixQueue ("2.2.8","2.2.9");
+
+		if (isInstalled ("zimbra-ldap")) {
+			Migrate::log("Migrating ldap data");
+			stopLdap();
+			`mv /opt/zimbra/openldap-data /opt/zimbra/openldap-data.prev`;
+			`mkdir /opt/zimbra/openldap-data`;
+			`chown zimbra:zimbra /opt/zimbra/openldap-data`;
+			`su - zimbra -c "/opt/zimbra/openldap/sbin/slapadd -f /opt/zimbra/conf/slapd.conf -l /opt/zimbra/openldap-data/ldap.bak`;
+			if (startLdap()) {return 1;}
+		}
+
 	}
 
 	return 0;
@@ -619,6 +630,17 @@ sub upgrade35M1 {
 	if ($startVersion eq "3.5.0_M1" && $startBuild <= 223) {
 		`su - zimbra -c "zmlocalconfig -e postfix_version=2.2.9"`;
 		movePostfixQueue ("2.2.8","2.2.9");
+
+		if (isInstalled ("zimbra-ldap")) {
+			Migrate::log("Migrating ldap data");
+			stopLdap();
+			`mv /opt/zimbra/openldap-data /opt/zimbra/openldap-data.prev`;
+			`mkdir /opt/zimbra/openldap-data`;
+			`chown zimbra:zimbra /opt/zimbra/openldap-data`;
+			`su - zimbra -c "/opt/zimbra/openldap/sbin/slapadd -f /opt/zimbra/conf/slapd.conf -l /opt/zimbra/openldap-data/ldap.bak`;
+			if (startLdap()) {return 1;}
+		}
+
 	}
 
 	return 0;
