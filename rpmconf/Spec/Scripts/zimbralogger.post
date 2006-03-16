@@ -38,5 +38,6 @@ egrep -q '^%zimbra.*zmqstat' /etc/sudoers
 if [ $? != 0 ]; then
     echo "%zimbra   ALL=NOPASSWD:/opt/zimbra/libexec/zmqstat" >> /etc/sudoers
 fi
+chmod 440 /etc/sudoers
 
 chown zimbra:zimbra /opt/zimbra/logger

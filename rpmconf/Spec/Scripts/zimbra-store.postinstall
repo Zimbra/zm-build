@@ -65,6 +65,7 @@ egrep -q '^%zimbra.*tomcat' /etc/sudoers
 if [ $? != 0 ]; then
 	echo "%zimbra ALL=NOPASSWD:/opt/zimbra/libexec/zmtomcatstart" >> /etc/sudoers
 fi
+chmod 440 /etc/sudoers
 
 cp -f /opt/zimbra/openldap/etc/openldap/slapd.conf /opt/zimbra/openldap/etc/openldap/slapd.conf.fcs
 sed -e 's/TLSCACertificateFile/#TLSCACertificateFile/g' \
