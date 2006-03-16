@@ -618,11 +618,11 @@ sub upgrade310GA {
 	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraGalLdapFilterDef 'zimbraResources:(&(|(cn=*%s*)(sn=*%s*)(gn=*%s*)(mail=*%s*)(zimbraMailDeliveryAddress=*%s*)(zimbraMailAlias=*%s*)(zimbraMailAddress=*%s*))(objectclass=zimbraCalendarResource))'"`;
 
 	# Bug 6077
-	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf -zimbraGalLdapAttrMap: 'givenName=firstName'"`;
-	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraGalLdapAttrMap: 'gn=firstName'"`;
-	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraGalLdapAttrMap: 'description=notes'"`;
-	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraGalLdapAttrMap: 'zimbraCalResType=zimbraCalResType'"`;
-	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraGalLdapAttrMap: 'zimbraCalResLocationDisplayName=zimbraCalResLocationDisplayName'"`;
+	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf -zimbraGalLdapAttrMap 'givenName=firstName'"`;
+	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraGalLdapAttrMap 'gn=firstName'"`;
+	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraGalLdapAttrMap 'description=notes'"`;
+	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraGalLdapAttrMap 'zimbraCalResType=zimbraCalResType'"`;
+	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraGalLdapAttrMap 'zimbraCalResLocationDisplayName=zimbraCalResLocationDisplayName'"`;
 
 	return 0;
 }
