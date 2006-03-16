@@ -609,10 +609,21 @@ sub upgrade301GA {
 sub upgrade310GA {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
 	Migrate::log("Updating from 3.1.0_GA");
-
 	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraCOSInheritedAttr zimbraFeatureSharingEnabled"`;
 	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainInheritedAttr zimbraFeatureSharingEnabled"`;
 	`su - zimbra -c "/opt/zimbra/bin/zmprov mc default zimbraFeatureSharingEnabled TRUE"`;
+
+	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf -zimbraGalLdapFilterDef 'zimbra:(&(|(cn=*%s*)(sn=*%s*)(gn=*%s*)(mail=*%s*)(zimbraMailDeliveryAddress=*%s*)(zimbraMailAlias=*%s*))(|(objectclass=zimbraAccount)(objectclass=zimbraDistributionList)))'"`;
+	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraGalLdapFilterDef 'zimbraAccounts:(&(|(cn=*%s*)(sn=*%s*)(gn=*%s*)(mail=*%s*)(zimbraMailDeliveryAddress=*%s*)(zimbraMailAlias=*%s*)(zimbraMailAddress=*%s*))(|(objectclass=zimbraAccount)(objectclass=zimbraDistributionList))(!(objectclass=zimbraCalendarResource)))'"`;
+	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraGalLdapFilterDef 'zimbraResources:(&(|(cn=*%s*)(sn=*%s*)(gn=*%s*)(mail=*%s*)(zimbraMailDeliveryAddress=*%s*)(zimbraMailAlias=*%s*)(zimbraMailAddress=*%s*))(objectclass=zimbraCalendarResource))'"`;
+
+	# Bug 6077
+	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf -zimbraGalLdapAttrMap: 'givenName=firstName'"`;
+	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraGalLdapAttrMap: 'gn=firstName'"`;
+	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraGalLdapAttrMap: 'description=notes'"`;
+	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraGalLdapAttrMap: 'zimbraCalResType=zimbraCalResType'"`;
+	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraGalLdapAttrMap: 'zimbraCalResLocationDisplayName=zimbraCalResLocationDisplayName'"`;
+
 	return 0;
 }
 
