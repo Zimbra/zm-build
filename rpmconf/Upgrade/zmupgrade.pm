@@ -821,7 +821,7 @@ sub isInstalled {
 
 }
 
-sub movePostfixQueues {
+sub movePostfixQueue {
 
 	my $fromVersion = shift;
 	my $toVersion = shift;
