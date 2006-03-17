@@ -49,7 +49,7 @@ if ($platform =~ /MACOSX/) {
 	}
 }
 
-if ($platform =~ /SuSEES9/) { `chmod 640 /etc/sudoers`;}
+if ($platform =~ /SuSE/) { `chmod 640 /etc/sudoers`;}
 
 use postinstall;
 
