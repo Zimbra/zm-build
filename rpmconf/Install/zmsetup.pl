@@ -49,6 +49,8 @@ if ($platform =~ /MACOSX/) {
 	}
 }
 
+if ($platform eq "SuSEES9") { `chmod 640 /etc/sudoers`;}
+
 use postinstall;
 
 use zmupgrade;
