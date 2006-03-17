@@ -113,7 +113,7 @@ homedir="/opt/zimbra"
 name="zimbra"
 addUser
 
-if [ -f /opt/zimbra/bin/zmcontrol ]; then
+if [ -f "/opt/zimbra/bin/zmcontrol" ]; then
 	su - zimbra -c "/opt/zimbra/bin/zmcontrol stop" > /dev/null 2>&1
 fi
 

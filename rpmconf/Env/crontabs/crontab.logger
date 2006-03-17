@@ -8,3 +8,7 @@
 # Graph generation
 #
 10 * * * * /opt/zimbra/libexec/zmgengraphs >> /tmp/gengraphs.out 2>&1
+#
+# Daily reports
+#
+10 1 * * * /opt/zimbra/libexec/zmdailyreport | /opt/zimbra/postfix/sbin/sendmail root
