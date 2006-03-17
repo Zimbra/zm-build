@@ -207,6 +207,7 @@ sub upgrade {
 
 	if (isInstalled ("zimbra-ldap")) {
 		Migrate::log("Migrating ldap data");
+		`rm -rf /opt/zimbra/openldap-data.prev`;
 		`mv /opt/zimbra/openldap-data /opt/zimbra/openldap-data.prev`;
 		`mkdir /opt/zimbra/openldap-data`;
 		`touch /opt/zimbra/openldap-data/DB_CONFIG`;

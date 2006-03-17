@@ -272,7 +272,13 @@ sub getSystemStatus {
 		if (-f "$zimbraHome/openldap-data/mail.bdb") {
 			$ldapConfigured = 1;
 			$ldapRunning = 0xffff & system("/opt/zimbra/bin/ldap status > /dev/null 2>&1");
-			$ldapRunning = ($ldapRunning)?0:1;
+			if ($ldapRunning) {
+				$ldapRunning = 0;
+			} else {
+				$ldapRunning = 1;
+			}
+			# Mac on x86 choked on this line?
+			#$ldapRunning = ($ldapRunning)?0:1;
 		} else {
 			$config{DOCREATEDOMAIN} = "yes";
 			$config{DOTRAINSA} = "yes";
