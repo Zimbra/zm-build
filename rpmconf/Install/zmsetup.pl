@@ -49,7 +49,7 @@ if ($platform =~ /MACOSX/) {
 	}
 }
 
-if ($platform eq "SuSEES9") { `chmod 640 /etc/sudoers`;}
+if ($platform =~ /SuSEES9/) { `chmod 640 /etc/sudoers`;}
 
 use postinstall;
 
@@ -2482,7 +2482,7 @@ checkPortConflicts();
 
 getSystemStatus();
 
-if (!$ldapRunning && $ldapConfigured) {
+if ($ldapConfigured) {
 	startLdap();
 }
 
