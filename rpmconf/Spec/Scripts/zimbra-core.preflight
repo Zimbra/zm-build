@@ -113,6 +113,10 @@ homedir="/opt/zimbra"
 name="zimbra"
 addUser
 
+if [ -f /opt/zimbra/bin/zmcontrol ]; then
+	su - zimbra -c "/opt/zimbra/bin/zmcontrol stop" > /dev/null 2>&1
+fi
+
 D=`date +%s`
 echo "${D}: INSTALL SESSION START" >> /opt/zimbra/.install_history
 
