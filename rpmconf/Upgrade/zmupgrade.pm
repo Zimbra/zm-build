@@ -625,6 +625,11 @@ sub upgrade310GA {
 	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraGalLdapAttrMap 'zimbraCalResType=zimbraCalResType'"`;
 	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraGalLdapAttrMap 'zimbraCalResLocationDisplayName=zimbraCalResLocationDisplayName'"`;
 
+	# bug: 2799
+	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraCOSInheritedAttr zimbraPrefCalendarApptReminderWarningTime"`;
+	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr zimbraPrefCalendarApptReminderWarningTime"`;
+	`su - zimbra -c "/opt/zimbra/bin/zmprov mc default zimbraPrefCalendarApptReminderWarningTime 5"`;
+
 	return 0;
 }
 
@@ -652,6 +657,18 @@ sub upgrade35M1 {
 		movePostfixQueue ("2.2.8","2.2.9");
 
 	}
+
+	# Bug 6077
+	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf -zimbraGalLdapAttrMap 'givenName=firstName'"`;
+	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraGalLdapAttrMap 'gn=firstName'"`;
+	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraGalLdapAttrMap 'description=notes'"`;
+	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraGalLdapAttrMap 'zimbraCalResType=zimbraCalResType'"`;
+	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraGalLdapAttrMap 'zimbraCalResLocationDisplayName=zimbraCalResLocationDisplayName'"`;
+
+	# bug: 2799
+	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraCOSInheritedAttr zimbraPrefCalendarApptReminderWarningTime"`;
+	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr zimbraPrefCalendarApptReminderWarningTime"`;
+	`su - zimbra -c "/opt/zimbra/bin/zmprov mc default zimbraPrefCalendarApptReminderWarningTime 5"`;
 
 	return 0;
 }
