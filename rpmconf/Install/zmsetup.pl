@@ -2089,11 +2089,15 @@ sub configCreateDomain {
 				progress ( "Creating user $config{TRAINSASPAM}..." );
 				my $pass = genRandomPass();
 				runAsZimbra("/opt/zimbra/bin/zmprov ca ".
-					"$config{TRAINSASPAM} \'$pass\' ");
+					"$config{TRAINSASPAM} \'$pass\' ".
+					"amavisBypassSpamChecks TRUE ".
+					"description \'Spam training account\'");
 				progress ( "Done\n" );
 				progress ( "Creating user $config{TRAINSAHAM}..." );
-				runAsZimbra("/opt/zimbra/bin/zmprov ca ".
-					"$config{TRAINSAHAM} \'$pass\' ");
+					runAsZimbra("/opt/zimbra/bin/zmprov ca ".
+					"$config{TRAINSAHAM} \'$pass\' ".
+					"amavisBypassSpamChecks TRUE ".
+					"description \'Spam training account\'");
 				progress ( "Done\n" );
 				progress ( "Setting spam training accounts..." );
 				runAsZimbra("/opt/zimbra/bin/zmprov mcf ".
