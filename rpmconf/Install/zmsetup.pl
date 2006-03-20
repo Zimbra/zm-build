@@ -2091,12 +2091,16 @@ sub configCreateDomain {
 				runAsZimbra("/opt/zimbra/bin/zmprov ca ".
 					"$config{TRAINSASPAM} \'$pass\' ".
 					"amavisBypassSpamChecks TRUE ".
+					"zimbraAttachmentsIndexingEnabled FALSE ".
+					"zimbraMailQuota 0 ".
 					"description \'Spam training account\'");
 				progress ( "Done\n" );
 				progress ( "Creating user $config{TRAINSAHAM}..." );
 					runAsZimbra("/opt/zimbra/bin/zmprov ca ".
 					"$config{TRAINSAHAM} \'$pass\' ".
 					"amavisBypassSpamChecks TRUE ".
+					"zimbraAttachmentsIndexingEnabled FALSE ".
+					"zimbraMailQuota 0 ".
 					"description \'Spam training account\'");
 				progress ( "Done\n" );
 				progress ( "Setting spam training accounts..." );
