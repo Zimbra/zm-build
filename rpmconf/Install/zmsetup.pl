@@ -179,9 +179,7 @@ sub checkPortConflicts {
 		# Shutdown postfix in launchd
 		if (-f "/System/Library/LaunchDaemons/org.postfix.master.plist") {
 			progress ( "Disabling postfix in launchd\n");
-			system ("/bin/launchctl unload /System/Library/LaunchDaemons/org.postfix.master.plist");
-			system ("mkdir /System/Library/LaunchDaemons.disabled");
-			system ("mv -f /System/Library/LaunchDaemons/org.postfix.master.plist /System/Library/LaunchDaemons.disabled/org.postfix.master.plist");
+			system ("/bin/launchctl unload -w /System/Library/LaunchDaemons/org.postfix.master.plist");
 		}
 	}
 	progress ( "Checking for port conflicts\n" );
@@ -2332,6 +2330,12 @@ sub applyConfig {
 	if ($newinstall) {
 		runAsZimbra ("/opt/zimbra/bin/zmsshkeygen");
 		runAsZimbra ("/opt/zimbra/bin/zmupdateauthkeys");
+	}
+	if ($platform =~ /MACOSX/) {
+		if (-d "/System/Library/LaunchDaemons") {
+			`cp -f /opt/zimbra/conf/com.zimbra.zcs.plist /System/Library/LaunchDaemons`;
+			`launchctl load /System/Library/LaunchDaemons/com.zimbra.zcs.plist`;
+		}
 	}
 
 	configLog ("END");
