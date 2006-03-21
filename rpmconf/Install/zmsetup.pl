@@ -138,7 +138,9 @@ sub detail {
 
 sub saveConfig {
 	my $fname = "/opt/zimbra/config.$$";
-	$fname = askNonBlank ("Save config in file:", $fname);
+	if (!(defined ($options{c})) && $newinstall ) {
+		$fname = askNonBlank ("Save config in file:", $fname);
+	}
 
 	if (open CONF, ">$fname") {
 		progress ("Saving config in $fname...");
@@ -2261,6 +2263,8 @@ sub applyConfig {
 		if (askYN("The system will be modified - continue?", "No") eq "no") {
 			return 1;
 		}
+	} else {
+		saveConfig();
 	}
 	progress ( "Operations logged to $logfile\n" );
 
