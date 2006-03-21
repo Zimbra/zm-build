@@ -24,6 +24,31 @@
 # ***** END LICENSE BLOCK *****
 # 
 
+ln -s /opt/zimbra/perdition-1.17 /opt/zimbra/perdition
+mkdir -p /opt/zimbra/perdition/var/run
+chown -R zimbra:zimbra /opt/zimbra/perdition/var
+
+PLAT=`/opt/zimbra/libexec/get_plat_tag.sh`
+ARCH=powerpc
+if [ "x$PLAT" = "xMACOSXx86" ]; then
+    ARCH=i686
+fi
+
+rm -f /opt/zimbra/mysql
+ln -s /opt/zimbra/mysql-standard-4.1.16-apple-darwin8.2.0-$ARCH /opt/zimbra/mysql
+# Can't get the dylib to hold the correct path...
+rm -f /opt/zimbra/mysql-standard-4.1.16-apple-darwin8.2.0-$ARCH/lib/mysql
+ln -s /opt/zimbra/mysql-standard-4.1.16-apple-darwin8.2.0-$ARCH/lib /opt/zimbra/mysql-standard-4.1.16-apple-darwin8.2.0-$ARCH/lib/mysql
+
+H=`hostname -s`
+
+mv /opt/zimbra/db/db.sql /opt/zimbra/db/db.sql.in
+sed -e "/server.hostname/ s/local/$H/" /opt/zimbra/db/db.sql.in > /opt/zimbra/db/db.sql
+
+rm -rf /opt/zimbra/tomcat
+ln -s /opt/zimbra/apache-tomcat-5.5.15 /opt/zimbra/tomcat
+mkdir -p /opt/zimbra/tomcat/logs
+chown zimbra:zimbra /opt/zimbra/tomcat/logs
 
 PKG=`echo ${RECEIPT_PATH} | sed -e 's|.*/\(zimbra-store.[^/]*pkg\)/.*|\1|' | sed -e 's/\./-/'`
 D=`date +%s`
