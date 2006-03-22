@@ -35,6 +35,22 @@ chown zimbra:zimbra /opt/zimbra/.ssh
 rm -f /opt/zimbra/java
 ln -s /usr /opt/zimbra/java
 
+# Bug 6645
+PLAT=`/opt/zimbra/libexec/get_plat_tag.sh`
+ARCH=powerpc
+if [ "x$PLAT" = "xMACOSXx86" ]; then
+	ARCH=i686
+fi
+
+if [ ! -d /opt/zimbra/openldap-2.3.20 ]; then
+	mkdir -p /opt/zimbra/openldap-2.3.20
+	ln -s /opt/zimbra/lib /opt/zimbra/openldap-2.3.20/lib
+fi
+if [ ! -d /opt/zimbra/mysql-standard-4.1.16-apple-darwin8.2.0-$ARCH ]; then
+	mkdir -p /opt/zimbra/mysql-standard-4.1.16-apple-darwin8.2.0-$ARCH
+	ln -s /opt/zimbra/lib /opt/zimbra/mysql-standard-4.1.16-apple-darwin8.2.0-$ARCH/lib
+fi
+
 /bin/sh /opt/zimbra/libexec/zmfixperms
 
 echo "Setting up syslog"
