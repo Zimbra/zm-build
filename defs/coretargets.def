@@ -209,6 +209,7 @@ $(CORE_DEST_DIR)/conf: $(WEBAPP_DIR)/service.war
 	cp $(SERVICE_DIR)/conf/my.logger.cnf $@
 	cp $(SERVICE_DIR)/conf/com.zimbra.zcs.plist $@
 	cp $(SERVICE_DIR)/conf/postfix_recipient_restrictions.cf $@
+	cp -Rf $(SERVICE_DIR)/conf/msgs $@/msgs
 	mkdir -p $@/spamassassin
 	cp $(SERVICE_DIR)/conf/spamassassin/[^C]* $@/spamassassin
 
