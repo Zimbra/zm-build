@@ -17,10 +17,11 @@ BUILDNUM	:= $(shell cat RE/BUILD)
 
 SOURCE_TAG := $(MAJOR).$(MINOR).$(MICRO)_$(BUILDNUM)
 VERSION_TAG := $(MAJOR).$(MINOR).$(MICRO)_$(BUILDNUM).$(BUILD_PLATFORM)
+
+ARCH := i386
+
 ifeq ($(BUILD_PLATFORM), MACOSX)
 	ARCH := ppc
-else
-	ARCH := i386
 endif
 
 ifeq ($(TAG), )

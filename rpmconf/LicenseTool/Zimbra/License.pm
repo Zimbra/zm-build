@@ -2,8 +2,6 @@ package Zimbra::License;
 
 use strict;
 
-use Zimbra::LicensingDB;
-
 sub new {
 	my $class = shift;
 	my $attrs = shift;
@@ -21,43 +19,6 @@ sub new {
 		}
 	}
 	return $self;
-}
-
-sub getLicenseIds {
-    my $ids = Zimbra::LicensingDB::getLicenseIds();
-	return $ids;
-}
-
-sub getLicense {
-	my $id = shift;
-	my $attrs = Zimbra::LicensingDB::getLicense($id);
-	if (defined($attrs)) {
-		my $license = new Zimbra::License($attrs);
-		return $license;
-	} 
-	return undef;
-}
-
-sub putLicense {
-	my $self = shift;
-	#print "Storing license in database...";
-	$self->{id} = Zimbra::LicensingDB::putLicense($self);
-	if (defined($self->{id})) {
-		#print "License ID $self->{id}...Done\n";
-		return 1;
-	}
-	#print "FAILED\n";
-	return undef;
-}
-
-sub updateLicense {
-	my $self = shift;
-	#print "Storing license in database...";
-	if (Zimbra::LicensingDB::updateLicense($self)) {
-		return 1;
-	}
-	#print "FAILED\n";
-	return undef;
 }
 
 sub toText {

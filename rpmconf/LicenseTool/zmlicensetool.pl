@@ -1,6 +1,7 @@
 #!/usr/bin/perl
 
 use strict;
+use Zimbra::LicensingDB;
 use Zimbra::License;
 use Zimbra::LicenseKey;
 use Zimbra::Customer;
@@ -66,7 +67,7 @@ sub setAction {
 }
 
 sub displayCurrentKey {
-	my $key = Zimbra::LicenseKey::getCurrentKey();
+	my $key = getCurrentKey();
 	if (!defined($key)) {
 		die "Can't get current key\n";
 	}
@@ -79,7 +80,7 @@ sub displayKey {
 		usage ("No key specified!");
 	}
 	if ($options{'id'} =~ /current/i) {return displayCurrentKey()};
-	my $key = Zimbra::LicenseKey::getKey($options{'id'});
+	my $key = getKey($options{'id'});
 	if (!defined($key)) {
 		die "Can't get key $options{'id'}\n";
 	}
@@ -92,17 +93,17 @@ sub createKey {
 	if (!$key->generate()) {
 		exit 1;
 	}
-	if (!$key->putKey()) {
+	if (!putKey($key)) {
 		exit 1;
 	}
 	$key->display($options{'verbose'});
 }
 
 sub listKeys {
-	my $ids = Zimbra::LicenseKey::getKeyIds();
+	my $ids = getKeyIds();
 
 	foreach (@$ids) {
-		my $key = Zimbra::LicenseKey::getKey($$_[0]);
+		my $key = getKey($$_[0]);
 		if (!defined($key)) {
 			warn "Can't get key $$_[0]\n";
 		}
@@ -115,7 +116,7 @@ sub verifyLicense {
 	if (!defined($options{'id'})) {
 		usage ("Missing license id");
 	}
-	my $license = Zimbra::License::getLicense($options{'id'});
+	my $license = getLicense($options{'id'});
 	if (!defined($license)) {
 		usage ("Can't get license $options{'id'}\n");
 	}
@@ -134,7 +135,7 @@ sub displayLicense {
 		usage ("Missing license id");
 	}
 
-	my $license = Zimbra::License::getLicense($options{'id'});
+	my $license = getLicense($options{'id'});
 	if (!defined($license)) {
 		usage ("Can't get license $options{'id'}\n");
 	}
@@ -150,7 +151,7 @@ sub createLicense {
 	}
 	$options{'expiration'} = "$options{'expiration'} 00:00:00";
 
-	my $customer = Zimbra::Customer::getCustomer($options{id});
+	my $customer = getCustomer($options{id});
 	if (!defined ($customer)) {
 		usage ("Customer $options{id} not found!");
 	}
@@ -162,13 +163,13 @@ sub createLicense {
 	}
 	$license->{'customer_id'} = $customer->{'id'};
 	$license->{'expiration'} = $options{'expiration'};
-	$license->{license_version} = Zimbra::LicenseKey::getCurrentKeyId();
+	$license->{license_version} = getCurrentKeyId();
 
 	foreach (sort keys %license_options) {
 		$license->{options}{$_} = $license_options{$_};
 	}
 
-	my $id = $license->putLicense();
+	my $id = putLicense($license);
 
 	if (!$id) {
 		usage ("License creation failed");
@@ -178,7 +179,7 @@ sub createLicense {
 		usage ("License generation failed!");
 	}
 
-	if (!$license->updateLicense()) {
+	if (!updateLicense($license)) {
 		usage ("License generation failed!");
 	}
 
@@ -193,7 +194,7 @@ sub createCustomer {
 	my $customer = new Zimbra::Customer();
 	$customer->{name} = $options{'name'};
 	if (defined($customer)) {
-		my $id = $customer->putCustomer();
+		my $id = putCustomer($customer);
 		if ($id) {
 			$customer->display($options{'verbose'});
 		}
@@ -204,17 +205,17 @@ sub displayCustomer {
 	if (!defined ($options{'id'}) ) {
 		usage ("No customer specified!");
 	}
-	my $customer = Zimbra::Customer::getCustomer($options{'id'});
+	my $customer = getCustomer($options{'id'});
 	if (defined($customer)) {
 		$customer->display($options{'verbose'});
 	}
 }
 
 sub listCustomers {
-	my $ids = Zimbra::Customer::getCustomerIds();
+	my $ids = getCustomerIds();
 
 	foreach (@$ids) {
-		my $customer = Zimbra::Customer::getCustomer($$_[0]);
+		my $customer = getCustomer($$_[0]);
 		if (!defined($customer)) {
 			warn "Can't get customer $$_[0]\n";
 		}
@@ -223,10 +224,10 @@ sub listCustomers {
 }
 
 sub listLicenses {
-	my $ids = Zimbra::License::getLicenseIds();
+	my $ids = getLicenseIds();
 
 	foreach (@$ids) {
-		my $license = Zimbra::License::getLicense($$_[0]);
+		my $license = getLicense($$_[0]);
 		if (!defined($license)) {
 			warn "Can't get license $$_[0]\n";
 		}
@@ -242,7 +243,7 @@ sub modifyLicense {
 
 	my $customer;
 
-	my $license = Zimbra::License::getLicense($options{'id'});
+	my $license = getLicense($options{'id'});
 	if (!defined($license)) {
 		usage ("Can't get license $options{'id'}\n");
 	}
@@ -252,7 +253,7 @@ sub modifyLicense {
 	}
 
 	if (defined ($license_options{'customer'})) {
-		$customer = Zimbra::Customer::getCustomer($license_options{'customer'});
+		$customer = getCustomer($license_options{'customer'});
 		if (!defined($customer)) {
 			usage ("Can't get customer $license_options{'customer'}\n");
 		}
@@ -275,7 +276,7 @@ sub modifyLicense {
 		usage ("License generation failed!");
 	}
 
-	if (!$license->updateLicense()) {
+	if (!updateLicense($license)) {
 		usage ("License generation failed!");
 	}
 
@@ -313,3 +314,119 @@ EOF
 
 	exit 1;
 }
+
+## Db Access commands
+
+sub getCustomerIds {
+	my $ids = Zimbra::LicensingDB::getCustomerIds();
+	return $ids;
+}
+
+sub getCustomer {
+	my $id = shift;
+	#print "Fetching customer $id from database...";
+	my $attrs = Zimbra::LicensingDB::getCustomer($id);
+	if (defined ($attrs)) {
+		my $customer = new Zimbra::Customer($attrs);
+		#print "Done\n";
+		return $customer;
+	}
+	#print "FAILED\n";
+	return undef;
+}
+
+sub putCustomer {
+	my $customer = shift;
+	#print "Storing customer $self->{name} in database...";
+	$customer->{id} = Zimbra::LicensingDB::putCustomer($customer);
+	if (defined($customer->{id})) {
+		#print "Customer ID $customer->{id}...Done\n";
+		return 1;
+	}
+	#print "FAILED\n";
+	return undef;
+}
+
+sub getCurrentKeyId {
+	my $ids = getKeyIds();
+	if ($#$ids < 0) {return undef;}
+	my $curId = $$ids[$#$ids][0];
+	return $curId;
+}
+
+sub getCurrentKey {
+	my $id = getCurrentKeyId;
+	if (!defined ($id)) {
+		return undef;
+	}
+	return (getKey($id));
+}
+
+sub getKeyIds {
+	my $ids = Zimbra::LicensingDB::getKeyIds();
+	return $ids;
+}
+
+sub getKey {
+	my $keyId = shift;
+	#print "Fetching key $keyId from database...";
+	my $attrs = Zimbra::LicensingDB::getKey($keyId);
+	if (defined ($attrs)) {
+		my $key = new Zimbra::LicenseKey($attrs);
+		#print "Done\n";
+		return $key;
+	}
+	#print "FAILED\n";
+	return undef;
+}
+
+sub putKey {
+	my $key = shift;
+
+	#print "Storing key in database...";
+	$key->{id} = Zimbra::LicensingDB::putKey($key);
+	if (defined($key->{id})) {
+		#print "Key ID $key->{id}...Done\n";
+		return 1;
+	}
+	#print "FAILED\n";
+	return undef;
+}
+
+sub getLicenseIds {
+	my $ids = Zimbra::LicensingDB::getLicenseIds();
+	return $ids;
+}
+
+sub getLicense {
+	my $id = shift;
+	my $attrs = Zimbra::LicensingDB::getLicense($id);
+	if (defined($attrs)) {
+		my $license = new Zimbra::License($attrs);
+		return $license;
+	}
+	return undef;
+}
+
+sub putLicense {
+	my $license = shift;
+	#print "Storing license in database...";
+	$license->{id} = Zimbra::LicensingDB::putLicense($license);
+	if (defined($license->{id})) {
+		#print "License ID $license->{id}...Done\n";
+		return 1;
+	}
+	#print "FAILED\n";
+	return undef;
+}
+
+sub updateLicense {
+	my $license = shift;
+	#print "Storing license in database...";
+	if (Zimbra::LicensingDB::updateLicense($license)) {
+		return 1;
+	}
+	#print "FAILED\n";
+	return undef;
+}   
+

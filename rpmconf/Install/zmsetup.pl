@@ -2098,7 +2098,7 @@ sub configCreateDomain {
 					"description \'Spam training account\'");
 				progress ( "Done\n" );
 				progress ( "Creating user $config{TRAINSAHAM}..." );
-					runAsZimbra("/opt/zimbra/bin/zmprov ca ".
+				runAsZimbra("/opt/zimbra/bin/zmprov ca ".
 					"$config{TRAINSAHAM} \'$pass\' ".
 					"amavisBypassSpamChecks TRUE ".
 					"zimbraAttachmentsIndexingEnabled FALSE ".
