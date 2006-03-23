@@ -1856,8 +1856,8 @@ sub configSetupLdap {
 			progress ( "Starting ldap..." );
 			runAsZimbra 
 				("/opt/zimbra/openldap/sbin/slapindex -f /opt/zimbra/conf/slapd.conf");
-			runAsZimbra ("ldap start");
-			runAsZimbra ("zmldapapplyldif");
+			runAsZimbra ("/opt/zimbra/bin/ldap start");
+			runAsZimbra ("/opt/zimbra/libexec/zmldapapplyldif");
 			progress ( "Done\n" );
 		}
 	} else {
@@ -1884,8 +1884,8 @@ sub configSaveCA {
 		chomp $cert;
 		chomp $key;
 
-		runAsZimbra("zmprov mcf zimbraCertAuthorityCertSelfSigned \\\"$cert\\\"");
-		runAsZimbra("zmprov mcf zimbraCertAuthorityKeySelfSigned \\\"$key\\\"");
+		runAsZimbra("/opt/zimbra/bin/zmprov mcf zimbraCertAuthorityCertSelfSigned \\\"$cert\\\"");
+		runAsZimbra("/opt/zimbra/bin/zmprov mcf zimbraCertAuthorityKeySelfSigned \\\"$key\\\"");
 
 		progress ( "Done\n" );
 	} else {
@@ -2461,8 +2461,8 @@ sub startLdap {
 	progress ( "Starting ldap..." );
 	runAsZimbra 
 		("/opt/zimbra/openldap/sbin/slapindex -f /opt/zimbra/conf/slapd.conf");
-	runAsZimbra ("ldap start");
-	runAsZimbra ("zmldapapplyldif");
+	runAsZimbra ("/opt/zimbra/bin/ldap start");
+	runAsZimbra ("/opt/zimbra/libexec/zmldapapplyldif");
 	progress ( "Done\n" );
 }
 
