@@ -677,6 +677,12 @@ sub upgrade35M1 {
 	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr zimbraPrefCalendarApptReminderWarningTime"`;
 	`su - zimbra -c "/opt/zimbra/bin/zmprov mc default zimbraPrefCalendarApptReminderWarningTime 5"`;
 
+	# bug 6077
+	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraAccountClientAttr zimbraLocale"`;
+	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraCOSInheritedAttr zimbraLocale"`;
+	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr zimbraLocale"`;
+	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraServerInheritedAttr zimbraLocale"`;
+
 	return 0;
 }
 
