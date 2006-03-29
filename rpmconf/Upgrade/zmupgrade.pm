@@ -637,6 +637,12 @@ sub upgrade310GA {
 	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr zimbraPrefMailLocalDeliveryDisabled"`;
 	`su - zimbra -c "/opt/zimbra/bin/zmprov mc default zimbraFeatureMailForwardingEnabled TRUE"`;
 
+	# bug 6077
+	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraAccountClientAttr zimbraLocale"`;
+	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraCOSInheritedAttr zimbraLocale"`;
+	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr zimbraLocale"`;
+	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraServerInheritedAttr zimbraLocale"`;
+
 	return 0;
 }
 
