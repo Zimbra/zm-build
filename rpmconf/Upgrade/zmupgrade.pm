@@ -652,6 +652,10 @@ sub upgrade310GA {
 	`su - zimbra -c "/opt/zimbra/bin/zmprov ms $hn zimbraRemoteManagementUser zimbra"`;
 	`su - zimbra -c "/opt/zimbra/bin/zmprov ms $hn zimbraRemoteManagementPrivateKeyPath /opt/zimbra/.ssh/zimbra_identity"`;
 	`su - zimbra -c "/opt/zimbra/bin/zmprov ms $hn zimbraRemoteManagementPort 22"`;
+
+	# bug: 6828
+	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf -zimbraGalLdapAttrMap zimbraMailAlias=email2"`;
+
 	return 0;
 }
 
