@@ -637,6 +637,21 @@ sub upgrade310GA {
 	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr zimbraPrefMailLocalDeliveryDisabled"`;
 	`su - zimbra -c "/opt/zimbra/bin/zmprov mc default zimbraFeatureMailForwardingEnabled TRUE"`;
 
+	# bug 6077
+	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraAccountClientAttr zimbraLocale"`;
+	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraCOSInheritedAttr zimbraLocale"`;
+	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr zimbraLocale"`;
+	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraServerInheritedAttr zimbraLocale"`;
+
+	# bug 6834
+	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraServerInheritedAttr zimbraRemoteManagementCommand"`;
+	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraServerInheritedAttr zimbraRemoteManagementUser"`;
+	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraServerInheritedAttr zimbraRemoteManagementPrivateKeyPath"`;
+	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraServerInheritedAttr zimbraRemoteManagementPort"`;
+	`su - zimbra -c "/opt/zimbra/bin/zmprov ms $hn zimbraRemoteManagementCommand /opt/zimbra/libexec/zmrcd"`;
+	`su - zimbra -c "/opt/zimbra/bin/zmprov ms $hn zimbraRemoteManagementUser zimbra"`;
+	`su - zimbra -c "/opt/zimbra/bin/zmprov ms $hn zimbraRemoteManagementPrivateKeyPath /opt/zimbra/.ssh/zimbra_identity"`;
+	`su - zimbra -c "/opt/zimbra/bin/zmprov ms $hn zimbraRemoteManagementPort 22"`;
 	return 0;
 }
 
@@ -676,12 +691,6 @@ sub upgrade35M1 {
 	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraCOSInheritedAttr zimbraPrefCalendarApptReminderWarningTime"`;
 	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr zimbraPrefCalendarApptReminderWarningTime"`;
 	`su - zimbra -c "/opt/zimbra/bin/zmprov mc default zimbraPrefCalendarApptReminderWarningTime 5"`;
-
-	# bug 6077
-	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraAccountClientAttr zimbraLocale"`;
-	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraCOSInheritedAttr zimbraLocale"`;
-	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr zimbraLocale"`;
-	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraServerInheritedAttr zimbraLocale"`;
 
 	return 0;
 }
