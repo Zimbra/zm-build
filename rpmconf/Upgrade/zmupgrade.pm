@@ -643,6 +643,17 @@ sub upgrade310GA {
 	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr zimbraLocale"`;
 	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraServerInheritedAttr zimbraLocale"`;
 
+	# bug 6834
+	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraServerInheritedAttr zimbraRemoteManagementCommand"`;
+	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraServerInheritedAttr zimbraRemoteManagementUser"`;
+	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraServerInheritedAttr zimbraRemoteManagementPrivateKeyPath"`;
+	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraServerInheritedAttr zimbraRemoteManagementPort"`;
+	`su - zimbra -c "/opt/zimbra/bin/zmprov ms $hn zimbraRemoteManagementCommand /opt/zimbra/libexec/zmrcd"`;
+	`su - zimbra -c "/opt/zimbra/bin/zmprov ms $hn zimbraRemoteManagementUser zimbra"`;
+	`su - zimbra -c "/opt/zimbra/bin/zmprov ms $hn zimbraRemoteManagementPrivateKeyPath /opt/zimbra/.ssh/zimbra_identity"`;
+	`su - zimbra -c "/opt/zimbra/bin/zmprov ms $hn zimbraRemoteManagementPort 22"`;
+
+
 	return 0;
 }
 
