@@ -612,6 +612,7 @@ sub upgrade310GA {
 	Migrate::log("Updating from 3.1.0_GA");
 	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraCOSInheritedAttr zimbraFeatureSharingEnabled"`;
 	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainInheritedAttr zimbraFeatureSharingEnabled"`;
+	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraAccountClientAttr zimbraFeatureSharingEnabled"`;
 	`su - zimbra -c "/opt/zimbra/bin/zmprov mc default zimbraFeatureSharingEnabled TRUE"`;
 
 	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf -zimbraGalLdapFilterDef 'zimbra:(&(|(cn=*%s*)(sn=*%s*)(gn=*%s*)(mail=*%s*)(zimbraMailDeliveryAddress=*%s*)(zimbraMailAlias=*%s*))(|(objectclass=zimbraAccount)(objectclass=zimbraDistributionList)))'"`;
