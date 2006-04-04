@@ -117,7 +117,7 @@ sub upgrade {
 		$curSchemaVersion = Migrate::getSchemaVersion();
 	}
 
-	if (isInstalled("zimbra-logger")) {
+	if (isInstalled("zimbra-logger") && -d "/opt/zimbra/logger/db/data/zimbra_logger/") {
 		if (startLoggerSql()) { return 1; }
 
 		if ($startVersion eq "3.0.0_M2") {
@@ -191,7 +191,7 @@ sub upgrade {
 		stopSql();
 	}
 
-	if (isInstalled ("zimbra-logger")) {
+	if (isInstalled ("zimbra-logger") && -d "/opt/zimbra/logger/db/data/zimbra_logger/") {
 		if ($curLoggerSchemaVersion < $hiLoggerVersion) {
 			print "An upgrade of the logger schema is necessary from version $curLoggerSchemaVersion\n";
 		}
