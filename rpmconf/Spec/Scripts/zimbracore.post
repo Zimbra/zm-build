@@ -64,12 +64,15 @@ if [ -x /sbin/chkconfig ]; then
 	chkconfig --add zimbra 
 	chkconfig zimbra on
 else
+	ln -s /etc/init.d/zimbra /etc/rc2.d/S99zimbra
 	ln -s /etc/init.d/zimbra /etc/rc3.d/S99zimbra
 	ln -s /etc/init.d/zimbra /etc/rc4.d/S99zimbra
 	ln -s /etc/init.d/zimbra /etc/rc5.d/S99zimbra
+	ln -s /etc/init.d/zimbra /etc/rc2.d/K01zimbra
 	ln -s /etc/init.d/zimbra /etc/rc3.d/K01zimbra
 	ln -s /etc/init.d/zimbra /etc/rc4.d/K01zimbra
 	ln -s /etc/init.d/zimbra /etc/rc5.d/K01zimbra
+	ln -s /etc/init.d/zimbra /etc/rc6.d/K01zimbra
 fi
 
 mkdir -p /opt/zimbra/log
