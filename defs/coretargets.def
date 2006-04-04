@@ -203,7 +203,7 @@ $(CORE_DEST_DIR)/conf: $(WEBAPP_DIR)/service.war
 	cp $(SERVICE_DIR)/conf/freshclam.conf.in $@
 	cp $(SERVICE_DIR)/conf/postfix_header_checks.in $@
 	cp $(SERVICE_DIR)/conf/perdition.conf.in $@
-	cp $(SERVICE_DIR)/conf/salocal.cf $@
+	cp $(SERVICE_DIR)/conf/salocal.cf $@/salocal.cf.in
 	cp $(SERVICE_DIR)/conf/zmmta.cf $@
 	cp $(SERVICE_DIR)/conf/zimbra.ld.conf $@
 	cp $(SERVICE_DIR)/conf/my.logger.cnf $@
