@@ -657,6 +657,15 @@ sub upgrade310GA {
 	# bug: 6828
 	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf -zimbraGalLdapAttrMap zimbraMailAlias=email2"`;
 
+	if ( ($startVersion eq "3.1.0_GA" && $startBuild <= 303) ||
+		($startVersion eq "3.0.0_GA" || $startVersion eq "3.0.0_M2" || $startVersion eq "3.0.M1" || 
+		$startVersion eq "3.0.0_M3" || $startVersion eq "3.0.0_M4")
+		) {
+		if (-f "/opt/zimbra/redolog/redo.log") {
+			`mv /opt/zimbra/redolog/redo.log /opt/zimbra/redolog/redo.log.preupgrade`;
+		}
+	}
+
 	return 0;
 }
 
