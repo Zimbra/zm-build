@@ -37,9 +37,4 @@ fi
 rm -f /opt/zimbra/logger/mysql
 ln -s /opt/zimbra/logger/mysql-standard-4.1.16-apple-darwin8.2.0-$ARCH /opt/zimbra/logger/mysql
 
-egrep -q '^%zimbra.*zmqstat' /etc/sudoers
-if [ $? != 0 ]; then
-    echo "%zimbra   ALL=NOPASSWD:/opt/zimbra/libexec/zmqstat" >> /etc/sudoers
-fi
-
 exit 0
