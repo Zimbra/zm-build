@@ -58,8 +58,12 @@ H=`hostname -s`
 I=`hostname -i`
 
 egrep -v '^%zimbra.*postfix' /etc/sudoers > /tmp/sudoers
-echo "%zimbra   ALL=NOPASSWD:/opt/zimbra/postfix-2.2.9/sbin/postfix, /opt/zimbra/postfix-2.2.9/sbin/postalias, /opt/zimbra/postfix-2.2.9/sbin/qshape.pl, /opt/zimbra/postfix-2.2.9/sbin/postconf,/opt/zimbra/postfix-2.2.9/sbin/postsuper" >> /tmp/sudoers
 mv -f /tmp/sudoers /etc/sudoers
+echo "%zimbra   ALL=NOPASSWD:/opt/zimbra/postfix-2.2.9/sbin/postfix, /opt/zimbra/postfix-2.2.9/sbin/postalias, /opt/zimbra/postfix-2.2.9/sbin/qshape.pl, /opt/zimbra/postfix-2.2.9/sbin/postconf,/opt/zimbra/postfix-2.2.9/sbin/postsuper" >> /etc/sudoers
+
+egrep -v '^%zimbra.*zmqstat' /etc/sudoers > /tmp/sudoers
+mv -f /tmp/sudoers /etc/sudoers
+echo "%zimbra   ALL=NOPASSWD:/opt/zimbra/libexec/zmqstat" >> /etc/sudoers
 chmod 440 /etc/sudoers
 
 chown postfix /opt/zimbra/postfix/conf/master.cf
