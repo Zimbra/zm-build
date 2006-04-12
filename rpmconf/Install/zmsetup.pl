@@ -2342,6 +2342,8 @@ sub applyConfig {
 	if ($newinstall) {
 		runAsZimbra ("/opt/zimbra/bin/zmsshkeygen");
 		runAsZimbra ("/opt/zimbra/bin/zmupdateauthkeys");
+	} else {
+		runAsZimbra ("/opt/zimbra/bin/zmupdateauthkeys");
 	}
 	if ($platform =~ /MACOSX/) {
 		if (-d "/System/Library/LaunchDaemons") {
