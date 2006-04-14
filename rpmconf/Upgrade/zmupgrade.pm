@@ -206,13 +206,17 @@ sub upgrade {
 	my $found = 0;
 
 	if (isInstalled ("zimbra-ldap")) {
-		Migrate::log("Migrating ldap data");
-		`rm -rf /opt/zimbra/openldap-data.prev`;
-		`mv /opt/zimbra/openldap-data /opt/zimbra/openldap-data.prev`;
-		`mkdir /opt/zimbra/openldap-data`;
-		`touch /opt/zimbra/openldap-data/DB_CONFIG`;
-		`chown -R zimbra:zimbra /opt/zimbra/openldap-data`;
-		`su - zimbra -c "/opt/zimbra/openldap/sbin/slapadd -f /opt/zimbra/conf/slapd.conf -l /opt/zimbra/openldap-data.prev/ldap.bak"`;
+		if (-f "/opt/zimbra/openldap-data/ldap.bak") {
+			Migrate::log("Migrating ldap data");
+			if (-d "/opt/zimbra/openldap-data.prev") {
+				`mv /opt/zimbra/openldap-data.prev /opt/zimbra/openldap-data.prev.$$`;
+			}
+			`mv /opt/zimbra/openldap-data /opt/zimbra/openldap-data.prev`;
+			`mkdir /opt/zimbra/openldap-data`;
+			`touch /opt/zimbra/openldap-data/DB_CONFIG`;
+			`chown -R zimbra:zimbra /opt/zimbra/openldap-data`;
+			`su - zimbra -c "/opt/zimbra/openldap/sbin/slapadd -f /opt/zimbra/conf/slapd.conf -l /opt/zimbra/openldap-data.prev/ldap.bak"`;
+		}
 		if (startLdap()) {return 1;}
 	}
 
