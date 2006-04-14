@@ -41,17 +41,18 @@ chomp $rundir;
 my $scriptDir = "/opt/zimbra/libexec/scripts";
 
 my $lowVersion = 18;
-my $hiVersion = 21;
+my $hiVersion = 22;
 my $hiLoggerVersion = 4;
 
 my $hn = `su - zimbra -c "zmlocalconfig -m nokey zimbra_server_hostname"`;
 chomp $hn;
 
 my %updateScripts = (
+	'UniqueVolume' => "migrate20051021-UniqueVolume.pl",
 	'18' => "migrate20050916-Volume.pl",
 	'19' => "migrate20050920-CompressionThreshold.pl",
 	'20' => "migrate20050927-DropRedologSequence.pl",
-	'21' => "migrate20051021-UniqueVolume.pl",
+	'21' => "migrate20060412-NotebookFolder.pl",
 );
 
 my %loggerUpdateScripts = (
@@ -105,6 +106,8 @@ sub upgrade {
 	$startVersion =~ s/_$startBuild//;
 	$targetVersion =~ s/_$targetBuild//;
 
+	my $needVolumeHack = 0;
+
 	getInstalledPackages();
 
 	if (stopZimbra()) { return 1; }
@@ -135,44 +138,25 @@ sub upgrade {
 
 	if ($startVersion eq "3.0.M1") {
 		print "This appears to be an non-upgraded version of 3.0.M1\n";
+		$needVolumeHack = 1;
 	} elsif ($startVersion eq "3.0.M1") {
 		print "This appears to be 3.0.M1\n";
-		$curSchemaVersion = 22;
 	} elsif ($startVersion eq "3.0.0_M2") {
 		print "This appears to be 3.0.0_M2\n";
 	} elsif ($startVersion eq "3.0.0_M2") {
 		print "This appears to be 3.0.0_M2\n";
-		$curSchemaVersion = 22;
 	} elsif ($startVersion eq "3.0.0_M3") {
 		print "This appears to be 3.0.0_M3\n";
-		if ($curSchemaVersion < 22) {
-			$curSchemaVersion = 22;
-		}
 	} elsif ($startVersion eq "3.0.0_M4") {
 		print "This appears to be 3.0.0_M4\n";
-		if ($curSchemaVersion < 22) {
-			$curSchemaVersion = 22;
-		}
 	} elsif ($startVersion eq "3.0.0_GA") {
 		print "This appears to be 3.0.0_GA\n";
-		if ($curSchemaVersion < 22) {
-			$curSchemaVersion = 22;
-		}
 	} elsif ($startVersion eq "3.0.1_GA") {
 		print "This appears to be 3.0.1_GA\n";
-		if ($curSchemaVersion < 22) {
-			$curSchemaVersion = 22;
-		}
 	} elsif ($startVersion eq "3.1.0_GA") {
 		print "This appears to be 3.1.0_GA\n";
-		if ($curSchemaVersion < 22) {
-			$curSchemaVersion = 22;
-		}
 	} elsif ($startVersion eq "3.5.0_M1") {
 		print "This appears to be 3.5.0_M1\n";
-		if ($curSchemaVersion < 22) {
-			$curSchemaVersion = 22;
-		}
 	} else {
 		print "I can't upgrade version $startVersion\n\n";
 		return 1;
@@ -185,6 +169,9 @@ sub upgrade {
 		}
 
 		while ($curSchemaVersion >= $lowVersion && $curSchemaVersion <= $hiVersion) {
+			if (($curSchemaVersion == 21) && $needVolumeHack) {
+				if (runSchemaUpgrade ("UniqueVolume")) { return 1; }
+			} 
 			if (runSchemaUpgrade ($curSchemaVersion)) { return 1; }
 			$curSchemaVersion++;
 		}
