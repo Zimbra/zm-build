@@ -164,11 +164,11 @@ sub upgrade {
 
 	if (isInstalled("zimbra-store")) {
 
-		if ($curSchemaVersion <= $hiVersion) {
+		if ($curSchemaVersion < $hiVersion) {
 			print "Schema upgrade required\n";
 		}
 
-		while ($curSchemaVersion >= $lowVersion && $curSchemaVersion <= $hiVersion) {
+		while ($curSchemaVersion >= $lowVersion && $curSchemaVersion < $hiVersion) {
 			if (($curSchemaVersion == 21) && $needVolumeHack) {
 				if (runSchemaUpgrade ("UniqueVolume")) { return 1; }
 			} 
