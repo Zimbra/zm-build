@@ -1724,6 +1724,11 @@ sub verifyLdap {
 	if ($config{LDAPHOST} eq $config{HOSTNAME}) {
 		$H = "localhost";
 	}
+	if ($config{LDAPPASS} eq "" || $config{LDAPPORT} eq "" || $config{LDAPHOST} eq "") {
+		progress ( "ldap configuration not compplete\n" );
+		return 1;
+	}
+
 	progress ( "Checking ldap on ${H}:$config{LDAPPORT}..." );
 
 	my $ldapsearch = "$zimbraHome/bin/ldapsearch";
