@@ -24,7 +24,6 @@ $(ARCH)/zcs.mpkg/Contents/Resources/English.lproj:
 	cat $(LICENSE_DIR)/zimbra/zcl.txt | \
 		sed -e 's<.*http.*<http://www.zimbra.com/license/collaboration_suite_collective_license.html<' >\
 		$@/License.txt 
-	cp -f $(CONSOLE_DIR)/img/hiRes/logo/SplashScreen.gif $@/background.gif
 	echo "Welcome to the ZCS installer" > $@/Welcome.txt
 	echo "ZCS Installation complete" > $@/Conclusion.txt
 	echo "Run /opt/zimbra/libexec/zmsetup.pl AS ROOT" >> $@/Conclusion.txt
