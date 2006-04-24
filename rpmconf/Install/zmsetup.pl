@@ -1725,7 +1725,7 @@ sub verifyLdap {
 		$H = "localhost";
 	}
 	if ($config{LDAPPASS} eq "" || $config{LDAPPORT} eq "" || $config{LDAPHOST} eq "") {
-		progress ( "ldap configuration not compplete\n" );
+		progress ( "ldap configuration not complete\n" );
 		return 1;
 	}
 
@@ -1824,7 +1824,7 @@ sub configCASetup {
 		return 0;
 	}
 
-	if (isEnabled("zimbra-ldap") && ( ! -f "/opt/zimbra/conf/ca/ca.key") ) {
+	if ( ! -f "/opt/zimbra/conf/ca/ca.key")  {
 		progress ( "Setting up CA..." );
 		runAsZimbra("cd /opt/zimbra; zmcreateca");
 
@@ -2346,6 +2346,8 @@ sub applyConfig {
 
 	if ($newinstall) {
 		runAsZimbra ("/opt/zimbra/bin/zmsshkeygen");
+		runAsZimbra ("/opt/zimbra/bin/zmupdateauthkeys");
+	} else {
 		runAsZimbra ("/opt/zimbra/bin/zmupdateauthkeys");
 	}
 	if ($platform =~ /MACOSX/) {
