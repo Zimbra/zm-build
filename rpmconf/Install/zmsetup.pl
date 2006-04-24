@@ -1725,7 +1725,7 @@ sub verifyLdap {
 		$H = "localhost";
 	}
 	if ($config{LDAPPASS} eq "" || $config{LDAPPORT} eq "" || $config{LDAPHOST} eq "") {
-		progress ( "ldap configuration not compplete\n" );
+		progress ( "ldap configuration not complete\n" );
 		return 1;
 	}
 	progress ( "Checking ldap on ${H}:$config{LDAPPORT}..." );
