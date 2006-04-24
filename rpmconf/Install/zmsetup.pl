@@ -1823,7 +1823,7 @@ sub configCASetup {
 		return 0;
 	}
 
-	if (isEnabled("zimbra-ldap") && ( ! -f "/opt/zimbra/conf/ca/ca.key") ) {
+	if ( ! -f "/opt/zimbra/conf/ca/ca.key")  {
 		progress ( "Setting up CA..." );
 		runAsZimbra("cd /opt/zimbra; zmcreateca");
 
