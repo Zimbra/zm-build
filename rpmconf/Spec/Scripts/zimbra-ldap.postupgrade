@@ -25,10 +25,10 @@
 # 
 
 rm -f /opt/zimbra/openldap
-ln -s /opt/zimbra/openldap-2.3.20 /opt/zimbra/openldap
+ln -s /opt/zimbra/openldap-2.3.21 /opt/zimbra/openldap
 
 egrep -v '^%zimbra.*slapd' /etc/sudoers > /tmp/sudoers
-echo "%zimbra   ALL=NOPASSWD:/opt/zimbra/openldap-2.3.20/libexec/slapd" >> /tmp/sudoers
+echo "%zimbra   ALL=NOPASSWD:/opt/zimbra/openldap-2.3.21/libexec/slapd" >> /tmp/sudoers
 mv -f /tmp/sudoers /etc/sudoers
 chmod 440 /etc/sudoers
 
