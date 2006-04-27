@@ -33,7 +33,7 @@
 	<key>IFPkgFlagIsRequired</key>
 	<true/>
 	<key>IFPkgFlagOverwritePermissions</key>
-	<true/>
+	<false/>
 	<key>IFPkgFlagRelocatable</key>
 	<false/>
 	<key>IFPkgFlagRestartAction</key>
