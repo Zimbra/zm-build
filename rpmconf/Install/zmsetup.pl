@@ -2376,7 +2376,9 @@ sub applyConfig {
 
 sub configLog {
 	my $stage = shift;
-	print H time(),": CONFIGURED $stage\n";
+	my $msg = time().": CONFIGURED $stage\n";
+	print H $msg;
+	progress ($msg);
 }
 
 sub setupCrontab {
