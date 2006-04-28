@@ -687,6 +687,7 @@ sub upgrade310GA {
 sub upgrade311GA {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
 	Migrate::log("Updating from 3.1.1_GA");
+	return 0;
 }
 
 sub upgrade35M1 {
