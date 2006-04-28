@@ -50,6 +50,17 @@ ln -s /opt/zimbra/apache-tomcat-5.5.15 /opt/zimbra/tomcat
 mkdir -p /opt/zimbra/tomcat/logs
 chown zimbra:zimbra /opt/zimbra/tomcat/logs
 
+egrep -v '^%zimbra.*tomcat' /etc/sudoers > /tmp/sudoers
+echo "%zimbra ALL=NOPASSWD:/opt/zimbra/libexec/zmtomcatstart" >> /tmp/sudoers
+mv -f /tmp/sudoers /etc/sudoers
+chmod 440 /etc/sudoers
+
+egrep -v '^%zimbra.*perdition' /etc/sudoers > /tmp/sudoers
+echo "%zimbra ALL=NOPASSWD:/opt/zimbra/perdition/sbin/perdition" >> /tmp/sudoers
+mv -f /tmp/sudoers /etc/sudoers
+chmod 440 /etc/sudoers
+
+
 PKG=`echo ${RECEIPT_PATH} | sed -e 's|.*/\(zimbra-store.[^/]*pkg\)/.*|\1|' | sed -e 's/\./-/'`
 D=`date +%s`
 echo "${D}: UPGRADED ${PKG}" >> /opt/zimbra/.install_history
