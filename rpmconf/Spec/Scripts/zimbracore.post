@@ -58,7 +58,7 @@ fi
 
 /opt/zimbra/bin/zmsyslogsetup local
 
-cp /opt/zimbra/bin/zimbra /etc/init.d/zimbra
+cp /opt/zimbra/libexec/zimbra /etc/init.d/zimbra
 chmod 755 /etc/init.d/zimbra
 if [ -x /sbin/chkconfig ]; then
 	chkconfig --add zimbra 
