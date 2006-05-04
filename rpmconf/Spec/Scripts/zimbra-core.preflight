@@ -95,6 +95,8 @@ addUser() {
 	niutil -createprop / /users/$name uid $mainuid
 	niutil -createprop / /users/$name gid ${maingid}
 	niutil -createprop / /users/$name shell /bin/bash
+	niutil -createprop / /users/$name authentication_authority ";ShadowHash;"
+	niutil -createprop / /users/$name passwd '*'
 
 	if [ x$homedir != "x" ]; then
 		niutil -createprop / /users/$name home $homedir

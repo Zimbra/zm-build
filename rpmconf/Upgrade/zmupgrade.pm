@@ -70,10 +70,21 @@ my %updateFuncs = (
 	"3.0.0_GA" => \&upgradeBGA,
 	"3.0.1_GA" => \&upgrade301GA,
 	"3.1.0_GA" => \&upgrade310GA,
+	"3.1.1_GA" => \&upgrade311GA,
 	"3.5.0_M1" => \&upgrade35M1,
 );
 
-my @versionOrder = ("3.0.M1", "3.0.0_M2", "3.0.0_M3", "3.0.0_M4", "3.0.0_GA", "3.0.1_GA", ,"3.1.0_GA", "3.5.0_M1");
+my @versionOrder = (
+	"3.0.M1", 
+	"3.0.0_M2", 
+	"3.0.0_M3", 
+	"3.0.0_M4", 
+	"3.0.0_GA", 
+	"3.0.1_GA", 
+	"3.1.0_GA", 
+	"3.1.1_GA", 
+	"3.5.0_M1"
+);
 
 my $startVersion;
 my $targetVersion;
@@ -647,6 +658,25 @@ sub upgrade310GA {
 
 	# bug: 6828
 	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf -zimbraGalLdapAttrMap zimbraMailAlias=email2"`;
+
+	if ( ($startVersion eq "3.1.0_GA" && $startBuild <= 303) ||
+		($startVersion eq "3.0.0_GA" || $startVersion eq "3.0.0_M2" || $startVersion eq "3.0.M1" || 
+		$startVersion eq "3.0.0_M3" || $startVersion eq "3.0.0_M4")
+		) {
+		if (-f "/opt/zimbra/redolog/redo.log") {
+			`mv /opt/zimbra/redolog/redo.log /opt/zimbra/redolog/redo.log.preupgrade`;
+		}
+		if (-d "/opt/zimbra/redolog/archive") {
+			`mv /opt/zimbra/redolog/archive /opt/zimbra/redolog/archive.preupgrade`;
+		}
+	}
+
+	return 0;
+}
+
+sub upgrade311GA {
+	my ($startBuild, $targetVersion, $targetBuild) = (@_);
+	Migrate::log("Updating from 3.1.1_GA");
 
 	return 0;
 }

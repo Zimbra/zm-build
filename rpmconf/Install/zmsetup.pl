@@ -383,6 +383,11 @@ sub setDefaults {
 	$config{POPSSLPORT} = 995;
 	$config{HTTPPORT} = 80;
 	$config{HTTPSPORT} = 443;
+	$config{USEIMAPPROXY} = "no";
+	$config{IMAPPROXYPORT} = 143;
+	$config{IMAPSSLPROXYPORT} = 993;
+	$config{POPPROXYPORT} = 110;
+	$config{POPSSLPROXYPORT} = 995;
 
 	if ($platform =~ /MACOSX/) {
 		setLocalConfig ("zimbra_java_home", "/System/Library/Frameworks/JavaVM.framework/Versions/1.5/Home");
@@ -840,6 +845,38 @@ sub setAvUser {
 sub toggleYN {
 	my $key = shift;
 	$config{$key} = ($config{$key} eq "yes")?"no":"yes";
+}
+
+sub setUseImapProxy {
+	$config{USEIMAPPROXY} = ($config{USEIMAPPROXY} eq "yes")?"no":"yes";
+
+	if ($config{USEIMAPPROXY} eq "yes") {
+		if ($config{IMAPPROXYPORT} == $config{IMAPPORT}) {
+			$config{IMAPPORT} = 7000+$config{IMAPPROXYPORT};
+		}
+		if ($config{IMAPSSLPROXYPORT} == $config{IMAPSSLPORT}) {
+			$config{IMAPSSLPORT} = 7000+$config{IMAPSSLPROXYPORT};
+		}
+		if ($config{POPPROXYPORT} == $config{POPPORT}) {
+			$config{POPPORT} = 7000+$config{POPPROXYPORT};
+		}
+		if ($config{POPSSLPROXYPORT} == $config{POPSSLPORT}) {
+			$config{POPSSLPORT} = 7000+$config{POPSSLPROXYPORT};
+		}
+	} else {
+		if ($config{IMAPPROXYPORT}+7000 == $config{IMAPPORT}) {
+			$config{IMAPPORT} = $config{IMAPPROXYPORT};
+		}
+		if ($config{IMAPSSLPROXYPORT}+7000 == $config{IMAPSSLPORT}) {
+			$config{IMAPSSLPORT} = $config{IMAPSSLPROXYPORT};
+		}
+		if ($config{POPPROXYPORT}+7000 == $config{POPPORT}) {
+			$config{POPPORT} = $config{POPPROXYPORT};
+		}
+		if ($config{POPSSLPROXYPORT}+7000 == $config{POPSSLPORT}) {
+			$config{POPSSLPORT} = $config{POPSSLPROXYPORT};
+		}
+	}
 }
 
 sub setStoreMode {
@@ -1364,6 +1401,42 @@ sub createStoreMenu {
 			"callback" => \&setStoreMode,
 			};
 		$i++;
+
+		$$lm{menuitems}{$i} = { 
+			"prompt" => "Enable POP/IMAP proxy:", 
+			"var" => \$config{USEIMAPPROXY}, 
+			"callback" => \&setUseImapProxy,
+			};
+		$i++;
+		if ($config{USEIMAPPROXY} eq "yes") {
+
+			$$lm{menuitems}{$i} = { 
+				"prompt" => "IMAP proxy port:", 
+				"var" => \$config{IMAPPROXYPORT}, 
+				"callback" => \&setImapProxyPort,
+				};
+			$i++;
+			$$lm{menuitems}{$i} = { 
+				"prompt" => "IMAP SSL proxy port:", 
+				"var" => \$config{IMAPSSLPROXYPORT}, 
+				"callback" => \&setImapSSLProxyPort,
+				};
+			$i++;
+			$$lm{menuitems}{$i} = { 
+				"prompt" => "POP proxy port:", 
+				"var" => \$config{POPPROXYPORT}, 
+				"callback" => \&setPopProxyPort,
+				};
+			$i++;
+			$$lm{menuitems}{$i} = { 
+				"prompt" => "POP SSL proxy port:", 
+				"var" => \$config{POPSSLPROXYPORT}, 
+				"callback" => \&setPopSSLProxyPort,
+				};
+			$i++;
+
+		}
+
 		$$lm{menuitems}{$i} = { 
 			"prompt" => "IMAP server port:", 
 			"var" => \$config{IMAPPORT}, 
@@ -1388,6 +1461,7 @@ sub createStoreMenu {
 			"callback" => \&setPopSSLPort,
 			};
 		$i++;
+
 		$$lm{menuitems}{$i} = { 
 			"prompt" => "Use spell check server:", 
 			"var" => \$config{USESPELL}, 
@@ -1728,7 +1802,6 @@ sub verifyLdap {
 		progress ( "ldap configuration not complete\n" );
 		return 1;
 	}
-
 	progress ( "Checking ldap on ${H}:$config{LDAPPORT}..." );
 
 	my $ldapsearch = "$zimbraHome/bin/ldapsearch";
@@ -2035,7 +2108,11 @@ sub configSetServicePorts {
 	progress ( "Setting service ports on $config{HOSTNAME}..." );
 	runAsZimbra("/opt/zimbra/bin/zmprov ms $config{HOSTNAME} ".
 		"zimbraImapBindPort $config{IMAPPORT} zimbraImapSSLBindPort $config{IMAPSSLPORT} ".
-		"zimbraPop3BindPort $config{POPPORT} zimbraPop3SSLBindPort $config{POPSSLPORT} ".
+		"zimbraPop3BindPort $config{POPPORT} zimbraPop3SSLBindPort $config{POPSSLPORT} ");
+	runAsZimbra("/opt/zimbra/bin/zmprov ms $config{HOSTNAME} ".
+		"zimbraImapProxyBindPort $config{IMAPPROXYPORT} zimbraImapSSLProxyBindPort $config{IMAPSSLPROXYPORT} ".
+		"zimbraPop3ProxyBindPort $config{POPPROXYPORT} zimbraPop3SSLProxyBindPort $config{POPSSLPROXYPORT} ");
+	runAsZimbra("/opt/zimbra/bin/zmprov ms $config{HOSTNAME} ".
 		"zimbraMailPort $config{HTTPPORT} zimbraMailSSLPort $config{HTTPSPORT} ".
 		"zimbraMailMode $config{MODE}");
 
@@ -2230,7 +2307,7 @@ sub configSetEnabledServices {
 		if ($p eq "zimbra-core") {next;}
 		if ($p eq "zimbra-apache") {next;}
 		$p =~ s/zimbra-//;
-		if ($p eq "store") {$p = "mailbox";}
+		if ($p eq "store") {$p = "mailbox"; $installedServiceStr .= "zimbraServiceInstalled imapproxy ";}
 		$installedServiceStr .= "zimbraServiceInstalled $p ";
 	}
 
@@ -2242,6 +2319,9 @@ sub configSetEnabledServices {
 			if ($p eq "store") {$p = "mailbox";}
 			$enabledServiceStr .= "zimbraServiceEnabled $p ";
 		}
+	}
+	if ($config{USEIMAPPROXY} eq "yes") {
+		$enabledServiceStr .= "zimbraServiceEnabled imapproxy ";
 	}
 
 	progress ( "Setting services on $config{HOSTNAME}..." );
@@ -2377,7 +2457,9 @@ sub applyConfig {
 
 sub configLog {
 	my $stage = shift;
-	print H time(),": CONFIGURED $stage\n";
+	my $msg = time().": CONFIGURED $stage\n";
+	print H $msg;
+	#progress ($msg);
 }
 
 sub setupCrontab {

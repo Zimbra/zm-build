@@ -61,12 +61,15 @@ chown zimbra:zimbra /opt/zimbra/convertd /opt/zimbra/redolog /opt/zimbra/store /
 
 /bin/sh /opt/zimbra/libexec/zmfixperms
 
-egrep -q '^%zimbra.*tomcat' /etc/sudoers
-if [ $? != 0 ]; then
-	echo "%zimbra ALL=NOPASSWD:/opt/zimbra/libexec/zmtomcatstart" >> /etc/sudoers
-fi
+egrep -v '^%zimbra.*tomcat' /etc/sudoers > /tmp/sudoers
+echo "%zimbra ALL=NOPASSWD:/opt/zimbra/libexec/zmtomcatstart" >> /tmp/sudoers
+mv -f /tmp/sudoers /etc/sudoers
 chmod 440 /etc/sudoers
 
+egrep -v '^%zimbra.*perdition' /etc/sudoers > /tmp/sudoers
+echo "%zimbra ALL=NOPASSWD:/opt/zimbra/perdition/sbin/perdition" >> /tmp/sudoers
+mv -f /tmp/sudoers /etc/sudoers
+chmod 440 /etc/sudoers
 
 PKG=`echo ${RECEIPT_PATH} | sed -e 's|.*/\(zimbra-store.[^/]*pkg\)/.*|\1|' | sed -e 's/\./-/'`
 D=`date +%s`
