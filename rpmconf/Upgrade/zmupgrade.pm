@@ -679,6 +679,9 @@ sub upgrade310GA {
 		if (-f "/opt/zimbra/redolog/redo.log") {
 			`mv /opt/zimbra/redolog/redo.log /opt/zimbra/redolog/redo.log.preupgrade`;
 		}
+		if (-d "/opt/zimbra/redolog/archive") {
+			`mv /opt/zimbra/redolog/archive /opt/zimbra/redolog/archive.preupgrade`;
+		}
 	}
 
 	return 0;
