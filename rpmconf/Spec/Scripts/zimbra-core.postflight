@@ -42,9 +42,9 @@ if [ "x$PLAT" = "xMACOSXx86" ]; then
 	ARCH=i686
 fi
 
-if [ ! -d /opt/zimbra/openldap-2.3.20 ]; then
-	mkdir -p /opt/zimbra/openldap-2.3.20
-	ln -s /opt/zimbra/lib /opt/zimbra/openldap-2.3.20/lib
+if [ ! -d /opt/zimbra/openldap-2.3.21 ]; then
+	mkdir -p /opt/zimbra/openldap-2.3.21
+	ln -s /opt/zimbra/lib /opt/zimbra/openldap-2.3.21/lib
 fi
 if [ ! -d /opt/zimbra/mysql-standard-4.1.16-apple-darwin8.2.0-$ARCH ]; then
 	mkdir -p /opt/zimbra/mysql-standard-4.1.16-apple-darwin8.2.0-$ARCH

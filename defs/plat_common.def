@@ -18,7 +18,7 @@ BUNDLE_EXT := tgz
 
 THIRD_PARTY	:= $(BUILD_ROOT)/../ThirdParty
 
-LDAP_VERSION	:= 2.3.20
+LDAP_VERSION	:= 2.3.21
 LDAP_DIR	:= openldap-$(LDAP_VERSION)
 LDAP_SOURCE	:= $(THIRD_PARTY)/openldap/builds/$(BUILD_PLATFORM)/$(LDAP_DIR)
 
