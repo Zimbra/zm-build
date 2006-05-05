@@ -8,6 +8,8 @@ mta: $(PACKAGE_DIR) mta_stage mta_pkg_spec_$(PACKAGE_EXT)
 	(cd $(CUR_DEST_ROOT); \
 		$(PACKAGING_COMMAND) $(PACKAGING_OPTIONS) )
 
+mta_pkg_spec_ccs:
+
 mta_pkg_spec_pkg: $(BUILD_ROOT)/resources/zimbra-mta $(BUILD_ROOT)/zimbra-mta.Info.plist $(BUILD_ROOT)/zimbra-mta.Description.plist
 
 $(BUILD_ROOT)/zimbra-mta.Description.plist:

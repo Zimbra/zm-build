@@ -8,6 +8,8 @@ logger: $(PACKAGE_DIR) logger_stage logger_pkg_spec_$(PACKAGE_EXT)
 	(cd $(CUR_DEST_ROOT); \
 		$(PACKAGING_COMMAND) $(PACKAGING_OPTIONS) )
 
+logger_pkg_spec_ccs:
+
 logger_pkg_spec_pkg: $(BUILD_ROOT)/resources/zimbra-logger $(BUILD_ROOT)/zimbra-logger.Info.plist $(BUILD_ROOT)/zimbra-logger.Description.plist
 
 $(BUILD_ROOT)/zimbra-logger.Description.plist:

@@ -8,6 +8,8 @@ snmp: $(PACKAGE_DIR) snmp_stage snmp_pkg_spec_$(PACKAGE_EXT)
 	(cd $(CUR_DEST_ROOT); \
 		$(PACKAGING_COMMAND) $(PACKAGING_OPTIONS) )
 
+snmp_pkg_spec_ccs:
+
 snmp_pkg_spec_pkg: $(BUILD_ROOT)/resources/zimbra-snmp $(BUILD_ROOT)/zimbra-snmp.Info.plist $(BUILD_ROOT)/zimbra-snmp.Description.plist
 
 $(BUILD_ROOT)/zimbra-snmp.Description.plist:

@@ -8,6 +8,8 @@ ldap: $(PACKAGE_DIR) ldap_stage ldap_pkg_spec_$(PACKAGE_EXT)
 	(cd $(CUR_DEST_ROOT); \
 		$(PACKAGING_COMMAND) $(PACKAGING_OPTIONS) )
 
+ldap_pkg_spec_ccs:
+
 ldap_pkg_spec_pkg: $(BUILD_ROOT)/resources/zimbra-ldap $(BUILD_ROOT)/zimbra-ldap.Info.plist $(BUILD_ROOT)/zimbra-ldap.Description.plist
 
 $(BUILD_ROOT)/zimbra-ldap.Description.plist:

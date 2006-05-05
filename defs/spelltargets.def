@@ -8,6 +8,8 @@ spell: $(PACKAGE_DIR) spell_stage spell_pkg_spec_$(PACKAGE_EXT)
 	(cd $(CUR_DEST_ROOT); \
 		$(PACKAGING_COMMAND) $(PACKAGING_OPTIONS) )
 
+spell_pkg_spec_ccs:
+
 spell_pkg_spec_pkg: $(BUILD_ROOT)/resources/zimbra-spell $(BUILD_ROOT)/zimbra-spell.Info.plist $(BUILD_ROOT)/zimbra-spell.Description.plist
 
 $(BUILD_ROOT)/zimbra-spell.Description.plist:

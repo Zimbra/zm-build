@@ -953,6 +953,12 @@ isInstalled () {
 			PKGVERSION=`$PACKAGEQUERY $pkg 2> /dev/null | sort -u`
 			PKGINSTALLED=`$PACKAGEQUERY $pkg | sed -e 's/\.[a-zA-Z].*$//' 2> /dev/null`
 		fi
+        elif [ $PACKAGEEXT = "ccs" ]; then
+		$PACKAGEQUERY $pkg >/dev/null 2>&1
+		if [ $? = 0 ]; then
+			PKGVERSION=`$PACKAGEQUERY $pkg 2> /dev/null | sort -u`
+			PKGINSTALLED=`$PACKAGEQUERY $pkg | sed -e 's/\.[a-zA-Z].*$//' 2> /dev/null`
+		fi
 	else
 		Q=`$PACKAGEQUERY $pkg 2>/dev/null | egrep '^Status: ' `
 		if [ "x$Q" != "x" ]; then
@@ -973,6 +979,12 @@ getPlatformVars() {
 		PACKAGEQUERY='dpkg -s'
 		PACKAGEEXT='deb'
 		PREREQ_PACKAGES="sudo libidn11 curl fetchmail libgmp3 libxml2 libstdc++6 openssl"
+	elif echo $PLATFORM | grep RPL > /dev/null 2>&1; then
+		PACKAGEINST='conary update'
+		PACKAGERM='conary erase'
+		PACKAGEQUERY='conary q'
+		PACKAGEEXT='ccs'
+		PREREQ_PACKAGES="sudo libidn curl fetchmail gmp libxml2 libstdc++ openssl"
 	else
 		PACKAGEINST='rpm -iv'
 		PACKAGERM='rpm -ev --noscripts --allmatches'
