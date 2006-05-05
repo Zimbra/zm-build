@@ -44,7 +44,7 @@ PKGDIR=$2
 PKGNAME=$3
 VERSION=$4
 
-WORK=$(mktemp -d /tmp/cvc-wrapper-XXXXXXXX)
+WORK=$(mktemp -d /tmp/cvc-wrapper-XXXXXX)
 
 # tar up the build dir
 tar czf $WORK/$PKGNAME.tar.gz -C $DESTDIR .
@@ -60,6 +60,10 @@ class ZimbraBuildRecipe(PackageRecipe):
         r.addArchive("%(name)s.tar.gz", dir="/")
         # avoid java deps for now
         r.Requires(exceptDeps=('.*', 'java:.*'))
+        r.Provides('soname: /opt/zimbra/mysql/lib/libmysqlclient.so.14',
+                   '.*/libmysqlclient.so.14')
+        # FIXME: some perl bits use CPAN::Config, but nothing provides it
+        r.Requires(exceptDeps=('.*', 'perl:.*CPAN::Config'))
         # turn of build requirement checks
         del r.EnforceSonameBuildRequirements
         del r.EnforcePerlBuildRequirements
@@ -67,6 +71,7 @@ class ZimbraBuildRecipe(PackageRecipe):
         del r.RemoveNonPackageFiles
         # set up libraries to be included in /etc/ld.so.conf
         r.SharedLibrary(subtrees='/opt/zimbra/%(lib)s')
+        r.SharedLibrary(subtrees='/opt/zimbra/cyrus-sasl.*/%(lib)s')
         # add a runtime requirements on sudo
         for x in ('postfix', 'qshape', 'postconf', 'tomcat', 'ldap'):
             r.Requires('sudo:runtime', '/opt/zimbra/bin/' + x)
@@ -84,18 +89,14 @@ class ZimbraBuildRecipe(PackageRecipe):
         # add requirement from zimbra-mta -> zimbra-store
         r.Requires('zimbra-store:runtime',
                    '/opt/zimbra/scripts/zimbramta.post')
+        # add requirement from zimbra->mta -> mailbase for /etc/aliases
+        r.Requires('mailbase:runtime', '/opt/zimbra/postfix.*/sbin/postalias')
         # zmfixperms uses these user/groups when changing ownerships
         for user in ('zimbra', 'postfix', 'nobody'):
             r.UtilizeUser(user, '/opt/zimbra/libexec/zmfixperms')
             r.UtilizeGroup(user, '/opt/zimbra/libexec/zmfixperms')
         r.UtilizeGroup('postdrop', '/opt/zimbra/libexec/zmfixperms')
 EOF
-if [ "$PKGNAME" = "zimbra-core" ]; then
-    cat >> $WORK/$PKGNAME.recipe <<EOF
-        r.Ownership('zimbra', 'zimbra', '/opt/zimbra')
-        r.ExcludeDirectories(exceptions='/opt/zimbra')
-EOF
-fi
 
 n=$(echo $PKGNAME | sed s/-//g)
 # FIXME: the post script for zimbra-store is called "zimbra.post", which does
