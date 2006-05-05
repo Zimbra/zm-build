@@ -147,8 +147,14 @@ else
     # move the files and add them to the source component
     mv -f $(find -maxdepth 1 -type f) $PKGNAME
     cd $PKGNAME
-    cvc add $((ls | grep -v CONARY; cat CONARY | tail +5 | awk '{print $2}') |
-              sort | uniq -u)
+    # fix up any permissions from files copied from p4
+    chmod u+w *
+    # add any new files
+    new=$((ls | grep -v CONARY; cat CONARY | tail +5 | awk '{print $2}') |
+           sort | uniq -u)
+    if [ -n "$new" ]; then
+        cvc add $new
+    fi
     cvc commit -m 'automated update from ZimbraBuild'
     cd -
     # build it
