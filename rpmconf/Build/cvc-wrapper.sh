@@ -71,7 +71,9 @@ class ZimbraBuildRecipe(PackageRecipe):
         del r.RemoveNonPackageFiles
         # set up libraries to be included in /etc/ld.so.conf
         r.SharedLibrary(subtrees='/opt/zimbra/%(lib)s')
-        r.SharedLibrary(subtrees='/opt/zimbra/cyrus-sasl.*/%(lib)s')
+	# glob not supported until conary 1.0.15
+        #r.SharedLibrary(subtrees='/opt/zimbra/cyrus-sasl.*/%(lib)s')
+        r.SharedLibrary(subtrees='/opt/zimbra/cyrus-sasl-2.1.21.ZIMBRA/%(lib)s')
         # add a runtime requirements on sudo
         for x in ('postfix', 'qshape', 'postconf', 'tomcat', 'ldap'):
             r.Requires('sudo:runtime', '/opt/zimbra/bin/' + x)
