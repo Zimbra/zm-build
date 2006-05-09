@@ -168,6 +168,11 @@ sub upgrade {
 		print "This appears to be 3.1.0_GA\n";
 	} elsif ($startVersion eq "3.1.1_GA") {
 		print "This appears to be 3.1.1_GA\n";
+	} elsif ($startVersion eq "3.1.1_GA") {
+		print "This appears to be 3.1.1_GA\n";
+		if ($curSchemaVersion < 22) {
+			$curSchemaVersion = 22;
+		}
 	} elsif ($startVersion eq "3.5.0_M1") {
 		print "This appears to be 3.5.0_M1\n";
 	} else {
