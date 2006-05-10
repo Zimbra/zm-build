@@ -1,4 +1,6 @@
 
+
+
 # __STORE
 
 store: CUR_DEST_ROOT := $(STORE_DEST_ROOT)
@@ -64,6 +66,8 @@ $(BUILD_ROOT)/zimbra.spec:
 	rm -f zimbra.pre
 	rm -f zimbra.post
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/zimlets" >> \
+		$(BUILD_ROOT)/zimbra.spec
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/zimlets-extra" >> \
 		$(BUILD_ROOT)/zimbra.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/apache-tomcat-5.5.15" >> \
 		$(BUILD_ROOT)/zimbra.spec
@@ -137,6 +141,18 @@ $(ZIMLET_DIR)/build/dist/zimlets/nofile:
 		-Dzimbra.buildinfo.version=$(VERSION_TAG) \
 		-Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) \
 		-Dzimbra.buildinfo.host=$(HOST) package-zimlets ; )
+
+$(ZIMLET_DIR)/build/dist/zimlets-extra/nofile:
+	(cd $(ZIMLET_DIR); $(ANT) \
+		-Dplat.tag=$(BUILD_PLATFORM) \
+		-Dzimbra.buildinfo.version=$(VERSION_TAG) \
+		-Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) \
+		-Dzimbra.buildinfo.host=$(HOST) package-zimlets ; )
+
+$(STORE_DEST_DIR)/zimlets-extra: $(ZIMLET_DIR)/build/dist/zimlets-extra/nofile
+	mkdir -p $@
+	cp $(SERVICE_DIR)/build/dist/zimlets-extra/* $@
+	cp $(ZIMLET_DIR)/build/dist/zimlets-extra/* $@
 
 $(STORE_DEST_DIR)/zimlets: $(SERVICE_DIR)/build/dist/zimlets/nofile $(ZIMLET_DIR)/build/dist/zimlets/nofile
 	mkdir -p $@
