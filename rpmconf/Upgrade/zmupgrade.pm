@@ -71,7 +71,8 @@ my %updateFuncs = (
 	"3.0.1_GA" => \&upgrade301GA,
 	"3.1.0_GA" => \&upgrade310GA,
 	"3.1.1_GA" => \&upgrade311GA,
-	"3.5.0_M1" => \&upgrade35M1,
+	"3.5.0_M1" => \&upgrade32M1,  #Hack for missed version change
+	"3.2.0_M1" => \&upgrade32M1,
 );
 
 my @versionOrder = (
@@ -83,7 +84,8 @@ my @versionOrder = (
 	"3.0.1_GA", 
 	"3.1.0_GA", 
 	"3.1.1_GA", 
-	"3.5.0_M1"
+	"3.5.0_M1",  #Hack for missed version change
+	"3.2.0_M1"
 );
 
 my $startVersion;
@@ -173,6 +175,8 @@ sub upgrade {
 		if ($curSchemaVersion < 22) {
 			$curSchemaVersion = 22;
 		}
+	} elsif ($startVersion eq "3.2.0_M1") {
+		print "This appears to be 3.2.0_M1\n";
 	} elsif ($startVersion eq "3.5.0_M1") {
 		print "This appears to be 3.5.0_M1\n";
 	} else {
@@ -688,9 +692,9 @@ sub upgrade311GA {
 	return 0;
 }
 
-sub upgrade35M1 {
+sub upgrade32M1 {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
-	Migrate::log("Updating from 3.5.0_M1");
+	Migrate::log("Updating from 3.2.0_M1");
 
 	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraCOSInheritedAttr zimbraFeatureSharingEnabled"`;
 	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainInheritedAttr zimbraFeatureSharingEnabled"`;
@@ -707,7 +711,7 @@ sub upgrade35M1 {
 	# In main, only move them if the previous function wasn't called
 	#
 
-	if ($startVersion eq "3.5.0_M1" && $startBuild <= 223) {
+	if ($startVersion eq "3.2.0_M1" && $startBuild <= 223) {
 		`su - zimbra -c "zmlocalconfig -e postfix_version=2.2.9"`;
 		movePostfixQueue ("2.2.8","2.2.9");
 
