@@ -71,8 +71,8 @@ my %updateFuncs = (
 	"3.0.1_GA" => \&upgrade301GA,
 	"3.1.0_GA" => \&upgrade310GA,
 	"3.1.1_GA" => \&upgrade311GA,
-	"3.5.0_M1" => \&upgrade32M1,  #Hack for missed version change
 	"3.2.0_M1" => \&upgrade32M1,
+	"3.5.0_M1" => \&upgrade35M1,  #Hack for missed version change
 );
 
 my @versionOrder = (
@@ -84,8 +84,8 @@ my @versionOrder = (
 	"3.0.1_GA", 
 	"3.1.0_GA", 
 	"3.1.1_GA", 
-	"3.5.0_M1",  #Hack for missed version change
-	"3.2.0_M1"
+	"3.2.0_M1",
+	"3.5.0_M1"  #Hack for missed version change
 );
 
 my $startVersion;
@@ -704,19 +704,6 @@ sub upgrade32M1 {
 	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraGalLdapFilterDef 'zimbraResources:(&(|(cn=*%s*)(sn=*%s*)(gn=*%s*)(mail=*%s*)(zimbraMailDeliveryAddress=*%s*)(zimbraMailAlias=*%s*)(zimbraMailAddress=*%s*))(objectclass=zimbraCalendarResource))'"`;
 	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraGalLdapFilterDef 'ad:(&(|(cn=*%s*)(sn=*%s*)(gn=*%s*)(mail=*%s*))(!(msExchHideFromAddressLists=TRUE))(mailnickname=*)(|(&(objectCategory=person)(objectClass=user)(!(homeMDB=*))(!(msExchHomeServerName=*)))(&(objectCategory=person)(objectClass=user)(|(homeMDB=*)(msExchHomeServerName=*)))(&(objectCategory=person)(objectClass=contact))(objectCategory=group)(objectCategory=publicFolder)(objectCategory=msExchDynamicDistributionList)))'"`;
 
-	# This change was made in both main and CRAY
-	# CRAY build 202
-	# MAIN build 223
-	#
-	# In main, only move them if the previous function wasn't called
-	#
-
-	if ($startVersion eq "3.2.0_M1" && $startBuild <= 223) {
-		`su - zimbra -c "zmlocalconfig -e postfix_version=2.2.9"`;
-		movePostfixQueue ("2.2.8","2.2.9");
-
-	}
-
 	# Bug 6077
 	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf -zimbraGalLdapAttrMap 'givenName=firstName'"`;
 	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraGalLdapAttrMap 'gn=firstName'"`;
@@ -729,6 +716,25 @@ sub upgrade32M1 {
 	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr zimbraPrefCalendarApptReminderWarningTime"`;
 	`su - zimbra -c "/opt/zimbra/bin/zmprov mc default zimbraPrefCalendarApptReminderWarningTime 5"`;
 
+	# Bug 7590
+	my @coses = `su - zimbra -c "/opt/zimbra/bin/zmprov gac"`;
+	foreach my $cos (@coses) {
+		chomp $cos;
+		`su - zimbra -c "/opt/zimbra/bin/zmprov mc $cos zimbraSkinChangeEnabled TRUE zimbraPrefSkin steel zimbraNotebookEnabled TRUE"`;
+	}
+
+   # Bug 7590
+   # The existing one whose default we flipped, someone else who cares about it
+   # should yes/no the flip.  The attribute is zimbraPrefAutoAddAddressEnabled which
+   # used to be FALSE by default and as of Edison we are going TRUE by default for
+   # all new installs.
+
+	return 0;
+}
+
+sub upgrade35M1 {
+	my ($startBuild, $targetVersion, $targetBuild) = (@_);
+	Migrate::log("Updating from 3.5.0_M1");
 	return 0;
 }
 
