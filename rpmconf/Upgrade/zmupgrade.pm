@@ -723,12 +723,16 @@ sub upgrade32M1 {
 		`su - zimbra -c "/opt/zimbra/bin/zmprov mc $cos zimbraSkinChangeEnabled TRUE zimbraPrefSkin steel zimbraNotebookEnabled TRUE"`;
 	}
 
-   # Bug 7590
-   # The existing one whose default we flipped, someone else who cares about it
-   # should yes/no the flip.  The attribute is zimbraPrefAutoAddAddressEnabled which
-   # used to be FALSE by default and as of Edison we are going TRUE by default for
-   # all new installs.
+	# Bug 7590
+	# The existing one whose default we flipped, someone else who cares about it
+	# should yes/no the flip.  The attribute is zimbraPrefAutoAddAddressEnabled which
+	# used to be FALSE by default and as of Edison we are going TRUE by default for
+	# all new installs.
 
+	# bug 7588
+
+	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf -zimbraGalLdapAttrMap gn=firstName"`;
+	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraGalLdapAttrMap givenName,gn=firstName "`;
 	return 0;
 }
 
