@@ -720,7 +720,7 @@ sub upgrade32M1 {
 	my @coses = `su - zimbra -c "/opt/zimbra/bin/zmprov gac"`;
 	foreach my $cos (@coses) {
 		chomp $cos;
-		`su - zimbra -c "/opt/zimbra/bin/zmprov mc $cos zimbraSkinChangeEnabled TRUE zimbraPrefSkin steel zimbraNotebookEnabled TRUE"`;
+		`su - zimbra -c "/opt/zimbra/bin/zmprov mc $cos zimbraFeatureSkinChangeEnabled TRUE zimbraPrefSkin steel zimbraFeatureNotebookEnabled TRUE"`;
 	}
 
 	# Bug 7590
