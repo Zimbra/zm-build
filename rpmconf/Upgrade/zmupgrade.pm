@@ -53,6 +53,7 @@ my %updateScripts = (
 	'19' => "migrate20050920-CompressionThreshold.pl",
 	'20' => "migrate20050927-DropRedologSequence.pl",
 	'21' => "migrate20060412-NotebookFolder.pl",
+	'22' => "migrate20060515-AddImapId.pl",
 );
 
 my %loggerUpdateScripts = (
