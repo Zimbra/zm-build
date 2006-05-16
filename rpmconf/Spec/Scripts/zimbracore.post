@@ -75,6 +75,8 @@ else
 	ln -s /etc/init.d/zimbra /etc/rc6.d/K01zimbra
 fi
 
+mkdir -p /opt/zimbra/backup
+chown zimbra:zimbra /opt/zimbra/backup
 mkdir -p /opt/zimbra/log
 chown zimbra:zimbra /opt/zimbra/log
 mkdir /opt/zimbra/ssl

@@ -27,6 +27,9 @@
 #zimbra-spell-3.0.0_M3_154.RHEL4-20051122140325.i386.rpm
 #/tmp/zimbra-core.3.0.0_M3_233.pkg.27213Uuexmh/Receipts/zimbra-core.3.0.0_M3_233.pkg/Contents/Resources
 
+mkdir -p /opt/zimbra/backup
+chown zimbra:zimbra /opt/zimbra/backup 
+
 PKG=`echo ${RECEIPT_PATH} | sed -e 's|.*/\(zimbra-core.[^/]*pkg\)/.*|\1|' | sed -e 's/\./-/'`
 D=`date +%s`
 echo "${D}: INSTALLED ${PKG}" >> /opt/zimbra/.install_history

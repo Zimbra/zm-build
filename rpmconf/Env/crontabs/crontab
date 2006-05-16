@@ -8,3 +8,8 @@
 #
 */2 * * * * /opt/zimbra/libexec/zmstatuslog
 */10 * * * * /opt/zimbra/libexec/zmdisklog
+#
+# Backups
+#
+# BACKUP BEGIN
+# BACKUP END
