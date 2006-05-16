@@ -733,6 +733,20 @@ sub upgrade32M1 {
 
 	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf -zimbraGalLdapAttrMap gn=firstName"`;
 	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraGalLdapAttrMap givenName,gn=firstName "`;
+
+	# Bug 5466
+	my $acct = `su - zimbra -c "/opt/zimbra/bin/zmprov gcf zimbraSpamIsSpamAccount"`;
+	chomp $acct;
+	$acct =~ s/.* //;
+	if ($acct ne "") {
+		`su - zimbra -c "/opt/zimbra/bin/zmprov ma $acct zimbraHideInGal TRUE"`;
+	}
+	$acct = `su - zimbra -c "/opt/zimbra/bin/zmprov gcf zimbraSpamIsNotSpamAccount"`;
+	chomp $acct;
+	$acct =~ s/.* //;
+	if ($acct ne "") {
+		`su - zimbra -c "/opt/zimbra/bin/zmprov ma $acct zimbraHideInGal TRUE"`;
+	}
 	return 0;
 }
 
