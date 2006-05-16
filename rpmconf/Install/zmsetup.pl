@@ -667,6 +667,10 @@ sub setCreateDomain {
 			foreach my $a (@answer) {
 				if ($a->type eq "MX") {
 					my $h = getDnsRecords ($a->exchange,'A');
+					if (!defined ($h)) {
+						progress "\tWarning: no 'A' record found for ".$a->exchange."\n";
+						next;
+					}
 					my @ha = $h->answer;
 					foreach $h (@ha) {
 						if ($h->type eq 'A') {
@@ -683,6 +687,10 @@ sub setCreateDomain {
 				foreach my $i (@interfaces) {
 					if ($a->type eq "MX") {
 						my $h = getDnsRecords ($a->exchange,'A');
+						if (!defined ($h)) {
+							progress "\tWarning: no 'A' record found for ".$a->exchange."\n";
+							next;
+						}
 						my @ha = $h->answer;
 						foreach $h (@ha) {
 							if ($h->type eq 'A') {
