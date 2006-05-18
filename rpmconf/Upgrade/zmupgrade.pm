@@ -54,6 +54,7 @@ my %updateScripts = (
 	'20' => "migrate20050927-DropRedologSequence.pl",
 	'21' => "migrate20060412-NotebookFolder.pl",
 	'22' => "migrate20060515-AddImapId.pl",
+	'23' => "migrate20060518-EmailedContactsFolder.pl",
 );
 
 my %loggerUpdateScripts = (
