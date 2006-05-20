@@ -749,6 +749,12 @@ sub upgrade32M1 {
 	if ($acct ne "") {
 		`su - zimbra -c "/opt/zimbra/bin/zmprov ma $acct zimbraHideInGal TRUE"`;
 	}
+
+	# Bug 7723
+	`su - zimbra -c "/opt/zimbra/bin/zmprov -zimbraLdapGalAttrMap zimbraMailDeliveryAddress,mail=email"`;
+
+	`su - zimbra -c "/opt/zimbra/bin/zmprov zimbraLdapGalAttrMap zimbraMailDeliveryAddress,zimbraMailAlias,mail=email,email2,email3,email4,email5,email6"`;
+
 	return 0;
 }
 
