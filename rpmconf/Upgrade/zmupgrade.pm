@@ -42,7 +42,7 @@ my $scriptDir = "/opt/zimbra/libexec/scripts";
 
 my $lowVersion = 18;
 my $hiVersion = 21;
-my $hiLoggerVersion = 4;
+my $hiLoggerVersion = 5;
 
 my $hn = `su - zimbra -c "zmlocalconfig -m nokey zimbra_server_hostname"`;
 chomp $hn;
@@ -59,6 +59,7 @@ my %loggerUpdateScripts = (
 	'1' => "migrateLogger2-config.pl",
 	'2' => "migrateLogger3-diskindex.pl",
 	'3' => "migrateLogger4-loghostname.pl",
+	'4' => "migrateLogger5-qid.pl",
 );
 
 my %updateFuncs = (
