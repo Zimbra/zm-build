@@ -82,18 +82,16 @@ $(LDAP_DEST_DIR)/$(LDAP_DIR): $(LDAP_DEST_DIR)
 		$(LDAP_DEST_DIR)/$(LDAP_DIR)/var/openldap-data
 	cp $(SERVICE_DIR)/conf/ldap/slapd.conf.production \
 		$(LDAP_DEST_DIR)/$(LDAP_DIR)/etc/openldap/slapd.conf
-	cp $(SERVICE_DIR)/conf/ldap/amavisd.schema \
+	cp $(SERVICE_DIR)/build/ldap-config/amavisd.schema \
 		$(LDAP_DEST_DIR)/$(LDAP_DIR)/etc/openldap/schema
-	cp $(SERVICE_DIR)/conf/ldap/zimbra.schema \
+	cp $(SERVICE_DIR)/build/ldap-config/zimbra.schema \
 		$(LDAP_DEST_DIR)/$(LDAP_DIR)/etc/openldap/schema
-	cp $(SERVICE_DIR)/conf/ldap/zimbra-hsm.schema \
+	cp $(SERVICE_DIR)/build/ldap-config/zimbra-hsm.schema \
 		$(LDAP_DEST_DIR)/$(LDAP_DIR)/etc/openldap/schema
-	cp $(SERVICE_DIR)/conf/ldap/zimbra.ldif \
+	cp $(SERVICE_DIR)/build/ldap-config/zimbra.ldif \
 		$(LDAP_DEST_DIR)/$(LDAP_DIR)/etc/openldap/zimbra.ldif
-	cp $(SERVICE_DIR)/conf/ldap/zimbra_mimehandlers.ldif \
+	cp $(SERVICE_DIR)/build/ldap-config/zimbra_mimehandlers.ldif \
 		$(LDAP_DEST_DIR)/$(LDAP_DIR)/etc/openldap/zimbra_mimehandlers.ldif
-	cp $(SERVICE_DIR)/conf/ldap/widgets.ldif \
-		$(LDAP_DEST_DIR)/$(LDAP_DIR)/etc/openldap/widgets.ldif
 
 $(LDAP_DEST_DIR)/lib/conf/zimbra-hsm.schema: $(LDAP_DEST_DIR)/lib/conf
 	cp -f $(SERVICE_DIR)/conf/ldap/zimbra-hsm.schema $(LDAP_DEST_DIR)/lib/conf/zimbra-hsm.schema
