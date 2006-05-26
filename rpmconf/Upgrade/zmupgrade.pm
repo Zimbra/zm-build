@@ -71,6 +71,7 @@ my %updateFuncs = (
 	"3.0.1_GA" => \&upgrade301GA,
 	"3.1.0_GA" => \&upgrade310GA,
 	"3.1.1_GA" => \&upgrade311GA,
+	"3.1.2_GA" => \&upgrade312GA,
 	"3.5.0_M1" => \&upgrade35M1,
 );
 
@@ -182,6 +183,11 @@ sub upgrade {
 		}
 	} elsif ($startVersion eq "3.1.1_GA") {
 		print "This appears to be 3.1.1_GA\n";
+		if ($curSchemaVersion < 22) {
+			$curSchemaVersion = 22;
+		}
+	} elsif ($startVersion eq "3.1.2_GA") {
+		print "This appears to be 3.1.2_GA\n";
 		if ($curSchemaVersion < 22) {
 			$curSchemaVersion = 22;
 		}
@@ -696,6 +702,12 @@ sub upgrade310GA {
 sub upgrade311GA {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
 	Migrate::log("Updating from 3.1.1_GA");
+	return 0;
+}
+
+sub upgrade312GA {
+	my ($startBuild, $targetVersion, $targetBuild) = (@_);
+	Migrate::log("Updating from 3.1.2_GA");
 	return 0;
 }
 
