@@ -67,6 +67,8 @@ $(BUILD_ROOT)/zimbraldap.spec:
 	rm -f zimbraldap.post
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/lib" >> \
 		$(BUILD_ROOT)/zimbraldap.spec
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/conf" >> \
+		$(BUILD_ROOT)/zimbraldap.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/openldap-$(LDAP_VERSION)" >> \
 		$(BUILD_ROOT)/zimbraldap.spec
 
@@ -96,4 +98,8 @@ $(LDAP_DEST_DIR)/lib/conf/zimbra-hsm.schema: $(LDAP_DEST_DIR)/lib/conf
 
 $(LDAP_DEST_DIR)/lib/conf:
 	mkdir -p $@
+
+$(LDAP_DEST_DIR)/conf/attrs:
+	mkdir -p $@
+	cp -f $(SERVICE_DIR)/build/conf/attrs/* $@
 
