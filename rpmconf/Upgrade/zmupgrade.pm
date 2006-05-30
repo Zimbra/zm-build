@@ -62,7 +62,7 @@ my %loggerUpdateScripts = (
 	'1' => "migrateLogger2-config.pl",
 	'2' => "migrateLogger3-diskindex.pl",
 	'3' => "migrateLogger4-loghostname.pl",
-	'4' => "migrateLogger4-qid.pl",
+	'4' => "migrateLogger5-qid.pl",
 );
 
 my %updateFuncs = (
