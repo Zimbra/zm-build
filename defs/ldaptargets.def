@@ -89,7 +89,7 @@ $(LDAP_DEST_DIR)/$(LDAP_DIR): $(LDAP_DEST_DIR)
 	cp $(SERVICE_DIR)/build/ldap-config/zimbra-hsm.schema \
 		$(LDAP_DEST_DIR)/$(LDAP_DIR)/etc/openldap/schema
 	cp $(SERVICE_DIR)/build/ldap-config/*.ldif \
-		$(LDAP_DEST_DIR)/$(LDAP_DIR)/etc/openldap/zimbra.ldif
+		$(LDAP_DEST_DIR)/$(LDAP_DIR)/etc/openldap
 
 $(LDAP_DEST_DIR)/lib/conf/zimbra-hsm.schema: $(LDAP_DEST_DIR)/lib/conf
 	cp -f $(SERVICE_DIR)/conf/ldap/zimbra-hsm.schema $(LDAP_DEST_DIR)/lib/conf/zimbra-hsm.schema
