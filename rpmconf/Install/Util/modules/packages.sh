@@ -73,16 +73,16 @@ findLatestPackage() {
 			major=`echo $version | awk -F. '{print $1}'`
 			minor=`echo $version | awk -F. '{print $2}'`
 			micro=`echo $version | awk -F. '{print $3}'`
-			micro=${micro}_`echo $version | awk -F_ '{print $3}'`
-			stamp=`echo $f | awk -F_ '{print $2}' | awk -F. '{print $1}'`
+			#micro=${micro}_`echo $version | awk -F_ '{print $3}'`
+			stamp=`echo $f | awk -F_ '{print $3}' | awk -F. '{print $1}'`
 		else
 			id=`echo $f | awk -F_ '{print $2}'`
 			version=`echo $id | awk -F_ '{print $1}'`
 			major=`echo $version | awk -F. '{print $1}'`
 			minor=`echo $version | awk -F. '{print $2}'`
 			micro=`echo $version | awk -F. '{print $3}'`
-			micro=${micro}_`echo $version | awk -F_ '{print $3}'`
-			stamp=`echo $f | awk -F_ '{print $2}' | awk -F. '{print $1}'`
+			#micro=${micro}_`echo $version | awk -F_ '{print $3}'`
+			stamp=`echo $f | awk -F_ '{print $3}' | awk -F. '{print $1}'`
 		fi
 
 		if [ $major -gt $himajor ]; then
@@ -123,9 +123,24 @@ checkPackages() {
 			echo "Exiting"
 			exit 1
 		else
+			echo $file | grep -q i386
+			if [ $? -eq 0 ]; then
+				PROC="i386"
+			else
+				PROC="x86_64"
+			fi
 			echo "Found $i"
 		fi
 	done
+
+	LOCALPROC=`uname -i`
+
+	if [ x$LOCALPROC != x$PROC ]; then
+		echo "Error: attempting to install $PROC packages on a $LOCALPROC OS."
+		echo "Exiting..."
+		echo ""
+		exit 1
+	fi
 
 	AVAILABLE_PACKAGES=""
 
