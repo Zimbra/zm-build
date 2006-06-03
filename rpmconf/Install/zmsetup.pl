@@ -51,6 +51,7 @@ if ($platform =~ /MACOSX/) {
 
 if ($platform =~ /SuSE/) { `chmod 640 /etc/sudoers`;}
 
+use preinstall;
 use postinstall;
 
 use zmupgrade;
@@ -1725,6 +1726,7 @@ sub createMainMenu {
 			#push @mm, "$_ not installed";
 		}
 	}
+	$i = &preinstall::mainMenuExtension(\%mm, $i);
 	$mm{menuitems}{r} = { 
 		"prompt" => "Start servers after configuration", 
 		"callback" => \&toggleYN,
