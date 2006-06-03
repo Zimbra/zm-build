@@ -697,6 +697,9 @@ sub upgrade310GA {
 		}
 	}
 
+	# bug 7241
+	`su - zimbra -c "/opt/zimbra/bin/zmsshkeygen"`;
+
 	return 0;
 }
 
