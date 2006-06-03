@@ -987,7 +987,7 @@ getPlatformVars() {
 		PREREQ_PACKAGES="sudo libidn curl fetchmail gmp libxml2 libstdc++ openssl"
 	else
 		PACKAGEINST='rpm -iv'
-		PACKAGERM='rpm -ev --noscripts --allmatches'
+		PACKAGERM='rpm -ev --nodeps --noscripts --allmatches'
 		PACKAGEQUERY='rpm -q'
 		PACKAGEEXT='rpm'
 		if [ $PLATFORM = "RHEL4" ]; then
