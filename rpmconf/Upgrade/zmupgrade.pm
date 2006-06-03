@@ -154,8 +154,6 @@ sub upgrade {
 		$curSchemaVersion = 22;
 	} elsif ($startVersion eq "3.0.0_M2") {
 		print "This appears to be 3.0.0_M2\n";
-	} elsif ($startVersion eq "3.0.0_M2") {
-		print "This appears to be 3.0.0_M2\n";
 		$curSchemaVersion = 22;
 	} elsif ($startVersion eq "3.0.0_M3") {
 		print "This appears to be 3.0.0_M3\n";
