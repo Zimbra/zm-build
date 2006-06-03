@@ -3,3 +3,4 @@ CONSOLE_DIR	:= $(BUILD_ROOT)/../ZimbraWebClient
 LICENSE_DIR := $(BUILD_ROOT)/../ZimbraLicenses
 NATIVE_DIR := $(BUILD_ROOT)/../ZimbraNative
 ZIMLET_DIR := $(BUILD_ROOT)/../Zimlet
+LAUNCHER_DIR := $(BUILD_ROOT)/../ZimbraLauncher
