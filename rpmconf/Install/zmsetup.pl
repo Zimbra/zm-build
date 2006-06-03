@@ -1726,7 +1726,7 @@ sub createMainMenu {
 			#push @mm, "$_ not installed";
 		}
 	}
-	$i = &preinstall::mainMenuExtension(\%mm, $i);
+	$i = &preinstall::mainMenuExtensions(\%mm, $i);
 	$mm{menuitems}{r} = { 
 		"prompt" => "Start servers after configuration", 
 		"callback" => \&toggleYN,
@@ -1872,14 +1872,12 @@ sub configLCValues {
 
 	if ($config{LDAPPORT} == 636) {
 		setLocalConfig ("ldap_master_url", "ldaps://$config{LDAPHOST}:$config{LDAPPORT}");
+		setLocalConfig ("ldap_url", "ldaps://$config{LDAPHOST}:$config{LDAPPORT}");
 	} else {
 		setLocalConfig ("ldap_master_url", "ldap://$config{LDAPHOST}:$config{LDAPPORT}");
+		setLocalConfig ("ldap_url", "ldap://$config{LDAPHOST}:$config{LDAPPORT}");
 	}
 
-	setLocalConfig ("ldap_url", "ldap://$config{LDAPHOST}");
-
-	# setLocalConfig ("ldap_host", $config{LDAPHOST});
-	# setLocalConfig ("ldap_port", $config{LDAPPORT});
 	my $uid = `id -u zimbra`;
 	chomp $uid;
 	my $gid = `id -g zimbra`;
