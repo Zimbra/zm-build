@@ -104,7 +104,6 @@ my $logfile = "/tmp/zmsetup.log.$$";
 my @interfaces = ();
 
 open LOGFILE, ">$logfile" or die "Can't open $logfile: $!\n";
-chmod 0600, $logfile;
 
 my $ol = select (LOGFILE);
 $| = 1;
@@ -135,7 +134,7 @@ sub status {
 
 sub detail {
 	my $msg = shift;
-	#`echo "$msg" >> $logfile`;
+	`echo "$msg" >> $logfile`;
 }
 
 sub saveConfig {
@@ -2628,5 +2627,6 @@ if ($options{c}) {
 }
 
 close LOGFILE;
+chmod 0600, $logfile;
 
 __END__
