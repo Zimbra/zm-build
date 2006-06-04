@@ -35,6 +35,15 @@ use lib "/opt/zimbra/zimbramon/lib/darwin-thread-multi-2level";
 our $platform = `/opt/zimbra/libexec/get_plat_tag.sh`;
 chomp $platform;
 
+my $logfile = "/tmp/zmsetup.log.$$";
+open LOGFILE, ">$logfile" or die "Can't open $logfile: $!\n";
+
+my $ol = select (LOGFILE);
+$| = 1;
+select ($ol);
+
+print "Operations logged to $logfile\n";
+
 if ($platform =~ /MACOSX/) {
 	progress ("Checking java version...");
 	my $rc = 0xffff & system("su - zimbra -c \"java -version 2>&1 | grep 'java version' | grep -q 1.5\"");
@@ -99,17 +108,7 @@ my $enabledServiceStr = "";
 
 my $ldapPassChanged = 0;
 
-my $logfile = "/tmp/zmsetup.log.$$";
-
 my @interfaces = ();
-
-open LOGFILE, ">$logfile" or die "Can't open $logfile: $!\n";
-
-my $ol = select (LOGFILE);
-$| = 1;
-select ($ol);
-
-print "Operations logged to $logfile\n";
 
 ($>) and usage();
 
