@@ -99,6 +99,7 @@ my $enabledServiceStr = "";
 my $ldapPassChanged = 0;
 
 my $logfile = "/tmp/zmsetup.log.$$";
+chmod 0600, $logfile;
 
 my @interfaces = ();
 

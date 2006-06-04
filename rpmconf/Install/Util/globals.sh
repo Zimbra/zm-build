@@ -42,6 +42,8 @@ PACKAGE_DIR=`dirname $0`/packages
 
 
 LOGFILE="/tmp/install.log.$$"
+touch $LOGFILE
+chmod 600 $LOGFILE
 SAVEDIR="/opt/zimbra/.saveconfig"
 
 if [ x$RESTORECONFIG = "x" ]; then
