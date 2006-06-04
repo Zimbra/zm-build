@@ -566,6 +566,7 @@ sub getInstallStatus {
 sub setDefaultsFromLocalConfig {
 	progress ("Setting defaults from existing config...");
 	$config{HOSTNAME} = getLocalConfig ("zimbra_server_hostname");
+	$config{HOSTNAME} = lc ($config{HOSTNAME});
 	my $ldapUrl = getLocalConfig ("ldap_url");
 	my $ld = (split ' ', $ldapUrl)[0];
 	my $p = $ld;
@@ -958,6 +959,7 @@ sub setHostName {
 			$config{HOSTNAME} = $old;
 		} else {last;}
 	}
+	$config{HOSTNAME} = lc($config{HOSTNAME});
 	if ($config{SMTPHOST} eq $old) {
 		$config{SMTPHOST} = $config{HOSTNAME};
 	}
@@ -1867,7 +1869,7 @@ sub configLCValues {
 	}
 
 	progress ("Setting local config values...");
-	setLocalConfig ("zimbra_server_hostname", $config{HOSTNAME});
+	setLocalConfig ("zimbra_server_hostname", lc($config{HOSTNAME}));
 
 	if ($config{LDAPPORT} == 636) {
 		setLocalConfig ("ldap_master_url", "ldaps://$config{LDAPHOST}:$config{LDAPPORT}");
