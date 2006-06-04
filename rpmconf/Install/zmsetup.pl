@@ -2430,6 +2430,9 @@ sub applyConfig {
 	setupCrontab();
 	postinstall::configure();
 
+	`touch /opt/zimbra/.bash_history`;
+	`chown zimbra:zimbra /opt/zimbra/.bash_history`;
+
 	if ($config{STARTSERVERS} eq "yes") {
 		progress ( "Starting servers..." );
 		runAsZimbra ("/opt/zimbra/bin/zmcontrol start");
