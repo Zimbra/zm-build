@@ -152,20 +152,7 @@ sub upgrade {
 		}
 	}
 
-	if ($startVersion eq "3.0.M1") {
-		print "This appears to be an non-upgraded version of 3.0.M1\n";
-		$needVolumeHack = 1;
-	} elsif ($startVersion eq "3.0.M1") {
-		print "This appears to be 3.0.M1\n";
-	} elsif ($startVersion eq "3.0.0_M2") {
-		print "This appears to be 3.0.0_M2\n";
-	} elsif ($startVersion eq "3.0.0_M2") {
-		print "This appears to be 3.0.0_M2\n";
-	} elsif ($startVersion eq "3.0.0_M3") {
-		print "This appears to be 3.0.0_M3\n";
-	} elsif ($startVersion eq "3.0.0_M4") {
-		print "This appears to be 3.0.0_M4\n";
-	} elsif ($startVersion eq "3.0.0_GA") {
+	if ($startVersion eq "3.0.0_GA") {
 		print "This appears to be 3.0.0_GA\n";
 	} elsif ($startVersion eq "3.0.1_GA") {
 		print "This appears to be 3.0.1_GA\n";
