@@ -104,6 +104,7 @@ my $logfile = "/tmp/zmsetup.log.$$";
 my @interfaces = ();
 
 open LOGFILE, ">$logfile" or die "Can't open $logfile: $!\n";
+chmod 0600, $logfile;
 
 my $ol = select (LOGFILE);
 $| = 1;
