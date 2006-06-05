@@ -284,7 +284,6 @@ sub getSystemStatus {
 			#$ldapRunning = ($ldapRunning)?0:1;
 		} else {
 			$config{DOCREATEDOMAIN} = "yes";
-			$config{DOTRAINSA} = "yes";
 		}
 	}
 
@@ -296,6 +295,7 @@ sub getSystemStatus {
 		}
 		if ($newinstall) {
 			$config{DOCREATEADMIN} = "yes";
+			$config{DOTRAINSA} = "yes";
 		}
 	}
 
@@ -408,15 +408,15 @@ sub setDefaults {
 	if (isEnabled("zimbra-store")) {
 		$config{MTAAUTHHOST} = $config{HOSTNAME};
 		$config{DOCREATEADMIN} = "yes";
-	}
-	if (isEnabled("zimbra-ldap")) {
-		$config{DOCREATEDOMAIN} = "yes";
-		$config{LDAPPASS} = genRandomPass();
 		$config{DOTRAINSA} = "yes";
 		$config{TRAINSASPAM} = lc(genRandomPass());
 		$config{TRAINSASPAM} .= '@'.$config{CREATEDOMAIN};
 		$config{TRAINSAHAM} = lc(genRandomPass());
 		$config{TRAINSAHAM} .= '@'.$config{CREATEDOMAIN};
+	}
+	if (isEnabled("zimbra-ldap")) {
+		$config{DOCREATEDOMAIN} = "yes";
+		$config{LDAPPASS} = genRandomPass();
 	}
 	$config{CREATEADMIN} = "admin\@$config{CREATEDOMAIN}";
 
@@ -1178,27 +1178,7 @@ sub createLdapMenu {
 				};
 			$i++;
 		}
-		$$lm{menuitems}{$i} = { 
-			"prompt" => "Enable automated spam training:", 
-			"var" => \$config{DOTRAINSA}, 
-			"callback" => \&toggleYN,
-			"arg" => "DOTRAINSA",
-			};
-		$i++;
-		if ($config{DOTRAINSA} eq "yes") {
-			$$lm{menuitems}{$i} = { 
-				"prompt" => "Spam training user:", 
-				"var" => \$config{TRAINSASPAM}, 
-				"callback" => \&setTrainSASpam
-				};
-			$i++;
-			$$lm{menuitems}{$i} = { 
-				"prompt" => "Non-spam(Ham) training user:", 
-				"var" => \$config{TRAINSAHAM}, 
-				"callback" => \&setTrainSAHam
-				};
-			$i++;
-		}
+
 	}
 	return $lm;
 }
@@ -1387,6 +1367,27 @@ sub createStoreMenu {
 				"prompt" => "Admin Password", 
 				"var" => \$config{ADMINPASSSET},
 				"callback" => \&setAdminPass
+				};
+			$i++;
+		}
+		$$lm{menuitems}{$i} = { 
+			"prompt" => "Enable automated spam training:", 
+			"var" => \$config{DOTRAINSA}, 
+			"callback" => \&toggleYN,
+			"arg" => "DOTRAINSA",
+			};
+		$i++;
+		if ($config{DOTRAINSA} eq "yes") {
+			$$lm{menuitems}{$i} = { 
+				"prompt" => "Spam training user:", 
+				"var" => \$config{TRAINSASPAM}, 
+				"callback" => \&setTrainSASpam
+				};
+			$i++;
+			$$lm{menuitems}{$i} = { 
+				"prompt" => "Non-spam(Ham) training user:", 
+				"var" => \$config{TRAINSAHAM}, 
+				"callback" => \&setTrainSAHam
 				};
 			$i++;
 		}
@@ -2181,32 +2182,7 @@ sub configCreateDomain {
 			runAsZimbra("/opt/zimbra/bin/zmprov cd $config{CREATEDOMAIN}");
 			runAsZimbra("/opt/zimbra/bin/zmprov mcf zimbraDefaultDomainName $config{CREATEDOMAIN}");
 			progress ( "Done\n" );
-			if ($config{DOTRAINSA} eq "yes") {
-				progress ( "Creating user $config{TRAINSASPAM}..." );
-				my $pass = genRandomPass();
-				runAsZimbra("/opt/zimbra/bin/zmprov ca ".
-					"$config{TRAINSASPAM} \'$pass\' ".
-					"amavisBypassSpamChecks TRUE ".
-					"zimbraAttachmentsIndexingEnabled FALSE ".
-					"zimbraHideInGal TRUE".
-					"zimbraMailQuota 0 ".
-					"description \'Spam training account\'");
-				progress ( "Done\n" );
-				progress ( "Creating user $config{TRAINSAHAM}..." );
-					runAsZimbra("/opt/zimbra/bin/zmprov ca ".
-					"$config{TRAINSAHAM} \'$pass\' ".
-					"amavisBypassSpamChecks TRUE ".
-					"zimbraAttachmentsIndexingEnabled FALSE ".
-					"zimbraHideInGal TRUE".
-					"zimbraMailQuota 0 ".
-					"description \'Spam training account\'");
-				progress ( "Done\n" );
-				progress ( "Setting spam training accounts..." );
-				runAsZimbra("/opt/zimbra/bin/zmprov mcf ".
-					"zimbraSpamIsSpamAccount $config{TRAINSASPAM} ".
-					"zimbraSpamIsNotSpamAccount $config{TRAINSAHAM}");
-				progress ( "Done\n" );
-			}
+
 		}
 	}
 	if (isEnabled("zimbra-store")) {
@@ -2223,6 +2199,32 @@ sub configCreateDomain {
 				"$config{CREATEADMIN} root\@$config{CREATEDOMAIN}");
 			runAsZimbra("/opt/zimbra/bin/zmprov aaa ".
 				"$config{CREATEADMIN} postmaster\@$config{CREATEDOMAIN}");
+			progress ( "Done\n" );
+		}
+		if ($config{DOTRAINSA} eq "yes") {
+			progress ( "Creating user $config{TRAINSASPAM}..." );
+			my $pass = genRandomPass();
+			runAsZimbra("/opt/zimbra/bin/zmprov ca ".
+				"$config{TRAINSASPAM} \'$pass\' ".
+				"amavisBypassSpamChecks TRUE ".
+				"zimbraAttachmentsIndexingEnabled FALSE ".
+				"zimbraHideInGal TRUE".
+				"zimbraMailQuota 0 ".
+				"description \'Spam training account\'");
+			progress ( "Done\n" );
+			progress ( "Creating user $config{TRAINSAHAM}..." );
+				runAsZimbra("/opt/zimbra/bin/zmprov ca ".
+				"$config{TRAINSAHAM} \'$pass\' ".
+				"amavisBypassSpamChecks TRUE ".
+				"zimbraAttachmentsIndexingEnabled FALSE ".
+				"zimbraHideInGal TRUE".
+				"zimbraMailQuota 0 ".
+				"description \'Spam training account\'");
+			progress ( "Done\n" );
+			progress ( "Setting spam training accounts..." );
+			runAsZimbra("/opt/zimbra/bin/zmprov mcf ".
+				"zimbraSpamIsSpamAccount $config{TRAINSASPAM} ".
+				"zimbraSpamIsNotSpamAccount $config{TRAINSAHAM}");
 			progress ( "Done\n" );
 		}
 	}
