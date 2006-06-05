@@ -32,6 +32,12 @@ if [ -f /etc/redhat-release ]; then
 		exit 0
 	fi
 
+	grep "Fedora Core release 5" /etc/redhat-release > /dev/null 2>&1
+	if [ $? = 0 ]; then
+		echo "FC5"
+		exit 0
+	fi
+
 	grep "Fedora Core release 4" /etc/redhat-release > /dev/null 2>&1
 	if [ $? = 0 ]; then
 		echo "FC4"
