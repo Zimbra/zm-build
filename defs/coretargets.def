@@ -160,6 +160,8 @@ pcre_MACOSX:
 	mkdir -p $(CORE_DEST_DIR)/lib
 	(cd $(CORE_DEST_DIR)/lib; tar xzf $(THIRD_PARTY)/pcre/builds/$(BUILD_PLATFORM)/pcre.tgz)
 
+pcre_FC5: ;
+
 pcre_FC4: ;
 
 pcre_FC3: ;
