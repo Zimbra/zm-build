@@ -2208,7 +2208,7 @@ sub configCreateDomain {
 				"$config{TRAINSASPAM} \'$pass\' ".
 				"amavisBypassSpamChecks TRUE ".
 				"zimbraAttachmentsIndexingEnabled FALSE ".
-				"zimbraHideInGal TRUE".
+				"zimbraHideInGal TRUE ".
 				"zimbraMailQuota 0 ".
 				"description \'Spam training account\'");
 			progress ( "Done\n" );
@@ -2217,7 +2217,7 @@ sub configCreateDomain {
 				"$config{TRAINSAHAM} \'$pass\' ".
 				"amavisBypassSpamChecks TRUE ".
 				"zimbraAttachmentsIndexingEnabled FALSE ".
-				"zimbraHideInGal TRUE".
+				"zimbraHideInGal TRUE ".
 				"zimbraMailQuota 0 ".
 				"description \'Spam training account\'");
 			progress ( "Done\n" );
