@@ -769,6 +769,25 @@ sub upgrade32M1 {
 
 	`su - zimbra -c "/opt/zimbra/bin/zmprov zimbraLdapGalAttrMap zimbraMailDeliveryAddress,zimbraMailAlias,mail=email,email2,email3,email4,email5,email6"`;
 
+	open RP, "/opt/zimbra/bin/zmjava com.zimbra.cs.util.RandomPassword 8 10|" or
+	die "Can't generate random password: $!\n";
+	my $nbacct = <RP>;
+	close RP;
+	chomp $nbacct;
+
+	open RP, "/opt/zimbra/bin/zmjava com.zimbra.cs.util.RandomPassword 8 10|" or
+	die "Can't generate random password: $!\n";
+	my $nbpass = <RP>;
+	close RP;
+	chomp $nbpass;
+
+	# bug 7391
+	`su - zimbra -c "/opt/zimbra/bin/zmprov ca $nbacct \'$nbpass\' amavisBypassSpamChecks TRUE zimbraAttachmentsIndexingEnabled FALSE zimbraHideInGal TRUE zimbraMailQuota 0 description \'Global notebook account\'"`;
+
+	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf zimbraNotebookAccount $nbacct"`;
+	#`su - zimbra -c "/opt/zimbra/bin/zmprov mcf zimbraFeatureNotebookEnabled TRUE"`;
+	`su - zimbra -c "/opt/zimbra/bin/zmprov in -p zimbra -f /opt/zimbra/wiki -t Template"`;
+
 	return 0;
 }
 

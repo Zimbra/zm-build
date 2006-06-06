@@ -413,6 +413,8 @@ sub setDefaults {
 		$config{TRAINSASPAM} .= '@'.$config{CREATEDOMAIN};
 		$config{TRAINSAHAM} = lc(genRandomPass());
 		$config{TRAINSAHAM} .= '@'.$config{CREATEDOMAIN};
+		$config{NOTEBOOKACCOUNT} = lc(genRandomPass());
+		$config{NOTEBOOKACCOUNT} .= '@'.$config{CREATEDOMAIN};
 	}
 	if (isEnabled("zimbra-ldap")) {
 		$config{DOCREATEDOMAIN} = "yes";
@@ -736,11 +738,15 @@ sub setCreateDomain {
 	}
 	my ($spamUser, $spamDomain) = split ('@', $config{TRAINSASPAM});
 	my ($hamUser, $hamDomain) = split ('@', $config{TRAINSAHAM});
+	my ($notebookUser, $notebookDomain) = split ('@', $config{NOTEBOOKACCOUNT});
 	if ($spamDomain eq $oldDomain) {
 		$config{TRAINSASPAM} = $spamUser.'@'.$config{CREATEDOMAIN};
 	}
 	if ($hamDomain eq $oldDomain) {
 		$config{TRAINSAHAM} = $hamUser.'@'.$config{CREATEDOMAIN};
+	}
+	if ($notebookDomain eq $oldDomain) {
+		$config{NOTEBOOKACCOUNT} = $notebookUser.'@'.$config{CREATEDOMAIN};
 	}
 }
 
@@ -2199,6 +2205,16 @@ sub configCreateDomain {
 				"$config{CREATEADMIN} root\@$config{CREATEDOMAIN}");
 			runAsZimbra("/opt/zimbra/bin/zmprov aaa ".
 				"$config{CREATEADMIN} postmaster\@$config{CREATEDOMAIN}");
+			runAsZimbra("/opt/zimbra/bin/zmprov ca ".
+				"$config{NOTEBOOKACCOUNT} \'$pass\' ".
+				"amavisBypassSpamChecks TRUE ".
+				"zimbraAttachmentsIndexingEnabled FALSE ".
+				"zimbraHideInGal TRUE ".
+				"zimbraMailQuota 0 ".
+				"description \'Global notebook account\'");
+			runAsZimbra("/opt/zimbra/bin/zmprov mcf zimbraNotebookAccount $config{NOTEBOOKACCOUNT}");
+			runAsZimbra("/opt/zimbra/bin/zmprov mcf zimbraFeatureNotebookEnabled TRUE");
+			runAsZimbra("/opt/zimbra/bin/zmprov in -p zimbra -f /opt/zimbra/wiki -t Template");
 			progress ( "Done\n" );
 		}
 		if ($config{DOTRAINSA} eq "yes") {
