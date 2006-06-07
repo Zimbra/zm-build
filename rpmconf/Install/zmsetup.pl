@@ -415,6 +415,7 @@ sub setDefaults {
 		$config{TRAINSAHAM} .= '@'.$config{CREATEDOMAIN};
 		$config{NOTEBOOKACCOUNT} = lc(genRandomPass());
 		$config{NOTEBOOKACCOUNT} .= '@'.$config{CREATEDOMAIN};
+		$config{NOTEBOOKPASS} = genRandomPass();
 	}
 	if (isEnabled("zimbra-ldap")) {
 		$config{DOCREATEDOMAIN} = "yes";
@@ -2206,7 +2207,7 @@ sub configCreateDomain {
 			runAsZimbra("/opt/zimbra/bin/zmprov aaa ".
 				"$config{CREATEADMIN} postmaster\@$config{CREATEDOMAIN}");
 			runAsZimbra("/opt/zimbra/bin/zmprov ca ".
-				"$config{NOTEBOOKACCOUNT} \'$pass\' ".
+				"$config{NOTEBOOKACCOUNT} \'$config{NOTEBOOKPASS}\' ".
 				"amavisBypassSpamChecks TRUE ".
 				"zimbraAttachmentsIndexingEnabled FALSE ".
 				"zimbraHideInGal TRUE ".
