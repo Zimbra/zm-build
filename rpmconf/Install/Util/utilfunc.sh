@@ -536,6 +536,12 @@ restoreCerts() {
 	if [ -f "$SAVEDIR/keystore" -a -d "/opt/zimbra/tomcat/conf" ]; then
 		cp $SAVEDIR/keystore /opt/zimbra/tomcat/conf/keystore
 	fi
+	if [ -f "$SAVEDIR/perdition.key" ]; then
+		cp $SAVEDIR/perdition.key /opt/zimbra/conf/perdition.key 
+	fi
+	if [ -f "$SAVEDIR/perdition.pem" ]; then
+		cp $SAVEDIR/perdition.pem /opt/zimbra/conf/perdition.pem 
+	fi
 	if [ -f "$SAVEDIR/smtpd.key" ]; then
 		cp $SAVEDIR/smtpd.key /opt/zimbra/conf/smtpd.key 
 	fi
@@ -552,7 +558,7 @@ restoreCerts() {
 	if [ -f "$SAVEDIR/ca.pem" ]; then
 		cp $SAVEDIR/ca.pem /opt/zimbra/conf/ca/ca.pem 
 	fi
-	chown zimbra:zimbra /opt/zimbra/java/jre/lib/security/cacerts /opt/zimbra/tomcat/conf/keystore /opt/zimbra/conf/smtpd.key /opt/zimbra/conf/smtpd.crt /opt/zimbra/conf/slapd.crt
+	chown zimbra:zimbra /opt/zimbra/java/jre/lib/security/cacerts /opt/zimbra/tomcat/conf/keystore /opt/zimbra/conf/smtpd.key /opt/zimbra/conf/smtpd.crt /opt/zimbra/conf/slapd.crt /opt/zimbra/conf/perdition.pem /opt/zimbra/conf/perdition.key
 	chown -R zimbra:zimbra /opt/zimbra/conf/ca
 }
 
@@ -564,6 +570,12 @@ saveExistingConfig() {
 	cp -f /opt/zimbra/java/jre/lib/security/cacerts $SAVEDIR
 	if [ -f "/opt/zimbra/tomcat/conf/keystore" ]; then
 		cp -f /opt/zimbra/tomcat/conf/keystore $SAVEDIR
+	fi
+	if [ -f "/opt/zimbra/conf/perdition.key" ]; then
+		cp -f /opt/zimbra/conf/perdition.key $SAVEDIR
+	fi
+	if [ -f "/opt/zimbra/conf/perdition.pem" ]; then
+		cp -f /opt/zimbra/conf/perdition.pem $SAVEDIR
 	fi
 	if [ -f "/opt/zimbra/conf/smtpd.key" ]; then
 		cp -f /opt/zimbra/conf/smtpd.key $SAVEDIR
