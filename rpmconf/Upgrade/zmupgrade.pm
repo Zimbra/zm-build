@@ -769,14 +769,19 @@ sub upgrade32M1 {
 
 	`su - zimbra -c "/opt/zimbra/bin/zmprov zimbraLdapGalAttrMap zimbraMailDeliveryAddress,zimbraMailAlias,mail=email,email2,email3,email4,email5,email6"`;
 
+	open DOMAINS, "/opt/zimbra/bin/zmprov gad | tail -1" or die "Can't get domain list!";
+	my $domain = <DOMAINS>;
+	close DOMAINS;
+	chomp $domain;
 	open RP, "/opt/zimbra/bin/zmjava com.zimbra.cs.util.RandomPassword 8 10|" or
-	die "Can't generate random password: $!\n";
+		die "Can't generate random account name: $!\n";
 	my $nbacct = <RP>;
 	close RP;
 	chomp $nbacct;
+	$nbacct .= '@'.$domain;
 
 	open RP, "/opt/zimbra/bin/zmjava com.zimbra.cs.util.RandomPassword 8 10|" or
-	die "Can't generate random password: $!\n";
+	die "Can't generate random account name: $!\n";
 	my $nbpass = <RP>;
 	close RP;
 	chomp $nbpass;
