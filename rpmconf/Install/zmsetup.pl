@@ -1817,9 +1817,6 @@ sub verifyLdap {
 	if (($config{LDAPHOST} eq $config{HOSTNAME}) && !$ldapConfigured) {
 		return 0;
 	}
-	if ($config{LDAPHOST} eq $config{HOSTNAME}) {
-		$H = "localhost";
-	}
 	if ($config{LDAPPASS} eq "" || $config{LDAPPORT} eq "" || $config{LDAPHOST} eq "") {
 		progress ( "ldap configuration not complete\n" );
 		return 1;
