@@ -133,7 +133,11 @@ checkPackages() {
 		fi
 	done
 
-	LOCALPROC=`uname -i`
+	if [ $PLATFORM = "DEBIAN3.1" ]; then
+		LOCALPROC=$PROC
+	else
+		LOCALPROC=`uname -i`
+	fi
 
 	if [ x$LOCALPROC != x$PROC ]; then
 		echo "Error: attempting to install $PROC packages on a $LOCALPROC OS."
