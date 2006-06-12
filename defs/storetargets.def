@@ -151,7 +151,6 @@ $(ZIMLET_DIR)/build/dist/zimlets-extra/nofile:
 
 $(STORE_DEST_DIR)/zimlets-extra: $(ZIMLET_DIR)/build/dist/zimlets-extra/nofile
 	mkdir -p $@
-	cp $(SERVICE_DIR)/build/dist/zimlets-extra/* $@
 	cp $(ZIMLET_DIR)/build/dist/zimlets-extra/* $@
 
 $(STORE_DEST_DIR)/zimlets: $(SERVICE_DIR)/build/dist/zimlets/nofile $(ZIMLET_DIR)/build/dist/zimlets/nofile
