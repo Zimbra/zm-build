@@ -106,5 +106,5 @@ $(LDAP_DEST_DIR)/lib/conf:
 
 $(LDAP_DEST_DIR)/conf/attrs:
 	mkdir -p $@
-	cp -f $(SERVICE_DIR)/build/conf/attrs/* $@
+	cp -f $(SERVICE_DIR)/build/dist/conf/attrs/* $@
 

@@ -202,8 +202,8 @@ $(CORE_DEST_DIR)/conf: $(WEBAPP_DIR)/service.war
 	mkdir -p $@
 	cp $(PACKAGE_CONF_DIR)/Conf/swatchrc $@/swatchrc.in
 	cp $(PACKAGE_CONF_DIR)/Conf/logswatchrc $@/logswatchrc
-	cp -R $(SERVICE_DIR)/conf/localconfig.xml $@/localconfig.xml
-	grep -vi stats $(SERVICE_DIR)/build/dist/conf/log4j.properties.production > $@/log4j.properties
+	cp $(SERVICE_DIR)/build/dist/conf/localconfig.xml $@
+	cp $(SERVICE_DIR)/build/dist/conf/log4j.properties $@
 	cp $(PACKAGE_CONF_DIR)/Conf/zmssl.cnf.in $@
 	cp $(SERVICE_DIR)/conf/amavisd.conf.in $@
 	cp $(SERVICE_DIR)/conf/dspam.conf $@
@@ -242,10 +242,7 @@ $(CORE_DEST_DIR)/libexec: $(LAUNCHER_DIR)/build/zmtomcatmgr
 $(CORE_DEST_DIR)/bin:
 	mkdir -p $@
 	cp -R $(SERVICE_DIR)/build/dist/bin/[a-z]* $@
-	mv $@/tomcat.production $@/tomcat
 	rm -f $(CORE_DEST_DIR)/bin/zmtransserver.bat
-	rm -f $(CORE_DEST_DIR)/bin/ldap
-	mv $(CORE_DEST_DIR)/bin/ldap.production $(CORE_DEST_DIR)/bin/ldap
 	cp $(ZIMBRA_BIN_DIR)/zmswatchctl $@
 	cp $(ZIMBRA_BIN_DIR)/zmlogswatchctl $@
 	cp $(ZIMBRA_BIN_DIR)/zmcreatecert $@

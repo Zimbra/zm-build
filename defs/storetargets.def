@@ -110,9 +110,9 @@ $(STORE_DEST_DIR)/$(TOMCAT_DIR)/conf: force
 	cp -f $(SERVICE_DIR)/conf/zimbraAdmin.xml \
 		$(STORE_DEST_DIR)/$(TOMCAT_DIR)/conf/AdminService/localhost/zimbraAdmin.xml
 	cp -f $(SERVICE_DIR)/conf/tomcat-5.5/tomcat-users.xml $(STORE_DEST_DIR)/$(TOMCAT_DIR)/conf
-	cp -f $(SERVICE_DIR)/build/dist/conf/log4j.properties.production  \
+	cp -f $(SERVICE_DIR)/build/dist/conf/log4j.properties  \
 		$(STORE_DEST_DIR)/$(TOMCAT_DIR)/conf/log4j.properties
-	cp -f $(SERVICE_DIR)/conf/production/web.xml \
+	cp -f $(SERVICE_DIR)/conf/web.xml.production \
 		$(STORE_DEST_DIR)/$(TOMCAT_DIR)/conf/service.web.xml.in
 	cp -f zimbraConf/web.xml \
 		$(STORE_DEST_DIR)/$(TOMCAT_DIR)/conf/zimbra.web.xml.in
