@@ -164,9 +164,7 @@ sub upgrade {
 		print "This appears to be 3.1.0_GA\n";
 	} elsif ($startVersion eq "3.1.1_GA") {
 		print "This appears to be 3.1.1_GA\n";
-		if ($curSchemaVersion < 22) {
-			$curSchemaVersion = 22;
-		}
+		$needVolumeHack = 1;
 	} elsif ($startVersion eq "3.1.2_GA") {
 		print "This appears to be 3.1.2_GA";
 	} elsif ($startVersion eq "3.1.3_GA") {
