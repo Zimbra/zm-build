@@ -103,8 +103,3 @@ $(LDAP_DEST_DIR)/lib/conf/zimbra-hsm.schema: $(LDAP_DEST_DIR)/lib/conf
 
 $(LDAP_DEST_DIR)/lib/conf:
 	mkdir -p $@
-
-$(LDAP_DEST_DIR)/conf/attrs:
-	mkdir -p $@
-	cp -f $(SERVICE_DIR)/build/dist/conf/attrs/* $@
-

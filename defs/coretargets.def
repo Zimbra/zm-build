@@ -221,6 +221,8 @@ $(CORE_DEST_DIR)/conf: $(WEBAPP_DIR)/service.war
 	cp -Rf $(SERVICE_DIR)/conf/msgs $@/msgs
 	mkdir -p $@/spamassassin
 	cp $(SERVICE_DIR)/conf/spamassassin/[^C]* $@/spamassassin
+    mkdir -p $@/attrs
+	cp -f $(SERVICE_DIR)/build/dist/conf/attrs/* $@/attrs
 
 $(CORE_DEST_DIR)/libexec: $(LAUNCHER_DIR)/build/zmtomcatmgr
 	@echo "*** Installing libexec"
