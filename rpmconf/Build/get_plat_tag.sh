@@ -26,35 +26,42 @@
 
 
 if [ -f /etc/redhat-release ]; then
+
+	i=`uname -i`
+	if [ "x$i" = "xx86_64" ]; then
+		i="_64"
+	fi
+
 	grep "Red Hat Enterprise Linux" /etc/redhat-release > /dev/null 2>&1
 	if [ $? = 0 ]; then
-		echo "RHEL4"
+		echo "RHEL4${i}"
 		exit 0
 	fi
 
 	grep "Fedora Core release 5" /etc/redhat-release > /dev/null 2>&1
 	if [ $? = 0 ]; then
-		echo "FC5"
+		echo "FC5${i}"
 		exit 0
 	fi
 
 	grep "Fedora Core release 4" /etc/redhat-release > /dev/null 2>&1
 	if [ $? = 0 ]; then
-		echo "FC4"
+		echo "FC4${i}"
 		exit 0
 	fi
 
 	grep "Fedora Core release 3" /etc/redhat-release > /dev/null 2>&1
 	if [ $? = 0 ]; then
-		echo "FC3"
+		echo "FC3${i}"
 		exit 0
 	fi
 
 	grep "CentOS release 4" /etc/redhat-release > /dev/null 2>&1
 	if [ $? = 0 ]; then
-		echo "CentOS4"
+		echo "CentOS4${i}"
 		exit 0
 	fi
+
 fi
 
 if [ -f /etc/SuSE-release ]; then
