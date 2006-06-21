@@ -73,6 +73,7 @@ my %updateFuncs = (
 	"3.1.1_GA" => \&upgrade311GA,
 	"3.1.2_GA" => \&upgrade312GA,
 	"3.1.3_GA" => \&upgrade313GA,
+	"3.1.4_GA" => \&upgrade314GA,
 	"3.5.0_M1" => \&upgrade35M1,
 );
 
@@ -87,6 +88,7 @@ my @versionOrder = (
 	"3.1.1_GA", 
 	"3.1.2_GA", 
 	"3.1.3_GA", 
+	"3.1.4_GA", 
 	"3.5.0_M1"
 );
 
@@ -194,6 +196,11 @@ sub upgrade {
 		}
 	} elsif ($startVersion eq "3.1.3_GA") {
 		print "This appears to be 3.1.3_GA\n";
+		if ($curSchemaVersion < 22) {
+			$curSchemaVersion = 22;
+		}
+	} elsif ($startVersion eq "3.1.4_GA") {
+		print "This appears to be 3.1.4_GA\n";
 		if ($curSchemaVersion < 22) {
 			$curSchemaVersion = 22;
 		}
@@ -728,6 +735,12 @@ sub upgrade313GA {
 		chomp;
 		`su - zimbra -c "/opt/zimbra/bin/zmprov ma $_ zimbraPrefMailLocalDeliveryDisabled FALSE"`;
 	}
+	return 0;
+}
+
+sub upgrade314GA {
+	my ($startBuild, $targetVersion, $targetBuild) = (@_);
+	Migrate::log("Updating from 3.1.4_GA");
 	return 0;
 }
 
