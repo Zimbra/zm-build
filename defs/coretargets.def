@@ -88,7 +88,7 @@ $(BUILD_ROOT)/zimbracore.spec:
 		$(BUILD_ROOT)/zimbracore.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/db" >> \
 		$(BUILD_ROOT)/zimbracore.spec
-	echo "%attr(-, root, root) /opt/zimbra/jdk1.5.0_06" >> \
+	echo "%attr(-, root, root) /opt/zimbra/jdk$(JAVA_VERSION)" >> \
 		$(BUILD_ROOT)/zimbracore.spec
 	echo "%attr(-, root, root) /opt/zimbra/lib" >> \
 		$(BUILD_ROOT)/zimbracore.spec
@@ -176,7 +176,7 @@ pcre_SuSE10: ;
 
 pcre_RPL1: ;
 
-$(CORE_DEST_DIR)/jdk1.5.0_06:
+$(CORE_DEST_DIR)/jdk$(JAVA_VERSION):
 	@echo "*** Creating java"
 	(cd $(CORE_DEST_DIR); tar xzf $(JAVA_SOURCE).tgz;)
 	rm -rf $@/jre/lsrc.zip
