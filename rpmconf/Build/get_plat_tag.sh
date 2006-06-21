@@ -30,6 +30,8 @@ if [ -f /etc/redhat-release ]; then
 	i=`uname -i`
 	if [ "x$i" = "xx86_64" ]; then
 		i="_64"
+	else 
+		i=""
 	fi
 
 	grep "Red Hat Enterprise Linux" /etc/redhat-release > /dev/null 2>&1
