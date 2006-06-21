@@ -8,4 +8,4 @@ AjaxTK-$(SOURCE_TAG)-src.tgz: $(PACKAGE_DIR)
 	(cd $(BUILD_ROOT)/..; tar czf $(PACKAGE_DIR)/AjaxTK-$(SOURCE_TAG)-src.tgz Ajax)
 
 zcs-$(SOURCE_TAG)-src.tgz: $(PACKAGE_DIR)
-	(cd $(BUILD_ROOT)/..; tar czf $(PACKAGE_DIR)/zcs-$(SOURCE_TAG)-src.tgz --exclude ZimbraBuild/$(ARCH) --exclude logs .)
+	(cd $(BUILD_ROOT)/..; tar czf $(PACKAGE_DIR)/zcs-$(SOURCE_TAG)-src.tgz --exclude ZimbraBuild/$(ARCH) --exclude logs --exclude ThirdParty --exclude ZimbraCluster --exclude ZimbraLicenses --exclude ZimbraMAPIInstaller --exclude ZimbraSync .)
