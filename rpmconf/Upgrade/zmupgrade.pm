@@ -741,7 +741,7 @@ sub upgrade313GA {
 sub upgrade314GA {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
 	Migrate::log("Updating from 3.1.4_GA");
-	my $a = <<EOF
+	my $a = <<EOF;
 # parse text/plain internally
 dn: cn=text/plain,cn=mime,cn=config,cn=zimbra
 changetype: add
