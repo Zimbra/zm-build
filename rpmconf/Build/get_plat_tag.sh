@@ -104,11 +104,8 @@ if [ -f /etc/release ]; then
 fi
 
 if [ -f /etc/distro-release ]; then
-       grep "rPath Linux release 1" /etc/distro-release > /dev/null 2>&1
-       if [ $? = 0 ]; then
-               echo "RPL1"
-               exit 0
-       fi
+        echo "RPL1"
+        exit 0
 fi
 
 p=`uname -p`
