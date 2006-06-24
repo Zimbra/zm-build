@@ -64,8 +64,6 @@ class ZimbraBuildRecipe(PackageRecipe):
                    '.*/libmysqlclient.so.14')
         # FIXME: some perl bits use CPAN::Config, but nothing provides it
         r.Requires(exceptDeps=('.*', 'perl:.*CPAN::Config'))
-        #  Ignore this file from some install shell script.
-        r.Requires(exceptDeps=('.*', '/do/not/execute/this/script/it/is/meant/to/be/sourced'))
         # turn of build requirement checks
         del r.EnforceSonameBuildRequirements
         del r.EnforcePerlBuildRequirements
@@ -73,8 +71,6 @@ class ZimbraBuildRecipe(PackageRecipe):
         del r.RemoveNonPackageFiles
         # set up libraries to be included in /etc/ld.so.conf
         r.SharedLibrary(subtrees='/opt/zimbra/%(lib)s')
-	# add PERL5LIB
-	r.Environment('PERL5LIB', '/opt/zimbra/zimbramon/lib:/opt/zimbra/zimbramon/lib/i386-linux-thread-multi')
 	# glob not supported until conary 1.0.15
         #r.SharedLibrary(subtrees='/opt/zimbra/cyrus-sasl.*/%(lib)s')
         r.SharedLibrary(subtrees='/opt/zimbra/cyrus-sasl-2.1.21.ZIMBRA/%(lib)s')

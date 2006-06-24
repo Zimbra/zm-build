@@ -1,6 +1,6 @@
 # Definitions for RPL1
 
-LOCAL=0
+LOCAL=1
 LABEL=zimbra.rpath.org@rpl:1
 
 PACKAGING_COMMAND := $(BUILD_ROOT)/rpmconf/Build/cvc-wrapper.sh
