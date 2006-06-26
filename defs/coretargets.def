@@ -178,6 +178,21 @@ pcre_SuSE10: ;
 
 pcre_RPL1: ;
 
+$(CORE_DEST_DIR)/jdk$(JAVA_VERSION_32):
+	@echo "*** Creating java (32 bit)"
+	(cd $(CORE_DEST_DIR); tar xzf $(JAVA_SOURCE_32).tgz;)
+	rm -rf $@/jre/lsrc.zip
+	rm -rf $@/demo
+	rm -rf $@/sample
+	rm -rf $@/jre/lib/audio/soundbank.gm
+	rm -rf $@/jre/bin/rmid
+	rm -rf $@/jre/bin/tnameserv
+	rm -rf $@/jre/bin/orbd
+	rm -rf $@/jre/bin/javaws
+	rm -rf $@/jre/lib/javaws
+	rm -rf $@/jre/lib/javaws.jar
+	rm -rf $@/jre/lib/i386/client/classes.jsa
+
 $(CORE_DEST_DIR)/jdk$(JAVA_VERSION):
 	@echo "*** Creating java"
 	(cd $(CORE_DEST_DIR); tar xzf $(JAVA_SOURCE).tgz;)

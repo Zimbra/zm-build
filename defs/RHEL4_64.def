@@ -12,60 +12,9 @@ include $(DEFS_DIR)/plat_common.def
 COMPAT_LIBSTDC := compat-libstdc++-33
 
 JAVA_FILE_32	:= $(JAVA_FILE)
-JAVA_VERSION_32	:= $(JAVA_VERSION)
-JAVA_SOURCE_32  := $(THIRD_PARTY)/$(JAVA_DIR)/RHEL4/$(JAVA_FILE_32)$(JAVA_VERSION_32)
+JAVA_VERSION_32	:= 1.5.0_06
+JAVA_SOURCE_32  := $(THIRD_PARTY)/$(JAVA_DIR)/$(JAVA_FILE_32)$(JAVA_VERSION_32)
 JAVA_VERSION	:= 1.5.0_07
 JAVA_SOURCE     := $(THIRD_PARTY)/$(JAVA_DIR)/x86_64/$(JAVA_FILE)$(JAVA_VERSION)
 JAVA_BINARY := /opt/zimbra/$(JAVA_FILE)$(JAVA_VERSION)/bin/java
-
-$(CORE_DEST_DIR)/jdk$(JAVA_VERSION):
-	@echo "*** Creating java"
-	(cd $(CORE_DEST_DIR); tar xzf $(JAVA_SOURCE_32).tgz;)
-	rm -rf $@/jre/lsrc.zip
-	rm -rf $@/demo
-	rm -rf $@/sample
-	rm -rf $@/jre/lib/audio/soundbank.gm
-	rm -rf $@/jre/bin/rmid
-	rm -rf $@/jre/bin/tnameserv
-	rm -rf $@/jre/bin/orbd
-	rm -rf $@/jre/bin/javaws
-	rm -rf $@/jre/lib/javaws
-	rm -rf $@/jre/lib/javaws.jar
-	rm -rf $@/jre/lib/i386/client/classes.jsa
-
-$(BUILD_ROOT)/zimbracore.spec:
-	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbracore.pre $(BUILD_ROOT)
-	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbracore.post $(BUILD_ROOT)
-	cat $(PACKAGE_CONF_DIR)/Spec/zimbracore.spec | \
-	sed -e 's/@@VERSION@@/$(VERSION_TAG)/' \
-	-e 's/@@RELEASE@@/$(RELEASE)/' \
-	-e 's/@@COMPAT_LIBSTDC@@/$(COMPAT_LIBSTDC)/' \
-	-e 's/^Copyright:/$(RPMCOPYRIGHTSTR):/' \
-	-e '/^%pre$$/ r zimbracore.pre' \
-	-e '/^%post$$/ r zimbracore.post' > $(BUILD_ROOT)/zimbracore.spec
-	rm -f zimbracore.pre
-	rm -f zimbracore.post
-	(cd $(CORE_DEST_ROOT); find opt -type f -o -type l -maxdepth 2 \
-		| sed -e 's|^|%attr(-, zimbra, zimbra) /|' >> \
-		$(BUILD_ROOT)/zimbracore.spec )
-	echo "%attr(755, root, root) /opt/zimbra/bin" >> \
-		$(BUILD_ROOT)/zimbracore.spec
-	echo "%attr(755, zimbra, zimbra) /opt/zimbra/doc" >> \
-		$(BUILD_ROOT)/zimbracore.spec
-	echo "%attr(755, root, root) /opt/zimbra/contrib" >> \
-		$(BUILD_ROOT)/zimbracore.spec
-	echo "%attr(755, root, root) /opt/zimbra/libexec" >> \
-		$(BUILD_ROOT)/zimbracore.spec
-	echo "%attr(-, zimbra, zimbra) /opt/zimbra/conf" >> \
-		$(BUILD_ROOT)/zimbracore.spec
-	echo "%attr(-, zimbra, zimbra) /opt/zimbra/db" >> \
-		$(BUILD_ROOT)/zimbracore.spec
-	echo "%attr(-, root, root) /opt/zimbra/jdk$(JAVA_VERSION_32)" >> \
-		$(BUILD_ROOT)/zimbracore.spec
-	echo "%attr(-, root, root) /opt/zimbra/jdk$(JAVA_VERSION)" >> \
-		$(BUILD_ROOT)/zimbracore.spec
-	echo "%attr(-, root, root) /opt/zimbra/lib" >> \
-		$(BUILD_ROOT)/zimbracore.spec
-	echo "%attr(-, zimbra, zimbra) /opt/zimbra/zimbramon" >> \
-		$(BUILD_ROOT)/zimbracore.spec
 
