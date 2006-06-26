@@ -69,7 +69,7 @@ $(BUILD_ROOT)/zimbramta.spec:
 	(cd $(MTA_DEST_ROOT); find opt -type f -o -type l -maxdepth 2 \
 		| sed -e 's|^|%attr(-, zimbra, zimbra) /|' >> \
 		$(BUILD_ROOT)/zimbramta.spec )
-	echo "%attr(-, zimbra, zimbra) /opt/zimbra/amavisd-new-2.3.3" >> \
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/amavisd-new-2.4.1" >> \
 		$(BUILD_ROOT)/zimbramta.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/dspam-3.6.2" >> \
 		$(BUILD_ROOT)/zimbramta.spec
