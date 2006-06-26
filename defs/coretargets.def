@@ -166,6 +166,8 @@ pcre_FC4: ;
 
 pcre_FC3: ;
 
+pcre_RHEL4_64: ;
+
 pcre_RHEL4: ;
 
 pcre_DEBIAN3.1: ;
