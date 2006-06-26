@@ -2480,7 +2480,7 @@ sub setupCrontab {
 		chomp $backupSchedule;
 	}
 	if ($platform =~ /SUSE/i) {
-		`cp -f "/var/spool/cron/tabs/zimbra /tmp/crontab.zimbra.orig"`;
+		`cp -f /var/spool/cron/tabs/zimbra /tmp/crontab.zimbra.orig`;
 	} else {
 		`crontab -u zimbra -l > /tmp/crontab.zimbra.orig`;
 	}
