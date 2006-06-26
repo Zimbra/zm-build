@@ -25,6 +25,9 @@ include $(DEFS_DIR)/destination.def
 # COMPONENTS
 
 include $(DEFS_DIR)/components.def
+ifeq ($(BUILD_PLATFORM), RHEL4_64)
+include $(DEFS_DIR)/RHEL4_64_components.def
+endif
 
 # PACKAGE TARGETS
 
