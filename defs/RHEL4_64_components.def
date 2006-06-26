@@ -1,0 +1,13 @@
+CORE_COMPONENTS	:= \
+	$(CORE_DEST_DIR) \
+	$(CORE_DEST_DIR)/db \
+	$(CORE_DEST_DIR)/lib \
+	$(CORE_DEST_DIR)/libexec \
+	$(CORE_DEST_DIR)/bin \
+	$(CORE_DEST_DIR)/contrib \
+	$(CORE_DEST_DIR)/zimbramon \
+	$(CORE_DEST_DIR)/$(JAVA_FILE)$(JAVA_VERSION) \
+	$(CORE_DEST_DIR)/$(JAVA_FILE_32)$(JAVA_VERSION_32) \
+	$(CORE_DEST_DIR)/conf \
+	$(CORE_DEST_DIR)/doc \
+	$(PLATFORM_CORE_COMPONENTS)
