@@ -178,9 +178,10 @@ pcre_SuSE10: ;
 
 pcre_RPL1: ;
 
-$(CORE_DEST_DIR)/jdk$(JAVA_VERSION_32):
+$(CORE_DEST_DIR)/jdk$(JAVA_VERSION_32)_i386:
 	@echo "*** Creating java (32 bit)"
 	(cd $(CORE_DEST_DIR); tar xzf $(JAVA_SOURCE_32).tgz;)
+	mv -f $(CORE_DEST_DIR)/jdk$(JAVA_VERSION_32) $(CORE_DEST_DIR)/jdk$(JAVA_VERSION_32)_i386
 	rm -rf $@/jre/lsrc.zip
 	rm -rf $@/demo
 	rm -rf $@/sample

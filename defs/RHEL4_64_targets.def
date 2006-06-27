@@ -25,7 +25,7 @@ $(BUILD_ROOT)/zimbracore.spec:
 		$(BUILD_ROOT)/zimbracore.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/db" >> \
 		$(BUILD_ROOT)/zimbracore.spec
-	echo "%attr(-, root, root) /opt/zimbra/jdk$(JAVA_VERSION_32)" >> \
+	echo "%attr(-, root, root) /opt/zimbra/jdk$(JAVA_VERSION_32)_i386" >> \
 		$(BUILD_ROOT)/zimbracore.spec
 	echo "%attr(-, root, root) /opt/zimbra/jdk$(JAVA_VERSION)" >> \
 		$(BUILD_ROOT)/zimbracore.spec
