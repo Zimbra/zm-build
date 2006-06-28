@@ -64,8 +64,6 @@ class ZimbraBuildRecipe(PackageRecipe):
                    '.*/libmysqlclient.so.14')
         # FIXME: some perl bits use CPAN::Config, but nothing provides it
         r.Requires(exceptDeps=('.*', 'perl:.*CPAN::Config'))
-        #  Ignore this file from some install shell script.
-        r.Requires(exceptDeps=('.*', '/do/not/execute/this/script/it/is/meant/to/be/sourced'))
         # turn of build requirement checks
         del r.EnforceSonameBuildRequirements
         del r.EnforcePerlBuildRequirements
