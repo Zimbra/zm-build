@@ -118,6 +118,8 @@ $(STORE_DEST_DIR)/$(TOMCAT_DIR)/conf: force
 		$(STORE_DEST_DIR)/$(TOMCAT_DIR)/conf/zimbra.web.xml.in
 	cp -f zimbraAdminConf/web.xml \
 		$(STORE_DEST_DIR)/$(TOMCAT_DIR)/conf/zimbraAdmin.web.xml.in
+	cp -f $(SERVICE_DIR)/conf/tomcat-5.5/web.xml \
+		$(STORE_DEST_DIR)/$(TOMCAT_DIR)/conf/web.xml
 
 $(STORE_DEST_DIR)/$(TOMCAT_DIR)/temp: force
 	mkdir -p $(STORE_DEST_DIR)/$(TOMCAT_DIR)/temp
