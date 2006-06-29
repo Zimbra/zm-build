@@ -49,6 +49,7 @@ rm -rf /opt/zimbra/tomcat
 ln -s /opt/zimbra/apache-tomcat-5.5.15 /opt/zimbra/tomcat
 mkdir -p /opt/zimbra/tomcat/logs
 chown zimbra:zimbra /opt/zimbra/tomcat/logs
+chown root:root /opt/zimbra/apache-tomcat-5.5.15
 
 egrep -v '^%zimbra.*tomcat' /etc/sudoers > /tmp/sudoers
 echo "%zimbra ALL=NOPASSWD:/opt/zimbra/libexec/zmtomcatmgr" >> /tmp/sudoers
