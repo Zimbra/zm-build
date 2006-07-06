@@ -39,6 +39,8 @@ $(BUILD_ROOT)/resources/zimbra-core:
 	chmod 755 $@/preupgrade
 	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-core.postupgrade $@/postupgrade
 	chmod 755 $@/postupgrade
+	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/InstallationCheck $@/InstallationCheck
+	chmod 755 $@/InstallationCheck
 
 core_pkg_spec_deb: $(CORE_DEST_ROOT)/DEBIAN/control
 

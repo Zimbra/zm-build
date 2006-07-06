@@ -4,7 +4,19 @@
 	<welcome file="Welcome.txt"></welcome>
 	<license file="License.txt"></license>
 	<conclusion file="Conclusion.txt"></conclusion>
-    <options allow-external-scripts="yes" customize="allow"></options>
+	<options allow-external-scripts="yes" customize="allow" rootVolumeOnly="true"></options>
+	<installation-check script="installationCheckZimbra()"></installation-check>
+    <script>
+function installationCheckZimbra() {
+	if (system.runOnce('InstallationCheck')) {
+		my.result.title = 'Installation error';
+		my.result.message = 'Installation setup failed';
+		my.result.type = 'Fatal';
+		return false;
+	}
+	return true;
+}
+</script>
     <script>
 function installationCheckRAM()
 {
@@ -65,12 +77,12 @@ function choiceIsADowngrade()
     <choice id="choice6" title="Logger" start_selected="true" start_enabled="true" start_visible="true">
         <pkg-ref id="com.zimbra.zcs.logger"></pkg-ref>
     </choice>
-    <pkg-ref id="com.zimbra.zcs.core" version="@@MAJOR@@.@@MINOR@@" installKBytes="@@CORESIZE@@" auth="Admin" onConclusion="None">file:./Contents/.Packages/zimbra-core.@@MAJOR@@.@@MINOR@@.@@MICRO@@_@@BUILDNUM@@.pkg</pkg-ref>
-    <pkg-ref id="com.zimbra.zcs.ldap" version="@@MAJOR@@.@@MINOR@@" installKBytes="@@LDAPSIZE@@" auth="Admin" onConclusion="None">file:./Contents/.Packages/zimbra-ldap.@@MAJOR@@.@@MINOR@@.@@MICRO@@_@@BUILDNUM@@.pkg</pkg-ref>
-    <pkg-ref id="com.zimbra.zcs.store" version="@@MAJOR@@.@@MINOR@@" installKBytes="@@STORESIZE@@" auth="Admin" onConclusion="None">file:./Contents/.Packages/zimbra-store.@@MAJOR@@.@@MINOR@@.@@MICRO@@_@@BUILDNUM@@.pkg</pkg-ref>
-    <pkg-ref id="com.zimbra.zcs.mta" version="@@MAJOR@@.@@MINOR@@" installKBytes="@@MTASIZE@@" auth="Admin" onConclusion="None">file:./Contents/.Packages/zimbra-mta.@@MAJOR@@.@@MINOR@@.@@MICRO@@_@@BUILDNUM@@.pkg</pkg-ref>
-    <pkg-ref id="com.zimbra.zcs.apache" version="@@MAJOR@@.@@MINOR@@" installKBytes="@@APACHESIZE@@" auth="Admin" onConclusion="None">file:./Contents/.Packages/zimbra-apache.@@MAJOR@@.@@MINOR@@.@@MICRO@@_@@BUILDNUM@@.pkg</pkg-ref>
-    <pkg-ref id="com.zimbra.zcs.spell" version="@@MAJOR@@.@@MINOR@@" installKBytes="@@SPELLSIZE@@" auth="Admin" onConclusion="None">file:./Contents/.Packages/zimbra-spell.@@MAJOR@@.@@MINOR@@.@@MICRO@@_@@BUILDNUM@@.pkg</pkg-ref>
-    <pkg-ref id="com.zimbra.zcs.snmp" version="@@MAJOR@@.@@MINOR@@" installKBytes="@@SNMPSIZE@@" auth="Admin" onConclusion="None">file:./Contents/.Packages/zimbra-snmp.@@MAJOR@@.@@MINOR@@.@@MICRO@@_@@BUILDNUM@@.pkg</pkg-ref>
-    <pkg-ref id="com.zimbra.zcs.logger" version="@@MAJOR@@.@@MINOR@@" installKBytes="@@LOGGERSIZE@@" auth="Admin" onConclusion="None">file:./Contents/.Packages/zimbra-logger.@@MAJOR@@.@@MINOR@@.@@MICRO@@_@@BUILDNUM@@.pkg</pkg-ref>
+    <pkg-ref id="com.zimbra.zcs.core" version="@@MAJOR@@.@@MINOR@@" installKBytes="@@CORESIZE@@" auth="Admin" onConclusion="None">file:./Contents/.Packages/zimbra-core.pkg</pkg-ref>
+    <pkg-ref id="com.zimbra.zcs.ldap" version="@@MAJOR@@.@@MINOR@@" installKBytes="@@LDAPSIZE@@" auth="Admin" onConclusion="None">file:./Contents/.Packages/zimbra-ldap.pkg</pkg-ref>
+    <pkg-ref id="com.zimbra.zcs.store" version="@@MAJOR@@.@@MINOR@@" installKBytes="@@STORESIZE@@" auth="Admin" onConclusion="None">file:./Contents/.Packages/zimbra-store.pkg</pkg-ref>
+    <pkg-ref id="com.zimbra.zcs.mta" version="@@MAJOR@@.@@MINOR@@" installKBytes="@@MTASIZE@@" auth="Admin" onConclusion="None">file:./Contents/.Packages/zimbra-mta.pkg</pkg-ref>
+    <pkg-ref id="com.zimbra.zcs.apache" version="@@MAJOR@@.@@MINOR@@" installKBytes="@@APACHESIZE@@" auth="Admin" onConclusion="None">file:./Contents/.Packages/zimbra-apache.pkg</pkg-ref>
+    <pkg-ref id="com.zimbra.zcs.spell" version="@@MAJOR@@.@@MINOR@@" installKBytes="@@SPELLSIZE@@" auth="Admin" onConclusion="None">file:./Contents/.Packages/zimbra-spell.pkg</pkg-ref>
+    <pkg-ref id="com.zimbra.zcs.snmp" version="@@MAJOR@@.@@MINOR@@" installKBytes="@@SNMPSIZE@@" auth="Admin" onConclusion="None">file:./Contents/.Packages/zimbra-snmp.pkg</pkg-ref>
+    <pkg-ref id="com.zimbra.zcs.logger" version="@@MAJOR@@.@@MINOR@@" installKBytes="@@LOGGERSIZE@@" auth="Admin" onConclusion="None">file:./Contents/.Packages/zimbra-logger.pkg</pkg-ref>
 </installer-gui-script>

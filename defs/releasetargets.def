@@ -18,6 +18,8 @@ $(ARCH)/zcs.mpkg/Contents/.Packages:
 
 $(ARCH)/zcs.mpkg/Contents/Resources: $(ARCH)/zcs.mpkg/Contents/Resources/English.lproj
 	mkdir -p $@
+	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/InstallationCheck $@/InstallationCheck
+	chmod 755 $@/InstallationCheck
 
 $(ARCH)/zcs.mpkg/Contents/Resources/English.lproj: 
 	mkdir -p $@
