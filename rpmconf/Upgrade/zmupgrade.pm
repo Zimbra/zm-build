@@ -220,6 +220,7 @@ sub upgrade {
 			`chown -R zimbra:zimbra /opt/zimbra/openldap-data`;
 			`su - zimbra -c "/opt/zimbra/openldap/sbin/slapadd -f /opt/zimbra/conf/slapd.conf -l /opt/zimbra/openldap-data.prev/ldap.bak"`;
 		}
+		`su - zimbra -c "/opt/zimbra/openldap/sbin/slapindex -f /opt/zimbra/conf/slapd.conf"`;
 		if (startLdap()) {return 1;} 
 	}
 
