@@ -49,6 +49,7 @@ fi
 if [ ! -d /opt/zimbra/mysql-standard-4.1.16-apple-darwin8.2.0-$ARCH ]; then
 	mkdir -p /opt/zimbra/mysql-standard-4.1.16-apple-darwin8.2.0-$ARCH
 	ln -s /opt/zimbra/lib /opt/zimbra/mysql-standard-4.1.16-apple-darwin8.2.0-$ARCH/lib
+	ln -s /opt/zimbra/mysql-standard-4.1.16-apple-darwin8.2.0-$ARCH/lib /opt/zimbra/mysql-standard-4.1.16-apple-darwin8.2.0-$ARCH/lib/mysql
 fi
 
 /bin/sh /opt/zimbra/libexec/zmfixperms
