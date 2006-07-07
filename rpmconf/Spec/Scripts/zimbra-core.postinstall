@@ -30,7 +30,19 @@
 mkdir -p /opt/zimbra/backup
 chown zimbra:zimbra /opt/zimbra/backup 
 
-PKG=`echo ${RECEIPT_PATH} | sed -e 's|.*/\(zimbra-core.[^/]*pkg\)/.*|\1|' | sed -e 's/\./-/'`
+# Get the package version from the receipt, because, you know, putting it in an environment variable spoils the fun...
+
+VER="FOO"
+getPkgVersion() {
+	VER=`grep -C1 CFBundleGetInfoString ${PACKAGE_PATH}/Contents/Info.plist  | \
+		tail -1 | \
+		sed -e 's/\<[^>]*\>//g' -e 's/^	*//g' | awk -F, '{print $1}'`
+
+}
+
+getPkgVersion
+PKG="zimbra-core-${VER}.pkg"
+
 D=`date +%s`
 echo "${D}: INSTALLED ${PKG}" >> /opt/zimbra/.install_history
 

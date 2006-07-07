@@ -315,21 +315,30 @@ sub getSystemStatus {
 	}
 }
 
+sub getLdapServerValue {
+	my $attrib = shift;
+	my $hn = shift;
+	if ($hn eq "") {
+		$hn = $config{HOSTNAME};
+	}
+
+	# Gotta love the triple escape: \\\  
+	my $rc = 0xffff & system("su - zimbra -c \"zmprov gs $hn | grep $attrib | sed -e \\\"s/${attrib}: //\\\" > /tmp/ld.out\"");
+	my $val=`cat /tmp/ld.out`;
+	unlink "/tmp/ld.out";
+	chomp $val;
+
+	return $val;
+}
+
 sub setLdapDefaults {
 	progress ( "Setting defaults from ldap..." );
 
-	my $rc = 0xffff & system("su - zimbra -c \"zmprov gs $config{HOSTNAME} | grep zimbraMailSSLPort | sed -e 's/zimbraMailSSLPort: //' > /tmp/ld.out\"");
-	my $sslport=`cat /tmp/ld.out`;
+	my $sslport=getLdapServerValue("zimbraMailSSLPort");
 
-	$rc = 0xffff & system("su - zimbra -c \"zmprov gs $config{HOSTNAME} | grep zimbraMailPort | sed -e 's/zimbraMailPort: //' > /tmp/ld.out\"");
-	my $mailport=`cat /tmp/ld.out`;
+	my $mailport=getLdapServerValue("zimbraMailPort");
 
-	$rc = 0xffff & system("su - zimbra -c \"zmprov gs $config{HOSTNAME} | grep zimbraMailMode | sed -e 's/zimbraMailMode: //' > /tmp/ld.out\"");
-	my $mailmode=`cat /tmp/ld.out`;
-
-	chomp $sslport;
-	chomp $mailport;
-	chomp $mailmode;
+	my $mailmode=getLdapServerValue("zimbraMailMode");
 
 	$config{HTTPPORT} = $mailport;
 	$config{HTTPSPORT} = $sslport;
@@ -338,23 +347,37 @@ sub setLdapDefaults {
 	if ($config{HTTPSPORT} eq 0) { $config{HTTPSPORT} = 443; }
 	if ($config{MODE} eq "") { $config{MODE} = "mixed"; }
 
-	$rc = 0xffff & system("su - zimbra -c \"zmprov gs $config{HOSTNAME} | grep zimbraSmtpHostname | sed -e 's/zimbraSmtpHostname: //' > /tmp/ld.out\"");
+	my $rc = 0xffff & system("su - zimbra -c \"zmprov gs $config{HOSTNAME} | grep 'zimbraServiceEnabled: imapproxy' | sed -e 's/zimbraServiceEnabled: //' > /tmp/ld.out\"");
+	$config{USEIMAPPROXY}=`cat /tmp/ld.out`;
 
-	my $smtphost=`cat /tmp/ld.out`;
-	chomp $smtphost;
+	chomp $config{USEIMAPPROXY};
+	if ($config{USEIMAPPROXY} eq "imapproxy") {
+		$config{USEIMAPPROXY} = "yes";
+	} else {
+		$config{USEIMAPPROXY} = "no";
+	}
+
+	$config{IMAPPORT} 			= getLdapServerValue("zimbraImapBindPort");
+	$config{IMAPSSLPORT} 		= getLdapServerValue("zimbraImapSSLBindPort");
+	$config{POPPORT} 			= getLdapServerValue("zimbraPop3BindPort");
+	$config{POPSSLPORT} 		= getLdapServerValue("zimbraPop3SSLBindPort");
+	$config{HTTPPORT} 			= getLdapServerValue("zimbraMailPort");
+	$config{HTTPSPORT} 			= getLdapServerValue("zimbraMailSSLPort");
+	$config{IMAPPROXYPORT} 		= getLdapServerValue("zimbraImapProxyBindPort");
+	$config{IMAPSSLPROXYPORT} 	= getLdapServerValue("zimbraImapSSLProxyBindPort");
+	$config{POPPROXYPORT} 		= getLdapServerValue("zimbraPop3ProxyBindPort");
+	$config{POPSSLPROXYPORT} 	= getLdapServerValue("zimbraPop3SSLProxyBindPort");
+
+	my $smtphost=getLdapServerValue("zimbraSmtpHostname");
 	if ( $smtphost ne "") {
 		$config{SMTPHOST} = $smtphost;
 	}
 
-	$rc = 0xffff & system("su - zimbra -c \"zmprov gs $config{HOSTNAME} | grep zimbraMtaAuthHost | sed -e 's/zimbraMtaAuthHost: //' > /tmp/ld.out\"");
-
-	my $mtaauthhost=`cat /tmp/ld.out`;
-	chomp $mtaauthhost;
+	my $mtaauthhost=getLdapServerValue("zimbraMtaAuthHost");
 	if ( $mtaauthhost ne "") {
 		$config{MTAAUTHHOST} = $mtaauthhost;
 	}
 
-	unlink "/tmp/ld.out";
 	progress ( "Done\n" );
 }
 

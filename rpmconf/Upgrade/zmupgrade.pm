@@ -76,6 +76,7 @@ my %updateFuncs = (
 	"3.1.1_GA" => \&upgrade311GA,
 	"3.1.2_GA" => \&upgrade312GA,
 	"3.1.3_GA" => \&upgrade313GA,
+	"3.1.4_GA" => \&upgrade314GA,
 	"3.2.0_M1" => \&upgrade32M1,
 	"3.5.0_M1" => \&upgrade35M1,  #Hack for missed version change
 );
@@ -91,6 +92,7 @@ my @versionOrder = (
 	"3.1.1_GA", 
 	"3.1.2_GA", 
 	"3.1.3_GA", 
+	"3.1.4_GA", 
 	"3.2.0_M1",
 	"3.5.0_M1"  #Hack for missed version change
 );
@@ -166,9 +168,11 @@ sub upgrade {
 	} elsif ($startVersion eq "3.1.1_GA") {
 		print "This appears to be 3.1.1_GA\n";
 	} elsif ($startVersion eq "3.1.2_GA") {
-		print "This appears to be 3.1.2_GA";
+		print "This appears to be 3.1.2_GA\n";
 	} elsif ($startVersion eq "3.1.3_GA") {
-		print "This appears to be 3.1.3_GA";
+		print "This appears to be 3.1.3_GA\n";
+	} elsif ($startVersion eq "3.1.4_GA") {
+		print "This appears to be 3.1.4_GA\n";
 	} elsif ($startVersion eq "3.2.0_M1") {
 		print "This appears to be 3.2.0_M1\n";
 	} elsif ($startVersion eq "3.5.0_M1") {
@@ -707,6 +711,12 @@ sub upgrade313GA {
 	return 0;
 }
 
+sub upgrade314GA {
+	my ($startBuild, $targetVersion, $targetBuild) = (@_);
+	Migrate::log("Updating from 3.1.4_GA");
+	return 0;
+}
+
 sub upgrade32M1 {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
 	Migrate::log("Updating from 3.2.0_M1");
@@ -796,6 +806,15 @@ sub upgrade32M1 {
 	}
 		#`su - zimbra -c "/opt/zimbra/bin/zmprov mcf zimbraFeatureNotebookEnabled TRUE"`;
 	`su - zimbra -c "/opt/zimbra/bin/zmprov in -p zimbra -f /opt/zimbra/wiki -t Template"`;
+
+	if ( -d "/opt/zimbra/amavisd-new-2.3.3/db" && -d "/opt/zimbra/amavisd-new-2.4.1" && ! -d "/opt/zimbra/amavisd-new-2.4.1/db" ) {
+		`mv /opt/zimbra/amavisd-new-2.3.3/db /opt/zimbra/amavisd-new-2.4.1/db`;
+		`chown -R zimbra:zimbra /opt/zimbra/amavisd-new-2.4.1/db`;
+	}
+	if ( -d "/opt/zimbra/amavisd-new-2.3.3/.spamassassin" && -d "/opt/zimbra/amavisd-new-2.4.1" && ! -d "/opt/zimbra/amavisd-new-2.4.1/.spamassassin" ) {
+		`mv /opt/zimbra/amavisd-new-2.3.3/.spamassassin /opt/zimbra/amavisd-new-2.4.1/.spamassassin`;
+		`chown -R zimbra:zimbra /opt/zimbra/amavisd-new-2.4.1/.spamassassin`;
+	}
 
 	return 0;
 }
