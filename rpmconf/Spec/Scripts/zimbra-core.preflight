@@ -119,6 +119,19 @@ if [ -f "/opt/zimbra/bin/zmcontrol" ]; then
 	su - zimbra -c "/opt/zimbra/bin/zmcontrol stop" > /dev/null 2>&1
 fi
 
+rm -f /opt/zimbra/.enable_replica
+if [ -f /opt/zimbra/conf/slapd.conf ]; then
+	egrep -q '^overlay syncprov' /opt/zimbra/conf/slapd.conf > /dev/null
+	if [ $? = 0 ]; then
+		touch /opt/zimbra/.enable_replica
+	else
+		egrep -q 'type=refreshAndPersist' /opt/zimbra/conf/slapd.conf > /dev/null
+		if [ $? = 0 ]; then
+			touch /opt/zimbra/.enable_replica
+		fi
+	fi
+fi  
+
 D=`date +%s`
 echo "${D}: INSTALL SESSION START" >> /opt/zimbra/.install_history
 

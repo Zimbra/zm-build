@@ -599,6 +599,20 @@ saveExistingConfig() {
 	if [ -x /opt/zimbra/bin/zmschedulebackup ]; then
 		runAsZimbra "zmschedulebackup -s > $SAVEDIR/backup.save"
 	fi
+
+	rm -f /opt/zimbra/.enable_replica
+	if [ -f /opt/zimbra/conf/slapd.conf ]; then
+		egrep -q '^overlay syncprov' /opt/zimbra/conf/slapd.conf > /dev/null
+		if [ $? = 0 ]; then
+			touch /opt/zimbra/.enable_replica
+		else
+			egrep -q 'type=refreshAndPersist' /opt/zimbra/conf/slapd.conf > /dev/null
+			if [ $? = 0 ]; then
+				touch /opt/zimbra/.enable_replica
+			fi
+		fi
+	fi
+
 }
 
 removeExistingInstall() {
