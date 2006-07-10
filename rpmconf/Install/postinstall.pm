@@ -29,7 +29,7 @@ package postinstall;
 sub configure {
 
 	if (main::isEnabled("zimbra-ldap")) {
-		main::runAsZimbra ("zmprov mcf zimbraComponentAvailable ''");
+		main::runAsZimbra ("${main::ZMPROV} mcf zimbraComponentAvailable ''");
 		main::runAsZimbra ("zmlocalconfig -u trial_expiration_date");
 	}
 

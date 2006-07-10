@@ -44,6 +44,8 @@ select ($ol);
 
 print "Operations logged to $logfile\n";
 
+our $ZMPROV = "/opt/zimbra/bin/zmprov -l";
+
 if ($platform =~ /MACOSX/) {
 	progress ("Checking java version...");
 	my $rc = 0xffff & system("su - zimbra -c \"java -version 2>&1 | grep 'java version' | grep -q 1.5\"");
@@ -323,7 +325,7 @@ sub getLdapServerValue {
 	}
 
 	# Gotta love the triple escape: \\\  
-	my $rc = 0xffff & system("su - zimbra -c \"zmprov gs $hn | grep $attrib | sed -e \\\"s/${attrib}: //\\\" > /tmp/ld.out\"");
+	my $rc = 0xffff & system("su - zimbra -c \"$ZMPROV gs $hn | grep $attrib | sed -e \\\"s/${attrib}: //\\\" > /tmp/ld.out\"");
 	my $val=`cat /tmp/ld.out`;
 	unlink "/tmp/ld.out";
 	chomp $val;
@@ -347,7 +349,7 @@ sub setLdapDefaults {
 	if ($config{HTTPSPORT} eq 0) { $config{HTTPSPORT} = 443; }
 	if ($config{MODE} eq "") { $config{MODE} = "mixed"; }
 
-	my $rc = 0xffff & system("su - zimbra -c \"zmprov gs $config{HOSTNAME} | grep 'zimbraServiceEnabled: imapproxy' | sed -e 's/zimbraServiceEnabled: //' > /tmp/ld.out\"");
+	my $rc = 0xffff & system("su - zimbra -c \"$ZMPROV gs $config{HOSTNAME} | grep 'zimbraServiceEnabled: imapproxy' | sed -e 's/zimbraServiceEnabled: //' > /tmp/ld.out\"");
 	$config{USEIMAPPROXY}=`cat /tmp/ld.out`;
 
 	chomp $config{USEIMAPPROXY};
@@ -1862,7 +1864,7 @@ sub verifyLdap {
 
 sub runAsZimbra {
 	my $cmd = shift;
-	if ($cmd =~ /init/ || $cmd =~ /zmprov ca/) {
+	if ($cmd =~ /init/ || $cmd =~ /zmprov -l ca/) {
 		# Suppress passwords in log file
 		my $c = (split ' ', $cmd)[0];
 		detail ( "*** Running as zimbra user: $c\n" );
@@ -2008,8 +2010,8 @@ sub configSaveCA {
 		chomp $cert;
 		chomp $key;
 
-		runAsZimbra("/opt/zimbra/bin/zmprov mcf zimbraCertAuthorityCertSelfSigned \\\"$cert\\\"");
-		runAsZimbra("/opt/zimbra/bin/zmprov mcf zimbraCertAuthorityKeySelfSigned \\\"$key\\\"");
+		runAsZimbra("$ZMPROV mcf zimbraCertAuthorityCertSelfSigned \\\"$cert\\\"");
+		runAsZimbra("$ZMPROV mcf zimbraCertAuthorityKeySelfSigned \\\"$key\\\"");
 
 		progress ( "Done\n" );
 	} else {
@@ -2022,9 +2024,9 @@ sub configSaveCA {
 		# Don't use runAsZimbra since it swallows output
 		my $rc;
 
-		$rc = 0xffff & system('su - zimbra -c "zmprov gacf | sed -ne \'/-----BEGIN RSA PRIVATE KEY-----/,/-----END RSA PRIVATE KEY-----/ p\'| sed  -e \'s/^zimbraCertAuthorityKeySelfSigned: //\' > /opt/zimbra/ssl/ssl/ca/ca.key"');
+		$rc = 0xffff & system('su - zimbra -c "$ZMPROV gacf | sed -ne \'/-----BEGIN RSA PRIVATE KEY-----/,/-----END RSA PRIVATE KEY-----/ p\'| sed  -e \'s/^zimbraCertAuthorityKeySelfSigned: //\' > /opt/zimbra/ssl/ssl/ca/ca.key"');
 
-		$rc = 0xffff & system('su - zimbra -c "zmprov gacf | sed -ne \'/-----BEGIN TRUSTED CERTIFICATE-----/,/-----END TRUSTED CERTIFICATE-----/ p\'| sed  -e \'s/^zimbraCertAuthorityCertSelfSigned: //\' > /opt/zimbra/ssl/ssl/ca/ca.pem"');
+		$rc = 0xffff & system('su - zimbra -c "$ZMPROV gacf | sed -ne \'/-----BEGIN TRUSTED CERTIFICATE-----/,/-----END TRUSTED CERTIFICATE-----/ p\'| sed  -e \'s/^zimbraCertAuthorityCertSelfSigned: //\' > /opt/zimbra/ssl/ssl/ca/ca.pem"');
 
 		progress ( "Done\n" );
 	}
@@ -2092,7 +2094,7 @@ sub configCreateServerEntry {
 	}
 
 	progress ( "Creating server entry for $config{HOSTNAME}..." );
-	runAsZimbra("/opt/zimbra/bin/zmprov cs $config{HOSTNAME}");
+	runAsZimbra("$ZMPROV cs $config{HOSTNAME}");
 	progress ( "Done\n" );
 	configLog("configCreateServerEntry");
 }
@@ -2106,7 +2108,7 @@ sub configSpellServer {
 
 	if ($config{USESPELL} eq "yes") {
 		progress ( "Setting spell check URL..." );
-		runAsZimbra("/opt/zimbra/bin/zmprov ms $config{HOSTNAME} ".
+		runAsZimbra("$ZMPROV ms $config{HOSTNAME} ".
 			"zimbraSpellCheckURL $config{SPELLURL}");
 		progress ( "Done\n" );
 	}
@@ -2127,7 +2129,7 @@ sub configSetMtaAuthHost {
 		progress ( "to fail.\n");
 		progress ( "To correct this - after installing a mailstore server, reset the zimbraMtaAuthHost\n");
 		progress ( "attribute for this server:\n");
-		progress ( "/opt/zimbra/bin/zmprov ms $config{HOSTNAME} zimbraMtaAuthHost $config{MTAAUTHHOST}\n\n");
+		progress ( "$ZMPROV ms $config{HOSTNAME} zimbraMtaAuthHost $config{MTAAUTHHOST}\n\n");
 		progress ( "\nOnce done, start the MTA:\n");
 		progress ( "zmmtactl start\n\n");
 		if (!$options{c}) {
@@ -2136,7 +2138,7 @@ sub configSetMtaAuthHost {
 	}
 	if ($config{MTAAUTHHOST} ne "") {
 		progress ( "Setting MTA auth host..." );
-		runAsZimbra("/opt/zimbra/bin/zmprov ms $config{HOSTNAME} ".
+		runAsZimbra("$ZMPROV ms $config{HOSTNAME} ".
 			"zimbraMtaAuthHost $config{MTAAUTHHOST}");
 		progress ( "Done\n" );
 	}
@@ -2152,13 +2154,13 @@ sub configSetServicePorts {
 	}
 
 	progress ( "Setting service ports on $config{HOSTNAME}..." );
-	runAsZimbra("/opt/zimbra/bin/zmprov ms $config{HOSTNAME} ".
+	runAsZimbra("$ZMPROV ms $config{HOSTNAME} ".
 		"zimbraImapBindPort $config{IMAPPORT} zimbraImapSSLBindPort $config{IMAPSSLPORT} ".
 		"zimbraPop3BindPort $config{POPPORT} zimbraPop3SSLBindPort $config{POPSSLPORT} ");
-	runAsZimbra("/opt/zimbra/bin/zmprov ms $config{HOSTNAME} ".
+	runAsZimbra("$ZMPROV ms $config{HOSTNAME} ".
 		"zimbraImapProxyBindPort $config{IMAPPROXYPORT} zimbraImapSSLProxyBindPort $config{IMAPSSLPROXYPORT} ".
 		"zimbraPop3ProxyBindPort $config{POPPROXYPORT} zimbraPop3SSLProxyBindPort $config{POPSSLPROXYPORT} ");
-	runAsZimbra("/opt/zimbra/bin/zmprov ms $config{HOSTNAME} ".
+	runAsZimbra("$ZMPROV ms $config{HOSTNAME} ".
 		"zimbraMailPort $config{HTTPPORT} zimbraMailSSLPort $config{HTTPSPORT} ".
 		"zimbraMailMode $config{MODE}");
 
@@ -2212,8 +2214,8 @@ sub configCreateDomain {
 	if (!$ldapConfigured && isEnabled("zimbra-ldap")) {
 		if ($config{DOCREATEDOMAIN} eq "yes") {
 			progress ( "Creating domain $config{CREATEDOMAIN}..." );
-			runAsZimbra("/opt/zimbra/bin/zmprov cd $config{CREATEDOMAIN}");
-			runAsZimbra("/opt/zimbra/bin/zmprov mcf zimbraDefaultDomainName $config{CREATEDOMAIN}");
+			runAsZimbra("$ZMPROV cd $config{CREATEDOMAIN}");
+			runAsZimbra("$ZMPROV mcf zimbraDefaultDomainName $config{CREATEDOMAIN}");
 			progress ( "Done\n" );
 
 		}
@@ -2222,32 +2224,32 @@ sub configCreateDomain {
 		if ($config{DOCREATEADMIN} eq "yes") {
 			progress ( "Creating user $config{CREATEADMIN}..." );
 			my ($u,$d) = split ('@', $config{CREATEADMIN});
-			runAsZimbra("/opt/zimbra/bin/zmprov cd $d");
-			runAsZimbra("/opt/zimbra/bin/zmprov ca ".
+			runAsZimbra("$ZMPROV cd $d");
+			runAsZimbra("$ZMPROV ca ".
 				"$config{CREATEADMIN} \'$config{CREATEADMINPASS}\' ".
 				"zimbraIsAdminAccount TRUE");
 			progress ( "Done\n" );
 			progress ( "Creating postmaster alias..." );
-			runAsZimbra("/opt/zimbra/bin/zmprov aaa ".
+			runAsZimbra("$ZMPROV aaa ".
 				"$config{CREATEADMIN} root\@$config{CREATEDOMAIN}");
-			runAsZimbra("/opt/zimbra/bin/zmprov aaa ".
+			runAsZimbra("$ZMPROV aaa ".
 				"$config{CREATEADMIN} postmaster\@$config{CREATEDOMAIN}");
-			runAsZimbra("/opt/zimbra/bin/zmprov ca ".
+			runAsZimbra("$ZMPROV ca ".
 				"$config{NOTEBOOKACCOUNT} \'$config{NOTEBOOKPASS}\' ".
 				"amavisBypassSpamChecks TRUE ".
 				"zimbraAttachmentsIndexingEnabled FALSE ".
 				"zimbraHideInGal TRUE ".
 				"zimbraMailQuota 0 ".
 				"description \'Global notebook account\'");
-			runAsZimbra("/opt/zimbra/bin/zmprov mcf zimbraNotebookAccount $config{NOTEBOOKACCOUNT}");
-			runAsZimbra("/opt/zimbra/bin/zmprov mcf zimbraFeatureNotebookEnabled TRUE");
-			runAsZimbra("/opt/zimbra/bin/zmprov in -p zimbra -f /opt/zimbra/wiki -t Template");
+			runAsZimbra("$ZMPROV mcf zimbraNotebookAccount $config{NOTEBOOKACCOUNT}");
+			runAsZimbra("$ZMPROV mcf zimbraFeatureNotebookEnabled TRUE");
+			runAsZimbra("$ZMPROV in -p zimbra -f /opt/zimbra/wiki -t Template");
 			progress ( "Done\n" );
 		}
 		if ($config{DOTRAINSA} eq "yes") {
 			progress ( "Creating user $config{TRAINSASPAM}..." );
 			my $pass = genRandomPass();
-			runAsZimbra("/opt/zimbra/bin/zmprov ca ".
+			runAsZimbra("$ZMPROV ca ".
 				"$config{TRAINSASPAM} \'$pass\' ".
 				"amavisBypassSpamChecks TRUE ".
 				"zimbraAttachmentsIndexingEnabled FALSE ".
@@ -2256,7 +2258,7 @@ sub configCreateDomain {
 				"description \'Spam training account\'");
 			progress ( "Done\n" );
 			progress ( "Creating user $config{TRAINSAHAM}..." );
-				runAsZimbra("/opt/zimbra/bin/zmprov ca ".
+				runAsZimbra("$ZMPROV ca ".
 				"$config{TRAINSAHAM} \'$pass\' ".
 				"amavisBypassSpamChecks TRUE ".
 				"zimbraAttachmentsIndexingEnabled FALSE ".
@@ -2265,7 +2267,7 @@ sub configCreateDomain {
 				"description \'Spam training account\'");
 			progress ( "Done\n" );
 			progress ( "Setting spam training accounts..." );
-			runAsZimbra("/opt/zimbra/bin/zmprov mcf ".
+			runAsZimbra("$ZMPROV mcf ".
 				"zimbraSpamIsSpamAccount $config{TRAINSASPAM} ".
 				"zimbraSpamIsNotSpamAccount $config{TRAINSAHAM}");
 			progress ( "Done\n" );
@@ -2286,7 +2288,7 @@ sub configInitSql {
 		runAsZimbra ("/opt/zimbra/libexec/zmmyinit");
 		progress ( "Done\n" );
 		progress ( "Setting zimbraSmtpHostname for $config{HOSTNAME}..." );
-		runAsZimbra("/opt/zimbra/bin/zmprov ms $config{HOSTNAME} ".
+		runAsZimbra("$ZMPROV ms $config{HOSTNAME} ".
 			"zimbraSmtpHostname $config{SMTPHOST}");
 		progress ( "Done\n" );
 	}
@@ -2307,7 +2309,7 @@ sub configInitLogger {
 	} 
 
 	if (isEnabled("zimbra-logger")) {
-		runAsZimbra ("/opt/zimbra/bin/zmprov mcf zimbraLogHostname $config{HOSTNAME}");
+		runAsZimbra ("$ZMPROV mcf zimbraLogHostname $config{HOSTNAME}");
 	}
 	configLog("configInitLogger");
 }
@@ -2384,8 +2386,8 @@ sub configSetEnabledServices {
 	}
 
 	progress ( "Setting services on $config{HOSTNAME}..." );
-	runAsZimbra ("/opt/zimbra/bin/zmprov ms $config{HOSTNAME} $installedServiceStr");
-	runAsZimbra ("/opt/zimbra/bin/zmprov ms $config{HOSTNAME} $enabledServiceStr");
+	runAsZimbra ("$ZMPROV ms $config{HOSTNAME} $installedServiceStr");
+	runAsZimbra ("$ZMPROV ms $config{HOSTNAME} $enabledServiceStr");
 	progress ( "Done\n" );
 
 	configLog("configSetEnabledServices");
@@ -2580,10 +2582,10 @@ sub setupCrontab {
 
 sub addServerToHostPool {
 	progress ( "Adding $config{HOSTNAME} to zimbraMailHostPool in default COS..." );
-	my $id = `/opt/zimbra/bin/zmprov gs $config{HOSTNAME} | grep zimbraId | sed -e 's/zimbraId: //'`;
+	my $id = `$ZMPROV gs $config{HOSTNAME} | grep zimbraId | sed -e 's/zimbraId: //'`;
 	chomp $id;
 
-	my $hp = `/opt/zimbra/bin/zmprov gc default | grep zimbraMailHostPool | sed 's/zimbraMailHostPool: //'`;
+	my $hp = `$ZMPROV gc default | grep zimbraMailHostPool | sed 's/zimbraMailHostPool: //'`;
 	chomp $hp;
 
 	my @HP = split (' ', $hp);
@@ -2597,7 +2599,7 @@ sub addServerToHostPool {
 
 	$n .= "zimbraMailHostPool $id";
 
-	`/opt/zimbra/bin/zmprov mc default $n >> $logfile 2>&1`;
+	`$ZMPROV mc default $n >> $logfile 2>&1`;
 	progress ( "Done\n" );
 }
 

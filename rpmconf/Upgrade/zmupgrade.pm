@@ -47,6 +47,8 @@ my $hiLoggerVersion = 5;
 my $hn = `su - zimbra -c "zmlocalconfig -m nokey zimbra_server_hostname"`;
 chomp $hn;
 
+my $ZMPROV = "/opt/zimbra/bin/zmprov -l";
+
 my %updateScripts = (
 	'UniqueVolume' => "migrate20051021-UniqueVolume.pl",
 	'18' => "migrate20050916-Volume.pl",
@@ -311,224 +313,224 @@ sub upgradeBM3 {
 	# $startBuild -> $targetBuild
 	if ($startVersion eq "3.0.0_M2" || $startVersion eq "3.0.M1" || $startBuild <= 346) {
 		# Set mode and authhost
-		`su - zimbra -c "/opt/zimbra/bin/zmprov ms $hn zimbraMailMode http"`;
-		`su - zimbra -c "/opt/zimbra/bin/zmprov ms $hn zimbraMtaAuthHost $hn"`;
+		`su - zimbra -c "$ZMPROV ms $hn zimbraMailMode http"`;
+		`su - zimbra -c "$ZMPROV ms $hn zimbraMtaAuthHost $hn"`;
 	}
 	if (($startVersion eq "3.0.0_M2" || $startVersion eq "3.0.M1" || $startBuild <= 427) &&
 		isInstalled ("zimbra-ldap")) {
 
 		Migrate::log ("Updating ldap GAL attributes");
-		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraGalLdapAttrMap zimbraId=zimbraId +zimbraGalLdapAttrMap objectClass=objectClass +zimbraGalLdapAttrMap zimbraMailForwardingAddress=zimbraMailForwardingAddress"`;
+		`su - zimbra -c "$ZMPROV mcf +zimbraGalLdapAttrMap zimbraId=zimbraId +zimbraGalLdapAttrMap objectClass=objectClass +zimbraGalLdapAttrMap zimbraMailForwardingAddress=zimbraMailForwardingAddress"`;
 
 		Migrate::log ("Updating ldap CLIENT attributes");
-		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraAccountClientAttr zimbraIsDomainAdminAccount +zimbraAccountClientAttr zimbraFeatureIMEnabled"`;
-		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraCOSInheritedAttr zimbraFeatureIMEnabled"`;
+		`su - zimbra -c "$ZMPROV mcf +zimbraAccountClientAttr zimbraIsDomainAdminAccount +zimbraAccountClientAttr zimbraFeatureIMEnabled"`;
+		`su - zimbra -c "$ZMPROV mcf +zimbraCOSInheritedAttr zimbraFeatureIMEnabled"`;
 		Migrate::log ("Updating ldap domain admin attributes");
-		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr zimbraAccountStatus"`;
+		`su - zimbra -c "$ZMPROV mcf +zimbraDomainAdminModifiableAttr zimbraAccountStatus"`;
 		print ".";
-		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr company"`;
+		`su - zimbra -c "$ZMPROV mcf +zimbraDomainAdminModifiableAttr company"`;
 		print ".";
-		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr cn"`;
+		`su - zimbra -c "$ZMPROV mcf +zimbraDomainAdminModifiableAttr cn"`;
 		print ".";
-		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr co"`;
+		`su - zimbra -c "$ZMPROV mcf +zimbraDomainAdminModifiableAttr co"`;
 		print ".";
-		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr displayName"`;
+		`su - zimbra -c "$ZMPROV mcf +zimbraDomainAdminModifiableAttr displayName"`;
 		print ".";
-		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr gn"`;
+		`su - zimbra -c "$ZMPROV mcf +zimbraDomainAdminModifiableAttr gn"`;
 		print ".";
-		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr description"`;
+		`su - zimbra -c "$ZMPROV mcf +zimbraDomainAdminModifiableAttr description"`;
 		print ".";
-		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr initials"`;
+		`su - zimbra -c "$ZMPROV mcf +zimbraDomainAdminModifiableAttr initials"`;
 		print ".";
-		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr l"`;
+		`su - zimbra -c "$ZMPROV mcf +zimbraDomainAdminModifiableAttr l"`;
 		print ".";
-		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr zimbraAttachmentsBlocked"`;
+		`su - zimbra -c "$ZMPROV mcf +zimbraDomainAdminModifiableAttr zimbraAttachmentsBlocked"`;
 		print ".";
-		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr zimbraAttachmentsIndexingEnabled"`;
+		`su - zimbra -c "$ZMPROV mcf +zimbraDomainAdminModifiableAttr zimbraAttachmentsIndexingEnabled"`;
 		print ".";
-		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr zimbraAttachmentsViewInHtmlOnly"`;
+		`su - zimbra -c "$ZMPROV mcf +zimbraDomainAdminModifiableAttr zimbraAttachmentsViewInHtmlOnly"`;
 		print ".";
-		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr zimbraAuthTokenLifetime"`;
+		`su - zimbra -c "$ZMPROV mcf +zimbraDomainAdminModifiableAttr zimbraAuthTokenLifetime"`;
 		print ".";
-		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr zimbraAuthLdapExternalDn"`;
+		`su - zimbra -c "$ZMPROV mcf +zimbraDomainAdminModifiableAttr zimbraAuthLdapExternalDn"`;
 		print ".";
-		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr zimbraAdminAuthTokenLifetime"`;
+		`su - zimbra -c "$ZMPROV mcf +zimbraDomainAdminModifiableAttr zimbraAdminAuthTokenLifetime"`;
 		print ".";
-		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr zimbraContactMaxNumEntries"`;
+		`su - zimbra -c "$ZMPROV mcf +zimbraDomainAdminModifiableAttr zimbraContactMaxNumEntries"`;
 		print ".";
-		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr zimbraFeatureContactsEnabled"`;
+		`su - zimbra -c "$ZMPROV mcf +zimbraDomainAdminModifiableAttr zimbraFeatureContactsEnabled"`;
 		print ".";
-		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr zimbraFeatureGalEnabled"`;
+		`su - zimbra -c "$ZMPROV mcf +zimbraDomainAdminModifiableAttr zimbraFeatureGalEnabled"`;
 		print ".";
-		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr zimbraFeatureHtmlComposeEnabled"`;
+		`su - zimbra -c "$ZMPROV mcf +zimbraDomainAdminModifiableAttr zimbraFeatureHtmlComposeEnabled"`;
 		print ".";
-		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr zimbraFeatureCalendarEnabled"`;
+		`su - zimbra -c "$ZMPROV mcf +zimbraDomainAdminModifiableAttr zimbraFeatureCalendarEnabled"`;
 		print ".";
-		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr zimbraFeatureIMEnabled"`;
+		`su - zimbra -c "$ZMPROV mcf +zimbraDomainAdminModifiableAttr zimbraFeatureIMEnabled"`;
 		print ".";
-		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr zimbraFeatureTaggingEnabled"`;
+		`su - zimbra -c "$ZMPROV mcf +zimbraDomainAdminModifiableAttr zimbraFeatureTaggingEnabled"`;
 		print ".";
-		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr zimbraFeatureAdvancedSearchEnabled"`;
+		`su - zimbra -c "$ZMPROV mcf +zimbraDomainAdminModifiableAttr zimbraFeatureAdvancedSearchEnabled"`;
 		print ".";
-		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr zimbraFeatureSavedSearchesEnabled"`;
+		`su - zimbra -c "$ZMPROV mcf +zimbraDomainAdminModifiableAttr zimbraFeatureSavedSearchesEnabled"`;
 		print ".";
-		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr zimbraFeatureConversationsEnabled"`;
+		`su - zimbra -c "$ZMPROV mcf +zimbraDomainAdminModifiableAttr zimbraFeatureConversationsEnabled"`;
 		print ".";
-		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr zimbraFeatureChangePasswordEnabled"`;
+		`su - zimbra -c "$ZMPROV mcf +zimbraDomainAdminModifiableAttr zimbraFeatureChangePasswordEnabled"`;
 		print ".";
-		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr zimbraFeatureInitialSearchPreferenceEnabled"`;
+		`su - zimbra -c "$ZMPROV mcf +zimbraDomainAdminModifiableAttr zimbraFeatureInitialSearchPreferenceEnabled"`;
 		print ".";
-		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr zimbraFeatureFiltersEnabled"`;
+		`su - zimbra -c "$ZMPROV mcf +zimbraDomainAdminModifiableAttr zimbraFeatureFiltersEnabled"`;
 		print ".";
-		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr zimbraForeignPrincipal"`;
+		`su - zimbra -c "$ZMPROV mcf +zimbraDomainAdminModifiableAttr zimbraForeignPrincipal"`;
 		print ".";
-		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr zimbraImapEnabled"`;
+		`su - zimbra -c "$ZMPROV mcf +zimbraDomainAdminModifiableAttr zimbraImapEnabled"`;
 		print ".";
-		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr zimbraIsDomainAdminAccount"`;
+		`su - zimbra -c "$ZMPROV mcf +zimbraDomainAdminModifiableAttr zimbraIsDomainAdminAccount"`;
 		print ".";
-		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr zimbraMailIdleSessionTimeout"`;
+		`su - zimbra -c "$ZMPROV mcf +zimbraDomainAdminModifiableAttr zimbraMailIdleSessionTimeout"`;
 		print ".";
-		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr zimbraMailMessageLifetime"`;
+		`su - zimbra -c "$ZMPROV mcf +zimbraDomainAdminModifiableAttr zimbraMailMessageLifetime"`;
 		print ".";
-		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr zimbraMailMinPollingInterval"`;
+		`su - zimbra -c "$ZMPROV mcf +zimbraDomainAdminModifiableAttr zimbraMailMinPollingInterval"`;
 		print ".";
-		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr zimbraMailSpamLifetime"`;
+		`su - zimbra -c "$ZMPROV mcf +zimbraDomainAdminModifiableAttr zimbraMailSpamLifetime"`;
 		print ".";
-		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr zimbraMailTrashLifetime"`;
+		`su - zimbra -c "$ZMPROV mcf +zimbraDomainAdminModifiableAttr zimbraMailTrashLifetime"`;
 		print ".";
-		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr zimbraNotes"`;
+		`su - zimbra -c "$ZMPROV mcf +zimbraDomainAdminModifiableAttr zimbraNotes"`;
 		print ".";
-		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr zimbraPasswordLocked"`;
+		`su - zimbra -c "$ZMPROV mcf +zimbraDomainAdminModifiableAttr zimbraPasswordLocked"`;
 		print ".";
-		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr zimbraPasswordMinLength"`;
+		`su - zimbra -c "$ZMPROV mcf +zimbraDomainAdminModifiableAttr zimbraPasswordMinLength"`;
 		print ".";
-		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr zimbraPasswordMaxLength"`;
+		`su - zimbra -c "$ZMPROV mcf +zimbraDomainAdminModifiableAttr zimbraPasswordMaxLength"`;
 		print ".";
-		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr zimbraPasswordMinAge"`;
+		`su - zimbra -c "$ZMPROV mcf +zimbraDomainAdminModifiableAttr zimbraPasswordMinAge"`;
 		print ".";
-		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr zimbraPasswordMaxAge"`;
+		`su - zimbra -c "$ZMPROV mcf +zimbraDomainAdminModifiableAttr zimbraPasswordMaxAge"`;
 		print ".";
-		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr zimbraPasswordEnforceHistory"`;
+		`su - zimbra -c "$ZMPROV mcf +zimbraDomainAdminModifiableAttr zimbraPasswordEnforceHistory"`;
 		print ".";
-		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr zimbraPasswordMustChange"`;
+		`su - zimbra -c "$ZMPROV mcf +zimbraDomainAdminModifiableAttr zimbraPasswordMustChange"`;
 		print ".";
-		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr zimbraPop3Enabled"`;
+		`su - zimbra -c "$ZMPROV mcf +zimbraDomainAdminModifiableAttr zimbraPop3Enabled"`;
 		print ".";
-		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr zimbraPrefTimeZoneId"`;
+		`su - zimbra -c "$ZMPROV mcf +zimbraDomainAdminModifiableAttr zimbraPrefTimeZoneId"`;
 		print ".";
-		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr zimbraPrefUseTimeZoneListInCalendar"`;
+		`su - zimbra -c "$ZMPROV mcf +zimbraDomainAdminModifiableAttr zimbraPrefUseTimeZoneListInCalendar"`;
 		print ".";
-		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr zimbraPrefComposeInNewWindow"`;
+		`su - zimbra -c "$ZMPROV mcf +zimbraDomainAdminModifiableAttr zimbraPrefComposeInNewWindow"`;
 		print ".";
-		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr zimbraPrefComposeFormat"`;
+		`su - zimbra -c "$ZMPROV mcf +zimbraDomainAdminModifiableAttr zimbraPrefComposeFormat"`;
 		print ".";
-		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr zimbraPrefHtmlEditorDefaultFontColor"`;
+		`su - zimbra -c "$ZMPROV mcf +zimbraDomainAdminModifiableAttr zimbraPrefHtmlEditorDefaultFontColor"`;
 		print ".";
-		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr zimbraPrefHtmlEditorDefaultFontFamily"`;
+		`su - zimbra -c "$ZMPROV mcf +zimbraDomainAdminModifiableAttr zimbraPrefHtmlEditorDefaultFontFamily"`;
 		print ".";
-		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr zimbraPrefHtmlEditorDefaultFontSize"`;
+		`su - zimbra -c "$ZMPROV mcf +zimbraDomainAdminModifiableAttr zimbraPrefHtmlEditorDefaultFontSize"`;
 		print ".";
-		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr zimbraPrefForwardReplyInOriginalFormat"`;
+		`su - zimbra -c "$ZMPROV mcf +zimbraDomainAdminModifiableAttr zimbraPrefForwardReplyInOriginalFormat"`;
 		print ".";
-		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr zimbraPrefAutoAddAddressEnabled"`;
+		`su - zimbra -c "$ZMPROV mcf +zimbraDomainAdminModifiableAttr zimbraPrefAutoAddAddressEnabled"`;
 		print ".";
-		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr zimbraPrefShowFragments"`;
+		`su - zimbra -c "$ZMPROV mcf +zimbraDomainAdminModifiableAttr zimbraPrefShowFragments"`;
 		print ".";
-		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr zimbraPrefShowSearchString"`;
+		`su - zimbra -c "$ZMPROV mcf +zimbraDomainAdminModifiableAttr zimbraPrefShowSearchString"`;
 		print ".";
-		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr zimbraPrefCalendarFirstDayOfWeek"`;
+		`su - zimbra -c "$ZMPROV mcf +zimbraDomainAdminModifiableAttr zimbraPrefCalendarFirstDayOfWeek"`;
 		print ".";
-		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr zimbraPrefCalendarInitialView"`;
+		`su - zimbra -c "$ZMPROV mcf +zimbraDomainAdminModifiableAttr zimbraPrefCalendarInitialView"`;
 		print ".";
-		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr zimbraPrefCalendarInitialCheckedCalendars"`;
+		`su - zimbra -c "$ZMPROV mcf +zimbraDomainAdminModifiableAttr zimbraPrefCalendarInitialCheckedCalendars"`;
 		print ".";
-		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr zimbraPrefCalendarUseQuickAdd"`;
+		`su - zimbra -c "$ZMPROV mcf +zimbraDomainAdminModifiableAttr zimbraPrefCalendarUseQuickAdd"`;
 		print ".";
-		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr zimbraPrefCalendarAlwaysShowMiniCal"`;
+		`su - zimbra -c "$ZMPROV mcf +zimbraDomainAdminModifiableAttr zimbraPrefCalendarAlwaysShowMiniCal"`;
 		print ".";
-		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr zimbraPrefCalendarNotifyDelegatedChanges"`;
+		`su - zimbra -c "$ZMPROV mcf +zimbraDomainAdminModifiableAttr zimbraPrefCalendarNotifyDelegatedChanges"`;
 		print ".";
-		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr zimbraPrefContactsInitialView"`;
+		`su - zimbra -c "$ZMPROV mcf +zimbraDomainAdminModifiableAttr zimbraPrefContactsInitialView"`;
 		print ".";
-		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr zimbraPrefDedupeMessagesSentToSelf"`;
+		`su - zimbra -c "$ZMPROV mcf +zimbraDomainAdminModifiableAttr zimbraPrefDedupeMessagesSentToSelf"`;
 		print ".";
-		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr zimbraPrefForwardIncludeOriginalText"`;
+		`su - zimbra -c "$ZMPROV mcf +zimbraDomainAdminModifiableAttr zimbraPrefForwardIncludeOriginalText"`;
 		print ".";
-		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr zimbraPrefForwardReplyPrefixChar"`;
+		`su - zimbra -c "$ZMPROV mcf +zimbraDomainAdminModifiableAttr zimbraPrefForwardReplyPrefixChar"`;
 		print ".";
-		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr zimbraPrefGroupMailBy"`;
+		`su - zimbra -c "$ZMPROV mcf +zimbraDomainAdminModifiableAttr zimbraPrefGroupMailBy"`;
 		print ".";
-		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr zimbraPrefImapSearchFoldersEnabled"`;
+		`su - zimbra -c "$ZMPROV mcf +zimbraDomainAdminModifiableAttr zimbraPrefImapSearchFoldersEnabled"`;
 		print ".";
-		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr zimbraPrefIncludeSpamInSearch"`;
+		`su - zimbra -c "$ZMPROV mcf +zimbraDomainAdminModifiableAttr zimbraPrefIncludeSpamInSearch"`;
 		print ".";
-		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr zimbraPrefIncludeTrashInSearch"`;
+		`su - zimbra -c "$ZMPROV mcf +zimbraDomainAdminModifiableAttr zimbraPrefIncludeTrashInSearch"`;
 		print ".";
-		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr zimbraPrefMailInitialSearch"`;
+		`su - zimbra -c "$ZMPROV mcf +zimbraDomainAdminModifiableAttr zimbraPrefMailInitialSearch"`;
 		print ".";
-		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr zimbraPrefMailItemsPerPage"`;
+		`su - zimbra -c "$ZMPROV mcf +zimbraDomainAdminModifiableAttr zimbraPrefMailItemsPerPage"`;
 		print ".";
-		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr zimbraPrefContactsPerPage"`;
+		`su - zimbra -c "$ZMPROV mcf +zimbraDomainAdminModifiableAttr zimbraPrefContactsPerPage"`;
 		print ".";
-		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr zimbraPrefMessageViewHtmlPreferred"`;
+		`su - zimbra -c "$ZMPROV mcf +zimbraDomainAdminModifiableAttr zimbraPrefMessageViewHtmlPreferred"`;
 		print ".";
-		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr zimbraPrefMailPollingInterval"`;
+		`su - zimbra -c "$ZMPROV mcf +zimbraDomainAdminModifiableAttr zimbraPrefMailPollingInterval"`;
 		print ".";
-		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr zimbraPrefMailSignature"`;
+		`su - zimbra -c "$ZMPROV mcf +zimbraDomainAdminModifiableAttr zimbraPrefMailSignature"`;
 		print ".";
-		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr zimbraPrefMailSignatureEnabled"`;
+		`su - zimbra -c "$ZMPROV mcf +zimbraDomainAdminModifiableAttr zimbraPrefMailSignatureEnabled"`;
 		print ".";
-		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr zimbraPrefMailSignatureStyle"`;
+		`su - zimbra -c "$ZMPROV mcf +zimbraDomainAdminModifiableAttr zimbraPrefMailSignatureStyle"`;
 		print ".";
-		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr zimbraPrefNewMailNotificationAddress"`;
+		`su - zimbra -c "$ZMPROV mcf +zimbraDomainAdminModifiableAttr zimbraPrefNewMailNotificationAddress"`;
 		print ".";
-		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr zimbraPrefNewMailNotificationEnabled"`;
+		`su - zimbra -c "$ZMPROV mcf +zimbraDomainAdminModifiableAttr zimbraPrefNewMailNotificationEnabled"`;
 		print ".";
-		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr zimbraPrefOutOfOfficeReply"`;
+		`su - zimbra -c "$ZMPROV mcf +zimbraDomainAdminModifiableAttr zimbraPrefOutOfOfficeReply"`;
 		print ".";
-		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr zimbraPrefOutOfOfficeReplyEnabled"`;
+		`su - zimbra -c "$ZMPROV mcf +zimbraDomainAdminModifiableAttr zimbraPrefOutOfOfficeReplyEnabled"`;
 		print ".";
-		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr zimbraPrefReplyIncludeOriginalText"`;
+		`su - zimbra -c "$ZMPROV mcf +zimbraDomainAdminModifiableAttr zimbraPrefReplyIncludeOriginalText"`;
 		print ".";
-		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr zimbraPrefReplyToAddress"`;
+		`su - zimbra -c "$ZMPROV mcf +zimbraDomainAdminModifiableAttr zimbraPrefReplyToAddress"`;
 		print ".";
-		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr zimbraPrefSaveToSent"`;
+		`su - zimbra -c "$ZMPROV mcf +zimbraDomainAdminModifiableAttr zimbraPrefSaveToSent"`;
 		print ".";
-		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr zimbraPrefSentMailFolder"`;
+		`su - zimbra -c "$ZMPROV mcf +zimbraDomainAdminModifiableAttr zimbraPrefSentMailFolder"`;
 		print ".";
-		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr zimbraPrefUseKeyboardShortcuts"`;
+		`su - zimbra -c "$ZMPROV mcf +zimbraDomainAdminModifiableAttr zimbraPrefUseKeyboardShortcuts"`;
 		print ".";
-		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr zimbraZimletAvailableZimlets"`;
+		`su - zimbra -c "$ZMPROV mcf +zimbraDomainAdminModifiableAttr zimbraZimletAvailableZimlets"`;
 		print ".";
-		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr zimbraZimletUserProperties"`;
+		`su - zimbra -c "$ZMPROV mcf +zimbraDomainAdminModifiableAttr zimbraZimletUserProperties"`;
 		print ".";
-		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr o"`;
+		`su - zimbra -c "$ZMPROV mcf +zimbraDomainAdminModifiableAttr o"`;
 		print ".";
-		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr ou"`;
+		`su - zimbra -c "$ZMPROV mcf +zimbraDomainAdminModifiableAttr ou"`;
 		print ".";
-		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr physicalDeliveryOfficeName"`;
+		`su - zimbra -c "$ZMPROV mcf +zimbraDomainAdminModifiableAttr physicalDeliveryOfficeName"`;
 		print ".";
-		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr postalAddress"`;
+		`su - zimbra -c "$ZMPROV mcf +zimbraDomainAdminModifiableAttr postalAddress"`;
 		print ".";
-		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr postalCode"`;
+		`su - zimbra -c "$ZMPROV mcf +zimbraDomainAdminModifiableAttr postalCode"`;
 		print ".";
-		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr sn"`;
+		`su - zimbra -c "$ZMPROV mcf +zimbraDomainAdminModifiableAttr sn"`;
 		print ".";
-		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr st"`;
+		`su - zimbra -c "$ZMPROV mcf +zimbraDomainAdminModifiableAttr st"`;
 		print ".";
-		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr telephoneNumber"`;
+		`su - zimbra -c "$ZMPROV mcf +zimbraDomainAdminModifiableAttr telephoneNumber"`;
 		print ".";
-		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr title"`;
+		`su - zimbra -c "$ZMPROV mcf +zimbraDomainAdminModifiableAttr title"`;
 		print ".";
-		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr zimbraMailStatus"`;
+		`su - zimbra -c "$ZMPROV mcf +zimbraDomainAdminModifiableAttr zimbraMailStatus"`;
 		print "\n";
 
 		Migrate::log ("Updating ldap server attributes");
 
-		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf zimbraLmtpNumThreads 20 "`;
-		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf zimbraMessageCacheSize 1671168 "`;
-		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraServerInheritedAttr zimbraMessageCacheSize +zimbraServerInheritedAttr zimbraMtaAuthHost +zimbraServerInheritedAttr zimbraMtaAuthURL +zimbraServerInheritedAttr zimbraMailMode"`;
-		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf -zimbraMtaRestriction reject_non_fqdn_hostname"`;
+		`su - zimbra -c "$ZMPROV mcf zimbraLmtpNumThreads 20 "`;
+		`su - zimbra -c "$ZMPROV mcf zimbraMessageCacheSize 1671168 "`;
+		`su - zimbra -c "$ZMPROV mcf +zimbraServerInheritedAttr zimbraMessageCacheSize +zimbraServerInheritedAttr zimbraMtaAuthHost +zimbraServerInheritedAttr zimbraMtaAuthURL +zimbraServerInheritedAttr zimbraMailMode"`;
+		`su - zimbra -c "$ZMPROV mcf -zimbraMtaRestriction reject_non_fqdn_hostname"`;
 	}
 	if ($startVersion eq "3.0.0_M2" || $startVersion eq "3.0.M1" || $startBuild <= 436) {
 		if (isInstalled("zimbra-store")) {
@@ -539,12 +541,12 @@ sub upgradeBM3 {
 
 		if (isInstalled("zimbra-ldap")) {
 			Migrate::log ("Updating ldap domain admin attributes");
-			`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr givenName"`;
-			`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr zimbraMailForwardingAddress"`;
-			`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr zimbraNewMailNotificationSubject"`;
-			`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr zimbraNewMailNotificationFrom"`;
-			`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr zimbraNewMailNotificationBody"`;
-			`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraServerInheritedAttr zimbraMtaMyNetworks"`;
+			`su - zimbra -c "$ZMPROV mcf +zimbraDomainAdminModifiableAttr givenName"`;
+			`su - zimbra -c "$ZMPROV mcf +zimbraDomainAdminModifiableAttr zimbraMailForwardingAddress"`;
+			`su - zimbra -c "$ZMPROV mcf +zimbraDomainAdminModifiableAttr zimbraNewMailNotificationSubject"`;
+			`su - zimbra -c "$ZMPROV mcf +zimbraDomainAdminModifiableAttr zimbraNewMailNotificationFrom"`;
+			`su - zimbra -c "$ZMPROV mcf +zimbraDomainAdminModifiableAttr zimbraNewMailNotificationBody"`;
+			`su - zimbra -c "$ZMPROV mcf +zimbraServerInheritedAttr zimbraMtaMyNetworks"`;
 		}
 	}
 	return 0;
@@ -554,13 +556,13 @@ sub upgradeBM4 {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
 	Migrate::log("Updating from 3.0.0_M4");
 	if (isInstalled("zimbra-ldap")) {
-		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr zimbraMailStatus"`;
+		`su - zimbra -c "$ZMPROV mcf +zimbraDomainAdminModifiableAttr zimbraMailStatus"`;
 		if ($startVersion eq "3.0.0_M2" || $startVersion eq "3.0.M1" || $startVersion eq "3.0.0_M3" ||
 			$startBuild <= 41) {
-			`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraAccountClientAttr zimbraFeatureViewInHtmlEnabled"`;
-			`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr zimbraFeatureViewInHtmlEnabled"`;
-			`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraCOSInheritedAttr zimbraFeatureViewInHtmlEnabled"`;
-			`su - zimbra -c "/opt/zimbra/bin/zmprov mc default zimbraFeatureViewInHtmlEnabled FALSE"`;
+			`su - zimbra -c "$ZMPROV mcf +zimbraAccountClientAttr zimbraFeatureViewInHtmlEnabled"`;
+			`su - zimbra -c "$ZMPROV mcf +zimbraDomainAdminModifiableAttr zimbraFeatureViewInHtmlEnabled"`;
+			`su - zimbra -c "$ZMPROV mcf +zimbraCOSInheritedAttr zimbraFeatureViewInHtmlEnabled"`;
+			`su - zimbra -c "$ZMPROV mc default zimbraFeatureViewInHtmlEnabled FALSE"`;
 		}
 	}
 	if ($startVersion eq "3.0.0_M4" && $startBuild == 41) {
@@ -593,13 +595,13 @@ sub upgrade301GA {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
 	Migrate::log("Updating from 3.0.1_GA");
 
-	open (G, "/opt/zimbra/bin/zmprov gcf zimbraGalLdapFilterDef |") or die "Can't open zmprov: $!";
-	`/opt/zimbra/bin/zmprov mcf zimbraGalLdapFilterDef ''`;
+	open (G, "$ZMPROV gcf zimbraGalLdapFilterDef |") or die "Can't open zmprov: $!";
+	`$ZMPROV mcf zimbraGalLdapFilterDef ''`;
 	while (<G>) {
 		chomp;
 		s/\(zimbraMailAddress=\*%s\*\)//;
 		s/zimbraGalLdapFilterDef: //;
-		`/opt/zimbra/bin/zmprov mcf +zimbraGalLdapFilterDef \'$_\'`;
+		`$ZMPROV mcf +zimbraGalLdapFilterDef \'$_\'`;
 	}
 
 	# This change was made in both main and CRAY
@@ -613,9 +615,9 @@ sub upgrade301GA {
 		movePostfixQueue ("2.2.8","2.2.9");
 
 	}
-	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraCOSInheritedAttr zimbraFeatureSharingEnabled"`;
-	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainInheritedAttr zimbraFeatureSharingEnabled"`;
-	`su - zimbra -c "/opt/zimbra/bin/zmprov mc default zimbraFeatureSharingEnabled TRUE"`;
+	`su - zimbra -c "$ZMPROV mcf +zimbraCOSInheritedAttr zimbraFeatureSharingEnabled"`;
+	`su - zimbra -c "$ZMPROV mcf +zimbraDomainInheritedAttr zimbraFeatureSharingEnabled"`;
+	`su - zimbra -c "$ZMPROV mc default zimbraFeatureSharingEnabled TRUE"`;
 
 	return 0;
 }
@@ -623,52 +625,52 @@ sub upgrade301GA {
 sub upgrade310GA {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
 	Migrate::log("Updating from 3.1.0_GA");
-	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraCOSInheritedAttr zimbraFeatureSharingEnabled"`;
-	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainInheritedAttr zimbraFeatureSharingEnabled"`;
-	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraAccountClientAttr zimbraFeatureSharingEnabled"`;
-	`su - zimbra -c "/opt/zimbra/bin/zmprov mc default zimbraFeatureSharingEnabled TRUE"`;
+	`su - zimbra -c "$ZMPROV mcf +zimbraCOSInheritedAttr zimbraFeatureSharingEnabled"`;
+	`su - zimbra -c "$ZMPROV mcf +zimbraDomainInheritedAttr zimbraFeatureSharingEnabled"`;
+	`su - zimbra -c "$ZMPROV mcf +zimbraAccountClientAttr zimbraFeatureSharingEnabled"`;
+	`su - zimbra -c "$ZMPROV mc default zimbraFeatureSharingEnabled TRUE"`;
 
-	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf -zimbraGalLdapFilterDef 'zimbra:(&(|(cn=*%s*)(sn=*%s*)(gn=*%s*)(mail=*%s*)(zimbraMailDeliveryAddress=*%s*)(zimbraMailAlias=*%s*))(|(objectclass=zimbraAccount)(objectclass=zimbraDistributionList)))'"`;
-	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraGalLdapFilterDef 'zimbraAccounts:(&(|(cn=*%s*)(sn=*%s*)(gn=*%s*)(mail=*%s*)(zimbraMailDeliveryAddress=*%s*)(zimbraMailAlias=*%s*)(zimbraMailAddress=*%s*))(|(objectclass=zimbraAccount)(objectclass=zimbraDistributionList))(!(objectclass=zimbraCalendarResource)))'"`;
-	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraGalLdapFilterDef 'zimbraResources:(&(|(cn=*%s*)(sn=*%s*)(gn=*%s*)(mail=*%s*)(zimbraMailDeliveryAddress=*%s*)(zimbraMailAlias=*%s*)(zimbraMailAddress=*%s*))(objectclass=zimbraCalendarResource))'"`;
+	`su - zimbra -c "$ZMPROV mcf -zimbraGalLdapFilterDef 'zimbra:(&(|(cn=*%s*)(sn=*%s*)(gn=*%s*)(mail=*%s*)(zimbraMailDeliveryAddress=*%s*)(zimbraMailAlias=*%s*))(|(objectclass=zimbraAccount)(objectclass=zimbraDistributionList)))'"`;
+	`su - zimbra -c "$ZMPROV mcf +zimbraGalLdapFilterDef 'zimbraAccounts:(&(|(cn=*%s*)(sn=*%s*)(gn=*%s*)(mail=*%s*)(zimbraMailDeliveryAddress=*%s*)(zimbraMailAlias=*%s*)(zimbraMailAddress=*%s*))(|(objectclass=zimbraAccount)(objectclass=zimbraDistributionList))(!(objectclass=zimbraCalendarResource)))'"`;
+	`su - zimbra -c "$ZMPROV mcf +zimbraGalLdapFilterDef 'zimbraResources:(&(|(cn=*%s*)(sn=*%s*)(gn=*%s*)(mail=*%s*)(zimbraMailDeliveryAddress=*%s*)(zimbraMailAlias=*%s*)(zimbraMailAddress=*%s*))(objectclass=zimbraCalendarResource))'"`;
 
 	# Bug 6077
-	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf -zimbraGalLdapAttrMap 'givenName=firstName'"`;
-	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraGalLdapAttrMap 'gn=firstName'"`;
-	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraGalLdapAttrMap 'description=notes'"`;
-	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraGalLdapAttrMap 'zimbraCalResType=zimbraCalResType'"`;
-	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraGalLdapAttrMap 'zimbraCalResLocationDisplayName=zimbraCalResLocationDisplayName'"`;
+	`su - zimbra -c "$ZMPROV mcf -zimbraGalLdapAttrMap 'givenName=firstName'"`;
+	`su - zimbra -c "$ZMPROV mcf +zimbraGalLdapAttrMap 'gn=firstName'"`;
+	`su - zimbra -c "$ZMPROV mcf +zimbraGalLdapAttrMap 'description=notes'"`;
+	`su - zimbra -c "$ZMPROV mcf +zimbraGalLdapAttrMap 'zimbraCalResType=zimbraCalResType'"`;
+	`su - zimbra -c "$ZMPROV mcf +zimbraGalLdapAttrMap 'zimbraCalResLocationDisplayName=zimbraCalResLocationDisplayName'"`;
 
 	# bug: 2799
-	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraCOSInheritedAttr zimbraPrefCalendarApptReminderWarningTime"`;
-	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr zimbraPrefCalendarApptReminderWarningTime"`;
-	`su - zimbra -c "/opt/zimbra/bin/zmprov mc default zimbraPrefCalendarApptReminderWarningTime 5"`;
+	`su - zimbra -c "$ZMPROV mcf +zimbraCOSInheritedAttr zimbraPrefCalendarApptReminderWarningTime"`;
+	`su - zimbra -c "$ZMPROV mcf +zimbraDomainAdminModifiableAttr zimbraPrefCalendarApptReminderWarningTime"`;
+	`su - zimbra -c "$ZMPROV mc default zimbraPrefCalendarApptReminderWarningTime 5"`;
 
-	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraAccountClientAttr zimbraFeatureMailForwardingEnabled"`;
-	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraCOSInheritedAttr zimbraFeatureMailForwardingEnabled"`;
-	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr zimbraFeatureMailForwardingEnabled"`;
-	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr zimbraPrefMailForwardingAddress"`;
-	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr zimbraPrefMailLocalDeliveryDisabled"`;
-	`su - zimbra -c "/opt/zimbra/bin/zmprov mc default zimbraFeatureMailForwardingEnabled TRUE"`;
+	`su - zimbra -c "$ZMPROV mcf +zimbraAccountClientAttr zimbraFeatureMailForwardingEnabled"`;
+	`su - zimbra -c "$ZMPROV mcf +zimbraCOSInheritedAttr zimbraFeatureMailForwardingEnabled"`;
+	`su - zimbra -c "$ZMPROV mcf +zimbraDomainAdminModifiableAttr zimbraFeatureMailForwardingEnabled"`;
+	`su - zimbra -c "$ZMPROV mcf +zimbraDomainAdminModifiableAttr zimbraPrefMailForwardingAddress"`;
+	`su - zimbra -c "$ZMPROV mcf +zimbraDomainAdminModifiableAttr zimbraPrefMailLocalDeliveryDisabled"`;
+	`su - zimbra -c "$ZMPROV mc default zimbraFeatureMailForwardingEnabled TRUE"`;
 
 	# bug 6077
-	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraAccountClientAttr zimbraLocale"`;
-	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraCOSInheritedAttr zimbraLocale"`;
-	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr zimbraLocale"`;
-	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraServerInheritedAttr zimbraLocale"`;
+	`su - zimbra -c "$ZMPROV mcf +zimbraAccountClientAttr zimbraLocale"`;
+	`su - zimbra -c "$ZMPROV mcf +zimbraCOSInheritedAttr zimbraLocale"`;
+	`su - zimbra -c "$ZMPROV mcf +zimbraDomainAdminModifiableAttr zimbraLocale"`;
+	`su - zimbra -c "$ZMPROV mcf +zimbraServerInheritedAttr zimbraLocale"`;
 
 	# bug 6834
-	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraServerInheritedAttr zimbraRemoteManagementCommand"`;
-	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraServerInheritedAttr zimbraRemoteManagementUser"`;
-	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraServerInheritedAttr zimbraRemoteManagementPrivateKeyPath"`;
-	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraServerInheritedAttr zimbraRemoteManagementPort"`;
-	`su - zimbra -c "/opt/zimbra/bin/zmprov ms $hn zimbraRemoteManagementCommand /opt/zimbra/libexec/zmrcd"`;
-	`su - zimbra -c "/opt/zimbra/bin/zmprov ms $hn zimbraRemoteManagementUser zimbra"`;
-	`su - zimbra -c "/opt/zimbra/bin/zmprov ms $hn zimbraRemoteManagementPrivateKeyPath /opt/zimbra/.ssh/zimbra_identity"`;
-	`su - zimbra -c "/opt/zimbra/bin/zmprov ms $hn zimbraRemoteManagementPort 22"`;
+	`su - zimbra -c "$ZMPROV mcf +zimbraServerInheritedAttr zimbraRemoteManagementCommand"`;
+	`su - zimbra -c "$ZMPROV mcf +zimbraServerInheritedAttr zimbraRemoteManagementUser"`;
+	`su - zimbra -c "$ZMPROV mcf +zimbraServerInheritedAttr zimbraRemoteManagementPrivateKeyPath"`;
+	`su - zimbra -c "$ZMPROV mcf +zimbraServerInheritedAttr zimbraRemoteManagementPort"`;
+	`su - zimbra -c "$ZMPROV ms $hn zimbraRemoteManagementCommand /opt/zimbra/libexec/zmrcd"`;
+	`su - zimbra -c "$ZMPROV ms $hn zimbraRemoteManagementUser zimbra"`;
+	`su - zimbra -c "$ZMPROV ms $hn zimbraRemoteManagementPrivateKeyPath /opt/zimbra/.ssh/zimbra_identity"`;
+	`su - zimbra -c "$ZMPROV ms $hn zimbraRemoteManagementPort 22"`;
 
 	# bug: 6828
-	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf -zimbraGalLdapAttrMap zimbraMailAlias=email2"`;
+	`su - zimbra -c "$ZMPROV mcf -zimbraGalLdapAttrMap zimbraMailAlias=email2"`;
 
 	if ( ($startVersion eq "3.1.0_GA" && $startBuild <= 303) ||
 		($startVersion eq "3.0.0_GA" || $startVersion eq "3.0.0_M2" || $startVersion eq "3.0.M1" || 
@@ -704,10 +706,10 @@ sub upgrade312GA {
 sub upgrade313GA {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
 	Migrate::log("Updating from 3.1.3_GA");
-	my @accounts = `su - zimbra -c "/opt/zimbra/bin/zmprov gaa"`;
+	my @accounts = `su - zimbra -c "$ZMPROV gaa"`;
 	foreach (@accounts) {
 		chomp;
-		`su - zimbra -c "/opt/zimbra/bin/zmprov ma $_ zimbraPrefMailLocalDeliveryDisabled FALSE"`;
+		`su - zimbra -c "$ZMPROV ma $_ zimbraPrefMailLocalDeliveryDisabled FALSE"`;
 	}
 	return 0;
 }
@@ -722,31 +724,31 @@ sub upgrade32M1 {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
 	Migrate::log("Updating from 3.2.0_M1");
 
-	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraCOSInheritedAttr zimbraFeatureSharingEnabled"`;
-	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainInheritedAttr zimbraFeatureSharingEnabled"`;
-	`su - zimbra -c "/opt/zimbra/bin/zmprov mc default zimbraFeatureSharingEnabled TRUE"`;
+	`su - zimbra -c "$ZMPROV mcf +zimbraCOSInheritedAttr zimbraFeatureSharingEnabled"`;
+	`su - zimbra -c "$ZMPROV mcf +zimbraDomainInheritedAttr zimbraFeatureSharingEnabled"`;
+	`su - zimbra -c "$ZMPROV mc default zimbraFeatureSharingEnabled TRUE"`;
 
-	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf zimbraGalLdapFilterDef 'zimbraAccounts:(&(|(cn=*%s*)(sn=*%s*)(gn=*%s*)(mail=*%s*)(zimbraMailDeliveryAddress=*%s*)(zimbraMailAlias=*%s*)(zimbraMailAddress=*%s*))(|(objectclass=zimbraAccount)(objectclass=zimbraDistributionList))(!(objectclass=zimbraCalendarResource)))'"`;
-	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraGalLdapFilterDef 'zimbraResources:(&(|(cn=*%s*)(sn=*%s*)(gn=*%s*)(mail=*%s*)(zimbraMailDeliveryAddress=*%s*)(zimbraMailAlias=*%s*)(zimbraMailAddress=*%s*))(objectclass=zimbraCalendarResource))'"`;
-	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraGalLdapFilterDef 'ad:(&(|(cn=*%s*)(sn=*%s*)(gn=*%s*)(mail=*%s*))(!(msExchHideFromAddressLists=TRUE))(mailnickname=*)(|(&(objectCategory=person)(objectClass=user)(!(homeMDB=*))(!(msExchHomeServerName=*)))(&(objectCategory=person)(objectClass=user)(|(homeMDB=*)(msExchHomeServerName=*)))(&(objectCategory=person)(objectClass=contact))(objectCategory=group)(objectCategory=publicFolder)(objectCategory=msExchDynamicDistributionList)))'"`;
+	`su - zimbra -c "$ZMPROV mcf zimbraGalLdapFilterDef 'zimbraAccounts:(&(|(cn=*%s*)(sn=*%s*)(gn=*%s*)(mail=*%s*)(zimbraMailDeliveryAddress=*%s*)(zimbraMailAlias=*%s*)(zimbraMailAddress=*%s*))(|(objectclass=zimbraAccount)(objectclass=zimbraDistributionList))(!(objectclass=zimbraCalendarResource)))'"`;
+	`su - zimbra -c "$ZMPROV mcf +zimbraGalLdapFilterDef 'zimbraResources:(&(|(cn=*%s*)(sn=*%s*)(gn=*%s*)(mail=*%s*)(zimbraMailDeliveryAddress=*%s*)(zimbraMailAlias=*%s*)(zimbraMailAddress=*%s*))(objectclass=zimbraCalendarResource))'"`;
+	`su - zimbra -c "$ZMPROV mcf +zimbraGalLdapFilterDef 'ad:(&(|(cn=*%s*)(sn=*%s*)(gn=*%s*)(mail=*%s*))(!(msExchHideFromAddressLists=TRUE))(mailnickname=*)(|(&(objectCategory=person)(objectClass=user)(!(homeMDB=*))(!(msExchHomeServerName=*)))(&(objectCategory=person)(objectClass=user)(|(homeMDB=*)(msExchHomeServerName=*)))(&(objectCategory=person)(objectClass=contact))(objectCategory=group)(objectCategory=publicFolder)(objectCategory=msExchDynamicDistributionList)))'"`;
 
 	# Bug 6077
-	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf -zimbraGalLdapAttrMap 'givenName=firstName'"`;
-	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraGalLdapAttrMap 'gn=firstName'"`;
-	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraGalLdapAttrMap 'description=notes'"`;
-	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraGalLdapAttrMap 'zimbraCalResType=zimbraCalResType'"`;
-	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraGalLdapAttrMap 'zimbraCalResLocationDisplayName=zimbraCalResLocationDisplayName'"`;
+	`su - zimbra -c "$ZMPROV mcf -zimbraGalLdapAttrMap 'givenName=firstName'"`;
+	`su - zimbra -c "$ZMPROV mcf +zimbraGalLdapAttrMap 'gn=firstName'"`;
+	`su - zimbra -c "$ZMPROV mcf +zimbraGalLdapAttrMap 'description=notes'"`;
+	`su - zimbra -c "$ZMPROV mcf +zimbraGalLdapAttrMap 'zimbraCalResType=zimbraCalResType'"`;
+	`su - zimbra -c "$ZMPROV mcf +zimbraGalLdapAttrMap 'zimbraCalResLocationDisplayName=zimbraCalResLocationDisplayName'"`;
 
 	# bug: 2799
-	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraCOSInheritedAttr zimbraPrefCalendarApptReminderWarningTime"`;
-	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraDomainAdminModifiableAttr zimbraPrefCalendarApptReminderWarningTime"`;
-	`su - zimbra -c "/opt/zimbra/bin/zmprov mc default zimbraPrefCalendarApptReminderWarningTime 5"`;
+	`su - zimbra -c "$ZMPROV mcf +zimbraCOSInheritedAttr zimbraPrefCalendarApptReminderWarningTime"`;
+	`su - zimbra -c "$ZMPROV mcf +zimbraDomainAdminModifiableAttr zimbraPrefCalendarApptReminderWarningTime"`;
+	`su - zimbra -c "$ZMPROV mc default zimbraPrefCalendarApptReminderWarningTime 5"`;
 
 	# Bug 7590
-	my @coses = `su - zimbra -c "/opt/zimbra/bin/zmprov gac"`;
+	my @coses = `su - zimbra -c "$ZMPROV gac"`;
 	foreach my $cos (@coses) {
 		chomp $cos;
-		`su - zimbra -c "/opt/zimbra/bin/zmprov mc $cos zimbraFeatureSkinChangeEnabled TRUE zimbraPrefSkin steel zimbraFeatureNotebookEnabled TRUE"`;
+		`su - zimbra -c "$ZMPROV mc $cos zimbraFeatureSkinChangeEnabled TRUE zimbraPrefSkin steel zimbraFeatureNotebookEnabled TRUE"`;
 	}
 
 	# Bug 7590
@@ -757,34 +759,34 @@ sub upgrade32M1 {
 
 	# bug 7588
 
-	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf -zimbraGalLdapAttrMap gn=firstName"`;
-	`su - zimbra -c "/opt/zimbra/bin/zmprov mcf +zimbraGalLdapAttrMap givenName,gn=firstName "`;
+	`su - zimbra -c "$ZMPROV mcf -zimbraGalLdapAttrMap gn=firstName"`;
+	`su - zimbra -c "$ZMPROV mcf +zimbraGalLdapAttrMap givenName,gn=firstName "`;
 
 	# Bug 5466
-	my $acct = `su - zimbra -c "/opt/zimbra/bin/zmprov gcf zimbraSpamIsSpamAccount"`;
+	my $acct = `su - zimbra -c "$ZMPROV gcf zimbraSpamIsSpamAccount"`;
 	chomp $acct;
 	$acct =~ s/.* //;
 	if ($acct ne "") {
-		`su - zimbra -c "/opt/zimbra/bin/zmprov ma $acct zimbraHideInGal TRUE"`;
+		`su - zimbra -c "$ZMPROV ma $acct zimbraHideInGal TRUE"`;
 	}
-	$acct = `su - zimbra -c "/opt/zimbra/bin/zmprov gcf zimbraSpamIsNotSpamAccount"`;
+	$acct = `su - zimbra -c "$ZMPROV gcf zimbraSpamIsNotSpamAccount"`;
 	chomp $acct;
 	$acct =~ s/.* //;
 	if ($acct ne "") {
-		`su - zimbra -c "/opt/zimbra/bin/zmprov ma $acct zimbraHideInGal TRUE"`;
+		`su - zimbra -c "$ZMPROV ma $acct zimbraHideInGal TRUE"`;
 	}
 
 	# Bug 7723
-	`su - zimbra -c "/opt/zimbra/bin/zmprov -zimbraLdapGalAttrMap zimbraMailDeliveryAddress,mail=email"`;
+	`su - zimbra -c "$ZMPROV -zimbraLdapGalAttrMap zimbraMailDeliveryAddress,mail=email"`;
 
-	`su - zimbra -c "/opt/zimbra/bin/zmprov zimbraLdapGalAttrMap zimbraMailDeliveryAddress,zimbraMailAlias,mail=email,email2,email3,email4,email5,email6"`;
+	`su - zimbra -c "$ZMPROV zimbraLdapGalAttrMap zimbraMailDeliveryAddress,zimbraMailAlias,mail=email,email2,email3,email4,email5,email6"`;
 
 	# bug 7391
 	# Notebook
-	my $nbacct = `su - zimbra -c "/opt/zimbra/bin/zmprov gcf zimbraNotebookAccount | sed -e 's/zimbraNotebookAccount: //'"`;
+	my $nbacct = `su - zimbra -c "$ZMPROV gcf zimbraNotebookAccount | sed -e 's/zimbraNotebookAccount: //'"`;
 	if ($nbacct eq "") {
 
-		open DOMAINS, "/opt/zimbra/bin/zmprov gad |" or die "Can't get domain list!";
+		open DOMAINS, "$ZMPROV gad |" or die "Can't get domain list!";
 		my $domain = <DOMAINS>;
 		close DOMAINS;
 		chomp $domain;
@@ -801,12 +803,12 @@ sub upgrade32M1 {
 		close RP;
 		chomp $nbpass;
 
-		`su - zimbra -c "/opt/zimbra/bin/zmprov ca $nbacct \'$nbpass\' amavisBypassSpamChecks TRUE zimbraAttachmentsIndexingEnabled FALSE zimbraHideInGal TRUE zimbraMailQuota 0 description \'Global notebook account\'"`;
+		`su - zimbra -c "$ZMPROV ca $nbacct \'$nbpass\' amavisBypassSpamChecks TRUE zimbraAttachmentsIndexingEnabled FALSE zimbraHideInGal TRUE zimbraMailQuota 0 description \'Global notebook account\'"`;
 
-		`su - zimbra -c "/opt/zimbra/bin/zmprov mcf zimbraNotebookAccount $nbacct"`;
+		`su - zimbra -c "$ZMPROV mcf zimbraNotebookAccount $nbacct"`;
 	}
-		#`su - zimbra -c "/opt/zimbra/bin/zmprov mcf zimbraFeatureNotebookEnabled TRUE"`;
-	`su - zimbra -c "/opt/zimbra/bin/zmprov in -p zimbra -f /opt/zimbra/wiki -t Template"`;
+		#`su - zimbra -c "$ZMPROV mcf zimbraFeatureNotebookEnabled TRUE"`;
+	`su - zimbra -c "$ZMPROV in -p zimbra -f /opt/zimbra/wiki -t Template"`;
 
 	if ( -d "/opt/zimbra/amavisd-new-2.3.3/db" && -d "/opt/zimbra/amavisd-new-2.4.1" && ! -d "/opt/zimbra/amavisd-new-2.4.1/db" ) {
 		`mv /opt/zimbra/amavisd-new-2.3.3/db /opt/zimbra/amavisd-new-2.4.1/db`;
