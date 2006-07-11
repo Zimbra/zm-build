@@ -2168,6 +2168,29 @@ sub configSetServicePorts {
 	configLog("configSetServicePorts");
 }
 
+sub configSetInstalledSkins {
+	if ($configStatus{configSetInstalledSkins} eq "CONFIGURED") {
+		configLog("configSetInstalledSkins");
+		return 0;
+	}
+
+	if (opendir DIR, "/opt/zimbra/tomcat/webapps/zimbra/skins") {
+		progress ( "Installing skins... " );
+		runAsZimbra("$ZMPROV mcf zimbraInstalledSkin ''");
+		my @skins = grep { !/^[\._]/ } readdir(DIR);
+		foreach my $skindir (@skins) {
+			if (-d "/opt/zimbra/tomcat/webapps/zimbra/skins/$skindir") {
+				my $skin = $skindir;
+				runAsZimbra("$ZMPROV mcf +zimbraInstalledSkin $skin");
+				print  ("\n\t$skin");
+			}
+		}
+		progress ( "\nDone\n" );
+	}
+
+	configLog("configSetInstalledSkins");
+}
+
 sub configInstallZimlets {
 
 	if ($configStatus{configInstallZimlets} eq "CONFIGURED") {
@@ -2182,10 +2205,10 @@ sub configInstallZimlets {
 		foreach my $zimletfile (@zimlets) {
 			my $zimlet = $zimletfile;
 			$zimlet =~ s/.zip//;
-			progress  ("$zimlet... ");
+			progress  ("\n\t$zimlet");
 			runAsZimbra ("/opt/zimbra/bin/zmzimletctl deploy zimlets/$zimletfile");
 		}
-		progress ( "Done\n" );
+		progress ( "\nDone\n" );
 	}
 
 	# Install zimlets
@@ -2195,10 +2218,10 @@ sub configInstallZimlets {
 		foreach my $zimletfile (@zimlets) {
 			my $zimlet = $zimletfile;
 			$zimlet =~ s/.zip//;
-			progress  ("$zimlet... ");
+			progress  ("\n\t$zimlet");
 			runAsZimbra ("/opt/zimbra/bin/zmzimletctl deploy zimlets-network/$zimletfile");
 		}
-		progress ( "Done\n" );
+		progress ( "\nDone\n" );
 	}
 
 	configLog("configInstallZimlets");
@@ -2455,6 +2478,8 @@ sub applyConfig {
 		addServerToHostPool();
 
 		configInstallZimlets();
+
+		configSetInstalledSkins();
 
 	}
 
