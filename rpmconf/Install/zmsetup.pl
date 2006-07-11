@@ -1955,7 +1955,7 @@ sub configSetupLdap {
 		return 0;
 	}
 
-	if (!$ldapConfigured && isEnabled("zimbra-ldap") && ! -f "/opt/zimbra/.enable_replica") {
+	if (!$ldapConfigured && isEnabled("zimbra-ldap") && ! -f "/opt/zimbra/.enable_replica" && $newinstall) {
 		progress ( "Initializing ldap..." ) ;
 		if (my $rc = runAsZimbra ("/opt/zimbra/libexec/zmldapinit $config{LDAPPASS}")) {
 			progress ( "FAILED ($rc)\n" );
@@ -1963,7 +1963,7 @@ sub configSetupLdap {
 		} else {
 			progress ( "Done\n" );
 		}
-	} elsif (isEnabled("zimbra-ldap")) {
+	} elsif (isEnabled("zimbra-ldap") && ! $newinstall) {
 		# zmldappasswd starts ldap and re-applies the ldif
 		if ( -f "/opt/zimbra/.enable_replica") {
 			progress ( "Enabling ldap replication..." );
