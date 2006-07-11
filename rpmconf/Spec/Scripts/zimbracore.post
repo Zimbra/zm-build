@@ -34,7 +34,7 @@ PLAT=`/opt/zimbra/libexec/get_plat_tag.sh`
 if [ "x$PLAT" = "xRHEL4_64" ]; then
 	ln -s /opt/zimbra/jdk1.5.0_07 /opt/zimbra/java
 else
-	ln -s /opt/zimbra/jdk1.5.0_06 /opt/zimbra/java
+	ln -s /opt/zimbra/jdk1.5.0_07 /opt/zimbra/java
 fi
 
 if [ -f /etc/debian_version ]; then
