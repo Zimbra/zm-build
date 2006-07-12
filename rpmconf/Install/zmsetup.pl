@@ -2071,7 +2071,6 @@ sub configInstallCert {
 			if (!-f "/opt/zimbra/tomcat/conf/keystore") {
 				runAsZimbra("cd /opt/zimbra; zmcertinstall mailbox");
 			}
-			runAsZimbra("cd /opt/zimbra; zmtlsctl $config{MODE}");
 		}
 		if (isEnabled("zimbra-mta")) {
 			if (! (-f "/opt/zimbra/conf/smtpd.key" || 
