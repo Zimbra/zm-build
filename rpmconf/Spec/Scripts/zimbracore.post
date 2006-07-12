@@ -61,7 +61,7 @@ if [ -d /etc/logrotate.d ]; then
 	cp -f /opt/zimbra/conf/zmlogrotate /etc/logrotate.d/zimbra
 fi
 
-/opt/zimbra/bin/zmsyslogsetup local
+#/opt/zimbra/bin/zmsyslogsetup local
 
 cp -f /opt/zimbra/libexec/zimbra /etc/init.d/zimbra
 chmod 755 /etc/init.d/zimbra

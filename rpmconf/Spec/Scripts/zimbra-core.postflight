@@ -55,7 +55,7 @@ fi
 /bin/sh /opt/zimbra/libexec/zmfixperms
 
 echo "Setting up syslog"
-/opt/zimbra/bin/zmsyslogsetup local
+#/opt/zimbra/bin/zmsyslogsetup local
 
 rm -rf /Users/zimbra
 
