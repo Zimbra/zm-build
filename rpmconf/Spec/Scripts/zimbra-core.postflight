@@ -46,10 +46,10 @@ if [ ! -d /opt/zimbra/openldap-2.3.21 ]; then
 	mkdir -p /opt/zimbra/openldap-2.3.21
 	ln -s /opt/zimbra/lib /opt/zimbra/openldap-2.3.21/lib
 fi
-if [ ! -d /opt/zimbra/mysql-standard-4.1.16-apple-darwin8.2.0-$ARCH ]; then
-	mkdir -p /opt/zimbra/mysql-standard-4.1.16-apple-darwin8.2.0-$ARCH
-	ln -s /opt/zimbra/lib /opt/zimbra/mysql-standard-4.1.16-apple-darwin8.2.0-$ARCH/lib
-	ln -s /opt/zimbra/mysql-standard-4.1.16-apple-darwin8.2.0-$ARCH/lib /opt/zimbra/mysql-standard-4.1.16-apple-darwin8.2.0-$ARCH/lib/mysql
+if [ ! -d /opt/zimbra/mysql-standard-4.1.20-apple-darwin8.2.0-$ARCH ]; then
+	mkdir -p /opt/zimbra/mysql-standard-4.1.20-apple-darwin8.2.0-$ARCH
+	ln -s /opt/zimbra/lib /opt/zimbra/mysql-standard-4.1.20-apple-darwin8.2.0-$ARCH/lib
+	ln -s /opt/zimbra/mysql-standard-4.1.20-apple-darwin8.2.0-$ARCH/lib /opt/zimbra/mysql-standard-4.1.20-apple-darwin8.2.0-$ARCH/lib/mysql
 fi
 
 /bin/sh /opt/zimbra/libexec/zmfixperms
