@@ -81,6 +81,7 @@ my %updateFuncs = (
 	"3.1.3_GA" => \&upgrade313GA,
 	"3.1.4_GA" => \&upgrade314GA,
 	"3.2.0_M1" => \&upgrade32M1,
+	"3.2.0_M2" => \&upgrade32M2,
 	"3.5.0_M1" => \&upgrade35M1,  #Hack for missed version change
 );
 
@@ -97,6 +98,7 @@ my @versionOrder = (
 	"3.1.3_GA", 
 	"3.1.4_GA", 
 	"3.2.0_M1",
+	"3.2.0_M2",
 	"3.5.0_M1"  #Hack for missed version change
 );
 
@@ -178,6 +180,8 @@ sub upgrade {
 		print "This appears to be 3.1.4_GA\n";
 	} elsif ($startVersion eq "3.2.0_M1") {
 		print "This appears to be 3.2.0_M1\n";
+	} elsif ($startVersion eq "3.2.0_M2") {
+		print "This appears to be 3.2.0_M2\n";
 	} elsif ($startVersion eq "3.5.0_M1") {
 		print "This appears to be 3.5.0_M1\n";
 	} else {
@@ -819,6 +823,18 @@ sub upgrade32M1 {
 		`chown -R zimbra:zimbra /opt/zimbra/amavisd-new-2.4.1/.spamassassin`;
 	}
 
+
+	return 0;
+}
+
+sub upgrade32M2 {
+	my ($startBuild, $targetVersion, $targetBuild) = (@_);
+	Migrate::log("Updating from 3.5.0_M2");
+  # bug 8121
+  if ( -e "/opt/zimbra/conf/my.cnf" ) {
+    `mv /opt/zimbra/conf/my.cnf /opt/zimbra/conf/my.cnf-pre3.2.0`;
+    `/opt/zimbra/libexec/zmmycnf > /opt/zimbra/conf/my.cnf`;
+  }
 	return 0;
 }
 
