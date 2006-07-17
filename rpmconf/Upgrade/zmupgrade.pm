@@ -829,11 +829,12 @@ sub upgrade32M1 {
 
 sub upgrade32M2 {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
-	Migrate::log("Updating from 3.5.0_M2");
+	Migrate::log("Updating from 3.2.0_M2");
   # bug 8121
   if ( -e "/opt/zimbra/conf/my.cnf" ) {
     `mv /opt/zimbra/conf/my.cnf /opt/zimbra/conf/my.cnf-pre3.2.0`;
-    `/opt/zimbra/libexec/zmmycnf > /opt/zimbra/conf/my.cnf`;
+    `su - zimbra /opt/zimbra/libexec/zmmycnf > /opt/zimbra/conf/my.cnf`;
+    `chmod 644 /opt/zimbra/conf/my.cnf`; 
   }
 	return 0;
 }
