@@ -95,6 +95,8 @@ class ZimbraBuildRecipe(PackageRecipe):
                    '/opt/zimbra/scripts/zimbramta.post')
         # add requirement from zimbra->mta -> mailbase for /etc/aliases
         r.Requires('mailbase:runtime', '/opt/zimbra/postfix.*/sbin/postalias')
+	# add an exclude for convertd libs
+	r.Requires(exceptDeps=('.*', 'soname:.*libnotes.*'))
         # zmfixperms uses these user/groups when changing ownerships
         for user in ('zimbra', 'postfix', 'nobody'):
             r.UtilizeUser(user, '/opt/zimbra/libexec/zmfixperms')

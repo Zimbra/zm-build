@@ -192,6 +192,7 @@ $(CORE_DEST_DIR)/jdk$(JAVA_VERSION_32)_i386:
 	rm -rf $@/jre/bin/tnameserv
 	rm -rf $@/jre/bin/orbd
 	rm -rf $@/jre/bin/javaws
+	rm -rf $@/jre/javaws
 	rm -rf $@/jre/lib/javaws
 	rm -rf $@/jre/lib/javaws.jar
 	rm -rf $@/jre/lib/i386/client/classes.jsa
@@ -207,6 +208,7 @@ $(CORE_DEST_DIR)/jdk$(JAVA_VERSION):
 	rm -rf $@/jre/bin/tnameserv
 	rm -rf $@/jre/bin/orbd
 	rm -rf $@/jre/bin/javaws
+	rm -rf $@/jre/javaws
 	rm -rf $@/jre/lib/javaws
 	rm -rf $@/jre/lib/javaws.jar
 	rm -rf $@/jre/lib/i386/client/classes.jsa
