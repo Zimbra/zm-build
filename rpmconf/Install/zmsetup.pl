@@ -2502,6 +2502,9 @@ sub applyConfig {
 	configSetEnabledServices();
 
 	setupCrontab();
+
+  setupSyslog();
+
 	postinstall::configure();
 
 	`touch /opt/zimbra/.bash_history`;
@@ -2553,6 +2556,21 @@ sub configLog {
 	#progress ($msg);
 }
 
+sub setupSyslog {
+
+	progress ("Setting up syslog.conf...");
+	if ( -f "/opt/zimbra/bin/zmsyslogsetup") {
+	  my $rc = 0xffff & system("/opt/zimbra/bin/zmsyslogsetup local");
+	  if ($rc) {
+	    progress ("Failed\n");
+	    } else {
+	    progress ("Done\n");
+    }
+	} else {
+    progress ("Failed\n");
+  }
+	configLog("setupSyslog");
+}
 sub setupCrontab {
 
 	my $backupSchedule;
