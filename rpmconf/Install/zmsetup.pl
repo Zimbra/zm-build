@@ -2260,6 +2260,7 @@ sub configCreateDomain {
 				"$config{NOTEBOOKACCOUNT} \'$config{NOTEBOOKPASS}\' ".
 				"amavisBypassSpamChecks TRUE ".
 				"zimbraAttachmentsIndexingEnabled FALSE ".
+        "zimbraIsSystemResource TRUE ".
 				"zimbraHideInGal TRUE ".
 				"zimbraMailQuota 0 ".
 				"description \'Global notebook account\'");
@@ -2275,6 +2276,7 @@ sub configCreateDomain {
 				"$config{TRAINSASPAM} \'$pass\' ".
 				"amavisBypassSpamChecks TRUE ".
 				"zimbraAttachmentsIndexingEnabled FALSE ".
+        "zimbraIsSystemResource TRUE ".
 				"zimbraHideInGal TRUE ".
 				"zimbraMailQuota 0 ".
 				"description \'Spam training account\'");
@@ -2284,6 +2286,7 @@ sub configCreateDomain {
 				"$config{TRAINSAHAM} \'$pass\' ".
 				"amavisBypassSpamChecks TRUE ".
 				"zimbraAttachmentsIndexingEnabled FALSE ".
+        "zimbraIsSystemResource TRUE ".
 				"zimbraHideInGal TRUE ".
 				"zimbraMailQuota 0 ".
 				"description \'Spam training account\'");
