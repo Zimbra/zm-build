@@ -62,8 +62,6 @@ $(BUILD_ROOT)/zimbralogger.spec:
 		-e '/^%post$$/ r zimbralogger.post' > $(BUILD_ROOT)/zimbralogger.spec
 	rm -f zimbralogger.pre
 	rm -f zimbralogger.post
-	echo "%attr(755, root, root) /opt/zimbra/bin" >> \
-		$(BUILD_ROOT)/zimbralogger.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/logger" >> \
 		$(BUILD_ROOT)/zimbralogger.spec
 
