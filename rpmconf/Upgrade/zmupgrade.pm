@@ -851,6 +851,14 @@ sub upgrade32M2 {
 	if ($acct ne "") {
 		`su - zimbra -c "$ZMPROV ma $acct zimbraIsSystemResource TRUE"`;
 	}
+
+  # Bug 7850
+	my @coses = `su - zimbra -c "$ZMPROV gac"`;
+	foreach my $cos (@coses) {
+		chomp $cos;
+		`su - zimbra -c "$ZMPROV mc $cos zimbraFeatureNewMailNotificationEnabled TRUE zimbraFeatureOutOfOfficeReplyEnabled TRUE"`;
+	}
+
 	return 0;
 }
 
