@@ -831,8 +831,8 @@ sub upgrade32M1 {
 
 		`su - zimbra -c "$ZMPROV mcf zimbraNotebookAccount $nbacct"`;
 	}
-		#`su - zimbra -c "$ZMPROV mcf zimbraFeatureNotebookEnabled TRUE"`;
-	`su - zimbra -c "$ZMPROV in -p zimbra -f /opt/zimbra/wiki -t Template"`;
+	`su - zimbra -c "$ZMPROV mc default zimbraFeatureNotebookEnabled TRUE"`;
+	`su - zimbra -c "$ZMPROV in $nbacct \'$nbpass\' /opt/zimbra/wiki Template"`;
 
 	if ( -d "/opt/zimbra/amavisd-new-2.3.3/db" && -d "/opt/zimbra/amavisd-new-2.4.1" && ! -d "/opt/zimbra/amavisd-new-2.4.1/db" ) {
 		`mv /opt/zimbra/amavisd-new-2.3.3/db /opt/zimbra/amavisd-new-2.4.1/db`;
