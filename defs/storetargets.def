@@ -102,6 +102,8 @@ $(STORE_DEST_DIR)/$(TOMCAT_DIR)/bin: $(STORE_DEST_DIR) force
 
 $(STORE_DEST_DIR)/$(TOMCAT_DIR)/conf: force
 	mkdir -p $@
+	cp -f $(SERVICE_DIR)/conf/tomcat-5.5/context.xml \
+		$(STORE_DEST_DIR)/$(TOMCAT_DIR)/conf/context.xml
 	cp -f $(SERVICE_DIR)/conf/tomcat-5.5/server.xml.production \
 		$(STORE_DEST_DIR)/$(TOMCAT_DIR)/conf/server.xml.in
 	cp -f $(SERVICE_DIR)/conf/zimbra.xml \
