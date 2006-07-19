@@ -721,6 +721,26 @@ sub upgrade313GA {
 sub upgrade314GA {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
 	Migrate::log("Updating from 3.1.4_GA");
+  my $a = <<EOF;
+# parse text/plain internally
+dn: cn=text/plain,cn=mime,cn=config,cn=zimbra
+changetype: add
+zimbraMimeType: text/plain
+cn: text/plain
+objectClass: zimbraMimeEntry
+zimbraMimeIndexingEnabled: TRUE
+zimbraMimeHandlerClass: TextPlainHandler
+zimbraMimeFileExtension: text
+zimbraMimeFileExtension: txt
+description: Plain Text Document
+EOF
+
+  open L, ">/tmp/text-plain.ldif";
+  print L $a;
+  close L;
+  my $ldap_pass = `su - zimbra -c "zmlocalconfig -s -m nokey ldap_root_password"`;
+  chomp $ldap_pass;
+  `su - zimbra -c "ldapmodify -c -D uid=zimbra,cn=admins,cn=zimbra -x -w $ldap_pass -f /tmp/text-plain.ldif"`;
 	return 0;
 }
 
