@@ -2024,9 +2024,9 @@ sub configSaveCA {
 		# Don't use runAsZimbra since it swallows output
 		my $rc;
 
-		$rc = 0xffff & system('su - zimbra -c "$ZMPROV gacf | sed -ne \'/-----BEGIN RSA PRIVATE KEY-----/,/-----END RSA PRIVATE KEY-----/ p\'| sed  -e \'s/^zimbraCertAuthorityKeySelfSigned: //\' > /opt/zimbra/ssl/ssl/ca/ca.key"');
+		$rc = 0xffff & system("su - zimbra -c \"$ZMPROV gacf | sed -ne \'/-----BEGIN RSA PRIVATE KEY-----/,/-----END RSA PRIVATE KEY-----/ p\'| sed  -e \'s/^zimbraCertAuthorityKeySelfSigned: //\' > /opt/zimbra/ssl/ssl/ca/ca.key\"");
 
-		$rc = 0xffff & system('su - zimbra -c "$ZMPROV gacf | sed -ne \'/-----BEGIN TRUSTED CERTIFICATE-----/,/-----END TRUSTED CERTIFICATE-----/ p\'| sed  -e \'s/^zimbraCertAuthorityCertSelfSigned: //\' > /opt/zimbra/ssl/ssl/ca/ca.pem"');
+		$rc = 0xffff & system("su - zimbra -c \"$ZMPROV gacf | sed -ne \'/-----BEGIN TRUSTED CERTIFICATE-----/,/-----END TRUSTED CERTIFICATE-----/ p\'| sed  -e \'s/^zimbraCertAuthorityCertSelfSigned: //\' > /opt/zimbra/ssl/ssl/ca/ca.pem\"");
 
 		progress ( "Done\n" );
 	}
