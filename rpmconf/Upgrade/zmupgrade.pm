@@ -830,9 +830,9 @@ sub upgrade32M1 {
 		`su - zimbra -c "$ZMPROV ca $nbacct \'$nbpass\' amavisBypassSpamChecks TRUE zimbraAttachmentsIndexingEnabled FALSE zimbraHideInGal TRUE zimbraMailQuota 0 description \'Global notebook account\'"`;
 
 		`su - zimbra -c "$ZMPROV mcf zimbraNotebookAccount $nbacct"`;
+	  `su - zimbra -c "$ZMPROV in $nbacct \'$nbpass\' /opt/zimbra/wiki Template"`;
 	}
 	`su - zimbra -c "$ZMPROV mc default zimbraFeatureNotebookEnabled TRUE"`;
-	`su - zimbra -c "$ZMPROV in $nbacct \'$nbpass\' /opt/zimbra/wiki Template"`;
 
 	if ( -d "/opt/zimbra/amavisd-new-2.3.3/db" && -d "/opt/zimbra/amavisd-new-2.4.1" && ! -d "/opt/zimbra/amavisd-new-2.4.1/db" ) {
 		`mv /opt/zimbra/amavisd-new-2.3.3/db /opt/zimbra/amavisd-new-2.4.1/db`;
