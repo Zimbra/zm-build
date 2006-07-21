@@ -2265,7 +2265,7 @@ sub configCreateDomain {
 				"zimbraMailQuota 0 ".
 				"description \'Global notebook account\'");
 			runAsZimbra("$ZMPROV mcf zimbraNotebookAccount $config{NOTEBOOKACCOUNT}");
-			runAsZimbra("$ZMPROV mc default zimbraFeatureNotebookEnabled TRUE");
+			runAsZimbra("$ZMPROV mc default zimbraFeatureNotebookEnabled FALSE");
 			runAsZimbra("$ZMPROV in $config{NOTEBOOKACCOUNT} \'$config{NOTEBOOKPASS}\' /opt/zimbra/wiki Template");
 			progress ( "Done\n" );
 		}

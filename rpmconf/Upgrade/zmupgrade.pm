@@ -832,7 +832,7 @@ sub upgrade32M1 {
 		`su - zimbra -c "$ZMPROV mcf zimbraNotebookAccount $nbacct"`;
 	  `su - zimbra -c "$ZMPROV in $nbacct \'$nbpass\' /opt/zimbra/wiki Template"`;
 	}
-	`su - zimbra -c "$ZMPROV mc default zimbraFeatureNotebookEnabled TRUE"`;
+	`su - zimbra -c "$ZMPROV mc default zimbraFeatureNotebookEnabled FALSE"`;
 
 	if ( -d "/opt/zimbra/amavisd-new-2.3.3/db" && -d "/opt/zimbra/amavisd-new-2.4.1" && ! -d "/opt/zimbra/amavisd-new-2.4.1/db" ) {
 		`mv /opt/zimbra/amavisd-new-2.3.3/db /opt/zimbra/amavisd-new-2.4.1/db`;
@@ -852,11 +852,7 @@ sub upgrade32M2 {
 	Migrate::log("Updating from 3.2.0_M2");
 
   # bug 8121
-  if ( -e "/opt/zimbra/conf/my.cnf" ) {
-    `mv /opt/zimbra/conf/my.cnf /opt/zimbra/conf/my.cnf-pre3.2.0`;
-    `su - zimbra /opt/zimbra/libexec/zmmycnf > /opt/zimbra/conf/my.cnf`;
-    `chmod 644 /opt/zimbra/conf/my.cnf`; 
-  }
+  updateMySQLcnf();
 
 	# Bug 9096
 	my $acct = `su - zimbra -c "$ZMPROV gcf zimbraSpamIsSpamAccount"`;
@@ -1084,6 +1080,38 @@ sub movePostfixQueue {
 	}
 
 	`/opt/zimbra/bin/zmfixperms.sh`;
+}
+
+sub updateMySQLcnf {
+
+  my $mycnf = "/opt/zimbra/conf/my.cnf";
+  if (-e "$mycnf") {
+    open(MYCNF, "$mycnf") or die "$!\n";
+    my @CNF = <MYCNF>;
+    close(MYCNF);
+    my $i=0;
+    my $mycnfChanged = 0;
+    my $tmpfile = "/tmp/my.cnf.$$";;
+    my $zimbra_user = `zmlocalconfig -m nokey zimbra_user 2> /dev/null` || "zmbra";;
+    open(TMP, ">$tmpfile");
+    foreach (@CNF) {
+      if (/^port/ && $CNF[$i+1] !~ m/^user/) {
+        print TMP;
+        print TMP "user         = $zimbra_user\n";
+        $mycnfChanged=1;
+        next;
+      }
+      print TMP;
+      $i++;
+    }
+    close(TMP);
+  
+    if ($mycnfChanged) {
+      `mv $mycnf ${mycnf}.3.2.0_M2`;
+      `cp -f $tmpfile $mycnf`;
+      `chmod 644 $mycnf`;
+    } 
+  }
 }
 
 1
