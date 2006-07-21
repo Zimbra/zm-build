@@ -721,6 +721,7 @@ sub upgrade313GA {
 sub upgrade314GA {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
 	Migrate::log("Updating from 3.1.4_GA");
+	if (isInstalled ("zimbra-ldap")) {
   my $a = <<EOF;
 # parse text/plain internally
 dn: cn=text/plain,cn=mime,cn=config,cn=zimbra
@@ -741,6 +742,7 @@ EOF
   my $ldap_pass = `su - zimbra -c "zmlocalconfig -s -m nokey ldap_root_password"`;
   chomp $ldap_pass;
   `su - zimbra -c "ldapmodify -c -D uid=zimbra,cn=admins,cn=zimbra -x -w $ldap_pass -f /tmp/text-plain.ldif"`;
+	}
 	return 0;
 }
 
