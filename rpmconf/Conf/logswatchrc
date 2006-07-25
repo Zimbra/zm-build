@@ -1,2 +1,3 @@
+ignore /DEBUG/
 watchfor /.*/
 	pipe /opt/zimbra/libexec/zmlogger,MESSAGE=$_\n,KEEP_OPEN=1
