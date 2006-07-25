@@ -21,6 +21,8 @@ perlcode 0 sub dosmtp {   my %args = (@_);  print "SMTP notification: $args{MESS
 
 perlcode 0 sub dosnmp {   my %args = (@_); print "SNMP notification: $args{MESSAGE}\n"; `$snmptrap $snmpsvctrap $snmpsvcname s $args{SERVICE} $snmpsvcstatus i $statuses{$args{STATUS}}`; }
 
+ignore /DEBUG/
+
 watchfor /err: Service status change: (.*) 2 0/ 
 	donotify SERVICE=$1,STATUS=started,HOST=localhost
 watchfor /err: Service status change: (.*) 0 2/ 
