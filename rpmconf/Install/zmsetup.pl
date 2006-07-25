@@ -2203,7 +2203,7 @@ sub configInstallZimlets {
 		my @zimlets = grep { !/^\./ } readdir(DIR);
 		foreach my $zimletfile (@zimlets) {
 			my $zimlet = $zimletfile;
-			$zimlet =~ s/\.zip//;
+			$zimlet =~ s/\.zip$//;
 			progress  ("\n\t$zimlet");
 			runAsZimbra ("/opt/zimbra/bin/zmzimletctl deploy zimlets/$zimletfile");
 		}
@@ -2216,7 +2216,7 @@ sub configInstallZimlets {
 		my @zimlets = grep { !/^\./ } readdir(DIR);
 		foreach my $zimletfile (@zimlets) {
 			my $zimlet = $zimletfile;
-			$zimlet =~ s/\.zip//;
+			$zimlet =~ s/\.zip$//;
 			progress  ("\n\t$zimlet");
 			runAsZimbra ("/opt/zimbra/bin/zmzimletctl deploy zimlets-network/$zimletfile");
 		}
