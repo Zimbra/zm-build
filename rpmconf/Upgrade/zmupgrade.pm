@@ -740,8 +740,10 @@ EOF
   print L $a;
   close L;
   my $ldap_pass = `su - zimbra -c "zmlocalconfig -s -m nokey ldap_root_password"`;
+  my $ldap_url = `su - zimbra -c "zmlocalconfig -s -m nokey ldap_url"`;
   chomp $ldap_pass;
-  `su - zimbra -c "ldapmodify -c -H ldap://localhost:389 -D uid=zimbra,cn=admins,cn=zimbra -x -w $ldap_pass -f /tmp/text-plain.ldif"`;
+  chomp $ldap_url;
+  `su - zimbra -c "ldapmodify -c -H $ldap_url -D uid=zimbra,cn=admins,cn=zimbra -x -w $ldap_pass -f /tmp/text-plain.ldif"`;
 	}
 	return 0;
 }
