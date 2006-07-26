@@ -2264,9 +2264,6 @@ sub configCreateDomain {
 				"zimbraHideInGal TRUE ".
 				"zimbraMailQuota 0 ".
 				"description \'Global notebook account\'");
-			runAsZimbra("$ZMPROV mcf zimbraNotebookAccount $config{NOTEBOOKACCOUNT}");
-			runAsZimbra("$ZMPROV mc default zimbraFeatureNotebookEnabled FALSE");
-			runAsZimbra("$ZMPROV in $config{NOTEBOOKACCOUNT} \'$config{NOTEBOOKPASS}\' /opt/zimbra/wiki Template");
 			progress ( "Done\n" );
 		}
 		if ($config{DOTRAINSA} eq "yes") {
@@ -2380,6 +2377,51 @@ sub configInitSnmp {
 		progress ( "Done\n" );
 	}
 	configLog("configInitSnmp");
+}
+
+sub configInitNotebooks {
+
+	configLog("configInitNotebooks");
+	if (isEnabled("zimbra-store")) {
+		progress ( "Initializing Notebooks..." );
+
+    if ($config{NOTEBOOKACCOUNT} eq "") {
+      open DOMAINS, "$ZMPROV gad|" or die "Can't get domain list!";
+      my $domain = <DOMAINS>;
+      close DOMAINS;
+      chomp $domain;
+      open RP, "/opt/zimbra/bin/zmjava com.zimbra.cs.util.RandomPassword 8 10|" 
+        or die "Can't generate random account name: $!\n";
+      chomp(my $nbacct = <RP>);
+      close RP;
+      $config{NOTEBOOKACCOUNT} = "$nbacct\@$domain";
+
+      open RP, "/opt/zimbra/bin/zmjava com.zimbra.cs.util.RandomPassword 8 10|" 
+        or die "Can't generate random account name: $!\n";
+      chomp($config{NOTEBOOKPASS} = <RP>);
+      close RP;
+    }
+
+    # global notebook
+	  my ($notebookUser, $notebookDomain) = split ('@', $config{NOTEBOOKACCOUNT});
+		runAsZimbra("$ZMPROV mcf zimbraNotebookAccount $config{NOTEBOOKACCOUNT}");
+		runAsZimbra("$ZMPROV mc default zimbraFeatureNotebookEnabled TRUE");
+		runAsZimbra("/opt/zimbra/bin/zmprov in $config{NOTEBOOKACCOUNT} \'$config{NOTEBOOKPASS}\' /opt/zimbra/wiki/Template Template");
+
+    # domain notebooks
+    open(ZM, "$ZMPROV gad|") or warn "Can't get domain list!";
+    my @domains = <ZM>;
+    close(ZM);
+    foreach my $domain (@domains) {
+      chomp($domain);
+      my $nbacc = "$notebookUser\@$domain";
+      runAsZimbra("/opt/zimbra/bin/zmprov idn $nbacc \'$config{NOTEBOOKPASS}\' $domain /opt/zimbra/wiki/Template Template");
+    }
+    runAsZimbra("/opt/zimbra/bin/tomcat stop");
+    runAsZimbra("/opt/zimbra/bin/tomcat start");
+		progress ( "Done\n" );
+	}
+	configLog("configInitNotebooks");
 }
 
 sub configSetEnabledServices {
@@ -2516,7 +2558,16 @@ sub applyConfig {
 		# runAsZimbra swallows the output, so call status this way
 		`su - zimbra -c "/opt/zimbra/bin/zmcontrol status"`;
 		progress ( "Done.\n" );
-	}
+
+    # Initialize notebooks if zimbra-store is enabled and 
+    # only after the application server is running.
+    configInitNotebooks()
+	    if (isEnabled("zimbra-store"));
+
+	} else {
+    progress ( "Skipping notebook initialization.\n")
+	    if (isEnabled("zimbra-store"));
+  }
 
 	if ($newinstall) {
 		runAsZimbra ("/opt/zimbra/bin/zmsshkeygen");

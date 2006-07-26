@@ -82,7 +82,7 @@ my %updateFuncs = (
 	"3.1.4_GA" => \&upgrade314GA,
 	"3.2.0_M1" => \&upgrade32M1,
 	"3.2.0_M2" => \&upgrade32M2,
-	"3.5.0_M1" => \&upgrade35M1,  #Hack for missed version change
+	"4.0.0_GA" => \&upgrade400GA,
 );
 
 my @versionOrder = (
@@ -99,7 +99,7 @@ my @versionOrder = (
 	"3.1.4_GA", 
 	"3.2.0_M1",
 	"3.2.0_M2",
-	"3.5.0_M1"  #Hack for missed version change
+	"4.0.0_GA",
 );
 
 my $startVersion;
@@ -182,8 +182,8 @@ sub upgrade {
 		print "This appears to be 3.2.0_M1\n";
 	} elsif ($startVersion eq "3.2.0_M2") {
 		print "This appears to be 3.2.0_M2\n";
-	} elsif ($startVersion eq "3.5.0_M1") {
-		print "This appears to be 3.5.0_M1\n";
+	} elsif ($startVersion eq "4.0.0_GA") {
+		print "This appears to be 4.0.0_GA\n";
 	} else {
 		print "I can't upgrade version $startVersion\n\n";
 		return 1;
@@ -809,34 +809,6 @@ sub upgrade32M1 {
 
 	`su - zimbra -c "$ZMPROV zimbraLdapGalAttrMap zimbraMailDeliveryAddress,zimbraMailAlias,mail=email,email2,email3,email4,email5,email6"`;
 
-	# bug 7391
-	# Notebook
-	my $nbacct = `su - zimbra -c "$ZMPROV gcf zimbraNotebookAccount | sed -e 's/zimbraNotebookAccount: //'"`;
-	if ($nbacct eq "") {
-
-		open DOMAINS, "$ZMPROV gad |" or die "Can't get domain list!";
-		my $domain = <DOMAINS>;
-		close DOMAINS;
-		chomp $domain;
-		open RP, "/opt/zimbra/bin/zmjava com.zimbra.cs.util.RandomPassword 8 10|" or
-			die "Can't generate random account name: $!\n";
-		$nbacct = <RP>;
-		close RP;
-		chomp $nbacct;
-		$nbacct .= '@'.$domain;
-
-		open RP, "/opt/zimbra/bin/zmjava com.zimbra.cs.util.RandomPassword 8 10|" or
-		die "Can't generate random account name: $!\n";
-		my $nbpass = <RP>;
-		close RP;
-		chomp $nbpass;
-
-		`su - zimbra -c "$ZMPROV ca $nbacct \'$nbpass\' amavisBypassSpamChecks TRUE zimbraAttachmentsIndexingEnabled FALSE zimbraHideInGal TRUE zimbraMailQuota 0 description \'Global notebook account\'"`;
-
-		`su - zimbra -c "$ZMPROV mcf zimbraNotebookAccount $nbacct"`;
-	  `su - zimbra -c "$ZMPROV in $nbacct \'$nbpass\' /opt/zimbra/wiki Template"`;
-	}
-	`su - zimbra -c "$ZMPROV mc default zimbraFeatureNotebookEnabled FALSE"`;
 
 	if ( -d "/opt/zimbra/amavisd-new-2.3.3/db" && -d "/opt/zimbra/amavisd-new-2.4.1" && ! -d "/opt/zimbra/amavisd-new-2.4.1/db" ) {
 		`mv /opt/zimbra/amavisd-new-2.3.3/db /opt/zimbra/amavisd-new-2.4.1/db`;
@@ -879,6 +851,12 @@ sub upgrade32M2 {
 		`su - zimbra -c "$ZMPROV mc $cos zimbraFeatureNewMailNotificationEnabled TRUE zimbraFeatureOutOfOfficeReplyEnabled TRUE"`;
 	}
 
+	return 0;
+}
+
+sub upgrade400GA {
+	my ($startBuild, $targetVersion, $targetBuild) = (@_);
+	Migrate::log("Updating from 4.0.0_GA");
 	return 0;
 }
 
