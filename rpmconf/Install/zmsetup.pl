@@ -2401,9 +2401,9 @@ sub configInitNotebooks {
       chomp($config{NOTEBOOKPASS} = <RP>);
       close RP;
     }
+	  my ($notebookUser, $notebookDomain) = split ('@', $config{NOTEBOOKACCOUNT});
 
     # global notebook
-	  my ($notebookUser, $notebookDomain) = split ('@', $config{NOTEBOOKACCOUNT});
 		runAsZimbra("$ZMPROV mcf zimbraNotebookAccount $config{NOTEBOOKACCOUNT}");
 		runAsZimbra("$ZMPROV mc default zimbraFeatureNotebookEnabled TRUE");
 		runAsZimbra("/opt/zimbra/bin/zmprov in $config{NOTEBOOKACCOUNT} \'$config{NOTEBOOKPASS}\' /opt/zimbra/wiki/Template Template");
@@ -2417,8 +2417,7 @@ sub configInitNotebooks {
       my $nbacc = "$notebookUser\@$domain";
       runAsZimbra("/opt/zimbra/bin/zmprov idn $nbacc \'$config{NOTEBOOKPASS}\' $domain /opt/zimbra/wiki/Template Template");
     }
-    runAsZimbra("/opt/zimbra/bin/tomcat stop");
-    runAsZimbra("/opt/zimbra/bin/tomcat start");
+    runAsZimbra("/opt/zimbra/bin/tomcat restart");
 		progress ( "Done\n" );
 	}
 	configLog("configInitNotebooks");
