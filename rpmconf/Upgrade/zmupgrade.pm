@@ -855,6 +855,19 @@ sub upgrade400GA {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
 	Migrate::log("Updating from 4.0.0_GA");
 
+  # Bug 9504
+  if (-d "/opt/zimbra/redolog") {
+	  `mv /opt/zimbra/redolog /opt/zimbra/redolog-pre-4.0`;
+    `mkdir /opt/zimbra/redolog`;
+    `chown zimbra:zimbra /opt/zimbra/redolog`;
+  }
+
+  if (-e "/opt/zimbra/backup") {
+	  `mv /opt/zimbra/backup /opt/zimbra/backup-pre-4.0`;
+    `mkdir /opt/zimbra/backup`;
+    `chown zimbra:zimbra /opt/zimbra/backup`;
+  }
+
   # Bug 9419
 	main::runAsZimbra("$ZMPROV mcf +zimbraGalLdapFilterDef 'adAutoComplete:(&(|(cn=%s*)(sn=%s*)(gn=%s*)(mail=%s*))(!(msExchHideFromAddressLists=TRUE))(mailnickname=*)(|(&(objectCategory=person)(objectClass=user)(!(homeMDB=*))(!(msExchHomeServerName=*)))(&(objectCategory=person)(objectClass=user)(|(homeMDB=*)(msExchHomeServerName=*)))(&(objectCategory=person)(objectClass=contact))(objectCategory=group)(objectCategory=publicFolder)(objectCategory=msExchDynamicDistributionList)))'");
 	main::runAsZimbra("$ZMPROV mcf +zimbraGalLdapFilterDef 'externalLdapAutoComplete:(|(cn=%s*)(sn=%s*)(gn=%s*)(mail=%s*)'");
