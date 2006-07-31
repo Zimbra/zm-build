@@ -711,7 +711,7 @@ sub upgrade312GA {
 sub upgrade313GA {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
 	Migrate::log("Updating from 3.1.3_GA");
-	my @accounts = main::runAsZimbra("$ZMPROV gaa");
+	my @accounts = `su - zimbra -c "$ZMPROV gaa"`;
 	foreach (@accounts) {
 		chomp;
 		main::runAsZimbra("$ZMPROV ma $_ zimbraPrefMailLocalDeliveryDisabled FALSE");
@@ -792,18 +792,14 @@ sub upgrade32M1 {
 	main::runAsZimbra("$ZMPROV mcf +zimbraGalLdapAttrMap givenName,gn=firstName ");
 
 	# Bug 5466
-	my $acct = `su - zimbra -c "$ZMPROV gcf zimbraSpamIsSpamAccount"`;
-	chomp $acct;
-	$acct =~ s/.* //;
-	if ($acct ne "") {
-		main::runAsZimbra("$ZMPROV ma $acct zimbraHideInGal TRUE");
-	}
-	$acct = `su - zimbra -c "$ZMPROV gcf zimbraSpamIsNotSpamAccount"`;
-	chomp $acct;
-	$acct =~ s/.* //;
-	if ($acct ne "") {
-		main::runAsZimbra("$ZMPROV ma $acct zimbraHideInGal TRUE");
-	}
+  my $acct;
+	$acct = (split(/\s+/, `su - zimbra -c "$ZMPROV gcf zimbraSpamIsSpamAccount"`))[-1];
+  main::runAsZimbra("$ZMPROV ma $acct zimbraHideInGal TRUE")
+	  if ($acct ne "");
+
+	$acct = (split(/\s+/, `su - zimbra -c "$ZMPROV gcf zimbraSpamIsNotSpamAccount"`))[-1];
+  main::runAsZimbra("$ZMPROV ma $acct zimbraHideInGal TRUE")
+  	if ($acct ne "");
 
 	# Bug 7723
 	main::runAsZimbra("$ZMPROV mcf -zimbraGalLdapAttrMap zimbraMailDeliveryAddress,mail=email");
@@ -858,6 +854,13 @@ sub upgrade32M2 {
 sub upgrade400GA {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
 	Migrate::log("Updating from 4.0.0_GA");
+
+  # Bug 9419
+	main::runAsZimbra("$ZMPROV mcf +zimbraGalLdapFilterDef 'adAutoComplete:(&(|(cn=%s*)(sn=%s*)(gn=%s*)(mail=%s*))(!(msExchHideFromAddressLists=TRUE))(mailnickname=*)(|(&(objectCategory=person)(objectClass=user)(!(homeMDB=*))(!(msExchHomeServerName=*)))(&(objectCategory=person)(objectClass=user)(|(homeMDB=*)(msExchHomeServerName=*)))(&(objectCategory=person)(objectClass=contact))(objectCategory=group)(objectCategory=publicFolder)(objectCategory=msExchDynamicDistributionList)))'");
+	main::runAsZimbra("$ZMPROV mcf +zimbraGalLdapFilterDef 'externalLdapAutoComplete:(|(cn=%s*)(sn=%s*)(gn=%s*)(mail=%s*)'");
+	main::runAsZimbra("$ZMPROV mcf +zimbraGalLdapFilterDef 'zimbraAccountAutoComplete:(&(|(cn=%s*)(sn=%s*)(gn=%s*)(mail=%s*)(zimbraMailDeliveryAddress=%s*)(zimbraMailAlias=%s*))(|(objectclass=zimbraAccount)(objectclass=zimbraDistributionList))(!(objectclass=zimbraCalendarResource)))'");
+	main::runAsZimbra("$ZMPROV mcf +zimbraGalLdapFilterDef 'zimbraResourceAutoComplete:(&(|(cn=%s*)(sn=%s*)(gn=%s*)(mail=%s*)(zimbraMailDeliveryAddress=%s*)(zimbraMailAlias=%s*))(objectclass=zimbraCalendarResource))'");
+  
 	return 0;
 }
 
