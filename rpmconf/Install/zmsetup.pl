@@ -2384,37 +2384,58 @@ sub configInitNotebooks {
 	configLog("configInitNotebooks");
 	if (isEnabled("zimbra-store")) {
 		progress ( "Initializing Notebooks..." );
+    my ($notebookUser, $notebookDomain, $globalWikiAcct);
 
-    if ($config{NOTEBOOKACCOUNT} eq "") {
-      open DOMAINS, "$ZMPROV gad|" or die "Can't get domain list!";
-      my $domain = <DOMAINS>;
-      close DOMAINS;
-      chomp $domain;
-      open RP, "/opt/zimbra/bin/zmjava com.zimbra.cs.util.RandomPassword 8 10|" 
-        or die "Can't generate random account name: $!\n";
-      chomp(my $nbacct = <RP>);
-      close RP;
-      $config{NOTEBOOKACCOUNT} = "$nbacct\@$domain";
+    $globalWikiAcct = (split(/\s+/, `su - zimbra -c "$ZMPROV gcf zimbraNotebookAccount"`))[-1];
 
-      open RP, "/opt/zimbra/bin/zmjava com.zimbra.cs.util.RandomPassword 8 10|" 
-        or die "Can't generate random account name: $!\n";
-      chomp($config{NOTEBOOKPASS} = <RP>);
-      close RP;
-    }
-	  my ($notebookUser, $notebookDomain) = split ('@', $config{NOTEBOOKACCOUNT});
+    # enable wiki before we do anything else.
+		runAsZimbra("$ZMPROV mc default zimbraFeatureNotebookEnabled TRUE");
+
+    if ($globalWikiAcct eq "") {
+      if ($config{NOTEBOOKACCOUNT} eq "") {
+        open DOMAINS, "$ZMPROV gad|" or die "Can't get domain list!";
+        my $domain = <DOMAINS>;
+        close DOMAINS;
+        chomp $domain;
+        open RP, "/opt/zimbra/bin/zmjava com.zimbra.cs.util.RandomPassword 8 10|" 
+          or die "Can't generate random account name: $!\n";
+        chomp(my $nbacct = <RP>);
+        close RP;
+        $config{NOTEBOOKACCOUNT} = "$nbacct\@$domain";
+  
+        open RP, "/opt/zimbra/bin/zmjava com.zimbra.cs.util.RandomPassword 8 10|" 
+          or die "Can't generate random account name: $!\n";
+        chomp($config{NOTEBOOKPASS} = <RP>);
+        close RP;
+      }
 
     # global notebook
-		runAsZimbra("$ZMPROV mcf zimbraNotebookAccount $config{NOTEBOOKACCOUNT}");
-		runAsZimbra("$ZMPROV mc default zimbraFeatureNotebookEnabled TRUE");
-		runAsZimbra("/opt/zimbra/bin/zmprov in $config{NOTEBOOKACCOUNT} \'$config{NOTEBOOKPASS}\' /opt/zimbra/wiki/Template Template");
+		  runAsZimbra("$ZMPROV mcf zimbraNotebookAccount $config{NOTEBOOKACCOUNT}");
+		  runAsZimbra("/opt/zimbra/bin/zmprov in $config{NOTEBOOKACCOUNT} \'$config{NOTEBOOKPASS}\' /opt/zimbra/wiki/Template Template");
+    } 
 
-    # domain notebooks
+	  ($notebookUser, $notebookDomain) = split ('@', $config{NOTEBOOKACCOUNT});
+
+    # domain notebooks only if the domain is local and wiki account
+    # was not previously setup.
     open(ZM, "$ZMPROV gad|") or warn "Can't get domain list!";
     my @domains = <ZM>;
     close(ZM);
     foreach my $domain (@domains) {
       chomp($domain);
+      my $domainType = (split(/\s+/, `su - zimbra -c "$ZMPROV gd $domain | grep zimbraDomainType"`))[-1];
+      next unless $domainType eq "local";
+
+      my $domainWikiAcct = (split(/\s+/, `su - zimbra -c "$ZMPROV gd $domain | grep zimbraNotebookAccount"`))[-1];
+      next unless $domainWikiAcct eq "";
+
+      $notebookUser = "domainWiki" unless $notebookUser; 
       my $nbacc = "$notebookUser\@$domain";
+
+      # global and domain accounts cannot be the same
+      $nbacc = "domainWiki\@$domain" 
+        if ($nbacc eq "$config{NOTEBOOKACCOUNT}");
+
       runAsZimbra("/opt/zimbra/bin/zmprov idn $nbacc \'$config{NOTEBOOKPASS}\' $domain /opt/zimbra/wiki/Template Template");
     }
     runAsZimbra("/opt/zimbra/bin/tomcat restart");
