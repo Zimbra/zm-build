@@ -2385,11 +2385,12 @@ sub configInitNotebooks {
 	if (isEnabled("zimbra-store")) {
 		progress ( "Initializing Notebooks..." );
     my ($notebookUser, $notebookDomain, $globalWikiAcct);
+    my $rc = 0;
 
     $globalWikiAcct = (split(/\s+/, `su - zimbra -c "$ZMPROV gcf zimbraNotebookAccount"`))[-1];
 
     # enable wiki before we do anything else.
-		runAsZimbra("$ZMPROV mc default zimbraFeatureNotebookEnabled TRUE");
+		runAsZimbra("/opt/zimbra/bin/zmprov mc default zimbraFeatureNotebookEnabled TRUE");
 
     if ($globalWikiAcct eq "") {
       if ($config{NOTEBOOKACCOUNT} eq "") {
@@ -2410,8 +2411,8 @@ sub configInitNotebooks {
       }
 
     # global notebook
-		  runAsZimbra("$ZMPROV mcf zimbraNotebookAccount $config{NOTEBOOKACCOUNT}");
-		  runAsZimbra("/opt/zimbra/bin/zmprov in $config{NOTEBOOKACCOUNT} \'$config{NOTEBOOKPASS}\' /opt/zimbra/wiki/Template Template");
+		  runAsZimbra("/opt/zimbra/bin/zmprov mcf zimbraNotebookAccount $config{NOTEBOOKACCOUNT}");
+		  $rc = runAsZimbra("/opt/zimbra/bin/zmprov in $config{NOTEBOOKACCOUNT} \'$config{NOTEBOOKPASS}\' /opt/zimbra/wiki/Template Template");
     } 
 
 	  ($notebookUser, $notebookDomain) = split ('@', $config{NOTEBOOKACCOUNT});
@@ -2438,9 +2439,15 @@ sub configInitNotebooks {
 
       runAsZimbra("/opt/zimbra/bin/zmprov idn $nbacc \'$config{NOTEBOOKPASS}\' $domain /opt/zimbra/wiki/Template Template");
     }
-    runAsZimbra("/opt/zimbra/bin/tomcat restart");
-		progress ( "Done\n" );
+    if ($rc != 0) {
+      progress ("failed to initialize notebooks...see logfile for details.\n");
+	    runAsZimbra("$ZMPROV mc default zimbraFeatureNotebookEnabled FALSE")
+    } else {
+      runAsZimbra("/opt/zimbra/bin/tomcat restart");
+		  progress ( "Done\n" );
+    }
 	}
+    
 	configLog("configInitNotebooks");
 }
 
