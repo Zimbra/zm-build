@@ -2051,6 +2051,9 @@ sub configCreateCert {
 			!-f "/opt/zimbra/conf/slapd.crt") {
 			runAsZimbra("cd /opt/zimbra; zmcreatecert");
 		}
+		if (-f "/opt/zimbra/java/jre/lib/security/cacerts") {
+			`chmod 744 /opt/zimbra/java/jre/lib/security/cacerts >> $logfile 2>&1`;
+		}
 		progress ( "Done\n" );
 
 	}
