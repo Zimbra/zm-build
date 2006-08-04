@@ -311,11 +311,46 @@ checkExistingInstall() {
 			echo "NOT FOUND"
 		fi
 	done
+
+  verifyLicenseAvailable
+
 	if [ $INSTALLED = "yes" ]; then
 		saveExistingConfig
 	else
 		checkUserInfo
 	fi
+}
+
+verifyLicenseAvailable() {
+
+  isInstalled zimbra-store
+  if [ x$PKGINSTALLED == "x" ]; then
+    return
+  fi
+
+  if [ x"`rpm --qf '%{description}' -qp ./packages/zimbra-core* | grep Network`" == "x" ]; then
+    return
+  fi
+
+  echo "Checking for available license file..."
+  if [ ! -f "/opt/zimbra/conf/ZCSLicense.xml" -a ! -f "/opt/zimbra/conf/ZCSLicense-Trial.xml" ]; then
+    echo "WARNING: No license file has been found to install."
+    echo "The ZCS Connector for Outlook, Zimbra Mobile and Zimbra account creation"
+    echo "will not work without a valid license file."
+	  while :; do
+		  askYN "Do you wish to continue without a license?" "N"
+		  if [ $response = "no" ]; then
+			  askYN "Exit?" "N"
+			  if [ $response = "yes" ]; then
+				  echo "Exiting - place a license file in /opt/zimbra/conf/ZCSLicense.xml and rerun."
+				  exit 1
+			  fi
+		  else
+			  break
+		  fi
+	  done
+
+  fi
 }
 
 checkUserInfo() {
