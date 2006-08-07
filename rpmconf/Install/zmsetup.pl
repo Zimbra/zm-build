@@ -2266,7 +2266,7 @@ sub configCreateDomain {
         "zimbraIsSystemResource TRUE ".
 				"zimbraHideInGal TRUE ".
 				"zimbraMailQuota 0 ".
-				"description \'Global Documents account\'");
+				"description \'Global notebook account\'");
 			progress ( "Done\n" );
 		}
 		if ($config{DOTRAINSA} eq "yes") {
@@ -2386,7 +2386,7 @@ sub configInitNotebooks {
 
 	configLog("configInitNotebooks");
 	if (isEnabled("zimbra-store")) {
-		progress ( "Initializing Documents..." );
+		progress ( "Initializing Notebooks..." );
     my ($notebookUser, $notebookDomain, $globalWikiAcct);
     my $rc = 0;
 
@@ -2413,14 +2413,14 @@ sub configInitNotebooks {
         close RP;
       }
 
-    # global Documents
+    # global notebook
 		  runAsZimbra("/opt/zimbra/bin/zmprov mcf zimbraNotebookAccount $config{NOTEBOOKACCOUNT}");
 		  $rc = runAsZimbra("/opt/zimbra/bin/zmprov in $config{NOTEBOOKACCOUNT} \'$config{NOTEBOOKPASS}\' /opt/zimbra/wiki/Template Template");
     } 
 
 	  ($notebookUser, $notebookDomain) = split ('@', $config{NOTEBOOKACCOUNT});
 
-    # domain Documents only if the domain is local and wiki account
+    # domain notebooks only if the domain is local and wiki account
     # was not previously setup.
     open(ZM, "$ZMPROV gad|") or warn "Can't get domain list!";
     my @domains = <ZM>;
@@ -2443,7 +2443,7 @@ sub configInitNotebooks {
       runAsZimbra("/opt/zimbra/bin/zmprov idn $nbacc \'$config{NOTEBOOKPASS}\' $domain /opt/zimbra/wiki/Template Template");
     }
     if ($rc != 0) {
-      progress ("failed to initialize documents...see logfile for details.\n");
+      progress ("failed to initialize notebooks...see logfile for details.\n");
 	    runAsZimbra("$ZMPROV mc default zimbraFeatureNotebookEnabled FALSE")
     } else {
       runAsZimbra("/opt/zimbra/bin/tomcat restart");
