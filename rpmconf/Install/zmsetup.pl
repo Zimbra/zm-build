@@ -2418,30 +2418,30 @@ sub configInitNotebooks {
 		  $rc = runAsZimbra("/opt/zimbra/bin/zmprov in $config{NOTEBOOKACCOUNT} \'$config{NOTEBOOKPASS}\' /opt/zimbra/wiki/Template Template");
     } 
 
-	  ($notebookUser, $notebookDomain) = split ('@', $config{NOTEBOOKACCOUNT});
+#	  ($notebookUser, $notebookDomain) = split ('@', $config{NOTEBOOKACCOUNT});
 
-    # domain Documents only if the domain is local and wiki account
-    # was not previously setup.
-    open(ZM, "$ZMPROV gad|") or warn "Can't get domain list!";
-    my @domains = <ZM>;
-    close(ZM);
-    foreach my $domain (@domains) {
-      chomp($domain);
-      my $domainType = (split(/\s+/, `su - zimbra -c "$ZMPROV gd $domain | grep zimbraDomainType"`))[-1];
-      next unless $domainType eq "local";
-
-      my $domainWikiAcct = (split(/\s+/, `su - zimbra -c "$ZMPROV gd $domain | grep zimbraNotebookAccount"`))[-1];
-      next unless $domainWikiAcct eq "";
-
-      $notebookUser = "domainWiki" unless $notebookUser; 
-      my $nbacc = "$notebookUser\@$domain";
-
-      # global and domain accounts cannot be the same
-      $nbacc = "domainWiki\@$domain" 
-        if ($nbacc eq "$config{NOTEBOOKACCOUNT}");
-
-      runAsZimbra("/opt/zimbra/bin/zmprov idn $nbacc \'$config{NOTEBOOKPASS}\' $domain /opt/zimbra/wiki/Template Template");
-    }
+#    # domain Documents only if the domain is local and wiki account
+#    # was not previously setup.
+#    open(ZM, "$ZMPROV gad|") or warn "Can't get domain list!";
+#    my @domains = <ZM>;
+#    close(ZM);
+#    foreach my $domain (@domains) {
+#      chomp($domain);
+#      my $domainType = (split(/\s+/, `su - zimbra -c "$ZMPROV gd $domain | grep zimbraDomainType"`))[-1];
+#      next unless $domainType eq "local";
+#
+#      my $domainWikiAcct = (split(/\s+/, `su - zimbra -c "$ZMPROV gd $domain | grep zimbraNotebookAccount"`))[-1];
+##      next unless $domainWikiAcct eq "";
+#
+#      $notebookUser = "domainWiki" unless $notebookUser; 
+#      my $nbacc = "$notebookUser\@$domain";
+#
+#      # global and domain accounts cannot be the same
+#      $nbacc = "domainWiki\@$domain" 
+#        if ($nbacc eq "$config{NOTEBOOKACCOUNT}");
+#
+#      runAsZimbra("/opt/zimbra/bin/zmprov idn $nbacc \'$config{NOTEBOOKPASS}\' $domain /opt/zimbra/wiki/Template Template");
+#    }
     if ($rc != 0) {
       progress ("failed to initialize documents...see logfile for details.\n");
 	    runAsZimbra("$ZMPROV mc default zimbraFeatureNotebookEnabled FALSE")
