@@ -39,6 +39,7 @@ STORE_COMPONENTS := \
 	$(STORE_DEST_DIR)/$(TOMCAT_DIR)/common/lib/mail.jar \
 	$(STORE_DEST_DIR)/$(TOMCAT_DIR)/common/endorsed/zimbra-charset.jar \
 	$(STORE_DEST_DIR)/$(TOMCAT_DIR)/common/lib/activation.jar \
+	$(STORE_DEST_DIR)/wiki \
 	$(STORE_DEST_DIR)/$(MYSQL_DIR) 
 
 ZIMLET_COMPONENTS := \
