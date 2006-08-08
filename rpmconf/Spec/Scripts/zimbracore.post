@@ -31,7 +31,8 @@ I=`hostname -i`
 #Symlinks
 rm -f /opt/zimbra/java
 PLAT=`/opt/zimbra/libexec/get_plat_tag.sh`
-if [ "x$PLAT" = "xRHEL4_64" ]; then
+BIT=`echo $PLAT | awk -F_ '{print $2}'`
+if [ "x$BIT" = "x64" ]; then
 	ln -s /opt/zimbra/jdk1.5.0_07 /opt/zimbra/java
 else
 	ln -s /opt/zimbra/jdk1.5.0_07 /opt/zimbra/java
@@ -92,7 +93,7 @@ mkdir /opt/zimbra/.ssh
 chown zimbra:zimbra /opt/zimbra/.ssh
 
 # 64 bit jvm doesn't support the dump
-if [ "x$PLAT" = "xRHEL4_64" ]; then
+if [ "x$BIT" = "x64" -o ]; then
 	exit 0
 fi
 
