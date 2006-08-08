@@ -2585,7 +2585,7 @@ sub applyConfig {
 	if ($config{STARTSERVERS} eq "yes") {
 
     # bug 6270 
-    if ($platfom =~ m/DEBIAN/ && ! $newinstall) {
+    if ($platform =~ m/DEBIAN/ && ! $newinstall) {
       `chown zimbra:zimbra /opt/zimbra/redolog/redo.log`;
     }
 
