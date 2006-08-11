@@ -334,11 +334,13 @@ verifyLicenseAvailable() {
 
   echo "Checking for available license file..."
   if [ ! -f "/opt/zimbra/conf/ZCSLicense.xml" -a ! -f "/opt/zimbra/conf/ZCSLicense-Trial.xml" ]; then
-    echo "WARNING: No license file has been found to install."
-    echo "The ZCS Connector for Outlook, Zimbra Mobile and Zimbra account creation"
-    echo "will not work without a valid license file."
+    echo "WARNING: No license file has been found to install or upgrade"
+    echo "an existing license. The ZCS Connector for Outlook, Zimbra Mobile"
+    echo "and Zimbra account creation will not work without a valid license"
+    echo "file. If you have previously installed a license you may safely"
+    echo "continue without /opt/zimbra/conf/ZCSLicense.xml present."
 	  while :; do
-		  askYN "Do you wish to continue without a license?" "N"
+		  askYN "Do you wish to continue?" "N"
 		  if [ $response = "no" ]; then
 			  askYN "Exit?" "N"
 			  if [ $response = "yes" ]; then
