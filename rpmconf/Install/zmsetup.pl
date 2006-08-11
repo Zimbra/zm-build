@@ -2583,6 +2583,12 @@ sub applyConfig {
 	`chown zimbra:zimbra /opt/zimbra/.bash_history`;
 
 	if ($config{STARTSERVERS} eq "yes") {
+
+    # bug 6270 
+    if ($platfom =~ m/DEBIAN/ && ! $newinstall) {
+      `chown zimbra:zimbra /opt/zimbra/redolog/redo.log`;
+    }
+
 		progress ( "Starting servers..." );
 		runAsZimbra ("/opt/zimbra/bin/zmcontrol start");
 		# runAsZimbra swallows the output, so call status this way
