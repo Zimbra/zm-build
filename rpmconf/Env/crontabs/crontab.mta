@@ -13,3 +13,8 @@
 # Dspam cleanup
 #
 0 1 * * * find /opt/zimbra/dspam/var/dspam/data/z/i/zimbra/zimbra.sig/ -type f -name \*sig -mtime +7 -exec rm {} \; > /dev/null 2>&1
+#
+# Spam Bayes auto-expiry
+#
+20 23 * * * /opt/zimbra/libexec/sa-learn --force-expire --sync > /dev/null 2>&1 
+
