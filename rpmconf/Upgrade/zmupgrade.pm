@@ -877,12 +877,9 @@ sub upgrade400GA {
 
   # Bug 9693
 	if ($startVersion eq "3.2.0_M1" || $startVersion eq "3.2.0_M2") {
-	  if (isInstalled ("zimbra-ldap")) { 
-		  return 1 if (startLdap());
-    }
 		if (isInstalled("zimbra-store")) {
 			if (startSql()) { return 1; }
-			main::runAsZimbra("${scriptDir}/migrate20060807-WikiDigestFixup.sh");
+			main::runAsZimbra("sh ${scriptDir}/migrate20060807-WikiDigestFixup.sh");
 			stopSql();
 		}
 	}
