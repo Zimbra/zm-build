@@ -71,6 +71,8 @@ $(BUILD_ROOT)/zimbra.spec:
 		$(BUILD_ROOT)/zimbra.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/apache-tomcat-5.5.15" >> \
 		$(BUILD_ROOT)/zimbra.spec
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/wiki" >> \
+		$(BUILD_ROOT)/zimbra.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/perdition-1.17" >> \
 		$(BUILD_ROOT)/zimbra.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/mysql-standard-4.1.20-pc-linux-gnu-i686-glibc23" >> \
@@ -131,6 +133,10 @@ $(STORE_DEST_DIR)/$(TOMCAT_DIR): $(STORE_DEST_DIR) $(STORE_DEST_DIR)/$(TOMCAT_DI
 
 $(WEBAPP_DIR): 
 	mkdir -p $@
+
+$(STORE_DEST_DIR)/wiki:
+	mkdir -p $@
+	cp -R $(SERVICE_DIR)/build/dist/wiki/Template $@
 
 $(SERVICE_DIR)/build/dist/zimlets/nofile:
 	(cd $(SERVICE_DIR); $(ANT) \
