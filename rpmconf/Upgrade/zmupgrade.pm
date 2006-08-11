@@ -857,13 +857,13 @@ sub upgrade400GA {
 	Migrate::log("Updating from 4.0.0_GA");
 
   # Bug 9504
-  if (-d "/opt/zimbra/redolog") {
+  if (-d "/opt/zimbra/redolog" && ! -e "/opt/zimbra/redolog-pre-4.0") {
 	  `mv /opt/zimbra/redolog /opt/zimbra/redolog-pre-4.0`;
     `mkdir /opt/zimbra/redolog`;
     `chown zimbra:zimbra /opt/zimbra/redolog`;
   }
 
-  if (-e "/opt/zimbra/backup") {
+  if (-e "/opt/zimbra/backup" && ! -e "/opt/zimbra/backup-pre-4.0") {
 	  `mv /opt/zimbra/backup /opt/zimbra/backup-pre-4.0`;
     `mkdir /opt/zimbra/backup`;
     `chown zimbra:zimbra /opt/zimbra/backup`;
@@ -874,6 +874,18 @@ sub upgrade400GA {
 	main::runAsZimbra("$ZMPROV mcf +zimbraGalLdapFilterDef 'externalLdapAutoComplete:(|(cn=%s*)(sn=%s*)(gn=%s*)(mail=%s*)'");
 	main::runAsZimbra("$ZMPROV mcf +zimbraGalLdapFilterDef 'zimbraAccountAutoComplete:(&(|(cn=%s*)(sn=%s*)(gn=%s*)(mail=%s*)(zimbraMailDeliveryAddress=%s*)(zimbraMailAlias=%s*))(|(objectclass=zimbraAccount)(objectclass=zimbraDistributionList))(!(objectclass=zimbraCalendarResource)))'");
 	main::runAsZimbra("$ZMPROV mcf +zimbraGalLdapFilterDef 'zimbraResourceAutoComplete:(&(|(cn=%s*)(sn=%s*)(gn=%s*)(mail=%s*)(zimbraMailDeliveryAddress=%s*)(zimbraMailAlias=%s*))(objectclass=zimbraCalendarResource))'");
+
+  # Bug 9693
+	if ($startVersion eq "3.2.0_M1" || $startVersion eq "3.2.0_M2") {
+	  if (isInstalled ("zimbra-ldap")) { 
+		  return 1 if (startLdap());
+    }
+		if (isInstalled("zimbra-store")) {
+			if (startSql()) { return 1; }
+			main::runAsZimbra("${scriptDir}/migrate20060807-WikiDigestFixup.sh");
+			stopSql();
+		}
+	}
   
 	return 0;
 }
