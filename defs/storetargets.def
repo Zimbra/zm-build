@@ -158,7 +158,7 @@ $(STORE_DEST_DIR)/zimlets-extra: $(ZIMLET_DIR)/build/dist/zimlets-extra/nofile
 
 $(STORE_DEST_DIR)/zimlets: $(ZIMLET_DIR)/build/dist/zimlets/nofile
 	mkdir -p $@
-	cp $(SERVICE_DIR)/build/dist/zimlets/* $@
+	cp $(ZIMLET_DIR)/build/dist/zimlets/* $@
 
 $(WEBAPP_DIR)/zimbra/downloads:
 	mkdir -p $@
