@@ -324,7 +324,11 @@ checkExistingInstall() {
 verifyLicenseAvailable() {
 
   isInstalled zimbra-store
-  if [ x$PKGINSTALLED == "x" ]; then
+  if [ x$PKGINSTALLED = "x" ]; then
+    return
+  fi
+
+  if [ x"$AUTOINSTALL" = "xyes" ]; then
     return
   fi
 
