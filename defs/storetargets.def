@@ -150,7 +150,7 @@ $(ZIMLET_DIR)/build/dist/zimlets-extra/nofile:
 		-Dplat.tag=$(BUILD_PLATFORM) \
 		-Dzimbra.buildinfo.version=$(VERSION_TAG) \
 		-Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) \
-		-Dzimbra.buildinfo.host=$(HOST) package-zimlets ; )
+		-Dzimbra.buildinfo.host=$(HOST) package-zimlets-extra ; )
 
 $(STORE_DEST_DIR)/zimlets-extra: $(ZIMLET_DIR)/build/dist/zimlets-extra/nofile
 	mkdir -p $@
