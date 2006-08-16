@@ -114,7 +114,7 @@ my @interfaces = ();
 
 ($>) and usage();
 
-getopts("c:h", \%options) or usage();
+getopts("c:hd", \%options) or usage();
 
 sub usage {
 	($>) and print STDERR "Warning: $0 must be run as root!\n\n";
@@ -317,6 +317,17 @@ sub getSystemStatus {
 	}
 }
 
+sub getLdapConfigValue {
+	my $attrib = shift;
+
+	# Gotta love the triple escape: \\\  
+	my $rc = 0xffff & system("su - zimbra -c \"$ZMPROV gcf $attrib | sed -e \\\"s/${attrib}: //\\\" > /tmp/ld.out\"");
+	my $val=`cat /tmp/ld.out`;
+	unlink "/tmp/ld.out";
+	chomp $val;
+
+	return $val;
+}
 sub getLdapServerValue {
 	my $attrib = shift;
 	my $hn = shift;
@@ -370,6 +381,10 @@ sub setLdapDefaults {
 	$config{POPPROXYPORT} 		= getLdapServerValue("zimbraPop3ProxyBindPort");
 	$config{POPSSLPROXYPORT} 	= getLdapServerValue("zimbraPop3SSLProxyBindPort");
 
+  $config{TRAINSASPAM} = getLdapConfigValue("zimbraSpamIsSpamAccount");
+  $config{TRAINSAHAM} = getLdapConfigValue("zimbraSpamIsNotSpamAccount");
+  $config{NOTEBOOKACCOUNT} = getLdapConfigValue("zimbraNotebookAccount");
+
 	my $smtphost=getLdapServerValue("zimbraSmtpHostname");
 	if ( $smtphost ne "") {
 		$config{SMTPHOST} = $smtphost;
@@ -379,6 +394,12 @@ sub setLdapDefaults {
 	if ( $mtaauthhost ne "") {
 		$config{MTAAUTHHOST} = $mtaauthhost;
 	}
+
+  if ($options{d}) {
+    foreach my $key (sort keys %config) {
+      print "\tDEBUG: $key=$config{$key}\n";
+    }
+  }
 
 	progress ( "Done\n" );
 }
@@ -2390,7 +2411,7 @@ sub configInitNotebooks {
     my ($notebookUser, $notebookDomain, $globalWikiAcct);
     my $rc = 0;
 
-    $globalWikiAcct = (split(/\s+/, `su - zimbra -c "$ZMPROV gcf zimbraNotebookAccount"`))[-1];
+    $globalWikiAcct = getLdapConfigValue("zimbraNotebookAccount");
 
     # enable wiki before we do anything else.
 		runAsZimbra("/opt/zimbra/bin/zmprov mc default zimbraFeatureNotebookEnabled TRUE");
@@ -2790,6 +2811,7 @@ if ($ldapConfigured) {
 if ($ldapConfigured || 
 	(($config{LDAPHOST} ne $config{HOSTNAME}) && !verifyLdap())) {
 	setLdapDefaults();
+  
 }
 
 if ($options{c}) {
