@@ -133,7 +133,7 @@ checkPackages() {
 		fi
 	done
 
-	if [ $PLATFORM = "DEBIAN3.1" ]; then
+	if [ $PLATFORM = "DEBIAN3.1" -o $PLATFORM = "MANDRIVA2006" ]; then
 		LOCALPROC=$PROC
 	else
 		LOCALPROC=`uname -i`
