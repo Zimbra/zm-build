@@ -2369,7 +2369,7 @@ sub configInitMta {
 
 	if (isEnabled("zimbra-mta")) {
 		progress ( "Initializing mta config..." );
-		runAsZimbra ("/opt/zimbra/libexec/zmmtainit $config{LDAPHOST}");
+		runAsZimbra ("/opt/zimbra/libexec/zmmtainit $config{LDAPHOST} $config{LDAPPORT}");
 		progress ( "Done\n" );
 		$installedServiceStr .= "zimbraServiceInstalled antivirus ";
 		$installedServiceStr .= "zimbraServiceInstalled antispam ";
