@@ -73,21 +73,21 @@ $(BUILD_ROOT)/zimbramta.spec:
 		$(BUILD_ROOT)/zimbramta.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/dspam-3.6.2" >> \
 		$(BUILD_ROOT)/zimbramta.spec
-	echo "%attr(555, zimbra, zimbra) /opt/zimbra/clamav-0.88/bin" >> \
+	echo "%attr(555, zimbra, zimbra) /opt/zimbra/clamav-$(CLAMAV_VERSION)/bin" >> \
 		$(BUILD_ROOT)/zimbramta.spec
-	echo "%attr(755, zimbra, zimbra) /opt/zimbra/clamav-0.88/db" >> \
+	echo "%attr(755, zimbra, zimbra) /opt/zimbra/clamav-$(CLAMAV_VERSION)/db" >> \
 		$(BUILD_ROOT)/zimbramta.spec
-	echo "%attr(-, zimbra, zimbra) /opt/zimbra/clamav-0.88/etc/" >> \
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/clamav-$(CLAMAV_VERSION)/etc/" >> \
 		$(BUILD_ROOT)/zimbramta.spec
-	echo "%attr(-, zimbra, zimbra) /opt/zimbra/clamav-0.88/include" >> \
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/clamav-$(CLAMAV_VERSION)/include" >> \
 		$(BUILD_ROOT)/zimbramta.spec
-	echo "%attr(-, zimbra, zimbra) /opt/zimbra/clamav-0.88/lib" >> \
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/clamav-$(CLAMAV_VERSION)/lib" >> \
 		$(BUILD_ROOT)/zimbramta.spec
-	echo "%attr(-, zimbra, zimbra) /opt/zimbra/clamav-0.88/man" >> \
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/clamav-$(CLAMAV_VERSION)/man" >> \
 		$(BUILD_ROOT)/zimbramta.spec
-	echo "%attr(555, zimbra, zimbra) /opt/zimbra/clamav-0.88/sbin" >> \
+	echo "%attr(555, zimbra, zimbra) /opt/zimbra/clamav-$(CLAMAV_VERSION)/sbin" >> \
 		$(BUILD_ROOT)/zimbramta.spec
-	echo "%attr(-, zimbra, zimbra) /opt/zimbra/clamav-0.88/share" >> \
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/clamav-$(CLAMAV_VERSION)/share" >> \
 		$(BUILD_ROOT)/zimbramta.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/postfix-2.2.9" >> \
 		$(BUILD_ROOT)/zimbramta.spec
@@ -108,7 +108,11 @@ $(MTA_DEST_DIR)/$(POSTFIX_DIR): $(MTA_DEST_DIR)
 	cp $(SERVICE_DIR)/conf/postfix/master.cf $(MTA_DEST_DIR)/$(POSTFIX_DIR)/conf/master.cf
 	cp -f $(THIRD_PARTY)/PostFix/PostFix-$(POSTFIX_VERSION)/builds/qshape.pl $(MTA_DEST_DIR)/$(POSTFIX_DIR)/sbin/qshape.pl
 
-$(MTA_DEST_DIR)/$(CLAMAV_DIR): $(MTA_DEST_DIR)
+$(CLAMAV_SOURCE).tgz:
+	@echo "*** Creating clamav"
+	(cd $(THIRD_PARTY)/$(CLAMAV_DIR) ; make)
+
+$(MTA_DEST_DIR)/$(CLAMAV_DIR): $(MTA_DEST_DIR) $(CLAMAV_SOURCE).tgz
 	@echo "*** Creating clamav"
 	(cd $(MTA_DEST_DIR); tar xzf $(CLAMAV_SOURCE).tgz;)
 	mkdir -p $(MTA_DEST_DIR)/$(CLAMAV_DIR)-$(CLAMAV_VERSION)/db
