@@ -154,6 +154,8 @@ $(LAUNCHER_DIR)/build/zimbra-launcher.jar:
 $(LAUNCHER_DIR)/build/zmtomcatmgr:
 	(cd $(LAUNCHER_DIR); make TOMCAT_HOME=$(TOMCAT_HOME) JAVA_BINARY=$(JAVA_BINARY))
 
+pcre_UBUNTU6: 
+	mkdir -p $(CORE_DEST_DIR)/lib
 pcre_MACOSXx86: 
 	mkdir -p $(CORE_DEST_DIR)/lib
 	(cd $(CORE_DEST_DIR)/lib; tar xzf $(THIRD_PARTY)/pcre/builds/$(BUILD_PLATFORM)/pcre.tgz)

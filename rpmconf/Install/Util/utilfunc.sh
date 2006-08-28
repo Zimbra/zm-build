@@ -1040,12 +1040,15 @@ isInstalled () {
 
 getPlatformVars() {
 	PLATFORM=`bin/get_plat_tag.sh`
-	if [ $PLATFORM = "DEBIAN3.1" ]; then
+	if [ $PLATFORM = "DEBIAN3.1" -o $PLATFORM = "UBUNTU6" ]; then
 		PACKAGEINST='dpkg -i'
 		PACKAGERM='dpkg --purge'
 		PACKAGEQUERY='dpkg -s'
 		PACKAGEEXT='deb'
 		PREREQ_PACKAGES="sudo libidn11 curl fetchmail libgmp3 libxml2 libstdc++6 openssl"
+		if [ $PLATFORM = "UBUNTU6" ]; then
+			PREREQ_PACKAGES="sudo libidn11 curl fetchmail libgmp3c2 libxml2 libstdc++6 openssl"
+		fi
 	elif echo $PLATFORM | grep RPL > /dev/null 2>&1; then
 		PACKAGEINST='conary update'
 		PACKAGERM='conary erase'

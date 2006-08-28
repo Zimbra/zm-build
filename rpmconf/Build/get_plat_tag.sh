@@ -87,6 +87,21 @@ if [ -f /etc/debian_version ]; then
 	fi
 fi
 
+if [ -f /etc/lsb-release ]; then
+	grep "DISTRIB_ID=Ubuntu" /etc/lsb-release > /dev/null 2>&1
+	if [ $? = 0 ]; then
+		echo -n "UBUNTU"
+	fi
+	grep "DISTRIB_RELEASE=6" /etc/lsb-release > /dev/null 2>&1
+	if [ $? = 0 ]; then
+		echo "6"
+		exit 0
+	else
+		echo "UNKNOWN"
+		exit 0
+	fi
+fi
+
 if [ -f /etc/mandriva-release ]; then
 	grep "2006" /etc/mandriva-release > /dev/null 2>&1
 	if [ $? = 0 ]; then
