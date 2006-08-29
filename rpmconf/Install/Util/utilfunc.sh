@@ -324,33 +324,44 @@ checkExistingInstall() {
 verifyLicenseAvailable() {
 
   isInstalled zimbra-store
-  if [ x$PKGINSTALLED == "x" ]; then
+  if [ x$PKGINSTALLED = "x" ]; then
     return
   fi
 
-  if [ x"`rpm --qf '%{description}' -qp ./packages/zimbra-core* | grep Network`" == "x" ]; then
+  if [ x"`rpm --qf '%{description}' -qp ./packages/zimbra-core* | grep Network`" = "x" ]; then
     return
   fi
 
   echo "Checking for available license file..."
   if [ ! -f "/opt/zimbra/conf/ZCSLicense.xml" -a ! -f "/opt/zimbra/conf/ZCSLicense-Trial.xml" ]; then
-    echo "WARNING: No license file has been found to install or upgrade"
-    echo "an existing license. The ZCS Connector for Outlook, Zimbra Mobile"
-    echo "and Zimbra account creation will not work without a valid license"
-    echo "file. If you have previously installed a license you may safely"
-    echo "continue without /opt/zimbra/conf/ZCSLicense.xml present."
-	  while :; do
-		  askYN "Do you wish to continue?" "N"
-		  if [ $response = "no" ]; then
-			  askYN "Exit?" "N"
-			  if [ $response = "yes" ]; then
-				  echo "Exiting - place a license file in /opt/zimbra/conf/ZCSLicense.xml and rerun."
-				  exit 1
-			  fi
-		  else
-			  break
-		  fi
-	  done
+    #echo "WARNING: No license file has been found to install or upgrade"
+    #echo "an existing license. The ZCS Connector for Outlook, Zimbra Mobile"
+    #echo "and Zimbra account creation will not work without a valid license"
+    #echo "file. If you have previously installed a license you may safely"
+    #echo "continue without /opt/zimbra/conf/ZCSLicense.xml present."
+    echo "ERROR: The ZCS Network upgrade requires a license to be located in"
+    echo "/opt/zimbra/conf/ZCSLicense.xml.  The upgrade will not continue"
+    echo "without a license.  Your system has not been modified"
+    echo ""
+    echo "New customers wanting to purchase or obtain a trial license"
+    echo "should contact Zimbra sales.  Contact information for Zimbra is"
+    echo "located at http://www.zimbra.com/about/contact_us.html"
+    echo "Existing customers can obtain an updated license file via the"
+    echo "Zimbra Support page located at http://www.zimbra.com/support."
+    echo ""
+    exit 1;
+	#  while :; do
+	#	  askYN "Do you wish to continue?" "N"
+	#	  if [ $response = "no" ]; then
+	#		  askYN "Exit?" "N"
+	#		  if [ $response = "yes" ]; then
+	#			  echo "Exiting - place a license file in /opt/zimbra/conf/ZCSLicense.xml and rerun."
+	#			  exit 1
+	#		  fi
+	#	  else
+	#		  break
+	#	  fi
+	#  done
 
   fi
 }
