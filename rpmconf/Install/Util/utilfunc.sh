@@ -323,6 +323,10 @@ checkExistingInstall() {
 
 verifyLicenseAvailable() {
 
+  if [ x$UNINSTALL = "xyes" ]; then
+    return
+  fi
+
   isInstalled zimbra-store
   if [ x$PKGINSTALLED = "x" ]; then
     return
