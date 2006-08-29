@@ -114,7 +114,7 @@ my @interfaces = ();
 
 ($>) and usage();
 
-getopts("c:h", \%options) or usage();
+getopts("c:hd", \%options) or usage();
 
 sub usage {
 	($>) and print STDERR "Warning: $0 must be run as root!\n\n";
@@ -317,6 +317,17 @@ sub getSystemStatus {
 	}
 }
 
+sub getLdapConfigValue {
+	my $attrib = shift;
+
+	# Gotta love the triple escape: \\\  
+	my $rc = 0xffff & system("su - zimbra -c \"$ZMPROV gcf $attrib | sed -e \\\"s/${attrib}: //\\\" > /tmp/ld.out\"");
+	my $val=`cat /tmp/ld.out`;
+	unlink "/tmp/ld.out";
+	chomp $val;
+
+	return $val;
+}
 sub getLdapServerValue {
 	my $attrib = shift;
 	my $hn = shift;
@@ -370,6 +381,10 @@ sub setLdapDefaults {
 	$config{POPPROXYPORT} 		= getLdapServerValue("zimbraPop3ProxyBindPort");
 	$config{POPSSLPROXYPORT} 	= getLdapServerValue("zimbraPop3SSLProxyBindPort");
 
+  $config{TRAINSASPAM} = getLdapConfigValue("zimbraSpamIsSpamAccount");
+  $config{TRAINSAHAM} = getLdapConfigValue("zimbraSpamIsNotSpamAccount");
+  $config{NOTEBOOKACCOUNT} = getLdapConfigValue("zimbraNotebookAccount");
+
 	my $smtphost=getLdapServerValue("zimbraSmtpHostname");
 	if ( $smtphost ne "") {
 		$config{SMTPHOST} = $smtphost;
@@ -380,11 +395,17 @@ sub setLdapDefaults {
 		$config{MTAAUTHHOST} = $mtaauthhost;
 	}
 
+  if ($options{d}) {
+    foreach my $key (sort keys %config) {
+      print "\tDEBUG: $key=$config{$key}\n";
+    }
+  }
+
 	progress ( "Done\n" );
 }
 
 sub setDefaults {
-	progress ( "Setting defaults..." );
+	progress ( "Setting defaults..." ) unless $options{d};
 
 	# Get the interfaces.
 	# Do this in perl, since it's the same on all platforms.
@@ -431,6 +452,7 @@ sub setDefaults {
 	$config{CREATEDOMAIN} = $config{HOSTNAME};
 	$config{DOCREATEADMIN} = "no";
 	if (isEnabled("zimbra-store")) {
+    progress  "setting defaults for zimbra-store.\n" if $options{d};
 		$config{MTAAUTHHOST} = $config{HOSTNAME};
 		$config{DOCREATEADMIN} = "yes";
 		$config{DOTRAINSA} = "yes";
@@ -443,6 +465,7 @@ sub setDefaults {
 		$config{NOTEBOOKPASS} = genRandomPass();
 	}
 	if (isEnabled("zimbra-ldap")) {
+    progress "setting defaults for zimbra-ldap.\n" if $options{d};
 		$config{DOCREATEDOMAIN} = "yes";
 		$config{LDAPPASS} = genRandomPass();
 	}
@@ -458,10 +481,12 @@ sub setDefaults {
 	$config{MODE} = "http";
 
 	$config{CREATEADMINPASS} = "";
-
+  progress "getting install status..." if $options{d};
 	getInstallStatus();
+  progress "done.\n" if $options{d};
 
 	if (!$options{c} && $newinstall) {
+    progress "no config file and newinstall checking dns resolution\n" if $options{d};
 
 		if (lookupHostName ($config{HOSTNAME}, 'A')) {
 			progress("\n\nDNS ERROR resolving $config{HOSTNAME}\n");
@@ -2348,7 +2373,7 @@ sub configInitMta {
 
 	if (isEnabled("zimbra-mta")) {
 		progress ( "Initializing mta config..." );
-		runAsZimbra ("/opt/zimbra/libexec/zmmtainit $config{LDAPHOST}");
+		runAsZimbra ("/opt/zimbra/libexec/zmmtainit $config{LDAPHOST} $config{LDAPPORT}");
 		progress ( "Done\n" );
 		$installedServiceStr .= "zimbraServiceInstalled antivirus ";
 		$installedServiceStr .= "zimbraServiceInstalled antispam ";
@@ -2390,12 +2415,12 @@ sub configInitNotebooks {
     my ($notebookUser, $notebookDomain, $globalWikiAcct);
     my $rc = 0;
 
-    $globalWikiAcct = (split(/\s+/, `su - zimbra -c "$ZMPROV gcf zimbraNotebookAccount"`))[-1];
+    $globalWikiAcct = getLdapConfigValue("zimbraNotebookAccount");
 
-    # enable wiki before we do anything else.
-		runAsZimbra("/opt/zimbra/bin/zmprov mc default zimbraFeatureNotebookEnabled TRUE");
 
     if ($globalWikiAcct eq "") {
+      # enable wiki before we do anything else.
+		  runAsZimbra("/opt/zimbra/bin/zmprov mc default zimbraFeatureNotebookEnabled TRUE");
       if ($config{NOTEBOOKACCOUNT} eq "") {
         open DOMAINS, "$ZMPROV gad|" or die "Can't get domain list!";
         my $domain = <DOMAINS>;
@@ -2416,6 +2441,15 @@ sub configInitNotebooks {
     # global Documents
 		  runAsZimbra("/opt/zimbra/bin/zmprov mcf zimbraNotebookAccount $config{NOTEBOOKACCOUNT}");
 		  $rc = runAsZimbra("/opt/zimbra/bin/zmprov in $config{NOTEBOOKACCOUNT} \'$config{NOTEBOOKPASS}\' /opt/zimbra/wiki/Template Template");
+      if ($rc != 0) {
+        progress ("failed to initialize documents...see logfile for details.\n");
+      } else {
+		    progress ( "Done\n" );
+        progress ( "Restarting tomcat...");
+        runAsZimbra("/opt/zimbra/bin/tomcat restart");
+		    progress ( "Done\n" );
+      }
+		  runAsZimbra("/opt/zimbra/bin/zmprov mc default zimbraFeatureNotebookEnabled FALSE");
     } 
 
 #	  ($notebookUser, $notebookDomain) = split ('@', $config{NOTEBOOKACCOUNT});
@@ -2442,13 +2476,7 @@ sub configInitNotebooks {
 #
 #      runAsZimbra("/opt/zimbra/bin/zmprov idn $nbacc \'$config{NOTEBOOKPASS}\' $domain /opt/zimbra/wiki/Template Template");
 #    }
-    if ($rc != 0) {
-      progress ("failed to initialize documents...see logfile for details.\n");
-	    runAsZimbra("$ZMPROV mc default zimbraFeatureNotebookEnabled FALSE")
-    } else {
-      runAsZimbra("/opt/zimbra/bin/tomcat restart");
-		  progress ( "Done\n" );
-    }
+
 	}
     
 	configLog("configInitNotebooks");
@@ -2790,6 +2818,7 @@ if ($ldapConfigured) {
 if ($ldapConfigured || 
 	(($config{LDAPHOST} ne $config{HOSTNAME}) && !verifyLdap())) {
 	setLdapDefaults();
+  
 }
 
 if ($options{c}) {
