@@ -2459,7 +2459,9 @@ sub configInitNotebooks {
         runAsZimbra("/opt/zimbra/bin/tomcat restart");
 		    progress ( "Done\n" );
       }
-		  runAsZimbra("/opt/zimbra/bin/zmprov mc default zimbraFeatureNotebookEnabled FALSE");
+		  unless (runAsZimbra("/opt/zimbra/bin/zmprov mc default zimbraFeatureNotebookEnabled FALSE")) {
+		    runAsZimbra("/opt/zimbra/bin/zmprov -l mc default zimbraFeatureNotebookEnabled FALSE");
+      }
     } 
 
 #	  ($notebookUser, $notebookDomain) = split ('@', $config{NOTEBOOKACCOUNT});
