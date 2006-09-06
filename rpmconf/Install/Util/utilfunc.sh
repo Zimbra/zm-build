@@ -372,8 +372,8 @@ verifyLicenseAvailable() {
     
   # Check for licensed user count and warn if necessary
   numCurrentUsers=`su - zimbra -c "zmprov -l gaa 2> /dev/null | wc -l"`;
-  numCurrentUsers=`expr $numCurrentUsers - 4`
   numUsersRC=$?
+  numCurrentUsers=`expr $numCurrentUsers - 4`
   
   echo "Current Users=$numCurrentUsers Licensed Users=$licensedUsers"
 
