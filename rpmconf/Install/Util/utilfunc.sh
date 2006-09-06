@@ -372,13 +372,30 @@ verifyLicenseAvailable() {
     
   # Check for licensed user count and warn if necessary
   numCurrentUsers=`su - zimbra -c "zmprov -l gaa 2> /dev/null | wc -l"`;
+  numCurrentUsers=`expr $numCurrentUsers - 4`
   numUsersRC=$?
   
-  #echo "rc=$numUsersRC current=$numCurrentUsers lic=$licensedUsers"
+  echo "Current Users=$numCurrentUsers Licensed Users=$licensedUsers"
 
   if [ "$licensedUsers" = "-1" ]; then
     return
-  elif [ $numUsersRC != 0 -o $licensedUsers < $numCurrentUsers ]; then
+  elif [ $numCurrentUsers -lt 0 ]; then
+    echo "Warning: Could not determine the number of users on this system."
+    echo "If you exceed the number of licensed users ($licensedUsers) then you will"
+    echo "not be able to create new users."
+	  while :; do
+	   askYN "Do you wish to continue?" "N"
+	   if [ $response = "no" ]; then
+	    askYN "Exit?" "N"
+	    if [ $response = "yes" ]; then
+		    echo "Exiting - place a valid license file in /opt/zimbra/conf/ZCSLicense.xml and rerun."
+		    exit 1
+	    fi
+	   else
+	    break
+	   fi
+	  done
+  elif [ $numUsersRC -ne 0 -o $numCurrentUsers -gt $licensedUsers ]; then
     echo "Warning: The number of users on this system ($numCurrentUsers) exceeds the licensed number"
     echo "($licensedUsers).  You may continue with the upgrade, but you will not be able to create"
     echo "new users.  Also, initialization of the Document feature will fail.  If you "
