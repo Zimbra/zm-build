@@ -2449,18 +2449,20 @@ sub configInitNotebooks {
     # global Documents
 		  runAsZimbra("/opt/zimbra/bin/zmprov mcf zimbraNotebookAccount $config{NOTEBOOKACCOUNT}");
 		  $rc = runAsZimbra("/opt/zimbra/bin/zmprov in $config{NOTEBOOKACCOUNT} \'$config{NOTEBOOKPASS}\' /opt/zimbra/wiki/Template Template");
+
       if ($rc != 0) {
 		    runAsZimbra("/opt/zimbra/bin/zmprov mc default zimbraFeatureNotebookEnabled FALSE");
         progress ("failed to initialize documents...see logfile for details.\n");
       } else {
 		    runAsZimbra("/opt/zimbra/bin/zmprov ma $config{NOTEBOOKACCOUNT} zimbraFeatureNotebookEnabled TRUE");
+        # disable feature in cos
+		    if (runAsZimbra("/opt/zimbra/bin/zmprov mc default zimbraFeatureNotebookEnabled FALSE") != 0) {
+		      runAsZimbra("/opt/zimbra/bin/zmprov -l mc default zimbraFeatureNotebookEnabled FALSE");
+        }
 		    progress ( "Done\n" );
         progress ( "Restarting tomcat...");
         runAsZimbra("/opt/zimbra/bin/tomcat restart");
 		    progress ( "Done\n" );
-      }
-		  unless (runAsZimbra("/opt/zimbra/bin/zmprov mc default zimbraFeatureNotebookEnabled FALSE")) {
-		    runAsZimbra("/opt/zimbra/bin/zmprov -l mc default zimbraFeatureNotebookEnabled FALSE");
       }
     } 
 
