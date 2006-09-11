@@ -405,7 +405,7 @@ sub setLdapDefaults {
 }
 
 sub setDefaults {
-	progress ( "Setting defaults..." );
+	progress ( "Setting defaults..." ) unless $options{d};
 
 	# Get the interfaces.
 	# Do this in perl, since it's the same on all platforms.
@@ -452,6 +452,7 @@ sub setDefaults {
 	$config{CREATEDOMAIN} = $config{HOSTNAME};
 	$config{DOCREATEADMIN} = "no";
 	if (isEnabled("zimbra-store")) {
+    progress  "setting defaults for zimbra-store.\n" if $options{d};
 		$config{MTAAUTHHOST} = $config{HOSTNAME};
 		$config{DOCREATEADMIN} = "yes";
 		$config{DOTRAINSA} = "yes";
@@ -464,6 +465,7 @@ sub setDefaults {
 		$config{NOTEBOOKPASS} = genRandomPass();
 	}
 	if (isEnabled("zimbra-ldap")) {
+    progress "setting defaults for zimbra-ldap.\n" if $options{d};
 		$config{DOCREATEDOMAIN} = "yes";
 		$config{LDAPPASS} = genRandomPass();
 	}
@@ -479,10 +481,12 @@ sub setDefaults {
 	$config{MODE} = "http";
 
 	$config{CREATEADMINPASS} = "";
-
+  progress "getting install status..." if $options{d};
 	getInstallStatus();
+  progress "done.\n" if $options{d};
 
 	if (!$options{c} && $newinstall) {
+    progress "no config file and newinstall checking dns resolution\n" if $options{d};
 
 		if (lookupHostName ($config{HOSTNAME}, 'A')) {
 			progress("\n\nDNS ERROR resolving $config{HOSTNAME}\n");
@@ -2413,10 +2417,10 @@ sub configInitNotebooks {
 
     $globalWikiAcct = getLdapConfigValue("zimbraNotebookAccount");
 
-    # enable wiki before we do anything else.
-		runAsZimbra("/opt/zimbra/bin/zmprov mc default zimbraFeatureNotebookEnabled TRUE");
 
     if ($globalWikiAcct eq "") {
+      # enable wiki before we do anything else.
+		  runAsZimbra("/opt/zimbra/bin/zmprov mc default zimbraFeatureNotebookEnabled TRUE");
       if ($config{NOTEBOOKACCOUNT} eq "") {
         open DOMAINS, "$ZMPROV gad|" or die "Can't get domain list!";
         my $domain = <DOMAINS>;
@@ -2437,6 +2441,15 @@ sub configInitNotebooks {
     # global Documents
 		  runAsZimbra("/opt/zimbra/bin/zmprov mcf zimbraNotebookAccount $config{NOTEBOOKACCOUNT}");
 		  $rc = runAsZimbra("/opt/zimbra/bin/zmprov in $config{NOTEBOOKACCOUNT} \'$config{NOTEBOOKPASS}\' /opt/zimbra/wiki/Template Template");
+      if ($rc != 0) {
+        progress ("failed to initialize documents...see logfile for details.\n");
+      } else {
+		    progress ( "Done\n" );
+        progress ( "Restarting tomcat...");
+        runAsZimbra("/opt/zimbra/bin/tomcat restart");
+		    progress ( "Done\n" );
+      }
+		  runAsZimbra("/opt/zimbra/bin/zmprov mc default zimbraFeatureNotebookEnabled FALSE");
     } 
 
 #	  ($notebookUser, $notebookDomain) = split ('@', $config{NOTEBOOKACCOUNT});
@@ -2463,13 +2476,7 @@ sub configInitNotebooks {
 #
 #      runAsZimbra("/opt/zimbra/bin/zmprov idn $nbacc \'$config{NOTEBOOKPASS}\' $domain /opt/zimbra/wiki/Template Template");
 #    }
-    if ($rc != 0) {
-      progress ("failed to initialize documents...see logfile for details.\n");
-	    runAsZimbra("$ZMPROV mc default zimbraFeatureNotebookEnabled FALSE")
-    } else {
-      runAsZimbra("/opt/zimbra/bin/tomcat restart");
-		  progress ( "Done\n" );
-    }
+
 	}
     
 	configLog("configInitNotebooks");
