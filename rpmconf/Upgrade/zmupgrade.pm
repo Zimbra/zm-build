@@ -85,6 +85,7 @@ my %updateFuncs = (
 	"3.2.0_M2" => \&upgrade32M2,
 	"4.0.0_RC1" => \&upgrade400RC1,
 	"4.0.0_GA" => \&upgrade400GA,
+	"4.0.1_GA" => \&upgrade401GA,
 );
 
 my @versionOrder = (
@@ -103,6 +104,7 @@ my @versionOrder = (
 	"3.2.0_M2",
 	"4.0.0_RC1",
 	"4.0.0_GA",
+	"4.0.1_GA",
 );
 
 my $startVersion;
@@ -146,7 +148,9 @@ sub upgrade {
 	my $curLoggerSchemaVersion;
 
 	if (isInstalled("zimbra-store")) {
-		if (startSql()) { return 1; }
+
+    if (startSql()) { return 1; };
+
 		$curSchemaVersion = Migrate::getSchemaVersion();
 	}
 
@@ -189,6 +193,8 @@ sub upgrade {
 		print "This appears to be 4.0.0_RC1\n";
 	} elsif ($startVersion eq "4.0.0_GA") {
 		print "This appears to be 4.0.0_GA\n";
+	} elsif ($startVersion eq "4.0.1_GA") {
+		print "This appears to be 4.0.1_GA\n";
 	} else {
 		print "I can't upgrade version $startVersion\n\n";
 		return 1;
@@ -902,6 +908,21 @@ sub upgrade400GA {
 	return 0;
 }
 
+sub upgrade401GA {
+	my ($startBuild, $targetVersion, $targetBuild) = (@_);
+	Migrate::log("Updating from 4.0.1_GA");
+
+  # bug 10346
+  my $globalWikiAcct = main::getLdapConfigValue("zimbraNotebookAccount");
+  next unless $globalWikiAcct;
+  main::runAsZimbra("/opt/zimbra/bin/zmprov ma $globalWikiAcct zimbraFeatureNotebookEnabled TRUE");
+  
+  # bug 10388
+  clearTomcatWorkDir();
+
+	return 0;
+}
+
 sub upgrade35M1 {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
 	Migrate::log("Updating from 3.5.0_M1");
@@ -914,17 +935,6 @@ sub stopZimbra {
 	$rc = $rc >> 8;
 	if ($rc) {
 		Migrate::log("Stop failed - exiting");
-		return $rc;
-	}
-	return 0;
-}
-
-sub stopSql {
-	Migrate::log("Stopping mysql");
-	my $rc = 0xffff & system("su - zimbra -c \"/opt/zimbra/bin/mysql.server stop > /dev/null 2>&1\"");
-	$rc = $rc >> 8;
-	if ($rc) {
-		Migrate::log("mysql stop failed with exit code $rc");
 		return $rc;
 	}
 	return 0;
@@ -973,21 +983,50 @@ sub stopLdap {
 	return 0;
 }
 
-sub startSql {
-	Migrate::log("Checking mysql status");
+sub isSqlRunning {
 	my $rc = 0xffff & system("su - zimbra -c \"/opt/zimbra/bin/mysqladmin status > /dev/null 2>&1\"");
 	$rc = $rc >> 8;
-	if ($rc) {
+  return($rc ? undef : 1);
+}
+
+sub startSql {
+
+	unless (isSqlRunning()) {
 		Migrate::log("Starting mysql");
-		$rc = 0xffff & system("su - zimbra -c \"/opt/zimbra/bin/mysql.server start > /dev/null 2>&1\"");
+		my $rc = 0xffff & system("su - zimbra -c \"/opt/zimbra/bin/mysql.server start > /dev/null 2>&1\"");
 		$rc = $rc >> 8;
 		if ($rc) {
 			Migrate::log("mysql startup failed with exit code $rc");
 			return $rc;
 		}
+    my $timeout = 0;
+    while (!isSqlRunning() && $timeout <= 120 ) {
+		  system("su - zimbra -c \"/opt/zimbra/bin/mysql.server start > /dev/null 2>&1\"");
+      $timeout += sleep 10;
+    }
 	}
-	return 0;
+	return(isSqlRunning() ? 0 : 1);
 }
+
+sub stopSql {
+
+  if (isSqlRunning()) {
+	  Migrate::log("Stopping mysql");
+	  my $rc = 0xffff & system("su - zimbra -c \"/opt/zimbra/bin/mysql.server stop > /dev/null 2>&1\"");
+	  $rc = $rc >> 8;
+	  if ($rc) {
+		  Migrate::log("mysql stop failed with exit code $rc");
+		  return $rc;
+	  }
+    my $timeout = 0;
+    while (isSqlRunning() && $timeout <= 120 ) {
+		  $rc = 0xffff & system("su - zimbra -c \"/opt/zimbra/bin/mysql.server stop > /dev/null 2>&1\"");
+      $timeout += sleep 10;
+    }
+  }
+  return(isSqlRunning() ? 1 : 0);
+}
+
 
 sub startLoggerSql {
 	Migrate::log("Checking logger mysql status");
@@ -1136,6 +1175,14 @@ sub updateMySQLcnf {
       `chmod 644 $mycnf`;
     } 
   }
+}
+
+sub clearTomcatWorkDir {
+
+  my $workDir = "/opt/zimbra/tomcat/work";
+  return unless (-d "$workDir");
+  system("find $workDir -type f -exec rm -f {} \\\;");
+
 }
 
 1
