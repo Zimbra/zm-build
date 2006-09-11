@@ -439,7 +439,8 @@ sub setDefaults {
 	$config{POPSSLPROXYPORT} = 995;
 
 	if ($platform =~ /MACOSX/) {
-		setLocalConfig ("zimbra_java_home", "/System/Library/Frameworks/JavaVM.framework/Versions/1.5/Home");
+    $config{JAVAHOME} = "/System/Library/Frameworks/JavaVM.framework/Versions/1.5/Home";
+		setLocalConfig ("zimbra_java_home", "$config{JAVAHOME}");
 		$config{HOSTNAME} = `hostname`;
 	} else {
 		$config{HOSTNAME} = `hostname --fqdn`;
@@ -1876,8 +1877,8 @@ sub verifyLdap {
 	my $ldapsearch = "$zimbraHome/bin/ldapsearch";
 	my $args = "-x -h ${H} -p $config{LDAPPORT} ".
 		"-D 'uid=zimbra,cn=admins,cn=zimbra' -w $config{LDAPPASS}";
-
-	my $rc = 0xffff & system ("$ldapsearch $args > /tmp/zmsetup.ldap.out 2>&1");
+  system("echo $ldapsearch $args > /tmp/zmsetup.ldap.out");
+	my $rc = 0xffff & system ("$ldapsearch $args >> /tmp/zmsetup.ldap.out 2>&1");
 
 	if ($rc) { my $foo = `cat /tmp/zmsetup.ldap.out`; chomp $foo; progress ("FAILED ( $foo )\n"); } 
 	else {
@@ -1933,6 +1934,9 @@ sub configLCValues {
 		setLocalConfig ("ldap_master_url", "ldap://$config{LDAPHOST}:$config{LDAPPORT}");
 		setLocalConfig ("ldap_url", "ldap://$config{LDAPHOST}:$config{LDAPPORT}");
 	}
+
+  setLocalConfig ("ldap_port", "$config{LDAPPORT}");
+  setLocalConfig ("ldap_host", "$config{LDAPHOST}");
 
 	my $uid = `id -u zimbra`;
 	chomp $uid;
@@ -2068,17 +2072,21 @@ sub configCreateCert {
 	if (isEnabled("zimbra-ldap") || isEnabled("zimbra-store") || isEnabled("zimbra-mta")) {
 
 		progress ( "Creating SSL certificate..." );
-		if (-f "/opt/zimbra/java/jre/lib/security/cacerts") {
-			`chmod 777 /opt/zimbra/java/jre/lib/security/cacerts >> $logfile 2>&1`;
-		}
+    if (-f "$config{JAVAHOME}/lib/security/cacerts") {
+			`chmod 777 $config{JAVAHOME}/lib/security/cacerts >> $logfile 2>&1`;
+    } else {
+			`chmod 777 $config{JAVAHOME}/jre/lib/security/cacerts >> $logfile 2>&1`;
+    }
 		if (!-f "/opt/zimbra/tomcat/conf/keystore" || 
 			!-f "/opt/zimbra/conf/smtpd.crt" ||
 			!-f "/opt/zimbra/conf/slapd.crt") {
 			runAsZimbra("cd /opt/zimbra; zmcreatecert");
 		}
-		if (-f "/opt/zimbra/java/jre/lib/security/cacerts") {
-			`chmod 744 /opt/zimbra/java/jre/lib/security/cacerts >> $logfile 2>&1`;
-		}
+    if (-f "$config{JAVAHOME}/lib/security/cacerts") {
+			`chmod 744 $config{JAVAHOME}/lib/security/cacerts >> $logfile 2>&1`;
+    } else {
+			`chmod 744 $config{JAVAHOME}/jre/lib/security/cacerts >> $logfile 2>&1`;
+    }
 		progress ( "Done\n" );
 
 	}
@@ -2442,8 +2450,10 @@ sub configInitNotebooks {
 		  runAsZimbra("/opt/zimbra/bin/zmprov mcf zimbraNotebookAccount $config{NOTEBOOKACCOUNT}");
 		  $rc = runAsZimbra("/opt/zimbra/bin/zmprov in $config{NOTEBOOKACCOUNT} \'$config{NOTEBOOKPASS}\' /opt/zimbra/wiki/Template Template");
       if ($rc != 0) {
+		    runAsZimbra("/opt/zimbra/bin/zmprov mc default zimbraFeatureNotebookEnabled FALSE");
         progress ("failed to initialize documents...see logfile for details.\n");
       } else {
+		    runAsZimbra("/opt/zimbra/bin/zmprov ma $config{NOTEBOOKACCOUNT} zimbraFeatureNotebookEnabled TRUE");
 		    progress ( "Done\n" );
         progress ( "Restarting tomcat...");
         runAsZimbra("/opt/zimbra/bin/tomcat restart");
@@ -2642,7 +2652,7 @@ sub applyConfig {
 	if ($platform =~ /MACOSX/) {
 		if (-d "/System/Library/LaunchDaemons") {
 			`cp -f /opt/zimbra/conf/com.zimbra.zcs.plist /System/Library/LaunchDaemons`;
-			`launchctl load /System/Library/LaunchDaemons/com.zimbra.zcs.plist`;
+			`launchctl load /System/Library/LaunchDaemons/com.zimbra.zcs.plist 2> /dev/null`;
 		}
 	}
 
