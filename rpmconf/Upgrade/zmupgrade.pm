@@ -83,6 +83,7 @@ my %updateFuncs = (
 	"3.1.4_GA" => \&upgrade314GA,
 	"3.2.0_M1" => \&upgrade32M1,
 	"3.2.0_M2" => \&upgrade32M2,
+	"4.0.0_RC1" => \&upgrade400RC1,
 	"4.0.0_GA" => \&upgrade400GA,
 );
 
@@ -100,6 +101,7 @@ my @versionOrder = (
 	"3.1.4_GA", 
 	"3.2.0_M1",
 	"3.2.0_M2",
+	"4.0.0_RC1",
 	"4.0.0_GA",
 );
 
@@ -183,6 +185,8 @@ sub upgrade {
 		print "This appears to be 3.2.0_M1\n";
 	} elsif ($startVersion eq "3.2.0_M2") {
 		print "This appears to be 3.2.0_M2\n";
+	} elsif ($startVersion eq "4.0.0_RC1") {
+		print "This appears to be 4.0.0_RC1\n";
 	} elsif ($startVersion eq "4.0.0_GA") {
 		print "This appears to be 4.0.0_GA\n";
 	} else {
@@ -857,9 +861,9 @@ sub upgrade32M2 {
 	return 0;
 }
 
-sub upgrade400GA {
+sub upgrade400RC1 {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
-	Migrate::log("Updating from 4.0.0_GA");
+	Migrate::log("Updating from 4.0.0_RC1");
 
   # Bug 9504
   if (-d "/opt/zimbra/redolog" && ! -e "/opt/zimbra/redolog-pre-4.0") {
@@ -889,6 +893,12 @@ sub upgrade400GA {
 		}
 	}
   
+	return 0;
+}
+
+sub upgrade400GA {
+	my ($startBuild, $targetVersion, $targetBuild) = (@_);
+	Migrate::log("Updating from 4.0.0_GA");
 	return 0;
 }
 
