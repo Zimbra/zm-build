@@ -30,3 +30,6 @@ WEBAPP_BUILD_DIR := build/dist/tomcat/webapps
 
 PACKAGE_DIR			:= $(BUILD_ROOT)/$(ARCH)
 ZIMBRA_BIN_DIR		:= $(BUILD_ROOT)/../ZimbraServer/src/bin
+
+ISYNC_DEST_ROOT := $(BUILD_ROOT)/isyncbuild
+ISYNC_DEST_DIR := $(ISYNC_DEST_ROOT)/root/Library/PreferencePanes
