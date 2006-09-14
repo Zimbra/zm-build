@@ -86,6 +86,7 @@ my %updateFuncs = (
 	"4.0.0_RC1" => \&upgrade400RC1,
 	"4.0.0_GA" => \&upgrade400GA,
 	"4.0.1_GA" => \&upgrade401GA,
+	"4.0.2_GA" => \&upgrade402GA,
 );
 
 my @versionOrder = (
@@ -105,6 +106,7 @@ my @versionOrder = (
 	"4.0.0_RC1",
 	"4.0.0_GA",
 	"4.0.1_GA",
+	"4.0.2_GA",
 );
 
 my $startVersion;
@@ -195,6 +197,8 @@ sub upgrade {
 		print "This appears to be 4.0.0_GA\n";
 	} elsif ($startVersion eq "4.0.1_GA") {
 		print "This appears to be 4.0.1_GA\n";
+	} elsif ($startVersion eq "4.0.2_GA") {
+		print "This appears to be 4.0.2_GA\n";
 	} else {
 		print "I can't upgrade version $startVersion\n\n";
 		return 1;
@@ -919,6 +923,24 @@ sub upgrade401GA {
   
   # bug 10388
   clearTomcatWorkDir();
+
+	return 0;
+}
+
+sub upgrade402GA {
+	my ($startBuild, $targetVersion, $targetBuild) = (@_);
+	Migrate::log("Updating from 4.0.2_GA");
+
+  # bug 10401
+	my @coses = `su - zimbra -c "$ZMPROV gac"`;
+	foreach my $cos (@coses) {
+		chomp $cos;
+    my $cur_value = 
+      main::getLdapCOSValue($cos,"zimbraFeatureMobileSyncEnabled");
+		main::runAsZimbra("$ZMPROV mc $cos zimbraFeatureMobileSyncEnabled FALSE")
+      if ($cur_value ne "TRUE");
+	}
+
 
 	return 0;
 }
