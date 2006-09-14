@@ -316,6 +316,17 @@ sub getSystemStatus {
 		}
 	}
 }
+sub getLdapCOSValue {
+	my ($cos,$attrib) = @_;
+
+	# Gotta love the triple escape: \\\  
+	my $rc = 0xffff & system("su - zimbra -c \"$ZMPROV gc $cos | grep $attrib | sed -e \\\"s/${attrib}: //\\\" > /tmp/ld.out\"");
+	my $val=`cat /tmp/ld.out`;
+	unlink "/tmp/ld.out";
+	chomp $val;
+
+	return $val;
+}
 
 sub getLdapConfigValue {
 	my $attrib = shift;
