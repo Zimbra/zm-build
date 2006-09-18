@@ -178,6 +178,8 @@ pcre_DEBIAN3.1: ;
 
 pcre_SuSEES9: ;
 
+pcre_MANDRIVA2006: ;
+
 pcre_SuSE10: ;
 
 pcre_RPL1: ;

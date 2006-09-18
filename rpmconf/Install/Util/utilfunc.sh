@@ -1130,6 +1130,8 @@ getPlatformVars() {
 		if [ $PLATFORM = "RHEL4" ]; then
 			PREREQ_PACKAGES="sudo libidn curl fetchmail gmp compat-libstdc++-296 compat-libstdc++-33"
 			PREREQ_LIBS="/usr/lib/libstdc++.so.5"
+		elif [ $PLATFORM = "MANDRIVA2006" ]; then
+			PREREQ_PACKAGES="sudo libidn11 curl fetchmail libgmp3 libxml2 libstdc++6 openssl"
 		else
 			PREREQ_PACKAGES="sudo libidn curl fetchmail gmp"
 			if [ $PLATFORM = "FC3" -o $PLATFORM = "FC4" ]; then
