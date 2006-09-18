@@ -87,6 +87,7 @@ my %updateFuncs = (
 	"4.0.0_GA" => \&upgrade400GA,
 	"4.0.1_GA" => \&upgrade401GA,
 	"4.0.2_GA" => \&upgrade402GA,
+	"4.1.0_GA" => \&upgrade410GA,
 );
 
 my @versionOrder = (
@@ -107,6 +108,7 @@ my @versionOrder = (
 	"4.0.0_GA",
 	"4.0.1_GA",
 	"4.0.2_GA",
+	"4.1.0_GA",
 );
 
 my $startVersion;
@@ -199,6 +201,8 @@ sub upgrade {
 		print "This appears to be 4.0.1_GA\n";
 	} elsif ($startVersion eq "4.0.2_GA") {
 		print "This appears to be 4.0.2_GA\n";
+	} elsif ($startVersion eq "4.1.0_GA") {
+		print "This appears to be 4.1.0_GA\n";
 	} else {
 		print "I can't upgrade version $startVersion\n\n";
 		return 1;
@@ -942,6 +946,12 @@ sub upgrade402GA {
 	}
 
 
+	return 0;
+}
+
+sub upgrade410GA {
+	my ($startBuild, $targetVersion, $targetBuild) = (@_);
+	Migrate::log("Updating from 4.1.0_GA");
 	return 0;
 }
 
