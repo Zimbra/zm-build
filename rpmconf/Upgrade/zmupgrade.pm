@@ -41,7 +41,7 @@ chomp $rundir;
 my $scriptDir = "/opt/zimbra/libexec/scripts";
 
 my $lowVersion = 18;
-my $hiVersion = 26;
+my $hiVersion = 27;
 my $hiLoggerVersion = 5;
 
 my $hn = `su - zimbra -c "zmlocalconfig -m nokey zimbra_server_hostname"`;
@@ -59,6 +59,7 @@ my %updateScripts = (
 	'23' => "migrate20060518-EmailedContactsFolder.pl",
 	'24' => "migrate20060708-FlagCalendarFolder.pl",
 	'25' => "migrate20060803-CreateMailboxMetadata.pl",
+	'26' => "migrate20060810-PersistFolderCounts.pl",
 );
 
 my %loggerUpdateScripts = (
