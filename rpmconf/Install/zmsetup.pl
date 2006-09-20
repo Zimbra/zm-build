@@ -29,7 +29,9 @@ use strict;
 use lib "/opt/zimbra/libexec";
 use lib "/opt/zimbra/zimbramon/lib";
 use lib "/opt/zimbra/zimbramon/lib/i386-linux-thread-multi";
+use lib "/opt/zimbra/zimbramon/lib/i486-linux-thread-multi";
 use lib "/opt/zimbra/zimbramon/lib/i586-linux-thread-multi";
+use lib "/opt/zimbra/zimbramon/lib/i686-linux-thread-multi";
 use lib "/opt/zimbra/zimbramon/lib/darwin-thread-multi-2level";
 
 our $platform = `/opt/zimbra/libexec/get_plat_tag.sh`;
@@ -2081,7 +2083,6 @@ sub configCreateCert {
 	}
 
 	if (isEnabled("zimbra-ldap") || isEnabled("zimbra-store") || isEnabled("zimbra-mta")) {
-
 		progress ( "Creating SSL certificate..." );
     if (-f "$config{JAVAHOME}/lib/security/cacerts") {
 			`chmod 777 $config{JAVAHOME}/lib/security/cacerts >> $logfile 2>&1`;
