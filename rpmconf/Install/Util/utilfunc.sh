@@ -1114,7 +1114,7 @@ getPlatformVars() {
 		PACKAGEEXT='deb'
 		PREREQ_PACKAGES="sudo libidn11 curl fetchmail libgmp3 libxml2 libstdc++6 openssl"
 		if [ $PLATFORM = "UBUNTU6" ]; then
-			PREREQ_PACKAGES="sudo libidn11 curl fetchmail libgmp3c2 libxml2 libstdc++6 openssl"
+			PREREQ_PACKAGES="sudo libidn11 curl fetchmail libpcre3 libgmp3c2 libxml2 libstdc++6 openssl"
 		fi
 	elif echo $PLATFORM | grep RPL > /dev/null 2>&1; then
 		PACKAGEINST='conary update'
