@@ -942,6 +942,8 @@ sub upgrade402GA {
       if ($cur_value ne "TRUE");
 	}
 
+  # bug 10845
+  main::runAsZimbra("$ZMPROV mcf zimbraMailURL /zimbra"); 
 
 	return 0;
 }
