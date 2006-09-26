@@ -1,4 +1,5 @@
 SERVICE_DIR	:= $(BUILD_ROOT)/../ZimbraServer
+COMMON_DIR := $(BUILD_ROOT)/../ZimbraCommon
 CONSOLE_DIR	:= $(BUILD_ROOT)/../ZimbraWebClient
 LICENSE_DIR := $(BUILD_ROOT)/../ZimbraLicenses
 NATIVE_DIR := $(BUILD_ROOT)/../ZimbraNative
