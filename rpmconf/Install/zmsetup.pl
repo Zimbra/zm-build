@@ -263,7 +263,7 @@ sub isInstalled {
 }
 
 sub genRandomPass {
-	open RP, "/opt/zimbra/bin/zmjava com.zimbra.cs.util.RandomPassword 8 10|" or
+	open RP, "/opt/zimbra/bin/zmjava com.zimbra.common.util.RandomPassword 8 10|" or
 		die "Can't generate random password: $!\n";
 	my $rp = <RP>;
 	close RP;
@@ -2445,13 +2445,13 @@ sub configInitNotebooks {
         my $domain = <DOMAINS>;
         close DOMAINS;
         chomp $domain;
-        open RP, "/opt/zimbra/bin/zmjava com.zimbra.cs.util.RandomPassword 8 10|" 
+        open RP, "/opt/zimbra/bin/zmjava com.zimbra.common.util.RandomPassword 8 10|" 
           or die "Can't generate random account name: $!\n";
         chomp(my $nbacct = <RP>);
         close RP;
         $config{NOTEBOOKACCOUNT} = "$nbacct\@$domain";
   
-        open RP, "/opt/zimbra/bin/zmjava com.zimbra.cs.util.RandomPassword 8 10|" 
+        open RP, "/opt/zimbra/bin/zmjava com.zimbra.common.util.RandomPassword 8 10|" 
           or die "Can't generate random account name: $!\n";
         chomp($config{NOTEBOOKPASS} = <RP>);
         close RP;
