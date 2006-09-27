@@ -41,7 +41,7 @@ chomp $rundir;
 my $scriptDir = "/opt/zimbra/libexec/scripts";
 
 my $lowVersion = 18;
-my $hiVersion = 26;
+my $hiVersion = 27;
 my $hiLoggerVersion = 5;
 
 my $hn = `su - zimbra -c "zmlocalconfig -m nokey zimbra_server_hostname"`;
@@ -59,6 +59,7 @@ my %updateScripts = (
 	'23' => "migrate20060518-EmailedContactsFolder.pl",
 	'24' => "migrate20060708-FlagCalendarFolder.pl",
 	'25' => "migrate20060803-CreateMailboxMetadata.pl",
+	'26' => "migrate20060810-PersistFolderCounts.pl",
 );
 
 my %loggerUpdateScripts = (
@@ -88,7 +89,6 @@ my %updateFuncs = (
 	"4.0.1_GA" => \&upgrade401GA,
 	"4.0.2_GA" => \&upgrade402GA,
 	"4.0.3_GA" => \&upgrade403GA,
-	"4.1.0_GA" => \&upgrade410GA,
 );
 
 my @versionOrder = (
@@ -110,7 +110,6 @@ my @versionOrder = (
 	"4.0.1_GA",
 	"4.0.2_GA",
 	"4.0.3_GA",
-	"4.1.0_GA",
 );
 
 my $startVersion;
@@ -205,8 +204,6 @@ sub upgrade {
 		print "This appears to be 4.0.2_GA\n";
 	} elsif ($startVersion eq "4.0.3_GA") {
 		print "This appears to be 4.0.3_GA\n";
-	} elsif ($startVersion eq "4.1.0_GA") {
-		print "This appears to be 4.1.0_GA\n";
 	} else {
 		print "I can't upgrade version $startVersion\n\n";
 		return 1;
@@ -949,9 +946,8 @@ sub upgrade402GA {
       if ($cur_value ne "TRUE");
 	}
 
-
-	return 0;
-}
+  # bug 10845
+  main::runAsZimbra("$ZMPROV mcf zimbraMailURL /zimbra"); 
 sub upgrade403GA {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
 	Migrate::log("Updating from 4.0.3_GA");
@@ -969,9 +965,6 @@ sub upgrade403GA {
 	return 0;
 }
 
-sub upgrade410GA {
-	my ($startBuild, $targetVersion, $targetBuild) = (@_);
-	Migrate::log("Updating from 4.1.0_GA");
 	return 0;
 }
 

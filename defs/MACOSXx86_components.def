@@ -1,3 +1,0 @@
-ISYNC_COMPONENTS	:= \
-	$(ISYNC_DEST_DIR)/Zimbra.prefPane 
-

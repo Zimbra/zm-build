@@ -138,6 +138,13 @@ $(STORE_DEST_DIR)/wiki:
 	mkdir -p $@
 	cp -R $(SERVICE_DIR)/build/dist/wiki/Template $@
 
+$(SERVICE_DIR)/build/dist/zimlets/nofile:
+	(cd $(SERVICE_DIR); $(ANT) \
+		-Dplat.tag=$(BUILD_PLATFORM) \
+		-Dzimbra.buildinfo.version=$(VERSION_TAG) \
+		-Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) \
+		-Dzimbra.buildinfo.host=$(HOST) package-zimlets ; )
+
 $(ZIMLET_DIR)/build/dist/zimlets/nofile:
 	(cd $(ZIMLET_DIR); $(ANT) \
 		-Dplat.tag=$(BUILD_PLATFORM) \
@@ -150,20 +157,19 @@ $(ZIMLET_DIR)/build/dist/zimlets-extra/nofile:
 		-Dplat.tag=$(BUILD_PLATFORM) \
 		-Dzimbra.buildinfo.version=$(VERSION_TAG) \
 		-Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) \
-		-Dzimbra.buildinfo.host=$(HOST) package-zimlets-extra ; )
+		-Dzimbra.buildinfo.host=$(HOST) package-zimlets ; )
 
 $(STORE_DEST_DIR)/zimlets-extra: $(ZIMLET_DIR)/build/dist/zimlets-extra/nofile
 	mkdir -p $@
 	cp $(ZIMLET_DIR)/build/dist/zimlets-extra/* $@
 
-$(STORE_DEST_DIR)/zimlets: $(ZIMLET_DIR)/build/dist/zimlets/nofile
+$(STORE_DEST_DIR)/zimlets: $(SERVICE_DIR)/build/dist/zimlets/nofile $(ZIMLET_DIR)/build/dist/zimlets/nofile
 	mkdir -p $@
-	cp $(ZIMLET_DIR)/build/dist/zimlets/* $@
+	cp $(SERVICE_DIR)/build/dist/zimlets/* $@
 
 $(WEBAPP_DIR)/zimbra/downloads:
 	mkdir -p $@
 	cp $(SERVICE_DIR)/src/windows/*exe $@
-	cp $(SERVICE_DIR)/src/macosx/*dmg $@
 
 $(STORE_DEST_DIR)/$(TOMCAT_DIR)/webapps/service/WEB-INF/lib/zimbrataglib.jar: $(ZIMLET_DIR)/build/dist/lib/zimbrataglib.jar
 	mkdir -p $(STORE_DEST_DIR)/$(TOMCAT_DIR)/webapps/service/WEB-INF/lib

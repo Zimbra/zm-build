@@ -67,11 +67,6 @@ if [ -f /etc/redhat-release ]; then
 fi
 
 if [ -f /etc/SuSE-release ]; then
-	grep "SUSE Linux Enterprise Server 10" /etc/SuSE-release > /dev/null 2>&1
-	if [ $? = 0 ]; then
-		echo "SuSEES10"
-		exit 0
-	fi
 	grep "SUSE LINUX Enterprise Server 9" /etc/SuSE-release > /dev/null 2>&1
 	if [ $? = 0 ]; then
 		echo "SuSEES9"

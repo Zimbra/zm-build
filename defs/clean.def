@@ -7,7 +7,6 @@ CLEAN_TARGETS	=	\
 		$(LOGGER_DEST_ROOT) \
 		$(APACHE_DEST_ROOT) \
 		$(SPELL_DEST_ROOT) \
-		$(ISYNC_DEST_ROOT) \
 		zcs \
 		zcs-*.tgz \
 		zimbra.rpmrc \
@@ -23,6 +22,5 @@ clean:
 
 allclean: clean
 	(cd $(SERVICE_DIR); $(ANT) clean)
-	(cd $(COMMON_DIR); $(ANT) clean)
 	(cd $(CONSOLE_DIR); $(ANT) clean)
 	(cd $(NATIVE_DIR); $(MAKE) clean)

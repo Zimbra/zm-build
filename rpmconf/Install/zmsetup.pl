@@ -29,7 +29,9 @@ use strict;
 use lib "/opt/zimbra/libexec";
 use lib "/opt/zimbra/zimbramon/lib";
 use lib "/opt/zimbra/zimbramon/lib/i386-linux-thread-multi";
+use lib "/opt/zimbra/zimbramon/lib/i486-linux-thread-multi";
 use lib "/opt/zimbra/zimbramon/lib/i586-linux-thread-multi";
+use lib "/opt/zimbra/zimbramon/lib/i686-linux-thread-multi";
 use lib "/opt/zimbra/zimbramon/lib/darwin-thread-multi-2level";
 
 our $platform = `/opt/zimbra/libexec/get_plat_tag.sh`;
@@ -263,7 +265,7 @@ sub isInstalled {
 }
 
 sub genRandomPass {
-	open RP, "/opt/zimbra/bin/zmjava com.zimbra.common.util.RandomPassword 8 10|" or
+	open RP, "/opt/zimbra/bin/zmjava com.zimbra.cs.util.RandomPassword 8 10|" or
 		die "Can't generate random password: $!\n";
 	my $rp = <RP>;
 	close RP;
@@ -2081,7 +2083,6 @@ sub configCreateCert {
 	}
 
 	if (isEnabled("zimbra-ldap") || isEnabled("zimbra-store") || isEnabled("zimbra-mta")) {
-
 		progress ( "Creating SSL certificate..." );
     if (-f "$config{JAVAHOME}/lib/security/cacerts") {
 			`chmod 777 $config{JAVAHOME}/lib/security/cacerts >> $logfile 2>&1`;
@@ -2445,13 +2446,13 @@ sub configInitNotebooks {
         my $domain = <DOMAINS>;
         close DOMAINS;
         chomp $domain;
-        open RP, "/opt/zimbra/bin/zmjava com.zimbra.common.util.RandomPassword 8 10|" 
+        open RP, "/opt/zimbra/bin/zmjava com.zimbra.cs.util.RandomPassword 8 10|" 
           or die "Can't generate random account name: $!\n";
         chomp(my $nbacct = <RP>);
         close RP;
         $config{NOTEBOOKACCOUNT} = "$nbacct\@$domain";
   
-        open RP, "/opt/zimbra/bin/zmjava com.zimbra.common.util.RandomPassword 8 10|" 
+        open RP, "/opt/zimbra/bin/zmjava com.zimbra.cs.util.RandomPassword 8 10|" 
           or die "Can't generate random account name: $!\n";
         chomp($config{NOTEBOOKPASS} = <RP>);
         close RP;

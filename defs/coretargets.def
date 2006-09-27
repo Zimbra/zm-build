@@ -182,8 +182,6 @@ pcre_MANDRIVA2006: ;
 
 pcre_SuSE10: ;
 
-pcre_SuSEES10: ;
-
 pcre_RPL1: ;
 
 $(CORE_DEST_DIR)/jdk$(JAVA_VERSION_32)_i386:
