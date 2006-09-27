@@ -87,6 +87,7 @@ my %updateFuncs = (
 	"4.0.0_GA" => \&upgrade400GA,
 	"4.0.1_GA" => \&upgrade401GA,
 	"4.0.2_GA" => \&upgrade402GA,
+	"4.0.3_GA" => \&upgrade403GA,
 	"4.1.0_GA" => \&upgrade410GA,
 );
 
@@ -108,6 +109,7 @@ my @versionOrder = (
 	"4.0.0_GA",
 	"4.0.1_GA",
 	"4.0.2_GA",
+	"4.0.3_GA",
 	"4.1.0_GA",
 );
 
@@ -201,6 +203,8 @@ sub upgrade {
 		print "This appears to be 4.0.1_GA\n";
 	} elsif ($startVersion eq "4.0.2_GA") {
 		print "This appears to be 4.0.2_GA\n";
+	} elsif ($startVersion eq "4.0.3_GA") {
+		print "This appears to be 4.0.3_GA\n";
 	} elsif ($startVersion eq "4.1.0_GA") {
 		print "This appears to be 4.1.0_GA\n";
 	} else {
@@ -945,6 +949,22 @@ sub upgrade402GA {
       if ($cur_value ne "TRUE");
 	}
 
+
+	return 0;
+}
+sub upgrade403GA {
+	my ($startBuild, $targetVersion, $targetBuild) = (@_);
+	Migrate::log("Updating from 4.0.3_GA");
+
+  #8081 remove amavis tmpfs
+  `egrep -q '/opt/zimbra/amavisd-new-2.4.1/tmp' /etc/fstab`;
+  if ($? == 0 ) {
+    `umount /opt/zimbra/amavisd-new-2.4.1/tmp > /dev/null 2>&1`;
+    `sed -i.zimbra -e 's:\(^/dev/shm\t/opt/zimbra.*\):#\1:' /etc/fstab`;
+    if ($? != 0) {
+      `mv /etc/fstab.zimbra /etc/fstab`;
+    }
+  }
 
 	return 0;
 }

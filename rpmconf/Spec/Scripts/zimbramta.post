@@ -90,11 +90,12 @@ if [ ! -f /opt/zimbra/postfix/conf/main.cf ]; then
 	chown zimbra:zimbra /opt/zimbra/postfix/conf/main.cf
 fi
 
-egrep -q '/opt/zimbra/amavisd-new-2.4.1/tmp' /etc/fstab
-if [ $? != 0 ]; then
-	uid=`id -u zimbra`
-	gid=`id -g zimbra`
-	echo "/dev/shm	/opt/zimbra/amavisd-new-2.4.1/tmp	tmpfs	defaults,users,size=150m,mode=777 0 0" >> /etc/fstab
-fi
+# bug 8081 remove tmpfs
+#egrep -q '/opt/zimbra/amavisd-new-2.4.1/tmp' /etc/fstab
+#if [ $? != 0 ]; then
+	#uid=`id -u zimbra`
+	#gid=`id -g zimbra`
+	#echo "/dev/shm	/opt/zimbra/amavisd-new-2.4.1/tmp	tmpfs	defaults,users,size=150m,mode=777 0 0" >> /etc/fstab
+#fi
 
 ldconfig
