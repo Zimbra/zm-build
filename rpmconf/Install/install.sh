@@ -147,6 +147,22 @@ done
 D=`date +%s`
 echo "${D}: INSTALL SESSION COMPLETE" >> /opt/zimbra/.install_history
 
+if [ x$RESTORECONFIG != "x" ]; then
+	SAVEDIR=$RESTORECONFIG
+fi
+
+if [ x$SAVEDIR != "x" -a x$REMOVE = "xno" ]; then
+    setDefaultsFromExistingConfig
+fi
+
+if [ $UPGRADE = "yes" ]; then
+
+	restoreExistingConfig
+
+	restoreCerts
+
+fi
+
 if [ $SOFTWAREONLY = "yes" ]; then
 	
 	echo ""
@@ -164,21 +180,6 @@ fi
 # Installation complete, now configure
 #
 
-if [ x$RESTORECONFIG != "x" ]; then
-	SAVEDIR=$RESTORECONFIG
-fi
-
-if [ x$SAVEDIR != "x" -a x$REMOVE = "xno" ]; then
-    setDefaultsFromExistingConfig
-fi
-
-if [ $UPGRADE = "yes" ]; then
-
-	restoreExistingConfig
-
-	restoreCerts
-
-fi
 
 if [ x$DEFAULTFILE != "x" ]; then
 	/opt/zimbra/libexec/zmsetup.pl -c $DEFAULTFILE
