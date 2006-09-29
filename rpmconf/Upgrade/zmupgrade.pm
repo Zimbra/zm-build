@@ -44,6 +44,10 @@ my $lowVersion = 18;
 my $hiVersion = 26;
 my $hiLoggerVersion = 5;
 
+# Variables for the combo schema updater
+my $comboLowVersion = 21;
+my $comboHiVersion  = 27;
+
 my $hn = `su - zimbra -c "zmlocalconfig -m nokey zimbra_server_hostname"`;
 chomp $hn;
 
@@ -51,6 +55,7 @@ my $ZMPROV = "/opt/zimbra/bin/zmprov -l --";
 
 my %updateScripts = (
 	'UniqueVolume' => "migrate20051021-UniqueVolume.pl",
+	'ComboUpdater' => "migrate-ComboUpdater.pl",
 	'18' => "migrate20050916-Volume.pl",
 	'19' => "migrate20050920-CompressionThreshold.pl",
 	'20' => "migrate20050927-DropRedologSequence.pl",
@@ -218,6 +223,13 @@ sub upgrade {
 			print "Schema upgrade required\n";
 		}
 
+    # fast tracked updater (ie invoke mysql once)
+    if ($curSchemaVersion >= $comboLowVersion && $curSchemaVersion < $comboHiVersion) {
+      if (runSchemaUpgrade("ComboUpdater")) { return 1; }
+      $curSchemaVersion = Migrate::getSchemaVersion();
+    }
+
+    # the old slow painful way (ie lots of mysql invocations)
 		while ($curSchemaVersion >= $lowVersion && $curSchemaVersion < $hiVersion) {
 			if (($curSchemaVersion == 21) && $needVolumeHack) {
 				if (runSchemaUpgrade ("UniqueVolume")) { return 1; }
@@ -949,9 +961,9 @@ sub upgrade402GA {
       if ($cur_value ne "TRUE");
 	}
 
-
-	return 0;
+  return 0;
 }
+
 sub upgrade403GA {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
 	Migrate::log("Updating from 4.0.3_GA");
@@ -966,7 +978,7 @@ sub upgrade403GA {
     }
   }
 
-	return 0;
+  return 0;
 }
 
 sub upgrade410GA {
@@ -1105,7 +1117,7 @@ sub runSchemaUpgrade {
 	}
 
 	if (! -x "${scriptDir}/$updateScripts{$curVersion}" ) {
-		Migrate::log ("Can't run ${scriptDir}/$updateScripts{$curVersion} - no script!");
+		Migrate::log ("Can't run ${scriptDir}/$updateScripts{$curVersion} - not executable!");
 		return 1;
 	}
 
