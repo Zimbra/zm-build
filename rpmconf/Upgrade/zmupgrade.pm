@@ -44,22 +44,27 @@ my $lowVersion = 18;
 my $hiVersion = 27;
 my $hiLoggerVersion = 5;
 
+# Variables for the combo schema updater
+my $comboLowVersion = 21;
+my $comboHiVersion  = 27;
+
 my $hn = `su - zimbra -c "zmlocalconfig -m nokey zimbra_server_hostname"`;
 chomp $hn;
 
 my $ZMPROV = "/opt/zimbra/bin/zmprov -l --";
 
 my %updateScripts = (
+  'ComboUpdater' => "migrate-ComboUpdater.pl",
 	'UniqueVolume' => "migrate20051021-UniqueVolume.pl",
 	'18' => "migrate20050916-Volume.pl",
 	'19' => "migrate20050920-CompressionThreshold.pl",
-	'20' => "migrate20050927-DropRedologSequence.pl",
+	'20' => "migrate20050927-DropRedologSequence.pl",    # 3.1.2
 	'21' => "migrate20060412-NotebookFolder.pl",
 	'22' => "migrate20060515-AddImapId.pl",
 	'23' => "migrate20060518-EmailedContactsFolder.pl",
 	'24' => "migrate20060708-FlagCalendarFolder.pl",
-	'25' => "migrate20060803-CreateMailboxMetadata.pl",
-	'26' => "migrate20060810-PersistFolderCounts.pl",
+	'25' => "migrate20060803-CreateMailboxMetadata.pl",  
+	'26' => "migrate20060810-PersistFolderCounts.pl",    # 4.0.2
 );
 
 my %loggerUpdateScripts = (
@@ -215,6 +220,13 @@ sub upgrade {
 			print "Schema upgrade required\n";
 		}
 
+    # fast tracked updater (ie invoke mysql once)
+    if ($curSchemaVersion >= $comboLowVersion && $curSchemaVersion < $comboHiVersion) {
+      if (runSchemaUpgrade("ComboUpdater")) { return 1; }
+		  $curSchemaVersion = Migrate::getSchemaVersion();
+    }
+
+    # the old slow painful way (ie lots of mysql invocations)
 		while ($curSchemaVersion >= $lowVersion && $curSchemaVersion < $hiVersion) {
 			if (($curSchemaVersion == 21) && $needVolumeHack) {
 				if (runSchemaUpgrade ("UniqueVolume")) { return 1; }
@@ -948,6 +960,10 @@ sub upgrade402GA {
 
   # bug 10845
   main::runAsZimbra("$ZMPROV mcf zimbraMailURL /zimbra"); 
+
+  return 0;
+}
+
 sub upgrade403GA {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
 	Migrate::log("Updating from 4.0.3_GA");
@@ -961,9 +977,6 @@ sub upgrade403GA {
       `mv /etc/fstab.zimbra /etc/fstab`;
     }
   }
-
-	return 0;
-}
 
 	return 0;
 }
@@ -1098,7 +1111,7 @@ sub runSchemaUpgrade {
 	}
 
 	if (! -x "${scriptDir}/$updateScripts{$curVersion}" ) {
-		Migrate::log ("Can't run ${scriptDir}/$updateScripts{$curVersion} - no script!");
+		Migrate::log ("Can't run ${scriptDir}/$updateScripts{$curVersion} - not executable");
 		return 1;
 	}
 
