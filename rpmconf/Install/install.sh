@@ -47,6 +47,9 @@ while [ $# -ne 0 ]; do
 		-r) shift
 			RESTORECONFIG=$1
 		;;
+		-l) shift
+			LICENSE=$1
+		;;
 		-u) UNINSTALL="yes"
 		;;
 		-s) SOFTWAREONLY="yes"
@@ -161,6 +164,10 @@ if [ $UPGRADE = "yes" ]; then
 
 	restoreCerts
 
+fi
+
+if [ x"$LICENSE" != "x" -a -e $LICENSE ]; then
+  cp $LICENSE /opt/zimbra/conf/ZCSLicense.xml
 fi
 
 if [ $SOFTWAREONLY = "yes" ]; then
