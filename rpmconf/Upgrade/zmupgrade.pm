@@ -743,16 +743,16 @@ sub upgrade312GA {
 sub upgrade313GA {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
 	Migrate::log("Updating from 3.1.3_GA");
-	my @accounts = `su - zimbra -c "$ZMPROV gaa"`;
 
-	open (G, "| $ZMPROV ") or die "Can't open zmprov: $!";
+  # removing this per bug 10901
+	#my @accounts = `su - zimbra -c "$ZMPROV gaa"`;
+	#open (G, "| $ZMPROV ") or die "Can't open zmprov: $!";
+	#foreach (@accounts) {
+	# chomp;
+	# print G "ma $_ zimbraPrefMailLocalDeliveryDisabled FALSE\n";
+	#}
+	#close G;
 
-	foreach (@accounts) {
-		chomp;
-		print G "ma $_ zimbraPrefMailLocalDeliveryDisabled FALSE\n";
-	}
-
-	close G;
 	return 0;
 }
 
