@@ -24,7 +24,6 @@ $(ISYNC_DEST_ROOT)/Zimbra.pmproj:
 $(ISYNC_DEST_ROOT)/InstallerResources: $(ISYNC_DIR)/build/Deployment/Zimbra.prefPane
 	mkdir -p $@
 	cp $(ISYNC_DIR)/InstallerResources/* $@
-	cp $(ISYNC_DIR)/build/Deployment/ZimbraUpdater $@/preflight
 
 $(PACKAGE_DIR)/$(CUR_PACKAGE_NAME).$(PACKAGE_EXT):
 	(cd $(CUR_DEST_ROOT);  $(PACKAGING_COMMAND) $(CUR_PACKAGING_OPTIONS) )
