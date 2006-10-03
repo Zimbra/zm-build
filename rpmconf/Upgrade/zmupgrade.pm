@@ -41,7 +41,7 @@ chomp $rundir;
 my $scriptDir = "/opt/zimbra/libexec/scripts";
 
 my $lowVersion = 18;
-my $hiVersion = 26;
+my $hiVersion = 28;
 my $hiLoggerVersion = 5;
 
 # Variables for the combo schema updater
@@ -54,16 +54,18 @@ chomp $hn;
 my $ZMPROV = "/opt/zimbra/bin/zmprov -l --";
 
 my %updateScripts = (
+  'ComboUpdater' => "migrate-ComboUpdater.pl",
 	'UniqueVolume' => "migrate20051021-UniqueVolume.pl",
-	'ComboUpdater' => "migrate-ComboUpdater.pl",
 	'18' => "migrate20050916-Volume.pl",
 	'19' => "migrate20050920-CompressionThreshold.pl",
-	'20' => "migrate20050927-DropRedologSequence.pl",
+	'20' => "migrate20050927-DropRedologSequence.pl",    # 3.1.2
 	'21' => "migrate20060412-NotebookFolder.pl",
 	'22' => "migrate20060515-AddImapId.pl",
 	'23' => "migrate20060518-EmailedContactsFolder.pl",
 	'24' => "migrate20060708-FlagCalendarFolder.pl",
 	'25' => "migrate20060803-CreateMailboxMetadata.pl",
+	'26' => "migrate20060810-PersistFolderCounts.pl",    # 4.0.2
+	'27' => "migrate20060911-MailboxGroup.pl",           # 4.1.0
 );
 
 my %loggerUpdateScripts = (
@@ -746,16 +748,16 @@ sub upgrade312GA {
 sub upgrade313GA {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
 	Migrate::log("Updating from 3.1.3_GA");
-	my @accounts = `su - zimbra -c "$ZMPROV gaa"`;
 
-	open (G, "| $ZMPROV ") or die "Can't open zmprov: $!";
+  # removing this per bug 10901
+	#my @accounts = `su - zimbra -c "$ZMPROV gaa"`;
+	#open (G, "| $ZMPROV ") or die "Can't open zmprov: $!";
+	#foreach (@accounts) {
+	# chomp;
+	# print G "ma $_ zimbraPrefMailLocalDeliveryDisabled FALSE\n";
+	#}
+	#close G;
 
-	foreach (@accounts) {
-		chomp;
-		print G "ma $_ zimbraPrefMailLocalDeliveryDisabled FALSE\n";
-	}
-
-	close G;
 	return 0;
 }
 
@@ -960,6 +962,9 @@ sub upgrade402GA {
 		main::runAsZimbra("$ZMPROV mc $cos zimbraFeatureMobileSyncEnabled FALSE")
       if ($cur_value ne "TRUE");
 	}
+
+  # bug 10845
+  main::runAsZimbra("$ZMPROV mcf zimbraMailURL /zimbra");
 
   return 0;
 }
