@@ -166,7 +166,7 @@ if [ $UPGRADE = "yes" ]; then
 
 fi
 
-if [ x"$LICENSE" != "x" -a -e $LICENSE ]; then
+if [ x"$LICENSE" != "x" ] && [ -e $LICENSE ]; then
   cp $LICENSE /opt/zimbra/conf/ZCSLicense.xml
 fi
 
