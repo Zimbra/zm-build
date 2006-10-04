@@ -45,7 +45,7 @@ my $hiVersion = 27;
 my $hiLoggerVersion = 5;
 
 # Variables for the combo schema updater
-my $comboLowVersion = 21;
+my $comboLowVersion = 20;
 my $comboHiVersion  = 27;
 
 my $hn = `su - zimbra -c "zmlocalconfig -m nokey zimbra_server_hostname"`;
