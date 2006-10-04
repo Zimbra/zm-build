@@ -41,7 +41,7 @@ chomp $rundir;
 my $scriptDir = "/opt/zimbra/libexec/scripts";
 
 my $lowVersion = 18;
-my $hiVersion = 28;
+my $hiVersion = 29;
 my $hiLoggerVersion = 5;
 
 # Variables for the combo schema updater
@@ -66,6 +66,7 @@ my %updateScripts = (
 	'25' => "migrate20060803-CreateMailboxMetadata.pl",
 	'26' => "migrate20060810-PersistFolderCounts.pl",    # 4.0.2
 	'27' => "migrate20060911-MailboxGroup.pl",           # 4.1.0
+	'28' => "migrate20060929-TypedTombstones.pl",
 );
 
 my %loggerUpdateScripts = (
