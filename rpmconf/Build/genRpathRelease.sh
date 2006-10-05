@@ -14,10 +14,10 @@ TROVE=`conary rq --full-versions --flavors group-dist=/zimbra.rpath.org@rpl:1//z
 BUILD=`rbuilder build-create zimbra "$TROVE" installable_iso --wait | awk -F= '{print $NF}'`
 if [ $? -eq 0 ]; then
   ISO=`rbuilder build-url $BUILD | head -1`
-  wget -o $BUILDROOT/i386/zcs-${RELEASETAG}.iso $ISO
+  wget -qO $BUILDROOT/i386/zcs-${RELEASETAG}.iso $ISO
 fi
 BUILD=`rbuilder build-create zimbra "$TROVE" vmware_image --wait | awk -F= '{print $NF}'`
 if [ $? -eq 0 ]; then
   ISO=`rbuilder build-url $BUILD | head -1`
-  wget -o $BUILDROOT/i386/zcs-${RELEASETAG}-vmware.zip $ISO
+  wget -qO $BUILDROOT/i386/zcs-${RELEASETAG}-vmware.zip $ISO
 fi
