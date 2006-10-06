@@ -67,18 +67,18 @@ class ZimbraBuildRecipe(PackageRecipe):
         # turn of build requirement checks
         del r.EnforceSonameBuildRequirements
         del r.EnforcePerlBuildRequirements
-	# Add in a tomcat/work dir.
-	if r.name == 'zimbra-core':
-    		r.makeDirs('/opt/zimbra/tomcat/work')
+        # Add in a tomcat/work dir.
+        if r.name == 'zimbra-core':
+                    r.makeDirs('/opt/zimbra/tomcat/work')
         # don't delete non-build files or directories (foo.c~,*.orig,etc)
-        del r.RemoveNonPackageFiles
-	# don't delete files
-	del r.ExcludeDirectories
+        r.RemoveNonPackageFiles(exceptions='.*')
+        # don't delete files
+        r.ExcludeDirectories(exceptions='.*')
         # set up libraries to be included in /etc/ld.so.conf
         r.SharedLibrary(subtrees='/opt/zimbra/%(lib)s')
-	# add PERL5LIB
-	r.Environment('PERL5LIB', '/opt/zimbra/zimbramon/lib:/opt/zimbra/zimbramon/lib/i386-linux-thread-multi')
-	# glob not supported until conary 1.0.15
+        # add PERL5LIB
+        r.Environment('PERL5LIB', '/opt/zimbra/zimbramon/lib:/opt/zimbra/zimbramon/lib/i386-linux-thread-multi')
+        # glob not supported until conary 1.0.15
         #r.SharedLibrary(subtrees='/opt/zimbra/cyrus-sasl.*/%(lib)s')
         r.SharedLibrary(subtrees='/opt/zimbra/cyrus-sasl-2.1.21.ZIMBRA/%(lib)s')
         # add a runtime requirements on sudo
@@ -100,8 +100,8 @@ class ZimbraBuildRecipe(PackageRecipe):
                    '/opt/zimbra/scripts/zimbramta.post')
         # add requirement from zimbra->mta -> mailbase for /etc/aliases
         r.Requires('mailbase:runtime', '/opt/zimbra/postfix.*/sbin/postalias')
-	# add an exclude for convertd libs
-	r.Requires(exceptDeps=('.*', 'soname:.*libnotes.*'))
+        # add an exclude for convertd libs
+        r.Requires(exceptDeps=('.*', 'soname:.*libnotes.*'))
         # zmfixperms uses these user/groups when changing ownerships
         for user in ('zimbra', 'postfix', 'nobody'):
             r.UtilizeUser(user, '/opt/zimbra/libexec/zmfixperms')
