@@ -96,7 +96,12 @@ my %updateFuncs = (
 	"4.0.1_GA" => \&upgrade401GA,
 	"4.0.2_GA" => \&upgrade402GA,
 	"4.0.3_GA" => \&upgrade403GA,
+	"4.1.0_BETA1" => \&upgrade410BETA1,
+	"4.1.0_RC1" => \&upgrade410RC1,
+	"4.1.0_RC2" => \&upgrade410RC2,
 	"4.1.0_GA" => \&upgrade410GA,
+	"5.0.0_BETA1" => \&upgrade500BETA1,
+	"5.0.0_GA" => \&upgrade500GA,
 );
 
 my @versionOrder = (
@@ -118,7 +123,12 @@ my @versionOrder = (
 	"4.0.1_GA",
 	"4.0.2_GA",
 	"4.0.3_GA",
+	"4.1.0_BETA1",
+	"4.1.0_RC1",
+	"4.1.0_RC2",
 	"4.1.0_GA",
+  "5.0.0_BETA1",
+  "5.0.0_GA",
 );
 
 my $startVersion;
@@ -213,8 +223,18 @@ sub upgrade {
 		print "This appears to be 4.0.2_GA\n";
 	} elsif ($startVersion eq "4.0.3_GA") {
 		print "This appears to be 4.0.3_GA\n";
+	} elsif ($startVersion eq "4.1.0_BETA1") {
+		print "This appears to be 4.1.0_BETA1\n";
+	} elsif ($startVersion eq "4.1.0_RC1") {
+		print "This appears to be 4.1.0_RC1\n";
+	} elsif ($startVersion eq "4.1.0_RC2") {
+		print "This appears to be 4.1.0_RC2\n";
 	} elsif ($startVersion eq "4.1.0_GA") {
 		print "This appears to be 4.1.0_GA\n";
+	} elsif ($startVersion eq "5.0.0_BETA1") {
+		print "This appears to be 5.0.0_BETA1\n";
+	} elsif ($startVersion eq "5.0.0_GA") {
+		print "This appears to be 5.0.0_GA\n";
 	} else {
 		print "I can't upgrade version $startVersion\n\n";
 		return 1;
@@ -987,9 +1007,34 @@ sub upgrade403GA {
   return 0;
 }
 
+sub upgrade410BETA1 {
+	my ($startBuild, $targetVersion, $targetBuild) = (@_);
+	Migrate::log("Updating from 4.1.0_BETA1");
+	return 0;
+}
+sub upgrade410RC1 {
+	my ($startBuild, $targetVersion, $targetBuild) = (@_);
+	Migrate::log("Updating from 4.1.0_RC1");
+	return 0;
+}
+sub upgrade410RC2 {
+	my ($startBuild, $targetVersion, $targetBuild) = (@_);
+	Migrate::log("Updating from 4.1.0_RC2");
+	return 0;
+}
 sub upgrade410GA {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
 	Migrate::log("Updating from 4.1.0_GA");
+	return 0;
+}
+sub upgrade500BETA1 {
+	my ($startBuild, $targetVersion, $targetBuild) = (@_);
+	Migrate::log("Updating from 5.0.0_BETA1");
+	return 0;
+}
+sub upgrade500GA {
+	my ($startBuild, $targetVersion, $targetBuild) = (@_);
+	Migrate::log("Updating from 5.0.0_GA");
 	return 0;
 }
 
