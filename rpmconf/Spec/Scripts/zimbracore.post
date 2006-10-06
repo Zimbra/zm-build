@@ -93,7 +93,7 @@ mkdir /opt/zimbra/.ssh
 chown zimbra:zimbra /opt/zimbra/.ssh
 
 # 64 bit jvm doesn't support the dump
-if [ "x$BIT" = "x64" -o ]; then
+if [ "x$BIT" = "x64" ]; then
 	exit 0
 fi
 
