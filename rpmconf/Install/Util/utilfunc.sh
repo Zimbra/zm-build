@@ -312,6 +312,7 @@ checkExistingInstall() {
 		fi
 	done
 
+  determineVersionInfo
   verifyLicenseAvailable
 
 	if [ $INSTALLED = "yes" ]; then
@@ -319,6 +320,48 @@ checkExistingInstall() {
 	else
 		checkUserInfo
 	fi
+}
+
+determineVersionInfo() {
+
+  isInstalled zimbra-core
+  if [ x$PKGINSTALLED != "x" ]; then
+    ZMVERSION_CURRENT=$PKGVERSION
+    if [ -d "/opt/zimbra/zimlets-network" ]; then
+      ZMTYPE_CURRENT="NETWORK"
+    else 
+      ZMTYPE_CURRENT="FOSS"
+    fi
+  fi
+  # need way to determine type for other package types
+	if [ $PACKAGEEXT = "rpm" ]; then
+    if [ x"`rpm --qf '%{description}' -qp ./packages/zimbra-core* | grep Network`" = "x" ]; then
+      ZMTYPE_INSTALLABLE="FOSS"
+    else 
+      ZMTYPE_INSTALLABLE="NETWORK"
+    fi
+  fi
+  echo "CURRENT VERSION $ZMTYPE_CURRENT $ZMVERSION_CURRENT"
+  echo "INSTALLING $ZMTYPE_INSTALLABLE"
+
+  if [ x"$ZMTYPE_CURRENT" = "xNETWORK" ] && [ x"$ZMTYPE_INSTALLABLE" = "xFOSS" ]; then
+    echo "Warning: You are about to upgrade from the Network Edition to the"
+    echo "Open Source Edition.  This will remove all Network features, including" 
+    echo "Attachment Searching, Zimbra Mobile, Backup/Restore, and support for the "
+    echo "Zimbra Connector for Outlook."
+	  while :; do
+	   askYN "Do you wish to continue?" "N"
+	   if [ $response = "no" ]; then
+	    askYN "Exit?" "N"
+	    if [ $response = "yes" ]; then
+		    echo "Exiting."
+		    exit 1
+	    fi
+	   else
+	    break
+	   fi
+	  done
+  fi
 }
 
 verifyLicenseAvailable() {
@@ -332,8 +375,12 @@ verifyLicenseAvailable() {
     return
   fi
 
-  # this is not portable.
-  if [ x"`rpm --qf '%{description}' -qp ./packages/zimbra-core* | grep Network`" = "x" ]; then
+  # need to finish for other native packagers
+	if [ $PACKAGEEXT = "rpm" ]; then
+    if [ x"`rpm --qf '%{description}' -qp ./packages/zimbra-core* | grep Network`" = "x" ]; then
+     return
+    fi
+  else 
     return
   fi
 
@@ -369,7 +416,9 @@ verifyLicenseAvailable() {
       exit 1;
     fi
   fi
-    
+  if [ x"$licensedUsers" = "x" ]; then
+    licensedUsers=0
+  fi
   # Check for licensed user count and warn if necessary
   numCurrentUsers=`su - zimbra -c "zmprov gaa 2> /dev/null | wc -l"`;
   numUsersRC=$?
@@ -377,7 +426,7 @@ verifyLicenseAvailable() {
     numCurrentUsers=`su - zimbra -c "zmprov -l gaa 2> /dev/null | wc -l"`;
     numUsersRC=$?
   fi
-  numCurrentUsers=`expr $numCurrentUsers - 4`
+  numCurrentUsers=`expr $numCurrentUsers - 3`
   if [ $numCurrentUsers -gt 0 ]; then
     echo "Current Users=$numCurrentUsers Licensed Users=$licensedUsers"
   fi
@@ -400,7 +449,7 @@ verifyLicenseAvailable() {
 	    break
 	   fi
 	  done
-  elif [ $numUsersRC -ne 0 -o $numCurrentUsers -gt $licensedUsers ]; then
+  elif [ $numUsersRC -ne 0 ] || [ $numCurrentUsers -gt $licensedUsers ]; then
     echo "Warning: The number of users on this system ($numCurrentUsers) exceeds the licensed number"
     echo "($licensedUsers).  You may continue with the upgrade, but you will not be able to create"
     echo "new users.  Also, initialization of the Document feature will fail.  If you "
