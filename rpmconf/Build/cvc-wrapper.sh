@@ -67,13 +67,17 @@ class ZimbraBuildRecipe(PackageRecipe):
         # turn of build requirement checks
         del r.EnforceSonameBuildRequirements
         del r.EnforcePerlBuildRequirements
-        # Add in a tomcat/work dir.
-        if r.name == 'zimbra-core':
-                    r.makeDirs('/opt/zimbra/tomcat/work')
-        # don't delete non-build files or directories (foo.c~,*.orig,etc)
-        r.RemoveNonPackageFiles(exceptions='.*')
-        # don't delete files
-        r.ExcludeDirectories(exceptions='.*')
+        # don't delete specific empty directories
+        if r.name == 'zimbra.mta':
+          r.ExcludeDirectories(exceptions='/opt/zimbra/postfix-.*')
+        if r.name == 'zimbra.store':
+          r.MakeDirs('/opt/zimbra/apache-tomcat-5.5.15/work/Catalina/localhost/host-manger', component='runtime', mode=0755)
+          r.Ownership('zimbra', 'zimbra' '/opt/zimbra/apache-tomcat-.*/work/?.*');
+          r.ExcludeDirectories(exceptions='/opt/zimbra/apache-tomcat-.*')
+        if r.name == 'zimbra.ldap':
+          r.ExcludeDirectories(exceptions='/opt/zimbra/openldap-.*')
+        if r.name == 'zimbra.apache':
+          r.ExcludeDirectories(exceptions='/opt/zimbra/httpd.*/logs')
         # set up libraries to be included in /etc/ld.so.conf
         r.SharedLibrary(subtrees='/opt/zimbra/%(lib)s')
         # add PERL5LIB
