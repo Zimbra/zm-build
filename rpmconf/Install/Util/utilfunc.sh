@@ -312,7 +312,7 @@ checkExistingInstall() {
 		fi
 	done
 
-  determineVersionInfo
+  determineVersionType
   verifyLicenseAvailable
 
 	if [ $INSTALLED = "yes" ]; then
@@ -322,7 +322,7 @@ checkExistingInstall() {
 	fi
 }
 
-determineVersionInfo() {
+determineVersionType() {
 
   isInstalled zimbra-core
   if [ x$PKGINSTALLED != "x" ]; then
@@ -341,8 +341,10 @@ determineVersionInfo() {
       ZMTYPE_INSTALLABLE="NETWORK"
     fi
   fi
-  echo "CURRENT VERSION $ZMTYPE_CURRENT $ZMVERSION_CURRENT"
-  echo "INSTALLING $ZMTYPE_INSTALLABLE"
+
+  if [ x"$UNINSTALL" = "xyes" ] || [ x"$AUTOINSTALL" = "xyes" ]; then
+    return
+  fi
 
   if [ x"$ZMTYPE_CURRENT" = "xNETWORK" ] && [ x"$ZMTYPE_INSTALLABLE" = "xFOSS" ]; then
     echo "Warning: You are about to upgrade from the Network Edition to the"
@@ -366,7 +368,7 @@ determineVersionInfo() {
 
 verifyLicenseAvailable() {
 
-  if [ x$UNINSTALL = "xyes" ]; then
+  if [ x"$AUTOINSTALL" = "xyes" ] || [ x"$UNINSTALL" = "xyes" ]; then
     return
   fi
 
@@ -815,11 +817,16 @@ removeExistingInstall() {
 		done
 
 		rm -f /etc/ld.so.conf.d/zimbra.ld.conf
-
-		cat /etc/sudoers | grep -v zimbra > /tmp/sudoers
-		cat /tmp/sudoers > /etc/sudoers
-		chmod 440 /etc/sudoers
-		rm -f /tmp/sudoers
+    if [ -f "/etc/sudoers" ]; then
+		  cat /etc/sudoers | grep -v zimbra > /tmp/sudoers
+		  cat /tmp/sudoers > /etc/sudoers
+      if [ $PLATFORM = "SuSEES9" -o $PLATFORM = "SuSEES10" -o $PLATFORM = "SuSE10" ]; then
+        chmod 640 /etc/sudoers
+      else
+        chmod 440 /etc/sudoers
+      fi
+		  rm -f /tmp/sudoers
+    fi
 		echo ""
 		echo "Removing deployed webapp directories"
 		/bin/rm -rf /opt/zimbra/tomcat/webapps/zimbra
