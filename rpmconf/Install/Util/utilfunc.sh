@@ -312,6 +312,7 @@ checkExistingInstall() {
 		fi
 	done
 
+  determineVersionType
   verifyLicenseAvailable
 
 	if [ $INSTALLED = "yes" ]; then
@@ -321,42 +322,159 @@ checkExistingInstall() {
 	fi
 }
 
+determineVersionType() {
+
+  isInstalled zimbra-core
+  if [ x$PKGINSTALLED != "x" ]; then
+    ZMVERSION_CURRENT=$PKGVERSION
+    if [ -d "/opt/zimbra/zimlets-network" ]; then
+      ZMTYPE_CURRENT="NETWORK"
+    else 
+      ZMTYPE_CURRENT="FOSS"
+    fi
+  fi
+  # need way to determine type for other package types
+	if [ $PACKAGEEXT = "rpm" ]; then
+    if [ x"`rpm --qf '%{description}' -qp ./packages/zimbra-core* | grep Network`" = "x" ]; then
+      ZMTYPE_INSTALLABLE="FOSS"
+    else 
+      ZMTYPE_INSTALLABLE="NETWORK"
+    fi
+  fi
+
+  if [ x"$UNINSTALL" = "xyes" ] || [ x"$AUTOINSTALL" = "xyes" ]; then
+    return
+  fi
+
+  if [ x"$ZMTYPE_CURRENT" = "xNETWORK" ] && [ x"$ZMTYPE_INSTALLABLE" = "xFOSS" ]; then
+    echo "Warning: You are about to upgrade from the Network Edition to the"
+    echo "Open Source Edition.  This will remove all Network features, including" 
+    echo "Attachment Searching, Zimbra Mobile, Backup/Restore, and support for the "
+    echo "Zimbra Connector for Outlook."
+	  while :; do
+	   askYN "Do you wish to continue?" "N"
+	   if [ $response = "no" ]; then
+	    askYN "Exit?" "N"
+	    if [ $response = "yes" ]; then
+		    echo "Exiting."
+		    exit 1
+	    fi
+	   else
+	    break
+	   fi
+	  done
+  fi
+}
+
 verifyLicenseAvailable() {
+
+  if [ x"$AUTOINSTALL" = "xyes" ] || [ x"$UNINSTALL" = "xyes" ]; then
+    return
+  fi
 
   isInstalled zimbra-store
   if [ x$PKGINSTALLED = "x" ]; then
     return
   fi
 
-  if [ x"$AUTOINSTALL" = "xyes" ]; then
-    return
-  fi
-
-  if [ x"`rpm --qf '%{description}' -qp ./packages/zimbra-core* | grep Network`" == "x" ]; then
+  # need to finish for other native packagers
+	if [ $PACKAGEEXT = "rpm" ]; then
+    if [ x"`rpm --qf '%{description}' -qp ./packages/zimbra-core* | grep Network`" = "x" ]; then
+     return
+    fi
+  else 
     return
   fi
 
   echo "Checking for available license file..."
-  if [ ! -f "/opt/zimbra/conf/ZCSLicense.xml" -a ! -f "/opt/zimbra/conf/ZCSLicense-Trial.xml" ]; then
-    echo "WARNING: No license file has been found to install or upgrade"
-    echo "an existing license. The ZCS Connector for Outlook, Zimbra Mobile"
-    echo "and Zimbra account creation will not work without a valid license"
-    echo "file. If you have previously installed a license you may safely"
-    echo "continue without /opt/zimbra/conf/ZCSLicense.xml present."
-	  while :; do
-		  askYN "Do you wish to continue?" "N"
-		  if [ $response = "no" ]; then
-			  askYN "Exit?" "N"
-			  if [ $response = "yes" ]; then
-				  echo "Exiting - place a license file in /opt/zimbra/conf/ZCSLicense.xml and rerun."
-				  exit 1
-			  fi
-		  else
-			  break
-		  fi
-	  done
 
+  # use the tool if it exists
+  if [ -f "/opt/zimbra/bin/zmlicense" ]; then
+    licenseCheck=`su - zimbra -c "zmlicense -c" 2> /dev/null`
+    licensedUsers=`su - zimbra -c "zmlicense -p | grep ^AccountsLimit | sed -e 's/AccountsLimit=//'" 2> /dev/null`
   fi
+
+  # parse files is license tool wasn't there or didn't return a valid license
+  if [ x"$licenseCheck" = "xlicense not installed" -o x"$licenseCheck" = "x" ]; then
+    if [ -f "/opt/zimbra/conf/ZCSLicense.xml" ]; then
+      licenseCheck="license is OK"
+      licensedUsers=`cat /opt/zimbra/conf/ZCSLicense.xml | grep AccountsLimit | head -1  | awk '{print $3}' | awk -F= '{print $2}' | awk -F\" '{print $2}'`
+    elif [ -f "/opt/zimbra/conf/ZCSLicense-Trial.xml" ]; then
+      licenseCheck="license is OK"
+      licensedUsers=`cat /opt/zimbra/conf/ZCSLicense-Trial.xml | grep AccountsLimit | head -1  | awk '{print $3}' | awk -F= '{print $2}' | awk -F\" '{print $2}'`
+    else
+      echo "ERROR: The ZCS Network upgrade requires a license to be located in"
+      echo "/opt/zimbra/conf/ZCSLicense.xml or a license previously installed."
+      echo "The upgrade will not continue without a license."
+      echo ""
+      echo "Your system has not been modified"
+      echo ""
+      echo "New customers wanting to purchase or obtain a trial license"
+      echo "should contact Zimbra sales.  Contact information for Zimbra is"
+      echo "located at http://www.zimbra.com/about/contact_us.html"
+      echo "Existing customers can obtain an updated license file via the"
+      echo "Zimbra Support page located at http://www.zimbra.com/support."
+      echo ""
+      exit 1;
+    fi
+  fi
+  if [ x"$licensedUsers" = "x" ]; then
+    licensedUsers=0
+  fi
+  # Check for licensed user count and warn if necessary
+  numCurrentUsers=`su - zimbra -c "zmprov gaa 2> /dev/null | wc -l"`;
+  numUsersRC=$?
+  if [ $numUsersRC -ne 0 ]; then
+    numCurrentUsers=`su - zimbra -c "zmprov -l gaa 2> /dev/null | wc -l"`;
+    numUsersRC=$?
+  fi
+  numCurrentUsers=`expr $numCurrentUsers - 3`
+  if [ $numCurrentUsers -gt 0 ]; then
+    echo "Current Users=$numCurrentUsers Licensed Users=$licensedUsers"
+  fi
+
+  if [ "$licensedUsers" = "-1" ]; then
+    return
+  elif [ $numCurrentUsers -lt 0 ]; then
+    echo "Warning: Could not determine the number of users on this system."
+    echo "If you exceed the number of licensed users ($licensedUsers) then you will"
+    echo "not be able to create new users."
+	  while :; do
+	   askYN "Do you wish to continue?" "N"
+	   if [ $response = "no" ]; then
+	    askYN "Exit?" "N"
+	    if [ $response = "yes" ]; then
+		    echo "Exiting - place a valid license file in /opt/zimbra/conf/ZCSLicense.xml and rerun."
+		    exit 1
+	    fi
+	   else
+	    break
+	   fi
+	  done
+  elif [ $numUsersRC -ne 0 ] || [ $numCurrentUsers -gt $licensedUsers ]; then
+    echo "Warning: The number of users on this system ($numCurrentUsers) exceeds the licensed number"
+    echo "($licensedUsers).  You may continue with the upgrade, but you will not be able to create"
+    echo "new users.  Also, initialization of the Document feature will fail.  If you "
+    echo "later wish to use the Documents feature you'll need to resolve the licensing "
+    echo "issues and then run a separate script available from support to initialize the "
+    echo "Documents feature. "
+	  while :; do
+	   askYN "Do you wish to continue?" "N"
+	   if [ $response = "no" ]; then
+	    askYN "Exit?" "N"
+	    if [ $response = "yes" ]; then
+		    echo "Exiting - place a valid license file in /opt/zimbra/conf/ZCSLicense.xml and rerun."
+		    exit 1
+	    fi
+	   else
+	    break
+	   fi
+	  done
+  else
+    # valid license and user count
+    return
+  fi
+
 }
 
 checkUserInfo() {
@@ -699,15 +817,16 @@ removeExistingInstall() {
 		done
 
 		rm -f /etc/ld.so.conf.d/zimbra.ld.conf
-
-		cat /etc/sudoers | grep -v zimbra > /tmp/sudoers
-		cat /tmp/sudoers > /etc/sudoers
-	  if [ $PLATFORM = "SuSEES9" -o $PLATFORM = "SuSEES10" -o $PLATFORM = "SuSE10" ]; then
-      chmod 640 /etc/sudoers
-    else 
-		  chmod 440 /etc/sudoers
+    if [ -f "/etc/sudoers" ]; then
+		  cat /etc/sudoers | grep -v zimbra > /tmp/sudoers
+		  cat /tmp/sudoers > /etc/sudoers
+      if [ $PLATFORM = "SuSEES9" -o $PLATFORM = "SuSEES10" -o $PLATFORM = "SuSE10" ]; then
+        chmod 640 /etc/sudoers
+      else
+        chmod 440 /etc/sudoers
+      fi
+		  rm -f /tmp/sudoers
     fi
-		rm -f /tmp/sudoers
 		echo ""
 		echo "Removing deployed webapp directories"
 		/bin/rm -rf /opt/zimbra/tomcat/webapps/zimbra
@@ -1051,7 +1170,7 @@ getPlatformVars() {
 		PACKAGEEXT='deb'
 		PREREQ_PACKAGES="sudo libidn11 curl fetchmail libgmp3 libxml2 libstdc++6 openssl"
 		if [ $PLATFORM = "UBUNTU6" ]; then
-			PREREQ_PACKAGES="sudo libidn11 curl fetchmail libgmp3c2 libxml2 libstdc++6 openssl"
+			PREREQ_PACKAGES="sudo libidn11 curl fetchmail libpcre3 libgmp3c2 libxml2 libstdc++6 openssl"
 		fi
 	elif echo $PLATFORM | grep RPL > /dev/null 2>&1; then
 		PACKAGEINST='conary update'
