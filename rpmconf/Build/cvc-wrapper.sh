@@ -75,6 +75,8 @@ class ZimbraBuildRecipe(PackageRecipe):
           r.ExcludeDirectories(exceptions='/opt/zimbra/amavis.*')
           r.ExcludeDirectories(exceptions='/opt/zimbra/dspam.*')
         if r.name == 'zimbra-store':
+          r.MakeDirs('/opt/zimbra/apache-tomcat-5.5.15/work', mode=0755)
+          r.MakeDirs('/opt/zimbra/apache-tomcat-5.5.15/work/Catalina', mode=0755)
           r.MakeDirs('/opt/zimbra/apache-tomcat-5.5.15/work/Catalina/localhost', mode=0755)
           r.Ownership('zimbra', 'zimbra' '/opt/zimbra/apache-tomcat-5.5.15/work/Catalina/localhost');
           r.ExcludeDirectories(exceptions='/opt/zimbra/apache-tomcat-5.5.15/?.*')
@@ -82,8 +84,6 @@ class ZimbraBuildRecipe(PackageRecipe):
         if r.name == 'zimbra-ldap':
           r.ExcludeDirectories(exceptions='/opt/zimbra/openldap.*')
         if r.name == 'zimbra-apache':
-          r.ExcludeDirectories(exceptions='/opt/zimbra/httpd.*')
-        if r.name == 'zimbra-spell':
           r.ExcludeDirectories(exceptions='/opt/zimbra/httpd.*')
         # set up libraries to be included in /etc/ld.so.conf
         r.SharedLibrary(subtrees='/opt/zimbra/%(lib)s')
