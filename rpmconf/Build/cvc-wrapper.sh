@@ -67,17 +67,24 @@ class ZimbraBuildRecipe(PackageRecipe):
         # turn of build requirement checks
         del r.EnforceSonameBuildRequirements
         del r.EnforcePerlBuildRequirements
+        r.RemoveNonPackageFiles(exceptions='.*')
         # don't delete specific empty directories
-        if r.name == 'zimbra.mta':
-          r.ExcludeDirectories(exceptions='/opt/zimbra/postfix-.*')
-        if r.name == 'zimbra.store':
-          r.MakeDirs('/opt/zimbra/apache-tomcat-5.5.15/work/Catalina/localhost/host-manger', component='runtime', mode=0755)
-          r.Ownership('zimbra', 'zimbra' '/opt/zimbra/apache-tomcat-.*/work/?.*');
-          r.ExcludeDirectories(exceptions='/opt/zimbra/apache-tomcat-.*')
-        if r.name == 'zimbra.ldap':
-          r.ExcludeDirectories(exceptions='/opt/zimbra/openldap-.*')
-        if r.name == 'zimbra.apache':
-          r.ExcludeDirectories(exceptions='/opt/zimbra/httpd.*/logs')
+        if r.name == 'zimbra-mta':
+          r.ExcludeDirectories(exceptions='/opt/zimbra/postfix.*')
+          r.ExcludeDirectories(exceptions='/opt/zimbra/clamav.*')
+          r.ExcludeDirectories(exceptions='/opt/zimbra/amavis.*')
+          r.ExcludeDirectories(exceptions='/opt/zimbra/dspam.*')
+        if r.name == 'zimbra-store':
+          r.MakeDirs('/opt/zimbra/apache-tomcat-5.5.15/work/Catalina/localhost', mode=0755)
+          r.Ownership('zimbra', 'zimbra' '/opt/zimbra/apache-tomcat-5.5.15/work/Catalina/localhost');
+          r.ExcludeDirectories(exceptions='/opt/zimbra/apache-tomcat-5.5.15/?.*')
+          r.ExcludeDirectories(exceptions='/opt/zimbra/wiki/?.*')
+        if r.name == 'zimbra-ldap':
+          r.ExcludeDirectories(exceptions='/opt/zimbra/openldap.*')
+        if r.name == 'zimbra-apache':
+          r.ExcludeDirectories(exceptions='/opt/zimbra/httpd.*')
+        if r.name == 'zimbra-spell':
+          r.ExcludeDirectories(exceptions='/opt/zimbra/httpd.*')
         # set up libraries to be included in /etc/ld.so.conf
         r.SharedLibrary(subtrees='/opt/zimbra/%(lib)s')
         # add PERL5LIB
