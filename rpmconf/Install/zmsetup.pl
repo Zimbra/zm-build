@@ -454,6 +454,8 @@ sub setDefaults {
 		setLocalConfig ("zimbra_java_home", "$config{JAVAHOME}");
 		$config{HOSTNAME} = `hostname`;
 	} else {
+    $config{JAVAHOME} = "/opt/zimbra/java";
+		setLocalConfig ("zimbra_java_home", "$config{JAVAHOME}");
 		$config{HOSTNAME} = `hostname --fqdn`;
 	}
 	chomp $config{HOSTNAME};
@@ -2604,8 +2606,6 @@ sub applyConfig {
 
 		addServerToHostPool();
 
-		configInstallZimlets();
-
 		configSetInstalledSkins();
 
 	}
@@ -2648,13 +2648,14 @@ sub applyConfig {
 		`su - zimbra -c "/opt/zimbra/bin/zmcontrol status"`;
 		progress ( "Done.\n" );
 
-    # Initialize notebooks if zimbra-store is enabled and 
+    # Initialize application server specific items
     # only after the application server is running.
-    configInitNotebooks()
-	    if (isEnabled("zimbra-store"));
-
+	  if (isEnabled("zimbra-store")) {
+		  configInstallZimlets();
+      configInitNotebooks()
+    }
 	} else {
-    progress ( "Skipping notebook initialization.\n")
+    progress ( "WARNING: Document and Zimlet initialization skipped because Application Server was not configured to start.\n")
 	    if (isEnabled("zimbra-store"));
   }
 
