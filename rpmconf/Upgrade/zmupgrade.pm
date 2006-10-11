@@ -995,14 +995,24 @@ sub upgrade403GA {
 	Migrate::log("Updating from 4.0.3_GA");
 
   #8081 remove amavis tmpfs
-  `egrep -q '/opt/zimbra/amavisd-new-2.4.1/tmp' /etc/fstab`;
-  if ($? == 0 ) {
-    `umount /opt/zimbra/amavisd-new-2.4.1/tmp > /dev/null 2>&1`;
-    `sed -i.zimbra -e 's:\(^/dev/shm\t/opt/zimbra.*\):#\1:' /etc/fstab`;
-    if ($? != 0) {
-      `mv /etc/fstab.zimbra /etc/fstab`;
+  if (-f "/etc/fstab") { 
+    `egrep -q '/opt/zimbra/amavisd-new-2.4.1/tmp' /etc/fstab`;
+    if ($? == 0 ) {
+      `umount /opt/zimbra/amavisd-new-2.4.1/tmp > /dev/null 2>&1`;
+      `sed -i.zimbra -e 's:\(^/dev/shm\t/opt/zimbra.*\):#\1:' /etc/fstab`;
+      if ($? != 0) {
+        `mv /etc/fstab.zimbra /etc/fstab`;
+      }
     }
   }
+
+  # bug 
+  my $remoteManagementUser = main::getLdapConfigValue("zimbraRemoteManagementUser");
+	main::runAsZimbra("$ZMPROV mcf zimbraRemoteManagementUser=zimbra") 
+    if ($remoteManagementUser eq "");
+  my $remoteManagementPort = main::getLdapConfigValue("zimbraRemoteManagementPort");
+	main::runAsZimbra("$ZMPROV mcf zimbraRemoteManagementPort=22") 
+    if ($remoteManagementPort eq "");
 
   return 0;
 }
