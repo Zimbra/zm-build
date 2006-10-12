@@ -980,13 +980,19 @@ sub upgrade403GA {
     }
   }
 
-  # bug 
+  # bug 11315
   my $remoteManagementUser = main::getLdapConfigValue("zimbraRemoteManagementUser");
-	main::runAsZimbra("$ZMPROV mcf zimbraRemoteManagementUser=zimbra") 
+	main::runAsZimbra("$ZMPROV mcf zimbraRemoteManagementUser zimbra") 
     if ($remoteManagementUser eq "");
   my $remoteManagementPort = main::getLdapConfigValue("zimbraRemoteManagementPort");
-	main::runAsZimbra("$ZMPROV mcf zimbraRemoteManagementPort=22") 
+	main::runAsZimbra("$ZMPROV mcf zimbraRemoteManagementPort 22") 
     if ($remoteManagementPort eq "");
+  my $remoteManagementPrivateKeyPath = main::getLdapConfigValue("zimbraRemoteManagementPrivateKeyPath");
+	main::runAsZimbra("$ZMPROV mcf zimbraRemoteManagementPrivateKeyPath /opt/zimbra/.ssh/zimbra_identity") 
+    if ($remoteManagementPrivateKeyPath eq "");
+  my $remoteManagementCommand = main::getLdapConfigValue("zimbraRemoteManagementCommand");
+	main::runAsZimbra("$ZMPROV mcf zimbraRemoteManagementCommand /opt/zimbra/libexec/zmrcd") 
+    if ($remoteManagementCommand eq "");
 
 	return 0;
 }
