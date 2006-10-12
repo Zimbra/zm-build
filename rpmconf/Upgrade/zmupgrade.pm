@@ -969,11 +969,11 @@ sub upgrade403GA {
 	Migrate::log("Updating from 4.0.3_GA");
 
   #8081 remove amavis tmpfs
-  if (-f "/etc/fstab") { 
-    `egrep -q '/opt/zimbra/amavisd-new-2.4.1/tmp' /etc/fstab`;
-    if ($? == 0 ) {
-      `umount /opt/zimbra/amavisd-new-2.4.1/tmp > /dev/null 2>&1`;
-      `sed -i.zimbra -e 's:\\(^/dev/shm\t/opt/zimbra.*\\):#\\1:' /etc/fstab`;
+  if ( -f "/etc/fstab" ) {
+    my $mount = (split(/\s+/, `egrep -e '^/dev/shm.*amavisd.*tmpfs' /etc/fstab`))[1];
+    if ($mount ne "" ) {
+      `umount $mount > /dev/null 2>&1`;
+      `sed -i.zimbra -e 's:\\(^/dev/shm.*amavis.*\\):#\\1:' /etc/fstab`;
       if ($? != 0) {
         `mv /etc/fstab.zimbra /etc/fstab`;
       }
