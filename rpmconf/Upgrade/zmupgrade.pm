@@ -974,18 +974,21 @@ sub upgrade402GA {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
 	Migrate::log("Updating from 4.0.2_GA");
 
-  # bug 10401
-	my @coses = `su - zimbra -c "$ZMPROV gac"`;
-	foreach my $cos (@coses) {
-		chomp $cos;
-    my $cur_value = 
-      main::getLdapCOSValue($cos,"zimbraFeatureMobileSyncEnabled");
-		main::runAsZimbra("$ZMPROV mc $cos zimbraFeatureMobileSyncEnabled FALSE")
-      if ($cur_value ne "TRUE");
-	}
+  if (isInstalled("zimbra-ldap")) {
+    # bug 10401
+	  my @coses = `su - zimbra -c "$ZMPROV gac"`;
+	  foreach my $cos (@coses) {
+		  chomp $cos;
+      my $cur_value = 
+        main::getLdapCOSValue($cos,"zimbraFeatureMobileSyncEnabled");
 
-  # bug 10845
-  main::runAsZimbra("$ZMPROV mcf zimbraMailURL /zimbra");
+      main::runAsZimbra("$ZMPROV mc $cos zimbraFeatureMobileSyncEnabled FALSE")
+        if ($cur_value ne "TRUE");
+	  }
+
+    # bug 10845
+    main::runAsZimbra("$ZMPROV mcf zimbraMailURL /zimbra"); 
+  }
 
   return 0;
 }
@@ -1006,19 +1009,28 @@ sub upgrade403GA {
     }
   }
 
-  # bug 11315
-  my $remoteManagementUser = main::getLdapConfigValue("zimbraRemoteManagementUser");
-	main::runAsZimbra("$ZMPROV mcf zimbraRemoteManagementUser zimbra") 
-    if ($remoteManagementUser eq "");
-  my $remoteManagementPort = main::getLdapConfigValue("zimbraRemoteManagementPort");
-	main::runAsZimbra("$ZMPROV mcf zimbraRemoteManagementPort 22") 
-    if ($remoteManagementPort eq "");
-  my $remoteManagementPrivateKeyPath = main::getLdapConfigValue("zimbraRemoteManagementPrivateKeyPath");
-	main::runAsZimbra("$ZMPROV mcf zimbraRemoteManagementPrivateKeyPath /opt/zimbra/.ssh/zimbra_identity") 
-    if ($remoteManagementPrivateKeyPath eq "");
-  my $remoteManagementCommand = main::getLdapConfigValue("zimbraRemoteManagementCommand");
-	main::runAsZimbra("$ZMPROV mcf zimbraRemoteManagementCommand /opt/zimbra/libexec/zmrcd") 
-    if ($remoteManagementCommand eq "");
+  if (isInstalled("zimbra-ldap")) {
+    # bug 11315
+    my $remoteManagementUser = 
+      main::getLdapConfigValue("zimbraRemoteManagementUser");
+    main::runAsZimbra("$ZMPROV mcf zimbraRemoteManagementUser zimbra") 
+      if ($remoteManagementUser eq "");
+
+    my $remoteManagementPort = 
+      main::getLdapConfigValue("zimbraRemoteManagementPort");
+    main::runAsZimbra("$ZMPROV mcf zimbraRemoteManagementPort 22") 
+     if ($remoteManagementPort eq "");
+
+    my $remoteManagementPrivateKeyPath = 
+      main::getLdapConfigValue("zimbraRemoteManagementPrivateKeyPath");
+    main::runAsZimbra("$ZMPROV mcf zimbraRemoteManagementPrivateKeyPath /opt/zimbra/.ssh/zimbra_identity") 
+      if ($remoteManagementPrivateKeyPath eq "");
+
+    my $remoteManagementCommand = 
+      main::getLdapConfigValue("zimbraRemoteManagementCommand");
+    main::runAsZimbra("$ZMPROV mcf zimbraRemoteManagementCommand /opt/zimbra/libexec/zmrcd") 
+      if ($remoteManagementCommand eq "");
+  }
 
   return 0;
 }
@@ -1237,7 +1249,7 @@ sub isInstalled {
 	my $pkgQuery;
 
 	my $good = 1;
-	if ($platform eq "DEBIAN3.1") {
+	if ($platform eq "DEBIAN3.1" || $platform eq "UBUNTU6") {
 		$pkgQuery = "dpkg -s $pkg | egrep '^Status: ' | grep 'not-installed'";
 	} elsif ($platform =~ /MACOSX/) {
 		my @l = sort glob ("/Library/Receipts/${pkg}*");
