@@ -35,6 +35,6 @@ if [ "x$PLAT" = "xMACOSXx86" ]; then
 fi
 
 rm -f /opt/zimbra/logger/mysql
-ln -s /opt/zimbra/logger/mysql-standard-4.1.20-apple-darwin8.2.0-$ARCH /opt/zimbra/logger/mysql
+ln -s /opt/zimbra/logger/mysql-standard-5.0.26-apple-darwin8.2.0-$ARCH /opt/zimbra/logger/mysql
 
 exit 0

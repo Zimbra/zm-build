@@ -1188,14 +1188,12 @@ getPlatformVars() {
 			PREREQ_LIBS="/usr/lib/libstdc++.so.5"
 		elif [ $PLATFORM = "MANDRIVA2006" ]; then
 			PREREQ_PACKAGES="sudo libidn11 curl fetchmail libgmp3 libxml2 libstdc++6 openssl"
+    elif [ $PLATFORM = "FC4" ] || [ $PLATFOM = "FC5" ] || [ $PLATFORM = "FC3" ]; then
+      PREREQ_PACKAGES="sudo libidn curl fetchmail gmp bind-libs vixie-cron"
+			PREREQ_LIBS="/usr/lib/libstdc++.so.5"
 		else
 			PREREQ_PACKAGES="sudo libidn curl fetchmail gmp"
-			if [ $PLATFORM = "FC3" -o $PLATFORM = "FC4" ]; then
-				if [ $PLATFORM = "FC3" ]; then
-					PREREQ_PACKAGES="sudo libidn curl fetchmail gmp bind-libs"
-				fi
-				PREREQ_LIBS="/usr/lib/libstdc++.so.5"
-			fi
+			PREREQ_LIBS="/usr/lib/libstdc++.so.5"
 		fi
 	fi
 }
