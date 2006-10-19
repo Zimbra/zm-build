@@ -32,9 +32,9 @@ BDB_SOURCE	:= $(THIRD_PARTY)/sleepycat/builds/$(BUILD_PLATFORM)/$(BDB_DIR)
 TOMCAT_VERSION	:= 5.5.15
 TOMCAT_DIR	:= apache-tomcat-$(TOMCAT_VERSION)
 TOMCAT_SOURCE 	:= $(THIRD_PARTY)/jakarta-tomcat/$(TOMCAT_DIR)
-
-MYSQL_VERSION	:= standard-4.1.20-pc-linux-gnu-i686-glibc23
-MYSQL_CLIENT_VERSION := standard-4.1.20-clientlibs
+MYSQL_VERSION_STRING := 5.0.26
+MYSQL_VERSION	:= standard-$(MYSQL_VERSION_STRING)-pc-linux-gnu-i686-glibc23
+MYSQL_CLIENT_VERSION := standard-$(MYSQL_VERSION_STRING)-clientlibs
 MYSQL_DIR	= mysql-$(MYSQL_VERSION)
 MYSQL_SOURCE 	= $(THIRD_PARTY)/mysql/$(BUILD_PLATFORM)/$(MYSQL_DIR)
 
