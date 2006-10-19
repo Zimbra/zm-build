@@ -1,6 +1,9 @@
 zcs-$(RELEASE).dmg: $(ARCH)/zcs.mpkg packages
-	mkdir $(ARCH)/tmp
+	mkdir -p $(ARCH)/tmp/scripts
+	mkdir -p $(ARCH)/tmp/docs
 	cp -f $(WEBAPP_DIR)/zimbra/downloads/* $(ARCH)
+	cp -f $(PACKAGE_CONF_DIR)/Install/install-mac.sh $(ARCH)/tmp/scripts/installZCS.sh
+	cp -f $(CONSOLE_DIR)/WebRoot/adminhelp/pdf/* $(ARCH)/tmp/docs/
 	cp -R $(ARCH)/zcs.mpkg $(ARCH)/tmp
 	hdiutil create -srcfolder $(ARCH)/tmp -volname zcs-$(VERSION_TAG).$(BUILD_PLATFORM) $(ARCH)/zcs-$(VERSION_TAG).$(BUILD_PLATFORM).dmg
 	rm -rf $(ARCH)/tmp
