@@ -821,7 +821,8 @@ sub setTrainSASpam {
 			ask("Spam training user:",
 				$config{TRAINSASPAM});
 		my ($u,$d) = split ('@', $new);
-		if ($d ne $config{CREATEDOMAIN}) {
+    my ($adminUser,$adminDomain) = split('@', $config{CREATEADMIN});
+		if ($d ne $config{CREATEDOMAIN} && $d ne $adminDomain) {
 			progress ( "You must create the user under the domain $config{CREATEDOMAIN}\n" );
 		} else {
 			$config{TRAINSASPAM} = $new;
@@ -836,7 +837,8 @@ sub setTrainSAHam {
 			ask("Ham training user:",
 				$config{TRAINSAHAM});
 		my ($u,$d) = split ('@', $new);
-		if ($d ne $config{CREATEDOMAIN}) {
+    my ($adminUser,$adminDomain) = split('@', $config{CREATEADMIN});
+		if ($d ne $config{CREATEDOMAIN} && $d ne $adminDomain) {
 			progress ( "You must create the user under the domain $config{CREATEDOMAIN}\n" );
 		} else {
 			$config{TRAINSAHAM} = $new;
@@ -847,21 +849,29 @@ sub setTrainSAHam {
 
 sub setCreateAdmin {
 
-	my $new = 
-		ask("Create admin user:",
-			$config{CREATEADMIN});
-	my ($u,$d) = split ('@', $new);
-	if ($config{CREATEADMIN} eq $config{AVUSER}) {
-		$config{AVUSER} = $new;
-	}
-	if ($config{CREATEADMIN} eq $config{SMTPDEST}) {
-		$config{SMTPDEST} = $new;
-	}
-	if ($config{CREATEADMIN} eq $config{SMTPSOURCE}) {
-		$config{SMTPSOURCE} = $new;
-	}
-	$config{CREATEADMIN} = $new;
+  while (1) {
+	  my $new = 
+	  	ask("Create admin user:", $config{CREATEADMIN});
+	  my ($u,$d) = split ('@', $new);
 
+    if ($d eq "") {
+      progress ( "Admin user must a valid email account [$u\@$config{CREATEDOMAIN}]\n");
+      next;
+    }
+
+	  if ($config{CREATEADMIN} eq $config{AVUSER}) {
+		  $config{AVUSER} = $new;
+	  }
+	  if ($config{CREATEADMIN} eq $config{SMTPDEST}) {
+		  $config{SMTPDEST} = $new;
+	  }
+	  if ($config{CREATEADMIN} eq $config{SMTPSOURCE}) {
+		  $config{SMTPSOURCE} = $new;
+	  }
+	  $config{CREATEADMIN} = $new;
+    last;
+  }
+  
 	setAdminPass();
 
 }
