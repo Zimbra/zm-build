@@ -1038,8 +1038,14 @@ sub upgrade403GA {
 sub upgrade410BETA1 {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
 	Migrate::log("Updating from 4.1.0_BETA1");
+
+  # bug 9622
+  clearRedologDir("/opt/zimbra/redolog", $targetVersion);
+  clearBackupDir("/opt/zimbra/backup", $targetVersion);
+
 	return 0;
 }
+
 sub upgrade410RC1 {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
 	Migrate::log("Updating from 4.1.0_RC1");
@@ -1078,17 +1084,6 @@ sub stopZimbra {
 	$rc = $rc >> 8;
 	if ($rc) {
 		Migrate::log("Stop failed - exiting");
-		return $rc;
-	}
-	return 0;
-}
-
-sub stopLoggerSql {
-	Migrate::log("Stopping logger mysql");
-	my $rc = 0xffff & system("su - zimbra -c \"/opt/zimbra/bin/logmysql.server stop > /dev/null 2>&1\"");
-	$rc = $rc >> 8;
-	if ($rc) {
-		Migrate::log("logger mysql stop failed with exit code $rc");
 		return $rc;
 	}
 	return 0;
@@ -1171,22 +1166,48 @@ sub stopSql {
   return(isSqlRunning() ? 1 : 0);
 }
 
-
-sub startLoggerSql {
-	Migrate::log("Checking logger mysql status");
+sub isLoggerSqlRunning {
 	my $rc = 0xffff & system("su - zimbra -c \"/opt/zimbra/bin/logmysqladmin status > /dev/null 2>&1\"");
 	$rc = $rc >> 8;
-	if ($rc) {
+  return($rc ? undef : 1);
+}
+
+sub startLoggerSql {
+	unless (isLoggerSqlRunning()) {
 		Migrate::log("Starting logger mysql");
-		$rc = 0xffff & system("su - zimbra -c \"/opt/zimbra/bin/logmysql.server start > /dev/null 2>&1\"");
+		my $rc = 0xffff & system("su - zimbra -c \"/opt/zimbra/bin/logmysql.server start > /dev/null 2>&1\"");
 		$rc = $rc >> 8;
 		if ($rc) {
 			Migrate::log("logger mysql startup failed with exit code $rc");
 			return $rc;
 		}
+    my $timeout = 0;
+    while (!isLoggerSqlRunning() && $timeout <= 120 ) {
+		  system("su - zimbra -c \"/opt/zimbra/bin/logmysql.server start > /dev/null 2>&1\"");
+      $timeout += sleep 10;
+    }
 	}
-	return 0;
+	return(isLoggerSqlRunning() ? 0 : 1);
 }
+
+sub stopLoggerSql {
+  if (isLoggerSqlRunning()) {
+	  Migrate::log("Stopping logger mysql");
+	  my $rc = 0xffff & system("su - zimbra -c \"/opt/zimbra/bin/logmysql.server stop > /dev/null 2>&1\"");
+	  $rc = $rc >> 8;
+	  if ($rc) {
+		  Migrate::log("logger mysql stop failed with exit code $rc");
+		  return $rc;
+	  }
+    my $timeout = 0;
+    while (isLoggerSqlRunning() && $timeout <= 120 ) {
+		  $rc = 0xffff & system("su - zimbra -c \"/opt/zimbra/bin/logmysql.server stop > /dev/null 2>&1\"");
+      $timeout += sleep 10;
+    }
+  }
+  return(isLoggerSqlRunning() ? 1 : 0);
+}
+
 
 sub runSchemaUpgrade {
 	my $curVersion = shift;
@@ -1327,6 +1348,26 @@ sub clearTomcatWorkDir {
   return unless (-d "$workDir");
   system("find $workDir -type f -exec rm -f {} \\\;");
 
+}
+
+sub clearRedologDir($$) {
+  my ($redologDir, $version) = @_;
+  if (-d "$redologDir" && ! -e "${redologDir}-${version}") {
+	  `mv $redologDir ${redologDir}-${version}`;
+    `mkdir $redologDir`;
+    `chown zimbra:zimbra $redologDir`;
+  }
+  return;
+}
+
+sub clearBackupDir($$) {
+  my ($backupDir, $version) = @_;
+  if (-e "$backupDir" && ! -e "${backupDir}-${version}") {
+	  `mv $backupDir ${backupDir}-${version}`;
+    `mkdir $backupDir`;
+    `chown zimbra:zimbra $backupDir`;
+  }
+  return;
 }
 
 1
