@@ -1123,6 +1123,7 @@ sub stopLdap {
 		Migrate::log("LDAP stop failed with exit code $rc");
 		return $rc;
 	}
+  sleep 5; # give it a chance to shutdown.
 	return 0;
 }
 
