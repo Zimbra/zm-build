@@ -1352,20 +1352,20 @@ sub clearTomcatWorkDir {
 
 sub clearRedologDir($$) {
   my ($redologDir, $version) = @_;
-  if (-d "$redologDir" && ! -e "${redologDir}-${version}") {
-	  `mv $redologDir ${redologDir}-${version}`;
-    `mkdir $redologDir`;
-    `chown zimbra:zimbra $redologDir`;
+  if (-d "$redologDir" && ! -e "${redologDir}/${version}") {
+    `mkdir ${redologDir}/${version}`;
+	  `mv ${redologDir}/* ${redologDir}/${version}/ > /dev/null 2>&1`;
+    `chown -R zimbra:zimbra $redologDir > /dev/null 2>&1`;
   }
   return;
 }
 
 sub clearBackupDir($$) {
   my ($backupDir, $version) = @_;
-  if (-e "$backupDir" && ! -e "${backupDir}-${version}") {
-	  `mv $backupDir ${backupDir}-${version}`;
-    `mkdir $backupDir`;
-    `chown zimbra:zimbra $backupDir`;
+  if (-e "$backupDir" && ! -e "${backupDir}/${version}") {
+    `mkdir ${backupDir}/${version}`;
+	  `mv ${backupDir}/* ${backupDir}/${version} > /dev/null 2>&1`;
+    `chown -R zimbra:zimbra $backupDir > /dev/null 2>&1`;
   }
   return;
 }
