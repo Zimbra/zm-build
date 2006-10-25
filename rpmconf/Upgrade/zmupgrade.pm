@@ -1103,6 +1103,7 @@ sub startLdap {
 			$rc = $rc >> 8;
 			if ($rc) {
 				Migrate::log("ldap startup failed with exit code $rc");
+			  system("su - zimbra -c \"/opt/zimbra/bin/ldap start 2>&1 | grep failed\"");
 				return $rc;
 			}
 		}
