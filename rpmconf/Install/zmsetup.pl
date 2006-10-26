@@ -396,6 +396,12 @@ sub setLdapDefaults {
   $config{TRAINSAHAM} = getLdapConfigValue("zimbraSpamIsNotSpamAccount");
   $config{NOTEBOOKACCOUNT} = getLdapConfigValue("zimbraNotebookAccount");
 
+  $config{USEKBSHORTCUTS} = getLdapCOSValue("default", "zimbraPrefUseKeyboardShortcuts");
+
+  # we want to prompt for this value at least once during upgrades
+  delete $config{USEKBSHORTCUTS}
+	  if ($configStatus{zimbraPrefUseKeyboardShortcuts} ne "CONFIGURED" && !$newinstall && !$options{c});
+  
 	my $smtphost=getLdapServerValue("zimbraSmtpHostname");
 	if ( $smtphost ne "") {
 		$config{SMTPHOST} = $smtphost;
@@ -569,6 +575,11 @@ sub setDefaults {
 		}
 
 	}
+  if ($options{d}) {
+    foreach my $key (sort keys %config) {
+      print "\tDEBUG: $key=$config{$key}\n";
+    }
+  }
 
 	progress ( "Done\n" );
 }
@@ -689,6 +700,19 @@ sub askYN {
 		if ($v eq "y") {return "yes";}
 		if ($v eq "n") {return "no";}
 		print "A Yes/No answer is required\n";
+	}
+}
+
+sub askTF {
+	my $prompt = shift;
+	my $default = shift;
+	while (1) {
+		my $v = ask($prompt, $default);
+		$v = lc($v);
+		$v = substr ($v,0,1);
+		if ($v eq "t") {return "TRUE";}
+		if ($v eq "f") {return "FALSE";}
+		print "A True/False answer is required\n";
 	}
 }
 
@@ -938,6 +962,10 @@ sub setAvUser {
 sub toggleYN {
 	my $key = shift;
 	$config{$key} = ($config{$key} eq "yes")?"no":"yes";
+}
+sub toggleTF {
+	my $key = shift;
+	$config{$key} = ($config{$key} eq "TRUE")?"FALSE":"TRUE";
 }
 
 sub setUseImapProxy {
@@ -1572,6 +1600,16 @@ sub createStoreMenu {
 				};
 			$i++;
 		}
+    if (!$newinstall && !$options{c}) {
+		  $$lm{menuitems}{$i} = { 
+			  "prompt" => "Use Keyboard Shortcuts:", 
+			  "var" => \$config{USEKBSHORTCUTS}, 
+			  "callback" => \&toggleTF,
+			  "arg" => "USEKBSHORTCUTS",
+			  };
+		  $i++;
+    }
+
 	}
 	return $lm;
 }
@@ -2249,6 +2287,17 @@ sub configSetInstalledSkins {
 	configLog("configSetInstalledSkins");
 }
 
+sub configSetKeyboardShortcutsPref {
+	if ($configStatus{zimbraPrefUseKeyboardShortcuts} eq "CONFIGURED") {
+		configLog("zimbraPrefUseKeyboardShortcuts");
+		return 0;
+	}
+	progress ( "Setting Keyboard Shortcut Preferences...");
+	runAsZimbra("$ZMPROV mc default zimbraPrefUseKeyboardShortcuts $config{USEKBSHORTCUTS}");
+	progress ( "done.\n" );
+	configLog("zimbraPrefUseKeyboardShortcuts");
+}
+
 sub configInstallZimlets {
 
 	if ($configStatus{configInstallZimlets} eq "CONFIGURED") {
@@ -2483,9 +2532,6 @@ sub configInitNotebooks {
 		      runAsZimbra("/opt/zimbra/bin/zmprov -l mc default zimbraFeatureNotebookEnabled FALSE");
         }
 		    progress ( "Done\n" );
-        progress ( "Restarting tomcat...");
-        runAsZimbra("/opt/zimbra/bin/tomcat restart");
-		    progress ( "Done\n" );
       }
     } 
 
@@ -2559,7 +2605,8 @@ sub failConfig {
 	progress ("\n\nERROR\n\n");
 	progress ("\n\nConfiguration failed\n\n");
 	progress ("Please address the error and re-run /opt/zimbra/libexec/zmsetup.pl to\n");
-	progress ("complete the configuration");
+	progress ("complete the configuration.\n");
+  progress ("\nErrors have been logged to $logfile\n\n");
 	exit 1;
 }
 
@@ -2618,6 +2665,8 @@ sub applyConfig {
 
 		configSetInstalledSkins();
 
+    configSetKeyboardShortcutsPref();
+
 	}
 
 	if (isEnabled("zimbra-mta")) {
@@ -2653,6 +2702,7 @@ sub applyConfig {
     }
 
 		progress ( "Starting servers..." );
+    runAsZimbra ("$ZMPROV ms $config{HOSTNAME} zimbraUserServicesEnabled FALSE");
 		runAsZimbra ("/opt/zimbra/bin/zmcontrol start");
 		# runAsZimbra swallows the output, so call status this way
 		`su - zimbra -c "/opt/zimbra/bin/zmcontrol status"`;
@@ -2664,6 +2714,10 @@ sub applyConfig {
 		  configInstallZimlets();
       configInitNotebooks()
     }
+    runAsZimbra ("$ZMPROV ms $config{HOSTNAME} zimbraUserServicesEnabled TRUE");
+    progress ( "Restarting tomcat...");
+    runAsZimbra("/opt/zimbra/bin/tomcat restart");
+		progress ( "Done\n" );
 	} else {
     progress ( "WARNING: Document and Zimlet initialization skipped because Application Server was not configured to start.\n")
 	    if (isEnabled("zimbra-store"));
