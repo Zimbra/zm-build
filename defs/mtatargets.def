@@ -69,9 +69,9 @@ $(BUILD_ROOT)/zimbramta.spec:
 	(cd $(MTA_DEST_ROOT); find opt -type f -o -type l -maxdepth 2 \
 		| sed -e 's|^|%attr(-, zimbra, zimbra) /|' >> \
 		$(BUILD_ROOT)/zimbramta.spec )
-	echo "%attr(-, zimbra, zimbra) /opt/zimbra/amavisd-new-2.4.1" >> \
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/amavisd-new-$(AMAVISD_VERSION)" >> \
 		$(BUILD_ROOT)/zimbramta.spec
-	echo "%attr(-, zimbra, zimbra) /opt/zimbra/dspam-3.6.2" >> \
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/dspam-$(DSPAM_VERSION)" >> \
 		$(BUILD_ROOT)/zimbramta.spec
 	echo "%attr(555, zimbra, zimbra) /opt/zimbra/clamav-$(CLAMAV_VERSION)/bin" >> \
 		$(BUILD_ROOT)/zimbramta.spec
@@ -121,6 +121,7 @@ $(MTA_DEST_DIR)/$(AMAVISD_DIR)-new-$(AMAVISD_VERSION): $(MTA_DEST_DIR)
 	@echo "*** Creating amavisd"
 	mkdir -p $@/sbin
 	cp -f $(AMAVISD_SOURCE)/amavisd $@/sbin
+	cp -f $(AMAVISD_SOURCE)/amavisd-nanny $@/sbin
 	mkdir -p $@/.spamassassin/init
 	cp -f $(PACKAGE_CONF_DIR)/SpamAssassin/bayes* $@/.spamassassin/init
 

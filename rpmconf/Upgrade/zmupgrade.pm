@@ -294,8 +294,7 @@ sub upgrade {
 	}
 
 	foreach my $v (@versionOrder) {
-		print "Checking $v\n\n";
-	  Migrate::log("Checking $v\n");
+	  Migrate::log("Checking $v");
 		if ($v eq $startVersion) {
 			$found = 1;
 		}
@@ -1043,6 +1042,9 @@ sub upgrade410BETA1 {
   clearRedologDir("/opt/zimbra/redolog", $targetVersion);
   clearBackupDir("/opt/zimbra/backup", $targetVersion);
 
+  # migrate amavis data 
+  migrateAmavisDB("2.4.3");
+
 	return 0;
 }
 
@@ -1369,6 +1371,30 @@ sub clearBackupDir($$) {
     `chown -R zimbra:zimbra $backupDir > /dev/null 2>&1`;
   }
   return;
+}
+
+sub migrateAmavisDB($) {
+  my ($toVersion) = @_;
+  my $amavisdBase = "/opt/zimbra/amavisd-new";
+  my $toDir = "${amavisdBase}-$toVersion";
+  Migrate::log("Migrating amavisd-new to version $toVersion");  
+  foreach my $fromVersion qw(2.4.1 2.3.3 2.3.1) {
+    my $fromDir = "${amavisdBase}-$fromVersion";
+    Migrate::log("Checking $fromDir/db");
+    if ( -d "$fromDir/db" && -d "$toDir" && ! -e "$toDir/db/cache.db") {
+      Migrate::log("Migrating amavis-new db from version $fromVersion to $toVersion");  
+      `rm -rf $toDir/db > /dev/null 2>&1`;
+      `mv $fromDir/db $toDir/db`;
+      `chown zimbra:zimbra $toDir/db`; 
+    }
+    Migrate::log("Checking $fromDir/.spamassassin");
+    if (-d "$fromDir/.spamassassin/" && -d "$toDir" && ! -e "$toDir/.spamassassain/bayes_toks" ) {
+      Migrate::log("Migrating amavis-new .spamassassin from version $fromVersion to $toVersion");  
+      `rm -rf $toDir/.spamassassin > /dev/null 2>&1`;
+      `mv $fromDir/.spamassassin $toDir/.spamassassin`;
+      `chown zimbra:zimbra $toDir/.spamassassin`; 
+    }
+  }
 }
 
 1
