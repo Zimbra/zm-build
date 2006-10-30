@@ -2702,7 +2702,7 @@ sub applyConfig {
     }
 
 		progress ( "Starting servers..." );
-    runAsZimbra ("$ZMPROV ms $config{HOSTNAME} zimbraUserServicesEnabled FALSE");
+    #runAsZimbra ("$ZMPROV ms $config{HOSTNAME} zimbraUserServicesEnabled FALSE");
 		runAsZimbra ("/opt/zimbra/bin/zmcontrol start");
 		# runAsZimbra swallows the output, so call status this way
 		`su - zimbra -c "/opt/zimbra/bin/zmcontrol status"`;
@@ -2714,7 +2714,7 @@ sub applyConfig {
 		  configInstallZimlets();
       configInitNotebooks()
     }
-    runAsZimbra ("$ZMPROV ms $config{HOSTNAME} zimbraUserServicesEnabled TRUE");
+    #runAsZimbra ("$ZMPROV ms $config{HOSTNAME} zimbraUserServicesEnabled TRUE");
     progress ( "Restarting tomcat...");
     runAsZimbra("/opt/zimbra/bin/tomcat restart");
 		progress ( "Done\n" );
