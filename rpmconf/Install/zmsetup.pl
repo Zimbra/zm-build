@@ -2665,7 +2665,7 @@ sub applyConfig {
 
 		configSetInstalledSkins();
 
-    configSetKeyboardShortcutsPref();
+    configSetKeyboardShortcutsPref() if (!$newinstall);
 
 	}
 
