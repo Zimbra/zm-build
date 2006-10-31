@@ -164,6 +164,7 @@ $(WEBAPP_DIR)/zimbra/downloads:
 	mkdir -p $@
 	cp $(SERVICE_DIR)/src/windows/*exe $@
 	cp $(SERVICE_DIR)/src/macosx/*dmg $@
+	-(rm -f $@/\%*.dmg)
 
 $(STORE_DEST_DIR)/$(TOMCAT_DIR)/webapps/service/WEB-INF/lib/zimbrataglib.jar: $(ZIMLET_DIR)/build/dist/lib/zimbrataglib.jar
 	mkdir -p $(STORE_DEST_DIR)/$(TOMCAT_DIR)/webapps/service/WEB-INF/lib
