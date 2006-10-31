@@ -74,6 +74,10 @@ if [ x$DEFAULTFILE != "x" ]; then
 	AUTOINSTALL="yes"
 fi
 
+if [ x"$LICENSE" != "x" ] && [ -e $LICENSE ]; then
+  cp $LICENSE /opt/zimbra/conf/ZCSLicense.xml
+fi
+
 checkExistingInstall
 
 if [ x$UNINSTALL = "xyes" ]; then
@@ -164,10 +168,6 @@ if [ $UPGRADE = "yes" ]; then
 
 	restoreCerts
 
-fi
-
-if [ x"$LICENSE" != "x" ] && [ -e $LICENSE ]; then
-  cp $LICENSE /opt/zimbra/conf/ZCSLicense.xml
 fi
 
 if [ $SOFTWAREONLY = "yes" ]; then
