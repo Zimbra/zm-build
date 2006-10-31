@@ -39,7 +39,7 @@ if [ $LOCAL -eq 0 ]; then
 fi
 
 DESTDIR=$1
-SCRIPTDIR="$DESTDIR/../rpmconf/Spec/Scripts"
+SCRIPTDIR="$DESTDIR/../rpmconf/Spec/Scripts/RPL1"
 PKGDIR=$2
 PKGNAME=$3
 VERSION=$4
@@ -100,15 +100,15 @@ class ZimbraBuildRecipe(PackageRecipe):
         r.Requires('openssh-client:runtime', '/opt/zimbra/libexec/zmrc')
         r.Requires('openssh-server:runtime', '/opt/zimbra/libexec/zmrc')
         # add requirements on zimbra-core (note that '' is for zimbra-store)
-        for pkg in ('apache', 'mta', 'ldap', '', 'logger', 'snmp'):
+        for pkg in ('apache', 'mta', 'ldap', 'store', 'logger', 'snmp'):
             r.Requires('zimbra-core:runtime',
-                       '/opt/zimbra/scripts/zimbra%s.post' %pkg)
+                       '/opt/zimbra/scripts/zimbra-%s.post' %pkg)
         # add requirement from zimbra-spell -> zimbra-apache
         r.Requires('zimbra-apache:runtime',
-                   '/opt/zimbra/scripts/zimbraspell.post')
+                   '/opt/zimbra/scripts/zimbra-spell.post')
         # add requirement from zimbra-mta -> zimbra-store
         r.Requires('zimbra-store:runtime',
-                   '/opt/zimbra/scripts/zimbramta.post')
+                   '/opt/zimbra/scripts/zimbra-mta.post')
         # add requirement from zimbra->mta -> mailbase for /etc/aliases
         r.Requires('mailbase:runtime', '/opt/zimbra/postfix.*/sbin/postalias')
         # add an exclude for convertd libs
@@ -120,13 +120,7 @@ class ZimbraBuildRecipe(PackageRecipe):
         r.UtilizeGroup('postdrop', '/opt/zimbra/libexec/zmfixperms')
 EOF
 
-n=$(echo $PKGNAME | sed s/-//g)
-# FIXME: the post script for zimbra-store is called "zimbra.post", which does
-# not fit the pattern
-if [ "$n" = "zimbrastore" ]; then
-    n=zimbra
-fi
-script=$SCRIPTDIR/$n.post
+script=$SCRIPTDIR/$PKGNAME.post
 if [ -f $script ]; then
     cp $script $WORK
     s=$(basename $script)
