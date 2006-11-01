@@ -368,7 +368,7 @@ determineVersionType() {
 
 verifyLicenseAvailable() {
 
-  if [ x"$AUTOINSTALL" = "xyes" ] || [ x"$UNINSTALL" = "xyes" ]; then
+  if [ x"$AUTOINSTALL" = "xyes" ] || [ x"$UNINSTALL" = "xyes" ] || [ x"$SOFTWAREONLY" = "yes" ]; then
     return
   fi
 
