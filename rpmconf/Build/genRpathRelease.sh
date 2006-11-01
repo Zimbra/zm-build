@@ -8,6 +8,11 @@ cd $BUILDROOT
 cvc checkout group-dist
 cd group-dist
 cvc cook group-dist
+if [ $? -ne 0 ]; then
+  echo "cvc cook group-dist failed"
+  exit 1
+fi
+
 cd $BUILDROOT
 
 TROVE=`conary rq --full-versions --flavors group-dist=/zimbra.rpath.org@rpl:1//zimbra.liquidsys.com@zimbra:devel`
