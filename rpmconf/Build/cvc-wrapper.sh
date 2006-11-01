@@ -68,6 +68,7 @@ class ZimbraBuildRecipe(PackageRecipe):
         del r.EnforceSonameBuildRequirements
         del r.EnforcePerlBuildRequirements
         r.RemoveNonPackageFiles(exceptions='.*')
+        r.InitialContent('/opt/zimbra/conf/localconfig.xml');
         # don't delete specific empty directories
         if r.name == 'zimbra-mta':
           r.ExcludeDirectories(exceptions='/opt/zimbra/postfix.*')
