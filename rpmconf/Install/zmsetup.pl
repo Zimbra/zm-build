@@ -847,7 +847,11 @@ sub setTrainSASpam {
 		my ($u,$d) = split ('@', $new);
     my ($adminUser,$adminDomain) = split('@', $config{CREATEADMIN});
 		if ($d ne $config{CREATEDOMAIN} && $d ne $adminDomain) {
-			progress ( "You must create the user under the domain $config{CREATEDOMAIN}\n" );
+      if ($config{CREATEDOMAIN} eq $adminDomain) {
+			  progress ( "You must create the user under the domain $config{CREATEDOMAIN}\n" );
+      } else {
+			  progress ( "You must create the user under the domain $config{CREATEDOMAIN} or $adminDomain\n" );
+      }
 		} else {
 			$config{TRAINSASPAM} = $new;
 			last;
@@ -863,7 +867,11 @@ sub setTrainSAHam {
 		my ($u,$d) = split ('@', $new);
     my ($adminUser,$adminDomain) = split('@', $config{CREATEADMIN});
 		if ($d ne $config{CREATEDOMAIN} && $d ne $adminDomain) {
-			progress ( "You must create the user under the domain $config{CREATEDOMAIN}\n" );
+      if ($config{CREATEDOMAIN} eq $adminDomain) {
+			  progress ( "You must create the user under the domain $config{CREATEDOMAIN}\n" );
+      } else {
+			  progress ( "You must create the user under the domain $config{CREATEDOMAIN} or $adminDomain\n" );
+      }
 		} else {
 			$config{TRAINSAHAM} = $new;
 			last;
@@ -878,7 +886,8 @@ sub setCreateAdmin {
 	  	ask("Create admin user:", $config{CREATEADMIN});
 	  my ($u,$d) = split ('@', $new);
 
-    if ($d eq "") {
+    #if ($d eq "") {
+    unless(validEmailAddress($new)) {
       progress ( "Admin user must a valid email account [$u\@$config{CREATEDOMAIN}]\n");
       next;
     }
@@ -898,6 +907,10 @@ sub setCreateAdmin {
   
 	setAdminPass();
 
+}
+
+sub validEmailAddress {
+   return($_[0] =~ m/^[^@]+@([-\w]+\.)+[A-Za-z]{2,4}/ ? 1 : 0);
 }
 
 sub setLdapPass {
