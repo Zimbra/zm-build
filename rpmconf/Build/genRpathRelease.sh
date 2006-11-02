@@ -7,7 +7,7 @@ RELEASETAG=$2
 cd $BUILDROOT
 cvc checkout group-dist
 cd group-dist
-cvc cook group-dist
+cvc cook group-dist --debug
 if [ $? -ne 0 ]; then
   echo "cvc cook group-dist failed"
   exit 1
