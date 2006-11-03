@@ -32,9 +32,10 @@ use lib "/opt/zimbra/zimbramon/lib/i386-linux-thread-multi";
 use lib "/opt/zimbra/zimbramon/lib/i586-linux-thread-multi";
 use lib "/opt/zimbra/zimbramon/lib/darwin-thread-multi-2level";
 
+$|=1; # don't buffer stdout
+
 our $platform = `/opt/zimbra/libexec/get_plat_tag.sh`;
 chomp $platform;
-
 my $logfile = "/tmp/zmsetup.log.$$";
 open LOGFILE, ">$logfile" or die "Can't open $logfile: $!\n";
 
