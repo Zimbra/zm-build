@@ -1163,6 +1163,23 @@ sub setPopSSLPort {
 			$config{POPSSLPORT});
 }
 
+sub setImapProxyPort {
+	$config{IMAPPROXYPORT} = askNum("Please enter the IMAP Proxy server port",
+			$config{IMAPPROXYPORT});
+}
+sub setImapSSLProxyPort {
+	$config{IMAPSSLPROXYPORT} = askNum("Please enter the IMAP SSL Proxy server port",
+			$config{IMAPSSLPROXYPORT});
+}
+sub setPopProxyPort {
+	$config{POPPROXYPORT} = askNum("Please enter the POP Proxy server port",
+			$config{POPPROXYPORT});
+}
+sub setPopSSLProxyPort {
+	$config{POPSSLPROXYPORT} = askNum("Please enter the POP SSL Proxyserver port",
+			$config{POPSSLPROXYPORT});
+}
+
 sub setSpellUrl {
 	$config{SPELLURL} = askNonBlank("Please enter the spell server URL", 
 		$config{SPELLURL});
