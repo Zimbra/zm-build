@@ -75,6 +75,9 @@ if [ x$DEFAULTFILE != "x" ]; then
 fi
 
 if [ x"$LICENSE" != "x" ] && [ -e $LICENSE ]; then
+  if [ ! -d "/opt/zimbra/conf" ]; then
+    mkdir -p /opt/zimbra/conf
+  fi
   cp $LICENSE /opt/zimbra/conf/ZCSLicense.xml
 fi
 
@@ -186,6 +189,9 @@ fi
 #
 # Installation complete, now configure
 #
+if [ x"$LICENSE" != "x" ] && [ -e $LICENSE ]; then
+  cp $LICENSE /opt/zimbra/conf/ZCSLicense.xml
+fi
 
 
 if [ x$DEFAULTFILE != "x" ]; then
