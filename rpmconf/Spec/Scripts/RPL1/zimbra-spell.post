@@ -27,7 +27,11 @@
 H=`hostname -s`
 I=`hostname -i`
 
-#Symlinks
-PKG="zimbra-spell-pkg"
+##### .install_historPackaging checky
+PKG=`basename $0 .post`
+INST_PKG=`conary q $PKG | sed 's/=/_/'`
 D=`date +%s`
-echo "${D}: INSTALLED ${PKG}" >> /opt/zimbra/.install_history
+if [ $PKG = "zimbra-core" ]; then
+  echo "${D}: INSTALL SESSION START" >> /opt/zimbra/.install_history
+fi
+echo "${D}: INSTALLED ${INST_PKG}" >> /opt/zimbra/.install_history

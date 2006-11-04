@@ -35,6 +35,12 @@ mv /opt/zimbra/db/loggerdb.sql /opt/zimbra/db/loggerdb.sql.in
 sed -e "/server.hostname/ s/local/$H/" /opt/zimbra/db/loggerdb.sql.in > /opt/zimbra/db/loggerdb.sql
 
 chown zimbra:zimbra /opt/zimbra/logger
-PKG="zimbra-logger-pkg"
+
+##### .install_historPackaging checky
+PKG=`basename $0 .post`
+INST_PKG=`conary q $PKG | sed 's/=/_/'`
 D=`date +%s`
-echo "${D}: INSTALLED ${PKG}" >> /opt/zimbra/.install_history
+if [ $PKG = "zimbra-core" ]; then
+  echo "${D}: INSTALL SESSION START" >> /opt/zimbra/.install_history
+fi
+echo "${D}: INSTALLED ${INST_PKG}" >> /opt/zimbra/.install_history

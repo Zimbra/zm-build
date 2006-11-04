@@ -98,7 +98,11 @@ fi
 	#echo "/dev/shm	/opt/zimbra/amavisd-new-2.4.1/tmp	tmpfs	defaults,users,size=150m,mode=777 0 0" >> /etc/fstab
 #fi
 
-ldconfig
-PKG="zimbra-mta-pkg"
+##### .install_historPackaging checky
+PKG=`basename $0 .post`
+INST_PKG=`conary q $PKG | sed 's/=/_/'`
 D=`date +%s`
-echo "${D}: INSTALLED ${PKG}" >> /opt/zimbra/.install_history
+if [ $PKG = "zimbra-core" ]; then
+  echo "${D}: INSTALL SESSION START" >> /opt/zimbra/.install_history
+fi
+echo "${D}: INSTALLED ${INST_PKG}" >> /opt/zimbra/.install_history

@@ -62,6 +62,11 @@ echo "%zimbra ALL=NOPASSWD:/opt/zimbra/perdition/sbin/perdition" >> /tmp/sudoers
 mv -f /tmp/sudoers /etc/sudoers
 chmod 440 /etc/sudoers
 
-PKG="zimbra-store-pkg"
+##### .install_historPackaging checky
+PKG=`basename $0 .post`
+INST_PKG=`conary q $PKG | sed 's/=/_/'`
 D=`date +%s`
-echo "${D}: INSTALLED ${PKG}" >> /opt/zimbra/.install_history
+if [ $PKG = "zimbra-core" ]; then
+  echo "${D}: INSTALL SESSION START" >> /opt/zimbra/.install_history
+fi
+echo "${D}: INSTALLED ${INST_PKG}" >> /opt/zimbra/.install_history
