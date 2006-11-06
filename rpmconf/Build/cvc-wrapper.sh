@@ -86,7 +86,7 @@ class ZimbraBuildRecipe(PackageRecipe):
           r.Ownership('zimbra', 'zimbra' '/opt/zimbra/apache-tomcat-5.5.15/work/Catalina/localhost');
           r.ExcludeDirectories(exceptions='/opt/zimbra/apache-tomcat-5.5.15/?.*')
           r.ExcludeDirectories(exceptions='/opt/zimbra/wiki/?.*')
-          r.Config('/opt/apache/apache-tomcat-5.5.15/webapps/zimbra/WEB-INF/web.xml')
+          r.Config('/opt/zimbra/apache-tomcat-5.5.15/webapps/zimbra/WEB-INF/web.xml')
           r.Config('/opt/zimbra/apache-tomcat-5.5.15/webapps/service/WEB-INF/web.xml')
         if r.name == 'zimbra-ldap':
           r.ExcludeDirectories(exceptions='/opt/zimbra/openldap.*')
