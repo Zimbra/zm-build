@@ -2520,7 +2520,6 @@ sub configInitSnmp {
 
 sub configInitNotebooks {
 
-	configLog("configInitNotebooks");
 	if (isEnabled("zimbra-store")) {
 		progress ( "Initializing Documents..." );
     my ($notebookUser, $notebookDomain, $globalWikiAcct);
