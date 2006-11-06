@@ -99,13 +99,11 @@ fi
 #fi
 
 ##### .install_historPackaging checky
-#
-# @@VERSION@@
-#
-PKG=`basename $0 .post`
+PKG=@@PKGNAME@@
+VERSION=@@VERSION@@
 INST_PKG=`conary q $PKG | sed 's/=/_/'`
 D=`date +%s`
 if [ $PKG = "zimbra-core" ]; then
   echo "${D}: INSTALL SESSION START" >> /opt/zimbra/.install_history
 fi
-echo "${D}: INSTALLED ${INST_PKG}" >> /opt/zimbra/.install_history
+echo "${D}: INSTALLED ${PKG}_${VERSION}" >> /opt/zimbra/.install_history

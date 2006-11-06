@@ -130,7 +130,7 @@ EOF
 script=$SCRIPTDIR/$PKGNAME.post
 if [ -f $script ]; then
     #cp $script $WORK
-    sed 's/@@VERSION@@/${VERSION}/' $script > $WORK
+    sed -e 's/@@VERSION@@/${VERSION}/' -e 's/@@PKGNAME@@/${PKGNAME}/' $script > $WORK
     s=$(basename $script)
     cat >> $WORK/$PKGNAME-tagdescription <<EOF
 file          %(taghandlerdir)s/%(name)s
