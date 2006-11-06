@@ -28,11 +28,13 @@ H=`hostname -s`
 I=`hostname -i`
 
 #Symlinks
-
 rm -f /opt/zimbra/httpd
 ln -s /opt/zimbra/httpd-2.0.54 /opt/zimbra/httpd
 
 ##### .install_historPackaging checky
+#
+# @@VERSION@@
+#
 PKG=`basename $0 .post`
 INST_PKG=`conary q $PKG | sed 's/=/_/'`
 D=`date +%s`

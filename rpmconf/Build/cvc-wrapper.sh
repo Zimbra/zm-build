@@ -70,6 +70,10 @@ class ZimbraBuildRecipe(PackageRecipe):
         r.RemoveNonPackageFiles(exceptions='.*')
         r.InitialContents('/opt/zimbra/conf/localconfig.xml');
         # don't delete specific empty directories
+        if r.name == 'zimbra-core':
+          r.MakeDirs('/etc/conary/entitlements')
+          r.Symlink ('/opt/zimbra/libexec/zmgenentitlements', '/etc/conary/entitlements/conary.rpath.com')
+          r.Symlink ('/opt/zimbra/libexec/zmgenentitlements', '/etc/conary/entitlements/zimbra.liquidsys.com')
         if r.name == 'zimbra-mta':
           r.ExcludeDirectories(exceptions='/opt/zimbra/postfix.*')
           r.ExcludeDirectories(exceptions='/opt/zimbra/clamav.*')
@@ -125,7 +129,8 @@ EOF
 
 script=$SCRIPTDIR/$PKGNAME.post
 if [ -f $script ]; then
-    cp $script $WORK
+    #cp $script $WORK
+    sed 's/@@VERSION@@/${VERSION}/' $script > $WORK
     s=$(basename $script)
     cat >> $WORK/$PKGNAME-tagdescription <<EOF
 file          %(taghandlerdir)s/%(name)s

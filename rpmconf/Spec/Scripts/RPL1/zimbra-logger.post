@@ -37,6 +37,9 @@ sed -e "/server.hostname/ s/local/$H/" /opt/zimbra/db/loggerdb.sql.in > /opt/zim
 chown zimbra:zimbra /opt/zimbra/logger
 
 ##### .install_historPackaging checky
+#
+# @@VERSION@@
+#
 PKG=`basename $0 .post`
 INST_PKG=`conary q $PKG | sed 's/=/_/'`
 D=`date +%s`

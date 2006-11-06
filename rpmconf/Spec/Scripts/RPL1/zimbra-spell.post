@@ -28,6 +28,9 @@ H=`hostname -s`
 I=`hostname -i`
 
 ##### .install_historPackaging checky
+#
+# @@VERSION@@
+#
 PKG=`basename $0 .post`
 INST_PKG=`conary q $PKG | sed 's/=/_/'`
 D=`date +%s`

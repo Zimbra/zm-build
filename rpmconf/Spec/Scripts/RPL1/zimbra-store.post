@@ -63,6 +63,9 @@ mv -f /tmp/sudoers /etc/sudoers
 chmod 440 /etc/sudoers
 
 ##### .install_historPackaging checky
+#
+# @@VERSION@@
+#
 PKG=`basename $0 .post`
 INST_PKG=`conary q $PKG | sed 's/=/_/'`
 D=`date +%s`

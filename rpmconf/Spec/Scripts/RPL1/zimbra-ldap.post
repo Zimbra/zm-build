@@ -49,6 +49,9 @@ chown root:root /opt/zimbra/openldap/libexec/slapd
 chmod 755 /opt/zimbra/openldap/libexec/slapd
 
 ##### .install_historPackaging checky
+#
+# @@VERSION@@
+#
 PKG=`basename $0 .post`
 INST_PKG=`conary q $PKG | sed 's/=/_/'`
 D=`date +%s`
