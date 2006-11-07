@@ -35,7 +35,7 @@ if [ $? -eq 0 ]; then
   ln -s $BUILDROOT/i386/zcs-${RELEASETAG}.iso $BUILDROOT/i386/zcs.iso
 fi
 echo "Building VMWare Image $BUILDROOT/i386/zcs-${RELEASETAG}-vmware.zip..."
-BUILD=`rbuilder build-create zimbra "$TROVE" vmware_image --option="vmMemory 512" --wait | awk -F= '{print $NF}'`
+BUILD=`rbuilder build-create zimbra "$TROVE" vmware_image --wait --option 'vmMemory 512' 'freespace 500'  | awk -F= '{print $NF}'`
 if [ $? -eq 0 ]; then
   ISO=`rbuilder build-url $BUILD | head -1`
   wget -qO $BUILDROOT/i386/zcs-${RELEASETAG}-vmware.zip $ISO
