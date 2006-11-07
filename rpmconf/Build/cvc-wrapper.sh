@@ -70,16 +70,15 @@ class ZimbraBuildRecipe(PackageRecipe):
         r.RemoveNonPackageFiles(exceptions='.*')
         r.InitialContents('/opt/zimbra/conf/localconfig.xml');
         # don't delete specific empty directories
-        if r.name == 'zimbra-core':
-          r.MakeDirs('/etc/conary/entitlements')
-          r.Symlink ('/opt/zimbra/libexec/zmgenentitlements', '/etc/conary/entitlements/conary.rpath.com')
-          r.Symlink ('/opt/zimbra/libexec/zmgenentitlements', '/etc/conary/entitlements/zimbra.liquidsys.com')
         if r.name == 'zimbra-mta':
           r.ExcludeDirectories(exceptions='/opt/zimbra/postfix.*')
           r.ExcludeDirectories(exceptions='/opt/zimbra/clamav.*')
           r.ExcludeDirectories(exceptions='/opt/zimbra/amavis.*')
           r.ExcludeDirectories(exceptions='/opt/zimbra/dspam.*')
         if r.name == 'zimbra-store':
+          r.MakeDirs('/etc/conary/entitlements')
+          r.Symlink ('/opt/zimbra/libexec/zmgenentitlements', '/etc/conary/entitlements/conary.rpath.com')
+          r.Symlink ('/opt/zimbra/libexec/zmgenentitlements', '/etc/conary/entitlements/zimbra.liquidsys.com')
           r.MakeDirs('/opt/zimbra/apache-tomcat-5.5.15/work', mode=0755)
           r.MakeDirs('/opt/zimbra/apache-tomcat-5.5.15/work/Catalina', mode=0755)
           r.MakeDirs('/opt/zimbra/apache-tomcat-5.5.15/work/Catalina/localhost', mode=0755)
@@ -130,7 +129,8 @@ EOF
 script=$SCRIPTDIR/$PKGNAME.post
 if [ -f $script ]; then
     #cp $script $WORK
-    sed -e 's/@@VERSION@@/${VERSION}/' -e 's/@@PKGNAME@@/${PKGNAME}/' $script > $WORK/$script
+    sed -e "s/@@VERSION@@/${VERSION}/" -e "s/@@PKGNAME@@/${PKGNAME}/" $script > /tmp/$PKGNAME.post
+    cp /tmp/$PKGNAME.post $WORK
     s=$(basename $script)
     cat >> $WORK/$PKGNAME-tagdescription <<EOF
 file          %(taghandlerdir)s/%(name)s
