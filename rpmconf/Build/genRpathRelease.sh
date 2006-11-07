@@ -1,9 +1,13 @@
 #!/bin/bash 
 
 
-
+LOCAL=0
 LABEL=zimbra.liquidsys.com@zimbra:devel
-if [ "$1" = "--label" ]; then
+
+if [ "$1" = "--local" ]; then
+    LOCAL=1
+    shift
+elif [ "$1" = "--label" ]; then
   LABEL=$2
   shift; shift;
 fi
