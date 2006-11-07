@@ -65,7 +65,6 @@ chmod 440 /etc/sudoers
 ##### .install_historPackaging checky
 PKG=@@PKGNAME@@
 VERSION=@@VERSION@@
-INST_PKG=`conary q $PKG | sed 's/=/_/'`
 D=`date +%s`
 if [ $PKG = "zimbra-core" ]; then
   echo "${D}: INSTALL SESSION START" >> /opt/zimbra/.install_history

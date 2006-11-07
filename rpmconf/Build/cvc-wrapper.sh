@@ -67,18 +67,20 @@ class ZimbraBuildRecipe(PackageRecipe):
         # turn of build requirement checks
         del r.EnforceSonameBuildRequirements
         del r.EnforcePerlBuildRequirements
+        del r.DanglingSymlinks
         r.RemoveNonPackageFiles(exceptions='.*')
         r.InitialContents('/opt/zimbra/conf/localconfig.xml');
         # don't delete specific empty directories
+        if r.name == 'zimbra-core':
+          r.MakeDirs('/etc/conary/entitlements')
+          r.Symlink ('/opt/zimbra/libexec/zmgenentitlement', '/etc/conary/entitlements/conary.rpath.com')
+          r.Symlink ('/opt/zimbra/libexec/zmgenentitlement', '/etc/conary/entitlements/zimbra.liquidsys.com')
         if r.name == 'zimbra-mta':
           r.ExcludeDirectories(exceptions='/opt/zimbra/postfix.*')
           r.ExcludeDirectories(exceptions='/opt/zimbra/clamav.*')
           r.ExcludeDirectories(exceptions='/opt/zimbra/amavis.*')
           r.ExcludeDirectories(exceptions='/opt/zimbra/dspam.*')
         if r.name == 'zimbra-store':
-          r.MakeDirs('/etc/conary/entitlements')
-          r.Symlink ('/opt/zimbra/libexec/zmgenentitlements', '/etc/conary/entitlements/conary.rpath.com')
-          r.Symlink ('/opt/zimbra/libexec/zmgenentitlements', '/etc/conary/entitlements/zimbra.liquidsys.com')
           r.MakeDirs('/opt/zimbra/apache-tomcat-5.5.15/work', mode=0755)
           r.MakeDirs('/opt/zimbra/apache-tomcat-5.5.15/work/Catalina', mode=0755)
           r.MakeDirs('/opt/zimbra/apache-tomcat-5.5.15/work/Catalina/localhost', mode=0755)

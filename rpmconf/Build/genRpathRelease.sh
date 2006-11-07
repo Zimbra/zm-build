@@ -30,7 +30,7 @@ if [ $? -eq 0 ]; then
   wget -qO $BUILDROOT/i386/zcs-${RELEASETAG}.iso $ISO
   ln -s $BUILDROOT/i386/zcs-${RELEASETAG}.iso $BUILDROOT/i386/zcs.iso
 fi
-echo "Building VMWare Image $BUILDROOT/i386/zcs-${RELEASETAG}-vmware.zip...""
+echo "Building VMWare Image $BUILDROOT/i386/zcs-${RELEASETAG}-vmware.zip..."
 BUILD=`rbuilder build-create zimbra "$TROVE" vmware_image --wait | awk -F= '{print $NF}'`
 if [ $? -eq 0 ]; then
   ISO=`rbuilder build-url $BUILD | head -1`
