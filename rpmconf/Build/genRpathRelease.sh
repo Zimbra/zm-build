@@ -16,9 +16,9 @@ BUILDROOT=$1
 RELEASETAG=$2
 
 cd $BUILDROOT
-cvc checkout group-dist
+cvc checkout group-dist=$LABEL
 cd group-dist
-cvc cook group-dist --debug
+cvc cook group-dist=$LABEL --debug
 if [ $? -ne 0 ]; then
   echo "cvc cook group-dist failed"
   exit 1
@@ -35,7 +35,7 @@ if [ $? -eq 0 ]; then
   ln -s $BUILDROOT/i386/zcs-${RELEASETAG}.iso $BUILDROOT/i386/zcs.iso
 fi
 echo "Building VMWare Image $BUILDROOT/i386/zcs-${RELEASETAG}-vmware.zip..."
-BUILD=`rbuilder build-create zimbra "$TROVE" vmware_image --wait | awk -F= '{print $NF}'`
+BUILD=`rbuilder build-create zimbra "$TROVE" vmware_image --option="vmMemory 512" --wait | awk -F= '{print $NF}'`
 if [ $? -eq 0 ]; then
   ISO=`rbuilder build-url $BUILD | head -1`
   wget -qO $BUILDROOT/i386/zcs-${RELEASETAG}-vmware.zip $ISO
