@@ -227,14 +227,18 @@ sub upgrade {
 		print "This appears to be 4.0.2_GA\n";
 	} elsif ($startVersion eq "4.0.3_GA") {
 		print "This appears to be 4.0.3_GA\n";
+	} elsif ($startVersion eq "4.0.4_GA") {
+		print "This appears to be 4.0.4_GA\n";
 	} elsif ($startVersion eq "4.1.0_BETA1") {
 		print "This appears to be 4.1.0_BETA1\n";
-	} elsif ($startVersion eq "4.1.0_RC1") {
-		print "This appears to be 4.1.0_RC1\n";
-	} elsif ($startVersion eq "4.1.0_RC2") {
-		print "This appears to be 4.1.0_RC2\n";
-	} elsif ($startVersion eq "4.1.0_GA") {
-		print "This appears to be 4.1.0_GA\n";
+	} elsif ($startVersion eq "4.5.0_BETA1") {
+		print "This appears to be 4.5.0_BETA1\n";
+	} elsif ($startVersion eq "4.5.0_RC1") {
+		print "This appears to be 4.5.0_RC1\n";
+	} elsif ($startVersion eq "4.5.0_RC2") {
+		print "This appears to be 4.5.0_RC2\n";
+	} elsif ($startVersion eq "4.5.0_GA") {
+		print "This appears to be 4.5.0_GA\n";
 	} elsif ($startVersion eq "5.0.0_BETA1") {
 		print "This appears to be 5.0.0_BETA1\n";
 	} elsif ($startVersion eq "5.0.0_GA") {
