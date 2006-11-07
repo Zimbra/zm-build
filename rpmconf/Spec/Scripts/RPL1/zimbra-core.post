@@ -92,23 +92,26 @@ chown zimbra:zimbra /opt/zimbra/ssl
 mkdir /opt/zimbra/.ssh
 chown zimbra:zimbra /opt/zimbra/.ssh
 
-# 64 bit jvm doesn't support the dump
-if [ "x$BIT" = "x64" ]; then
-	exit 0
-fi
-
-if [ -d "/etc/conary/entitlements" -a -f "/opt/zimbra/libexec/zmgenentitlement" ]; then
-  ln -s /opt/zimbra/libexec/zmgenentitlement /etc/conary/entitlements/conary.rpath.com
-  ln -s /opt/zimbra/libexec/zmgenentitlement /etc/conary/entitlements/zimbra.liquidsys.com
-fi
-
-/opt/zimbra/java/bin/java -client -Xshare:dump
-
-##### .install_historPackaging checky
+##### install_history
 PKG=@@PKGNAME@@
 VERSION=@@VERSION@@
+INSTALL_HISTORY=/opt/zimbra/.install_history
 D=`date +%s`
-if [ $PKG = "zimbra-core" ]; then
-  echo "${D}: INSTALL SESSION START" >> /opt/zimbra/.install_history
+UPGRADE=`grep "INSTALLED $PKG" $INSTALL_HISTORY`
+if [ x"$UPGRADE" = "x" ]; then
+  ACTION="INSTALLED"
+else
+  ACTION="UPGRADED"
 fi
-echo "${D}: INSTALLED ${PKG}_${VERSION}" >> /opt/zimbra/.install_history
+
+if [ $PKG = "zimbra-core" ]; then
+  echo "${D}: INSTALL SESSION START" >> $INSTALL_HISTORY
+fi
+
+echo "${D}: $ACTION ${PKG}_${VERSION}" >> /opt/zimbra/.install_history
+
+if [ $PKG = "zimbra-store" ]; then
+  echo "${D}: INSTALL SESSION COMPLETE" >> $INSTALL_HISTORY
+fi
+
+exit 0
