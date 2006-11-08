@@ -1065,6 +1065,9 @@ sub upgrade410BETA1 {
 sub upgrade450BETA1 {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
 	Migrate::log("Updating from 4.5.0_BETA1");
+  if (isInstalled("zimbra-ldap")) {
+    main::runAsZimbra("$ZMPROV mc default zimbraPrefUseKeyboardShortcuts TRUE");
+  }
 	return 0;
 }
 
@@ -1378,7 +1381,7 @@ sub clearRedologDir($$) {
   if (-d "$redologDir" && ! -e "${redologDir}/${version}") {
     `mkdir ${redologDir}/${version}`;
 	  `mv ${redologDir}/* ${redologDir}/${version}/ > /dev/null 2>&1`;
-    `chown -R zimbra:zimbra $redologDir > /dev/null 2>&1`;
+    `chown zimbra:zimbra $redologDir > /dev/null 2>&1`;
   }
   return;
 }
@@ -1388,7 +1391,7 @@ sub clearBackupDir($$) {
   if (-e "$backupDir" && ! -e "${backupDir}/${version}") {
     `mkdir ${backupDir}/${version}`;
 	  `mv ${backupDir}/* ${backupDir}/${version} > /dev/null 2>&1`;
-    `chown -R zimbra:zimbra $backupDir > /dev/null 2>&1`;
+    `chown zimbra:zimbra $backupDir > /dev/null 2>&1`;
   }
   return;
 }
