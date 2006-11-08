@@ -400,8 +400,8 @@ sub setLdapDefaults {
   $config{USEKBSHORTCUTS} = getLdapCOSValue("default", "zimbraPrefUseKeyboardShortcuts");
 
   # we want to prompt for this value at least once during upgrades
-  delete $config{USEKBSHORTCUTS}
-	  if ($configStatus{zimbraPrefUseKeyboardShortcuts} ne "CONFIGURED" && !$newinstall && !$options{c});
+  #delete $config{USEKBSHORTCUTS}
+	  #if ($configStatus{zimbraPrefUseKeyboardShortcuts} ne "CONFIGURED" && !$newinstall && !$options{c});
   
 	my $smtphost=getLdapServerValue("zimbraSmtpHostname");
 	if ( $smtphost ne "") {
