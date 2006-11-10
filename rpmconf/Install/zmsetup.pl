@@ -2748,7 +2748,7 @@ sub applyConfig {
     # only after the application server is running.
     if (isEnabled("zimbra-store")) {
       configInstallZimlets();
-      configInitNotebooks()
+      configInitNotebooks();
 
       progress ( "Restarting tomcat...");
       runAsZimbra("/opt/zimbra/bin/tomcat restart");
