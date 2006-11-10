@@ -41,7 +41,7 @@ chomp $rundir;
 my $scriptDir = "/opt/zimbra/libexec/scripts";
 
 my $lowVersion = 18;
-my $hiVersion = 29;
+my $hiVersion = 30;
 my $hiLoggerVersion = 5;
 
 # Variables for the combo schema updater
@@ -65,8 +65,9 @@ my %updateScripts = (
 	'24' => "migrate20060708-FlagCalendarFolder.pl",
 	'25' => "migrate20060803-CreateMailboxMetadata.pl",
 	'26' => "migrate20060810-PersistFolderCounts.pl",    # 4.0.2
-	'27' => "migrate20060911-MailboxGroup.pl",           # 4.1.0
+	'27' => "migrate20060911-MailboxGroup.pl",           # 4.5.0_BETA1
 	'28' => "migrate20060929-TypedTombstones.pl",
+  '29' => "migrate20061101-IMFolder.pl",               # 4.5.0_RC1
 );
 
 my %loggerUpdateScripts = (
@@ -285,21 +286,9 @@ sub upgrade {
 
 	my $found = 0;
 
-	if (isInstalled ("zimbra-ldap")) {
-		if (-f "/opt/zimbra/openldap-data/ldap.bak") {
-			Migrate::log("Migrating ldap data");
-			if (-d "/opt/zimbra/openldap-data.prev") {
-				`mv /opt/zimbra/openldap-data.prev /opt/zimbra/openldap-data.prev.$$`;
-			}
-			`mv /opt/zimbra/openldap-data /opt/zimbra/openldap-data.prev`;
-			`mkdir /opt/zimbra/openldap-data`;
-			`touch /opt/zimbra/openldap-data/DB_CONFIG`;
-			`chown -R zimbra:zimbra /opt/zimbra/openldap-data`;
-			main::runAsZimbra("/opt/zimbra/openldap/sbin/slapadd -f /opt/zimbra/conf/slapd.conf -l /opt/zimbra/openldap-data.prev/ldap.bak");
-		}
-		main::runAsZimbra("/opt/zimbra/openldap/sbin/slapindex -f /opt/zimbra/conf/slapd.conf");
-		if (startLdap()) {return 1;} 
-	}
+  #migrateLdap();
+  # start ldap
+  if (startLdap()) {return 1;} 
 
 	foreach my $v (@versionOrder) {
 	  Migrate::log("Checking $v");
@@ -1393,6 +1382,25 @@ sub clearBackupDir($$) {
 	  `mv ${backupDir}/* ${backupDir}/${version} > /dev/null 2>&1`;
     `chown zimbra:zimbra $backupDir > /dev/null 2>&1`;
   }
+  return;
+}
+
+sub migrateLdap {
+	if (isInstalled ("zimbra-ldap")) {
+		if (-f "/opt/zimbra/openldap-data/ldap.bak") {
+			Migrate::log("Migrating ldap data");
+			if (-d "/opt/zimbra/openldap-data.prev") {
+				`mv /opt/zimbra/openldap-data.prev /opt/zimbra/openldap-data.prev.$$`;
+			}
+			`mv /opt/zimbra/openldap-data /opt/zimbra/openldap-data.prev`;
+			`mkdir /opt/zimbra/openldap-data`;
+			`touch /opt/zimbra/openldap-data/DB_CONFIG`;
+			`chown -R zimbra:zimbra /opt/zimbra/openldap-data`;
+			main::runAsZimbra("/opt/zimbra/openldap/sbin/slapadd -f /opt/zimbra/conf/slapd.conf -l /opt/zimbra/openldap-data.prev/ldap.bak");
+		}
+		main::runAsZimbra("/opt/zimbra/openldap/sbin/slapindex -f /opt/zimbra/conf/slapd.conf");
+		if (startLdap()) {return 1;} 
+	}
   return;
 }
 
