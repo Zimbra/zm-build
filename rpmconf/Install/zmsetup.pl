@@ -2749,11 +2749,12 @@ sub applyConfig {
     if (isEnabled("zimbra-store")) {
       configInstallZimlets();
       configInitNotebooks()
+
+      progress ( "Restarting tomcat...");
+      runAsZimbra("/opt/zimbra/bin/tomcat restart");
+      progress ( "Done\n" );
     }
     #runAsZimbra ("$ZMPROV ms $config{HOSTNAME} zimbraUserServicesEnabled TRUE");
-    progress ( "Restarting tomcat...");
-    runAsZimbra("/opt/zimbra/bin/tomcat restart");
-    progress ( "Done\n" );
   } else {
     progress ( "WARNING: Document and Zimlet initialization skipped because Application Server was not configured to start.\n")
       if (isEnabled("zimbra-store"));
