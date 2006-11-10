@@ -2350,7 +2350,7 @@ sub configInstallZimlets {
       my $zimlet = $zimletfile;
       $zimlet =~ s/\.zip$//;
       progress  ("\n\t$zimlet");
-      runAsZimbra ("/opt/zimbra/bin/zmzimletctl deploy zimlets/$zimletfile");
+      runAsZimbra ("/opt/zimbra/bin/zmzimletctl -l deploy zimlets/$zimletfile");
     }
     progress ( "\nDone\n" );
   }
@@ -2363,7 +2363,7 @@ sub configInstallZimlets {
       my $zimlet = $zimletfile;
       $zimlet =~ s/\.zip$//;
       progress  ("\n\t$zimlet");
-      runAsZimbra ("/opt/zimbra/bin/zmzimletctl deploy zimlets-network/$zimletfile");
+      runAsZimbra ("/opt/zimbra/bin/zmzimletctl -l deploy zimlets-network/$zimletfile");
     }
     progress ( "\nDone\n" );
   }
