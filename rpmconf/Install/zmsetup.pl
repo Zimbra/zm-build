@@ -477,11 +477,11 @@ sub setDefaults {
     $config{MTAAUTHHOST} = $config{HOSTNAME};
     $config{DOCREATEADMIN} = "yes";
     $config{DOTRAINSA} = "yes";
-    $config{TRAINSASPAM} = lc(genRandomPass());
+    $config{TRAINSASPAM} = "spam.".lc(genRandomPass());
     $config{TRAINSASPAM} .= '@'.$config{CREATEDOMAIN};
-    $config{TRAINSAHAM} = lc(genRandomPass());
+    $config{TRAINSAHAM} = "ham.".lc(genRandomPass());
     $config{TRAINSAHAM} .= '@'.$config{CREATEDOMAIN};
-    $config{NOTEBOOKACCOUNT} = lc(genRandomPass());
+    $config{NOTEBOOKACCOUNT} = "wiki";
     $config{NOTEBOOKACCOUNT} .= '@'.$config{CREATEDOMAIN};
     $config{NOTEBOOKPASS} = genRandomPass();
   }
@@ -835,14 +835,35 @@ sub setCreateDomain {
   my ($spamUser, $spamDomain) = split ('@', $config{TRAINSASPAM});
   my ($hamUser, $hamDomain) = split ('@', $config{TRAINSAHAM});
   my ($notebookUser, $notebookDomain) = split ('@', $config{NOTEBOOKACCOUNT});
-  if ($spamDomain eq $oldDomain) {
-    $config{TRAINSASPAM} = $spamUser.'@'.$config{CREATEDOMAIN};
-  }
-  if ($hamDomain eq $oldDomain) {
-    $config{TRAINSAHAM} = $hamUser.'@'.$config{CREATEDOMAIN};
-  }
-  if ($notebookDomain eq $oldDomain) {
-    $config{NOTEBOOKACCOUNT} = $notebookUser.'@'.$config{CREATEDOMAIN};
+
+  $config{NOTEBOOKACCOUNT} = $spamUser.'@'.$config{CREATEDOMAIN}
+    if ($notebookDomain eq $oldDomain);
+
+  $config{TRAINSASPAM} = $spamUser.'@'.$config{CREATEDOMAIN}
+    if ($spamDomain eq $oldDomain);
+
+  $config{TRAINSAHAM} = $hamUser.'@'.$config{CREATEDOMAIN}
+    if ($hamDomain eq $oldDomain);
+
+}
+
+sub setNotebookAccount {
+  while (1) {
+    my $new = 
+      ask("Global Documents account:",
+        $config{NOTEBOOKACCOUNT});
+    my ($u,$d) = split ('@', $new);
+    my ($adminUser,$adminDomain) = split('@', $config{CREATEADMIN});
+    if ($d ne $config{CREATEDOMAIN} && $d ne $adminDomain) {
+      if ($config{CREATEDOMAIN} eq $adminDomain) {
+        progress ( "You must create the user under the domain $config{CREATEDOMAIN}\n" );
+      } else {
+        progress ( "You must create the user under the domain $config{CREATEDOMAIN} or $adminDomain\n" );
+      }
+    } else {
+      $config{NOTEBOOKACCOUNT} = $new;
+      last;
+    }
   }
 }
 
@@ -1538,6 +1559,12 @@ sub createStoreMenu {
       $i++;
     }
     $$lm{menuitems}{$i} = { 
+      "prompt" => "Global Documents Account:", 
+      "var" => \$config{NOTEBOOKACCOUNT}, 
+      "callback" => \&setNotebookAccount
+      };
+    $i++;
+    $$lm{menuitems}{$i} = { 
       "prompt" => "SMTP host:", 
       "var" => \$config{SMTPHOST}, 
       "callback" => \&setSmtpHost,
@@ -2092,10 +2119,12 @@ sub configSetupLdap {
     }
   } elsif (isEnabled("zimbra-ldap") && ! $newinstall) {
     # zmldappasswd starts ldap and re-applies the ldif
-    if ( -f "/opt/zimbra/.enable_replica") {
+    if ($config{LDAPHOST} ne $config{HOSTNAME} ||  -f "/opt/zimbra/.enable_replica") {
       progress ( "Enabling ldap replication..." );
       runAsZimbra ("/opt/zimbra/libexec/zmldapenablereplica");
       unlink "/opt/zimbra/.enable_replica";
+      $config{DOCREATEADMIN} = "no";
+      $config{DOCREATEDOMAIN} = "no";
       progress ( "Done\n" );
     }
     if ($ldapPassChanged) {
@@ -2106,11 +2135,8 @@ sub configSetupLdap {
       runAsZimbra ("/opt/zimbra/bin/zmldappasswd $config{LDAPPASS}");
       progress ( "Done\n" );
     } else {
-      progress ( "Starting ldap..." );
-      runAsZimbra 
-        ("/opt/zimbra/openldap/sbin/slapindex -f /opt/zimbra/conf/slapd.conf");
-      runAsZimbra ("/opt/zimbra/bin/ldap start");
-      runAsZimbra ("/opt/zimbra/libexec/zmldapapplyldif");
+      runAsZimbra ("/opt/zimbra/bin/ldap stop");
+      startLdap();
       progress ( "Done\n" );
     }
   } else {
@@ -2129,7 +2155,7 @@ sub configSaveCA {
     return 0;
   }
 
-  if (isEnabled("zimbra-ldap")) {
+  if (isEnabled("zimbra-ldap") && ($config{LDAPHOST} eq $config{HOSTNAME})) {
     progress ( "Saving CA in ldap..." );
 
     my $cert=`cat /opt/zimbra/ssl/ssl/ca/ca.pem`;
