@@ -1063,8 +1063,18 @@ sub upgrade450BETA1 {
 sub upgrade450RC1 {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
 	Migrate::log("Updating from 4.5.0_RC1");
+
+  # bug 12031
+  if (isInstalled("zimbra-ldap")) {
+	  my @coses = `su - zimbra -c "$ZMPROV gac"`;
+	  foreach my $cos (@coses) {
+		  chomp $cos;
+		  main::runAsZimbra("$ZMPROV mc $cos zimbraFeaturePop3DataSourceEnabled TRUE");
+	  }
+  }
 	return 0;
 }
+
 sub upgrade450RC2 {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
 	Migrate::log("Updating from 4.5.0_RC2");
