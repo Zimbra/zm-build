@@ -122,6 +122,7 @@ sub usage {
   print STDERR "Usage: $0 [-h] [-c <config file>]\n";
   print STDERR "\t-h: display this help message\n";
   print STDERR "\t-c: configure with values in <config file>\n\n";
+  #print STDERR "\t-l: install license in <license file>\n\n";
   exit 1;
 }
 
@@ -399,10 +400,6 @@ sub setLdapDefaults {
 
   $config{USEKBSHORTCUTS} = getLdapCOSValue("default", "zimbraPrefUseKeyboardShortcuts");
 
-  # we want to prompt for this value at least once during upgrades
-  #delete $config{USEKBSHORTCUTS}
-    #if ($configStatus{zimbraPrefUseKeyboardShortcuts} ne "CONFIGURED" && !$newinstall && !$options{c});
-  
   my $smtphost=getLdapServerValue("zimbraSmtpHostname");
   if ( $smtphost ne "") {
     $config{SMTPHOST} = $smtphost;
@@ -484,6 +481,9 @@ sub setDefaults {
     $config{NOTEBOOKACCOUNT} = "wiki";
     $config{NOTEBOOKACCOUNT} .= '@'.$config{CREATEDOMAIN};
     $config{NOTEBOOKPASS} = genRandomPass();
+    $config{DEFAULTLICENSEFILE} = "/opt/zimbra/conf/ZCSLicense.xml" if isNetwork();
+    $config{LICENSEFILE} = $config{DEFAULTLICENSEFILE}
+      if (-f "$config{DEFAULTLICENSEFILE}" && isNetwork());
   }
   if (isEnabled("zimbra-ldap")) {
     progress "setting defaults for zimbra-ldap.\n" if $options{d};
@@ -741,6 +741,17 @@ sub askNonBlank {
     my $v = ask($prompt, $default);
     if ($v ne "") {return $v;}
     print "A non-blank answer is required\n";
+  }
+}
+
+sub askFileName {
+  my $prompt = shift;
+  my $default = shift;
+  while (1) {
+    my $v = ask($prompt, $default);
+    if ($v ne "" && -f $v) {return $v;}
+    print "A non-blank answer is required\n" if ($v eq "");;
+    print "$v must exist and be readable\n" if (!-f $v && $v ne "");
   }
 }
 
@@ -1213,6 +1224,13 @@ sub setSpellUrl {
     $config{SPELLURL});
 }
 
+sub setLicenseFile {
+  $config{LICENSEFILE} = askFileName("Enter the name of the file that contains the license", 
+    $config{LICENSEFILE});
+  system("cp $config{LICENSEFILE} /opt/zimbra/conf/ZCSLicense.xml")
+    if ($config{LICENSEFILE} ne "/opt/zimbra/conf/ZCSLicense.xml");
+}
+
 sub configurePackage {
   my $package = shift;
   if ($package eq "zimbra-logger") {
@@ -1288,6 +1306,18 @@ sub genPackageMenu {
 sub isEnabled {
   my $package = shift;
   return ($enabledPackages{$package} eq "Enabled");
+}
+
+sub isNetwork {
+  return((-f "/opt/zimbra/lib/ext/zimbra-license/zimbra-license.jar") ? 1 : 0);
+}
+
+sub isFoss {
+  return((-f "/opt/zimbra/lib/ext/zimbra-license/zimbra-license.jar") ? 0 : 1);
+}
+
+sub isLicenseInstalled {
+ return(runAsZimbra("zmlicense -c") ? 0 : 1); 
 }
 
 sub createPackageMenu {
@@ -1664,16 +1694,16 @@ sub createStoreMenu {
         };
       $i++;
     }
-    if (!$newinstall && !$options{c}) {
+    # only prompt for license if we are network install and
+    # a license doesn't exist in /opt/zimbra/conf or ldap.
+    if (isNetwork() && !-f $config{DEFAULTLICENSEFILE} && !isLicenseInstalled() ) {
       $$lm{menuitems}{$i} = { 
-        "prompt" => "Use Keyboard Shortcuts:", 
-        "var" => \$config{USEKBSHORTCUTS}, 
-        "callback" => \&toggleTF,
-        "arg" => "USEKBSHORTCUTS",
+        "prompt" => "License filename:", 
+        "var" => \$config{LICENSEFILE}, 
+        "callback" => \&setLicenseFile,
         };
       $i++;
     }
-
   }
   return $lm;
 }
