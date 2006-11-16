@@ -2006,14 +2006,14 @@ sub configSetupLdap {
 			progress ( "Done\n" );
 		}
 	} elsif (isEnabled("zimbra-ldap") && ! $newinstall) {
-		# zmldappasswd starts ldap and re-applies the ldif
-		if ( -f "/opt/zimbra/.enable_replica") {
+		if ( $config{LDAPHOST} ne $config{HOSTNAME} || -f "/opt/zimbra/.enable_replica") {
 			progress ( "Enabling ldap replication..." );
 			runAsZimbra ("/opt/zimbra/libexec/zmldapenablereplica");
 			unlink "/opt/zimbra/.enable_replica";
 			progress ( "Done\n" );
 		}
 		if ($ldapPassChanged) {
+		  # zmldappasswd starts ldap and re-applies the ldif
 			progress ( "Setting ldap password..." );
 			runAsZimbra 
 				("/opt/zimbra/openldap/sbin/slapindex -f /opt/zimbra/conf/slapd.conf");
@@ -2021,12 +2021,9 @@ sub configSetupLdap {
 			runAsZimbra ("/opt/zimbra/bin/zmldappasswd $config{LDAPPASS}");
 			progress ( "Done\n" );
 		} else {
-			progress ( "Starting ldap..." );
-			runAsZimbra 
-				("/opt/zimbra/openldap/sbin/slapindex -f /opt/zimbra/conf/slapd.conf");
-			runAsZimbra ("/opt/zimbra/bin/ldap start");
-			runAsZimbra ("/opt/zimbra/libexec/zmldapapplyldif");
-			progress ( "Done\n" );
+      # restart ldap
+			runAsZimbra ("/opt/zimbra/bin/ldap stop");
+      startLdap();
 		}
 	} else {
 		setLocalConfig ("ldap_root_password", $config{LDAPPASS});
