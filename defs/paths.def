@@ -6,3 +6,5 @@ NATIVE_DIR := $(BUILD_ROOT)/../ZimbraNative
 ZIMLET_DIR := $(BUILD_ROOT)/../Zimlet
 LAUNCHER_DIR := $(BUILD_ROOT)/../ZimbraLauncher
 ISYNC_DIR := $(BUILD_ROOT)/../ZimbraISync
+TAGLIB_DIR := $(BUILD_ROOT)/../ZimbraTagLib
+HTMLCLIENT_DIR := $(BUILD_ROOT)/../ZimbraHtmlClient

@@ -64,3 +64,23 @@ $(CONSOLE_DIR)/$(WEBAPP_BUILD_DIR)/zimbra.war:
 	rm -rf zimbraConf
 	mkdir zimbraConf
 	cp $(CONSOLE_DIR)/build/WebRoot/WEB-INF/web.xml zimbraConf
+
+$(WEBAPP_DIR)/html.war: $(WEBAPP_DIR) $(HTMLCLIENT_DIR)/build/html.war
+	mkdir $(WEBAPP_DIR)/html
+	(cd $(WEBAPP_DIR)/html; jar xf $(HTMLCLIENT_DIR)/build/html.war)
+
+$(HTMLCLIENT_DIR)/build/html.war: $(TAGLIB_DIR)/build/zimbrataglib.jar
+	(cd $(HTMLCLIENT_DIR); $(ANT) \
+		-Dplat.tag=$(BUILD_PLATFORM) \
+		-Dis-production=1 \
+		-Dzimbra.buildinfo.version=$(VERSION_TAG) \
+		-Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) \
+		-Dzimbra.buildinfo.host=$(HOST) clean war ; )
+
+$(TAGLIB_DIR)/build/zimbrataglib.jar:
+	(cd $(TAGLIB_DIR); $(ANT) \
+		-Dplat.tag=$(BUILD_PLATFORM) \
+		-Dis-production=1 \
+		-Dzimbra.buildinfo.version=$(VERSION_TAG) \
+		-Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) \
+		-Dzimbra.buildinfo.host=$(HOST) clean jar ; )
