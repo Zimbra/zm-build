@@ -397,6 +397,10 @@ sub setLdapDefaults {
   $config{TRAINSASPAM} = getLdapConfigValue("zimbraSpamIsSpamAccount");
   $config{TRAINSAHAM} = getLdapConfigValue("zimbraSpamIsNotSpamAccount");
   $config{NOTEBOOKACCOUNT} = getLdapConfigValue("zimbraNotebookAccount");
+ 
+  # default values for upgrades 
+ $config{NOTEBOOKACCOUNT} = "wiki".'@'.$config{CREATEDOMAIN}
+  if ($config{NOTEBOOKACCOUNT} eq "") {
 
   $config{USEKBSHORTCUTS} = getLdapCOSValue("default", "zimbraPrefUseKeyboardShortcuts");
 
@@ -847,7 +851,7 @@ sub setCreateDomain {
   my ($hamUser, $hamDomain) = split ('@', $config{TRAINSAHAM});
   my ($notebookUser, $notebookDomain) = split ('@', $config{NOTEBOOKACCOUNT});
 
-  $config{NOTEBOOKACCOUNT} = $spamUser.'@'.$config{CREATEDOMAIN}
+  $config{NOTEBOOKACCOUNT} = $notebookUser.'@'.$config{CREATEDOMAIN}
     if ($notebookDomain eq $oldDomain);
 
   $config{TRAINSASPAM} = $spamUser.'@'.$config{CREATEDOMAIN}
