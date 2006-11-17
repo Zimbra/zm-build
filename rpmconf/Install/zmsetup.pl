@@ -400,7 +400,7 @@ sub setLdapDefaults {
  
   # default values for upgrades 
  $config{NOTEBOOKACCOUNT} = "wiki".'@'.$config{CREATEDOMAIN}
-  if ($config{NOTEBOOKACCOUNT} eq "") {
+  if ($config{NOTEBOOKACCOUNT} eq "");
 
   $config{USEKBSHORTCUTS} = getLdapCOSValue("default", "zimbraPrefUseKeyboardShortcuts");
 
