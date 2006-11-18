@@ -656,7 +656,7 @@ sub setDefaultsFromLocalConfig {
   progress ("Setting defaults from existing config...");
   $config{HOSTNAME} = getLocalConfig ("zimbra_server_hostname");
   $config{HOSTNAME} = lc ($config{HOSTNAME});
-  my $ldapUrl = getLocalConfig ("ldap_url");
+  my $ldapUrl = getLocalConfig ("ldap_master_url");
   my $ld = (split ' ', $ldapUrl)[0];
   my $p = $ld;
   $p =~ s/ldaps?:\/\///;
