@@ -2139,6 +2139,7 @@ sub configCASetup {
 sub configSetupLdap {
 
   if ($configStatus{configSetupLdap} eq "CONFIGURED") {
+    detail("ldap already configured bypassing configuration\n");
     configLog("configSetupLdap");
     return 0;
   }
@@ -2154,12 +2155,24 @@ sub configSetupLdap {
   } elsif (isEnabled("zimbra-ldap")) {
     # enable replica for both new and upgrade installs if we are adding ldap
     if ($config{LDAPHOST} ne $config{HOSTNAME} ||  -f "/opt/zimbra/.enable_replica") {
+      progress("Updating ldap_root_password and zimbra_ldap_passwd...");
+      setLocalConfig ("ldap_root_password", $config{LDAPPASS});
+      setLocalConfig ("zimbra_ldap_password", $config{LDAPPASS});
+      progress("done.\n");
       progress ( "Enabling ldap replication..." );
-      runAsZimbra ("/opt/zimbra/libexec/zmldapenablereplica");
-      unlink "/opt/zimbra/.enable_replica";
-      $config{DOCREATEADMIN} = "no";
-      $config{DOCREATEDOMAIN} = "no";
-      progress ( "Done\n" );
+      my $rc = runAsZimbra ("/opt/zimbra/libexec/zmldapenablereplica");
+      if ($rc == 0) {
+        unlink "/opt/zimbra/.enable_replica";
+        $config{DOCREATEADMIN} = "no";
+        $config{DOCREATEDOMAIN} = "no";
+        progress ( "done.\n" );
+      } else {
+        progress ("failed.\n");
+        progress ("You will have to correct the problem and manually enable replication.\n");
+        progress ("Disabling ldap on $config{HOSTNAME}...");
+        runAsZimbra("$ZMPROV ms $config{HOSTNAME} -zimbraServiceEnabled ldap");
+        progress ("done.\n");
+      }
     }
     # zmldappasswd starts ldap and re-applies the ldif
     if ($ldapPassChanged) {
@@ -2170,14 +2183,17 @@ sub configSetupLdap {
       runAsZimbra ("/opt/zimbra/bin/zmldappasswd $config{LDAPPASS}");
       progress ( "Done\n" );
     } else {
+      progress("Stopping ldap...");
       runAsZimbra ("/opt/zimbra/bin/ldap stop");
+      progress("done\n");
       startLdap();
-      progress ( "Done\n" );
     }
   } else {
+    detail("Updating ldap_root_password and zimbra_ldap_passwd\n");
     setLocalConfig ("ldap_root_password", $config{LDAPPASS});
     setLocalConfig ("zimbra_ldap_password", $config{LDAPPASS});
   }
+
   configLog("configSetupLdap");
   return 0;
 
@@ -2630,7 +2646,10 @@ sub configInitNotebooks {
         }
         progress ( "Done\n" );
       }
-    } 
+    }  else {
+      progress ("global account already initialized.\n");
+      # need to redeploy templates
+    }
 
 #    ($notebookUser, $notebookDomain) = split ('@', $config{NOTEBOOKACCOUNT});
 
