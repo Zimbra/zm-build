@@ -90,6 +90,10 @@ if [ ! -f /opt/zimbra/postfix/conf/main.cf ]; then
 	chown zimbra:zimbra /opt/zimbra/postfix/conf/main.cf
 fi
 
+if [ ! -f /etc/aliases ]; then
+  ln -s /opt/zimbra/postfix/conf/aliases /etc/aliases
+fi
+
 # bug 8081 remove tmpfs
 #egrep -q '/opt/zimbra/amavisd-new-2.4.1/tmp' /etc/fstab
 #if [ $? != 0 ]; then

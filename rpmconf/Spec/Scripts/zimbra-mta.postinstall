@@ -66,6 +66,10 @@ if [ ! -f /opt/zimbra/postfix/conf/main.cf ]; then
 	chown zimbra:zimbra /opt/zimbra/postfix/conf/main.cf
 fi
 
+if [ ! -f /etc/aliases ]; then
+  ln -s /opt/zimbra/postfix/conf/aliases /etc/aliases
+fi
+
 egrep -v '^%zimbra.*postfix' /etc/sudoers > /tmp/sudoers
 mv -f /tmp/sudoers /etc/sudoers
 echo "%zimbra   ALL=NOPASSWD:/opt/zimbra/postfix-2.2.9/sbin/postfix, /opt/zimbra/postfix-2.2.9/sbin/postalias, /opt/zimbra/postfix-2.2.9/sbin/qshape.pl, /opt/zimbra/postfix-2.2.9/sbin/postconf,/opt/zimbra/postfix-2.2.9/sbin/postsuper" >> /etc/sudoers
