@@ -28,7 +28,7 @@ package Zimbra::Mon::Logger;
 
 use strict;
 
-use Sys::Syslog;
+use Sys::Syslog qw(:DEFAULT setlogsock);;
 
 require Exporter;
 
@@ -47,6 +47,7 @@ sub Log
 {
 	my ($level,$msg) = (@_);
 	if ($loglevels{$level} >= $LOG_LEVEL) {
+    setlogsock('unix');
 		openlog($ident, "pid,ndelay,nowait", $facility);
 		syslog($level, "$$:$level: $msg");
 		if ($::DEBUG) {
