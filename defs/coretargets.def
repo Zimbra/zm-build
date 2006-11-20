@@ -256,9 +256,11 @@ $(CORE_DEST_DIR)/conf: $(WEBAPP_DIR)/service.war
 $(CORE_DEST_DIR)/libexec: $(LAUNCHER_DIR)/build/zmtomcatmgr
 	@echo "*** Installing libexec"
 	mkdir -p $@/installer/util/modules
+	mkdir -p $@/installer/bin
 	cp -f $(PACKAGE_CONF_DIR)/Install/zmsetup.pl $@/zmsetup.pl
 	cp -f $(PACKAGE_CONF_DIR)/Upgrade/zmupgrade.pm $@/zmupgrade.pm
 	cp -f $(PACKAGE_CONF_DIR)/Install/install.sh $@/installer/install.sh
+	cp -f $(BUILD_ROOT)/rpmconf/Build/get_plat_tag.sh $@/installer/bin/get_plat_tag.sh
 	cp -f $(PACKAGE_CONF_DIR)/Install/install-mac.sh $@/installer/install-mac.sh
 	cp -f $(PACKAGE_CONF_DIR)/Install/Util/*sh $@/installer/util
 	cp -f $(PACKAGE_CONF_DIR)/Install/Util/modules/*sh $@/installer/util/modules
