@@ -2610,10 +2610,7 @@ sub configInitNotebooks {
 
     $globalWikiAcct = getLdapConfigValue("zimbraNotebookAccount");
 
-
     if ($globalWikiAcct eq "") {
-      # enable wiki before we do anything else.
-      runAsZimbra("/opt/zimbra/bin/zmprov mc default zimbraFeatureNotebookEnabled TRUE");
       if ($config{NOTEBOOKACCOUNT} eq "") {
         open DOMAINS, "$ZMPROV gad|" or die "Can't get domain list!";
         my $domain = <DOMAINS>;
@@ -2626,56 +2623,26 @@ sub configInitNotebooks {
         $config{NOTEBOOKACCOUNT} = "$nbacct\@$domain";
   
         open RP, "/opt/zimbra/bin/zmjava com.zimbra.common.util.RandomPassword 8 10|" 
-          or die "Can't generate random account name: $!\n";
+          or die "Can't generate random password: $!\n";
         chomp($config{NOTEBOOKPASS} = <RP>);
         close RP;
       }
-
-    # global Documents
-      runAsZimbra("/opt/zimbra/bin/zmprov mcf zimbraNotebookAccount $config{NOTEBOOKACCOUNT}");
-      $rc = runAsZimbra("/opt/zimbra/bin/zmprov in $config{NOTEBOOKACCOUNT} \'$config{NOTEBOOKPASS}\' /opt/zimbra/wiki/Template Template");
-
-      if ($rc != 0) {
-        runAsZimbra("/opt/zimbra/bin/zmprov mc default zimbraFeatureNotebookEnabled FALSE");
-        progress ("failed to initialize documents...see logfile for details.\n");
-      } else {
-        runAsZimbra("/opt/zimbra/bin/zmprov ma $config{NOTEBOOKACCOUNT} zimbraFeatureNotebookEnabled TRUE");
-        # disable feature in cos
-        if (runAsZimbra("/opt/zimbra/bin/zmprov mc default zimbraFeatureNotebookEnabled FALSE") != 0) {
-          runAsZimbra("/opt/zimbra/bin/zmprov -l mc default zimbraFeatureNotebookEnabled FALSE");
-        }
-        progress ( "Done\n" );
-      }
-    }  else {
-      progress ("global account already initialized.\n");
-      # need to redeploy templates
     }
 
-#    ($notebookUser, $notebookDomain) = split ('@', $config{NOTEBOOKACCOUNT});
+    # enable wiki before we do anything else.
+    runAsZimbra("/opt/zimbra/bin/zmprov mc default zimbraFeatureNotebookEnabled TRUE");
 
-#    # domain Documents only if the domain is local and wiki account
-#    # was not previously setup.
-#    open(ZM, "$ZMPROV gad|") or warn "Can't get domain list!";
-#    my @domains = <ZM>;
-#    close(ZM);
-#    foreach my $domain (@domains) {
-#      chomp($domain);
-#      my $domainType = (split(/\s+/, `su - zimbra -c "$ZMPROV gd $domain | grep zimbraDomainType"`))[-1];
-#      next unless $domainType eq "local";
-#
-#      my $domainWikiAcct = (split(/\s+/, `su - zimbra -c "$ZMPROV gd $domain | grep zimbraNotebookAccount"`))[-1];
-##      next unless $domainWikiAcct eq "";
-#
-#      $notebookUser = "domainWiki" unless $notebookUser; 
-#      my $nbacc = "$notebookUser\@$domain";
-#
-#      # global and domain accounts cannot be the same
-#      $nbacc = "domainWiki\@$domain" 
-#        if ($nbacc eq "$config{NOTEBOOKACCOUNT}");
-#
-#      runAsZimbra("/opt/zimbra/bin/zmprov idn $nbacc \'$config{NOTEBOOKPASS}\' $domain /opt/zimbra/wiki/Template Template");
-#    }
+    # global Documents
+    runAsZimbra("/opt/zimbra/bin/zmprov mcf zimbraNotebookAccount $config{NOTEBOOKACCOUNT}");
+    $rc = runAsZimbra("/opt/zimbra/bin/zmprov in $config{NOTEBOOKACCOUNT} \'$config{NOTEBOOKPASS}\' /opt/zimbra/wiki/Template Template");
 
+    if ($rc != 0) {
+      runAsZimbra("/opt/zimbra/bin/zmprov mc default zimbraFeatureNotebookEnabled FALSE");
+      progress ("failed to initialize documents...see logfile for details.\n");
+    } else {
+      runAsZimbra("/opt/zimbra/bin/zmprov ma $config{NOTEBOOKACCOUNT} zimbraFeatureNotebookEnabled TRUE");
+      progress ( "Done\n" );
+    }
   }
     
   configLog("configInitNotebooks");
