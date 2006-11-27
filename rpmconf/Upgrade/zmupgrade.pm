@@ -1075,7 +1075,8 @@ sub upgrade450RC1 {
 		  main::runAsZimbra("$ZMPROV mc $cos zimbraFeaturePop3DataSourceEnabled TRUE zimbraPrefReadingPaneEnabled TRUE zimbraPrefUseRfc2231 FALSE");
 	  }
 
-    # 10041
+    # bah-bye timezones
+    # replaced by /opt/zimbra/conf/timezones.ics
     my $ldap_pass = `su - zimbra -c "zmlocalconfig -s -m nokey ldap_root_password"`;
     my $ldap_master_url = `su - zimbra -c "zmlocalconfig -s -m nokey ldap_master_url"`;
     my $ldap; 
@@ -1085,56 +1086,14 @@ sub upgrade450RC1 {
       Migrate::log("Unable to contact $ldap_master_url: $!"); 
       return 1;
     }
+    my $dn = 'cn=timezones,cn=config,cn=zimbra';
     my $result = $ldap->bind("uid=zimbra,cn=admins,cn=zimbra", password => $ldap_pass);
-
-    my $old_dn='cn=(GMT\+11.00) Magadan / Solomon Is. / New Calenodia,cn=timezones,cn=config,cn=zimbra';
-    $result = $ldap->search( base => $old_dn, scope => "base", filter => "(objectclass=*)");
-    unless ($result->code()) {
-      $result = $ldap->delete($old_dn);
-      Migrate::log($result->code() ? "Failed to delete $old_dn".$result->error() : "Deleted $old_dn");
-    }
-    
-      
-    my $new_dn = 'cn=(GMT\+11.00) Magadan / Solomon Is. / New Caledonia,cn=timezones,cn=config,cn=zimbra';
-    my $entry = Net::LDAP::Entry->new;
-    $entry->dn($new_dn);
-    $entry->add(
-      objectClass => 'zimbraTimeZone',
-      cn => "(GMT\+11.00) Magadan / Solomon Is. / New Caledonia",
-      zimbraTimeZoneStandardDtStart => '16010101T000000',
-      zimbraTimeZoneStandardOffset => '+1100',
-      zimbraTimeZoneDaylightDtStart => '16010101T000000',
-      zimbraTimeZoneDaylightOffset => '+1100',
-    );
-    $result = $entry->update($ldap);
-    if ($result->code() && $result->code() != 68) {
-      Migrate::log("Ldap entry not added: ", $result->error());
-    } elsif ($result->code == 68) {
-    } else {
-      Migrate::log("Added $new_dn");
-    }
-    
-    my $dn = 'cn=(GMT-04.00) Atlantic Time (Canada),cn=timezones,cn=config,cn=zimbra';
-    $result = $ldap->search( base => $dn, scope => "base", filter => "(objectclass=*)");
-    if ($result->code()) {
-      Migrate::log("Couldn't find $dn: ",  $result->error());
-    } else {
-      $entry = $result->entry(0);
-      Migrate::log("Modifying ", $entry->dn());
-      $entry->replace(
-        objectclass => 'zimbraTimeZone',
-        cn => '(GMT-04.00) Atlantic Time (Canada)',
-        zimbraTimeZoneStandardDtStart => '16010101T020000',
-        zimbraTimeZoneStandardOffset => '-0400',
-        zimbraTimeZoneStandardRRule => 'FREQ=YEARLY;WKST=MO;INTERVAL=1;BYMONTH=10;BYDAY=-1SU',
-        zimbraTimeZoneDaylightDtStart => '16010101T020000',
-        zimbraTimeZoneDaylightOffset => '-0300',
-        zimbraTimeZoneDaylightRRule => 'FREQ=YEARLY;WKST=MO;INTERVAL=1;BYMONTH=4;BYDAY=1SU',
-      );
-      $result = $entry->update($ldap);
-      Migrate::log($result->error()) if $result->code();
+    unless($result->code()) {
+      $result = DeleteLdapTree($ldap,$dn);
+      Migrate::log($result->code() ? "Failed to delete $dn: ".$result->error() : "Deleted $dn");
     }
     $result = $ldap->unbind;
+    
         
   }
 	return 0;
@@ -1477,6 +1436,26 @@ sub migrateLdap {
 		if (startLdap()) {return 1;} 
 	}
   return;
+}
+
+# DeleteLdapTree
+# Requires Net::LDAP ref and DN
+# Returns Net::LDAP::Search ref
+sub DeleteLdapTree {
+  my ($handle, $dn) = @_;
+    
+  # make sure it exists and get all the entries
+  my $result = $handle->search( base => $dn, scope => 'one', filter => "(objectclass=*)");
+  return $result if ($result->code());
+
+  # loop through the entries and recursively delete them
+  foreach my $entry($result->all_entries) {
+    my $ref = DeleteLdapTree($handle, $entry->dn());
+    return $ref if ($ref->code());
+  }
+
+  $result = $handle->delete($dn);
+  return $result;
 }
 
 sub migrateAmavisDB($) {
