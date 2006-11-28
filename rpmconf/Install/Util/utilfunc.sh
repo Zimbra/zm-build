@@ -1012,7 +1012,12 @@ getInstallPackages() {
 			continue
 		fi
 
-		askYN "Install $i" "Y"
+    if [ $UPGRADE = "yes" ]; then
+		  askYN "Install $i" "N"
+    else
+		  askYN "Install $i" "Y"
+    fi
+
 		if [ $response = "yes" ]; then
 			if [ $i = "zimbra-spell" -a $APACHE_SELECTED = "no" ]; then
 				APACHE_SELECTED="yes"
