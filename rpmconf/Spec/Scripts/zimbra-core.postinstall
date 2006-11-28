@@ -24,11 +24,16 @@
 # ***** END LICENSE BLOCK *****
 # 
 
-#zimbra-spell-3.0.0_M3_154.RHEL4-20051122140325.i386.rpm
-#/tmp/zimbra-core.3.0.0_M3_233.pkg.27213Uuexmh/Receipts/zimbra-core.3.0.0_M3_233.pkg/Contents/Resources
 
 mkdir -p /opt/zimbra/backup
 chown zimbra:zimbra /opt/zimbra/backup 
+
+# log rotation
+if [ -d "/etc/periodic/daily" ]; then
+  cp /opt/zimbra/libexec/600.zimbra /etc/periodic/daily/600.zimbra
+  chown root:wheel /etc/periodic/daily/600.zimbra
+  chmod 555 /etc/periodic/daily/600.zimbra
+fi
 
 # Get the package version from the receipt, because, you know, putting it in an environment variable spoils the fun...
 

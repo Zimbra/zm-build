@@ -16,7 +16,7 @@
 # The Original Code is: Zimbra Collaboration Suite Server.
 # 
 # The Initial Developer of the Original Code is Zimbra, Inc.
-# Portions created by Zimbra are Copyright (C) 2006 Zimbra, Inc.
+# Portions created by Zimbra are Copyright (C) 2005, 2006 Zimbra, Inc.
 # All Rights Reserved.
 # 
 # Contributor(s):
@@ -179,6 +179,11 @@ if [ x$UNINSTALL == "xyes" ]; then
     fi
   fi
 
+  # remove log rotation
+  if [ -f "/etc/periodic/daily/600.zimbra" ]; then
+    rm /etc/periodic/daily/600.zimbra
+  fi
+
   # clean up sudoers
   echo -n "Cleaning up /etc/sudoers..."
   egrep -v '^%zimbra' /etc/sudoers > /tmp/sudoers.$$
@@ -250,7 +255,7 @@ if [ x"$LICENSE" != "x" -a -r "$LICENSE" ]; then
 fi
 
 # Configure the installation
-if [ x$SOFTWAREONLY == "xno" -a x$DMG != "x" ]; then
+if [ x$SOFTWAREONLY == "xno" ] && [ x$DMG != "x" -o x$PKG != "x"  ]; then
   if [ x$DEFAULTSFILE == "x" ]; then
     /opt/zimbra/libexec/zmsetup.pl
   else 
