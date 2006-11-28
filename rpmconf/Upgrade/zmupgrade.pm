@@ -1072,7 +1072,7 @@ sub upgrade450RC1 {
 	  my @coses = `su - zimbra -c "$ZMPROV gac"`;
 	  foreach my $cos (@coses) {
 		  chomp $cos;
-		  main::runAsZimbra("$ZMPROV mc $cos zimbraFeaturePop3DataSourceEnabled TRUE zimbraPrefReadingPaneEnabled TRUE zimbraPrefUseRfc2231 FALSE");
+		  main::runAsZimbra("$ZMPROV mc $cos zimbraFeaturePop3DataSourceEnabled TRUE zimbraPrefReadingPaneEnabled TRUE zimbraPrefUseRfc2231 FALSE zimbraFeatureIdentitiesEnabled TRUE");
 	  }
 
     # bah-bye timezones
