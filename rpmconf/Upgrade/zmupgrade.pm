@@ -103,6 +103,7 @@ my %updateFuncs = (
 	"4.0.4_GA" => \&upgrade404GA,
 	"4.1.0_BETA1" => \&upgrade410BETA1,
   "4.5.0_BETA1" => \&upgrade450BETA1,
+	"4.5.0_BETA2" => \&upgrade450BETA2,
 	"4.5.0_RC1" => \&upgrade450RC1,
 	"4.5.0_RC2" => \&upgrade450RC2,
 	"4.5.0_GA" => \&upgrade450GA,
@@ -132,6 +133,7 @@ my @versionOrder = (
 	"4.0.4_GA",
 	"4.1.0_BETA1",
 	"4.5.0_BETA1",
+	"4.5.0_BETA2",
 	"4.5.0_RC1",
 	"4.5.0_RC2",
 	"4.5.0_GA",
@@ -237,6 +239,8 @@ sub upgrade {
 		print "This appears to be 4.1.0_BETA1\n";
 	} elsif ($startVersion eq "4.5.0_BETA1") {
 		print "This appears to be 4.5.0_BETA1\n";
+	} elsif ($startVersion eq "4.5.0_BETA2") {
+		print "This appears to be 4.5.0_BETA2\n";
 	} elsif ($startVersion eq "4.5.0_RC1") {
 		print "This appears to be 4.5.0_RC1\n";
 	} elsif ($startVersion eq "4.5.0_RC2") {
@@ -1063,10 +1067,9 @@ sub upgrade450BETA1 {
 	return 0;
 }
 
-sub upgrade450RC1 {
+sub upgrade450BETA2 {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
-	Migrate::log("Updating from 4.5.0_RC1");
-
+	Migrate::log("Updating from 4.5.0_BETA2");
   if (isInstalled("zimbra-ldap")) {
     # bug 12031
 	  my @coses = `su - zimbra -c "$ZMPROV gac"`;
@@ -1093,9 +1096,13 @@ sub upgrade450RC1 {
       Migrate::log($result->code() ? "Failed to delete $dn: ".$result->error() : "Deleted $dn");
     }
     $result = $ldap->unbind;
-    
-        
   }
+	return 0;
+}
+
+sub upgrade450RC1 {
+	my ($startBuild, $targetVersion, $targetBuild) = (@_);
+	Migrate::log("Updating from 4.5.0_RC1");
 	return 0;
 }
 
