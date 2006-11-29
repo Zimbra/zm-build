@@ -2608,6 +2608,10 @@ sub configInitNotebooks {
     my ($notebookUser, $notebookDomain, $globalWikiAcct);
     my $rc = 0;
 
+    # get the default state
+    my $zimbraFeatureNotebookEnabled = getLdapCOSValue("default", "zimbraFeatureNotebookEnabled");
+    $zimbraFeatureNotebookEnabled = "FALSE" unless $zimbraFeatureNotebookEnabled;
+
     $globalWikiAcct = getLdapConfigValue("zimbraNotebookAccount");
 
     if ($globalWikiAcct eq "") {
@@ -2643,6 +2647,8 @@ sub configInitNotebooks {
       runAsZimbra("/opt/zimbra/bin/zmprov ma $config{NOTEBOOKACCOUNT} zimbraFeatureNotebookEnabled TRUE");
       progress ( "Done\n" );
     }
+
+    runAsZimbra("/opt/zimbra/bin/zmprov mc default zimbraFeatureNotebookEnabled $zimbraFeatureNotebookEnabled");
   }
     
   configLog("configInitNotebooks");
