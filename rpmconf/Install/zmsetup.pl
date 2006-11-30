@@ -321,6 +321,7 @@ sub getSystemStatus {
 sub getLdapCOSValue {
   my ($cos,$attrib) = @_;
 
+  detail ( "Getting ldap $cos cos attribute $attrib from ldap.\n" );
   # Gotta love the triple escape: \\\  
   my $rc = 0xffff & system("su - zimbra -c \"$ZMPROV gc $cos | grep $attrib | sed -e \\\"s/${attrib}: //\\\" > /tmp/ld.out\"");
   my $val=`cat /tmp/ld.out`;
@@ -333,6 +334,7 @@ sub getLdapCOSValue {
 sub getLdapConfigValue {
   my $attrib = shift;
 
+  detail ( "Getting global config attribute $attrib from ldap.\n" );
   # Gotta love the triple escape: \\\  
   my $rc = 0xffff & system("su - zimbra -c \"$ZMPROV gcf $attrib | sed -e \\\"s/${attrib}: //\\\" > /tmp/ld.out\"");
   my $val=`cat /tmp/ld.out`;
@@ -348,6 +350,7 @@ sub getLdapServerValue {
     $hn = $config{HOSTNAME};
   }
 
+  detail ( "Getting server config attribute $attrib for $hn from ldap.\n" );
   # Gotta love the triple escape: \\\  
   my $rc = 0xffff & system("su - zimbra -c \"$ZMPROV gs $hn | grep $attrib | sed -e \\\"s/${attrib}: //\\\" > /tmp/ld.out\"");
   my $val=`cat /tmp/ld.out`;
