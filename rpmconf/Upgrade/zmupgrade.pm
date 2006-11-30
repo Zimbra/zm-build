@@ -1070,6 +1070,12 @@ sub upgrade450BETA1 {
 sub upgrade450BETA2 {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
 	Migrate::log("Updating from 4.5.0_BETA2");
+	return 0;
+}
+
+sub upgrade450RC1 {
+	my ($startBuild, $targetVersion, $targetBuild) = (@_);
+	Migrate::log("Updating from 4.5.0_RC1");
   if (isInstalled("zimbra-ldap")) {
     # bug 12031
 	  my @coses = `su - zimbra -c "$ZMPROV gac"`;
@@ -1097,12 +1103,6 @@ sub upgrade450BETA2 {
     }
     $result = $ldap->unbind;
   }
-	return 0;
-}
-
-sub upgrade450RC1 {
-	my ($startBuild, $targetVersion, $targetBuild) = (@_);
-	Migrate::log("Updating from 4.5.0_RC1");
 	return 0;
 }
 
