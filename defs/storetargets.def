@@ -165,6 +165,20 @@ $(WEBAPP_DIR)/zimbra/downloads:
 	-cp $(SERVICE_DIR)/src/windows/*exe $@
 	-(rm -f $@/\%*.dmg)
 
+$(STORE_DEST_DIR)/lib/ext/clamscanner/clamscanner.jar: $(STORE_DEST_DIR)/lib/ext/clamscanner $(CLAMSCANNER_DIR)/build/clamscanner.jar
+	cp -f $(CLAMSCANNER_DIR)/build/clamscanner.jar $@
+
+$(STORE_DEST_DIR)/lib/ext/clamscanner:
+	mkdir -p $@
+
+$(CLAMSCANNER_DIR)/build/clamscanner.jar:
+	(cd $(CLAMSCANNER_DIR); $(ANT) \
+		-Dplat.tag=$(BUILD_PLATFORM) \
+		-Dis-production=1 \
+		-Dzimbra.buildinfo.version=$(VERSION_TAG) \
+		-Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) \
+		-Dzimbra.buildinfo.host=$(HOST) jar ; )
+
 $(STORE_DEST_DIR)/$(TOMCAT_DIR)/webapps/service/WEB-INF/lib/zimbrataglib.jar: $(ZIMLET_DIR)/build/dist/lib/zimbrataglib.jar
 	mkdir -p $(STORE_DEST_DIR)/$(TOMCAT_DIR)/webapps/service/WEB-INF/lib
 	cp $(ZIMLET_DIR)/build/dist/lib/zimbrataglib.jar $@

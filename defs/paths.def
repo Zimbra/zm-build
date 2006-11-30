@@ -8,3 +8,4 @@ LAUNCHER_DIR := $(BUILD_ROOT)/../ZimbraLauncher
 ISYNC_DIR := $(BUILD_ROOT)/../ZimbraISync
 TAGLIB_DIR := $(BUILD_ROOT)/../ZimbraTagLib
 HTMLCLIENT_DIR := $(BUILD_ROOT)/../ZimbraHtmlClient
+CLAMSCANNER_DIR := $(BUILD_ROOT)/../ClamScanner
