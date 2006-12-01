@@ -65,6 +65,8 @@ $(BUILD_ROOT)/zimbra.spec:
 		-e '/^%post$$/ r zimbra.post' > $(BUILD_ROOT)/zimbra.spec
 	rm -f zimbra.pre
 	rm -f zimbra.post
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/lib" >> \
+		$(BUILD_ROOT)/zimbra.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/zimlets" >> \
 		$(BUILD_ROOT)/zimbra.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/zimlets-extra" >> \
