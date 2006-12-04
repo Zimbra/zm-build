@@ -69,7 +69,7 @@ $(WEBAPP_DIR)/html.war: $(WEBAPP_DIR) $(HTMLCLIENT_DIR)/build/html.war
 	mkdir $(WEBAPP_DIR)/html
 	(cd $(WEBAPP_DIR)/html; jar xf $(HTMLCLIENT_DIR)/build/html.war)
 
-$(HTMLCLIENT_DIR)/build/html.war: $(TAGLIB_DIR)/build/zimbrataglib.jar
+$(HTMLCLIENT_DIR)/build/html.war: $(TAGLIB_DIR)/build/zimbrataglib.jar $(CONSOLE_DIR)/$(WEBAPP_BUILD_DIR)/zimbra.war: 
 	(cd $(HTMLCLIENT_DIR); $(ANT) \
 		-Dplat.tag=$(BUILD_PLATFORM) \
 		-Dis-production=1 \
