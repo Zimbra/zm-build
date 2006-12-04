@@ -151,9 +151,19 @@ checkPackages() {
 	for i in $PACKAGES $OPTIONAL_PACKAGES; do
 		findLatestPackage $i
 		if [ -f "$file" ]; then
-			echo "Found $i"
-			AVAILABLE_PACKAGES="$AVAILABLE_PACKAGES $i"
-		fi
+      if [ x$PACKAGEVERIFY != "X" ]; then
+        `$PACKAGEVERIFY $file 2> /dev/null`
+        if [ $? = 0 ]; then
+          echo "Found $i"
+			    AVAILABLE_PACKAGES="$AVAILABLE_PACKAGES $i"
+        else 
+          echo "Found $i but package is not installable. (possibly corrupt)"
+        fi
+      else 
+			  echo "Found $i"
+			  AVAILABLE_PACKAGES="$AVAILABLE_PACKAGES $i"
+      fi
+    fi
 	done
 
 	echo ""

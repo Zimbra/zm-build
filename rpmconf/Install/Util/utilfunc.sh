@@ -632,7 +632,21 @@ EOF
 		done
 	else 
 		# REMOVE = yes for non installed systems, to clean up /opt/zimbra
-		REMOVE="yes"
+    DETECTDIRS="store db bin conf openldap-data"
+    for i in $DETECTDIRS; do
+      if [ -d "/opt/zimbra/$i" ]; then
+        INSTALLED="yes"
+      fi
+    done
+    if [ x$INSTALLED = "xyes" ]; then
+		  echo ""
+		  echo "The Zimbra Collaboration Suite does not appear to be installed,"
+      echo "yet there appears to be a ZCS directory structure in /opt/zimbra."
+		  askYN "Would you like to delete /opt/zimbra before installing?" "N"
+      REMOVE="$response"
+    else 
+      REMOVE="yes"
+    fi
 	fi
 
 }
