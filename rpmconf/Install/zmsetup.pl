@@ -2623,16 +2623,8 @@ sub configInitNotebooks {
         my $domain = <DOMAINS>;
         close DOMAINS;
         chomp $domain;
-        open RP, "/opt/zimbra/bin/zmjava com.zimbra.common.util.RandomPassword 8 10|" 
-          or die "Can't generate random account name: $!\n";
-        chomp(my $nbacct = <RP>);
-        close RP;
-        $config{NOTEBOOKACCOUNT} = "$nbacct\@$domain";
-  
-        open RP, "/opt/zimbra/bin/zmjava com.zimbra.common.util.RandomPassword 8 10|" 
-          or die "Can't generate random password: $!\n";
-        chomp($config{NOTEBOOKPASS} = <RP>);
-        close RP;
+        $config{NOTEBOOKACCOUNT} = "wiki.".lc(genRandomPass())."\@$domain";
+        $config{NOTEBOOKPASS} = lc(genRandomPass());
       }
     }
 

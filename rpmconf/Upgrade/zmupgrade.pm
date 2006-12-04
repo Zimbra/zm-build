@@ -258,6 +258,9 @@ sub upgrade {
 
 	if (isInstalled("zimbra-store")) {
 
+  
+    doBackupRestoreVersionUpdate($startVersion);
+
 		if ($curSchemaVersion < $hiVersion) {
 			print "Schema upgrade required\n";
 		}
@@ -1424,6 +1427,42 @@ sub clearBackupDir($$) {
     `chown zimbra:zimbra $backupDir > /dev/null 2>&1`;
   }
   return;
+}
+
+sub doBackupRestoreVersionUpdate($) {
+  my ($startVersion) = @_;
+
+  my $prevBackupVersion = &Migrate::getBackupVersion; 
+  my $currentBackupVersion = `su - zimbra -c "zmjava com.zimbra.cs.backup.util.GetVersion"`;
+  chomp($currentBackupVersion);
+
+  my $prevRedologVersion = &Migrate::getRedologVersion;
+  my $currentRedologVersion = `su - zimbra -c "zmjava com.zimbra.cs.redolog.util.GetVersion"`;
+  chomp($currentRedologVersion);
+  Migrate::log("Backup Version: $prevBackupVersion New Backup Version: $currentBackupVersion");
+  Migrate::log("Redolog Version: $prevRedologVersion New Redolog Version: $currentRedologVersion");
+  return unless ($currentBackupVersion && $currentRedologVersion);
+
+  Migrate::insertBackupVersion($currentBackupVersion)
+    if ($prevBackupVersion eq "");
+
+  Migrate::insertRedologVersion($currentRedologVersion)
+    if ($prevRedologVersion eq "");
+
+  # clear both directories if the backup version changed.  we aren't going
+  # to automatically clear the redolog if the backup version didn't change 
+  # because it invalidates all the backups.
+  if ($prevBackupVersion != $currentBackupVersion) {
+    Migrate::log("Moving /opt/zimbra/backup/* to /opt/zimbra/backup/${startVersion}-${currentBackupVersion}.");
+    clearBackupDir("/opt/zimbra/backup", "${startVersion}-${currentBackupVersion}");
+    Migrate::log("Moving /opt/zimbra/redolog/* to /opt/zimbra/redolog/${startVersion}-${currentRedologVersion}.");
+    clearRedologDir("/opt/zimbra/redolog", "${startVersion}-${currentRedologVersion}");
+  }
+
+  Migrate::updateBackupVersion($prevBackupVersion,$currentBackupVersion)
+    if ($prevBackupVersion != $currentBackupVersion);
+  Migrate::updateRedologVersion($prevRedologVersion,$currentRedologVersion)
+    if ($prevRedologVersion != $currentRedologVersion);
 }
 
 sub migrateLdap {
