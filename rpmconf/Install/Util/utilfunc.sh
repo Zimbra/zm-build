@@ -1188,7 +1188,7 @@ getPlatformVars() {
 		PACKAGERM='rpm -ev --nodeps --noscripts --allmatches'
 		PACKAGEQUERY='rpm -q'
 		PACKAGEEXT='rpm'
-		if [ $PLATFORM = "RHEL4" ]; then
+		if [ $PLATFORM = "RHEL4" -o $PLATFORM = "CentOS4" ]; then
 			PREREQ_PACKAGES="sudo libidn curl fetchmail gmp compat-libstdc++-296 compat-libstdc++-33"
 			PREREQ_LIBS="/usr/lib/libstdc++.so.5"
 		elif [ $PLATFORM = "MANDRIVA2006" ]; then
