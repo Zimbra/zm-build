@@ -151,8 +151,8 @@ checkPackages() {
 	for i in $PACKAGES $OPTIONAL_PACKAGES; do
 		findLatestPackage $i
 		if [ -f "$file" ]; then
-      if [ x$PACKAGEVERIFY != "X" ]; then
-        `$PACKAGEVERIFY $file 2> /dev/null`
+      if [ x"$PACKAGEVERIFY" != "x" ]; then
+        `$PACKAGEVERIFY $file > /dev/null 2>&1`
         if [ $? = 0 ]; then
           echo "Found $i"
 			    AVAILABLE_PACKAGES="$AVAILABLE_PACKAGES $i"
