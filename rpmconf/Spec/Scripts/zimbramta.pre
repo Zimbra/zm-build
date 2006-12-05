@@ -46,7 +46,13 @@ if [ $? != 0 ]; then
 fi
 
 # Fix incase the account existed but the groups were wrong
-usermod -g zimbra -G postfix,tty zimbra
+# add adm for mandriva so logger can read the log files
+egrep -q '^adm:' /etc/group
+if [ $? = 0 ]; then
+  usermod -g zimbra -G postfix,tty,adm zimbra
+else 
+  usermod -g zimbra -G postfix,tty zimbra
+fi
 
 egrep -q '^postfix:' /etc/passwd
 if [ $? != 0 ]; then
