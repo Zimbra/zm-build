@@ -270,7 +270,6 @@ $(CORE_DEST_DIR)/libexec: $(LAUNCHER_DIR)/build/zmtomcatmgr
 	cp -f $(SERVICE_DIR)/src/db/migrate*pl $@/scripts
 	cp -f $(SERVICE_DIR)/src/db/migrate*sh $@/scripts
 	cp -f $(SERVICE_DIR)/src/db/fixConversationCounts.pl $@/scripts
-	cp -f $(SERVICE_DIR)/src/libexec/600.zimbra $@/600.zimbra
 	cp -f $(PACKAGE_CONF_DIR)/Install/postinstall.pm $@/postinstall.pm
 	cp -f $(PACKAGE_CONF_DIR)/Install/preinstall.pm $@/preinstall.pm
 	cp -f $(PACKAGE_CONF_DIR)/Install/Util/addUser.sh $@/addUser.sh
