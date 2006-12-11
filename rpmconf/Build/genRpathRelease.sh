@@ -2,7 +2,9 @@
 
 
 LOCAL=0
-LABEL=zimbra.liquidsys.com@zimbra:devel
+LABEL=zimbra.liquidsys.com@zimbra:zcs
+#group-dist=/zimbra.rpath.org@rpl:1//$LABEL
+group-dist=/$LABEL
 
 if [ "$1" = "--local" ]; then
     LOCAL=1
@@ -26,7 +28,7 @@ fi
 
 cd $BUILDROOT
 
-TROVE=`conary rq --full-versions --flavors group-dist=/zimbra.rpath.org@rpl:1//$LABEL`
+TROVE=`conary rq --full-versions --flavors $group-dist`
 echo "Building ISO Image $BUILDROOT/zcs-${RELEASETAG}.iso..."
 BUILD=`rbuilder build-create zimbra "$TROVE" installable_iso --wait | awk -F= '{print $NF}'`
 if [ $? -eq 0 ]; then
