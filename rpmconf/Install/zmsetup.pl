@@ -1142,8 +1142,18 @@ sub setHostName {
   }
   if ($config{CREATEDOMAIN} eq $old) {
     $config{CREATEDOMAIN} = $config{HOSTNAME};
+
     my ($u,$d) = split ('@', $config{CREATEADMIN});
     $config{CREATEADMIN} = $u.'@'.$config{CREATEDOMAIN};
+
+    my ($u,$d) = split ('@', $config{NOTEBOOKACCOUNT});
+    $config{NOTEBOOKACCOUNT} = $u.'@'.$config{CREATEDOMAIN};
+
+    my ($u,$d) = split ('@', $config{TRAINSASPAM});
+    $config{TRAINSASPAM} = $u.'@'.$config{CREATEDOMAIN};
+
+    my ($u,$d) = split ('@', $config{TRAINSAHAM});
+    $config{TRAINSAHAM} = $u.'@'.$config{CREATEDOMAIN};
   }
   my ($suser,$sdomain) = split ('@', $config{SMTPSOURCE}, 2);
   if ($sdomain eq $old) {
