@@ -54,7 +54,7 @@ $(WEBAPP_DIR)/zimbra.war: $(WEBAPP_DIR) $(CONSOLE_DIR)/$(WEBAPP_BUILD_DIR)/zimbr
 	mkdir $(WEBAPP_DIR)/zimbra
 	(cd $(WEBAPP_DIR)/zimbra; jar xf $(CONSOLE_DIR)/build/dist/tomcat/webapps/zimbra.war)
 
-$(CONSOLE_DIR)/$(WEBAPP_BUILD_DIR)/zimbra.war: 
+$(CONSOLE_DIR)/$(WEBAPP_BUILD_DIR)/zimbra.war:  $(TAGLIB_DIR)/build/zimbrataglib.jar
 	(cd $(CONSOLE_DIR); $(ANT) \
 		-Dplat.tag=$(BUILD_PLATFORM) \
 		-Dis-production=1 \
