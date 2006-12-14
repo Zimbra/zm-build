@@ -301,7 +301,9 @@ sub upgrade {
 
   #migrateLdap();
   # start ldap
-  if (startLdap()) {return 1;} 
+	if (isInstalled ("zimbra-ldap")) {
+    if (startLdap()) {return 1;} 
+  }
 
 	foreach my $v (@versionOrder) {
 	  Migrate::log("Checking $v");
