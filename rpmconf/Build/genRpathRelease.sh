@@ -3,8 +3,6 @@
 
 LOCAL=0
 LABEL=zimbra.liquidsys.com@zimbra:zcs
-#group-dist=/zimbra.rpath.org@rpl:1//$LABEL
-#group-dist=/$LABEL
 
 if [ "$1" = "--local" ]; then
     LOCAL=1
@@ -32,7 +30,7 @@ fi
 
 cd $BUILDROOT
 
-TROVE=`conary rq --full-versions --flavors group-dist=/$LABEL`
+TROVE=`conary rq --full-versions --flavors group-dist=$LABEL`
 if [ $? != 0 ]; then
   exit 1
 fi
