@@ -3,6 +3,7 @@
 
 LOCAL=0
 LABEL=zimbra.liquidsys.com@zimbra:zcs
+
 #group-dist=/zimbra.rpath.org@rpl:1//$LABEL
 #group-dist=/$LABEL
 
@@ -14,6 +15,9 @@ elif [ "$1" = "--label" ]; then
   shift; shift;
 fi
 
+if [ $LABEL = "zimbra.liquidsys.com@zimbra:zcs" ]; then
+  LABEL="/zimbra.rpath.org@rpl:1//zimbra.liquidsys.com@zimbra.devel//zcs" 
+fi
 BUILDROOT=$1
 RELEASETAG=$4
 
@@ -32,7 +36,7 @@ fi
 
 cd $BUILDROOT
 
-TROVE=`conary rq --full-versions --flavors group-dist=/$LABEL`
+TROVE=`conary rq --full-versions --flavors group-dist=$LABEL`
 if [ $? != 0 ]; then
   exit 1
 fi
