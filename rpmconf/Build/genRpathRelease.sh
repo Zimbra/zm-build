@@ -14,7 +14,7 @@ elif [ "$1" = "--label" ]; then
 fi
 
 if [ $LABEL = "zimbra.liquidsys.com@zimbra:zcs" ]; then
-  LABEL="/zimbra.rpath.org@rpl:1//zimbra.liquidsys.com@zimbra.devel//zcs" 
+  LABEL="/zimbra.rpath.org@rpl:1//zimbra.liquidsys.com@zimbra:devel//zcs" 
 fi
 BUILDROOT=$1
 RELEASETAG=$4
