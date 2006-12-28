@@ -26,7 +26,7 @@ $(WEBAPP_DIR)/zimbraAdmin.war: $(WEBAPP_DIR) $(CONSOLE_DIR)/$(WEBAPP_BUILD_DIR)/
 		echo "IMPORT_WIZ_DOWNLOAD_LINK = <A HREF=\"/zimbra/downloads/$$download\" target=_blank>Import Wizard</A>" >> $(WEBAPP_DIR)/zimbraAdmin/WEB-INF/classes/msgs/ZaMsg.properties; \
 	done
 	for download in $(MWDOWNLOAD); do \
-		echo "MIG_WIZ_DOWNLOAD_LINK = <A HREF=\"/zimbra/downloads/$$download\" target=_blank>Migration Wizard</A>" >> $(WEBAPP_DIR)/zimbraAdmin/WEB-INF/classes/msgs/ZaMsg.properties; \
+		echo "MIG_WIZ_DOWNLOAD_LINK = <A HREF=\"/zimbra/downloads/$$download\" target=_blank>Migration Wizard for Exchange</A>" >> $(WEBAPP_DIR)/zimbraAdmin/WEB-INF/classes/msgs/ZaMsg.properties; \
 	done
 	for download in $(CNDOWNLOAD); do \
 		echo "CONNECTOR_DOWNLOAD_LINK = <A HREF=\"/zimbra/downloads/$$download\" target=_blank>Connector for Outlook</A>" >> $(WEBAPP_DIR)/zimbraAdmin/WEB-INF/classes/msgs/ZaMsg.properties; \
