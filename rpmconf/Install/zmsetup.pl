@@ -2490,11 +2490,6 @@ sub configInstallZimlets {
     return 0;
   }
 
-  foreach my $zimlet qw(hsm cluster convertd) {
-    runAsZimbra("/opt/zimbra/bin/zmzimletctl -l undeploy $zimlet")
-      if (-d "/opt/zimbra/tomcat/webapps/service/zimlet/$zimlet");
-  }
-
   # Install zimlets
   if (opendir DIR, "/opt/zimbra/zimlets") {
     progress ( "Installing zimlets... " );
