@@ -1117,8 +1117,12 @@ sub upgrade450RC1 {
 sub upgrade450RC2 {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
 	Migrate::log("Updating from 4.5.0_RC2");
+  if (isInstalled("zimbra-ldap")) {
+    main::runAsZimbra("$ZMPROV mcf zimbraSmtpSendAddOriginatingIP TRUE");
+  }
 	return 0;
 }
+
 sub upgrade450GA {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
 	Migrate::log("Updating from 4.5.0_GA");
