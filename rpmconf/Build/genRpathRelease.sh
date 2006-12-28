@@ -4,6 +4,7 @@
 LOCAL=0
 LABEL=zimbra.liquidsys.com@zimbra:zcs
 
+
 if [ "$1" = "--local" ]; then
     LOCAL=1
     shift
@@ -12,6 +13,9 @@ elif [ "$1" = "--label" ]; then
   shift; shift;
 fi
 
+if [ $LABEL = "zimbra.liquidsys.com@zimbra:zcs" ]; then
+  LABEL="/zimbra.rpath.org@rpl:1//zimbra.liquidsys.com@zimbra.devel//zcs" 
+fi
 BUILDROOT=$1
 RELEASETAG=$4
 
