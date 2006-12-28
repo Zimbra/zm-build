@@ -938,6 +938,23 @@ sub setCreateAdmin {
       next;
     }
 
+    # spam/ham/notebook accounts follow admin domain if ldap isn't install
+    # this prevents us from trying to provision in a non-existent domain
+    if (!isEnabled("zimbra-ldap")) {
+      my ($spamUser, $spamDomain) = split ('@', $config{TRAINSASPAM});
+      my ($hamUser, $hamDomain) = split ('@', $config{TRAINSAHAM});
+      my ($notebookUser, $notebookDomain) = split ('@', $config{NOTEBOOKACCOUNT});
+
+      $config{NOTEBOOKACCOUNT} = $notebookUser.'@'.$d
+        if ($notebookDomain ne $d);
+
+      $config{TRAINSASPAM} = $spamUser.'@'.$d
+        if ($spamDomain eq $d);
+  
+      $config{TRAINSAHAM} = $hamUser.'@'.$d
+        if ($hamDomain eq $d);
+    }
+
     if ($config{CREATEADMIN} eq $config{AVUSER}) {
       $config{AVUSER} = $new;
     }
@@ -2430,6 +2447,11 @@ sub configInstallZimlets {
   if ($configStatus{configInstallZimlets} eq "CONFIGURED") {
     configLog("configInstallZimlets");
     return 0;
+  }
+
+  foreach my $zimlet qw(hsm cluster convertd) {
+    runAsZimbra("/opt/zimbra/bin/zmzimletctl -l undeploy $zimlet")
+      if (-d "/opt/zimbra/tomcat/webapps/service/zimlet/$zimlet");
   }
 
   # Install zimlets
