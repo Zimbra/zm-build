@@ -481,17 +481,38 @@ sub setDefaults {
     $config{MTAAUTHHOST} = $config{HOSTNAME};
     $config{DOCREATEADMIN} = "yes";
     $config{DOTRAINSA} = "yes";
-    $config{TRAINSASPAM} = "spam.".lc(genRandomPass());
-    $config{TRAINSASPAM} .= '@'.$config{CREATEDOMAIN};
-    $config{TRAINSAHAM} = "ham.".lc(genRandomPass());
-    $config{TRAINSAHAM} .= '@'.$config{CREATEDOMAIN};
-    $config{NOTEBOOKACCOUNT} = "wiki";
-    $config{NOTEBOOKACCOUNT} .= '@'.$config{CREATEDOMAIN};
+
+    # see if they are already set in ldap.
+    $config{TRAINSASPAM} = getLdapConfigValue("zimbraSpamIsSpamAccount");
+    $config{TRAINSAHAM} = getLdapConfigValue("zimbraSpamIsNotSpamAccount");
+    $config{NOTEBOOKACCOUNT} = getLdapConfigValue("zimbraNotebookAccount");
+ 
+    # default values for upgrades 
+    $config{NOTEBOOKACCOUNT} = "wiki".'@'.$config{CREATEDOMAIN}
+      if ($config{NOTEBOOKACCOUNT} eq "");
+
+    if ($config{TRAINSASPAM} eq "") {
+      $config{TRAINSASPAM} = "spam.".lc(genRandomPass());
+      $config{TRAINSASPAM} .= '@'.$config{CREATEDOMAIN};
+    }
+    if ($config{TRAINSAHAM} eq "") {
+      $config{TRAINSAHAM} = "ham.".lc(genRandomPass());
+      $config{TRAINSAHAM} .= '@'.$config{CREATEDOMAIN};
+    }
+
+    # bug. we shouldn't update this on upgrade.
     $config{NOTEBOOKPASS} = genRandomPass();
-    $config{DEFAULTLICENSEFILE} = "/opt/zimbra/conf/ZCSLicense.xml" if isNetwork();
+
+    # license files locations this is associated with the store
+    # for now as there is a dependancy on the store jar file. 
+    $config{DEFAULTLICENSEFILE} = "/opt/zimbra/conf/ZCSLicense.xml" 
+      if isNetwork();
+
     $config{LICENSEFILE} = $config{DEFAULTLICENSEFILE}
       if (-f "$config{DEFAULTLICENSEFILE}" && isNetwork());
+
   }
+
   if (isEnabled("zimbra-ldap")) {
     progress "setting defaults for zimbra-ldap.\n" if $options{d};
     $config{DOCREATEDOMAIN} = "yes";
@@ -932,7 +953,6 @@ sub setCreateAdmin {
       ask("Create admin user:", $config{CREATEADMIN});
     my ($u,$d) = split ('@', $new);
 
-    #if ($d eq "") {
     unless(validEmailAddress($new)) {
       progress ( "Admin user must a valid email account [$u\@$config{CREATEDOMAIN}]\n");
       next;
@@ -944,15 +964,17 @@ sub setCreateAdmin {
       my ($spamUser, $spamDomain) = split ('@', $config{TRAINSASPAM});
       my ($hamUser, $hamDomain) = split ('@', $config{TRAINSAHAM});
       my ($notebookUser, $notebookDomain) = split ('@', $config{NOTEBOOKACCOUNT});
+      $config{CREATEDOMAIN} = $d
+        if ($config{CREATEDOMAIN} ne $d);
 
       $config{NOTEBOOKACCOUNT} = $notebookUser.'@'.$d
         if ($notebookDomain ne $d);
 
       $config{TRAINSASPAM} = $spamUser.'@'.$d
-        if ($spamDomain eq $d);
+        if ($spamDomain ne $d);
   
       $config{TRAINSAHAM} = $hamUser.'@'.$d
-        if ($hamDomain eq $d);
+        if ($hamDomain ne $d);
     }
 
     if ($config{CREATEADMIN} eq $config{AVUSER}) {
@@ -2157,10 +2179,29 @@ sub configCASetup {
     return 0;
   }
 
-  if ( ! -f "/opt/zimbra/conf/ca/ca.key")  {
+  if (! -f "/opt/zimbra/ssl/ssl/ca/ca.key" && !($config{LDAPHOST} eq $config{HOSTNAME})) {
+    # fetch it from ldap if ldap has been configed
+    progress("Updating ldap_root_password and zimbra_ldap_passwd...");
+    setLocalConfig ("ldap_root_password", $config{LDAPPASS});
+    setLocalConfig ("zimbra_ldap_password", $config{LDAPPASS});
+    progress ( "Done\n" );
+
+    if (! -f "/opt/zimbra/ssl/ssl/ca/ca.key" || -z "/opt/zimbra/ssl/ssl/ca/ca.key") {
+      progress ( "Fetching CA from ldap..." );
+      runAsZimbra("mkdir -p /opt/zimbra/ssl/ssl/ca");
+      # Don't use runAsZimbra since it swallows output
+      my $rc;
+      $rc = 0xffff & system("su - zimbra -c \"$ZMPROV gacf | sed -ne \'/-----BEGIN RSA PRIVATE KEY-----/,/-----END RSA PRIVATE KEY-----/ p\'| sed  -e \'s/^zimbraCertAuthorityKeySelfSigned: //\' > /opt/zimbra/ssl/ssl/ca/ca.key\"");
+  
+      $rc = 0xffff & system("su - zimbra -c \"$ZMPROV gacf | sed -ne \'/-----BEGIN TRUSTED CERTIFICATE-----/,/-----END TRUSTED CERTIFICATE-----/ p\'| sed  -e \'s/^zimbraCertAuthorityCertSelfSigned: //\' > /opt/zimbra/ssl/ssl/ca/ca.pem\"");
+        progress ( "Done\n" );
+    }
+  }
+  
+
+  if ( ! -f "/opt/zimbra/ssl/ssl/ca/ca.key" || -z "/opt/zimbra/ssl/ssl/ca/ca.key")  {
     progress ( "Setting up CA..." );
     runAsZimbra("cd /opt/zimbra; zmcreateca");
-
     progress ( "Done\n" );
   }
   configLog("configCASetup");
@@ -2276,23 +2317,23 @@ sub configCreateCert {
 
   if (isEnabled("zimbra-ldap") || isEnabled("zimbra-store") || isEnabled("zimbra-mta")) {
 
-    progress ( "Creating SSL certificate..." );
-    if (-f "$config{JAVAHOME}/lib/security/cacerts") {
-      `chmod 777 $config{JAVAHOME}/lib/security/cacerts >> $logfile 2>&1`;
-    } else {
-      `chmod 777 $config{JAVAHOME}/jre/lib/security/cacerts >> $logfile 2>&1`;
-    }
     if (!-f "/opt/zimbra/tomcat/conf/keystore" || 
       !-f "/opt/zimbra/conf/smtpd.crt" ||
       !-f "/opt/zimbra/conf/slapd.crt") {
+      progress ( "Creating SSL certificate..." );
+      if (-f "$config{JAVAHOME}/lib/security/cacerts") {
+        `chmod 777 $config{JAVAHOME}/lib/security/cacerts >> $logfile 2>&1`;
+      } else {
+        `chmod 777 $config{JAVAHOME}/jre/lib/security/cacerts >> $logfile 2>&1`;
+      }
       runAsZimbra("cd /opt/zimbra; zmcreatecert");
+      if (-f "$config{JAVAHOME}/lib/security/cacerts") {
+        `chmod 744 $config{JAVAHOME}/lib/security/cacerts >> $logfile 2>&1`;
+      } else {
+        `chmod 744 $config{JAVAHOME}/jre/lib/security/cacerts >> $logfile 2>&1`;
+      }
+      progress ( "Done\n" );
     }
-    if (-f "$config{JAVAHOME}/lib/security/cacerts") {
-      `chmod 744 $config{JAVAHOME}/lib/security/cacerts >> $logfile 2>&1`;
-    } else {
-      `chmod 744 $config{JAVAHOME}/jre/lib/security/cacerts >> $logfile 2>&1`;
-    }
-    progress ( "Done\n" );
 
   }
 
@@ -3025,7 +3066,6 @@ if ($ldapConfigured) {
 if ($ldapConfigured || 
   (($config{LDAPHOST} ne $config{HOSTNAME}) && !verifyLdap())) {
   setLdapDefaults();
-  
 }
 
 if ($options{c}) {
