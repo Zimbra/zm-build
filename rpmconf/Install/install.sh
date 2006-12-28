@@ -54,6 +54,8 @@ while [ $# -ne 0 ]; do
 		;;
 		-s) SOFTWAREONLY="yes"
 		;;
+		-c) CLUSTERUPGRADE="yes"
+		;;
 		*) DEFAULTFILE=$1
 		;;
 	esac
