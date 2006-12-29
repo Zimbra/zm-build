@@ -1121,6 +1121,11 @@ sub upgrade450RC2 {
   if (isInstalled("zimbra-ldap")) {
     main::runAsZimbra("$ZMPROV mcf zimbraSmtpSendAddOriginatingIP TRUE");
   }
+
+  if (isInstalled("zimbra-logger")) {
+	  main::setLocalConfig("stats_img_folder", "/opt/zimbra/logger/db/work");
+  }
+    
 	return 0;
 }
 
