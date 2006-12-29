@@ -2542,6 +2542,7 @@ sub configCreateDomain {
   }
   if (isEnabled("zimbra-store")) {
     if ($config{DOCREATEADMIN} eq "yes") {
+      $config{CREATEADMIN} = lc($config{CREATEADMIN});
       progress ( "Creating user $config{CREATEADMIN}..." );
       my ($u,$d) = split ('@', $config{CREATEADMIN});
       runAsZimbra("$ZMPROV cd $d");
@@ -2549,11 +2550,16 @@ sub configCreateDomain {
         "$config{CREATEADMIN} \'$config{CREATEADMINPASS}\' ".
         "zimbraIsAdminAccount TRUE");
       progress ( "Done\n" );
+
       progress ( "Creating postmaster alias..." );
       runAsZimbra("$ZMPROV aaa ".
         "$config{CREATEADMIN} root\@$config{CREATEDOMAIN}");
       runAsZimbra("$ZMPROV aaa ".
         "$config{CREATEADMIN} postmaster\@$config{CREATEDOMAIN}");
+      progress ( "Done\n" );
+
+      $config{NOTEBOOKACCOUNT} = lc($config{NOTEBOOKACCOUNT});
+      progress ( "Creating user $config{NOTEBOOKACCOUNT}..." );
       runAsZimbra("$ZMPROV ca ".
         "$config{NOTEBOOKACCOUNT} \'$config{NOTEBOOKPASS}\' ".
         "amavisBypassSpamChecks TRUE ".
@@ -2565,6 +2571,7 @@ sub configCreateDomain {
       progress ( "Done\n" );
     }
     if ($config{DOTRAINSA} eq "yes") {
+      $config{TRAINSASPAM} = lc($config{TRAINSASPAM});
       progress ( "Creating user $config{TRAINSASPAM}..." );
       my $pass = genRandomPass();
       runAsZimbra("$ZMPROV ca ".
@@ -2576,6 +2583,8 @@ sub configCreateDomain {
         "zimbraMailQuota 0 ".
         "description \'Spam training account\'");
       progress ( "Done\n" );
+
+      $config{TRAINSAHAM} = lc($config{TRAINSAHAM});
       progress ( "Creating user $config{TRAINSAHAM}..." );
         runAsZimbra("$ZMPROV ca ".
         "$config{TRAINSAHAM} \'$pass\' ".
@@ -2586,6 +2595,7 @@ sub configCreateDomain {
         "zimbraMailQuota 0 ".
         "description \'Spam training account\'");
       progress ( "Done\n" );
+
       progress ( "Setting spam training accounts..." );
       runAsZimbra("$ZMPROV mcf ".
         "zimbraSpamIsSpamAccount $config{TRAINSASPAM} ".
