@@ -482,11 +482,6 @@ sub setDefaults {
     $config{DOCREATEADMIN} = "yes";
     $config{DOTRAINSA} = "yes";
 
-    # see if they are already set in ldap.
-    $config{TRAINSASPAM} = getLdapConfigValue("zimbraSpamIsSpamAccount");
-    $config{TRAINSAHAM} = getLdapConfigValue("zimbraSpamIsNotSpamAccount");
-    $config{NOTEBOOKACCOUNT} = getLdapConfigValue("zimbraNotebookAccount");
- 
     # default values for upgrades 
     $config{NOTEBOOKACCOUNT} = "wiki".'@'.$config{CREATEDOMAIN}
       if ($config{NOTEBOOKACCOUNT} eq "");
@@ -2113,6 +2108,23 @@ sub runAsZimbra {
   return $rc;
 }
 
+sub runAsZimbraWithOutput {
+  my $cmd = shift;
+  if ($cmd =~ /init/ || $cmd =~ /zmprov -l ca/) {
+    # Suppress passwords in log file
+    my $c = (split ' ', $cmd)[0];
+    detail ( "*** Running as zimbra user: $c\n" );
+  } else {
+    detail ( "*** Running as zimbra user: $cmd\n" );
+  }
+  system("su - zimbra -c \"$cmd\"");
+  my $exit_value = $? >> 8;
+  my $signal_num = $? & 127;
+  my $dumped_core = $? & 128;
+
+  return $exit_value;
+}
+
 sub getLocalConfig {
   my $key = shift;
   detail ( "Getting local config $key\n" );
@@ -2217,7 +2229,7 @@ sub configSetupLdap {
 
   if (!$ldapConfigured && isEnabled("zimbra-ldap") && ! -f "/opt/zimbra/.enable_replica" && $newinstall && ($config{LDAPHOST} eq $config{HOSTNAME})) {
     progress ( "Initializing ldap..." ) ;
-    if (my $rc = runAsZimbra ("/opt/zimbra/libexec/zmldapinit $config{LDAPPASS}")) {
+    if (my $rc = runAsZimbraWithOutput("/opt/zimbra/libexec/zmldapinit $config{LDAPPASS}")) {
       progress ( "FAILED ($rc)\n" );
       failConfig();
     } else {
