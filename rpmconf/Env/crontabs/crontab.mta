@@ -4,7 +4,7 @@
 #
 # Queue logging
 #
-*/10 * * * * /opt/zimbra/libexec/zmqueuelog
+0,10,20,30,40,50 * * * * /opt/zimbra/libexec/zmqueuelog
 #
 # Spam training
 #
@@ -19,4 +19,7 @@
 # Spam Bayes auto-expiry
 #
 20 23 * * * /opt/zimbra/libexec/sa-learn --force-expire --sync > /dev/null 2>&1 
-
+# 
+# Clean up amavisd/tmp
+#
+15 5,20 * * * find /opt/zimbra/amavisd/tmp -maxdepth 1 -type d -name 'amavis-*' -mtime +1 -exec rm -rf {} \; > /dev/null 2>&1
