@@ -28,9 +28,8 @@ use strict;
 
 use lib "/opt/zimbra/libexec";
 use lib "/opt/zimbra/zimbramon/lib";
-use lib "/opt/zimbra/zimbramon/lib/i386-linux-thread-multi";
-use lib "/opt/zimbra/zimbramon/lib/i586-linux-thread-multi";
-use lib "/opt/zimbra/zimbramon/lib/darwin-thread-multi-2level";
+use Zimbra::Util::Common;
+use Net::LDAP;
 
 $|=1; # don't buffer stdout
 
@@ -2495,6 +2494,30 @@ sub configSetKeyboardShortcutsPref {
   configLog("zimbraPrefUseKeyboardShortcuts");
 }
 
+sub zimletCleanup {
+  my $ldap_pass = getLocalConfig("ldap_root_password");
+  my $ldap_master_url = getLocalConfig("ldap_master_url");
+  my $ldap;
+  unless($ldap = Net::LDAP->new($ldap_master_url)) {
+    detail("Unable to contact $ldap_master_url: $!");
+    return 1;
+  }
+  my $ldap_dn = "uid=zimbra,cn=admins,cn=zimbra";
+  my $ldap_base = "cn=zimlets,cn=zimbra";
+  my $result = $ldap->bind($ldap_dn, password => $ldap_pass);
+  unless ($result->code()) {
+    $result = $ldap->search(base => $ldap_base, scope => 'one', filter => "(|(cn=convertd)(cn=cluster)(cn=hsm))");
+    return $result if ($result->code());
+    foreach my $entry ($result->all_entries) {
+      my $zimlet = $entry->get_value('zimbraZimletKeyword');
+      detail("Removing $zimlet");
+      runAsZimbra("/opt/zimbra/bin/zmzimletctl undeploy $zimlet")
+    }
+  }
+  $result = $ldap->unbind;
+  return 0;
+}
+
 sub configInstallZimlets {
 
   if ($configStatus{configInstallZimlets} eq "CONFIGURED") {
@@ -2502,10 +2525,9 @@ sub configInstallZimlets {
     return 0;
   }
 
-  foreach my $zimlet qw(hsm cluster convertd) {
-    runAsZimbra("/opt/zimbra/bin/zmzimletctl -l undeploy $zimlet")
-      if (-d "/opt/zimbra/tomcat/webapps/service/zimlet/$zimlet");
-  }
+  # cleanup renamed zimlets, this is really an upgrade task but
+  # tomcat needs to be be running here.
+  zimletCleanup();
 
   # Install zimlets
   if (opendir DIR, "/opt/zimbra/zimlets") {
