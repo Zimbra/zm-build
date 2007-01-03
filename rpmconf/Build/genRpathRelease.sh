@@ -4,8 +4,6 @@
 LOCAL=0
 LABEL=zimbra.liquidsys.com@zimbra:zcs
 
-#group-dist=/zimbra.rpath.org@rpl:1//$LABEL
-#group-dist=/$LABEL
 
 if [ "$1" = "--local" ]; then
     LOCAL=1
