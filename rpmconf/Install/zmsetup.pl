@@ -2506,7 +2506,7 @@ sub zimletCleanup {
   my $ldap_base = "cn=zimlets,cn=zimbra";
   my $result = $ldap->bind($ldap_dn, password => $ldap_pass);
   unless ($result->code()) {
-    $result = $ldap->search(base => $ldap_base, scope => 'one', filter => "(|(cn=convertd)(cn=cluster)(cn=hsm))");
+    $result = $ldap->search(base => $ldap_base, scope => 'one', filter => "(|(cn=convertd)(cn=cluster)(cn=hsm)(cn=hotbackup)");
     return $result if ($result->code());
     foreach my $entry ($result->all_entries) {
       my $zimlet = $entry->get_value('zimbraZimletKeyword');
