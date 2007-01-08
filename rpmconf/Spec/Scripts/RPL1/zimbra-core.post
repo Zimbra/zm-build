@@ -67,8 +67,8 @@ fi
 cp -f /opt/zimbra/libexec/zimbra /etc/init.d/zimbra
 chmod 755 /etc/init.d/zimbra
 if [ -x /sbin/chkconfig ]; then
-	chkconfig --add zimbra 
-	chkconfig zimbra on
+	/sbin/chkconfig --add zimbra 
+	/sbin/chkconfig zimbra on
 else
 	rm -f /etc/rc*.d/S99zimbra
 	rm -f /etc/rc*.d/K01zimbra
