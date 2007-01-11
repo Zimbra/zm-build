@@ -1217,7 +1217,7 @@ sub startSql {
 	unless (isSqlRunning()) {
 		Migrate::log("Starting mysql");
 		my $rc = 0xffff & system("su - zimbra -c \"/opt/zimbra/bin/mysql.server start > /dev/null 2>&1\"");
-    my $timeout = 0;
+    my $timeout = sleep 10;
     while (!isSqlRunning() && $timeout <= 120 ) {
 		  $rc = 0xffff & system("su - zimbra -c \"/opt/zimbra/bin/mysql.server start > /dev/null 2>&1\"");
       $timeout += sleep 10;
@@ -1236,7 +1236,7 @@ sub stopSql {
   if (isSqlRunning()) {
 	  Migrate::log("Stopping mysql");
 	  my $rc = 0xffff & system("su - zimbra -c \"/opt/zimbra/bin/mysql.server stop > /dev/null 2>&1\"");
-    my $timeout = 0;
+    my $timeout = sleep 10;
     while (isSqlRunning() && $timeout <= 120 ) {
 		  $rc = 0xffff & system("su - zimbra -c \"/opt/zimbra/bin/mysql.server stop > /dev/null 2>&1\"");
       $timeout += sleep 10;
@@ -1265,7 +1265,7 @@ sub startLoggerSql {
 			Migrate::log("logger mysql startup failed with exit code $rc");
 			return $rc;
 		}
-    my $timeout = 0;
+    my $timeout = sleep 10;
     while (!isLoggerSqlRunning() && $timeout <= 120 ) {
 		  system("su - zimbra -c \"/opt/zimbra/bin/logmysql.server start > /dev/null 2>&1\"");
       $timeout += sleep 10;
@@ -1283,7 +1283,7 @@ sub stopLoggerSql {
 		  Migrate::log("logger mysql stop failed with exit code $rc");
 		  return $rc;
 	  }
-    my $timeout = 0;
+    my $timeout = sleep 10;
     while (isLoggerSqlRunning() && $timeout <= 120 ) {
 		  $rc = 0xffff & system("su - zimbra -c \"/opt/zimbra/bin/logmysql.server stop > /dev/null 2>&1\"");
       $timeout += sleep 10;
