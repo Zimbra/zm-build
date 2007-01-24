@@ -1,6 +1,6 @@
 %define evolution_version 2.3.7
 %define eds_version 1.3.7
-%define evo_api_version 2.6
+%define evo_api_version 2.8
 
 Summary: Zimbra Connector for Evolution %{evo_api_version}
 Name: evolution-zimbra
