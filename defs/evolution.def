@@ -20,8 +20,9 @@ evolution_pkg_spec_tgz:
 
 evolution_stage: $(EVO_DEST_DIR)
 
-$(EVO_DEST_DIR):
+$(EVO_DEST_DIR): force
 	@echo "*** Creating Evolution Connector"
+	-(rm -rf $@)
 	mkdir -p $@
 	(cd $(EVO_DIR); sh ./bootstrap.sh; \
 	env DESTDIR=$(EVO_DEST_DIR) make -e install)
@@ -30,14 +31,15 @@ $(EVO_DEST_DIR):
 # Debian specific 
 #
 $(EVO_DEST_ROOT)/DEBIAN: force
+	-(rm -rf $@)
 	mkdir -p $@
-	chmod -R 555 $@
 
 $(EVO_DEST_ROOT)/DEBIAN/control: $(EVO_DEST_ROOT)/DEBIAN force
 	cat $(PACKAGE_CONF_DIR)/Spec/evolution-zimbra.deb | \
 	sed -e 's/@@VERSION@@/$(VERSION_TAG)/' \
 	-e 's/@@RELEASE@@/$(RELEASE)/' \
 	-e 's/@@ARCH@@/$(ARCH)/' > $@
+	chmod 555 $@
 
 #
 # RPM 

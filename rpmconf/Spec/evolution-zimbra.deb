@@ -5,4 +5,6 @@ Maintainer: build@zimbra.com
 Section: Mail
 Priority: optional
 Architecture: @@ARCH@@
-Depends: evolution evolution-data-server glib2 
+Depends: evolution
+Depends: evolution-data-server
+Depends: glib2 
