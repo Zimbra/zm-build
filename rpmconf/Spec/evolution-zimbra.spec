@@ -35,5 +35,5 @@ Zimbra mail server in Evolution %{evo_api_version}.
 %files
 /usr/lib/evolution-data-server-1.2/camel-providers/*
 /usr/lib/evolution-data-server-1.2/extensions/*
-/usr/lib/evolution/2.6/plugins/*
+/usr/lib/evolution/%{evo_api_version}/plugins/*
 %changelog
