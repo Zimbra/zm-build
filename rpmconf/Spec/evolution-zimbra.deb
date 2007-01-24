@@ -1,0 +1,8 @@
+Package: evolution-zimbra
+Version: @@VERSION@@
+Description: Zimbra Connector for Evolution MUA 
+Maintainer: build@zimbra.com
+Section: Mail
+Priority: optional
+Architecture: @@ARCH@@
+Depends: evolution evolution-data-server glib2 
