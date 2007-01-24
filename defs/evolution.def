@@ -33,6 +33,7 @@ $(EVO_DEST_DIR): force
 $(EVO_DEST_ROOT)/DEBIAN: force
 	-(rm -rf $@)
 	mkdir -p $@
+	chmod 755 $@
 
 $(EVO_DEST_ROOT)/DEBIAN/control: $(EVO_DEST_ROOT)/DEBIAN force
 	cat $(PACKAGE_CONF_DIR)/Spec/evolution-zimbra.deb | \
