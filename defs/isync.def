@@ -3,7 +3,7 @@
 ISYNC_PACKAGING_OPTIONS ?= -build -v -p $(PACKAGE_DIR)/$(CUR_PACKAGE_NAME).$(PACKAGE_EXT) -proj $(ISYNC_DEST_ROOT)/Zimbra.pmproj
 
 ISYNC_VERSION_TAG := $(MAJOR).$(MINOR).$(BUILDNUM)
-isync: MICRO       := $(shell cat RE/MICRO_ISYNC)
+#isync: MICRO       := $(shell cat RE/MICRO_ISYNC)
 isync: VERSION_TAG := $(MAJOR).$(MINOR).$(MICRO)_$(BUILDNUM).$(BUILD_PLATFORM)
 isync: CUR_DEST_ROOT := $(ISYNC_DEST_ROOT) 
 isync: CUR_PACKAGE_NAME := zimbra-isync
