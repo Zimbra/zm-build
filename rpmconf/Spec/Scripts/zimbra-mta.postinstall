@@ -25,8 +25,7 @@
 # 
 
 umount -f /opt/zimbra/amavisd/tmp
-rm -rf /opt/zimbra/amavisd
-mv -f /opt/zimbra/amavisd /opt/zimbra/amavisd.old
+rm -f /opt/zimbra/amavisd
 ln -s /opt/zimbra/amavisd-new-2.4.3 /opt/zimbra/amavisd
 
 rm -f /opt/zimbra/dspam
