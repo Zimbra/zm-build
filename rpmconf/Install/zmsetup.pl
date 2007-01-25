@@ -2940,12 +2940,6 @@ sub applyConfig {
   } else {
     runAsZimbra ("/opt/zimbra/bin/zmupdateauthkeys");
   }
-  if ($platform =~ /MACOSX/) {
-    if (-d "/System/Library/LaunchDaemons") {
-      `cp -f /opt/zimbra/conf/com.zimbra.zcs.plist /System/Library/LaunchDaemons`;
-      `launchctl load /System/Library/LaunchDaemons/com.zimbra.zcs.plist 2> /dev/null`;
-    }
-  }
 
   configLog ("END");
 
