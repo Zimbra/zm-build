@@ -2235,6 +2235,17 @@ sub configSetupLdap {
   } elsif (isEnabled("zimbra-ldap")) {
     # enable replica for both new and upgrade installs if we are adding ldap
     if ($config{LDAPHOST} ne $config{HOSTNAME} ||  -f "/opt/zimbra/.enable_replica") {
+      my $ldap_replica_rid = getLocalConfig("ldap_replica_rid");
+      unless ($ldap_replica_rid) {
+        progress("Updating ldap_replica_rid...");
+        foreach my $int (@interfaces) {
+          next if ($int =~ m/127\.0\.0\.1/);
+          my $rid = sprintf("%03d", (split(/\./,$int))[-1]);
+          setLocalConfig("ldap_replica_rid", $rid);
+          last if $rid;
+        }
+        progress("done\n");
+      }
       progress("Updating ldap_root_password and zimbra_ldap_passwd...");
       setLocalConfig ("ldap_root_password", $config{LDAPPASS});
       setLocalConfig ("zimbra_ldap_password", $config{LDAPPASS});
