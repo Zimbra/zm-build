@@ -288,6 +288,32 @@ EOF
     echo ""
     exit 1
   fi
+
+  echo "Getting for required space..."
+  # /tmp must have 1GB
+  # /opt/zimbra must have 5GB
+  #!/bin/bash
+  TMPKB=`df -lk /tmp | tail -1 | awk '{print $4}'`
+  AVAIL=$(($TMPKB / 1048576))
+  if [ $AVAIL -lt  1 ]; then
+    echo "/tmp must have at least 1GB of availble space to install."
+    echo "${AVAIL}GB is not enough space to install ZCS."
+    GOOD=no
+  fi
+  
+  ZIMBRA=`df -k /opt/zimbra | tail -1 | awk '{print $4}'`
+  AVAIL=$(($ZIMBRA / 1048576))
+  if [ $AVAIL -lt 5 ]; then
+    echo "/opt/zimbra requires at least 5GB of space to install."
+    echo "${AVAIL}GB is not enough space to install."
+    GOOD=no
+  fi
+  if [ $GOOD = "no" ]; then
+    echo ""
+    echo "Installation cancelled."
+    echo ""
+    exit 1
+  fi
 }
 
 checkExistingInstall() {
