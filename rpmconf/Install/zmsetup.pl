@@ -333,13 +333,21 @@ sub getLdapCOSValue {
 sub getLdapConfigValue {
   my $attrib = shift;
 
-  detail ( "Getting global config attribute $attrib from ldap.\n" );
+  #detail ( "Getting global config attribute $attrib from ldap.\n" );
   # Gotta love the triple escape: \\\  
-  my $rc = 0xffff & system("su - zimbra -c \"$ZMPROV gcf $attrib | sed -e \\\"s/${attrib}: //\\\" > /tmp/ld.out\"");
+  my $rc = 0xffff & system("su - zimbra -c \"$ZMPROV gcf $attrib 2> /tmp/ld.err 2> /tmp/ld.err | sed -e \\\"s/${attrib}: //\\\" > /tmp/ld.out\"");
   my $val=`cat /tmp/ld.out`;
-  unlink "/tmp/ld.out";
-  chomp $val;
+  chomp($val);
+  detail ("Global config attribute retrieved from ldap: $attrib=$val");
 
+  if (!-z "/tmp/ld.err") {
+    my $err=`cat /tmp/ld.err`;
+    chomp($err);
+    #my $level = $val ? "WARNING" : "ERROR";
+    #detail ("$level: $ZMPROV gcf $attrib: $err");
+  }
+  unlink "/tmp/ld.out";
+  unlink "/tmp/ld.err";
   return $val;
 }
 sub getLdapServerValue {
@@ -902,9 +910,9 @@ sub setNotebookAccount {
 
 sub setTrainSASpam {
   while (1) {
-    my $new = 
-      ask("Spam training user:",
-        $config{TRAINSASPAM});
+
+    my $new = ask("Spam training user:", $config{TRAINSASPAM});
+      
     my ($u,$d) = split ('@', $new);
     my ($adminUser,$adminDomain) = split('@', $config{CREATEADMIN});
     if ($d ne $config{CREATEDOMAIN} && $d ne $adminDomain) {
@@ -1623,25 +1631,51 @@ sub createStoreMenu {
       };
     $i++;
     if ($config{DOTRAINSA} eq "yes") {
-      $$lm{menuitems}{$i} = { 
-        "prompt" => "Spam training user:", 
-        "var" => \$config{TRAINSASPAM}, 
-        "callback" => \&setTrainSASpam
-        };
-      $i++;
-      $$lm{menuitems}{$i} = { 
-        "prompt" => "Non-spam(Ham) training user:", 
-        "var" => \$config{TRAINSAHAM}, 
-        "callback" => \&setTrainSAHam
-        };
-      $i++;
+
+      my $ldap_trainsaspam = getLdapConfigValue("zimbraSpamIsSpamAccount")
+        if (!verifyLdap());
+
+      if ($ldap_trainsaspam eq "") {
+        $$lm{menuitems}{$i} = { 
+          "prompt" => "Spam training user:", 
+          "var" => \$config{TRAINSASPAM}, 
+          "callback" => \&setTrainSASpam
+          };
+        $i++;
+      } else {
+        $config{TRAINSASPAM} = $ldap_trainsaspam;
+      }
+
+
+      my $ldap_trainsaham = getLdapConfigValue("zimbraSpamIsNotSpamAccount")
+        if (!verifyLdap());
+
+      if ($ldap_trainsaham eq "") {
+        $$lm{menuitems}{$i} = { 
+          "prompt" => "Non-spam(Ham) training user:", 
+          "var" => \$config{TRAINSAHAM}, 
+          "callback" => \&setTrainSAHam
+          };
+        $i++;
+      } else {
+        $config{TRAINSAHAM} = $ldap_trainsaham;
+      }
     }
-    $$lm{menuitems}{$i} = { 
-      "prompt" => "Global Documents Account:", 
-      "var" => \$config{NOTEBOOKACCOUNT}, 
-      "callback" => \&setNotebookAccount
+
+    my $ldap_wikiAccount = getLdapConfigValue("zimbraNotebookAccount")
+      if (!verifyLdap());
+
+    if ($ldap_wikiAccount eq "") {
+      $$lm{menuitems}{$i} = { 
+        "prompt" => "Global Documents Account:", 
+        "var" => \$config{NOTEBOOKACCOUNT}, 
+        "callback" => \&setNotebookAccount
       };
-    $i++;
+      $i++;
+    } else {
+      $config{NOTEBOOKACCOUNT} = $ldap_wikiAccount;
+    }
+
     $$lm{menuitems}{$i} = { 
       "prompt" => "SMTP host:", 
       "var" => \$config{SMTPHOST}, 
@@ -2072,10 +2106,10 @@ sub verifyLdap {
     return 0;
   }
   if ($config{LDAPPASS} eq "" || $config{LDAPPORT} eq "" || $config{LDAPHOST} eq "") {
-    progress ( "ldap configuration not complete\n" );
+    detail ( "ldap configuration not complete\n" );
     return 1;
   }
-  progress ( "Checking ldap on ${H}:$config{LDAPPORT}..." );
+  detail( "Checking ldap on ${H}:$config{LDAPPORT}...");
 
   my $ldapsearch = "$zimbraHome/bin/ldapsearch";
   my $args = "-x -h ${H} -p $config{LDAPPORT} ".
@@ -2083,9 +2117,14 @@ sub verifyLdap {
   system("echo $ldapsearch $args > /tmp/zmsetup.ldap.out");
   my $rc = 0xffff & system ("$ldapsearch $args >> /tmp/zmsetup.ldap.out 2>&1");
 
-  if ($rc) { my $foo = `cat /tmp/zmsetup.ldap.out`; chomp $foo; progress ("FAILED ( $foo )\n"); } 
-  else {
-    progress ( "Success\n"); 
+  if ($rc) { 
+    my $foo = `cat /tmp/zmsetup.ldap.out`;
+    chomp $foo; 
+    detail ("FAILED ( $foo )"); 
+  } else {
+    detail ( "Success\n"); 
+    setLocalConfig ("ldap_url", "ldap://$config{LDAPHOST}:$config{LDAPPORT}");
+    setLocalConfig ("zimbra_ldap_password", $config{LDAPPASS});
   }
   return $rc;
 
