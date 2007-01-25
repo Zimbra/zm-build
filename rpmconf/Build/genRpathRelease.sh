@@ -39,7 +39,7 @@ if [ $? != 0 ]; then
   exit 1
 fi
 echo "Building ISO Image $BUILDROOT/zcs-${RELEASETAG}.iso..."
-BUILD=`rbuilder build-create zimbra "$TROVE" installable_iso --wait | awk -F= '{print $NF}'`
+BUILD=`rbuilder build-create zimbra "$TROVE" installable_iso --wait --option "baseFilename zcs-${RELEASETAG}" | awk -F= '{print $NF}'`
 if [ $? -eq 0 ]; then
   echo "Getting URL for Build $BUILD"
   ISO=`rbuilder build-url $BUILD | head -1`
@@ -51,7 +51,7 @@ if [ $? -eq 0 ]; then
 fi
 
 echo "Building VMWare Image $BUILDROOT/zcs-${RELEASETAG}-vmware.zip..."
-BUILD=`rbuilder build-create zimbra "$TROVE" vmware_image --wait --option 'vmMemory 512' --option 'freespace 500'  | awk -F= '{print $NF}'`
+BUILD=`rbuilder build-create zimbra "$TROVE" vmware_image --wait --option 'vmMemory 512' --option 'freespace 500' --option "baseFileName zcs-${RELEASETAG}-vmware"  | awk -F= '{print $NF}'`
 if [ $? -eq 0 ]; then
   echo "Getting URL for Build $BUILD"
   ZIP=`rbuilder build-url $BUILD | head -1`
