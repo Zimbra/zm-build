@@ -74,6 +74,8 @@ use Net::DNS::Resolver;
 our %options = ();
 
 our %config = ();
+our %loaded = ();
+our %saved = ();
 
 my @packageList = (
   "zimbra-core",
@@ -320,18 +322,25 @@ sub getSystemStatus {
 sub getLdapCOSValue {
   my ($cos,$attrib) = @_;
 
-  detail ( "Getting ldap $cos cos attribute $attrib from ldap.\n" );
+  return $loaded{gc}{$cos}{$attrib} 
+    if (exists $loaded{gc}{$cos}{$attrib});
   # Gotta love the triple escape: \\\  
   my $rc = 0xffff & system("su - zimbra -c \"$ZMPROV gc $cos | grep $attrib | sed -e \\\"s/${attrib}: //\\\" > /tmp/ld.out\"");
   my $val=`cat /tmp/ld.out`;
   unlink "/tmp/ld.out";
   chomp $val;
+  detail ( "COS attribute retrieved for COS $cos: $attrib=$val");
+
+  $loaded{gc}{$cos}{$attrib} = $val;
 
   return $val;
 }
 
 sub getLdapConfigValue {
   my $attrib = shift;
+  
+  return $loaded{gcf}{$attrib}
+    if (exists $loaded{gcf}{$attrib});
 
   #detail ( "Getting global config attribute $attrib from ldap.\n" );
   # Gotta love the triple escape: \\\  
@@ -339,6 +348,7 @@ sub getLdapConfigValue {
   my $val=`cat /tmp/ld.out`;
   chomp($val);
   detail ("Global config attribute retrieved from ldap: $attrib=$val");
+  $loaded{gcf}{$attrib} = $val;
 
   if (!-z "/tmp/ld.err") {
     my $err=`cat /tmp/ld.err`;
@@ -357,12 +367,17 @@ sub getLdapServerValue {
     $hn = $config{HOSTNAME};
   }
 
-  detail ( "Getting server config attribute $attrib for $hn from ldap.\n" );
+  return $loaded{gs}{$hn}{$attrib}
+    if (exists $loaded{gs}{$hn}{$attrib});
+
+  #detail ( "Getting server config attribute $attrib for $hn from ldap." );
   # Gotta love the triple escape: \\\  
   my $rc = 0xffff & system("su - zimbra -c \"$ZMPROV gs $hn | grep $attrib | sed -e \\\"s/${attrib}: //\\\" > /tmp/ld.out\"");
   my $val=`cat /tmp/ld.out`;
   unlink "/tmp/ld.out";
   chomp $val;
+  detail("Server config attribute retrieved for $hn: $attrib=$val");
+  $loaded{gs}{$hn}{$attrib} = $val;
 
   return $val;
 }
@@ -2109,24 +2124,27 @@ sub verifyLdap {
     detail ( "ldap configuration not complete\n" );
     return 1;
   }
-  detail( "Checking ldap on ${H}:$config{LDAPPORT}...");
-
-  my $ldapsearch = "$zimbraHome/bin/ldapsearch";
-  my $args = "-x -h ${H} -p $config{LDAPPORT} ".
-    "-D 'uid=zimbra,cn=admins,cn=zimbra' -w $config{LDAPPASS}";
-  system("echo $ldapsearch $args > /tmp/zmsetup.ldap.out");
-  my $rc = 0xffff & system ("$ldapsearch $args >> /tmp/zmsetup.ldap.out 2>&1");
-
-  if ($rc) { 
-    my $foo = `cat /tmp/zmsetup.ldap.out`;
-    chomp $foo; 
-    detail ("FAILED ( $foo )"); 
-  } else {
-    detail ( "Success\n"); 
-    setLocalConfig ("ldap_url", "ldap://$config{LDAPHOST}:$config{LDAPPORT}");
-    setLocalConfig ("zimbra_ldap_password", $config{LDAPPASS});
+  detail( "Checking ldap on ${H}:$config{LDAPPORT}");
+  my $ldap;
+  my $ldap_secure = (($config{LDAPPORT} == "636") ? "s" : "");
+  my $ldap_url = "ldap${ldap_secure}://$config{LDAPHOST}:$config{LDAPPORT}";
+  unless($ldap = Net::LDAP->new($ldap_url)) {
+    detail("failed: Unable to contact ldap at $ldap_url: $!");
+    return 1;
   }
-  return $rc;
+
+  my $dn = 'cn=config,cn=zimbra';
+  my $result = $ldap->bind("uid=zimbra,cn=admins,cn=zimbra", password => $config{LDAPPASS});
+  if ($result->code()) {
+    detail ("Unable to bind to $ldap_url with password $config{LDAPPASS}: $!");
+    return 1;
+  } else {
+    $ldap->unbind;
+    detail ("Verfied ldap running at $ldap_url\n");
+    setLocalConfig ("ldap_url", $ldap_url);
+    setLocalConfig ("zimbra_ldap_password", $config{LDAPPASS});
+    return 0;
+  }
 
 }
 
@@ -2163,16 +2181,27 @@ sub runAsZimbraWithOutput {
 
 sub getLocalConfig {
   my $key = shift;
-  detail ( "Getting local config $key\n" );
+
+  return $loaded{lc}{$key}
+    if (exists $loaded{lc}{$key});
+
+  detail ( "Getting local config $key" );
   my $val = `/opt/zimbra/bin/zmlocalconfig -s -m nokey ${key}`;
   chomp $val;
+  $loaded{lc}{$key} = $val;
   return $val;
 }
 
 sub setLocalConfig {
   my $key = shift;
   my $val = shift;
-  detail ( "Setting local config $key to $val\n" );
+
+  if (exists $saved{lc}{$key} && $saved{lc}{$key} eq $val) {
+    detail ( "Skipping $key=$val. Already written.");
+    return;
+  }
+  detail ( "Setting local config $key to $val" );
+  $saved{lc}{$key} = $val;
   runAsZimbra("/opt/zimbra/bin/zmlocalconfig -f -e ${key}=${val}");
 }
 
