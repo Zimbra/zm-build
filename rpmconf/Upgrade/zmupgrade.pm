@@ -1457,22 +1457,32 @@ sub clearBackupDir($$) {
 sub doBackupRestoreVersionUpdate($) {
   my ($startVersion) = @_;
 
-  my $prevBackupVersion = &Migrate::getBackupVersion; 
-  my $currentBackupVersion = `su - zimbra -c "zmjava com.zimbra.cs.backup.util.GetVersion"`;
-  chomp($currentBackupVersion);
-
-  my $prevRedologVersion = &Migrate::getRedologVersion;
-  my $currentRedologVersion = `su - zimbra -c "zmjava com.zimbra.cs.redolog.util.GetVersion"`;
+  my ($prevRedologVersion,$currentRedologVersion,$prevBackupVersion,$currentBackupVersion);
+  $prevRedologVersion = &Migrate::getRedologVersion;
+  $currentRedologVersion = `su - zimbra -c "zmjava com.zimbra.cs.redolog.util.GetVersion"`;
   chomp($currentRedologVersion);
-  Migrate::log("Backup Version: $prevBackupVersion New Backup Version: $currentBackupVersion");
+
+  return unless ($currentRedologVersion);
+
   Migrate::log("Redolog Version: $prevRedologVersion New Redolog Version: $currentRedologVersion");
-  return unless ($currentBackupVersion && $currentRedologVersion);
-
-  Migrate::insertBackupVersion($currentBackupVersion)
-    if ($prevBackupVersion eq "");
-
   Migrate::insertRedologVersion($currentRedologVersion)
     if ($prevRedologVersion eq "");
+  Migrate::updateRedologVersion($prevRedologVersion,$currentRedologVersion)
+    if ($prevRedologVersion != $currentRedologVersion);
+
+  if (-f "/opt/zimbra/lib/ext/backup/zimbrabackup.jar") {
+    $prevBackupVersion = &Migrate::getBackupVersion; 
+    $currentBackupVersion = `su - zimbra -c "zmjava com.zimbra.cs.backup.util.GetVersion"`;
+    chomp($currentBackupVersion);
+
+    return unless ($currentBackupVersion);
+
+    Migrate::log("Backup Version: $prevBackupVersion New Backup Version: $currentBackupVersion");
+    Migrate::insertBackupVersion($currentBackupVersion)
+      if ($prevBackupVersion eq "");
+    Migrate::updateBackupVersion($prevBackupVersion,$currentBackupVersion)
+      if ($prevBackupVersion != $currentBackupVersion);
+  }
 
   # clear both directories if the backup version changed.  we aren't going
   # to automatically clear the redolog if the backup version didn't change 
@@ -1484,10 +1494,6 @@ sub doBackupRestoreVersionUpdate($) {
     clearRedologDir("/opt/zimbra/redolog", "${startVersion}-${currentRedologVersion}");
   }
 
-  Migrate::updateBackupVersion($prevBackupVersion,$currentBackupVersion)
-    if ($prevBackupVersion != $currentBackupVersion);
-  Migrate::updateRedologVersion($prevRedologVersion,$currentRedologVersion)
-    if ($prevRedologVersion != $currentRedologVersion);
 }
 
 sub migrateLdap {
