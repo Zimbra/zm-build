@@ -1155,6 +1155,13 @@ sub upgrade450GA {
 sub upgrade451GA {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
 	Migrate::log("Updating from 4.5.1_GA");
+  if (isInstalled("zimbra-store")) {
+    my $tomcat_java_options = main::getLocalConfig("tomcat_java_options");
+    $tomcat_java_options .= " -Djava.awt.headless=true"
+      unless ($tomcat_java_options =~ /java\.awt\.headless/);
+    main::detail("Modified tomcat_java_options=$tomcat_java_options");
+    main::setLocalConfig("tomcat_java_options", $tomcat_java_options);
+  }
 	return 0;
 }
 sub upgrade452GA {
