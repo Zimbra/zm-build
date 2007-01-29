@@ -73,6 +73,7 @@ class ZimbraBuildRecipe(PackageRecipe):
         # don't delete specific empty directories
         if r.name == 'zimbra-core':
           r.MakeDirs('/etc/conary/entitlements')
+          r.Symlink ('/opt/zimbra/libexec/zmgenentitlement', '/etc/conary/entitlements/products.rpath.com')
           r.Symlink ('/opt/zimbra/libexec/zmgenentitlement', '/etc/conary/entitlements/conary.rpath.com')
           r.Symlink ('/opt/zimbra/libexec/zmgenentitlement', '/etc/conary/entitlements/zimbra.liquidsys.com')
         if r.name == 'zimbra-mta':
