@@ -321,7 +321,7 @@ EOF
     DBCOUNT=`find /opt/zimbra/db/data -type d | wc -l | awk '{if ($NF-1 >= 31998) print $NF-1}'`
     if [ x"$DBCOUNT" != "x" ]; then
       echo "You have $DBCOUNT databases on an ext3 FileSystem, which is at"
-      echo "or over the limit of 31998 databases you will need to delete at"
+      echo "or over the limit of 31998 databases. You will need to delete at"
       echo "least one database prior to upgrading or your upgrade will fail."
       exit 1
     fi
