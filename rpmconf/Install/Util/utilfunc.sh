@@ -324,6 +324,7 @@ EOF
       echo "You have $DBCOUNT databases on an ext3 FileSystem, which is at"
       echo "or over the limit of 31998 databases. You will need to delete at"
       echo "least one database prior to upgrading or your upgrade will fail."
+      echo "/opt/zimbra/db/data/test is a good candidate for removal."
       exit 1
     fi
   fi
