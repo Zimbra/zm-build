@@ -293,7 +293,7 @@ EOF
   # /tmp must have 1GB
   # /opt/zimbra must have 5GB
   #!/bin/bash
-  TMPKB=`df -lk /tmp | tail -1 | awk '{print $4}'`
+  TMPKB=`df -Pk /tmp | tail -1 | awk '{print $4}'`
   AVAIL=$(($TMPKB / 1048576))
   if [ $AVAIL -lt  1 ]; then
     echo "/tmp must have at least 1GB of availble space to install."
@@ -301,7 +301,7 @@ EOF
     GOOD=no
   fi
   
-  ZIMBRA=`df -k /opt/zimbra | tail -1 | awk '{print $4}'`
+  ZIMBRA=`df -Pk /opt/zimbra | tail -1 | awk '{print $4}'`
   AVAIL=$(($ZIMBRA / 1048576))
   if [ $AVAIL -lt 5 ]; then
     echo "/opt/zimbra requires at least 5GB of space to install."
@@ -321,8 +321,9 @@ EOF
     DBCOUNT=`find /opt/zimbra/db/data -type d | wc -l | awk '{if ($NF-1 >= 31998) print $NF-1}'`
     if [ x"$DBCOUNT" != "x" ]; then
       echo "You have $DBCOUNT databases on an ext3 FileSystem, which is at"
-      echo "or over the limit of 31998 databases you will need to delete at"
+      echo "or over the limit of 31998 databases. You will need to delete at"
       echo "least one database prior to upgrading or your upgrade will fail."
+      echo "/opt/zimbra/db/data/test is a good candidate for removal."
       exit 1
     fi
   fi
