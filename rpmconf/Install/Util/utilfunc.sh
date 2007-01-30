@@ -289,7 +289,7 @@ EOF
     exit 1
   fi
 
-  echo "Getting for required space..."
+  echo "Checking for required space..."
   # /tmp must have 1GB
   # /opt/zimbra must have 5GB
   #!/bin/bash
@@ -316,6 +316,7 @@ EOF
   fi
 
   # limitation of ext3
+  echo "Checking current number of databases..."
   TYPECHECK=`df -t ext3 /opt/zimbra/db/data`
   if [ x"$TYPECHECK" != "x" ]; then
     DBCOUNT=`find /opt/zimbra/db/data -type d | wc -l | awk '{if ($NF-1 >= 31998) print $NF-1}'`
