@@ -60,8 +60,8 @@ class ZimbraBuildRecipe(PackageRecipe):
         r.addArchive("%(name)s.tar.gz", dir="/")
         # avoid java deps for now
         r.Requires(exceptDeps=('.*', 'java:.*'))
-        r.Provides('soname: /opt/zimbra/mysql/lib/libmysqlclient.so.14',
-                   '.*/libmysqlclient.so.14')
+        r.Provides('soname: /opt/zimbra/mysql/lib/libmysqlclient.so.15',
+                   '.*/libmysqlclient.so.15')
         # FIXME: some perl bits use CPAN::Config, but nothing provides it
         r.Requires(exceptDeps=('.*', 'perl:.*CPAN::Config'))
         # turn of build requirement checks
@@ -90,6 +90,7 @@ class ZimbraBuildRecipe(PackageRecipe):
           r.ExcludeDirectories(exceptions='/opt/zimbra/wiki/?.*')
           r.Config('/opt/zimbra/apache-tomcat-5.5.15/webapps/zimbra/WEB-INF/web.xml')
           r.Config('/opt/zimbra/apache-tomcat-5.5.15/webapps/service/WEB-INF/web.xml')
+          r.SetModes('/opt/zimbra/verity/FilterSDK/bin/kvoop', 0755)
         if r.name == 'zimbra-ldap':
           r.ExcludeDirectories(exceptions='/opt/zimbra/openldap.*')
         if r.name == 'zimbra-apache':
