@@ -2204,7 +2204,7 @@ sub setLocalConfig {
   }
   detail ( "Setting local config $key to $val" );
   $saved{lc}{$key} = $val;
-  runAsZimbra("/opt/zimbra/bin/zmlocalconfig -f -e ${key}=${val}");
+  runAsZimbra("/opt/zimbra/bin/zmlocalconfig -f -e ${key}=\'${val}\'");
 }
 
 sub configLCValues {

@@ -1160,7 +1160,7 @@ sub upgrade451GA {
     $tomcat_java_options .= " -Djava.awt.headless=true"
       unless ($tomcat_java_options =~ /java\.awt\.headless/);
     main::detail("Modified tomcat_java_options=$tomcat_java_options");
-    main::setLocalConfig("tomcat_java_options", $tomcat_java_options);
+    main::setLocalConfig("tomcat_java_options", "$tomcat_java_options");
   }
 	return 0;
 }
