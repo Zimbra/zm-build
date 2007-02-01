@@ -64,7 +64,7 @@ if [ $GOOD = "no" ]; then
   echo ""
   echo "Installation cancelled."
   echo ""
-  exit 1
+  exit 113
 fi
 
 exit 0

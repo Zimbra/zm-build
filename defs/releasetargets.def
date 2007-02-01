@@ -35,6 +35,7 @@ $(ARCH)/zcs.mpkg/Contents/Resources/English.lproj:
 	echo "to complete system configuration" >> $@/Conclusion.txt
 	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zcs.postflight $@/postflight
 	chmod 755 $@/postflight
+	cp $(PACKAGE_CONF_DIR)/Spec/InstallationCheck.strings $@/InstallationCheck.strings
 
 $(ARCH)/zcs.mpkg/Contents/distribution.dist:
 	sh $(PACKAGE_CONF_DIR)/Build/create_distribution.dist.sh $(ARCH) $(PACKAGE_CONF_DIR)/Spec/distribution.dist > $@
