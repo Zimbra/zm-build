@@ -293,7 +293,7 @@ sub getSystemStatus {
   }
 
   if (isEnabled("zimbra-store")) {
-    if (-d "$zimbraHome/db/data") {
+    if (-d "$zimbraHome/db/data/zimbra") {
       $sqlConfigured = 1;
       $sqlRunning = 0xffff & system("/opt/zimbra/bin/mysqladmin status > /dev/null 2>&1");
       $sqlRunning = ($sqlRunning)?0:1;
@@ -305,7 +305,7 @@ sub getSystemStatus {
   }
 
   if (isEnabled("zimbra-logger")) {
-    if (-d "$zimbraHome/logger/db/data") {
+    if (-d "$zimbraHome/logger/db/data/zimbra_logger") {
       $loggerSqlConfigured = 1;
       $loggerSqlRunning = 0xffff & 
         system("/opt/zimbra/bin/logmysqladmin status > /dev/null 2>&1");
