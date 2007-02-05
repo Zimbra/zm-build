@@ -6,6 +6,7 @@ IWDOWNLOAD = $(shell cd $(WEBAPP_DIR)/zimbra/downloads; ls ZCSImp*)
 CNDOWNLOAD = $(shell cd $(WEBAPP_DIR)/zimbra/downloads; ls ZimbraOl*)
 CMDOWNLOAD = $(shell cd $(WEBAPP_DIR)/zimbra/downloads; ls ZmCus*)
 DMDOWNLOAD = $(shell cd $(WEBAPP_DIR)/zimbra/downloads; ls DominoMigrationWizard*)
+ZTDOWNLOAD = $(shell cd $(WEBAPP_DIR)/zimbra/downloads; ls ZimbraToast*)
 
 $(WEBAPP_DIR)/service.war: $(WEBAPP_DIR) $(SERVICE_DIR)/$(WEBAPP_BUILD_DIR)/service.war
 	mkdir $(WEBAPP_DIR)/service
@@ -36,6 +37,9 @@ $(WEBAPP_DIR)/zimbraAdmin.war: $(WEBAPP_DIR) $(CONSOLE_DIR)/$(WEBAPP_BUILD_DIR)/
 	done
 	for download in $(DMDOWNLOAD); do \
 		echo "DOMINO_MIG_WIZ_DOWNLOAD_LINK = <A HREF=\"/zimbra/downloads/$$download\" target=_blank>Migration Wizard for Domino</A>" >> $(WEBAPP_DIR)/zimbraAdmin/WEB-INF/classes/msgs/ZaMsg.properties; \
+	done
+	for download in $(ZTDOWNLOAD); do \
+		echo "ZIMBRA_TOASTER_DOWNLOAD_LINK = <A HREF=\"/zimbra/downloads/$$download\" target=_blank>Zimbra Toaster</A>" >> $(WEBAPP_DIR)/zimbraAdmin/WEB-INF/classes/msgs/ZaMsg.properties; \
 	done
 
 
