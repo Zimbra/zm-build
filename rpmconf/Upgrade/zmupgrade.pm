@@ -1387,6 +1387,9 @@ sub isInstalled {
 		if ( $#l < 0 ) { return 0; }
 		$pkgQuery = "test -d $l[$#l]";
 		$good = 0;
+ } elsif ($platform =~ /RPL/) {
+    $pkgQuery = "conary q $pkg";
+    $good = 0;
 	} else {
 		$pkgQuery = "rpm -q $pkg";
 		$good = 0;
