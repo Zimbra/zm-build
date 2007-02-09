@@ -165,6 +165,7 @@ $(STORE_DEST_DIR)/zimlets: $(ZIMLET_DIR)/build/dist/zimlets/nofile
 $(WEBAPP_DIR)/zimbra/downloads:
 	mkdir -p $@
 	-cp $(SERVICE_DIR)/src/windows/*exe $@
+	-cp $(SERVICE_DIR)/src/windows/ZimbraToast*msi $@
 	-(rm -f $@/\%*.dmg)
 
 $(STORE_DEST_DIR)/lib/ext/clamscanner/clamscanner.jar: $(STORE_DEST_DIR)/lib/ext/clamscanner $(CLAMSCANNER_DIR)/build/clamscanner.jar
