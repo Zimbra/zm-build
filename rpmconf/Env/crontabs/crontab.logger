@@ -11,4 +11,4 @@
 #
 # Daily reports
 #
-10 1 * * * /opt/zimbra/libexec/zmdailyreport | /opt/zimbra/postfix/sbin/sendmail root
+10 1 * * * /opt/zimbra/libexec/zmdailyreport -m
