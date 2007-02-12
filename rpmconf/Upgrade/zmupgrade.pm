@@ -183,6 +183,7 @@ sub upgrade {
 	$targetVersion =~ s/_$targetBuild//;
 
 	my $needVolumeHack = 0;
+	my $needMysqlTableCheck = 0;
 
 	getInstalledPackages();
 
@@ -272,8 +273,13 @@ sub upgrade {
 		return 1;
 	}
 
+  if ($targetVersion eq "4.5.2_GA") {
+    $needMysqlTableCheck=1;
+  }
+
 	if (isInstalled("zimbra-store")) {
 
+    doMysqlTableCheck() if ($needMysqlTableCheck);
   
     doBackupRestoreVersionUpdate($startVersion);
 
@@ -1480,6 +1486,19 @@ sub clearBackupDir($$) {
     `chown zimbra:zimbra $backupDir > /dev/null 2>&1`;
   }
   return;
+}
+
+sub doMysqlTableCheck {
+
+  my $updateSQL = "/opt/zimbra/mysql/share/mysql/mysql_fix_privilege_tables.sql";
+  if (-e "$updateSQL") {
+    Migrate::log("Verifying mysql tables");
+    my $db_pass = main::getLocalConfig("mysql_root_password");
+    my $mysql = "/opt/zimbra/bin/mysql";
+    my $cmd = "$mysql --force --user=root --password=$db_pass --database=mysql --batch < $updateSQL";
+    Migrate::log("Executing $cmd");
+    main::runAsZimbra("$cmd > /tmp/mysql_fix_perms.out 2>&1");
+  }
 }
 
 sub doBackupRestoreVersionUpdate($) {
