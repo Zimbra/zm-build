@@ -316,19 +316,21 @@ EOF
   fi
 
   # limitation of ext3
-  echo "Checking current number of databases..."
-  TYPECHECK=`df -t ext3 /opt/zimbra/db/data`
-  if [ x"$TYPECHECK" != "x" ]; then
-    DBCOUNT=`find /opt/zimbra/db/data -type d | wc -l | awk '{if ($NF-1 >= 31998) print $NF-1}'`
-    if [ x"$DBCOUNT" != "x" ]; then
-      echo "You have $DBCOUNT databases on an ext3 FileSystem, which is at"
-      echo "or over the limit of 31998 databases. You will need to delete at"
-      echo "least one database prior to upgrading or your upgrade will fail."
-      echo "/opt/zimbra/db/data/test is a good candidate for removal."
-      exit 1
+  if [ -d "/opt/zimbra/db/data" ]; then
+    echo "Checking current number of databases..."
+    TYPECHECK=`df -t ext3 /opt/zimbra/db/data`
+    if [ x"$TYPECHECK" != "x" ]; then
+      DBCOUNT=`find /opt/zimbra/db/data -type d | wc -l | awk '{if ($NF-1 >= 31998) print $NF-1}'`
+      if [ x"$DBCOUNT" != "x" ]; then
+        echo "You have $DBCOUNT databases on an ext3 FileSystem, which is at"
+        echo "or over the limit of 31998 databases. You will need to delete at"
+        echo "least one database prior to upgrading or your upgrade will fail."
+        echo "/opt/zimbra/db/data/test is a good candidate for removal."
+        exit 1
+      fi
     fi
   fi
-
+  
 }
 
 checkExistingInstall() {
