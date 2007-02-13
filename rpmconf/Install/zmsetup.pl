@@ -35,6 +35,7 @@ $|=1; # don't buffer stdout
 
 our $platform = `/opt/zimbra/libexec/get_plat_tag.sh`;
 chomp $platform;
+our $addr_space = (($platform =~ m/\w+_(\d+)/) ? "$1" : "32");
 my $logfile = "/tmp/zmsetup.log.$$";
 open LOGFILE, ">$logfile" or die "Can't open $logfile: $!\n";
 
@@ -546,6 +547,10 @@ sub setDefaults {
 
   $config{MODE} = "http";
 
+  $config{SYSTEMMEMORY} = getSystemMemory();
+  $config{MYSQLMEMORYPERCENT} = mysqlMemoryPercent($config{SYSTEMMEMORY});
+  $config{TOMCATMEMORYPERCENT} = tomcatMemoryPercent($config{SYSTEMMEMORY});
+
   $config{CREATEADMINPASS} = "";
   progress "getting install status..." if $options{d};
   getInstallStatus();
@@ -726,6 +731,8 @@ sub setDefaultsFromLocalConfig {
   $config{LOGSQLROOTPASS} = getLocalConfig ("mysql_logger_root_password");
   $config{ZIMBRASQLPASS} = getLocalConfig ("zimbra_mysql_password");
   $config{ZIMBRALOGSQLPASS} = getLocalConfig ("zimbra_logger_mysql_password");
+  $config{TOMCATMEMORYPERCENT} = getLocalConfig ("tomcat_java_heap_memory_percent");
+  $config{MYSQLMEMORYPERCENT} = getLocalConfig ("mysql_memory_percent");
 }
 
 sub ask {
@@ -2243,6 +2250,9 @@ sub configLCValues {
 
   setLocalConfig ("ssl_allow_untrusted_certs", "TRUE");
 
+  setLocalConfig ("mysql_memory_percent", $config{MYSQLMEMORYPERCENT});
+  setLocalConfig ("tomcat_java_heap_memory_percent", $config{TOMCATMEMORYPERCENT});
+
   configLog ("configLCValues");
 
   progress ("Done\n");
@@ -3100,6 +3110,39 @@ sub setupCrontab {
   progress ("Done\n");
   configLog("setupCrontab");
 
+}
+
+sub getSystemMemory {
+  my $os = lc `uname -s`;
+  chomp($os);
+  return "unknown" unless $os;
+  my $mem;
+  if ($os eq "linux") {
+    $mem = `cat /proc/meminfo | grep ^MemTotal: | awk '{print \$2}'`;
+    chomp($mem);
+    $mem = sprintf "%0.1f", $mem/(1024*1024);
+  } elsif ($os eq "darwin") {
+    $mem = `sysctl hw.memsize | awk '{print \$NF}'`;
+    chomp($mem);
+    $mem = sprintf "%0.1f", $mem/(1024*1024*1024);
+  }
+  return $mem;
+}
+
+sub mysqlMemoryPercent {
+  my $system_mem = shift;
+  my $percent = 30;
+  $percent = int((2/$system_mem)*100)
+    if ($system_mem > 2);
+  return $percent;
+}
+
+sub tomcatMemoryPercent {
+  my $system_mem = shift;
+  my $percent = 40;
+  $percent = int((2/$system_mem)*100)
+    if ($system_mem > 2);
+  return $percent;
 }
 
 
