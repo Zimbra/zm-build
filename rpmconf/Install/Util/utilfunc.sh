@@ -411,6 +411,13 @@ determineVersionType() {
 
 verifyLicenseAvailable() {
 
+  if [ x"$LICENSE" != "x" ] && [ -e $LICENSE ]; then
+    if [ ! -d "/opt/zimbra/conf" ]; then
+      mkdir -p /opt/zimbra/conf
+    fi
+    cp -f $LICENSE /opt/zimbra/conf/ZCSLicense.xml
+  fi
+
   if [ x"$AUTOINSTALL" = "xyes" ] || [ x"$UNINSTALL" = "xyes" ] || [ x"$SOFTWAREONLY" = "yes" ]; then
     return
   fi
@@ -430,6 +437,7 @@ verifyLicenseAvailable() {
   fi
 
   echo "Checking for available license file..."
+
 
   # use the tool if it exists
   if [ -f "/opt/zimbra/bin/zmlicense" ]; then
