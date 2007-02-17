@@ -885,7 +885,7 @@ removeExistingInstall() {
     if [ -f "/etc/sudoers" ]; then
       cat /etc/sudoers | grep -v zimbra > /tmp/sudoers
       cat /tmp/sudoers > /etc/sudoers
-      if [ $PLATFORM = "SuSEES9" -o $PLATFORM = "SuSEES10" -o $PLATFORM = "SuSE10" ]; then
+      if [ $PLATFORM = "SuSEES9" -o $PLATFORM = "SuSEES10" -o $PLATFORM = "SuSE10" -o $PLATFORM = "openSUSE_10.2" -o $PLATFORM = "openSUSE_10.1" ]; then
         chmod 640 /etc/sudoers
       else
         chmod 440 /etc/sudoers

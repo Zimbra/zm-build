@@ -88,6 +88,16 @@ if [ -f /etc/SuSE-release ]; then
 		echo "SuSE10"
 		exit 0
 	fi
+	grep "openSUSE 10.1" /etc/SuSE-release > /dev/null 2>&1
+	if [ $? = 0 ]; then
+		echo "openSUSE_10.1"
+		exit 0
+	fi
+	grep "openSUSE 10.2" /etc/SuSE-release > /dev/null 2>&1
+	if [ $? = 0 ]; then
+		echo "openSUSE_10.2"
+		exit 0
+	fi
 fi
 
 if [ -f /etc/debian_version ]; then
