@@ -1,0 +1,1 @@
+"48" = "This host doesn't have enough free space to install ZCS.  /opt/zimbra/ requires at least 5GB of space and /tmp must have at least 1GB of available space to install."

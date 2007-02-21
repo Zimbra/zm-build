@@ -41,6 +41,8 @@ $(BUILD_ROOT)/resources/zimbra-core:
 	chmod 755 $@/postupgrade
 	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/InstallationCheck $@/InstallationCheck
 	chmod 755 $@/InstallationCheck
+	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/VolumeCheck $@/VolumeCheck
+	chmod 755 $@/VolumeCheck
 
 core_pkg_spec_deb: $(CORE_DEST_ROOT)/DEBIAN/control
 
