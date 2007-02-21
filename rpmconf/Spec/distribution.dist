@@ -6,44 +6,28 @@
 	<conclusion file="Conclusion.txt"></conclusion>
 	<options allow-external-scripts="yes" customize="allow" rootVolumeOnly="true"></options>
 	<installation-check script="installationCheckZimbra()"></installation-check>
-    <script>
+  <volume-check script="volume_check()"></volume-check>
+  <script>
+function volume_check() {
+  var result = true;
+  var minimum = 5*1024*1024*1024;
+
+  if(my.target.availableKilobytes &lt; minimum) {
+    my.result.type = 'Fatal';
+    my.result.title = '';
+    my.result.message = 'ZCS requires at least 5GB of space to install.';
+    result = false;
+  }
+  return result;
+}
 function installationCheckZimbra() {
 	if (system.runOnce('InstallationCheck')) {
-		my.result.title = 'Installation error';
-		my.result.message = 'Installation setup failed';
-		my.result.type = 'Fatal';
+		my.result.title = 'InstallationCheck';
+		my.result.message = 'Installation Check failed';
+		my.result.type = 'WARNING';
 		return false;
 	}
 	return true;
-}
-</script>
-    <script>
-function installationCheckRAM()
-{
-	if (system.sysctl('hw.memsize') &lt; (128*1024*1024)) {
-		my.type = 'Warn';
-		my.title = 'Memory Warning';
-		my.message = 'You have less than 128MB of RAM.';
-	}
-}
-</script>
-    <script>
-function volumeCheckTiger()
-{
-	if (my.target.systemVersion.ProductVersion &lt; '10.4')
-		my.type = 'Fatal';
-}
-</script>
-    <script>
-function choiceIsADowngrade()
-{
-	var upgradeAction = my.choice.packageUpgradeAction;
-
-	if ((upgradeAction == 'downgrade') || (upgradeAction == 'mixed')) {
-		return true;
-	}
-
-	return false;
 }
 </script>
     <choices-outline>

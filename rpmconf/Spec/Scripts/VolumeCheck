@@ -24,26 +24,41 @@
 # ***** END LICENSE BLOCK *****
 # 
 # Exit strings available are 17-31 with bits 5 and 6 set to 1.
-# 16 = 112
+# 16 = 48
 # 17 = 113
 # 18 = ... 
-echo "Performing installation check"
+GOOD=yes
+SCP_PATH=$0
+VOL_PATH=$1
 
-for i in core mta store ldap snmp logger apache spell; do
-	echo "Looking for $i"
-	pkgs=`find /Library/Receipts/zimbra-${i}* -type d -maxdepth 0 | sort -r`
-	first=1
-	for pkg in $pkgs; do
-    if [ -f "${pkg}/Contents/Info.plist" ]; then
-      VER=`grep -C1 CFBundleGetInfoString ${pkg}/Contents/Info.plist | tail -1 | sed -e 's/\<[^>]*\>//g' -e 's/^ *//g' | awk -F, '{print $1}' | awk '{print $1}'`
-    fi
-		echo "Found $pkg $VER"
-		if [ $first -ne 1 ]; then
-			echo Removing $pkg
-			/bin/rm -rf $pkg
-		fi
-		first=2
-	done
-done
+echo "Checking for required space..."
+# /tmp must have 1GB
+# /opt/zimbra must have 5GB
+TMPKB=`df -lk /tmp | tail -1 | awk '{print $4}'`
+AVAIL=$(($TMPKB / 1048576))
+if [ $AVAIL -lt  1 ]; then
+  echo "/tmp must have at least 1GB of availble space to install."
+  echo "${AVAIL}GB is not enough space to install ZCS."
+  GOOD=no
+fi
+
+if [ -d "$VOL_PATH/opt/zimbra" ]; then
+  PART_CHECK="$VOL_PATH/opt/zimbra";
+else
+  PART_CHECK="$VOL_PATH/"
+fi
+ZIMBRA=`df -k $PART_CHECK | tail -1 | awk '{print $4}'`
+AVAIL=$(($ZIMBRA / 1048576))
+if [ $AVAIL -lt 5 ]; then
+  echo "/opt/zimbra requires at least 5GB of space to install."
+  echo "${AVAIL}GB is not enough space to install."
+  GOOD=no
+fi
+if [ $GOOD = "no" ]; then
+  echo ""
+  echo "Installation cancelled."
+  echo ""
+  exit 48
+fi
 
 exit 0

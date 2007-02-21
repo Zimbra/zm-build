@@ -23,6 +23,8 @@ $(ARCH)/zcs.mpkg/Contents/Resources: $(ARCH)/zcs.mpkg/Contents/Resources/English
 	mkdir -p $@
 	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/InstallationCheck $@/InstallationCheck
 	chmod 755 $@/InstallationCheck
+	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/VolumeCheck $@/VolumeCheck
+	chmod 755 $@/VolumeCheck
 
 $(ARCH)/zcs.mpkg/Contents/Resources/English.lproj: 
 	mkdir -p $@
@@ -36,6 +38,7 @@ $(ARCH)/zcs.mpkg/Contents/Resources/English.lproj:
 	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zcs.postflight $@/postflight
 	chmod 755 $@/postflight
 	cp $(PACKAGE_CONF_DIR)/Spec/InstallationCheck.strings $@/InstallationCheck.strings
+	cp $(PACKAGE_CONF_DIR)/Spec/VolumeCheck.strings $@/VolumeCheck.strings
 
 $(ARCH)/zcs.mpkg/Contents/distribution.dist:
 	sh $(PACKAGE_CONF_DIR)/Build/create_distribution.dist.sh $(ARCH) $(PACKAGE_CONF_DIR)/Spec/distribution.dist > $@
