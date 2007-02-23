@@ -54,6 +54,13 @@ if [ -f $SAVEDIR/smtpd.crt ]; then
 	chown zimbra:zimbra /opt/zimbra/conf/smtpd.crt
 fi
 
+# log rotation
+if [ -d "/etc/periodic/daily" ]; then
+  cp /opt/zimbra/libexec/600.zimbra /etc/periodic/daily/600.zimbra
+  chown root:wheel /etc/periodic/daily/600.zimbra
+  chmod 555 /etc/periodic/daily/600.zimbra
+fi
+
 VER="FOO"
 getPkgVersion() {
 	VER=`grep -C1 CFBundleGetInfoString ${PACKAGE_PATH}/Contents/Info.plist  | \
