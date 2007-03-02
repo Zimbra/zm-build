@@ -61,7 +61,7 @@ if ($platform =~ /MACOSX/) {
   }
 }
 
-if ($platform =~ /SuSE/) { `chmod 640 /etc/sudoers`;}
+if ($platform =~ /SuSE|openSUSE/) { `chmod 640 /etc/sudoers`;}
 
 use preinstall;
 use postinstall;
@@ -3135,7 +3135,7 @@ sub mysqlMemoryPercent {
   my $system_mem = shift;
   my $percent = 30;
   $percent = int((2/$system_mem)*100)
-    if ($system_mem > 2);
+    if ($system_mem > 2 && $addr_space eq "32");
   return $percent;
 }
 
@@ -3143,7 +3143,7 @@ sub tomcatMemoryPercent {
   my $system_mem = shift;
   my $percent = 40;
   $percent = int((2/$system_mem)*100)
-    if ($system_mem > 2);
+    if ($system_mem > 2 && $addr_space eq "32");
   return $percent;
 }
 
