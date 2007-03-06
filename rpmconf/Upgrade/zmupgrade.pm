@@ -114,6 +114,9 @@ my %updateFuncs = (
 	"4.5.0_GA" => \&upgrade450GA,
 	"4.5.1_GA" => \&upgrade451GA,
 	"4.5.2_GA" => \&upgrade452GA,
+  "4.6.0_BETA" => \&upgrade460BETA,
+  "4.6.0_RC1" => \&upgrade460RC1,
+  "4.6.0_GA" => \&upgrade460GA,
 	"5.0.0_BETA1" => \&upgrade500BETA1,
 	"5.0.0_GA" => \&upgrade500GA,
 );
@@ -147,6 +150,9 @@ my @versionOrder = (
 	"4.5.0_GA",
 	"4.5.1_GA",
 	"4.5.2_GA",
+  "4.6.0_BETA",
+  "4.6.0_RC1",
+  "4.6.0_GA",
   "5.0.0_BETA1",
   "5.0.0_GA",
 );
@@ -264,6 +270,12 @@ sub upgrade {
 		print "This appears to be 4.5.1_GA\n";
 	} elsif ($startVersion eq "4.5.2_GA") {
 		print "This appears to be 4.5.2_GA\n";
+	} elsif ($startVersion eq "4.6.0_BETA") {
+		print "This appears to be 4.6.0_BETA\n";
+	} elsif ($startVersion eq "4.6.0_RC1") {
+		print "This appears to be 4.6.0_RC1\n";
+	} elsif ($startVersion eq "4.6.0_GA") {
+		print "This appears to be 4.6.0_GA\n";
 	} elsif ($startVersion eq "5.0.0_BETA1") {
 		print "This appears to be 5.0.0_BETA1\n";
 	} elsif ($startVersion eq "5.0.0_GA") {
@@ -1173,6 +1185,21 @@ sub upgrade451GA {
 sub upgrade452GA {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
 	Migrate::log("Updating from 4.5.2_GA");
+	return 0;
+}
+sub upgrade460BETA {
+	my ($startBuild, $targetVersion, $targetBuild) = (@_);
+	Migrate::log("Updating from 4.6.0_BETA");
+	return 0;
+}
+sub upgrade460RC1 {
+	my ($startBuild, $targetVersion, $targetBuild) = (@_);
+	Migrate::log("Updating from 4.6.0_RC1");
+	return 0;
+}
+sub upgrade460GA {
+	my ($startBuild, $targetVersion, $targetBuild) = (@_);
+	Migrate::log("Updating from 4.6.0_GA");
 	return 0;
 }
 sub upgrade500BETA1 {
