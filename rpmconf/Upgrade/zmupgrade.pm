@@ -1226,6 +1226,9 @@ sub upgrade453GA {
 sub upgrade454GA {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
 	Migrate::log("Updating from 4.5.4_GA");
+  if (isInstalled("zimbra-ldap")) {
+    main::setLocalConfig("ldap_log_level", "32768");
+  }
 	return 0;
 }
 sub upgrade455GA {
