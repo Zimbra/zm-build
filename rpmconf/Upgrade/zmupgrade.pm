@@ -178,6 +178,7 @@ my @packageList = (
 my %installedPackages = ();
 my $platform = `/opt/zimbra/libexec/get_plat_tag.sh`;
 chomp $platform;
+my $addr_space = (($platform =~ m/\w+_(\d+)/) ? "$1" : "32");
 
 #####################
 
@@ -203,6 +204,8 @@ sub upgrade {
 	my $curLoggerSchemaVersion;
 
 	if (isInstalled("zimbra-store")) {
+
+    &verifyMysqlConfig;
 
     if (startSql()) { return 1; };
 
@@ -1665,6 +1668,30 @@ sub migrateAmavisDB($) {
       `chown zimbra:zimbra $toDir/.spamassassin`; 
     }
   }
+}
+
+
+sub verifyMysqlConfig {
+  my $mysqlConf = "/opt/zimbra/conf/my.cnf";
+  Migrate::log("Verifying $mysqlConf");
+  return if ($addr_space eq "64");
+  return unless (-e "$mysqlConf");
+  my $c=0;
+
+  open(CONF, "$mysqlConf") or Migrate::log("Couldn't read $mysqlConf: $!\n");
+  my @lines = <CONF>;
+  close(CONF);
+  foreach (@lines) {
+    if (my ($buffer_size) = m/innodb_buffer_pool_size\s+=\s+(\d+)/) {
+      if ($buffer_size gt 2000000000) {
+        $c=1;
+        Migrate::log("innodb_buffer_pool_size must be less then 2GB on a 32bit system");
+        Migrate::log("Please correct $mysqlConf and rerun zmsetup.pl");
+        exit 1;
+      }
+    }
+  }
+  return;
 }
 
 1
