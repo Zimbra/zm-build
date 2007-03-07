@@ -1200,9 +1200,19 @@ sub upgrade453GA {
 	Migrate::log("Updating from 4.5.3_GA");
   if (isInstalled("zimbra-store")) {
     # bug 14160
-    my $maxMessageSize = main::getLdapConfigValue("zimbraMtaMaxMessageSize");
-    my $zimbraMessageCacheSize = $maxMessageSize*2;
-    runAsZimbra("$ZMPROV mcf zimbraMessageCacheSize $zimbraMessageCacheSize");
+    my ($maxMessageSize, $zimbraMessageCacheSize, $systemMemorySize, $newcache);
+    my $tomcatHeapPercent = main::getLocalConfig("tomcat_java_heap_memory_percent");
+    $tomcatHeapPercent = 40 if ($tomcatHeapPercent eq "");
+    $maxMessageSize = main::getLdapConfigValue("zimbraMtaMaxMessageSize");
+    $zimbraMessageCacheSize = main::getLdapConfigValue("zimbraMessageCacheSize");
+    $systemMemorySize = main::getSystemMemory();
+
+    my $tomcatHeapSize = ($systemMemorySize*($tomcatHeapPercent/100));
+    $newcache = int($tomcatHeapSize*.05*1024*1024*1024);
+   
+    main::runAsZimbra("$ZMPROV mcf zimbraMessageCacheSize $newcache")
+      if ($newcache > $zimbraMessageCacheSize);
+    
   }
 	return 0;
 }
