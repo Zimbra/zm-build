@@ -1198,6 +1198,12 @@ sub upgrade452GA {
 sub upgrade453GA {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
 	Migrate::log("Updating from 4.5.3_GA");
+  if (isInstalled("zimbra-store")) {
+    # bug 14160
+    my $maxMessageSize = main::getLdapConfigValue("zimbraMtaMaxMessageSize");
+    my $zimbraMessageCacheSize = $maxMessageSize*2;
+    runAsZimbra("$ZMPROV mcf zimbraMessageCacheSize $zimbraMessageCacheSize");
+  }
 	return 0;
 }
 sub upgrade454GA {
