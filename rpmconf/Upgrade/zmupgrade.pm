@@ -1514,7 +1514,7 @@ sub updateMySQLcnf {
     my $i=0;
     my $mycnfChanged = 0;
     my $tmpfile = "/tmp/my.cnf.$$";;
-    my $zimbra_user = `zmlocalconfig -m nokey zimbra_user 2> /dev/null` || "zmbra";;
+    my $zimbra_user = `zmlocalconfig -m nokey zimbra_user 2> /dev/null` || "zimbra";;
     open(TMP, ">$tmpfile");
     foreach (@CNF) {
       if (/^port/ && $CNF[$i+1] !~ m/^user/) {
