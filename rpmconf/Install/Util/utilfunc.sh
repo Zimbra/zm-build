@@ -1258,13 +1258,15 @@ getPlatformVars() {
       PREREQ_LIBS="/usr/lib/libstdc++.so.5"
     elif [ $PLATFORM = "MANDRIVA2006" ]; then
       PREREQ_PACKAGES="sudo libidn11 curl fetchmail libgmp3 libxml2 libstdc++6 openssl"
-    elif [ $PLATFORM = "FC4" -o $PLATFORM = "FC5" -o $PLATFORM = "FC3" ]; then
+    elif [ $PLATFORM = "FC3" -o $PLATFORM = "FC4" ]; then
       PREREQ_PACKAGES="sudo libidn curl fetchmail gmp bind-libs vixie-cron"
-      if [ $PLATFORM = "FC5" ]; then
-        PREREQ_LIBS="/usr/lib/libstdc++.so.6"
-      else 
-        PREREQ_LIBS="/usr/lib/libstdc++.so.5"
-      fi
+      PREREQ_LIBS="/usr/lib/libstdc++.so.5"
+    elif [ $PLATFORM = "FC5" -o $PLATFORM = "FC6" ]; then
+      PREREQ_PACKAGES="sudo libidn curl fetchmail gmp bind-libs vixie-cron"
+      PREREQ_LIBS="/usr/lib/libstdc++.so.6"
+    elif [ $PLATFORM = "FC5_64" -o $PLATFORM = "FC6_64" ]; then
+      PREREQ_PACKAGES="sudo libidn curl fetchmail gmp compat-libstdc++-296 compat-libstdc++-33"
+      PREREQ_LIBS="/usr/lib/libstdc++.so.6 /usr/lib64/libstdc++.so.5"
     elif [ $PLATFORM = "RHEL4_64" -o $PLATFORM = "CentOS4_64" ]; then
       PREREQ_PACKAGES="sudo libidn curl fetchmail gmp compat-libstdc++-296 compat-libstdc++-33"
       PREREQ_LIBS="/usr/lib/libstdc++.so.5 /usr/lib64/libstdc++.so.5"
