@@ -1257,6 +1257,11 @@ sub upgrade460GA {
 sub upgrade500BETA1 {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
 	main::progress("Updating from 5.0.0_BETA1\n");
+  if (isInstalled("zimbra-store")) {
+    if (startSql()) { return 1; }
+      main::runAsZimbra("perl -I${scriptDir} migrate20070302-NullContactVolumeId.pl");
+      stopSql();
+  }
 	return 0;
 }
 sub upgrade500GA {
