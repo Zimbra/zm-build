@@ -232,60 +232,60 @@ sub upgrade {
 	}
 
 	if ($startVersion eq "3.0.0_GA") {
-		print "This appears to be 3.0.0_GA\n";
+		main::progress("This appears to be 3.0.0_GA\n");
 	} elsif ($startVersion eq "3.0.1_GA") {
-		print "This appears to be 3.0.1_GA\n";
+		main::progress("This appears to be 3.0.1_GA\n");
 	} elsif ($startVersion eq "3.1.0_GA") {
-		print "This appears to be 3.1.0_GA\n";
+		main::progress("This appears to be 3.1.0_GA\n");
 		#$needVolumeHack = 1;
 	} elsif ($startVersion eq "3.1.1_GA") {
-		print "This appears to be 3.1.1_GA\n";
+		main::progress("This appears to be 3.1.1_GA\n");
 	} elsif ($startVersion eq "3.1.2_GA") {
-		print "This appears to be 3.1.2_GA\n";
+		main::progress("This appears to be 3.1.2_GA\n");
 	} elsif ($startVersion eq "3.1.3_GA") {
-		print "This appears to be 3.1.3_GA\n";
+		main::progress("This appears to be 3.1.3_GA\n");
 	} elsif ($startVersion eq "3.1.4_GA") {
-		print "This appears to be 3.1.4_GA\n";
+		main::progress("This appears to be 3.1.4_GA\n");
 	} elsif ($startVersion eq "3.2.0_M1") {
-		print "This appears to be 3.2.0_M1\n";
+		main::progress("This appears to be 3.2.0_M1\n");
 	} elsif ($startVersion eq "3.2.0_M2") {
-		print "This appears to be 3.2.0_M2\n";
+		main::progress("This appears to be 3.2.0_M2\n");
 	} elsif ($startVersion eq "4.0.0_RC1") {
-		print "This appears to be 4.0.0_RC1\n";
+		main::progress("This appears to be 4.0.0_RC1\n");
 	} elsif ($startVersion eq "4.0.0_GA") {
-		print "This appears to be 4.0.0_GA\n";
+		main::progress("This appears to be 4.0.0_GA\n");
 	} elsif ($startVersion eq "4.0.1_GA") {
-		print "This appears to be 4.0.1_GA\n";
+		main::progress("This appears to be 4.0.1_GA\n");
 	} elsif ($startVersion eq "4.0.2_GA") {
-		print "This appears to be 4.0.2_GA\n";
+		main::progress("This appears to be 4.0.2_GA\n");
 	} elsif ($startVersion eq "4.0.3_GA") {
-		print "This appears to be 4.0.3_GA\n";
+		main::progress("This appears to be 4.0.3_GA\n");
 	} elsif ($startVersion eq "4.0.4_GA") {
-		print "This appears to be 4.0.4_GA\n";
+		main::progress("This appears to be 4.0.4_GA\n");
 	} elsif ($startVersion eq "4.0.5_GA") {
-		print "This appears to be 4.0.5_GA\n";
+		main::progress("This appears to be 4.0.5_GA\n");
 	} elsif ($startVersion eq "4.1.0_BETA1") {
-		print "This appears to be 4.1.0_BETA1\n";
+		main::progress("This appears to be 4.1.0_BETA1\n");
 	} elsif ($startVersion eq "4.5.0_BETA1") {
-		print "This appears to be 4.5.0_BETA1\n";
+		main::progress("This appears to be 4.5.0_BETA1\n");
 	} elsif ($startVersion eq "4.5.0_BETA2") {
-		print "This appears to be 4.5.0_BETA2\n";
+		main::progress("This appears to be 4.5.0_BETA2\n");
 	} elsif ($startVersion eq "4.5.0_RC1") {
-		print "This appears to be 4.5.0_RC1\n";
+		main::progress("This appears to be 4.5.0_RC1\n");
 	} elsif ($startVersion eq "4.5.0_RC2") {
-		print "This appears to be 4.5.0_RC2\n";
+		main::progress("This appears to be 4.5.0_RC2\n");
 	} elsif ($startVersion eq "4.5.0_GA") {
-		print "This appears to be 4.5.0_GA\n";
+		main::progress("This appears to be 4.5.0_GA\n");
 	} elsif ($startVersion eq "4.5.1_GA") {
-		print "This appears to be 4.5.1_GA\n";
+		main::progress("This appears to be 4.5.1_GA\n");
 	} elsif ($startVersion eq "4.5.2_GA") {
-		print "This appears to be 4.5.2_GA\n";
+		main::progress("This appears to be 4.5.2_GA\n");
 	} elsif ($startVersion eq "4.5.3_GA") {
-		print "This appears to be 4.5.3_GA\n";
+		main::progress("This appears to be 4.5.3_GA\n");
 	} elsif ($startVersion eq "4.5.4_GA") {
-		print "This appears to be 4.5.4_GA\n";
+		main::progress("This appears to be 4.5.4_GA\n");
 	} elsif ($startVersion eq "4.5.5_GA") {
-		print "This appears to be 4.5.5_GA\n";
+		main::progress("This appears to be 4.5.5_GA\n");
 	} elsif ($startVersion eq "4.6.0_BETA") {
 		print "This appears to be 4.6.0_BETA\n";
 	} elsif ($startVersion eq "4.6.0_RC1") {
@@ -293,11 +293,11 @@ sub upgrade {
 	} elsif ($startVersion eq "4.6.0_GA") {
 		print "This appears to be 4.6.0_GA\n";
 	} elsif ($startVersion eq "5.0.0_BETA1") {
-		print "This appears to be 5.0.0_BETA1\n";
+		main::progress("This appears to be 5.0.0_BETA1\n");
 	} elsif ($startVersion eq "5.0.0_GA") {
-		print "This appears to be 5.0.0_GA\n";
+		main::progress("This appears to be 5.0.0_GA\n");
 	} else {
-		print "I can't upgrade version $startVersion\n\n";
+		main::progress("I can't upgrade version $startVersion\n\n");
 		return 1;
 	}
 
@@ -312,7 +312,7 @@ sub upgrade {
     doBackupRestoreVersionUpdate($startVersion);
 
 		if ($curSchemaVersion < $hiVersion) {
-			print "Schema upgrade required\n";
+			main::progress("Schema upgrade required\n");
 		}
 
     # fast tracked updater (ie invoke mysql once)
@@ -334,7 +334,7 @@ sub upgrade {
 
 	if (isInstalled ("zimbra-logger") && -d "/opt/zimbra/logger/db/data/zimbra_logger/") {
 		if ($curLoggerSchemaVersion < $hiLoggerVersion) {
-			print "An upgrade of the logger schema is necessary from version $curLoggerSchemaVersion\n";
+			main::progress("An upgrade of the logger schema is necessary from version $curLoggerSchemaVersion\n");
 		}
 
 		while ($curLoggerSchemaVersion < $hiLoggerVersion) {
@@ -353,7 +353,7 @@ sub upgrade {
   }
 
 	foreach my $v (@versionOrder) {
-	  Migrate::log("Checking $v");
+	  main::progress("Checking $v\n");
 		if ($v eq $startVersion) {
 			$found = 1;
 		}
@@ -363,7 +363,7 @@ sub upgrade {
 					return 1;
 				}
 			} else {
-				Migrate::log("I don't know how to update $v - exiting");
+				main::progress("I don't know how to update $v - exiting\n");
 				return 1;
 			}
 		}
@@ -379,7 +379,7 @@ sub upgrade {
 }
 
 sub upgradeBM1 {
-	Migrate::log("Updating from 3.0.M1");
+	main::progress("Updating from 3.0.M1\n");
 
 	my $t = time()+(60*60*24*60);
 	my @d = localtime($t);
@@ -391,22 +391,22 @@ sub upgradeBM1 {
 	my $ldp = main::runAsZimbra("zmlocalconfig -m nokey ldap_port");
 	chomp $ldp;
 
-	Migrate::log("Updating ldap url configuration");
+	main::progress("Updating ldap url configuration\n");
 	main::runAsZimbra("zmlocalconfig -e ldap_url=ldap://${ldh}:${ldp}");
 	main::runAsZimbra("zmlocalconfig -e ldap_master_url=ldap://${ldh}:${ldp}");
 
 	if ($hn eq $ldh) {
-		Migrate::log("Setting ldap master to true");
+		main::progress("Setting ldap master to true\n");
 		main::runAsZimbra("zmlocalconfig -e ldap_is_master=true");
 	}
 
-	Migrate::log("Updating index configuration");
+	main::progress("Updating index configuration\n");
 	main::runAsZimbra("zmlocalconfig -e zimbra_index_idle_flush_time=600");
 	main::runAsZimbra("zmlocalconfig -e zimbra_index_lru_size=100");
 	main::runAsZimbra("zmlocalconfig -e zimbra_index_max_uncommitted_operations=200");
 	main::runAsZimbra("zmlocalconfig -e logger_mysql_port=7307");
 
-	Migrate::log("Updating zimbra user configuration");
+	main::progress("Updating zimbra user configuration\n");
 	main::runAsZimbra("zmlocalconfig -e zimbra_user=zimbra");
 	my $UID = `id -u zimbra`;
 	chomp $UID;
@@ -420,7 +420,7 @@ sub upgradeBM1 {
 }
 
 sub upgradeBM2 {
-	Migrate::log("Updating from 3.0.0_M2");
+	main::progress("Updating from 3.0.0_M2\n");
 
 	movePostfixQueue ("2.2.3","2.2.5");
 
@@ -429,7 +429,7 @@ sub upgradeBM2 {
 
 sub upgradeBM3 {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
-	Migrate::log("Updating from 3.0.0_M3");
+	main::progress("Updating from 3.0.0_M3\n");
 
 	# $startBuild -> $targetBuild
 	if ($startVersion eq "3.0.0_M2" || $startVersion eq "3.0.M1" || $startBuild <= 346) {
@@ -440,13 +440,13 @@ sub upgradeBM3 {
 	if (($startVersion eq "3.0.0_M2" || $startVersion eq "3.0.M1" || $startBuild <= 427) &&
 		isInstalled ("zimbra-ldap")) {
 
-		Migrate::log ("Updating ldap GAL attributes");
+		main::progress ("Updating ldap GAL attributes\n");
 		main::runAsZimbra("$ZMPROV mcf +zimbraGalLdapAttrMap zimbraId=zimbraId +zimbraGalLdapAttrMap objectClass=objectClass +zimbraGalLdapAttrMap zimbraMailForwardingAddress=zimbraMailForwardingAddress");
 
-		Migrate::log ("Updating ldap CLIENT attributes");
+		main::progress ("Updating ldap CLIENT attributes\n");
 		main::runAsZimbra("$ZMPROV mcf +zimbraAccountClientAttr zimbraIsDomainAdminAccount +zimbraAccountClientAttr zimbraFeatureIMEnabled");
 		main::runAsZimbra("$ZMPROV mcf +zimbraCOSInheritedAttr zimbraFeatureIMEnabled");
-		Migrate::log ("Updating ldap domain admin attributes");
+		main::progress ("Updating ldap domain admin attributes\n");
 		main::runAsZimbra("$ZMPROV mcf +zimbraDomainAdminModifiableAttr zimbraAccountStatus");
 		print ".";
 		main::runAsZimbra("$ZMPROV mcf +zimbraDomainAdminModifiableAttr company");
@@ -646,7 +646,7 @@ sub upgradeBM3 {
 		main::runAsZimbra("$ZMPROV mcf +zimbraDomainAdminModifiableAttr zimbraMailStatus");
 		print "\n";
 
-		Migrate::log ("Updating ldap server attributes");
+		main::progress ("Updating ldap server attributes\n");
 
 		main::runAsZimbra("$ZMPROV mcf zimbraLmtpNumThreads 20 ");
 		main::runAsZimbra("$ZMPROV mcf zimbraMessageCacheSize 1671168 ");
@@ -661,7 +661,7 @@ sub upgradeBM3 {
 		}
 
 		if (isInstalled("zimbra-ldap")) {
-			Migrate::log ("Updating ldap domain admin attributes");
+			main::progress ("Updating ldap domain admin attributes\n");
 			main::runAsZimbra("$ZMPROV mcf +zimbraDomainAdminModifiableAttr givenName");
 			main::runAsZimbra("$ZMPROV mcf +zimbraDomainAdminModifiableAttr zimbraMailForwardingAddress");
 			main::runAsZimbra("$ZMPROV mcf +zimbraDomainAdminModifiableAttr zimbraNewMailNotificationSubject");
@@ -675,7 +675,7 @@ sub upgradeBM3 {
 
 sub upgradeBM4 {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
-	Migrate::log("Updating from 3.0.0_M4");
+	main::progress("Updating from 3.0.0_M4\n");
 	if (isInstalled("zimbra-ldap")) {
 		main::runAsZimbra("$ZMPROV mcf +zimbraDomainAdminModifiableAttr zimbraMailStatus");
 		if ($startVersion eq "3.0.0_M2" || $startVersion eq "3.0.M1" || $startVersion eq "3.0.0_M3" ||
@@ -699,7 +699,7 @@ sub upgradeBM4 {
 
 sub upgradeBGA {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
-	Migrate::log("Updating from 3.0.0_GA");
+	main::progress("Updating from 3.0.0_GA\n");
 	return 0;
 
 	if ( -d "/opt/zimbra/clamav-0.87.1/db" && -d "/opt/zimbra/clamav-0.88" &&
@@ -714,9 +714,11 @@ sub upgradeBGA {
 
 sub upgrade301GA {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
-	Migrate::log("Updating from 3.0.1_GA");
+	main::progress("Updating from 3.0.1_GA\n");
 
-	open (G, "$ZMPROV gcf zimbraGalLdapFilterDef |") or die "Can't open zmprov: $!";
+	unless(open (G, "$ZMPROV gcf zimbraGalLdapFilterDef |")) {
+    Migrate::myquit(1,"Can't open zmprov: $!");
+  }
 	`$ZMPROV mcf zimbraGalLdapFilterDef ''`;
 	while (<G>) {
 		chomp;
@@ -745,7 +747,7 @@ sub upgrade301GA {
 
 sub upgrade310GA {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
-	Migrate::log("Updating from 3.1.0_GA");
+	main::progress("Updating from 3.1.0_GA\n");
 	main::runAsZimbra("$ZMPROV mcf +zimbraCOSInheritedAttr zimbraFeatureSharingEnabled");
 	main::runAsZimbra("$ZMPROV mcf +zimbraDomainInheritedAttr zimbraFeatureSharingEnabled");
 	main::runAsZimbra("$ZMPROV mcf +zimbraAccountClientAttr zimbraFeatureSharingEnabled");
@@ -813,20 +815,20 @@ sub upgrade310GA {
 
 sub upgrade311GA {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
-	Migrate::log("Updating from 3.1.1_GA");
+	main::progress("Updating from 3.1.1_GA\n");
 
 	return 0;
 }
 
 sub upgrade312GA {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
-	Migrate::log("Updating from 3.1.2_GA");
+	main::progress("Updating from 3.1.2_GA\n");
 	return 0;
 }
 
 sub upgrade313GA {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
-	Migrate::log("Updating from 3.1.3_GA");
+	main::progress("Updating from 3.1.3_GA\n");
 
   # removing this per bug 10901
 	#my @accounts = `su - zimbra -c "$ZMPROV gaa"`;
@@ -842,7 +844,7 @@ sub upgrade313GA {
 
 sub upgrade314GA {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
-	Migrate::log("Updating from 3.1.4_GA");
+	main::progress("Updating from 3.1.4_GA\n");
 	if (isInstalled ("zimbra-ldap")) {
   my $a = <<EOF;
 # parse text/plain internally
@@ -872,7 +874,7 @@ EOF
 
 sub upgrade32M1 {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
-	Migrate::log("Updating from 3.2.0_M1");
+	main::progress("Updating from 3.2.0_M1\n");
 
 	main::runAsZimbra("$ZMPROV mcf +zimbraCOSInheritedAttr zimbraFeatureSharingEnabled");
 	main::runAsZimbra("$ZMPROV mcf +zimbraDomainInheritedAttr zimbraFeatureSharingEnabled");
@@ -943,7 +945,7 @@ sub upgrade32M1 {
 
 sub upgrade32M2 {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
-	Migrate::log("Updating from 3.2.0_M2");
+	main::progress("Updating from 3.2.0_M2\n");
 
   # bug 8121
   updateMySQLcnf();
@@ -974,7 +976,7 @@ sub upgrade32M2 {
 
 sub upgrade400RC1 {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
-	Migrate::log("Updating from 4.0.0_RC1");
+	main::progress("Updating from 4.0.0_RC1\n");
 
   # Bug 9504
   if (-d "/opt/zimbra/redolog" && ! -e "/opt/zimbra/redolog-pre-4.0") {
@@ -1009,13 +1011,13 @@ sub upgrade400RC1 {
 
 sub upgrade400GA {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
-	Migrate::log("Updating from 4.0.0_GA");
+	main::progress("Updating from 4.0.0_GA\n");
 	return 0;
 }
 
 sub upgrade401GA {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
-	Migrate::log("Updating from 4.0.1_GA");
+	main::progress("Updating from 4.0.1_GA\n");
 
   # bug 10346
   my $globalWikiAcct = main::getLdapConfigValue("zimbraNotebookAccount");
@@ -1030,7 +1032,7 @@ sub upgrade401GA {
 
 sub upgrade402GA {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
-	Migrate::log("Updating from 4.0.2_GA");
+	main::progress("Updating from 4.0.2_GA\n");
 
   if (isInstalled("zimbra-ldap")) {
     # bug 10401
@@ -1053,7 +1055,7 @@ sub upgrade402GA {
 
 sub upgrade403GA {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
-	Migrate::log("Updating from 4.0.3_GA");
+	main::progress("Updating from 4.0.3_GA\n");
 
   #8081 remove amavis tmpfs
   if ( -f "/etc/fstab" ) {
@@ -1095,19 +1097,19 @@ sub upgrade403GA {
 
 sub upgrade404GA {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
-	Migrate::log("Updating from 4.0.4_GA");
+	main::progress("Updating from 4.0.4_GA\n");
 	return 0;
 }
 
 sub upgrade405GA {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
-	Migrate::log("Updating from 4.0.5_GA");
+	main::progress("Updating from 4.0.5_GA\n");
 	return 0;
 }
 
 sub upgrade410BETA1 {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
-	Migrate::log("Updating from 4.1.0_BETA1");
+	main::progress("Updating from 4.1.0_BETA1\n");
 
   # bug 9622
   clearRedologDir("/opt/zimbra/redolog", $targetVersion);
@@ -1121,7 +1123,7 @@ sub upgrade410BETA1 {
 
 sub upgrade450BETA1 {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
-	Migrate::log("Updating from 4.5.0_BETA1");
+	main::progress("Updating from 4.5.0_BETA1\n");
   if (isInstalled("zimbra-ldap")) {
     main::runAsZimbra("$ZMPROV mc default zimbraPrefUseKeyboardShortcuts TRUE");
   }
@@ -1130,13 +1132,13 @@ sub upgrade450BETA1 {
 
 sub upgrade450BETA2 {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
-	Migrate::log("Updating from 4.5.0_BETA2");
+	main::progress("Updating from 4.5.0_BETA2\n");
 	return 0;
 }
 
 sub upgrade450RC1 {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
-	Migrate::log("Updating from 4.5.0_RC1");
+	main::progress("Updating from 4.5.0_RC1\n");
   if (isInstalled("zimbra-ldap")) {
     # bug 12031
 	  my @coses = `su - zimbra -c "$ZMPROV gac"`;
@@ -1153,14 +1155,14 @@ sub upgrade450RC1 {
     chomp($ldap_master_url);
     chomp($ldap_pass);
     unless($ldap = Net::LDAP->new($ldap_master_url)) { 
-      Migrate::log("Unable to contact $ldap_master_url: $!"); 
+      main::progress("Unable to contact $ldap_master_url: $!\n"); 
       return 1;
     }
     my $dn = 'cn=timezones,cn=config,cn=zimbra';
     my $result = $ldap->bind("uid=zimbra,cn=admins,cn=zimbra", password => $ldap_pass);
     unless($result->code()) {
       $result = DeleteLdapTree($ldap,$dn);
-      Migrate::log($result->code() ? "Failed to delete $dn: ".$result->error() : "Deleted $dn");
+      main::progress($result->code() ? "Failed to delete $dn: ".$result->error() : "Deleted $dn\n");
     }
     $result = $ldap->unbind;
   }
@@ -1169,7 +1171,7 @@ sub upgrade450RC1 {
 
 sub upgrade450RC2 {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
-	Migrate::log("Updating from 4.5.0_RC2");
+	main::progress("Updating from 4.5.0_RC2\n");
   if (isInstalled("zimbra-ldap")) {
     main::runAsZimbra("$ZMPROV mcf zimbraSmtpSendAddOriginatingIP TRUE");
   }
@@ -1183,12 +1185,12 @@ sub upgrade450RC2 {
 
 sub upgrade450GA {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
-	Migrate::log("Updating from 4.5.0_GA");
+	main::progress("Updating from 4.5.0_GA\n");
 	return 0;
 }
 sub upgrade451GA {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
-	Migrate::log("Updating from 4.5.1_GA");
+	main::progress("Updating from 4.5.1_GA\n");
   if (isInstalled("zimbra-store")) {
     my $tomcat_java_options = main::getLocalConfig("tomcat_java_options");
     $tomcat_java_options .= " -Djava.awt.headless=true"
@@ -1200,12 +1202,12 @@ sub upgrade451GA {
 }
 sub upgrade452GA {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
-	Migrate::log("Updating from 4.5.2_GA");
+	main::progress("Updating from 4.5.2_GA\n");
 	return 0;
 }
 sub upgrade453GA {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
-	Migrate::log("Updating from 4.5.3_GA");
+	main::progress("Updating from 4.5.3_GA\n");
   if (isInstalled("zimbra-store")) {
     # bug 14160
     my ($maxMessageSize, $zimbraMessageCacheSize, $systemMemorySize, $newcache);
@@ -1226,7 +1228,7 @@ sub upgrade453GA {
 }
 sub upgrade454GA {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
-	Migrate::log("Updating from 4.5.4_GA");
+	main::progress("Updating from 4.5.4_GA\n");
   if (isInstalled("zimbra-ldap")) {
     main::setLocalConfig("ldap_log_level", "32768");
   }
@@ -1234,7 +1236,7 @@ sub upgrade454GA {
 }
 sub upgrade455GA {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
-	Migrate::log("Updating from 4.5.5_GA");
+	main::progress("Updating from 4.5.5_GA\n");
 	return 0;
 }
 sub upgrade460BETA {
@@ -1254,38 +1256,38 @@ sub upgrade460GA {
 }
 sub upgrade500BETA1 {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
-	Migrate::log("Updating from 5.0.0_BETA1");
+	main::progress("Updating from 5.0.0_BETA1\n");
 	return 0;
 }
 sub upgrade500GA {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
-	Migrate::log("Updating from 5.0.0_GA");
+	main::progress("Updating from 5.0.0_GA\n");
 	return 0;
 }
 
 sub upgrade35M1 {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
-	Migrate::log("Updating from 3.5.0_M1");
+	main::progress("Updating from 3.5.0_M1\n");
 	return 0;
 }
 
 sub stopZimbra {
-	Migrate::log("Stopping zimbra services");
+	main::progress("Stopping zimbra services\n");
 	my $rc = 0xffff & system("su - zimbra -c \"/opt/zimbra/bin/zmcontrol stop > /dev/null 2>&1\"");
 	$rc = $rc >> 8;
 	if ($rc) {
-		Migrate::log("Stop failed - exiting");
+		main::progress("Stop failed - exiting\n");
 		return $rc;
 	}
 	return 0;
 }
 
 sub startLdap {
-	Migrate::log("Checking ldap status");
+	main::progress("Checking ldap status\n");
 	my $rc = 0xffff & system("su - zimbra -c \"/opt/zimbra/bin/ldap status > /dev/null 2>&1\"");
 	$rc = $rc >> 8;
 	if ($rc) {
-		Migrate::log("Starting ldap");
+		main::progress("Starting ldap\n");
 		$rc = 0xffff & system("su - zimbra -c \"/opt/zimbra/libexec/zmldapapplyldif > /dev/null 2>&1\"");
 		$rc = 0xffff & system("su - zimbra -c \"/opt/zimbra/bin/ldap status > /dev/null 2>&1\"");
 		$rc = $rc >> 8;
@@ -1293,7 +1295,7 @@ sub startLdap {
 			$rc = 0xffff & system("su - zimbra -c \"/opt/zimbra/bin/ldap start > /dev/null 2>&1\"");
 			$rc = $rc >> 8;
 			if ($rc) {
-				Migrate::log("ldap startup failed with exit code $rc");
+				main::progress("ldap startup failed with exit code $rc\n");
 			  system("su - zimbra -c \"/opt/zimbra/bin/ldap start 2>&1 | grep failed\"");
 				return $rc;
 			}
@@ -1303,11 +1305,11 @@ sub startLdap {
 }
 
 sub stopLdap {
-	Migrate::log("Stopping ldap");
+	main::progress("Stopping ldap\n");
 	my $rc = 0xffff & system("su - zimbra -c \"/opt/zimbra/bin/ldap stop > /dev/null 2>&1\"");
 	$rc = $rc >> 8;
 	if ($rc) {
-		Migrate::log("LDAP stop failed with exit code $rc");
+		main::progress("LDAP stop failed with exit code $rc\n");
 		return $rc;
 	}
   sleep 5; # give it a chance to shutdown.
@@ -1323,7 +1325,7 @@ sub isSqlRunning {
 sub startSql {
 
 	unless (isSqlRunning()) {
-		Migrate::log("Starting mysql");
+		main::progress("Starting mysql\n");
 		my $rc = 0xffff & system("su - zimbra -c \"/opt/zimbra/bin/mysql.server start > /dev/null 2>&1\"");
     my $timeout = sleep 10;
     while (!isSqlRunning() && $timeout <= 120 ) {
@@ -1332,7 +1334,7 @@ sub startSql {
     }
 		$rc = $rc >> 8;
 		if ($rc) {
-			Migrate::log("mysql startup failed with exit code $rc");
+			main::progress("mysql startup failed with exit code $rc\n");
 			return $rc;
 		}
 	}
@@ -1342,7 +1344,7 @@ sub startSql {
 sub stopSql {
 
   if (isSqlRunning()) {
-	  Migrate::log("Stopping mysql");
+	  main::progress("Stopping mysql\n");
 	  my $rc = 0xffff & system("su - zimbra -c \"/opt/zimbra/bin/mysql.server stop > /dev/null 2>&1\"");
     my $timeout = sleep 10;
     while (isSqlRunning() && $timeout <= 120 ) {
@@ -1351,7 +1353,7 @@ sub stopSql {
     }
 	  $rc = $rc >> 8;
 	  if ($rc) {
-		  Migrate::log("mysql stop failed with exit code $rc");
+		  main::progress("mysql stop failed with exit code $rc\n");
 		  return $rc;
 	  }
   }
@@ -1366,11 +1368,11 @@ sub isLoggerSqlRunning {
 
 sub startLoggerSql {
 	unless (isLoggerSqlRunning()) {
-		Migrate::log("Starting logger mysql");
+		main::progress("Starting logger mysql\n");
 		my $rc = 0xffff & system("su - zimbra -c \"/opt/zimbra/bin/logmysql.server start > /dev/null 2>&1\"");
 		$rc = $rc >> 8;
 		if ($rc) {
-			Migrate::log("logger mysql startup failed with exit code $rc");
+			main::progress("logger mysql startup failed with exit code $rc\n");
 			return $rc;
 		}
     my $timeout = sleep 10;
@@ -1384,11 +1386,11 @@ sub startLoggerSql {
 
 sub stopLoggerSql {
   if (isLoggerSqlRunning()) {
-	  Migrate::log("Stopping logger mysql");
+	  main::progress("Stopping logger mysql\n");
 	  my $rc = 0xffff & system("su - zimbra -c \"/opt/zimbra/bin/logmysql.server stop > /dev/null 2>&1\"");
 	  $rc = $rc >> 8;
 	  if ($rc) {
-		  Migrate::log("logger mysql stop failed with exit code $rc");
+		  main::progress("logger mysql stop failed with exit code $rc\n");
 		  return $rc;
 	  }
     my $timeout = sleep 10;
@@ -1405,20 +1407,24 @@ sub runSchemaUpgrade {
 	my $curVersion = shift;
 
 	if (! defined ($updateScripts{$curVersion})) {
-		Migrate::log ("Can't upgrade from version $curVersion - no script!");
+		main::progress ("Can't upgrade from version $curVersion - no script!\n");
 		return 1;
 	}
 
 	if (! -x "${scriptDir}/$updateScripts{$curVersion}" ) {
-		Migrate::log ("Can't run ${scriptDir}/$updateScripts{$curVersion} - not executable!");
+		main::progress ("Can't run ${scriptDir}/$updateScripts{$curVersion} - not executable!\n");
 		return 1;
 	}
 
-	Migrate::log ("Running ${scriptDir}/$updateScripts{$curVersion}");
-	my $rc = 0xffff & system("su - zimbra -c \"perl -I${scriptDir} ${scriptDir}/$updateScripts{$curVersion}\"");
-	$rc = $rc >> 8;
-	if ($rc) {
-		Migrate::log ("Script failed with code $rc - exiting");
+	main::progress ("Running ${scriptDir}/$updateScripts{$curVersion}\n");
+  open(MIG, "su - zimbra -c \"perl -I${scriptDir} ${scriptDir}/$updateScripts{$curVersion}\" 2>&1|");
+  while (<MIG>) {
+    main::progress($_);
+  }
+  close(MIG);
+  my $rc = $?;
+	if ($rc != 0) {
+		main::progress ("Script failed with code $rc: $! - exiting\n");
 		return $rc;
 	}
 	return 0;
@@ -1428,20 +1434,20 @@ sub runLoggerSchemaUpgrade {
 	my $curVersion = shift;
 
 	if (! defined ($loggerUpdateScripts{$curVersion})) {
-		Migrate::log ("Can't upgrade from version $curVersion - no script!");
+		main::progress ("Can't upgrade from version $curVersion - no script!\n");
 		return 1;
 	}
 
 	if (! -x "${scriptDir}/$loggerUpdateScripts{$curVersion}" ) {
-		Migrate::log ("Can't run ${scriptDir}/$loggerUpdateScripts{$curVersion} - no script!");
+		main::progress ("Can't run ${scriptDir}/$loggerUpdateScripts{$curVersion} - no script!\n");
 		return 1;
 	}
 
-	Migrate::log ("Running ${scriptDir}/$loggerUpdateScripts{$curVersion}");
+	main::progress ("Running ${scriptDir}/$loggerUpdateScripts{$curVersion}\n");
 	my $rc = 0xffff & system("su - zimbra -c \"perl -I${scriptDir} ${scriptDir}/$loggerUpdateScripts{$curVersion}\"");
 	$rc = $rc >> 8;
 	if ($rc) {
-		Migrate::log ("Script failed with code $rc - exiting");
+		main::progress ("Script failed with code $rc - exiting\n");
 		return $rc;
 	}
 	return 0;
@@ -1490,12 +1496,12 @@ sub movePostfixQueue {
 	my $toVersion = shift;
 
 	if ( -d "/opt/zimbra/postfix-$fromVersion/spool" ) {
-		Migrate::log("Moving postfix queues");
+		main::progress("Moving postfix queues\n");
 		my @dirs = qw /active bounce corrupt defer deferred flush hold incoming maildrop/;
 		`mkdir -p /opt/zimbra/postfix-$toVersion/spool`;
 		foreach my $d (@dirs) {
 			if (-d "/opt/zimbra/postfix-$fromVersion/spool/$d/") {
-				Migrate::log("Moving $d");
+				main::progress("Moving $d\n");
 				`cp -Rf /opt/zimbra/postfix-$fromVersion/spool/$d/* /opt/zimbra/postfix-$toVersion/spool/$d`;
 				`chown -R postfix:postdrop /opt/zimbra/postfix-$toVersion/spool/$d`;
 			}
@@ -1509,7 +1515,9 @@ sub updateMySQLcnf {
 
   my $mycnf = "/opt/zimbra/conf/my.cnf";
   if (-e "$mycnf") {
-    open(MYCNF, "$mycnf") or die "$!\n";
+    unless (open(MYCNF, "$mycnf")) {
+      Migrate::myquit(1, "${mycnf}: $!\n");
+    }
     my @CNF = <MYCNF>;
     close(MYCNF);
     my $i=0;
@@ -1569,11 +1577,11 @@ sub doMysqlTableCheck {
 
   my $updateSQL = "/opt/zimbra/mysql/share/mysql/mysql_fix_privilege_tables.sql";
   if (-e "$updateSQL") {
-    Migrate::log("Verifying mysql tables");
+    main::progress("Verifying mysql tables\n");
     my $db_pass = main::getLocalConfig("mysql_root_password");
     my $mysql = "/opt/zimbra/bin/mysql";
     my $cmd = "$mysql --force --user=root --password=$db_pass --database=mysql --batch < $updateSQL";
-    Migrate::log("Executing $cmd");
+    main::progress("Executing $cmd\n");
     main::runAsZimbra("$cmd > /tmp/mysql_fix_perms.out 2>&1");
   }
 }
@@ -1588,7 +1596,7 @@ sub doBackupRestoreVersionUpdate($) {
 
   return unless ($currentRedologVersion);
 
-  Migrate::log("Redolog Version: $prevRedologVersion New Redolog Version: $currentRedologVersion");
+  main::progress("Redolog Version: $prevRedologVersion New Redolog Version: $currentRedologVersion\n");
   Migrate::insertRedologVersion($currentRedologVersion)
     if ($prevRedologVersion eq "");
   Migrate::updateRedologVersion($prevRedologVersion,$currentRedologVersion)
@@ -1601,7 +1609,7 @@ sub doBackupRestoreVersionUpdate($) {
 
     return unless ($currentBackupVersion);
 
-    Migrate::log("Backup Version: $prevBackupVersion New Backup Version: $currentBackupVersion");
+    main::progress("Backup Version: $prevBackupVersion New Backup Version: $currentBackupVersion\n");
     Migrate::insertBackupVersion($currentBackupVersion)
       if ($prevBackupVersion eq "");
     Migrate::updateBackupVersion($prevBackupVersion,$currentBackupVersion)
@@ -1612,9 +1620,9 @@ sub doBackupRestoreVersionUpdate($) {
   # to automatically clear the redolog if the backup version didn't change 
   # because it invalidates all the backups.
   if ($prevBackupVersion != $currentBackupVersion) {
-    Migrate::log("Moving /opt/zimbra/backup/* to /opt/zimbra/backup/${startVersion}-${currentBackupVersion}.");
+    main::progress("Moving /opt/zimbra/backup/* to /opt/zimbra/backup/${startVersion}-${currentBackupVersion}.\n");
     clearBackupDir("/opt/zimbra/backup", "${startVersion}-${currentBackupVersion}");
-    Migrate::log("Moving /opt/zimbra/redolog/* to /opt/zimbra/redolog/${startVersion}-${currentRedologVersion}.");
+    main::progress("Moving /opt/zimbra/redolog/* to /opt/zimbra/redolog/${startVersion}-${currentRedologVersion}.\n");
     clearRedologDir("/opt/zimbra/redolog", "${startVersion}-${currentRedologVersion}");
   }
 
@@ -1623,7 +1631,7 @@ sub doBackupRestoreVersionUpdate($) {
 sub migrateLdap {
 	if (isInstalled ("zimbra-ldap")) {
 		if (-f "/opt/zimbra/openldap-data/ldap.bak") {
-			Migrate::log("Migrating ldap data");
+			main::progress("Migrating ldap data\n");
 			if (-d "/opt/zimbra/openldap-data.prev") {
 				`mv /opt/zimbra/openldap-data.prev /opt/zimbra/openldap-data.prev.$$`;
 			}
@@ -1663,19 +1671,19 @@ sub migrateAmavisDB($) {
   my ($toVersion) = @_;
   my $amavisdBase = "/opt/zimbra/amavisd-new";
   my $toDir = "${amavisdBase}-$toVersion";
-  Migrate::log("Migrating amavisd-new to version $toVersion");  
+  main::progress("Migrating amavisd-new to version $toVersion\n");
   foreach my $fromVersion qw(2.4.1 2.3.3 2.3.1) {
     my $fromDir = "${amavisdBase}-$fromVersion";
-    Migrate::log("Checking $fromDir/db");
+    main::progress("Checking $fromDir/db\n");
     if ( -d "$fromDir/db" && -d "$toDir" && ! -e "$toDir/db/cache.db") {
-      Migrate::log("Migrating amavis-new db from version $fromVersion to $toVersion");  
+      main::progress("Migrating amavis-new db from version $fromVersion to $toVersion\n");
       `rm -rf $toDir/db > /dev/null 2>&1`;
       `mv $fromDir/db $toDir/db`;
       `chown zimbra:zimbra $toDir/db`; 
     }
-    Migrate::log("Checking $fromDir/.spamassassin");
+    main::progress("Checking $fromDir/.spamassassin\n");
     if (-d "$fromDir/.spamassassin/" && -d "$toDir" && ! -e "$toDir/.spamassassain/bayes_toks" ) {
-      Migrate::log("Migrating amavis-new .spamassassin from version $fromVersion to $toVersion");  
+      main::progress("Migrating amavis-new .spamassassin from version $fromVersion to $toVersion\n");
       `rm -rf $toDir/.spamassassin > /dev/null 2>&1`;
       `mv $fromDir/.spamassassin $toDir/.spamassassin`;
       `chown zimbra:zimbra $toDir/.spamassassin`; 
@@ -1686,19 +1694,18 @@ sub migrateAmavisDB($) {
 
 sub verifyMysqlConfig {
   my $mysqlConf = "/opt/zimbra/conf/my.cnf";
-  Migrate::log("Verifying $mysqlConf");
+  main::progress("Verifying $mysqlConf\n");
   return if ($addr_space eq "64");
   return unless (-e "$mysqlConf");
 
-  open(CONF, "$mysqlConf") or Migrate::log("Couldn't read $mysqlConf: $!\n");
+  open(CONF, "$mysqlConf") or main::progress("Couldn't read $mysqlConf: $!\n");
   my @lines = <CONF>;
   close(CONF);
   foreach (@lines) {
     if (my ($buffer_size) = m/innodb_buffer_pool_size\s+=\s+(\d+)/) {
       if ($buffer_size > 2000000000) {
-        Migrate::log("innodb_buffer_pool_size must be less then 2GB on a 32bit system");
-        Migrate::log("Please correct $mysqlConf and rerun zmsetup.pl");
-        exit 1;
+        main::progress("innodb_buffer_pool_size must be less then 2GB on a 32bit system\n");
+        Migrate::myquit(1,"Please correct $mysqlConf and rerun zmsetup.pl");
       }
     }
   }

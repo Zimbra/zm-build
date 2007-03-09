@@ -40,8 +40,8 @@ my $logfile = "/tmp/zmsetup.log.$$";
 open LOGFILE, ">$logfile" or die "Can't open $logfile: $!\n";
 
 my $ol = select (LOGFILE);
-$| = 1;
 select ($ol);
+$| = 1;
 
 print "Operations logged to $logfile\n";
 
@@ -139,6 +139,7 @@ sub status {
 
 sub detail {
   my $msg = shift;
+  $msg =~ s/\n$//;
   `echo "$msg" >> $logfile`;
 }
 
