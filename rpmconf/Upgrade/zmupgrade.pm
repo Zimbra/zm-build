@@ -1270,6 +1270,9 @@ sub upgrade500BETA1 {
       main::runAsZimbra("perl -I${scriptDir} migrate20070302-NullContactVolumeId.pl");
       stopSql();
   }
+  if (isInstalled("zimbra-ldap")) {
+    main::runAsZimbra("$ZMPROV mc default zimbraFeatureTasksEnabled TRUE");
+  }
 	return 0;
 }
 sub upgrade500GA {
