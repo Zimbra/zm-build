@@ -198,6 +198,7 @@ sub upgrade {
 
 	my $needVolumeHack = 0;
 	my $needMysqlTableCheck = 0;
+	my $needLdapMigration = 0;
 
 	getInstalledPackages();
 
@@ -301,8 +302,15 @@ sub upgrade {
 		return 1;
 	}
 
-  if ($targetVersion eq "4.5.2_GA") {
-    $needMysqlTableCheck=1;
+  
+	my $found = 0;
+	foreach my $v (@versionOrder) {
+    $found = 1 if ($v eq $startVersion);
+		if ($found) {
+      $needMysqlTableCheck=1 if ($v eq "4.5.2_GA");
+      $needLdapMigration=1 if ($v eq "5.0.0_BETA1");
+		}
+	  last if ($v eq $targetVersion);
   }
 
 	if (isInstalled("zimbra-store")) {
@@ -344,14 +352,14 @@ sub upgrade {
 		stopLoggerSql();
 	}
 
-	my $found = 0;
 
-  #migrateLdap();
   # start ldap
 	if (isInstalled ("zimbra-ldap")) {
+    migrateLdap() if $needLdapMigration;
     if (startLdap()) {return 1;} 
   }
 
+	my $found = 0;
 	foreach my $v (@versionOrder) {
 	  main::progress("Checking $v\n");
 		if ($v eq $startVersion) {

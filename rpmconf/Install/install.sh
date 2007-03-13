@@ -168,7 +168,7 @@ if [ $UPGRADE = "yes" ]; then
 
 fi
 
-if [ "x$LICENSE" != "x" ] && [ -e $LICENSE ]; then
+if [ "x$LICENSE" != "x" ] && [ -f "$LICENSE" ]; then
   echo "Installing /opt/zimbra/conf/ZCSLicense.xml"
   if [ ! -d "/opt/zimbra/conf" ]; then
     mkdir -p /opt/zimbra/conf
@@ -193,8 +193,8 @@ fi
 #
 # Installation complete, now configure
 #
-if [ x$DEFAULTFILE != "x" ]; then
-	/opt/zimbra/libexec/zmsetup.pl -c $DEFAULTFILE
+if [ "x$DEFAULTFILE" != "x" ]; then
+	/opt/zimbra/libexec/zmsetup.pl $DEFAULTFILE
 else
 	/opt/zimbra/libexec/zmsetup.pl
 fi
