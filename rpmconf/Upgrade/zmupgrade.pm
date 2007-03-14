@@ -1266,7 +1266,7 @@ sub upgrade500BETA1 {
 	main::progress("Updating from 5.0.0_BETA1\n");
   if (isInstalled("zimbra-store")) {
     if (startSql()) { return 1; }
-      main::runAsZimbra("perl -I${scriptDir} migrate20070302-NullContactVolumeId.pl");
+      main::runAsZimbra("perl -I${scriptDir} ${scriptDir}/migrate20070302-NullContactVolumeId.pl");
       stopSql();
   }
   if (isInstalled("zimbra-ldap")) {
