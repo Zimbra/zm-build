@@ -308,7 +308,6 @@ sub upgrade {
     $found = 1 if ($v eq $startVersion);
 		if ($found) {
       $needMysqlTableCheck=1 if ($v eq "4.5.2_GA");
-      $needLdapMigration=1 if ($v eq "5.0.0_BETA1");
 		}
 	  last if ($v eq $targetVersion);
   }
