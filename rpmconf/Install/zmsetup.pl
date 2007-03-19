@@ -989,15 +989,17 @@ sub setCreateAdmin {
       my ($spamUser, $spamDomain) = split ('@', $config{TRAINSASPAM});
       my ($hamUser, $hamDomain) = split ('@', $config{TRAINSAHAM});
       my ($notebookUser, $notebookDomain) = split ('@', $config{NOTEBOOKACCOUNT});
+      $config{CREATEDOMAIN} = $d
+        if ($config{CREATEDOMAIN} ne $d);
 
       $config{NOTEBOOKACCOUNT} = $notebookUser.'@'.$d
         if ($notebookDomain ne $d);
 
       $config{TRAINSASPAM} = $spamUser.'@'.$d
-        if ($spamDomain eq $d);
+        if ($spamDomain ne $d);
   
       $config{TRAINSAHAM} = $hamUser.'@'.$d
-        if ($hamDomain eq $d);
+        if ($hamDomain ne $d);
     }
 
     if ($config{CREATEADMIN} eq $config{AVUSER}) {
@@ -2332,7 +2334,7 @@ sub configSetupLdap {
       progress ( "Enabling ldap replication..." );
       my $rc = runAsZimbra ("/opt/zimbra/libexec/zmldapenablereplica");
       if ($rc == 0) {
-        unlink "/opt/zimbra/.enable_replica";
+        #unlink "/opt/zimbra/.enable_replica";
         $config{DOCREATEADMIN} = "no";
         $config{DOCREATEDOMAIN} = "no";
         progress ( "done.\n" );
