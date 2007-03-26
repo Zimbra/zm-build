@@ -5,9 +5,9 @@ zcs-$(RELEASE).dmg: $(ARCH)/zcs.mpkg packages
 	cp -f $(PACKAGE_CONF_DIR)/Install/install-mac.sh $(ARCH)/tmp/scripts/installZCS.sh
 	cp -f $(CONSOLE_DIR)/WebRoot/adminhelp/pdf/* $(ARCH)/tmp/docs/
 	cp -R $(ARCH)/zcs.mpkg $(ARCH)/tmp
-	hdiutil create -srcfolder $(ARCH)/tmp -volname zcs-$(VERSION_TAG).$(BUILD_PLATFORM) $(ARCH)/zcs-$(VERSION_TAG).$(BUILD_PLATFORM).dmg
+	hdiutil create -srcfolder $(ARCH)/tmp -volname zcs-$(VERSION_TAG) $(ARCH)/zcs-$(VERSION_TAG).dmg
 	rm -rf $(ARCH)/tmp
-	(cd $(ARCH); ln -s zcs-$(VERSION_TAG).$(BUILD_PLATFORM).dmg zcs.dmg)
+	(cd $(ARCH); ln -s zcs-$(VERSION_TAG).dmg zcs.dmg)
 
 $(ARCH)/zcs.mpkg: $(ARCH)/zcs.mpkg/Contents
 	mkdir -p $@/Contents
