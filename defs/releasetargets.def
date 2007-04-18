@@ -15,6 +15,9 @@ $(ARCH)/zcs.mpkg: $(ARCH)/zcs.mpkg/Contents
 $(ARCH)/zcs.mpkg/Contents: $(ARCH)/zcs.mpkg/Contents/.Packages $(ARCH)/zcs.mpkg/Contents/Resources $(ARCH)/zcs.mpkg/Contents/distribution.dist
 	mkdir -p $@
 
+zcs-$(RELEASE).iso: packages zcs-$(RELEASE).tgz
+	$(BUILD_ROOT)/rpmconf/Build/genRpathRelease.sh $(PACKAGING_OPTIONS) $(BUILD_ROOT) $(PRODUCT)-$(VERSION_TAG)
+
 $(ARCH)/zcs.mpkg/Contents/.Packages:
 	mkdir -p $@
 	cp -R $(ARCH)/*.pkg $@
