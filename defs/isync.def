@@ -23,6 +23,7 @@ $(ISYNC_DIR)/build/Deployment/Zimbra.prefPane:
 
 $(ISYNC_DEST_ROOT)/Zimbra.pmproj:
 	cp $(ISYNC_DIR)/Zimbra.pmproj $@
+	cp $(ISYNC_DIR)/License.rtf $(ISYNC_DEST_ROOT)
 
 $(ISYNC_DEST_ROOT)/InstallerResources: $(ISYNC_DIR)/build/Deployment/Zimbra.prefPane
 	mkdir -p $@
