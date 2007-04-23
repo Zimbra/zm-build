@@ -42,7 +42,7 @@ chomp $rundir;
 my $scriptDir = "/opt/zimbra/libexec/scripts";
 
 my $lowVersion = 18;
-my $hiVersion = 37;
+my $hiVersion = 36;
 my $hiLoggerVersion = 5;
 
 # Variables for the combo schema updater
@@ -75,7 +75,6 @@ my %updateScripts = (
   '33' => "migrate20061205-UniqueAppointmentIndex.pl", # 4.5.0_RC1
   '34' => "migrate20061212-RepairMutableIndexIds.pl",  # 4.5.0_RC1
   '35' => "migrate20061221-RecalculateFolderSizes.pl", # 4.5.0_GA
-  '36' => "migrate20070306-Pop3MessageUid.pl",         # 5.0.0_BETA1
 );
 
 my %loggerUpdateScripts = (
@@ -118,9 +117,6 @@ my %updateFuncs = (
 	"4.5.3_GA" => \&upgrade453GA,
 	"4.5.4_GA" => \&upgrade454GA,
 	"4.5.5_GA" => \&upgrade455GA,
-  "4.6.0_BETA" => \&upgrade460BETA,
-  "4.6.0_RC1" => \&upgrade460RC1,
-  "4.6.0_GA" => \&upgrade460GA,
 	"5.0.0_BETA1" => \&upgrade500BETA1,
 	"5.0.0_GA" => \&upgrade500GA,
 );
@@ -157,9 +153,6 @@ my @versionOrder = (
 	"4.5.3_GA",
 	"4.5.4_GA",
 	"4.5.5_GA",
-  "4.6.0_BETA",
-  "4.6.0_RC1",
-  "4.6.0_GA",
   "5.0.0_BETA1",
   "5.0.0_GA",
 );
@@ -198,7 +191,6 @@ sub upgrade {
 
 	my $needVolumeHack = 0;
 	my $needMysqlTableCheck = 0;
-	my $needLdapMigration = 0;
 
 	getInstalledPackages();
 
@@ -287,12 +279,6 @@ sub upgrade {
 		main::progress("This appears to be 4.5.4_GA\n");
 	} elsif ($startVersion eq "4.5.5_GA") {
 		main::progress("This appears to be 4.5.5_GA\n");
-	} elsif ($startVersion eq "4.6.0_BETA") {
-		print "This appears to be 4.6.0_BETA\n";
-	} elsif ($startVersion eq "4.6.0_RC1") {
-		print "This appears to be 4.6.0_RC1\n";
-	} elsif ($startVersion eq "4.6.0_GA") {
-		print "This appears to be 4.6.0_GA\n";
 	} elsif ($startVersion eq "5.0.0_BETA1") {
 		main::progress("This appears to be 5.0.0_BETA1\n");
 	} elsif ($startVersion eq "5.0.0_GA") {
@@ -302,14 +288,8 @@ sub upgrade {
 		return 1;
 	}
 
-  
-	my $found = 0;
-	foreach my $v (@versionOrder) {
-    $found = 1 if ($v eq $startVersion);
-		if ($found) {
-      $needMysqlTableCheck=1 if ($v eq "4.5.2_GA");
-		}
-	  last if ($v eq $targetVersion);
+  if ($targetVersion eq "4.5.2_GA") {
+    $needMysqlTableCheck=1;
   }
 
 	if (isInstalled("zimbra-store")) {
@@ -351,14 +331,14 @@ sub upgrade {
 		stopLoggerSql();
 	}
 
+	my $found = 0;
 
+  #migrateLdap();
   # start ldap
 	if (isInstalled ("zimbra-ldap")) {
-    migrateLdap() if $needLdapMigration;
     if (startLdap()) {return 1;} 
   }
 
-	my $found = 0;
 	foreach my $v (@versionOrder) {
 	  main::progress("Checking $v\n");
 		if ($v eq $startVersion) {
@@ -1246,32 +1226,9 @@ sub upgrade455GA {
 	main::progress("Updating from 4.5.5_GA\n");
 	return 0;
 }
-sub upgrade460BETA {
-	my ($startBuild, $targetVersion, $targetBuild) = (@_);
-	Migrate::log("Updating from 4.6.0_BETA");
-	return 0;
-}
-sub upgrade460RC1 {
-	my ($startBuild, $targetVersion, $targetBuild) = (@_);
-	Migrate::log("Updating from 4.6.0_RC1");
-	return 0;
-}
-sub upgrade460GA {
-	my ($startBuild, $targetVersion, $targetBuild) = (@_);
-	Migrate::log("Updating from 4.6.0_GA");
-	return 0;
-}
 sub upgrade500BETA1 {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
 	main::progress("Updating from 5.0.0_BETA1\n");
-  if (isInstalled("zimbra-store")) {
-    if (startSql()) { return 1; }
-      main::runAsZimbra("perl -I${scriptDir} ${scriptDir}/migrate20070302-NullContactVolumeId.pl");
-      stopSql();
-  }
-  if (isInstalled("zimbra-ldap")) {
-    main::runAsZimbra("$ZMPROV mc default zimbraFeatureTasksEnabled TRUE");
-  }
 	return 0;
 }
 sub upgrade500GA {
@@ -1538,7 +1495,7 @@ sub updateMySQLcnf {
     my $i=0;
     my $mycnfChanged = 0;
     my $tmpfile = "/tmp/my.cnf.$$";;
-    my $zimbra_user = `zmlocalconfig -m nokey zimbra_user 2> /dev/null` || "zimbra";;
+    my $zimbra_user = `zmlocalconfig -m nokey zimbra_user 2> /dev/null` || "zmbra";;
     open(TMP, ">$tmpfile");
     foreach (@CNF) {
       if (/^port/ && $CNF[$i+1] !~ m/^user/) {

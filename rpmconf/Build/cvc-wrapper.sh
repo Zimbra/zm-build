@@ -181,7 +181,7 @@ else
     new=$((ls | grep -v CONARY; cat CONARY | tail +5 | awk '{print $2}') |
            sort | uniq -u)
     if [ -n "$new" ]; then
-        cvc add $new --text
+        cvc add $new
     fi
     cvc commit -m 'automated update from ZimbraBuild'
     cd -

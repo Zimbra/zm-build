@@ -25,11 +25,6 @@ include $(DEFS_DIR)/destination.def
 # COMPONENTS
 
 include $(DEFS_DIR)/components.def
-
-ifeq ($(BUILD_PLATFORM), RHEL5_64)
-include $(DEFS_DIR)/RHEL5_64_components.def
-endif
-
 ifeq ($(BUILD_PLATFORM), RHEL4_64)
 include $(DEFS_DIR)/RHEL4_64_components.def
 endif
@@ -47,11 +42,6 @@ include $(DEFS_DIR)/misctargets.def
 include $(DEFS_DIR)/releasetargets.def
 
 include $(DEFS_DIR)/coretargets.def
-
-ifeq ($(BUILD_PLATFORM), RHEL5_64)
-include $(DEFS_DIR)/RHEL5_64_targets.def
-endif
-
 ifeq ($(BUILD_PLATFORM), RHEL4_64)
 include $(DEFS_DIR)/RHEL4_64_targets.def
 endif

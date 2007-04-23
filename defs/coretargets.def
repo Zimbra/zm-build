@@ -106,7 +106,6 @@ $(CORE_DEST_DIR):
 	cp $(ENV_FILE_SOURCE) $(CORE_DEST_DIR)/$(ENV_FILE_DEST)
 	cp $(PROFILE_SOURCE) $(CORE_DEST_DIR)/$(PROFILE_DEST)
 	cp $(EXRC_SOURCE) $(CORE_DEST_DIR)/$(EXRC_DEST)
-	cp $(VIMINFO_SOURCE) $(CORE_DEST_DIR)/$(VIMINFO_DEST)
 
 $(CORE_DEST_DIR)/doc:
 	mkdir -p $@
@@ -176,10 +175,6 @@ pcre_FC3: ;
 pcre_RHEL4_64: ;
 
 pcre_RHEL4: ;
-
-pcre_RHEL5_64: ;
-
-pcre_RHEL5: ;
 
 pcre_DEBIAN3.1: ;
 
@@ -254,6 +249,7 @@ $(CORE_DEST_DIR)/conf: $(WEBAPP_DIR)/service.war
 	cp $(SERVICE_DIR)/conf/timezones.ics $@
 	cp $(SERVICE_DIR)/conf/zimbra.ld.conf $@
 	cp $(SERVICE_DIR)/conf/my.logger.cnf $@
+	cp $(SERVICE_DIR)/conf/wildfire.xml $@
 	cp $(SERVICE_DIR)/conf/com.zimbra.zcs.plist $@
 	cp $(SERVICE_DIR)/conf/postfix_recipient_restrictions.cf $@
 	cp -Rf $(SERVICE_DIR)/conf/msgs $@/msgs
