@@ -89,6 +89,17 @@ my @packageList = (
   "zimbra-spell",
   );
 
+my %packageServiceMap = (
+  antivirus => "zimbra-mta",
+  antispam  => "zimbra-mta",
+  mta       => "zimbra-mta",
+  logger    => "zimbra-logger",
+  mailbox   => "zimbra-store",
+  snmp      => "zimbra-snmp",
+  ldap      => "zimbra-ldap",
+  spell     => "zimbra-spell",
+);
+
 my %installedPackages = ();
 my %enabledPackages = ();
 
@@ -131,6 +142,8 @@ sub usage {
 sub progress {
   my $msg = shift;
   print $msg;
+  my ($sub,$line) = (caller(1))[3,2];
+  $msg = "$sub:$line $msg" if $options{d};
   detail ($msg);
 }
 
@@ -139,7 +152,9 @@ sub status {
 
 sub detail {
   my $msg = shift;
+  my ($sub,$line) = (caller(1))[3,2];
   $msg =~ s/\n$//;
+  $msg = "$sub:$line $msg" if $options{d};
   `echo "$msg" >> $logfile`;
 }
 
@@ -230,14 +245,62 @@ sub checkPortConflicts {
 }
 
 sub getInstalledPackages {
-
+  detail("Getting installed packages");
   foreach my $p (@packageList) {
     if (isInstalled($p)) {
       $installedPackages{$p} = $p;
-      $enabledPackages{$p} = "Enabled";
     }
   }
   
+}
+sub isEnabled {
+  my $package = shift;
+  detail("checking isEnabled $package");
+  # if its already defined return;
+  if (defined $enabledPackages{$package}) {
+    if ($enabledPackages{$package} eq "Enabled") {
+      detail("$package is enabled");
+      return 1;
+    } else {
+      detail("$package is not enabled");
+      return undef;
+    }
+  }
+
+  # lookup service in ldap
+  if ($newinstall == 0) {
+    startLdap();
+    detail("Getting enabled services from ldap");
+    $config{zimbra_server_hostname} = getLocalConfig ("zimbra_server_hostname");
+    $enabledPackages{"zimbra-core"} = "Enabled"
+      if (isInstalled("zimbra-core"));
+
+    open(ZMPROV, "$ZMPROV gs $config{zimbra_server_hostname}|");
+    while (<ZMPROV>) {
+      chomp;
+      if (/^zimbraServiceEnabled:\s(.*)/) {
+        detail ("Marking $packageServiceMap{$1} as an enabled service")
+          if $options{d};
+        $enabledPackages{$packageServiceMap{$1}} = "Enabled";
+      }
+    } 
+    foreach my $p (@packageList) {
+      if (isInstalled($p) and not defined $enabledPackages{$p}) {
+        detail("Marking $p as disabled");
+        $enabledPackages{$p} = "Disabled";
+      }
+    }
+    close(ZMPROV);
+  } else {
+    detail("Newinstall enabling all installed packages");
+    foreach my $p (@packageList) {
+      if (isInstalled($p)) {
+        detail("Enabling $p");
+        $enabledPackages{$p} = "Enabled";
+      }
+    }
+  }
+  return ($enabledPackages{$package} eq "Enabled" ? 1 : 0);
 }
 
 sub isInstalled {
@@ -503,7 +566,7 @@ sub setDefaults {
   if (isEnabled("zimbra-store")) {
     progress  "setting defaults for zimbra-store.\n" if $options{d};
     $config{MTAAUTHHOST} = $config{HOSTNAME};
-    $config{DOCREATEADMIN} = "yes";
+    $config{DOCREATEADMIN} = "yes" if $newinstall;
     $config{DOTRAINSA} = "yes";
 
     # default values for upgrades 
@@ -534,7 +597,7 @@ sub setDefaults {
 
   if (isEnabled("zimbra-ldap")) {
     progress "setting defaults for zimbra-ldap.\n" if $options{d};
-    $config{DOCREATEDOMAIN} = "yes";
+    $config{DOCREATEDOMAIN} = "yes" if $newinstall;
     $config{LDAPPASS} = genRandomPass();
   }
   $config{CREATEADMIN} = "admin\@$config{CREATEDOMAIN}";
@@ -553,9 +616,6 @@ sub setDefaults {
   $config{TOMCATMEMORYPERCENT} = tomcatMemoryPercent($config{SYSTEMMEMORY});
 
   $config{CREATEADMINPASS} = "";
-  progress "getting install status..." if $options{d};
-  getInstallStatus();
-  progress "done.\n" if $options{d};
 
   if (!$options{c} && $newinstall) {
     progress "no config file and newinstall checking dns resolution\n" if $options{d};
@@ -643,6 +703,7 @@ sub setDefaults {
 }
 
 sub getInstallStatus {
+  progress "getting install status..." if $options{d};
 
   if (open H, "/opt/zimbra/.install_history") {
 
@@ -690,13 +751,14 @@ sub getInstallStatus {
       $newinstall = 1;
     } else {
       $newinstall = 0;
-      $config{DOCREATEDOMAIN} = "no";
-      $config{DOCREATEADMIN} = "no";
-      setDefaultsFromLocalConfig();
+      #$config{DOCREATEDOMAIN} = "no";
+      #$config{DOCREATEADMIN} = "no";
+      #setDefaultsFromLocalConfig();
     }
   } else {
     $newinstall = 1;
   }
+  progress "done.\n" if $options{d};
 }
 
 sub setDefaultsFromLocalConfig {
@@ -1384,10 +1446,6 @@ sub genPackageMenu {
   return \%lm;
 }
 
-sub isEnabled {
-  my $package = shift;
-  return ($enabledPackages{$package} eq "Enabled");
-}
 
 sub isNetwork {
   return((-f "/opt/zimbra/lib/ext/zimbra-license/zimbra-license.jar") ? 1 : 0);
@@ -3198,9 +3256,28 @@ sub resumeConfiguration {
   }
 }
 
+getInstallStatus();
+
 getInstalledPackages();
 
+unless (isEnabled("zimbra-core")) {
+  progress("zimbra-core must be enabled.");
+  exit 1;
+}
+
+if ($options{d}) {
+  foreach my $pkg (keys %installedPackages) {
+    detail("Package $pkg is installed");
+  }
+  foreach my $pkg (keys %enabledPackages) {
+    detail("Package $pkg is $enabledPackages{$pkg}");
+  }     
+} 
+
 setDefaults();
+
+setDefaultsFromLocalConfig()
+  if (! $newinstall);
 
 # if we're an upgrade, run the upgrader...
 
