@@ -411,6 +411,13 @@ determineVersionType() {
 
 verifyLicenseAvailable() {
 
+  if [ x"$LICENSE" != "x" ] && [ -e $LICENSE ]; then
+    if [ ! -d "/opt/zimbra/conf" ]; then
+      mkdir -p /opt/zimbra/conf
+    fi
+    cp -f $LICENSE /opt/zimbra/conf/ZCSLicense.xml
+  fi
+
   if [ x"$AUTOINSTALL" = "xyes" ] || [ x"$UNINSTALL" = "xyes" ] || [ x"$SOFTWAREONLY" = "yes" ]; then
     return
   fi
@@ -430,6 +437,7 @@ verifyLicenseAvailable() {
   fi
 
   echo "Checking for available license file..."
+
 
   # use the tool if it exists
   if [ -f "/opt/zimbra/bin/zmlicense" ]; then
@@ -845,8 +853,10 @@ removeExistingInstall() {
       echo ""
       echo "Backing up ldap"
       echo ""
-      /opt/zimbra/openldap/sbin/slapcat -f /opt/zimbra/conf/slapd.conf \
-        -l /opt/zimbra/openldap-data/ldap.bak
+      if [ -f "/opt/zimbra/openldap/sbin/slapcat" ]; then
+        /opt/zimbra/openldap/sbin/slapcat -f /opt/zimbra/conf/slapd.conf \
+         -l /opt/zimbra/openldap-data/ldap.bak
+      fi
     fi
 
     echo ""
@@ -1253,13 +1263,15 @@ getPlatformVars() {
       PREREQ_LIBS="/usr/lib/libstdc++.so.6"
     elif [ $PLATFORM = "MANDRIVA2006" ]; then
       PREREQ_PACKAGES="sudo libidn11 curl fetchmail libgmp3 libxml2 libstdc++6 openssl"
-    elif [ $PLATFORM = "FC4" -o $PLATFORM = "FC5" -o $PLATFORM = "FC3" ]; then
+    elif [ $PLATFORM = "FC3" -o $PLATFORM = "FC4" ]; then
       PREREQ_PACKAGES="sudo libidn curl fetchmail gmp bind-libs vixie-cron"
-      if [ $PLATFORM = "FC5" ]; then
-        PREREQ_LIBS="/usr/lib/libstdc++.so.6"
-      else 
-        PREREQ_LIBS="/usr/lib/libstdc++.so.5"
-      fi
+      PREREQ_LIBS="/usr/lib/libstdc++.so.5"
+    elif [ $PLATFORM = "FC5" -o $PLATFORM = "FC6" ]; then
+      PREREQ_PACKAGES="sudo libidn curl fetchmail gmp bind-libs vixie-cron"
+      PREREQ_LIBS="/usr/lib/libstdc++.so.6"
+    elif [ $PLATFORM = "FC5_64" -o $PLATFORM = "FC6_64" ]; then
+      PREREQ_PACKAGES="sudo libidn curl fetchmail gmp compat-libstdc++-296 compat-libstdc++-33"
+      PREREQ_LIBS="/usr/lib/libstdc++.so.6 /usr/lib64/libstdc++.so.5"
     elif [ $PLATFORM = "RHEL5_64" -o $PLATFORM = "CentOS5_64" ]; then
       PREREQ_PACKAGES="sudo libidn curl fetchmail gmp compat-libstdc++-296 compat-libstdc++-33"
       PREREQ_LIBS="/usr/lib/libstdc++.so.6 /usr/lib64/libstdc++.so.6"
