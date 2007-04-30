@@ -98,4 +98,12 @@ if [ $PKG = "zimbra-store" ]; then
   echo "${D}: INSTALL SESSION COMPLETE" >> $INSTALL_HISTORY
 fi
 
+if [ -f "/etc/security/limits.conf" ]; then
+  egrep -q 'zimbra' /etc/security/limits.conf
+  if [ $? != 0 ]; then
+    echo "zimbra soft nofile 10000" >> /etc/security/limits.conf
+    echo "zimbra hard nofile 10000" >> /etc/security/limits.conf
+  fi
+fi
+
 exit 0

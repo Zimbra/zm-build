@@ -36,3 +36,11 @@ if [ $? != 0 ]; then
 else
 	usermod -g zimbra -d /opt/zimbra -s /bin/bash zimbra
 fi
+
+if [ -f "/etc/security/limits.conf" ]; then
+  egrep -q 'zimbra' /etc/security/limits.conf
+  if [ $? != 0 ]; then
+    echo "zimbra soft nofile 10000" >> /etc/security/limits.conf
+    echo "zimbra hard nofile 10000" >> /etc/security/limits.conf
+  fi
+fi
