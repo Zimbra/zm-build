@@ -34,13 +34,13 @@ if [ -f /etc/redhat-release ]; then
 		i=""
 	fi
 
-	grep "Red Hat Enterprise Linux.*5" /etc/redhat-release > /dev/null 2>&1
+	grep "Red Hat Enterprise Linux.*release 5" /etc/redhat-release > /dev/null 2>&1
 	if [ $? = 0 ]; then
 		echo "RHEL5${i}"
 		exit 0
 	fi
 
-	grep "Red Hat Enterprise Linux.*4" /etc/redhat-release > /dev/null 2>&1
+	grep "Red Hat Enterprise Linux.*release 4" /etc/redhat-release > /dev/null 2>&1
 	if [ $? = 0 ]; then
 		echo "RHEL4${i}"
 		exit 0
