@@ -266,12 +266,20 @@ sub isEnabled {
       return undef;
     }
   }
+  
 
   # lookup service in ldap
   if ($newinstall == 0) {
-    startLdap();
+    $config{zimbra_server_hostname} = getLocalConfig ("zimbra_server_hostname")
+      if ($config{zimbra_server_hostname} eq "");
+
+    $config{ldap_url} = getLocalConfig ("ldap_url")
+      if ($config{ldap_url} eq "");
+
+    if ($config{zimbra_server_hostname} =~ m/$config{ldap_url}/) {
+      if (startLdap()) {return 1;}
+    }
     detail("Getting enabled services from ldap");
-    $config{zimbra_server_hostname} = getLocalConfig ("zimbra_server_hostname");
     $enabledPackages{"zimbra-core"} = "Enabled"
       if (isInstalled("zimbra-core"));
 
@@ -3238,13 +3246,24 @@ sub mainMenu {
 }
 
 sub startLdap {
-  progress ( "Starting ldap..." );
-  runAsZimbra 
-    ("/opt/zimbra/openldap/sbin/slapindex -f /opt/zimbra/conf/slapd.conf");
-  runAsZimbra ("/opt/zimbra/bin/ldap start");
-  runAsZimbra ("/opt/zimbra/libexec/zmldapapplyldif");
-  progress ( "Done\n" );
-}
+  main::progress("Checking ldap status\n");
+  my $rc = runAsZimbra("/opt/zimbra/bin/ldap status");
+  if ($rc) { 
+    main::progress("Starting ldap\n");
+    $rc = runAsZimbra ("/opt/zimbra/openldap/sbin/slapindex -f /opt/zimbra/conf/slapd.conf");
+    $rc = runAsZimbra ("/opt/zimbra/libexec/zmldapapplyldif");
+    $rc = runAsZimbra ("/opt/zimbra/bin/ldap status");
+    if ($rc) {
+      $rc = runAsZimbra("/opt/zimbra/bin/ldap start");
+      if ($rc) { 
+        main::progress("ldap startup failed with exit code $rc\n");
+        system("su - zimbra -c \"/opt/zimbra/bin/ldap start 2>&1 | grep failed\"");
+        return $rc;
+      } 
+    } 
+  }
+  return 0;
+}     
 
 sub resumeConfiguration {
   progress ( "\n\nNote\n\n" );
