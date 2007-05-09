@@ -383,6 +383,12 @@ determineVersionType() {
     else 
       ZMTYPE_INSTALLABLE="NETWORK"
     fi
+  elif [ "$PACKAGEEXT" = "deb" ]; then
+    if [ x"`dpkg -f ./packages/zimbra-core* Description | grep Network`" = "x" ]; then
+      ZMTYPE_INSTALLABLE="FOSS"
+    else 
+      ZMTYPE_INSTALLABLE="NETWORK"
+    fi
   fi
 
   if [ x"$UNINSTALL" = "xyes" ] || [ x"$AUTOINSTALL" = "xyes" ]; then
@@ -431,6 +437,10 @@ verifyLicenseAvailable() {
   if [ $PACKAGEEXT = "rpm" ]; then
     if [ x"`rpm --qf '%{description}' -qp ./packages/zimbra-core* | grep Network`" = "x" ]; then
      return
+    fi
+  elif [ "$PACKAGEEXT" = "deb" ]; then
+    if [ x"`dpkg -f ./packages/zimbra-core* Description | grep Network`" = "x" ]; then
+      return
     fi
   else 
     return
