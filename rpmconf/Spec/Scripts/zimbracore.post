@@ -57,12 +57,30 @@ else
 	cp -f /opt/zimbra/conf/zimbra.ld.conf /etc/ld.so.conf.d
 fi
 
+# update prelink.conf
+if [ -f /etc/prelink.conf ]; then
+  egrep -q 'zimbra' /etc/prelink.conf
+  if [ $? != 0 ]; then
+    echo "# added for Zimbra" >> /etc/prelink.conf
+    echo "-l /opt/zimbra/lib" >> /etc/prelink.conf
+    echo "-l /opt/zimbra/sleepycat/lib" >> /etc/prelink.conf
+    echo "-l /opt/zimbra/openldap/lib" >> /etc/prelink.conf
+    echo "-l /opt/zimbra/cyrus-sasl/lib" >> /etc/prelink.conf
+    echo "-l /opt/zimbra/mysql/lib" >> /etc/prelink.conf
+    if [ -x /usr/sbin/prelink ]; then
+      /usr/sbin/prelink -amR > /dev/null 2>&1
+    fi
+  fi
+fi
+
 if [ ! -d /opt/zimbra/zimbramon/mrtg/work/ ]; then
 	mkdir -p /opt/zimbra/zimbramon/mrtg/work/
 fi
 chown -R zimbra:zimbra /opt/zimbra/zimbramon/mrtg
 
-ldconfig
+if [ -x /sbin/ldconfig ]; then
+  /sbin/ldconfig
+fi
 
 # Setup syslog
 
