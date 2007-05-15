@@ -59,8 +59,11 @@ for i in jetty apache-tomcat ; do
   fi
   echo "ln -s $LONG $SHORT"
   ln -s $LONG $SHORT
-  rm -rf /opt/zimbra/mailboxd
-  ln -s $LONG /opt/zimbra/mailboxd
+  if [ -f "${LONG}/start.jar" -o -f "${LONG}/bin/startup.sh" ]; then
+    echo "Relinking /opt/zimbra/mailboxd to $LONG" 
+    rm -rf /opt/zimbra/mailboxd
+    ln -s $LONG /opt/zimbra/mailboxd
+  fi
   mkdir -p $SHORT/logs
   chown zimbra:zimbra $SHORT/logs
   chown root:root $LONG

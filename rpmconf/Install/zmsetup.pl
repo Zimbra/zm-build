@@ -577,10 +577,10 @@ sub setDefaults {
   chomp $config{HOSTNAME};
 
   $config{mailboxd_directory} = "/opt/zimbra/mailboxd";
-  if ( -d "/opt/zimbra/jetty/etc" ) {
+  if ( -f "/opt/zimbra/jetty/start.jar" ) {
     $config{mailboxd_keystore} = "$config{mailboxd_directory}/etc/keystore";
     $config{mailboxd_server} = "jetty";
-  } elsif ( -d "/opt/zimbra/tomcat/conf" ) {
+  } elsif ( -f "/opt/zimbra/tomcat/bin/startup.sh" ) {
     $config{mailboxd_keystore} = "$config{mailboxd_directory}/conf/keystore";
     $config{mailboxd_server} = "tomcat";
   }
@@ -2947,14 +2947,21 @@ sub configInitNotebooks {
 
     # global Documents
     runAsZimbra("/opt/zimbra/bin/zmprov mcf zimbraNotebookAccount $config{NOTEBOOKACCOUNT}");
-    $rc = runAsZimbra("/opt/zimbra/bin/zmprov in $config{NOTEBOOKACCOUNT} \'$config{NOTEBOOKPASS}\' /opt/zimbra/wiki/Template Template");
-
+    $rc = runAsZimbra("/opt/zimbra/bin/zmprov in $config{NOTEBOOKACCOUNT}");
     if ($rc != 0) {
       runAsZimbra("/opt/zimbra/bin/zmprov mc default zimbraFeatureNotebookEnabled FALSE");
       progress ("failed to initialize documents...see logfile for details.\n");
+
     } else {
-      runAsZimbra("/opt/zimbra/bin/zmprov ma $config{NOTEBOOKACCOUNT} zimbraFeatureNotebookEnabled TRUE");
-      progress ( "Done\n" );
+      $rc = runAsZimbra("/opt/zimbra/bin/zmprov impn $config{NOTEBOOKACCOUNT} /opt/zimbra/wiki/Template Template");
+
+      if ($rc != 0) {
+        runAsZimbra("/opt/zimbra/bin/zmprov mc default zimbraFeatureNotebookEnabled FALSE");
+        progress ("failed to initialize documents...see logfile for details.\n");
+      } else {
+        runAsZimbra("/opt/zimbra/bin/zmprov ma $config{NOTEBOOKACCOUNT} zimbraFeatureNotebookEnabled TRUE");
+        progress ( "Done\n" );
+      }
     }
 
     runAsZimbra("/opt/zimbra/bin/zmprov mc default zimbraFeatureNotebookEnabled $zimbraFeatureNotebookEnabled");
