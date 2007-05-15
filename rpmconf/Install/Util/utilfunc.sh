@@ -29,7 +29,7 @@ displayLicense() {
   echo ""
   cat $MYDIR/docs/zcl.txt
   echo ""
-e echo ""
+  echo ""
   if [ x$DEFAULTFILE = "x" -o x$CLUSTERUPGRADE = "xyes" ]; then
     echo -n "Press Return to continue"
     read response
