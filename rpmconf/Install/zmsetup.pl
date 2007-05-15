@@ -505,6 +505,16 @@ sub setLdapDefaults {
   $config{TRAINSASPAM} = getLdapConfigValue("zimbraSpamIsSpamAccount");
   $config{TRAINSAHAM} = getLdapConfigValue("zimbraSpamIsNotSpamAccount");
   $config{NOTEBOOKACCOUNT} = getLdapConfigValue("zimbraNotebookAccount");
+
+  if (isNetwork() && isEnabled("zimbra-store")) {
+    $config{zimbraBackupReportEmailRecipients} = getLdapConfigValue("zimbraBackupReportEmailRecipients");
+    $config{zimbraBackupReportEmailRecipients} = $config{CREATEADMIN}
+      if ($config{zimbraBackupReportEmailRecipients} eq "");
+
+    $config{zimbraBackupReportEmailSender} = getLdapConfigValue("zimbraBackupReportEmailSender");
+    $config{zimbraBackupReportEmailSender} = $config{CREATEADMIN}
+      if ($config{zimbraBackupReportEmailSender} eq "");
+  }
  
   # default values for upgrades 
  $config{NOTEBOOKACCOUNT} = "wiki".'@'.$config{CREATEDOMAIN}
@@ -636,6 +646,11 @@ sub setDefaults {
   $config{SNMPNOTIFY} = "yes";
   $config{SMTPNOTIFY} = "yes";
   $config{STARTSERVERS} = "yes";
+
+  if (isEnabled("zimbra-store") && isNetwork()) {
+    $config{zimbraBackupReportEmailRecipients} = $config{CREATEADMIN};
+    $config{zimbraBackupReportEmailSender} = $config{CREATEADMIN};
+  }
 
   $config{MODE} = "http";
 
@@ -2691,6 +2706,13 @@ sub configSetKeyboardShortcutsPref {
   configLog("zimbraPrefUseKeyboardShortcuts");
 }
 
+sub configInitBackupPrefs {
+  if (isEnabled("zimbra-store") && isNetwork()) {
+    runAsZimbra("$ZMPROV mcf zimbraBackupReportEmailRecipients $config{zimbraBackupReportEmailRecipients}");
+    runAsZimbra("$ZMPROV mcf zimbraBackupReportEmailSender $config{zimbraBackupReportEmailSender}");
+  }
+}
+
 sub zimletCleanup {
   my $ldap_pass = getLocalConfig("ldap_root_password");
   my $ldap_master_url = getLocalConfig("ldap_master_url");
@@ -3071,6 +3093,8 @@ sub applyConfig {
     configSetInstalledSkins();
 
     configSetKeyboardShortcutsPref() if (!$newinstall);
+  
+    configInitBackupPrefs();
 
   }
 
