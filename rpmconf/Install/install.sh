@@ -56,6 +56,8 @@ while [ $# -ne 0 ]; do
 		;;
 		-c) CLUSTERUPGRADE="yes"
 		;;
+		-x) SKIPSPACECHECK="yes"
+		;;
 		*) DEFAULTFILE=$1
 		;;
 	esac
