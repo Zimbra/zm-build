@@ -39,11 +39,23 @@ ln -s /opt/zimbra/perdition-1.17 /opt/zimbra/perdition
 mkdir -p /opt/zimbra/perdition/var/run
 chown -R zimbra:zimbra /opt/zimbra/perdition/var
 
-rm -rf /opt/zimbra/tomcat
-ln -s /opt/zimbra/apache-tomcat-5.5.15 /opt/zimbra/tomcat
-mkdir -p /opt/zimbra/tomcat/logs
-chown zimbra:zimbra /opt/zimbra/tomcat/logs
-chown root:root /opt/zimbra/apache-tomcat-5.5.15
+for i in jetty apache-tomcat ; do
+  MAILBOXD=`perl -e 'print ($1 eq "apache-tomcat" ? "tomcat $1-$2" : "jetty $1-$2")  if ($ARGV[0] =~ m/(jetty|apache-tomcat)-(.*)/ && $2 ne "*");' /opt/zimbra/$i-*`
+  if [ "x${MAILBOXD}" = "x" ]; then
+    continue
+  fi
+  SHORT=/opt/zimbra/`echo $MAILBOXD | awk '{print $1}'`
+  LONG=/opt/zimbra/`echo $MAILBOXD | awk '{print $2}'`
+  if [ -L "$SHORT" ]; then
+    rm -f $SHORT
+  fi
+  ln -s $LONG $SHORT
+  rm -rf /opt/zimbra/mailboxd
+  ln -s $LONG /opt/zimbra/mailboxd
+  mkdir -p $SHORT/logs
+  chown zimbra:zimbra $SHORT/logs
+  chown root:root $LONG
+done
 
 mkdir -p /opt/zimbra/convertd
 mkdir -p /opt/zimbra/redolog
@@ -52,8 +64,8 @@ mkdir -p /opt/zimbra/index
 mkdir -p /opt/zimbra/backup
 chown zimbra:zimbra /opt/zimbra/convertd /opt/zimbra/redolog /opt/zimbra/store /opt/zimbra/index /opt/zimbra/backup 
 
-egrep -v '^%zimbra.*tomcat' /etc/sudoers > /tmp/sudoers
-echo "%zimbra ALL=NOPASSWD:/opt/zimbra/libexec/zmtomcatmgr" >> /tmp/sudoers
+egrep -v -e '^%zimbra.*tomcat' -e '^%zimbra.*mailboxdmgr'  /etc/sudoers > /tmp/sudoers
+echo "%zimbra ALL=NOPASSWD:/opt/zimbra/libexec/mailboxdmgr" >> /tmp/sudoers
 mv -f /tmp/sudoers /etc/sudoers
 chmod 440 /etc/sudoers
 

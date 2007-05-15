@@ -28,24 +28,32 @@ MTA_COMPONENTS	:= \
 LOGGER_COMPONENTS := \
 	$(LOGGER_DEST_DIR)/$(MYSQL_DIR) \
 
+ifndef $(ZIMBRA_USE_TOMCAT)
+	MAILBOXD_COMPONENTS := \
+		$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/common/lib/jcl104-over-slf4j-$(SLF4J_VERSION).jar \
+		$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/common/lib/slf4j-simple-$(SLF4J_VERSION).jar \
+		$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/common/lib/slf4j-api-$(SLF4J_VERSION).jar 
+endif
+
 STORE_COMPONENTS := \
 	$(WEBAPPS) \
-	$(STORE_DEST_DIR)/$(TOMCAT_DIR) \
+	$(STORE_DEST_DIR)/$(MAILBOXD_DIR) \
 	$(STORE_DEST_DIR)/zimlets \
 	$(STORE_DEST_DIR)/zimlets-extra \
 	$(STORE_DEST_DIR)/$(PERDITION_DIR)-$(PERDITION_VERSION) \
-	$(STORE_DEST_DIR)/$(TOMCAT_DIR)/common/lib/ical4j-0.9.16-patched.jar \
-	$(STORE_DEST_DIR)/$(TOMCAT_DIR)/common/lib/zimbra-native.jar \
-	$(STORE_DEST_DIR)/$(TOMCAT_DIR)/common/lib/mail.jar \
-	$(STORE_DEST_DIR)/$(TOMCAT_DIR)/common/endorsed/zimbra-charset.jar \
-	$(STORE_DEST_DIR)/$(TOMCAT_DIR)/common/lib/activation.jar \
+	$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/common/lib/ical4j-0.9.16-patched.jar \
+	$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/common/lib/zimbra-native.jar \
+	$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/common/lib/mail.jar \
+	$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/common/endorsed/zimbra-charset.jar \
+	$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/common/lib/activation.jar \
+	$(MAILBOXD_COMPONENTS) \
 	$(STORE_DEST_DIR)/lib/ext/clamscanner/clamscanner.jar \
 	$(STORE_DEST_DIR)/wiki \
 	$(STORE_DEST_DIR)/$(MYSQL_DIR) 
 
 ZIMLET_COMPONENTS := \
-	$(STORE_DEST_DIR)/$(TOMCAT_DIR)/webapps/service/WEB-INF/lib/zimbrataglib.jar \
-	$(STORE_DEST_DIR)/$(TOMCAT_DIR)/webapps/service/WEB-INF/zimbra.tld
+	$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/webapps/service/WEB-INF/lib/zimbrataglib.jar \
+	$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/webapps/service/WEB-INF/zimbra.tld
 
 LDAP_COMPONENTS := \
 	$(LDAP_DEST_DIR)/$(LDAP_DIR) \

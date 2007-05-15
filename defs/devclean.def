@@ -1,7 +1,7 @@
 DEV_CLEAN_TARGETS := \
 	$(DEV_INSTALL_ROOT)/$(LDAP_DIR) \
 	$(DEV_INSTALL_ROOT)/$(MYSQL_DIR) \
-	$(DEV_INSTALL_ROOT)/$(TOMCAT_DIR) \
+	$(DEV_INSTALL_ROOT)/$(MAILBOXD_DIR) \
 
 dev-allclean:
 	-su - zimbra -c "zmcontrol shutdown"

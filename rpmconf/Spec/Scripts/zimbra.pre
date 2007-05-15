@@ -48,4 +48,3 @@ if [ $? = 0 ]; then
 else 
   usermod -g zimbra -G postfix,tty zimbra
 fi
-

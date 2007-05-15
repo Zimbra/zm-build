@@ -149,13 +149,13 @@ $(CORE_DEST_DIR)/lib: $(WEBAPP_DIR)/service.war $(LDAP_DEST_DIR)/$(LDAP_DIR) $(M
 	cp -f $(LAUNCHER_DIR)/build/zimbra-launcher.jar $(CORE_DEST_DIR)/lib/jars
 
 $(NATIVE_DIR)/build/libzimbra-native.$(JNI_EXT):
-	(cd $(NATIVE_DIR); make TOMCAT_HOME=$(TOMCAT_HOME) JAVA_BINARY=$(JAVA_BINARY))
+	(cd $(NATIVE_DIR); make JAVA_BINARY=$(JAVA_BINARY))
 
 $(LAUNCHER_DIR)/build/zimbra-launcher.jar:
-	(cd $(LAUNCHER_DIR); make TOMCAT_HOME=$(TOMCAT_HOME) JAVA_BINARY=$(JAVA_BINARY))
+	(cd $(LAUNCHER_DIR); make JAVA_BINARY=$(JAVA_BINARY))
 
-$(LAUNCHER_DIR)/build/zmtomcatmgr:
-	(cd $(LAUNCHER_DIR); make TOMCAT_HOME=$(TOMCAT_HOME) JAVA_BINARY=$(JAVA_BINARY))
+$(LAUNCHER_DIR)/build/mailboxdmgr:
+	(cd $(LAUNCHER_DIR); make JAVA_BINARY=$(JAVA_BINARY))
 
 pcre_UBUNTU6: 
 	mkdir -p $(CORE_DEST_DIR)/lib
@@ -250,7 +250,7 @@ $(CORE_DEST_DIR)/conf: $(WEBAPP_DIR)/service.war
 	cp $(SERVICE_DIR)/conf/postfix_header_checks.in $@
 	cp $(SERVICE_DIR)/conf/perdition.conf.in $@
 	cp $(SERVICE_DIR)/conf/salocal.cf $@/salocal.cf.in
-	cp $(SERVICE_DIR)/conf/zmmta.cf $@
+	cp $(SERVICE_DIR)/conf/zmmta.cf-$(MAILBOXD_SERVER) $@/zmmta.cf
 	cp $(SERVICE_DIR)/conf/timezones.ics $@
 	cp $(SERVICE_DIR)/conf/zimbra.ld.conf $@
 	cp $(SERVICE_DIR)/conf/my.logger.cnf $@
@@ -262,7 +262,7 @@ $(CORE_DEST_DIR)/conf: $(WEBAPP_DIR)/service.war
 	mkdir -p $@/attrs
 	cp -f $(SERVICE_DIR)/build/dist/conf/attrs/* $@/attrs
 
-$(CORE_DEST_DIR)/libexec: $(LAUNCHER_DIR)/build/zmtomcatmgr
+$(CORE_DEST_DIR)/libexec: $(LAUNCHER_DIR)/build/mailboxdmgr
 	@echo "*** Installing libexec"
 	mkdir -p $@/installer/util/modules
 	mkdir -p $@/installer/bin
@@ -281,8 +281,8 @@ $(CORE_DEST_DIR)/libexec: $(LAUNCHER_DIR)/build/zmtomcatmgr
 	cp -f $(PACKAGE_CONF_DIR)/Install/postinstall.pm $@/postinstall.pm
 	cp -f $(PACKAGE_CONF_DIR)/Install/preinstall.pm $@/preinstall.pm
 	cp -f $(PACKAGE_CONF_DIR)/Install/Util/addUser.sh $@/addUser.sh
-	cp -f $(LAUNCHER_DIR)/build/zmtomcatmgr $@
-	cp -f $(LAUNCHER_DIR)/build/zmtomcatmgr.unrestricted $@
+	cp -f $(LAUNCHER_DIR)/build/mailboxdmgr $@
+	cp -f $(LAUNCHER_DIR)/build/mailboxdmgr.unrestricted $@
 	cp $(SERVICE_DIR)/src/libexec/* $@
 	cp $@/swatch $@/logswatch
 	cp -f $(BUILD_ROOT)/rpmconf/Build/get_plat_tag.sh $@

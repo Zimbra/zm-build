@@ -29,7 +29,7 @@ displayLicense() {
   echo ""
   cat $MYDIR/docs/zcl.txt
   echo ""
-  echo ""
+e echo ""
   if [ x$DEFAULTFILE = "x" -o x$CLUSTERUPGRADE = "xyes" ]; then
     echo -n "Press Return to continue"
     read response
@@ -309,10 +309,16 @@ EOF
     GOOD=no
   fi
   if [ $GOOD = "no" ]; then
-    echo ""
-    echo "Installation cancelled."
-    echo ""
-    exit 1
+    if [ x"$SKIPSPACECHECK" != "xyes" ]; then
+      echo ""
+      echo "Installation cancelled."
+      echo ""
+      exit 1
+    else 
+      echo ""
+      echo "Installation will contine by request." 
+      echo ""
+    fi
   fi
 
   # limitation of ext3
@@ -769,6 +775,8 @@ restoreCerts() {
   fi
   if [ -f "$SAVEDIR/keystore" -a -d "/opt/zimbra/tomcat/conf" ]; then
     cp $SAVEDIR/keystore /opt/zimbra/tomcat/conf/keystore
+  elif [ -f "$SAVEDIR/keystore" -a -d "/opt/zimbra/jetty/etc" ]; then
+    cp $SAVEDIR/keystore /opt/zimbra/jetty/etc/keystore
   fi
   if [ -f "$SAVEDIR/perdition.key" ]; then
     cp $SAVEDIR/perdition.key /opt/zimbra/conf/perdition.key 
@@ -792,7 +800,12 @@ restoreCerts() {
   if [ -f "$SAVEDIR/ca.pem" ]; then
     cp $SAVEDIR/ca.pem /opt/zimbra/conf/ca/ca.pem 
   fi
-  chown zimbra:zimbra /opt/zimbra/java/jre/lib/security/cacerts /opt/zimbra/tomcat/conf/keystore /opt/zimbra/conf/smtpd.key /opt/zimbra/conf/smtpd.crt /opt/zimbra/conf/slapd.crt /opt/zimbra/conf/perdition.pem /opt/zimbra/conf/perdition.key
+  if [ -f "/opt/zimbra/tomcat/conf/keystore" ]; then
+    chown zimbra:zimbra /opt/zimbra/tomcat/conf/keystore
+  elif [ -f "/opt/zimbra/jetty/etc/keystore" ]; then
+    chown zimbra:zimbra /opt/zimbra/jetty/etc/keystore
+  fi
+  chown zimbra:zimbra /opt/zimbra/java/jre/lib/security/cacerts /opt/zimbra/conf/smtpd.key /opt/zimbra/conf/smtpd.crt /opt/zimbra/conf/slapd.crt /opt/zimbra/conf/perdition.pem /opt/zimbra/conf/perdition.key
   chown -R zimbra:zimbra /opt/zimbra/conf/ca
 }
 
@@ -804,6 +817,8 @@ saveExistingConfig() {
   cp -f /opt/zimbra/java/jre/lib/security/cacerts $SAVEDIR
   if [ -f "/opt/zimbra/tomcat/conf/keystore" ]; then
     cp -f /opt/zimbra/tomcat/conf/keystore $SAVEDIR
+  elif [ -f "/opt/zimbra/jetty/etc/keystore" ]; then
+    cp -f /opt/zimbra/jetty/etc/keystore $SAVEDIR
   fi
   if [ -f "/opt/zimbra/conf/perdition.key" ]; then
     cp -f /opt/zimbra/conf/perdition.key $SAVEDIR
@@ -906,13 +921,23 @@ removeExistingInstall() {
     fi
     echo ""
     echo "Removing deployed webapp directories"
-    /bin/rm -rf /opt/zimbra/tomcat/webapps/zimbra
-    /bin/rm -rf /opt/zimbra/tomcat/webapps/zimbra.war
-    /bin/rm -rf /opt/zimbra/tomcat/webapps/zimbraAdmin
-    /bin/rm -rf /opt/zimbra/tomcat/webapps/zimbraAdmin.war
-    /bin/rm -rf /opt/zimbra/tomcat/webapps/service
-    /bin/rm -rf /opt/zimbra/tomcat/webapps/service.war
-    /bin/rm -rf /opt/zimbra/tomcat/work
+    if [ -d "/opt/zimbra/tomcat/webapps/" ]; then
+      /bin/rm -rf /opt/zimbra/tomcat/webapps/zimbra
+      /bin/rm -rf /opt/zimbra/tomcat/webapps/zimbra.war
+      /bin/rm -rf /opt/zimbra/tomcat/webapps/zimbraAdmin
+      /bin/rm -rf /opt/zimbra/tomcat/webapps/zimbraAdmin.war
+      /bin/rm -rf /opt/zimbra/tomcat/webapps/service
+      /bin/rm -rf /opt/zimbra/tomcat/webapps/service.war
+      /bin/rm -rf /opt/zimbra/tomcat/work
+    elif [ -d "/opt/zimbra/jetty/webapps" ]; then
+      /bin/rm -rf /opt/zimbra/jetty/webapps/zimbra
+      /bin/rm -rf /opt/zimbra/jetty/webapps/zimbra.war
+      /bin/rm -rf /opt/zimbra/jetty/webapps/zimbraAdmin
+      /bin/rm -rf /opt/zimbra/jetty/webapps/zimbraAdmin.war
+      /bin/rm -rf /opt/zimbra/jetty/webapps/service
+      /bin/rm -rf /opt/zimbra/jetty/webapps/service.war
+      /bin/rm -rf /opt/zimbra/jetty/work
+    fi
   fi
 
   if [ $REMOVE = "yes" ]; then

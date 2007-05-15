@@ -1169,7 +1169,7 @@ sub upgrade450RC1 {
     my $result = $ldap->bind("uid=zimbra,cn=admins,cn=zimbra", password => $ldap_pass);
     unless($result->code()) {
       $result = DeleteLdapTree($ldap,$dn);
-      main::progress($result->code() ? "Failed to delete $dn: ".$result->error() : "Deleted $dn\n");
+      main::progress($result->code() ? "Failed to delete $dn: ".$result->error()."\n" : "Deleted $dn\n");
     }
     $result = $ldap->unbind;
   }
@@ -1266,8 +1266,57 @@ sub upgrade500BETA1 {
 	main::progress("Updating from 5.0.0_BETA1\n");
   if (isInstalled("zimbra-store")) {
     if (startSql()) { return 1; }
-      main::runAsZimbra("perl -I${scriptDir} ${scriptDir}/migrate20070302-NullContactVolumeId.pl");
-      stopSql();
+    Migrate::log("Executing ${scriptDir}/migrate20070302-NullContactVolumeId.pl"); 
+    main::runAsZimbra("perl -I${scriptDir} ${scriptDir}/migrate20070302-NullContactVolumeId.pl");
+    stopSql();
+
+    my $mailboxd_java_options = main::getLocalConfig("mailboxd_java_options");
+    if ($mailboxd_java_options eq "") {
+      my $tomcat_java_options = main::getLocalConfig("tomcat_java_options");
+      main::setLocalConfig("mailboxd_java_options", "$tomcat_java_options");
+      main::deleteLocalConfig("tomcat_java_options");
+    }
+
+    my $zimbra_home = main::getLocalConfig("zimbra_home");
+    $zimbra_home = "/opt/zimbra" if ($zimbra_home eq "");
+
+    my $mailboxd_directory = main::getLocalConfig("mailboxd_directory");
+    if ($mailboxd_directory eq "") {
+      main::setLocalConfig("mailboxd_directory", "${zimbra_home}/mailboxd");
+      $main::config{mailboxd_directory} = $mailboxd_directory;
+      main::deleteLocalConfig("tomcat_directory");
+    }
+
+    my $mailboxd_keystore = main::getLocalConfig("mailboxd_keystore");
+    if ($mailboxd_keystore eq "" || -f "${zimbra_home}/mailboxd/etc/jettyrc") {
+      $mailboxd_keystore="${zimbra_home}/mailboxd/etc/keystore";
+      main::deleteLocalConfig("tomcat_keystore");
+    } elsif ( -f "${zimbra_home}/mailboxd/conf/server.xml.in") {
+      $mailboxd_keystore="${zimbra_home}/mailboxd/conf/keystore";
+    }
+    $main::config{mailboxd_keystore} = $mailboxd_keystore;
+    main::setLocalConfig("mailboxd_keystore", "${mailboxd_keystore}");
+
+    my $mailboxd_java_heap_memory_percent = 
+      main::getLocalConfig("mailboxd_java_heap_memory_percent");
+
+    if ($mailboxd_java_heap_memory_percent eq "") {
+      my $tomcat_java_heap_memory_percent  = 
+        main::getLocalConfig("tomcat_java_heap_memory_percent");
+      $tomcat_java_heap_memory_percent = 40 
+        if ($tomcat_java_heap_memory_percent eq "");
+      main::setLocalConfig("mailboxd_java_heap_memory_percent", 
+        "$tomcat_java_heap_memory_percent");
+      main::deleteLocalConfig("tomcat_java_heap_memory_percent");
+    }
+
+    my $mailboxd_java_home = main::getLocalConfig("mailboxd_java_home");
+    if ($mailboxd_java_home eq "") {
+      my $tomcat_java_home = main::getLocalConfig("tomcat_java_home");
+      main::setLocalConfig("mailboxd_java_home", "$tomcat_java_home");
+      main::deleteLocalConfig("tomcat_java_home");
+    }
+
   }
   if (isInstalled("zimbra-ldap")) {
     main::runAsZimbra("$ZMPROV mc default zimbraFeatureTasksEnabled TRUE");

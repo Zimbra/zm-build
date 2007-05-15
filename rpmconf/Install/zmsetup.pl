@@ -130,6 +130,7 @@ my @interfaces = ();
 
 getopts("c:hd", \%options) or usage();
 
+my $debug = $options{d};
 sub usage {
   ($>) and print STDERR "Warning: $0 must be run as root!\n\n";
   print STDERR "Usage: $0 [-h] [-c <config file>]\n";
@@ -404,8 +405,8 @@ sub getSystemStatus {
 sub getLdapCOSValue {
   my ($cos,$attrib) = @_;
 
-  return $loaded{gc}{$cos}{$attrib} 
-    if (exists $loaded{gc}{$cos}{$attrib});
+  return $main::loaded{gc}{$cos}{$attrib} 
+    if (exists $main::loaded{gc}{$cos}{$attrib});
   # Gotta love the triple escape: \\\  
   my $rc = 0xffff & system("su - zimbra -c \"$ZMPROV gc $cos | grep $attrib | sed -e \\\"s/${attrib}: //\\\" > /tmp/ld.out\"");
   my $val=`cat /tmp/ld.out`;
@@ -413,7 +414,7 @@ sub getLdapCOSValue {
   chomp $val;
   detail ( "COS attribute retrieved for COS $cos: $attrib=$val");
 
-  $loaded{gc}{$cos}{$attrib} = $val;
+  $main::loaded{gc}{$cos}{$attrib} = $val;
 
   return $val;
 }
@@ -421,8 +422,8 @@ sub getLdapCOSValue {
 sub getLdapConfigValue {
   my $attrib = shift;
   
-  return $loaded{gcf}{$attrib}
-    if (exists $loaded{gcf}{$attrib});
+  return $main::loaded{gcf}{$attrib}
+    if (exists $main::loaded{gcf}{$attrib});
 
   #detail ( "Getting global config attribute $attrib from ldap.\n" );
   # Gotta love the triple escape: \\\  
@@ -430,7 +431,7 @@ sub getLdapConfigValue {
   my $val=`cat /tmp/ld.out`;
   chomp($val);
   detail ("Global config attribute retrieved from ldap: $attrib=$val");
-  $loaded{gcf}{$attrib} = $val;
+  $main::loaded{gcf}{$attrib} = $val;
 
   if (!-z "/tmp/ld.err") {
     my $err=`cat /tmp/ld.err`;
@@ -449,8 +450,8 @@ sub getLdapServerValue {
     $hn = $config{HOSTNAME};
   }
 
-  return $loaded{gs}{$hn}{$attrib}
-    if (exists $loaded{gs}{$hn}{$attrib});
+  return $main::loaded{gs}{$hn}{$attrib}
+    if (exists $main::loaded{gs}{$hn}{$attrib});
 
   #detail ( "Getting server config attribute $attrib for $hn from ldap." );
   # Gotta love the triple escape: \\\  
@@ -459,7 +460,7 @@ sub getLdapServerValue {
   unlink "/tmp/ld.out";
   chomp $val;
   detail("Server config attribute retrieved for $hn: $attrib=$val");
-  $loaded{gs}{$hn}{$attrib} = $val;
+  $main::loaded{gs}{$hn}{$attrib} = $val;
 
   return $val;
 }
@@ -575,6 +576,16 @@ sub setDefaults {
   }
   chomp $config{HOSTNAME};
 
+  $config{mailboxd_directory} = "/opt/zimbra/mailboxd";
+  if ( -d "/opt/zimbra/jetty/etc" ) {
+    $config{mailboxd_keystore} = "$config{mailboxd_directory}/etc/keystore";
+    $config{mailboxd_server} = "jetty";
+  } elsif ( -d "/opt/zimbra/tomcat/conf" ) {
+    $config{mailboxd_keystore} = "$config{mailboxd_directory}/conf/keystore";
+    $config{mailboxd_server} = "tomcat";
+  }
+  print "DEBUG: \$config{mailboxd_directory}=$config{mailboxd_directory}\n" if $debug;
+
   $config{SMTPHOST} = "";
   $config{SNMPTRAPHOST} = $config{HOSTNAME};
   $config{DOCREATEDOMAIN} = "no";
@@ -630,7 +641,7 @@ sub setDefaults {
 
   $config{SYSTEMMEMORY} = getSystemMemory();
   $config{MYSQLMEMORYPERCENT} = mysqlMemoryPercent($config{SYSTEMMEMORY});
-  $config{TOMCATMEMORYPERCENT} = tomcatMemoryPercent($config{SYSTEMMEMORY});
+  $config{MAILBOXDMEMORYPERCENT} = mailboxdMemoryPercent($config{SYSTEMMEMORY});
 
   $config{CREATEADMINPASS} = "";
 
@@ -811,8 +822,10 @@ sub setDefaultsFromLocalConfig {
   $config{LOGSQLROOTPASS} = getLocalConfig ("mysql_logger_root_password");
   $config{ZIMBRASQLPASS} = getLocalConfig ("zimbra_mysql_password");
   $config{ZIMBRALOGSQLPASS} = getLocalConfig ("zimbra_logger_mysql_password");
-  $config{TOMCATMEMORYPERCENT} = getLocalConfig ("tomcat_java_heap_memory_percent");
+  $config{MAILBOXDMEMORYPERCENT} = getLocalConfig ("mailboxd_java_heap_memory_percent");
   $config{MYSQLMEMORYPERCENT} = getLocalConfig ("mysql_memory_percent");
+  $config{mailboxd_directory} = getLocalConfig("mailboxd_directory");
+  $config{mailboxd_keystore} = getLocalConfig("mailboxd_keystore");
 }
 
 sub ask {
@@ -2260,33 +2273,49 @@ sub runAsZimbraWithOutput {
   my $exit_value = $? >> 8;
   my $signal_num = $? & 127;
   my $dumped_core = $? & 128;
-
+  detail ("DEBUG: exit status from cmd was $exit_value") if $debug;
   return $exit_value;
 }
 
 sub getLocalConfig {
   my $key = shift;
 
-  return $loaded{lc}{$key}
-    if (exists $loaded{lc}{$key});
+  return $main::loaded{lc}{$key}
+    if (exists $main::loaded{lc}{$key});
 
   detail ( "Getting local config $key" );
-  my $val = `/opt/zimbra/bin/zmlocalconfig -s -m nokey ${key}`;
+  my $val = `/opt/zimbra/bin/zmlocalconfig -x -s -m nokey ${key}`;
   chomp $val;
-  $loaded{lc}{$key} = $val;
+  detail ("DEBUG: $key=$val") if $debug;
+  $main::loaded{lc}{$key} = $val;
   return $val;
+}
+
+sub deleteLocalConfig {
+  my $key = shift;
+
+  detail ( "Deleting local config $key" );
+  my $rc = 0xffff & system("/opt/zimbra/bin/zmlocalconfig -u ${key}");
+  if ($rc == 0) {
+    detail ("DEBUG: deleted localconfig key $key") if $debug;
+    delete($main::loaded{lc}{$key}) if (exists $main::loaded{lc}{$key});
+    return 1;
+  } else {
+    detail ("DEBUG: failed to deleted localconfig key $key") if $debug;
+    return undef
+  }
 }
 
 sub setLocalConfig {
   my $key = shift;
   my $val = shift;
 
-  if (exists $saved{lc}{$key} && $saved{lc}{$key} eq $val) {
+  if (exists $main::saved{lc}{$key} && $main::saved{lc}{$key} eq $val) {
     detail ( "Skipping $key=$val. Already written.");
     return;
   }
   detail ( "Setting local config $key to $val" );
-  $saved{lc}{$key} = $val;
+  $main::saved{lc}{$key} = $val;
   runAsZimbra("/opt/zimbra/bin/zmlocalconfig -f -e ${key}=\'${val}\'");
 }
 
@@ -2329,7 +2358,10 @@ sub configLCValues {
   setLocalConfig ("ssl_allow_untrusted_certs", "TRUE");
 
   setLocalConfig ("mysql_memory_percent", $config{MYSQLMEMORYPERCENT});
-  setLocalConfig ("tomcat_java_heap_memory_percent", $config{TOMCATMEMORYPERCENT});
+  setLocalConfig ("mailboxd_java_heap_memory_percent", $config{MAILBOXDMEMORYPERCENT});
+  setLocalConfig ("mailboxd_directory", $config{mailboxd_directory});
+  setLocalConfig ("mailboxd_keystore", $config{mailboxd_keystore});
+  setLocalConfig ("mailboxd_server", $config{mailboxd_server});
 
   configLog ("configLCValues");
 
@@ -2493,7 +2525,7 @@ sub configCreateCert {
 
   if (isEnabled("zimbra-ldap") || isEnabled("zimbra-store") || isEnabled("zimbra-mta")) {
 
-    if (!-f "/opt/zimbra/tomcat/conf/keystore" || 
+    if (!-f "$config{mailboxd_keystore}" || 
       !-f "/opt/zimbra/conf/smtpd.crt" ||
       !-f "/opt/zimbra/conf/slapd.crt") {
       progress ( "Creating SSL certificate..." );
@@ -2526,7 +2558,7 @@ sub configInstallCert {
   if (isEnabled("zimbra-store") || isEnabled("zimbra-mta")) {
     progress ("Installing SSL certificate...");
     if (isEnabled("zimbra-store")) {
-      if (!-f "/opt/zimbra/tomcat/conf/keystore") {
+      if (!-f "$config{mailboxd_keystore}") {
         runAsZimbra("cd /opt/zimbra; zmcertinstall mailbox");
       }
     }
@@ -2631,12 +2663,12 @@ sub configSetInstalledSkins {
     return 0;
   }
 
-  if (opendir DIR, "/opt/zimbra/tomcat/webapps/zimbra/skins") {
+  if (opendir DIR, "$config{mailboxd_directory}/webapps/zimbra/skins") {
     progress ( "Installing skins... " );
     runAsZimbra("$ZMPROV mcf zimbraInstalledSkin ''");
     my @skins = grep { !/^[\._]/ } readdir(DIR);
     foreach my $skindir (@skins) {
-      if (-d "/opt/zimbra/tomcat/webapps/zimbra/skins/$skindir") {
+      if (-d "$config{mailboxd_directory}/webapps/zimbra/skins/$skindir") {
         my $skin = $skindir;
         runAsZimbra("$ZMPROV mcf +zimbraInstalledSkin $skin");
         print  ("\n\t$skin");
@@ -2691,7 +2723,7 @@ sub configInstallZimlets {
   }
 
   # cleanup renamed zimlets, this is really an upgrade task but
-  # tomcat needs to be be running here.
+  # mailboxd needs to be be running here.
   zimletCleanup();
 
   # Install zimlets
@@ -3080,8 +3112,8 @@ sub applyConfig {
       configInstallZimlets();
       configInitNotebooks();
 
-      progress ( "Restarting tomcat...");
-      runAsZimbra("/opt/zimbra/bin/tomcat restart");
+      progress ( "Restarting mailboxd...");
+      runAsZimbra("/opt/zimbra/bin/mailboxdctl restart");
       progress ( "Done\n" );
     }
     #runAsZimbra ("$ZMPROV ms $config{HOSTNAME} zimbraUserServicesEnabled TRUE");
@@ -3215,7 +3247,7 @@ sub mysqlMemoryPercent {
   return $percent;
 }
 
-sub tomcatMemoryPercent {
+sub mailboxdMemoryPercent {
   my $system_mem = shift;
   my $percent = 40;
   $percent = int((2/$system_mem)*100)

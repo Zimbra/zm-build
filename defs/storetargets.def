@@ -71,13 +71,15 @@ $(BUILD_ROOT)/zimbra.spec:
 		$(BUILD_ROOT)/zimbra.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/zimlets-extra" >> \
 		$(BUILD_ROOT)/zimbra.spec
-	echo "%attr(-, zimbra, zimbra) /opt/zimbra/apache-tomcat-5.5.15" >> \
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/$(MAILBOXD_DIR)" >> \
 		$(BUILD_ROOT)/zimbra.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/wiki" >> \
 		$(BUILD_ROOT)/zimbra.spec
-	echo "%attr(-, zimbra, zimbra) /opt/zimbra/perdition-1.17" >> \
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/$(PERDITION_DIR)-$(PERDITION_VERSION)" >> \
 		$(BUILD_ROOT)/zimbra.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/mysql-standard-$(MYSQL_VERSION_STRING)-pc-linux-gnu-i686-glibc23" >> \
+		$(BUILD_ROOT)/zimbra.spec
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/mysql" >> \
 		$(BUILD_ROOT)/zimbra.spec
 
 store_stage: $(STORE_COMPONENTS) $(ZIMLET_COMPONENTS)
@@ -100,38 +102,60 @@ $(STORE_DEST_DIR)/$(PERDITION_DIR)-$(PERDITION_VERSION): $(STORE_DEST_DIR)
 	@echo "*** Creating perdition"
 	(cd $(STORE_DEST_DIR); tar xzf $(PERDITION_SOURCE).tgz;)
 
-$(STORE_DEST_DIR)/$(TOMCAT_DIR)/bin: $(STORE_DEST_DIR) force
-	@echo "*** Creating tomcat"
-	(cd $(STORE_DEST_DIR); tar xzf $(TOMCAT_SOURCE).tar.gz;)
+$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/bin: $(STORE_DEST_DIR) force
+	@echo "*** Creating $(MAILBOXD_SERVER)"
+	(cd $(STORE_DEST_DIR); tar xzf $(MAILBOXD_SOURCE).tar.gz;)
 
-$(STORE_DEST_DIR)/$(TOMCAT_DIR)/conf: force
-	mkdir -p $@
-	cp -f $(SERVICE_DIR)/conf/tomcat-5.5/context.xml \
-		$(STORE_DEST_DIR)/$(TOMCAT_DIR)/conf/context.xml
-	cp -f $(SERVICE_DIR)/conf/tomcat-5.5/server.xml.production \
-		$(STORE_DEST_DIR)/$(TOMCAT_DIR)/conf/server.xml.in
-	cp -f $(SERVICE_DIR)/conf/zimbra.xml \
-		$(STORE_DEST_DIR)/$(TOMCAT_DIR)/conf/Catalina/localhost/zimbra.xml
-	mkdir -p $(STORE_DEST_DIR)/$(TOMCAT_DIR)/conf/AdminService/localhost
-	cp -f $(SERVICE_DIR)/conf/zimbraAdmin.xml \
-		$(STORE_DEST_DIR)/$(TOMCAT_DIR)/conf/AdminService/localhost/zimbraAdmin.xml
-	cp -f $(SERVICE_DIR)/conf/tomcat-5.5/tomcat-users.xml $(STORE_DEST_DIR)/$(TOMCAT_DIR)/conf
-	cp -f $(SERVICE_DIR)/build/dist/conf/log4j.properties  \
-		$(STORE_DEST_DIR)/$(TOMCAT_DIR)/conf/log4j.properties
-	cp -f $(SERVICE_DIR)/conf/web.xml.production \
-		$(STORE_DEST_DIR)/$(TOMCAT_DIR)/conf/service.web.xml.in
-	cp -f zimbraConf/web.xml \
-		$(STORE_DEST_DIR)/$(TOMCAT_DIR)/conf/zimbra.web.xml.in
-	cp -f zimbraAdminConf/web.xml \
-		$(STORE_DEST_DIR)/$(TOMCAT_DIR)/conf/zimbraAdmin.web.xml.in
-	cp -f $(SERVICE_DIR)/conf/tomcat-5.5/web.xml \
-		$(STORE_DEST_DIR)/$(TOMCAT_DIR)/conf/web.xml
+ifeq ($(ZIMBRA_USE_TOMCAT), 1)
+$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/conf: force
+		mkdir -p $@
+		cp -f $(SERVICE_DIR)/conf/$(MAILBOXD_SERVER)-$(MAILBOXD_MINOR_VERSION)/context.xml \
+			$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/conf/context.xml
+		cp -f $(SERVICE_DIR)/conf/$(MAILBOXD_SERVER)-$(MAILBOXD_MINOR_VERSION)/server.xml.production \
+			$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/conf/server.xml.in
+		cp -f $(SERVICE_DIR)/conf/zimbra.xml \
+			$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/conf/Catalina/localhost/zimbra.xml
+		mkdir -p $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/conf/AdminService/localhost
+		cp -f $(SERVICE_DIR)/conf/zimbraAdmin.xml \
+			$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/conf/AdminService/localhost/zimbraAdmin.xml
+		cp -f $(SERVICE_DIR)/conf/$(MAILBOXD_SERVER)-$(MAILBOXD_MINOR_VERSION)/tomcat-users.xml $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/conf
+		cp -f $(SERVICE_DIR)/build/dist/conf/log4j.properties  \
+			$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/conf/log4j.properties
+		cp -f $(SERVICE_DIR)/conf/web.xml.production \
+			$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/conf/service.web.xml.in
+		cp -f zimbraConf/web.xml \
+			$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/conf/zimbra.web.xml.in
+		cp -f zimbraAdminConf/web.xml \
+			$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/conf/zimbraAdmin.web.xml.in
+		cp -f $(SERVICE_DIR)/conf/$(MAILBOXD_SERVER)-$(MAILBOXD_MINOR_VERSION)/web.xml \
+			$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/conf/web.xml
 
-$(STORE_DEST_DIR)/$(TOMCAT_DIR)/temp: force
-	mkdir -p $(STORE_DEST_DIR)/$(TOMCAT_DIR)/temp
-	touch $(STORE_DEST_DIR)/$(TOMCAT_DIR)/temp/.emptyfile
+$(STORE_DEST_DIR)/$(MAILBOXD_DIR): $(STORE_DEST_DIR) $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/bin $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/conf $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/temp $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/common/lib
 
-$(STORE_DEST_DIR)/$(TOMCAT_DIR): $(STORE_DEST_DIR) $(STORE_DEST_DIR)/$(TOMCAT_DIR)/bin $(STORE_DEST_DIR)/$(TOMCAT_DIR)/conf $(STORE_DEST_DIR)/$(TOMCAT_DIR)/temp $(STORE_DEST_DIR)/$(TOMCAT_DIR)/common/lib
+else
+$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/etc: force
+		mkdir -p $@
+		cp -f $(SERVICE_DIR)/conf/$(MAILBOXD_SERVER)-$(MAILBOXD_MINOR_VERSION)/jettyrc \
+			$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/etc/jettyrc
+		cp -f $(SERVICE_DIR)/conf/$(MAILBOXD_SERVER)-$(MAILBOXD_MINOR_VERSION)/jetty.xml.production \
+			$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/etc/jetty.xml.in
+		cp -f $(SERVICE_DIR)/conf/$(MAILBOXD_SERVER)-$(MAILBOXD_MINOR_VERSION)/start.config \
+			$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/etc/start.config
+		cp -f $(SERVICE_DIR)/conf/web.xml.production \
+			$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/etc/service.web.xml.in
+		cp -f zimbraConf/web.xml \
+			$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/etc/zimbra.web.xml.in
+		cp -f zimbraAdminConf/web.xml \
+			$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/etc/zimbraAdmin.web.xml.in
+
+$(STORE_DEST_DIR)/$(MAILBOXD_DIR): $(STORE_DEST_DIR) $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/bin $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/etc $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/temp $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/common/lib
+
+endif
+
+$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/temp: force
+	mkdir -p $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/temp
+	touch $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/temp/.emptyfile
+
 
 $(WEBAPP_DIR): 
 	mkdir -p $@
@@ -182,15 +206,15 @@ $(CLAMSCANNER_DIR)/build/clamscanner.jar:
 		-Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) \
 		-Dzimbra.buildinfo.host=$(HOST) jar ; )
 
-$(STORE_DEST_DIR)/$(TOMCAT_DIR)/webapps/service/WEB-INF/lib/zimbrataglib.jar: $(ZIMLET_DIR)/build/dist/lib/zimbrataglib.jar
-	mkdir -p $(STORE_DEST_DIR)/$(TOMCAT_DIR)/webapps/service/WEB-INF/lib
+$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/webapps/service/WEB-INF/lib/zimbrataglib.jar: $(ZIMLET_DIR)/build/dist/lib/zimbrataglib.jar
+	mkdir -p $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/webapps/service/WEB-INF/lib
 	cp $(ZIMLET_DIR)/build/dist/lib/zimbrataglib.jar $@
 
 $(ZIMLET_DIR)/build/dist/lib/zimbrataglib.jar:
 	(cd $(ZIMLET_DIR); ant package)
 
-$(STORE_DEST_DIR)/$(TOMCAT_DIR)/webapps/service/WEB-INF/zimbra.tld: $(ZIMLET_DIR)/build/dist/conf/zimbra.tld
-	mkdir -p $(STORE_DEST_DIR)/$(TOMCAT_DIR)/webapps/service/WEB-INF
+$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/webapps/service/WEB-INF/zimbra.tld: $(ZIMLET_DIR)/build/dist/conf/zimbra.tld
+	mkdir -p $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/webapps/service/WEB-INF
 	cp $(ZIMLET_DIR)/build/dist/conf/zimbra.tld $@
 
 $(ZIMLET_DIR)/build/dist/conf/zimbra.tld:
