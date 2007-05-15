@@ -1317,6 +1317,9 @@ sub upgrade500BETA1 {
       main::deleteLocalConfig("tomcat_java_home");
     }
 
+    my $zimlet_directory = "${zimbra_home}/mailboxd/webapps/service/zimlet";
+    main::setLocalConfig("zimlet_directory", "$zimlet_directory");
+
   }
   if (isInstalled("zimbra-ldap")) {
     main::runAsZimbra("$ZMPROV mc default zimbraFeatureTasksEnabled TRUE");
