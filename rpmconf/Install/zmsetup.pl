@@ -272,12 +272,19 @@ sub isEnabled {
   if ($newinstall == 0) {
     $config{zimbra_server_hostname} = getLocalConfig ("zimbra_server_hostname")
       if ($config{zimbra_server_hostname} eq "");
+    detail ("DEBUG: zimbra_server_hostname=$config{zimbra_server_hostname}") 
+      if $options{d};
 
     $config{ldap_url} = getLocalConfig ("ldap_url")
       if ($config{ldap_url} eq "");
+    detail ("DEBUG: ldap_url=$config{ldap_url}") 
+      if $options{d};
 
-    if ($config{zimbra_server_hostname} =~ m/$config{ldap_url}/) {
+    if (grep($config{zimbra_server_hostname}, $config{ldap_url})) {
+      detail ("zimbra_server_hostname contained in ldap_url checking ldap status");
       if (startLdap()) {return 1;}
+    } else {
+      detail ("zimbra_server_hostname not in ldap_url not starting slapd");
     }
     detail("Getting enabled services from ldap");
     $enabledPackages{"zimbra-core"} = "Enabled"
@@ -290,6 +297,8 @@ sub isEnabled {
         detail ("Marking $packageServiceMap{$1} as an enabled service")
           if $options{d};
         $enabledPackages{$packageServiceMap{$1}} = "Enabled";
+      } else {
+        detail ("DEBUG: zmprov gs $1");
       }
     } 
     foreach my $p (@packageList) {
