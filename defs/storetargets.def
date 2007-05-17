@@ -79,8 +79,6 @@ $(BUILD_ROOT)/zimbra.spec:
 		$(BUILD_ROOT)/zimbra.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/mysql-standard-$(MYSQL_VERSION_STRING)-pc-linux-gnu-i686-glibc23" >> \
 		$(BUILD_ROOT)/zimbra.spec
-	echo "%attr(-, zimbra, zimbra) /opt/zimbra/mysql" >> \
-		$(BUILD_ROOT)/zimbra.spec
 
 store_stage: $(STORE_COMPONENTS) $(ZIMLET_COMPONENTS)
 
