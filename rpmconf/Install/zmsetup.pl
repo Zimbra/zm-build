@@ -491,6 +491,16 @@ sub setLdapDefaults {
     $config{USEIMAPPROXY} = "no";
   }
 
+  # default domainname
+  $config{zimbraDefaultDomainName} = getLdapConfigValue("zimbraDefaultDomainName");
+  if ($config{zimbradefaultDomainName} eq "") {
+    $config{zimbraDefaultDomainName} = $config{CREATEDOMAIN};
+  } else {
+    $config{CREATEDOMAIN} = $config{zimbraDefaultDomainName};
+    $config{CREATEADMIN} = "admin\@$config{CREATEDOMAIN}";
+  }
+  
+
   $config{IMAPPORT}       = getLdapServerValue("zimbraImapBindPort");
   $config{IMAPSSLPORT}     = getLdapServerValue("zimbraImapSSLBindPort");
   $config{POPPORT}       = getLdapServerValue("zimbraPop3BindPort");
@@ -505,6 +515,10 @@ sub setLdapDefaults {
   $config{TRAINSASPAM} = getLdapConfigValue("zimbraSpamIsSpamAccount");
   $config{TRAINSAHAM} = getLdapConfigValue("zimbraSpamIsNotSpamAccount");
   $config{NOTEBOOKACCOUNT} = getLdapConfigValue("zimbraNotebookAccount");
+
+  $config{SMTPSOURCE} = $config{CREATEADMIN};
+  $config{SMTPDEST} = $config{CREATEADMIN};
+  $config{AVUSER} = $config{CREATEADMIN};
 
   if (isNetwork() && isEnabled("zimbra-store")) {
     $config{zimbraBackupReportEmailRecipients} = getLdapConfigValue("zimbraBackupReportEmailRecipients");
@@ -841,6 +855,28 @@ sub setDefaultsFromLocalConfig {
   $config{MYSQLMEMORYPERCENT} = getLocalConfig ("mysql_memory_percent");
   $config{mailboxd_directory} = getLocalConfig("mailboxd_directory");
   $config{mailboxd_keystore} = getLocalConfig("mailboxd_keystore");
+
+  if (isEnabled("zimbra-snmp")) {
+    $config{SNMPNOTIFY} = getLocalConfig("snmp_notify");
+    $config{SNMPNOTIFY} = "yes" if ($config{SNMPNOTIFY} eq "");
+
+    $config{SMTPNOTIFY} = getLocalConfig("smtp_notify");
+    $config{SMTPNOTIFY} = "yes" if ($config{SNMPNOTIFY} eq "");
+
+    $config{SNMPTRAPHOST} = getLocalConfig("snmp_trap_host");
+    $config{SNMPTRAPHOST} = $config{CREATEADMIN}
+      if ($config{SNMPTRAPHOST} eq "");
+  }
+
+  if (isEnabled("zimbra-logger") || isEnabled("zimbra-snmp")) {
+    $config{SMTPSOURCE} = getLocalConfig("smtp_source");
+    $config{SMTPSOURCE} = $config{CREATEADMIN}
+      if ($config{SMTPSOURCE} eq "");
+
+    $config{SMTPDEST} = getLocalConfig("smtp_destination");
+    $config{SMTPDEST} = $config{CREATEADMIN}
+      if ($config{SMTPDEST} eq "");
+  }
 }
 
 sub ask {
@@ -2893,6 +2929,8 @@ sub configInitLogger {
 
   if (isEnabled("zimbra-logger")) {
     runAsZimbra ("$ZMPROV mcf zimbraLogHostname $config{HOSTNAME}");
+    setLocalConfig ("smtp_source", $config{SMTPSOURCE});
+    setLocalConfig ("smtp_destination", $config{SMTPDEST});
   }
   configLog("configInitLogger");
 }
@@ -3144,7 +3182,7 @@ sub applyConfig {
       configInitNotebooks();
 
       progress ( "Restarting mailboxd...");
-      runAsZimbra("/opt/zimbra/bin/mailboxdctl restart");
+      runAsZimbra("/opt/zimbra/bin/zmmailboxdctl restart");
       progress ( "Done\n" );
     }
     #runAsZimbra ("$ZMPROV ms $config{HOSTNAME} zimbraUserServicesEnabled TRUE");

@@ -1264,6 +1264,10 @@ sub upgrade460GA {
 sub upgrade500BETA1 {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
 	main::progress("Updating from 5.0.0_BETA1\n");
+
+  my $zimbra_home = main::getLocalConfig("zimbra_home");
+  $zimbra_home = "/opt/zimbra" if ($zimbra_home eq "");
+
   if (isInstalled("zimbra-store")) {
     if (startSql()) { return 1; }
     Migrate::log("Executing ${scriptDir}/migrate20070302-NullContactVolumeId.pl"); 
@@ -1277,8 +1281,6 @@ sub upgrade500BETA1 {
       main::deleteLocalConfig("tomcat_java_options");
     }
 
-    my $zimbra_home = main::getLocalConfig("zimbra_home");
-    $zimbra_home = "/opt/zimbra" if ($zimbra_home eq "");
 
     my $mailboxd_directory = main::getLocalConfig("mailboxd_directory");
     if ($mailboxd_directory eq "") {
@@ -1320,9 +1322,53 @@ sub upgrade500BETA1 {
     my $zimlet_directory = "${zimbra_home}/mailboxd/webapps/service/zimlet";
     main::setLocalConfig("zimlet_directory", "$zimlet_directory");
 
+    # convert tomcat keystore to jetty keystore
+    if (!-f "${mailboxd_keystore}" && -f "/opt/zimbra/tomcat/conf/keystore") { 
+      Migrate::log("Migrating tomcat keystore to ${mailboxd_keystore}");
+      main::runAsZimbra("mkdir -p `dirname ${mailboxd_keystore}`; cp -f /opt/zimbra/tomcat/conf/keystore ${mailboxd_keystore}; /opt/zimbra/java/bin/keytool -keystore ${mailboxd_keystore} -keyclone -alias tomcat -dest jetty -storepass zimbra -new zimbra");
+    }
+
   }
+
   if (isInstalled("zimbra-ldap")) {
     main::runAsZimbra("$ZMPROV mc default zimbraFeatureTasksEnabled TRUE");
+    # bug add zimbraBackupTarget 
+    my $zimbraBackupTarget = main::getLdapConfigValue("zimbraBackupTarget");
+    if ($zimbraBackupTarget eq "") {
+      $zimbraBackupTarget = "${zimbra_home}/backup";
+      Migrate::log("Setting global ldap config zimbraBackupTarget=$zimbraBackupTarget");
+      main::runAsZimbra("$ZMPROV mcf zimbraBackupTarget $zimbraBackupTarget");
+    }
+
+    # bug 15452 add zimbraSpamSenderHeader and zimbraSpamTypeHeader
+    my $zimbraSpamReportSenderHeader = main::getLdapConfigValue("zimbraSpamReportSenderHeader");
+    if ($zimbraSpamReportSenderHeader eq "") {
+      $zimbraSpamReportSenderHeader = "X-Zimbra-Spam-Report-Sender";
+      Migrate::log("Setting global ldap config zimbraSpamReportSenderHeader=$zimbraSpamReportSenderHeader");
+      main::runAsZimbra("$ZMPROV mcf zimbraSpamReportSenderHeader $zimbraSpamReportSenderHeader");
+    }
+    my $zimbraSpamReportTypeHeader = main::getLdapConfigValue("zimbraSpamReportTypeHeader");
+    if ($zimbraSpamReportTypeHeader eq "") {
+      $zimbraSpamReportTypeHeader = "X-Zimbra-Spam-Report-Type";
+      Migrate::log("Setting global ldap config zimbraSpamReportTypeHeader=$zimbraSpamReportTypeHeader");
+      main::runAsZimbra("$ZMPROV mcf zimbraSpamReportTypeHeader $zimbraSpamReportTypeHeader");
+    }
+
+    my $zimbraSpamReportTypeSpam = main::getLdapConfigValue("zimbraSpamReportTypeSpam");
+    if ($zimbraSpamReportTypeSpam eq "") {
+      $zimbraSpamReportTypeSpam = "spam";
+      Migrate::log("Setting global ldap config zimbraSpamReportTypeSpam=$zimbraSpamReportTypeSpam");
+      main::runAsZimbra("$ZMPROV mcf zimbraSpamReportTypeSpam $zimbraSpamReportTypeSpam");
+    }
+
+    my $zimbraSpamReportTypeHam = main::getLdapConfigValue("zimbraSpamReportTypeHam");
+    if ($zimbraSpamReportTypeHam eq "") {
+      $zimbraSpamReportTypeHam = "ham";
+      Migrate::log("Setting global ldap config zimbraSpamReportTypeHam=$zimbraSpamReportTypeHam");
+      main::runAsZimbra("$ZMPROV mcf zimbraSpamReportTypeHam $zimbraSpamReportTypeHam");
+    }
+
+    my $zimbraSpamReportTypeHeader = main::getLdapConfigValue("zimbraSpamReportTypeHeader");
   }
 	return 0;
 }
