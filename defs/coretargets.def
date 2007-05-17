@@ -154,7 +154,7 @@ $(NATIVE_DIR)/build/libzimbra-native.$(JNI_EXT):
 $(LAUNCHER_DIR)/build/zimbra-launcher.jar:
 	(cd $(LAUNCHER_DIR); make JAVA_BINARY=$(JAVA_BINARY))
 
-$(LAUNCHER_DIR)/build/mailboxdmgr:
+$(LAUNCHER_DIR)/build/zmmailboxdmgr:
 	(cd $(LAUNCHER_DIR); make JAVA_BINARY=$(JAVA_BINARY))
 
 pcre_UBUNTU6: 
@@ -262,7 +262,7 @@ $(CORE_DEST_DIR)/conf: $(WEBAPP_DIR)/service.war
 	mkdir -p $@/attrs
 	cp -f $(SERVICE_DIR)/build/dist/conf/attrs/* $@/attrs
 
-$(CORE_DEST_DIR)/libexec: $(LAUNCHER_DIR)/build/mailboxdmgr
+$(CORE_DEST_DIR)/libexec: $(LAUNCHER_DIR)/build/zmmailboxdmgr
 	@echo "*** Installing libexec"
 	mkdir -p $@/installer/util/modules
 	mkdir -p $@/installer/bin
@@ -281,8 +281,8 @@ $(CORE_DEST_DIR)/libexec: $(LAUNCHER_DIR)/build/mailboxdmgr
 	cp -f $(PACKAGE_CONF_DIR)/Install/postinstall.pm $@/postinstall.pm
 	cp -f $(PACKAGE_CONF_DIR)/Install/preinstall.pm $@/preinstall.pm
 	cp -f $(PACKAGE_CONF_DIR)/Install/Util/addUser.sh $@/addUser.sh
-	cp -f $(LAUNCHER_DIR)/build/mailboxdmgr $@
-	cp -f $(LAUNCHER_DIR)/build/mailboxdmgr.unrestricted $@
+	cp -f $(LAUNCHER_DIR)/build/zmmailboxdmgr $@
+	cp -f $(LAUNCHER_DIR)/build/zmmailboxdmgr.unrestricted $@
 	cp $(SERVICE_DIR)/src/libexec/* $@
 	cp $@/swatch $@/logswatch
 	cp -f $(BUILD_ROOT)/rpmconf/Build/get_plat_tag.sh $@
@@ -302,7 +302,7 @@ $(CORE_DEST_DIR)/bin:
 	cp $(ZIMBRA_BIN_DIR)/zmantivirusctl $@
 	cp $(ZIMBRA_BIN_DIR)/zmcontrol $@
 	cp $(ZIMBRA_BIN_DIR)/zmloggerctl $@
-	cp $(ZIMBRA_BIN_DIR)/zmmailboxctl $@
+	cp $(ZIMBRA_BIN_DIR)/zmstorectl $@
 	cp $(ZIMBRA_BIN_DIR)/zmmtactl $@
 	cp $(ZIMBRA_BIN_DIR)/zmspellctl $@
 	cp $(ZIMBRA_BIN_DIR)/zmapachectl $@
