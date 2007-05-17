@@ -28,7 +28,7 @@ $(WEBAPP_DIR)/zimbraAdmin.war: $(WEBAPP_DIR) $(CONSOLE_DIR)/$(WEBAPP_BUILD_DIR)/
 		echo "IMPORT_WIZ_DOWNLOAD_LINK = <A HREF=\"/zimbra/downloads/$$download\" target=_blank>PST Import Wizard</A>" >> $(WEBAPP_DIR)/zimbraAdmin/WEB-INF/classes/msgs/ZaMsg.properties; \
 	done
 	for download in $(MWDOWNLOAD); do \
-		echo "MIG_WIZ_DOWNLOAD_LINK = <A HREF=\"/zimbra/downloads/$$download\" target=_blank>Migration Wizard for Exchange</A>" >> $(WEBAPP_DIR)/zimbraAdmin/WEB-INF/classes/msgs/ZaMsg.properties; \
+		echo "MIG_WIZ_DOWNLOAD_LINK = <A HREF=\"/zimbra/downloads/$$download\" target=_blank>ZCS Migration Wizard for Exchange</A>" >> $(WEBAPP_DIR)/zimbraAdmin/WEB-INF/classes/msgs/ZaMsg.properties; \
 	done
 	for download in $(CNDOWNLOAD); do \
 		echo "CONNECTOR_DOWNLOAD_LINK = <A HREF=\"/zimbra/downloads/$$download\" target=_blank>Zimbra Connector for Outlook</A>" >> $(WEBAPP_DIR)/zimbraAdmin/WEB-INF/classes/msgs/ZaMsg.properties; \
@@ -37,7 +37,7 @@ $(WEBAPP_DIR)/zimbraAdmin.war: $(WEBAPP_DIR) $(CONSOLE_DIR)/$(WEBAPP_BUILD_DIR)/
 		echo "CONNECTOR_MSI_DOWNLOAD_LINK = <A HREF=\"/zimbra/downloads/$$download\" target=_blank>Zimbra Connector for Outlook MSI Customizer</A>" >> $(WEBAPP_DIR)/zimbraAdmin/WEB-INF/classes/msgs/ZaMsg.properties; \
 	done
 	for download in $(DMDOWNLOAD); do \
-		echo "DOMINO_MIG_WIZ_DOWNLOAD_LINK = <A HREF=\"/zimbra/downloads/$$download\" target=_blank>Migration Wizard for Domino</A>" >> $(WEBAPP_DIR)/zimbraAdmin/WEB-INF/classes/msgs/ZaMsg.properties; \
+		echo "DOMINO_MIG_WIZ_DOWNLOAD_LINK = <A HREF=\"/zimbra/downloads/$$download\" target=_blank>ZCS Migration Wizard for Domino</A>" >> $(WEBAPP_DIR)/zimbraAdmin/WEB-INF/classes/msgs/ZaMsg.properties; \
 	done
 	for download in $(ZTDOWNLOAD); do \
 		echo "ZIMBRA_TOASTER_DOWNLOAD_LINK = <A HREF=\"/zimbra/downloads/$$download\" target=_blank>Zimbra Toaster</A>" >> $(WEBAPP_DIR)/zimbraAdmin/WEB-INF/classes/msgs/ZaMsg.properties; \
