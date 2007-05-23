@@ -1441,7 +1441,7 @@ sub startSql {
 		main::progress("Starting mysql\n");
 		my $rc = 0xffff & system("su - zimbra -c \"/opt/zimbra/bin/mysql.server start > /dev/null 2>&1\"");
     my $timeout = sleep 10;
-    while (!isSqlRunning() && $timeout <= 120 ) {
+    while (!isSqlRunning() && $timeout <= 1200 ) {
 		  $rc = 0xffff & system("su - zimbra -c \"/opt/zimbra/bin/mysql.server start > /dev/null 2>&1\"");
       $timeout += sleep 10;
     }
