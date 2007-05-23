@@ -2585,6 +2585,11 @@ sub configCreateCert {
       } else {
         `chmod 777 $config{JAVAHOME}/jre/lib/security/cacerts >> $logfile 2>&1`;
       }
+      if (!-d "$config{mailboxd_directory}") {
+        `mkdir -p $config{mailboxd_directory}/etc`;
+        `chown -R zimbra:zimbra $config{mailboxd_directory}`;
+        `chmod 744 $config{mailboxd_directory}/etc`;
+      }
       runAsZimbra("cd /opt/zimbra; zmcreatecert");
       if (-f "$config{JAVAHOME}/lib/security/cacerts") {
         `chmod 744 $config{JAVAHOME}/lib/security/cacerts >> $logfile 2>&1`;
