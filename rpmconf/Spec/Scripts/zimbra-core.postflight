@@ -24,9 +24,8 @@
 # ***** END LICENSE BLOCK *****
 # 
 
-mkdir -p /opt/zimbra/log/openldap-bdb
+mkdir -p /opt/zimbra/log
 chown zimbra:zimbra /opt/zimbra/log
-chown zimbra:zimbra /opt/zimbra/log/openldap-bdb
 
 mkdir /opt/zimbra/ssl
 chown zimbra:zimbra /opt/zimbra/ssl
