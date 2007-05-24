@@ -84,4 +84,5 @@ include $(DEFS_DIR)/devclean.def
 
 ifeq ($(BUILD_PLATFORM), MACOSXx86)
 include $(DEFS_DIR)/isync.def
+include $(DEFS_DIR)/app-mactoaster.def
 endif
