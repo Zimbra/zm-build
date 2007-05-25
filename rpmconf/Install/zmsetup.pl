@@ -3043,7 +3043,10 @@ sub configSetEnabledServices {
   }
 
   foreach my $p (keys %installedPackages) {
-    if ($p eq "zimbra-core") {next;}
+    if ($p eq "zimbra-core") {
+      $installedServiceStr .= "zimbraServiceInstalled stats ";
+      next;
+    }
     if ($p eq "zimbra-apache") {next;}
     $p =~ s/zimbra-//;
     if ($p eq "store") {$p = "mailbox"; $installedServiceStr .= "zimbraServiceInstalled imapproxy ";}
@@ -3051,7 +3054,10 @@ sub configSetEnabledServices {
   }
 
   foreach my $p (keys %enabledPackages) {
-    if ($p eq "zimbra-core") {next;}
+    if ($p eq "zimbra-core") {
+      $enabledServiceStr .= "zimbraServiceEnabled stats ";
+      next;
+    }
     if ($p eq "zimbra-apache") {next;}
     if ($enabledPackages{$p} eq "Enabled") {
       $p =~ s/zimbra-//;
