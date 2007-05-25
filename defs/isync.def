@@ -32,6 +32,8 @@ $(ISYNC_DEST_ROOT)/InstallerResources: $(ISYNC_DIR)/build/Deployment/Zimbra.pref
 	cp $(ISYNC_DIR)/InstallerResources/* $@
 
 $(ISYNC_DIR)/Info.plist: force
+	touch $@
+	chmod 744 $@
 	sed -e "s/@@ISYNC_VERSION_TAG@@/$(ISYNC_VERSION_TAG)/" -e "s/@@VERSION_TAG@@/$(VERSION_TAG)/" $(ISYNC_DIR)/Info-production.plist > $@ 
 
 $(PACKAGE_DIR)/$(CUR_PACKAGE_NAME).$(PACKAGE_EXT):
