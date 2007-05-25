@@ -14,7 +14,9 @@ package Zimbra::Mon::Zmstat;
 use Exporter;
 @ISA = qw(Exporter);
 @EXPORT = qw(
-    zmstatInit getZimbraHome getZmstatRoot
+    zmstatInit getZimbraHome getZimbraUser getZimbraServerHostname
+    getZmstatRoot getZmstatInterval
+    isLinux isMac
     percent getTstamp getDate waitUntilNiceRoundSecond
     getPidFileDir readPidFile createPidFile
     getLogFilePath openLogFile rotateLogFile
@@ -54,19 +56,25 @@ sub userCheck() {
     }
 }
 
+sub isLinux() {
+    return $^O =~ /linux/i;
+}
+
+sub isMac() {
+    return $^O =~ /darwin/i;
+}
+
 sub osCheck() {
-    if ($^O !~ /linux/i) {
-        print "zmstat is supported on Linux only\n";
+    if (!isLinux() && !isMac()) {
+        print "zmstat is supported on Linux and Mac only\n";
         exit(0);  # return success to calling script
     }
 }
 
-sub zmstatInit(;$) {
-    my $skipOSCheck = shift;
-    if (!$skipOSCheck) {
-        osCheck();
-    }
-    getLocalConfig('zimbra_home', 'zimbra_user', 'zmstat_log_directory');
+sub zmstatInit() {
+    osCheck();
+    getLocalConfig('zimbra_home', 'zimbra_user', 'zimbra_server_hostname',
+                   'zmstat_log_directory', 'zmstat_interval');
     userCheck();
 }
 
@@ -74,8 +82,20 @@ sub getZimbraHome() {
     return $LC{'zimbra_home'};
 }
 
+sub getZimbraUser() {
+    return $LC{'zimbra_user'};
+}
+
+sub getZimbraServerHostname() {
+    return $LC{'zimbra_server_hostname'};
+}
+
 sub getZmstatRoot() {
     return $LC{'zmstat_log_directory'};
+}
+
+sub getZmstatInterval() {
+    return $LC{'zmstat_interval'};
 }
 
 sub percent($$) {
