@@ -281,7 +281,7 @@ sub isEnabled {
     detail ("DEBUG: ldap_url=$config{ldap_url}") 
       if $options{d};
 
-    if (grep($config{zimbra_server_hostname}, $config{ldap_url})) {
+    if (index($config{ldap_url}, $config{zimbra_server_hostname}) != -1) {
       detail ("zimbra_server_hostname contained in ldap_url checking ldap status");
       if (startLdap()) {return 1;}
     } else {
