@@ -584,10 +584,10 @@ sub setDefaults {
   $config{HTTPPORT} = 80;
   $config{HTTPSPORT} = 443;
   $config{USEIMAPPROXY} = "no";
-  $config{IMAPPROXYPORT} = 143;
-  $config{IMAPSSLPROXYPORT} = 993;
-  $config{POPPROXYPORT} = 110;
-  $config{POPSSLPROXYPORT} = 995;
+  $config{IMAPPROXYPORT} = 7143;
+  $config{IMAPSSLPROXYPORT} = 7993;
+  $config{POPPROXYPORT} = 7110;
+  $config{POPSSLPROXYPORT} = 7995;
 
   if ($platform =~ /MACOSX/) {
     $config{JAVAHOME} = "/System/Library/Frameworks/JavaVM.framework/Versions/1.5/Home";
@@ -2701,9 +2701,9 @@ sub configSetServicePorts {
   progress ( "Setting service ports on $config{HOSTNAME}..." );
   runAsZimbra("$ZMPROV ms $config{HOSTNAME} ".
     "zimbraImapBindPort $config{IMAPPORT} zimbraImapSSLBindPort $config{IMAPSSLPORT} ".
-    "zimbraPop3BindPort $config{POPPORT} zimbraPop3SSLBindPort $config{POPSSLPORT} ");
+    "zimbraImapProxyBindPort $config{IMAPPROXYPORT} zimbraImapSSLProxyBindPort $config{IMAPSSLPROXYPORT} ");
   runAsZimbra("$ZMPROV ms $config{HOSTNAME} ".
-    "zimbraImapProxyBindPort $config{IMAPPROXYPORT} zimbraImapSSLProxyBindPort $config{IMAPSSLPROXYPORT} ".
+    "zimbraPop3BindPort $config{POPPORT} zimbraPop3SSLBindPort $config{POPSSLPORT} ".
     "zimbraPop3ProxyBindPort $config{POPPROXYPORT} zimbraPop3SSLProxyBindPort $config{POPSSLPROXYPORT} ");
   runAsZimbra("$ZMPROV ms $config{HOSTNAME} ".
     "zimbraMailPort $config{HTTPPORT} zimbraMailSSLPort $config{HTTPSPORT} ".
