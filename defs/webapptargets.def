@@ -1,6 +1,8 @@
 
 # __WAR 
 
+BUILD_TYPE := FOSS
+
 MWDOWNLOAD = $(shell cd $(WEBAPP_DIR)/zimbra/downloads; ls ZCSExhangeMigrationWizard*)
 IWDOWNLOAD = $(shell cd $(WEBAPP_DIR)/zimbra/downloads; ls ZCSPSTImportWizard*)
 CNDOWNLOAD = $(shell cd $(WEBAPP_DIR)/zimbra/downloads; ls ZimbraOl*)
@@ -18,6 +20,7 @@ $(SERVICE_DIR)/$(WEBAPP_BUILD_DIR)/service.war:
 		-Dplat.tag=$(BUILD_PLATFORM) \
 		-Dis-production=1 \
 		-Dzimbra.buildinfo.version=$(VERSION_TAG) \
+		-Dzimbra.buildinfo.type=$(BUILD_TYPE) \		
 		-Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) \
 		-Dzimbra.buildinfo.host=$(HOST) dev-dist ; )
 
@@ -52,6 +55,7 @@ $(CONSOLE_DIR)/$(WEBAPP_BUILD_DIR)/zimbraAdmin.war:
 		-Dplat.tag=$(BUILD_PLATFORM) \
 		-Dis-production=1 \
 		-Dzimbra.buildinfo.version=$(VERSION_TAG) \
+		-Dzimbra.buildinfo.type=$(BUILD_TYPE) \		
 		-Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) \
 		-Dzimbra.buildinfo.host=$(HOST) clean admin-war ; )
 	rm -rf zimbraAdminConf
@@ -67,6 +71,7 @@ $(CONSOLE_DIR)/$(WEBAPP_BUILD_DIR)/zimbra.war:  $(TAGLIB_DIR)/build/zimbrataglib
 		-Dplat.tag=$(BUILD_PLATFORM) \
 		-Dis-production=1 \
 		-Dzimbra.buildinfo.version=$(VERSION_TAG) \
+		-Dzimbra.buildinfo.type=$(BUILD_TYPE) \
 		-Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) \
 		-Dzimbra.buildinfo.host=$(HOST) clean prod-war ; )
 	rm -rf zimbraConf
@@ -78,5 +83,6 @@ $(TAGLIB_DIR)/build/zimbrataglib.jar:
 		-Dplat.tag=$(BUILD_PLATFORM) \
 		-Dis-production=1 \
 		-Dzimbra.buildinfo.version=$(VERSION_TAG) \
+		-Dzimbra.buildinfo.type=$(BUILD_TYPE) \		
 		-Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) \
 		-Dzimbra.buildinfo.host=$(HOST) clean jar ; )
