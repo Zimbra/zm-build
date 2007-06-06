@@ -3254,8 +3254,14 @@ sub setupCrontab {
   my $backupSchedule;
   progress ("Setting up zimbra crontab...");
   if ( -f "/opt/zimbra/bin/zmschedulebackup") {
+    detail("Getting current backup schedule in restorable format");
     $backupSchedule = `su - zimbra -c "zmschedulebackup -s"`;
     chomp $backupSchedule;
+    if ($backupSchedule eq "") {
+      detail("Backup schedule was not previously defined");
+    } else {
+      detail("Retrieved backup schedule: $backupSchedule");
+    }
   }
   if ($platform =~ /SUSE/i) {
     `cp -f /var/spool/cron/tabs/zimbra /tmp/crontab.zimbra.orig`;
@@ -3274,28 +3280,35 @@ sub setupCrontab {
   `cp -f /opt/zimbra/zimbramon/crontabs/crontab /tmp/crontab.zimbra`;
 
   if (isEnabled("zimbra-ldap")) {
+    detail("Crontab: Adding zimbra-ldap specific crontab entries");
     `cat /opt/zimbra/zimbramon/crontabs/crontab.ldap >> /tmp/crontab.zimbra`;
   }
 
   if (isEnabled("zimbra-store")) {
+    detail("Crontab: Adding zimbra-store specific crontab entries");
     `cat /opt/zimbra/zimbramon/crontabs/crontab.store >> /tmp/crontab.zimbra`;
   }
 
   if (isEnabled("zimbra-logger")) {
+    detail("Crontab: Adding zimbra-logger specific crontab entries");
     `cat /opt/zimbra/zimbramon/crontabs/crontab.logger >> /tmp/crontab.zimbra`;
   }
 
   if (isEnabled("zimbra-mta")) {
+    detail("Crontab: Adding zimbra-mta specific crontab entries");
     `cat /opt/zimbra/zimbramon/crontabs/crontab.mta >> /tmp/crontab.zimbra`;
   }
 
   `echo "# ZIMBRAEND -- DO NOT EDIT ANYTHING BETWEEN THIS LINE AND ZIMBRASTART" >> /tmp/crontab.zimbra`;
   `cat /tmp/crontab.zimbra.proc >> /tmp/crontab.zimbra`;
-
+  detail("crontab: installing new crontab");
   `crontab -u zimbra /tmp/crontab.zimbra`;
   if ( -f "/opt/zimbra/bin/zmschedulebackup" && $backupSchedule ne "") {
     $backupSchedule =~ s/"/\\"/g;
     `su - zimbra -c "/opt/zimbra/bin/zmschedulebackup -R $backupSchedule" > /dev/null 2>&1`;
+  } elsif ( -f "/opt/zimbra/bin/zmschedulebackup" && $backupSchedule eq "" && !$newinstall) {
+    detail("crontab: no backup schedule found: installing default");
+    `su - zimbra -c "/opt/zimbra/bin/zmschedulebackup -D" > /dev/null 2>&1`;
   }
   progress ("Done\n");
   configLog("setupCrontab");
