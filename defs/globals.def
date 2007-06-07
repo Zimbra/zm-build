@@ -16,7 +16,7 @@ MICRO	:= $(shell cat RE/MICRO)
 BUILDNUM	:= $(shell cat RE/BUILD)
 
 SOURCE_TAG := $(MAJOR).$(MINOR).$(MICRO)_$(BUILDNUM)
-VERSION_TAG := $(MAJOR).$(MINOR).$(MICRO)_$(BUILDNUM).$(BUILD_PLATFORM)
+VERSION_TAG := $(MAJOR).$(MINOR).$(MICRO)_$(BUILDNUM)_$(RELEASE).$(BUILD_PLATFORM)
 
 ARCH := i386
 
@@ -62,8 +62,6 @@ ENV_FILE_SOURCE     := $(PACKAGE_CONF_DIR)/Env/zimbra.bashrc
 ENV_FILE_DEST       := .bashrc
 EXRC_SOURCE         := $(PACKAGE_CONF_DIR)/Env/zimbra.exrc
 EXRC_DEST           := .exrc
-VIMINFO_SOURCE      := $(PACKAGE_CONF_DIR)/Env/zimbra.viminfo
-VIMINFO_DEST        := .viminfo
 
 JAVA_HOME       ?= /usr/local/java
 export JAVA_HOME

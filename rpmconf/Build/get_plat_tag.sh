@@ -46,12 +46,6 @@ if [ -f /etc/redhat-release ]; then
 		exit 0
 	fi
 
-	grep "Fedora Core release 6" /etc/redhat-release > /dev/null 2>&1
-	if [ $? = 0 ]; then
-		echo "FC6${i}"
-		exit 0
-	fi
-
 	grep "Fedora Core release 5" /etc/redhat-release > /dev/null 2>&1
 	if [ $? = 0 ]; then
 		echo "FC5${i}"
@@ -72,7 +66,7 @@ if [ -f /etc/redhat-release ]; then
 
 	grep "CentOS release 5" /etc/redhat-release > /dev/null 2>&1
 	if [ $? = 0 ]; then
-		echo "CentOS5${i}"
+		echo "CentOS5{i}"
 		exit 0
 	fi
 
@@ -136,11 +130,6 @@ if [ -f /etc/lsb-release ]; then
 fi
 
 if [ -f /etc/mandriva-release ]; then
-	grep "2007" /etc/mandriva-release > /dev/null 2>&1
-	if [ $? = 0 ]; then
-		echo "MANDRIVA2007"
-		exit 0
-	fi
 	grep "2006" /etc/mandriva-release > /dev/null 2>&1
 	if [ $? = 0 ]; then
 		echo "MANDRIVA2006"

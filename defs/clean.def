@@ -27,4 +27,3 @@ allclean: clean
 	(cd $(COMMON_DIR); $(ANT) clean)
 	(cd $(CONSOLE_DIR); $(ANT) clean)
 	(cd $(NATIVE_DIR); $(MAKE) clean)
-	(cd $(LAUNCHER_DIR); $(MAKE) clean)
