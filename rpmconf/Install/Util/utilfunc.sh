@@ -200,6 +200,34 @@ checkUser() {
   fi
 }
 
+checkRecentBackup() {
+  isInstalled zimbra-store
+  if [ x$PKGINSTALLED != "x" ]; then
+    if [ -x "bin/checkValidBackup" ]; then
+      echo "Checking for a recent backup"
+      `bin/checkValidBackup > /dev/null 2>&1`
+      if [ $? != 0 ]; then
+        echo "WARNING: Unable to find a system backup started within the last" 
+        echo "24hrs.  It is recommended to perform a full system backup and"
+        echo "copy it to a safe location prior to performing an upgrade."
+        echo ""
+        while :; do
+          askYN "Do you wish to continue without a backup?" "N"
+          if [ $response = "no" ]; then
+            askYN "Exit?" "N"
+            if [ $response = "yes" ]; then
+              echo "Exiting."
+              exit 1
+            fi
+          else
+            break
+          fi
+        done
+      fi
+    fi
+  fi
+}
+
 checkRequired() {
 
   if ! cat /etc/hosts | perl -ne 'if (/^\s*127\.0\.0\.1/ && !/^\s*127\.0\.0\.1\s+localhost/) { exit 11; }'; then
@@ -305,8 +333,11 @@ EOF
       fi
     fi
   fi
+
+  checkRecentBackup
   
 }
+
 
 checkRequiredSpace() {
   # /tmp must have 100MB
