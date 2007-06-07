@@ -211,18 +211,22 @@ checkRecentBackup() {
         echo "24hrs.  It is recommended to perform a full system backup and"
         echo "copy it to a safe location prior to performing an upgrade."
         echo ""
-        while :; do
-          askYN "Do you wish to continue without a backup?" "N"
-          if [ $response = "no" ]; then
-            askYN "Exit?" "N"
-            if [ $response = "yes" ]; then
-              echo "Exiting."
-              exit 1
+        if [ x$DEFAULTFILE = "x" -o x$CLUSTERUPGRADE = "xyes" ]; then
+          while :; do
+            askYN "Do you wish to continue without a backup?" "N"
+            if [ $response = "no" ]; then
+              askYN "Exit?" "N"
+              if [ $response = "yes" ]; then
+                echo "Exiting."
+                exit 1
+              fi
+            else
+              break
             fi
-          else
-            break
-          fi
-        done
+          done
+        else 
+          echo "Automated install detected...continuing."
+        fi
       fi
     fi
   fi
