@@ -123,6 +123,9 @@ my %updateFuncs = (
   "4.6.0_RC1" => \&upgrade460RC1,
   "4.6.0_GA" => \&upgrade460GA,
 	"5.0.0_BETA1" => \&upgrade500BETA1,
+	"5.0.0_BETA2" => \&upgrade500BETA2,
+	"5.0.0_RC1" => \&upgrade500RC1,
+	"5.0.0_RC2" => \&upgrade500RC2,
 	"5.0.0_GA" => \&upgrade500GA,
 );
 
@@ -163,6 +166,9 @@ my @versionOrder = (
   "4.6.0_RC1",
   "4.6.0_GA",
   "5.0.0_BETA1",
+  "5.0.0_BETA2",
+  "5.0.0_RC1",
+  "5.0.0_RC2",
   "5.0.0_GA",
 );
 
@@ -299,6 +305,12 @@ sub upgrade {
 		print "This appears to be 4.6.0_GA\n";
 	} elsif ($startVersion eq "5.0.0_BETA1") {
 		main::progress("This appears to be 5.0.0_BETA1\n");
+	} elsif ($startVersion eq "5.0.0_BETA2") {
+		main::progress("This appears to be 5.0.0_BETA2\n");
+	} elsif ($startVersion eq "5.0.0_RC1") {
+		main::progress("This appears to be 5.0.0_RC1\n");
+	} elsif ($startVersion eq "5.0.0_RC2") {
+		main::progress("This appears to be 5.0.0_RC2\n");
 	} elsif ($startVersion eq "5.0.0_GA") {
 		main::progress("This appears to be 5.0.0_GA\n");
 	} else {
@@ -1379,6 +1391,21 @@ sub upgrade500BETA1 {
 
     my $zimbraSpamReportTypeHeader = main::getLdapConfigValue("zimbraSpamReportTypeHeader");
   }
+	return 0;
+}
+sub upgrade500BETA2 {
+	my ($startBuild, $targetVersion, $targetBuild) = (@_);
+	main::progress("Updating from 5.0.0_BETA2\n");
+	return 0;
+}
+sub upgrade500RC1 {
+	my ($startBuild, $targetVersion, $targetBuild) = (@_);
+	main::progress("Updating from 5.0.0_RC1\n");
+	return 0;
+}
+sub upgrade500RC2 {
+	my ($startBuild, $targetVersion, $targetBuild) = (@_);
+	main::progress("Updating from 5.0.0_RC2\n");
 	return 0;
 }
 sub upgrade500GA {
