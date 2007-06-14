@@ -1400,6 +1400,19 @@ sub upgrade500BETA1 {
 sub upgrade500BETA2 {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
 	main::progress("Updating from 5.0.0_BETA2\n");
+  if (isInstalled("zimbra-store")) {
+    my $zimbra_home = main::getLocalConfig("zimbra_home");
+    $zimbra_home = "/opt/zimbra" if ($zimbra_home eq "");
+    # clean up tomcat localconfig if they are still hanging around
+    if (-f "${zimbra_home}/mailboxd/etc/jettyrc") {
+      main::deleteLocalConfig("tomcat_java_options");
+      main::deleteLocalConfig("tomcat_directory");
+      main::deleteLocalConfig("tomcat_keystore");
+      main::deleteLocalConfig("tomcat_java_heap_memory_percent");
+      main::deleteLocalConfig("tomcat_java_home");
+      main::deleteLocalConfig("tomcat_pid_file");
+    }
+  }
 	return 0;
 }
 sub upgrade500RC1 {
