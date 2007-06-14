@@ -35,6 +35,10 @@ chown zimbra:zimbra /opt/zimbra/.ssh
 rm -f /opt/zimbra/java
 ln -s /usr /opt/zimbra/java
 
+mkdir -p /opt/zimbra/zmstat/pid
+chown zimbra:zimbra /opt/zimbra/zmstat
+chown zimbra:zimbra /opt/zimbra/zmstat/pid
+
 # Bug 6645
 PLAT=`/opt/zimbra/libexec/get_plat_tag.sh`
 ARCH=powerpc

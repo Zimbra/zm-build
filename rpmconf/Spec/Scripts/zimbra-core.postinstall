@@ -28,6 +28,10 @@
 mkdir -p /opt/zimbra/backup
 chown zimbra:zimbra /opt/zimbra/backup 
 
+mkdir -p /opt/zimbra/zmstat/pid
+chown zimbra:zimbra /opt/zimbra/zmstat
+chown zimbra:zimbra /opt/zimbra/zmstat/pid
+
 # log rotation
 if [ -d "/etc/periodic/daily" ]; then
   cp /opt/zimbra/libexec/600.zimbra /etc/periodic/daily/600.zimbra

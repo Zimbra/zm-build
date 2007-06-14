@@ -26,6 +26,10 @@
 
 SAVEDIR=/opt/zimbra/.saveconfig
 
+mkdir -p /opt/zimbra/zmstat/pid
+chown zimbra:zimbra /opt/zimbra/zmstat
+chown zimbra:zimbra /opt/zimbra/zmstat/pid
+
 /bin/sh /opt/zimbra/libexec/zmfixperms
 
 RF="$SAVEDIR/config.save"
