@@ -1072,6 +1072,9 @@ sub upgrade402GA {
 
     # bug 10845
     main::runAsZimbra("$ZMPROV mcf zimbraMailURL /zimbra"); 
+    
+    # bug 5238
+    main::runAsZimbra("$ZMPROV mcf zimbraAdminURL /zimbraAdmin");     
   }
 
   return 0;
