@@ -1233,6 +1233,9 @@ sub upgrade455GA {
 sub upgrade456GA {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
 	main::progress("Updating from 4.5.6_GA\n");
+  # bug 16425 rewrite default perms on localconfig.xml
+  main::setLocalConfig("upgrade_dummy", "1");
+  main::deleteLocalConfig("upgrade_dummy");
 	return 0;
 }
 sub upgrade500BETA1 {
@@ -1240,6 +1243,11 @@ sub upgrade500BETA1 {
 	main::progress("Updating from 5.0.0_BETA1\n");
 	return 0;
 }
+
+  # bug 16425 rewrite default perms on localconfig.xml
+  main::setLocalConfig("upgrade_dummy", "1");
+  main::deleteLocalConfig("upgrade_dummy");
+
 sub upgrade500GA {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
 	main::progress("Updating from 5.0.0_GA\n");
