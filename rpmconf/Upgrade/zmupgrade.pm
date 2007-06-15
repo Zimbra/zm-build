@@ -1269,6 +1269,9 @@ sub upgrade455GA {
 sub upgrade456GA {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
 	main::progress("Updating from 4.5.6_GA\n");
+  # bug 16425 rewrite default perms on localconfig.xml
+  main::setLocalConfig("upgrade_dummy", "1");
+  main::deleteLocalConfig("upgrade_dummy");
 	return 0;
 }
 sub upgrade460BETA {
@@ -1400,6 +1403,11 @@ sub upgrade500BETA1 {
 sub upgrade500BETA2 {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
 	main::progress("Updating from 5.0.0_BETA2\n");
+
+  # bug 16425 rewrite default perms on localconfig.xml
+  main::setLocalConfig("upgrade_dummy", "1");
+  main::deleteLocalConfig("upgrade_dummy");
+
   if (isInstalled("zimbra-store")) {
     my $zimbra_home = main::getLocalConfig("zimbra_home");
     $zimbra_home = "/opt/zimbra" if ($zimbra_home eq "");
