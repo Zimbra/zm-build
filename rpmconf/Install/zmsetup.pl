@@ -265,6 +265,10 @@ sub isEnabled {
       detail("$package is not enabled");
       return undef;
     }
+  } else {
+    detail("$package not in enabled cache");
+    my $packages = join(" ", keys %enabledPackages);
+    detail("enabled packages $packages");
   }
   
 
@@ -312,11 +316,17 @@ sub isEnabled {
     detail("Newinstall enabling all installed packages");
     foreach my $p (@packageList) {
       if (isInstalled($p)) {
-        detail("Enabling $p");
-        $enabledPackages{$p} = "Enabled";
+        unless ($enabledPackages{$p} eq "Disabled") {
+          detail("Enabling $p");
+          $enabledPackages{$p} = "Enabled" 
+        }
       }
     }
   }
+  
+  $enabledPackages{$package} = "Disabled" 
+    if ($enabledPackages{$package} ne "Enabled");
+
   return ($enabledPackages{$package} eq "Enabled" ? 1 : 0);
 }
 
