@@ -1256,13 +1256,13 @@ sub upgrade500BETA1 {
 	return 0;
 }
 
-  # bug 16425 rewrite default perms on localconfig.xml
-  main::setLocalConfig("upgrade_dummy", "1");
-  main::deleteLocalConfig("upgrade_dummy");
-
 sub upgrade500BETA2 {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
 	main::progress("Updating from 5.0.0_BETA2\n");
+
+  # bug 16425 rewrite default perms on localconfig.xml
+  main::setLocalConfig("upgrade_dummy", "1");
+  main::deleteLocalConfig("upgrade_dummy");
 	return 0;
 }
 sub upgrade500RC1 {
