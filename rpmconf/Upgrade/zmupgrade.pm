@@ -1073,8 +1073,6 @@ sub upgrade402GA {
     # bug 10845
     main::runAsZimbra("$ZMPROV mcf zimbraMailURL /zimbra"); 
     
-    # bug 5238
-    main::runAsZimbra("$ZMPROV mcf zimbraAdminURL /zimbraAdmin");     
   }
 
   return 0;
@@ -1420,6 +1418,9 @@ sub upgrade500BETA2 {
       main::deleteLocalConfig("tomcat_java_home");
       main::deleteLocalConfig("tomcat_pid_file");
     }
+
+    # bug 5238
+    main::runAsZimbra("$ZMPROV mcf zimbraAdminURL /zimbraAdmin");     
   }
 	return 0;
 }
