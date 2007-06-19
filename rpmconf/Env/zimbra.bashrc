@@ -38,3 +38,4 @@ PERL5LIB=$PERLLIB
 export PERL5LIB
 
 ulimit -n 10000 > /dev/null 2>&1
+umask 0027
