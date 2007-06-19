@@ -67,6 +67,14 @@ for i in jetty apache-tomcat ; do
   chown root:root $LONG
 done
 
+rm -f /opt/zimbra/mailboxd
+rm -f /opt/zimbra/jetty
+ln -s /opt/zimbra/jetty-6.1.4 /opt/zimbra/jetty
+ln -s /opt/zimbra/jetty-6.1.4 /opt/zimbra/mailboxd
+
+mkdir -p /opt/zimbra/mailboxd/logs
+chown zimbra:zimbra /opt/zimbra/mailboxd/logs
+
 egrep -v -e '^%zimbra.*tomcat' -e '^%zimbra.*mailboxdmgr' /etc/sudoers > /tmp/sudoers
 echo "%zimbra ALL=NOPASSWD:/opt/zimbra/libexec/zmmailboxdmgr" >> /tmp/sudoers
 mv -f /tmp/sudoers /etc/sudoers

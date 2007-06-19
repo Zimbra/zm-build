@@ -59,6 +59,13 @@ for i in jetty apache-tomcat ; do
   chown zimbra:zimbra $SHORT/logs
   chown root:root $LONG
 done
+rm -f /opt/zimbra/mailboxd
+rm -f /opt/zimbra/jetty
+ln -s /opt/zimbra/jetty-6.1.4 /opt/zimbra/jetty
+ln -s /opt/zimbra/jetty-6.1.4 /opt/zimbra/mailboxd
+
+mkdir -p /opt/zimbra/mailboxd/logs
+chown zimbra:zimbra /opt/zimbra/mailboxd/logs
 
 mkdir -p /opt/zimbra/convertd
 mkdir -p /opt/zimbra/redolog
