@@ -42,7 +42,7 @@ chomp $rundir;
 my $scriptDir = "/opt/zimbra/libexec/scripts";
 
 my $lowVersion = 18;
-my $hiVersion = 38;
+my $hiVersion = 39;
 my $hiLoggerVersion = 5;
 
 # Variables for the combo schema updater
@@ -77,6 +77,7 @@ my %updateScripts = (
   '35' => "migrate20061221-RecalculateFolderSizes.pl", # 4.5.0_GA
   '36' => "migrate20070306-Pop3MessageUid.pl",         # 5.0.0_BETA1
   '37' => "migrate20070606-WidenMetadata.pl",          # 5.0.0_BETA2
+  '38' => "migrate20070614-BriefcaseFolder.pl",        # 5.0.0_BETA2
 );
 
 my %loggerUpdateScripts = (
@@ -1419,9 +1420,12 @@ sub upgrade500BETA2 {
       main::deleteLocalConfig("tomcat_pid_file");
     }
 
-    # bug 5238
-    main::runAsZimbra("$ZMPROV mcf zimbraAdminURL /zimbraAdmin");     
   }
+
+  if (isInstalled("zimbra-ldap")) {
+    main::runAsZimbra("$ZMPROV mc default zimbraFeatureBriefcasesEnabled FALSE");     
+  }
+
 	return 0;
 }
 sub upgrade500RC1 {
