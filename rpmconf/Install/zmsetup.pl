@@ -130,6 +130,7 @@ my @interfaces = ();
 
 getopts("c:hd", \%options) or usage();
 
+my $debug = $options{d};
 sub usage {
   ($>) and print STDERR "Warning: $0 must be run as root!\n\n";
   print STDERR "Usage: $0 [-h] [-c <config file>]\n";
@@ -2300,6 +2301,21 @@ sub getLocalConfig {
   chomp $val;
   $loaded{lc}{$key} = $val;
   return $val;
+}
+
+sub deleteLocalConfig {
+  my $key = shift;
+
+  detail ( "Deleting local config $key" );
+  my $rc = 0xffff & system("/opt/zimbra/bin/zmlocalconfig -u ${key}");
+  if ($rc == 0) {
+    detail ("DEBUG: deleted localconfig key $key") if $debug;
+    delete($main::loaded{lc}{$key}) if (exists $main::loaded{lc}{$key});
+    return 1;
+  } else {
+    detail ("DEBUG: failed to deleted localconfig key $key") if $debug;
+    return undef
+  }
 }
 
 sub setLocalConfig {
