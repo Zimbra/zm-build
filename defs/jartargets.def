@@ -1,6 +1,9 @@
 
 # __JAR
 
+$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/lib: $(STORE_DEST_DIR)/$(MAILBOXD_DIR)
+	mkdir -p $@
+
 $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/common/lib: $(STORE_DEST_DIR)/$(MAILBOXD_DIR)
 	mkdir -p $@
 
@@ -25,6 +28,9 @@ $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/common/lib/zimbra-native.jar: $(NATIVE_DIR)/bu
 
 $(NATIVE_DIR)/build/zimbra-native.jar:
 	(cd $(NATIVE_DIR); make JAVA_BINARY=$(JAVA_BINARY))
+
+$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/lib/log4j-1.2.8.jar: $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/lib $(WEBAPP_DIR)/service.war
+	cp $(SERVICE_DIR)/build/dist/lib/jars/log4j-1.2.8.jar $@
 
 $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/common/lib/jcl104-over-slf4j-$(SLF4J_VERSION).jar: $(SLF4J_SOURCE)
 	cp $(SLF4J_SOURCE)/jcl104-over-slf4j-$(SLF4J_VERSION).jar $@
