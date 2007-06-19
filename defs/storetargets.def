@@ -75,7 +75,7 @@ $(BUILD_ROOT)/zimbra.spec:
 		$(BUILD_ROOT)/zimbra.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/wiki" >> \
 		$(BUILD_ROOT)/zimbra.spec
-	echo "%attr(-, zimbra, zimbra) /opt/zimbra/perdition-1.17" >> \
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/$(PERDITION_DIR)-$(PERDITION_VERSION)" >> \
 		$(BUILD_ROOT)/zimbra.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/mysql-standard-$(MYSQL_VERSION_STRING)-pc-linux-gnu-i686-glibc23" >> \
 		$(BUILD_ROOT)/zimbra.spec
