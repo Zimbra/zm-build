@@ -48,6 +48,17 @@ sub configure {
 		main::progress ("Notification skipped\n");
 		}
 	}
+
+  # enable zimbra on startup
+  if ($platform =~ /RPL1/) {
+    system("/sbin/chkconfig --add zimbra");
+    system("/sbin/chkconfig zimbra on");
+  } elsif ($platform =~ /MACOSX/) {
+    if (-d "/System/Library/LaunchDaemons") {
+      system("cp -f /opt/zimbra/conf/com.zimbra.zcs.plist /System/Library/LaunchDaemons");
+      system("launchctl load /System/Library/LaunchDaemons/com.zimbra.zcs.plist 2> /dev/null");
+    }
+  }
 }
 
 1
