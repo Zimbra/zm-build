@@ -1423,6 +1423,7 @@ sub upgrade500BETA2 {
   }
 
   if (isInstalled("zimbra-ldap")) {
+    main::runAsZimbra("$ZMPROV mcf zimbraAdminURL /zimbraAdmin");  
     main::runAsZimbra("$ZMPROV mc default zimbraFeatureBriefcasesEnabled FALSE");     
   }
 
