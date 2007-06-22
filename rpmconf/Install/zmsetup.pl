@@ -234,8 +234,11 @@ sub checkPortConflicts {
   my $any = 0;
   foreach (@ports) {
     if (defined ($needed{$_}) && isEnabled($needed{$_})) {
-      $any = 1;
-      progress ( "Port conflict detected: $_ ($needed{$_})\n" );
+      # don't report ldap conflicts on upgrade # 14438
+      unless ($needed{$_} eq "zimbra-ldap" && $newinstall == 0) {
+        $any = 1;
+        progress ( "Port conflict detected: $_ ($needed{$_})\n" );
+      }
     }
   }
 
