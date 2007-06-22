@@ -49,14 +49,16 @@ sub configure {
 		}
 	}
 
-  # enable zimbra on startup
-  if ($platform =~ /RPL1/) {
+    # enable zimbra on startup
+  if ($main::platform =~ /RPL1/) {
     system("/sbin/chkconfig --add zimbra");
     system("/sbin/chkconfig zimbra on");
-  } elsif ($platform =~ /MACOSX/) {
+  } elsif ($main::platform =~ /MACOSX/) {
     if (-d "/System/Library/LaunchDaemons") {
       system("cp -f /opt/zimbra/conf/com.zimbra.zcs.plist /System/Library/LaunchDaemons");
       system("launchctl load /System/Library/LaunchDaemons/com.zimbra.zcs.plist 2> /dev/null");
+      system("launchctl stop com.zimbra.zcs")
+        if ($main::config{STARTSERVERS} eq "no");
     }
   }
 }
