@@ -2521,7 +2521,7 @@ sub configSetupLdap {
     if ($ldapPassChanged) {
       progress ( "Setting ldap password..." );
       runAsZimbra 
-        ("/opt/zimbra/openldap/sbin/slapindex -f /opt/zimbra/conf/slapd.conf");
+        ("/opt/zimbra/openldap/sbin/slapindex -q -f /opt/zimbra/conf/slapd.conf");
       runAsZimbra ("/opt/zimbra/bin/zmldappasswd --root $config{LDAPPASS}");
       runAsZimbra ("/opt/zimbra/bin/zmldappasswd $config{LDAPPASS}");
       progress ( "Done\n" );
@@ -3397,7 +3397,7 @@ sub startLdap {
   my $rc = runAsZimbra("/opt/zimbra/bin/ldap status");
   if ($rc) { 
     main::progress("Starting ldap\n");
-    $rc = runAsZimbra ("/opt/zimbra/openldap/sbin/slapindex -f /opt/zimbra/conf/slapd.conf");
+    $rc = runAsZimbra ("/opt/zimbra/openldap/sbin/slapindex -q -f /opt/zimbra/conf/slapd.conf");
     $rc = runAsZimbra ("/opt/zimbra/libexec/zmldapapplyldif");
     $rc = runAsZimbra ("/opt/zimbra/bin/ldap status");
     if ($rc) {
