@@ -198,13 +198,9 @@ my $addr_space = (($platform =~ m/\w+_(\d+)/) ? "$1" : "32");
 sub upgrade {
 	$startVersion = shift;
 	$targetVersion = shift;
-	my $startBuild = $startVersion;
-	$startBuild =~ s/.*_//;
-	my $targetBuild = $targetVersion;
-	$targetBuild =~ s/.*_//;
-
-	$startVersion =~ s/_$startBuild//;
-	$targetVersion =~ s/_$targetBuild//;
+  my ($startBuild,$targetBuild);
+  ($startVersion,$startBuild) = $startVersion =~ /(\d\.\d\.\d_[^_]*)_(\d+)/;  
+  ($targetVersion,$targetBuild) = $targetVersion =~ m/(\d\.\d\.\d_[^_]*)_(\d+)/;
 
 	my $needVolumeHack = 0;
 	my $needMysqlTableCheck = 0;
