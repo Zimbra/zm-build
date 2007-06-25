@@ -1267,6 +1267,12 @@ sub upgrade456GA {
   # bug 16425 rewrite default perms on localconfig.xml
   main::setLocalConfig("upgrade_dummy", "1");
   main::deleteLocalConfig("upgrade_dummy");
+
+  # bug 17879
+  if (isInstalled("zimbra-store")) {
+    updateMySQLcnf();
+  }
+
 	return 0;
 }
 sub upgrade460BETA {
@@ -1690,6 +1696,8 @@ sub movePostfixQueue {
 sub updateMySQLcnf {
 
   my $mycnf = "/opt/zimbra/conf/my.cnf";
+  my $mysql_pidfile = main::getLocalConfig("mysql_pidfile");
+  $mysql_pidfile = "/opt/zimbra/db/mysql.pid" if ($mysql_pidfile eq "");
   if (-e "$mycnf") {
     unless (open(MYCNF, "$mycnf")) {
       Migrate::myquit(1, "${mycnf}: $!\n");
@@ -1707,6 +1715,11 @@ sub updateMySQLcnf {
         print TMP "user         = $zimbra_user\n";
         $mycnfChanged=1;
         next;
+      } elsif (/^err-log/ && $CNF[$i+1] !~ m/^pid-file/) {
+        print TMP;
+        print TMP "pid-file = ${mysql_pidfile}\n";
+        $mycnfChanged=1;
+        next;
       }
       print TMP;
       $i++;
@@ -1714,7 +1727,7 @@ sub updateMySQLcnf {
     close(TMP);
   
     if ($mycnfChanged) {
-      `mv $mycnf ${mycnf}.3.2.0_M2`;
+      `mv $mycnf ${mycnf}.${startVersion}`;
       `cp -f $tmpfile $mycnf`;
       `chmod 644 $mycnf`;
     } 
