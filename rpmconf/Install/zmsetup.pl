@@ -2398,7 +2398,11 @@ sub configLCValues {
     setLocalConfig ("ldap_url", "ldaps://$config{LDAPHOST}:$config{LDAPPORT}");
   } else {
     setLocalConfig ("ldap_master_url", "ldap://$config{LDAPHOST}:$config{LDAPPORT}");
-    setLocalConfig ("ldap_url", "ldap://$config{LDAPHOST}:$config{LDAPPORT}");
+    if ($config{ldap_url} eq "") { 
+      setLocalConfig ("ldap_url", "ldap://$config{LDAPHOST}:$config{LDAPPORT}");
+    } else {
+      setLocalConfig ("ldap_url", "$config{ldap_url}");
+    }
   }
 
   setLocalConfig ("ldap_port", "$config{LDAPPORT}");
