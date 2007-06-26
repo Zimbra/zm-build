@@ -685,7 +685,7 @@ sub setDefaults {
   $config{MYSQLMEMORYPERCENT} = mysqlMemoryPercent($config{SYSTEMMEMORY});
   $config{MAILBOXDMEMORYPERCENT} = mailboxdMemoryPercent($config{SYSTEMMEMORY});
 
-  $config{CREATEADMINPASS} = "";
+  $config{CREATEADMINPASS} = "" unless ($config{CREATEADMINPASS});
 
   if (!$options{c} && $newinstall) {
     progress "no config file and newinstall checking dns resolution\n" if $options{d};
