@@ -42,7 +42,7 @@ chomp $rundir;
 my $scriptDir = "/opt/zimbra/libexec/scripts";
 
 my $lowVersion = 18;
-my $hiVersion = 41;
+my $hiVersion = 42;
 my $hiLoggerVersion = 5;
 
 # Variables for the combo schema updater
@@ -80,6 +80,7 @@ my %updateScripts = (
   '38' => "migrate20070614-BriefcaseFolder.pl",        # 5.0.0_BETA2
   '39' => "migrate20070627-BackupTime.pl",             # 5.0.0_BETA2
   '40' => "migrate20070629-IMTables.pl",               # 5.0.0_BETA2
+  '41' => "migrate20070630-LastSoapAccess.pl",         # 5.0.0_BETA2
 );
 
 my %loggerUpdateScripts = (
