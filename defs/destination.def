@@ -25,6 +25,12 @@ APACHE_DEST_DIR		:= $(APACHE_DEST_ROOT)/opt/zimbra
 SPELL_DEST_ROOT		:= $(BUILD_ROOT)/spellbuild
 SPELL_DEST_DIR		:= $(SPELL_DEST_ROOT)/opt/zimbra
 
+MEMCACHED_DEST_ROOT	:= $(BUILD_ROOT)/memcached
+MEMCACHED_DEST_DIR	:= $(MEMCACHED_DEST_DIR)/opt/zimbra
+
+NGINX_DEST_ROOT		:= $(BUILD_ROOT)/nginx
+NGINX_DEST_DIR		:= $(NGINX_DEST_DIR)/opt/zimbra
+
 WEBAPP_DIR		:= $(STORE_DEST_ROOT)/opt/zimbra/$(MAILBOXD_DIR)/webapps
 WEBAPP_BUILD_DIR := build/dist/$(MAILBOXD_SERVER)/webapps
 
