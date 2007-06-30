@@ -118,7 +118,7 @@ $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/conf: force
 			$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/conf/AdminService/localhost/zimbraAdmin.xml
 		cp -f $(SERVICE_DIR)/conf/$(MAILBOXD_SERVER)-$(MAILBOXD_MINOR_VERSION)/tomcat-users.xml $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/conf
 		cp -f $(SERVICE_DIR)/build/dist/conf/log4j.properties  \
-			$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/conf/log4j.properties
+			$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/conf/log4j.properties.in
 		cp -f $(SERVICE_DIR)/conf/web.xml.production \
 			$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/conf/service.web.xml.in
 		cp -f zimbraConf/web.xml \
