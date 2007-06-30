@@ -36,6 +36,22 @@ ifndef $(ZIMBRA_USE_TOMCAT)
 		$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/lib/log4j-1.2.8.jar
 endif
 
+ifndef $(ZIMBRA_USE_PERDITION)
+STORE_COMPONENTS := \
+	$(WEBAPPS) \
+	$(STORE_DEST_DIR)/$(MAILBOXD_DIR) \
+	$(STORE_DEST_DIR)/zimlets \
+	$(STORE_DEST_DIR)/zimlets-extra \
+	$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/common/lib/ical4j-0.9.16-patched.jar \
+	$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/common/lib/zimbra-native.jar \
+	$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/common/lib/mail.jar \
+	$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/common/endorsed/zimbra-charset.jar \
+	$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/common/lib/activation.jar \
+	$(MAILBOXD_COMPONENTS) \
+	$(STORE_DEST_DIR)/lib/ext/clamscanner/clamscanner.jar \
+	$(STORE_DEST_DIR)/wiki \
+	$(STORE_DEST_DIR)/$(MYSQL_DIR) 
+else
 STORE_COMPONENTS := \
 	$(WEBAPPS) \
 	$(STORE_DEST_DIR)/$(MAILBOXD_DIR) \
@@ -51,6 +67,7 @@ STORE_COMPONENTS := \
 	$(STORE_DEST_DIR)/lib/ext/clamscanner/clamscanner.jar \
 	$(STORE_DEST_DIR)/wiki \
 	$(STORE_DEST_DIR)/$(MYSQL_DIR) 
+endif
 
 ZIMLET_COMPONENTS := \
 	$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/webapps/service/WEB-INF/lib/zimbrataglib.jar \
@@ -76,8 +93,7 @@ SNMP_COMPONENTS := \
 
 PROXY_COMPONENTS := \
 	$(PROXY_DEST_DIR)/$(NGINX_DIR) \
-	$(PROXY_DEST_DIR)/$(MEMCACHED_DIR) \
-	$(PROXY_DEST_DIR)/lib/ext/nginx-lookup/nginx-lookup.jar
+	$(PROXY_DEST_DIR)/$(MEMCACHED_DIR)
 
 EVO_COMPONENTS := \
 	$(EVO_DEST_DIR)
