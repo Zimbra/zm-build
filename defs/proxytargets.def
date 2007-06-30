@@ -33,9 +33,9 @@ $(BUILD_ROOT)/resources/zimbra-proxy:
 	chmod 755 $@/postupgrade
 
 
-proxy_pkg_spec_deb: $(NGINX_DEST_ROOT)/DEBIAN/control
+proxy_pkg_spec_deb: $(PROXY_DEST_ROOT)/DEBIAN/control
 
-$(NGINX_DEST_ROOT)/DEBIAN: force
+$(PROXY_DEST_ROOT)/DEBIAN: force
 	mkdir -p $@
 	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra.pre $@/preinst
 	echo "#!/bin/bash" > $@/postinst
@@ -43,7 +43,7 @@ $(NGINX_DEST_ROOT)/DEBIAN: force
 	cat $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra.post >> $@/postinst
 	chmod 555 $@/*
 
-$(NGINX_DEST_ROOT)/DEBIAN/control: $(NGINX_DEST_ROOT)/DEBIAN force
+$(PROXY_DEST_ROOT)/DEBIAN/control: $(PROXY_DEST_ROOT)/DEBIAN force
 	cat $(PACKAGE_CONF_DIR)/Spec/zimbraproxy.deb | \
 	sed -e 's/@@VERSION@@/$(VERSION_TAG)/' \
 	-e 's/@@RELEASE@@/$(RELEASE)/' \
