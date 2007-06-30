@@ -1,0 +1,77 @@
+
+# __NGINX
+
+nginx: CUR_DEST_ROOT := $(NGINX_DEST_ROOT)
+nginx: CUR_PACKAGE_SPEC := $(BUILD_ROOT)/zimbranginx.spec
+nginx: CUR_PACKAGE_NAME := zimbra-nginx
+nginx: $(PACKAGE_DIR) nginx_stage nginx_pkg_spec_$(PACKAGE_EXT)
+	(cd $(CUR_DEST_ROOT); \
+	$(PACKAGING_COMMAND) $(PACKAGING_OPTIONS) )
+
+nginx_pkg_spec_pkg: $(BUILD_ROOT)/resources/zimbra-nginx $(BUILD_ROOT)/zimbra-nginx.Info.plist $(BUILD_ROOT)/zimbra-nginx.Description.plist 
+
+$(BUILD_ROOT)/zimbra-nginx.Description.plist:
+	cat $(PACKAGE_CONF_DIR)/Spec/zimbra-nginx.Description.plist | \
+		sed -e 's/@@VERSION@@/$(VERSION_TAG)/' \
+		-e 's/@@RELEASE@@/$(RELEASE)/' \
+		-e 's/@@MAJOR@@/$(MAJOR)/' \
+		-e 's/@@MINOR@@/$(MINOR)/' > $@
+
+$(BUILD_ROOT)/zimbra-nginx.Info.plist:
+	cat $(PACKAGE_CONF_DIR)/Spec/zimbra-nginx.Info.plist | \
+		sed -e 's/@@VERSION@@/$(VERSION_TAG)/' \
+		-e 's/@@RELEASE@@/$(RELEASE)/' \
+		-e 's/@@MAJOR@@/$(MAJOR)/' \
+		-e 's/@@BUILDNUM@@/$(BUILDNUM)/' \
+		-e 's/@@MINOR@@/$(MINOR)/' > $@
+
+$(BUILD_ROOT)/resources/zimbra-nginx:
+	mkdir -p $@
+	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-nginx.postinstall $@/postinstall
+	chmod 755 $@/postinstall
+	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-nginx.postupgrade $@/postupgrade
+	chmod 755 $@/postupgrade
+
+
+nginx_pkg_spec_deb: $(NGINX_DEST_ROOT)/DEBIAN/control
+
+$(NGINX_DEST_ROOT)/DEBIAN: force
+	mkdir -p $@
+	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra.pre $@/preinst
+	echo "#!/bin/bash" > $@/postinst
+	echo "sh /opt/zimbra/bin/zmfixperms.sh" >> $@/postinst
+	cat $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra.post >> $@/postinst
+	chmod 555 $@/*
+
+$(NGINX_DEST_ROOT)/DEBIAN/control: $(NGINX_DEST_ROOT)/DEBIAN force
+	cat $(PACKAGE_CONF_DIR)/Spec/zimbranginx.deb | \
+	sed -e 's/@@VERSION@@/$(VERSION_TAG)/' \
+	-e 's/@@RELEASE@@/$(RELEASE)/' \
+	-e 's/@@ARCH@@/$(ARCH)/' > $@
+
+nginx_pkg_spec_ccs:
+
+nginx_pkg_spec_rpm: $(BUILD_ROOT)/zimbranginx.spec
+
+$(BUILD_ROOT)/zimbranginx.spec:
+	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbranginx.pre $(BUILD_ROOT)
+	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbranginx.post $(BUILD_ROOT)
+	cat $(PACKAGE_CONF_DIR)/Spec/zimbranginx.spec | \
+		sed -e 's/@@VERSION@@/$(VERSION_TAG)/' \
+		-e 's/@@RELEASE@@/$(RELEASE)/' \
+		-e 's/^Copyright:/$(RPMCOPYRIGHTSTR):/' \
+		-e '/^%pre$$/ r zimbranginx.pre' \
+		-e '/^%post$$/ r zimbranginx.post' > $(BUILD_ROOT)/zimbranginx.spec
+	rm -f zimbranginx.pre
+	rm -f zimbranginx.post
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/nginx-$(NGINX_VERSION)" >> \
+                $(BUILD_ROOT)/zimbranginx.spec
+
+nginx_stage: $(NGINX_COMPONENTS)
+
+$(NGINX_DEST_DIR):
+	mkdir -p $@
+
+$(NGINX_DEST_DIR)/$(NGINX_DIR): $(NGINX_DEST_DIR)
+	@echo "*** Creating nginx"
+	(cd $(NGINX_DEST_DIR); tar xzf $(NGINX_SOURCE).tgz;)
