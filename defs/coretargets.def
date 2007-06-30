@@ -304,6 +304,7 @@ $(CORE_DEST_DIR)/bin:
 	cp $(ZIMBRA_BIN_DIR)/zmcontrol $@
 	cp $(ZIMBRA_BIN_DIR)/zmloggerctl $@
 	cp $(ZIMBRA_BIN_DIR)/zmstorectl $@
+	cp $(ZIMBRA_BIN_DIR)/zmproxyctl $@
 	cp $(ZIMBRA_BIN_DIR)/zmmtactl $@
 	cp $(ZIMBRA_BIN_DIR)/zmspellctl $@
 	cp $(ZIMBRA_BIN_DIR)/zmapachectl $@
