@@ -32,7 +32,8 @@ zimbra-mta \
 zimbra-snmp \
 zimbra-store \
 zimbra-apache \
-zimbra-spell"
+zimbra-spell \
+zimbra-proxy"
 
 SERVICES=""
 
