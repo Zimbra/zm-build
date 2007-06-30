@@ -65,7 +65,7 @@ $(BUILD_ROOT)/zimbranginx.spec:
 	rm -f zimbranginx.pre
 	rm -f zimbranginx.post
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/nginx-$(NGINX_VERSION)" >> \
-                $(BUILD_ROOT)/zimbranginx.spec
+		$(BUILD_ROOT)/zimbranginx.spec
 
 nginx_stage: $(NGINX_COMPONENTS)
 
