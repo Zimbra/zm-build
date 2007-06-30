@@ -853,7 +853,7 @@ restoreCerts() {
   elif [ -f "/opt/zimbra/jetty/etc/keystore" ]; then
     chown zimbra:zimbra /opt/zimbra/jetty/etc/keystore
   fi
-  chown zimbra:zimbra /opt/zimbra/java/jre/lib/security/cacerts /opt/zimbra/conf/smtpd.key /opt/zimbra/conf/smtpd.crt /opt/zimbra/conf/slapd.crt /opt/zimbra/conf/perdition.pem /opt/zimbra/conf/perdition.key
+  chown zimbra:zimbra /opt/zimbra/java/jre/lib/security/cacerts /opt/zimbra/conf/smtpd.key /opt/zimbra/conf/smtpd.crt /opt/zimbra/conf/slapd.crt /opt/zimbra/conf/perdition.pem /opt/zimbra/conf/perdition.key /opt/zimbra/conf/nginx.key /opt/zimbra/conf/nginx.crt
   chown -R zimbra:zimbra /opt/zimbra/conf/ca
 }
 
@@ -885,6 +885,12 @@ saveExistingConfig() {
   fi
   if [ -f "/opt/zimbra/conf/slapd.crt" ]; then
     cp -f /opt/zimbra/conf/slapd.crt $SAVEDIR
+  fi
+  if [ -f "/opt/zimbra/conf/nginx.key" ]; then
+    cp -f /opt/zimbra/conf/nginx.key $SAVEDIR
+  fi
+  if [ -f "/opt/zimbra/conf/nginx.crt" ]; then
+    cp -f /opt/zimbra/conf/nginx.crt $SAVEDIR
   fi
   if [ -f "/opt/zimbra/conf/ca/ca.key" ]; then
     cp -f /opt/zimbra/conf/ca/ca.key $SAVEDIR
