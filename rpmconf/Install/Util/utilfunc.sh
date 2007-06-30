@@ -835,6 +835,12 @@ restoreCerts() {
   if [ -f "$SAVEDIR/slapd.crt" ]; then
     cp $SAVEDIR/slapd.crt /opt/zimbra/conf/slapd.crt 
   fi
+  if [ -f "$SAVEDIR/nginx.key" ]; then
+    cp $SAVEDIR/nginx.key /opt/zimbra/conf/nginx.key
+  fi
+  if [ -f "$SAVEDIR/nginx.crt" ]; then
+    cp $SAVEDIR/nginx.crt /opt/zimbra/conf/nginx.crt
+  fi
   mkdir -p /opt/zimbra/conf/ca
   if [ -f "$SAVEDIR/ca.key" ]; then
     cp $SAVEDIR/ca.key /opt/zimbra/conf/ca/ca.key 
