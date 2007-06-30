@@ -26,7 +26,7 @@ SPELL_DEST_ROOT		:= $(BUILD_ROOT)/spellbuild
 SPELL_DEST_DIR		:= $(SPELL_DEST_ROOT)/opt/zimbra
 
 PROXY_DEST_ROOT		:= $(BUILD_ROOT)/proxy
-PROXY_DEST_DIR		:= $(PROXY_DEST_DIR)/opt/zimbra
+PROXY_DEST_DIR		:= $(PROXY_DEST_ROOT)/opt/zimbra
 
 WEBAPP_DIR		:= $(STORE_DEST_ROOT)/opt/zimbra/$(MAILBOXD_DIR)/webapps
 WEBAPP_BUILD_DIR := build/dist/$(MAILBOXD_SERVER)/webapps
