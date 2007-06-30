@@ -11,3 +11,4 @@ TAGLIB_DIR := $(BUILD_ROOT)/../ZimbraTagLib
 HTMLCLIENT_DIR := $(BUILD_ROOT)/../ZimbraHtmlClient
 CLAMSCANNER_DIR := $(BUILD_ROOT)/../ClamScanner
 EVO_DIR := $(BUILD_ROOT)/../ZimbraEvolution
+NGINX_LOOKUP_DIR := $(BUILD_ROOT)/../ZimbraNginxLookup
