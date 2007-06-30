@@ -1,6 +1,6 @@
 # Makefile for entire install tree, for RPM packages.
 
-.PHONY: core mta store ldap snmp 
+.PHONY: core proxy mta store ldap snmp
 
 # BASE VARIABLES
 
@@ -55,6 +55,8 @@ endif
 ifeq ($(BUILD_PLATFORM), RHEL4_64)
 include $(DEFS_DIR)/RHEL4_64_targets.def
 endif
+
+include $(DEFS_DIR)/proxytargets.def
 
 include $(DEFS_DIR)/ldaptargets.def
 
