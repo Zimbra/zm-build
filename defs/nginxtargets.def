@@ -1,39 +1,39 @@
 
-# __NGINX
+# __PROXY
 
-nginx: CUR_DEST_ROOT := $(NGINX_DEST_ROOT)
-nginx: CUR_PACKAGE_SPEC := $(BUILD_ROOT)/zimbranginx.spec
-nginx: CUR_PACKAGE_NAME := zimbra-nginx
-nginx: $(PACKAGE_DIR) nginx_stage nginx_pkg_spec_$(PACKAGE_EXT)
+proxy: CUR_DEST_ROOT := $(PROXY_DEST_ROOT)
+proxy: CUR_PACKAGE_SPEC := $(BUILD_ROOT)/zimbraproxy.spec
+proxy: CUR_PACKAGE_NAME := zimbra-proxy
+proxy: $(PACKAGE_DIR) proxy_stage proxy_pkg_spec_$(PACKAGE_EXT)
 	(cd $(CUR_DEST_ROOT); \
 	$(PACKAGING_COMMAND) $(PACKAGING_OPTIONS) )
 
-nginx_pkg_spec_pkg: $(BUILD_ROOT)/resources/zimbra-nginx $(BUILD_ROOT)/zimbra-nginx.Info.plist $(BUILD_ROOT)/zimbra-nginx.Description.plist 
+proxy_pkg_spec_pkg: $(BUILD_ROOT)/resources/zimbra-proxy $(BUILD_ROOT)/zimbra-proxy.Info.plist $(BUILD_ROOT)/zimbra-proxy.Description.plist 
 
-$(BUILD_ROOT)/zimbra-nginx.Description.plist:
-	cat $(PACKAGE_CONF_DIR)/Spec/zimbra-nginx.Description.plist | \
+$(BUILD_ROOT)/zimbra-proxy.Description.plist:
+	cat $(PACKAGE_CONF_DIR)/Spec/zimbra-proxy.Description.plist | \
 		sed -e 's/@@VERSION@@/$(VERSION_TAG)/' \
 		-e 's/@@RELEASE@@/$(RELEASE)/' \
 		-e 's/@@MAJOR@@/$(MAJOR)/' \
 		-e 's/@@MINOR@@/$(MINOR)/' > $@
 
-$(BUILD_ROOT)/zimbra-nginx.Info.plist:
-	cat $(PACKAGE_CONF_DIR)/Spec/zimbra-nginx.Info.plist | \
+$(BUILD_ROOT)/zimbra-proxy.Info.plist:
+	cat $(PACKAGE_CONF_DIR)/Spec/zimbra-proxy.Info.plist | \
 		sed -e 's/@@VERSION@@/$(VERSION_TAG)/' \
 		-e 's/@@RELEASE@@/$(RELEASE)/' \
 		-e 's/@@MAJOR@@/$(MAJOR)/' \
 		-e 's/@@BUILDNUM@@/$(BUILDNUM)/' \
 		-e 's/@@MINOR@@/$(MINOR)/' > $@
 
-$(BUILD_ROOT)/resources/zimbra-nginx:
+$(BUILD_ROOT)/resources/zimbra-proxy:
 	mkdir -p $@
-	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-nginx.postinstall $@/postinstall
+	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-proxy.postinstall $@/postinstall
 	chmod 755 $@/postinstall
-	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-nginx.postupgrade $@/postupgrade
+	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-proxy.postupgrade $@/postupgrade
 	chmod 755 $@/postupgrade
 
 
-nginx_pkg_spec_deb: $(NGINX_DEST_ROOT)/DEBIAN/control
+proxy_pkg_spec_deb: $(NGINX_DEST_ROOT)/DEBIAN/control
 
 $(NGINX_DEST_ROOT)/DEBIAN: force
 	mkdir -p $@
@@ -44,42 +44,48 @@ $(NGINX_DEST_ROOT)/DEBIAN: force
 	chmod 555 $@/*
 
 $(NGINX_DEST_ROOT)/DEBIAN/control: $(NGINX_DEST_ROOT)/DEBIAN force
-	cat $(PACKAGE_CONF_DIR)/Spec/zimbranginx.deb | \
+	cat $(PACKAGE_CONF_DIR)/Spec/zimbraproxy.deb | \
 	sed -e 's/@@VERSION@@/$(VERSION_TAG)/' \
 	-e 's/@@RELEASE@@/$(RELEASE)/' \
 	-e 's/@@ARCH@@/$(ARCH)/' > $@
 
-nginx_pkg_spec_ccs:
+proxy_pkg_spec_ccs:
 
-nginx_pkg_spec_rpm: $(BUILD_ROOT)/zimbranginx.spec
+proxy_pkg_spec_rpm: $(BUILD_ROOT)/zimbraproxy.spec
 
-$(BUILD_ROOT)/zimbranginx.spec:
-	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbranginx.pre $(BUILD_ROOT)
-	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbranginx.post $(BUILD_ROOT)
-	cat $(PACKAGE_CONF_DIR)/Spec/zimbranginx.spec | \
+$(BUILD_ROOT)/zimbraproxy.spec:
+	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbraproxy.pre $(BUILD_ROOT)
+	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbraproxy.post $(BUILD_ROOT)
+	cat $(PACKAGE_CONF_DIR)/Spec/zimbraproxy.spec | \
 		sed -e 's/@@VERSION@@/$(VERSION_TAG)/' \
 		-e 's/@@RELEASE@@/$(RELEASE)/' \
 		-e 's/^Copyright:/$(RPMCOPYRIGHTSTR):/' \
-		-e '/^%pre$$/ r zimbranginx.pre' \
-		-e '/^%post$$/ r zimbranginx.post' > $(BUILD_ROOT)/zimbranginx.spec
-	rm -f zimbranginx.pre
-	rm -f zimbranginx.post
+		-e '/^%pre$$/ r zimbraproxy.pre' \
+		-e '/^%post$$/ r zimbraproxy.post' > $(BUILD_ROOT)/zimbraproxy.spec
+	rm -f zimbraproxy.pre
+	rm -f zimbraproxy.post
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/nginx-$(NGINX_VERSION)" >> \
-		$(BUILD_ROOT)/zimbranginx.spec
+		$(BUILD_ROOT)/zimbraproxy.spec
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/memcached-$(MEMCACHED_VERSION)" >> \
+		$(BUILD_ROOT)/zimbraproxy.spec
 
-nginx_stage: $(NGINX_COMPONENTS)
+proxy_stage: $(PROXY_COMPONENTS)
 
-$(NGINX_DEST_DIR):
+$(PROXY_DEST_DIR):
 	mkdir -p $@
 
-$(NGINX_DEST_DIR)/$(NGINX_DIR): $(NGINX_DEST_DIR)
+$(PROXY_DEST_DIR)/$(NGINX_DIR): $(PROXY_DEST_DIR)
 	@echo "*** Creating nginx"
-	(cd $(NGINX_DEST_DIR); tar xzf $(NGINX_SOURCE).tgz;)
+	(cd $(PROXY_DEST_DIR); tar xzf $(NGINX_SOURCE).tgz;)
 
-$(NGINX_DEST_DIR)/lib/ext/nginx-lookup/nginx-lookup.jar: $(NGINX_DEST_DIR)/lib/ext/nginx-lookup $(NGINX_DIR)/build/nginx-lookup.jar
+$(PROXY_DEST_DIR)/$(MEMCACHED_DIR): $(PROXY_DEST_DIR)
+	@echo "*** Creating memcached"
+	(cd $(PROXY_DEST_DIR); tar xzf $(MEMCACHED_SOURCE).tgz;)
+
+$(PROXY_DEST_DIR)/lib/ext/nginx-lookup/nginx-lookup.jar: $(PROXY_DEST_DIR)/lib/ext/nginx-lookup $(NGINX_DIR)/build/nginx-lookup.jar
 	cp -f $(NGINX_DIR)/build/nginx-lookup.jar
 
-$(NGINX_DEST_DIR)/lib/ext/nginx-lookup:
+$(PROXY_DEST_DIR)/lib/ext/nginx-lookup:
 	mkdir -p $@
 
 $(NGINX_DIR)/build/nginx-lookup.jar:
