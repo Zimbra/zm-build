@@ -83,7 +83,7 @@ $(PROXY_DEST_DIR)/$(MEMCACHED_DIR): $(PROXY_DEST_DIR)
 	(cd $(PROXY_DEST_DIR); tar xzf $(MEMCACHED_SOURCE).tgz;)
 
 $(PROXY_DEST_DIR)/lib/ext/nginx-lookup/nginx-lookup.jar: $(PROXY_DEST_DIR)/lib/ext/nginx-lookup $(NGINX_LOOKUP_DIR)/build/nginx-lookup.jar
-	cp -f $(NGINX_LOOKUP_DIR)/build/nginx-lookup.jar
+	cp -f $(NGINX_LOOKUP_DIR)/build/nginx-lookup.jar $@
 
 $(PROXY_DEST_DIR)/lib/ext/nginx-lookup:
 	mkdir -p $@
