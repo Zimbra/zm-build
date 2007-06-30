@@ -1,4 +1,4 @@
-Package: zimbra-nginx
+Package: zimbra-proxy
 Version: @@VERSION@@
 Description: Best email money can buy
 Maintainer: build@zimbra.com

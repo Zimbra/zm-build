@@ -5,9 +5,9 @@
 	<key>CFBundleGetInfoString</key>
 	<string>@@VERSION@@, Zimbra, Inc.</string>
 	<key>CFBundleIdentifier</key>
-	<string>com.zimbra.zcs.nginx</string>
+	<string>com.zimbra.zcs.proxy</string>
 	<key>CFBundleName</key>
-	<string>zimbra-nginx</string>
+	<string>zimbra-proxy</string>
 	<key>CFBundleShortVersionString</key>
 	<string>@@MAJOR@@.@@MINOR@@</string>
 	<key>BuildVersion</key>

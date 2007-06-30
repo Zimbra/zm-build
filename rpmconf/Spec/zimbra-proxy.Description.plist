@@ -3,8 +3,8 @@
 <plist version="1.0">
 <dict>
 	<key>IFPkgDescriptionTitle</key>
-	<string>zimbra-nginx @@VERSION@@</string>
+	<string>zimbra-proxy @@VERSION@@</string>
 	<key>IFPkgDescriptionTitle</key>
-	<string>Zimbra Nginx Imap Proxy Utilities</string>
+	<string>Zimbra Proxy Utilities</string>
 </dict>
 </plist>

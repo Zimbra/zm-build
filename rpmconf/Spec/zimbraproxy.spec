@@ -1,8 +1,8 @@
 #
 # spec file for zimbra.rpm
 #
-Summary: Zimbra nginx
-Name: zimbra-nginx
+Summary: Zimbra Proxy
+Name: zimbra-proxy
 Version: @@VERSION@@
 Release: @@RELEASE@@
 Copyright: ZPL and other
