@@ -131,6 +131,14 @@ if [ -f /etc/debian_version ]; then
 	fi
 fi
 
+if [ -f /etc/debian_version ]; then
+	grep "4.0" /etc/debian_version > /dev/null 2>&1
+	if [ $? = 0 ]; then
+		echo "DEBIAN4.0"
+		exit 0
+	fi
+fi
+
 if [ -f /etc/lsb-release ]; then
 	grep "DISTRIB_ID=Ubuntu" /etc/lsb-release > /dev/null 2>&1
 	if [ $? = 0 ]; then
