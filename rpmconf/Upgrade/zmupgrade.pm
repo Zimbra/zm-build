@@ -1433,6 +1433,8 @@ sub upgrade500BETA2 {
     main::runAsZimbra("$ZMPROV mcf zimbraAdminURL /zimbraAdmin");  
     main::runAsZimbra("$ZMPROV mc default zimbraFeatureBriefcasesEnabled FALSE");     
   }
+  main::runAsZimbra("zmlocalconfig -e postfix_version=2.4.3.3");
+  movePostfixQueue ("2.2.9","2.4.3.3");
 
 	return 0;
 }
