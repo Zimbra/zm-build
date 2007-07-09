@@ -29,19 +29,19 @@ rm -f /opt/zimbra/amavisd
 ln -s /opt/zimbra/amavisd-new-2.4.3 /opt/zimbra/amavisd
 
 rm -f /opt/zimbra/dspam
-ln -s /opt/zimbra/dspam-3.6.2 /opt/zimbra/dspam
+ln -s /opt/zimbra/dspam-3.8.0 /opt/zimbra/dspam
 
 rm -f /opt/zimbra/postfix
-ln -s /opt/zimbra/postfix-2.2.9 /opt/zimbra/postfix
+ln -s /opt/zimbra/postfix-2.4.3.3 /opt/zimbra/postfix
 
 rm -f /opt/zimbra/clamav
-ln -s /opt/zimbra/clamav-0.90.2 /opt/zimbra/clamav
+ln -s /opt/zimbra/clamav-0.90.3 /opt/zimbra/clamav
 
 rm -f /opt/zimbra/sleepycat
-ln -s /opt/zimbra/sleepycat-4.2.52.4 /opt/zimbra/sleepycat
+ln -s /opt/zimbra/sleepycat-4.2.52.6 /opt/zimbra/sleepycat
 
 rm -f /opt/zimbra/cyrus-sasl
-ln -s /opt/zimbra/cyrus-sasl-2.1.21.ZIMBRA /opt/zimbra/cyrus-sasl
+ln -s /opt/zimbra/cyrus-sasl-2.1.22.3 /opt/zimbra/cyrus-sasl
 
 if [ ! -d /opt/zimbra/zimbramon/mrtg/work/ ]; then
 	mkdir -p /opt/zimbra/zimbramon/mrtg/work/
@@ -71,7 +71,7 @@ fi
 
 egrep -v '^%zimbra.*postfix' /etc/sudoers > /tmp/sudoers
 mv -f /tmp/sudoers /etc/sudoers
-echo "%zimbra   ALL=NOPASSWD:/opt/zimbra/postfix-2.2.9/sbin/postfix, /opt/zimbra/postfix-2.2.9/sbin/postalias, /opt/zimbra/postfix-2.2.9/sbin/qshape.pl, /opt/zimbra/postfix-2.2.9/sbin/postconf,/opt/zimbra/postfix-2.2.9/sbin/postsuper" >> /etc/sudoers
+echo "%zimbra   ALL=NOPASSWD:/opt/zimbra/postfix-2.4.3.3/sbin/postfix, /opt/zimbra/postfix-2.4.3.3/sbin/postalias, /opt/zimbra/postfix-2.4.3.3/sbin/qshape.pl, /opt/zimbra/postfix-2.4.3.3/sbin/postconf,/opt/zimbra/postfix-2.4.3.3/sbin/postsuper" >> /etc/sudoers
 
 egrep -v '^%zimbra.*zmqstat' /etc/sudoers > /tmp/sudoers
 mv -f /tmp/sudoers /etc/sudoers
