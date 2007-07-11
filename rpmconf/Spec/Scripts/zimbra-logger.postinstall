@@ -33,7 +33,6 @@ fi
 rm -f /opt/zimbra/logger/mysql
 ln -s /opt/zimbra/logger/mysql-standard-5.0.42-apple-darwin8.2.0-$ARCH /opt/zimbra/logger/mysql
 
-#/bin/sh /opt/zimbra/bin/zmfixperms.sh
 PKG=`echo ${RECEIPT_PATH} | sed -e 's|.*/\(zimbra-logger.[^/]*pkg\)/.*|\1|' | sed -e 's/\./-/'`
 D=`date +%s`
 echo "${D}: INSTALLED ${PKG}" >> /opt/zimbra/.install_history
