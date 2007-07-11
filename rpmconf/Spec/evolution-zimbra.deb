@@ -7,4 +7,4 @@ Priority: optional
 Architecture: @@ARCH@@
 Depends: evolution
 Depends: evolution-data-server
-Depends: glib2 
+Depends: libglib2.0-0
