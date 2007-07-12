@@ -1424,7 +1424,7 @@ sub upgrade500BETA2 {
       main::deleteLocalConfig("tomcat_keystore");
       main::deleteLocalConfig("tomcat_java_heap_memory_percent");
       main::deleteLocalConfig("tomcat_java_home");
-      main::deleteLocalConfig("tomcat_pid_file");
+      main::deleteLocalConfig("tomcat_pidfile");
     }
 
   }
