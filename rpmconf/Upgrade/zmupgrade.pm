@@ -1850,7 +1850,6 @@ sub migrateLdap {
 sub migrateLdapBdbLogs {
 	my @files;
 	my @filesDb;
-	my $files;
 	if (isInstalled ("zimbra-ldap")) {
 		@files = </opt/zimbra/openldap-data/log*>;
 		@filesDb = </opt/zimbra/openldap-data/logs/log*>;
