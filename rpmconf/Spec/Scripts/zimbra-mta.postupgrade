@@ -49,7 +49,7 @@ echo "%zimbra   ALL=NOPASSWD:/opt/zimbra/postfix-2.4.3.3/sbin/postfix, /opt/zimb
 
 egrep -v '^%zimbra.*zmqstat' /etc/sudoers > /tmp/sudoers
 mv -f /tmp/sudoers /etc/sudoers
-echo "%zimbra   ALL=NOPASSWD:/opt/zimbra/libexec/zmqstat" >> /etc/sudoers
+echo "%zimbra   ALL=NOPASSWD:/opt/zimbra/libexec/zmqstat,/opt/zimbra/libexec/zmmtastatus" >> /etc/sudoers
 chmod 440 /etc/sudoers
 
 if [ ! -f /opt/zimbra/postfix/conf/main.cf ]; then
