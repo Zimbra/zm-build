@@ -1848,11 +1848,13 @@ sub migrateLdap {
 }
 
 sub migrateLdapBdbLogs {
-	my @files,@files2,$files;
+	my @files;
+	my @filesDb;
+	my $files;
 	if (isInstalled ("zimbra-ldap")) {
 		@files = </opt/zimbra/openldap-data/log*>;
-		@files2 = </opt/zimbra/openldap-data/logs/log*>;
-		if (@files > 0 && @files2 == 0) {
+		@filesDb = </opt/zimbra/openldap-data/logs/log*>;
+		if (@files > 0 && @filesDb == 0) {
 			main::progress("Migrating ldap bdb log files\n");
    			`mkdir -p "/opt/zimbra/openldap-data/logs"`;
    			`mv /opt/zimbra/openldap-data/log.* /opt/zimbra/openldap-data/logs/`;
