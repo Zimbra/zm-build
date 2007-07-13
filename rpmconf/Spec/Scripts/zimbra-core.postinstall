@@ -35,6 +35,9 @@ chown zimbra:zimbra /opt/zimbra/zmstat/pid
 rm -f /opt/zimbra/sleepycat
 ln -s /opt/zimbra/sleepycat-4.2.52.6 /opt/zimbra/sleepycat
 
+rm -f /opt/zimbra/cyrus-sasl
+ln -s /opt/zimbra/cyrus-sasl-2.1.22.3 /opt/zimbra/cyrus-sasl
+
 # log rotation
 if [ -d "/etc/periodic/daily" ]; then
   cp /opt/zimbra/libexec/600.zimbra /etc/periodic/daily/600.zimbra
