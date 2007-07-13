@@ -1289,10 +1289,10 @@ sub upgrade457GA {
 	main::progress("Updating from 4.5.7_GA\n");
   if (isInstalled("zimbra-ldap")) {
     #bug 17887
-    main::runAsZimbra("$ZMPROV mcf zimbraHttpNumThreads 100")
-    main::runAsZimbra("$ZMPROV mcf zimbraHttpSSLNumThreads 50")
+    main::runAsZimbra("$ZMPROV mcf zimbraHttpNumThreads 100");
+    main::runAsZimbra("$ZMPROV mcf zimbraHttpSSLNumThreads 50");
     #bug 17794
-    main::runAsZimbra("$ZMPROV mcf zimbraMtaMyDestination localhost")
+    main::runAsZimbra("$ZMPROV mcf zimbraMtaMyDestination localhost");
   }
 	return 0;
 }
@@ -1449,7 +1449,7 @@ sub upgrade500BETA2 {
     main::runAsZimbra("$ZMPROV mcf zimbraAdminURL /zimbraAdmin");  
     main::runAsZimbra("$ZMPROV mc default zimbraFeatureBriefcasesEnabled FALSE");
     #bug 17794
-    main::runAsZimbra("$ZMPROV mcf zimbraMtaMyDestination localhost")
+    main::runAsZimbra("$ZMPROV mcf zimbraMtaMyDestination localhost");
     stopLdap();
     &migrateLdapBdbLogs;
     startLdap();
