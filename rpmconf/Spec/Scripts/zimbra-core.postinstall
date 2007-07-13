@@ -28,6 +28,9 @@
 mkdir -p /opt/zimbra/backup
 chown zimbra:zimbra /opt/zimbra/backup 
 
+rm -f /opt/zimbra/sleepycat
+ln -s /opt/zimbra/sleepycat-4.2.52.6 /opt/zimbra/sleepycat
+
 # log rotation
 if [ -d "/etc/periodic/daily" ]; then
   cp /opt/zimbra/libexec/600.zimbra /etc/periodic/daily/600.zimbra
