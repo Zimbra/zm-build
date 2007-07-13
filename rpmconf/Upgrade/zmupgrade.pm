@@ -132,6 +132,7 @@ my %updateFuncs = (
   "4.6.0_GA" => \&upgrade460GA,
 	"5.0.0_BETA1" => \&upgrade500BETA1,
 	"5.0.0_BETA2" => \&upgrade500BETA2,
+	"5.0.0_BETA3" => \&upgrade500BETA3,
 	"5.0.0_RC1" => \&upgrade500RC1,
 	"5.0.0_RC2" => \&upgrade500RC2,
 	"5.0.0_GA" => \&upgrade500GA,
@@ -176,6 +177,7 @@ my @versionOrder = (
   "4.6.0_GA",
   "5.0.0_BETA1",
   "5.0.0_BETA2",
+  "5.0.0_BETA3",
   "5.0.0_RC1",
   "5.0.0_RC2",
   "5.0.0_GA",
@@ -314,6 +316,8 @@ sub upgrade {
 		main::progress("This appears to be 5.0.0_BETA1\n");
 	} elsif ($startVersion eq "5.0.0_BETA2") {
 		main::progress("This appears to be 5.0.0_BETA2\n");
+	} elsif ($startVersion eq "5.0.0_BETA3") {
+		main::progress("This appears to be 5.0.0_BETA3\n");
 	} elsif ($startVersion eq "5.0.0_RC1") {
 		main::progress("This appears to be 5.0.0_RC1\n");
 	} elsif ($startVersion eq "5.0.0_RC2") {
@@ -1460,6 +1464,11 @@ sub upgrade500BETA2 {
   main::runAsZimbra("zmlocalconfig -e postfix_version=2.4.3.3");
   movePostfixQueue ("2.2.9","2.4.3.3");
 
+	return 0;
+}
+sub upgrade500BETA3 {
+	my ($startBuild, $targetVersion, $targetBuild) = (@_);
+	main::progress("Updating from 5.0.0_BETA3\n");
 	return 0;
 }
 sub upgrade500RC1 {
