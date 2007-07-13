@@ -331,8 +331,9 @@ $(CORE_DEST_DIR)/$(BDB_DIR):
 	(cd $(CORE_DEST_DIR); tar xzf $(BDB_SOURCE).tgz; chmod u+w $(BDB_DIR)/bin/*)
 	rm -rf $(CORE_DEST_DIR)/$(BDB_DIR)/docs/java
 
-$(CORE_DEST_DIR)/$(SASL_DIR): $(CORE_DEST_DIR)
+$(CORE_DEST_DIR)/$(SASL_DIR):
 	@echo "*** Creating cyrus-sasl"
+	mkdir -p $@
 	(cd $(CORE_DEST_DIR); tar xzf $(SASL_SOURCE).tgz;)
 	mkdir -p $(CORE_DEST_DIR)/$(SASL_DIR)-$(SASL_VERSION)/etc
 	cp -f $(SERVICE_DIR)/conf/saslauthd.conf.in $(CORE_DEST_DIR)/$(SASL_DIR)-$(SASL_VERSION)/etc/
