@@ -143,11 +143,10 @@ $(CORE_DEST_DIR)/zimbramon/lib:
 	tar xzf $(PERL_LIB_SOURCE)/builds/$(BUILD_PLATFORM)/perllib.tgz)
 	cp -R $(BUILD_ROOT)/lib/Zimbra $(CORE_DEST_DIR)/zimbramon/lib
 
-$(CORE_DEST_DIR)/lib: $(WEBAPP_DIR)/service.war $(LDAP_DEST_DIR)/$(LDAP_DIR) $(CORE_DEST_DIR)/$(BDB_DIR) pcre_$(BUILD_PLATFORM) $(NATIVE_DIR)/build/libzimbra-native.$(JNI_EXT) $(LAUNCHER_DIR)/build/zimbra-launcher.jar
+$(CORE_DEST_DIR)/lib: $(WEBAPP_DIR)/service.war $(LDAP_DEST_DIR)/$(LDAP_DIR) pcre_$(BUILD_PLATFORM) $(NATIVE_DIR)/build/libzimbra-native.$(JNI_EXT) $(LAUNCHER_DIR)/build/zimbra-launcher.jar
 	mkdir -p $@
 	cp -pr $(SERVICE_DIR)/build/dist/lib/* $@
 	cp -pr $(LDAP_DEST_DIR)/$(LDAP_DIR)/lib/* $@
-	cp -pr $(CORE_DEST_DIR)/$(BDB_DIR)/lib/* $@
 	cp -pr $(SERVICE_DIR)/build/dist/lib/* $@
 	cp -pr $(NATIVE_DIR)/build/libzimbra-native.$(JNI_EXT) $@
 	(cd $@; tar xzf $(THIRD_PARTY)/mysql/$(BUILD_PLATFORM)/mysql-$(MYSQL_CLIENT_VERSION).tgz)
