@@ -126,6 +126,7 @@ my %updateFuncs = (
 	"4.5.4_GA" => \&upgrade454GA,
 	"4.5.5_GA" => \&upgrade455GA,
 	"4.5.6_GA" => \&upgrade456GA,
+	"4.5.7_GA" => \&upgrade457GA,
   "4.6.0_BETA" => \&upgrade460BETA,
   "4.6.0_RC1" => \&upgrade460RC1,
   "4.6.0_GA" => \&upgrade460GA,
@@ -169,6 +170,7 @@ my @versionOrder = (
 	"4.5.4_GA",
 	"4.5.5_GA",
 	"4.5.6_GA",
+	"4.5.7_GA",
   "4.6.0_BETA",
   "4.6.0_RC1",
   "4.6.0_GA",
@@ -300,12 +302,14 @@ sub upgrade {
 		main::progress("This appears to be 4.5.5_GA\n");
 	} elsif ($startVersion eq "4.5.6_GA") {
 		main::progress("This appears to be 4.5.6_GA\n");
+	} elsif ($startVersion eq "4.5.7_GA") {
+		main::progress("This appears to be 4.5.7_GA\n");
 	} elsif ($startVersion eq "4.6.0_BETA") {
-		print "This appears to be 4.6.0_BETA\n";
+		main::progress("This appears to be 4.6.0_BETA\n");
 	} elsif ($startVersion eq "4.6.0_RC1") {
-		print "This appears to be 4.6.0_RC1\n";
+		main::progress("This appears to be 4.6.0_RC1\n");
 	} elsif ($startVersion eq "4.6.0_GA") {
-		print "This appears to be 4.6.0_GA\n";
+		main::progress("This appears to be 4.6.0_GA\n");
 	} elsif ($startVersion eq "5.0.0_BETA1") {
 		main::progress("This appears to be 5.0.0_BETA1\n");
 	} elsif ($startVersion eq "5.0.0_BETA2") {
@@ -1280,19 +1284,31 @@ sub upgrade456GA {
 
 	return 0;
 }
+sub upgrade457GA {
+	my ($startBuild, $targetVersion, $targetBuild) = (@_);
+	main::progress("Updating from 4.5.7_GA\n");
+  if (isInstalled("zimbra-ldap")) {
+    #bug 17887
+    main::runAsZimbra("$ZMPROV mcf zimbraHttpNumThreads 100")
+    main::runAsZimbra("$ZMPROV mcf zimbraHttpSSLNumThreads 50")
+    #bug 17794
+    main::runAsZimbra("$ZMPROV mcf zimbraMtaMyDestination localhost")
+  }
+	return 0;
+}
 sub upgrade460BETA {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
-	Migrate::log("Updating from 4.6.0_BETA");
+	main::progress("Updating from 4.6.0_BETA");
 	return 0;
 }
 sub upgrade460RC1 {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
-	Migrate::log("Updating from 4.6.0_RC1");
+	main::progress("Updating from 4.6.0_RC1");
 	return 0;
 }
 sub upgrade460GA {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
-	Migrate::log("Updating from 4.6.0_GA");
+	main::progress("Updating from 4.6.0_GA");
 	return 0;
 }
 sub upgrade500BETA1 {
@@ -1432,6 +1448,8 @@ sub upgrade500BETA2 {
   if (isInstalled("zimbra-ldap")) {
     main::runAsZimbra("$ZMPROV mcf zimbraAdminURL /zimbraAdmin");  
     main::runAsZimbra("$ZMPROV mc default zimbraFeatureBriefcasesEnabled FALSE");
+    #bug 17794
+    main::runAsZimbra("$ZMPROV mcf zimbraMtaMyDestination localhost")
     stopLdap();
     &migrateLdapBdbLogs;
     startLdap();
