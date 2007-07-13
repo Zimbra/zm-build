@@ -118,6 +118,7 @@ my %updateFuncs = (
 	"4.5.4_GA" => \&upgrade454GA,
 	"4.5.5_GA" => \&upgrade455GA,
 	"4.5.6_GA" => \&upgrade456GA,
+	"4.5.7_GA" => \&upgrade457GA,
 	"5.0.0_BETA1" => \&upgrade500BETA1,
 	"5.0.0_BETA2" => \&upgrade500BETA2,
 	"5.0.0_RC1" => \&upgrade500RC1,
@@ -158,6 +159,7 @@ my @versionOrder = (
 	"4.5.4_GA",
 	"4.5.5_GA",
 	"4.5.6_GA",
+	"4.5.7_GA",
   "5.0.0_BETA1",
   "5.0.0_BETA2",
   "5.0.0_RC1",
@@ -289,6 +291,8 @@ sub upgrade {
 		main::progress("This appears to be 4.5.5_GA\n");
 	} elsif ($startVersion eq "4.5.6_GA") {
 		main::progress("This appears to be 4.5.6_GA\n");
+	} elsif ($startVersion eq "4.5.7_GA") {
+		main::progress("This appears to be 4.5.7_GA\n");
 	} elsif ($startVersion eq "5.0.0_BETA1") {
 		main::progress("This appears to be 5.0.0_BETA1\n");
 	} elsif ($startVersion eq "5.0.0_BETA2") {
@@ -1254,6 +1258,11 @@ sub upgrade456GA {
     updateMySQLcnf();
   }
 
+	return 0;
+}
+sub upgrade457GA {
+	my ($startBuild, $targetVersion, $targetBuild) = (@_);
+	main::progress("Updating from 4.5.7_GA\n");
 	return 0;
 }
 sub upgrade500BETA1 {
