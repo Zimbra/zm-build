@@ -1447,28 +1447,37 @@ sub upgrade500BETA2 {
       main::deleteLocalConfig("tomcat_pidfile");
     }
 
-    # 17495
-    main::runAsZimbra("perl -I${scriptDir} ${scriptDir}/migrate20070713-NullContactBlobDigest.pl");
-
   }
 
   if (isInstalled("zimbra-ldap")) {
     main::runAsZimbra("$ZMPROV mcf zimbraAdminURL /zimbraAdmin");  
     main::runAsZimbra("$ZMPROV mc default zimbraFeatureBriefcasesEnabled FALSE");
+
+	return 0;
+}
+
+sub upgrade500BETA3 {
+	my ($startBuild, $targetVersion, $targetBuild) = (@_);
+	main::progress("Updating from 5.0.0_BETA3\n");
+
+  if (isInstalled("zimbra-store")) {
+    # 17495
+    main::runAsZimbra("perl -I${scriptDir} ${scriptDir}/migrate20070713-NullContactBlobDigest.pl");
+  }
+
+  if (isInstalled("zimbra-ldap")) {
     #bug 17794
     main::runAsZimbra("$ZMPROV mcf zimbraMtaMyDestination localhost");
     stopLdap();
     &migrateLdapBdbLogs;
     startLdap();
   }
-  main::runAsZimbra("zmlocalconfig -e postfix_version=2.4.3.3");
-  movePostfixQueue ("2.2.9","2.4.3.3");
 
-	return 0;
-}
-sub upgrade500BETA3 {
-	my ($startBuild, $targetVersion, $targetBuild) = (@_);
-	main::progress("Updating from 5.0.0_BETA3\n");
+  if (isInstalled("zimbra-mta")) {
+    main::runAsZimbra("zmlocalconfig -e postfix_version=2.4.3.3");
+    movePostfixQueue ("2.2.9","2.4.3.3");
+  }
+
 	return 0;
 }
 sub upgrade500RC1 {
