@@ -28,4 +28,4 @@
 
 /bin/sh /opt/zimbra/libexec/addUser.sh -g zimbra -G postfix zimbra
 
-/bin/sh /opt/zimbra/bin/zmfixperms.sh
+/bin/bash /opt/zimbra/libexec/zmfixperms

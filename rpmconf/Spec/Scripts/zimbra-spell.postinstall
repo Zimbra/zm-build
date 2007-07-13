@@ -24,7 +24,6 @@
 # ***** END LICENSE BLOCK *****
 # 
 
-#/bin/sh /opt/zimbra/bin/zmfixperms.sh
 PKG=`echo ${RECEIPT_PATH} | sed -e 's|.*/\(zimbra-spell.[^/]*pkg\)/.*|\1|' | sed -e 's/\./-/'`
 D=`date +%s`
 echo "${D}: INSTALLED ${PKG}" >> /opt/zimbra/.install_history
