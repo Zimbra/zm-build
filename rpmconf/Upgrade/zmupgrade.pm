@@ -1263,10 +1263,12 @@ sub upgrade456GA {
 sub upgrade457GA {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
 	main::progress("Updating from 4.5.7_GA\n");
-  if (isInstalled("zimbra-store")) {
+  if (isInstalled("zimbra-ldap")) {
     #bug 17887
     main::runAsZimbra("$ZMPROV mcf zimbraHttpNumThreads 100")
     main::runAsZimbra("$ZMPROV mcf zimbraHttpSSLNumThreads 50")
+    #bug 17794
+    main::runAsZimbra("$ZMPROV mcf zimbraMtaMyDestination localhost")
   }
 	return 0;
 }
