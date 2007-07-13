@@ -1443,6 +1443,9 @@ sub upgrade500BETA2 {
       main::deleteLocalConfig("tomcat_pidfile");
     }
 
+    # 17495
+    main::runAsZimbra("perl -I${scriptDir} ${scriptDir}/migrate20070713-NullContactBlobDigest.pl");
+
   }
 
   if (isInstalled("zimbra-ldap")) {
