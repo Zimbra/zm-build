@@ -27,7 +27,7 @@
 SAVEDIR=/opt/zimbra/.saveconfig
 
 rm -f /opt/zimbra/sleepycat
-ln -s /opt/zimbra/sleepycat-4.2.52.6 /opt/zimbra/sleepycat
+ln -s /opt/zimbra/sleepycat-4.2.52.4 /opt/zimbra/sleepycat
 
 /bin/sh /opt/zimbra/libexec/zmfixperms
 
