@@ -89,8 +89,6 @@ $(BUILD_ROOT)/zimbramta.spec:
 		$(BUILD_ROOT)/zimbramta.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/postfix-$(POSTFIX_VERSION)" >> \
 		$(BUILD_ROOT)/zimbramta.spec
-	echo "%attr(-, zimbra, zimbra) /opt/zimbra/sleepycat-$(BDB_VERSION)" >> \
-		$(BUILD_ROOT)/zimbramta.spec
 	echo "%attr(-, root, zimbra) /opt/zimbra/cyrus-sasl-$(SASL_VERSION)" >> \
 		$(BUILD_ROOT)/zimbramta.spec
 
@@ -135,8 +133,3 @@ $(MTA_DEST_DIR)/$(SASL_DIR): $(MTA_DEST_DIR)
 	mkdir -p $(MTA_DEST_DIR)/$(SASL_DIR)-$(SASL_VERSION)/etc
 	cp -f $(SERVICE_DIR)/conf/saslauthd.conf.in $(MTA_DEST_DIR)/$(SASL_DIR)-$(SASL_VERSION)/etc/
 	cp -f $(SERVICE_DIR)/conf/postfix_sasl_smtpd.conf $(MTA_DEST_DIR)/$(SASL_DIR)-$(SASL_VERSION)/lib/sasl2/smtpd.conf
-
-$(MTA_DEST_DIR)/$(BDB_DIR): $(MTA_DEST_DIR)
-	@echo "*** Creating sleepycat"
-	(cd $(MTA_DEST_DIR); tar xzf $(BDB_SOURCE).tgz; chmod u+w $(BDB_DIR)/bin/*)
-	rm -rf $(MTA_DEST_DIR)/$(BDB_DIR)/docs/java

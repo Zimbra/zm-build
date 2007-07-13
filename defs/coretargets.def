@@ -98,6 +98,8 @@ $(BUILD_ROOT)/zimbracore.spec:
 		$(BUILD_ROOT)/zimbracore.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/zimbramon" >> \
 		$(BUILD_ROOT)/zimbracore.spec
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/sleepycat-$(BDB_VERSION)" >> \
+		$(BUILD_ROOT)/zimbracore.spec
 
 core_stage: $(CORE_COMPONENTS)
 
@@ -322,3 +324,7 @@ $(CORE_DEST_DIR)/lib/libexpat.dylib: $(CORE_DEST_DIR)/lib
 	(cd $(CORE_DEST_DIR); tar xzf $(THIRD_PARTY)/popt/builds/$(BUILD_PLATFORM)/popt.tgz)
 	rm -rf $(CORE_DEST_DIR)/include
 
+$(CORE_DEST_DIR)/$(BDB_DIR): $(CORE_DEST_DIR)
+	@echo "*** Creating sleepycat"
+	(cd $(CORE_DEST_DIR); tar xzf $(BDB_SOURCE).tgz; chmod u+w $(BDB_DIR)/bin/*)
+	rm -rf $(CORE_DEST_DIR)/$(BDB_DIR)/docs/java

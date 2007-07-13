@@ -38,6 +38,9 @@ else
 	ln -s /opt/zimbra/jdk1.6.0_01 /opt/zimbra/java
 fi
 
+rm -f /opt/zimbra/sleepycat
+ln -s /opt/zimbra/sleepycat-4.2.52.6 /opt/zimbra/sleepycat
+
 if [ -f /etc/debian_version ]; then
 	if [ -f /etc/ld.so.conf ]; then
 		mv -f /etc/ld.so.conf /etc/ld.so.conf.$$
