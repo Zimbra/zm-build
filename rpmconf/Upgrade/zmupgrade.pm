@@ -1432,7 +1432,9 @@ sub upgrade500BETA2 {
   if (isInstalled("zimbra-ldap")) {
     main::runAsZimbra("$ZMPROV mcf zimbraAdminURL /zimbraAdmin");  
     main::runAsZimbra("$ZMPROV mc default zimbraFeatureBriefcasesEnabled FALSE");
+    stopLdap();
     &migrateLdapBdbLogs;
+    startLdap();
   }
   main::runAsZimbra("zmlocalconfig -e postfix_version=2.4.3.3");
   movePostfixQueue ("2.2.9","2.4.3.3");
@@ -1850,6 +1852,7 @@ sub migrateLdap {
 sub migrateLdapBdbLogs {
 	my @files;
 	my @filesDb;
+	my $db_config;
 	if (isInstalled ("zimbra-ldap")) {
 		@files = </opt/zimbra/openldap-data/log*>;
 		@filesDb = </opt/zimbra/openldap-data/logs/log*>;
@@ -1857,6 +1860,20 @@ sub migrateLdapBdbLogs {
 			main::progress("Migrating ldap bdb log files\n");
    			`mkdir -p "/opt/zimbra/openldap-data/logs"`;
    			`mv /opt/zimbra/openldap-data/log.* /opt/zimbra/openldap-data/logs/`;
+		}
+		if ( -f "/opt/zimbra/openldap-data/DB_CONFIG" ) {
+			my $seen = 0;
+			open (DBCONFIG,"/opt/zimbra/openldap-data/DB_CONFIG");
+			   while ($db_config = <DBCONFIG>) {
+				if ($db_config =~ /set_lg_dir/) {
+					$seen=1;
+      				}
+   			}
+   			if ($seen != 1) {
+				`echo "set_lg_dir              /opt/zimbra/openldap-data/logs" >> /opt/zimbra/openldap-data/DB_CONFIG`;
+  			}
+		} else {
+			`echo "set_lg_dir              /opt/zimbra/openldap-data/logs" >> /opt/zimbra/openldap-data/DB_CONFIG`;
 		}
 	}
 }
