@@ -33,4 +33,6 @@ $(BUILD_ROOT)/zimbracore.spec:
 		$(BUILD_ROOT)/zimbracore.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/zimbramon" >> \
 		$(BUILD_ROOT)/zimbracore.spec
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/sleepycat-$(BDB_VERSION)" >> \
+		$(BUILD_ROOT)/zimbracore.spec
 
