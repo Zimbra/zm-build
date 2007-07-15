@@ -1463,7 +1463,10 @@ sub upgrade500BETA3 {
 
   if (isInstalled("zimbra-store")) {
     # 17495
+    if (startSql()) { return 1; }
+    Migrate::log("Executing ${scriptDir}/migrate20070713-NullContactBlobDigest.pl"); 
     main::runAsZimbra("perl -I${scriptDir} ${scriptDir}/migrate20070713-NullContactBlobDigest.pl");
+    stopSql();
   }
 
   if (isInstalled("zimbra-ldap")) {
