@@ -196,7 +196,7 @@ fi
 # Installation complete, now configure
 #
 if [ "x$DEFAULTFILE" != "x" ]; then
-	/opt/zimbra/libexec/zmsetup.pl $DEFAULTFILE
+	/opt/zimbra/libexec/zmsetup.pl -c $DEFAULTFILE
 else
 	/opt/zimbra/libexec/zmsetup.pl
 fi
