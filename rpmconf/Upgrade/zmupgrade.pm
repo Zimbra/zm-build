@@ -1907,7 +1907,7 @@ sub migrateLdapBdbLogs {
 		if ( -f "/opt/zimbra/openldap-data/DB_CONFIG" ) {
 			my $seen = 0;
 			open (DBCONFIG,"/opt/zimbra/openldap-data/DB_CONFIG");
-			   while ($db_config = <DBCONFIG>) {
+			while ($db_config = <DBCONFIG>) {
 				if ($db_config =~ /set_lg_dir/) {
 					$seen=1;
       				}
