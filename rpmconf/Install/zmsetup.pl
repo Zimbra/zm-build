@@ -2591,11 +2591,12 @@ sub configCreateCert {
     return 0;
   }
 
-  if (isEnabled("zimbra-ldap") || isEnabled("zimbra-store") || isEnabled("zimbra-mta")) {
+  if (isEnabled("zimbra-ldap") || isEnabled("zimbra-store") || isEnabled("zimbra-mta") || isEnabled("zimbra-proxy")) {
 
     if (!-f "$config{mailboxd_keystore}" || 
       !-f "/opt/zimbra/conf/smtpd.crt" ||
-      !-f "/opt/zimbra/conf/slapd.crt") {
+      !-f "/opt/zimbra/conf/slapd.crt" ||
+      !-f "/opt/zimbra/conf/nginx.crt" ) {
       progress ( "Creating SSL certificate..." );
       if (-f "$config{JAVAHOME}/lib/security/cacerts") {
         `chmod 777 $config{JAVAHOME}/lib/security/cacerts >> $logfile 2>&1`;
@@ -2639,6 +2640,14 @@ sub configInstallCert {
       if (! (-f "/opt/zimbra/conf/smtpd.key" || 
         -f "/opt/zimbra/conf/smtpd.crt")) {
         runAsZimbra("cd /opt/zimbra; zmcertinstall mta ".
+          "/opt/zimbra/ssl/ssl/server/server.crt ".
+          "/opt/zimbra/ssl/ssl/server/server.key");
+      }
+    }
+    if (isEnabled("zimbra-proxy")) {
+      if (! (-f "/opt/zimbra/conf/nginx.key" || 
+        -f "/opt/zimbra/conf/nginx.crt")) {
+        runAsZimbra("cd /opt/zimbra; zmcertinstall proxy ".
           "/opt/zimbra/ssl/ssl/server/server.crt ".
           "/opt/zimbra/ssl/ssl/server/server.key");
       }
