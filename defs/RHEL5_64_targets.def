@@ -35,4 +35,5 @@ $(BUILD_ROOT)/zimbracore.spec:
 		$(BUILD_ROOT)/zimbracore.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/sleepycat-$(BDB_VERSION)" >> \
 		$(BUILD_ROOT)/zimbracore.spec
-
+	echo "%attr(-, root, zimbra) /opt/zimbra/cyrus-sasl-$(SASL_VERSION)" >> \
+		$(BUILD_ROOT)/zimbracore.spec
