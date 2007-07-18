@@ -1297,6 +1297,10 @@ sub upgrade457GA {
     main::runAsZimbra("$ZMPROV mcf zimbraHttpSSLNumThreads 50");
     #bug 17794
     main::runAsZimbra("$ZMPROV mcf zimbraMtaMyDestination localhost");
+    #bug 18388
+	  my $threads = (split(/\s+/, `su - zimbra -c "$ZMPROV gcf zimbraPop3NumThreads"`))[-1];
+    main::runAsZimbra("$ZMPROV mcf zimbraHttpSSLNumThreads 100")
+      if ($threads eq "20");
   }
 	return 0;
 }
