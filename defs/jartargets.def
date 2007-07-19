@@ -4,30 +4,9 @@
 $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/lib: $(STORE_DEST_DIR)/$(MAILBOXD_DIR)
 	mkdir -p $@
 
-$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/common/lib: $(STORE_DEST_DIR)/$(MAILBOXD_DIR)
+$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/common/lib: $(STORE_DEST_DIR)/$(MAILBOXD_DIR) $(WEBAPP_DIR)/service.war
 	mkdir -p $@
-
-$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/common/lib/ical4j-0.9.16-patched.jar: $(STORE_DEST_DIR)/$(MAILBOXD_DIR) $(WEBAPP_DIR)/service.war
-	mkdir -p $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/common/lib
-	cp $(SERVICE_DIR)/build/dist/lib/jars/ical4j-0.9.16-patched.jar $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/common/lib
-
-$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/common/lib/mail.jar: $(STORE_DEST_DIR)/$(MAILBOXD_DIR) $(WEBAPP_DIR)/service.war
-	mkdir -p $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/common/lib
-	cp $(SERVICE_DIR)/build/dist/lib/jars/mail.jar $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/common/lib
-
-$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/common/endorsed/zimbra-charset.jar: $(STORE_DEST_DIR)/$(MAILBOXD_DIR) $(WEBAPP_DIR)/service.war
-	cp $(SERVICE_DIR)/build/dist/lib/jars/zimbra-charset.jar $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/common/endorsed
-
-$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/common/lib/activation.jar: $(STORE_DEST_DIR)/$(MAILBOXD_DIR) $(WEBAPP_DIR)/service.war
-	mkdir -p $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/common/lib
-	cp $(SERVICE_DIR)/build/dist/lib/jars/activation.jar $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/common/lib
-
-$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/common/lib/zimbra-native.jar: $(NATIVE_DIR)/build/zimbra-native.jar
-	mkdir -p $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/common/lib
-	cp $(NATIVE_DIR)/build/zimbra-native.jar $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/common/lib
-
-$(NATIVE_DIR)/build/zimbra-native.jar:
-	(cd $(NATIVE_DIR); make JAVA_BINARY=$(JAVA_BINARY))
+	cp $(SERVICE_DIR)/build/dist/$(MAILBOXD_SERVER)/common/lib/*.jar $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/common/lib
 
 $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/lib/log4j-1.2.8.jar: $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/lib $(WEBAPP_DIR)/service.war
 	cp $(SERVICE_DIR)/build/dist/lib/jars/log4j-1.2.8.jar $@

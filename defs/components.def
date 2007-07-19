@@ -33,7 +33,8 @@ ifndef $(ZIMBRA_USE_TOMCAT)
 		$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/common/lib/jcl104-over-slf4j-$(SLF4J_VERSION).jar \
 		$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/common/lib/slf4j-simple-$(SLF4J_VERSION).jar \
 		$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/common/lib/slf4j-api-$(SLF4J_VERSION).jar \
-		$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/lib/log4j-1.2.8.jar
+		$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/lib/log4j-1.2.8.jar \
+		$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/resources/log4j.properties
 endif
 
 STORE_COMPONENTS := \
@@ -42,11 +43,7 @@ STORE_COMPONENTS := \
 	$(STORE_DEST_DIR)/zimlets \
 	$(STORE_DEST_DIR)/zimlets-extra \
 	$(STORE_DEST_DIR)/$(PERDITION_DIR)-$(PERDITION_VERSION) \
-	$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/common/lib/ical4j-0.9.16-patched.jar \
-	$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/common/lib/zimbra-native.jar \
-	$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/common/lib/mail.jar \
-	$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/common/endorsed/zimbra-charset.jar \
-	$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/common/lib/activation.jar \
+	$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/common/lib \
 	$(MAILBOXD_COMPONENTS) \
 	$(STORE_DEST_DIR)/lib/ext/clamscanner/clamscanner.jar \
 	$(STORE_DEST_DIR)/lib/ext/nginx-lookup/nginx-lookup.jar \
