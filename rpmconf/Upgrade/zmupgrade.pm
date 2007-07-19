@@ -1479,6 +1479,13 @@ sub upgrade500BETA3 {
     stopLdap();
     &migrateLdapBdbLogs;
     startLdap();
+    #bug 14643
+	  my @coses = `su - zimbra -c "$ZMPROV gac"`;
+	  foreach my $cos (@coses) {
+		  chomp $cos;
+		  main::runAsZimbra("$ZMPROV mc $cos zimbraFeatureGroupCalendarEnabled TRUE");
+	  }
+    
   }
 
   if (isInstalled("zimbra-mta")) {
