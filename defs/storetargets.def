@@ -65,6 +65,8 @@ $(BUILD_ROOT)/zimbra.spec:
 		-e '/^%post$$/ r zimbra.post' > $(BUILD_ROOT)/zimbra.spec
 	rm -f zimbra.pre
 	rm -f zimbra.post
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/conf" >> \
+		$(BUILD_ROOT)/zimbra.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/lib" >> \
 		$(BUILD_ROOT)/zimbra.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/zimlets" >> \
@@ -168,6 +170,11 @@ $(STORE_DEST_DIR)/wiki:
 	mkdir -p $@
 	cp -R $(SERVICE_DIR)/build/dist/wiki/Template $@
 
+$(STORE_DEST_DIR)/conf:
+	mkdir -p $@
+
+$(STORE_DEST_DIR)/conf/zimbra-contact-fields.xml: $(STORE_DEST_DIR)/conf
+	cp $(SERVICE_DIR)/conf/contacts/zimbra-contact-fields.xml $@
 
 $(ZIMLET_DIR)/build/dist/zimlets/nofile:
 	(cd $(ZIMLET_DIR); $(ANT) \
