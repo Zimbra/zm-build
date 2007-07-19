@@ -24,6 +24,7 @@
 # ***** END LICENSE BLOCK *****
 # 
 
+rm -f /opt/zimbra/perdition
 ln -s /opt/zimbra/perdition-1.17.1 /opt/zimbra/perdition
 mkdir -p /opt/zimbra/perdition/var/run
 chown -R zimbra:zimbra /opt/zimbra/perdition/var

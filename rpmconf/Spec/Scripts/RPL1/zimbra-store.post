@@ -34,7 +34,7 @@ ln -s /opt/zimbra/mysql-standard-5.0.42-pc-linux-gnu-i686-glibc23 /opt/zimbra/my
 mv /opt/zimbra/db/db.sql /opt/zimbra/db/db.sql.in
 sed -e "/server.hostname/ s/local/$H/" /opt/zimbra/db/db.sql.in > /opt/zimbra/db/db.sql
 
-rm -rf /opt/zimbra/perdition
+rm -f /opt/zimbra/perdition
 ln -s /opt/zimbra/perdition-1.17.1 /opt/zimbra/perdition
 mkdir -p /opt/zimbra/perdition/var/run
 chown -R zimbra:zimbra /opt/zimbra/perdition/var
