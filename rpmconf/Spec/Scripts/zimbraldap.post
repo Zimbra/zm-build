@@ -50,4 +50,8 @@ chmod 440 /etc/sudoers
 chown root:root /opt/zimbra/openldap/libexec/slapd
 chmod 755 /opt/zimbra/openldap/libexec/slapd
 
+if [ ! -s /opt/zimbra/openldap-data/DB_CONFIG ]; then
+   mv /opt/zimbra/openldap-data/log.* /opt/zimbra/openldap-data/logs/
+fi
+
 ldconfig

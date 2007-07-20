@@ -46,6 +46,10 @@ sed -e 's/TLSCACertificateFile/#TLSCACertificateFile/g' \
 	/opt/zimbra/openldap/etc/openldap/slapd.conf
 chown zimbra:zimbra /opt/zimbra/openldap/etc/openldap/slapd.conf
 
+if [ ! -s /opt/zimbra/openldap-data/DB_CONFIG ]; then
+   mv /opt/zimbra/openldap-data/log.* /opt/zimbra/openldap-data/logs/
+fi
+
 PKG=`echo ${RECEIPT_PATH} | sed -e 's|.*/\(zimbra-ldap.[^/]*pkg\)/.*|\1|' | sed -e 's/\./-/'`
 D=`date +%s`
 echo "${D}: INSTALLED ${PKG}" >> /opt/zimbra/.install_history
