@@ -27,6 +27,10 @@
 rm -f /opt/zimbra/openldap
 ln -s /opt/zimbra/openldap-2.3.36.6 /opt/zimbra/openldap
 
+mkdir -p /opt/zimbra/openldap-data/db
+mkdir -p /opt/zimbra/openldap-data/logs
+chown -R zimbra:zimbra /opt/zimbra/openldap-data
+
 egrep -v '^%zimbra.*slapd' /etc/sudoers > /tmp/sudoers
 echo "%zimbra   ALL=NOPASSWD:/opt/zimbra/openldap/libexec/slapd" >> /tmp/sudoers
 mv -f /tmp/sudoers /etc/sudoers
@@ -37,6 +41,10 @@ sed -e 's/TLSCACertificateFile/#TLSCACertificateFile/g' \
 	/opt/zimbra/openldap/etc/openldap/slapd.conf.fcs > \
 	/opt/zimbra/openldap/etc/openldap/slapd.conf
 chown zimbra:zimbra /opt/zimbra/openldap/etc/openldap/slapd.conf
+
+if [ ! -s /opt/zimbra/openldap-data/DB_CONFIG ]; then
+   mv /opt/zimbra/openldap-data/log.* /opt/zimbra/openldap-data/logs/
+fi
 
 PKG=`echo ${RECEIPT_PATH} | sed -e 's|.*/\(zimbra-ldap.[^/]*pkg\)/.*|\1|' | sed -e 's/\./-/'`
 D=`date +%s`
