@@ -46,18 +46,6 @@ if [ -f /etc/redhat-release ]; then
 		exit 0
 	fi
 
-	grep "Fedora release 7" /etc/redhat-release >/dev/null 2>&1
-	if [ $? = 0 ]; then
-		echo "F7${i}"
-		exit 0
-	fi
-
-	grep "Fedora Core release 6" /etc/redhat-release > /dev/null 2>&1
-	if [ $? = 0 ]; then
-		echo "FC6${i}"
-		exit 0
-	fi
-
 	grep "Fedora Core release 5" /etc/redhat-release > /dev/null 2>&1
 	if [ $? = 0 ]; then
 		echo "FC5${i}"
@@ -78,7 +66,7 @@ if [ -f /etc/redhat-release ]; then
 
 	grep "CentOS release 5" /etc/redhat-release > /dev/null 2>&1
 	if [ $? = 0 ]; then
-		echo "CentOS5${i}"
+		echo "CentOS5{i}"
 		exit 0
 	fi
 
@@ -91,11 +79,6 @@ if [ -f /etc/redhat-release ]; then
 fi
 
 if [ -f /etc/SuSE-release ]; then
-	grep "SUSE Linux Enterprise Server 10 (x86_64)" /etc/SuSE-release >/dev/null 2>&1
-	if [ $? = 0 ]; then
-		echo "SLES10_64"
-		exit 0
-	fi
 	grep "SUSE Linux Enterprise Server 10" /etc/SuSE-release > /dev/null 2>&1
 	if [ $? = 0 ]; then
 		echo "SuSEES10"
@@ -131,14 +114,6 @@ if [ -f /etc/debian_version ]; then
 	fi
 fi
 
-if [ -f /etc/debian_version ]; then
-	grep "4.0" /etc/debian_version > /dev/null 2>&1
-	if [ $? = 0 ]; then
-		echo "DEBIAN4.0"
-		exit 0
-	fi
-fi
-
 if [ -f /etc/lsb-release ]; then
 	grep "DISTRIB_ID=Ubuntu" /etc/lsb-release > /dev/null 2>&1
 	if [ $? = 0 ]; then
@@ -155,11 +130,6 @@ if [ -f /etc/lsb-release ]; then
 fi
 
 if [ -f /etc/mandriva-release ]; then
-	grep "2007" /etc/mandriva-release > /dev/null 2>&1
-	if [ $? = 0 ]; then
-		echo "MANDRIVA2007"
-		exit 0
-	fi
 	grep "2006" /etc/mandriva-release > /dev/null 2>&1
 	if [ $? = 0 ]; then
 		echo "MANDRIVA2006"

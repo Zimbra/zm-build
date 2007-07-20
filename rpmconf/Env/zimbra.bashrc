@@ -22,14 +22,10 @@ export JAVA_HOME
 JAVA_JVM_VERSION=1.5
 export JAVA_JVM_VERSION
 
-PATH=/opt/zimbra/bin:/opt/zimbra/zimbramon:/opt/zimbra/postfix-2.4.3.3/sbin:/opt/zimbra/openldap/bin:${JAVA_HOME}/bin:/opt/zimbra/snmp/bin:/opt/zimbra/sleepycat/bin:${PATH}
+PATH=/opt/zimbra/bin:/opt/zimbra/zimbramon:/opt/zimbra/postfix-2.2.9/sbin:/opt/zimbra/openldap/bin:${JAVA_HOME}/bin:/opt/zimbra/snmp/bin:/opt/zimbra/sleepycat/bin:${PATH}
 export PATH
 
-if [ "x$LD_LIBRARY_PATH" = "x" ]; then
-  LD_LIBRARY_PATH=/opt/zimbra/lib:${LD_LIBRARY_PATH}
-else
-  LD_LIBRARY_PATH=/opt/zimbra/lib
-fi
+LD_LIBRARY_PATH=/opt/zimbra/lib:${LD_LIBRARY_PATH}
 export LD_LIBRARY_PATH
 
 SNMPCONFPATH=/opt/zimbra/conf

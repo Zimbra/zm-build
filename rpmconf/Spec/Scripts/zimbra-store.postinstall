@@ -36,11 +36,10 @@ if [ "x$PLAT" = "xMACOSXx86" ]; then
 fi
 
 rm -f /opt/zimbra/mysql
-ln -s /opt/zimbra/mysql-standard-5.0.42-apple-darwin8.2.0-$ARCH /opt/zimbra/mysql
+ln -s /opt/zimbra/mysql-standard-5.0.33-apple-darwin8.2.0-$ARCH /opt/zimbra/mysql
 # Can't get the dylib to hold the correct path...
-rm -f /opt/zimbra/mysql-standard-5.0.42-apple-darwin8.2.0-$ARCH/lib/mysql
-ln -s /opt/zimbra/mysql-standard-5.0.42-apple-darwin8.2.0-$ARCH/lib /opt/zimbra/mysql-standard-5.0.42-apple-darwin8.2.0-$ARCH/lib/mysql
-
+rm -f /opt/zimbra/mysql-standard-5.0.33-apple-darwin8.2.0-$ARCH/lib/mysql
+ln -s /opt/zimbra/mysql-standard-5.0.33-apple-darwin8.2.0-$ARCH/lib /opt/zimbra/mysql-standard-5.0.33-apple-darwin8.2.0-$ARCH/lib/mysql
 
 
 H=`hostname -s`
@@ -48,51 +47,28 @@ H=`hostname -s`
 mv /opt/zimbra/db/db.sql /opt/zimbra/db/db.sql.in
 sed -e "/server.hostname/ s/local/$H/" /opt/zimbra/db/db.sql.in > /opt/zimbra/db/db.sql
 
-for i in jetty apache-tomcat ; do
-  MAILBOXD=`perl -e 'print ($1 eq "apache-tomcat" ? "tomcat $1-$2" : "jetty $1-$2")  if ($ARGV[0] =~ m/(jetty|apache-tomcat)-(.*)/ && $2 ne "*");' /opt/zimbra/$i-*`
-  if [ "x${MAILBOXD}" = "x" ]; then
-    continue
-  fi
-  SHORT=/opt/zimbra/`echo $MAILBOXD | awk '{print $1}'`
-  LONG=/opt/zimbra/`echo $MAILBOXD | awk '{print $2}'`
-  if [ -L "$SHORT" ]; then
-    rm -f $SHORT
-  fi
-  echo "ln -s $LONG $SHORT"
-  ln -s $LONG $SHORT
-  if [ -f "${LONG}/start.jar" -o -f "${LONG}/bin/startup.sh" ]; then
-    echo "Relinking /opt/zimbra/mailboxd to $LONG" 
-    rm -rf /opt/zimbra/mailboxd
-    ln -s $LONG /opt/zimbra/mailboxd
-  fi
-  mkdir -p $SHORT/logs
-  chown zimbra:zimbra $SHORT/logs
-  chown root:root $LONG
-done
+rm -rf /opt/zimbra/tomcat
+ln -s /opt/zimbra/apache-tomcat-5.5.15 /opt/zimbra/tomcat
+mkdir -p /opt/zimbra/tomcat/logs
+chown zimbra:zimbra /opt/zimbra/tomcat/logs
+chown root:root /opt/zimbra/apache-tomcat-5.5.15
 
-
-rm -f /opt/zimbra/mailboxd
-rm -f /opt/zimbra/jetty
-ln -s /opt/zimbra/jetty-6.1.5 /opt/zimbra/jetty
-ln -s /opt/zimbra/jetty-6.1.5 /opt/zimbra/mailboxd
-
-mkdir -p /opt/zimbra/mailboxd/logs
 mkdir -p /opt/zimbra/convertd
 mkdir -p /opt/zimbra/redolog
 mkdir -p /opt/zimbra/store
 mkdir -p /opt/zimbra/index
 mkdir -p /opt/zimbra/backup
-chown zimbra:zimbra /opt/zimbra/convertd /opt/zimbra/redolog /opt/zimbra/store /opt/zimbra/index /opt/zimbra/backup  /opt/zimbra/mailboxd/logs
+chown zimbra:zimbra /opt/zimbra/convertd /opt/zimbra/redolog /opt/zimbra/store /opt/zimbra/index /opt/zimbra/backup 
 
 /bin/sh /opt/zimbra/libexec/zmfixperms
 
-egrep -v -e '^%zimbra.*tomcat' -e '^%zimbra.*mailboxdmgr'  /etc/sudoers > /tmp/sudoers
-echo "%zimbra ALL=NOPASSWD:/opt/zimbra/libexec/zmmailboxdmgr" >> /tmp/sudoers
+egrep -v '^%zimbra.*tomcat' /etc/sudoers > /tmp/sudoers
+echo "%zimbra ALL=NOPASSWD:/opt/zimbra/libexec/zmtomcatmgr" >> /tmp/sudoers
 mv -f /tmp/sudoers /etc/sudoers
 chmod 440 /etc/sudoers
 
-egrep -v '^%zimbra.*nginx' /etc/sudoers > /tmp/sudoers
-echo "%zimbra ALL=NOPASSWD:/opt/zimbra/nginx/sbin/nginx" >> /tmp/sudoers
+egrep -v '^%zimbra.*perdition' /etc/sudoers > /tmp/sudoers
+echo "%zimbra ALL=NOPASSWD:/opt/zimbra/perdition/sbin/perdition" >> /tmp/sudoers
 mv -f /tmp/sudoers /etc/sudoers
 chmod 440 /etc/sudoers
 

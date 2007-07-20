@@ -101,7 +101,7 @@ class ZimbraBuildRecipe(PackageRecipe):
         r.Environment('PERL5LIB', '/opt/zimbra/zimbramon/lib:/opt/zimbra/zimbramon/lib/i386-linux-thread-multi')
         # glob not supported until conary 1.0.15
         #r.SharedLibrary(subtrees='/opt/zimbra/cyrus-sasl.*/%(lib)s')
-        r.SharedLibrary(subtrees='/opt/zimbra/cyrus-sasl-2.1.22.3/%(lib)s')
+        r.SharedLibrary(subtrees='/opt/zimbra/cyrus-sasl-2.1.21.ZIMBRA/%(lib)s')
         # add a runtime requirements on sudo
         for x in ('postfix', 'qshape', 'postconf', 'tomcat', 'ldap'):
             r.Requires('sudo:runtime', '/opt/zimbra/bin/' + x)
@@ -110,7 +110,7 @@ class ZimbraBuildRecipe(PackageRecipe):
         r.Requires('openssh-client:runtime', '/opt/zimbra/libexec/zmrc')
         r.Requires('openssh-server:runtime', '/opt/zimbra/libexec/zmrc')
         # add requirements on zimbra-core (note that '' is for zimbra-store)
-        for pkg in ('apache', 'mta', 'ldap', 'store', 'logger', 'snmp', 'proxy'):
+        for pkg in ('apache', 'mta', 'ldap', 'store', 'logger', 'snmp'):
             r.Requires('zimbra-core:runtime',
                        '/opt/zimbra/scripts/zimbra-%s.post' %pkg)
         # add requirement from zimbra-spell -> zimbra-apache
@@ -181,7 +181,7 @@ else
     new=$((ls | grep -v CONARY; cat CONARY | tail +5 | awk '{print $2}') |
            sort | uniq -u)
     if [ -n "$new" ]; then
-        cvc add $new --text
+        cvc add $new
     fi
     cvc commit -m 'automated update from ZimbraBuild'
     cd -
