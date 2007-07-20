@@ -3226,7 +3226,7 @@ sub applyConfig {
   }
 
   if (isEnabled("zimbra-ldap")) {
-    configSetTimeZonePrefs();
+    configSetTimeZonePref();
   }
 
   configCreateDomain();
