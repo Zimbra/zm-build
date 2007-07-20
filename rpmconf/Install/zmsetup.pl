@@ -487,6 +487,7 @@ sub setLdapDefaults {
 
   my $mailmode=getLdapServerValue("zimbraMailMode");
 
+
   $config{HTTPPORT} = $mailport;
   $config{HTTPSPORT} = $sslport;
   $config{MODE} = $mailmode;
@@ -548,6 +549,8 @@ sub setLdapDefaults {
   if ($config{NOTEBOOKACCOUNT} eq "");
 
   $config{USEKBSHORTCUTS} = getLdapCOSValue("default", "zimbraPrefUseKeyboardShortcuts");
+
+  $config{zimbraPrefTimeZoneId}=getLdapServerValue("zimbraPrefTimeZoneId");
 
   my $smtphost=getLdapServerValue("zimbraSmtpHostname");
   if ( $smtphost ne "") {
@@ -664,6 +667,7 @@ sub setDefaults {
     progress "setting defaults for zimbra-ldap.\n" if $options{d};
     $config{DOCREATEDOMAIN} = "yes" if $newinstall;
     $config{LDAPPASS} = genRandomPass();
+    $config{zimbraPrefTimeZoneId} = "(GMT-08.00) Pacific Time (US & Canada)";
   }
   $config{CREATEADMIN} = "admin\@$config{CREATEDOMAIN}";
 
@@ -1468,6 +1472,35 @@ sub setLicenseFile {
     if ($config{LICENSEFILE} ne "/opt/zimbra/conf/ZCSLicense.xml");
 }
 
+sub setTimeZone {
+  my $timezones="/opt/zimbra/conf/timezones.ics";
+  if (-f $timezones) {
+    detail ("DEBUG: Checking for timezones in $timezones\n");
+    open (ICS, "$timezones");
+    my %TZID;
+    my $i=0;
+    foreach my $tz (grep(/^TZID/, <ICS>)) {
+      chomp $tz;
+      $tz =~ s/^TZID://;
+      $i++;
+      $TZID{$tz} = $i;
+    }
+    my %RTZID = reverse %TZID;
+    close(ICS);
+    my $new;
+    my $default = $TZID{$config{zimbraPrefTimeZoneId}} || "5";
+    while ($new eq "") {
+      foreach (sort {$TZID{$a} <=> $TZID{$b}} keys %TZID) {
+        print "$TZID{$_} $_\n";
+      }
+      my $ans=askNum("Enter the number for the local timezone:", $default);
+      $new = $RTZID{$ans};
+    }
+    $config{zimbraPrefTimeZoneId} = $new;
+    
+  }
+}
+
 sub configurePackage {
   my $package = shift;
   if ($package eq "zimbra-logger") {
@@ -1569,7 +1602,6 @@ sub createPackageMenu {
     return createStoreMenu($package);
   }
 }
-
 sub createLdapMenu {
   my $package = shift;
   my $lm = genPackageMenu($package);
@@ -2175,6 +2207,12 @@ sub createMainMenu {
     "callback" => \&setLdapPass
     };
   $i++;
+  $mm{menuitems}{$i} = { 
+    "prompt" => "TimeZone:", 
+    "var" => \$config{zimbraPrefTimeZoneId},
+    "callback" => \&setTimeZone
+  };
+  $i++;
   foreach (@packageList) {
     if ($_ eq "zimbra-core") {next;}
     if ($_ eq "zimbra-apache") {next;}
@@ -2773,6 +2811,17 @@ sub configSetKeyboardShortcutsPref {
   configLog("zimbraPrefUseKeyboardShortcuts");
 }
 
+sub configSetTimeZonePref {
+  if ($configStatus{zimbraPrefTimeZoneId} eq "CONFIGURED") {
+    configLog("zimbraPrefTimeZoneId");
+    return 0;
+  }
+  progress ( "Setting TimeZone Preference...");
+  runAsZimbra("$ZMPROV mcf zimbraPrefTimeZoneId $config{zimbraPrefTimeZoneId}");
+  progress ( "done.\n" );
+  configLog("zimbraPrefTimeZoneId");
+}
+
 sub configInitBackupPrefs {
   if (isEnabled("zimbra-store") && isNetwork()) {
     runAsZimbra("$ZMPROV mcf zimbraBackupReportEmailRecipients $config{zimbraBackupReportEmailRecipients}");
@@ -3168,13 +3217,16 @@ sub applyConfig {
     configSetInstalledSkins();
 
     configSetKeyboardShortcutsPref() if (!$newinstall);
-  
-    configInitBackupPrefs();
 
+    configInitBackupPrefs();
   }
 
   if (isEnabled("zimbra-mta")) {
     configSetMtaAuthHost();
+  }
+
+  if (isEnabled("zimbra-ldap")) {
+    configSetTimeZonePrefs();
   }
 
   configCreateDomain();
