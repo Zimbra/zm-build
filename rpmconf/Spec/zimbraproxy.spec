@@ -1,17 +1,18 @@
 #
 # spec file for zimbra.rpm
 #
-Summary: Zimbra Core
-Name: zimbra-core
+Summary: Zimbra Proxy
+Name: zimbra-proxy
 Version: @@VERSION@@
 Release: @@RELEASE@@
-Copyright: Various
+Copyright: ZPL and other
 Group: Applications/Messaging
 URL: http://www.zimbra.com
 Vendor: Zimbra, Inc.
 Packager: Zimbra, Inc.
 BuildRoot: /opt/zimbra
 AutoReqProv: no
+requires: zimbra-core
 
 %description
 Best email money can buy
