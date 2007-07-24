@@ -25,7 +25,7 @@
 # 
 
 rm -f /opt/zimbra/openldap
-ln -s /opt/zimbra/openldap-2.3.36.6 /opt/zimbra/openldap
+ln -s /opt/zimbra/openldap-2.3.37.7 /opt/zimbra/openldap
 
 mkdir -p /opt/zimbra/openldap-data/db
 mkdir -p /opt/zimbra/openldap-data/logs
