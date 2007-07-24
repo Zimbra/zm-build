@@ -1286,9 +1286,9 @@ sub setUseImapProxy {
 sub setStoreMode {
   while (1) {
     my $m = 
-      askNonBlank("Please enter the web server mode (http,https,both,mixed)",
+      askNonBlank("Please enter the web server mode (http,https,both,mixed,secure)",
         $config{MODE});
-    if ($m eq "http" || $m eq "https" || $m eq "mixed" || $m eq "both") {
+    if ($m eq "http" || $m eq "https" || $m eq "mixed" || $m eq "both" || $m eq "secure" ) {
       $config{MODE} = $m;
       return;
     }
@@ -2629,12 +2629,11 @@ sub configCreateCert {
     return 0;
   }
 
-  if (isEnabled("zimbra-ldap") || isEnabled("zimbra-store") || isEnabled("zimbra-mta") || isEnabled("zimbra-proxy")) {
+  if (isEnabled("zimbra-ldap") || isEnabled("zimbra-store") || isEnabled("zimbra-mta")) {
 
     if (!-f "$config{mailboxd_keystore}" || 
       !-f "/opt/zimbra/conf/smtpd.crt" ||
-      !-f "/opt/zimbra/conf/slapd.crt" ||
-      !-f "/opt/zimbra/conf/nginx.crt" ) {
+      !-f "/opt/zimbra/conf/slapd.crt" ) {
       progress ( "Creating SSL certificate..." );
       if (-f "$config{JAVAHOME}/lib/security/cacerts") {
         `chmod 777 $config{JAVAHOME}/lib/security/cacerts >> $logfile 2>&1`;
