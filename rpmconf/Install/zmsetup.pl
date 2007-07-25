@@ -1286,9 +1286,9 @@ sub setUseImapProxy {
 sub setStoreMode {
   while (1) {
     my $m = 
-      askNonBlank("Please enter the web server mode (http,https,both,mixed,secure)",
+      askNonBlank("Please enter the web server mode (http,https,both,mixed,redirect)",
         $config{MODE});
-    if ($m eq "http" || $m eq "https" || $m eq "mixed" || $m eq "both" || $m eq "secure" ) {
+    if ($m eq "http" || $m eq "https" || $m eq "mixed" || $m eq "both" || $m eq "redirect" ) {
       $config{MODE} = $m;
       return;
     }
