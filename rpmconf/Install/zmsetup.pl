@@ -2816,7 +2816,7 @@ sub configSetTimeZonePref {
     return 0;
   }
   progress ( "Setting TimeZone Preference...");
-  runAsZimbra("$ZMPROV mc default zimbraPrefTimeZoneId \"$config{zimbraPrefTimeZoneId}\"");
+  runAsZimbra("$ZMPROV mc default zimbraPrefTimeZoneId \'$config{zimbraPrefTimeZoneId}\'");
   progress ( "done.\n" );
   configLog("zimbraPrefTimeZoneId");
 }
