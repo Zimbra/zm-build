@@ -42,7 +42,7 @@ chomp $rundir;
 my $scriptDir = "/opt/zimbra/libexec/scripts";
 
 my $lowVersion = 18;
-my $hiVersion = 44;
+my $hiVersion = 45;
 my $hiLoggerVersion = 5;
 
 # Variables for the combo schema updater
