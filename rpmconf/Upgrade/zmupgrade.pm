@@ -83,6 +83,7 @@ my %updateScripts = (
   '41' => "migrate20070630-LastSoapAccess.pl",         # 5.0.0_BETA2
   '42' => "migrate20070703-ScheduledTask.pl",          # 5.0.0_BETA2
   '43' => "migrate20070706-DeletedAccount.pl",         # 5.0.0_BETA2
+  '44' => "migrate20070725-CreateRevisionTable.pl"     # 5.0.0_BETA3
 );
 
 my %loggerUpdateScripts = (
