@@ -134,6 +134,7 @@ my %updateFuncs = (
 	"5.0.0_BETA1" => \&upgrade500BETA1,
 	"5.0.0_BETA2" => \&upgrade500BETA2,
 	"5.0.0_BETA3" => \&upgrade500BETA3,
+	"5.0.0_BETA4" => \&upgrade500BETA4,
 	"5.0.0_RC1" => \&upgrade500RC1,
 	"5.0.0_RC2" => \&upgrade500RC2,
 	"5.0.0_GA" => \&upgrade500GA,
@@ -1496,6 +1497,11 @@ sub upgrade500BETA3 {
     movePostfixQueue ("2.2.9","2.4.3.3");
   }
 
+	return 0;
+}
+sub upgrade500BETA4 {
+	my ($startBuild, $targetVersion, $targetBuild) = (@_);
+	main::progress("Updating from 5.0.0_BETA4\n");
 	return 0;
 }
 sub upgrade500RC1 {
