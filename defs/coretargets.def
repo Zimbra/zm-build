@@ -189,6 +189,8 @@ pcre_RHEL5: ;
 
 pcre_DEBIAN3.1: ;
 
+pcre_DEBIAN4.0: ;
+
 pcre_SuSEES9: ;
 
 pcre_MANDRIVA2006: ;
