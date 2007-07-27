@@ -180,6 +180,7 @@ my @versionOrder = (
   "5.0.0_BETA1",
   "5.0.0_BETA2",
   "5.0.0_BETA3",
+  "5.0.0_BETA4",
   "5.0.0_RC1",
   "5.0.0_RC2",
   "5.0.0_GA",
@@ -320,6 +321,8 @@ sub upgrade {
 		main::progress("This appears to be 5.0.0_BETA2\n");
 	} elsif ($startVersion eq "5.0.0_BETA3") {
 		main::progress("This appears to be 5.0.0_BETA3\n");
+	} elsif ($startVersion eq "5.0.0_BETA4") {
+		main::progress("This appears to be 5.0.0_BETA4\n");
 	} elsif ($startVersion eq "5.0.0_RC1") {
 		main::progress("This appears to be 5.0.0_RC1\n");
 	} elsif ($startVersion eq "5.0.0_RC2") {
