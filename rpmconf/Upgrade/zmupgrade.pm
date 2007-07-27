@@ -1471,6 +1471,8 @@ sub upgrade500BETA3 {
     if (startSql()) { return 1; }
     Migrate::log("Executing ${scriptDir}/migrate20070713-NullContactBlobDigest.pl"); 
     main::runAsZimbra("perl -I${scriptDir} ${scriptDir}/migrate20070713-NullContactBlobDigest.pl");
+    Migrate::log("Executing ${scriptDir}/migrate20070726-ImapDataSource.pl"); 
+    main::runAsZimbra("perl -I${scriptDir} ${scriptDir}/migrate20070726-ImapDataSource.pl");
     stopSql();
   }
 
