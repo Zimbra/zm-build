@@ -210,7 +210,7 @@ authorityKeyIdentifier=keyid,issuer:always
 
 basicConstraints = CA:FALSE
 keyUsage = nonRepudiation, digitalSignature, keyEncipherment
-@@ALTNAMES@@
+#@@ALTNAMES@@
 
 [ v3_ca ]
 
