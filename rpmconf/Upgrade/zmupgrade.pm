@@ -1274,6 +1274,9 @@ sub upgrade457GA {
     main::runAsZimbra("$ZMPROV mcf zimbraHttpSSLNumThreads 100")
       if ($threads eq "20");
   }
+  # migrate amavis data 
+  migrateAmavisDB("2.5.2");
+
 	return 0;
 }
 sub upgrade500BETA1 {
