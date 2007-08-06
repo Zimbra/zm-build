@@ -18,7 +18,6 @@ include $(DEFS_DIR)/plat_common.def
 
 JAVA_BINARY := /usr/bin/java
 
-MYSQL_VERSION_STRING := 5.0.45
 MYSQL_VERSION   := standard-$(MYSQL_VERSION_STRING)-apple-darwin8.2.0-i686
 MYSQL_CLIENT_VERSION := standard-$(MYSQL_VERSION_STRING)-clientlibs
 

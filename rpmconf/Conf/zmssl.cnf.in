@@ -5,8 +5,8 @@
 
 # This definition stops the following lines choking if HOME isn't
 # defined.
-HOME			= .
-RANDFILE		= $ENV::HOME/.rnd
+HOME			= $ENV::HOME/ssl
+RANDFILE		= $ENV::HOME/ssl/.rnd
 
 # Extra OBJECT IDENTIFIER info:
 #oid_file		= $ENV::HOME/.oid

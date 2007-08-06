@@ -24,10 +24,10 @@
 # ***** END LICENSE BLOCK *****
 # 
 
-echo ""
-echo "Backing up ldap"
-echo ""
 /opt/zimbra/openldap/sbin/slapcat -f /opt/zimbra/conf/slapd.conf \
-	-l /opt/zimbra/openldap-data/ldap.bak
+	-l /opt/zimbra/openldap-data/ldap.bak 2> /dev/null
+if [ $? = 0 ]; then
+  echo "ldap backup complete."
+fi
 
 exit 0

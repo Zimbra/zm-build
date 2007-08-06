@@ -8,6 +8,7 @@ CLEAN_TARGETS	=	\
 		$(APACHE_DEST_ROOT) \
 		$(SPELL_DEST_ROOT) \
 		$(ISYNC_DEST_ROOT) \
+		$(PROXY_DEST_ROOT) \
 		zcs \
 		zcs-*.tgz \
 		zimbra.rpmrc \
@@ -27,3 +28,4 @@ allclean: clean
 	(cd $(COMMON_DIR); $(ANT) clean)
 	(cd $(CONSOLE_DIR); $(ANT) clean)
 	(cd $(NATIVE_DIR); $(MAKE) clean)
+	(cd $(LAUNCHER_DIR); $(MAKE) clean)

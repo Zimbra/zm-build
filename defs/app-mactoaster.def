@@ -1,0 +1,45 @@
+# __ZimbraMacToaster
+
+
+TOASTER_PACKAGE_NAME := zimbra-toaster
+TOASTER_VERSION_TAG := $(MAJOR).$(MINOR).$(BUILDNUM)
+TOASTER_PACKAGING_OPTIONS ?= -build -v -p $(PACKAGE_DIR)/$(TOASTER_PACKAGE_NAME).$(PACKAGE_EXT) -proj $(TOASTER_DEST_ROOT)/ZimbraToaster.pmproj
+
+toaster: VERSION_TAG := $(MAJOR).$(MINOR).$(MICRO)_$(BUILDNUM).MACOSX_UB
+toaster: $(PACKAGE_DIR) $(TOASTER_DIR)/Info.plist toaster_stage zimbra-toaster-$(RELEASE).dmg
+
+toaster_stage: $(TOASTER_DEST_DIR)/Zimbra\ Toaster.app $(TOASTER_DEST_ROOT)/InstallerResources $(TOASTER_DEST_ROOT)/ZimbraToaster.pmproj
+
+$(TOASTER_DEST_DIR):
+	mkdir -p $@
+
+$(TOASTER_DEST_DIR)/Zimbra\ Toaster.app: $(TOASTER_DEST_DIR) $(TOASTER_DIR)/build/Release/Zimbra\ Toaster.app
+	cp -r $(TOASTER_DIR)/build/Release/Zimbra\ Toaster.app '$@'
+
+$(TOASTER_DIR)/build/Release/Zimbra\ Toaster.app:
+	(cd $(TOASTER_DIR); xcodebuild -configuration Release)
+
+$(TOASTER_DEST_ROOT)/ZimbraToaster.pmproj:
+	plutil -convert xml1 $(TOASTER_DIR)/Package/ZimbraToaster.pmproj -o $(TOASTER_DIR)/ZimbraToaster.plist
+	sed -i -e 's/0.9.19/$(TOASTER_VERSION_TAG)/g' $(TOASTER_DIR)/ZimbraToaster.plist
+	plutil -convert binary1 $(TOASTER_DIR)/ZimbraToaster.plist -o $@
+	cp $(TOASTER_DIR)/Package/License.rtf $(TOASTER_DEST_ROOT)
+
+$(TOASTER_DEST_ROOT)/InstallerResources: $(TOASTER_DIR)/build/Release/Zimbra\ Toaster.app
+	mkdir -p $@
+	-cp $(TOASTER_DIR)/InstallerResources/* $@
+
+$(TOASTER_DIR)/Info.plist: force
+	touch $@
+	chmod u+w $@
+	sed -e "s/@@TOASTER_VERSION_TAG@@/$(TOASTER_VERSION_TAG)/" -e "s/@@VERSION_TAG@@/$(VERSION_TAG)/" $(TOASTER_DIR)/Package/Info-production.plist > $@ 
+
+$(PACKAGE_DIR)/$(TOASTER_PACKAGE_NAME).$(PACKAGE_EXT):
+	(cd $(TOASTER_DEST_ROOT);  $(PACKAGING_COMMAND) $(TOASTER_PACKAGING_OPTIONS) )
+
+$(TOASTER_PACKAGE_NAME)-$(RELEASE).dmg: $(PACKAGE_DIR)/$(TOASTER_PACKAGE_NAME).$(PACKAGE_EXT) 
+	rm -rf $(TOASTER_DEST_ROOT)/tmp
+	mkdir $(TOASTER_DEST_ROOT)/tmp
+	cp -R $(PACKAGE_DIR)/$(TOASTER_PACKAGE_NAME).$(PACKAGE_EXT) $(TOASTER_DEST_ROOT)/tmp
+	hdiutil create -srcfolder $(TOASTER_DEST_ROOT)/tmp -volname $(TOASTER_PACKAGE_NAME)-$(VERSION_TAG) $(PACKAGE_DIR)/$(TOASTER_PACKAGE_NAME)-$(VERSION_TAG).$(BUNDLE_EXT)
+

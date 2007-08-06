@@ -1,0 +1,61 @@
+#!/bin/bash
+# 
+# ***** BEGIN LICENSE BLOCK *****
+# Version: MPL 1.1
+# 
+# The contents of this file are subject to the Mozilla Public License
+# Version 1.1 ("License"); you may not use this file except in
+# compliance with the License. You may obtain a copy of the License at
+# http://www.zimbra.com/license
+# 
+# Software distributed under the License is distributed on an "AS IS"
+# basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See
+# the License for the specific language governing rights and limitations
+# under the License.
+# 
+# The Original Code is: Zimbra Collaboration Suite Server.
+# 
+# The Initial Developer of the Original Code is Zimbra, Inc.
+# Portions created by Zimbra are Copyright (C) 2006 Zimbra, Inc.
+# All Rights Reserved.
+# 
+# Contributor(s):
+# 
+# ***** END LICENSE BLOCK *****
+# 
+# Create group, user for zimbra and postfix.
+
+H=`hostname -s`
+I=`hostname -i`
+
+#Symlinks
+
+rm -f /opt/zimbra/memcached
+ln -s /opt/zimbra/memcached-1.2.2 /opt/zimbra/memcached
+
+rm -f /opt/zimbra/nginx
+ln -s /opt/zimbra/nginx-0.5.20-zimbra /opt/zimbra/nginx
+
+##### install_history
+PKG=@@PKGNAME@@
+VERSION=@@VERSION@@
+INSTALL_HISTORY=/opt/zimbra/.install_history
+D=`date +%s`
+UPGRADE=`grep "INSTALLED $PKG" $INSTALL_HISTORY`
+if [ x"$UPGRADE" = "x" ]; then
+  ACTION="INSTALLED"
+else
+  ACTION="UPGRADED"
+fi
+
+if [ $PKG = "zimbra-core" ]; then
+  echo "${D}: INSTALL SESSION START" >> $INSTALL_HISTORY
+fi
+
+echo "${D}: $ACTION ${PKG}_${VERSION}" >> /opt/zimbra/.install_history
+
+if [ $PKG = "zimbra-store" ]; then
+  echo "${D}: INSTALL SESSION COMPLETE" >> $INSTALL_HISTORY
+fi
+
+exit 0
