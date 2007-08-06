@@ -897,7 +897,7 @@ removeExistingInstall() {
       echo "Backing up ldap"
       echo ""
       /opt/zimbra/openldap/sbin/slapcat -f /opt/zimbra/conf/slapd.conf \
-        -l /opt/zimbra/openldap-data/ldap.bak
+        -b '' -l /opt/zimbra/openldap-data/ldap.bak
     fi
 
     echo ""
