@@ -550,7 +550,7 @@ sub setLdapDefaults {
 
   $config{USEKBSHORTCUTS} = getLdapCOSValue("default", "zimbraPrefUseKeyboardShortcuts");
 
-  $config{zimbraPrefTimeZoneId}=getLdapServerValue("zimbraPrefTimeZoneId");
+  $config{zimbraPrefTimeZoneId}=getLdapCOSValue("default", "zimbraPrefTimeZoneId");
 
   my $smtphost=getLdapServerValue("zimbraSmtpHostname");
   if ( $smtphost ne "") {
@@ -667,7 +667,7 @@ sub setDefaults {
     progress "setting defaults for zimbra-ldap.\n" if $options{d};
     $config{DOCREATEDOMAIN} = "yes" if $newinstall;
     $config{LDAPPASS} = genRandomPass();
-    $config{zimbraPrefTimeZoneId} = "(GMT-08.00) Pacific Time (US & Canada)";
+    $config{zimbraPrefTimeZoneId} = '(GMT-08.00) Pacific Time (US & Canada)';
   }
   $config{CREATEADMIN} = "admin\@$config{CREATEDOMAIN}";
 
