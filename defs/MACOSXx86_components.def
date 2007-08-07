@@ -1,3 +1,5 @@
 ISYNC_COMPONENTS	:= \
 	$(ISYNC_DEST_DIR)/Zimbra.prefPane 
 
+MACTOASTER_COMPONENTS := \
+	$(MACTOASTER_DEST_DIR)/Zimbra\ Toaster.app

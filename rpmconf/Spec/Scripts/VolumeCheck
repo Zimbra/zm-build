@@ -55,6 +55,9 @@ if [ $AVAIL -lt 5 ]; then
   GOOD=no
 fi
 if [ $GOOD = "no" ]; then
+  if [ -f "$VOL_PATH/opt/zimbra/.skipvolcheck" ]; then
+    exit 0
+  fi
   echo ""
   echo "Installation cancelled."
   echo ""

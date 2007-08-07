@@ -32,6 +32,7 @@ cat $TEMPLATE | sed -e "s/@@CORESIZE@@/$CORESIZE/g" \
 	-e "s/@@APACHESIZE@@/$APACHESIZE/g" \
 	-e "s/@@STORESIZE@@/$STORESIZE/g" \
 	-e "s/@@MTASIZE@@/$MTASIZE/g" \
+	-e "s/@@PROXYSIZE@@/$PROXYSIZE/g" \
 	-e "s/@@SNMPSIZE@@/$SNMPSIZE/g" \
 	-e "s/@@SPELLSIZE@@/$SPELLSIZE/g" \
 	-e "s/@@MAJOR@@/$MAJOR/g" \

@@ -25,7 +25,7 @@
 # 
 
 rm -f /opt/zimbra/httpd
-ln -s /opt/zimbra/httpd-2.0.54 /opt/zimbra/httpd
+ln -s /opt/zimbra/httpd-2.2.4 /opt/zimbra/httpd
 
 PKG=`echo ${RECEIPT_PATH} | sed -e 's|.*/\(zimbra-apache.[^/]*pkg\)/.*|\1|' | sed -e 's/\./-/'`
 D=`date +%s`

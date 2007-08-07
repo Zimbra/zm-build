@@ -65,7 +65,7 @@ $(BUILD_ROOT)/zimbraapache.spec:
 	rm -f zimbraapache.post
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/conf" >> \
 		$(BUILD_ROOT)/zimbraapache.spec
-	echo "%attr(-, zimbra, zimbra) /opt/zimbra/httpd-2.0.54" >> \
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/httpd-$(APACHE_VERSION)" >> \
 		$(BUILD_ROOT)/zimbraapache.spec
 
 apache_stage: $(APACHE_COMPONENTS)
