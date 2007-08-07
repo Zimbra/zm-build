@@ -1494,7 +1494,7 @@ sub upgrade500BETA3 {
 	  my @coses = `su - zimbra -c "$ZMPROV gac"`;
 	  foreach my $cos (@coses) {
 		  chomp $cos;
-		  main::runAsZimbra("$ZMPROV mc $cos zimbraFeatureGroupCalendarEnabled TRUE");
+		  main::runAsZimbra("$ZMPROV mc $cos zimbraFeatureGroupCalendarEnabled TRUE zimbraFeatureMailEnabled TRUE");
 	  }
     
   }
