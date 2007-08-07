@@ -215,6 +215,8 @@ sub upgrade {
 
     if (startSql()) { return 1; };
 
+    &verifyDatabaseIntegrity;
+
 		$curSchemaVersion = Migrate::getSchemaVersion();
 	}
 
@@ -1743,6 +1745,14 @@ sub migrateAmavisDB($) {
   }
 }
 
+
+sub verifyDatabaseIntegrity {
+  if (-x "/opt/zimbra/libexec/zmdbintegrityreport") {
+    main::progress("Verifying integrity of databases.\n");
+	  main::runAsZimbra("/opt/zimbra/libexec/zmdbintegrityreport -v -r");
+  }
+  return;
+}
 
 sub verifyMysqlConfig {
   my $mysqlConf = "/opt/zimbra/conf/my.cnf";
