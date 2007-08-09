@@ -127,12 +127,12 @@ $(CORE_DEST_DIR)/zimbramon: $(CORE_DEST_DIR)/zimbramon/lib $(CORE_DEST_DIR)/zimb
 	mkdir -p $(CORE_DEST_DIR)/zimbramon/mrtg/conf
 	cp $(PACKAGE_CONF_DIR)/Conf/mrtg.cfg $(CORE_DEST_DIR)/zimbramon/mrtg/conf
 	(cd $(CORE_DEST_DIR)/zimbramon; tar xzf $(RRD_SOURCE).tar.gz)
-	mkdir -p $(CORE_DEST_DIR)/zimbramon/rrdtool/work
-	mkdir -p $(CORE_DEST_DIR)/zimbramon/rrdtool/work
+	mkdir -p $(CORE_DEST_DIR)/logger/db/work
+	mkdir -p $(CORE_DEST_DIR)/logger/db/work
 	cp -f $(PACKAGE_CONF_DIR)/Img/connection_failed.gif \
-		$(CORE_DEST_DIR)/zimbramon/rrdtool/work
+		$(CORE_DEST_DIR)/logger/db/work
 	cp -f $(PACKAGE_CONF_DIR)/Img/data_not_available.gif \
-		$(CORE_DEST_DIR)/zimbramon/rrdtool/work
+		$(CORE_DEST_DIR)/logger/db/work
 
 $(CORE_DEST_DIR)/zimbramon/crontabs:
 	mkdir -p $@
