@@ -46,10 +46,10 @@ ln -s /opt/zimbra/cyrus-sasl-2.1.22.3 /opt/zimbra/cyrus-sasl
 
 if [ -d "/opt/zimbra/zimbramon/rrdtool" ]; then
   rm -rf /opt/zimbra/zimbramon/rrdtool
-  ln -s /opt/zimbra/zimbramon/rrdtool-1.2.23 /opt/zimbra/zimbramon/rrdtool
+  ln -s /opt/zimbra/zimbramon/rrdtool-1.0.49 /opt/zimbra/zimbramon/rrdtool
 else
   rm -f /opt/zimbra/zimbramon/rrdtool
-  ln -s /opt/zimbra/zimbramon/rrdtool-1.2.23 /opt/zimbra/zimbramon/rrdtool
+  ln -s /opt/zimbra/zimbramon/rrdtool-1.0.49 /opt/zimbra/zimbramon/rrdtool
 fi
 
 if [ -f /etc/debian_version ]; then
@@ -107,8 +107,6 @@ mkdir /opt/zimbra/ssl
 chown zimbra:zimbra /opt/zimbra/ssl
 mkdir /opt/zimbra/.ssh
 chown zimbra:zimbra /opt/zimbra/.ssh
-mkdir /opt/zimbra/zmstat
-chown zimbra:zimbra /opt/zimbra/zmstat
 
 ##### install_history
 PKG=@@PKGNAME@@

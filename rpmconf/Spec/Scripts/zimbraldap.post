@@ -34,10 +34,11 @@ rm -f /opt/zimbra/openldap
 ln -s /opt/zimbra/openldap-2.3.37.7 /opt/zimbra/openldap
 
 mkdir -p /opt/zimbra/openldap/var/openldap-data
-mkdir -p /opt/zimbra/openldap-data/db
-mkdir -p /opt/zimbra/openldap-data/logs
+mkdir -p /opt/zimbra/openldap-data
+mkdir -p /opt/zimbra/openldap-replica
 chown -R zimbra:zimbra /opt/zimbra/openldap/var
 chown -R zimbra:zimbra /opt/zimbra/openldap-data
+chown -R zimbra:zimbra /opt/zimbra/openldap-replica
 
 egrep -v '^%zimbra.*slapd' /etc/sudoers > /tmp/sudoers
 echo "%zimbra   ALL=NOPASSWD:/opt/zimbra/openldap/libexec/slapd" >> /tmp/sudoers
@@ -49,9 +50,5 @@ chmod 440 /etc/sudoers
 
 chown root:root /opt/zimbra/openldap/libexec/slapd
 chmod 755 /opt/zimbra/openldap/libexec/slapd
-
-if [ ! -s /opt/zimbra/openldap-data/DB_CONFIG ]; then
-   mv /opt/zimbra/openldap-data/log.* /opt/zimbra/openldap-data/logs/
-fi
 
 ldconfig

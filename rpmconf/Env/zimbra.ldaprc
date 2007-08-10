@@ -1,2 +1,0 @@
-BASE ""
-TLS_CACERT /opt/zimbra/ssl/ssl/ca/ca.pem

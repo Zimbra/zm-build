@@ -112,9 +112,6 @@ $(CORE_DEST_DIR):
 	cp $(ENV_FILE_SOURCE) $(CORE_DEST_DIR)/$(ENV_FILE_DEST)
 	cp $(PROFILE_SOURCE) $(CORE_DEST_DIR)/$(PROFILE_DEST)
 	cp $(EXRC_SOURCE) $(CORE_DEST_DIR)/$(EXRC_DEST)
-	cp $(VIMINFO_SOURCE) $(CORE_DEST_DIR)/$(VIMINFO_DEST)
-	cp $(LDAPRC_SOURCE) $(CORE_DEST_DIR)/$(LDAPRC_DEST)
-	chmod 644 $(CORE_DEST_DIR)/$(VIMINFO_DEST)
 
 $(CORE_DEST_DIR)/doc:
 	mkdir -p $@
@@ -155,13 +152,13 @@ $(CORE_DEST_DIR)/lib: $(WEBAPP_DIR)/service.war $(LDAP_DEST_DIR)/$(LDAP_DIR) pcr
 	cp -f $(LAUNCHER_DIR)/build/zimbra-launcher.jar $(CORE_DEST_DIR)/lib/jars
 
 $(NATIVE_DIR)/build/libzimbra-native.$(JNI_EXT):
-	(cd $(NATIVE_DIR); make JAVA_BINARY=$(JAVA_BINARY))
+	(cd $(NATIVE_DIR); make TOMCAT_HOME=$(TOMCAT_HOME) JAVA_BINARY=$(JAVA_BINARY))
 
 $(LAUNCHER_DIR)/build/zimbra-launcher.jar:
-	(cd $(LAUNCHER_DIR); make JAVA_BINARY=$(JAVA_BINARY))
+	(cd $(LAUNCHER_DIR); make TOMCAT_HOME=$(TOMCAT_HOME) JAVA_BINARY=$(JAVA_BINARY))
 
-$(LAUNCHER_DIR)/build/zmmailboxdmgr:
-	(cd $(LAUNCHER_DIR); make JAVA_BINARY=$(JAVA_BINARY))
+$(LAUNCHER_DIR)/build/zmtomcatmgr:
+	(cd $(LAUNCHER_DIR); make TOMCAT_HOME=$(TOMCAT_HOME) JAVA_BINARY=$(JAVA_BINARY))
 
 pcre_UBUNTU6: 
 	mkdir -p $(CORE_DEST_DIR)/lib
@@ -172,8 +169,6 @@ pcre_MACOSXx86:
 pcre_MACOSX: 
 	mkdir -p $(CORE_DEST_DIR)/lib
 	(cd $(CORE_DEST_DIR)/lib; tar xzf $(THIRD_PARTY)/pcre/builds/$(BUILD_PLATFORM)/pcre.tgz)
-
-pcre_F7: ;
 
 pcre_FC5: ;
 
@@ -190,8 +185,6 @@ pcre_RHEL5_64: ;
 pcre_RHEL5: ;
 
 pcre_DEBIAN3.1: ;
-
-pcre_DEBIAN4.0: ;
 
 pcre_SuSEES9: ;
 
@@ -252,7 +245,7 @@ $(CORE_DEST_DIR)/conf: $(WEBAPP_DIR)/service.war
 	cp $(PACKAGE_CONF_DIR)/Conf/swatchrc $@/swatchrc.in
 	cp $(PACKAGE_CONF_DIR)/Conf/logswatchrc $@/logswatchrc
 	cp $(SERVICE_DIR)/build/dist/conf/localconfig.xml $@
-	cp $(SERVICE_DIR)/build/dist/conf/log4j.properties $@/log4j.properties.in
+	cp $(SERVICE_DIR)/build/dist/conf/log4j.properties $@
 	cp $(PACKAGE_CONF_DIR)/Conf/zmssl.cnf.in $@
 	cp $(SERVICE_DIR)/conf/amavisd.conf.in $@
 	cp $(SERVICE_DIR)/conf/dspam.conf $@
@@ -261,12 +254,12 @@ $(CORE_DEST_DIR)/conf: $(WEBAPP_DIR)/service.war
 	cp $(SERVICE_DIR)/conf/freshclam.conf.in $@
 	cp $(SERVICE_DIR)/conf/postfix_header_checks.in $@
 	cp $(SERVICE_DIR)/conf/perdition.conf.in $@
-	cp $(SERVICE_DIR)/conf/nginx.conf.in $@
 	cp $(SERVICE_DIR)/conf/salocal.cf $@/salocal.cf.in
-	cp $(SERVICE_DIR)/conf/zmmta.cf-$(MAILBOXD_SERVER) $@/zmmta.cf
+	cp $(SERVICE_DIR)/conf/zmmta.cf $@
 	cp $(SERVICE_DIR)/conf/timezones.ics $@
 	cp $(SERVICE_DIR)/conf/zimbra.ld.conf $@
 	cp $(SERVICE_DIR)/conf/my.logger.cnf $@
+	cp $(SERVICE_DIR)/conf/wildfire.xml $@
 	cp $(SERVICE_DIR)/conf/com.zimbra.zcs.plist $@
 	cp $(SERVICE_DIR)/conf/postfix_recipient_restrictions.cf $@
 	cp -Rf $(SERVICE_DIR)/conf/msgs $@/msgs
@@ -275,7 +268,7 @@ $(CORE_DEST_DIR)/conf: $(WEBAPP_DIR)/service.war
 	mkdir -p $@/attrs
 	cp -f $(SERVICE_DIR)/build/dist/conf/attrs/* $@/attrs
 
-$(CORE_DEST_DIR)/libexec: $(LAUNCHER_DIR)/build/zmmailboxdmgr
+$(CORE_DEST_DIR)/libexec: $(LAUNCHER_DIR)/build/zmtomcatmgr
 	@echo "*** Installing libexec"
 	mkdir -p $@/installer/util/modules
 	mkdir -p $@/installer/bin
@@ -294,8 +287,8 @@ $(CORE_DEST_DIR)/libexec: $(LAUNCHER_DIR)/build/zmmailboxdmgr
 	cp -f $(PACKAGE_CONF_DIR)/Install/postinstall.pm $@/postinstall.pm
 	cp -f $(PACKAGE_CONF_DIR)/Install/preinstall.pm $@/preinstall.pm
 	cp -f $(PACKAGE_CONF_DIR)/Install/Util/addUser.sh $@/addUser.sh
-	cp -f $(LAUNCHER_DIR)/build/zmmailboxdmgr $@
-	cp -f $(LAUNCHER_DIR)/build/zmmailboxdmgr.unrestricted $@
+	cp -f $(LAUNCHER_DIR)/build/zmtomcatmgr $@
+	cp -f $(LAUNCHER_DIR)/build/zmtomcatmgr.unrestricted $@
 	cp $(SERVICE_DIR)/src/libexec/* $@
 	cp $@/swatch $@/logswatch
 	cp -f $(BUILD_ROOT)/rpmconf/Build/get_plat_tag.sh $@
@@ -315,8 +308,7 @@ $(CORE_DEST_DIR)/bin:
 	cp $(ZIMBRA_BIN_DIR)/zmantivirusctl $@
 	cp $(ZIMBRA_BIN_DIR)/zmcontrol $@
 	cp $(ZIMBRA_BIN_DIR)/zmloggerctl $@
-	cp $(ZIMBRA_BIN_DIR)/zmstorectl $@
-	cp $(ZIMBRA_BIN_DIR)/zmproxyctl $@
+	cp $(ZIMBRA_BIN_DIR)/zmmailboxctl $@
 	cp $(ZIMBRA_BIN_DIR)/zmmtactl $@
 	cp $(ZIMBRA_BIN_DIR)/zmspellctl $@
 	cp $(ZIMBRA_BIN_DIR)/zmapachectl $@
