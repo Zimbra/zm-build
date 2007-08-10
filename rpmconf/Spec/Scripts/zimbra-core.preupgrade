@@ -38,6 +38,9 @@ cp -f /opt/zimbra/java/jre/lib/security/cacerts $SAVEDIR
 if [ -f "/opt/zimbra/tomcat/conf/keystore" ]; then
 	cp -f /opt/zimbra/tomcat/conf/keystore $SAVEDIR
 fi 
+if [ -f "/opt/zimbra/jetty/conf/keystore" ]; then
+	cp -f /opt/zimbra/jetty/conf/keystore $SAVEDIR
+fi 
 if [ -f "/opt/zimbra/conf/smtpd.key" ]; then
 	cp -f /opt/zimbra/conf/smtpd.key $SAVEDIR
 fi 

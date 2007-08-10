@@ -1,0 +1,31 @@
+# Makefile for entire install tree, for RPM packages.
+
+.PHONY: evolution
+
+# BASE VARIABLES
+
+BUILD_ROOT	:= $(shell pwd)
+
+DEFS_DIR := $(BUILD_ROOT)/defs
+
+include $(DEFS_DIR)/globals.def
+
+include $(DEFS_DIR)/devglobals.def
+
+include $(DEFS_DIR)/paths.def
+
+# 3rd PARTY INCLUDES
+
+include $(DEFS_DIR)/$(BUILD_PLATFORM).def
+
+include $(DEFS_DIR)/destination.def
+
+all: evolution
+
+include $(DEFS_DIR)/misctargets.def
+
+include $(DEFS_DIR)/evolution.def
+
+include $(DEFS_DIR)/clean.def
+
+include $(DEFS_DIR)/devclean.def

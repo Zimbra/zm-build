@@ -1,6 +1,6 @@
 # Makefile for entire install tree, for RPM packages.
 
-.PHONY: core mta store ldap snmp 
+.PHONY: core proxy mta store ldap snmp
 
 # BASE VARIABLES
 
@@ -56,6 +56,8 @@ ifeq ($(BUILD_PLATFORM), RHEL4_64)
 include $(DEFS_DIR)/RHEL4_64_targets.def
 endif
 
+include $(DEFS_DIR)/proxytargets.def
+
 include $(DEFS_DIR)/ldaptargets.def
 
 include $(DEFS_DIR)/mtatargets.def
@@ -84,4 +86,5 @@ include $(DEFS_DIR)/devclean.def
 
 ifeq ($(BUILD_PLATFORM), MACOSXx86)
 include $(DEFS_DIR)/isync.def
+include $(DEFS_DIR)/app-mactoaster.def
 endif
