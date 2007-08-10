@@ -88,6 +88,8 @@ $(BUILD_ROOT)/zimbracore.spec:
 		$(BUILD_ROOT)/zimbracore.spec
 	echo "%attr(755, root, root) /opt/zimbra/libexec" >> \
 		$(BUILD_ROOT)/zimbracore.spec
+	echo "%attr(755, root, root) /opt/zimbra/logger" >> \
+		$(BUILD_ROOT)/zimbracore.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/conf" >> \
 		$(BUILD_ROOT)/zimbracore.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/db" >> \
