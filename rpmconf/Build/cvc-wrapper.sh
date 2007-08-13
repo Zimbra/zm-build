@@ -68,12 +68,10 @@ class ZimbraBuildRecipe(PackageRecipe):
         del r.EnforceSonameBuildRequirements
         del r.EnforcePerlBuildRequirements
         del r.DanglingSymlinks
-        del r.BadInterpreterPaths
         r.RemoveNonPackageFiles(exceptions='.*')
         r.InitialContents('/opt/zimbra/conf/localconfig.xml');
         # don't delete specific empty directories
         if r.name == 'zimbra-core':
-	  r.Provides('file', '/opt/zimbra/zimbramon/rrdtool-1.0.49/bin/rrdcgi')
           r.MakeDirs('/etc/conary/entitlements')
           r.Symlink ('/opt/zimbra/libexec/zmgenentitlement', '/etc/conary/entitlements/products.rpath.com')
           r.Symlink ('/opt/zimbra/libexec/zmgenentitlement', '/etc/conary/entitlements/conary.rpath.com')
@@ -112,7 +110,7 @@ class ZimbraBuildRecipe(PackageRecipe):
         r.Requires('openssh-client:runtime', '/opt/zimbra/libexec/zmrc')
         r.Requires('openssh-server:runtime', '/opt/zimbra/libexec/zmrc')
         # add requirements on zimbra-core (note that '' is for zimbra-store)
-        for pkg in ('apache', 'mta', 'ldap', 'store', 'logger', 'snmp'):
+        for pkg in ('apache', 'mta', 'ldap', 'store', 'logger', 'snmp', 'proxy'):
             r.Requires('zimbra-core:runtime',
                        '/opt/zimbra/scripts/zimbra-%s.post' %pkg)
         # add requirement from zimbra-spell -> zimbra-apache
@@ -183,7 +181,7 @@ else
     new=$((ls | grep -v CONARY; cat CONARY | tail +5 | awk '{print $2}') |
            sort | uniq -u)
     if [ -n "$new" ]; then
-        cvc add $new
+        cvc add $new --text
     fi
     cvc commit -m 'automated update from ZimbraBuild'
     cd -

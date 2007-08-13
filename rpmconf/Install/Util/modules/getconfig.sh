@@ -34,9 +34,9 @@ getConfigOptions() {
 	fi
 	if [ $STORE_HERE = "yes" ]; then
 		while :; do
-			askNonBlank "Enter web server mode (http, https, mixed)" "$MODE"
+			askNonBlank "Enter web server mode (http, https, mixed, redirect)" "$MODE"
 			MODE=$response
-			if [ $MODE = "http" -o $MODE = "https" -o $MODE = "mixed" ]; then
+			if [ $MODE = "http" -o $MODE = "https" -o $MODE = "mixed" -o $MODE = "redirect" ]; then
 				break
 			else
 				echo "Please enter a valid mode"

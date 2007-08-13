@@ -46,6 +46,18 @@ if [ -f /etc/redhat-release ]; then
 		exit 0
 	fi
 
+	grep "Fedora release 7" /etc/redhat-release >/dev/null 2>&1
+	if [ $? = 0 ]; then
+		echo "F7${i}"
+		exit 0
+	fi
+
+	grep "Fedora Core release 6" /etc/redhat-release > /dev/null 2>&1
+	if [ $? = 0 ]; then
+		echo "FC6${i}"
+		exit 0
+	fi
+
 	grep "Fedora Core release 5" /etc/redhat-release > /dev/null 2>&1
 	if [ $? = 0 ]; then
 		echo "FC5${i}"
@@ -115,6 +127,14 @@ if [ -f /etc/debian_version ]; then
 	grep "3.1" /etc/debian_version > /dev/null 2>&1
 	if [ $? = 0 ]; then
 		echo "DEBIAN3.1"
+		exit 0
+	fi
+fi
+
+if [ -f /etc/debian_version ]; then
+	grep "4.0" /etc/debian_version > /dev/null 2>&1
+	if [ $? = 0 ]; then
+		echo "DEBIAN4.0"
 		exit 0
 	fi
 fi
