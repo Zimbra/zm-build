@@ -1505,6 +1505,14 @@ sub upgrade500BETA3 {
     main::runAsZimbra("zmlocalconfig -e postfix_version=2.4.3.3");
     movePostfixQueue ("2.2.9","2.4.3.3");
   }
+  if (isInstalled("zimbra-proxy")) {
+     if (! (-f "/opt/zimbra/conf/nginx.key" ||
+        -f "/opt/zimbra/conf/nginx.crt" )) {
+        runAsZimbra("cd /opt/zimbra; zmcertinstall proxy ".
+        "/opt/zimbra/ssl/ssl/server/server.crt ".
+        "/opt/zimbra/ssl/sll/server/server.key");
+     }
+  }
 
 	return 0;
 }
