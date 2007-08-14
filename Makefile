@@ -17,6 +17,7 @@ include $(DEFS_DIR)/paths.def
 # 3rd PARTY INCLUDES
 
 THIRD_PARTY	:= $(BUILD_ROOT)/../ThirdParty
+THIRD_PARTY_BUILDS	:= $(BUILD_ROOT)/../ThirdPartyBuilds
 
 include $(DEFS_DIR)/$(BUILD_PLATFORM).def
 
