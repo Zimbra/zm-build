@@ -1496,7 +1496,9 @@ sub upgrade500BETA3 {
 		  chomp $cos;
 		  main::runAsZimbra("$ZMPROV mc $cos zimbraFeatureGroupCalendarEnabled TRUE zimbraFeatureMailEnabled TRUE");
 	  }
-    
+    #bug 17320
+    Migrate::log("Executing ${scriptDir}/migrate20070809-Signatures.pl"); 
+    main::runAsZimbra("perl -I${scriptDir} ${scriptDir}/migrate20070809-Signatures.pl");
   }
 
   if (isInstalled("zimbra-mta")) {
