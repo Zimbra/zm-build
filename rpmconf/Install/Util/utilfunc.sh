@@ -819,6 +819,8 @@ restoreCerts() {
     cp $SAVEDIR/keystore /opt/zimbra/tomcat/conf/keystore
   elif [ -f "$SAVEDIR/keystore" -a -d "/opt/zimbra/jetty/etc" ]; then
     cp $SAVEDIR/keystore /opt/zimbra/jetty/etc/keystore
+  else 
+    cp $SAVEDIR/keystore /opt/zimbra/conf/keystore
   fi
   if [ -f "$SAVEDIR/perdition.key" ]; then
     cp $SAVEDIR/perdition.key /opt/zimbra/conf/perdition.key 

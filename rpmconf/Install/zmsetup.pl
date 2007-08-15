@@ -623,6 +623,8 @@ sub setDefaults {
   } elsif ( -f "/opt/zimbra/tomcat/bin/startup.sh" ) {
     $config{mailboxd_keystore} = "$config{mailboxd_directory}/conf/keystore";
     $config{mailboxd_server} = "tomcat";
+  } else {
+    $config{mailboxd_keystore} = "/opt/zimbra/conf/keystore";
   }
   print "DEBUG: \$config{mailboxd_directory}=$config{mailboxd_directory}\n" if $debug;
 
