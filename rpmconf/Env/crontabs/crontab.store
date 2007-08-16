@@ -21,3 +21,8 @@
 # Report on any database inconsistencies
 #
 0 23 * * 7 /opt/zimbra/libexec/zmdbintegrityreport -m
+#
+# Monitor for multiple mysqld to prevent corruption
+#
+*/5 * * * * /opt/zimbra/libexec/zmcheckduplicatemysqld -e > /dev/null 2>&1
+
