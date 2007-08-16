@@ -1693,9 +1693,10 @@ sub migrateLdap {
 			`mkdir /opt/zimbra/openldap-data`;
 			`touch /opt/zimbra/openldap-data/DB_CONFIG`;
 			`chown -R zimbra:zimbra /opt/zimbra/openldap-data`;
-			main::runAsZimbra("/opt/zimbra/openldap/sbin/slapadd -f /opt/zimbra/conf/slapd.conf -l /opt/zimbra/openldap-data.prev/ldap.bak");
+			main::runAsZimbra("/opt/zimbra/openldap/sbin/slapadd -b '' -f /opt/zimbra/conf/slapd.conf -l /opt/zimbra/openldap-data.prev/ldap.bak");
+		} else {
+			main::runAsZimbra("/opt/zimbra/openldap/sbin/slapindex -b '' -f /opt/zimbra/conf/slapd.conf");
 		}
-		main::runAsZimbra("/opt/zimbra/openldap/sbin/slapindex -f /opt/zimbra/conf/slapd.conf");
 		if (startLdap()) {return 1;} 
 	}
   return;
