@@ -1,2 +1,2 @@
 BASE ""
-TLS_CACERT /opt/zimbra/conf/ca/ca.pem
+TLS_CACERTDIR /opt/zimbra/conf/ca
