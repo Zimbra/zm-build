@@ -32,7 +32,7 @@ my %LC;
 sub getLocalConfig(;@) {
     my @vars = @_;
     my $dir = dirname($0);
-    my $cmd = "zmlocalconfig -q -x";
+    my $cmd = "/opt/zimbra/bin/zmlocalconfig -q -x";
     if (scalar(@vars) > 0) {
         $cmd .= ' ' . join(' ', @vars);
     }
