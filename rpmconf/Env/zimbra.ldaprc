@@ -1,2 +1,1 @@
-BASE ""
 TLS_CACERTDIR /opt/zimbra/conf/ca
