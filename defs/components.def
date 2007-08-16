@@ -47,6 +47,7 @@ STORE_COMPONENTS := \
 	$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/common/lib \
 	$(MAILBOXD_COMPONENTS) \
 	$(STORE_DEST_DIR)/lib/ext/clamscanner/clamscanner.jar \
+	$(STORE_DEST_DIR)/lib/ext/zimbra_cert_manager/zimbra_cert_manager.jar \
 	$(STORE_DEST_DIR)/lib/ext/nginx-lookup/nginx-lookup.jar \
 	$(STORE_DEST_DIR)/wiki \
 	$(STORE_DEST_DIR)/$(MYSQL_DIR) 

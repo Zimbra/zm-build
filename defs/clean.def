@@ -27,5 +27,6 @@ allclean: clean
 	(cd $(CLAMSCANNER_DIR); $(ANT) clean)
 	(cd $(COMMON_DIR); $(ANT) clean)
 	(cd $(CONSOLE_DIR); $(ANT) clean)
-	(cd $(NATIVE_DIR); $(MAKE) clean)
 	(cd $(LAUNCHER_DIR); $(MAKE) clean)
+	(cd $(ADMIN_EXT_DIR); $(MAKE) clean)
+	(cd $(NATIVE_DIR); $(MAKE) clean)
