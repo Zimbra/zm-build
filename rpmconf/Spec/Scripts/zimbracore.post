@@ -52,6 +52,10 @@ else
   ln -s /opt/zimbra/zimbramon/rrdtool-1.2.23 /opt/zimbra/zimbramon/rrdtool
 fi
 
+if [ -f "/opt/zimbra/conf/ca/ca.pem" ]; then
+  ln -f -s ca.pem /opt/zimbra/conf/ca/`openssl x509 -hash -noout -in /opt/zimbra/conf/ca/ca.pem`.0
+fi
+
 if [ x"$PLAT" = "xRHEL5" -o x"$PLAT" = "xCentOS5" ]; then
   sed -i -e 's:\(^Defaults.*requiretty\):#\1:' /etc/sudoers
 elif [ x"$PLAT" = "xRHEL5_64" -o x"$PLAT" = "xCentOS5_64" ]; then
