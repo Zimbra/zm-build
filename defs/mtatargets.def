@@ -102,11 +102,8 @@ $(MTA_DEST_DIR)/$(POSTFIX_DIR): $(MTA_DEST_DIR)
 	cp $(SERVICE_DIR)/conf/postfix/master.cf $(MTA_DEST_DIR)/$(POSTFIX_DIR)/conf/master.cf
 	cp -f $(THIRD_PARTY)/PostFix/builds/qshape.pl-$(POSTFIX_VERSION) $(MTA_DEST_DIR)/$(POSTFIX_DIR)/sbin/qshape.pl
 
-$(CLAMAV_SOURCE).tgz:
-	@echo "*** Creating clamav"
-	(cd $(THIRD_PARTY)/$(CLAMAV_DIR) ; make)
 
-$(MTA_DEST_DIR)/$(CLAMAV_DIR): $(MTA_DEST_DIR) $(CLAMAV_SOURCE).tgz
+$(MTA_DEST_DIR)/$(CLAMAV_DIR): $(MTA_DEST_DIR)
 	@echo "*** Creating clamav"
 	(cd $(MTA_DEST_DIR); tar xzf $(CLAMAV_SOURCE).tgz;)
 	mkdir -p $(MTA_DEST_DIR)/$(CLAMAV_DIR)-$(CLAMAV_VERSION)/db
