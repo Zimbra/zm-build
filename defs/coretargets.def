@@ -167,11 +167,11 @@ pcre_UBUNTU6:
 	mkdir -p $(CORE_DEST_DIR)/lib
 pcre_MACOSXx86: 
 	mkdir -p $(CORE_DEST_DIR)/lib
-	(cd $(CORE_DEST_DIR)/lib; tar xzf $(THIRD_PARTY)/pcre/builds/$(BUILD_PLATFORM)/pcre.tgz)
+	(cd $(CORE_DEST_DIR)/lib; tar xzf $(THIRD_PARTY_BUILDS)/$(BUILD_PLATFORM)/pcre/pcre-7.1.tgz)
 
 pcre_MACOSX: 
 	mkdir -p $(CORE_DEST_DIR)/lib
-	(cd $(CORE_DEST_DIR)/lib; tar xzf $(THIRD_PARTY)/pcre/builds/$(BUILD_PLATFORM)/pcre.tgz)
+	(cd $(CORE_DEST_DIR)/lib; tar xzf $(THIRD_PARTY_BUILDS)/$(BUILD_PLATFORM)/pcre/pcre-7.1.tgz)
 
 pcre_F7: ;
 
