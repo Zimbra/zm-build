@@ -22,7 +22,7 @@
 #
 # Spam Bayes auto-expiry
 #
-20 23 * * * /opt/zimbra/libexec/sa-learn --force-expire --sync > /dev/null 2>&1 
+20 23 * * * /opt/zimbra/libexec/sa-learn -p /opt/zimbra/conf/salocal.cf --dbpath /opt/zimbra/amavisd/.spamassassin --siteconfigpath /opt/zimbra/conf/spamassassin --force-expire --sync > /dev/null 2>&1 
 # 
 # Clean up amavisd/tmp
 #
