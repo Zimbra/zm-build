@@ -95,7 +95,11 @@ sub getZmstatRoot() {
 }
 
 sub getZmstatInterval() {
-    return $LC{'zmstat_interval'};
+    my $n = $LC{'zmstat_interval'};
+    if (!defined($n) || $n + 0 < 1) {
+        $n = 30;
+    }
+    return $n;
 }
 
 sub percent($$) {
