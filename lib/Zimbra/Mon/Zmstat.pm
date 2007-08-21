@@ -61,8 +61,11 @@ sub osCheck() {
     }
 }
 
-sub zmstatInit() {
-    osCheck();
+sub zmstatInit(;$) {
+    my $skipOSCheck = shift;
+    if (!$skipOSCheck) {
+        osCheck();
+    }
     getLocalConfig('zimbra_home', 'zimbra_user', 'zmstat_log_directory');
     userCheck();
 }
