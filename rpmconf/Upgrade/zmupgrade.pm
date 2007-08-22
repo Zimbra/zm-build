@@ -42,7 +42,7 @@ chomp $rundir;
 my $scriptDir = "/opt/zimbra/libexec/scripts";
 
 my $lowVersion = 18;
-my $hiVersion = 45;
+my $hiVersion = 46;
 my $hiLoggerVersion = 5;
 
 # Variables for the combo schema updater
@@ -83,7 +83,8 @@ my %updateScripts = (
   '41' => "migrate20070630-LastSoapAccess.pl",         # 5.0.0_BETA2
   '42' => "migrate20070703-ScheduledTask.pl",          # 5.0.0_BETA2
   '43' => "migrate20070706-DeletedAccount.pl",         # 5.0.0_BETA2
-  '44' => "migrate20070725-CreateRevisionTable.pl"     # 5.0.0_BETA3
+  '44' => "migrate20070725-CreateRevisionTable.pl",     # 5.0.0_BETA3
+  '45' => "migrate20070726-ImapDataSource.pl"          # 5.0.0_BETA3
 );
 
 my %loggerUpdateScripts = (
@@ -1315,17 +1316,17 @@ sub upgrade457GA {
 }
 sub upgrade460BETA {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
-	main::progress("Updating from 4.6.0_BETA");
+	main::progress("Updating from 4.6.0_BETA\n");
 	return 0;
 }
 sub upgrade460RC1 {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
-	main::progress("Updating from 4.6.0_RC1");
+	main::progress("Updating from 4.6.0_RC1\n");
 	return 0;
 }
 sub upgrade460GA {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
-	main::progress("Updating from 4.6.0_GA");
+	main::progress("Updating from 4.6.0_GA\n");
 	return 0;
 }
 sub upgrade500BETA1 {
@@ -1479,8 +1480,6 @@ sub upgrade500BETA3 {
     if (startSql()) { return 1; }
     Migrate::log("Executing ${scriptDir}/migrate20070713-NullContactBlobDigest.pl"); 
     main::runAsZimbra("perl -I${scriptDir} ${scriptDir}/migrate20070713-NullContactBlobDigest.pl");
-    Migrate::log("Executing ${scriptDir}/migrate20070726-ImapDataSource.pl"); 
-    main::runAsZimbra("perl -I${scriptDir} ${scriptDir}/migrate20070726-ImapDataSource.pl");
     stopSql();
   }
 
@@ -1490,6 +1489,7 @@ sub upgrade500BETA3 {
     stopLdap();
     &migrateLdapBdbLogs;
     startLdap();
+
     #bug 14643
 	  my @coses = `su - zimbra -c "$ZMPROV gac"`;
 	  foreach my $cos (@coses) {
@@ -1502,15 +1502,15 @@ sub upgrade500BETA3 {
   }
 
   if (isInstalled("zimbra-mta")) {
-    main::runAsZimbra("zmlocalconfig -e postfix_version=2.4.3.3");
-    movePostfixQueue ("2.2.9","2.4.3.3");
+    movePostfixQueue("2.2.9","2.4.3.3");
   }
+
   if (isInstalled("zimbra-proxy")) {
      if (! (-f "/opt/zimbra/conf/nginx.key" ||
         -f "/opt/zimbra/conf/nginx.crt" )) {
         main::runAsZimbra("cd /opt/zimbra; zmcertinstall proxy ".
         "/opt/zimbra/ssl/ssl/server/server.crt ".
-        "/opt/zimbra/ssl/sll/server/server.key");
+        "/opt/zimbra/ssl/ssl/server/server.key");
      }
   }
 
@@ -1765,19 +1765,26 @@ sub isInstalled {
 }
 
 sub movePostfixQueue {
+  my ($fromVersion,$toVersion) = @_;
 
-	my $fromVersion = shift;
-	my $toVersion = shift;
+  # update localconfig vars
+  my ($var,$val);
+  foreach $var qw(version command_directory daemon_directory mailq_path manpage_directory newaliases_path queue_directory sendmail_path) {
+    $val = main::getLocalConfig("postfix_${var}");
+    $val =~ s/$fromVersion/$toVersion/;
+    main::setLocalConfig("postfix_${var}", "$val"); 
+  }
 
-	if ( -d "/opt/zimbra/postfix-$fromVersion/spool" ) {
-		main::progress("Moving postfix queues\n");
+  # move the spool files
+	if ( -d "/opt/zimbra/postfix-${fromVersion}/spool" ) {
+		main::progress("Moving postfix queues from $fromVersion to $toVersion\n");
 		my @dirs = qw /active bounce corrupt defer deferred flush hold incoming maildrop/;
-		`mkdir -p /opt/zimbra/postfix-$toVersion/spool`;
+		`mkdir -p /opt/zimbra/postfix-${toVersion}/spool`;
 		foreach my $d (@dirs) {
-			if (-d "/opt/zimbra/postfix-$fromVersion/spool/$d/") {
+			if (-d "/opt/zimbra/postfix-${fromVersion}/spool/${d}/") {
 				main::progress("Moving $d\n");
-				`cp -Rf /opt/zimbra/postfix-$fromVersion/spool/$d/* /opt/zimbra/postfix-$toVersion/spool/$d`;
-				`chown -R postfix:postdrop /opt/zimbra/postfix-$toVersion/spool/$d`;
+				`cp -Rf /opt/zimbra/postfix-${fromVersion}/spool/${d}/* /opt/zimbra/postfix-${toVersion}/spool/${d}`;
+				`chown -R postfix:postdrop /opt/zimbra/postfix-${toVersion}/spool/${d}`;
 			}
 		}
 	}
