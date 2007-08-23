@@ -9,3 +9,7 @@ ISYNC_DIR := $(BUILD_ROOT)/../ZimbraISync
 TAGLIB_DIR := $(BUILD_ROOT)/../ZimbraTagLib
 HTMLCLIENT_DIR := $(BUILD_ROOT)/../ZimbraHtmlClient
 CLAMSCANNER_DIR := $(BUILD_ROOT)/../ClamScanner
+POSIX_EXT_DIR := $(BUILD_ROOT)/../ZimbraPosixAccountsExtension
+SAMBA_EXT_DIR := $(BUILD_ROOT)/../ZimbraSambaExtension
+LDAP_EXT_DIR := $(BUILD_ROOT)/../ZimbraLDAPUtilsExtension
+
