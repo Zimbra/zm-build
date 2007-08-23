@@ -312,7 +312,7 @@ sub upgrade {
 
   if ($targetVersion eq "4.5.2_GA") {
     $needMysqlTableCheck=1;
-  }
+		}
 
 	if (isInstalled("zimbra-store")) {
 
@@ -1258,7 +1258,7 @@ sub upgrade456GA {
   # bug 17879
   if (isInstalled("zimbra-store")) {
     updateMySQLcnf();
-  }
+}
 
 	return 0;
 }
@@ -1279,13 +1279,19 @@ sub upgrade457GA {
   # migrate amavis data 
   migrateAmavisDB("2.5.2");
 
+	if (isInstalled("zimbra-store")) {
+		if (startSql()) { return 1; }
+		main::runAsZimbra("perl -I${scriptDir} ${scriptDir}/migrateLargeMetadata.pl -a");
+		stopSql();
+	}
+
 	return 0;
 }
 sub upgrade500BETA1 {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
 	main::progress("Updating from 5.0.0_BETA1\n");
 	return 0;
-}
+    }
 
 sub upgrade500BETA2 {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
