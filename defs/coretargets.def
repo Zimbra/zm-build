@@ -330,11 +330,11 @@ $(CORE_DEST_DIR)/contrib:
 	cp -R $(SERVICE_DIR)/src/contrib/* $@
 
 $(CORE_DEST_DIR)/lib/libpopt.0.dylib: $(CORE_DEST_DIR)/lib
-	(cd $(CORE_DEST_DIR); tar xzf $(THIRD_PARTY)/expat/builds/$(BUILD_PLATFORM)/expat.tgz)
+	(cd $(CORE_DEST_DIR); tar xzf $(THIRD_PARTY_BUILDS)/$(BUILD_PLATFORM)/expat/expat.tgz)
 	rm -rf $(CORE_DEST_DIR)/include
 
 $(CORE_DEST_DIR)/lib/libexpat.dylib: $(CORE_DEST_DIR)/lib
-	(cd $(CORE_DEST_DIR); tar xzf $(THIRD_PARTY)/popt/builds/$(BUILD_PLATFORM)/popt.tgz)
+	(cd $(CORE_DEST_DIR); tar xzf $(THIRD_PARTY_BUILDS)/$(BUILD_PLATFORM)/popt/popt.tgz)
 	rm -rf $(CORE_DEST_DIR)/include
 
 $(CORE_DEST_DIR)/$(BDB_DIR):
