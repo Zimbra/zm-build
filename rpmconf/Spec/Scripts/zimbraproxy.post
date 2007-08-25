@@ -29,4 +29,4 @@ rm -rf /opt/zimbra/memcached
 ln -s /opt/zimbra/memcached-1.2.2 /opt/zimbra/memcached
 
 rm -rf /opt/zimbra/nginx
-ln -s /opt/zimbra/nginx-0.5.20-zimbra /opt/zimbra/nginx
+ln -s /opt/zimbra/nginx-0.5.30-zimbra /opt/zimbra/nginx
