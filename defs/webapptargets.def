@@ -57,7 +57,7 @@ $(CONSOLE_DIR)/$(WEBAPP_BUILD_DIR)/zimbraAdmin.war:
 		-Dzimbra.buildinfo.version=$(VERSION_TAG) \
 		-Dzimbra.buildinfo.type=$(BUILD_TYPE) \
 		-Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) \
-		-Dzimbra.buildinfo.host=$(HOST) clean admin-war ; )
+		-Dzimbra.buildinfo.host=$(HOST) clean admin ; )
 	rm -rf zimbraAdminConf
 	mkdir zimbraAdminConf
 	cp $(CONSOLE_DIR)/build/WebRoot/WEB-INF/web.xml zimbraAdminConf
@@ -73,7 +73,7 @@ $(CONSOLE_DIR)/$(WEBAPP_BUILD_DIR)/zimbra.war:  $(TAGLIB_DIR)/build/zimbrataglib
 		-Dzimbra.buildinfo.version=$(VERSION_TAG) \
 		-Dzimbra.buildinfo.type=$(BUILD_TYPE) \
 		-Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) \
-		-Dzimbra.buildinfo.host=$(HOST) clean prod-war ; )
+		-Dzimbra.buildinfo.host=$(HOST) clean prod ; )
 	rm -rf zimbraConf
 	mkdir zimbraConf
 	cp $(CONSOLE_DIR)/build/WebRoot/WEB-INF/web.xml zimbraConf
@@ -86,3 +86,4 @@ $(TAGLIB_DIR)/build/zimbrataglib.jar:
 		-Dzimbra.buildinfo.type=$(BUILD_TYPE) \
 		-Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) \
 		-Dzimbra.buildinfo.host=$(HOST) clean jar ; )
+
