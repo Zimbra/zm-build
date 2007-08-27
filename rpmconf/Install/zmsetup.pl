@@ -2577,27 +2577,38 @@ sub configCreateCert {
     return 0;
   }
 
-  if (isEnabled("zimbra-ldap") || isEnabled("zimbra-store") || isEnabled("zimbra-mta")) {
-
-    if (!-f "/opt/zimbra/tomcat/conf/keystore" || 
-      !-f "/opt/zimbra/conf/smtpd.crt" ||
-      !-f "/opt/zimbra/conf/slapd.crt") {
-      progress ( "Creating SSL certificate..." );
-      if (-f "$config{JAVAHOME}/lib/security/cacerts") {
-        `chmod 777 $config{JAVAHOME}/lib/security/cacerts >> $logfile 2>&1`;
-      } else {
-        `chmod 777 $config{JAVAHOME}/jre/lib/security/cacerts >> $logfile 2>&1`;
-      }
-      runAsZimbra("cd /opt/zimbra; zmcreatecert");
-      if (-f "$config{JAVAHOME}/lib/security/cacerts") {
-        `chmod 744 $config{JAVAHOME}/lib/security/cacerts >> $logfile 2>&1`;
-      } else {
-        `chmod 744 $config{JAVAHOME}/jre/lib/security/cacerts >> $logfile 2>&1`;
-      }
-      progress ( "Done\n" );
-    }
-
+  if (-f "$config{JAVAHOME}/lib/security/cacerts") {
+    `chmod 777 $config{JAVAHOME}/lib/security/cacerts >> $logfile 2>&1`;
+  } else {
+   `chmod 777 $config{JAVAHOME}/jre/lib/security/cacerts >> $logfile 2>&1`;
   }
+
+  progress ( "Creating SSL certificate..." );
+
+  if (isEnabled("zimbra-store")) {
+    if ( !-f "/opt/zimbra/tomcat/conf/keystore" && !-f "/opt/zimbra/ssl/ssl/server/server.crt" ) {
+      runAsZimbra("cd /opt/zimbra; zmcreatecert");
+    }
+  }
+
+  if (isEnabled("zimbra-ldap")) {
+    if ( !-f "/opt/zimbra/conf/slapd.crt" && !-f "/opt/zimbra/ssl/ssl/server.crt") {
+      runAsZimbra("cd /opt/zimbra; zmcreatecert");
+    }
+  }
+
+  if (isEnabled("zimbra-mta")) {
+    if ( !-f "/opt/zimbra/conf/smtpd.crt" && !-f "/opt/zimbra/ssl/ssl/server.crt") {
+      runAsZimbra("cd /opt/zimbra; zmcreatecert");
+    }
+  }
+
+  if (-f "$config{JAVAHOME}/lib/security/cacerts") {
+    `chmod 744 $config{JAVAHOME}/lib/security/cacerts >> $logfile 2>&1`;
+  } else {
+    `chmod 744 $config{JAVAHOME}/jre/lib/security/cacerts >> $logfile 2>&1`;
+  }
+  progress ( "Done\n" );
 
   configLog("configCreateCert");
 }
@@ -2624,6 +2635,7 @@ sub configInstallCert {
           "/opt/zimbra/ssl/ssl/server/server.key");
       }
     }
+
     progress ( "Done\n" );
   }
   configLog("configInstallCert");
