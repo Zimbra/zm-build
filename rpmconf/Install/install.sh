@@ -176,6 +176,8 @@ if [ $UPGRADE = "yes" ]; then
 
 fi
 
+  chown zimbra:zimbra /opt/zimbra/conf/ZCSLicense.xml
+  chmod 644 /opt/zimbra/conf/ZCSLicense.xml
 if [ $SOFTWAREONLY = "yes" ]; then
 	
 	echo ""

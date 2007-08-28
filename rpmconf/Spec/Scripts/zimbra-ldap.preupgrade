@@ -29,5 +29,6 @@ echo "Backing up ldap"
 echo ""
 /opt/zimbra/openldap/sbin/slapcat -f /opt/zimbra/conf/slapd.conf \
 	-b '' -l /opt/zimbra/openldap-data/ldap.bak 2> /dev/null
+chmod 640 /opt/zimbra/openldap-data/ldap.bak
 
 exit 0
