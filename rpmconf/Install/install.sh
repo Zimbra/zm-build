@@ -67,7 +67,8 @@ done
 getPlatformVars
 
 mkdir -p $SAVEDIR
-chmod 777 $SAVEDIR
+chown zimbra:zimbra $SAVEDIR
+chmod 750 $SAVEDIR
 
 echo ""
 echo "Operations logged to $LOGFILE"
