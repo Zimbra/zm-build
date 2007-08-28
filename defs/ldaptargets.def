@@ -83,6 +83,8 @@ $(LDAP_DEST_DIR)/$(LDAP_DIR): $(LDAP_DEST_DIR)
 	(cd $(LDAP_DEST_DIR); tar xfz $(TCMALLOC_SOURCE).tgz;)
 	cp $(SERVICE_DIR)/conf/ldap/DB_CONFIG \
 		$(LDAP_DEST_DIR)/$(LDAP_DIR)/var/openldap-data
+	cp $(SERVICE_DIR)/conf/ldap/DB_CONFIG.accesslog \
+		$(LDAP_DEST_DIR)/$(LDAP_DIR)/var/openldap-data
 	cp $(SERVICE_DIR)/conf/ldap/slapd.conf.production \
 		$(LDAP_DEST_DIR)/$(LDAP_DIR)/etc/openldap/slapd.conf
 	cp $(SERVICE_DIR)/build/ldap-config/amavisd.schema \
