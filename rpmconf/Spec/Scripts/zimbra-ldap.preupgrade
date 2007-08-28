@@ -29,5 +29,6 @@
 if [ $? = 0 ]; then
   echo "ldap backup complete."
 fi
+chmod 640 /opt/zimbra/openldap-data/ldap.bak
 
 exit 0

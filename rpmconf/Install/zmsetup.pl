@@ -178,6 +178,7 @@ sub saveConfig {
     }
     print CONF "\"\n";
     close CONF;
+    chmod 0600, $fname;
     progress ("Done\n");
   } else {
     progress( "Can't open $fname: $!\n");

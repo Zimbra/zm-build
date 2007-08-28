@@ -177,6 +177,8 @@ if [ "x$LICENSE" != "x" ] && [ -f "$LICENSE" ]; then
     mkdir -p /opt/zimbra/conf
   fi
   cp -f $LICENSE /opt/zimbra/conf/ZCSLicense.xml
+  chown zimbra:zimbra /opt/zimbra/conf/ZCSLicense.xml
+  chmod 644 /opt/zimbra/conf/ZCSLicense.xml
 fi
 
 
