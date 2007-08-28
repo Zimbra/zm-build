@@ -30,6 +30,7 @@ if [ -d ${SAVEDIR} ]; then
 fi
 rm -rf $SAVEDIR
 mkdir -p $SAVEDIR
+chown zimbra:zimbra $SAVEDIR
 chmod 750 $SAVEDIR
 # yes, it needs massaging to be fed back in...
 su - zimbra -c "/opt/zimbra/bin/zmcontrol stop"
