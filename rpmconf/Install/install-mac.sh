@@ -193,9 +193,21 @@ if [ x$UNINSTALL == "xyes" ]; then
   echo "done".
 
   # clean up Receipts
-  echo -n "Removing /opt/zimbra and packaging receipts..."
-  rm -rf /opt/zimbra /Library/Receipts/zimbra-* 2> /dev/null
-  echo "done."
+  echo -n "Removing packaging receipts..."
+  rm -rf /Library/Receipts/zimbra-* 2> /dev/null
+  if [ $? = 0 ]; then
+    echo "done."
+  else
+    echo "failed."
+  fi
+
+  echo -n "Removing /opt/zimbra..."
+  rm -rf /opt/zimbra 2> /dev/null
+  if [ $? = 0 ]; then
+    echo "done."
+  else
+    echo "failed."
+  fi
 
   # remove group and user
   echo -n "Deleting group $ZIMBRA_USER..."
@@ -219,12 +231,14 @@ if [ x$UNINSTALL == "xyes" ]; then
     echo "done."
   fi
 
-  echo -n "Deleting /opt/zimbra..."
   if [ -e "/opt/zimbra" ]; then
-   rm -rf /opt/zimbra > /dev/null 2>&1
-   echo "done."
-  else 
-   echo "didn't exist."
+    echo -n "Deleting /opt/zimbra..."
+    rm -rf /opt/zimbra > /dev/null 2>&1
+    if [ $? = 0 ]; then
+      echo "done."
+    else 
+      echo "failed."
+    fi
   fi
 
   echo -n "Reenabling postfix..."
