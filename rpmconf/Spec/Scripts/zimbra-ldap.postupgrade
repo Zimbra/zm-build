@@ -33,6 +33,7 @@ chown -R zimbra:zimbra /opt/zimbra/openldap-data
 
 egrep -v '^%zimbra.*slapd' /etc/sudoers > /tmp/sudoers
 echo "%zimbra   ALL=NOPASSWD:/opt/zimbra/openldap/libexec/slapd" >> /tmp/sudoers
+echo "%zimbra   ALL=NOPASSWD:/opt/zimbra/libexec/zmslapd" >> /tmp/sudoers
 mv -f /tmp/sudoers /etc/sudoers
 chmod 440 /etc/sudoers
 
