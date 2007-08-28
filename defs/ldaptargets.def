@@ -88,7 +88,9 @@ $(LDAP_DEST_DIR)/$(LDAP_DIR): $(LDAP_DEST_DIR)
 	cp $(SERVICE_DIR)/conf/ldap/slapd.conf.production \
 		$(LDAP_DEST_DIR)/$(LDAP_DIR)/etc/openldap/slapd.conf
 	cp $(SERVICE_DIR)/conf/ldap/master-accesslog.conf \
-		$(LDAP_DEST_DIR)/$(LDAP_DIR)/etc/openldap/master-accesslog.conf
+		$(LDAP_DEST_DIR)/$(LDAP_DIR)/etc/openldap
+	cp $(SERVICE_DIR)/conf/ldap/master-accesslog-overlay.conf
+		$(LDAP_DEST_DIR)/$(LDAP_DIR)/etc/openldap
 	cp $(SERVICE_DIR)/build/ldap-config/amavisd.schema \
 		$(LDAP_DEST_DIR)/$(LDAP_DIR)/etc/openldap/schema
 	cp $(SERVICE_DIR)/build/ldap-config/zimbra.schema \
