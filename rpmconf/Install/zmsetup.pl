@@ -2694,17 +2694,30 @@ sub configInstallCert {
           "/opt/zimbra/ssl/ssl/server/server.key");
       }
     }
-
-    if (isEnabled("zimbra-proxy")) {
-      if (! (-f "/opt/zimbra/conf/nginx.key" || 
-        -f "/opt/zimbra/conf/nginx.crt")) {
-        runAsZimbra("cd /opt/zimbra; zmcertinstall proxy ".
-          "/opt/zimbra/ssl/ssl/server/server.crt ".
-          "/opt/zimbra/ssl/ssl/server/server.key");
-      }
-    }
     progress ( "Done\n" );
   }
+  if (isEnabled("zimbra-ldap")) {
+    if (! (-f "/opt/zimbra/conf/slapd.key" || 
+      -f "/opt/zimbra/conf/slapd.crt")) {
+      progress ("Installing LDAP SSL certificate...");
+      runAsZimbra("cd /opt/zimbra; zmcertinstall ldap ".
+        "/opt/zimbra/ssl/ssl/server/server.crt ".
+        "/opt/zimbra/ssl/ssl/server/server.key");
+      progress ( "Done\n" );
+    }
+  }
+
+  if (isEnabled("zimbra-proxy")) {
+    if (! (-f "/opt/zimbra/conf/nginx.key" || 
+      -f "/opt/zimbra/conf/nginx.crt")) {
+      progress ("Installing Proxy SSL certificate...");
+      runAsZimbra("cd /opt/zimbra; zmcertinstall proxy ".
+        "/opt/zimbra/ssl/ssl/server/server.crt ".
+        "/opt/zimbra/ssl/ssl/server/server.key");
+      progress ( "Done\n" );
+    }
+  }
+
   configLog("configInstallCert");
 }
 
