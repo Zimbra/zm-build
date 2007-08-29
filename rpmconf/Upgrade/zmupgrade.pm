@@ -1325,6 +1325,8 @@ sub upgrade460RC1 {
 sub upgrade460GA {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
 	main::progress("Updating from 4.6.0_GA\n");
+    # 19749
+    updateMySQLcnf();
 	return 0;
 }
 sub upgrade500BETA1 {
@@ -1831,6 +1833,10 @@ sub updateMySQLcnf {
       } elsif (/^err-log/ && $CNF[$i+1] !~ m/^pid-file/) {
         print TMP;
         print TMP "pid-file = ${mysql_pidfile}\n";
+        $mycnfChanged=1;
+        next;
+      } elsif (/^skip-external-locking/) {
+        # 19749 remove skip-external-locking
         $mycnfChanged=1;
         next;
       }
