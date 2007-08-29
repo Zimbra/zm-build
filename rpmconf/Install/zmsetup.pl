@@ -2565,7 +2565,7 @@ sub configSetupLdap {
     # zmldappasswd starts ldap and re-applies the ldif
     if ($ldapPassChanged) {
       progress ( "Setting ldap password..." );
-      if ( -f "/opt/zimbra/openldap-data/id2entry.bdb) {
+      if ( -f "/opt/zimbra/openldap-data/id2entry.bdb") {
         runAsZimbra 
           ("/opt/zimbra/openldap/sbin/slapindex -b '' -q -f /opt/zimbra/conf/slapd.conf");
       }
