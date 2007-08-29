@@ -1517,8 +1517,19 @@ sub upgrade500BETA3 {
 sub upgrade500BETA4 {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
 	main::progress("Updating from 5.0.0_BETA4\n");
-        # migrate amavis data
-        migrateAmavisDB("2.5.2");
+  # migrate amavis data
+  migrateAmavisDB("2.5.2");
+
+  # 18545
+  if (isInstalled("zimbra-store")) {
+    my $mailboxd_java_options = main::getLocalConfig("mailboxd_java_options");
+    $mailboxd_java_options .= " -XX:MaxPermSize=128m"
+      unless ($mailboxd_java_options =~ /MaxPermSize/);
+    main::detail("Modified mailboxd_java_options=$mailboxd_java_options");
+    main::setLocalConfig("mailboxd_java_options", "$mailboxd_java_options");
+  }
+    
+  }
 	return 0;
 }
 sub upgrade500RC1 {
