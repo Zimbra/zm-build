@@ -203,7 +203,7 @@ checkUser() {
 checkDatabaseIntegrity() {
   isInstalled zimbra-store
   if [ x$PKGINSTALLED != "x" ]; then
-    if [ -x "/opt/zimbra/libexec/zmdbintegrityreport" ]; then
+    if [ -x "bin/zmdbintegrityreport" ]; then
       if [ x$DEFAULTFILE = "x" -o x$CLUSTERUPGRADE = "xyes" ]; then
         while :; do
           askYN "Do you want to verify message store database integrity?" "Y"
@@ -211,7 +211,7 @@ checkDatabaseIntegrity() {
             break
           elif [ $response = "yes" ]; then
             echo "Verifying integrity of message store databases.  This may take a while."
-            /opt/zimbra/libexec/zmdbintegrityreport -v -r
+            perl -I/opt/zimbra/zimbramon/lib bin/zmdbintegrityreport -v -r
             if [ $? != 0 ]; then
               exit $?
             fi
