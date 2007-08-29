@@ -215,8 +215,6 @@ sub upgrade {
 
     if (startSql()) { return 1; };
 
-    &verifyDatabaseIntegrity;
-
 		$curSchemaVersion = Migrate::getSchemaVersion();
 	}
 
