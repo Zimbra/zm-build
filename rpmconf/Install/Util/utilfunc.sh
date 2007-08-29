@@ -200,6 +200,33 @@ checkUser() {
   fi
 }
 
+checkDatabaseIntegrity() {
+  isInstalled zimbra-store
+  if [ x$PKGINSTALLED != "x" ]; then
+    if [ -x "/opt/zimbra/libexec/zmdbintegrityreport" ]; then
+      if [ x$DEFAULTFILE = "x" -o x$CLUSTERUPGRADE = "xyes" ]; then
+        while :; do
+          askYN "Do you want to verify message store database integrity?" "Y"
+          if [ $response = "no" ]; then
+            break
+          elif [ $response = "yes" ]; then
+            echo "Verifying integrity of message store databases.  This may take a while."
+            /opt/zimbra/libexec/zmdbintegrityreport -v -r
+            if [ $? != 0 ]; then
+              exit $?
+            fi
+            break
+          else
+            break
+          fi
+        done
+      else 
+        echo "Automated install detected...continuing."
+      fi
+    fi
+  fi
+}
+
 checkRecentBackup() {
   isInstalled zimbra-store
   if [ x$PKGINSTALLED != "x" ]; then
@@ -231,6 +258,7 @@ checkRecentBackup() {
     fi
   fi
 }
+
 
 checkRequired() {
 
@@ -339,7 +367,9 @@ EOF
   fi
 
   checkRecentBackup
-  
+
+  checkDatabaseIntegrity
+
 }
 
 
