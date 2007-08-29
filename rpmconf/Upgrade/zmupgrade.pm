@@ -1520,18 +1520,23 @@ sub upgrade500BETA4 {
   # migrate amavis data
   migrateAmavisDB("2.5.2");
 
-  # 18545
   if (isInstalled("zimbra-store")) {
+    # 18545
     my $mailboxd_java_options = main::getLocalConfig("mailboxd_java_options");
     $mailboxd_java_options .= " -XX:MaxPermSize=128m"
       unless ($mailboxd_java_options =~ /MaxPermSize/);
     main::detail("Modified mailboxd_java_options=$mailboxd_java_options");
     main::setLocalConfig("mailboxd_java_options", "$mailboxd_java_options");
   }
-    
+
+  if (isInstalled("zimbra-ldap")) {
+    # 19517
+		main::runAsZimbra("$ZMPROV mcf zimbraBackupAutoGroupedInterval 1d zimbraBackupAutoGroupedNumGroups 7 zimbraBackupAutoGroupedThrottled FALSE zimbraBackupMode Standard");
   }
+    
 	return 0;
 }
+
 sub upgrade500RC1 {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
 	main::progress("Updating from 5.0.0_RC1\n");
