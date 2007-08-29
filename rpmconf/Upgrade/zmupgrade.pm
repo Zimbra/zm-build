@@ -1256,7 +1256,7 @@ sub upgrade456GA {
   # bug 17879
   if (isInstalled("zimbra-store")) {
     updateMySQLcnf();
-}
+  }
 
 	return 0;
 }
@@ -1278,6 +1278,8 @@ sub upgrade457GA {
   migrateAmavisDB("2.5.2");
 
 	if (isInstalled("zimbra-store")) {
+    # 19749
+    updateMySQLcnf();
 		if (startSql()) { return 1; }
 		main::runAsZimbra("perl -I${scriptDir} ${scriptDir}/migrateLargeMetadata.pl -a");
 		stopSql();
@@ -1587,6 +1589,10 @@ sub updateMySQLcnf {
       } elsif (/^err-log/ && $CNF[$i+1] !~ m/^pid-file/) {
         print TMP;
         print TMP "pid-file = ${mysql_pidfile}\n";
+        $mycnfChanged=1;
+        next;
+      } elsif (/^skip-external-locking/) {
+        # 19749 remove skip-external-locking
         $mycnfChanged=1;
         next;
       }
