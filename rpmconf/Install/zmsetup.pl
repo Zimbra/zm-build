@@ -3358,16 +3358,18 @@ sub setupSyslog {
 }
 sub setupCrontab {
 
-  my $backupSchedule;
+  my @backupSchedule=();
   progress ("Setting up zimbra crontab...");
-  if ( -f "/opt/zimbra/bin/zmschedulebackup") {
-    detail("Getting current backup schedule in restorable format");
-    $backupSchedule = `su - zimbra -c "zmschedulebackup -s"`;
-    chomp $backupSchedule;
-    if ($backupSchedule eq "") {
+  if ( -x "/opt/zimbra/bin/zmschedulebackup") {
+    detail("Getting current backup schedule in restorable format.");
+    @backupSchedule = (`su - zimbra -c "zmschedulebackup -s" 2> /dev/null`);
+    for (my $i=0;$i<=$#backupSchedule;$i++) {
+      $backupSchedule[$i] =~ s/"/\\"/g;
+    }
+    if (scalar @backupSchedule == 0) {
       detail("Backup schedule was not previously defined");
     } else {
-      detail("Retrieved backup schedule: $backupSchedule");
+      detail("Retrieved backup schedule:\n @backupSchedule");
     }
   }
   if ($platform =~ /SUSE/i) {
@@ -3409,12 +3411,19 @@ sub setupCrontab {
   `echo "# ZIMBRAEND -- DO NOT EDIT ANYTHING BETWEEN THIS LINE AND ZIMBRASTART" >> /tmp/crontab.zimbra`;
   `cat /tmp/crontab.zimbra.proc >> /tmp/crontab.zimbra`;
   detail("crontab: installing new crontab");
-  `crontab -u zimbra /tmp/crontab.zimbra`;
-  if ( -f "/opt/zimbra/bin/zmschedulebackup" && $backupSchedule ne "") {
-    $backupSchedule =~ s/"/\\"/g;
-    `su - zimbra -c "/opt/zimbra/bin/zmschedulebackup -R $backupSchedule" > /dev/null 2>&1`;
-  } elsif ( -f "/opt/zimbra/bin/zmschedulebackup" && $backupSchedule eq "" && !$newinstall) {
-    detail("crontab: no backup schedule found: installing default");
+  `crontab -u zimbra /tmp/crontab.zimbra 2> /dev/null`;
+  if ( -x "/opt/zimbra/bin/zmschedulebackup" && scalar @backupSchedule > 0) {
+    detail("Restoring previous backup schedule.");
+    for (my $i=0;$i<=$#backupSchedule;$i++) {
+      chomp($backupSchedule[$i]);
+      if ($i == 0) {
+        `su - zimbra -c "/opt/zimbra/bin/zmschedulebackup -R $backupSchedule[$i]"`;
+      } else {
+        `su - zimbra -c "/opt/zimbra/bin/zmschedulebackup -A $backupSchedule[$i]"`;
+      }
+    }
+  } elsif ( -f "/opt/zimbra/bin/zmschedulebackup" && scalar @backupSchedule == 0 && !$newinstall) {
+    detail("No backup schedule found: installing default schedule.");
     `su - zimbra -c "/opt/zimbra/bin/zmschedulebackup -D" > /dev/null 2>&1`;
   }
   progress ("Done\n");

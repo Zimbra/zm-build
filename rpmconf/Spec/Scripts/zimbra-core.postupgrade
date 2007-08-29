@@ -48,15 +48,23 @@ if [ -f "/opt/zimbra/conf/ca/ca.pem" ]; then
   ln -f -s ca.pem /opt/zimbra/conf/ca/`openssl x509 -hash -noout -in /opt/zimbra/conf/ca/ca.pem`.0
 fi
 
-/bin/sh /opt/zimbra/libexec/zmfixperms
+/bin/bash /opt/zimbra/libexec/zmfixperms
 
 RF="$SAVEDIR/config.save"
 while read i; do
 	# echo "Setting $i"
 	su - zimbra -c "zmlocalconfig -f -e $i"
 done < $RF
-if [ -f $SAVEDIR/backup.save ]; then
-	su - zimbra -c "cat $RESTORECONFIG/backup.save | xargs zmschedulebackup -R"
+if [ -f "$SAVEDIR/backup.save" -a -x "/opt/zimbra/bin/zmschedulebackup" ]; then
+  first=1
+  while read line; do
+    if [ $first = 1 ]; then
+      su - zimbra -c "/opt/zimbra/bin/zmschedulebackup -R $line"
+      first=0
+    else
+      su - zimbra -c "/opt/zimbra/bin/zmschedulebackup -A $line"
+    fi
+  done < "$SAVEDIR/backup.save"
 fi
 
 if [ -f $SAVEDIR/cacerts ]; then
