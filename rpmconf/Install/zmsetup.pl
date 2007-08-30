@@ -852,7 +852,7 @@ sub setDefaultsFromLocalConfig {
   $config{TOMCATMEMORYPERCENT} = getLocalConfig ("tomcat_java_heap_memory_percent");
   $config{MYSQLMEMORYPERCENT} = getLocalConfig ("mysql_memory_percent");
   $config{tomcat_keystore_password} = getLocalConfig ("tomcat_keystore_password")
-    if (getLocalConfig("tomcat_keystore_passwordd") ne "");
+    if (getLocalConfig("tomcat_keystore_password") ne "");
   $config{tomcat_truststore_password} = getLocalConfig ("tomcat_truststore_password") 
     if (getLocalconfig("tomcat_truststore_password") ne "");
   if ($debug) {
