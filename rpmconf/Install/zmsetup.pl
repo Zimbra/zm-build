@@ -304,10 +304,10 @@ sub isEnabled {
       chomp;
       if (/^zimbraServiceEnabled:\s(.*)/) {
         detail ("Marking $packageServiceMap{$1} as an enabled service")
-          if $options{d};
+          if $debug;
         $enabledPackages{$packageServiceMap{$1}} = "Enabled";
       } else {
-        detail ("DEBUG: zmprov gs $1");
+        detail ("DEBUG: skipping not zimbraServiceEnabled =>  $_") if $debug;
       }
     } 
     foreach my $p (@packageList) {
@@ -608,6 +608,9 @@ sub setDefaults {
   $config{DOCREATEDOMAIN} = "no";
   $config{CREATEDOMAIN} = $config{HOSTNAME};
   $config{DOCREATEADMIN} = "no";
+  $config{tomcat_keystore_password} = genRandomPass();
+  $config{tomcat_truststore_password} = "changeit";
+
   if (isEnabled("zimbra-store")) {
     progress  "setting defaults for zimbra-store.\n" if $options{d};
     $config{MTAAUTHHOST} = $config{HOSTNAME};
@@ -746,6 +749,7 @@ sub setDefaults {
   }
   if ($options{d}) {
     foreach my $key (sort keys %config) {
+      detail("\tDEBUG: $key=$config{$key}");
       print "\tDEBUG: $key=$config{$key}\n";
     }
   }
@@ -847,6 +851,16 @@ sub setDefaultsFromLocalConfig {
   $config{ZIMBRALOGSQLPASS} = getLocalConfig ("zimbra_logger_mysql_password");
   $config{TOMCATMEMORYPERCENT} = getLocalConfig ("tomcat_java_heap_memory_percent");
   $config{MYSQLMEMORYPERCENT} = getLocalConfig ("mysql_memory_percent");
+  $config{tomcat_keystore_password} = getLocalConfig ("tomcat_keystore_password")
+    if (getLocalConfig("tomcat_keystore_passwordd") ne "");
+  $config{tomcat_truststore_password} = getLocalConfig ("tomcat_truststore_password") 
+    if (getLocalconfig("tomcat_truststore_password") ne "");
+  if ($debug) {
+    foreach my $key (sort keys %config) {
+      print "\tDEBUG: $key=$config{$key}\n";
+    }
+  }
+    
 }
 
 sub ask {
@@ -2334,11 +2348,12 @@ sub runAsZimbraWithOutput {
 
 sub getLocalConfig {
   my $key = shift;
+  
+  detail ( "Getting local config $key" );
 
   return $loaded{lc}{$key}
     if (exists $loaded{lc}{$key});
 
-  detail ( "Getting local config $key" );
   my $val = `/opt/zimbra/bin/zmlocalconfig -x -s -m nokey ${key}`;
   chomp $val;
   $loaded{lc}{$key} = $val;
@@ -2405,6 +2420,9 @@ sub configLCValues {
   setLocalConfig ("zimbra_uid", $uid);
   setLocalConfig ("zimbra_gid", $gid);
   setLocalConfig ("zimbra_user", "zimbra");
+
+  setLocalConfig ("tomcat_truststore_password", "$config{tomcat_truststore_password}");
+  setLocalConfig ("tomcat_keystore_password", "$config{tomcat_keystore_password}");
 
   if (defined $config{AVUSER}) {
     setLocalConfig ("av_notify_user", $config{AVUSER})
