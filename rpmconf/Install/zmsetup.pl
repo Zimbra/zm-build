@@ -878,9 +878,9 @@ sub setDefaultsFromLocalConfig {
   $config{mailboxd_directory} = getLocalConfig("mailboxd_directory");
   $config{mailboxd_keystore} = getLocalConfig("mailboxd_keystore");
   $config{mailboxd_keystore_password} = getLocalConfig ("mailboxd_keystore_password")
-    if (getLocalConfig("mailboxd_keystore_passwordd") ne "");
+    if (getLocalConfig("mailboxd_keystore_password") ne "");
   $config{mailboxd_truststore_password} = getLocalConfig ("mailboxd_truststore_password") 
-    if (getLocalconfig("mailboxd_truststore_password") ne "");
+    if (getLocalConfig("mailboxd_truststore_password") ne "");
 
   if (isEnabled("zimbra-snmp")) {
     $config{SNMPNOTIFY} = getLocalConfig("snmp_notify");
