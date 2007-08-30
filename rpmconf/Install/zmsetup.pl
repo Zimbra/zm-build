@@ -304,10 +304,10 @@ sub isEnabled {
       chomp;
       if (/^zimbraServiceEnabled:\s(.*)/) {
         detail ("Marking $packageServiceMap{$1} as an enabled service")
-          if $options{d};
+          if $debug;
         $enabledPackages{$packageServiceMap{$1}} = "Enabled";
       } else {
-        detail ("DEBUG: zmprov gs $1");
+        detail ("DEBUG: skipping not zimbraServiceEnabled => $_") if $debug;
       }
     } 
     foreach my $p (@packageList) {
@@ -627,6 +627,8 @@ sub setDefaults {
   } else {
     $config{mailboxd_keystore} = "/opt/zimbra/conf/keystore";
   }
+  $config{mailboxd_keystore_password} = genRandomPass();
+  $config{mailboxd_truststore_password} = "changeit";
   print "DEBUG: \$config{mailboxd_directory}=$config{mailboxd_directory}\n" if $debug;
 
   $config{SMTPHOST} = "";
@@ -875,6 +877,10 @@ sub setDefaultsFromLocalConfig {
   $config{MYSQLMEMORYPERCENT} = getLocalConfig ("mysql_memory_percent");
   $config{mailboxd_directory} = getLocalConfig("mailboxd_directory");
   $config{mailboxd_keystore} = getLocalConfig("mailboxd_keystore");
+  $config{mailboxd_keystore_password} = getLocalConfig ("mailboxd_keystore_password")
+    if (getLocalConfig("mailboxd_keystore_passwordd") ne "");
+  $config{mailboxd_truststore_password} = getLocalConfig ("mailboxd_truststore_password") 
+    if (getLocalconfig("mailboxd_truststore_password") ne "");
 
   if (isEnabled("zimbra-snmp")) {
     $config{SNMPNOTIFY} = getLocalConfig("snmp_notify");
@@ -2471,6 +2477,8 @@ sub configLCValues {
   setLocalConfig ("mailboxd_directory", $config{mailboxd_directory});
   setLocalConfig ("mailboxd_keystore", $config{mailboxd_keystore});
   setLocalConfig ("mailboxd_server", $config{mailboxd_server});
+  setLocalConfig ("mailboxd_truststore_password", "$config{mailboxd_truststore_password}");
+  setLocalConfig ("mailboxd_keystore_password", "$config{mailboxd_keystore_password}");
 
   configLog ("configLCValues");
 
