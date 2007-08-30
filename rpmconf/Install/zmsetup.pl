@@ -854,7 +854,7 @@ sub setDefaultsFromLocalConfig {
   $config{tomcat_keystore_password} = getLocalConfig ("tomcat_keystore_password")
     if (getLocalConfig("tomcat_keystore_password") ne "");
   $config{tomcat_truststore_password} = getLocalConfig ("tomcat_truststore_password") 
-    if (getLocalconfig("tomcat_truststore_password") ne "");
+    if (getLocalConfig("tomcat_truststore_password") ne "");
   if ($debug) {
     foreach my $key (sort keys %config) {
       print "\tDEBUG: $key=$config{$key}\n";
