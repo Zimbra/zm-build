@@ -419,8 +419,8 @@ sub getSystemStatus {
 sub getLdapCOSValue {
   my ($cos,$attrib) = @_;
 
-  return $main::loaded{gc}{$cos}{$attrib} 
-    if (exists $main::loaded{gc}{$cos}{$attrib});
+  return $loaded{gc}{$cos}{$attrib} 
+    if (exists $loaded{gc}{$cos}{$attrib});
   # Gotta love the triple escape: \\\  
   my $rc = 0xffff & system("su - zimbra -c \"$ZMPROV gc $cos | grep $attrib | sed -e \\\"s/${attrib}: //\\\" > /tmp/ld.out\"");
   my $val=`cat /tmp/ld.out`;
@@ -428,7 +428,7 @@ sub getLdapCOSValue {
   chomp $val;
   detail ( "COS attribute retrieved for COS $cos: $attrib=$val");
 
-  $main::loaded{gc}{$cos}{$attrib} = $val;
+  $loaded{gc}{$cos}{$attrib} = $val;
 
   return $val;
 }
@@ -436,8 +436,8 @@ sub getLdapCOSValue {
 sub getLdapConfigValue {
   my $attrib = shift;
   
-  return $main::loaded{gcf}{$attrib}
-    if (exists $main::loaded{gcf}{$attrib});
+  return $loaded{gcf}{$attrib}
+    if (exists $loaded{gcf}{$attrib});
 
   #detail ( "Getting global config attribute $attrib from ldap.\n" );
   # Gotta love the triple escape: \\\  
@@ -445,7 +445,7 @@ sub getLdapConfigValue {
   my $val=`cat /tmp/ld.out`;
   chomp($val);
   detail ("Global config attribute retrieved from ldap: $attrib=$val");
-  $main::loaded{gcf}{$attrib} = $val;
+  $loaded{gcf}{$attrib} = $val;
 
   if (!-z "/tmp/ld.err") {
     my $err=`cat /tmp/ld.err`;
@@ -464,8 +464,8 @@ sub getLdapServerValue {
     $hn = $config{HOSTNAME};
   }
 
-  return $main::loaded{gs}{$hn}{$attrib}
-    if (exists $main::loaded{gs}{$hn}{$attrib});
+  return $loaded{gs}{$hn}{$attrib}
+    if (exists $loaded{gs}{$hn}{$attrib});
 
   #detail ( "Getting server config attribute $attrib for $hn from ldap." );
   # Gotta love the triple escape: \\\  
@@ -474,7 +474,7 @@ sub getLdapServerValue {
   unlink "/tmp/ld.out";
   chomp $val;
   detail("Server config attribute retrieved for $hn: $attrib=$val");
-  $main::loaded{gs}{$hn}{$attrib} = $val;
+  $loaded{gs}{$hn}{$attrib} = $val;
 
   return $val;
 }
@@ -506,16 +506,6 @@ sub setLdapDefaults {
     $config{USEIMAPPROXY} = "no";
   }
 
-  # default domainname
-  $config{zimbraDefaultDomainName} = getLdapConfigValue("zimbraDefaultDomainName");
-  if ($config{zimbradefaultDomainName} eq "") {
-    $config{zimbraDefaultDomainName} = $config{CREATEDOMAIN};
-  } else {
-    $config{CREATEDOMAIN} = $config{zimbraDefaultDomainName};
-    $config{CREATEADMIN} = "admin\@$config{CREATEDOMAIN}";
-  }
-  
-
   $config{IMAPPORT}       = getLdapServerValue("zimbraImapBindPort");
   $config{IMAPSSLPORT}     = getLdapServerValue("zimbraImapSSLBindPort");
   $config{POPPORT}       = getLdapServerValue("zimbraPop3BindPort");
@@ -530,10 +520,6 @@ sub setLdapDefaults {
   $config{TRAINSASPAM} = getLdapConfigValue("zimbraSpamIsSpamAccount");
   $config{TRAINSAHAM} = getLdapConfigValue("zimbraSpamIsNotSpamAccount");
   $config{NOTEBOOKACCOUNT} = getLdapConfigValue("zimbraNotebookAccount");
-
-  $config{SMTPSOURCE} = $config{CREATEADMIN};
-  $config{SMTPDEST} = $config{CREATEADMIN};
-  $config{AVUSER} = $config{CREATEADMIN};
 
   if (isNetwork() && isEnabled("zimbra-store")) {
     $config{zimbraBackupReportEmailRecipients} = getLdapConfigValue("zimbraBackupReportEmailRecipients");
@@ -601,10 +587,10 @@ sub setDefaults {
   $config{HTTPPORT} = 80;
   $config{HTTPSPORT} = 443;
   $config{USEIMAPPROXY} = "no";
-  $config{IMAPPROXYPORT} = 7143;
-  $config{IMAPSSLPROXYPORT} = 7993;
-  $config{POPPROXYPORT} = 7110;
-  $config{POPSSLPROXYPORT} = 7995;
+  $config{IMAPPROXYPORT} = 143;
+  $config{IMAPSSLPROXYPORT} = 993;
+  $config{POPPROXYPORT} = 110;
+  $config{POPSSLPROXYPORT} = 995;
 
   if ($platform =~ /MACOSX/) {
     $config{JAVAHOME} = "/System/Library/Frameworks/JavaVM.framework/Versions/1.5/Home";
@@ -616,18 +602,6 @@ sub setDefaults {
     $config{HOSTNAME} = `hostname --fqdn`;
   }
   chomp $config{HOSTNAME};
-
-  $config{mailboxd_directory} = "/opt/zimbra/mailboxd";
-  if ( -f "/opt/zimbra/jetty/start.jar" ) {
-    $config{mailboxd_keystore} = "$config{mailboxd_directory}/etc/keystore";
-    $config{mailboxd_server} = "jetty";
-  } elsif ( -f "/opt/zimbra/tomcat/bin/startup.sh" ) {
-    $config{mailboxd_keystore} = "$config{mailboxd_directory}/conf/keystore";
-    $config{mailboxd_server} = "tomcat";
-  } else {
-    $config{mailboxd_keystore} = "/opt/zimbra/conf/keystore";
-  }
-  print "DEBUG: \$config{mailboxd_directory}=$config{mailboxd_directory}\n" if $debug;
 
   $config{SMTPHOST} = "";
   $config{SNMPTRAPHOST} = $config{HOSTNAME};
@@ -690,9 +664,9 @@ sub setDefaults {
 
   $config{SYSTEMMEMORY} = getSystemMemory();
   $config{MYSQLMEMORYPERCENT} = mysqlMemoryPercent($config{SYSTEMMEMORY});
-  $config{MAILBOXDMEMORYPERCENT} = mailboxdMemoryPercent($config{SYSTEMMEMORY});
+  $config{TOMCATMEMORYPERCENT} = tomcatMemoryPercent($config{SYSTEMMEMORY});
 
-  $config{CREATEADMINPASS} = "" unless ($config{CREATEADMINPASS});
+  $config{CREATEADMINPASS} = "";
 
   if (!$options{c} && $newinstall) {
     progress "no config file and newinstall checking dns resolution\n" if $options{d};
@@ -871,32 +845,8 @@ sub setDefaultsFromLocalConfig {
   $config{LOGSQLROOTPASS} = getLocalConfig ("mysql_logger_root_password");
   $config{ZIMBRASQLPASS} = getLocalConfig ("zimbra_mysql_password");
   $config{ZIMBRALOGSQLPASS} = getLocalConfig ("zimbra_logger_mysql_password");
-  $config{MAILBOXDMEMORYPERCENT} = getLocalConfig ("mailboxd_java_heap_memory_percent");
+  $config{TOMCATMEMORYPERCENT} = getLocalConfig ("tomcat_java_heap_memory_percent");
   $config{MYSQLMEMORYPERCENT} = getLocalConfig ("mysql_memory_percent");
-  $config{mailboxd_directory} = getLocalConfig("mailboxd_directory");
-  $config{mailboxd_keystore} = getLocalConfig("mailboxd_keystore");
-
-  if (isEnabled("zimbra-snmp")) {
-    $config{SNMPNOTIFY} = getLocalConfig("snmp_notify");
-    $config{SNMPNOTIFY} = "yes" if ($config{SNMPNOTIFY} eq "");
-
-    $config{SMTPNOTIFY} = getLocalConfig("smtp_notify");
-    $config{SMTPNOTIFY} = "yes" if ($config{SNMPNOTIFY} eq "");
-
-    $config{SNMPTRAPHOST} = getLocalConfig("snmp_trap_host");
-    $config{SNMPTRAPHOST} = $config{CREATEADMIN}
-      if ($config{SNMPTRAPHOST} eq "");
-  }
-
-  if (isEnabled("zimbra-logger") || isEnabled("zimbra-snmp")) {
-    $config{SMTPSOURCE} = getLocalConfig("smtp_source");
-    $config{SMTPSOURCE} = $config{CREATEADMIN}
-      if ($config{SMTPSOURCE} eq "");
-
-    $config{SMTPDEST} = getLocalConfig("smtp_destination");
-    $config{SMTPDEST} = $config{CREATEADMIN}
-      if ($config{SMTPDEST} eq "");
-  }
 }
 
 sub ask {
@@ -1289,9 +1239,9 @@ sub setUseImapProxy {
 sub setStoreMode {
   while (1) {
     my $m = 
-      askNonBlank("Please enter the web server mode (http,https,both,mixed,redirect)",
+      askNonBlank("Please enter the web server mode (http,https,both,mixed)",
         $config{MODE});
-    if ($m eq "http" || $m eq "https" || $m eq "mixed" || $m eq "both" || $m eq "redirect" ) {
+    if ($m eq "http" || $m eq "https" || $m eq "mixed" || $m eq "both") {
       $config{MODE} = $m;
       return;
     }
@@ -2378,21 +2328,20 @@ sub runAsZimbraWithOutput {
   my $exit_value = $? >> 8;
   my $signal_num = $? & 127;
   my $dumped_core = $? & 128;
-  detail ("DEBUG: exit status from cmd was $exit_value") if $debug;
+
   return $exit_value;
 }
 
 sub getLocalConfig {
   my $key = shift;
 
-  return $main::loaded{lc}{$key}
-    if (exists $main::loaded{lc}{$key});
+  return $loaded{lc}{$key}
+    if (exists $loaded{lc}{$key});
 
   detail ( "Getting local config $key" );
   my $val = `/opt/zimbra/bin/zmlocalconfig -x -s -m nokey ${key}`;
   chomp $val;
-  detail ("DEBUG: $key=$val") if $debug;
-  $main::loaded{lc}{$key} = $val;
+  $loaded{lc}{$key} = $val;
   return $val;
 }
 
@@ -2415,12 +2364,12 @@ sub setLocalConfig {
   my $key = shift;
   my $val = shift;
 
-  if (exists $main::saved{lc}{$key} && $main::saved{lc}{$key} eq $val) {
+  if (exists $saved{lc}{$key} && $saved{lc}{$key} eq $val) {
     detail ( "Skipping $key=$val. Already written.");
     return;
   }
   detail ( "Setting local config $key to $val" );
-  $main::saved{lc}{$key} = $val;
+  $saved{lc}{$key} = $val;
   runAsZimbra("/opt/zimbra/bin/zmlocalconfig -f -e ${key}=\'${val}\'");
 }
 
@@ -2467,10 +2416,7 @@ sub configLCValues {
   setLocalConfig ("ssl_allow_untrusted_certs", "TRUE");
 
   setLocalConfig ("mysql_memory_percent", $config{MYSQLMEMORYPERCENT});
-  setLocalConfig ("mailboxd_java_heap_memory_percent", $config{MAILBOXDMEMORYPERCENT});
-  setLocalConfig ("mailboxd_directory", $config{mailboxd_directory});
-  setLocalConfig ("mailboxd_keystore", $config{mailboxd_keystore});
-  setLocalConfig ("mailboxd_server", $config{mailboxd_server});
+  setLocalConfig ("tomcat_java_heap_memory_percent", $config{TOMCATMEMORYPERCENT});
 
   configLog ("configLCValues");
 
@@ -2645,12 +2591,7 @@ sub configCreateCert {
   progress ( "Creating SSL certificate..." );
 
   if (isEnabled("zimbra-store")) {
-    if ( !-f "$config{mailboxd_keystore}" && !-f "/opt/zimbra/ssl/ssl/server/server.crt" ) {
-      if (!-d "$config{mailboxd_directory}") {
-        `mkdir -p $config{mailboxd_directory}/etc`;
-        `chown -R zimbra:zimbra $config{mailboxd_directory}`;
-        `chmod 744 $config{mailboxd_directory}/etc`;
-      }
+    if ( !-f "/opt/zimbra/tomcat/conf/keystore" && !-f "/opt/zimbra/ssl/ssl/server/server.crt" ) {
       runAsZimbra("cd /opt/zimbra; zmcreatecert");
     }
   }
@@ -2687,7 +2628,7 @@ sub configInstallCert {
   if (isEnabled("zimbra-store") || isEnabled("zimbra-mta")) {
     progress ("Installing SSL certificate...");
     if (isEnabled("zimbra-store")) {
-      if (!-f "$config{mailboxd_keystore}") {
+      if (!-f "/opt/zimbra/tomcat/conf/keystore") {
         runAsZimbra("cd /opt/zimbra; zmcertinstall mailbox");
       }
     }
@@ -2706,17 +2647,6 @@ sub configInstallCert {
       -f "/opt/zimbra/conf/slapd.crt")) {
       progress ("Installing LDAP SSL certificate...");
       runAsZimbra("cd /opt/zimbra; zmcertinstall ldap ".
-        "/opt/zimbra/ssl/ssl/server/server.crt ".
-        "/opt/zimbra/ssl/ssl/server/server.key");
-      progress ( "Done\n" );
-    }
-  }
-
-  if (isEnabled("zimbra-proxy")) {
-    if (! (-f "/opt/zimbra/conf/nginx.key" || 
-      -f "/opt/zimbra/conf/nginx.crt")) {
-      progress ("Installing Proxy SSL certificate...");
-      runAsZimbra("cd /opt/zimbra; zmcertinstall proxy ".
         "/opt/zimbra/ssl/ssl/server/server.crt ".
         "/opt/zimbra/ssl/ssl/server/server.key");
       progress ( "Done\n" );
@@ -2796,9 +2726,9 @@ sub configSetServicePorts {
   progress ( "Setting service ports on $config{HOSTNAME}..." );
   runAsZimbra("$ZMPROV ms $config{HOSTNAME} ".
     "zimbraImapBindPort $config{IMAPPORT} zimbraImapSSLBindPort $config{IMAPSSLPORT} ".
-    "zimbraImapProxyBindPort $config{IMAPPROXYPORT} zimbraImapSSLProxyBindPort $config{IMAPSSLPROXYPORT} ");
+    "zimbraPop3BindPort $config{POPPORT} zimbraPop3SSLBindPort $config{POPSSLPORT} ");
   runAsZimbra("$ZMPROV ms $config{HOSTNAME} ".
-    "zimbraPop3BindPort $config{POPPORT} zimbraPop3SSLBindPort $config{POPSSLPORT} ".
+    "zimbraImapProxyBindPort $config{IMAPPROXYPORT} zimbraImapSSLProxyBindPort $config{IMAPSSLPROXYPORT} ".
     "zimbraPop3ProxyBindPort $config{POPPROXYPORT} zimbraPop3SSLProxyBindPort $config{POPSSLPROXYPORT} ");
   runAsZimbra("$ZMPROV ms $config{HOSTNAME} ".
     "zimbraMailPort $config{HTTPPORT} zimbraMailSSLPort $config{HTTPSPORT} ".
@@ -2814,12 +2744,12 @@ sub configSetInstalledSkins {
     return 0;
   }
 
-  if (opendir DIR, "$config{mailboxd_directory}/webapps/zimbra/skins") {
+  if (opendir DIR, "/opt/zimbra/tomcat/webapps/zimbra/skins") {
     progress ( "Installing skins... " );
     runAsZimbra("$ZMPROV mcf zimbraInstalledSkin ''");
     my @skins = grep { !/^[\._]/ } readdir(DIR);
     foreach my $skindir (@skins) {
-      if (-d "$config{mailboxd_directory}/webapps/zimbra/skins/$skindir") {
+      if (-d "/opt/zimbra/tomcat/webapps/zimbra/skins/$skindir") {
         my $skin = $skindir;
         runAsZimbra("$ZMPROV mcf +zimbraInstalledSkin $skin");
         print  ("\n\t$skin");
@@ -2892,7 +2822,7 @@ sub configInstallZimlets {
   }
 
   # cleanup renamed zimlets, this is really an upgrade task but
-  # mailboxd needs to be be running here.
+  # tomcat needs to be be running here.
   zimletCleanup();
 
   # Install zimlets
@@ -3040,8 +2970,6 @@ sub configInitLogger {
 
   if (isEnabled("zimbra-logger")) {
     runAsZimbra ("$ZMPROV mcf zimbraLogHostname $config{HOSTNAME}");
-    setLocalConfig ("smtp_source", $config{SMTPSOURCE});
-    setLocalConfig ("smtp_destination", $config{SMTPDEST});
   }
   configLog("configInitLogger");
 }
@@ -3118,21 +3046,14 @@ sub configInitNotebooks {
 
     # global Documents
     runAsZimbra("/opt/zimbra/bin/zmprov mcf zimbraNotebookAccount $config{NOTEBOOKACCOUNT}");
-    $rc = runAsZimbra("/opt/zimbra/bin/zmprov in $config{NOTEBOOKACCOUNT}");
+    $rc = runAsZimbra("/opt/zimbra/bin/zmprov in $config{NOTEBOOKACCOUNT} \'$config{NOTEBOOKPASS}\' /opt/zimbra/wiki/Template Template");
+
     if ($rc != 0) {
       runAsZimbra("/opt/zimbra/bin/zmprov mc default zimbraFeatureNotebookEnabled FALSE");
       progress ("failed to initialize documents...see logfile for details.\n");
-
     } else {
-      $rc = runAsZimbra("/opt/zimbra/bin/zmprov impn $config{NOTEBOOKACCOUNT} /opt/zimbra/wiki/Template Template");
-
-      if ($rc != 0) {
-        runAsZimbra("/opt/zimbra/bin/zmprov mc default zimbraFeatureNotebookEnabled FALSE");
-        progress ("failed to initialize documents...see logfile for details.\n");
-      } else {
-        runAsZimbra("/opt/zimbra/bin/zmprov ma $config{NOTEBOOKACCOUNT} zimbraFeatureNotebookEnabled TRUE");
-        progress ( "Done\n" );
-      }
+      runAsZimbra("/opt/zimbra/bin/zmprov ma $config{NOTEBOOKACCOUNT} zimbraFeatureNotebookEnabled TRUE");
+      progress ( "Done\n" );
     }
 
     runAsZimbra("/opt/zimbra/bin/zmprov mc default zimbraFeatureNotebookEnabled $zimbraFeatureNotebookEnabled");
@@ -3301,8 +3222,8 @@ sub applyConfig {
       configInstallZimlets();
       configInitNotebooks();
 
-      progress ( "Restarting mailboxd...");
-      runAsZimbra("/opt/zimbra/bin/zmmailboxdctl restart");
+      progress ( "Restarting tomcat...");
+      runAsZimbra("/opt/zimbra/bin/tomcat restart");
       progress ( "Done\n" );
     }
     #runAsZimbra ("$ZMPROV ms $config{HOSTNAME} zimbraUserServicesEnabled TRUE");
@@ -3360,18 +3281,16 @@ sub setupSyslog {
 }
 sub setupCrontab {
 
-  my @backupSchedule=();
+  my $backupSchedule;
   progress ("Setting up zimbra crontab...");
-  if ( -x "/opt/zimbra/bin/zmschedulebackup") {
-    detail("Getting current backup schedule in restorable format.");
-    @backupSchedule = (`su - zimbra -c "zmschedulebackup -s" 2> /dev/null`);
-    for (my $i=0;$i<=$#backupSchedule;$i++) {
-      $backupSchedule[$i] =~ s/"/\\"/g;
-    }
-    if (scalar @backupSchedule == 0) {
+  if ( -f "/opt/zimbra/bin/zmschedulebackup") {
+    detail("Getting current backup schedule in restorable format");
+    $backupSchedule = `su - zimbra -c "zmschedulebackup -s"`;
+    chomp $backupSchedule;
+    if ($backupSchedule eq "") {
       detail("Backup schedule was not previously defined");
     } else {
-      detail("Retrieved backup schedule:\n @backupSchedule");
+      detail("Retrieved backup schedule: $backupSchedule");
     }
   }
   if ($platform =~ /SUSE/i) {
@@ -3413,19 +3332,12 @@ sub setupCrontab {
   `echo "# ZIMBRAEND -- DO NOT EDIT ANYTHING BETWEEN THIS LINE AND ZIMBRASTART" >> /tmp/crontab.zimbra`;
   `cat /tmp/crontab.zimbra.proc >> /tmp/crontab.zimbra`;
   detail("crontab: installing new crontab");
-  `crontab -u zimbra /tmp/crontab.zimbra 2> /dev/null`;
-  if ( -x "/opt/zimbra/bin/zmschedulebackup" && scalar @backupSchedule > 0) {
-    detail("Restoring previous backup schedule.");
-    for (my $i=0;$i<=$#backupSchedule;$i++) {
-      chomp($backupSchedule[$i]);
-      if ($i == 0) {
-        `su - zimbra -c "/opt/zimbra/bin/zmschedulebackup -R $backupSchedule[$i]"`;
-      } else {
-        `su - zimbra -c "/opt/zimbra/bin/zmschedulebackup -A $backupSchedule[$i]"`;
-      }
-    }
-  } elsif ( -f "/opt/zimbra/bin/zmschedulebackup" && scalar @backupSchedule == 0 && !$newinstall) {
-    detail("No backup schedule found: installing default schedule.");
+  `crontab -u zimbra /tmp/crontab.zimbra`;
+  if ( -f "/opt/zimbra/bin/zmschedulebackup" && $backupSchedule ne "") {
+    $backupSchedule =~ s/"/\\"/g;
+    `su - zimbra -c "/opt/zimbra/bin/zmschedulebackup -R $backupSchedule" > /dev/null 2>&1`;
+  } elsif ( -f "/opt/zimbra/bin/zmschedulebackup" && $backupSchedule eq "" && !$newinstall) {
+    detail("crontab: no backup schedule found: installing default");
     `su - zimbra -c "/opt/zimbra/bin/zmschedulebackup -D" > /dev/null 2>&1`;
   }
   progress ("Done\n");
@@ -3458,7 +3370,7 @@ sub mysqlMemoryPercent {
   return $percent;
 }
 
-sub mailboxdMemoryPercent {
+sub tomcatMemoryPercent {
   my $system_mem = shift;
   my $percent = 40;
   $percent = int((2/$system_mem)*100)

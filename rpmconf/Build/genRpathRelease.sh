@@ -51,7 +51,7 @@ if [ $? -eq 0 ]; then
 fi
 
 echo "Building VMWare Image $BUILDROOT/zcs-${RELEASETAG}-vmware.zip..."
-BUILD=`rbuilder build-create zimbra "$TROVE" vmware_image --wait --option 'vmMemory 512' --option 'freespace 500' --option "baseFileName zcs-${RELEASETAG}-vmware"  | awk -F= '{print $NF}'`
+BUILD=`rbuilder build-create zimbra "$TROVE" vmware_image --wait --option 'vmMemory 512' --option 'freespace 5000' --option "baseFileName zcs-${RELEASETAG}-vmware"  | awk -F= '{print $NF}'`
 if [ $? -eq 0 ]; then
   echo "Getting URL for Build $BUILD"
   ZIP=`rbuilder build-url $BUILD | head -1`
@@ -62,7 +62,19 @@ if [ $? -eq 0 ]; then
   fi
 fi
 
-if [ "x$ISO" = "x" -o "x$ZIP" = "x" ]; then
+echo "Building VMWare ESX Image $BUILDROOT/zcs-${RELEASETAG}-vmware.zip..."
+BUILD=`rbuilder build-create zimbra "$TROVE" vmware_esx_image --wait --option 'vmMemory 512' --option 'freespace 30000' --option "baseFileName zcs-${RELEASETAG}-esx"  | awk -F= '{print $NF}'`
+if [ $? -eq 0 ]; then
+  echo "Getting URL for Build $BUILD"
+  ESX=`rbuilder build-url $BUILD | head -1`
+  if [ x"$ESX" != "x" ]; then
+    echo "Retrieving image from $ESX"
+    wget -qO $BUILDROOT/zcs-${RELEASETAG}-esx.zip $ESX
+    ln -s $BUILDROOT/zcs-${RELEASETAG}-esx.zip $BUILDROOT/zcs-esx.zip
+  fi
+fi
+
+if [ "x$ISO" = "x" -o "x$ZIP" = "x" -o "X$ESX" = "x" ]; then
   exit 1
 else 
   exit 0
