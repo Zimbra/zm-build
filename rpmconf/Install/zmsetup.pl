@@ -2553,12 +2553,14 @@ sub configSetupLdap {
         #unlink "/opt/zimbra/.enable_replica";
         $config{DOCREATEADMIN} = "no";
         $config{DOCREATEDOMAIN} = "no";
+	runAsZimbra ("/opt/zimbra/bin/ldap stop");
         progress ( "done.\n" );
       } else {
         progress ("failed.\n");
         progress ("You will have to correct the problem and manually enable replication.\n");
         progress ("Disabling ldap on $config{HOSTNAME}...");
         runAsZimbra("$ZMPROV ms $config{HOSTNAME} -zimbraServiceEnabled ldap");
+	runAsZimbra ("/opt/zimbra/bin/ldap stop");
         progress ("done.\n");
       }
     }
