@@ -1327,6 +1327,9 @@ sub upgrade460GA {
 	main::progress("Updating from 4.6.0_GA\n");
     # 19749
     updateMySQLcnf();
+  if (isInstalled("zimbra-logger")) {
+    updateLoggerMySQLcnf();
+  }
 	return 0;
 }
 sub upgrade500BETA1 {
@@ -1808,6 +1811,51 @@ sub movePostfixQueue {
 	`/opt/zimbra/bin/zmfixperms.sh`;
 }
 
+sub updateLoggerMySQLcnf {
+
+  my $mycnf = "/opt/zimbra/conf/my.logger.cnf";
+  my $mysql_pidfile = main::getLocalConfig("logger_mysql_pidfile");
+  $mysql_pidfile = "/opt/zimbra/logger/db/mysql.pid" if ($mysql_pidfile eq "");
+  if (-e "$mycnf") {
+    unless (open(MYCNF, "$mycnf")) {
+      Migrate::myquit(1, "${mycnf}: $!\n");
+    }
+    my @CNF = <MYCNF>;
+    close(MYCNF);
+    my $i=0;
+    my $mycnfChanged = 0;
+    my $tmpfile = "/tmp/my.cnf.$$";;
+    my $zimbra_user = `zmlocalconfig -m nokey zimbra_user 2> /dev/null` || "zmbra";;
+    open(TMP, ">$tmpfile");
+    foreach (@CNF) {
+      if (/^port/ && $CNF[$i+1] !~ m/^user/) {
+        print TMP;
+        print TMP "user         = $zimbra_user\n";
+        $mycnfChanged=1;
+        next;
+      } elsif (/^err-log/ && $CNF[$i+1] !~ m/^pid-file/) {
+        print TMP;
+        print TMP "pid-file = ${mysql_pidfile}\n";
+        $mycnfChanged=1;
+        next;
+      } elsif (/^skip-external-locking/) {
+        # 19749 remove skip-external-locking
+        print TMP "external-locking\n";
+        $mycnfChanged=1;
+        next;
+      }
+      print TMP;
+      $i++;
+    }
+    close(TMP);
+  
+    if ($mycnfChanged) {
+      `mv $mycnf ${mycnf}.${startVersion}`;
+      `cp -f $tmpfile $mycnf`;
+      `chmod 644 $mycnf`;
+    } 
+  }
+}
 sub updateMySQLcnf {
 
   my $mycnf = "/opt/zimbra/conf/my.cnf";
@@ -1837,6 +1885,7 @@ sub updateMySQLcnf {
         next;
       } elsif (/^skip-external-locking/) {
         # 19749 remove skip-external-locking
+        print TMP "external-locking\n";
         $mycnfChanged=1;
         next;
       }
