@@ -26,6 +26,10 @@
 
 SAVEDIR=/opt/zimbra/.saveconfig
 
+mkdir -p /opt/zimbra/zmstat/pid
+chown zimbra:zimbra /opt/zimbra/zmstat
+chown zimbra:zimbra /opt/zimbra/zmstat/pid
+
 rm -f /opt/zimbra/sleepycat
 ln -s /opt/zimbra/sleepycat-4.2.52.6 /opt/zimbra/sleepycat
 
