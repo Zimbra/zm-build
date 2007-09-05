@@ -546,7 +546,7 @@ sub setLdapDefaults {
   }
   if (isInstalled("zimbra-proxy")) {
     my $defaultDomain = $config{zimbraDefaultDomainName};
-    my $query = "(|(|(zimbraMailDeliveryAddress=\${USER}\@${defaultDomain})(zimbraMailAlias=\${USER}\@${defaultDomain}))(|(zimbraMailDeliveryAddress=\${USER})(zimbraMailAlias=\${USER})))";
+    my $query = "\\(\\|\\(\\|\\(zimbraMailDeliveryAddress=\${USER}\@${defaultDomain})(zimbraMailAlias=\${USER}\@${defaultDomain}))(|(zimbraMailDeliveryAddress=\${USER})(zimbraMailAlias=\${USER})))";
 
     $config{zimbraReverseProxyMailHostQuery} = getLdapConfigValue("zimbraReverseProxyMailHostQuery");
     $config{zimbraReverseProxyMailHostQuery} = $query
@@ -2902,13 +2902,13 @@ sub configInitBackupPrefs {
 
 sub configSetProxyPrefs {
   if (isInstalled("zimbra-proxy")) {
-    runAsZimbra("$ZMPROV mcf $config{zimbraReverseProxyMailHostQuery}");
-    runAsZimbra("$ZMPROV mcf $config{zimbraReverseProxyMailHostAttribute}");
-    runAsZimbra("$ZMPROV mcf $config{zimbraReverseProxyPortQuery}");
-    runAsZimbra("$ZMPROV mcf $config{zimbraReverseProxyPop3PortAttribute}");
-    runAsZimbra("$ZMPROV mcf $config{zimbraReverseProxyPop3SSLPortAttribute}");
-    runAsZimbra("$ZMPROV mcf $config{zimbraReverseProxyImapPortAttribute}");
-    runAsZimbra("$ZMPROV mcf $config{zimbraReverseProxyImapSSLPortAttribute}");
+    runAsZimbra("$ZMPROV mcf zimbraReverseProxyMailHostQuery  $config{zimbraReverseProxyMailHostQuery}");
+    runAsZimbra("$ZMPROV mcf zimbraReverseProxyMailHostAttribute $config{zimbraReverseProxyMailHostAttribute}");
+    runAsZimbra("$ZMPROV mcf zimbraReverseProxyPortQuery $config{zimbraReverseProxyPortQuery}");
+    runAsZimbra("$ZMPROV mcf zimbraReverseProxyPop3PortAttribute $config{zimbraReverseProxyPop3PortAttribute}");
+    runAsZimbra("$ZMPROV mcf zimbraReverseProxyPop3SSLPortAttribute $config{zimbraReverseProxyPop3SSLPortAttribute}");
+    runAsZimbra("$ZMPROV mcf zimbraReverseProxyImapPortAttribute $config{zimbraReverseProxyImapPortAttribute}");
+    runAsZimbra("$ZMPROV mcf zimbraReverseProxyImapSSLPortAttribute $config{zimbraReverseProxyImapSSLPortAttribute}");
   }
 }
 
