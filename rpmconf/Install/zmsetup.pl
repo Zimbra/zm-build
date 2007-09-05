@@ -549,7 +549,7 @@ sub setLdapDefaults {
     my $query = "(|(|(zimbraMailDeliveryAddress=\${USER}\@${defaultDomain})(zimbraMailAlias=\${USER}\@${defaultDomain}))(|(zimbraMailDeliveryAddress=\${USER})(zimbraMailAlias=\${USER})))";
 
     $config{zimbraReverseProxyMailHostQuery} = getLdapConfigValue("zimbraReverseProxyMailHostQuery");
-    $config{zimbraReverseProxyMailHostQuery} = $query;
+    $config{zimbraReverseProxyMailHostQuery} = $query
       if ($config{zimbraReverseProxyMailHostQuery} eq ""); 
 
     $config{zimbraReverseProxyMailHostAttribute} = getLdapConfigValue("zimbraReverseProxyMailHostAttribute");
