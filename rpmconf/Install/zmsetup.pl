@@ -508,7 +508,7 @@ sub setLdapDefaults {
 
   # default domainname
   $config{zimbraDefaultDomainName} = getLdapConfigValue("zimbraDefaultDomainName");
-  if ($config{zimbradefaultDomainName} eq "") {
+  if ($config{zimbraDefaultDomainName} eq "") {
     $config{zimbraDefaultDomainName} = $config{CREATEDOMAIN};
   } else {
     $config{CREATEDOMAIN} = $config{zimbraDefaultDomainName};
@@ -545,7 +545,7 @@ sub setLdapDefaults {
       if ($config{zimbraBackupReportEmailSender} eq "");
   }
   if (isInstalled("zimbra-proxy")) {
-    my $defaultDomain = $config{zimbradefaultDomainName};
+    my $defaultDomain = $config{zimbraDefaultDomainName};
     my $query = "(|(|(zimbraMailDeliveryAddress=\${USER}\@${defaultDomain})(zimbraMailAlias=\${USER}\@${defaultDomain}))(|(zimbraMailDeliveryAddress=\${USER})(zimbraMailAlias=\${USER})))";
 
     $config{zimbraReverseProxyMailHostQuery} = getLdapConfigValue("zimbraReverseProxyMailHostQuery");
