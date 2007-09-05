@@ -544,6 +544,38 @@ sub setLdapDefaults {
     $config{zimbraBackupReportEmailSender} = $config{CREATEADMIN}
       if ($config{zimbraBackupReportEmailSender} eq "");
   }
+  if (isInstalled("zimbra-proxy")) {
+    my $defaultDomain = $config{zimbradefaultDomainName};
+    my $query = "(|(|(zimbraMailDeliveryAddress=\${USER}\@${defaultDomain})(zimbraMailAlias=\${USER}\@${defaultDomain}))(|(zimbraMailDeliveryAddress=\${USER})(zimbraMailAlias=\${USER})))";
+
+    $config{zimbraReverseProxyMailHostQuery} = getLdapConfigValue("zimbraReverseProxyMailHostQuery");
+    $config{zimbraReverseProxyMailHostQuery} = $query;
+      if ($config{zimbraReverseProxyMailHostQuery} eq ""); 
+
+    $config{zimbraReverseProxyMailHostAttribute} = getLdapConfigValue("zimbraReverseProxyMailHostAttribute");
+    $config{zimbraReverseProxyMailHostAttribute} = "zimbraMailHost"
+      if ($config{zimbraReverseProxyMailHostAttribute} eq "");
+
+    $config{zimbraReverseProxyPortQuery} = getLdapConfigValue("zimbraReverseProxyPortQuery");
+    $config{zimbraReverseProxyPortQuery} = '(&(zimbraServiceHostname=${MAILHOST})(objectClass=zimbraServer))'
+      if ( $config{zimbraReverseProxyPortQuery} eq "");
+
+    $config{zimbraReverseProxyPop3PortAttribute} = getLdapConfigValue("zimbraReverseProxyPop3PortAttribute");
+    $config{zimbraReverseProxyPop3PortAttribute} = "zimbraPop3BindPort"
+      if ( $config{zimbraReverseProxyPop3PortAttribute} eq "");
+
+    $config{zimbraReverseProxyPop3SSLPortAttribute} = getLdapConfigValue("zimbraReverseProxyPop3SSLPortAttribute");
+    $config{zimbraReverseProxyPop3SSLPortAttribute} = "zimbraPop3SSLBindPort"
+      if ( $config{zimbraReverseProxyPop3SSLPortAttribute} eq "");
+
+   $config{zimbraReverseProxyImapPortAttribute} = getLdapConfigValue("zimbraReverseProxyImapPortAttribute");
+   $config{zimbraReverseProxyImapPortAttribute} = "zimbraImapBindPort"
+      if ( $config{zimbraReverseProxyImapPortAttribute} eq "");
+
+   $config{zimbraReverseProxyImapSSLPortAttribute} = getLdapConfigValue("zimbraReverseProxyImapSSLPortAttribute");
+   $config{zimbraReverseProxyImapSSLPortAttribute} = "zimbraImapSSLBindPort"
+      if ( $config{zimbraReverseProxyImapSSLPortAttribute} eq ""); 
+  }
  
   # default values for upgrades 
  $config{NOTEBOOKACCOUNT} = "wiki".'@'.$config{CREATEDOMAIN}
@@ -2868,6 +2900,18 @@ sub configInitBackupPrefs {
   }
 }
 
+sub configSetProxyPrefs {
+  if (isInstalled("zimbra-proxy")) {
+    runAsZimbra("$ZMPROV mcf $config{zimbraReverseProxyMailHostQuery}");
+    runAsZimbra("$ZMPROV mcf $config{zimbraReverseProxyMailHostAttribute}");
+    runAsZimbra("$ZMPROV mcf $config{zimbraReverseProxyPortQuery}");
+    runAsZimbra("$ZMPROV mcf $config{zimbraReverseProxyPop3PortAttribute}");
+    runAsZimbra("$ZMPROV mcf $config{zimbraReverseProxyPop3SSLPortAttribute}");
+    runAsZimbra("$ZMPROV mcf $config{zimbraReverseProxyImapPortAttribute}");
+    runAsZimbra("$ZMPROV mcf $config{zimbraReverseProxyImapSSLPortAttribute}");
+  }
+}
+
 sub zimletCleanup {
   my $ldap_pass = getLocalConfig("ldap_root_password");
   my $ldap_master_url = getLocalConfig("ldap_master_url");
@@ -3266,6 +3310,10 @@ sub applyConfig {
 
   if (isEnabled("zimbra-ldap")) {
     configSetTimeZonePref();
+  }
+
+  if (isInstalled("zimbra-proxy")) {
+    configSetProxyPrefs();
   }
 
   configCreateDomain();
