@@ -689,6 +689,9 @@ sub setDefaults {
     # bug. we shouldn't update this on upgrade.
     $config{NOTEBOOKPASS} = genRandomPass();
 
+    $config{zimbra_ldap_userdn} = "uid=zimbra,cn=admins,cn=zimbra"
+      if ($config{zimbra_ldap_userdn} eq "");
+
     # license files locations this is associated with the store
     # for now as there is a dependancy on the store jar file. 
     $config{DEFAULTLICENSEFILE} = "/opt/zimbra/conf/ZCSLicense.xml" 
@@ -912,6 +915,8 @@ sub setDefaultsFromLocalConfig {
     if (getLocalConfig("mailboxd_keystore_password") ne "");
   $config{mailboxd_truststore_password} = getLocalConfig ("mailboxd_truststore_password") 
     if (getLocalConfig("mailboxd_truststore_password") ne "");
+  $config{zimbra_ldap_userdn} = getLocalconfig("zimbra_ldap_userdn")
+    if (getLocalConfig("zimbra_ldap_userdn") ne "");
 
   if (isEnabled("zimbra-snmp")) {
     $config{SNMPNOTIFY} = getLocalConfig("snmp_notify");
@@ -1109,6 +1114,20 @@ sub setCreateDomain {
   $config{TRAINSAHAM} = $hamUser.'@'.$config{CREATEDOMAIN}
     if ($hamDomain eq $oldDomain);
 
+}
+
+sub setLdapUserDN {
+  while (1) {
+    print "Warning: Do not change this from the default value unless\n";
+    print "you are absolutely sure you know what you are doing!\n\n";
+    my $new =
+      askNonBlank("Ldap bind DN:",
+        $config{zimbra_ldap_userdn});
+    if ($config{zimbra_ldap_userdn} ne $new) {
+      $config{zimbra_ldap_userdn} = $new;
+    }
+    return;
+  }
 }
 
 sub setNotebookAccount {
@@ -1680,6 +1699,12 @@ sub createLdapMenu {
         };
       $i++;
     }
+    $$lm{menuitems}{$i} = { 
+      "prompt" => "Bind DN:", 
+      "var" => \$config{zimbra_ldap_userdn}, 
+      "callback" => \&setLdapUserDN,
+      };
+    $i++;
 
   }
   return $lm;
@@ -2373,8 +2398,7 @@ sub verifyLdap {
     return 1;
   }
 
-  my $dn = 'cn=config,cn=zimbra';
-  my $result = $ldap->bind("uid=zimbra,cn=admins,cn=zimbra", password => $config{LDAPPASS});
+  my $result = $ldap->bind("$config{zimbra_ldap_userdn}", password => $config{LDAPPASS});
   if ($result->code()) {
     detail ("Unable to bind to $ldap_url with password $config{LDAPPASS}: $!");
     return 1;
@@ -2502,7 +2526,6 @@ sub configLCValues {
   }
 
   setLocalConfig ("ssl_allow_untrusted_certs", "TRUE");
-
   setLocalConfig ("mysql_memory_percent", $config{MYSQLMEMORYPERCENT});
   setLocalConfig ("mailboxd_java_heap_memory_percent", $config{MAILBOXDMEMORYPERCENT});
   setLocalConfig ("mailboxd_directory", $config{mailboxd_directory});
@@ -2510,6 +2533,7 @@ sub configLCValues {
   setLocalConfig ("mailboxd_server", $config{mailboxd_server});
   setLocalConfig ("mailboxd_truststore_password", "$config{mailboxd_truststore_password}");
   setLocalConfig ("mailboxd_keystore_password", "$config{mailboxd_keystore_password}");
+  setLocalConfig ("zimbra_ldap_userdn", "$config{zimbra_ldap_userdn}");
 
   configLog ("configLCValues");
 
