@@ -545,8 +545,7 @@ sub setLdapDefaults {
       if ($config{zimbraBackupReportEmailSender} eq "");
   }
   if (isInstalled("zimbra-proxy")) {
-    my $defaultDomain = $config{zimbraDefaultDomainName};
-    my $query = "\\(\\|\\(\\|\\(zimbraMailDeliveryAddress=\${USER}\@${defaultDomain})(zimbraMailAlias=\${USER}\@${defaultDomain}))(|(zimbraMailDeliveryAddress=\${USER})(zimbraMailAlias=\${USER})))";
+    my $query = "\(\|\(\|\(zimbraMailDeliveryAddress=\${USER}\@$config{zimbraDefaultDomainName}\)\(zimbraMailAlias=\${USER}\@$config{zimbraDefaultDomainName}\)\)\(\|\(zimbraMailDeliveryAddress=\${USER}\)\(zimbraMailAlias=\${USER}\)\)\)";
 
     $config{zimbraReverseProxyMailHostQuery} = getLdapConfigValue("zimbraReverseProxyMailHostQuery");
     $config{zimbraReverseProxyMailHostQuery} = $query
@@ -557,7 +556,7 @@ sub setLdapDefaults {
       if ($config{zimbraReverseProxyMailHostAttribute} eq "");
 
     $config{zimbraReverseProxyPortQuery} = getLdapConfigValue("zimbraReverseProxyPortQuery");
-    $config{zimbraReverseProxyPortQuery} = '(&(zimbraServiceHostname=${MAILHOST})(objectClass=zimbraServer))'
+    $config{zimbraReverseProxyPortQuery} = '\(\&\(zimbraServiceHostname=\${MAILHOST}\)\(objectClass=zimbraServer\)\)'
       if ( $config{zimbraReverseProxyPortQuery} eq "");
 
     $config{zimbraReverseProxyPop3PortAttribute} = getLdapConfigValue("zimbraReverseProxyPop3PortAttribute");
@@ -2902,9 +2901,12 @@ sub configInitBackupPrefs {
 
 sub configSetProxyPrefs {
   if (isInstalled("zimbra-proxy")) {
-    runAsZimbra("$ZMPROV mcf zimbraReverseProxyMailHostQuery  $config{zimbraReverseProxyMailHostQuery}");
+    # We have to use a pipe to write out the Query, otherwise ${USER} gets interpreted
+    open(ZMPROV, "|su - zimbra -c 'zmprov -l'");
+    print ZMPROV "mcf zimbraReverseProxyMailHostQuery $config{zimbraReverseProxyMailHostQuery}\n";
+    print ZMPROV "mcf zimbraReverseProxyPortQuery $config{zimbraReverseProxyPortQuery}\n";
+    close ZMPROV;
     runAsZimbra("$ZMPROV mcf zimbraReverseProxyMailHostAttribute $config{zimbraReverseProxyMailHostAttribute}");
-    runAsZimbra("$ZMPROV mcf zimbraReverseProxyPortQuery $config{zimbraReverseProxyPortQuery}");
     runAsZimbra("$ZMPROV mcf zimbraReverseProxyPop3PortAttribute $config{zimbraReverseProxyPop3PortAttribute}");
     runAsZimbra("$ZMPROV mcf zimbraReverseProxyPop3SSLPortAttribute $config{zimbraReverseProxyPop3SSLPortAttribute}");
     runAsZimbra("$ZMPROV mcf zimbraReverseProxyImapPortAttribute $config{zimbraReverseProxyImapPortAttribute}");
