@@ -44,7 +44,6 @@ STORE_COMPONENTS := \
 	$(STORE_DEST_DIR)/conf/zimbra-contact-fields.xml \
 	$(STORE_DEST_DIR)/zimlets-extra \
 	$(STORE_DEST_DIR)/zimlets-admin-extra \
-	$(STORE_DEST_DIR)/$(PERDITION_DIR)-$(PERDITION_VERSION) \
 	$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/common/lib \
 	$(MAILBOXD_COMPONENTS) \
 	$(STORE_DEST_DIR)/lib/ext/clamscanner/clamscanner.jar \

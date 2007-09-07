@@ -25,9 +25,6 @@
 # 
 
 rm -f /opt/zimbra/perdition
-ln -s /opt/zimbra/perdition-1.17.1 /opt/zimbra/perdition
-mkdir -p /opt/zimbra/perdition/var/run
-chown -R zimbra:zimbra /opt/zimbra/perdition/var
 
 PLAT=`/opt/zimbra/libexec/get_plat_tag.sh`
 ARCH=powerpc
@@ -87,7 +84,6 @@ mv -f /tmp/sudoers /etc/sudoers
 chmod 440 /etc/sudoers
 
 egrep -v '^%zimbra.*perdition' /etc/sudoers > /tmp/sudoers
-echo "%zimbra ALL=NOPASSWD:/opt/zimbra/perdition/sbin/perdition" >> /tmp/sudoers
 mv -f /tmp/sudoers /etc/sudoers
 chmod 440 /etc/sudoers
 

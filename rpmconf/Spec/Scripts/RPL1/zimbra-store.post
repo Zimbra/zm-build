@@ -35,9 +35,6 @@ mv /opt/zimbra/db/db.sql /opt/zimbra/db/db.sql.in
 sed -e "/server.hostname/ s/local/$H/" /opt/zimbra/db/db.sql.in > /opt/zimbra/db/db.sql
 
 rm -f /opt/zimbra/perdition
-ln -s /opt/zimbra/perdition-1.17.1 /opt/zimbra/perdition
-mkdir -p /opt/zimbra/perdition/var/run
-chown -R zimbra:zimbra /opt/zimbra/perdition/var
 
 for i in jetty apache-tomcat ; do
   MAILBOXD=`perl -e 'print ($1 eq "apache-tomcat" ? "tomcat $1-$2" : "jetty $1-$2")  if ($ARGV[0] =~ m/(jetty|apache-tomcat)-(.*)/ && $2 ne "*");' /opt/zimbra/$i-*`
@@ -85,7 +82,6 @@ mv -f /tmp/sudoers /etc/sudoers
 chmod 440 /etc/sudoers
 
 egrep -v '^%zimbra.*perdition' /etc/sudoers > /tmp/sudoers
-echo "%zimbra ALL=NOPASSWD:/opt/zimbra/perdition/sbin/perdition" >> /tmp/sudoers
 mv -f /tmp/sudoers /etc/sudoers
 chmod 440 /etc/sudoers
 

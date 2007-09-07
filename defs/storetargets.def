@@ -79,8 +79,6 @@ $(BUILD_ROOT)/zimbra.spec:
 		$(BUILD_ROOT)/zimbra.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/wiki" >> \
 		$(BUILD_ROOT)/zimbra.spec
-	echo "%attr(-, zimbra, zimbra) /opt/zimbra/$(PERDITION_DIR)-$(PERDITION_VERSION)" >> \
-		$(BUILD_ROOT)/zimbra.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/mysql-standard-$(MYSQL_VERSION_STRING)-pc-linux-gnu-i686-glibc23" >> \
 		$(BUILD_ROOT)/zimbra.spec
 
@@ -99,10 +97,6 @@ $(STORE_DEST_DIR)/$(MYSQL_DIR):
 	rm -rf $(STORE_DEST_DIR)/$(MYSQL_DIR)/sql-bench
 	rm -rf $(STORE_DEST_DIR)/$(MYSQL_DIR)/docs/mysql.info
 	rm -rf $(STORE_DEST_DIR)/$(MYSQL_DIR)/docs/manual.txt
-
-$(STORE_DEST_DIR)/$(PERDITION_DIR)-$(PERDITION_VERSION): $(STORE_DEST_DIR)
-	@echo "*** Creating perdition"
-	(cd $(STORE_DEST_DIR); tar xzf $(PERDITION_SOURCE).tgz;)
 
 $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/bin: $(STORE_DEST_DIR) force
 	@echo "*** Creating $(MAILBOXD_SERVER)"

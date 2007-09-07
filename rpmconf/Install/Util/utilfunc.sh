@@ -852,12 +852,6 @@ restoreCerts() {
   else 
     cp $SAVEDIR/keystore /opt/zimbra/conf/keystore
   fi
-  if [ -f "$SAVEDIR/perdition.key" ]; then
-    cp $SAVEDIR/perdition.key /opt/zimbra/conf/perdition.key 
-  fi
-  if [ -f "$SAVEDIR/perdition.pem" ]; then
-    cp $SAVEDIR/perdition.pem /opt/zimbra/conf/perdition.pem 
-  fi
   if [ -f "$SAVEDIR/smtpd.key" ]; then
     cp $SAVEDIR/smtpd.key /opt/zimbra/conf/smtpd.key 
   fi
@@ -885,7 +879,7 @@ restoreCerts() {
   elif [ -f "/opt/zimbra/jetty/etc/keystore" ]; then
     chown zimbra:zimbra /opt/zimbra/jetty/etc/keystore
   fi
-  chown zimbra:zimbra /opt/zimbra/java/jre/lib/security/cacerts /opt/zimbra/conf/smtpd.key /opt/zimbra/conf/smtpd.crt /opt/zimbra/conf/slapd.crt /opt/zimbra/conf/perdition.pem /opt/zimbra/conf/perdition.key /opt/zimbra/conf/nginx.key /opt/zimbra/conf/nginx.crt
+  chown zimbra:zimbra /opt/zimbra/java/jre/lib/security/cacerts /opt/zimbra/conf/smtpd.key /opt/zimbra/conf/smtpd.crt /opt/zimbra/conf/slapd.crt /opt/zimbra/conf/nginx.key /opt/zimbra/conf/nginx.crt
   chown -R zimbra:zimbra /opt/zimbra/conf/ca
 }
 
@@ -899,12 +893,6 @@ saveExistingConfig() {
     cp -f /opt/zimbra/tomcat/conf/keystore $SAVEDIR
   elif [ -f "/opt/zimbra/jetty/etc/keystore" ]; then
     cp -f /opt/zimbra/jetty/etc/keystore $SAVEDIR
-  fi
-  if [ -f "/opt/zimbra/conf/perdition.key" ]; then
-    cp -f /opt/zimbra/conf/perdition.key $SAVEDIR
-  fi
-  if [ -f "/opt/zimbra/conf/perdition.pem" ]; then
-    cp -f /opt/zimbra/conf/perdition.pem $SAVEDIR
   fi
   if [ -f "/opt/zimbra/conf/smtpd.key" ]; then
     cp -f /opt/zimbra/conf/smtpd.key $SAVEDIR
