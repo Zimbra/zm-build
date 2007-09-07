@@ -915,7 +915,7 @@ sub setDefaultsFromLocalConfig {
     if (getLocalConfig("mailboxd_keystore_password") ne "");
   $config{mailboxd_truststore_password} = getLocalConfig ("mailboxd_truststore_password") 
     if (getLocalConfig("mailboxd_truststore_password") ne "");
-  $config{zimbra_ldap_userdn} = getLocalconfig("zimbra_ldap_userdn")
+  $config{zimbra_ldap_userdn} = getLocalConfig("zimbra_ldap_userdn")
     if (getLocalConfig("zimbra_ldap_userdn") ne "");
 
   if (isEnabled("zimbra-snmp")) {
