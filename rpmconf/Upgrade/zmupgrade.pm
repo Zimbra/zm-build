@@ -1537,6 +1537,20 @@ sub upgrade500BETA4 {
   if (isInstalled("zimbra-ldap")) {
     # 19517
 		main::runAsZimbra("$ZMPROV mcf zimbraBackupAutoGroupedInterval 1d zimbraBackupAutoGroupedNumGroups 7 zimbraBackupAutoGroupedThrottled FALSE zimbraBackupMode Standard");
+
+    # 19826
+	  my @coses = `su - zimbra -c "$ZMPROV gac"`;
+    my %attrs = ( zimbraQuotaWarnPercent => "90",
+               zimbraQuotaWarnInterval => "1d",
+               zimbraQuotaWarnMessage  => 'From: Postmaster <postmaster@\${RECIPIENT_DOMAIN}>\${NEWLINE}To: \${RECIPIENT_NAME} <\${RECIPIENT_ADDRESS}>\${NEWLINE}Subject: Quota warning\${NEWLINE}Date: \${DATE}\${NEWLINE}Content-Type: text/plain\${NEWLINE}\${NEWLINE}Your mailbox size has reached \${MBOX_SIZE_MB}MB, which is over \${WARN_PERCENT}% of your \${QUOTA_MB}MB quota.\${NEWLINE}Please delete some messages to avoid exceeding your quota.\${NEWLINE}');
+	  foreach my $cos (@coses) {
+		  chomp $cos;
+      foreach my $attr (keys %attrs) {
+        my $cur_value = main::getLdapCOSValue($cos, $attr);
+        main::runAsZimbra("$ZMPROV mc $cos $attr \'$attrs{$attr}\'")
+          if ($cur_value eq "");
+      }
+	  }
   }
     
 	return 0;
