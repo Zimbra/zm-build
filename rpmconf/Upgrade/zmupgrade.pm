@@ -1307,6 +1307,10 @@ sub upgrade457GA {
 	  my $threads = (split(/\s+/, `su - zimbra -c "$ZMPROV gcf zimbraPop3NumThreads"`))[-1];
     main::runAsZimbra("$ZMPROV mcf zimbraPop3NumThreads 100")
       if ($threads eq "20");
+    #bug 19973 work around openldap bug
+    stopLdap();
+    main::runAsZimbra("/opt/zimbra/sleepycat/bin/db_recover -h /opt/zimbra/openldap-data");
+    startLdap();
   }
   # migrate amavis data
   migrateAmavisDB("2.5.2");
