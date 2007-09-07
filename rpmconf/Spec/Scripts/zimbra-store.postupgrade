@@ -81,6 +81,11 @@ echo "%zimbra ALL=NOPASSWD:/opt/zimbra/libexec/zmmailboxdmgr" >> /tmp/sudoers
 mv -f /tmp/sudoers /etc/sudoers
 chmod 440 /etc/sudoers
 
+egrep -v -e '^%zimbra.*zmcertmgr' /etc/sudoers > /tmp/sudoers
+echo "%zimbra ALL=NOPASSWD:/opt/zimbra/bin/zmcertmgr" >> /tmp/sudoers
+mv -f /tmp/sudoers /etc/sudoers
+chmod 440 /etc/sudoers
+
 egrep -v '^%zimbra.*perdition' /etc/sudoers > /tmp/sudoers
 echo "%zimbra ALL=NOPASSWD:/opt/zimbra/perdition/sbin/perdition" >> /tmp/sudoers
 mv -f /tmp/sudoers /etc/sudoers
