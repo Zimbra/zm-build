@@ -1310,7 +1310,6 @@ sub upgrade457GA {
     #bug 19973 work around openldap bug
     stopLdap();
     main::runAsZimbra("/opt/zimbra/sleepycat/bin/db_recover -h /opt/zimbra/openldap-data");
-    startLdap();
   }
   # migrate amavis data
   migrateAmavisDB("2.5.2");
