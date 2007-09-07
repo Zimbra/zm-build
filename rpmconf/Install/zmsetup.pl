@@ -2450,7 +2450,7 @@ sub getLocalConfig {
     if (exists $main::loaded{lc}{$key});
 
   detail ( "Getting local config $key" );
-  my $val = `/opt/zimbra/bin/zmlocalconfig -x -s -m nokey ${key}`;
+  my $val = `/opt/zimbra/bin/zmlocalconfig -x -s -m nokey ${key} 2> /dev/null`;
   chomp $val;
   detail ("DEBUG: $key=$val") if $debug;
   $main::loaded{lc}{$key} = $val;
@@ -2461,7 +2461,7 @@ sub deleteLocalConfig {
   my $key = shift;
 
   detail ( "Deleting local config $key" );
-  my $rc = 0xffff & system("/opt/zimbra/bin/zmlocalconfig -u ${key}");
+  my $rc = 0xffff & system("/opt/zimbra/bin/zmlocalconfig -u ${key} 2> /dev/null");
   if ($rc == 0) {
     detail ("DEBUG: deleted localconfig key $key") if $debug;
     delete($main::loaded{lc}{$key}) if (exists $main::loaded{lc}{$key});
@@ -2482,7 +2482,7 @@ sub setLocalConfig {
   }
   detail ( "Setting local config $key to $val" );
   $main::saved{lc}{$key} = $val;
-  runAsZimbra("/opt/zimbra/bin/zmlocalconfig -f -e ${key}=\'${val}\'");
+  runAsZimbra("/opt/zimbra/bin/zmlocalconfig -f -e ${key}=\'${val}\' 2> /dev/null");
 }
 
 sub configLCValues {
