@@ -3233,8 +3233,10 @@ sub configSetEnabledServices {
     }
     if ($p eq "zimbra-apache") {next;}
     $p =~ s/zimbra-//;
-    if ($p eq "store") {$p = "mailbox"; $installedServiceStr .= "zimbraServiceInstalled imapproxy ";}
-    $installedServiceStr .= "zimbraServiceInstalled $p ";
+    if ($p eq "proxy") { $installedServiceStr .= "zimbraServiceInstalled imapproxy ";}
+    else {
+        $installedServiceStr .= "zimbraServiceInstalled $p ";
+    }
   }
 
   foreach my $p (keys %enabledPackages) {
