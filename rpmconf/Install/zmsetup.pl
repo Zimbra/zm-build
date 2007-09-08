@@ -36,7 +36,7 @@ $|=1; # don't buffer stdout
 our $platform = `/opt/zimbra/libexec/get_plat_tag.sh`;
 chomp $platform;
 our $addr_space = (($platform =~ m/\w+_(\d+)/) ? "$1" : "32");
-my $logfile = "/tmp/zmsetup.log.$$";
+my $logfile = "/tmp/zmsetup.log.debug";
 open LOGFILE, ">$logfile" or die "Can't open $logfile: $!\n";
 
 my $ol = select (LOGFILE);
@@ -98,9 +98,11 @@ my %packageServiceMap = (
   snmp      => "zimbra-snmp",
   ldap      => "zimbra-ldap",
   spell     => "zimbra-spell",
+  stats     => "zimbra-core",
 );
 
 my %installedPackages = ();
+my %prevInstalledPackages = ();
 my %enabledPackages = ();
 
 my $zimbraHome = "/opt/zimbra";
@@ -256,8 +258,46 @@ sub getInstalledPackages {
       $installedPackages{$p} = $p;
     }
   }
+
+  # get list of previously installed packages on upgrade  
+  if ($newinstall == 0) {
+    $config{zimbra_server_hostname} = getLocalConfig ("zimbra_server_hostname")
+      if ($config{zimbra_server_hostname} eq "");
+    detail ("DEBUG: zimbra_server_hostname=$config{zimbra_server_hostname}") 
+      if $options{d};
+
+    $config{ldap_url} = getLocalConfig ("ldap_url")
+      if ($config{ldap_url} eq "");
+    detail ("DEBUG: ldap_url=$config{ldap_url}") 
+      if $options{d};
+
+    if (index($config{ldap_url}, $config{zimbra_server_hostname}) != -1) {
+      detail ("zimbra_server_hostname contained in ldap_url checking ldap status");
+      if (startLdap()) {return 1;}
+    } else {
+      detail ("zimbra_server_hostname not in ldap_url not starting slapd");
+    }
+    detail("Getting installed services from ldap");
+    open(ZMPROV, "$ZMPROV gs $config{zimbra_server_hostname}|");
+    while (<ZMPROV>) {
+      chomp;
+      if (/zimbraServiceInstalled:\s(.*)/) {
+        my $service = $1;
+        if (exists $packageServiceMap{$service}) {
+          detail ("Marking $service as previously installed.")
+            if ($debug);
+          $prevInstalledPackages{$packageServiceMap{$service}} = "Installed";
+        } else {
+          progress("WARNING: Unknown package installed for $service.\n");
+        }
+      } else {
+        detail ("DEBUG: skipping not zimbraServiceInstalled =>  $_") if $debug;
+      }
+    } 
+  }
   
 }
+
 sub isEnabled {
   my $package = shift;
   detail("checking isEnabled $package");
@@ -302,17 +342,25 @@ sub isEnabled {
     open(ZMPROV, "$ZMPROV gs $config{zimbra_server_hostname}|");
     while (<ZMPROV>) {
       chomp;
-      if (/^zimbraServiceEnabled:\s(.*)/) {
-        detail ("Marking $packageServiceMap{$1} as an enabled service")
-          if $debug;
-        $enabledPackages{$packageServiceMap{$1}} = "Enabled";
+      if (/zimbraServiceEnabled:\s(.*)/) {
+        my $service = $1;
+        if (exists $packageServiceMap{$service}) {
+          detail ("Marking $service as an enabled service.")
+            if ($debug);
+          $enabledPackages{$packageServiceMap{$service}} = "Enabled";
+        } else {
+          progress("WARNING: Unknown package installed for $service.\n");
+        }
       } else {
         detail ("DEBUG: skipping not zimbraServiceEnabled => $_") if $debug;
       }
     } 
     foreach my $p (@packageList) {
-      if (isInstalled($p) and not defined $enabledPackages{$p}) {
-        detail("Marking $p as disabled");
+      if (isInstalled($p) and not defined $prevInstalledPackages{$p}) {
+        detail("Marking $p as installed. Services for $p will be enabled.");
+        $enabledPackages{$p} = "Enabled";
+      } elsif (isInstalled($p) and not defined $enabledPackages{$p}) {
+        detail("Marking $p as disabled.");
         $enabledPackages{$p} = "Disabled";
       }
     }
