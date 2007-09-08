@@ -689,9 +689,6 @@ sub setDefaults {
     # bug. we shouldn't update this on upgrade.
     $config{NOTEBOOKPASS} = genRandomPass();
 
-    $config{zimbra_ldap_userdn} = "uid=zimbra,cn=admins,cn=zimbra"
-      if ($config{zimbra_ldap_userdn} eq "");
-
     # license files locations this is associated with the store
     # for now as there is a dependancy on the store jar file. 
     $config{DEFAULTLICENSEFILE} = "/opt/zimbra/conf/ZCSLicense.xml" 
@@ -709,6 +706,9 @@ sub setDefaults {
     $config{zimbraPrefTimeZoneId} = '(GMT-08.00) Pacific Time (US & Canada)';
   }
   $config{CREATEADMIN} = "admin\@$config{CREATEDOMAIN}";
+
+  $config{zimbra_ldap_userdn} = "uid=zimbra,cn=admins,cn=zimbra"
+    if ($config{zimbra_ldap_userdn} eq "");
 
   $config{SMTPSOURCE} = $config{CREATEADMIN};
   $config{SMTPDEST} = $config{CREATEADMIN};
@@ -2946,7 +2946,7 @@ sub zimletCleanup {
     detail("Unable to contact $ldap_master_url: $!");
     return 1;
   }
-  my $ldap_dn = "uid=zimbra,cn=admins,cn=zimbra";
+  my $ldap_dn = $config{zimbra_ldap_userdn};
   my $ldap_base = "cn=zimlets,cn=zimbra";
   my $result = $ldap->bind($ldap_dn, password => $ldap_pass);
   unless ($result->code()) {
