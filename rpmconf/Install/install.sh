@@ -176,8 +176,16 @@ if [ $UPGRADE = "yes" ]; then
 
 fi
 
+if [ "x$LICENSE" != "x" ] && [ -f "$LICENSE" ]; then
+  echo "Installing /opt/zimbra/conf/ZCSLicense.xml"
+  if [ ! -d "/opt/zimbra/conf" ]; then
+    mkdir -p /opt/zimbra/conf
+  fi
+  cp -f $LICENSE /opt/zimbra/conf/ZCSLicense.xml
   chown zimbra:zimbra /opt/zimbra/conf/ZCSLicense.xml
   chmod 644 /opt/zimbra/conf/ZCSLicense.xml
+fi
+
 if [ $SOFTWAREONLY = "yes" ]; then
 	
 	echo ""
@@ -194,9 +202,6 @@ fi
 #
 # Installation complete, now configure
 #
-if [ x"$LICENSE" != "x" ] && [ -e $LICENSE ]; then
-  cp $LICENSE /opt/zimbra/conf/ZCSLicense.xml
-fi
 
 
 if [ x$DEFAULTFILE != "x" ]; then
