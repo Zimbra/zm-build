@@ -1307,9 +1307,6 @@ sub upgrade457GA {
 	  my $threads = (split(/\s+/, `su - zimbra -c "$ZMPROV gcf zimbraPop3NumThreads"`))[-1];
     main::runAsZimbra("$ZMPROV mcf zimbraPop3NumThreads 100")
       if ($threads eq "20");
-    #bug 19973 work around openldap bug
-    stopLdap();
-    main::runAsZimbra("/opt/zimbra/sleepycat/bin/db_recover -h /opt/zimbra/openldap-data");
   }
   # migrate amavis data
   migrateAmavisDB("2.5.2");
@@ -2017,6 +2014,8 @@ sub migrateLdap {
 			`chown -R zimbra:zimbra /opt/zimbra/openldap-data`;
 			main::runAsZimbra("/opt/zimbra/openldap/sbin/slapadd -b '' -f /opt/zimbra/conf/slapd.conf -l /opt/zimbra/openldap-data.prev/ldap.bak");
 		} else {
+                        stopLdap();
+                        main::runAsZimbra("/opt/zimbra/sleepycat/bin/db_recover -h /opt/zimbra/openldap-data");
 			main::runAsZimbra("/opt/zimbra/openldap/sbin/slapindex -b '' -f /opt/zimbra/conf/slapd.conf");
 		}
 		if (startLdap()) {return 1;} 
