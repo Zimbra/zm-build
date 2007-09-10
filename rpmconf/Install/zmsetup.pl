@@ -36,7 +36,7 @@ $|=1; # don't buffer stdout
 our $platform = `/opt/zimbra/libexec/get_plat_tag.sh`;
 chomp $platform;
 our $addr_space = (($platform =~ m/\w+_(\d+)/) ? "$1" : "32");
-my $logfile = "/tmp/zmsetup.log.debug";
+my $logfile = "/tmp/zmsetup.log.$$";
 open LOGFILE, ">$logfile" or die "Can't open $logfile: $!\n";
 
 my $ol = select (LOGFILE);
