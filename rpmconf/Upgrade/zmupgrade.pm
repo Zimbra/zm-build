@@ -1274,16 +1274,18 @@ sub upgrade457GA {
     main::runAsZimbra("$ZMPROV mcf zimbraPop3NumThreads 100")
       if ($threads eq "20");
   }
-  # migrate amavis data 
-  migrateAmavisDB("2.5.2");
+  if (isInstalled("zimbra-mta")) {
+    # migrate amavis data 
+    migrateAmavisDB("2.5.2");
+  }
 
-	if (isInstalled("zimbra-store")) {
+  if (isInstalled("zimbra-store")) {
     # 19749
     updateMySQLcnf();
 		if (startSql()) { return 1; }
 		main::runAsZimbra("perl -I${scriptDir} ${scriptDir}/migrateLargeMetadata.pl -a");
 		stopSql();
-	}
+  }
 
   if (isInstalled("zimbra-logger")) {
     updateLoggerMySQLcnf();
