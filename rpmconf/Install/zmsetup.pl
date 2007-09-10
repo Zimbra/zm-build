@@ -2580,6 +2580,8 @@ sub configSetupLdap {
     if ($ldapPassChanged) {
       progress ( "Setting ldap password..." );
       if ( -f "/opt/zimbra/openldap-data/id2entry.bdb") {
+        stopLdap();
+        runAsZimbra("/opt/zimbra/sleepycat/bin/db_recover -h /opt/zimbra/openldap-data");
         runAsZimbra 
           ("/opt/zimbra/openldap/sbin/slapindex -b '' -q -f /opt/zimbra/conf/slapd.conf");
       }
@@ -3480,6 +3482,7 @@ sub startLdap {
   my $rc = runAsZimbra("/opt/zimbra/bin/ldap status");
   if ($rc) { 
     main::progress("Starting ldap\n");
+    runAsZimbra("/opt/zimbra/sleepycat/bin/db_recover -h /opt/zimbra/openldap-data");
     $rc = runAsZimbra ("/opt/zimbra/openldap/sbin/slapindex -b '' -q -f /opt/zimbra/conf/slapd.conf");
     $rc = runAsZimbra ("/opt/zimbra/libexec/zmldapapplyldif");
     $rc = runAsZimbra ("/opt/zimbra/bin/ldap status");
