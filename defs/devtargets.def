@@ -123,7 +123,7 @@ $(DEV_INSTALL_ROOT)/$(AMAVISD_DIR): $(DEV_INSTALL_ROOT)
 devperllibs: 
 	mkdir -p $(DEV_INSTALL_ROOT)/zimbramon/lib
 	(cd $(DEV_INSTALL_ROOT)/zimbramon/lib; \
-	tar xzf $(PERL_LIB_SOURCE)/builds/perllib.tgz)
+	tar xzf $(PERL_LIB_SOURCE)/perllib.tgz)
 	cp -fR $(BUILD_ROOT)/lib/Zimbra $(DEV_INSTALL_ROOT)/zimbramon/lib
 
 $(DEV_INSTALL_ROOT)/zimbramon: $(DEV_INSTALL_ROOT) devperllibs
