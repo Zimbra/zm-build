@@ -1308,8 +1308,10 @@ sub upgrade457GA {
     main::runAsZimbra("$ZMPROV mcf zimbraPop3NumThreads 100")
       if ($threads eq "20");
   }
-  # migrate amavis data
-  migrateAmavisDB("2.5.2");
+  if (isInstalled("zimbra-mta")) {
+    # migrate amavis data 
+    migrateAmavisDB("2.5.2");
+  }
 	return 0;
 }
 sub upgrade460BETA {
@@ -1325,8 +1327,10 @@ sub upgrade460RC1 {
 sub upgrade460GA {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
 	main::progress("Updating from 4.6.0_GA\n");
+  if (isInstalled("zimbra-store")) {
     # 19749
     updateMySQLcnf();
+  }
   if (isInstalled("zimbra-logger")) {
     updateLoggerMySQLcnf();
   }
