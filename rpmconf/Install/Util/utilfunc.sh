@@ -1206,7 +1206,11 @@ getInstallPackages() {
     if [ $UPGRADE = "yes" ]; then
       askYN "Install $i" "N"
     else
-      askYN "Install $i" "Y"
+      if [ $i = "zimbra-proxy" ]; then
+         askYN "Install $i" "N"
+      else
+         askYN "Install $i" "Y"
+      fi
     fi
 
     if [ $response = "yes" ]; then
