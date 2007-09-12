@@ -2016,6 +2016,7 @@ sub createProxyMenu {
 
     }
   }
+  return $lm;
 }
 
 sub createStoreMenu {
