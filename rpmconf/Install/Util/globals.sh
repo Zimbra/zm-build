@@ -33,12 +33,11 @@ zimbra-snmp \
 zimbra-store \
 zimbra-apache \
 zimbra-spell \
-zimbra-cluster \
-zimbra-proxy"
+zimbra-cluster"
 
 SERVICES=""
 
-OPTIONAL_PACKAGES="zimbra-qatest"
+OPTIONAL_PACKAGES="zimbra-proxy zimbra-qatest"
 
 PACKAGE_DIR=`dirname $0`/packages
 
