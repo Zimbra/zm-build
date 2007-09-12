@@ -88,6 +88,7 @@ my @packageList = (
   "zimbra-apache",
   "zimbra-spell",
   "zimbra-cluster",
+  "zimbra-proxy",
   );
 
 my %packageServiceMap = (
@@ -100,6 +101,7 @@ my %packageServiceMap = (
   ldap      => "zimbra-ldap",
   spell     => "zimbra-spell",
   stats     => "zimbra-core",
+  imapproxy     => "zimbra-proxy",
 );
 
 my %installedPackages = ();
@@ -680,7 +682,11 @@ sub setDefaults {
   $config{POPSSLPORT} = 995;
   $config{HTTPPORT} = 80;
   $config{HTTPSPORT} = 443;
-  $config{USEIMAPPROXY} = "no";
+  if(isInstalled("zimbra-proxy")) {
+     $config{USEIMAPPROXY} = "yes";
+  } else {
+     $config{USEIMAPPROXY} = "no";
+  }
   $config{IMAPPROXYPORT} = 7143;
   $config{IMAPSSLPROXYPORT} = 7993;
   $config{POPPROXYPORT} = 7110;
@@ -1644,6 +1650,8 @@ sub configurePackage {
     configureStore($package);
   } elsif ($package eq "zimbra-cluster") {
     configureCluster($package);
+  } elsif ($package eq "zimbra-proxy") {
+    configureProxy($package);
   }
 }
 
@@ -1731,6 +1739,8 @@ sub createPackageMenu {
     return createStoreMenu($package);
   } elsif ($package eq "zimbra-cluster") {
     return createClusterMenu($package);
+  } elsif ($package eq "zimbra-proxy") {
+    return createProxyMenu($package)
   }
 }
 sub createLdapMenu {
@@ -1960,6 +1970,54 @@ sub configureMta {
   displayMenu($lm);
 }
 
+sub createProxyMenu {
+  my $package = shift;
+  my $lm = genPackageMenu($package);
+
+  $$lm{title} = "Proxy configuration";
+
+  $$lm{createsub} = \&createProxyMenu;
+  $$lm{createarg} = $package;
+
+  my $i = 2;
+  if (isEnabled($package)) {
+    $$lm{menuitems}{$i} = { 
+      "prompt" => "Enable POP/IMAP proxy:", 
+      "var" => \$config{USEIMAPPROXY}, 
+      "callback" => \&setUseImapProxy,
+      };
+    $i++;
+    if ($config{USEIMAPPROXY} eq "yes") {
+
+      $$lm{menuitems}{$i} = { 
+        "prompt" => "IMAP proxy port:", 
+        "var" => \$config{IMAPPROXYPORT}, 
+        "callback" => \&setImapProxyPort,
+        };
+      $i++;
+      $$lm{menuitems}{$i} = { 
+        "prompt" => "IMAP SSL proxy port:", 
+        "var" => \$config{IMAPSSLPROXYPORT}, 
+        "callback" => \&setImapSSLProxyPort,
+        };
+      $i++;
+      $$lm{menuitems}{$i} = { 
+        "prompt" => "POP proxy port:", 
+        "var" => \$config{POPPROXYPORT}, 
+        "callback" => \&setPopProxyPort,
+        };
+      $i++;
+      $$lm{menuitems}{$i} = { 
+        "prompt" => "POP SSL proxy port:", 
+        "var" => \$config{POPSSLPROXYPORT}, 
+        "callback" => \&setPopSSLProxyPort,
+        };
+      $i++;
+
+    }
+  }
+}
+
 sub createStoreMenu {
   my $package = shift;
   my $lm = genPackageMenu($package);
@@ -2076,41 +2134,6 @@ sub createStoreMenu {
     $i++;
 
     $$lm{menuitems}{$i} = { 
-      "prompt" => "Enable POP/IMAP proxy:", 
-      "var" => \$config{USEIMAPPROXY}, 
-      "callback" => \&setUseImapProxy,
-      };
-    $i++;
-    if ($config{USEIMAPPROXY} eq "yes") {
-
-      $$lm{menuitems}{$i} = { 
-        "prompt" => "IMAP proxy port:", 
-        "var" => \$config{IMAPPROXYPORT}, 
-        "callback" => \&setImapProxyPort,
-        };
-      $i++;
-      $$lm{menuitems}{$i} = { 
-        "prompt" => "IMAP SSL proxy port:", 
-        "var" => \$config{IMAPSSLPROXYPORT}, 
-        "callback" => \&setImapSSLProxyPort,
-        };
-      $i++;
-      $$lm{menuitems}{$i} = { 
-        "prompt" => "POP proxy port:", 
-        "var" => \$config{POPPROXYPORT}, 
-        "callback" => \&setPopProxyPort,
-        };
-      $i++;
-      $$lm{menuitems}{$i} = { 
-        "prompt" => "POP SSL proxy port:", 
-        "var" => \$config{POPSSLPROXYPORT}, 
-        "callback" => \&setPopSSLProxyPort,
-        };
-      $i++;
-
-    }
-
-    $$lm{menuitems}{$i} = { 
       "prompt" => "IMAP server port:", 
       "var" => \$config{IMAPPORT}, 
       "callback" => \&setImapPort,
@@ -2162,6 +2185,14 @@ sub createStoreMenu {
     }
   }
   return $lm;
+}
+
+sub configureProxy {
+  my $package = shift;
+
+  my $lm = createProxyMenu($package);
+
+  displayMenu($lm);
 }
 
 sub configureStore {
