@@ -1166,6 +1166,9 @@ getInstallPackages() {
   fi
 
   APACHE_SELECTED="no"
+  LOGGER_SELECTED="no"
+  STORE_SELECTED="no"
+  CLUSTER_SELECTED="no"
 
   for i in $AVAILABLE_PACKAGES; do
     # If we're upgrading, and it's installed, don't ask stoopid questions
@@ -1179,12 +1182,24 @@ getInstallPackages() {
         INSTALL_PACKAGES="$INSTALL_PACKAGES $i"
         if [ $i = "zimbra-apache" ]; then
           APACHE_SELECTED="yes"
+        elif [ $i = "zimbra-logger" ]; then
+          LOGGER_SELECTED="yes"
+        elif [ $i = "zimbra-store" ]; then
+          STORE_SELECTED="yes"
+        elif [ $i = "zimbra_cluster" ]; then
+          CLUSTER_SELECTED="yes"
         fi
         continue
       fi
     fi
 
     if [ $i = "zimbra-apache" ]; then
+      continue
+    fi
+
+    # Only prompt for cluster on supported platforms
+    echo $PLATFORM | egrep -q "RHEL|CentOS"
+    if [ $? != 0 -a $i = "zimbra-cluster" ]; then
       continue
     fi
 
@@ -1195,10 +1210,29 @@ getInstallPackages() {
     fi
 
     if [ $response = "yes" ]; then
+      if [ $i = "zimbra-logger" ]; then
+        LOGGER_SELECTED="yes"
+      elif [ $i = "zimbra-store" ]; then
+        STORE_SELECTED="yes"
+      elif [ $i = "zimbra_cluster" ]; then
+        CLUSTER_SELECTED="yes"
+      fi
+
       if [ $i = "zimbra-spell" -a $APACHE_SELECTED = "no" ]; then
         APACHE_SELECTED="yes"
         INSTALL_PACKAGES="$INSTALL_PACKAGES zimbra-apache"
       fi
+
+      if [ $i = "zimbra-store" -a $LOGGER_SELECTED = "no" -a $CLUSTER_SELECTED = "yes" ]; then
+        LOGGER_SELECTED="yes"
+        INSTALL_PACKAGES="$INSTALL_PACKAGES zimbra-logger"
+      fi
+
+      if [ $i = "zimbra-cluster" -a $STORE_SELECTED = "yes" -a $LOGGER_SELECTED = "no" ]; then
+        LOGGER_SELECTED="yes"
+        INSTALL_PACKAGES="$INSTALL_PACKAGES zimbra-logger"
+      fi
+
       INSTALL_PACKAGES="$INSTALL_PACKAGES $i"
     fi
 

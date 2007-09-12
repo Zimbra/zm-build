@@ -33,6 +33,7 @@ zimbra-snmp \
 zimbra-store \
 zimbra-apache \
 zimbra-spell \
+zimbra-cluster \
 zimbra-proxy"
 
 SERVICES=""

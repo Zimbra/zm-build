@@ -36,7 +36,7 @@ $|=1; # don't buffer stdout
 our $platform = `/opt/zimbra/libexec/get_plat_tag.sh`;
 chomp $platform;
 our $addr_space = (($platform =~ m/\w+_(\d+)/) ? "$1" : "32");
-my $logfile = "/tmp/zmsetup.log.debug";
+my $logfile = "/tmp/zmsetup.log.$$";
 open LOGFILE, ">$logfile" or die "Can't open $logfile: $!\n";
 
 my $ol = select (LOGFILE);
@@ -87,6 +87,7 @@ my @packageList = (
   "zimbra-logger",
   "zimbra-apache",
   "zimbra-spell",
+  "zimbra-cluster",
   );
 
 my %packageServiceMap = (
@@ -715,6 +716,13 @@ sub setDefaults {
   $config{DOCREATEDOMAIN} = "no";
   $config{CREATEDOMAIN} = $config{HOSTNAME};
   $config{DOCREATEADMIN} = "no";
+
+  if (isEnabled("zimbra-cluster")) {
+    $config{zimbraClusterType} = "RedHat"; 
+  } else {
+    $config{zimbraClusterType} = "none";
+  }
+
   if (isEnabled("zimbra-store")) {
     progress  "setting defaults for zimbra-store.\n" if $options{d};
     $config{MTAAUTHHOST} = $config{HOSTNAME};
@@ -751,9 +759,10 @@ sub setDefaults {
     progress "setting defaults for zimbra-ldap.\n" if $options{d};
     $config{DOCREATEDOMAIN} = "yes" if $newinstall;
     $config{LDAPPASS} = genRandomPass();
-    $config{zimbraPrefTimeZoneId} = '(GMT-08.00) Pacific Time (US & Canada)';
   }
   $config{CREATEADMIN} = "admin\@$config{CREATEDOMAIN}";
+
+  $config{zimbraPrefTimeZoneId} = '(GMT-08.00) Pacific Time (US & Canada)';
 
   $config{zimbra_ldap_userdn} = "uid=zimbra,cn=admins,cn=zimbra"
     if ($config{zimbra_ldap_userdn} eq "");
@@ -1058,6 +1067,17 @@ sub askFileName {
     if ($v ne "" && -f $v) {return $v;}
     print "A non-blank answer is required\n" if ($v eq "");;
     print "$v must exist and be readable\n" if (!-f $v && $v ne "");
+  }
+}
+
+sub setClusterType {
+  while (1) {
+    my $m = askNonBlank("Cluster Type:", $config{zimbraClusterType});
+    if ($m eq "RedHat" || $m eq "Veritas" || $m eq "none" ) {
+      $config{zimbraClusterType} = $m;
+      return;
+    }
+    print "Supported cluster types are RedHat, Veritas or none\n";
   }
 }
 
@@ -1622,6 +1642,8 @@ sub configurePackage {
     configureSpell($package);
   } elsif ($package eq "zimbra-store") {
     configureStore($package);
+  } elsif ($package eq "zimbra-cluster") {
+    configureCluster($package);
   }
 }
 
@@ -1707,6 +1729,8 @@ sub createPackageMenu {
     return createSpellMenu($package);
   } elsif ($package eq "zimbra-store") {
     return createStoreMenu($package);
+  } elsif ($package eq "zimbra-cluster") {
+    return createClusterMenu($package);
   }
 }
 sub createLdapMenu {
@@ -1793,6 +1817,34 @@ sub configureSpell {
   my $package = shift;
 
   my $lm = createSpellMenu($package);
+
+  displayMenu($lm);
+}
+sub createClusterMenu {
+  my $package = shift;
+  my $lm = genPackageMenu($package);
+
+  $$lm{title} = "Cluster configuration";
+
+  $$lm{createsub} = \&createClusterMenu;
+  $$lm{createarg} = $package;
+
+  my $i = 2;
+  if (isEnabled($package)) {
+    $$lm{menuitems}{$i} = { 
+      "prompt" => "Cluster type:", 
+      "var" => \$config{zimbraClusterType}, 
+      "callback" => \&setClusterType,
+      };
+    $i++;
+  }
+  return $lm;
+}
+
+sub configureCluster {
+  my $package = shift;
+
+  my $lm = createClusterMenu($package);
 
   displayMenu($lm);
 }
@@ -2329,6 +2381,7 @@ sub createMainMenu {
   foreach (@packageList) {
     if ($_ eq "zimbra-core") {next;}
     if ($_ eq "zimbra-apache") {next;}
+    if ($_ eq "zimbra-cluster") {next;}
     if (defined($installedPackages{$_})) {
       if ($_ eq "zimbra-logger") {
         $mm{menuitems}{$i} = { 
@@ -2988,6 +3041,10 @@ sub configSetProxyPrefs {
   }
 }
 
+sub configSetCluster {
+  runAsZimbra("$ZMPROV mcf zimbraClusterType $config{zimbraClusterType}"); 
+}
+
 sub zimletCleanup {
   my $ldap_pass = getLocalConfig("ldap_root_password");
   my $ldap_master_url = getLocalConfig("ldap_master_url");
@@ -3282,6 +3339,7 @@ sub configSetEnabledServices {
       next;
     }
     if ($p eq "zimbra-apache") {next;}
+    if ($p eq "zimbra-cluster") {next;}
     $p =~ s/zimbra-//;
     if ($p eq "proxy") { $installedServiceStr .= "zimbraServiceInstalled imapproxy ";}
     else {
@@ -3295,6 +3353,7 @@ sub configSetEnabledServices {
       next;
     }
     if ($p eq "zimbra-apache") {next;}
+    if ($p eq "zimbra-cluster") {next;}
     if ($enabledPackages{$p} eq "Enabled") {
       $p =~ s/zimbra-//;
       if ($p eq "store") {$p = "mailbox";}
@@ -3392,6 +3451,10 @@ sub applyConfig {
 
   if (isInstalled("zimbra-proxy")) {
     configSetProxyPrefs();
+  }
+
+  if (isInstalled("zimbra-cluster")) {
+    configSetCluster();
   }
 
   configCreateDomain();
@@ -3561,6 +3624,12 @@ sub setupCrontab {
   } elsif ( -f "/opt/zimbra/bin/zmschedulebackup" && scalar @backupSchedule == 0 && !$newinstall) {
     detail("No backup schedule found: installing default schedule.");
     `su - zimbra -c "/opt/zimbra/bin/zmschedulebackup -D" > /dev/null 2>&1`;
+  }
+
+  if (isEnabled("zimbra-cluster")) {
+    mkdir("/opt/zimbra/conf/cron");
+    runAsZimbra("mkdir -p /opt/zimbra/conf/crontab");
+    runAsZimbra("crontab -l > /opt/zimbra/conf/crontab");
   }
   progress ("Done\n");
   configLog("setupCrontab");
