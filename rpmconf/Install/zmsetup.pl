@@ -95,6 +95,7 @@ my %packageServiceMap = (
   mta       => "zimbra-mta",
   logger    => "zimbra-logger",
   mailbox   => "zimbra-store",
+  imapproxy => "zimbra-store",
   snmp      => "zimbra-snmp",
   ldap      => "zimbra-ldap",
   spell     => "zimbra-spell",
