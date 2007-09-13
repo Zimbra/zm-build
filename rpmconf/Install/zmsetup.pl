@@ -2413,7 +2413,6 @@ sub createMainMenu {
   foreach (@packageList) {
     if ($_ eq "zimbra-core") {next;}
     if ($_ eq "zimbra-apache") {next;}
-    if ($_ eq "zimbra-cluster") {next;}
     if (defined($installedPackages{$_})) {
       if ($_ eq "zimbra-logger") {
         $mm{menuitems}{$i} = { 
