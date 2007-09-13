@@ -211,6 +211,10 @@ checkDatabaseIntegrity() {
             break
           elif [ $response = "yes" ]; then
             echo "Verifying integrity of message store databases.  This may take a while."
+            su - zimbra -c "/opt/zimbra/bin/mysqladmin -s ping" 2>/dev/null
+            if [ $? != 0 ]; then
+              su - zimbra -c "/opt/zimbra/bin/mysql.server start" 2> /dev/null
+            fi
             perl -I/opt/zimbra/zimbramon/lib bin/zmdbintegrityreport -v -r
             if [ $? != 0 ]; then
               exit $?
