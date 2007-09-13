@@ -52,6 +52,10 @@ else
   ln -s /opt/zimbra/zimbramon/rrdtool-1.2.23 /opt/zimbra/zimbramon/rrdtool
 fi
 
+if [ -d "/opt/zimbra/logger/db" ]; then
+  chown zimbra:zimbra /opt/zimbra/logger/db
+fi
+
 if [ -f "/opt/zimbra/conf/ca/ca.pem" ]; then
   ln -f -s ca.pem /opt/zimbra/conf/ca/`openssl x509 -hash -noout -in /opt/zimbra/conf/ca/ca.pem`.0
 fi
@@ -137,6 +141,7 @@ mkdir /opt/zimbra/.ssh
 chown zimbra:zimbra /opt/zimbra/.ssh
 mkdir /opt/zimbra/zmstat
 chown zimbra:zimbra /opt/zimbra/zmstat
+
 
 # 64 bit jvm doesn't support the dump
 if [ "x$BIT" = "x64" ]; then
