@@ -1555,6 +1555,9 @@ sub upgrade500BETA4 {
           if ($cur_value eq "");
       }
 	  }
+
+    # 20009
+    main::runAsZimbra("$ZMPROV mcf +zimbraAccountExtraObjectClass amavisAccount");
   }
     
 	return 0;
