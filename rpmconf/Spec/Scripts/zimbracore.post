@@ -52,6 +52,10 @@ else
   ln -s /opt/zimbra/zimbramon/rrdtool-1.0.49 /opt/zimbra/zimbramon/rrdtool
 fi
 
+if [ -d "/opt/zimbra/logger/db" ]; then
+  chown zimbra:zimbra /opt/zimbra/logger/db
+fi
+
 if [ x"$PLAT" = "xRHEL5" -o x"$PLAT" = "xCentOS5" ]; then
   sed -i -e 's:\(^Defaults.*requiretty\):#\1:' /etc/sudoers
 elif [ x"$PLAT" = "xRHEL5_64" -o x"$PLAT" = "xCentOS5_64" ]; then
@@ -133,6 +137,7 @@ mkdir /opt/zimbra/.ssh
 chown zimbra:zimbra /opt/zimbra/.ssh
 mkdir /opt/zimbra/zmstat
 chown zimbra:zimbra /opt/zimbra/zmstat
+
 
 # 64 bit jvm doesn't support the dump
 if [ "x$BIT" = "x64" ]; then
