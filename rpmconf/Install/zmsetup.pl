@@ -3659,8 +3659,8 @@ sub setupCrontab {
 
   if (isEnabled("zimbra-cluster")) {
     mkdir("/opt/zimbra/conf/cron");
-    runAsZimbra("mkdir -p /opt/zimbra/conf/crontab");
-    runAsZimbra("crontab -l > /opt/zimbra/conf/crontab");
+    runAsZimbra("mkdir -p /opt/zimbra/conf/cron");
+    runAsZimbra("crontab -l > /opt/zimbra/conf/cron/crontab");
   }
   progress ("Done\n");
   configLog("setupCrontab");
