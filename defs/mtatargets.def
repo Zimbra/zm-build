@@ -87,7 +87,7 @@ $(BUILD_ROOT)/zimbramta.spec:
 		$(BUILD_ROOT)/zimbramta.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/clamav-$(CLAMAV_VERSION)/share" >> \
 		$(BUILD_ROOT)/zimbramta.spec
-	echo "%attr(-, zimbra, zimbra) /opt/zimbra/postfix-$(POSTFIX_VERSION)" >> \
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/postfix-2.2.9" >> \
 		$(BUILD_ROOT)/zimbramta.spec
 
 mta_stage: $(MTA_COMPONENTS)
@@ -100,10 +100,13 @@ $(MTA_DEST_DIR)/$(POSTFIX_DIR): $(MTA_DEST_DIR)
 	(cd $(MTA_DEST_DIR); tar xzf $(POSTFIX_SOURCE).tgz;)
 	rm -f $(MTA_DEST_DIR)/$(POSTFIX_DIR)/conf/main.cf
 	cp $(SERVICE_DIR)/conf/postfix/master.cf $(MTA_DEST_DIR)/$(POSTFIX_DIR)/conf/master.cf
-	cp -f $(THIRD_PARTY)/PostFix/builds/qshape.pl-$(POSTFIX_VERSION) $(MTA_DEST_DIR)/$(POSTFIX_DIR)/sbin/qshape.pl
+	cp -f $(THIRD_PARTY)/PostFix/PostFix-$(POSTFIX_VERSION)/builds/qshape.pl $(MTA_DEST_DIR)/$(POSTFIX_DIR)/sbin/qshape.pl
 
+$(CLAMAV_SOURCE).tgz:
+	@echo "*** Creating clamav"
+	(cd $(THIRD_PARTY)/$(CLAMAV_DIR) ; make)
 
-$(MTA_DEST_DIR)/$(CLAMAV_DIR): $(MTA_DEST_DIR)
+$(MTA_DEST_DIR)/$(CLAMAV_DIR): $(MTA_DEST_DIR) $(CLAMAV_SOURCE).tgz
 	@echo "*** Creating clamav"
 	(cd $(MTA_DEST_DIR); tar xzf $(CLAMAV_SOURCE).tgz;)
 	mkdir -p $(MTA_DEST_DIR)/$(CLAMAV_DIR)-$(CLAMAV_VERSION)/db
@@ -114,7 +117,7 @@ $(MTA_DEST_DIR)/$(AMAVISD_DIR)-new-$(AMAVISD_VERSION): $(MTA_DEST_DIR)
 	@echo "*** Creating amavisd"
 	mkdir -p $@/sbin
 	cp -f $(AMAVISD_SOURCE)/amavisd $@/sbin
-	sed -e 's!/var/amavis/db!/opt/zimbra/amavisd/db!' $(AMAVISD_SOURCE)/amavisd-nanny > $@/sbin/amavisd-nanny
+	cp -f $(AMAVISD_SOURCE)/amavisd-nanny $@/sbin
 	mkdir -p $@/.spamassassin/init
 	cp -f $(PACKAGE_CONF_DIR)/SpamAssassin/bayes* $@/.spamassassin/init
 

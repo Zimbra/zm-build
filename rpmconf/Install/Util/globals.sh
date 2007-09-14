@@ -32,12 +32,11 @@ zimbra-mta \
 zimbra-snmp \
 zimbra-store \
 zimbra-apache \
-zimbra-spell \
-zimbra-cluster"
+zimbra-spell"
 
 SERVICES=""
 
-OPTIONAL_PACKAGES="zimbra-proxy zimbra-qatest"
+OPTIONAL_PACKAGES="zimbra-qatest"
 
 PACKAGE_DIR=`dirname $0`/packages
 

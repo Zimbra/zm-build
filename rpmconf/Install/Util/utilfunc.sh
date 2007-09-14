@@ -255,7 +255,7 @@ checkRecentBackup() {
               break
             fi
           done
-        else 
+        else
           echo "Automated install detected...continuing."
         fi
       fi
@@ -353,7 +353,6 @@ EOF
     exit 1
   fi
 
-
   # limitation of ext3
   if [ -d "/opt/zimbra/db/data" ]; then
     echo "Checking current number of databases..."
@@ -378,8 +377,6 @@ EOF
 
 
 checkRequiredSpace() {
-  # /tmp must have 100MB
-  # /opt/zimbra must have 5GB
   echo "Checking required space for zimbra-core"
   TMPKB=`df -Pk /tmp | tail -1 | awk '{print $4}'`
   AVAIL=$(($TMPKB / 1024))
@@ -499,13 +496,6 @@ determineVersionType() {
 
 verifyLicenseAvailable() {
 
-  if [ x"$LICENSE" != "x" ] && [ -e $LICENSE ]; then
-    if [ ! -d "/opt/zimbra/conf" ]; then
-      mkdir -p /opt/zimbra/conf
-    fi
-    cp -f $LICENSE /opt/zimbra/conf/ZCSLicense.xml
-  fi
-
   if [ x"$AUTOINSTALL" = "xyes" ] || [ x"$UNINSTALL" = "xyes" ] || [ x"$SOFTWAREONLY" = "yes" ]; then
     return
   fi
@@ -529,7 +519,6 @@ verifyLicenseAvailable() {
   fi
 
   echo "Checking for available license file..."
-
 
   # use the tool if it exists
   if [ -f "/opt/zimbra/bin/zmlicense" ]; then
@@ -851,10 +840,12 @@ restoreCerts() {
   fi
   if [ -f "$SAVEDIR/keystore" -a -d "/opt/zimbra/tomcat/conf" ]; then
     cp $SAVEDIR/keystore /opt/zimbra/tomcat/conf/keystore
-  elif [ -f "$SAVEDIR/keystore" -a -d "/opt/zimbra/jetty/etc" ]; then
-    cp $SAVEDIR/keystore /opt/zimbra/jetty/etc/keystore
-  else 
-    cp $SAVEDIR/keystore /opt/zimbra/conf/keystore
+  fi
+  if [ -f "$SAVEDIR/perdition.key" ]; then
+    cp $SAVEDIR/perdition.key /opt/zimbra/conf/perdition.key 
+  fi
+  if [ -f "$SAVEDIR/perdition.pem" ]; then
+    cp $SAVEDIR/perdition.pem /opt/zimbra/conf/perdition.pem 
   fi
   if [ -f "$SAVEDIR/smtpd.key" ]; then
     cp $SAVEDIR/smtpd.key /opt/zimbra/conf/smtpd.key 
@@ -865,12 +856,6 @@ restoreCerts() {
   if [ -f "$SAVEDIR/slapd.crt" ]; then
     cp $SAVEDIR/slapd.crt /opt/zimbra/conf/slapd.crt 
   fi
-  if [ -f "$SAVEDIR/nginx.key" ]; then
-    cp $SAVEDIR/nginx.key /opt/zimbra/conf/nginx.key
-  fi
-  if [ -f "$SAVEDIR/nginx.crt" ]; then
-    cp $SAVEDIR/nginx.crt /opt/zimbra/conf/nginx.crt
-  fi
   mkdir -p /opt/zimbra/conf/ca
   if [ -f "$SAVEDIR/ca.key" ]; then
     cp $SAVEDIR/ca.key /opt/zimbra/conf/ca/ca.key 
@@ -878,12 +863,7 @@ restoreCerts() {
   if [ -f "$SAVEDIR/ca.pem" ]; then
     cp $SAVEDIR/ca.pem /opt/zimbra/conf/ca/ca.pem 
   fi
-  if [ -f "/opt/zimbra/tomcat/conf/keystore" ]; then
-    chown zimbra:zimbra /opt/zimbra/tomcat/conf/keystore
-  elif [ -f "/opt/zimbra/jetty/etc/keystore" ]; then
-    chown zimbra:zimbra /opt/zimbra/jetty/etc/keystore
-  fi
-  chown zimbra:zimbra /opt/zimbra/java/jre/lib/security/cacerts /opt/zimbra/conf/smtpd.key /opt/zimbra/conf/smtpd.crt /opt/zimbra/conf/slapd.crt /opt/zimbra/conf/nginx.key /opt/zimbra/conf/nginx.crt
+  chown zimbra:zimbra /opt/zimbra/java/jre/lib/security/cacerts /opt/zimbra/tomcat/conf/keystore /opt/zimbra/conf/smtpd.key /opt/zimbra/conf/smtpd.crt /opt/zimbra/conf/slapd.crt /opt/zimbra/conf/perdition.pem /opt/zimbra/conf/perdition.key
   chown -R zimbra:zimbra /opt/zimbra/conf/ca
 }
 
@@ -895,8 +875,12 @@ saveExistingConfig() {
   cp -f /opt/zimbra/java/jre/lib/security/cacerts $SAVEDIR
   if [ -f "/opt/zimbra/tomcat/conf/keystore" ]; then
     cp -f /opt/zimbra/tomcat/conf/keystore $SAVEDIR
-  elif [ -f "/opt/zimbra/jetty/etc/keystore" ]; then
-    cp -f /opt/zimbra/jetty/etc/keystore $SAVEDIR
+  fi
+  if [ -f "/opt/zimbra/conf/perdition.key" ]; then
+    cp -f /opt/zimbra/conf/perdition.key $SAVEDIR
+  fi
+  if [ -f "/opt/zimbra/conf/perdition.pem" ]; then
+    cp -f /opt/zimbra/conf/perdition.pem $SAVEDIR
   fi
   if [ -f "/opt/zimbra/conf/smtpd.key" ]; then
     cp -f /opt/zimbra/conf/smtpd.key $SAVEDIR
@@ -909,12 +893,6 @@ saveExistingConfig() {
   fi
   if [ -f "/opt/zimbra/conf/slapd.crt" ]; then
     cp -f /opt/zimbra/conf/slapd.crt $SAVEDIR
-  fi
-  if [ -f "/opt/zimbra/conf/nginx.key" ]; then
-    cp -f /opt/zimbra/conf/nginx.key $SAVEDIR
-  fi
-  if [ -f "/opt/zimbra/conf/nginx.crt" ]; then
-    cp -f /opt/zimbra/conf/nginx.crt $SAVEDIR
   fi
   if [ -f "/opt/zimbra/conf/ca/ca.key" ]; then
     cp -f /opt/zimbra/conf/ca/ca.key $SAVEDIR
@@ -956,10 +934,8 @@ removeExistingInstall() {
       echo ""
       echo "Backing up ldap"
       echo ""
-      if [ -f "/opt/zimbra/openldap/sbin/slapcat" ]; then
-        /opt/zimbra/openldap/sbin/slapcat -f /opt/zimbra/conf/slapd.conf \
-         -b '' -l /opt/zimbra/openldap-data/ldap.bak
-      fi
+      /opt/zimbra/openldap/sbin/slapcat -f /opt/zimbra/conf/slapd.conf \
+        -b '' -l /opt/zimbra/openldap-data/ldap.bak
     fi
 
     echo ""
@@ -990,7 +966,7 @@ removeExistingInstall() {
     if [ -f "/etc/sudoers" ]; then
       cat /etc/sudoers | grep -v zimbra > /tmp/sudoers
       cat /tmp/sudoers > /etc/sudoers
-      if [ $PLATFORM = "SuSEES9" -o $PLATFORM = "SuSEES10" -o $PLATFORM = "SuSE10" -o $PLATFORM = "openSUSE_10.2" -o $PLATFORM = "openSUSE_10.1" -o $PLATFORM = "SLES10_64" ]; then
+      if [ $PLATFORM = "SuSEES9" -o $PLATFORM = "SuSEES10" -o $PLATFORM = "SuSE10" -o $PLATFORM = "openSUSE_10.2" -o $PLATFORM = "openSUSE_10.1" ]; then
         chmod 640 /etc/sudoers
       else
         chmod 440 /etc/sudoers
@@ -999,23 +975,13 @@ removeExistingInstall() {
     fi
     echo ""
     echo "Removing deployed webapp directories"
-    if [ -d "/opt/zimbra/tomcat/webapps/" ]; then
-      /bin/rm -rf /opt/zimbra/tomcat/webapps/zimbra
-      /bin/rm -rf /opt/zimbra/tomcat/webapps/zimbra.war
-      /bin/rm -rf /opt/zimbra/tomcat/webapps/zimbraAdmin
-      /bin/rm -rf /opt/zimbra/tomcat/webapps/zimbraAdmin.war
-      /bin/rm -rf /opt/zimbra/tomcat/webapps/service
-      /bin/rm -rf /opt/zimbra/tomcat/webapps/service.war
-      /bin/rm -rf /opt/zimbra/tomcat/work
-    elif [ -d "/opt/zimbra/jetty/webapps" ]; then
-      /bin/rm -rf /opt/zimbra/jetty/webapps/zimbra
-      /bin/rm -rf /opt/zimbra/jetty/webapps/zimbra.war
-      /bin/rm -rf /opt/zimbra/jetty/webapps/zimbraAdmin
-      /bin/rm -rf /opt/zimbra/jetty/webapps/zimbraAdmin.war
-      /bin/rm -rf /opt/zimbra/jetty/webapps/service
-      /bin/rm -rf /opt/zimbra/jetty/webapps/service.war
-      /bin/rm -rf /opt/zimbra/jetty/work
-    fi
+    /bin/rm -rf /opt/zimbra/tomcat/webapps/zimbra
+    /bin/rm -rf /opt/zimbra/tomcat/webapps/zimbra.war
+    /bin/rm -rf /opt/zimbra/tomcat/webapps/zimbraAdmin
+    /bin/rm -rf /opt/zimbra/tomcat/webapps/zimbraAdmin.war
+    /bin/rm -rf /opt/zimbra/tomcat/webapps/service
+    /bin/rm -rf /opt/zimbra/tomcat/webapps/service.war
+    /bin/rm -rf /opt/zimbra/tomcat/work
   fi
 
   if [ $REMOVE = "yes" ]; then
@@ -1170,9 +1136,6 @@ getInstallPackages() {
   fi
 
   APACHE_SELECTED="no"
-  LOGGER_SELECTED="no"
-  STORE_SELECTED="no"
-  CLUSTER_SELECTED="no"
 
   for i in $AVAILABLE_PACKAGES; do
     # If we're upgrading, and it's installed, don't ask stoopid questions
@@ -1186,12 +1149,6 @@ getInstallPackages() {
         INSTALL_PACKAGES="$INSTALL_PACKAGES $i"
         if [ $i = "zimbra-apache" ]; then
           APACHE_SELECTED="yes"
-        elif [ $i = "zimbra-logger" ]; then
-          LOGGER_SELECTED="yes"
-        elif [ $i = "zimbra-store" ]; then
-          STORE_SELECTED="yes"
-        elif [ $i = "zimbra_cluster" ]; then
-          CLUSTER_SELECTED="yes"
         fi
         continue
       fi
@@ -1201,48 +1158,17 @@ getInstallPackages() {
       continue
     fi
 
-    # Only prompt for cluster on supported platforms
-    echo $PLATFORM | egrep -q "RHEL|CentOS"
-    if [ $? != 0 -a $i = "zimbra-cluster" ]; then
-      continue
-    fi
-
     if [ $UPGRADE = "yes" ]; then
       askYN "Install $i" "N"
     else
-      if [ $i = "zimbra-proxy" ]; then
-         askYN "Install $i" "N"
-      elif [ $i = "zimbra-cluster" ]; then
-         askYN "Install $i" "N"
-      else
-         askYN "Install $i" "Y"
-      fi
+      askYN "Install $i" "Y"
     fi
 
     if [ $response = "yes" ]; then
-      if [ $i = "zimbra-logger" ]; then
-        LOGGER_SELECTED="yes"
-      elif [ $i = "zimbra-store" ]; then
-        STORE_SELECTED="yes"
-      elif [ $i = "zimbra_cluster" ]; then
-        CLUSTER_SELECTED="yes"
-      fi
-
       if [ $i = "zimbra-spell" -a $APACHE_SELECTED = "no" ]; then
         APACHE_SELECTED="yes"
         INSTALL_PACKAGES="$INSTALL_PACKAGES zimbra-apache"
       fi
-
-      if [ $i = "zimbra-store" -a $LOGGER_SELECTED = "no" -a $CLUSTER_SELECTED = "yes" ]; then
-        LOGGER_SELECTED="yes"
-        INSTALL_PACKAGES="$INSTALL_PACKAGES zimbra-logger"
-      fi
-
-      if [ $i = "zimbra-cluster" -a $STORE_SELECTED = "yes" -a $LOGGER_SELECTED = "no" ]; then
-        LOGGER_SELECTED="yes"
-        INSTALL_PACKAGES="$INSTALL_PACKAGES zimbra-logger"
-      fi
-
       INSTALL_PACKAGES="$INSTALL_PACKAGES $i"
     fi
 
@@ -1428,9 +1354,13 @@ getPlatformVars() {
       PREREQ_LIBS="/usr/lib/libstdc++.so.6"
     elif [ $PLATFORM = "MANDRIVA2006" ]; then
       PREREQ_PACKAGES="sudo libidn11 curl fetchmail libgmp3 libxml2 libstdc++6 openssl"
-    elif [ $PLATFORM = "FC3" -o $PLATFORM = "FC4" ]; then
+    elif [ $PLATFORM = "FC4" -o $PLATFORM = "FC5" -o $PLATFORM = "FC3" ]; then
       PREREQ_PACKAGES="sudo libidn curl fetchmail gmp bind-libs vixie-cron"
-      PREREQ_LIBS="/usr/lib/libstdc++.so.5"
+      if [ $PLATFORM = "FC5" ]; then
+        PREREQ_LIBS="/usr/lib/libstdc++.so.6"
+      else 
+        PREREQ_LIBS="/usr/lib/libstdc++.so.5"
+      fi
     elif [ $PLATFORM = "FC5" -o $PLATFORM = "FC6" -o $PLATFORM = "F7" ]; then
       PREREQ_PACKAGES="sudo libidn curl fetchmail gmp bind-libs vixie-cron"
       PREREQ_LIBS="/usr/lib/libstdc++.so.6"
