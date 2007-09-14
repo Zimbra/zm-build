@@ -1019,26 +1019,27 @@ removeExistingInstall() {
   fi
 
   if [ $REMOVE = "yes" ]; then
-    echo ""
-    echo "Removing /opt/zimbra"
-    umount /opt/zimbra/amavisd/tmp > /dev/null 2>&1
-    MOUNTPOINTS=`mount | awk '{print $3}' | grep /opt/zimbra`
-    for mp in $MOUNTPOINTS; do
-      if [ x$mp != "x/opt/zimbra" ]; then
-        /bin/rm -rf ${mp}/*
-        umount -f ${mp}
-      fi
-    done
-
-    /bin/rm -rf /opt/zimbra/*
-
-    for mp in $MOUNTPOINTS; do
-      if [ x$mp != "x/opt/zimbra" ]; then
-        mkdir -p ${mp}
-        mount ${mp}
-      fi
-    done
-
+    if [ ! -L "/opt/zimbra" ]; then
+      echo ""
+      echo "Removing /opt/zimbra"
+      umount /opt/zimbra/amavisd/tmp > /dev/null 2>&1
+      MOUNTPOINTS=`mount | awk '{print $3}' | grep /opt/zimbra`
+      for mp in $MOUNTPOINTS; do
+        if [ x$mp != "x/opt/zimbra" ]; then
+          /bin/rm -rf ${mp}/*
+          umount -f ${mp}
+        fi
+      done
+  
+      /bin/rm -rf /opt/zimbra/*
+  
+      for mp in $MOUNTPOINTS; do
+        if [ x$mp != "x/opt/zimbra" ]; then
+          mkdir -p ${mp}
+          mount ${mp}
+        fi
+      done
+    fi
   else
     if [ -d /opt/zimbra/openldap/var/openldap-data/ ]; then
       if [ -d /opt/zimbra/openldap-data/ ]; then
