@@ -547,16 +547,6 @@ sub setLdapDefaults {
   if ($config{HTTPSPORT} eq 0) { $config{HTTPSPORT} = 443; }
   if ($config{MODE} eq "") { $config{MODE} = "mixed"; }
 
-  my $rc = 0xffff & system("su - zimbra -c \"$ZMPROV gs $config{HOSTNAME} | grep 'zimbraServiceEnabled: imapproxy' | sed -e 's/zimbraServiceEnabled: //' > /tmp/ld.out\"");
-  $config{USEIMAPPROXY}=`cat /tmp/ld.out`;
-
-  chomp $config{USEIMAPPROXY};
-  if ($config{USEIMAPPROXY} eq "imapproxy") {
-    $config{USEIMAPPROXY} = "yes";
-  } else {
-    $config{USEIMAPPROXY} = "no";
-  }
-
   # default domainname
   $config{zimbraDefaultDomainName} = getLdapConfigValue("zimbraDefaultDomainName");
   if ($config{zimbraDefaultDomainName} eq "") {
@@ -3388,11 +3378,9 @@ sub configSetEnabledServices {
     if ($enabledPackages{$p} eq "Enabled") {
       $p =~ s/zimbra-//;
       if ($p eq "store") {$p = "mailbox";}
+      if ($p eq "proxy") { $p = "imapproxy";}
       $enabledServiceStr .= "zimbraServiceEnabled $p ";
     }
-  }
-  if ($config{USEIMAPPROXY} eq "yes") {
-    $enabledServiceStr .= "zimbraServiceEnabled imapproxy ";
   }
 
   progress ( "Setting services on $config{HOSTNAME}..." );
