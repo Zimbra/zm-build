@@ -26,9 +26,9 @@ PATH=/opt/zimbra/bin:/opt/zimbra/zimbramon:/opt/zimbra/postfix-2.4.3.3/sbin:/opt
 export PATH
 
 if [ "x$LD_LIBRARY_PATH" = "x" ]; then
-  LD_LIBRARY_PATH=/opt/zimbra/lib:${LD_LIBRARY_PATH}
+  LD_LIBRARY_PATH=/opt/zimbra/lib:/opt/zimbra/sleepycat/lib:/opt/zimbra/libxml2/lib:/opt/zimbra/cyrus-sasl/lib:/opt/zimbra/openldap/lib:/opt/zimbra/mysql/lib
 else
-  LD_LIBRARY_PATH=/opt/zimbra/lib
+  LD_LIBRARY_PATH=/opt/zimbra/lib:/opt/zimbra/sleepycat/lib:/opt/zimbra/libxml2/lib:/opt/zimbra/cyrus-sasl/lib:/opt/zimbra/openldap/lib:/opt/zimbra/mysql/lib:${LD_LIBRARY_PATH}
 fi
 export LD_LIBRARY_PATH
 
