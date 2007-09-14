@@ -214,6 +214,13 @@ checkDatabaseIntegrity() {
             su - zimbra -c "/opt/zimbra/bin/mysqladmin -s ping" 2>/dev/null
             if [ $? != 0 ]; then
               su - zimbra -c "/opt/zimbra/bin/mysql.server start" 2> /dev/null
+              for ((i = 0; i < 60; i++)) do
+                su - zimbra -c "/opt/zimbra/bin/mysqladmin -s ping" 2>/dev/null
+                if [ $? = 0 ]; then
+                  break
+                fi
+                sleep 2
+              done
             fi
             perl -I/opt/zimbra/zimbramon/lib bin/zmdbintegrityreport -v -r
             if [ $? != 0 ]; then
