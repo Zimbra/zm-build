@@ -32,6 +32,15 @@ else
 fi
 export LD_LIBRARY_PATH
 
+if [ `uname -s` == "Darwin" ]; then
+  if [ "x$DYLD_LIBRARY_PATH" = "x" ]; then
+    DYLD_LIBRARY_PATH=/opt/zimbra/lib:/opt/zimbra/sleepycat/lib:/opt/zimbra/libxml2/lib:/opt/zimbra/cyrus-sasl/lib:/opt/zimbra/openldap/lib:/opt/zimbra/mysql/lib
+  else
+    DYLD_LIBRARY_PATH=/opt/zimbra/lib:/opt/zimbra/sleepycat/lib:/opt/zimbra/libxml2/lib:/opt/zimbra/cyrus-sasl/lib:/opt/zimbra/openldap/lib:/opt/zimbra/mysql/lib:${DYLD_LIBRARY_PATH}
+  fi
+fi
+export DYLD_LIBRARY_PATH
+
 SNMPCONFPATH=/opt/zimbra/conf
 export SNMPCONFPATH
 
