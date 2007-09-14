@@ -38,6 +38,11 @@ ln -s /opt/zimbra/mysql-standard-5.0.45-apple-darwin8.2.0-$ARCH /opt/zimbra/mysq
 rm -f /opt/zimbra/mysql-standard-5.0.45-apple-darwin8.2.0-$ARCH/lib/mysql
 ln -s /opt/zimbra/mysql-standard-5.0.45-apple-darwin8.2.0-$ARCH/lib /opt/zimbra/mysql-standard-5.0.45-apple-darwin8.2.0-$ARCH/lib/mysql
 
+rm -f /opt/zimbra/keyview
+ln -s /opt/zimbra/keyview-10.2.0.2 /opt/zimbra/keyview
+
+rm -rf /opt/zimbra/verity
+
 H=`hostname -s`
 
 mv /opt/zimbra/db/db.sql /opt/zimbra/db/db.sql.in
