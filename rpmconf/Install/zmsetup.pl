@@ -672,11 +672,6 @@ sub setDefaults {
   $config{POPSSLPORT} = 995;
   $config{HTTPPORT} = 80;
   $config{HTTPSPORT} = 443;
-  if(isInstalled("zimbra-proxy")) {
-     $config{USEIMAPPROXY} = "yes";
-  } else {
-     $config{USEIMAPPROXY} = "no";
-  }
   $config{IMAPPROXYPORT} = 7143;
   $config{IMAPSSLPROXYPORT} = 7993;
   $config{POPPROXYPORT} = 7110;
@@ -1375,9 +1370,8 @@ sub toggleTF {
 }
 
 sub setUseImapProxy {
-  $config{USEIMAPPROXY} = ($config{USEIMAPPROXY} eq "yes")?"no":"yes";
 
-  if ($config{USEIMAPPROXY} eq "yes") {
+  if (isEnabled("zimbra-proxy")) {
     if ($config{IMAPPROXYPORT} == $config{IMAPPORT}) {
       $config{IMAPPORT} = 7000+$config{IMAPPROXYPORT};
     }
@@ -1670,6 +1664,9 @@ sub setEnabledDependencies {
   if (isEnabled("zimbra-spell")) {
     $config{USESPELL} = "yes";
     $config{SPELLURL} = "http://$config{HOSTNAME}:7780/aspell.php";
+  }
+  if (isInstalled("zimbra-proxy")) {
+     setUseImapProxy();
   }
 }
 
@@ -1970,41 +1967,31 @@ sub createProxyMenu {
   $$lm{createarg} = $package;
 
   my $i = 2;
-  if (isEnabled($package)) {
+  if (isInstalled($package)) {
     $$lm{menuitems}{$i} = { 
-      "prompt" => "Enable POP/IMAP proxy:", 
-      "var" => \$config{USEIMAPPROXY}, 
-      "callback" => \&setUseImapProxy,
-      };
+      "prompt" => "IMAP proxy port:", 
+      "var" => \$config{IMAPPROXYPORT}, 
+      "callback" => \&setImapProxyPort,
+    };
     $i++;
-    if ($config{USEIMAPPROXY} eq "yes") {
-
-      $$lm{menuitems}{$i} = { 
-        "prompt" => "IMAP proxy port:", 
-        "var" => \$config{IMAPPROXYPORT}, 
-        "callback" => \&setImapProxyPort,
-        };
-      $i++;
-      $$lm{menuitems}{$i} = { 
-        "prompt" => "IMAP SSL proxy port:", 
-        "var" => \$config{IMAPSSLPROXYPORT}, 
-        "callback" => \&setImapSSLProxyPort,
-        };
-      $i++;
-      $$lm{menuitems}{$i} = { 
-        "prompt" => "POP proxy port:", 
-        "var" => \$config{POPPROXYPORT}, 
-        "callback" => \&setPopProxyPort,
-        };
-      $i++;
-      $$lm{menuitems}{$i} = { 
-        "prompt" => "POP SSL proxy port:", 
-        "var" => \$config{POPSSLPROXYPORT}, 
-        "callback" => \&setPopSSLProxyPort,
-        };
-      $i++;
-
-    }
+    $$lm{menuitems}{$i} = { 
+      "prompt" => "IMAP SSL proxy port:", 
+      "var" => \$config{IMAPSSLPROXYPORT}, 
+      "callback" => \&setImapSSLProxyPort,
+    };
+    $i++;
+    $$lm{menuitems}{$i} = { 
+      "prompt" => "POP proxy port:", 
+      "var" => \$config{POPPROXYPORT}, 
+      "callback" => \&setPopProxyPort,
+    };
+    $i++;
+    $$lm{menuitems}{$i} = { 
+      "prompt" => "POP SSL proxy port:", 
+      "var" => \$config{POPSSLPROXYPORT}, 
+      "callback" => \&setPopSSLProxyPort,
+    };
+    $i++;
   }
   return $lm;
 }
