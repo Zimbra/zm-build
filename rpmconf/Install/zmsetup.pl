@@ -677,6 +677,31 @@ sub setDefaults {
   $config{POPPROXYPORT} = 7110;
   $config{POPSSLPROXYPORT} = 7995;
 
+  if (isInstalled("zimbra-proxy")) {
+    my $query = "\(\|\(\|\(zimbraMailDeliveryAddress=\${USER}\@$config{zimbraDefaultDomainName}\)\(zimbraMailAlias=\${USER}\@$config{zimbraDefaultDomainName}\)\)\(\|\(zimbraMailDeliveryAddress=\${USER}\)\(zimbraMailAlias=\${USER}\)\)\)";
+
+    $config{zimbraReverseProxyMailHostQuery} = $query
+      if ($config{zimbraReverseProxyMailHostQuery} eq ""); 
+
+    $config{zimbraReverseProxyMailHostAttribute} = "zimbraMailHost"
+      if ($config{zimbraReverseProxyMailHostAttribute} eq "");
+
+    $config{zimbraReverseProxyPortQuery} = '\(\&\(zimbraServiceHostname=\${MAILHOST}\)\(objectClass=zimbraServer\)\)'
+      if ( $config{zimbraReverseProxyPortQuery} eq "");
+
+    $config{zimbraReverseProxyPop3PortAttribute} = "zimbraPop3BindPort"
+      if ( $config{zimbraReverseProxyPop3PortAttribute} eq "");
+
+    $config{zimbraReverseProxyPop3SSLPortAttribute} = "zimbraPop3SSLBindPort"
+      if ( $config{zimbraReverseProxyPop3SSLPortAttribute} eq "");
+
+   $config{zimbraReverseProxyImapPortAttribute} = "zimbraImapBindPort"
+      if ( $config{zimbraReverseProxyImapPortAttribute} eq "");
+
+   $config{zimbraReverseProxyImapSSLPortAttribute} = "zimbraImapSSLBindPort"
+      if ( $config{zimbraReverseProxyImapSSLPortAttribute} eq ""); 
+  }
+ 
   if ($platform =~ /MACOSX/) {
     $config{JAVAHOME} = "/System/Library/Frameworks/JavaVM.framework/Versions/1.5/Home";
     setLocalConfig ("zimbra_java_home", "$config{JAVAHOME}");
