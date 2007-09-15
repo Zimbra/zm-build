@@ -782,8 +782,8 @@ EOF
     done
   else 
     # REMOVE = yes for non installed systems, to clean up /opt/zimbra
-    DETECTDIRS="store db bin conf openldap-data"
-    for i in $DETECTDIRS; do
+    DETECTFILES="db/db.sql bin/zmcontrol conf/localconfig.xml openldap-data/DB_CONFIG"
+    for i in $DETECTFILES; do
       if [ -d "/opt/zimbra/$i" ]; then
         INSTALLED="yes"
       fi
@@ -794,6 +794,8 @@ EOF
       echo "yet there appears to be a ZCS directory structure in /opt/zimbra."
       askYN "Would you like to delete /opt/zimbra before installing?" "N"
       REMOVE="$response"
+    elif [ x$CLUSTERTYPE != "x" ]; then
+      REMOVE="no"
     else 
       REMOVE="yes"
     fi
@@ -1180,6 +1182,7 @@ getInstallPackages() {
   APACHE_SELECTED="no"
   LOGGER_SELECTED="no"
   STORE_SELECTED="no"
+  
   CLUSTER_SELECTED="no"
 
   for i in $AVAILABLE_PACKAGES; do
@@ -1220,7 +1223,7 @@ getInstallPackages() {
     else
       if [ $i = "zimbra-proxy" ]; then
          askYN "Install $i" "N"
-      elif [ $i = "zimbra-cluster" ]; then
+      elif [ $i = "zimbra-cluster" -a "x$CLUSTERTYPE" = "x" ]; then
          askYN "Install $i" "N"
       else
          askYN "Install $i" "Y"

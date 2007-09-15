@@ -42,29 +42,64 @@ done
 UNINSTALL="no"
 SOFTWAREONLY="no"
 
+usage() {
+  echo "$0 [-r <file> -l <file> -u -s -c type -x -h] [defaultsfile]"
+  echo ""
+  echo "-c|--cluster type     Cluster install type active|standby."
+  echo "-h|--help             Usage"
+  echo "-l|--license <file>   License file to install."
+  echo "-r|--restore <file>   Restore contents of <file> to localconfig" 
+  echo "-s|--softwareonly     Software only installation."
+  echo "-u|--uninstall        Uninstall ZCS"
+  echo "-x|--skipspacecheck   Skip filesystem capacity checks."
+  echo "[defaultsfile]        File containing default install values."
+  echo ""
+  exit
+}
+
 while [ $# -ne 0 ]; do
 	case $1 in
-		-r) shift
+		-r|--config) 
+      shift
 			RESTORECONFIG=$1
 		;;
-		-l) shift
+		-l|--license) 
+      shift
 			LICENSE=$1
 		;;
-		-u) UNINSTALL="yes"
-		;;
-		-s) SOFTWAREONLY="yes"
-		;;
-		-c) CLUSTERUPGRADE="yes"
-		;;
-		-x) SKIPSPACECHECK="yes"
-		;;
-		*) DEFAULTFILE=$1
-		;;
+		-u|--uninstall) 
+      UNINSTALL="yes"
+		  ;;
+		-s|--softwareonly) 
+      SOFTWAREONLY="yes"
+		  ;;
+		-c|--cluster)
+      shift
+      CLUSTERTYPE=$1
+		  ;;
+		-x|--skipspacecheck) 
+      SKIPSPACECHECK="yes"
+		  ;;
+    -h|-help|--help)
+      usage
+      ;;
+		*) 
+      DEFAULTFILE=$1
+      if [ ! -f "$DEFAULTFILE" ]; then
+        echo "ERROR: Unknown option $DEFAULTFILE"
+        usage
+      fi
+		  ;;
 	esac
 	shift
 done
 
 . ./util/globals.sh
+
+if [ x"$CLUSTERTYPE" != "x" -a -f "./util/clusterfunc.sh" ]; then
+  . ./util/clusterfunc.sh
+  checkClusterTypeArgs
+fi
 
 getPlatformVars
 
@@ -97,6 +132,10 @@ checkUser root
 checkRequired
 
 checkPackages
+
+if [ x"$CLUSTERTYPE" != "x" ]; then
+  clusterPreInstall
+fi
 
 if [ $AUTOINSTALL = "no" ]; then
 	setRemove
@@ -191,6 +230,10 @@ if [ $SOFTWAREONLY = "yes" ]; then
 	echo ""
 	echo "Run /opt/zimbra/libexec/zmsetup.pl to configure the system"
 	echo ""
+
+  if [ x"$CLUSTERTYPE" = "xstandby" ]; then
+    clusterStandbyPostInstall
+  fi
 
 	exit 0
 fi
