@@ -1996,7 +1996,7 @@ sub createProxyMenu {
   $$lm{createarg} = $package;
 
   my $i = 2;
-  if (isInstalled($package)) {
+  if (isEnabled($package)) {
     $$lm{menuitems}{$i} = { 
       "prompt" => "IMAP proxy port:", 
       "var" => \$config{IMAPPROXYPORT}, 
