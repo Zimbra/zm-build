@@ -672,10 +672,6 @@ sub setDefaults {
   $config{POPSSLPORT} = 995;
   $config{HTTPPORT} = 80;
   $config{HTTPSPORT} = 443;
-  $config{IMAPPROXYPORT} = 7143;
-  $config{IMAPSSLPROXYPORT} = 7993;
-  $config{POPPROXYPORT} = 7110;
-  $config{POPSSLPROXYPORT} = 7995;
 
   if (isInstalled("zimbra-proxy")) {
     my $query = "\(\|\(\|\(zimbraMailDeliveryAddress=\${USER}\@$config{zimbraDefaultDomainName}\)\(zimbraMailAlias=\${USER}\@$config{zimbraDefaultDomainName}\)\)\(\|\(zimbraMailDeliveryAddress=\${USER}\)\(zimbraMailAlias=\${USER}\)\)\)";
@@ -700,6 +696,14 @@ sub setDefaults {
 
    $config{zimbraReverseProxyImapSSLPortAttribute} = "zimbraImapSSLBindPort"
       if ( $config{zimbraReverseProxyImapSSLPortAttribute} eq ""); 
+    $config{IMAPPROXYPORT} = 143;
+    $config{IMAPSSLPROXYPORT} = 993;
+    $config{POPPROXYPORT} = 110;
+    $config{POPSSLPROXYPORT} = 995;
+    $config{IMAPPORT} = 7143;
+    $config{IMAPSSLPORT} = 7993;
+    $config{POPPORT} = 7110;
+    $config{POPSSLPORT} = 7995;
   }
  
   if ($platform =~ /MACOSX/) {
