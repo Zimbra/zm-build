@@ -2570,6 +2570,20 @@ sub verifyLdap {
 
 }
 
+sub runAsRoot {
+  my $cmd = shift;
+  if ($cmd =~ /init/ || $cmd =~ /zmprov -l ca/) {
+    # Suppress passwords in log file
+    my $c = (split ' ', $cmd)[0];
+    detail ( "*** Running as root user: $c\n" );
+  } else {
+    detail ( "*** Running as root user: $cmd\n" );
+  }
+  my $rc;
+  $rc = 0xffff & system("$cmd >> $logfile 2>&1");
+  return $rc;
+}
+
 sub runAsZimbra {
   my $cmd = shift;
   if ($cmd =~ /init/ || $cmd =~ /zmprov -l ca/) {
@@ -2706,31 +2720,18 @@ sub configCASetup {
     return 0;
   }
 
-  if (! -f "/opt/zimbra/ssl/ssl/ca/ca.key" && !($config{LDAPHOST} eq $config{HOSTNAME})) {
+
+  if ($config{LDAPHOST} ne $config{HOSTNAME}) {
     # fetch it from ldap if ldap has been configed
     progress("Updating ldap_root_password and zimbra_ldap_passwd...");
     setLocalConfig ("ldap_root_password", $config{LDAPPASS});
     setLocalConfig ("zimbra_ldap_password", $config{LDAPPASS});
     progress ( "Done\n" );
-
-    if (! -f "/opt/zimbra/ssl/ssl/ca/ca.key" || -z "/opt/zimbra/ssl/ssl/ca/ca.key") {
-      progress ( "Fetching CA from ldap..." );
-      runAsZimbra("mkdir -p /opt/zimbra/ssl/ssl/ca");
-      # Don't use runAsZimbra since it swallows output
-      my $rc;
-      $rc = 0xffff & system("su - zimbra -c \"$ZMPROV gacf | sed -ne \'/-----BEGIN RSA PRIVATE KEY-----/,/-----END RSA PRIVATE KEY-----/ p\'| sed  -e \'s/^zimbraCertAuthorityKeySelfSigned: //\' > /opt/zimbra/ssl/ssl/ca/ca.key\"");
-  
-      $rc = 0xffff & system("su - zimbra -c \"$ZMPROV gacf | sed -ne \'/-----BEGIN TRUSTED CERTIFICATE-----/,/-----END TRUSTED CERTIFICATE-----/ p\'| sed  -e \'s/^zimbraCertAuthorityCertSelfSigned: //\' > /opt/zimbra/ssl/ssl/ca/ca.pem\"");
-        progress ( "Done\n" );
-    }
   }
+  progress ( "Setting up CA..." );
+  runAsRoot("/opt/zimbra/bin/zmcertmgr createca");
+  progress ( "Done\n" );
   
-
-  if ( ! -f "/opt/zimbra/ssl/ssl/ca/ca.key" || -z "/opt/zimbra/ssl/ssl/ca/ca.key")  {
-    progress ( "Setting up CA..." );
-    runAsZimbra("cd /opt/zimbra; zmcreateca");
-    progress ( "Done\n" );
-  }
   configLog("configCASetup");
 }
 
@@ -2820,35 +2821,9 @@ sub configSaveCA {
     configLog("configSaveCA");
     return 0;
   }
-
-  if (isEnabled("zimbra-ldap") && ($config{LDAPHOST} eq $config{HOSTNAME})) {
-    progress ( "Saving CA in ldap..." );
-
-    my $cert=`cat /opt/zimbra/ssl/ssl/ca/ca.pem`;
-    my $key=`cat /opt/zimbra/ssl/ssl/ca/ca.key`;
-    chomp $cert;
-    chomp $key;
-
-    runAsZimbra("$ZMPROV mcf zimbraCertAuthorityCertSelfSigned \\\"$cert\\\"");
-    runAsZimbra("$ZMPROV mcf zimbraCertAuthorityKeySelfSigned \\\"$key\\\"");
-
-    progress ( "Done\n" );
-  } else {
-    # Fetch it from ldap
-
-    progress ( "Fetching CA from ldap..." );
-
-    runAsZimbra("mkdir -p /opt/zimbra/ssl/ssl/ca");
-
-    # Don't use runAsZimbra since it swallows output
-    my $rc;
-
-    $rc = 0xffff & system("su - zimbra -c \"$ZMPROV gacf | sed -ne \'/-----BEGIN RSA PRIVATE KEY-----/,/-----END RSA PRIVATE KEY-----/ p\'| sed  -e \'s/^zimbraCertAuthorityKeySelfSigned: //\' > /opt/zimbra/ssl/ssl/ca/ca.key\"");
-
-    $rc = 0xffff & system("su - zimbra -c \"$ZMPROV gacf | sed -ne \'/-----BEGIN TRUSTED CERTIFICATE-----/,/-----END TRUSTED CERTIFICATE-----/ p\'| sed  -e \'s/^zimbraCertAuthorityCertSelfSigned: //\' > /opt/zimbra/ssl/ssl/ca/ca.pem\"");
-
-    progress ( "Done\n" );
-  }
+  progress ( "Deploying CA in ..." );
+  runAsRoot("/opt/zimbra/bin/zmcertmgr deployca");
+  progress ( "Done\n" );
   configLog("configSaveCA");
 }
 
@@ -2857,12 +2832,6 @@ sub configCreateCert {
   if ($configStatus{configCreateCert} eq "CONFIGURED") {
     configLog("configCreateCert");
     return 0;
-  }
-
-  if (-f "$config{JAVAHOME}/lib/security/cacerts") {
-    `chmod 777 $config{JAVAHOME}/lib/security/cacerts >> $logfile 2>&1`;
-  } else {
-   `chmod 777 $config{JAVAHOME}/jre/lib/security/cacerts >> $logfile 2>&1`;
   }
 
   progress ( "Creating SSL certificate..." );
@@ -2874,26 +2843,20 @@ sub configCreateCert {
         `chown -R zimbra:zimbra $config{mailboxd_directory}`;
         `chmod 744 $config{mailboxd_directory}/etc`;
       }
-      runAsZimbra("cd /opt/zimbra; zmcreatecert");
+      runAsRoot("/opt/zimbra/bin/zmcertmgr install self");
     }
   }
 
   if (isEnabled("zimbra-ldap")) {
     if ( !-f "/opt/zimbra/conf/slapd.crt" && !-f "/opt/zimbra/ssl/ssl/server.crt") {
-      runAsZimbra("cd /opt/zimbra; zmcreatecert");
+      runAsRoot("/opt/zimbra/bin/zmcertmgr install self");
     }
   }
 
   if (isEnabled("zimbra-mta")) {
     if ( !-f "/opt/zimbra/conf/smtpd.crt" && !-f "/opt/zimbra/ssl/ssl/server.crt") {
-      runAsZimbra("cd /opt/zimbra; zmcreatecert");
+      runAsRoot("/opt/zimbra/bin/zmcertmgr install self");
     }
-  }
-
-  if (-f "$config{JAVAHOME}/lib/security/cacerts") {
-    `chmod 744 $config{JAVAHOME}/lib/security/cacerts >> $logfile 2>&1`;
-  } else {
-    `chmod 744 $config{JAVAHOME}/jre/lib/security/cacerts >> $logfile 2>&1`;
   }
   progress ( "Done\n" );
 

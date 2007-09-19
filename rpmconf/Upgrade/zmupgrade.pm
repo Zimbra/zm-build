@@ -1560,6 +1560,9 @@ sub upgrade500BETA4 {
     # 20009
     main::runAsZimbra("$ZMPROV mcf +zimbraAccountExtraObjectClass amavisAccount");
   }
+
+  # migrate certs to work with the new zimbra_cert_manager admin ui
+  main::runAsRoot("/opt/zimbra/bin/zmcertmgr migrate");
     
 	return 0;
 }
