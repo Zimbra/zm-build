@@ -1404,27 +1404,47 @@ sub setUseImapProxy {
     if ($config{IMAPPROXYPORT} == $config{IMAPPORT}) {
       $config{IMAPPORT} = 7000+$config{IMAPPROXYPORT};
     }
+    if ($config{IMAPPORT}+7000 == $config{IMAPPROXYPORT}) {
+      $config{IMAPPORT} = $config{IMAPPROXYPORT};
+      $config{IMAPPROXYPORT} = $config{IMAPPROXYPORT}-7000;
+    }
     if ($config{IMAPSSLPROXYPORT} == $config{IMAPSSLPORT}) {
       $config{IMAPSSLPORT} = 7000+$config{IMAPSSLPROXYPORT};
+    }
+    if ($config{IMAPSSLPORT}+7000 == $config{IMAPSSLPROXYPORT}) {
+      $config{IMAPSSLPORT} = $config{IMAPSSLPROXYPORT};
+      $config{IMAPSSLPROXYPORT} = $config{IMAPSSLPROXYPORT}-7000;  
     }
     if ($config{POPPROXYPORT} == $config{POPPORT}) {
       $config{POPPORT} = 7000+$config{POPPROXYPORT};
     }
+    if ($config{POPPORT}+7000 == $config{POPPROXYPORT}) {
+      $config{POPPORT} = $config{POPPROXYPORT};
+      $config{POPPROXYPORT} = $config{POPPROXYPORT}-7000;
+    }
     if ($config{POPSSLPROXYPORT} == $config{POPSSLPORT}) {
       $config{POPSSLPORT} = 7000+$config{POPSSLPROXYPORT};
+    }
+    if ($config{POPSSLPORT}+7000 == $config{POPSSLPROXYPORT}) {
+      $config{POPSSLPORT} = $config{POPSSLPROXYPORT};
+      $config{POPSSLPROXYPORT} = $config{POPSSLPROXYPORT}-7000;
     }
   } else {
     if ($config{IMAPPROXYPORT}+7000 == $config{IMAPPORT}) {
       $config{IMAPPORT} = $config{IMAPPROXYPORT};
+      $config{IMAPPROXYPORT} = $config{IMAPPROXYPORT}+7000;
     }
     if ($config{IMAPSSLPROXYPORT}+7000 == $config{IMAPSSLPORT}) {
       $config{IMAPSSLPORT} = $config{IMAPSSLPROXYPORT};
+      $config{IMAPSSLPROXYPORT} = $config{IMAPSSLPROXYPORT} + 7000;
     }
     if ($config{POPPROXYPORT}+7000 == $config{POPPORT}) {
       $config{POPPORT} = $config{POPPROXYPORT};
+      $config{POPPROXYPORT} = $config{POPPROXYPORT} + 7000;
     }
     if ($config{POPSSLPROXYPORT}+7000 == $config{POPSSLPORT}) {
       $config{POPSSLPORT} = $config{POPSSLPROXYPORT};
+      $config{POPSSLPROXYPORT} = $config{POPSSLPROXYPORT}+7000;
     }
   }
 }
@@ -1996,7 +2016,7 @@ sub createProxyMenu {
   $$lm{createarg} = $package;
 
   my $i = 2;
-  if (isEnabled($package)) {
+  if (isInstalled($package)) {
     $$lm{menuitems}{$i} = { 
       "prompt" => "IMAP proxy port:", 
       "var" => \$config{IMAPPROXYPORT}, 
