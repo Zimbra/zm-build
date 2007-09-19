@@ -1454,6 +1454,15 @@ getPlatformVars() {
     elif [ $PLATFORM = "RHEL4_64" -o $PLATFORM = "CentOS4_64" ]; then
       PREREQ_PACKAGES="sudo libidn curl fetchmail gmp compat-libstdc++-296 compat-libstdc++-33"
       PREREQ_LIBS="/usr/lib/libstdc++.so.5 /usr/lib64/libstdc++.so.5"
+    elif [ $PLATFORM = "DEBIAN4.0" ]; then
+      PREREQ_PACKAGES="sudo libidn curl fetchmail gmp"
+      PREREQ_LIBS="/usr/lib/libstdc++.so.6"
+    elif [ $PLATFORM = "F7" ]; then
+      PREREQ_PACKAGES="sudo libidn curl fetchmail gmp bind-libs vixie-cron"
+      PREREQ_LIBS="/usr/lib/libstdc++.so.6"
+    elif [ $PLATFORM = "SLES10_64" ]; then
+      PREREQ_PACKAGES="sudo libidn curl fetchmail gmp"
+      PREREQ_LIBS="/usr/lib/libstdc++.so.6"
     else
       PREREQ_PACKAGES="sudo libidn curl fetchmail gmp"
       PREREQ_LIBS="/usr/lib/libstdc++.so.5"
