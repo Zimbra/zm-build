@@ -1539,9 +1539,22 @@ sub upgrade500BETA4 {
     main::setLocalConfig("mailboxd_java_options", "$mailboxd_java_options");
   }
 
+  # 20456  
+  my $tomcat_keystore_password = main::getLocalConfig("tomcat_keystore_password");
+  if ($tomcat_keystore_password ne "") {
+    main::setLocalConfig("mailboxd_keystore_password", "$tomcat_keystore_password");
+    main::deleteLocalConfig("tomcat_keystore_password");
+  }
+
+  my $tomcat_truststore_password = main::getLocalConfig("tomcat_truststore_password");
+  if ($tomcat_truststore_password ne "") {
+    main::setLocalConfig("mailboxd_truststore_password", "$tomcat_truststore_password");
+    main::deleteLocalConfig("tomcat_truststore_password");
+  }
+
   if (isInstalled("zimbra-ldap")) {
     # 19517
-		main::runAsZimbra("$ZMPROV mcf zimbraBackupAutoGroupedInterval 1d zimbraBackupAutoGroupedNumGroups 7 zimbraBackupAutoGroupedThrottled FALSE zimbraBackupMode Standard");
+    main::runAsZimbra("$ZMPROV mcf zimbraBackupAutoGroupedInterval 1d zimbraBackupAutoGroupedNumGroups 7 zimbraBackupAutoGroupedThrottled FALSE zimbraBackupMode Standard");
 
     # 19826
 	  my @coses = `su - zimbra -c "$ZMPROV gac"`;
