@@ -2874,15 +2874,13 @@ sub configInstallCert {
     progress ("Installing SSL certificate...");
     if (isEnabled("zimbra-store")) {
       if (!-f "$config{mailboxd_keystore}") {
-        runAsZimbra("cd /opt/zimbra; zmcertinstall mailbox");
+        runAsRoot("/opt/zimbra/bin/zmcertmgr install self");
       }
     }
     if (isEnabled("zimbra-mta")) {
       if (! (-f "/opt/zimbra/conf/smtpd.key" || 
         -f "/opt/zimbra/conf/smtpd.crt")) {
-        runAsZimbra("cd /opt/zimbra; zmcertinstall mta ".
-          "/opt/zimbra/ssl/ssl/server/server.crt ".
-          "/opt/zimbra/ssl/ssl/server/server.key");
+        runAsRoot("/opt/zimbra/bin/zmcertmgr install self");
       }
     }
     progress ( "Done\n" );
@@ -2891,9 +2889,7 @@ sub configInstallCert {
     if (! (-f "/opt/zimbra/conf/slapd.key" || 
       -f "/opt/zimbra/conf/slapd.crt")) {
       progress ("Installing LDAP SSL certificate...");
-      runAsZimbra("cd /opt/zimbra; zmcertinstall ldap ".
-        "/opt/zimbra/ssl/ssl/server/server.crt ".
-        "/opt/zimbra/ssl/ssl/server/server.key");
+      runAsRoot("/opt/zimbra/bin/zmcertmgr install self");
       progress ( "Done\n" );
     }
   }
@@ -2902,9 +2898,7 @@ sub configInstallCert {
     if (! (-f "/opt/zimbra/conf/nginx.key" || 
       -f "/opt/zimbra/conf/nginx.crt")) {
       progress ("Installing Proxy SSL certificate...");
-      runAsZimbra("cd /opt/zimbra; zmcertinstall proxy ".
-        "/opt/zimbra/ssl/ssl/server/server.crt ".
-        "/opt/zimbra/ssl/ssl/server/server.key");
+      runAsRoot("/opt/zimbra/bin/zmcertmgr install self");
       progress ( "Done\n" );
     }
   }
@@ -3716,6 +3710,18 @@ sub mainMenu {
   $mm{createsub} = \&createMainMenu;
 
   displayMenu(\%mm);
+}
+
+sub stopLdap {
+  main::progress("Stopping ldap\n");
+  my $rc = 0xffff & system("su - zimbra -c \"/opt/zimbra/bin/ldap stop > /dev/null 2>&1\"");
+  $rc = $rc >> 8;
+  if ($rc) {
+    main::progress("LDAP stop failed with exit code $rc\n");
+    return $rc;
+  }
+  sleep 5; # give it a chance to shutdown.
+  return 0;
 }
 
 sub startLdap {
