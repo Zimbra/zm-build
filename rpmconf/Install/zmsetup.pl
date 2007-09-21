@@ -391,20 +391,17 @@ sub isInstalled {
 
   my $pkgQuery;
 
-  my $good = 1;
+  my $good = 0;
   if ($platform eq "DEBIAN3.1" || $platform eq "UBUNTU6" || $platform eq "DEBIAN4.0" ) {
     $pkgQuery = "dpkg -s $pkg";
   } elsif ($platform =~ /MACOSX/) {
     my @l = sort glob ("/Library/Receipts/${pkg}*");
     if ( $#l < 0 ) { return 0; }
     $pkgQuery = "test -d $l[$#l]";
-    $good = 0;
   } elsif ($platform =~ /RPL/) {
     $pkgQuery = "conary q $pkg";
-    $good = 0;
   } else {
     $pkgQuery = "rpm -q $pkg";
-    $good = 0;
   }
 
   my $rc = 0xffff & system ("$pkgQuery > /dev/null 2>&1");
