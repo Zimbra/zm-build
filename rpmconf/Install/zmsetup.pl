@@ -413,7 +413,6 @@ sub isInstalled {
     $rc >>= 8;
     return ($rc == $good);
   } else {
-    print "In else\n";
     return ($rc == $good);
   }
 }
