@@ -857,43 +857,52 @@ restoreExistingConfig() {
 restoreCerts() {
   if [ -f "$SAVEDIR/cacerts" ]; then
     cp $SAVEDIR/cacerts /opt/zimbra/java/jre/lib/security/cacerts
+    chown zimbra:zimbra /opt/zimbra/java/jre/lib/security/cacerts
   fi
   if [ -f "$SAVEDIR/keystore" -a -d "/opt/zimbra/tomcat/conf" ]; then
     cp $SAVEDIR/keystore /opt/zimbra/tomcat/conf/keystore
+    chown zimbra:zimbra /opt/zimbra/tomcat/conf/keystore
   elif [ -f "$SAVEDIR/keystore" -a -d "/opt/zimbra/jetty/etc" ]; then
     cp $SAVEDIR/keystore /opt/zimbra/jetty/etc/keystore
+    chown zimbra:zimbra /opt/zimbra/jetty/etc/keystore
   else 
     cp $SAVEDIR/keystore /opt/zimbra/conf/keystore
+    chown zimbra:zimbra /opt/zimbra/conf/keystore
   fi
   if [ -f "$SAVEDIR/smtpd.key" ]; then
     cp $SAVEDIR/smtpd.key /opt/zimbra/conf/smtpd.key 
+    chown zimbra:zimbra /opt/zimbra/conf/smtpd.key
   fi
   if [ -f "$SAVEDIR/smtpd.crt" ]; then
     cp $SAVEDIR/smtpd.crt /opt/zimbra/conf/smtpd.crt 
+    chown zimbra:zimbra /opt/zimbra/conf/smtpd.crt
   fi
   if [ -f "$SAVEDIR/slapd.crt" ]; then
     cp $SAVEDIR/slapd.crt /opt/zimbra/conf/slapd.crt 
+    chown zimbra:zimbra /opt/zimbra/conf/slapd.crt
   fi
   if [ -f "$SAVEDIR/nginx.key" ]; then
     cp $SAVEDIR/nginx.key /opt/zimbra/conf/nginx.key
+    chown zimbra:zimbra /opt/zimbra/conf/nginx.key
   fi
   if [ -f "$SAVEDIR/nginx.crt" ]; then
     cp $SAVEDIR/nginx.crt /opt/zimbra/conf/nginx.crt
+    chown zimbra:zimbra /opt/zimbra/conf/nginx.crt
   fi
   mkdir -p /opt/zimbra/conf/ca
   if [ -f "$SAVEDIR/ca.key" ]; then
     cp $SAVEDIR/ca.key /opt/zimbra/conf/ca/ca.key 
+    chown zimbra:zimbra /opt/zimbra/conf/ca/ca.key
   fi
   if [ -f "$SAVEDIR/ca.pem" ]; then
     cp $SAVEDIR/ca.pem /opt/zimbra/conf/ca/ca.pem 
+    chown zimbra:zimbra /opt/zimbra/conf/ca/ca.pem
   fi
   if [ -f "/opt/zimbra/tomcat/conf/keystore" ]; then
     chown zimbra:zimbra /opt/zimbra/tomcat/conf/keystore
   elif [ -f "/opt/zimbra/jetty/etc/keystore" ]; then
     chown zimbra:zimbra /opt/zimbra/jetty/etc/keystore
   fi
-  chown zimbra:zimbra /opt/zimbra/java/jre/lib/security/cacerts /opt/zimbra/conf/smtpd.key /opt/zimbra/conf/smtpd.crt /opt/zimbra/conf/slapd.crt /opt/zimbra/conf/nginx.key /opt/zimbra/conf/nginx.crt
-  chown -R zimbra:zimbra /opt/zimbra/conf/ca
 }
 
 saveExistingConfig() {
