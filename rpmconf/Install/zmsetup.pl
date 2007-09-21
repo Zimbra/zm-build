@@ -1632,7 +1632,7 @@ sub setSpellUrl {
 }
 
 sub setLicenseFile {
-  $config{LICENSEFILE} = askFileName("Enter the name of the file that contains the license", 
+  $config{LICENSEFILE} = askFileName("Enter the name of the file that contains the license:", 
     $config{LICENSEFILE});
   system("cp $config{LICENSEFILE} /opt/zimbra/conf/ZCSLicense.xml")
     if ($config{LICENSEFILE} ne "/opt/zimbra/conf/ZCSLicense.xml");
