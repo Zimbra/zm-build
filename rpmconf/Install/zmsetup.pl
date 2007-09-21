@@ -673,39 +673,6 @@ sub setDefaults {
   $config{HTTPPORT} = 80;
   $config{HTTPSPORT} = 443;
 
-  if (isInstalled("zimbra-proxy")) {
-    my $query = "\(\|\(\|\(zimbraMailDeliveryAddress=\${USER}\@$config{zimbraDefaultDomainName}\)\(zimbraMailAlias=\${USER}\@$config{zimbraDefaultDomainName}\)\)\(\|\(zimbraMailDeliveryAddress=\${USER}\)\(zimbraMailAlias=\${USER}\)\)\)";
-
-    $config{zimbraReverseProxyMailHostQuery} = $query
-      if ($config{zimbraReverseProxyMailHostQuery} eq ""); 
-
-    $config{zimbraReverseProxyMailHostAttribute} = "zimbraMailHost"
-      if ($config{zimbraReverseProxyMailHostAttribute} eq "");
-
-    $config{zimbraReverseProxyPortQuery} = '\(\&\(zimbraServiceHostname=\${MAILHOST}\)\(objectClass=zimbraServer\)\)'
-      if ( $config{zimbraReverseProxyPortQuery} eq "");
-
-    $config{zimbraReverseProxyPop3PortAttribute} = "zimbraPop3BindPort"
-      if ( $config{zimbraReverseProxyPop3PortAttribute} eq "");
-
-    $config{zimbraReverseProxyPop3SSLPortAttribute} = "zimbraPop3SSLBindPort"
-      if ( $config{zimbraReverseProxyPop3SSLPortAttribute} eq "");
-
-   $config{zimbraReverseProxyImapPortAttribute} = "zimbraImapBindPort"
-      if ( $config{zimbraReverseProxyImapPortAttribute} eq "");
-
-   $config{zimbraReverseProxyImapSSLPortAttribute} = "zimbraImapSSLBindPort"
-      if ( $config{zimbraReverseProxyImapSSLPortAttribute} eq ""); 
-    $config{IMAPPROXYPORT} = 143;
-    $config{IMAPSSLPROXYPORT} = 993;
-    $config{POPPROXYPORT} = 110;
-    $config{POPSSLPROXYPORT} = 995;
-    $config{IMAPPORT} = 7143;
-    $config{IMAPSSLPORT} = 7993;
-    $config{POPPORT} = 7110;
-    $config{POPSSLPORT} = 7995;
-  }
- 
   if ($platform =~ /MACOSX/) {
     $config{JAVAHOME} = "/System/Library/Frameworks/JavaVM.framework/Versions/1.5/Home";
     setLocalConfig ("zimbra_java_home", "$config{JAVAHOME}");
@@ -883,6 +850,26 @@ sub setDefaults {
     }
 
   }
+  if (isInstalled("zimbra-proxy")) {
+    my $query = "\(\|\(\|\(zimbraMailDeliveryAddress=\${USER}\@$config{CREATEDOMAIN}\)\(zimbraMailAlias=\${USER}\@$config{CREATEDOMAIN}\)\)\(\|\(zimbraMailDeliveryAddress=\${USER}\)\(zimbraMailAlias=\${USER}\)\)\)";
+
+    $config{zimbraReverseProxyMailHostQuery} = $query;
+    $config{zimbraReverseProxyMailHostAttribute} = "zimbraMailHost";
+    $config{zimbraReverseProxyPortQuery} = '\(\&\(zimbraServiceHostname=\${MAILHOST}\)\(objectClass=zimbraServer\)\)';
+    $config{zimbraReverseProxyPop3PortAttribute} = "zimbraPop3BindPort";
+    $config{zimbraReverseProxyPop3SSLPortAttribute} = "zimbraPop3SSLBindPort";
+    $config{zimbraReverseProxyImapPortAttribute} = "zimbraImapBindPort";
+    $config{zimbraReverseProxyImapSSLPortAttribute} = "zimbraImapSSLBindPort";
+    $config{IMAPPROXYPORT} = 143;
+    $config{IMAPSSLPROXYPORT} = 993;
+    $config{POPPROXYPORT} = 110;
+    $config{POPSSLPROXYPORT} = 995;
+    $config{IMAPPORT} = 7143;
+    $config{IMAPSSLPORT} = 7993;
+    $config{POPPORT} = 7110;
+    $config{POPSSLPORT} = 7995;
+  }
+ 
   if ($options{d}) {
     foreach my $key (sort keys %config) {
       print "\tDEBUG: $key=$config{$key}\n";
