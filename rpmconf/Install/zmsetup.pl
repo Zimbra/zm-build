@@ -184,7 +184,7 @@ sub saveConfig {
     print CONF "\"\n";
     close CONF;
     chmod 0600, $fname;
-    progress ("Done\n");
+    progress ("done.\n");
   } else {
     progress( "Can't open $fname: $!\n");
   }
@@ -543,7 +543,6 @@ sub setLdapDefaults {
 
   my $mailmode=getLdapServerValue("zimbraMailMode");
 
-
   $config{HTTPPORT} = $mailport;
   $config{HTTPSPORT} = $sslport;
   $config{MODE} = $mailmode;
@@ -559,7 +558,6 @@ sub setLdapDefaults {
     $config{CREATEDOMAIN} = $config{zimbraDefaultDomainName};
     $config{CREATEADMIN} = "admin\@$config{CREATEDOMAIN}";
   }
-  
 
   $config{IMAPPORT}       = getLdapServerValue("zimbraImapBindPort");
   $config{IMAPSSLPORT}     = getLdapServerValue("zimbraImapSSLBindPort");
@@ -645,7 +643,7 @@ sub setLdapDefaults {
     }
   }
 
-  progress ( "Done\n" );
+  progress ( "done.\n" );
 }
 
 sub setDefaults {
@@ -880,7 +878,7 @@ sub setDefaults {
     }
   }
 
-  progress ( "Done\n" );
+  progress ( "done.\n" );
 }
 
 sub getInstallStatus {
@@ -1007,6 +1005,7 @@ sub setDefaultsFromLocalConfig {
     $config{SMTPDEST} = $config{CREATEADMIN}
       if ($config{SMTPDEST} eq "");
   }
+  progress("done.\n");
 }
 
 sub ask {
@@ -2644,6 +2643,7 @@ sub setLocalConfig {
     return;
   }
   detail ( "Setting local config $key to $val" );
+  $main::config{$key} = $val;
   $main::saved{lc}{$key} = $val;
   runAsZimbra("/opt/zimbra/bin/zmlocalconfig -f -e ${key}=\'${val}\' 2> /dev/null");
 }
@@ -2700,7 +2700,7 @@ sub configLCValues {
 
   configLog ("configLCValues");
 
-  progress ("Done\n");
+  progress ("done.\n");
 
 }
 
@@ -2717,11 +2717,11 @@ sub configCASetup {
     progress("Updating ldap_root_password and zimbra_ldap_passwd...");
     setLocalConfig ("ldap_root_password", $config{LDAPPASS});
     setLocalConfig ("zimbra_ldap_password", $config{LDAPPASS});
-    progress ( "Done\n" );
+    progress ( "done.\n" );
   }
   progress ( "Setting up CA..." );
   runAsRoot("/opt/zimbra/bin/zmcertmgr createca");
-  progress ( "Done\n" );
+  progress ( "done.\n" );
   
   configLog("configCASetup");
 }
@@ -2740,7 +2740,7 @@ sub configSetupLdap {
       progress ( "FAILED ($rc)\n" );
       failConfig();
     } else {
-      progress ( "Done\n" );
+      progress ( "done.\n" );
     }
   } elsif (isEnabled("zimbra-ldap")) {
     # enable replica for both new and upgrade installs if we are adding ldap
@@ -2788,11 +2788,11 @@ sub configSetupLdap {
       }
       runAsZimbra ("/opt/zimbra/bin/zmldappasswd --root $config{LDAPPASS}");
       runAsZimbra ("/opt/zimbra/bin/zmldappasswd $config{LDAPPASS}");
-      progress ( "Done\n" );
+      progress ( "done.\n" );
     } else {
       progress("Stopping ldap...");
       runAsZimbra ("/opt/zimbra/bin/ldap stop");
-      progress("done\n");
+      progress("done.\n");
       startLdap();
     }
   } else {
@@ -2814,7 +2814,7 @@ sub configSaveCA {
   }
   progress ( "Deploying CA in ..." );
   runAsRoot("/opt/zimbra/bin/zmcertmgr deployca");
-  progress ( "Done\n" );
+  progress ( "done.\n" );
   configLog("configSaveCA");
 }
 
@@ -2849,7 +2849,7 @@ sub configCreateCert {
       runAsRoot("/opt/zimbra/bin/zmcertmgr install self");
     }
   }
-  progress ( "Done\n" );
+  progress ( "done.\n" );
 
   configLog("configCreateCert");
 }
@@ -2874,14 +2874,14 @@ sub configInstallCert {
         runAsRoot("/opt/zimbra/bin/zmcertmgr install self");
       }
     }
-    progress ( "Done\n" );
+    progress ( "done.\n" );
   }
   if (isEnabled("zimbra-ldap")) {
     if (! (-f "/opt/zimbra/conf/slapd.key" || 
       -f "/opt/zimbra/conf/slapd.crt")) {
       progress ("Installing LDAP SSL certificate...");
       runAsRoot("/opt/zimbra/bin/zmcertmgr install self");
-      progress ( "Done\n" );
+      progress ( "done.\n" );
     }
   }
 
@@ -2890,7 +2890,7 @@ sub configInstallCert {
       -f "/opt/zimbra/conf/nginx.crt")) {
       progress ("Installing Proxy SSL certificate...");
       runAsRoot("/opt/zimbra/bin/zmcertmgr install self");
-      progress ( "Done\n" );
+      progress ( "done.\n" );
     }
   }
 
@@ -2906,7 +2906,7 @@ sub configCreateServerEntry {
 
   progress ( "Creating server entry for $config{HOSTNAME}..." );
   runAsZimbra("$ZMPROV cs $config{HOSTNAME}");
-  progress ( "Done\n" );
+  progress ( "done.\n" );
   configLog("configCreateServerEntry");
 }
 
@@ -2921,7 +2921,7 @@ sub configSpellServer {
     progress ( "Setting spell check URL..." );
     runAsZimbra("$ZMPROV ms $config{HOSTNAME} ".
       "zimbraSpellCheckURL $config{SPELLURL}");
-    progress ( "Done\n" );
+    progress ( "done.\n" );
   }
 
   configLog("configSpellServer");
@@ -2951,7 +2951,7 @@ sub configSetMtaAuthHost {
     progress ( "Setting MTA auth host..." );
     runAsZimbra("$ZMPROV ms $config{HOSTNAME} ".
       "zimbraMtaAuthHost $config{MTAAUTHHOST}");
-    progress ( "Done\n" );
+    progress ( "done.\n" );
   }
 
   configLog("configSetMtaAuthHost");
@@ -2975,7 +2975,7 @@ sub configSetServicePorts {
     "zimbraMailPort $config{HTTPPORT} zimbraMailSSLPort $config{HTTPSPORT} ".
     "zimbraMailMode $config{MODE}");
 
-  progress ( "Done\n" );
+  progress ( "done.\n" );
   configLog("configSetServicePorts");
 }
 
@@ -2996,7 +2996,7 @@ sub configSetInstalledSkins {
         print  ("\n\t$skin");
       }
     }
-    progress ( "\nDone\n" );
+    progress ( "\ndone.\n" );
   }
 
   configLog("configSetInstalledSkins");
@@ -3095,7 +3095,7 @@ sub configInstallZimlets {
       progress  ("\n\t$zimlet");
       runAsZimbra ("/opt/zimbra/bin/zmzimletctl -l deploy zimlets/$zimletfile");
     }
-    progress ( "\nDone\n" );
+    progress ( "\ndone.\n" );
   }
 
   # Install zimlets
@@ -3108,7 +3108,7 @@ sub configInstallZimlets {
       progress  ("\n\t$zimlet");
       runAsZimbra ("/opt/zimbra/bin/zmzimletctl -l deploy zimlets-network/$zimletfile");
     }
-    progress ( "\nDone\n" );
+    progress ( "\ndone.\n" );
   }
 
   configLog("configInstallZimlets");
@@ -3126,7 +3126,7 @@ sub configCreateDomain {
       progress ( "Creating domain $config{CREATEDOMAIN}..." );
       runAsZimbra("$ZMPROV cd $config{CREATEDOMAIN}");
       runAsZimbra("$ZMPROV mcf zimbraDefaultDomainName $config{CREATEDOMAIN}");
-      progress ( "Done\n" );
+      progress ( "done.\n" );
 
     }
   }
@@ -3139,14 +3139,14 @@ sub configCreateDomain {
       runAsZimbra("$ZMPROV ca ".
         "$config{CREATEADMIN} \'$config{CREATEADMINPASS}\' ".
         "zimbraIsAdminAccount TRUE");
-      progress ( "Done\n" );
+      progress ( "done.\n" );
 
       progress ( "Creating postmaster alias..." );
       runAsZimbra("$ZMPROV aaa ".
         "$config{CREATEADMIN} root\@$config{CREATEDOMAIN}");
       runAsZimbra("$ZMPROV aaa ".
         "$config{CREATEADMIN} postmaster\@$config{CREATEDOMAIN}");
-      progress ( "Done\n" );
+      progress ( "done.\n" );
 
       $config{NOTEBOOKACCOUNT} = lc($config{NOTEBOOKACCOUNT});
       progress ( "Creating user $config{NOTEBOOKACCOUNT}..." );
@@ -3158,7 +3158,7 @@ sub configCreateDomain {
         "zimbraHideInGal TRUE ".
         "zimbraMailQuota 0 ".
         "description \'Global Documents account\'");
-      progress ( "Done\n" );
+      progress ( "done.\n" );
     }
     if ($config{DOTRAINSA} eq "yes") {
       $config{TRAINSASPAM} = lc($config{TRAINSASPAM});
@@ -3172,7 +3172,7 @@ sub configCreateDomain {
         "zimbraHideInGal TRUE ".
         "zimbraMailQuota 0 ".
         "description \'Spam training account\'");
-      progress ( "Done\n" );
+      progress ( "done.\n" );
 
       $config{TRAINSAHAM} = lc($config{TRAINSAHAM});
       progress ( "Creating user $config{TRAINSAHAM}..." );
@@ -3184,13 +3184,13 @@ sub configCreateDomain {
         "zimbraHideInGal TRUE ".
         "zimbraMailQuota 0 ".
         "description \'Spam training account\'");
-      progress ( "Done\n" );
+      progress ( "done.\n" );
 
       progress ( "Setting spam training accounts..." );
       runAsZimbra("$ZMPROV mcf ".
         "zimbraSpamIsSpamAccount $config{TRAINSASPAM} ".
         "zimbraSpamIsNotSpamAccount $config{TRAINSAHAM}");
-      progress ( "Done\n" );
+      progress ( "done.\n" );
     }
   }
   configLog("configCreateDomain");
@@ -3206,11 +3206,11 @@ sub configInitSql {
   if (!$sqlConfigured && isEnabled("zimbra-store")) {
     progress ( "Initializing store sql database..." );
     runAsZimbra ("/opt/zimbra/libexec/zmmyinit");
-    progress ( "Done\n" );
+    progress ( "done.\n" );
     progress ( "Setting zimbraSmtpHostname for $config{HOSTNAME}..." );
     runAsZimbra("$ZMPROV ms $config{HOSTNAME} ".
       "zimbraSmtpHostname $config{SMTPHOST}");
-    progress ( "Done\n" );
+    progress ( "done.\n" );
   }
   configLog("configInitSql");
 }
@@ -3225,7 +3225,7 @@ sub configInitLogger {
   if (!$loggerSqlConfigured && isEnabled("zimbra-logger")) {
     progress ( "Initializing logger sql database..." );
     runAsZimbra ("/opt/zimbra/libexec/zmloggerinit");
-    progress ( "Done\n" );
+    progress ( "done.\n" );
   } 
 
   if (isEnabled("zimbra-logger")) {
@@ -3246,7 +3246,7 @@ sub configInitMta {
   if (isEnabled("zimbra-mta")) {
     progress ( "Initializing mta config..." );
     runAsZimbra ("/opt/zimbra/libexec/zmmtainit $config{LDAPHOST} $config{LDAPPORT}");
-    progress ( "Done\n" );
+    progress ( "done.\n" );
     $installedServiceStr .= "zimbraServiceInstalled antivirus ";
     $installedServiceStr .= "zimbraServiceInstalled antispam ";
     if ($config{RUNAV} eq "yes") {
@@ -3274,7 +3274,7 @@ sub configInitSnmp {
     setLocalConfig ("smtp_source", $config{SMTPSOURCE});
     setLocalConfig ("smtp_destination", $config{SMTPDEST});
     runAsZimbra ("/opt/zimbra/libexec/zmsnmpinit");
-    progress ( "Done\n" );
+    progress ( "done.\n" );
   }
   configLog("configInitSnmp");
 }
@@ -3321,7 +3321,7 @@ sub configInitNotebooks {
         progress ("failed to initialize documents...see logfile for details.\n");
       } else {
         runAsZimbra("/opt/zimbra/bin/zmprov ma $config{NOTEBOOKACCOUNT} zimbraFeatureNotebookEnabled TRUE");
-        progress ( "Done\n" );
+        progress ( "done.\n" );
       }
     }
 
@@ -3370,7 +3370,7 @@ sub configSetEnabledServices {
   progress ( "Setting services on $config{HOSTNAME}..." );
   runAsZimbra ("$ZMPROV ms $config{HOSTNAME} $installedServiceStr");
   runAsZimbra ("$ZMPROV ms $config{HOSTNAME} $enabledServiceStr");
-  progress ( "Done\n" );
+  progress ( "done.\n" );
 
   configLog("configSetEnabledServices");
 }
@@ -3493,7 +3493,7 @@ sub applyConfig {
     runAsZimbra ("/opt/zimbra/bin/zmcontrol start");
     # runAsZimbra swallows the output, so call status this way
     `su - zimbra -c "/opt/zimbra/bin/zmcontrol status"`;
-    progress ( "Done.\n" );
+    progress ( "done.\n" );
 
     # Initialize application server specific items
     # only after the application server is running.
@@ -3503,7 +3503,7 @@ sub applyConfig {
 
       progress ( "Restarting mailboxd...");
       runAsZimbra("/opt/zimbra/bin/zmmailboxdctl restart");
-      progress ( "Done\n" );
+      progress ( "done.\n" );
     }
     #runAsZimbra ("$ZMPROV ms $config{HOSTNAME} zimbraUserServicesEnabled TRUE");
   } else {
@@ -3551,7 +3551,7 @@ sub setupSyslog {
     if ($rc) {
       progress ("Failed\n");
       } else {
-      progress ("Done\n");
+      progress ("done.\n");
     }
   } else {
     progress ("Failed\n");
@@ -3634,7 +3634,7 @@ sub setupCrontab {
     runAsZimbra("mkdir -p /opt/zimbra/conf/cron");
     runAsZimbra("crontab -l > /opt/zimbra/conf/cron/crontab");
   }
-  progress ("Done\n");
+  progress ("done.\n");
   configLog("setupCrontab");
 
 }
@@ -3693,7 +3693,7 @@ sub addServerToHostPool {
   $n .= "zimbraMailHostPool $id";
 
   `$ZMPROV mc default $n >> $logfile 2>&1`;
-  progress ( "Done\n" );
+  progress ( "done.\n" );
 }
 
 sub mainMenu {

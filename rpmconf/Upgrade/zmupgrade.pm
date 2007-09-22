@@ -1397,10 +1397,19 @@ sub upgrade500BETA1 {
     my $zimlet_directory = "${zimbra_home}/mailboxd/webapps/service/zimlet";
     main::setLocalConfig("zimlet_directory", "$zimlet_directory");
 
+    
+
     # convert tomcat keystore to jetty keystore
     if (!-f "${mailboxd_keystore}" && -f "/opt/zimbra/tomcat/conf/keystore") { 
       Migrate::log("Migrating tomcat keystore to ${mailboxd_keystore}");
-      main::runAsZimbra("mkdir -p `dirname ${mailboxd_keystore}`; cp -f /opt/zimbra/tomcat/conf/keystore ${mailboxd_keystore}; /opt/zimbra/java/bin/keytool -keystore ${mailboxd_keystore} -keyclone -alias tomcat -dest jetty -storepass zimbra -new zimbra");
+      my $keystore_pass = main::getLocalConfig("tomcat_keystore_password");
+      if ($keystore_pass ne "") {
+        main::setLocalConfig("mailboxd_keystore_password", "$keystore_pass");
+        main::deleteLocalConfig("tomcat_keystore_password");
+      } else {
+        $keystore_pass = main::getLocalConfig("mailboxd_keystore_password");
+      }
+      main::runAsZimbra("mkdir -p `dirname ${mailboxd_keystore}`; cp -f /opt/zimbra/tomcat/conf/keystore ${mailboxd_keystore}; /opt/zimbra/java/bin/keytool -keystore ${mailboxd_keystore} -keyclone -alias tomcat -dest jetty -storepass ${keystore_pass} -new ${keystore_pass}");
     }
 
   }
@@ -2100,7 +2109,8 @@ sub migrateAmavisDB($) {
   my $amavisdBase = "/opt/zimbra/amavisd-new";
   my $toDir = "${amavisdBase}-$toVersion";
   main::progress("Migrating amavisd-new to version $toVersion\n");
-  foreach my $fromVersion qw(2.4.1 2.3.3 2.3.1) {
+  foreach my $fromVersion qw(2.5.2 2.4.3 2.4.1 2.3.3 2.3.1) {
+    next if ($toVersion eq $fromVersion);
     my $fromDir = "${amavisdBase}-$fromVersion";
     main::progress("Checking $fromDir/db\n");
     if ( -d "$fromDir/db" && -d "$toDir" && ! -e "$toDir/db/cache.db") {
