@@ -119,6 +119,7 @@ my %updateFuncs = (
 	"4.5.5_GA" => \&upgrade455GA,
 	"4.5.6_GA" => \&upgrade456GA,
 	"4.5.7_GA" => \&upgrade457GA,
+	"4.5.8_GA" => \&upgrade458GA,
 	"5.0.0_BETA1" => \&upgrade500BETA1,
 	"5.0.0_BETA2" => \&upgrade500BETA2,
 	"5.0.0_RC1" => \&upgrade500RC1,
@@ -1278,6 +1279,10 @@ sub upgrade457GA {
     # migrate amavis data 
     migrateAmavisDB("2.5.2");
   }
+
+sub upgrade458GA {
+	return 0;
+}
 
   if (isInstalled("zimbra-store")) {
     # 19749
