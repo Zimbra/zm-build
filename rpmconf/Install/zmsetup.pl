@@ -588,6 +588,57 @@ sub setLdapDefaults {
       if ($config{zimbraBackupReportEmailSender} eq "");
   }
   if (isInstalled("zimbra-proxy")) {
+    if (isEnabled("zimbra-proxy")) {
+        if ($config{IMAPPORT} == $config{IMAPPROXYPORT} && $config{IMAPPORT} == 143) {
+            $config{IMAPPORT} = 7143;
+        }
+        if ($config{IMAPSSLPORT} == $config{IMAPSSLPROXYPORT} && $config{IMAPSSLPORT} == 993) {
+            $config{IMAPSSLPORT} = 7993;
+        }
+        if ($config{POPPORT} == $config{POPPROXYPORT} && $config{POPPORT} == 110) {
+            $config{POPPORT} = 7110;
+        }
+        if ($config{POPSSLPORT} == $config{POPSSLPROXYPORT} && $config{POPSSLPORT} == 995) {
+            $config{POPSSLPORT} = 7995;
+        }
+        if ($config{IMAPPORT} == $config{IMAPPROXYPORT} && $config{IMAPPORT} == 7143) {
+            $config{IMAPPROXYPORT} = 143;
+        }
+        if ($config{IMAPSSLPORT} == $config{IMAPSSLPROXYPORT} && $config{IMAPSSLPORT} == 7993) {
+            $config{IMAPSSLPROXYPORT} = 993;
+        }
+        if ($config{POPPORT} == $config{POPPROXYPORT} && $config{POPPORT} == 7110) {
+            $config{POPPROXYPORT} = 110;
+        }
+        if ($config{POPSSLPORT} == $config{POPSSLPROXYPORT} && $config{POPSSLPORT} == 7995) {
+            $config{POPSSLPROXYPORT} = 995;
+        }
+    } else {
+        if ($config{IMAPPORT} == $config{IMAPPROXYPORT} && $config{IMAPPORT} == 143) {
+            $config{IMAPPROXYPORT} = 7143;
+        }
+        if ($config{IMAPSSLPORT} == $config{IMAPSSLPROXYPORT} && $config{IMAPSSLPORT} == 993) {
+            $config{IMAPSSLPROXYPORT} = 7993;
+        }
+        if ($config{POPPORT} == $config{POPPROXYPORT} && $config{POPPORT} == 110) {
+            $config{POPPROXYPORT} = 7110;
+        }
+        if ($config{POPSSLPORT} == $config{POPSSLPROXYPORT} && $config{POPSSLPORT} == 995) {
+            $config{POPSSLPROXYPORT} = 7995;
+        }
+        if ($config{IMAPPORT} == $config{IMAPPROXYPORT} && $config{IMAPPORT} == 7143) {
+            $config{IMAPPORT} = 143;
+        }
+        if ($config{IMAPSSLPORT} == $config{IMAPSSLPROXYPORT} && $config{IMAPSSLPORT} == 7993) {
+            $config{IMAPSSLPORT} = 993;
+        }
+        if ($config{POPPORT} == $config{POPPROXYPORT} && $config{POPPORT} == 7110) {
+            $config{POPPORT} = 110;
+        }
+        if ($config{POPSSLPORT} == $config{POPSSLPROXYPORT} && $config{POPSSLPORT} == 7995) {
+            $config{POPSSLPORT} = 995;
+        }
+    }
     my $query = "\(\|\(\|\(zimbraMailDeliveryAddress=\${USER}\@$config{zimbraDefaultDomainName}\)\(zimbraMailAlias=\${USER}\@$config{zimbraDefaultDomainName}\)\)\(\|\(zimbraMailDeliveryAddress=\${USER}\)\(zimbraMailAlias=\${USER}\)\)\)";
 
     $config{zimbraReverseProxyMailHostQuery} = getLdapConfigValue("zimbraReverseProxyMailHostQuery");
