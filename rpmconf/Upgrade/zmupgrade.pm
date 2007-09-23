@@ -130,6 +130,7 @@ my %updateFuncs = (
 	"4.5.5_GA" => \&upgrade455GA,
 	"4.5.6_GA" => \&upgrade456GA,
 	"4.5.7_GA" => \&upgrade457GA,
+	"4.5.8_GA" => \&upgrade458GA,
   "4.6.0_BETA" => \&upgrade460BETA,
   "4.6.0_RC1" => \&upgrade460RC1,
   "4.6.0_GA" => \&upgrade460GA,
@@ -1315,6 +1316,11 @@ sub upgrade457GA {
   }
 	return 0;
 }
+
+sub upgrade458GA {
+	return 0;
+}
+
 sub upgrade460BETA {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
 	main::progress("Updating from 4.6.0_BETA\n");
