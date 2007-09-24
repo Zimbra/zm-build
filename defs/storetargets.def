@@ -238,10 +238,10 @@ $(ADMIN_EXT_DIR)/build/zimbra_cert_manager.jar:
 		-Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) \
 		-Dzimbra.buildinfo.host=$(HOST) jar ; )
 	
-$(STORE_DEST_DIR)/lib/ext/zimbra_cert_manager/zimbra_cert_manager.jar: $(STORE_DEST_DIR)/lib/ext/zimbra_cert_manager $(ADMIN_EXT_DIR)/build/zimbra_cert_manager.jar
+$(CORE_DEST_DIR)/lib/ext/zimbra_cert_manager/zimbra_cert_manager.jar: $(CORE_DEST_DIR)/lib/ext/zimbra_cert_manager $(ADMIN_EXT_DIR)/build/zimbra_cert_manager.jar
 	cp -f $(ADMIN_EXT_DIR)/build/zimbra_cert_manager.jar $@
 
-$(STORE_DEST_DIR)/lib/ext/zimbra_cert_manager:
+$(CORE_DEST_DIR)/lib/ext/zimbra_cert_manager:
 	mkdir -p $@
 
 $(STORE_DEST_DIR)/lib/ext/clamscanner/clamscanner.jar: $(STORE_DEST_DIR)/lib/ext/clamscanner $(CLAMSCANNER_DIR)/build/clamscanner.jar

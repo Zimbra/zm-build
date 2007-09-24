@@ -17,6 +17,7 @@ CORE_COMPONENTS	:= \
 	$(CORE_DEST_DIR)/doc \
 	$(CORE_DEST_DIR)/$(BDB_DIR) \
 	$(CORE_DEST_DIR)/$(SASL_DIR)-$(SASL_VERSION) \
+	$(CORE_DEST_DIR)/lib/ext/zimbra_cert_manager/zimbra_cert_manager.jar \
 	$(PLATFORM_CORE_COMPONENTS)
 
 MTA_COMPONENTS	:= \
@@ -48,7 +49,6 @@ STORE_COMPONENTS := \
 	$(MAILBOXD_COMPONENTS) \
 	$(STORE_DEST_DIR)/lib/ext/clamscanner/clamscanner.jar \
 	$(STORE_DEST_DIR)/lib/ext/zimbraldaputils/zimbraldaputils.jar \
-	$(STORE_DEST_DIR)/lib/ext/zimbra_cert_manager/zimbra_cert_manager.jar \
 	$(STORE_DEST_DIR)/lib/ext/nginx-lookup/nginx-lookup.jar \
 	$(STORE_DEST_DIR)/wiki \
 	$(STORE_DEST_DIR)/$(MYSQL_DIR) 
