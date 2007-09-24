@@ -28,6 +28,10 @@ ifeq ($(BUILD_PLATFORM), RHEL5_64)
 	ARCH := x86_64
 endif
 
+ifeq ($(BUILD_PLATFORM), SLES10_64)
+	ARCH := x86_64
+endif
+
 ifeq ($(BUILD_PLATFORM), MACOSX)
 	ARCH := ppc
 endif
