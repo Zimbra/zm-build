@@ -921,6 +921,11 @@ sub setDefaults {
     $config{IMAPSSLPORT} = 7993;
     $config{POPPORT} = 7110;
     $config{POPSSLPORT} = 7995;
+  } else {
+    $config{IMAPPROXYPORT} = 7143;
+    $config{IMAPSSLPROXYPORT} = 7993;
+    $config{POPPROXYPORT} = 7110;
+    $config{POPSSLPROXYPORT} = 7995;
   }
  
   if ($options{d}) {
