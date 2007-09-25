@@ -39,10 +39,16 @@ displayLicense() {
 
 isFQDN() {
   #fqdn is > 2 dots.  because I said so.
-  if [ $1 = "dogfood" ]; then
+  if [ x"$1" = "xdogfood" ]; then
     echo 1
     return
   fi
+
+  if [ x"$1" = "x" ] then
+    echo 0
+    return
+  fi
+
   NF=`echo $1 | awk -F. '{print NF}'`
   if [ $NF -ge 2 ]; then 
     echo 1
