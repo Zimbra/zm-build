@@ -782,9 +782,9 @@ EOF
     done
   else 
     # REMOVE = yes for non installed systems, to clean up /opt/zimbra
-    DETECTFILES="db/db.sql bin/zmcontrol conf/localconfig.xml openldap-data/DB_CONFIG"
+    DETECTDIRS="db bin/zmcontrol redolog index store conf/localconfig.xml openldap-data"
     for i in $DETECTFILES; do
-      if [ -d "/opt/zimbra/$i" ]; then
+      if [ -e "/opt/zimbra/$i" ]; then
         INSTALLED="yes"
       fi
     done
