@@ -44,7 +44,7 @@ isFQDN() {
     return
   fi
 
-  if [ x"$1" = "x" ] then
+  if [ x"$1" = "x" ]; then
     echo 0
     return
   fi
