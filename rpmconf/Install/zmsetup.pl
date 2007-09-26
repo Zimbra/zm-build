@@ -418,7 +418,7 @@ sub isInstalled {
 }
 
 sub genRandomPass {
-  open RP, "/opt/zimbra/bin/zmjava com.zimbra.common.util.RandomPassword 8 10|" or
+  open RP, "/opt/zimbra/bin/zmjava com.zimbra.common.util.RandomPassword -l 8 10|" or
     die "Can't generate random password: $!\n";
   my $rp = <RP>;
   close RP;
