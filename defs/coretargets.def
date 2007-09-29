@@ -292,8 +292,7 @@ $(CORE_DEST_DIR)/bin:
 	rm -f $(CORE_DEST_DIR)/bin/zmtransserver.bat
 	cp $(ZIMBRA_BIN_DIR)/zmswatchctl $@
 	cp $(ZIMBRA_BIN_DIR)/zmlogswatchctl $@
-	cp $(ZIMBRA_BIN_DIR)/zmcreatecert $@
-	cp $(ZIMBRA_BIN_DIR)/zmcertinstall $@
+	cp $(ZIMBRA_BIN_DIR)/zmcertmgr $@
 	cp $(ZIMBRA_BIN_DIR)/zmtlsctl $@
 	cp $(ZIMBRA_BIN_DIR)/zmsyslogsetup $@
 	cp $(LDAP_DEST_ROOT)/opt/zimbra/$(LDAP_DIR)/bin/ldapsearch $@

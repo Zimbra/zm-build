@@ -193,7 +193,7 @@ $(DEV_INSTALL_ROOT)/bin:
 	cp -f $(ZIMBRA_BIN_DIR)/zmlogrotate $@
 	cp -f $(ZIMBRA_BIN_DIR)/zmsnmpinit $@
 	cp -f $(ZIMBRA_BIN_DIR)/zmgengraphs $@
-	cp -f $(ZIMBRA_BIN_DIR)/zmcreatecert $@
+	cp -f $(ZIMBRA_BIN_DIR)/zmcertmgr $@
 	cp -f $(ZIMBRA_BIN_DIR)/zmroll_catalina.sh $@
 	cp -f $(ZIMBRA_BIN_DIR)/zmtlsctl $@
 	cp -f $(ZIMBRA_BIN_DIR)/zmfixperms.sh $@
