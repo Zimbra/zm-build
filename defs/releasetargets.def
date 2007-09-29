@@ -53,8 +53,9 @@ zcs_stage:
 	mkdir -p zcs/util/modules
 	cp -f $(LICENSE_DIR)/zimbra/zpl-full.txt zcs/ZPL.txt
 	cp -f $(CONSOLE_DIR)/WebRoot/adminhelp/pdf/*pdf zcs/docs
-	cp -f $(LICENSE_DIR)/zimbra/zcl-full.txt zcs/docs/zcl-full.txt
 	cp -f $(LICENSE_DIR)/zimbra/zcl.txt zcs/docs/zcl.txt
+	cp -f $(LICENSE_DIR)/zimbra/ypl-full.txt zcs/docs/YPL.txt
+	cp -f $(LICENSE_DIR)/zimbra/zimbra_public_eula_2.1.txt zcs/docs/zimbra_public_eula_2.1.txt
 	cp -f $(CONSOLE_DIR)/WebRoot/adminhelp/txt/readme_source.txt zcs
 	cp -f $(CONSOLE_DIR)/WebRoot/adminhelp/txt/readme_binary.txt zcs
 	cp -f $(SERVICE_DIR)/build/versions-init.sql zcs/data
