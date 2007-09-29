@@ -71,8 +71,8 @@ zcs_stage:
 	tar czf zcs-$(VERSION_TAG).tgz zcs
 	mv zcs-$(VERSION_TAG).tgz $(PACKAGE_DIR)
 	(cd $(PACKAGE_DIR); ln -s zcs-$(VERSION_TAG).tgz zcs.tgz)
-	cp -f $(LICENSE_DIR)/zimbra/ypl-full.txt zcs-$(VERSION_TAG).$(RELEASE)/YPL.txt
-	cp -f $(LICENSE_DIR)/zimbra/zimbra_public_eula_2.1.txt zcs-$(VERSION_TAG).$(RELEASE)/docs/zimbra_public_eula_2.1.txt
+	cp -f $(LICENSE_DIR)/zimbra/ypl-full.txt zcs/YPL.txt
+	cp -f $(LICENSE_DIR)/zimbra/zimbra_public_eula_2.1.txt zcs/docs/zimbra_public_eula_2.1.txt
 	cp -f $(WEBAPP_DIR)/zimbra/downloads/* $(PACKAGE_DIR)
 	@echo "*** BUILD COMPLETED ***"
 
