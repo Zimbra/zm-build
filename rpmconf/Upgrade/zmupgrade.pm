@@ -121,6 +121,7 @@ my %updateFuncs = (
 	"4.5.6_GA" => \&upgrade456GA,
 	"4.5.7_GA" => \&upgrade457GA,
 	"4.5.8_GA" => \&upgrade458GA,
+	"4.5.9_GA" => \&upgrade459GA,
   "4.6.0_BETA" => \&upgrade460BETA,
   "4.6.0_RC1" => \&upgrade460RC1,
   "4.6.0_GA" => \&upgrade460GA,
@@ -170,6 +171,8 @@ my @versionOrder = (
   "4.6.0_BETA",
   "4.6.0_RC1",
   "4.6.0_GA",
+  "4.5.8_GA",
+  "4.5.9_GA",
   "5.0.0_BETA1",
   "5.0.0_BETA2",
   "5.0.0_BETA3",
@@ -302,6 +305,10 @@ sub upgrade {
 		main::progress("This appears to be 4.5.6_GA\n");
 	} elsif ($startVersion eq "4.5.7_GA") {
 		main::progress("This appears to be 4.5.7_GA\n");
+	} elsif ($startVersion eq "4.5.8_GA") {
+		main::progress("This appears to be 4.5.8_GA\n");
+	} elsif ($startVersion eq "4.5.9_GA") {
+		main::progress("This appears to be 4.5.9_GA\n");
 	} elsif ($startVersion eq "4.6.0_BETA") {
 		main::progress("This appears to be 4.6.0_BETA\n");
 	} elsif ($startVersion eq "4.6.0_RC1") {
@@ -1304,12 +1311,33 @@ sub upgrade457GA {
     # migrate amavis data 
     migrateAmavisDB("2.5.2");
   }
+
+  if (isInstalled("zimbra-store")) {
+    # 19749
+    updateMySQLcnf();
+		if (startSql()) { return 1; }
+		main::runAsZimbra("perl -I${scriptDir} ${scriptDir}/migrateLargeMetadata.pl -a");
+		stopSql();
+  }
+
+  if (isInstalled("zimbra-logger")) {
+    updateLoggerMySQLcnf();
+  }
 	return 0;
 }
 
 sub upgrade458GA {
+	my ($startBuild, $targetVersion, $targetBuild) = (@_);
+	main::progress("Updating from 4.5.8_GA\n");
 	return 0;
 }
+
+sub upgrade459GA {
+	my ($startBuild, $targetVersion, $targetBuild) = (@_);
+	main::progress("Updating from 4.5.9_GA\n");
+	return 0;
+}
+
 
 sub upgrade460BETA {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
@@ -1333,6 +1361,7 @@ sub upgrade460GA {
   }
 	return 0;
 }
+
 sub upgrade500BETA1 {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
 	main::progress("Updating from 5.0.0_BETA1\n");
@@ -1453,6 +1482,7 @@ sub upgrade500BETA1 {
   }
 	return 0;
 }
+
 sub upgrade500BETA2 {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
 	main::progress("Updating from 5.0.0_BETA2\n");
@@ -1529,6 +1559,7 @@ sub upgrade500BETA3 {
 
 	return 0;
 }
+
 sub upgrade500BETA4 {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
 	main::progress("Updating from 5.0.0_BETA4\n");
@@ -1590,11 +1621,13 @@ sub upgrade500RC1 {
 	main::progress("Updating from 5.0.0_RC1\n");
 	return 0;
 }
+
 sub upgrade500RC2 {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
 	main::progress("Updating from 5.0.0_RC2\n");
 	return 0;
 }
+
 sub upgrade500GA {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
 	main::progress("Updating from 5.0.0_GA\n");
