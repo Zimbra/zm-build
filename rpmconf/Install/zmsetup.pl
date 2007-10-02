@@ -2823,6 +2823,16 @@ sub configSetupLdap {
         progress ("done.\n");
       }
     }
+
+    # set default zmprov bahaviour
+    if (isEnabled("zimbra-ldap")) {
+      if (isEnabled("zimbra-store")) {
+        setLocalConfig ("zimbra_zmprov_default_to_ldap", "FALSE");
+      } else {
+        setLocalConfig ("zimbra_zmprov_default_to_ldap", "TRUE");
+      }
+    }
+
     # zmldappasswd starts ldap and re-applies the ldif
     if ($ldapPassChanged) {
       progress ( "Setting ldap password..." );
