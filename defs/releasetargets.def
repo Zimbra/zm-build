@@ -64,6 +64,7 @@ zcs_stage:
 	cp -f $(PACKAGE_CONF_DIR)/Install/Util/modules/*sh zcs-$(VERSION_TAG).$(RELEASE)/util/modules
 	cp -f $(BUILD_ROOT)/RE/README.txt zcs-$(VERSION_TAG).$(RELEASE)
 	cp -f $(BUILD_ROOT)/rpmconf/Build/get_plat_tag.sh zcs-$(VERSION_TAG).$(RELEASE)/bin
+	cp -f $(SERVICE_DIR)/build/dist/libexec/zmdbintegrityreport zcs-$(VERSION_TAG).$(RELEASE)/bin
 	chmod 755 zcs-$(VERSION_TAG).$(RELEASE)/install.sh
 	cp $(PACKAGE_DIR)/*$(PACKAGE_EXT) zcs-$(VERSION_TAG).$(RELEASE)/packages
 	tar czf zcs-$(VERSION_TAG).$(RELEASE).tgz zcs-$(VERSION_TAG).$(RELEASE)
