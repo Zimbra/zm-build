@@ -109,6 +109,7 @@ my %updateFuncs = (
 	"4.5.6_GA" => \&upgrade456GA,
 	"4.5.7_GA" => \&upgrade457GA,
 	"4.5.8_GA" => \&upgrade458GA,
+	"4.5.9_GA" => \&upgrade459GA,
 	"5.0.0_BETA1" => \&upgrade500BETA1,
 	"5.0.0_BETA2" => \&upgrade500BETA2,
 	"5.0.0_RC1" => \&upgrade500RC1,
@@ -150,11 +151,8 @@ my @versionOrder = (
 	"4.5.5_GA",
 	"4.5.6_GA",
 	"4.5.7_GA",
-  "5.0.0_BETA1",
-  "5.0.0_BETA2",
-  "5.0.0_RC1",
-  "5.0.0_RC2",
-  "5.0.0_GA",
+  "4.5.8_GA",
+  "4.5.9_GA",
 );
 
 my $startVersion;
@@ -283,6 +281,10 @@ sub upgrade {
 		main::progress("This appears to be 4.5.6_GA\n");
 	} elsif ($startVersion eq "4.5.7_GA") {
 		main::progress("This appears to be 4.5.7_GA\n");
+	} elsif ($startVersion eq "4.5.8_GA") {
+		main::progress("This appears to be 4.5.8_GA\n");
+	} elsif ($startVersion eq "4.5.9_GA") {
+		main::progress("This appears to be 4.5.9_GA\n");
 	} elsif ($startVersion eq "5.0.0_BETA1") {
 		main::progress("This appears to be 5.0.0_BETA1\n");
 	} elsif ($startVersion eq "5.0.0_BETA2") {
@@ -1269,10 +1271,6 @@ sub upgrade457GA {
     migrateAmavisDB("2.5.2");
   }
 
-sub upgrade458GA {
-	return 0;
-}
-
   if (isInstalled("zimbra-store")) {
     # 19749
     updateMySQLcnf();
@@ -1286,6 +1284,19 @@ sub upgrade458GA {
   }
 	return 0;
 }
+
+sub upgrade458GA {
+	my ($startBuild, $targetVersion, $targetBuild) = (@_);
+	main::progress("Updating from 4.5.8_GA\n");
+	return 0;
+}
+
+sub upgrade459GA {
+	my ($startBuild, $targetVersion, $targetBuild) = (@_);
+	main::progress("Updating from 4.5.9_GA\n");
+	return 0;
+}
+
 sub upgrade500BETA1 {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
 	main::progress("Updating from 5.0.0_BETA1\n");
