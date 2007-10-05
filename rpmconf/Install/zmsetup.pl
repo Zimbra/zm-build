@@ -118,6 +118,8 @@ my $installedServiceStr = "";
 my $enabledServiceStr = "";
 
 my $ldapPassChanged = 0;
+my $ldapRepChanged = 0;
+my $ldapPostChanged = 0;
 
 my @interfaces = ();
 
@@ -789,6 +791,10 @@ sub setDefaults {
     progress "setting defaults for zimbra-ldap.\n" if $options{d};
     $config{DOCREATEDOMAIN} = "yes" if $newinstall;
     $config{LDAPPASS} = genRandomPass();
+    $config{LDAPREPPASS} = genRandomPass();
+    $config{LDAPPOSTPASS} = genRandomPass();
+    $ldapRepChanged = 1;
+    $ldapPostChanged = 1;
   }
   $config{CREATEADMIN} = "admin\@$config{CREATEDOMAIN}";
 
@@ -1050,6 +1056,20 @@ sub setDefaultsFromLocalConfig {
     $config{SMTPDEST} = getLocalConfig("smtp_destination");
     $config{SMTPDEST} = $config{CREATEADMIN}
       if ($config{SMTPDEST} eq "");
+  }
+  if (isEnabled("zimbra-ldap")) {
+
+    $config{LDAPREPPASS} = getLocalConfig ("ldap_replication_password");
+    if ($config{LDAPREPPASS} eq "") {
+      $config{LDAPREPPASS} = genRandomPass();
+      $ldapRepChanged = 1;
+    }
+
+    $config{LDAPPOSTPASS} = getLocalConfig ("ldap_postfix_password");
+    if ($config{LDAPPOSTPASS} eq "") {
+      $config{LDAPPOSTPASS} = genRandomPass();
+      $ldapPostChanged = 1;
+    }
   }
   progress("done.\n");
 }
@@ -2791,17 +2811,6 @@ sub configSetupLdap {
   } elsif (isEnabled("zimbra-ldap")) {
     # enable replica for both new and upgrade installs if we are adding ldap
     if ($config{LDAPHOST} ne $config{HOSTNAME} ||  -f "/opt/zimbra/.enable_replica") {
-      my $ldap_replica_rid = getLocalConfig("ldap_replica_rid");
-      unless ($ldap_replica_rid) {
-        progress("Updating ldap_replica_rid...");
-        foreach my $int (@interfaces) {
-          next if ($int =~ m/127\.0\.0\.1/);
-          my $rid = sprintf("%03d", (split(/\./,$int))[-1]);
-          setLocalConfig("ldap_replica_rid", $rid);
-          last if $rid;
-        }
-        progress("done\n");
-      }
       progress("Updating ldap_root_password and zimbra_ldap_passwd...");
       setLocalConfig ("ldap_root_password", $config{LDAPPASS});
       setLocalConfig ("zimbra_ldap_password", $config{LDAPPASS});
@@ -2836,14 +2845,10 @@ sub configSetupLdap {
     # zmldappasswd starts ldap and re-applies the ldif
     if ($ldapPassChanged) {
       progress ( "Setting ldap password..." );
-      if ( -f "/opt/zimbra/openldap-data/id2entry.bdb") {
-        stopLdap();
-        runAsZimbra("/opt/zimbra/sleepycat/bin/db_recover -h /opt/zimbra/openldap-data");
-        runAsZimbra 
-          ("/opt/zimbra/openldap/sbin/slapindex -b '' -q -f /opt/zimbra/conf/slapd.conf");
-      }
-      runAsZimbra ("/opt/zimbra/bin/zmldappasswd --root $config{LDAPPASS}");
-      runAsZimbra ("/opt/zimbra/bin/zmldappasswd $config{LDAPPASS}");
+      runAsZimbra ("/opt/zimbra/bin/zmldappasswd -r $config{LDAPPASS}");
+      # No reason to run this twice, zmldappaswd will change it for admin
+      # and root usr both when run with -r option
+      #runAsZimbra ("/opt/zimbra/bin/zmldappasswd $config{LDAPPASS}");
       progress ( "done.\n" );
     } else {
       progress("Stopping ldap...");
@@ -2855,6 +2860,14 @@ sub configSetupLdap {
     detail("Updating ldap_root_password and zimbra_ldap_passwd\n");
     setLocalConfig ("ldap_root_password", $config{LDAPPASS});
     setLocalConfig ("zimbra_ldap_password", $config{LDAPPASS});
+  }
+  if ($ldapRepChanged == 1) {
+    setLocalConfig ("ldap_replication_password", "$config{LDAPREPPASS}");
+    runAsZimbra ("/opt/zimbra/bin/zmldappasswd -l $config{LDAPREPPASS}");
+  }
+  if ($ldapPostChanged == 1) {
+    setLocalConfig ("ldap_postfix_password", "$config{LDAPPOSTPASS}");
+    runAsZimbra ("/opt/zimbra/bin/zmldappasswd -p $config{LDAPPOSTPASS}");
   }
 
   configLog("configSetupLdap");
@@ -3464,7 +3477,7 @@ sub applyConfig {
 
   # About SSL
   # 
-  # On the master ldap server, create a ca and a ceert
+  # On the master ldap server, create a ca and a cert
   # On store and MTA servers, just create a cert.
   #
   # Non-ldap masters use the master CA, which they get from ldap
