@@ -3477,6 +3477,18 @@ sub mainMenu {
   displayMenu(\%mm);
 }
 
+sub stopLdap {
+  main::progress("Stopping ldap\n");
+  my $rc = 0xffff & system("su - zimbra -c \"/opt/zimbra/bin/ldap stop > /dev/null 2>&1\"");
+  $rc = $rc >> 8;
+  if ($rc) {
+    main::progress("LDAP stop failed with exit code $rc\n");
+    return $rc;
+  }
+  sleep 5; # give it a chance to shutdown.
+  return 0;
+}
+
 sub startLdap {
   main::progress("Checking ldap status\n");
   my $rc = runAsZimbra("/opt/zimbra/bin/ldap status");
