@@ -1294,6 +1294,11 @@ sub upgrade458GA {
 sub upgrade459GA {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
 	main::progress("Updating from 4.5.9_GA\n");
+  if (isInstalled("zimbra-store")) {
+    main::setLocalConfig("zimbra_mailbox_purgeable", "true");
+  }
+
+  
 	return 0;
 }
 
@@ -1320,6 +1325,9 @@ sub upgrade500RC1 {
 sub upgrade500RC2 {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
 	main::progress("Updating from 5.0.0_RC2\n");
+  if (isInstalled("zimbra-store")) {
+    main::setLocalConfig("zimbra_mailbox_purgeable", "true");
+  }
 	return 0;
 }
 sub upgrade500GA {
