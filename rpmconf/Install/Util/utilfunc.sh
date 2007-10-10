@@ -454,7 +454,7 @@ determineVersionType() {
 
   isInstalled zimbra-core
   if [ x$PKGINSTALLED != "x" ]; then
-    ZMVERSION_CURRENT=$PKGVERSION
+    ZMVERSION_CURRENT=`echo $PKGVERSION | sed s/^zimbra-core-//`
     if [ -d "/opt/zimbra/zimlets-network" ]; then
       ZMTYPE_CURRENT="NETWORK"
     else 
@@ -904,6 +904,19 @@ restoreCerts() {
 saveExistingConfig() {
   echo ""
   echo "Saving existing configuration file to $SAVEDIR"
+  echo "$ZMVERSION_CURRENT"
+  # make copies of existing save files
+  for f in config.save keystore cacerts perdition.pem smtpd.key smtpd.crt slapd.key slapd.crt ca.key backup.save; do
+    if [ -f "${SAVEDIR}/${f}" ]; then
+      for (( i=0 ;; i++ )); do
+        if [ ! -f "${SAVEDIR}/${ZMVERSION_CURRENT}/${i}/${f}" ]; then
+          mkdir -p ${SAVEDIR}/${ZMVERSION_CURRENT}/${i} 2> /dev/null
+          mv -f "${SAVEDIR}/${f}" "${SAVEDIR}/${ZMVERSION_CURRENT}/${i}/${f}"
+          break
+        fi
+      done
+    fi
+  done
   # yes, it needs massaging to be fed back in...
   runAsZimbra "zmlocalconfig -s | sed -e \"s/ = \(.*\)/=\'\1\'/\" > $SAVEDIR/config.save"
   cp -f /opt/zimbra/java/jre/lib/security/cacerts $SAVEDIR
