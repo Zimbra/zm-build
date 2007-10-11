@@ -79,7 +79,8 @@ my @packageList = (
   "zimbra-spell",
   "zimbra-cluster",
   "zimbra-proxy",
-  );
+  "zimbra-archiving",
+);
 
 my %packageServiceMap = (
   antivirus => "zimbra-mta",
@@ -91,7 +92,8 @@ my %packageServiceMap = (
   ldap      => "zimbra-ldap",
   spell     => "zimbra-spell",
   stats     => "zimbra-core",
-  imapproxy     => "zimbra-proxy",
+  imapproxy => "zimbra-proxy",
+  archiving => "zimbra-archiving",
 );
 
 my %installedPackages = ();
@@ -1741,6 +1743,9 @@ sub configurePackage {
     configureCluster($package);
   } elsif ($package eq "zimbra-proxy") {
     configureProxy($package);
+  } elsif ($package eq "zimbra-archiving") {
+    configureArchiving($package);
+  }
   }
 }
 
@@ -1833,6 +1838,8 @@ sub createPackageMenu {
     return createClusterMenu($package);
   } elsif ($package eq "zimbra-proxy") {
     return createProxyMenu($package)
+  } elsif ($package eq "zimbra-archiving") {
+    return createArchivingMenu($package)
   }
 }
 sub createLdapMenu {
@@ -1889,6 +1896,22 @@ sub configureLdap {
 
   my $lm = createLdapMenu($package);
 
+  displayMenu($lm);
+}
+
+sub createArchivingMenu {
+  my $package = shift;
+  my $lm = genPackageMenu($package);
+  $$lm{title} = "Archiving configuration";
+  $$lm{createsub} = \&createArchivingMenu;
+  $$lm{createarg} = $package;
+  my $i = 2;
+  return $lm;
+}
+
+sub configureArchiving {
+  my $package = shift;
+  my $lm = createArchivingMenu($package);
   displayMenu($lm);
 }
 
@@ -3415,10 +3438,9 @@ sub configSetEnabledServices {
     if ($p eq "zimbra-apache") {next;}
     if ($p eq "zimbra-cluster") {next;}
     $p =~ s/zimbra-//;
-    if ($p eq "proxy") { $installedServiceStr .= "zimbraServiceInstalled imapproxy ";}
-    else {
-        $installedServiceStr .= "zimbraServiceInstalled $p ";
-    }
+    if ($p eq "store") {$p = "mailbox";}
+    if ($p eq "proxy") { $p = "imapproxy";}
+    $installedServiceStr .= "zimbraServiceInstalled $p ";
   }
 
   foreach my $p (keys %enabledPackages) {
