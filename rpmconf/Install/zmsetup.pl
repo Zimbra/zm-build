@@ -79,7 +79,7 @@ my @packageList = (
   "zimbra-spell",
   "zimbra-cluster",
   "zimbra-proxy",
-  "zimbra-archiving",
+  #"zimbra-archiving",
 );
 
 my %packageServiceMap = (
@@ -93,7 +93,7 @@ my %packageServiceMap = (
   spell     => "zimbra-spell",
   stats     => "zimbra-core",
   imapproxy => "zimbra-proxy",
-  archiving => "zimbra-archiving",
+  #archiving => "zimbra-archiving",
 );
 
 my %installedPackages = ();
@@ -1743,9 +1743,8 @@ sub configurePackage {
     configureCluster($package);
   } elsif ($package eq "zimbra-proxy") {
     configureProxy($package);
-  } elsif ($package eq "zimbra-archiving") {
-    configureArchiving($package);
-  }
+  #} elsif ($package eq "zimbra-archiving") {
+    #configureArchiving($package);
   }
 }
 
@@ -1838,8 +1837,8 @@ sub createPackageMenu {
     return createClusterMenu($package);
   } elsif ($package eq "zimbra-proxy") {
     return createProxyMenu($package)
-  } elsif ($package eq "zimbra-archiving") {
-    return createArchivingMenu($package)
+  #} elsif ($package eq "zimbra-archiving") {
+    #return createArchivingMenu($package)
   }
 }
 sub createLdapMenu {
