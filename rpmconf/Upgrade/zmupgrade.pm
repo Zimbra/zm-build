@@ -1804,6 +1804,7 @@ sub migrateAmavisDB($) {
   my $toDir = "${amavisdBase}-$toVersion";
   main::progress("Migrating amavisd-new to version $toVersion\n");
   foreach my $fromVersion qw(2.5.2 2.4.3 2.4.1 2.3.3 2.3.1) {
+    next if ($toVersion eq $fromVersion);
     my $fromDir = "${amavisdBase}-$fromVersion";
     main::progress("Checking $fromDir/db\n");
     if ( -d "$fromDir/db" && -d "$toDir" && ! -e "$toDir/db/cache.db") {
