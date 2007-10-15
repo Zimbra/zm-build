@@ -976,7 +976,7 @@ removeExistingInstall() {
     if [ -f "/etc/sudoers" ]; then
       cat /etc/sudoers | grep -v zimbra > /tmp/sudoers
       cat /tmp/sudoers > /etc/sudoers
-      if [ $PLATFORM = "SuSEES9" -o $PLATFORM = "SuSEES10" -o $PLATFORM = "SuSE10" -o $PLATFORM = "openSUSE_10.2" -o $PLATFORM = "openSUSE_10.1" ]; then
+      if [ $PLATFORM = "SuSEES9" -o $PLATFORM = "SuSEES10" -o $PLATFORM = "SuSE10" -o $PLATFORM = "openSUSE_10.2" -o $PLATFORM = "openSUSE_10.1" -o $PLATFORM = "SLES10_64" ]; then
         chmod 640 /etc/sudoers
       else
         chmod 440 /etc/sudoers
@@ -1336,7 +1336,7 @@ isInstalled () {
 
 getPlatformVars() {
   PLATFORM=`bin/get_plat_tag.sh`
-  if [ $PLATFORM = "DEBIAN3.1" -o $PLATFORM = "UBUNTU6" ]; then
+  if [ $PLATFORM = "DEBIAN3.1" -o $PLATFORM = "UBUNTU6" -o $PLATFORM = "DEBIAN4.0" ]; then
     PACKAGEINST='dpkg -i'
     PACKAGERM='dpkg --purge'
     PACKAGEQUERY='dpkg -s'
@@ -1344,6 +1344,9 @@ getPlatformVars() {
     PREREQ_PACKAGES="sudo libidn11 curl fetchmail libgmp3 libxml2 libstdc++6 openssl"
     if [ $PLATFORM = "UBUNTU6" ]; then
       PREREQ_PACKAGES="sudo libidn11 curl fetchmail libpcre3 libgmp3c2 libexpat1 libxml2 libstdc++6 libstdc++5 openssl"
+    fi
+    if [ $PLATFORM = "DEBIAN4.0" ]; then
+      PREREQ_PACKAGES="sudo libidn11 curl fetchmail libgmp3c2 libxml2 libstdc++6 openssl"
     fi
   elif echo $PLATFORM | grep RPL > /dev/null 2>&1; then
     PACKAGEINST='conary update'
@@ -1364,9 +1367,9 @@ getPlatformVars() {
       PREREQ_LIBS="/usr/lib/libstdc++.so.6"
     elif [ $PLATFORM = "MANDRIVA2006" ]; then
       PREREQ_PACKAGES="sudo libidn11 curl fetchmail libgmp3 libxml2 libstdc++6 openssl"
-    elif [ $PLATFORM = "FC4" -o $PLATFORM = "FC5" -o $PLATFORM = "FC3" ]; then
+    elif [ $PLATFORM = "FC4" -o $PLATFORM = "FC5" -o $PLATFORM = "FC3" -o $PLATFORM = "F7" ]; then
       PREREQ_PACKAGES="sudo libidn curl fetchmail gmp bind-libs vixie-cron"
-      if [ $PLATFORM = "FC5" ]; then
+      if [ $PLATFORM = "FC5" -o $PLATFORM = "F7" ]; then
         PREREQ_LIBS="/usr/lib/libstdc++.so.6"
       else 
         PREREQ_LIBS="/usr/lib/libstdc++.so.5"
@@ -1383,6 +1386,12 @@ getPlatformVars() {
     elif [ $PLATFORM = "RHEL4_64" -o $PLATFORM = "CentOS4_64" ]; then
       PREREQ_PACKAGES="sudo libidn curl fetchmail gmp compat-libstdc++-296 compat-libstdc++-33"
       PREREQ_LIBS="/usr/lib/libstdc++.so.5 /usr/lib64/libstdc++.so.5"
+    elif [ $PLATFORM = "F7" ]; then
+      PREREQ_PACKAGES="sudo libidn curl fetchmail gmp bind-libs vixie-cron"
+      PREREQ_LIBS="/usr/lib/libstdc++.so.6"
+    elif [ $PLATFORM = "SLES10_64" ]; then
+      PREREQ_PACKAGES="sudo libidn curl fetchmail gmp"
+      PREREQ_LIBS="/usr/lib/libstdc++.so.6"
     else
       PREREQ_PACKAGES="sudo libidn curl fetchmail gmp"
       PREREQ_LIBS="/usr/lib/libstdc++.so.5"
