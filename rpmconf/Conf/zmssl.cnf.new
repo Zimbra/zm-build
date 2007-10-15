@@ -203,14 +203,7 @@ authorityKeyIdentifier=keyid,issuer:always
 #nsRenewalUrl
 #nsCaPolicyUrl
 #nsSslServerName
-
-[ v3_req ]
-
-# Extensions to add to a certificate request
-
-basicConstraints = CA:FALSE
-keyUsage = nonRepudiation, digitalSignature, keyEncipherment
-#@@ALTNAMES@@
+subjectAltName          = @sub_alt_names
 
 [ v3_ca ]
 
@@ -248,6 +241,7 @@ basicConstraints = CA:true
 # Where 'obj' is a standard or added object
 # You can even override a supported extension:
 # basicConstraints= critical, DER:30:03:01:01:FF
+subjectAltName          = @sub_alt_names
 
 [ crl_ext ]
 
@@ -256,3 +250,19 @@ basicConstraints = CA:true
 
 # issuerAltName=issuer:copy
 authorityKeyIdentifier=keyid:always,issuer:always
+
+
+[ v3_req ]
+
+# Extensions to add to a certificate request
+
+basicConstraints = CA:FALSE
+keyUsage = nonRepudiation, digitalSignature, keyEncipherment
+
+subjectAltName          = @sub_alt_names
+
+[ sub_alt_names ]
+#DNS.1                   = admindev.zimbra.com
+#DNS.2                   = test1.zimbra.com
+#DNS.3                   = test2.zimbra.com
+@@SUBJECT_ALT_NAMES@@
