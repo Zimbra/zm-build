@@ -1476,6 +1476,10 @@ sub setLicenseFile {
     $config{LICENSEFILE});
   system("cp $config{LICENSEFILE} /opt/zimbra/conf/ZCSLicense.xml")
     if ($config{LICENSEFILE} ne "/opt/zimbra/conf/ZCSLicense.xml");
+  if ( -f "/opt/zimbra/conf/ZCSLicense.xml") {
+    `chown zimbra:zimbra /opt/zimbra/conf/ZCSLicense.xml`;
+    `chmod 444 /opt/zimbra/conf/ZCSLicense.xml`;
+  }
 }
 
 sub setTimeZone {

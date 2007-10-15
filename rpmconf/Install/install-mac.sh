@@ -256,6 +256,8 @@ fi
 # Install the license file
 if [ x"$LICENSE" != "x" -a -r "$LICENSE" ]; then
   cp $LICENSE /opt/zimbra/conf/ZCSLicense.xml
+  chown zimbra:zimbra /opt/zimbra/conf/ZCSLicense.xml
+  chmod 444 /opt/zimbra/conf/ZCSLicense.xml
 fi
 
 # Configure the installation
