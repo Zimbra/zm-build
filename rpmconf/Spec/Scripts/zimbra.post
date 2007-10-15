@@ -26,8 +26,12 @@ if [ -d "/opt/zimbra/keyview-10.2.0.2" ]; then
   ln -s /opt/zimbra/keyview-10.2.0.2 /opt/zimbra/keyview
 fi
 
-mv /opt/zimbra/db/db.sql /opt/zimbra/db/db.sql.in
-sed -e "/server.hostname/ s/local/$H/" /opt/zimbra/db/db.sql.in > /opt/zimbra/db/db.sql
+if [ -f /opt/zimbra/db/db.sql ]; then
+  mv /opt/zimbra/db/db.sql /opt/zimbra/db/db.sql.in
+  sed -e "/server.hostname/ s/local/$H/" /opt/zimbra/db/db.sql.in > /opt/zimbra/db/db.sql
+  chown zimbra:zimbra /opt/zimbra/db/db.sql*
+  chmod 440 /opt/zimbra/db/db.sql*
+fi
 
 rm -f /opt/zimbra/perdition
 rm -rf /opt/zimbra/verity

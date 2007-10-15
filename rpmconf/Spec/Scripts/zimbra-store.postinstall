@@ -37,8 +37,12 @@ rm -rf /opt/zimbra/verity
 
 H=`hostname -s`
 
-mv /opt/zimbra/db/db.sql /opt/zimbra/db/db.sql.in
-sed -e "/server.hostname/ s/local/$H/" /opt/zimbra/db/db.sql.in > /opt/zimbra/db/db.sql
+if [ -f /opt/zimbra/db/db.sql ]; then
+  mv /opt/zimbra/db/db.sql /opt/zimbra/db/db.sql.in
+  sed -e "/server.hostname/ s/local/$H/" /opt/zimbra/db/db.sql.in > /opt/zimbra/db/db.sql
+  chmod 440 /opt/zimbra/db/db.sql*
+  chown zimbra:zimbra /opt/zimbra/db/db.sql*
+fi
 
 for i in jetty apache-tomcat ; do
   MAILBOXD=`perl -e 'print ($1 eq "apache-tomcat" ? "tomcat $1-$2" : "jetty $1-$2")  if ($ARGV[0] =~ m/(jetty|apache-tomcat)-(.*)/ && $2 ne "*");' /opt/zimbra/$i-*`
