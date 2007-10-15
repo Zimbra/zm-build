@@ -104,6 +104,8 @@ if [ x$DEFAULTFILE != "x" ]; then
 	AUTOINSTALL="yes"
 fi
 
+  chown zimbra:zimbra /opt/zimbra/conf/ZCSLicense.xml
+  chmod 444 /opt/zimbra/conf/ZCSLicense.xml
 checkExistingInstall
 
 if [ x$UNINSTALL = "xyes" ]; then
