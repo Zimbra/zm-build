@@ -21,8 +21,12 @@ I=`hostname -i`
 rm -f /opt/zimbra/mysql
 ln -s /opt/zimbra/mysql-standard-5.0.45-pc-linux-gnu-i686-glibc23 /opt/zimbra/mysql
 
-mv /opt/zimbra/db/db.sql /opt/zimbra/db/db.sql.in
-sed -e "/server.hostname/ s/local/$H/" /opt/zimbra/db/db.sql.in > /opt/zimbra/db/db.sql
+if [ -f /opt/zimbra/db/db.sql ]; then
+  mv /opt/zimbra/db/db.sql /opt/zimbra/db/db.sql.in
+  sed -e "/server.hostname/ s/local/$H/" /opt/zimbra/db/db.sql.in > /opt/zimbra/db/db.sql
+  chown zimbra:zimbra /opt/zimbra/db/db.sql*
+  chmod 440 /opt/zimbra/db/db.sql*
+fi
 
 rm -f /opt/zimbra/perdition
 ln -s /opt/zimbra/perdition-1.17.1 /opt/zimbra/perdition
