@@ -15,6 +15,9 @@
 # 
 
 SAVEDIR=/opt/zimbra/.saveconfig
+if [ ! -d "$SAVEDIR" ]; then
+ mkdir -p $SAVEDIR
+fi
 for f in config.save keystore cacerts perdition.pem smtpd.key smtpd.crt slapd.key slapd.crt ca.key backup.save; do
   if [ -f "${SAVEDIR}/${f}" ]; then
     for (( i=0 ;; i++ )); do
