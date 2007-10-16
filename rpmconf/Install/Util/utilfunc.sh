@@ -904,7 +904,9 @@ restoreCerts() {
 saveExistingConfig() {
   echo ""
   echo "Saving existing configuration file to $SAVEDIR"
-  echo "$ZMVERSION_CURRENT"
+  if [ ! -d "$SAVEDIR" ]; then
+    mkdir -p $SAVEDIR
+  fi
   # make copies of existing save files
   for f in config.save keystore cacerts perdition.pem smtpd.key smtpd.crt slapd.key slapd.crt ca.key backup.save; do
     if [ -f "${SAVEDIR}/${f}" ]; then
