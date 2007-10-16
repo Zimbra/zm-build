@@ -241,7 +241,6 @@ basicConstraints = CA:true
 # Where 'obj' is a standard or added object
 # You can even override a supported extension:
 # basicConstraints= critical, DER:30:03:01:01:FF
-subjectAltName          = @sub_alt_names
 
 [ crl_ext ]
 
