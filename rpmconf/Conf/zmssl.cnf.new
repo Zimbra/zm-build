@@ -257,11 +257,5 @@ authorityKeyIdentifier=keyid:always,issuer:always
 
 basicConstraints = CA:FALSE
 keyUsage = nonRepudiation, digitalSignature, keyEncipherment
+@@SUBJECT_ALT_NAMES@@
 
-subjectAltName          = @sub_alt_names
-
-[ sub_alt_names ]
-#DNS.1                   = admindev.zimbra.com
-#DNS.2                   = test1.zimbra.com
-#DNS.3                   = test2.zimbra.com
-#@@SUBJECT_ALT_NAMES@@
