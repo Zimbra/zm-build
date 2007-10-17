@@ -264,4 +264,4 @@ subjectAltName          = @sub_alt_names
 #DNS.1                   = admindev.zimbra.com
 #DNS.2                   = test1.zimbra.com
 #DNS.3                   = test2.zimbra.com
-@@SUBJECT_ALT_NAMES@@
+#@@SUBJECT_ALT_NAMES@@
