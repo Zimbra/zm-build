@@ -35,10 +35,10 @@ function installationCheckZimbra() {
         <line choice="choice5"></line>
         <line choice="choice12"></line>
         <line choice="choice7"></line>
-        <line choice="choice13"></line>
         <line choice="choice10"></line>
         <line choice="choice11"></line>
         <line choice="choice6"></line>
+        <line choice="choice13"></line>
     </choices-outline>
     <choice id="choice3" title="Core Utilities" start_selected="true" start_enabled="false" start_visible="true">
         <pkg-ref id="com.zimbra.zcs.core"></pkg-ref>
@@ -52,7 +52,7 @@ function installationCheckZimbra() {
     <choice id="choice7" title="Mta" start_selected="true" start_enabled="true" start_visible="true">
         <pkg-ref id="com.zimbra.zcs.mta"></pkg-ref>
     </choice>
-    <choice id="choice13" title="Proxy" start_selected="true" start_enabled="true" start_visible="true">
+    <choice id="choice13" title="Proxy" start_selected="false" start_enabled="true" start_visible="true">
         <pkg-ref id="com.zimbra.zcs.proxy"></pkg-ref>
     </choice>
     <choice id="choice10" title="Spell" start_selected="true" start_enabled="true" start_visible="true">

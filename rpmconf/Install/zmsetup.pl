@@ -79,7 +79,7 @@ my @packageList = (
   "zimbra-spell",
   "zimbra-cluster",
   "zimbra-proxy",
-  #"zimbra-archiving",
+  "zimbra-archiving",
 );
 
 my %packageServiceMap = (
@@ -93,7 +93,7 @@ my %packageServiceMap = (
   spell     => "zimbra-spell",
   stats     => "zimbra-core",
   imapproxy => "zimbra-proxy",
-  #archiving => "zimbra-archiving",
+  archiving => "zimbra-archiving",
 );
 
 my %installedPackages = ();
@@ -246,6 +246,38 @@ sub checkPortConflicts {
     if ($any) { ask("Port conflicts detected! - Any key to continue", ""); }
   }
 
+}
+
+sub isComponentAvailable {
+  my $component = shift;
+  detail("checking isComponentAvailable $component");
+  # if its already defined return;
+  if (exists $main::loaded{components}{$component}) {
+    return 1;
+  }
+  if ($ldapConfigured || 
+    (($config{LDAPHOST} ne $config{HOSTNAME}) && !verifyLdap())) {
+    getAvailableComponents();
+  }
+  if (exists $main::loaded{components}{$component}) {
+    return 1;
+  } else {
+    return undef;
+  }
+  
+}
+
+sub getAvailableComponents {
+  detail("Getting available components");
+  open(ZM, "$ZMPROV gcf zimbraComponentAvailable 2> /dev/null|") or 
+    return undef;
+  while (<ZM>) {
+    chomp;
+    if (/^zimbraComponentAvailable: (\S+)/) {
+      $main::loaded{components}{$1} = "zimbraComponentAvailable";
+    }
+  }
+  close(ZM) or return undef;
 }
 
 sub getInstalledPackages {
@@ -1747,8 +1779,8 @@ sub configurePackage {
     configureCluster($package);
   } elsif ($package eq "zimbra-proxy") {
     configureProxy($package);
-  #} elsif ($package eq "zimbra-archiving") {
-    #configureArchiving($package);
+  } elsif ($package eq "zimbra-archiving") {
+    configureArchiving($package);
   }
 }
 
@@ -1772,6 +1804,7 @@ sub setEnabledDependencies {
   if (isEnabled("zimbra-mta")) {
     $config{RUNAV} = "yes";
     $config{RUNSA} = "yes";
+    $config{RUNARCHIVING} = "no";
   }
 
   if (isEnabled("zimbra-spell")) {
@@ -1841,8 +1874,8 @@ sub createPackageMenu {
     return createClusterMenu($package);
   } elsif ($package eq "zimbra-proxy") {
     return createProxyMenu($package)
-  #} elsif ($package eq "zimbra-archiving") {
-    #return createArchivingMenu($package)
+  } elsif ($package eq "zimbra-archiving") {
+    return createArchivingMenu($package)
   }
 }
 sub createLdapMenu {
@@ -2073,6 +2106,15 @@ sub createMtaMenu {
         "prompt" => "Notification address for AV alerts:", 
         "var" => \$config{AVUSER}, 
         "callback" => \&setAvUser,
+        };
+      $i++;
+    }
+    if (isEnabled("zimbra-archiving") || isComponentAvailable("archiving")) {
+      $$lm{menuitems}{$i} = { 
+        "prompt" => "Enable Archiving and Discovery:",
+        "var" => \$config{RUNARCHIVING}, 
+        "callback" => \&toggleYN,
+        "arg" => "RUNARCHIVING",
         };
       $i++;
     }
@@ -3347,6 +3389,10 @@ sub configInitMta {
     if ($config{RUNAV} eq "yes") {
       $enabledServiceStr .= "zimbraServiceEnabled antivirus ";
     }
+    if ($config{RUNARCHIVING} eq "yes") {
+      $installedServiceStr .= "zimbraServiceInstalled archiving ";
+      $enabledServiceStr .= "zimbraServiceEnabled archiving ";
+    }
     if ($config{RUNSA} eq "yes") {
       $enabledServiceStr .= "zimbraServiceEnabled antispam ";
     }
@@ -3888,6 +3934,7 @@ if ($ldapConfigured) {
 if ($ldapConfigured || 
   (($config{LDAPHOST} ne $config{HOSTNAME}) && !verifyLdap())) {
   setLdapDefaults();
+  getAvailableComponents();
 }
 
 if ($options{c}) {

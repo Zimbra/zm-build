@@ -14,7 +14,7 @@
 # ***** END LICENSE BLOCK *****
 # 
 
-PKG=`echo ${RECEIPT_PATH} | sed -e 's|.*/\(zimbra-cms[^/]*pkg\)/.*|\1|' | sed -e 's/\./-/'`
+PKG=`echo ${RECEIPT_PATH} | sed -e 's|.*/\(zimbra-archiving[^/]*pkg\)/.*|\1|' | sed -e 's/\./-/'`
 D=`date +%s`
 echo "${D}: INSTALLED ${PKG}" >> /opt/zimbra/.install_history
 exit 0

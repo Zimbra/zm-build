@@ -29,6 +29,7 @@ done
 cat $TEMPLATE | sed -e "s/@@CORESIZE@@/$CORESIZE/g" \
 	-e "s/@@LDAPSIZE@@/$LDAPSIZE/g" \
 	-e "s/@@LOGGERSIZE@@/$LOGGERSIZE/g" \
+	-e "s/@@ARCHIVINGSIZE@@/$ARCHIVINGSIZE/g" \
 	-e "s/@@APACHESIZE@@/$APACHESIZE/g" \
 	-e "s/@@STORESIZE@@/$STORESIZE/g" \
 	-e "s/@@MTASIZE@@/$MTASIZE/g" \

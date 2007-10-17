@@ -3,8 +3,8 @@
 <plist version="1.0">
 <dict>
 	<key>IFPkgDescriptionTitle</key>
-	<string>zimbra-cms @@VERSION@@</string>
+	<string>zimbra-archiving @@VERSION@@</string>
 	<key>IFPkgDescriptionTitle</key>
-	<string>Zimbra Cross Mailbox Search utilities</string>
+	<string>Zimbra Archiving and Cross Mailbox Search utilities</string>
 </dict>
 </plist>
