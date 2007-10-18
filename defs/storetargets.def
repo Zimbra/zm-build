@@ -184,7 +184,7 @@ $(ZIMLET_DIR)/build/dist/zimlets/nofile:
 		-Dzimbra.buildinfo.host=$(HOST) package-zimlets ; )
 	(cd $(ADMIN_EXT_DIR); $(ANT) \
 		-Dplat.tag=$(BUILD_PLATFORM) \
-		-Dext.dir=CertificateMgr -Dext.name=zimbra_cert_manager \
+		-Dext.dir=CertificateMgr -Dext.name=com_zimbra_cert_manager \
 		-Dzimbra.buildinfo.version=$(VERSION_TAG) \
 		-Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) \
 		-Dzimbra.buildinfo.host=$(HOST) package-zimlet ; )
@@ -230,18 +230,18 @@ $(WEBAPP_DIR)/zimbra/downloads:
 	-cp $(SERVICE_DIR)/src/windows/ZimbraToast*msi $@
 	-(rm -f $@/\%*.dmg)
 
-$(ADMIN_EXT_DIR)/build/zimbra_cert_manager.jar:
+$(ADMIN_EXT_DIR)/build/com_zimbra_cert_manager.jar:
 	(cd $(ADMIN_EXT_DIR); $(ANT) \
 		-Dplat.tag=$(BUILD_PLATFORM) \
-		-Dext.dir=CertificateMgr -Dext.name=zimbra_cert_manager \
+		-Dext.dir=CertificateMgr -Dext.name=com_zimbra_cert_manager \
 		-Dzimbra.buildinfo.version=$(VERSION_TAG) \
 		-Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) \
 		-Dzimbra.buildinfo.host=$(HOST) jar ; )
 	
-$(CORE_DEST_DIR)/lib/ext/zimbra_cert_manager/zimbra_cert_manager.jar: $(CORE_DEST_DIR)/lib/ext/zimbra_cert_manager $(ADMIN_EXT_DIR)/build/zimbra_cert_manager.jar
-	cp -f $(ADMIN_EXT_DIR)/build/zimbra_cert_manager.jar $@
+$(CORE_DEST_DIR)/lib/ext/com_zimbra_cert_manager/com_zimbra_cert_manager.jar: $(CORE_DEST_DIR)/lib/ext/com_zimbra_cert_manager $(ADMIN_EXT_DIR)/build/com_zimbra_cert_manager.jar
+	cp -f $(ADMIN_EXT_DIR)/build/com_zimbra_cert_manager.jar $@
 
-$(CORE_DEST_DIR)/lib/ext/zimbra_cert_manager:
+$(CORE_DEST_DIR)/lib/ext/com_zimbra_cert_manager:
 	mkdir -p $@
 
 $(STORE_DEST_DIR)/lib/ext/clamscanner/clamscanner.jar: $(STORE_DEST_DIR)/lib/ext/clamscanner $(CLAMSCANNER_DIR)/build/clamscanner.jar

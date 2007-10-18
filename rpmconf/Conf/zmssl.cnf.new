@@ -203,7 +203,7 @@ authorityKeyIdentifier=keyid,issuer:always
 #nsRenewalUrl
 #nsCaPolicyUrl
 #nsSslServerName
-subjectAltName          = @sub_alt_names
+@@SUBJECT_ALT_NAMES@@
 
 [ v3_ca ]
 
