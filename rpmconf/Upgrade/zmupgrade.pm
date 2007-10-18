@@ -122,6 +122,7 @@ my %updateFuncs = (
   "4.5.7_GA" => \&upgrade457GA,
   "4.5.8_GA" => \&upgrade458GA,
   "4.5.9_GA" => \&upgrade459GA,
+	"4.5.10_GA" => \&upgrade4510GA,
   "4.6.0_BETA" => \&upgrade460BETA,
   "4.6.0_RC1" => \&upgrade460RC1,
   "4.6.0_GA" => \&upgrade460GA,
@@ -133,7 +134,6 @@ my %updateFuncs = (
   "5.0.0_RC1" => \&upgrade500RC1,
   "5.0.0_RC2" => \&upgrade500RC2,
   "5.0.0_GA" => \&upgrade500GA,
-	"4.5.10_GA" => \&upgrade4510GA,
 );
 
 my @versionOrder = (
@@ -1646,7 +1646,7 @@ sub upgrade500RC2 {
 	main::progress("Updating from 5.0.0_RC2\n");
   if (isInstalled("zimbra-store")) {
     main::setLocalConfig("zimbra_mailbox_purgeable", "true");
-    main::setLocalConfig("mailboxd_thread_stack_size", "256k");
+    migrateTomcatLCKey("thread_stack_size", "256k"); 
   }
 	return 0;
 }
@@ -2082,6 +2082,21 @@ sub doBackupRestoreVersionUpdate($) {
     clearRedologDir("/opt/zimbra/redolog", "${startVersion}-${currentRedologVersion}");
   }
 
+}
+
+sub migrateTomcatLCKey {
+  my ($key,$defVal) = @_;
+  $defVal="" unless $defVal;
+  my ($oldKey,$newKey,$oldVal); 
+  $oldKey="tomcat_${key}";
+  $newKey="mailboxd_${key}";
+  $oldVal = main::getLocalConfig($oldKey);
+  if ($oldVal ne "") {
+    main::setLocalConfig("$newKey", "$oldVal");
+  } elsif ($defVal ne "") {
+    main::setLocalConfig("$newKey", "$defVal");
+  }
+  main::deleteLocalConfig("$oldKey");
 }
 
 sub migrateLdap {
