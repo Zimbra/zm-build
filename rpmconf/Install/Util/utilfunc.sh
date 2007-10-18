@@ -1243,6 +1243,8 @@ getInstallPackages() {
     else
       if [ $i = "zimbra-proxy" ]; then
          askYN "Install $i" "N"
+      elif [ $i = "zimbra-archiving" ]; then
+         askYN "Install $i" "N"
       elif [ $i = "zimbra-cluster" -a "x$CLUSTERTYPE" = "x" ]; then
          askYN "Install $i" "N"
       else
