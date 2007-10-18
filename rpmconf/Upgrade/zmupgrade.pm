@@ -1635,6 +1635,7 @@ sub upgrade500RC2 {
 	main::progress("Updating from 5.0.0_RC2\n");
   if (isInstalled("zimbra-store")) {
     main::setLocalConfig("zimbra_mailbox_purgeable", "true");
+    main::setLocalConfig("mailboxd_thread_stack_size", "256k");
   }
 	return 0;
 }
