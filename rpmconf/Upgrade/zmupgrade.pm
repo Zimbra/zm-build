@@ -110,6 +110,7 @@ my %updateFuncs = (
 	"4.5.7_GA" => \&upgrade457GA,
 	"4.5.8_GA" => \&upgrade458GA,
 	"4.5.9_GA" => \&upgrade459GA,
+	"4.5.10_GA" => \&upgrade4510GA,
 	"5.0.0_BETA1" => \&upgrade500BETA1,
 	"5.0.0_BETA2" => \&upgrade500BETA2,
 	"5.0.0_RC1" => \&upgrade500RC1,
@@ -153,6 +154,7 @@ my @versionOrder = (
 	"4.5.7_GA",
   "4.5.8_GA",
   "4.5.9_GA",
+  "4.5.10_GA",
 );
 
 my $startVersion;
@@ -285,6 +287,8 @@ sub upgrade {
 		main::progress("This appears to be 4.5.8_GA\n");
 	} elsif ($startVersion eq "4.5.9_GA") {
 		main::progress("This appears to be 4.5.9_GA\n");
+	} elsif ($startVersion eq "4.5.10_GA") {
+		main::progress("This appears to be 4.5.10_GA\n");
 	} elsif ($startVersion eq "5.0.0_BETA1") {
 		main::progress("This appears to be 5.0.0_BETA1\n");
 	} elsif ($startVersion eq "5.0.0_BETA2") {
@@ -1297,16 +1301,23 @@ sub upgrade459GA {
   if (isInstalled("zimbra-store")) {
     main::setLocalConfig("zimbra_mailbox_purgeable", "true");
   }
-
-  
 	return 0;
+}
+
+sub upgrade4510GA {
+  my ($startBuild, $targetVersion, $targetBuild) = (@_);
+  main::progress("Updating from 4.5.10_GA\n");
+  if (isInstalled("zimbra-store")) {
+    main::setLocalConfig("tomcat_thread_stack_size", "256k");
+  }
+  return 0;
 }
 
 sub upgrade500BETA1 {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
 	main::progress("Updating from 5.0.0_BETA1\n");
 	return 0;
-    }
+}
 
 sub upgrade500BETA2 {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
