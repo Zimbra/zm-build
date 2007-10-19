@@ -12,7 +12,7 @@ ZTDOWNLOAD = $(shell cd $(WEBAPP_DIR)/zimbra/downloads; ls ZimbraToast*)
 #GWDOWNLOAD = $(shell cd $(WEBAPP_DIR)/zimbra/downloads; ls ZCSGroupwiseMigrationWizard*)
 
 $(WEBAPP_DIR)/service.war: $(WEBAPP_DIR) $(SERVICE_DIR)/$(WEBAPP_BUILD_DIR)/service.war
-	mkdir $(WEBAPP_DIR)/service
+	-mkdir $(WEBAPP_DIR)/service
 	(cd $(WEBAPP_DIR)/service; jar xf $(SERVICE_DIR)/build/dist/$(MAILBOXD_SERVER)/webapps/service.war)
 
 $(SERVICE_DIR)/$(WEBAPP_BUILD_DIR)/service.war:
@@ -56,14 +56,19 @@ $(CONSOLE_DIR)/$(WEBAPP_BUILD_DIR)/zimbraAdmin.war:
 		-Dzimbra.buildinfo.version=$(VERSION_TAG) \
 		-Dzimbra.buildinfo.type=$(BUILD_TYPE) \
 		-Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) \
-		-Dzimbra.buildinfo.host=$(HOST) clean admin prod war ; )
+		-Dzimbra.buildinfo.host=$(HOST) clean admin prod war; )
 	rm -rf zimbraAdminConf
 	mkdir zimbraAdminConf
 	cp $(CONSOLE_DIR)/build/web.xml zimbraAdminConf
 
-$(WEBAPP_DIR)/zimbra.war: $(WEBAPP_DIR) $(CONSOLE_DIR)/$(WEBAPP_BUILD_DIR)/zimbra.war
+$(WEBAPP_DIR)/zimbra.war: $(WEBAPP_DIR) $(CONSOLE_DIR)/$(WEBAPP_BUILD_DIR)/zimbra.war $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/work
 	mkdir $(WEBAPP_DIR)/zimbra
 	(cd $(WEBAPP_DIR)/zimbra; jar xf $(CONSOLE_DIR)/build/dist/$(MAILBOXD_SERVER)/webapps/zimbra.war)
+
+$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/work: $(CONSOLE_DIR)/$(WEBAPP_BUILD_DIR)/zimbra.war
+	mkdir -p $@
+	cp -rf $(CONSOLE_DIR)/build/dist/$(MAILBOXD_SERVER)/work/ $@
+    
 
 $(CONSOLE_DIR)/$(WEBAPP_BUILD_DIR)/zimbra.war:  $(TAGLIB_DIR)/build/zimbrataglib.jar
 	(cd $(CONSOLE_DIR); $(ANT) \
@@ -71,7 +76,7 @@ $(CONSOLE_DIR)/$(WEBAPP_BUILD_DIR)/zimbra.war:  $(TAGLIB_DIR)/build/zimbrataglib
 		-Dzimbra.buildinfo.version=$(VERSION_TAG) \
 		-Dzimbra.buildinfo.type=$(BUILD_TYPE) \
 		-Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) \
-		-Dzimbra.buildinfo.host=$(HOST) clean prod war; )
+		-Dzimbra.buildinfo.host=$(HOST) clean prod-build; )
 	rm -rf zimbraConf
 	mkdir zimbraConf
 	cp $(CONSOLE_DIR)/build/web.xml zimbraConf
