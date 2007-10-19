@@ -35,7 +35,10 @@ chmod 750 $SAVEDIR
 # yes, it needs massaging to be fed back in...
 su - zimbra -c "/opt/zimbra/bin/zmcontrol stop"
 su - zimbra -c "/opt/zimbra/bin/zmlocalconfig -m shell > $SAVEDIR/config.save"
-cp -f /opt/zimbra/java/jre/lib/security/cacerts $SAVEDIR
+
+if [ -f "/opt/zimbra/java/jre/lib/security/cacerts" ]; then
+  cp -f /opt/zimbra/java/jre/lib/security/cacerts $SAVEDIR
+fi
 if [ -f "/opt/zimbra/tomcat/conf/keystore" ]; then
 	cp -f /opt/zimbra/tomcat/conf/keystore $SAVEDIR
 fi 
@@ -59,6 +62,11 @@ if [ -f "/opt/zimbra/conf/ca/ca.key" ]; then
 fi
 if [ -f "/opt/zimbra/conf/ca/ca.pem" ]; then
   cp -f /opt/zimbra/conf/ca/ca.pem $SAVEDIR
+fi
+if [ -d "/opt/zimbra/tomcat/webapps/service/zimlet" ]; then
+  cp -rf /opt/zimbra/tomcat/webapps/service/zimlet $SAVEDIR
+elif [ -d "/opt/zimbra/mailboxd/webapps/service/zimlet" ]; then
+  cp -rf /opt/zimbra/mailboxd/webapps/service/zimlet $SAVEDIR
 fi
 if [ -x "/opt/zimbra/bin/zmschedulebackup" ]; then
 	su - zimbra -c "/opt/zimbra/bin/zmschedulebackup -s > $SAVEDIR/backup.save"

@@ -850,6 +850,12 @@ restoreExistingConfig() {
   fi
 }
 
+restoreZimlets() {
+  if [ -d $SAVEDIR/zimlet -a -d /opt/zimbra/mailboxd/webapps/service ]; then
+    cp -rf $SAVEDIR/zimlet /opt/zimbra/mailboxd/webapps/service/
+  fi
+}
+
 restoreCerts() {
   if [ -f "$SAVEDIR/cacerts" ]; then
     cp $SAVEDIR/cacerts /opt/zimbra/java/jre/lib/security/cacerts
@@ -951,7 +957,11 @@ saveExistingConfig() {
   if [ -f "/opt/zimbra/conf/ca/ca.pem" ]; then
     cp -f /opt/zimbra/conf/ca/ca.pem $SAVEDIR
   fi
-
+  if [ -d "/opt/zimbra/tomcat/webapps/service/zimlet" ]; then
+    cp -rf /opt/zimbra/tomcat/webapps/service/zimlet $SAVEDIR
+  elif [ -d "/opt/zimbra/mailboxd/webapps/service/zimlet" ]; then
+    cp -rf /opt/zimbra/mailboxd/webapps/service/zimlet $SAVEDIR
+  fi
   if [ -x /opt/zimbra/bin/zmschedulebackup ]; then
     runAsZimbra "zmschedulebackup -s > $SAVEDIR/backup.save"
   fi

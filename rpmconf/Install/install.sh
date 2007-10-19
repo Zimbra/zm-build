@@ -200,6 +200,8 @@ if [ $UPGRADE = "yes" ]; then
 
 	restoreCerts
 
+  restoreZimlets
+
 fi
 
 if [ "x$LICENSE" != "x" ] && [ -f "$LICENSE" ]; then

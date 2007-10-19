@@ -35,6 +35,8 @@ $(BUILD_ROOT)/resources/zimbra-store:
 	chmod 755 $@/postinstall
 	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-store.postupgrade $@/postupgrade
 	chmod 755 $@/postupgrade
+	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-store.preupgrade $@/preupgrade
+	chmod 755 $@/preupgrade
 
 store_pkg_spec_deb: $(STORE_DEST_ROOT)/DEBIAN/control
 

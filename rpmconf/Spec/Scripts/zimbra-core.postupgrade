@@ -77,6 +77,9 @@ if [ -f $SAVEDIR/smtpd.crt ]; then
 	cp -f $SAVEDIR/smtpd.crt /opt/zimbra/conf/smtpd.crt 
 	chown zimbra:zimbra /opt/zimbra/conf/smtpd.crt
 fi
+if [ -d $SAVEDIR/zimlet -a -d /opt/zimbra/mailboxd/webapps/service ]; then
+  cp -rf $SAVEDIR/zimlet /opt/zimbra/mailboxd/webapps/service/
+fi
 
 # log rotation
 if [ -d "/etc/periodic/daily" ]; then
