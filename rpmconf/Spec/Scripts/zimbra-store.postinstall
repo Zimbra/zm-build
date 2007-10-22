@@ -80,7 +80,11 @@ mkdir -p /opt/zimbra/index
 mkdir -p /opt/zimbra/backup
 chown zimbra:zimbra /opt/zimbra/convertd /opt/zimbra/redolog /opt/zimbra/store /opt/zimbra/index /opt/zimbra/backup  /opt/zimbra/mailboxd/logs
 
-/bin/sh /opt/zimbra/libexec/zmfixperms
+/bin/bash /opt/zimbra/libexec/zmfixperms
+
+if [ -d $SAVEDIR/zimlet -a -d /opt/zimbra/mailboxd/webapps/service ]; then
+  cp -rf $SAVEDIR/zimlet /opt/zimbra/mailboxd/webapps/service/
+fi
 
 egrep -v -e '^%zimbra.*tomcat' -e '^%zimbra.*mailboxdmgr'  /etc/sudoers > /tmp/sudoers
 echo "%zimbra ALL=NOPASSWD:/opt/zimbra/libexec/zmmailboxdmgr" >> /tmp/sudoers
