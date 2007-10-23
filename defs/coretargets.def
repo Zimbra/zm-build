@@ -290,6 +290,7 @@ $(CORE_DEST_DIR)/bin:
 	mkdir -p $@
 	cp -R $(SERVICE_DIR)/build/dist/bin/[a-z]* $@
 	rm -f $(CORE_DEST_DIR)/bin/zmtransserver.bat
+	rm -rf $(CORE_DEST_DIR)/bin/zmexternaldirsync
 	cp $(ZIMBRA_BIN_DIR)/zmswatchctl $@
 	cp $(ZIMBRA_BIN_DIR)/zmlogswatchctl $@
 	cp $(ZIMBRA_BIN_DIR)/zmcertmgr $@
