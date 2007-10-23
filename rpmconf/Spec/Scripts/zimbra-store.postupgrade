@@ -14,15 +14,23 @@
 # ***** END LICENSE BLOCK *****
 # 
 
-rm -f /opt/zimbra/perdition
-
+SAVEDIR=/opt/zimbra/.saveconfig
 PLAT=`/opt/zimbra/libexec/get_plat_tag.sh`
 ARCH=powerpc
+zimbra_home=/opt/zimbra
+H=`hostname -s`
+
 if [ "x$PLAT" = "xMACOSXx86" ]; then
     ARCH=i686
 fi
 
-rm -f /opt/zimbra/mysql
+if [ -e "${zimbra_home}/perdition" ]; then
+  rm -f ${zimbra_home}/perdition
+fi
+
+if [ -e "${zimbra_home}/mysql" ]; then
+  rm -f ${zimbra_home}/mysql
+fi
 ln -s /opt/zimbra/mysql-standard-5.0.45-apple-darwin8.2.0-$ARCH /opt/zimbra/mysql
 # Can't get the dylib to hold the correct path...
 rm -f /opt/zimbra/mysql-standard-5.0.45-apple-darwin8.2.0-$ARCH/lib/mysql
@@ -33,12 +41,14 @@ if [ -d "/opt/zimbra/keyview-10.2.0.2" ]; then
   ln -s /opt/zimbra/keyview-10.2.0.2 /opt/zimbra/keyview
 fi
 
-rm -rf /opt/zimbra/verity
+if [ -e "/opt/zimbra/verity" ]; then
+  rm -rf /opt/zimbra/verity
+fi
 
-H=`hostname -s`
-
-mv /opt/zimbra/db/db.sql /opt/zimbra/db/db.sql.in
-sed -e "/server.hostname/ s/local/$H/" /opt/zimbra/db/db.sql.in > /opt/zimbra/db/db.sql
+if [ -e "${zimbra_home}/db/db.sql" ]; then
+  mv ${zimbra_home}/db/db.sql ${zimbra_home}/db/db.sql.in
+  sed -e "/server.hostname/ s/local/$H/" ${zimbra_home}/db/db.sql.in > ${zimbra_home}/db/db.sql
+fi
 
 for i in jetty apache-tomcat ; do
   MAILBOXD=`perl -e 'print ($1 eq "apache-tomcat" ? "tomcat $1-$2" : "jetty $1-$2")  if ($ARGV[0] =~ m/(jetty|apache-tomcat)-(.*)/ && $2 ne "*");' /opt/zimbra/$i-*`
@@ -69,6 +79,16 @@ ln -s /opt/zimbra/jetty-6.1.5 /opt/zimbra/mailboxd
 
 mkdir -p /opt/zimbra/mailboxd/logs
 chown zimbra:zimbra /opt/zimbra/mailboxd/logs
+
+
+if [ -d $SAVEDIR/zimlet -a -d /opt/zimbra/mailboxd/webapps/service ]; then
+  echo "Restoring $SAVEDIR/zimlet"
+  cp -rf $SAVEDIR/zimlet /opt/zimbra/mailboxd/webapps/service/
+else
+  echo "zimlet directories not present to restore."
+  ls -ld $SAVEDIR/zimlet
+  ls -ld /opt/zimbra/mailboxd/webapps/service
+fi
 
 egrep -v -e '^%zimbra.*tomcat' -e '^%zimbra.*mailboxdmgr' /etc/sudoers > /tmp/sudoers
 echo "%zimbra ALL=NOPASSWD:/opt/zimbra/libexec/zmmailboxdmgr" >> /tmp/sudoers
