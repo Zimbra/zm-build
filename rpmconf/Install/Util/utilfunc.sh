@@ -946,6 +946,10 @@ removeExistingInstall() {
       echo ""
       echo "Backing up ldap"
       echo ""
+      if [ x"$LD_LIBRARY_PATH" != x ]; then
+          LD_LIBRARY_PATH=/opt/zimbra/sleepycat/lib:/opt/zimbra/cyrus-sasl/lib:/opt/zimbra/openldap/lib:/opt/zimbra/mysql/lib:$LD_LIBRARY_PATH
+          export LD_LIBRARY_PATH
+      fi
       /opt/zimbra/openldap/sbin/slapcat -f /opt/zimbra/conf/slapd.conf \
         -b '' -l /opt/zimbra/openldap-data/ldap.bak
     fi
