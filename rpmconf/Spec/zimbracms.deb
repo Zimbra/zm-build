@@ -1,8 +1,0 @@
-Package: zimbra-cms
-Version: @@VERSION@@
-Description: Best email money can buy
-Maintainer: build@zimbra.com
-Section: Mail
-Priority: optional
-Architecture: @@ARCH@@
-Depends: zimbra-core
