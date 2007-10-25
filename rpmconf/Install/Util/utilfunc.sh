@@ -1451,12 +1451,12 @@ getPlatformVars() {
     PACKAGERM='dpkg --purge'
     PACKAGEQUERY='dpkg -s'
     PACKAGEEXT='deb'
-    PREREQ_PACKAGES="sudo libidn11 curl fetchmail libgmp3 libxml2 libstdc++6 openssl"
+    PREREQ_PACKAGES="sudo libidn11 curl fetchmail libgmp3 libxml2 libstdc++6 openssl libltdl3-dev"
     if [ $PLATFORM = "UBUNTU6" ]; then
-      PREREQ_PACKAGES="sudo libidn11 curl fetchmail libpcre3 libgmp3c2 libexpat1 libxml2 libstdc++6 libstdc++5 openssl"
+      PREREQ_PACKAGES="sudo libidn11 curl fetchmail libpcre3 libgmp3c2 libexpat1 libxml2 libstdc++6 libstdc++5 openssl libltdl3-dev"
     fi
     if [ $PLATFORM = "DEBIAN4.0" ]; then
-      PREREQ_PACKAGES="sudo libidn11 curl fetchmail libgmp3c2 libxml2 libstdc++6 openssl"
+      PREREQ_PACKAGES="sudo libidn11 curl fetchmail libgmp3c2 libxml2 libstdc++6 openssl libltdl3-dev"
     fi
   elif echo $PLATFORM | grep RPL > /dev/null 2>&1; then
     PACKAGEINST='conary update'
@@ -1470,10 +1470,10 @@ getPlatformVars() {
     PACKAGEQUERY='rpm -q'
     PACKAGEEXT='rpm'
     if [ $PLATFORM = "RHEL4" -o $PLATFORM = "CentOS4" ]; then
-      PREREQ_PACKAGES="sudo libidn curl fetchmail gmp compat-libstdc++-296 compat-libstdc++-33"
+      PREREQ_PACKAGES="sudo libidn curl fetchmail gmp compat-libstdc++-296 compat-libstdc++-33 libtool-ltdl"
       PREREQ_LIBS="/usr/lib/libstdc++.so.5"
     elif [ $PLATFORM = "RHEL5" -o $PLATFORM = "CentOS5" ]; then
-      PREREQ_PACKAGES="sudo libidn curl fetchmail gmp compat-libstdc++-296 compat-libstdc++-33"
+      PREREQ_PACKAGES="sudo libidn curl fetchmail gmp compat-libstdc++-296 compat-libstdc++-33 libtool-ltdl"
       PREREQ_LIBS="/usr/lib/libstdc++.so.6"
     elif [ $PLATFORM = "MANDRIVA2006" ]; then
       PREREQ_PACKAGES="sudo libidn11 curl fetchmail libgmp3 libxml2 libstdc++6 openssl"
@@ -1487,13 +1487,13 @@ getPlatformVars() {
       PREREQ_PACKAGES="sudo libidn curl fetchmail gmp bind-libs vixie-cron"
       PREREQ_LIBS="/usr/lib/libstdc++.so.6 /usr/lib64/libstdc++.so.6"
     elif [ $PLATFORM = "RHEL5_64" -o $PLATFORM = "CentOS5_64" ]; then
-      PREREQ_PACKAGES="sudo libidn curl fetchmail gmp compat-libstdc++-296 compat-libstdc++-33"
+      PREREQ_PACKAGES="sudo libidn curl fetchmail gmp compat-libstdc++-296 compat-libstdc++-33 libtool-ltdl"
       PREREQ_LIBS="/usr/lib/libstdc++.so.6 /usr/lib64/libstdc++.so.6"
     elif [ $PLATFORM = "RHEL4_64" -o $PLATFORM = "CentOS4_64" ]; then
       PREREQ_PACKAGES="sudo libidn curl fetchmail gmp compat-libstdc++-296 compat-libstdc++-33"
       PREREQ_LIBS="/usr/lib/libstdc++.so.5 /usr/lib64/libstdc++.so.5"
     elif [ $PLATFORM = "F7" ]; then
-      PREREQ_PACKAGES="sudo libidn curl fetchmail gmp bind-libs vixie-cron"
+      PREREQ_PACKAGES="sudo libidn curl fetchmail gmp bind-libs vixie-cron libtool-ltdl"
       PREREQ_LIBS="/usr/lib/libstdc++.so.6"
     elif [ $PLATFORM = "SLES10_64" ]; then
       PREREQ_PACKAGES="sudo libidn curl fetchmail gmp"
