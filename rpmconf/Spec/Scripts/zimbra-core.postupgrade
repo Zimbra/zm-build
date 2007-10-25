@@ -23,8 +23,20 @@ chown zimbra:zimbra /opt/zimbra/zmstat/pid
 rm -f /opt/zimbra/sleepycat
 ln -s /opt/zimbra/sleepycat-4.2.52.6 /opt/zimbra/sleepycat
 
+rm -f /opt/zimbra/openssl
+ln -s /opt/zimbra/openssl-0.9.8e /opt/zimbra/openssl
+
+rm -f /opt/zimbra/heimdal
+ln -s /opt/zimbra/heimdal-1.0.1 /opt/zimbra/heimdal
+
+rm -f /opt/zimbra/curl
+ln -s /opt/zimbra/curl-7.17.0 /opt/zimbra/curl
+
 rm -f /opt/zimbra/cyrus-sasl
 ln -s /opt/zimbra/cyrus-sasl-2.1.22.3 /opt/zimbra/cyrus-sasl
+
+rm -f /opt/zimbra/openldap-clibs
+ln -s /opt/zimbra/openldap-clibs-2.3.37.7 /opt/zimbra/openldap-clibs
 
 if [ -d "/opt/zimbra/zimbramon/rrdtool" ]; then
   rm -rf /opt/zimbra/zimbramon/rrdtool
