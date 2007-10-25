@@ -46,9 +46,9 @@ sub configure {
   } elsif ($main::platform =~ /MACOSX/) {
     if (-d "/System/Library/LaunchDaemons") {
       system("cp -f /opt/zimbra/conf/com.zimbra.zcs.plist /System/Library/LaunchDaemons");
-      system("launchctl load /System/Library/LaunchDaemons/com.zimbra.zcs.plist 2> /dev/null");
-      system("launchctl stop com.zimbra.zcs")
-        if ($main::config{STARTSERVERS} eq "no");
+      #system("launchctl load /System/Library/LaunchDaemons/com.zimbra.zcs.plist 2> /dev/null");
+      #system("launchctl stop com.zimbra.zcs")
+      #  if ($main::config{STARTSERVERS} eq "no");
     }
   }
 }
