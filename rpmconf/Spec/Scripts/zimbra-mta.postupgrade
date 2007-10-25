@@ -25,7 +25,7 @@ rm -f /opt/zimbra/postfix
 ln -s /opt/zimbra/postfix-2.4.3.3 /opt/zimbra/postfix
 
 rm -f /opt/zimbra/clamav
-ln -s /opt/zimbra/clamav-0.91.1 /opt/zimbra/clamav
+ln -s /opt/zimbra/clamav-0.91.2 /opt/zimbra/clamav
 
 egrep -v '^%zimbra.*postfix' /etc/sudoers > /tmp/sudoers
 mv -f /tmp/sudoers /etc/sudoers
