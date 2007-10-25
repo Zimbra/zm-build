@@ -102,7 +102,15 @@ $(BUILD_ROOT)/zimbracore.spec:
 		$(BUILD_ROOT)/zimbracore.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/sleepycat-$(BDB_VERSION)" >> \
 		$(BUILD_ROOT)/zimbracore.spec
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/openssl-$(OPENSSL_VERSION)" >> \
+		$(BUILD_ROOT)/zimbracore.spec
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/heimdal-$(HEIMDAL_VERSION)" >> \
+		$(BUILD_ROOT)/zimbracore.spec
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/curl-$(CURL_VERSION)" >> \
+		$(BUILD_ROOT)/zimbracore.spec
 	echo "%attr(-, root, zimbra) /opt/zimbra/$(SASL_DIR)-$(SASL_VERSION)" >> \
+		$(BUILD_ROOT)/zimbracore.spec
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/openldap-clibs-$(LDAP_VERSION)" >> \
 		$(BUILD_ROOT)/zimbracore.spec
 
 core_stage: $(CORE_COMPONENTS)
@@ -325,6 +333,21 @@ $(CORE_DEST_DIR)/$(BDB_DIR):
 	(cd $(CORE_DEST_DIR); tar xzf $(BDB_SOURCE).tgz; chmod u+w $(BDB_DIR)/bin/*)
 	rm -rf $(CORE_DEST_DIR)/$(BDB_DIR)/docs/java
 
+$(CORE_DEST_DIR)/$(OPENSSL_DIR)-$(OPENSSL_VERSION):
+	@echo "*** Creating openssl"
+	mkdir -p $@
+	(cd $(CORE_DEST_DIR); tar xzf $(OPENSSL_SOURCE).tgz;)
+
+$(CORE_DEST_DIR)/$(HEIMDAL_DIR)-$(HEIMDAL_VERSION):
+	@echo "*** Creating heimdal"
+	mkdir -p $@
+	(cd $(CORE_DEST_DIR); tar xzf $(HEIMDAL_SOURCE).tgz;)
+
+$(CORE_DEST_DIR)/$(CURL_DIR)-$(CURL_VERSION):
+	@echo "*** Creating curl"
+	mkdir -p $@
+	(cd $(CORE_DEST_DIR); tar xzf $(CURL_SOURCE).tgz;)
+
 $(CORE_DEST_DIR)/$(SASL_DIR)-$(SASL_VERSION):
 	@echo "*** Creating cyrus-sasl"
 	mkdir -p $@
@@ -332,3 +355,8 @@ $(CORE_DEST_DIR)/$(SASL_DIR)-$(SASL_VERSION):
 	mkdir -p $(CORE_DEST_DIR)/$(SASL_DIR)-$(SASL_VERSION)/etc
 	cp -f $(SERVICE_DIR)/conf/saslauthd.conf.in $(CORE_DEST_DIR)/$(SASL_DIR)-$(SASL_VERSION)/etc/
 	cp -f $(SERVICE_DIR)/conf/postfix_sasl_smtpd.conf $(CORE_DEST_DIR)/$(SASL_DIR)-$(SASL_VERSION)/lib/sasl2/smtpd.conf
+
+$(CORE_DEST_DIR)/$(LDAP_DIR)-clibs-$(LDAP_VERSION):
+	@echo "*** Creating openldap client libraries"
+	mkdir -p $@
+	(cd $(CORE_DEST_DIR); tar xzf $(LDAP_CLIBS).tgz;)
