@@ -77,30 +77,30 @@ ldap_stage: $(LDAP_COMPONENTS)
 $(LDAP_DEST_DIR):
 	mkdir -p $@
 
-$(LDAP_DEST_DIR)/$(LDAP_DIR): $(LDAP_DEST_DIR) 
+$(LDAP_DEST_DIR)/$(LDAP_DIR)-$(LDAP_VERSION): $(LDAP_DEST_DIR) 
 	@echo "*** Creating openldap"
 	(cd $(LDAP_DEST_DIR); tar xzf $(LDAP_SOURCE).tgz;)
 	(cd $(LDAP_DEST_DIR); tar xfz $(TCMALLOC_SOURCE).tgz;)
 	cp $(SERVICE_DIR)/conf/ldap/DB_CONFIG \
-		$(LDAP_DEST_DIR)/$(LDAP_DIR)/var/openldap-data
+		$(LDAP_DEST_DIR)/$(LDAP_DIR)-$(LDAP_VERSION)/var/openldap-data
 	cp $(SERVICE_DIR)/conf/ldap/DB_CONFIG.accesslog \
-		$(LDAP_DEST_DIR)/$(LDAP_DIR)/var/openldap-data
+		$(LDAP_DEST_DIR)/$(LDAP_DIR)-$(LDAP_VERSION)/var/openldap-data
 	cp $(SERVICE_DIR)/conf/ldap/slapd.conf.production \
-		$(LDAP_DEST_DIR)/$(LDAP_DIR)/etc/openldap/slapd.conf
+		$(LDAP_DEST_DIR)/$(LDAP_DIR)-$(LDAP_VERSION)/etc/openldap/slapd.conf
 	cp $(SERVICE_DIR)/conf/ldap/master-accesslog.conf \
-		$(LDAP_DEST_DIR)/$(LDAP_DIR)/etc/openldap
+		$(LDAP_DEST_DIR)/$(LDAP_DIR)-$(LDAP_VERSION)/etc/openldap
 	cp $(SERVICE_DIR)/conf/ldap/master-accesslog-overlay.conf \
-		$(LDAP_DEST_DIR)/$(LDAP_DIR)/etc/openldap
+		$(LDAP_DEST_DIR)/$(LDAP_DIR)-$(LDAP_VERSION)/etc/openldap
 	cp $(SERVICE_DIR)/build/ldap-config/amavisd.schema \
-		$(LDAP_DEST_DIR)/$(LDAP_DIR)/etc/openldap/schema
+		$(LDAP_DEST_DIR)/$(LDAP_DIR)-$(LDAP_VERSION)/etc/openldap/schema
 	cp $(SERVICE_DIR)/build/ldap-config/zimbra.schema \
-		$(LDAP_DEST_DIR)/$(LDAP_DIR)/etc/openldap/schema
+		$(LDAP_DEST_DIR)/$(LDAP_DIR)-$(LDAP_VERSION)/etc/openldap/schema
 	cp $(SERVICE_DIR)/conf/ldap/zimbra-ext.schema \
-		$(LDAP_DEST_DIR)/$(LDAP_DIR)/etc/openldap/schema
+		$(LDAP_DEST_DIR)/$(LDAP_DIR)-$(LDAP_VERSION)/etc/openldap/schema
 	cp $(SERVICE_DIR)/conf/ldap/zimbra-hsm.schema \
-		$(LDAP_DEST_DIR)/$(LDAP_DIR)/etc/openldap/schema
+		$(LDAP_DEST_DIR)/$(LDAP_DIR)-$(LDAP_VERSION)/etc/openldap/schema
 	cp $(SERVICE_DIR)/build/ldap-config/*.ldif \
-		$(LDAP_DEST_DIR)/$(LDAP_DIR)/etc/openldap
+		$(LDAP_DEST_DIR)/$(LDAP_DIR)-$(LDAP_VERSION)/etc/openldap
 
 $(LDAP_DEST_DIR)/lib/conf/zimbra-ext.schema: $(LDAP_DEST_DIR)/lib/conf
 	cp -f $(SERVICE_DIR)/conf/ldap/zimbra-ext.schema $(LDAP_DEST_DIR)/lib/conf/zimbra-ext.schema

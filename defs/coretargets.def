@@ -147,10 +147,10 @@ $(CORE_DEST_DIR)/zimbramon/lib:
 	tar xzf $(PERL_LIB_SOURCE)/perllib.tgz)
 	cp -R $(BUILD_ROOT)/lib/Zimbra $(CORE_DEST_DIR)/zimbramon/lib
 
-$(CORE_DEST_DIR)/lib: $(WEBAPP_DIR)/service.war $(LDAP_DEST_DIR)/$(LDAP_DIR) pcre_$(BUILD_PLATFORM) $(NATIVE_DIR)/build/libzimbra-native.$(JNI_EXT) $(NATIVE_DIR)/build/libsetuid.$(JNI_EXT)
+$(CORE_DEST_DIR)/lib: $(WEBAPP_DIR)/service.war $(LDAP_DEST_DIR)/$(LDAP_DIR)-$(LDAP_VERSION) pcre_$(BUILD_PLATFORM) $(NATIVE_DIR)/build/libzimbra-native.$(JNI_EXT) $(NATIVE_DIR)/build/libsetuid.$(JNI_EXT)
 	mkdir -p $@
 	cp -pr $(SERVICE_DIR)/build/dist/lib/* $@
-	cp -pr $(LDAP_DEST_DIR)/$(LDAP_DIR)/lib/* $@
+	cp -pr $(LDAP_DEST_DIR)/$(LDAP_DIR)-$(LDAP_VERSION)/lib/* $@
 	cp -pr $(SERVICE_DIR)/build/dist/lib/* $@
 	cp -pr $(NATIVE_DIR)/build/libzimbra-native.$(JNI_EXT) $@
 	cp -pr $(NATIVE_DIR)/build/libsetuid.$(JNI_EXT) $@
@@ -296,7 +296,7 @@ $(CORE_DEST_DIR)/bin:
 	cp $(ZIMBRA_BIN_DIR)/zmcertmgr $@
 	cp $(ZIMBRA_BIN_DIR)/zmtlsctl $@
 	cp $(ZIMBRA_BIN_DIR)/zmsyslogsetup $@
-	cp $(LDAP_DEST_ROOT)/opt/zimbra/$(LDAP_DIR)/bin/ldapsearch $@
+	cp $(LDAP_DEST_ROOT)/opt/zimbra/$(LDAP_DIR)-$(LDAP_VERSION)/bin/ldapsearch $@
 	cp $(ZIMBRA_BIN_DIR)/zmantispamctl $@
 	cp $(ZIMBRA_BIN_DIR)/zmantivirusctl $@
 	cp $(ZIMBRA_BIN_DIR)/zmcontrol $@

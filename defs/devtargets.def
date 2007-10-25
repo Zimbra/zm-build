@@ -2,7 +2,7 @@
 
 DEV_INSTALL_COMPONENTS	:= \
 	$(DEV_INSTALL_ROOT)/$(MYSQL_DIR) \
-	$(DEV_INSTALL_ROOT)/$(LDAP_DIR) \
+	$(DEV_INSTALL_ROOT)/$(LDAP_DIR)-$(LDAP_VERSION) \
 	$(DEV_INSTALL_ROOT)/$(TOMCAT_DIR) \
 	$(DEV_INSTALL_ROOT)/$(CLAMAV_DIR) \
 	$(DEV_INSTALL_ROOT)/$(AMAVISD_DIR) \
@@ -72,7 +72,7 @@ dev-install: $(DEV_INSTALL_COMPONENTS)
 		$(DEV_INSTALL_ROOT)/clamav
 	ln -s $(DEV_INSTALL_ROOT)/$(TOMCAT_DIR) $(DEV_INSTALL_ROOT)/tomcat
 	ln -s $(DEV_INSTALL_ROOT)/$(MYSQL_DIR) $(DEV_INSTALL_ROOT)/mysql
-	ln -s $(DEV_INSTALL_ROOT)/$(LDAP_DIR) $(DEV_INSTALL_ROOT)/openldap
+	ln -s $(DEV_INSTALL_ROOT)/$(LDAP_DIR)-$(LDAP_VERSION) $(DEV_INSTALL_ROOT)/openldap
 	ln -s $(DEV_INSTALL_ROOT)/$(JAVA_FILE)$(JAVA_VERSION) \
 		$(DEV_INSTALL_ROOT)/java
 	ln -s $(DEV_INSTALL_ROOT)/$(BDB_DIR) $(DEV_INSTALL_ROOT)/sleepycat
@@ -86,7 +86,7 @@ $(DEV_INSTALL_ROOT)/$(MYSQL_DIR): $(DEV_INSTALL_ROOT)
 	@echo "*** Installing mysql"
 	(cd $(DEV_INSTALL_ROOT); tar xzf $(MYSQL_SOURCE).tar.gz;)
 
-$(DEV_INSTALL_ROOT)/$(LDAP_DIR): $(DEV_INSTALL_ROOT)
+$(DEV_INSTALL_ROOT)/$(LDAP_DIR)-$(LDAP_VERSION): $(DEV_INSTALL_ROOT)
 	@echo "*** Installing openldap"
 	(cd $(DEV_INSTALL_ROOT); tar xzf $(LDAP_SOURCE).tgz;)
 	cp -f $(SERVICE_DIR)/conf/ldap/DB_CONFIG $@/var/openldap-data
@@ -162,11 +162,11 @@ $(DEV_INSTALL_ROOT)/$(BDB_DIR): $(DEV_INSTALL_ROOT)
 	@echo "*** Installing sleepycat"
 	(cd $(DEV_INSTALL_ROOT); tar xzf $(BDB_SOURCE).tgz; chmod u+w $(BDB_DIR)/bin/*)
 
-$(DEV_INSTALL_ROOT)/lib: $(DEV_INSTALL_ROOT)/$(LDAP_DIR) $(DEV_INSTALL_ROOT)/$(BDB_DIR)
+$(DEV_INSTALL_ROOT)/lib: $(DEV_INSTALL_ROOT)/$(LDAP_DIR)-$(LDAP_VERSION) $(DEV_INSTALL_ROOT)/$(BDB_DIR)
 	@echo "*** Installing lib"
 	mkdir -p $@
 	cp -f -pr $(SERVICE_DIR)/build/dist/lib/* $@
-	cp -f -pr $(DEV_INSTALL_ROOT)/$(LDAP_DIR)/lib/* $@
+	cp -f -pr $(DEV_INSTALL_ROOT)/$(LDAP_DIR)-$(LDAP_VERSION)/lib/* $@
 	cp -f -pr $(DEV_INSTALL_ROOT)/$(BDB_DIR)/lib/* $@
 	cp -f -pr $(SERVICE_DIR)/build/dist/lib/* $@
 	(cd $@; tar xzf $(THIRD_PARTY)/mysql/$(BUILD_PLATFORM)/mysql-standard-4.1.10a-clientlibs.tgz)

@@ -58,7 +58,7 @@ ZIMLET_COMPONENTS := \
 	$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/webapps/service/WEB-INF/zimbra.tld
 
 LDAP_COMPONENTS := \
-	$(LDAP_DEST_DIR)/$(LDAP_DIR) \
+	$(LDAP_DEST_DIR)/$(LDAP_DIR)-$(LDAP_VERSION) \
 	$(LDAP_DEST_DIR)/lib/conf/zimbra-ext.schema \
 	$(LDAP_DEST_DIR)/lib/conf/zimbra-hsm.schema
 
