@@ -84,6 +84,8 @@ chown zimbra:zimbra /opt/zimbra/mailboxd/logs
 if [ -d $SAVEDIR/zimlet -a -d /opt/zimbra/mailboxd/webapps/service ]; then
   echo "Restoring $SAVEDIR/zimlet"
   cp -rf $SAVEDIR/zimlet /opt/zimbra/mailboxd/webapps/service/
+  chown -R zimbra:zimbra /opt/zimbra/mailboxd/webapps/service/zimlet
+  chmod 755 /opt/zimbra/mailboxd/webapps/service/zimlet
 else
   echo "zimlet directories not present to restore."
   ls -ld $SAVEDIR/zimlet

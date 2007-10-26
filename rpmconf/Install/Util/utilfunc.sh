@@ -853,6 +853,8 @@ restoreExistingConfig() {
 restoreZimlets() {
   if [ -d $SAVEDIR/zimlet -a -d /opt/zimbra/mailboxd/webapps/service ]; then
     cp -rf $SAVEDIR/zimlet /opt/zimbra/mailboxd/webapps/service/
+    chown -R zimbra:zimbra /opt/zimbra/mailboxd/webapps/service/zimlet
+    chmod 775 /opt/zimbra/mailboxd/webapps/service/zimlet
   fi
 }
 
