@@ -605,7 +605,7 @@ sub setLdapDefaults {
   $config{AVUSER} = $config{CREATEADMIN};
 
   if (isEnabled("zimbra-mta")) {
-    my $tmpval = getLdapConfigValue("zimbraMtaMyNetworks");
+    my $tmpval = getLdapServerValue("zimbraMtaMyNetworks");
     $config{zimbraMtaMyNetworks} = $tmpval
       unless ($tmpval eq "");
   }
@@ -3415,7 +3415,7 @@ sub configInitMta {
       $enabledServiceStr .= "zimbraServiceEnabled antispam ";
     }
 
-    runAsZimbra ("$ZMPROV mcf zimbraMtaMyNetworks \'$config{zimbraMtaMyNetworks}\'")
+    runAsZimbra ("$ZMPROV ms $config{HOSTNAME} zimbraMtaMyNetworks \'$config{zimbraMtaMyNetworks}\'")
       if ($config{zimbraMtaMyNetworks} ne "");
       
   }
