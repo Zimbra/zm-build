@@ -3807,7 +3807,8 @@ sub mysqlMemoryPercent {
 sub mailboxdMemoryPercent {
   my $system_mem = shift;
   my $percent = 40;
-  $percent = int((2/$system_mem)*100)
+  # can only allocate about 1.6GB on a 32 bit system
+  $percent = int((1.5/$system_mem)*100)
     if ($system_mem > 2 && $addr_space eq "32");
   return $percent;
 }
