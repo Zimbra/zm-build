@@ -10,16 +10,3 @@ $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/common/lib: $(STORE_DEST_DIR)/$(MAILBOXD_DIR) 
 
 $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/lib/log4j-1.2.8.jar: $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/lib $(WEBAPP_DIR)/service.war
 	cp $(SERVICE_DIR)/build/dist/lib/jars/log4j-1.2.8.jar $@
-
-$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/common/lib/jcl104-over-slf4j-$(SLF4J_VERSION).jar: $(SLF4J_SOURCE)
-	cp $(SLF4J_SOURCE)/jcl104-over-slf4j-$(SLF4J_VERSION).jar $@
-
-$(SLF4J_SOURCE):
-	cd $(THIRD_PARTY)/slf4j; tar xzf slf4j-$(SLF4J_VERSION).tar.gz
-
-$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/common/lib/slf4j-simple-$(SLF4J_VERSION).jar: $(SLF4J_SOURCE)
-	cp $(SLF4J_SOURCE)/slf4j-simple-$(SLF4J_VERSION).jar $@
-
-$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/common/lib/slf4j-api-$(SLF4J_VERSION).jar: $(SLF4J_SOURCE)
-	cp $(SLF4J_SOURCE)/slf4j-api-$(SLF4J_VERSION).jar $@
-

@@ -35,9 +35,6 @@ LOGGER_COMPONENTS := \
 
 ifndef $(ZIMBRA_USE_TOMCAT)
 	MAILBOXD_COMPONENTS := \
-		$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/common/lib/jcl104-over-slf4j-$(SLF4J_VERSION).jar \
-		$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/common/lib/slf4j-simple-$(SLF4J_VERSION).jar \
-		$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/common/lib/slf4j-api-$(SLF4J_VERSION).jar \
 		$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/lib/log4j-1.2.8.jar \
 		$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/resources/log4j.properties
 endif
