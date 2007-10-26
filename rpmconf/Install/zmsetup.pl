@@ -604,6 +604,12 @@ sub setLdapDefaults {
   $config{SMTPDEST} = $config{CREATEADMIN};
   $config{AVUSER} = $config{CREATEADMIN};
 
+  if (isEnabled("zimbra-mta")) {
+    my $tmpval = getLdapConfigValue("zimbraMtaMyNetworks");
+    $config{zimbraMtaMyNetworks} = $tmpval
+      unless ($tmpval eq "");
+  }
+
   if (isNetwork() && isEnabled("zimbra-store")) {
     $config{zimbraBackupReportEmailRecipients} = getLdapConfigValue("zimbraBackupReportEmailRecipients");
     $config{zimbraBackupReportEmailRecipients} = $config{CREATEADMIN}
@@ -830,6 +836,7 @@ sub setDefaults {
     $ldapRepChanged = 1;
     $ldapPostChanged = 1;
   }
+
   $config{CREATEADMIN} = "admin\@$config{CREATEDOMAIN}";
 
   $config{zimbraPrefTimeZoneId} = '(GMT-08.00) Pacific Time (US & Canada)';
@@ -847,6 +854,17 @@ sub setDefaults {
   if (isEnabled("zimbra-store") && isNetwork()) {
     $config{zimbraBackupReportEmailRecipients} = $config{CREATEADMIN};
     $config{zimbraBackupReportEmailSender} = $config{CREATEADMIN};
+  }
+
+  if (isEnabled("zimbra-mta")) {
+    my $tmpval = (`su - zimbra -c "postconf mynetworks"`);
+    chomp($tmpval);
+    $tmpval =~ s/mynetworks = //;
+    if ($tmpval eq "") {
+      $config{zimbraMtaMyNetworks} = "127.0.0.0/8";
+    } else {
+      $config{zimbraMtaMyNetworks} = "$tmpval";
+    }
   }
 
   $config{MODE} = "http";
@@ -3396,6 +3414,10 @@ sub configInitMta {
     if ($config{RUNSA} eq "yes") {
       $enabledServiceStr .= "zimbraServiceEnabled antispam ";
     }
+
+    runAsZimbra ("$ZMPROV mcf zimbraMtaMyNetworks \'$config{zimbraMtaMyNetworks}\'")
+      if ($config{zimbraMtaMyNetworks} ne "");
+      
   }
   configLog("configInitMta");
 }
