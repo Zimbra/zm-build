@@ -1453,9 +1453,9 @@ getPlatformVars() {
     PACKAGERM='dpkg --purge'
     PACKAGEQUERY='dpkg -s'
     PACKAGEEXT='deb'
-    PREREQ_PACKAGES="sudo libidn11 curl fetchmail libgmp3 libxml2 libstdc++6 openssl libltdl3-dev"
+    PREREQ_PACKAGES="sudo libidn11 curl fetchmail libgmp3 libxml2 libstdc++6 openssl libltdl3"
     if [ $PLATFORM = "UBUNTU6" ]; then
-      PREREQ_PACKAGES="sudo libidn11 curl fetchmail libpcre3 libgmp3c2 libexpat1 libxml2 libstdc++6 libstdc++5 openssl libltdl3-dev"
+      PREREQ_PACKAGES="sudo libidn11 curl fetchmail libpcre3 libgmp3c2 libexpat1 libxml2 libstdc++6 libstdc++5 openssl libltdl3"
     fi
     if [ $PLATFORM = "DEBIAN4.0" ]; then
       PREREQ_PACKAGES="sudo libidn11 curl fetchmail libgmp3c2 libxml2 libstdc++6 openssl libltdl3-dev"
