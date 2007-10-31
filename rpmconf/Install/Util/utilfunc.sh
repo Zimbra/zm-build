@@ -1003,6 +1003,7 @@ removeExistingInstall() {
       if [ -f "/opt/zimbra/openldap/sbin/slapcat" ]; then
         /opt/zimbra/openldap/sbin/slapcat -f /opt/zimbra/conf/slapd.conf \
          -b '' -l /opt/zimbra/openldap-data/ldap.bak
+        chmod 640 /opt/zimbra/openldap-data/ldap.bak
       fi
     fi
 
