@@ -67,7 +67,7 @@ $(WEBAPP_DIR)/zimbra.war: $(WEBAPP_DIR) $(CONSOLE_DIR)/$(WEBAPP_BUILD_DIR)/zimbr
 
 $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/work: $(CONSOLE_DIR)/$(WEBAPP_BUILD_DIR)/zimbra.war
 	mkdir -p $@
-	cp -rf $(CONSOLE_DIR)/build/dist/$(MAILBOXD_SERVER)/work/ $@
+	cp -rf $(CONSOLE_DIR)/build/dist/$(MAILBOXD_SERVER)/work/* $@
     
 
 $(CONSOLE_DIR)/$(WEBAPP_BUILD_DIR)/zimbra.war:  $(TAGLIB_DIR)/build/zimbrataglib.jar
