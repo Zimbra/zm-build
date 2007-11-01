@@ -1767,6 +1767,16 @@ sub doBackupRestoreVersionUpdate($) {
 
 }
 
+sub indexLdap {
+	if (isInstalled ("zimbra-ldap")) {
+		stopLdap();
+		main::runAsZimbra("/opt/zimbra/sleepycat/bin/db_recover -h /opt/zimbra/openldap-data");
+		main::runAsZimbra ("/opt/zimbra/openldap/sbin/slapindex -b '' -q -f /opt/zimbra/conf/slapd.conf");
+		if (startLdap()) {return 1;}
+	}
+  return;
+}
+
 sub migrateLdap {
 	if (isInstalled ("zimbra-ldap")) {
 		if (-f "/opt/zimbra/openldap-data/ldap.bak") {
