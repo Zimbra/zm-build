@@ -861,7 +861,7 @@ sub setDefaults {
     chomp($tmpval);
     $tmpval =~ s/mynetworks = //;
     if ($tmpval eq "") {
-      $config{zimbraMtaMyNetworks} = "127.0.0.0/8";
+      $config{zimbraMtaMyNetworks} = "127.0.0.0/8 @interfaces";
     } else {
       $config{zimbraMtaMyNetworks} = "$tmpval";
     }
@@ -2967,7 +2967,7 @@ sub configSaveCA {
     configLog("configSaveCA");
     return 0;
   }
-  progress ( "Deploying CA in ..." );
+  progress ( "Deploying CA to /opt/zimbra/conf/ca ..." );
   runAsRoot("/opt/zimbra/bin/zmcertmgr deployca");
   progress ( "done.\n" );
   configLog("configSaveCA");
