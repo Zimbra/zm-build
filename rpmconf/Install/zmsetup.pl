@@ -122,6 +122,7 @@ my $enabledServiceStr = "";
 my $ldapPassChanged = 0;
 my $ldapRepChanged = 0;
 my $ldapPostChanged = 0;
+my $ldapAmavisChanged = 0;
 
 my @interfaces = ();
 
@@ -833,8 +834,10 @@ sub setDefaults {
     $config{LDAPPASS} = genRandomPass();
     $config{LDAPREPPASS} = genRandomPass();
     $config{LDAPPOSTPASS} = genRandomPass();
+    $config{LDAPAMAVISPASS} = genRandomPass();
     $ldapRepChanged = 1;
     $ldapPostChanged = 1;
+    $ldapAmavisChanged = 1;
   }
 
   $config{CREATEADMIN} = "admin\@$config{CREATEDOMAIN}";
@@ -1121,6 +1124,12 @@ sub setDefaultsFromLocalConfig {
     if ($config{LDAPPOSTPASS} eq "") {
       $config{LDAPPOSTPASS} = genRandomPass();
       $ldapPostChanged = 1;
+    }
+
+    $config{LDAPAMAVISPASS} = getLocalConfig ("ldap_amavis_password");
+    if ($config{LDAPAMAVISPASS} eq "") {
+      $config{LDAPAMAVISPASS} = genRandomPass();
+      $ldapAmavisChanged = 1;
     }
   }
   progress("done.\n");
@@ -2954,6 +2963,10 @@ sub configSetupLdap {
   if ($ldapPostChanged == 1) {
     setLocalConfig ("ldap_postfix_password", "$config{LDAPPOSTPASS}");
     runAsZimbra ("/opt/zimbra/bin/zmldappasswd -p $config{LDAPPOSTPASS}");
+  }
+  if ($ldapAmavisChanged == 1) {
+    setLocalConfig ("ldap_amavis_password", "$config{LDAPAMAVISPASS}");
+    runAsZimbra ("/opt/zimbra/bin/zmldappasswd -a $config{LDAPAMAVISPASS}");
   }
 
   configLog("configSetupLdap");
