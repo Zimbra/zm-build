@@ -133,6 +133,7 @@ my %updateFuncs = (
   "5.0.0_BETA4" => \&upgrade500BETA4,
   "5.0.0_RC1" => \&upgrade500RC1,
   "5.0.0_RC2" => \&upgrade500RC2,
+  "5.0.0_RC3" => \&upgrade500RC3,
   "5.0.0_GA" => \&upgrade500GA,
 );
 
@@ -179,6 +180,7 @@ my @versionOrder = (
   "5.0.0_BETA4",
   "5.0.0_RC1",
   "5.0.0_RC2",
+  "5.0.0_RC3",
   "5.0.0_GA",
 );
 
@@ -329,6 +331,8 @@ sub upgrade {
 		main::progress("This appears to be 5.0.0_RC1\n");
 	} elsif ($startVersion eq "5.0.0_RC2") {
 		main::progress("This appears to be 5.0.0_RC2\n");
+	} elsif ($startVersion eq "5.0.0_RC3") {
+		main::progress("This appears to be 5.0.0_RC3\n");
 	} elsif ($startVersion eq "5.0.0_GA") {
 		main::progress("This appears to be 5.0.0_GA\n");
 	} else {
@@ -1652,6 +1656,12 @@ sub upgrade500RC2 {
 	main::detail("Updating slapd indices\n");
 	indexLdap();
   }
+	return 0;
+}
+
+sub upgrade500RC3 {
+	my ($startBuild, $targetVersion, $targetBuild) = (@_);
+	main::progress("Updating from 5.0.0_RC3\n");
 	return 0;
 }
 
