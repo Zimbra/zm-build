@@ -3501,6 +3501,30 @@ sub configInitNotebooks {
       }
     }
 
+    # domain Documents only if the domain is local and wiki account
+    # was previously setup.
+    open(ZM, "$ZMPROV gad|") or warn "Can't get domain list!";
+    my @domains = <ZM>;
+    close(ZM);
+    foreach my $domain (@domains) {
+      chomp($domain);
+      my $domainType = (split(/\s+/, `su - zimbra -c "$ZMPROV gd $domain | grep zimbraDomainType"`))[-1];
+      next unless $domainType eq "local";
+    
+      my $domainWikiAcct = (split(/\s+/, `su - zimbra -c "$ZMPROV gd $domain | grep zimbraNotebookAccount"`))[-1];
+      next if ($domainWikiAcct eq "");
+    
+      # global and domain accounts cannot be the same
+      next if ($domainWikiAcct eq $config{NOTEBOOKACCOUNT});
+      progress("Updating document templates for $domainWikiAcct...");
+      $rc = runAsZimbra("/opt/zimbra/bin/zmprov impn $domainWikiAcct /opt/zimbra/wiki/Template Template");
+      if ($rc != 0) {
+        progress ("failed...see logfile for details.\n");
+      } else {
+        progress ("done.\n");
+      }
+    }
+
     runAsZimbra("/opt/zimbra/bin/zmprov mc default zimbraFeatureNotebookEnabled $zimbraFeatureNotebookEnabled");
   }
     
