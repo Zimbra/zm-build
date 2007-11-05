@@ -23,17 +23,19 @@ use Net::LDAP;
 
 $|=1; # don't buffer stdout
 
+
+
 our $platform = `/opt/zimbra/libexec/get_plat_tag.sh`;
 chomp $platform;
 our $addr_space = (($platform =~ m/\w+_(\d+)/) ? "$1" : "32");
-my $logfile = "/tmp/zmsetup.log.$$";
+my $logfile = "/tmp/zmsetup.".getDateStamp().".log";
 open LOGFILE, ">$logfile" or die "Can't open $logfile: $!\n";
 
 my $ol = select (LOGFILE);
 select ($ol);
 $| = 1;
 
-print "Operations logged to $logfile\n";
+progress("Operations logged to $logfile\n");
 
 our $ZMPROV = "/opt/zimbra/bin/zmprov -l";
 
@@ -279,6 +281,18 @@ sub getAvailableComponents {
     }
   }
   close(ZM) or return undef;
+}
+
+sub getDateStamp() {
+  my ($sec,$min,$hour,$mday,$mon,$year) = localtime(time());
+  $year = 1900+$year;
+  $sec = sprintf("%02d", $sec);
+  $min = sprintf("%02d", $min);
+  $hour = sprintf("%02d", $hour);
+  $mday = sprintf("%02d", $mday);
+  $mon = sprintf("%02d", $mon+1);
+  my $stamp = "$mon$mday$year-$hour$min$sec";
+  return $stamp;
 }
 
 sub getInstalledPackages {
@@ -2928,14 +2942,6 @@ sub configSetupLdap {
       }
     }
 
-    # set default zmprov bahaviour
-    if (isEnabled("zimbra-ldap")) {
-      if (isEnabled("zimbra-store")) {
-        setLocalConfig ("zimbra_zmprov_default_to_ldap", "FALSE");
-      } else {
-        setLocalConfig ("zimbra_zmprov_default_to_ldap", "TRUE");
-      }
-    }
 
     # zmldappasswd starts ldap and re-applies the ldif
     if ($ldapPassChanged) {
@@ -2967,6 +2973,14 @@ sub configSetupLdap {
   if ($ldapAmavisChanged == 1) {
     setLocalConfig ("ldap_amavis_password", "$config{LDAPAMAVISPASS}");
     runAsZimbra ("/opt/zimbra/bin/zmldappasswd -a $config{LDAPAMAVISPASS}");
+  }
+  # set default zmprov bahaviour
+  if (isEnabled("zimbra-ldap")) {
+    if (isEnabled("zimbra-store")) {
+      setLocalConfig ("zimbra_zmprov_default_to_ldap", "FALSE");
+    } else {
+      setLocalConfig ("zimbra_zmprov_default_to_ldap", "TRUE");
+    }
   }
 
   configLog("configSetupLdap");
@@ -3726,11 +3740,18 @@ sub applyConfig {
   getSystemStatus();
 
   progress ( "\n\n" );
-  progress ( "Operations logged to $logfile\n" );
+  chmod 0600, $logfile;
+  if (-d "/opt/zimbra/log") {
+    main::progress("Moving $logfile to /opt/zimbra/log\n");
+    system("mv -f $logfile /opt/zimbra/log");
+  } else {
+    progress ( "Operations logged to $logfile\n" );
+  }
   progress ( "\n\n" );
   if (!defined ($options{c})) {
     ask("Configuration complete - press return to exit", "");
     print "\n\n";
+    close LOGFILE;
     exit 0;
   }
 }
@@ -3776,7 +3797,7 @@ sub setupCrontab {
   if ($platform =~ /SUSE/i) {
     `cp -f /var/spool/cron/tabs/zimbra /tmp/crontab.zimbra.orig`;
   } else {
-    `crontab -u zimbra -l > /tmp/crontab.zimbra.orig`;
+    `crontab -u zimbra -l > /tmp/crontab.zimbra.orig 2> /dev/null`;
   }
   my $rc = 0xffff & system("grep ZIMBRASTART /tmp/crontab.zimbra.orig > /dev/null 2>&1");
   if ($rc) {
@@ -3916,21 +3937,25 @@ sub stopLdap {
 }
 
 sub startLdap {
-  main::progress("Checking ldap status\n");
+  main::detail("Checking ldap status.");
   my $rc = runAsZimbra("/opt/zimbra/bin/ldap status");
   if ($rc) { 
-    main::progress("Starting ldap\n");
+    main::progress("Starting ldap...");
     runAsZimbra("/opt/zimbra/sleepycat/bin/db_recover -h /opt/zimbra/openldap-data");
     $rc = runAsZimbra ("/opt/zimbra/libexec/zmldapapplyldif");
     $rc = runAsZimbra ("/opt/zimbra/bin/ldap status");
     if ($rc) {
       $rc = runAsZimbra("/opt/zimbra/bin/ldap start");
       if ($rc) { 
-        main::progress("ldap startup failed with exit code $rc\n");
+        main::progress("failed with exit code $rc.\n");
         system("su - zimbra -c \"/opt/zimbra/bin/ldap start 2>&1 | grep failed\"");
         return $rc;
       } 
-    } 
+    }  else {
+      main::progress("done.\n");
+    }
+  } else {
+    main::detail("slapd already running.\n");
   }
   return 0;
 }     
@@ -4015,5 +4040,9 @@ if ($options{c}) {
 
 close LOGFILE;
 chmod 0600, $logfile;
+if (-d "/opt/zimbra/log") {
+  main::progress("Moving $logfile to /opt/zimbra/log\n");
+  system("mv -f $logfile /opt/zimbra/log");
+}
 
 __END__
