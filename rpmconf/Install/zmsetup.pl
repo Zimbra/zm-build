@@ -23,13 +23,13 @@ use Net::LDAP;
 
 $|=1; # don't buffer stdout
 
-
-
 our $platform = `/opt/zimbra/libexec/get_plat_tag.sh`;
 chomp $platform;
 our $addr_space = (($platform =~ m/\w+_(\d+)/) ? "$1" : "32");
 my $logfile = "/tmp/zmsetup.".getDateStamp().".log";
 open LOGFILE, ">$logfile" or die "Can't open $logfile: $!\n";
+unlink("/tmp/zmsetup.log") if (-e "/tmp/zmsetup.log");
+symlink($logfile, "/tmp/zmsetup.log");
 
 my $ol = select (LOGFILE);
 select ($ol);
@@ -263,9 +263,11 @@ sub isComponentAvailable {
     getAvailableComponents();
   }
   if (exists $main::loaded{components}{$component}) {
+    detail("Component $component is available.");
     return 1;
   } else {
-    return undef;
+    detail("Component $component is not available.");
+    return 0;
   }
   
 }
@@ -1820,8 +1822,6 @@ sub configurePackage {
     configureCluster($package);
   } elsif ($package eq "zimbra-proxy") {
     configureProxy($package);
-  } elsif ($package eq "zimbra-archiving") {
-    configureArchiving($package);
   }
 }
 
@@ -1915,8 +1915,6 @@ sub createPackageMenu {
     return createClusterMenu($package);
   } elsif ($package eq "zimbra-proxy") {
     return createProxyMenu($package)
-  } elsif ($package eq "zimbra-archiving") {
-    return createArchivingMenu($package)
   }
 }
 sub createLdapMenu {
@@ -2601,29 +2599,30 @@ sub createMainMenu {
     "callback" => \&setTimeZone
   };
   $i++;
-  foreach (@packageList) {
-    if ($_ eq "zimbra-core") {next;}
-    if ($_ eq "zimbra-apache") {next;}
-    if (defined($installedPackages{$_})) {
-      if ($_ eq "zimbra-logger") {
+  foreach my $package (@packageList) {
+    if ($package eq "zimbra-core") {next;}
+    if ($package eq "zimbra-apache") {next;}
+    if ($package eq "zimbra-archiving") {next;}
+    if (defined($installedPackages{$package})) {
+      if ($package eq "zimbra-logger") {
         $mm{menuitems}{$i} = { 
-          "prompt" => "$_:", 
-          "var" => \$enabledPackages{$_},
+          "prompt" => "$package:", 
+          "var" => \$enabledPackages{$package},
           "callback" => \&toggleEnabled, 
-          "arg" => $_
+          "arg" => $package
         };
         $i++;
         next;
       }
-      my $submenu = createPackageMenu($_);
+      my $submenu = createPackageMenu($package);
       $mm{menuitems}{$i} = { 
-        "prompt" => "$_:", 
-        "var" => \$enabledPackages{$_},
+        "prompt" => "$package:", 
+        "var" => \$enabledPackages{$package},
         "submenu" => $submenu,
       };
       $i++;
     } else {
-      #push @mm, "$_ not installed";
+      #push @mm, "$package not installed";
     }
   }
   $i = &preinstall::mainMenuExtensions(\%mm, $i);
@@ -3743,7 +3742,7 @@ sub applyConfig {
   chmod 0600, $logfile;
   if (-d "/opt/zimbra/log") {
     main::progress("Moving $logfile to /opt/zimbra/log\n");
-    system("mv -f $logfile /opt/zimbra/log");
+    system("cp -f $logfile /opt/zimbra/log");
   } else {
     progress ( "Operations logged to $logfile\n" );
   }
@@ -4042,7 +4041,7 @@ close LOGFILE;
 chmod 0600, $logfile;
 if (-d "/opt/zimbra/log") {
   main::progress("Moving $logfile to /opt/zimbra/log\n");
-  system("mv -f $logfile /opt/zimbra/log");
+  system("cp -f $logfile /opt/zimbra/log");
 }
 
 __END__
