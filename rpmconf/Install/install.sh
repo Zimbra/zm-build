@@ -91,10 +91,14 @@ if [ x"$CLUSTERTYPE" != "x" -a -f "./util/clusterfunc.sh" ]; then
   checkClusterTypeArgs
 fi
 
+if [ x"$CLUSTERTYPE" != "x" ]; then
+  clusterPreInstall
+fi
+
 getPlatformVars
 
 mkdir -p $SAVEDIR
-chown zimbra:zimbra $SAVEDIR
+chown zimbra:zimbra $SAVEDIR 2> /dev/null
 chmod 750 $SAVEDIR
 
 echo ""
@@ -109,7 +113,7 @@ if [ x"$LICENSE" != "x" ] && [ -e $LICENSE ]; then
     mkdir -p /opt/zimbra/conf
   fi
   cp $LICENSE /opt/zimbra/conf/ZCSLicense.xml
-  chown zimbra:zimbra /opt/zimbra/conf/ZCSLicense.xml
+  chown zimbra:zimbra /opt/zimbra/conf/ZCSLicense.xml 2> /dev/null
   chmod 444 /opt/zimbra/conf/ZCSLicense.xml
 fi
 
@@ -131,10 +135,6 @@ checkUser root
 checkRequired
 
 checkPackages
-
-if [ x"$CLUSTERTYPE" != "x" ]; then
-  clusterPreInstall
-fi
 
 if [ $AUTOINSTALL = "no" ]; then
 	setRemove
