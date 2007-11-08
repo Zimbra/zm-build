@@ -3242,9 +3242,14 @@ sub zimletCleanup {
   my $ldap_dn = $config{zimbra_ldap_userdn};
   my $ldap_base = "cn=zimlets,cn=zimbra";
   my $result = $ldap->bind($ldap_dn, password => $ldap_pass);
-  unless ($result->code()) {
-    $result = $ldap->search(base => $ldap_base, scope => 'one', filter => "(|(cn=convertd)(cn=cluster)(cn=hsm)(cn=hotbackup))");
+  if ($result->code()) {
+    detail("ldap bind failed for $ldap_dn");
+    return 1;
+  } else {
+    detail("ldap bind done for $ldap_dn");
+    $result = $ldap->search(base => $ldap_base, scope => 'one', filter => "(|(cn=convertd)(cn=cluster)(cn=hsm)(cn=hotbackup)(cn=zimbra_cert_manager))", attrs => ['zimbraZimletKeyword']);
     return $result if ($result->code());
+    detail("processing ldap search results");
     foreach my $entry ($result->all_entries) {
       my $zimlet = $entry->get_value('zimbraZimletKeyword');
       detail("Removing $zimlet");
@@ -3264,7 +3269,12 @@ sub configInstallZimlets {
 
   # cleanup renamed zimlets, this is really an upgrade task but
   # mailboxd needs to be be running here.
-  zimletCleanup();
+  progress("Checking for deprecated zimlets...");
+  if (zimletCleanup()) {
+    progress("failed.\n");
+  } else {
+    progress("done.\n");
+  }
 
   # Install zimlets
   if (opendir DIR, "/opt/zimbra/zimlets") {
