@@ -5,8 +5,8 @@
 
 # This definition stops the following lines choking if HOME isn't
 # defined.
-HOME			= $ENV::HOME/ssl
-RANDFILE		= $ENV::HOME/ssl/.rnd
+HOME			= /opt/zimbra/ssl
+RANDFILE	= /opt/zimbra/ssl/.rnd
 
 # Extra OBJECT IDENTIFIER info:
 #oid_file		= $ENV::HOME/.oid
