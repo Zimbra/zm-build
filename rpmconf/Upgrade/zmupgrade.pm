@@ -1662,6 +1662,16 @@ sub upgrade500RC2 {
 sub upgrade500RC3 {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
 	main::progress("Updating from 5.0.0_RC3\n");
+  if (isInstalled("zimbra-store")) {
+    # 21179
+    my $zimbra_java_home = getLocalConfig("zimbra_java_home");
+    if ( -f "${zimbra_java_home}/lib/security/cacerts") {
+      main::setLocalConfig("mailboxd_truststore", "${zimbra_java_home}/lib/security/cacerts"); 
+    } else {
+      main::setLocalConfig("mailboxd_truststore", "${zimbra_java_home}/jre/lib/security/cacerts"); 
+    }
+  }
+  
 	return 0;
 }
 
