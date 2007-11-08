@@ -82,3 +82,11 @@ echo "%zimbra ALL=NOPASSWD:/opt/zimbra/bin/zmcertmgr" >> /tmp/sudoers
 mv -f /tmp/sudoers /etc/sudoers
 chmod 440 /etc/sudoers
 
+if [ -d "/opt/zimbra/mailboxd/work/zimbra" ]; then
+  find /opt/zimbra/mailboxd/work/zimbra -exec touch {} \; 2> /dev/null
+fi
+
+if [ -x "/opt/zimbra/libexec/zmfixperms" ]; then
+  /opt/zimbra/libexec/zmfixperms
+fi
+
