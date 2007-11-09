@@ -796,6 +796,11 @@ sub setDefaults {
   } else {
     $config{mailboxd_keystore} = "/opt/zimbra/conf/keystore";
   }
+  if ( -f "/opt/zimbra/java/lib/security/cacerts") {
+    $config{mailboxd_truststore} = "/opt/zimbra/java/lib/security/cacerts";
+  } else {
+    $config{mailboxd_truststore} = "/opt/zimbra/java/jre/lib/security/cacerts";
+  }
   $config{mailboxd_keystore_password} = genRandomPass();
   $config{mailboxd_truststore_password} = "changeit";
   print "DEBUG: \$config{mailboxd_directory}=$config{mailboxd_directory}\n" if $debug;
@@ -2868,6 +2873,7 @@ sub configLCValues {
   setLocalConfig ("mailboxd_directory", $config{mailboxd_directory});
   setLocalConfig ("mailboxd_keystore", $config{mailboxd_keystore});
   setLocalConfig ("mailboxd_server", $config{mailboxd_server});
+  setLocalConfig ("mailboxd_truststore", "$config{mailboxd_truststore}");
   setLocalConfig ("mailboxd_truststore_password", "$config{mailboxd_truststore_password}");
   setLocalConfig ("mailboxd_keystore_password", "$config{mailboxd_keystore_password}");
   setLocalConfig ("zimbra_ldap_userdn", "$config{zimbra_ldap_userdn}");
