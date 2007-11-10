@@ -3275,7 +3275,7 @@ sub configSetCluster {
 }
 
 sub zimletCleanup {
-  my $ldap_pass = getLocalConfig("ldap_root_password");
+  my $ldap_pass = getLocalConfig("zimbra_ldap_password");
   my $ldap_master_url = getLocalConfig("ldap_master_url");
   my $ldap;
   unless($ldap = Net::LDAP->new($ldap_master_url)) {
