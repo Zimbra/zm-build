@@ -121,10 +121,12 @@ my $loggerSqlRunning = 0;
 my $installedServiceStr = "";
 my $enabledServiceStr = "";
 
-my $ldapPassChanged = 0;
+my $ldapRootPassChanged = 0;
+my $ldapAdminPassChanged = 0;
 my $ldapRepChanged = 0;
 my $ldapPostChanged = 0;
 my $ldapAmavisChanged = 0;
+my $ldapReplica = 0;
 
 my @interfaces = ();
 
@@ -852,7 +854,8 @@ sub setDefaults {
   if (isEnabled("zimbra-ldap")) {
     progress "setting defaults for zimbra-ldap.\n" if $options{d};
     $config{DOCREATEDOMAIN} = "yes" if $newinstall;
-    $config{LDAPPASS} = genRandomPass();
+    $config{LDAPROOTPASS} = genRandomPass();
+    $config{LDAPADMINPASS} = genRandomPass();
     $config{LDAPREPPASS} = genRandomPass();
     $config{LDAPPOSTPASS} = genRandomPass();
     $config{LDAPAMAVISPASS} = genRandomPass();
@@ -1096,7 +1099,8 @@ sub setDefaultsFromLocalConfig {
       $config{LDAPHOST} = $h;
     }
   }
-  $config{LDAPPASS} = getLocalConfig ("ldap_root_password");
+  $config{LDAPROOTPASS} = getLocalConfig ("ldap_root_password");
+  $config{LDAPADMINPASS} = getLocalConfig ("zimbra_ldap_password");
   $config{SQLROOTPASS} = getLocalConfig ("mysql_root_password");
   $config{LOGSQLROOTPASS} = getLocalConfig ("mysql_logger_root_password");
   $config{ZIMBRASQLPASS} = getLocalConfig ("zimbra_mysql_password");
@@ -1468,15 +1472,32 @@ sub validEmailAddress {
    return($_[0] =~ m/^[^@]+@([-\w]+\.)+[A-Za-z]{2,4}/ ? 1 : 0);
 }
 
-sub setLdapPass {
+sub setLdapRootPass {
   while (1) {
     my $new =
-      askNonBlank("Password for ldap server (min 6 characters):",
-        $config{LDAPPASS});
+      askNonBlank("Password for ldap root user (min 6 characters):",
+        $config{LDAPROOTPASS});
     if (length($new) >= 6) {
-      if ($config{LDAPPASS} ne $new) {
-        $config{LDAPPASS} = $new;
-        $ldapPassChanged = 1;
+      if ($config{LDAPROOTPASS} ne $new) {
+        $config{LDAPROOTPASS} = $new;
+        $ldapRootPassChanged = 1;
+      }
+      return;
+    } else {
+      print "Minimum length of 6 characters!\n";
+    }
+  }
+}
+
+sub setLdapAdminPass {
+  while (1) {
+    my $new =
+      askNonBlank("Password for ldap admin user (min 6 characters):",
+        $config{LDAPADMINPASS});
+    if (length($new) >= 6) {
+      if ($config{LDAPADMINPASS} ne $new) {
+        $config{LDAPADMINPASS} = $new;
+        $ldapAdminPassChanged = 1;
       }
       return;
     } else {
@@ -1838,7 +1859,8 @@ sub setEnabledDependencies {
   } else {
     if ($config{LDAPHOST} eq $config{HOSTNAME}) {
       changeLdapHost("");
-      $config{LDAPPASS} = "";
+      $config{LDAPADMINPASS} = "";
+      $config{LDAPROOTPASS} = "";
     }
   }
 
@@ -2587,15 +2609,26 @@ sub createMainMenu {
     "callback" => \&setLdapPort
     };
   $i++;
-  if ($config{LDAPPASS} ne "") {
-    $config{LDAPPASSSET} = "set";
+  if ($config{LDAPROOTPASS} ne "") {
+    $config{LDAPROOTPASSSET} = "set";
   } else {
-    $config{LDAPPASSSET} = "UNSET";
+    $config{LDAPROOTPASSSET} = "UNSET";
+  }
+  $mm{menuitems}{$i} = {
+    "prompt" => "Ldap Root password:",
+    "var" => \$config{LDAPROOTPASSSET},
+    "callback" => \&setLdapRootPass
+    };
+  $i++;
+  if ($config{LDAPADMINPASS} ne "") {
+    $config{LDAPADMINPASSSET} = "set";
+  } else {
+    $config{LDAPADMINPASSSET} = "UNSET";
   }
   $mm{menuitems}{$i} = { 
-    "prompt" => "Ldap password:", 
-    "var" => \$config{LDAPPASSSET}, 
-    "callback" => \&setLdapPass
+    "prompt" => "Ldap Admin password:", 
+    "var" => \$config{LDAPADMINPASSSET}, 
+    "callback" => \&setLdapAdminPass
     };
   $i++;
   $mm{menuitems}{$i} = { 
@@ -2712,7 +2745,7 @@ sub verifyLdap {
   if (($config{LDAPHOST} eq $config{HOSTNAME}) && !$ldapConfigured) {
     return 0;
   }
-  if ($config{LDAPPASS} eq "" || $config{LDAPPORT} eq "" || $config{LDAPHOST} eq "") {
+  if ($config{LDAPADMINPASS} eq "" || $config{LDAPPORT} eq "" || $config{LDAPHOST} eq "" || $config{LDAPROOTPASS} eq "") {
     detail ( "ldap configuration not complete\n" );
     return 1;
   }
@@ -2725,15 +2758,15 @@ sub verifyLdap {
     return 1;
   }
 
-  my $result = $ldap->bind("$config{zimbra_ldap_userdn}", password => $config{LDAPPASS});
+  my $result = $ldap->bind("$config{zimbra_ldap_userdn}", password => $config{LDAPADMINPASS});
   if ($result->code()) {
-    detail ("Unable to bind to $ldap_url with password $config{LDAPPASS}: $!");
+    detail ("Unable to bind to $ldap_url with password $config{LDAPADMINPASS}: $!");
     return 1;
   } else {
     $ldap->unbind;
     detail ("Verfied ldap running at $ldap_url\n");
     setLocalConfig ("ldap_url", $ldap_url);
-    setLocalConfig ("zimbra_ldap_password", $config{LDAPPASS});
+    setLocalConfig ("zimbra_ldap_password", $config{LDAPADMINPASS});
     return 0;
   }
 
@@ -2895,8 +2928,8 @@ sub configCASetup {
   if ($config{LDAPHOST} ne $config{HOSTNAME}) {
     # fetch it from ldap if ldap has been configed
     progress("Updating ldap_root_password and zimbra_ldap_passwd...");
-    setLocalConfig ("ldap_root_password", $config{LDAPPASS});
-    setLocalConfig ("zimbra_ldap_password", $config{LDAPPASS});
+    setLocalConfig ("ldap_root_password", $config{LDAPROOTPASS});
+    setLocalConfig ("zimbra_ldap_password", $config{LDAPADMINPASS});
     progress ( "done.\n" );
   }
   progress ( "Setting up CA..." );
@@ -2916,7 +2949,7 @@ sub configSetupLdap {
 
   if (!$ldapConfigured && isEnabled("zimbra-ldap") && ! -f "/opt/zimbra/.enable_replica" && $newinstall && ($config{LDAPHOST} eq $config{HOSTNAME})) {
     progress ( "Initializing ldap..." ) ;
-    if (my $rc = runAsZimbraWithOutput("/opt/zimbra/libexec/zmldapinit $config{LDAPPASS}")) {
+    if (my $rc = runAsZimbraWithOutput("/opt/zimbra/libexec/zmldapinit $config{LDAPROOTPASS} $config{LDAPADMINPASS}")) {
       progress ( "FAILED ($rc)\n" );
       failConfig();
     } else {
@@ -2926,8 +2959,8 @@ sub configSetupLdap {
     # enable replica for both new and upgrade installs if we are adding ldap
     if ($config{LDAPHOST} ne $config{HOSTNAME} ||  -f "/opt/zimbra/.enable_replica") {
       progress("Updating ldap_root_password and zimbra_ldap_passwd...");
-      setLocalConfig ("ldap_root_password", $config{LDAPPASS});
-      setLocalConfig ("zimbra_ldap_password", $config{LDAPPASS});
+      setLocalConfig ("ldap_root_password", $config{LDAPROOTPASS});
+      setLocalConfig ("zimbra_ldap_password", $config{LDAPADMINPASS});
       progress("done.\n");
       progress ( "Enabling ldap replication..." );
       my $rc = runAsZimbra ("/opt/zimbra/libexec/zmldapenablereplica");
@@ -2949,13 +2982,17 @@ sub configSetupLdap {
 
 
     # zmldappasswd starts ldap and re-applies the ldif
-    if ($ldapPassChanged) {
-      progress ( "Setting ldap password..." );
-      runAsZimbra ("/opt/zimbra/bin/zmldappasswd -r $config{LDAPPASS}");
-      # No reason to run this twice, zmldappaswd will change it for admin
-      # and root usr both when run with -r option
-      #runAsZimbra ("/opt/zimbra/bin/zmldappasswd $config{LDAPPASS}");
-      progress ( "done.\n" );
+    if ($ldapRootPassChanged || $ldapAdminPassChanged) {
+      if ($ldapRootPassChanged) {
+         progress ( "Setting ldap root password..." );
+         runAsZimbra ("/opt/zimbra/bin/zmldappasswd -r $config{LDAPROOTPASS}");
+         progress ( "done.\n" );
+      }
+      if ($ldapAdminPassChanged) {
+         progress ( "Setting ldap admin password..." );
+         runAsZimbra ("/opt/zimbra/bin/zmldappasswd $config{LDAPADMINPASS}");
+         progress ( "done.\n" );
+      }
     } else {
       progress("Stopping ldap...");
       runAsZimbra ("/opt/zimbra/bin/ldap stop");
@@ -2964,8 +3001,8 @@ sub configSetupLdap {
     }
   } else {
     detail("Updating ldap_root_password and zimbra_ldap_passwd\n");
-    setLocalConfig ("ldap_root_password", $config{LDAPPASS});
-    setLocalConfig ("zimbra_ldap_password", $config{LDAPPASS});
+    setLocalConfig ("ldap_root_password", $config{LDAPROOTPASS});
+    setLocalConfig ("zimbra_ldap_password", $config{LDAPADMINPASS});
   }
   if ($ldapRepChanged == 1) {
     setLocalConfig ("ldap_replication_password", "$config{LDAPREPPASS}");

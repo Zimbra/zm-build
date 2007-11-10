@@ -53,7 +53,7 @@ postInstallConfig() {
 	if [ $UPGRADE = "no" ]; then
 		if [ $LDAP_HERE = "yes" ]; then
 			echo -n "Initializing ldap..."
-			runAsZimbra "/opt/zimbra/libexec/zmldapinit $LDAPROOTPW"
+			runAsZimbra "/opt/zimbra/libexec/zmldapinit $LDAPROOTPW $LDAPZIMBRAPW"
 			echo "done"
 		else
 			# set the ldap password in localconfig only

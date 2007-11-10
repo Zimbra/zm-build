@@ -908,7 +908,7 @@ EOF
   open L, ">/tmp/text-plain.ldif";
   print L $a;
   close L;
-  my $ldap_pass = `su - zimbra -c "zmlocalconfig -s -m nokey ldap_root_password"`;
+  my $ldap_pass = `su - zimbra -c "zmlocalconfig -s -m nokey zimbra_ldap_password"`;
   my $ldap_url = `su - zimbra -c "zmlocalconfig -s -m nokey ldap_url"`;
   chomp $ldap_pass;
   chomp $ldap_url;
@@ -1195,7 +1195,7 @@ sub upgrade450RC1 {
 
     # bah-bye timezones
     # replaced by /opt/zimbra/conf/timezones.ics
-    my $ldap_pass = `su - zimbra -c "zmlocalconfig -s -m nokey ldap_root_password"`;
+    my $ldap_pass = `su - zimbra -c "zmlocalconfig -s -m nokey zimbra_ldap_password"`;
     my $ldap_master_url = `su - zimbra -c "zmlocalconfig -s -m nokey ldap_master_url"`;
     my $ldap; 
     chomp($ldap_master_url);
