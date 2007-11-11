@@ -15,7 +15,7 @@
 # 
 
 rm -f /opt/zimbra/snmp
-ln -s /opt/zimbra/net-snmp-5.4 /opt/zimbra/snmp
+ln -s /opt/zimbra/net-snmp-5.4.1 /opt/zimbra/snmp
 
 PKG=`echo ${RECEIPT_PATH} | sed -e 's|.*/\(zimbra-snmp.[^/]*pkg\)/.*|\1|' | sed -e 's/\./-/'`
 D=`date +%s`

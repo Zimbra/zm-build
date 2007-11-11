@@ -20,7 +20,7 @@ I=`hostname -i`
 #Symlinks
 
 rm -f /opt/zimbra/snmp
-ln -s /opt/zimbra/net-snmp-5.4 /opt/zimbra/snmp
+ln -s /opt/zimbra/net-snmp-5.4.1 /opt/zimbra/snmp
 
 if [ ! -d /opt/zimbra/zimbramon/mrtg/work/ ]; then
 	mkdir -p /opt/zimbra/zimbramon/mrtg/work/
