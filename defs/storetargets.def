@@ -155,7 +155,7 @@ $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/etc: force
 $(STORE_DEST_DIR)/$(MAILBOXD_DIR): $(STORE_DEST_DIR) $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/bin $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/etc $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/temp $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/common/lib
 
 $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/resources/log4j.properties: $(STORE_DEST_DIR)/$(MAILBOXD_DIR)
-	mkdir -p $@
+	mkdir -p $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/resources
 	cp $(SERVICE_DIR)/build/dist/$(MAILBOXD_SERVER)/resources/log4j.properties $@ 
 
 endif
