@@ -16,7 +16,10 @@
 
 #Symlinks
 
-umount -f /opt/zimbra/amavisd/tmp
+if [ -d "/opt/zimbra/amavisd/tmp" ]; then
+  #umount -f /opt/zimbra/amavisd/tmp
+fi
+
 rm -f /opt/zimbra/amavisd
 ln -s /opt/zimbra/amavisd-new-2.5.2 /opt/zimbra/amavisd
 
@@ -58,8 +61,6 @@ chown -R zimbra:zimbra /opt/zimbra/amavisd/*
 mkdir -p /opt/zimbra/clamav/db
 chown -R zimbra:zimbra /opt/zimbra/clamav/db
 
-/opt/zimbra/libexec/zmfixperms
-
 if [ ! -f /opt/zimbra/postfix/conf/main.cf ]; then
 	touch /opt/zimbra/postfix/conf/main.cf
 	chown zimbra:zimbra /opt/zimbra/postfix/conf/main.cf
@@ -76,5 +77,9 @@ fi
 	#gid=`id -g zimbra`
 	#echo "/dev/shm	/opt/zimbra/amavisd-new-2.4.1/tmp	tmpfs	defaults,users,size=150m,mode=777 0 0" >> /etc/fstab
 #fi
+
+if [ -x "/opt/zimbra/libexec/zmfixperms" ]; then
+  /opt/zimbra/libexec/zmfixperms
+fi
 
 ldconfig

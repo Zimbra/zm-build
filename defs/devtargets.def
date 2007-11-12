@@ -53,7 +53,6 @@ $(DEV_INSTALL_ROOT)/$(POSTFIX_DIR): $(DEV_INSTALL_ROOT)
 		$(DEV_INSTALL_ROOT)/$(POSTFIX_DIR)/conf/main.cf
 	sed 's/^7075/25/g' $(SERVICE_DIR)/conf/postfix/master.cf > \
 		$(DEV_INSTALL_ROOT)/$(POSTFIX_DIR)/conf/master.cf
-	#sh -x $(ZIMBRA_BIN_DIR)/zmfixperms.sh
 	(cd $(DEV_INSTALL_ROOT)/$(POSTFIX_DIR)/sbin; ln -s postdrop sendmail)
 
 $(DEV_INSTALL_ROOT)/$(CLAMAV_DIR): $(DEV_INSTALL_ROOT)
@@ -196,7 +195,6 @@ $(DEV_INSTALL_ROOT)/bin:
 	cp -f $(ZIMBRA_BIN_DIR)/zmcertmgr $@
 	cp -f $(ZIMBRA_BIN_DIR)/zmroll_catalina.sh $@
 	cp -f $(ZIMBRA_BIN_DIR)/zmtlsctl $@
-	cp -f $(ZIMBRA_BIN_DIR)/zmfixperms.sh $@
 	cp -f $(ZIMBRA_BIN_DIR)/zmsyslogsetup $@
 	chmod u+x $@/*
 

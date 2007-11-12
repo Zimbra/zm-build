@@ -160,6 +160,9 @@ chown zimbra:zimbra /opt/zimbra/.ssh
 mkdir /opt/zimbra/zmstat
 chown zimbra:zimbra /opt/zimbra/zmstat
 
+if [ -x "/opt/zimbra/libexec/zmfixperms" ]; then
+  /opt/zimbra/libexec/zmfixperms
+fi
 
 # 64 bit jvm doesn't support the dump
 if [ "x$BIT" = "x64" ]; then

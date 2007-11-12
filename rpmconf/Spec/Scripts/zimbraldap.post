@@ -36,11 +36,14 @@ echo "%zimbra   ALL=NOPASSWD:/opt/zimbra/libexec/zmslapd" >> /tmp/sudoers
 mv -f /tmp/sudoers /etc/sudoers
 chmod 440 /etc/sudoers
 
+if [ -d "/opt/zimbra/openldap/libexec/slapd" ]; then
+  chown root:root /opt/zimbra/openldap/libexec/slapd
+  chmod 755 /opt/zimbra/openldap/libexec/slapd
+fi
 
-/bin/bash /opt/zimbra/libexec/zmfixperms
-
-chown root:root /opt/zimbra/openldap/libexec/slapd
-chmod 755 /opt/zimbra/openldap/libexec/slapd
+if [ -x "/opt/zimbra/libexec/zmfixperms" ]; then
+  /opt/zimbra/libexec/zmfixperms
+fi
 
 if [ ! -s /opt/zimbra/openldap-data/DB_CONFIG ]; then
    mv /opt/zimbra/openldap-data/log.* /opt/zimbra/openldap-data/logs/

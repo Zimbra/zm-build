@@ -39,8 +39,6 @@ spell_pkg_spec_deb: $(SPELL_DEST_ROOT)/DEBIAN/control
 $(SPELL_DEST_ROOT)/DEBIAN: force
 	mkdir -p $@
 	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbraspell.pre $@/preinst
-	echo "#!/bin/bash" > $@/postinst
-	echo "sh /opt/zimbra/libexec/zmfixperms" >> $@/postinst
 	cat $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbraspell.post >> $@/postinst
 	chmod 555 $@/*
 

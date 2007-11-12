@@ -14,10 +14,11 @@
 # ***** END LICENSE BLOCK *****
 # 
 
-H=`hostname -s`
-I=`hostname -i`
+if [ -x "/opt/zimbra/libexec/zmfixperms" ]; then
+  /opt/zimbra/libexec/zmfixperms
+fi
 
-#Symlinks
-
-rm -f /opt/zimbra/httpd
+if [ -L "/opt/zimbra/httpd" ]; then
+  rm -f /opt/zimbra/httpd
+fi
 ln -s /opt/zimbra/httpd-2.2.4 /opt/zimbra/httpd

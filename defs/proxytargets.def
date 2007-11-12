@@ -37,10 +37,8 @@ proxy_pkg_spec_deb: $(PROXY_DEST_ROOT)/DEBIAN/control
 
 $(PROXY_DEST_ROOT)/DEBIAN: force
 	mkdir -p $@
-	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra.pre $@/preinst
-	echo "#!/bin/bash" > $@/postinst
-	echo "sh /opt/zimbra/bin/zmfixperms.sh" >> $@/postinst
-	cat $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra.post >> $@/postinst
+	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbraproxy.pre $@/preinst
+	cat $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbraproxy.post >> $@/postinst
 	chmod 555 $@/*
 
 $(PROXY_DEST_ROOT)/DEBIAN/control: $(PROXY_DEST_ROOT)/DEBIAN force

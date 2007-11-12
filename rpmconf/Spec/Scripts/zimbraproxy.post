@@ -15,10 +15,14 @@
 # 
 
 # Symlinks
-rm -rf /opt/zimbra/memcached
+if [ -L "/opt/zimbra/memcached" ]; then
+  rm -rf /opt/zimbra/memcached
+fi
 ln -s /opt/zimbra/memcached-1.2.2 /opt/zimbra/memcached
 
-rm -rf /opt/zimbra/nginx
+if [ -L "/opt/zimbra/nginx" ]; then
+  rm -rf /opt/zimbra/nginx
+fi
 ln -s /opt/zimbra/nginx-0.5.30-zimbra /opt/zimbra/nginx
 
 egrep -v '^%zimbra.*nginx' /etc/sudoers > /tmp/sudoers
@@ -26,3 +30,6 @@ echo "%zimbra ALL=NOPASSWD:/opt/zimbra/nginx/sbin/nginx" >> /tmp/sudoers
 mv -f /tmp/sudoers /etc/sudoers
 chmod 440 /etc/sudoers
 
+if [ -x "/opt/zimbra/libexec/zmfixperms" ]; then
+  /opt/zimbra/libexec/zmfixperms
+fi
