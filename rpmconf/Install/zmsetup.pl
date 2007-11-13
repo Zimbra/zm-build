@@ -3624,6 +3624,7 @@ sub configSetEnabledServices {
     }
     if ($p eq "zimbra-apache") {next;}
     if ($p eq "zimbra-cluster") {next;}
+    if ($p eq "zimbra-archiving") {next;}
     if ($enabledPackages{$p} eq "Enabled") {
       $p =~ s/zimbra-//;
       if ($p eq "store") {$p = "mailbox";}
