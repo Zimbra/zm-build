@@ -4,7 +4,6 @@
 # Log pruning
 #
 30 2 * * * find /opt/zimbra/mailboxd/logs/ -type f -name \*log\* -mtime +8 -exec rm {} \; > /dev/null 2>&1
-0 2 * * * /opt/zimbra/libexec/zmroll_catalina > /dev/null 2>&1
 #
 # Purge messages
 #
