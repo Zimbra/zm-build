@@ -266,6 +266,31 @@ checkRecentBackup() {
   fi
 }
 
+checkUbuntuRelease() {
+  if [ -f "/etc/lsb-release" ]; then
+    . /etc/lsb-release
+  fi
+  if [ x"$DISTRIB_RELEASE" != "x6.06" -a x"$DEFAULTFILE" = "x" ]; then
+    echo "WARNING: ZCS is currently only supported on Ubuntu Server 6.06 LTS."
+    echo "You are attempting to install on $DISTRIB_DESCRIPTION which may not work."
+    echo "Support will not be provided if you choose to continue."
+    echo ""
+    while :; do
+      askYN "Do you wish to continue?" "N"
+      if [ $response = "no" ]; then
+        askYN "Exit?" "N"
+        if [ $response = "yes" ]; then
+          echo "Exiting."
+          exit 1
+        fi
+      else
+        break
+      fi
+    done
+  else 
+    echo "Automated install detected...continuing."
+  fi
+}
 
 checkRequired() {
 
@@ -1449,13 +1474,14 @@ isInstalled () {
 
 getPlatformVars() {
   PLATFORM=`bin/get_plat_tag.sh`
-  if [ $PLATFORM = "DEBIAN3.1" -o $PLATFORM = "UBUNTU6" -o $PLATFORM = "DEBIAN4.0" ]; then
+  if [ $PLATFORM = "DEBIAN3.1" -o $PLATFORM = "UBUNTU6" -o $PLATFORM = "UBUNTU7" -o $PLATFORM = "DEBIAN4.0" -o $PLATFORM = "UBUNTUUNKNOWN" ]; then
+    checkUbuntuRelease
     PACKAGEINST='dpkg -i'
     PACKAGERM='dpkg --purge'
     PACKAGEQUERY='dpkg -s'
     PACKAGEEXT='deb'
     PREREQ_PACKAGES="sudo libidn11 curl fetchmail libgmp3 libxml2 libstdc++6 openssl libltdl3"
-    if [ $PLATFORM = "UBUNTU6" ]; then
+    if [ $PLATFORM = "UBUNTU6" -o $PLATFORM = "UBUNTU7" ]; then
       PREREQ_PACKAGES="sudo libidn11 curl fetchmail libpcre3 libgmp3c2 libexpat1 libxml2 libstdc++6 libstdc++5 openssl libltdl3"
     fi
     if [ $PLATFORM = "DEBIAN4.0" ]; then
