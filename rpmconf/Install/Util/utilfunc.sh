@@ -461,7 +461,14 @@ checkExistingInstall() {
       INSTALLED="yes"
       INSTALLED_PACKAGES="$INSTALLED_PACKAGES $i"
     else
-      echo "NOT FOUND"
+      if [ x$i = "xzimbra-archiving" ]; then
+        if [ -f "/opt/zimbra/lib/ext/zimbra_xmbxsearch/zimbra_xmbxsearch.jar" -a -f "/opt/zimbra/zimlets-network/zimbra_xmbxsearch.zip" ]; then
+          echo "FOUND zimbra-cms"
+          INSTALLED_PACKAGES="$INSTALLED_PACKAGES zimbra-archiving"
+        fi
+      else
+         echo "NOT FOUND"
+      fi
     fi
   done
 
