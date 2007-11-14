@@ -379,26 +379,30 @@ sub isInstalled {
 
   my $pkgQuery;
 
-  my $good = 1;
+  my $good = 0;
   if ($platform eq "DEBIAN3.1" || $platform eq "UBUNTU6") {
-    $pkgQuery = "dpkg -s $pkg | egrep '^Status: ' | grep 'not-installed'";
+    $pkgQuery = "dpkg -s $pkg";
   } elsif ($platform =~ /MACOSX/) {
     my @l = sort glob ("/Library/Receipts/${pkg}*");
     if ( $#l < 0 ) { return 0; }
     $pkgQuery = "test -d $l[$#l]";
-    $good = 0;
   } elsif ($platform =~ /RPL/) {
     $pkgQuery = "conary q $pkg";
-    $good = 0;
   } else {
     $pkgQuery = "rpm -q $pkg";
-    $good = 0;
   }
 
   my $rc = 0xffff & system ("$pkgQuery > /dev/null 2>&1");
   $rc >>= 8;
-  return ($rc == $good);
-
+  if (($platform eq "DEBIAN3.1" || $platform eq "UBUNTU6") && $rc == 0 ) {
+    $good = 1;
+    $pkgQuery = "dpkg -s $pkg 2> /dev/null | egrep '^Status: ' | grep 'not-installed'";
+    $rc = 0xffff & system ("$pkgQuery > /dev/null 2>&1");
+    $rc >>= 8;
+    return ($rc == $good);
+  } else {
+    return ($rc == $good);
+  }
 }
 
 sub genRandomPass {
