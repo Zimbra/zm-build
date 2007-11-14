@@ -18,6 +18,10 @@ installPackage() {
 	PKG=$1
 	echo -n "    $PKG..."
 	findLatestPackage $PKG
+  if [ ! -f "$file" ]; then
+    echo "file not found."
+    return
+  fi
 	f=`basename $file`
 	echo -n "...$f..."
 	$PACKAGEINST $file >> $LOGFILE 2>&1

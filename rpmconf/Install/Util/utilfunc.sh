@@ -1472,8 +1472,8 @@ isInstalled () {
     if [ "x$Q" != "x" ]; then
       echo $Q | grep 'not-installed' > /dev/null 2>&1
       if [ $? != 0 ]; then
-        version=`$PACKAGEQUERY $pkg | egrep '^Version: ' | sed -e 's/Version: //' 2> /dev/null`
-        PKGINSTALLED="${pkg}-${version}"
+        PKGVERSION=`$PACKAGEQUERY $pkg | egrep '^Version: ' | sed -e 's/Version: //' 2> /dev/null`
+        PKGINSTALLED="${pkg}-${PKGVERSION}"
       fi
     fi
   fi
