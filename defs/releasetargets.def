@@ -1,7 +1,7 @@
 zcs-$(RELEASE).dmg: $(ARCH)/zcs.mpkg packages
 	mkdir -p $(ARCH)/tmp/scripts
 	mkdir -p $(ARCH)/tmp/docs
-	cp -f $(WEBAPP_DIR)/zimbra/downloads/* $(ARCH)
+	-cp -f $(WEBAPP_DIR)/zimbra/downloads/* $(ARCH)
 	cp -f $(PACKAGE_CONF_DIR)/Install/install-mac.sh $(ARCH)/tmp/scripts/installZCS.sh
 	cp -f $(CONSOLE_DIR)/WebRoot/adminhelp/pdf/* $(ARCH)/tmp/docs/
 	cp -R $(ARCH)/zcs.mpkg $(ARCH)/tmp
@@ -70,7 +70,7 @@ zcs_stage:
 	tar czf zcs-$(VERSION_TAG).$(RELEASE).tgz zcs-$(VERSION_TAG).$(RELEASE)
 	mv zcs-$(VERSION_TAG).$(RELEASE).tgz $(PACKAGE_DIR)
 	(cd $(PACKAGE_DIR); ln -s zcs-$(VERSION_TAG).$(RELEASE).tgz zcs.tgz)
-	cp -f $(WEBAPP_DIR)/zimbra/downloads/* $(PACKAGE_DIR)
+	-cp -f $(WEBAPP_DIR)/zimbra/downloads/* $(PACKAGE_DIR)
 	@echo "*** BUILD COMPLETED ***"
 
 packages: core proxy mta store ldap snmp logger apache spell
