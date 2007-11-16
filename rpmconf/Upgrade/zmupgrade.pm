@@ -209,8 +209,8 @@ sub upgrade {
 	$startVersion = shift;
 	$targetVersion = shift;
   my ($startBuild,$targetBuild);
-  ($startVersion,$startBuild) = $startVersion =~ /(\d\.\d\.\d_[^_]*)_(\d+)/;  
-  ($targetVersion,$targetBuild) = $targetVersion =~ m/(\d\.\d\.\d_[^_]*)_(\d+)/;
+  ($startVersion,$startBuild) = $startVersion =~ /(\d\.\d\.\d+_[^_]*)_(\d+)/;  
+  ($targetVersion,$targetBuild) = $targetVersion =~ m/(\d\.\d\.\d+_[^_]*)_(\d+)/;
 
 	my $needVolumeHack = 0;
 	my $needMysqlTableCheck = 0;
