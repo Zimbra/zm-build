@@ -78,7 +78,7 @@ if [ $? -eq 0 ]; then
   fi
 fi
 
-echo "Building VMWare ESX Image $BUILDROOT/zcs-${RELEASETAG}-vmware.zip..."
+echo "Building VMWare ESX Image $BUILDROOT/zcs-${RELEASETAG}-esx.zip..."
 BUILD=`rbuilder build-create zimbra "$TROVE" vmware_esx_image --wait --option 'vmMemory 512' --option 'freespace 30000' --option "baseFileName zcs-${RELEASETAG}-esx"  | awk -F= '{print $NF}'`
 if [ $? -eq 0 ]; then
   echo "Getting URL for Build $BUILD"
@@ -90,7 +90,8 @@ if [ $? -eq 0 ]; then
   fi
 fi
 
-if [ "x$ISO" = "x" -o "x$ZIP" = "x" -o "X$ESX" = "x" ]; then
+#if [ "x$ISO" = "x" -o "x$ZIP" = "x" -o "X$ESX" = "x" ]; then
+if [ "x$ISO" = "x" -o "x$ZIP" = "x" ]; then
   exit 1
 else 
   exit 0
