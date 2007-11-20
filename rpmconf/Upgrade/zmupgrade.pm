@@ -1671,7 +1671,14 @@ sub upgrade500RC3 {
       main::setLocalConfig("mailboxd_truststore", "${zimbra_java_home}/jre/lib/security/cacerts"); 
     }
   }
-  
+  # 21707
+  if (isInstalled("zimbra-proxy")) {
+      my $query = "\(\|\(zimbraMailDeliveryAddress=\${USER}\)\(zimbraMailAlias=\${USER}\)\)";
+      # We have to use a pipe to write out the Query, otherwise ${USER} gets interpreted
+      open(ZMPROV, "|su - zimbra -c 'zmprov -l'");
+      print ZMPROV "mcf zimbraReverseProxyMailHostQuery $query\n";
+      close ZMPROV;
+  }
 	return 0;
 }
 
