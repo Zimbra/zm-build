@@ -1651,10 +1651,12 @@ sub upgrade500RC2 {
   if (isInstalled("zimbra-store")) {
     main::setLocalConfig("zimbra_mailbox_purgeable", "true");
     migrateTomcatLCKey("thread_stack_size", "256k"); 
+    # 20111
+    main::runAsZimbra("$ZMPROV mcf zimbraHttpNumThreads 100");
   }
   if (isInstalled("zimbra-ldap")) {
-	main::detail("Updating slapd indices\n");
-	indexLdap();
+	  main::detail("Updating slapd indices\n");
+	  indexLdap();
   }
 	return 0;
 }
