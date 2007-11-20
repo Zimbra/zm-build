@@ -690,7 +690,7 @@ sub setLdapDefaults {
             $config{POPSSLPORT} = 995;
         }
     }
-    my $query = "\(\|\(\|\(zimbraMailDeliveryAddress=\${USER}\@$config{zimbraDefaultDomainName}\)\(zimbraMailAlias=\${USER}\@$config{zimbraDefaultDomainName}\)\)\(\|\(zimbraMailDeliveryAddress=\${USER}\)\(zimbraMailAlias=\${USER}\)\)\)";
+    my $query = "\(\|\(zimbraMailDeliveryAddress=\${USER}\)\(zimbraMailAlias=\${USER}\)\)";
 
     $config{zimbraReverseProxyMailHostQuery} = getLdapConfigValue("zimbraReverseProxyMailHostQuery");
     $config{zimbraReverseProxyMailHostQuery} = $query
@@ -979,7 +979,7 @@ sub setDefaults {
 
   }
   if (isInstalled("zimbra-proxy")) {
-    my $query = "\(\|\(\|\(zimbraMailDeliveryAddress=\${USER}\@$config{CREATEDOMAIN}\)\(zimbraMailAlias=\${USER}\@$config{CREATEDOMAIN}\)\)\(\|\(zimbraMailDeliveryAddress=\${USER}\)\(zimbraMailAlias=\${USER}\)\)\)";
+    my $query = "\(\|\(zimbraMailDeliveryAddress=\${USER}\)\(zimbraMailAlias=\${USER}\)\)";
 
     $config{zimbraReverseProxyMailHostQuery} = $query;
     $config{zimbraReverseProxyMailHostAttribute} = "zimbraMailHost";
