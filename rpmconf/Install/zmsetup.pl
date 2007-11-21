@@ -1642,6 +1642,10 @@ sub setStoreMode {
 
 sub changeLdapHost {
   $config{LDAPHOST} = shift;
+  $config{LDAPHOST} = lc($config{LDAPHOST});
+  if (isInstalled("zimbra-ldap") && $config{LDAPHOST} != $config{HOSTNAME}) {
+      $ldapReplica=1;
+  }
 }
 
 sub changeLdapPort {
@@ -2009,7 +2013,7 @@ sub createLdapMenu {
       $i++;
     }
     $$lm{menuitems}{$i} = { 
-      "prompt" => "Bind DN:", 
+      "prompt" => "Admin User Bind DN:", 
       "var" => \$config{zimbra_ldap_userdn}, 
       "callback" => \&setLdapUserDN,
       };
@@ -2980,6 +2984,21 @@ sub configSetupLdap {
       failConfig();
     } else {
       progress ( "done.\n" );
+      if ($ldapRepChanged == 1) {
+         progress ( "Setting replication password..." );
+         runAsZimbra ("/opt/zimbra/bin/zmldappasswd -l $config{LDAPREPPASS}");
+         progress ( "done.\n" );
+      }
+      if ($ldapPostChanged == 1) {
+         progress ( "Setting Postfix password..." );
+         runAsZimbra ("/opt/zimbra/bin/zmldappasswd -p $config{LDAPPOSTPASS}");
+         progress ( "done.\n" );
+      }
+      if ($ldapAmavisChanged == 1) {
+         progress ( "Setting amavis password..." );
+         runAsZimbra ("/opt/zimbra/bin/zmldappasswd -a $config{LDAPAMAVISPASS}");
+         progress ( "done.\n" );
+      }
     }
   } elsif (isEnabled("zimbra-ldap")) {
     # enable replica for both new and upgrade installs if we are adding ldap
@@ -3008,7 +3027,7 @@ sub configSetupLdap {
 
 
     # zmldappasswd starts ldap and re-applies the ldif
-    if ($ldapRootPassChanged || $ldapAdminPassChanged) {
+    if ($ldapRootPassChanged || $ldapAdminPassChanged || $ldapRepChanged || $ldapPostChanged || $ldapAmavisChanged) {
       if ($ldapRootPassChanged) {
          progress ( "Setting ldap root password..." );
          runAsZimbra ("/opt/zimbra/bin/zmldappasswd -r $config{LDAPROOTPASS}");
@@ -3019,6 +3038,21 @@ sub configSetupLdap {
          runAsZimbra ("/opt/zimbra/bin/zmldappasswd $config{LDAPADMINPASS}");
          progress ( "done.\n" );
       }
+      if ($ldapRepChanged == 1) {
+         progress ( "Setting replication password..." );
+         runAsZimbra ("/opt/zimbra/bin/zmldappasswd -l $config{LDAPREPPASS}");
+         progress ( "done.\n" );
+      }
+      if ($ldapPostChanged == 1) {
+         progress ( "Setting Postfix password..." );
+         runAsZimbra ("/opt/zimbra/bin/zmldappasswd -p $config{LDAPPOSTPASS}");
+         progress ( "done.\n" );
+      }
+      if ($ldapAmavisChanged == 1) {
+         progress ( "Setting amavis password..." );
+         runAsZimbra ("/opt/zimbra/bin/zmldappasswd -a $config{LDAPAMAVISPASS}");
+         progress ( "done.\n" );
+      }
     } else {
       progress("Stopping ldap...");
       runAsZimbra ("/opt/zimbra/bin/ldap stop");
@@ -3026,21 +3060,12 @@ sub configSetupLdap {
       startLdap();
     }
   } else {
-    detail("Updating ldap_root_password and zimbra_ldap_passwd\n");
+    detail("Updating ldap user passwords\n");
     setLocalConfig ("ldap_root_password", $config{LDAPROOTPASS});
     setLocalConfig ("zimbra_ldap_password", $config{LDAPADMINPASS});
-  }
-  if ($ldapRepChanged == 1) {
     setLocalConfig ("ldap_replication_password", "$config{LDAPREPPASS}");
-    runAsZimbra ("/opt/zimbra/bin/zmldappasswd -l $config{LDAPREPPASS}");
-  }
-  if ($ldapPostChanged == 1) {
     setLocalConfig ("ldap_postfix_password", "$config{LDAPPOSTPASS}");
-    runAsZimbra ("/opt/zimbra/bin/zmldappasswd -p $config{LDAPPOSTPASS}");
-  }
-  if ($ldapAmavisChanged == 1) {
     setLocalConfig ("ldap_amavis_password", "$config{LDAPAMAVISPASS}");
-    runAsZimbra ("/opt/zimbra/bin/zmldappasswd -a $config{LDAPAMAVISPASS}");
   }
   # set default zmprov bahaviour
   if (isEnabled("zimbra-ldap")) {
