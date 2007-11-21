@@ -101,6 +101,7 @@ my %packageServiceMap = (
 my %installedPackages = ();
 my %prevInstalledPackages = ();
 my %enabledPackages = ();
+my %enabledServices = ();
 
 my $zimbraHome = "/opt/zimbra";
 
@@ -346,6 +347,24 @@ sub getInstalledPackages {
   
 }
 
+sub isServiceEnabled {
+  my $service = shift;
+
+  if (defined ($enabledServices{$service})) {
+    if ($enabledServices{$service} eq "Enabled") {
+      detail ("$service is enabled");
+      return 1;
+    } else {
+      detail("$service is not enabled");
+      return undef;
+    }
+  } else {
+    detail("$service not in enabled cache");
+  }
+
+  return undef;
+}
+
 sub isEnabled {
   my $package = shift;
   detail("checking isEnabled $package");
@@ -396,6 +415,7 @@ sub isEnabled {
           detail ("Marking $service as an enabled service.")
             if ($debug);
           $enabledPackages{$packageServiceMap{$service}} = "Enabled";
+          $enabledServices{$service} = "Enabled";
         } else {
           progress("WARNING: Unknown package installed for $service.\n");
         }
@@ -618,10 +638,6 @@ sub setLdapDefaults {
   $config{TRAINSASPAM} = getLdapConfigValue("zimbraSpamIsSpamAccount");
   $config{TRAINSAHAM} = getLdapConfigValue("zimbraSpamIsNotSpamAccount");
   $config{NOTEBOOKACCOUNT} = getLdapConfigValue("zimbraNotebookAccount");
-
-  $config{SMTPSOURCE} = $config{CREATEADMIN};
-  $config{SMTPDEST} = $config{CREATEADMIN};
-  $config{AVUSER} = $config{CREATEADMIN};
 
   if (isEnabled("zimbra-mta")) {
     my $tmpval = getLdapServerValue("zimbraMtaMyNetworks");
@@ -1128,15 +1144,18 @@ sub setDefaultsFromLocalConfig {
       if ($config{SNMPTRAPHOST} eq "");
   }
 
-  if (isEnabled("zimbra-logger") || isEnabled("zimbra-snmp")) {
-    $config{SMTPSOURCE} = getLocalConfig("smtp_source");
-    $config{SMTPSOURCE} = $config{CREATEADMIN}
-      if ($config{SMTPSOURCE} eq "");
+  $config{SMTPSOURCE} = getLocalConfig("smtp_source");
+  $config{SMTPSOURCE} = $config{CREATEADMIN}
+    if ($config{SMTPSOURCE} eq "");
 
-    $config{SMTPDEST} = getLocalConfig("smtp_destination");
-    $config{SMTPDEST} = $config{CREATEADMIN}
-      if ($config{SMTPDEST} eq "");
-  }
+  $config{SMTPDEST} = getLocalConfig("smtp_destination");
+  $config{SMTPDEST} = $config{CREATEADMIN}
+    if ($config{SMTPDEST} eq "");
+
+  $config{AVUSER} = getLocalConfig("av_notify_user");
+  $config{AVUSER} = $config{CREATEADMIN}
+    if ($config{AVUSER} eq "");
+
   if (isEnabled("zimbra-ldap")) {
 
     $config{LDAPREPPASS} = getLocalConfig ("ldap_replication_password");
@@ -1869,10 +1888,17 @@ sub setEnabledDependencies {
       $config{SMTPHOST} = $config{HOSTNAME};
     }
   }
+
   if (isEnabled("zimbra-mta")) {
-    $config{RUNAV} = "yes";
-    $config{RUNSA} = "yes";
-    $config{RUNARCHIVING} = "no";
+    if ($newinstall) {
+      $config{RUNAV} = "yes";
+      $config{RUNSA} = "yes";
+      $config{RUNARCHIVING} = "no";
+    } else {
+      $config{RUNAV} = (isServiceEnabled("antispam") ? "yes" : "no");
+      $config{RUNSA} = (isServiceEnabled("antivirus") ? "yes" : "no");
+      $config{RUNARCHIVING} = (isServiceEnabled("archiving") ? "yes" : "no");
+    }
   }
 
   if (isEnabled("zimbra-spell")) {
@@ -3051,7 +3077,7 @@ sub configCreateCert {
 
   progress ( "Creating SSL certificate..." );
 
-  if (isEnabled("zimbra-store")) {
+  if (isInstalled("zimbra-store")) {
     if ( !-f "$config{mailboxd_keystore}" && !-f "/opt/zimbra/ssl/ssl/server/server.crt" ) {
       if (!-d "$config{mailboxd_directory}") {
         `mkdir -p $config{mailboxd_directory}/etc`;
@@ -3062,13 +3088,13 @@ sub configCreateCert {
     }
   }
 
-  if (isEnabled("zimbra-ldap")) {
+  if (isInstalled("zimbra-ldap")) {
     if ( !-f "/opt/zimbra/conf/slapd.crt" && !-f "/opt/zimbra/ssl/ssl/server.crt") {
       runAsRoot("/opt/zimbra/bin/zmcertmgr install self");
     }
   }
 
-  if (isEnabled("zimbra-mta")) {
+  if (isInstalled("zimbra-mta")) {
     if ( !-f "/opt/zimbra/conf/smtpd.crt" && !-f "/opt/zimbra/ssl/ssl/server.crt") {
       runAsRoot("/opt/zimbra/bin/zmcertmgr install self");
     }
