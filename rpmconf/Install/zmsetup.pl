@@ -1525,6 +1525,57 @@ sub setLdapAdminPass {
   }
 }
 
+sub setLdapRepPass {
+  while (1) {
+    my $new =
+      askNonBlank("Password for ldap replication user (min 6 characters):",
+        $config{LDAPREPPASS});
+    if (length($new) >= 6) {
+      if ($config{LDAPREPPASS} ne $new) {
+        $config{LDAPREPPASS} = $new;
+        $ldapRepChanged = 1;
+      }
+      return;
+    } else {
+      print "Minimum length of 6 characters!\n";
+    }
+  } 
+}
+
+sub setLdapPostPass {
+  while (1) {
+    my $new =
+      askNonBlank("Password for ldap Postfix user (min 6 characters):",
+        $config{LDAPPOSTPASS});
+    if (length($new) >= 6) {
+      if ($config{LDAPPOSTPASS} ne $new) {
+        $config{LDAPPOSTPASS} = $new;
+        $ldapRepChanged = 1;
+      }
+      return;
+    } else {
+      print "Minimum length of 6 characters!\n";
+    }
+  }
+}
+
+sub setLdapAmavisPass {
+  while (1) {
+    my $new =
+      askNonBlank("Password for ldap Amavis user (min 6 characters):",
+        $config{LDAPAMAVISPASS});
+    if (length($new) >= 6) {
+      if ($config{LDAPAMAVISPASS} ne $new) {
+        $config{LDAPAMAVISPASS} = $new;
+        $ldapRepChanged = 1;
+      }
+      return;
+    } else {
+      print "Minimum length of 6 characters!\n";
+    }
+  }
+}
+
 sub setAdminPass {
   if ($config{CREATEADMIN} ne "") {
     while (1) {
@@ -2659,6 +2710,39 @@ sub createMainMenu {
     "prompt" => "Ldap Admin password:", 
     "var" => \$config{LDAPADMINPASSSET}, 
     "callback" => \&setLdapAdminPass
+    };
+  $i++;
+  if ($config{LDAPREPPASS} ne "") {
+    $config{LDAPREPPASSSET} = "set";
+  } else {
+    $config{LDAPREPPASSSET} = "UNSET";
+  }
+  $mm{menuitems}{$i} = {
+    "prompt" => "Ldap Replication password:",
+    "var" => \$config{LDAPREPPASSSET},
+    "callback" => \&setLdapRepPass
+    };
+  $i++;
+  if ($config{LDAPPOSTPASS} ne "") {
+    $config{LDAPPOSTPASSSET} = "set";
+  } else {
+    $config{LDAPPOSTPASSSET} = "UNSET";
+  }
+  $mm{menuitems}{$i} = {
+    "prompt" => "Ldap Postfix password:",
+    "var" => \$config{LDAPPOSTPASSSET},
+    "callback" => \&setLdapPostPass
+    };
+  $i++;
+  if ($config{LDAPAMAVISPASS} ne "") {
+    $config{LDAPAMAVISPASSSET} = "set";
+  } else {
+    $config{LDAPAMAVISPASSSET} = "UNSET";
+  }
+  $mm{menuitems}{$i} = {
+    "prompt" => "Ldap Amavis password:",
+    "var" => \$config{LDAPAMAVISPASSSET},
+    "callback" => \&setLdapAmavisPass
     };
   $i++;
   $mm{menuitems}{$i} = { 
