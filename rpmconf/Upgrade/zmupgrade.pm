@@ -1681,6 +1681,24 @@ sub upgrade500RC3 {
       print ZMPROV "mcf zimbraReverseProxyMailHostQuery $query\n";
       close ZMPROV;
   }
+  if (main::isInstalled("zimbra-ldap") && $platform !~ /MACOSX/ ) {
+    my $ldap_pass = `su - zimbra -c "zmlocalconfig -s -m nokey zimbra_ldap_password"`;
+    my $ldap_master_url = `su - zimbra -c "zmlocalconfig -s -m nokey ldap_master_url"`;
+    my $ldap; 
+    chomp($ldap_master_url);
+    chomp($ldap_pass);
+    unless($ldap = Net::LDAP->new($ldap_master_url)) { 
+      main::progress("Unable to contact $ldap_master_url: $!\n"); 
+      return 1;
+    }
+    my $dn = 'cn=mime,cn=config,cn=zimbra';
+    my $result = $ldap->bind("uid=zimbra,cn=admins,cn=zimbra", password => $ldap_pass);
+    unless($result->code()) {
+      $result = DeleteLdapTree($ldap,$dn);
+      main::progress($result->code() ? "Failed to delete $dn: ".$result->error()."\n" : "Deleted $dn\n");
+    }
+    $result = $ldap->unbind;
+  }
 	return 0;
 }
 
