@@ -41,8 +41,6 @@ ldap_pkg_spec_deb: $(LDAP_DEST_ROOT)/DEBIAN/control
 $(LDAP_DEST_ROOT)/DEBIAN: force
 	mkdir -p $@
 	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbraldap.pre $@/preinst
-	echo "#!/bin/bash" > $@/postinst
-	echo "sh /opt/zimbra/libexec/zmfixperms" >> $@/postinst
 	cat $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbraldap.post >> $@/postinst
 	chmod 555 $@/*
 

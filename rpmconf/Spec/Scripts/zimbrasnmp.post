@@ -19,9 +19,15 @@ I=`hostname -i`
 
 #Symlinks
 
-rm -f /opt/zimbra/snmp
+if [ -L "/opt/zimbra/snmp" ]; then
+  rm -f /opt/zimbra/snmp
+fi
 ln -s /opt/zimbra/net-snmp-5.4.1 /opt/zimbra/snmp
 
-if [ ! -d /opt/zimbra/zimbramon/mrtg/work/ ]; then
+if [ ! -d "/opt/zimbra/zimbramon/mrtg/work/" ]; then
 	mkdir -p /opt/zimbra/zimbramon/mrtg/work/
+fi
+
+if [ -x "/opt/zimbra/libexec/zmfixperms" ]; then
+  /opt/zimbra/libexec/zmfixperms
 fi

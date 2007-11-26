@@ -14,7 +14,6 @@
 # ***** END LICENSE BLOCK *****
 # 
 
-H=`hostname -s`
-I=`hostname -i`
-
-#Symlinks
+if [ -x "/opt/zimbra/libexec/zmfixperms" ]; then
+  /opt/zimbra/libexec/zmfixperms
+fi

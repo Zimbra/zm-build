@@ -39,8 +39,6 @@ mta_pkg_spec_deb: $(MTA_DEST_ROOT)/DEBIAN/control
 $(MTA_DEST_ROOT)/DEBIAN: force
 	mkdir -p $@
 	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbramta.pre $@/preinst
-	echo "#!/bin/bash" > $@/postinst
-	echo "sh /opt/zimbra/libexec/zmfixperms" >> $@/postinst
 	cat $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbramta.post >> $@/postinst
 	chmod 555 $@/*
 

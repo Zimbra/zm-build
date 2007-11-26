@@ -39,8 +39,6 @@ apache_pkg_spec_deb: $(APACHE_DEST_ROOT)/DEBIAN/control
 $(APACHE_DEST_ROOT)/DEBIAN: force
 	mkdir -p $@
 	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbraapache.pre $@/preinst
-	echo "#!/bin/bash" > $@/postinst
-	echo "sh /opt/zimbra/libexec/zmfixperms" >> $@/postinst
 	cat $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbraapache.post >> $@/postinst
 	chmod 555 $@/*
 

@@ -38,8 +38,6 @@ logger_pkg_spec_deb: $(LOGGER_DEST_ROOT)/DEBIAN/control
 $(LOGGER_DEST_ROOT)/DEBIAN: force
 	mkdir -p $@
 	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbralogger.pre $@/preinst
-	echo "#!/bin/bash" > $@/postinst
-	echo "sh /opt/zimbra/libexec/zmfixperms" >> $@/postinst
 	cat $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbralogger.post >> $@/postinst
 	chmod 555 $@/*
 
