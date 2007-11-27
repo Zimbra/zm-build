@@ -199,7 +199,7 @@ sub upgrade {
 	my $curSchemaVersion;
 	my $curLoggerSchemaVersion;
 
-	if (isInstalled("zimbra-store")) {
+	if (main::isInstalled("zimbra-store")) {
 
     &verifyMysqlConfig;
 
@@ -208,7 +208,7 @@ sub upgrade {
 		$curSchemaVersion = Migrate::getSchemaVersion();
 	}
 
-	if (isInstalled("zimbra-logger") && -d "/opt/zimbra/logger/db/data/zimbra_logger/") {
+	if (main::isInstalled("zimbra-logger") && -d "/opt/zimbra/logger/db/data/zimbra_logger/") {
 		if (startLoggerSql()) { return 1; }
 
 		if ($startVersion eq "3.0.0_M2") {
@@ -308,7 +308,7 @@ sub upgrade {
     $needMysqlTableCheck=1;
 		}
 
-	if (isInstalled("zimbra-store")) {
+	if (main::isInstalled("zimbra-store")) {
 
     doMysqlTableCheck() if ($needMysqlTableCheck);
   
@@ -335,7 +335,7 @@ sub upgrade {
 		stopSql();
 	}
 
-	if (isInstalled ("zimbra-logger") && -d "/opt/zimbra/logger/db/data/zimbra_logger/") {
+	if (main::isInstalled ("zimbra-logger") && -d "/opt/zimbra/logger/db/data/zimbra_logger/") {
 		if ($curLoggerSchemaVersion < $hiLoggerVersion) {
 			main::progress("An upgrade of the logger schema is necessary from version $curLoggerSchemaVersion\n");
 		}
@@ -351,7 +351,7 @@ sub upgrade {
 
   #migrateLdap();
   # start ldap
-	if (isInstalled ("zimbra-ldap")) {
+	if (main::isInstalled ("zimbra-ldap")) {
     if (startLdap()) {return 1;} 
   }
 
@@ -374,7 +374,7 @@ sub upgrade {
 			last;
 		}
 	}
-	if (isInstalled ("zimbra-ldap")) {
+	if (main::isInstalled ("zimbra-ldap")) {
 		stopLdap();
 	}
 
@@ -441,7 +441,7 @@ sub upgradeBM3 {
 		main::runAsZimbra("$ZMPROV ms $hn zimbraMtaAuthHost $hn");
 	}
 	if (($startVersion eq "3.0.0_M2" || $startVersion eq "3.0.M1" || $startBuild <= 427) &&
-		isInstalled ("zimbra-ldap")) {
+		main::isInstalled ("zimbra-ldap")) {
 
 		main::progress ("Updating ldap GAL attributes\n");
 		main::runAsZimbra("$ZMPROV mcf +zimbraGalLdapAttrMap zimbraId=zimbraId +zimbraGalLdapAttrMap objectClass=objectClass +zimbraGalLdapAttrMap zimbraMailForwardingAddress=zimbraMailForwardingAddress");
@@ -657,13 +657,13 @@ sub upgradeBM3 {
 		main::runAsZimbra("$ZMPROV mcf -zimbraMtaRestriction reject_non_fqdn_hostname");
 	}
 	if ($startVersion eq "3.0.0_M2" || $startVersion eq "3.0.M1" || $startBuild <= 436) {
-		if (isInstalled("zimbra-store")) {
+		if (main::isInstalled("zimbra-store")) {
 			if (startSql()) { return 1; }
 			main::runAsZimbra("perl -I${scriptDir} ${scriptDir}/fixConversationCounts.pl");
 			stopSql();
 		}
 
-		if (isInstalled("zimbra-ldap")) {
+		if (main::isInstalled("zimbra-ldap")) {
 			main::progress ("Updating ldap domain admin attributes\n");
 			main::runAsZimbra("$ZMPROV mcf +zimbraDomainAdminModifiableAttr givenName");
 			main::runAsZimbra("$ZMPROV mcf +zimbraDomainAdminModifiableAttr zimbraMailForwardingAddress");
@@ -679,7 +679,7 @@ sub upgradeBM3 {
 sub upgradeBM4 {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
 	main::progress("Updating from 3.0.0_M4\n");
-	if (isInstalled("zimbra-ldap")) {
+	if (main::isInstalled("zimbra-ldap")) {
 		main::runAsZimbra("$ZMPROV mcf +zimbraDomainAdminModifiableAttr zimbraMailStatus");
 		if ($startVersion eq "3.0.0_M2" || $startVersion eq "3.0.M1" || $startVersion eq "3.0.0_M3" ||
 			$startBuild <= 41) {
@@ -690,7 +690,7 @@ sub upgradeBM4 {
 		}
 	}
 	if ($startVersion eq "3.0.0_M4" && $startBuild == 41) {
-		if (isInstalled("zimbra-store")) {
+		if (main::isInstalled("zimbra-store")) {
 			if (startSql()) { return 1; }
 			main::runAsZimbra("perl -I${scriptDir} ${scriptDir}/migrate20060120-Appointment.pl");
 			stopSql();
@@ -848,7 +848,7 @@ sub upgrade313GA {
 sub upgrade314GA {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
 	main::progress("Updating from 3.1.4_GA\n");
-	if (isInstalled ("zimbra-ldap")) {
+	if (main::isInstalled ("zimbra-ldap")) {
   my $a = <<EOF;
 # parse text/plain internally
 dn: cn=text/plain,cn=mime,cn=config,cn=zimbra
@@ -1002,7 +1002,7 @@ sub upgrade400RC1 {
 
   # Bug 9693
 	if ($startVersion eq "3.2.0_M1" || $startVersion eq "3.2.0_M2") {
-		if (isInstalled("zimbra-store")) {
+		if (main::isInstalled("zimbra-store")) {
 			if (startSql()) { return 1; }
 			main::runAsZimbra("sh ${scriptDir}/migrate20060807-WikiDigestFixup.sh");
 			stopSql();
@@ -1037,7 +1037,7 @@ sub upgrade402GA {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
 	main::progress("Updating from 4.0.2_GA\n");
 
-  if (isInstalled("zimbra-ldap")) {
+  if (main::isInstalled("zimbra-ldap")) {
     # bug 10401
 	  my @coses = `su - zimbra -c "$ZMPROV gac"`;
 	  foreach my $cos (@coses) {
@@ -1072,7 +1072,7 @@ sub upgrade403GA {
     }
   }
 
-  if (isInstalled("zimbra-ldap")) {
+  if (main::isInstalled("zimbra-ldap")) {
     # bug 11315
     my $remoteManagementUser = 
       main::getLdapConfigValue("zimbraRemoteManagementUser");
@@ -1127,7 +1127,7 @@ sub upgrade410BETA1 {
 sub upgrade450BETA1 {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
 	main::progress("Updating from 4.5.0_BETA1\n");
-  if (isInstalled("zimbra-ldap")) {
+  if (main::isInstalled("zimbra-ldap")) {
     main::runAsZimbra("$ZMPROV mc default zimbraPrefUseKeyboardShortcuts TRUE");
   }
 	return 0;
@@ -1142,7 +1142,7 @@ sub upgrade450BETA2 {
 sub upgrade450RC1 {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
 	main::progress("Updating from 4.5.0_RC1\n");
-  if (isInstalled("zimbra-ldap")) {
+  if (main::isInstalled("zimbra-ldap")) {
     # bug 12031
 	  my @coses = `su - zimbra -c "$ZMPROV gac"`;
 	  foreach my $cos (@coses) {
@@ -1175,11 +1175,11 @@ sub upgrade450RC1 {
 sub upgrade450RC2 {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
 	main::progress("Updating from 4.5.0_RC2\n");
-  if (isInstalled("zimbra-ldap")) {
+  if (main::isInstalled("zimbra-ldap")) {
     main::runAsZimbra("$ZMPROV mcf zimbraSmtpSendAddOriginatingIP TRUE");
   }
 
-  if (isInstalled("zimbra-logger")) {
+  if (main::isInstalled("zimbra-logger")) {
 	  main::setLocalConfig("stats_img_folder", "/opt/zimbra/logger/db/work");
   }
     
@@ -1194,7 +1194,7 @@ sub upgrade450GA {
 sub upgrade451GA {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
 	main::progress("Updating from 4.5.1_GA\n");
-  if (isInstalled("zimbra-store")) {
+  if (main::isInstalled("zimbra-store")) {
     my $tomcat_java_options = main::getLocalConfig("tomcat_java_options");
     $tomcat_java_options .= " -Djava.awt.headless=true"
       unless ($tomcat_java_options =~ /java\.awt\.headless/);
@@ -1211,7 +1211,7 @@ sub upgrade452GA {
 sub upgrade453GA {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
 	main::progress("Updating from 4.5.3_GA\n");
-  if (isInstalled("zimbra-store")) {
+  if (main::isInstalled("zimbra-store")) {
     # bug 14160
     my ($maxMessageSize, $zimbraMessageCacheSize, $systemMemorySize, $newcache);
     my $tomcatHeapPercent = main::getLocalConfig("tomcat_java_heap_memory_percent");
@@ -1232,7 +1232,7 @@ sub upgrade453GA {
 sub upgrade454GA {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
 	main::progress("Updating from 4.5.4_GA\n");
-  if (isInstalled("zimbra-ldap")) {
+  if (main::isInstalled("zimbra-ldap")) {
     main::setLocalConfig("ldap_log_level", "32768");
   }
 	return 0;
@@ -1250,7 +1250,7 @@ sub upgrade456GA {
   main::deleteLocalConfig("upgrade_dummy");
 
   # bug 17879
-  if (isInstalled("zimbra-store")) {
+  if (main::isInstalled("zimbra-store")) {
     updateMySQLcnf();
   }
 
@@ -1259,7 +1259,7 @@ sub upgrade456GA {
 sub upgrade457GA {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
 	main::progress("Updating from 4.5.7_GA\n");
-  if (isInstalled("zimbra-ldap")) {
+  if (main::isInstalled("zimbra-ldap")) {
     #bug 17887
     main::runAsZimbra("$ZMPROV mcf zimbraHttpNumThreads 100");
     main::runAsZimbra("$ZMPROV mcf zimbraHttpSSLNumThreads 50");
@@ -1270,12 +1270,12 @@ sub upgrade457GA {
     main::runAsZimbra("$ZMPROV mcf zimbraPop3NumThreads 100")
       if ($threads eq "20");
   }
-  if (isInstalled("zimbra-mta")) {
+  if (main::isInstalled("zimbra-mta")) {
     # migrate amavis data 
     migrateAmavisDB("2.5.2");
   }
 
-  if (isInstalled("zimbra-store")) {
+  if (main::isInstalled("zimbra-store")) {
     # 19749
     updateMySQLcnf();
 		if (startSql()) { return 1; }
@@ -1283,7 +1283,7 @@ sub upgrade457GA {
 		stopSql();
   }
 
-  if (isInstalled("zimbra-logger")) {
+  if (main::isInstalled("zimbra-logger")) {
     updateLoggerMySQLcnf();
   }
 	return 0;
@@ -1298,7 +1298,7 @@ sub upgrade458GA {
 sub upgrade459GA {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
 	main::progress("Updating from 4.5.9_GA\n");
-  if (isInstalled("zimbra-store")) {
+  if (main::isInstalled("zimbra-store")) {
     main::setLocalConfig("zimbra_mailbox_purgeable", "true");
   }
 	return 0;
@@ -1307,7 +1307,7 @@ sub upgrade459GA {
 sub upgrade4510GA {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
   main::progress("Updating from 4.5.10_GA\n");
-  if (isInstalled("zimbra-store")) {
+  if (main::isInstalled("zimbra-store")) {
     main::setLocalConfig("tomcat_thread_stack_size", "256k");
   }
   return 0;
@@ -1336,7 +1336,7 @@ sub upgrade500RC1 {
 sub upgrade500RC2 {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
 	main::progress("Updating from 5.0.0_RC2\n");
-  if (isInstalled("zimbra-store")) {
+  if (main::isInstalled("zimbra-store")) {
     main::setLocalConfig("zimbra_mailbox_purgeable", "true");
   }
 	return 0;
@@ -1538,37 +1538,10 @@ sub runLoggerSchemaUpgrade {
 sub getInstalledPackages {
 
 	foreach my $p (@packageList) {
-		if (isInstalled($p)) {
+		if (main::isInstalled($p)) {
 			$installedPackages{$p} = $p;
 		}
 	}
-
-}
-
-sub isInstalled {
-	my $pkg = shift;
-
-	my $pkgQuery;
-
-	my $good = 1;
-	if ($platform eq "DEBIAN3.1" || $platform eq "UBUNTU6") {
-		$pkgQuery = "dpkg -s $pkg | egrep '^Status: ' | grep 'not-installed'";
-	} elsif ($platform =~ /MACOSX/) {
-		my @l = sort glob ("/Library/Receipts/${pkg}*");
-		if ( $#l < 0 ) { return 0; }
-		$pkgQuery = "test -d $l[$#l]";
-		$good = 0;
- } elsif ($platform =~ /RPL/) {
-    $pkgQuery = "conary q $pkg";
-    $good = 0;
-	} else {
-		$pkgQuery = "rpm -q $pkg";
-		$good = 0;
-	}
-
-	my $rc = 0xffff & system ("$pkgQuery > /dev/null 2>&1");
-	$rc >>= 8;
-	return ($rc == $good);
 
 }
 
@@ -1768,7 +1741,7 @@ sub doBackupRestoreVersionUpdate($) {
 }
 
 sub indexLdap {
-	if (isInstalled ("zimbra-ldap")) {
+	if (main::isInstalled ("zimbra-ldap")) {
 		stopLdap();
 		main::runAsZimbra("/opt/zimbra/sleepycat/bin/db_recover -h /opt/zimbra/openldap-data");
 		main::runAsZimbra ("/opt/zimbra/openldap/sbin/slapindex -b '' -q -f /opt/zimbra/conf/slapd.conf");
@@ -1778,7 +1751,7 @@ sub indexLdap {
 }
 
 sub migrateLdap {
-	if (isInstalled ("zimbra-ldap")) {
+	if (main::isInstalled ("zimbra-ldap")) {
 		if (-f "/opt/zimbra/openldap-data/ldap.bak") {
 			main::progress("Migrating ldap data\n");
 			if (-d "/opt/zimbra/openldap-data.prev") {
