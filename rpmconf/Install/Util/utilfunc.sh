@@ -963,7 +963,9 @@ saveExistingConfig() {
   done
   # yes, it needs massaging to be fed back in...
   runAsZimbra "zmlocalconfig -s | sed -e \"s/ = \(.*\)/=\'\1\'/\" > $SAVEDIR/config.save"
-  cp -f /opt/zimbra/java/jre/lib/security/cacerts $SAVEDIR
+  if [ -f "/opt/zimbra/java/jre/lib/security/cacerts" ]; then
+    cp -f /opt/zimbra/java/jre/lib/security/cacerts $SAVEDIR
+  fi
   if [ -f "/opt/zimbra/tomcat/conf/keystore" ]; then
     cp -f /opt/zimbra/tomcat/conf/keystore $SAVEDIR
   elif [ -f "/opt/zimbra/jetty/etc/keystore" ]; then
@@ -1002,7 +1004,10 @@ saveExistingConfig() {
     runAsZimbra "zmschedulebackup -s > $SAVEDIR/backup.save"
   fi
 
-  rm -f /opt/zimbra/.enable_replica
+  if [ -f "/opt/zimbra/.enable_replica" ]; then
+    rm -f /opt/zimbra/.enable_replica
+  fi 
+
   if [ -f /opt/zimbra/conf/slapd.conf ]; then
     egrep -q '^overlay syncprov' /opt/zimbra/conf/slapd.conf > /dev/null
     if [ $? = 0 ]; then
@@ -1028,15 +1033,23 @@ removeExistingInstall() {
 
     isInstalled "zimbra-ldap"
     if [ x$PKGINSTALLED != "x" ]; then
-      echo ""
-      echo "Backing up ldap"
-      echo ""
       if [ x"$LD_LIBRARY_PATH" != x ]; then
         LD_LIBRARY_PATH=/opt/zimbra/sleepycat/lib:/opt/zimbra/openssl/lib:/opt/zimbra/cyrus-sasl/lib:/opt/zimbra/openldap/lib:/opt/zimbra/mysql/lib:$LD_LIBRARY_PATH
       fi
-      if [ -f "/opt/zimbra/openldap/sbin/slapcat" ]; then
+      if [ -f "/opt/zimbra/openldap/sbin/slapcat" -a x"$UNINSTALL" != "xyes" ]; then
+        echo ""
+        echo -n "Backing up the ldap database..."
+        tmpfile=`mktemp -t slapcat.XXXXXX 2> /dev/null` || (echo "Failed to create tmpfile" && exit 1)
         /opt/zimbra/openldap/sbin/slapcat -f /opt/zimbra/conf/slapd.conf \
-         -b '' -l /opt/zimbra/openldap-data/ldap.bak
+         -b '' -l /opt/zimbra/openldap-data/ldap.bak > $tmpfile 2>&1
+        if [ $? != 0 ]; then
+          echo "failed."
+          echo 
+          cat $tmpfile
+          exit
+        else
+          echo "done."
+        fi
         chmod 640 /opt/zimbra/openldap-data/ldap.bak
       fi
     fi
