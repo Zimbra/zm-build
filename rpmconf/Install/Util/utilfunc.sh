@@ -601,6 +601,12 @@ verifyLicenseAvailable() {
   if [ x"$licensedUsers" = "x" ]; then
     licensedUsers=0
   fi
+
+  # return immediately if we have an unlimited license
+  if [ "$licensedUsers" = "-1" ]; then
+    return
+  fi
+
   # Check for licensed user count and warn if necessary
   numCurrentUsers=`su - zimbra -c "zmprov gaa 2> /dev/null | wc -l"`;
   numUsersRC=$?
@@ -613,9 +619,7 @@ verifyLicenseAvailable() {
     echo "Current Users=$numCurrentUsers Licensed Users=$licensedUsers"
   fi
 
-  if [ "$licensedUsers" = "-1" ]; then
-    return
-  elif [ $numCurrentUsers -lt 0 ]; then
+  if [ $numCurrentUsers -lt 0 ]; then
     echo "Warning: Could not determine the number of users on this system."
     echo "If you exceed the number of licensed users ($licensedUsers) then you will"
     echo "not be able to create new users."
