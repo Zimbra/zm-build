@@ -871,10 +871,10 @@ sub setDefaults {
     progress "setting defaults for zimbra-ldap.\n" if $options{d};
     $config{DOCREATEDOMAIN} = "yes" if $newinstall;
     $config{LDAPROOTPASS} = genRandomPass();
-    $config{LDAPADMINPASS} = genRandomPass();
-    $config{LDAPREPPASS} = genRandomPass();
-    $config{LDAPPOSTPASS} = genRandomPass();
-    $config{LDAPAMAVISPASS} = genRandomPass();
+    $config{LDAPADMINPASS} = $config{LDAPROOTPASS};
+    $config{LDAPREPPASS} =  $config{LDAPADMINPASS};
+    $config{LDAPPOSTPASS} = $config{LDAPADMINPASS};
+    $config{LDAPAMAVISPASS} =  $config{LDAPADMINPASS};
     $ldapRepChanged = 1;
     $ldapPostChanged = 1;
     $ldapAmavisChanged = 1;
@@ -1160,19 +1160,19 @@ sub setDefaultsFromLocalConfig {
 
     $config{LDAPREPPASS} = getLocalConfig ("ldap_replication_password");
     if ($config{LDAPREPPASS} eq "") {
-      $config{LDAPREPPASS} = genRandomPass();
+      $config{LDAPREPPASS} = $config{LDAPADMINPASS};
       $ldapRepChanged = 1;
     }
 
     $config{LDAPPOSTPASS} = getLocalConfig ("ldap_postfix_password");
     if ($config{LDAPPOSTPASS} eq "") {
-      $config{LDAPPOSTPASS} = genRandomPass();
+      $config{LDAPPOSTPASS} = $config{LDAPADMINPASS};
       $ldapPostChanged = 1;
     }
 
     $config{LDAPAMAVISPASS} = getLocalConfig ("ldap_amavis_password");
     if ($config{LDAPAMAVISPASS} eq "") {
-      $config{LDAPAMAVISPASS} = genRandomPass();
+      $config{LDAPAMAVISPASS} = $config{LDAPADMINPASS};
       $ldapAmavisChanged = 1;
     }
   }
@@ -1550,7 +1550,7 @@ sub setLdapPostPass {
     if (length($new) >= 6) {
       if ($config{LDAPPOSTPASS} ne $new) {
         $config{LDAPPOSTPASS} = $new;
-        $ldapRepChanged = 1;
+        $ldapPostChanged = 1;
       }
       return;
     } else {
@@ -1567,7 +1567,7 @@ sub setLdapAmavisPass {
     if (length($new) >= 6) {
       if ($config{LDAPAMAVISPASS} ne $new) {
         $config{LDAPAMAVISPASS} = $new;
-        $ldapRepChanged = 1;
+        $ldapAmavisChanged = 1;
       }
       return;
     } else {
