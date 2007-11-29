@@ -38,10 +38,6 @@ ifeq ($(BUILD_PLATFORM), RHEL4_64)
 include $(DEFS_DIR)/RHEL4_64_components.def
 endif
 
-ifeq ($(BUILD_PLATFORM), MACOSXx86)
-include $(DEFS_DIR)/MACOSXx86_components.def
-endif
-
 # PACKAGE TARGETS
 
 all: packages zcs-$(RELEASE).$(BUNDLE_EXT)
