@@ -26,6 +26,10 @@ include $(DEFS_DIR)/destination.def
 
 include $(DEFS_DIR)/components.def
 
+ifeq ($(BUILD_PLATFORM), SLES10_64)
+include $(DEFS_DIR)/SLES10_64_components.def
+endif
+
 ifeq ($(BUILD_PLATFORM), RHEL5_64)
 include $(DEFS_DIR)/RHEL5_64_components.def
 endif
@@ -34,7 +38,7 @@ ifeq ($(BUILD_PLATFORM), RHEL4_64)
 include $(DEFS_DIR)/RHEL4_64_components.def
 endif
 
-ifeq ($(BUILD_PLATFORM), RHEL4_64)
+ifeq ($(BUILD_PLATFORM), MACOSXx86)
 include $(DEFS_DIR)/MACOSXx86_components.def
 endif
 
@@ -54,6 +58,10 @@ endif
 
 ifeq ($(BUILD_PLATFORM), RHEL4_64)
 include $(DEFS_DIR)/RHEL4_64_targets.def
+endif
+
+ifeq ($(BUILD_PLATFORM), SLES10_64)
+include $(DEFS_DIR)/SLES10_64_targets.def
 endif
 
 include $(DEFS_DIR)/ldaptargets.def
