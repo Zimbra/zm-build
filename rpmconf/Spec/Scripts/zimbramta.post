@@ -17,7 +17,7 @@
 #Symlinks
 
 if [ -d "/opt/zimbra/amavisd/tmp" ]; then
-  #umount -f /opt/zimbra/amavisd/tmp
+  umount -f /opt/zimbra/amavisd/tmp
 fi
 
 rm -f /opt/zimbra/amavisd
