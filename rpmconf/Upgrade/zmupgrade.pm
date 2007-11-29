@@ -31,7 +31,7 @@ chomp $rundir;
 my $scriptDir = "/opt/zimbra/libexec/scripts";
 
 my $lowVersion = 18;
-my $hiVersion = 48;
+my $hiVersion = 49;
 my $hiLoggerVersion = 5;
 
 # Variables for the combo schema updater
@@ -75,7 +75,8 @@ my %updateScripts = (
   '44' => "migrate20070725-CreateRevisionTable.pl",     # 5.0.0_BETA3
   '45' => "migrate20070726-ImapDataSource.pl",          # 5.0.0_BETA3
   '46' => "migrate20070921-ImapDataSourceUidValidity.pl", # 5.0.0_RC1
-  '47' => "migrate20070928-ScheduledTaskIndex.pl"      # 5.0.0_RC2
+  '47' => "migrate20070928-ScheduledTaskIndex.pl",     # 5.0.0_RC2
+  '48' => "migrate20071128-AccountId.pl"               # 5.0.0_RC3
 );
 
 my %loggerUpdateScripts = (
