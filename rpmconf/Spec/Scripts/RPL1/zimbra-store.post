@@ -25,7 +25,7 @@ mv /opt/zimbra/db/db.sql /opt/zimbra/db/db.sql.in
 sed -e "/server.hostname/ s/local/$H/" /opt/zimbra/db/db.sql.in > /opt/zimbra/db/db.sql
 
 rm -f /opt/zimbra/perdition
-ln -s /opt/zimbra/perdition-1.17.1.1z /opt/zimbra/perdition
+ln -s /opt/zimbra/perdition-1.17.1.2z /opt/zimbra/perdition
 mkdir -p /opt/zimbra/perdition/var/run
 chown -R zimbra:zimbra /opt/zimbra/perdition/var
 
