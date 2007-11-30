@@ -1922,6 +1922,8 @@ sub configurePackage {
     configureCluster($package);
   } elsif ($package eq "zimbra-proxy") {
     configureProxy($package);
+  } elsif ($package eq "ldap-users") {
+    configureLdapUsers($package);
   }
 }
 
@@ -1992,6 +1994,16 @@ sub genPackageMenu {
   return \%lm;
 }
 
+sub genLUPackageMenu {
+  my $package = shift;
+  my %lm = ();
+  $lm{promptitem} = { 
+    "selector" => "r", 
+    "prompt" => "Select, or 'r' for previous menu ", 
+    "action" => "return"};
+  $lm{default} = "r";
+  return \%lm;
+}
 
 sub isNetwork {
   return((-f "/opt/zimbra/lib/ext/zimbra-license/zimbra-license.jar") ? 1 : 0);
@@ -2023,6 +2035,8 @@ sub createPackageMenu {
     return createClusterMenu($package);
   } elsif ($package eq "zimbra-proxy") {
     return createProxyMenu($package)
+  } elsif ($package eq "ldap-users") {
+    return createLdapUsersMenu($package)
   }
 }
 sub createLdapMenu {
@@ -2069,6 +2083,17 @@ sub createLdapMenu {
       "callback" => \&setLdapUserDN,
       };
     $i++;
+    if ($config{LDAPREPPASS} ne "") {
+      $config{LDAPREPPASSSET} = "set";
+    } else {
+      $config{LDAPREPPASSSET} = "UNSET";
+    }
+    $$lm{menuitems}{$i} = {
+      "prompt" => "Ldap Replication password:",
+      "var" => \$config{LDAPREPPASSSET},
+      "callback" => \&setLdapRepPass
+      };
+    $i++;
 
   }
   return $lm;
@@ -2078,6 +2103,49 @@ sub configureLdap {
   my $package = shift;
 
   my $lm = createLdapMenu($package);
+
+  displayMenu($lm);
+}
+
+sub createLdapUsersMenu {
+  my $package = shift;
+  my $lm = genLUPackageMenu($package);
+
+  $$lm{title} = "Ldap Users configuration";
+
+  $$lm{createsub} = \&createLdapUsersMenu;
+  $$lm{createarg} = $package;
+
+  my $i = 1;
+  if ($config{LDAPPOSTPASS} ne "") {
+    $config{LDAPPOSTPASSSET} = "set";
+  } else {
+    $config{LDAPPOSTPASSSET} = "UNSET";
+  }
+  $$lm{menuitems}{$i} = {
+    "prompt" => "Ldap Postfix password:",
+    "var" => \$config{LDAPPOSTPASSSET},
+    "callback" => \&setLdapPostPass
+    };
+  $i++;
+  if ($config{LDAPAMAVISPASS} ne "") {
+    $config{LDAPAMAVISPASSSET} = "set";
+  } else {
+    $config{LDAPAMAVISPASSSET} = "UNSET";
+  }
+  $$lm{menuitems}{$i} = {
+    "prompt" => "Ldap Amavis password:",
+    "var" => \$config{LDAPAMAVISPASSSET},
+    "callback" => \&setLdapAmavisPass
+    };
+  $i++;
+  return $lm;
+}
+
+sub configureLdapUsers {
+  my $package = shift;
+
+  my $lm = createLdapUsersMenu($package);
 
   displayMenu($lm);
 }
@@ -2712,45 +2780,22 @@ sub createMainMenu {
     "callback" => \&setLdapAdminPass
     };
   $i++;
-  if ($config{LDAPREPPASS} ne "") {
-    $config{LDAPREPPASSSET} = "set";
-  } else {
-    $config{LDAPREPPASSSET} = "UNSET";
-  }
-  $mm{menuitems}{$i} = {
-    "prompt" => "Ldap Replication password:",
-    "var" => \$config{LDAPREPPASSSET},
-    "callback" => \&setLdapRepPass
-    };
-  $i++;
-  if ($config{LDAPPOSTPASS} ne "") {
-    $config{LDAPPOSTPASSSET} = "set";
-  } else {
-    $config{LDAPPOSTPASSSET} = "UNSET";
-  }
-  $mm{menuitems}{$i} = {
-    "prompt" => "Ldap Postfix password:",
-    "var" => \$config{LDAPPOSTPASSSET},
-    "callback" => \&setLdapPostPass
-    };
-  $i++;
-  if ($config{LDAPAMAVISPASS} ne "") {
-    $config{LDAPAMAVISPASSSET} = "set";
-  } else {
-    $config{LDAPAMAVISPASSSET} = "UNSET";
-  }
-  $mm{menuitems}{$i} = {
-    "prompt" => "Ldap Amavis password:",
-    "var" => \$config{LDAPAMAVISPASSSET},
-    "callback" => \&setLdapAmavisPass
-    };
-  $i++;
   $mm{menuitems}{$i} = { 
     "prompt" => "TimeZone:", 
     "var" => \$config{zimbraPrefTimeZoneId},
     "callback" => \&setTimeZone
   };
   $i++;
+  if (defined($installedPackages{"zimbra-ldap"}) || defined($installedPackages{"zimbra-mta"})) {
+    my $submenu = createPackageMenu("ldap-users");
+    $config{LDAPUSERS}="Enabled";
+    $mm{menuitems}{$i} = {
+          "prompt" => "ldap-users:", 
+          "var" => \$config{LDAPUSERS},
+          "submenu" => $submenu,
+    };
+    $i++;
+  }
   foreach my $package (@packageList) {
     if ($package eq "zimbra-core") {next;}
     if ($package eq "zimbra-apache") {next;}
