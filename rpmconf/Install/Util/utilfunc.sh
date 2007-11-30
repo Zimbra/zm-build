@@ -270,7 +270,13 @@ checkUbuntuRelease() {
   if [ -f "/etc/lsb-release" ]; then
     . /etc/lsb-release
   fi
-  if [ x"$DISTRIB_RELEASE" != "x6.06" -a x"$DEFAULTFILE" = "x" ]; then
+
+  if [ x"$DEFAULTFILE" != "x" ]; then
+    echo "Automated install detected...continuing."
+    return
+  fi
+
+  if [ x"$DISTRIB_RELEASE" != "x6.06" ]; then
     echo "WARNING: ZCS is currently only supported on Ubuntu Server 6.06 LTS."
     echo "You are attempting to install on $DISTRIB_DESCRIPTION which may not work."
     echo "Support will not be provided if you choose to continue."
@@ -287,8 +293,6 @@ checkUbuntuRelease() {
         break
       fi
     done
-  else 
-    echo "Automated install detected...continuing."
   fi
 }
 
@@ -817,7 +821,7 @@ EOF
   else 
     # REMOVE = yes for non installed systems, to clean up /opt/zimbra
     DETECTDIRS="db bin/zmcontrol redolog index store conf/localconfig.xml openldap-data"
-    for i in $DETECTFILES; do
+    for i in $DETECTDIRS; do
       if [ -e "/opt/zimbra/$i" ]; then
         INSTALLED="yes"
       fi
