@@ -15,7 +15,7 @@
 # 
 
 rm -f /opt/zimbra/openldap
-ln -s /opt/zimbra/openldap-2.3.39.5z /opt/zimbra/openldap
+ln -s /opt/zimbra/openldap-2.3.39.6z /opt/zimbra/openldap
 ln -s /opt/zimbra/tcmalloc-0.93 /opt/zimbra/tcmalloc
 
 mkdir -p /opt/zimbra/openldap-data/db

@@ -101,7 +101,7 @@ class ZimbraBuildRecipe(PackageRecipe):
         r.Environment('PERL5LIB', '/opt/zimbra/zimbramon/lib:/opt/zimbra/zimbramon/lib/i386-linux-thread-multi')
         # glob not supported until conary 1.0.15
         #r.SharedLibrary(subtrees='/opt/zimbra/cyrus-sasl.*/%(lib)s')
-        r.SharedLibrary(subtrees='/opt/zimbra/cyrus-sasl-2.1.22.3/%(lib)s')
+        r.SharedLibrary(subtrees='/opt/zimbra/cyrus-sasl-2.1.22.3z/%(lib)s')
         # add a runtime requirements on sudo
         for x in ('postfix', 'qshape', 'postconf', 'tomcat', 'ldap'):
             r.Requires('sudo:runtime', '/opt/zimbra/bin/' + x)

@@ -1700,6 +1700,9 @@ sub upgrade500RC3 {
     }
     $result = $ldap->unbind;
   }
+  if (main::isInstalled("zimbra-mta")) {
+    movePostfixQueue("2.4.3.3","2.4.3.3z");
+  }
 	return 0;
 }
 
