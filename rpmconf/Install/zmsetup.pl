@@ -2917,6 +2917,13 @@ sub verifyLdap {
     return 1;
   }
 
+  if ($ldap_secury ne "s") {
+    my $result = $ldap->start_tls(verify=>'none');
+    if ($result->code()) {
+      detail("Unable to startTLS: $!\n");
+      return 1;
+    }
+  }
   my $result = $ldap->bind("$config{zimbra_ldap_userdn}", password => $config{LDAPADMINPASS});
   if ($result->code()) {
     detail ("Unable to bind to $ldap_url with password $config{LDAPADMINPASS}: $!");
