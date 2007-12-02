@@ -1692,10 +1692,12 @@ sub upgrade500RC3 {
       main::progress("Unable to contact $ldap_master_url: $!\n"); 
       return 1;
     }
-    my $result = $ldap->start_tls(verify=>'none');
-    if ($result->code()) {
-      main::progress("Unable to startTLS: $!\n"); 
-      return 1;
+    if ($ldap_master_url !~ /^ldaps/i) {
+      my $result = $ldap->start_tls(verify=>'none');
+      if ($result->code()) {
+        main::progress("Unable to startTLS: $!\n"); 
+        return 1;
+      }
     }
     my $dn = 'cn=mime,cn=config,cn=zimbra';
     $result = $ldap->bind("uid=zimbra,cn=admins,cn=zimbra", password => $ldap_pass);
