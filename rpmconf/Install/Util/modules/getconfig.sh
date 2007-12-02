@@ -65,6 +65,7 @@ getConfigOptions() {
 				askNonBlank "Enter the root ldap password for $LDAPHOST:" \
 					"$LDAPROOTPW"
 				LDAPROOTPW=$response
+				askNonBlank "Enter the zimbra admin ldap password for $LDAPHOST:" \
 				LDAPZIMBRAPW=$response
 			fi
 

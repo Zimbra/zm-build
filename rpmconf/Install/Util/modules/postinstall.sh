@@ -60,6 +60,9 @@ postInstallConfig() {
 			echo -n "Setting the ldap passwords..."
 			runAsZimbra "zmlocalconfig -f -e ldap_root_password=$LDAPROOTPW"
 			runAsZimbra "zmlocalconfig -f -e zimbra_ldap_password=$LDAPZIMBRAPW"
+			runAsZimbra "zmlocalconfig -f -e ldap_postfix_password=$LDAPPOSTPW"
+			runAsZimbra "zmlocalconfig -f -e ldap_replication_password=$LDAPREPPW"
+			runAsZimbra "zmlocalconfig -f -e ldap_amavis_password=$LDAPAMAVISPW"
 			echo "done"
 		fi
 

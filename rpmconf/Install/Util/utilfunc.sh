@@ -67,6 +67,9 @@ INSTALL_PACKAGES="$INSTALL_PACKAGES"
 STARTSERVERS=$STARTSERVERS
 LDAPROOTPW=$LDAPROOTPW
 LDAPZIMBRAPW=$LDAPZIMBRAPW
+LDAPPOSTPW=$LDAPPOSTPW
+LDAPREPPW=$LDAPREPPW
+LDAPAMAVISPW=$LDAPAMAVISPW
 CREATEDOMAIN=$CREATEDOMAIN
 CREATEADMIN=$CREATEADMIN
 CREATEADMINPASS=$CREATEADMINPASS
@@ -860,6 +863,9 @@ setDefaultsFromExistingConfig() {
   SMTPNOTIFY=${smtp_notify:-0}
   LDAPROOTPW=${ldap_root_password}
   LDAPZIMBRAPW=${zimbra_ldap_password}
+  LDAPPOSTPW=${ldap_postfix_password}
+  LDAPREPPW=${ldap_replication_password}
+  LDAPAMAVISPW=${ldap_amavis_password}
 
   echo "   HOSTNAME=${zimbra_server_hostname}"
   echo "   LDAPHOST=${ldap_host}"
@@ -871,6 +877,9 @@ setDefaultsFromExistingConfig() {
   echo "   SMTPNOTIFY=${smtp_notify:-0}"
   echo "   LDAPROOTPW=${ldap_root_password}"
   echo "   LDAPZIMBRAPW=${zimbra_ldap_password}"
+  echo "   LDAPPOSTPW=${ldap_postfix_password}"
+  echo "   LDAPREPPW=${ldap_replication_password}"
+  echo "   LDAPAMAVISPW=${ldap_amavis_password}"
 
 }
 
