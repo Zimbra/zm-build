@@ -2917,7 +2917,7 @@ sub verifyLdap {
     return 1;
   }
 
-  if ($ldap_secury ne "s") {
+  if ($ldap_secure ne "s") {
     my $result = $ldap->start_tls(verify=>'none');
     if ($result->code()) {
       detail("Unable to startTLS: $!\n");
