@@ -1700,7 +1700,7 @@ sub upgrade500RC3 {
       }
     }
     my $dn = 'cn=mime,cn=config,cn=zimbra';
-    $result = $ldap->bind("uid=zimbra,cn=admins,cn=zimbra", password => $ldap_pass);
+    my $result = $ldap->bind("uid=zimbra,cn=admins,cn=zimbra", password => $ldap_pass);
     unless($result->code()) {
       $result = DeleteLdapTree($ldap,$dn);
       main::progress($result->code() ? "Failed to delete $dn: ".$result->error()."\n" : "Deleted $dn\n");
