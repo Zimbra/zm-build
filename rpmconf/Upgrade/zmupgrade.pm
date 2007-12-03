@@ -1925,7 +1925,7 @@ sub movePostfixQueue {
   my ($var,$val);
   foreach $var qw(version command_directory daemon_directory mailq_path manpage_directory newaliases_path queue_directory sendmail_path) {
     $val = main::getLocalConfig("postfix_${var}");
-    if ($val == $toVersion) {
+    if ($val eq $toVersion) {
       next;
     }
     if ($val =~ m/postfix-$toVersion/) {
