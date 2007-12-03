@@ -1928,6 +1928,9 @@ sub movePostfixQueue {
     if ($val == $toVersion) {
       next;
     }
+    if ($val =~ m/postfix-$toVersion/) {
+      next;
+    }
     $val =~ s/$fromVersion/$toVersion/;
     main::setLocalConfig("postfix_${var}", "$val"); 
   }
