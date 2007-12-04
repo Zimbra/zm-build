@@ -128,6 +128,7 @@ my $ldapRepChanged = 0;
 my $ldapPostChanged = 0;
 my $ldapAmavisChanged = 0;
 my $ldapReplica = 0;
+my $starttls = 0;
 
 my @interfaces = ();
 
@@ -2918,11 +2919,14 @@ sub verifyLdap {
   }
 
   if ($ldap_secure ne "s") {
+    $starttls = 1;
     my $result = $ldap->start_tls(verify=>'none');
     if ($result->code()) {
       detail("Unable to startTLS: $!\n");
       return 1;
     }
+  } else {
+    $starttls = 0;
   }
   my $result = $ldap->bind("$config{zimbra_ldap_userdn}", password => $config{LDAPADMINPASS});
   if ($result->code()) {
@@ -2932,6 +2936,7 @@ sub verifyLdap {
     $ldap->unbind;
     detail ("Verfied ldap running at $ldap_url\n");
     setLocalConfig ("ldap_url", $ldap_url);
+    setLocalConfig ("ldap_starttls_supported", $starttls);
     setLocalConfig ("zimbra_ldap_password", $config{LDAPADMINPASS});
     return 0;
   }
@@ -3039,12 +3044,19 @@ sub configLCValues {
   if ($config{LDAPPORT} == 636) {
     setLocalConfig ("ldap_master_url", "ldaps://$config{LDAPHOST}:$config{LDAPPORT}");
     setLocalConfig ("ldap_url", "ldaps://$config{LDAPHOST}:$config{LDAPPORT}");
+    setLocalConfig ("ldap_starttls_supported", 0);
   } else {
     setLocalConfig ("ldap_master_url", "ldap://$config{LDAPHOST}:$config{LDAPPORT}");
     if ($config{ldap_url} eq "") { 
       setLocalConfig ("ldap_url", "ldap://$config{LDAPHOST}:$config{LDAPPORT}");
+      setLocalConfig ("ldap_starttls_supported", 1);
     } else {
       setLocalConfig ("ldap_url", "$config{ldap_url}");
+      if ($config{ldap_url} !~ /^ldaps/i) {
+        setLocalConfig ("ldap_starttls_supported", 1);
+      } else {
+        setLocalConfig ("ldap_starttls_supported", 0);
+      }
     }
   }
 
