@@ -3105,7 +3105,7 @@ sub configCASetup {
 
   if ($config{LDAPHOST} ne $config{HOSTNAME}) {
     # fetch it from ldap if ldap has been configed
-    progress("Updating ldap_root_password and zimbra_ldap_passwd...");
+    progress("Updating ldap_root_password and zimbra_ldap_password...");
     setLocalConfig ("ldap_root_password", $config{LDAPROOTPASS});
     setLocalConfig ("zimbra_ldap_password", $config{LDAPADMINPASS});
     progress ( "done.\n" );
@@ -3183,22 +3183,22 @@ sub configSetupLdap {
       }
       if ($ldapAdminPassChanged) {
          progress ( "Setting ldap admin password..." );
-         runAsZimbra ("/opt/zimbra/bin/zmldappasswd $config{LDAPADMINPASS}");
+         setLocalConfig ("zimbra_ldap_password", $config{LDAPADMINPASS});
          progress ( "done.\n" );
       }
       if ($ldapRepChanged == 1) {
          progress ( "Setting replication password..." );
-         runAsZimbra ("/opt/zimbra/bin/zmldappasswd -l $config{LDAPREPPASS}");
+         setLocalConfig ("ldap_replication_password", "$config{LDAPREPPASS}");
          progress ( "done.\n" );
       }
       if ($ldapPostChanged == 1) {
          progress ( "Setting Postfix password..." );
-         runAsZimbra ("/opt/zimbra/bin/zmldappasswd -p $config{LDAPPOSTPASS}");
+         setLocalConfig ("ldap_postfix_password", "$config{LDAPPOSTPASS}");
          progress ( "done.\n" );
       }
       if ($ldapAmavisChanged == 1) {
          progress ( "Setting amavis password..." );
-         runAsZimbra ("/opt/zimbra/bin/zmldappasswd -a $config{LDAPAMAVISPASS}");
+         setLocalConfig ("ldap_amavis_password", "$config{LDAPAMAVISPASS}");
          progress ( "done.\n" );
       }
     } else {
