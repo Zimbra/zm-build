@@ -3151,9 +3151,10 @@ sub configSetupLdap {
   } elsif (isEnabled("zimbra-ldap")) {
     # enable replica for both new and upgrade installs if we are adding ldap
     if ($config{LDAPHOST} ne $config{HOSTNAME} ||  -f "/opt/zimbra/.enable_replica") {
-      progress("Updating ldap_root_password and zimbra_ldap_passwd...");
+      progress("Updating ldap_root_password and zimbra_ldap_password...");
       setLocalConfig ("ldap_root_password", $config{LDAPROOTPASS});
       setLocalConfig ("zimbra_ldap_password", $config{LDAPADMINPASS});
+      setLocalConfig ("ldap_replication_password", "$config{LDAPREPPASS}");
       progress("done.\n");
       progress ( "Enabling ldap replication..." );
       my $rc = runAsZimbra ("/opt/zimbra/libexec/zmldapenablereplica");
