@@ -1938,6 +1938,7 @@ sub movePostfixQueue {
       next;
     }
     $val =~ s/$fromVersion/$toVersion/;
+    $val = $toVersion if ($var eq "version");
     main::setLocalConfig("postfix_${var}", "$val"); 
   }
 
@@ -1955,7 +1956,7 @@ sub movePostfixQueue {
 		}
 	}
 
-	`/opt/zimbra/bin/zmfixperms.sh`;
+	main::runAsRoot("/opt/zimbra/libexec/zmfixperms");
 }
 
 sub updateLoggerMySQLcnf {
