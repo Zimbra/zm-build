@@ -742,7 +742,7 @@ sub setLdapDefaults {
     $config{zimbraReverseProxyDomainNameQuery} = $query
       if ( $config{zimbraReverseProxyDomainNameQuery} eq "");
     $config{zimbraReverseProxyDomainNameAttribute} = getLdapConfigValue("zimbraReverseProxyDomainNameAttribute");
-    $config{zimbraReverseProxyDomainNameAttribute} = zimbraDomainName
+    $config{zimbraReverseProxyDomainNameAttribute} = "zimbraDomainName";
       if ( $config{zimbraReverseProxyDomainNameAttribute} eq "");
   }
  
