@@ -1722,6 +1722,10 @@ sub upgrade500GA {
     Migrate::log("Executing ${scriptDir}/migrate20071204-deleteOldLDAPUsers.pl"); 
     main::runAsZimbra("perl -I${scriptDir} ${scriptDir}/migrate20071204-deleteOldLDAPUsers.pl");
   }
+
+  if (main::isInstalled("zimbra-proxy")) {
+		main::runAsZimbra("$ZMPROV mcf zimbraMemcachedBindPort 11211");
+  }
 	return 0;
 }
 
