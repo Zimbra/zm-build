@@ -1716,6 +1716,12 @@ sub upgrade500RC3 {
 sub upgrade500GA {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
 	main::progress("Updating from 5.0.0_GA\n");
+  if (main::isInstalled("zimbra-ldap")) {
+    startLdap();
+    #bug 19466
+    Migrate::log("Executing ${scriptDir}/migrate20071204-deleteOldLDAPUsers.pl"); 
+    main::runAsZimbra("perl -I${scriptDir} ${scriptDir}/migrate20071204-deleteOldLDAPUsers.pl");
+  }
 	return 0;
 }
 
