@@ -31,7 +31,7 @@ chomp $rundir;
 my $scriptDir = "/opt/zimbra/libexec/scripts";
 
 my $lowVersion = 18;
-my $hiVersion = 49;
+my $hiVersion = 50;
 my $hiLoggerVersion = 5;
 
 # Variables for the combo schema updater
@@ -76,7 +76,8 @@ my %updateScripts = (
   '45' => "migrate20070726-ImapDataSource.pl",          # 5.0.0_BETA3
   '46' => "migrate20070921-ImapDataSourceUidValidity.pl", # 5.0.0_RC1
   '47' => "migrate20070928-ScheduledTaskIndex.pl",     # 5.0.0_RC2
-  '48' => "migrate20071128-AccountId.pl"               # 5.0.0_RC3
+  '48' => "migrate20071128-AccountId.pl",              # 5.0.0_RC3
+  '49' => "migrate20071206-WidenSizeColumns.pl"        # 5.0.0_GA
 );
 
 my %loggerUpdateScripts = (
@@ -1725,6 +1726,10 @@ sub upgrade500GA {
 
   if (main::isInstalled("zimbra-proxy")) {
 		main::runAsZimbra("$ZMPROV mcf zimbraMemcachedBindPort 11211");
+  }
+
+  if (main::isInstalled("zimbra-store")) {
+    main::setLocalConfig("localized_client_msgs_directory", '\${mailboxd_directory}/webapps/zimbra/WEB-INF/classes/messages');
   }
 	return 0;
 }
