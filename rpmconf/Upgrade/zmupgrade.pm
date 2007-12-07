@@ -186,8 +186,8 @@ my @versionOrder = (
   "5.0.0_GA",
 );
 
-my $startVersion;
-my $targetVersion;
+my ($startVersion,$startMajor,$startMinor,$startMicro);
+my ($targetVersion,$targetMajor,$targetMinor,$targetMicro);
 
 my @packageList = (
 	"zimbra-core",
@@ -213,6 +213,10 @@ sub upgrade {
   my ($startBuild,$targetBuild);
   ($startVersion,$startBuild) = $startVersion =~ /(\d\.\d\.\d+_[^_]*)_(\d+)/;  
   ($targetVersion,$targetBuild) = $targetVersion =~ m/(\d\.\d\.\d+_[^_]*)_(\d+)/;
+  ($startMajor,$startMinor,$startMicro) =
+    $startVersion =~ /(\d+)\.(\d+)\.(\d+_[^_]*)/;
+  ($targetMajor,$targetMinor,$targetMicro) =
+    $targetVersion =~ /(\d+)\.(\d+)\.(\d+_[^_]*)/;
 
 	my $needVolumeHack = 0;
 	my $needMysqlTableCheck = 0;
@@ -1716,6 +1720,7 @@ sub upgrade500RC3 {
 
 sub upgrade500GA {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
+
 	main::progress("Updating from 5.0.0_GA\n");
   if (main::isInstalled("zimbra-ldap")) {
     startLdap();
@@ -1730,7 +1735,15 @@ sub upgrade500GA {
 
   if (main::isInstalled("zimbra-store")) {
     main::setLocalConfig("localized_client_msgs_directory", '\${mailboxd_directory}/webapps/zimbra/WEB-INF/classes/messages');
+
+    # 22602
+    my $mailboxd_java_options = main::getLocalConfig("mailboxd_java_options");
+    $mailboxd_java_options .= " -XX:SoftRefLRUPolicyMSPerMB=1"
+      unless ($mailboxd_java_options =~ /SoftRefLRUPolicyMSPerMB/);
+    main::detail("Modified mailboxd_java_options=$mailboxd_java_options");
+    main::setLocalConfig("mailboxd_java_options", "$mailboxd_java_options");
   }
+
 	return 0;
 }
 
