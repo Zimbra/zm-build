@@ -1739,9 +1739,41 @@ sub upgrade500GA {
 
   if (main::isInstalled("zimbra-proxy")) {
 		main::runAsZimbra("$ZMPROV mcf zimbraMemcachedBindPort 11211");
+
+    my $zimbraReverseProxyMailHostQuery = 
+      "\(\|\(zimbraMailDeliveryAddress=\${USER}\)\(zimbraMailAlias=\${USER}\)\)";
+    my $zimbraReverseProxyDomainNameQuery = 
+      "\(\&\(zimbraVirtualIPAddress=\${IPADDR}\)\(objectClass=zimbraDomain\)\)";
+    my $zimbraReverseProxyPortQuery = 
+      '\(\&\(zimbraServiceHostname=\${MAILHOST}\)\(objectClass=zimbraServer\)\)';
+
+    # We have to use a pipe to write out the Query, otherwise ${USER} gets interpreted
+    open(ZMPROV, "|su - zimbra -c 'zmprov -l'");
+    print ZMPROV "mcf zimbraReverseProxyMailHostQuery $zimbraReverseProxyMailHostQuery\n";
+    print ZMPROV "mcf zimbraReverseProxyPortQuery $zimbraReverseProxyPortQuery\n";
+    print ZMPROV "mcf zimbraReverseProxyDomainNameQuery $zimbraReverseProxyDomainNameQuery\n";
+    close ZMPROV;
+
+    main::runAsZimbra("$ZMPROV mcf zimbraReverseProxyMailHostAttribute zimbraMailHost");
+    main::runAsZimbra("$ZMPROV mcf zimbraReverseProxyPop3PortAttribute zimbraPop3BindPort");
+    main::runAsZimbra("$ZMPROV mcf zimbraReverseProxyPop3SSLPortAttribute zimbraPop3SSLBindPort");
+    main::runAsZimbra("$ZMPROV mcf zimbraReverseProxyImapPortAttribute zimbraImapBindPort");
+    main::runAsZimbra("$ZMPROV mcf zimbraReverseProxyImapSSLPortAttribute zimbraImapSSLBindPort");
+    main::runAsZimbra("$ZMPROV mcf zimbraReverseProxyDomainNameAttribute zimbraDomainName");
+    main::runAsZimbra("$ZMPROV mcf zimbraReverseProxyAuthWaitInterval 10s");
   }
 
   if (main::isInstalled("zimbra-store")) {
+    main::runAsZimbra("$ZMPROV mcf zimbraLogToSyslog FALSE");
+    main::runAsZimbra("$ZMPROV mcf zimbraJunkMessagesIndexingEnabled TRUE");
+    main::runAsZimbra("$ZMPROV mcf zimbraMailDiskStreamingThreshold 1048576");
+    main::runAsZimbra("$ZMPROV mcf zimbraMailPurgeSleepInterval 0");
+    main::runAsZimbra("$ZMPROV mcf zimbraMtaAuthTarget TRUE");
+    main::runAsZimbra("$ZMPROV mcf zimbraPop3SaslGssapiEnabled FALSE");
+    main::runAsZimbra("$ZMPROV mcf zimbraImapSaslGssapiEnabled FALSE");
+    main::runAsZimbra("$ZMPROV mcf zimbraScheduledTaskNumThreads 20");
+    main::runAsZimbra("$ZMPROV mcf zimbraSoapRequestMaxSize 15360000");
+    main::runAsZimbra("$ZMPROV mcf zimbraHttpNumThreads 250");
     main::setLocalConfig("localized_client_msgs_directory", '\${mailboxd_directory}/webapps/zimbra/WEB-INF/classes/messages');
 
     # 22602
