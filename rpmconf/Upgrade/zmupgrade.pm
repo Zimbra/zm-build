@@ -137,6 +137,8 @@ my %updateFuncs = (
   "5.0.0_RC2" => \&upgrade500RC2,
   "5.0.0_RC3" => \&upgrade500RC3,
   "5.0.0_GA" => \&upgrade500GA,
+  "5.0.1_GA" => \&upgrade501GA,
+  "5.0.2_GA" => \&upgrade502GA,
 );
 
 my @versionOrder = (
@@ -184,6 +186,8 @@ my @versionOrder = (
   "5.0.0_RC2",
   "5.0.0_RC3",
   "5.0.0_GA",
+  "5.0.1_GA",
+  "5.0.2_GA",
 );
 
 my ($startVersion,$startMajor,$startMinor,$startMicro);
@@ -341,6 +345,10 @@ sub upgrade {
 		main::progress("This appears to be 5.0.0_RC3\n");
 	} elsif ($startVersion eq "5.0.0_GA") {
 		main::progress("This appears to be 5.0.0_GA\n");
+	} elsif ($startVersion eq "5.0.1_GA") {
+		main::progress("This appears to be 5.0.1_GA\n");
+	} elsif ($startVersion eq "5.0.2_GA") {
+		main::progress("This appears to be 5.0.2_GA\n");
 	} else {
 		main::progress("I can't upgrade version $startVersion\n\n");
 		return 1;
@@ -1744,6 +1752,17 @@ sub upgrade500GA {
     main::setLocalConfig("mailboxd_java_options", "$mailboxd_java_options");
   }
 
+	return 0;
+}
+
+sub upgrade501GA {
+	my ($startBuild, $targetVersion, $targetBuild) = (@_);
+	main::progress("Updating from 5.0.1_GA\n");
+	return 0;
+}
+sub upgrade502GA {
+	my ($startBuild, $targetVersion, $targetBuild) = (@_);
+	main::progress("Updating from 5.0.2_GA\n");
 	return 0;
 }
 
