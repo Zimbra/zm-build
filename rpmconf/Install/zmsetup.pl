@@ -165,19 +165,20 @@ if ($options{d}) {
 
 setDefaults();
 
-setDefaultsFromLocalConfig()
-  if (! $newinstall);
+if (! $newinstall ) {
 
-# if we're an upgrade, run the upgrader...
-
-if (! $newinstall && ($prevVersion ne $curVersion )) {
-  progress ("Upgrading from $prevVersion to $curVersion\n");
-  if (zmupgrade::upgrade($prevVersion, $curVersion)){
-    progress ("UPGRADE FAILED - exiting\n");
-    exit 1;
-  } else {
-    progress ("Upgrade complete\n");
+  # if we're an upgrade, run the upgrader...
+  if (($prevVersion ne $curVersion )) {
+    progress ("Upgrading from $prevVersion to $curVersion\n");
+    if (zmupgrade::upgrade($prevVersion, $curVersion)){
+      progress ("UPGRADE FAILED - exiting\n");
+      exit 1;
+    } else {
+      progress ("Upgrade complete\n");
+    }
   }
+
+  setDefaultsFromLocalConfig();
 }
 
 setEnabledDependencies();
@@ -3498,10 +3499,6 @@ sub configSetTimeZonePref {
 }
 
 sub configSetCEFeatures {
-}
-
-sub configSetNEFeatures {
-  return unless isNetwork();
   foreach my $feature qw(IM Tasks Briefcases Notebook) {
     my $key = "zimbraFeature${feature}Enabled";
     my $val = ($config{$key} eq "Enabled" ? "TRUE" : "FALSE");; 
@@ -3514,6 +3511,10 @@ sub configSetNEFeatures {
     progress ( "done.\n" );
     configLog($key);
   }
+}
+
+sub configSetNEFeatures {
+  return unless isNetwork();
 }
 
 sub configInitBackupPrefs {
