@@ -57,15 +57,11 @@ if ($platform =~ /SuSE|openSUSE|SLES/) { `chmod 640 /etc/sudoers`;}
 
 use preinstall;
 use postinstall;
-
 use zmupgrade;
-
 use Getopt::Std;
-
 use Net::DNS::Resolver;
 
 our %options = ();
-
 our %config = ();
 our %loaded = ();
 our %saved = ();
@@ -110,7 +106,8 @@ my %configStatus = ();
 
 my $prevVersion = "";
 our $curVersion = "";
-
+my ($prevVersionMinor,$prevVersionMajor,$prevVersionMicro,$prevVersionBuild);
+my ($curVersionMinor,$curVersionMajor,$curVersionMicro,$curVersionBuild);
 our $newinstall = 1;
 
 my $ldapConfigured = 0;
@@ -137,6 +134,100 @@ my @interfaces = ();
 getopts("c:hd", \%options) or usage();
 
 my $debug = $options{d};
+
+
+getInstallStatus();
+
+getInstalledPackages();
+
+if ($0 =~ /testMenu/) {
+  #delete $installedPackages{"zimbra-ldap"}; 
+  #delete $installedPackages{"zimbra-mta"}; 
+  setDefaults();
+  mainMenu();
+  exit;
+}
+
+
+unless (isEnabled("zimbra-core")) {
+  progress("zimbra-core must be enabled.");
+  exit 1;
+}
+
+if ($options{d}) {
+  foreach my $pkg (keys %installedPackages) {
+    detail("Package $pkg is installed");
+  }
+  foreach my $pkg (keys %enabledPackages) {
+    detail("Package $pkg is $enabledPackages{$pkg}");
+  }     
+} 
+
+setDefaults();
+
+setDefaultsFromLocalConfig()
+  if (! $newinstall);
+
+# if we're an upgrade, run the upgrader...
+
+if (! $newinstall && ($prevVersion ne $curVersion )) {
+  progress ("Upgrading from $prevVersion to $curVersion\n");
+  if (zmupgrade::upgrade($prevVersion, $curVersion)){
+    progress ("UPGRADE FAILED - exiting\n");
+    exit 1;
+  } else {
+    progress ("Upgrade complete\n");
+  }
+}
+
+setEnabledDependencies();
+
+checkPortConflicts();
+
+getSystemStatus();
+
+if ($ldapConfigured) {
+  startLdap();
+}
+
+if ($ldapConfigured || 
+  (($config{LDAPHOST} ne $config{HOSTNAME}) && !verifyLdap())) {
+  setLdapDefaults();
+  getAvailableComponents();
+}
+
+if ($options{c}) {
+  loadConfig ($options{c});
+  applyConfig();
+} else {
+  if ($configStatus{BEGIN} eq "CONFIGURED" &&
+    $configStatus{END}  ne "CONFIGURED") {
+    resumeConfiguration();
+  }
+  if (!$newinstall) {
+    my $m = createMainMenu();
+    if (checkMenuConfig($m)) {
+      applyConfig();
+    }
+  } 
+  mainMenu();
+}
+
+close LOGFILE;
+chmod 0600, $logfile;
+if (-d "/opt/zimbra/log") {
+  main::progress("Moving $logfile to /opt/zimbra/log\n");
+  system("cp -f $logfile /opt/zimbra/log");
+}
+
+################################################################
+# End Main
+################################################################
+
+################################################################
+# Subroutines
+################################################################
+
 sub usage {
   ($>) and print STDERR "Warning: $0 must be run as root!\n\n";
   print STDERR "Usage: $0 [-h] [-c <config file>]\n";
@@ -578,6 +669,7 @@ sub getLdapConfigValue {
   unlink "/tmp/ld.err";
   return $val;
 }
+
 sub getLdapServerValue {
   my $attrib = shift;
   my $hn = shift;
@@ -603,19 +695,6 @@ sub getLdapServerValue {
 sub setLdapDefaults {
   progress ( "Setting defaults from ldap..." );
 
-  my $sslport=getLdapServerValue("zimbraMailSSLPort");
-
-  my $mailport=getLdapServerValue("zimbraMailPort");
-
-  my $mailmode=getLdapServerValue("zimbraMailMode");
-
-  $config{HTTPPORT} = $mailport;
-  $config{HTTPSPORT} = $sslport;
-  $config{MODE} = $mailmode;
-  if ($config{HTTPPORT} eq 0) { $config{HTTPPORT} = 80; }
-  if ($config{HTTPSPORT} eq 0) { $config{HTTPSPORT} = 443; }
-  if ($config{MODE} eq "") { $config{MODE} = "mixed"; }
-
   # default domainname
   $config{zimbraDefaultDomainName} = getLdapConfigValue("zimbraDefaultDomainName");
   if ($config{zimbraDefaultDomainName} eq "") {
@@ -625,20 +704,27 @@ sub setLdapDefaults {
     $config{CREATEADMIN} = "admin\@$config{CREATEDOMAIN}";
   }
 
-  $config{IMAPPORT}       = getLdapServerValue("zimbraImapBindPort");
-  $config{IMAPSSLPORT}     = getLdapServerValue("zimbraImapSSLBindPort");
-  $config{POPPORT}       = getLdapServerValue("zimbraPop3BindPort");
-  $config{POPSSLPORT}     = getLdapServerValue("zimbraPop3SSLBindPort");
-  $config{HTTPPORT}       = getLdapServerValue("zimbraMailPort");
-  $config{HTTPSPORT}       = getLdapServerValue("zimbraMailSSLPort");
-  $config{IMAPPROXYPORT}     = getLdapServerValue("zimbraImapProxyBindPort");
-  $config{IMAPSSLPROXYPORT}   = getLdapServerValue("zimbraImapSSLProxyBindPort");
-  $config{POPPROXYPORT}     = getLdapServerValue("zimbraPop3ProxyBindPort");
-  $config{POPSSLPROXYPORT}   = getLdapServerValue("zimbraPop3SSLProxyBindPort");
+  $config{IMAPPORT}         = getLdapServerValue("zimbraImapBindPort");
+  $config{IMAPSSLPORT}      = getLdapServerValue("zimbraImapSSLBindPort");
+  $config{POPPORT}          = getLdapServerValue("zimbraPop3BindPort");
+  $config{POPSSLPORT}       = getLdapServerValue("zimbraPop3SSLBindPort");
 
-  $config{TRAINSASPAM} = getLdapConfigValue("zimbraSpamIsSpamAccount");
-  $config{TRAINSAHAM} = getLdapConfigValue("zimbraSpamIsNotSpamAccount");
-  $config{NOTEBOOKACCOUNT} = getLdapConfigValue("zimbraNotebookAccount");
+  $config{MODE}             = getLdapServerValue("zimbraMailMode");
+  $config{HTTPPORT}         = getLdapServerValue("zimbraMailPort");
+  $config{HTTPSPORT}        = getLdapServerValue("zimbraMailSSLPort");
+
+  $config{IMAPPROXYPORT}    = getLdapServerValue("zimbraImapProxyBindPort");
+  $config{IMAPSSLPROXYPORT} = getLdapServerValue("zimbraImapSSLProxyBindPort");
+  $config{POPPROXYPORT}     = getLdapServerValue("zimbraPop3ProxyBindPort");
+  $config{POPSSLPROXYPORT}  = getLdapServerValue("zimbraPop3SSLProxyBindPort");
+
+  $config{TRAINSASPAM}      = getLdapConfigValue("zimbraSpamIsSpamAccount");
+  $config{TRAINSAHAM}       = getLdapConfigValue("zimbraSpamIsNotSpamAccount");
+  $config{NOTEBOOKACCOUNT}  = getLdapConfigValue("zimbraNotebookAccount");
+
+  if ($config{HTTPPORT} eq 0) { $config{HTTPPORT} = 80; }
+  if ($config{HTTPSPORT} eq 0) { $config{HTTPSPORT} = 443; }
+  if ($config{MODE} eq "") { $config{MODE} = "mixed"; }
 
   if (isEnabled("zimbra-mta")) {
     my $tmpval = getLdapServerValue("zimbraMtaMyNetworks");
@@ -747,13 +833,44 @@ sub setLdapDefaults {
   }
  
   # default values for upgrades 
- $config{NOTEBOOKACCOUNT} = "wiki".'@'.$config{CREATEDOMAIN}
-  if ($config{NOTEBOOKACCOUNT} eq "");
+  $config{NOTEBOOKACCOUNT} = "wiki".'@'.$config{CREATEDOMAIN}
+    if ($config{NOTEBOOKACCOUNT} eq "");
 
   $config{USEKBSHORTCUTS} = getLdapCOSValue("default", "zimbraPrefUseKeyboardShortcuts");
 
   $config{zimbraPrefTimeZoneId}=getLdapCOSValue("default", "zimbraPrefTimeZoneId");
 
+  if ($prevVersionMajor < 5 && !$options{c}) {
+    $config{zimbraFeatureIMEnabled} = "";
+    $config{zimbraFeatureBriefcasesEnabled} = "";
+    $config{zimbraFeatureTasksEnabled} = "";
+    $config{zimbraFeatureNotebookEnabled} = "Enabled";
+  } else {
+    $config{zimbraFeatureIMEnabled}=getLdapCOSValue("default", "zimbraFeatureIMEnabled");
+    $config{zimbraFeatureIMEnabled}="Enabled"
+      if (lc($config{zimbraFeatureIMEnabled}) eq "true");
+    $config{zimbraFeatureIMEnabled}="Disabled"
+      if (lc($config{zimbraFeatureIMEnabled}) eq "false");
+    
+    $config{zimbraFeatureTasksEnabled}=getLdapCOSValue("default", "zimbraFeatureTasksEnabled");
+    $config{zimbraFeatureTasksEnabled}="Enabled"
+      if (lc($config{zimbraFeatureTasksEnabled}) eq "true");
+    $config{zimbraFeatureTasksEnabled}="Disabled"
+      if (lc($config{zimbraFeatureTasksEnabled}) eq "false");
+  
+    $config{zimbraFeatureBriefcasesEnabled}=getLdapCOSValue("default", "zimbraFeatureBriefcasesEnabled");
+    $config{zimbraFeatureBriefcasesEnabled}="Enabled"
+      if (lc($config{zimbraFeatureBriefcasesEnabled}) eq "true");
+    $config{zimbraFeatureBriefcasesEnabled}="Disabled"
+      if (lc($config{zimbraFeatureBriefcasesEnabled}) eq "false");
+  
+    $config{zimbraFeatureNotebookEnabled}=getLdapCOSValue("default", "zimbraFeatureNotebookEnabled");
+    $config{zimbraFeatureNotebookEnabled}="Enabled"
+      if (lc($config{zimbraFeatureNotebookEnabled}) eq "true");
+    $config{zimbraFeatureNotebookEnabled}="Disabled"
+      if (lc($config{zimbraFeatureNotebookEnabled}) eq "false");
+  }
+  
   my $smtphost=getLdapServerValue("zimbraSmtpHostname");
   if ( $smtphost ne "") {
     $config{SMTPHOST} = $smtphost;
@@ -839,6 +956,7 @@ sub setDefaults {
   $config{DOCREATEADMIN} = "no";
 
   if (isEnabled("zimbra-cluster")) {
+    progress  "setting defaults for zimbra-cluster.\n" if $options{d};
     $config{zimbraClusterType} = "RedHat"; 
   } else {
     $config{zimbraClusterType} = "none";
@@ -873,6 +991,22 @@ sub setDefaults {
 
     $config{LICENSEFILE} = $config{DEFAULTLICENSEFILE}
       if (-f "$config{DEFAULTLICENSEFILE}" && isNetwork());
+
+    if (!$newinstall && $prevVersionMajor < 5 && !$options{c}) {
+      $config{zimbraFeatureIMEnabled} = "";
+      $config{zimbraFeatureBriefcasesEnabled} = "";
+      $config{zimbraFeatureTasksEnabled} = "";
+      $config{zimbraFeatureNotebookEnabled} = "Enabled";
+    } else {
+      $config{zimbraFeatureIMEnabled} = "Disabled"
+        if ($config{zimbraFeatureIMEnabled} eq "");
+      $config{zimbraFeatureNotebookEnabled} = "Enabled"
+        if ($config{zimbraFeatureNotebookEnabled} eq "");
+      $config{zimbraFeatureBriefcasesEnabled} = "Disabled"
+        if ($config{zimbraFeatureBriefcasesEnabled} eq "");
+      $config{zimbraFeatureTasksEnabled} = "Enabled"
+        if ($config{zimbraFeatureTasksEnabled} eq "");
+    }
 
   }
 
@@ -909,6 +1043,7 @@ sub setDefaults {
   }
 
   if (isEnabled("zimbra-mta")) {
+    progress  "setting defaults for zimbra-mta.\n" if $options{d};
     my $tmpval = (`su - zimbra -c "postconf mynetworks"`);
     chomp($tmpval);
     $tmpval =~ s/mynetworks = //;
@@ -1004,6 +1139,7 @@ sub setDefaults {
 
   }
   if (isInstalled("zimbra-proxy")) {
+    progress  "setting defaults for zimbra-proxy.\n" if $options{d};
     my $query = "\(\|\(zimbraMailDeliveryAddress=\${USER}\)\(zimbraMailAlias=\${USER}\)\)";
 
     $config{zimbraReverseProxyMailHostQuery} = $query;
@@ -1096,7 +1232,17 @@ sub getInstallStatus {
   } else {
     $newinstall = 1;
   }
-  progress "done.\n" if $options{d};
+
+  ($prevVersionMajor,$prevVersionMinor,$prevVersionMicro,$prevVersionBuild) = 
+    $prevVersion =~ /(\d+)\.(\d+)\.(\d+_[^_]*)_(\d+)/;
+  ($curVersionMajor,$curVersionMinor,$curVersionMicro,$curVersionBuild) = 
+    $curVersion =~ /(\d+)\.(\d+)\.(\d+_[^_]*)_(\d+)/;
+
+  if ($options{d}) {
+    progress "done.\n";
+    progress "Previous version  maj:$prevVersionMajor minor:$prevVersionMinor micro:$prevVersionMicro build:$prevVersionBuild\n";
+    progress "Current version  maj:$curVersionMajor minor:$curVersionMinor micro:$curVersionMicro build:$curVersionBuild\n";
+  }
 }
 
 sub setDefaultsFromLocalConfig {
@@ -1169,23 +1315,27 @@ sub setDefaultsFromLocalConfig {
     if ($config{AVUSER} eq "");
 
   if (isEnabled("zimbra-ldap")) {
-
     $config{LDAPREPPASS} = getLocalConfig ("ldap_replication_password");
     if ($config{LDAPREPPASS} eq "") {
       $config{LDAPREPPASS} = $config{LDAPADMINPASS};
       $ldapRepChanged = 1;
     }
-
+  } elsif (isEnabled("zimbra-ldap") || isEnabled("zimbra-mta")) {
     $config{LDAPPOSTPASS} = getLocalConfig ("ldap_postfix_password");
     if ($config{LDAPPOSTPASS} eq "") {
       $config{LDAPPOSTPASS} = $config{LDAPADMINPASS};
       $ldapPostChanged = 1;
     }
-
     $config{LDAPAMAVISPASS} = getLocalConfig ("ldap_amavis_password");
     if ($config{LDAPAMAVISPASS} eq "") {
       $config{LDAPAMAVISPASS} = $config{LDAPADMINPASS};
       $ldapAmavisChanged = 1;
+    }
+  }
+
+  if ($options{d}) {
+    foreach my $key (sort keys %config) {
+      print "\tlc DEBUG: $key=$config{$key}\n";
     }
   }
   progress("done.\n");
@@ -1638,6 +1788,10 @@ sub toggleTF {
   my $key = shift;
   $config{$key} = ($config{$key} eq "TRUE")?"FALSE":"TRUE";
 }
+sub toggleConfigEnabled {
+  my $key = shift;
+  $config{$key} = ($config{$key} eq "Enabled")?"Disabled":"Enabled";
+}
 
 sub setUseImapProxy {
 
@@ -1916,29 +2070,6 @@ sub setTimeZone {
   }
 }
 
-sub configurePackage {
-  my $package = shift;
-  if ($package eq "zimbra-logger") {
-    configureLogger($package);
-  } elsif ($package eq "zimbra-ldap") {
-    configureLdap($package);
-  } elsif ($package eq "zimbra-mta") {
-    configureMta($package);
-  } elsif ($package eq "zimbra-snmp") {
-    configureSnmp($package);
-  } elsif ($package eq "zimbra-spell") {
-    configureSpell($package);
-  } elsif ($package eq "zimbra-store") {
-    configureStore($package);
-  } elsif ($package eq "zimbra-cluster") {
-    configureCluster($package);
-  } elsif ($package eq "zimbra-proxy") {
-    configureProxy($package);
-  } elsif ($package eq "ldap-users") {
-    configureLdapUsers($package);
-  }
-}
-
 sub setEnabledDependencies {
   if (isEnabled("zimbra-ldap")) {
     if ($config{LDAPHOST} eq "") {
@@ -2006,8 +2137,7 @@ sub genPackageMenu {
   return \%lm;
 }
 
-sub genLUPackageMenu {
-  my $package = shift;
+sub genSubMenu {
   my %lm = ();
   $lm{promptitem} = { 
     "selector" => "r", 
@@ -2031,26 +2161,78 @@ sub isLicenseInstalled {
 
 sub createPackageMenu {
   my $package = shift;
-  if ($package eq "zimbra-logger") {
-    return createLoggerMenu($package);
-  } elsif ($package eq "zimbra-ldap") {
+  if ($package eq "zimbra-ldap") {
     return createLdapMenu($package);
   } elsif ($package eq "zimbra-mta") {
     return createMtaMenu($package);
   } elsif ($package eq "zimbra-snmp") {
     return createSnmpMenu($package);
-  } elsif ($package eq "zimbra-spell") {
-    return createSpellMenu($package);
   } elsif ($package eq "zimbra-store") {
     return createStoreMenu($package);
   } elsif ($package eq "zimbra-cluster") {
     return createClusterMenu($package);
   } elsif ($package eq "zimbra-proxy") {
     return createProxyMenu($package)
-  } elsif ($package eq "ldap-users") {
-    return createLdapUsersMenu($package)
   }
 }
+
+sub createCommonMenu {
+  my $package = shift;
+  my $lm = genSubMenu();
+
+  $$lm{title} = "Common configuration";
+
+  $$lm{createsub} = \&createCommonMenu;
+  $$lm{createarg} = $package;
+
+  my $i = 1;
+  $$lm{menuitems}{$i} = { 
+    "prompt" => "Hostname:", 
+    "var" => \$config{HOSTNAME}, 
+    "callback" => \&setHostName
+    };
+  $i++;
+  $$lm{menuitems}{$i} = { 
+    "prompt" => "Ldap master host:", 
+    "var" => \$config{LDAPHOST}, 
+    "callback" => \&setLdapHost
+    };
+  $i++;
+  $$lm{menuitems}{$i} = { 
+    "prompt" => "Ldap port:", 
+    "var" => \$config{LDAPPORT}, 
+    "callback" => \&setLdapPort
+    };
+  $i++;
+  if ($config{LDAPADMINPASS} ne "") {
+    $config{LDAPADMINPASSSET} = "set";
+  } else {
+    $config{LDAPADMINPASSSET} = "UNSET";
+  }
+  $$lm{menuitems}{$i} = { 
+    "prompt" => "Ldap Admin password:", 
+    "var" => \$config{LDAPADMINPASSSET}, 
+    "callback" => \&setLdapAdminPass
+    };
+  $i++;
+  # ldap users
+  if (!defined($installedPackages{"zimbra-ldap"})) {
+    $$lm{menuitems}{$i} = { 
+      "prompt" => "Admin User LDAP Bind DN:", 
+      "var" => \$config{zimbra_ldap_userdn}, 
+      "callback" => \&setLdapUserDN,
+      };
+    $i++;
+  }
+  $$lm{menuitems}{$i} = { 
+    "prompt" => "TimeZone:", 
+    "var" => \$config{zimbraPrefTimeZoneId},
+    "callback" => \&setTimeZone
+  };
+  $i++;
+  return $lm;
+}
+
 sub createLdapMenu {
   my $package = shift;
   my $lm = genPackageMenu($package);
@@ -2062,18 +2244,6 @@ sub createLdapMenu {
 
   my $i = 2;
   if (isEnabled($package)) {
-#    $$lm{menuitems}{$i} = { 
-#      "prompt" => "Ldap host:", 
-#      "var" => \$config{LDAPHOST}, 
-#      "callback" => \&setLdapHost
-#      };
-#    $i++;
-#    $$lm{menuitems}{$i} = { 
-#      "prompt" => "Ldap port:", 
-#      "var" => \$config{LDAPPORT}, 
-#      "callback" => \&setLdapPort
-#      };
-#    $i++;
     $$lm{menuitems}{$i} = { 
       "prompt" => "Create Domain:", 
       "var" => \$config{DOCREATEDOMAIN}, 
@@ -2089,10 +2259,15 @@ sub createLdapMenu {
         };
       $i++;
     }
-    $$lm{menuitems}{$i} = { 
-      "prompt" => "Admin User Bind DN:", 
-      "var" => \$config{zimbra_ldap_userdn}, 
-      "callback" => \&setLdapUserDN,
+    if ($config{LDAPROOTPASS} ne "") {
+      $config{LDAPROOTPASSSET} = "set";
+    } else {
+      $config{LDAPROOTPASSSET} = "UNSET";
+    }
+    $$lm{menuitems}{$i} = {
+      "prompt" => "Ldap Root password:",
+      "var" => \$config{LDAPROOTPASSSET},
+      "callback" => \&setLdapRootPass
       };
     $i++;
     if ($config{LDAPREPPASS} ne "") {
@@ -2106,22 +2281,75 @@ sub createLdapMenu {
       "callback" => \&setLdapRepPass
       };
     $i++;
-
+    if ($config{LDAPPOSTPASS} ne "") {
+      $config{LDAPPOSTPASSSET} = "set";
+    } else {
+      $config{LDAPPOSTPASSSET} = "UNSET";
+    }
+    $$lm{menuitems}{$i} = {
+      "prompt" => "Ldap Postfix password:",
+      "var" => \$config{LDAPPOSTPASSSET},
+      "callback" => \&setLdapPostPass
+      };
+    $i++;
+    if ($config{LDAPAMAVISPASS} ne "") {
+      $config{LDAPAMAVISPASSSET} = "set";
+    } else {
+      $config{LDAPAMAVISPASSSET} = "UNSET";
+    }
+    $$lm{menuitems}{$i} = {
+      "prompt" => "Ldap Amavis password:",
+      "var" => \$config{LDAPAMAVISPASSSET},
+      "callback" => \&setLdapAmavisPass
+      };
+    $i++;
   }
   return $lm;
 }
-
-sub configureLdap {
+sub createCOSMenu {
   my $package = shift;
+  my $lm = genSubMenu();
 
-  my $lm = createLdapMenu($package);
+  $$lm{title} = "Default Class of Service configuration";
 
-  displayMenu($lm);
+  $$lm{createsub} = \&createCOSMenu;
+  $$lm{createarg} = $package;
+
+  my $i = 1;
+  $$lm{menuitems}{$i} = { 
+    "prompt" => "Enable Instant Messaging Feature:", 
+    "var" => \$config{zimbraFeatureIMEnabled}, 
+    "callback" => \&toggleConfigEnabled,
+    "arg" => "zimbraFeatureIMEnabled",
+    };
+  $i++;
+  $$lm{menuitems}{$i} = { 
+    "prompt" => "Enable Briefcases Feature:", 
+    "var" => \$config{zimbraFeatureBriefcasesEnabled}, 
+    "callback" => \&toggleConfigEnabled,
+    "arg" => "zimbraFeatureBriefcasesEnabled",
+    };
+  $i++;
+  $$lm{menuitems}{$i} = { 
+    "prompt" => "Enable Tasks Feature:", 
+    "var" => \$config{zimbraFeatureTasksEnabled}, 
+    "callback" => \&toggleConfigEnabled,
+    "arg" => "zimbraFeatureTasksEnabled",
+    };
+  $i++;
+  $$lm{menuitems}{$i} = { 
+    "prompt" => "Enable Notebook Feature:", 
+    "var" => \$config{zimbraFeatureNotebookEnabled}, 
+    "callback" => \&toggleConfigEnabled,
+    "arg" => "zimbraFeatureNotebookEnabled",
+    };
+  $i++;
+  return $lm;
 }
 
 sub createLdapUsersMenu {
   my $package = shift;
-  my $lm = genLUPackageMenu($package);
+  my $lm = genSubMenu();
 
   $$lm{title} = "Ldap Users configuration";
 
@@ -2129,37 +2357,7 @@ sub createLdapUsersMenu {
   $$lm{createarg} = $package;
 
   my $i = 1;
-  if ($config{LDAPPOSTPASS} ne "") {
-    $config{LDAPPOSTPASSSET} = "set";
-  } else {
-    $config{LDAPPOSTPASSSET} = "UNSET";
-  }
-  $$lm{menuitems}{$i} = {
-    "prompt" => "Ldap Postfix password:",
-    "var" => \$config{LDAPPOSTPASSSET},
-    "callback" => \&setLdapPostPass
-    };
-  $i++;
-  if ($config{LDAPAMAVISPASS} ne "") {
-    $config{LDAPAMAVISPASSSET} = "set";
-  } else {
-    $config{LDAPAMAVISPASSSET} = "UNSET";
-  }
-  $$lm{menuitems}{$i} = {
-    "prompt" => "Ldap Amavis password:",
-    "var" => \$config{LDAPAMAVISPASSSET},
-    "callback" => \&setLdapAmavisPass
-    };
-  $i++;
   return $lm;
-}
-
-sub configureLdapUsers {
-  my $package = shift;
-
-  my $lm = createLdapUsersMenu($package);
-
-  displayMenu($lm);
 }
 
 sub createArchivingMenu {
@@ -2172,42 +2370,7 @@ sub createArchivingMenu {
   return $lm;
 }
 
-sub configureArchiving {
-  my $package = shift;
-  my $lm = createArchivingMenu($package);
-  displayMenu($lm);
-}
 
-sub createSpellMenu {
-  my $package = shift;
-  my $lm = genPackageMenu($package);
-
-  $$lm{title} = "Spell configuration";
-
-  $$lm{createsub} = \&createSpellMenu;
-  $$lm{createarg} = $package;
-
-  my $i = 2;
-
-  if (isEnabled($package)) {
-#    $$lm{menuitems}{$i} = { 
-#      "prompt" => "Enable SMTP notifications:", 
-#      "var" => \$config{SMTPNOTIFY}, 
-#      "callback" => \&toggleYN,
-#      "arg" => "SMTPNOTIFY",
-#      };
-#    $i++;
-  }
-  return $lm;
-}
-
-sub configureSpell {
-  my $package = shift;
-
-  my $lm = createSpellMenu($package);
-
-  displayMenu($lm);
-}
 sub createClusterMenu {
   my $package = shift;
   my $lm = genPackageMenu($package);
@@ -2227,14 +2390,6 @@ sub createClusterMenu {
     $i++;
   }
   return $lm;
-}
-
-sub configureCluster {
-  my $package = shift;
-
-  my $lm = createClusterMenu($package);
-
-  displayMenu($lm);
 }
 
 sub createSnmpMenu {
@@ -2288,14 +2443,6 @@ sub createSnmpMenu {
   return $lm;
 }
 
-sub configureSnmp {
-  my $package = shift;
-
-  my $lm = createSnmpMenu($package);
-
-  displayMenu($lm);
-}
-
 sub createMtaMenu {
   my $package = shift;
   my $lm = genPackageMenu($package);
@@ -2345,16 +2492,30 @@ sub createMtaMenu {
         };
       $i++;
     }
+    if ($config{LDAPPOSTPASS} ne "") {
+      $config{LDAPPOSTPASSSET} = "set";
+    } else {
+      $config{LDAPPOSTPASSSET} = "UNSET";
+    }
+    $$lm{menuitems}{$i} = {
+      "prompt" => "Bind password for postfix ldap user:",
+      "var" => \$config{LDAPPOSTPASSSET},
+      "callback" => \&setLdapPostPass
+      };
+    $i++;
+    if ($config{LDAPAMAVISPASS} ne "") {
+      $config{LDAPAMAVISPASSSET} = "set";
+    } else {
+      $config{LDAPAMAVISPASSSET} = "UNSET";
+    }
+    $$lm{menuitems}{$i} = {
+      "prompt" => "Bind password for amavis ldap user:",
+      "var" => \$config{LDAPAMAVISPASSSET},
+      "callback" => \&setLdapAmavisPass
+      };
+    $i++;
   }
   return $lm;
-}
-
-sub configureMta {
-  my $package = shift;
-
-  my $lm = createMtaMenu($package);
-
-  displayMenu($lm);
 }
 
 sub createProxyMenu {
@@ -2565,44 +2726,6 @@ sub createStoreMenu {
   return $lm;
 }
 
-sub configureProxy {
-  my $package = shift;
-
-  my $lm = createProxyMenu($package);
-
-  displayMenu($lm);
-}
-
-sub configureStore {
-  my $package = shift;
-
-  my $lm = createStoreMenu($package);
-
-  displayMenu($lm);
-}
-
-sub createLoggerMenu {
-  my $package = shift;
-  my $lm = genPackageMenu($package);
-
-  $$lm{title} = "Logger configuration";
-
-  $$lm{createsub} = \&createLoggerMenu;
-  $$lm{createarg} = $package;
-
-  if (isEnabled($package)) {
-  }
-  return $lm;
-}
-
-sub configureLogger {
-  my $package = shift;
-
-  my $lm = createLoggerMenu($package);
-
-  displayMenu($lm);
-}
-
 sub displaySubMenuItems {
   my $items = shift;
   my $parentmenuvar = shift;
@@ -2752,68 +2875,19 @@ sub createMainMenu {
     "prompt" => "Quit",
     "action" => "quit",
     };
-  $mm{menuitems}{1} = { 
-    "prompt" => "Hostname:", 
-    "var" => \$config{HOSTNAME}, 
-    "callback" => \&setHostName
-    };
-  my $i = 2;
-  $mm{menuitems}{$i} = { 
-    "prompt" => "Ldap master host:", 
-    "var" => \$config{LDAPHOST}, 
-    "callback" => \&setLdapHost
-    };
-  $i++;
-  $mm{menuitems}{$i} = { 
-    "prompt" => "Ldap port:", 
-    "var" => \$config{LDAPPORT}, 
-    "callback" => \&setLdapPort
-    };
-  $i++;
-  if ($config{LDAPROOTPASS} ne "") {
-    $config{LDAPROOTPASSSET} = "set";
-  } else {
-    $config{LDAPROOTPASSSET} = "UNSET";
-  }
+  my $i = 1;
+  my $submenu = createCommonMenu("zimbra-core");
   $mm{menuitems}{$i} = {
-    "prompt" => "Ldap Root password:",
-    "var" => \$config{LDAPROOTPASSSET},
-    "callback" => \&setLdapRootPass
-    };
-  $i++;
-  if ($config{LDAPADMINPASS} ne "") {
-    $config{LDAPADMINPASSSET} = "set";
-  } else {
-    $config{LDAPADMINPASSSET} = "UNSET";
-  }
-  $mm{menuitems}{$i} = { 
-    "prompt" => "Ldap Admin password:", 
-    "var" => \$config{LDAPADMINPASSSET}, 
-    "callback" => \&setLdapAdminPass
-    };
-  $i++;
-  $mm{menuitems}{$i} = { 
-    "prompt" => "TimeZone:", 
-    "var" => \$config{zimbraPrefTimeZoneId},
-    "callback" => \&setTimeZone
+    "prompt" => "Common Configuration:",
+    "submenu" => $submenu,
   };
   $i++;
-  if (defined($installedPackages{"zimbra-ldap"}) || defined($installedPackages{"zimbra-mta"})) {
-    my $submenu = createPackageMenu("ldap-users");
-    $config{LDAPUSERS}="Enabled";
-    $mm{menuitems}{$i} = {
-          "prompt" => "ldap-users:", 
-          "var" => \$config{LDAPUSERS},
-          "submenu" => $submenu,
-    };
-    $i++;
-  }
   foreach my $package (@packageList) {
     if ($package eq "zimbra-core") {next;}
     if ($package eq "zimbra-apache") {next;}
     if ($package eq "zimbra-archiving") {next;}
     if (defined($installedPackages{$package})) {
-      if ($package eq "zimbra-logger") {
+      if ($package =~ /logger|spell/) {
         $mm{menuitems}{$i} = { 
           "prompt" => "$package:", 
           "var" => \$enabledPackages{$package},
@@ -2833,6 +2907,15 @@ sub createMainMenu {
     } else {
       #push @mm, "$package not installed";
     }
+  }
+  
+  if (defined($installedPackages{"zimbra-store"})) {
+    my $submenu = createCOSMenu("cos");
+    $mm{menuitems}{$i} = {
+      "prompt" => "Default Class of Service Configuration:",
+      "submenu" => $submenu,
+    };
+    $i++;
   }
   $i = &preinstall::mainMenuExtensions(\%mm, $i);
   $mm{menuitems}{r} = { 
@@ -2916,7 +2999,7 @@ sub verifyLdap {
   if (($config{LDAPHOST} eq $config{HOSTNAME}) && !$ldapConfigured) {
     return 0;
   }
-  if ($config{LDAPADMINPASS} eq "" || $config{LDAPPORT} eq "" || $config{LDAPHOST} eq "" || $config{LDAPROOTPASS} eq "") {
+  if ($config{LDAPADMINPASS} eq "" || $config{LDAPPORT} eq "" || $config{LDAPHOST} eq "") {
     detail ( "ldap configuration not complete\n" );
     return 1;
   }
@@ -3000,15 +3083,15 @@ sub runAsZimbraWithOutput {
 }
 
 sub getLocalConfig {
-  my $key = shift;
+  my ($key,$force) = @_;
 
   return $main::loaded{lc}{$key}
-    if (exists $main::loaded{lc}{$key});
+    if (exists $main::loaded{lc}{$key} && !$force);
 
   detail ( "Getting local config $key" );
   my $val = `/opt/zimbra/bin/zmlocalconfig -x -s -m nokey ${key} 2> /dev/null`;
   chomp $val;
-  detail ("DEBUG: $key=$val") if $debug;
+  detail ("DEBUG: LC Loaded $key=$val") if $debug;
   $main::loaded{lc}{$key} = $val;
   return $val;
 }
@@ -3037,8 +3120,9 @@ sub setLocalConfig {
     return;
   }
   detail ( "Setting local config $key to $val" );
-  $main::config{$key} = $val;
+  #$main::config{$key} = $val;
   $main::saved{lc}{$key} = $val;
+  $main::loaded{lc}{$key} = $val;
   runAsZimbra("/opt/zimbra/bin/zmlocalconfig -f -e ${key}=\'${val}\' 2> /dev/null");
 }
 
@@ -3112,7 +3196,6 @@ sub configCASetup {
     configLog("configCASetup");
     return 0;
   }
-
 
   if ($config{LDAPHOST} ne $config{HOSTNAME}) {
     # fetch it from ldap if ldap has been configed
@@ -3346,7 +3429,6 @@ sub configCreateServerEntry {
 }
 
 sub configSpellServer {
-
   if ($configStatus{configSpellServer} eq "CONFIGURED") {
     configLog("configSpellServer");
     return 0;
@@ -3457,6 +3539,25 @@ sub configSetTimeZonePref {
   runAsZimbra("$ZMPROV mc default zimbraPrefTimeZoneId \'$config{zimbraPrefTimeZoneId}\'");
   progress ( "done.\n" );
   configLog("zimbraPrefTimeZoneId");
+}
+
+sub configSetCEFeatures {
+}
+
+sub configSetNEFeatures {
+  return unless isNetwork();
+  foreach my $feature qw(IM Tasks Briefcases Notebook) {
+    my $key = "zimbraFeature${feature}Enabled";
+    my $val = ($config{$key} eq "Enabled" ? "TRUE" : "FALSE");; 
+    if ($configStatus{$key} eq "CONFIGURED") {
+      configLog($key);
+      next;
+    }
+    progress ( "Setting $key=$val...");
+    runAsZimbra("$ZMPROV mc default $key \'$val\'");
+    progress ( "done.\n" );
+    configLog($key);
+  }
 }
 
 sub configInitBackupPrefs {
@@ -3921,6 +4022,10 @@ sub applyConfig {
     configSetKeyboardShortcutsPref() if (!$newinstall);
 
     configInitBackupPrefs();
+
+    configSetCEFeatures();
+
+    configSetNEFeatures() if isNetwork();
   }
 
   if (isEnabled("zimbra-mta")) {
@@ -4030,7 +4135,6 @@ sub configLog {
 }
 
 sub setupSyslog {
-
   progress ("Setting up syslog.conf...");
   if ( -f "/opt/zimbra/bin/zmsyslogsetup") {
     my $rc = 0xffff & system("/opt/zimbra/bin/zmsyslogsetup local");
@@ -4044,8 +4148,8 @@ sub setupSyslog {
   }
   configLog("setupSyslog");
 }
-sub setupCrontab {
 
+sub setupCrontab {
   my @backupSchedule=();
   progress ("Setting up zimbra crontab...");
   if ( -x "/opt/zimbra/bin/zmschedulebackup") {
@@ -4122,7 +4226,6 @@ sub setupCrontab {
   }
   progress ("done.\n");
   configLog("setupCrontab");
-
 }
 
 sub getSystemMemory {
@@ -4158,7 +4261,6 @@ sub mailboxdMemoryPercent {
     if ($system_mem > 2 && $addr_space eq "32");
   return $percent;
 }
-
 
 sub addServerToHostPool {
   progress ( "Adding $config{HOSTNAME} to zimbraMailHostPool in default COS..." );
@@ -4224,7 +4326,7 @@ sub startLdap {
     main::detail("slapd already running.\n");
   }
   return 0;
-}     
+}
 
 sub resumeConfiguration {
   progress ( "\n\nNote\n\n" );
@@ -4236,79 +4338,7 @@ sub resumeConfiguration {
   }
 }
 
-getInstallStatus();
+### end subs
 
-getInstalledPackages();
-
-unless (isEnabled("zimbra-core")) {
-  progress("zimbra-core must be enabled.");
-  exit 1;
-}
-
-if ($options{d}) {
-  foreach my $pkg (keys %installedPackages) {
-    detail("Package $pkg is installed");
-  }
-  foreach my $pkg (keys %enabledPackages) {
-    detail("Package $pkg is $enabledPackages{$pkg}");
-  }     
-} 
-
-setDefaults();
-
-setDefaultsFromLocalConfig()
-  if (! $newinstall);
-
-# if we're an upgrade, run the upgrader...
-
-if (! $newinstall && ($prevVersion ne $curVersion )) {
-  progress ("Upgrading from $prevVersion to $curVersion\n");
-  if (zmupgrade::upgrade($prevVersion, $curVersion)){
-    progress ("UPGRADE FAILED - exiting\n");
-    exit 1;
-  } else {
-    progress ("Upgrade complete\n");
-  }
-}
-
-setEnabledDependencies();
-
-checkPortConflicts();
-
-getSystemStatus();
-
-if ($ldapConfigured) {
-  startLdap();
-}
-
-if ($ldapConfigured || 
-  (($config{LDAPHOST} ne $config{HOSTNAME}) && !verifyLdap())) {
-  setLdapDefaults();
-  getAvailableComponents();
-}
-
-if ($options{c}) {
-  loadConfig ($options{c});
-  applyConfig();
-} else {
-  if ($configStatus{BEGIN} eq "CONFIGURED" &&
-    $configStatus{END}  ne "CONFIGURED") {
-    resumeConfiguration();
-  }
-  if (!$newinstall) {
-    my $m = createMainMenu();
-    if (checkMenuConfig($m)) {
-      applyConfig();
-    }
-  } 
-  mainMenu();
-}
-
-close LOGFILE;
-chmod 0600, $logfile;
-if (-d "/opt/zimbra/log") {
-  main::progress("Moving $logfile to /opt/zimbra/log\n");
-  system("cp -f $logfile /opt/zimbra/log");
-}
 
 __END__
