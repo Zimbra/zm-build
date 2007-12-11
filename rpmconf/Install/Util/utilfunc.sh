@@ -1306,10 +1306,6 @@ getInstallPackages() {
         fi
         continue
       fi
-    else
-      if  [ "$i" = "zimbra-cluster" ]; then
-          echo "Need to do something here for cluster"  
-      fi
     fi
 
     # Only prompt for cluster on supported platforms
