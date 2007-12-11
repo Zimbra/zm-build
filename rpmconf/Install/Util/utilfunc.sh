@@ -1301,20 +1301,25 @@ getInstallPackages() {
           LOGGER_SELECTED="yes"
         elif [ $i = "zimbra-store" ]; then
           STORE_SELECTED="yes"
-        elif [ $i = "zimbra_cluster" ]; then
+        elif [ $i = "zimbra-cluster" ]; then
           CLUSTER_SELECTED="yes"
         fi
         continue
       fi
-    fi
-
-    if [ $i = "zimbra-apache" ]; then
-      continue
+    else
+      if  [ "$i" = "zimbra-cluster" ]; then
+        
+      fi
     fi
 
     # Only prompt for cluster on supported platforms
     echo $PLATFORM | egrep -q "RHEL|CentOS"
     if [ $? != 0 -a $i = "zimbra-cluster" ]; then
+      continue
+    fi
+
+    # Cluster is only available clustertype is defined 
+    if [ x"$CLUSTERTYPE" = "x" -a "$i" = "zimbra-cluster" ]; then
       continue
     fi
 
@@ -1337,7 +1342,7 @@ getInstallPackages() {
         LOGGER_SELECTED="yes"
       elif [ $i = "zimbra-store" ]; then
         STORE_SELECTED="yes"
-      elif [ $i = "zimbra_cluster" ]; then
+      elif [ $i = "zimbra-cluster" ]; then
         CLUSTER_SELECTED="yes"
       fi
 
