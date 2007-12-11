@@ -410,7 +410,7 @@ sub upgrade {
     if (startLdap()) {return 1;} 
   }
 
-	my $found = 0;
+	$found = 0;
 	foreach my $v (@versionOrder) {
 	  main::progress("Checking $v\n");
 		if ($v eq $startVersion) {
@@ -1515,7 +1515,6 @@ sub upgrade500BETA1 {
       main::runAsZimbra("$ZMPROV mcf zimbraSpamReportTypeHam $zimbraSpamReportTypeHam");
     }
 
-    my $zimbraSpamReportTypeHeader = main::getLdapConfigValue("zimbraSpamReportTypeHeader");
   }
 	return 0;
 }
@@ -1760,7 +1759,6 @@ sub upgrade500GA {
       zimbraFeatureContactsUpsellEnabled => "FALSE",
       zimbraFeatureFlaggingEnabled => "TRUE",
       zimbraFeatureImapDataSourceEnabled => "TRUE",
-      zimbraFeatureInstantNotify => "TRUE",
       zimbraFeatureMailPollingIntervalPreferenceEnabled => "TRUE",
       zimbraFeatureMailPriorityEnabled => "TRUE",
       zimbraFeatureMailUpsellEnabled => "FALSE",
