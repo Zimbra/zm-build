@@ -1814,6 +1814,13 @@ sub upgrade500GA {
       }
       main::progress("done.\n");
 	  }
+      #bug 19348
+      main::progress("Updating LDAP Locker values");
+      stopLdap();
+      main::runAsZimbra("/opt/zimbra/sleepycat/bin/db_recover -h /opt/zimbra/openldap-data");
+      Migrate::log("Executing ${scriptDir}/migrate20071206-UpdateDBCONFIG.pl");
+      main::runAsZimbra("perl -I${scriptDir} ${scriptDir}/migrate20071206-UpdateDBCONFIG.pl");
+      startLdap();
 
   }
 
