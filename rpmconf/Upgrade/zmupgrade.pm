@@ -1737,22 +1737,84 @@ sub upgrade500GA {
     main::runAsZimbra("perl -I${scriptDir} ${scriptDir}/migrate20071204-deleteOldLDAPUsers.pl");
 
     # 22666
-    main::runAsZimbra("$ZMPORV mcf -zimbraGalLdapFilterDef 'zimbraMailDeliveryAddress,zimbraMailAlias,mail=email,email2,email3,email4,email5,email6'");
-    main::runAsZimbra("$ZMPORV mcf +zimbraGalLdapFilterDef 'zimbraMailDeliveryAddress,zimbraMailAlias,mail=email,email2,email3,email4,email5,email6,email7,email8,email9,email10,email11,email12,email13,email14,email15,email16'");
+    main::runAsZimbra("$ZMPROV mcf -zimbraGalLdapFilterDef 'zimbraMailDeliveryAddress,zimbraMailAlias,mail=email,email2,email3,email4,email5,email6'");
+    main::runAsZimbra("$ZMPROV mcf +zimbraGalLdapFilterDef 'zimbraMailDeliveryAddress,zimbraMailAlias,mail=email,email2,email3,email4,email5,email6,email7,email8,email9,email10,email11,email12,email13,email14,email15,email16'");
 
-    main::runAsZimbra("$ZMPORV mcf -zimbraGalLdapFilterDef 'zimbraAccountAutoComplete:(&(|(cn=%s*)(sn=%s*)(gn=%s*)(mail=%s*)(zimbraMailDeliveryAddress=%s*)(zimbraMailAlias=%s*))(|(objectclass=zimbraAccount)(objectclass=zimbraDistributionList))(!(objectclass=zimbraCalendarResource)))'");
-    main::runAsZimbra("$ZMPORV mcf +zimbraGalLdapFilterDef 'zimbraAccountAutoComplete:(&(|(displayName=*%s*)(cn=%s*)(sn=%s*)(gn=%s*)(mail=%s*)(zimbraMailDeliveryAddress=%s*)(zimbraMailAlias=%s*))(|(objectclass=zimbraAccount)(objectclass=zimbraDistributionList))(!(objectclass=zimbraCalendarResource)))'");
+    main::runAsZimbra("$ZMPROV mcf -zimbraGalLdapFilterDef 'zimbraAccountAutoComplete:(&(|(cn=%s*)(sn=%s*)(gn=%s*)(mail=%s*)(zimbraMailDeliveryAddress=%s*)(zimbraMailAlias=%s*))(|(objectclass=zimbraAccount)(objectclass=zimbraDistributionList))(!(objectclass=zimbraCalendarResource)))'");
+    main::runAsZimbra("$ZMPROV mcf +zimbraGalLdapFilterDef 'zimbraAccountAutoComplete:(&(|(displayName=*%s*)(cn=%s*)(sn=%s*)(gn=%s*)(mail=%s*)(zimbraMailDeliveryAddress=%s*)(zimbraMailAlias=%s*))(|(objectclass=zimbraAccount)(objectclass=zimbraDistributionList))(!(objectclass=zimbraCalendarResource)))'");
 
-    main::runAsZimbra("$ZMPORV mcf -zimbraGalLdapFilterDef 'zimbraAccounts:(&(|(cn=*%s*)(sn=*%s*)(gn=*%s*)(mail=*%s*)(zimbraMailDeliveryAddress=*%s*)(zimbraMailAlias=*%s*))(|(objectclass=zimbraAccount)(objectclass=zimbraDistributionList))(!(objectclass=zimbraCalendarResource)))'");
-    main::runAsZimbra("$ZMPORV mcf +zimbraGalLdapFilterDef 'zimbraAccounts:(&(|(displayName=*%s*)(cn=*%s*)(sn=*%s*)(gn=*%s*)(mail=*%s*)(zimbraMailDeliveryAddress=*%s*)(zimbraMailAlias=*%s*))(|(objectclass=zimbraAccount)(objectclass=zimbraDistributionList))(!(objectclass=zimbraCalendarResource)))
+    main::runAsZimbra("$ZMPROV mcf -zimbraGalLdapFilterDef 'zimbraAccounts:(&(|(cn=*%s*)(sn=*%s*)(gn=*%s*)(mail=*%s*)(zimbraMailDeliveryAddress=*%s*)(zimbraMailAlias=*%s*))(|(objectclass=zimbraAccount)(objectclass=zimbraDistributionList))(!(objectclass=zimbraCalendarResource)))'");
+    main::runAsZimbra("$ZMPROV mcf +zimbraGalLdapFilterDef 'zimbraAccounts:(&(|(displayName=*%s*)(cn=*%s*)(sn=*%s*)(gn=*%s*)(mail=*%s*)(zimbraMailDeliveryAddress=*%s*)(zimbraMailAlias=*%s*))(|(objectclass=zimbraAccount)(objectclass=zimbraDistributionList))(!(objectclass=zimbraCalendarResource)))
 '");
 
-    main::runAsZimbra("$ZMPORV mcf -zimbraGalLdapFilterDef 'zimbraResourceAutoComplete:(&(|(cn=%s*)(sn=%s*)(gn=%s*)(mail=%s*)(zimbraMailDeliveryAddress=%s*)(zimbraMailAlias=%s*))(objectclass=zimbraCalendarResource))'");
-    main::runAsZimbra("$ZMPORV mcf +zimbraGalLdapFilterDef 'zimbraResourceAutoComplete:(&(|(displayName=*%s*)(cn=%s*)(sn=%s*)(gn=%s*)(mail=%s*)(zimbraMailDeliveryAddress=%s*)(zimbraMailAlias=%s*))(objectclass=zimbraCalendarResource))'");
+    main::runAsZimbra("$ZMPROV mcf -zimbraGalLdapFilterDef 'zimbraResourceAutoComplete:(&(|(cn=%s*)(sn=%s*)(gn=%s*)(mail=%s*)(zimbraMailDeliveryAddress=%s*)(zimbraMailAlias=%s*))(objectclass=zimbraCalendarResource))'");
+    main::runAsZimbra("$ZMPROV mcf +zimbraGalLdapFilterDef 'zimbraResourceAutoComplete:(&(|(displayName=*%s*)(cn=%s*)(sn=%s*)(gn=%s*)(mail=%s*)(zimbraMailDeliveryAddress=%s*)(zimbraMailAlias=%s*))(objectclass=zimbraCalendarResource))'");
 
-    main::runAsZimbra("$ZMPORV mcf -zimbraGalLdapFilterDef 'zimbraResources:(&(|(cn=*%s*)(sn=*%s*)(gn=*%s*)(mail=*%s*)(zimbraMailDeliveryAddress=*%s*)(zimbraMailAlias=*%s*))(objectclass=zimbraCalendarResource))
+    main::runAsZimbra("$ZMPROV mcf -zimbraGalLdapFilterDef 'zimbraResources:(&(|(cn=*%s*)(sn=*%s*)(gn=*%s*)(mail=*%s*)(zimbraMailDeliveryAddress=*%s*)(zimbraMailAlias=*%s*))(objectclass=zimbraCalendarResource))
 '");
-    main::runAsZimbra("$ZMPORV mcf +zimbraGalLdapFilterDef 'zimbraResources:(&(|(displayName=*%s*)(cn=*%s*)(sn=*%s*)(gn=*%s*)(mail=*%s*)(zimbraMailDeliveryAddress=*%s*)(zimbraMailAlias=*%s*))(objectclass=zimbraCalendarResource))'");
+    main::runAsZimbra("$ZMPROV mcf +zimbraGalLdapFilterDef 'zimbraResources:(&(|(displayName=*%s*)(cn=*%s*)(sn=*%s*)(gn=*%s*)(mail=*%s*)(zimbraMailDeliveryAddress=*%s*)(zimbraMailAlias=*%s*))(objectclass=zimbraCalendarResource))'");
+
+    my %attrs = (
+      zimbraDataSourceMinPollingInterval => "1m",
+      zimbraFeatureCalendarUpsellEnabled => "FALSE",
+      zimbraFeatureContactsUpsellEnabled => "FALSE",
+      zimbraFeatureFlaggingEnabled => "TRUE",
+      zimbraFeatureImapDataSourceEnabled => "TRUE",
+      zimbraFeatureInstantNotify => "TRUE",
+      zimbraFeatureMailPollingIntervalPreferenceEnabled => "TRUE",
+      zimbraFeatureMailPriorityEnabled => "TRUE",
+      zimbraFeatureMailUpsellEnabled => "FALSE",
+      zimbraFeatureOptionsEnabled => "TRUE",
+      zimbraFeaturePortalEnabled => "FALSE",
+      zimbraFeatureShortcutAliasesEnabled => "TRUE",
+      zimbraFeatureSignaturesEnabled => "TRUE",
+      zimbraFeatureVoiceEnabled => "FALSE",
+      zimbraFeatureVoiceUpsellEnabled => "FALSE",
+      zimbraFeatureZimbraAssistantEnabled => "TRUE",
+      zimbraMailSignatureMaxLength => "1024",
+      zimbraNotebookMaxRevisions => "0",
+      zimbraPortalName => "example",
+      zimbraPrefAutoSaveDraftInterval => "30s",
+      zimbraPrefCalendarDayHourEnd => "18",
+      zimbraPrefCalendarDayHourStart => "8",
+      zimbraPrefClientType => "advanced",
+      zimbraPrefDeleteInviteOnReply => "TRUE",
+      zimbraPrefDisplayExternalImages => "FALSE",
+      zimbraPrefIMAutoLogin => "FALSE",
+      zimbraPrefIMFlashIcon => "TRUE",
+      zimbraPrefIMIdleStatus => "away",
+      zimbraPrefIMIdleTimeout => "10",
+      zimbraPrefIMInstantNotify => "TRUE",
+      zimbraPrefIMLogChatsEnabled => "TRUE",
+      zimbraPrefIMLogChats => "TRUE",
+      zimbraPrefIMNotifyPresence => "TRUE",
+      zimbraPrefIMNotifyStatus => "TRUE",
+      zimbraPrefIMReportIdle => "TRUE",
+      zimbraPrefIMSoundsEnabled => "TRUE",
+      zimbraPrefInboxReadLifetime => "0",
+      zimbraPrefInboxUnreadLifetime => "0",
+      zimbraPrefJunkLifetime => "0",
+      zimbraPrefOpenMailInNewWindow => "FALSE",
+      zimbraPrefSentLifetime => "0",
+      zimbraPrefShowSelectionCheckbox => "TRUE",
+      zimbraPrefTrashLifetime => "0",
+      zimbraPrefVoiceItemsPerPage => "25",
+      zimbraPrefWarnOnExit => "TRUE",
+      zimbraSignatureMaxNumEntries => "20",
+      zimbraSignatureMinNumEntries => "1",
+    );
+	  my @coses = `su - zimbra -c "$ZMPROV gac"`;
+	  foreach my $cos (@coses) {
+		  chomp $cos;
+      main::progress("Updating attributes for $cos COS...");
+      foreach my $attr (keys %attrs) {
+        my $cur_value = main::getLdapCOSValue($cos,$attr);
+        main::runAsZimbra("$ZMPROV mc $cos $attr $attrs{$attr}")
+          if ($cur_value eq "");
+      }
+      main::progress("done.\n");
+	  }
+
   }
 
   if (main::isInstalled("zimbra-proxy")) {
