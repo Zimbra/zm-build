@@ -1822,6 +1822,29 @@ sub upgrade500GA {
       main::runAsZimbra("perl -I${scriptDir} ${scriptDir}/migrate20071206-UpdateDBCONFIG.pl");
       startLdap();
 
+      #bug 22746
+      my $ldap_pass = `su - zimbra -c "zmlocalconfig -s -m nokey zimbra_ldap_password"`;
+      my $ldap_master_url = `su - zimbra -c "zmlocalconfig -s -m nokey ldap_master_url"`;
+      my $ldap;
+      chomp($ldap_master_url);    chomp($ldap_pass);
+      unless($ldap = Net::LDAP->new($ldap_master_url)) {      main::progress("Unable to contact $ldap_master_url: $!\n");
+        return 1;    }
+      if ($ldap_master_url !~ /^ldaps/i) {
+        my $result = $ldap->start_tls(verify=>'none');
+        if ($result->code()) {
+          main::progress("Unable to startTLS: $!\n");
+          return 1;
+        }
+      }
+      my $dn = 'cn=config,cn=zimbra';
+      my $result = $ldap->bind("uid=zimbra,cn=admins,cn=zimbra", password => $ldap_pass);
+      unless($result->code()) {
+        $result = $ldap->modify( $dn, delete => { 'zimbraMtaCommonBlockedExtension' => 'hta '});
+        main::progress($result->code() ? "Failed to delete zimbraMtaCommonBlockedExtension:hta ".$result->error()."\n" : "Deleted zimbraMtaCommonBlockedExtension: hta \n");
+        $result = $ldap->modify( $dn, add => { 'zimbraMtaCommonBlockedExtension' => 'hta'});
+        main::progress($result->code() ? "Failed to add zimbraMtaCommonBlockedExtension:hta ".$result->error()."\n" : "Added zimbraMtaCommonBlockedExtension:hta\n");
+      }
+      $result = $ldap->unbind;
   }
 
   if (main::isInstalled("zimbra-proxy")) {
