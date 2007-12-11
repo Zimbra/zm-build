@@ -5,8 +5,8 @@
 
 # This definition stops the following lines choking if HOME isn't
 # defined.
-HOME			= $ENV::HOME/ssl
-RANDFILE		= $ENV::HOME/ssl/.rnd
+HOME			= /opt/zimbra/ssl
+RANDFILE	= /opt/zimbra/ssl/.rnd
 
 # Extra OBJECT IDENTIFIER info:
 #oid_file		= $ENV::HOME/.oid
@@ -34,14 +34,14 @@ default_ca	= CA_default		# The default ca section
 ####################################################################
 [ CA_default ]
 
-dir		= /opt/zimbra/ssl/ssl/newCA		# Where everything is kept
+dir		= /opt/zimbra/ssl/zimbra/ca		# Where everything is kept
 certs		= $dir/certs		# Where the issued certs are kept
 crl_dir		= $dir/crl		# Where the issued crl are kept
 database	= $dir/index.txt	# database index file.
 new_certs_dir	= $dir/newcerts		# default place for new certs.
 
 certificate	= $dir/cacert.pem 	# The CA certificate
-serial		= /opt/zimbra/ssl/ssl/ca/ca.srl 		# The current serial number
+serial		= /opt/zimbra/ssl/zimbra/ca/ca.srl 		# The current serial number
 crl		= $dir/crl.pem 		# The current CRL
 private_key	= $dir/private/cakey.pem# The private key
 RANDFILE	= $dir/private/.rand	# private random number file
@@ -68,7 +68,7 @@ preserve	= no			# keep passed DN ordering
 # A few difference way of specifying how similar the request should look
 # For type CA, the listed attributes must be the same, and the optional
 # and supplied fields are just that :-)
-policy		= policy_match
+policy		= policy_anything
 
 # For the CA policy
 [ policy_match ]
@@ -128,14 +128,14 @@ localityName			= Locality Name (eg, city)
 localityName_default		= N/A
 
 0.organizationName		= Organization Name (eg, company)
-0.organizationName_default	= Zimbra Collaboration Suite
+0.organizationName_default	= N/A
 
 # we can do this but it is not needed normally :-)
 #1.organizationName		= Second Organization Name (eg, company)
 #1.organizationName_default	= World Wide Web Pty Ltd
 
 organizationalUnitName		= Organizational Unit Name (eg, section)
-#organizationalUnitName_default	=
+organizationalUnitName_default	= Zimbra Collaboration Suite
 
 commonName			= Common Name (eg, your name or your server\'s hostname)
 commonName_max			= 64
@@ -203,14 +203,7 @@ authorityKeyIdentifier=keyid,issuer:always
 #nsRenewalUrl
 #nsCaPolicyUrl
 #nsSslServerName
-
-[ v3_req ]
-
-# Extensions to add to a certificate request
-
-basicConstraints = CA:FALSE
-keyUsage = nonRepudiation, digitalSignature, keyEncipherment
-@@ALTNAMES@@
+@@SUBJECT_ALT_NAMES@@
 
 [ v3_ca ]
 
@@ -256,3 +249,13 @@ basicConstraints = CA:true
 
 # issuerAltName=issuer:copy
 authorityKeyIdentifier=keyid:always,issuer:always
+
+
+[ v3_req ]
+
+# Extensions to add to a certificate request
+
+basicConstraints = CA:FALSE
+keyUsage = nonRepudiation, digitalSignature, keyEncipherment
+@@SUBJECT_ALT_NAMES@@
+
