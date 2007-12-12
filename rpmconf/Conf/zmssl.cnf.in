@@ -68,7 +68,7 @@ preserve	= no			# keep passed DN ordering
 # A few difference way of specifying how similar the request should look
 # For type CA, the listed attributes must be the same, and the optional
 # and supplied fields are just that :-)
-policy		= policy_anything
+policy		= policy_match
 
 # For the CA policy
 [ policy_match ]
