@@ -1338,6 +1338,8 @@ getInstallPackages() {
         LOGGER_SELECTED="yes"
       elif [ $i = "zimbra-store" ]; then
         STORE_SELECTED="yes"
+      elif [ $i = "zimbra-apache" ]; then
+        APACHE_SELECTED="yes"
       elif [ $i = "zimbra-cluster" ]; then
         CLUSTER_SELECTED="yes"
       fi
