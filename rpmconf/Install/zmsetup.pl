@@ -804,10 +804,10 @@ sub setLdapDefaults {
 
   $config{zimbraPrefTimeZoneId}=getLdapCOSValue("default", "zimbraPrefTimeZoneId");
 
-  if ($prevVersionMajor < 5 && !$options{c}) {
-    $config{zimbraFeatureIMEnabled} = "";
-    $config{zimbraFeatureBriefcasesEnabled} = "";
-    $config{zimbraFeatureTasksEnabled} = "";
+  if ($prevVersionMajor < 5) {
+    $config{zimbraFeatureIMEnabled} = "Disabled";
+    $config{zimbraFeatureBriefcasesEnabled} = "Disabled";
+    $config{zimbraFeatureTasksEnabled} = "Disabled";
     $config{zimbraFeatureNotebookEnabled} = "Enabled";
   } else {
     $config{zimbraFeatureIMEnabled}=getLdapCOSValue("default", "zimbraFeatureIMEnabled");
@@ -956,17 +956,21 @@ sub setDefaults {
     $config{LICENSEFILE} = $config{DEFAULTLICENSEFILE}
       if (-f "$config{DEFAULTLICENSEFILE}" && isNetwork());
 
-    if (!$newinstall && $prevVersionMajor < 5 && !$options{c}) {
-      $config{zimbraFeatureIMEnabled} = "";
-      $config{zimbraFeatureBriefcasesEnabled} = "";
-      $config{zimbraFeatureTasksEnabled} = "";
-      $config{zimbraFeatureNotebookEnabled} = "Enabled";
+    if (!$newinstall) {
+      $config{zimbraFeatureIMEnabled} = "Disabled"
+        if ($config{zimbraFeatureIMEnabled} eq "");
+      $config{zimbraFeatureBriefcasesEnabled} = "Disabled"
+        if ($config{zimbraFeatureBriefcasesEnabled} eq "");
+      $config{zimbraFeatureTasksEnabled} = "Disabled"
+        if ($config{zimbraFeatureTasksEnabled} eq "");
+      $config{zimbraFeatureNotebookEnabled} = "Enabled"
+        if ($config{zimbraFeatureNotebookEnabled} eq "");
     } else {
       $config{zimbraFeatureIMEnabled} = "Disabled"
         if ($config{zimbraFeatureIMEnabled} eq "");
       $config{zimbraFeatureNotebookEnabled} = "Enabled"
         if ($config{zimbraFeatureNotebookEnabled} eq "");
-      $config{zimbraFeatureBriefcasesEnabled} = "Disabled"
+      $config{zimbraFeatureBriefcasesEnabled} = "Enabled"
         if ($config{zimbraFeatureBriefcasesEnabled} eq "");
       $config{zimbraFeatureTasksEnabled} = "Enabled"
         if ($config{zimbraFeatureTasksEnabled} eq "");
