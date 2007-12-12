@@ -1805,11 +1805,14 @@ sub upgrade500GA {
 	  foreach my $cos (@coses) {
 		  chomp $cos;
       main::progress("Updating attributes for $cos COS...");
+      my $attrs = "";
       foreach my $attr (keys %attrs) {
         my $cur_value = main::getLdapCOSValue($cos,$attr);
-        main::runAsZimbra("$ZMPROV mc $cos $attr $attrs{$attr}")
+        $attrs .= "$attr $attrs{$attr} "
           if ($cur_value eq "");
       }
+      main::runAsZimbra("$ZMPROV mc $cos $attrs");
+      
       main::progress("done.\n");
 	  }
       #bug 19348
