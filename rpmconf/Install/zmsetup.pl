@@ -3208,6 +3208,11 @@ sub configSetupLdap {
       progress("done.\n");
       progress ( "Enabling ldap replication..." );
       my $rc = runAsZimbra ("/opt/zimbra/libexec/zmldapenablereplica");
+      if ( ! -f "/opt/zimbra/.enable_replica" ) {
+         my $file="/opt/zimbra/.enable_replica";
+         open(ER,">>$file");
+         close ER;
+      }
       if ($rc == 0) {
         #unlink "/opt/zimbra/.enable_replica";
         $config{DOCREATEADMIN} = "no";
