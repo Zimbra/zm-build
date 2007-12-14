@@ -1800,6 +1800,7 @@ sub upgrade500GA {
       zimbraPrefWarnOnExit => "TRUE",
       zimbraSignatureMaxNumEntries => "20",
       zimbraSignatureMinNumEntries => "1",
+      zimbraJunkMessagesIndexingEnabled => "TRUE",
     );
 	  my @coses = `su - zimbra -c "$ZMPROV gac"`;
 	  foreach my $cos (@coses) {
@@ -1876,7 +1877,6 @@ sub upgrade500GA {
 
   if (main::isInstalled("zimbra-store")) {
     main::runAsZimbra("$ZMPROV mcf zimbraLogToSyslog FALSE");
-    main::runAsZimbra("$ZMPROV mcf zimbraJunkMessagesIndexingEnabled TRUE");
     main::runAsZimbra("$ZMPROV mcf zimbraMailDiskStreamingThreshold 1048576");
     main::runAsZimbra("$ZMPROV mcf zimbraMailPurgeSleepInterval 0");
     main::runAsZimbra("$ZMPROV mcf zimbraMtaAuthTarget TRUE");
