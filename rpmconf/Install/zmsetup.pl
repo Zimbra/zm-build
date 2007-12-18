@@ -3559,6 +3559,7 @@ sub configSetCluster {
 sub zimletCleanup {
   my $ldap_pass = getLocalConfig("zimbra_ldap_password");
   my $ldap_master_url = getLocalConfig("ldap_master_url");
+  my $ldap_dit_base_dn_config = getLocalConfig("ldap_dit_base_dn_config");
   my $ldap;
   unless($ldap = Net::LDAP->new($ldap_master_url)) {
     detail("Unable to contact $ldap_master_url: $!");
@@ -3566,6 +3567,9 @@ sub zimletCleanup {
   }
   my $ldap_dn = $config{zimbra_ldap_userdn};
   my $ldap_base = "cn=zimlets,cn=zimbra";
+  $ldap_base = "$ldap_base,$ldap_dit_base_dn_config"
+    unless ($ldap_dit_base_dn_config eq "");
+
   my $result = $ldap->bind($ldap_dn, password => $ldap_pass);
   if ($result->code()) {
     detail("ldap bind failed for $ldap_dn");
