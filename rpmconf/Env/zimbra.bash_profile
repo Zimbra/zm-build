@@ -8,9 +8,11 @@ fi
 
 # User specific environment and startup programs
 
-BASH_ENV=$HOME/.bashrc
-USERNAME="zimbra"
+# this breaks unicode_start on vt consoles
+#BASH_ENV=$HOME/.bashrc
+#export BASH_ENV
 
-export USERNAME BASH_ENV 
+USERNAME="zimbra"
+export USERNAME
 
 export LANG=C
