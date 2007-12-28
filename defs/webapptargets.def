@@ -3,7 +3,7 @@
 
 BUILD_TYPE := FOSS
 
-MWDOWNLOAD = $(shell cd $(WEBAPP_DIR)/zimbra/downloads; ls ZCSExhangeMigrationWizard*)
+MWDOWNLOAD = $(shell cd $(WEBAPP_DIR)/zimbra/downloads; ls ZCSExchangeMigrationWizard*)
 IWDOWNLOAD = $(shell cd $(WEBAPP_DIR)/zimbra/downloads; ls ZCSPSTImportWizard*)
 CNDOWNLOAD = $(shell cd $(WEBAPP_DIR)/zimbra/downloads; ls ZimbraOl*)
 CMDOWNLOAD = $(shell cd $(WEBAPP_DIR)/zimbra/downloads; ls ZmCus*)
@@ -24,7 +24,7 @@ $(SERVICE_DIR)/$(WEBAPP_BUILD_DIR)/service.war:
 		-Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) \
 		-Dzimbra.buildinfo.host=$(HOST) dev-dist ; )
 
-$(WEBAPP_DIR)/zimbraAdmin.war: $(WEBAPP_DIR) $(CONSOLE_DIR)/$(WEBAPP_BUILD_DIR)/zimbraAdmin.war
+$(WEBAPP_DIR)/zimbraAdmin.war: $(WEBAPP_DIR) $(CONSOLE_DIR)/$(WEBAPP_BUILD_DIR)/zimbraAdmin.war $(WEBAPP_DIR)/zimbra/downloads
 	mkdir $(WEBAPP_DIR)/zimbraAdmin
 	(cd $(WEBAPP_DIR)/zimbraAdmin; jar xf $(CONSOLE_DIR)/build/dist/$(MAILBOXD_SERVER)/webapps/zimbraAdmin.war)
 	for download in $(IWDOWNLOAD); do \
