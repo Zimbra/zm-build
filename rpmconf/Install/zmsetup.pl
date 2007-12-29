@@ -126,6 +126,7 @@ my $ldapPostChanged = 0;
 my $ldapAmavisChanged = 0;
 my $ldapReplica = 0;
 my $starttls = 0;
+my $needNewCert = "";
 
 my @interfaces = ();
 
@@ -2950,16 +2951,64 @@ sub checkMenuConfig {
 }
 
 sub verifyLdap {
-  # My laptop can't always find itself...
-  my $H = $config{LDAPHOST};
   if (($config{LDAPHOST} eq $config{HOSTNAME}) && !$ldapConfigured) {
     return 0;
   }
+
+  # check zimbra ldap admin user binding to the master
   if ($config{LDAPADMINPASS} eq "" || $config{LDAPPORT} eq "" || $config{LDAPHOST} eq "") {
     detail ( "ldap configuration not complete\n" );
     return 1;
   }
-  detail( "Checking ldap on ${H}:$config{LDAPPORT}");
+  if (checkLdapBind($config{zimbra_ldap_userdn},$config{LDAPADMINPASS})) {
+    detail ("Couldn't bind to $config{LDAPHOST} as $config{zimbra_ldap_userdn}\n");
+    return 1 
+  } else {
+    detail ("Verified $config{zimbra_ldap_userdn} on $config{LDAPHOST}.\n");
+    setLocalConfig ("zimbra_ldap_password", $config{LDAPADMINPASS});
+  }
+
+  # check postfix and amavis user binding to the master
+  if (isInstalled("zimbra-mta")) {
+    if ($config{LDAPPOSTPASS} eq "" || $config{LDAPAMAVISPASS} eq "") {
+      detail ("mta configuration not complete\n");
+      return 1;
+    }
+    my $binduser = "uid=zmpostfix,cn=appacts,cn=zimbra";
+    if (checkLdapBind($binduser,$config{LDAPPOSTPASS})) {
+      detail ("Couldn't bind to $config{LDAPHOST} as $binduser\n");
+      #return 1 
+    }
+    my $binduser = "uid=zmamavis,cn=appacts,cn=zimbra";
+    if (checkLdapBind($binduser,$config{LDAPAMAVISPASS})) {
+      detail ("Couldn't bind to $config{LDAPHOST} as $binduser\n");
+      #return 1 
+    } else {
+      detail ("Verified $binduser on $config{LDAPHOST}.\n");
+    }
+  }
+
+  # check replication user binding to master
+  if (isInstalled("zimbra-ldap") && $config{LDAPHOST} ne $config{HOSTNAME}) {
+    if ($config{LDAPREPPASS} eq "") {
+      detail ("ldap configuration not complete\n");
+      return 1;
+    }
+    my $binduser = "uid=zmreplica,cn=admins,cn=zimbra";
+    if (checkLdapBind($binduser,$config{LDAPREPPASS})) {
+      detail ("Couldn't bind to $config{LDAPHOST} as $binduser\n");
+      #return 1 
+    } else {
+      detail ("Verified $binduser on $config{LDAPHOST}.\n");
+    }
+  }
+  return 0;
+}
+
+sub checkLdapBind() {
+  my ($binduser,$bindpass) = @_;
+
+  detail( "Checking ldap on $config{LDAPHOST}:$config{LDAPPORT}");
   my $ldap;
   my $ldap_secure = (($config{LDAPPORT} == "636") ? "s" : "");
   my $ldap_url = "ldap${ldap_secure}://$config{LDAPHOST}:$config{LDAPPORT}";
@@ -2978,16 +3027,15 @@ sub verifyLdap {
   } else {
     $starttls = 0;
   }
-  my $result = $ldap->bind("$config{zimbra_ldap_userdn}", password => $config{LDAPADMINPASS});
+  my $result = $ldap->bind($binduser, password => $bindpass);
   if ($result->code()) {
-    detail ("Unable to bind to $ldap_url with password $config{LDAPADMINPASS}: $!");
+    detail ("Unable to bind to $ldap_url with user $binduser and password $bindpass: $!");
     return 1;
   } else {
     $ldap->unbind;
     detail ("Verfied ldap running at $ldap_url\n");
     setLocalConfig ("ldap_url", $ldap_url);
     setLocalConfig ("ldap_starttls_supported", $starttls);
-    setLocalConfig ("zimbra_ldap_password", $config{LDAPADMINPASS});
     return 0;
   }
 
@@ -3161,9 +3209,18 @@ sub configCASetup {
     progress ( "done.\n" );
   }
   progress ( "Setting up CA..." );
-  runAsRoot("/opt/zimbra/bin/zmcertmgr createca");
+  if (! $newinstall) {
+    if (-f "/opt/zimbra/conf/ca/ca.pem") {
+      my $rc = runAsRoot("openssl verify -purpose sslserver -CAfile /opt/zimbra/conf/ca/ca.pem /opt/zimbra/conf/ca/ca.pem | egrep \"^error 10\"");
+      $needNewCert = "-new" if ($rc == 0);
+    } else {
+      $needNewCert = "-new";
+    }
+  } else {
+    $needNewCert = "-new";
+  }
+  runAsRoot("/opt/zimbra/bin/zmcertmgr createca $needNewCert");
   progress ( "done.\n" );
-  
   configLog("configCASetup");
 }
 
@@ -3177,8 +3234,8 @@ sub configSetupLdap {
 
   if (!$ldapConfigured && isEnabled("zimbra-ldap") && ! -f "/opt/zimbra/.enable_replica" && $newinstall && ($config{LDAPHOST} eq $config{HOSTNAME})) {
     progress ( "Initializing ldap..." ) ;
-    if (my $rc = runAsZimbraWithOutput("/opt/zimbra/libexec/zmldapinit $config{LDAPROOTPASS} $config{LDAPADMINPASS}")) {
-      progress ( "FAILED ($rc)\n" );
+    if (my $rc = runAsZimbra("/opt/zimbra/libexec/zmldapinit $config{LDAPROOTPASS} $config{LDAPADMINPASS}")) {
+      progress ( "failed. ($rc)\n" );
       failConfig();
     } else {
       progress ( "done.\n" );
@@ -3334,19 +3391,19 @@ sub configCreateCert {
         `chown -R zimbra:zimbra $config{mailboxd_directory}`;
         `chmod 744 $config{mailboxd_directory}/etc`;
       }
-      runAsRoot("/opt/zimbra/bin/zmcertmgr install self");
+      runAsRoot("/opt/zimbra/bin/zmcertmgr deploycrt self $needNewCert");
     }
   }
 
   if (isInstalled("zimbra-ldap")) {
     if ( !-f "/opt/zimbra/conf/slapd.crt" && !-f "/opt/zimbra/ssl/ssl/server.crt") {
-      runAsRoot("/opt/zimbra/bin/zmcertmgr install self");
+      runAsRoot("/opt/zimbra/bin/zmcertmgr deploycrt self $needNewCert");
     }
   }
 
   if (isInstalled("zimbra-mta")) {
     if ( !-f "/opt/zimbra/conf/smtpd.crt" && !-f "/opt/zimbra/ssl/ssl/server.crt") {
-      runAsRoot("/opt/zimbra/bin/zmcertmgr install self");
+      runAsRoot("/opt/zimbra/bin/zmcertmgr deploycrt self $needNewCert");
     }
   }
   progress ( "done.\n" );
@@ -3365,13 +3422,13 @@ sub configInstallCert {
     progress ("Installing SSL certificate...");
     if (isEnabled("zimbra-store")) {
       if (!-f "$config{mailboxd_keystore}") {
-        runAsRoot("/opt/zimbra/bin/zmcertmgr install self");
+        runAsRoot("/opt/zimbra/bin/zmcertmgr deploycrt self $needNewCert");
       }
     }
     if (isEnabled("zimbra-mta")) {
       if (! (-f "/opt/zimbra/conf/smtpd.key" || 
         -f "/opt/zimbra/conf/smtpd.crt")) {
-        runAsRoot("/opt/zimbra/bin/zmcertmgr install self");
+        runAsRoot("/opt/zimbra/bin/zmcertmgr deploycrt self $needNewCert");
       }
     }
     progress ( "done.\n" );
@@ -3380,7 +3437,7 @@ sub configInstallCert {
     if (! (-f "/opt/zimbra/conf/slapd.key" || 
       -f "/opt/zimbra/conf/slapd.crt")) {
       progress ("Installing LDAP SSL certificate...");
-      runAsRoot("/opt/zimbra/bin/zmcertmgr install self");
+      runAsRoot("/opt/zimbra/bin/zmcertmgr deploycrt self $needNewCert");
       progress ( "done.\n" );
     }
   }
@@ -3389,7 +3446,7 @@ sub configInstallCert {
     if (! (-f "/opt/zimbra/conf/nginx.key" || 
       -f "/opt/zimbra/conf/nginx.crt")) {
       progress ("Installing Proxy SSL certificate...");
-      runAsRoot("/opt/zimbra/bin/zmcertmgr install self");
+      runAsRoot("/opt/zimbra/bin/zmcertmgr deploycrt self $needNewCert");
       progress ( "done.\n" );
     }
   }
