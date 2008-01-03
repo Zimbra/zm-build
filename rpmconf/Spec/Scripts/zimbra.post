@@ -86,6 +86,11 @@ if [ -d "/opt/zimbra/mailboxd/work/zimbra" ]; then
   find /opt/zimbra/mailboxd/work/zimbra -exec touch {} \; 2> /dev/null
 fi
 
+# make sure the class files get recompiled and are up-to-date
+if [ -d "/opt/zimbra/mailboxd/work/zimbraAdmin" ]; then
+  rm -rf /opt/zimbra/mailboxd/work/zimbraAdmin > /dev/null 2>&1
+fi
+
 if [ -x "/opt/zimbra/libexec/zmfixperms" ]; then
   /opt/zimbra/libexec/zmfixperms
 fi
