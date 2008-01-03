@@ -869,6 +869,20 @@ sub setDefaults {
     push @interfaces, $_;
   }
   close INTS;
+  if (-x "/sbin/ip") {
+    open INTS, "/sbin/ip addr| grep 'inet ' |";
+    foreach (<INTS>) {
+      chomp;
+      s/.*inet //;
+      s/\s.*//;
+      s/\/\d+$//;
+      s/[a-zA-Z:]//g;
+      push @interfaces, $_;
+    }
+  close INTS;
+  }
+  my %seen=();
+  @interfaces = grep {!$seen{$_}++} @interfaces;
 
   $config{EXPANDMENU} = "no";
   $config{REMOVE} = "no";

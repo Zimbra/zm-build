@@ -229,11 +229,12 @@ if [ $SOFTWAREONLY = "yes" ]; then
 	echo ""
 	echo "Operations logged to $LOGFILE"
 	echo ""
-	echo "Run /opt/zimbra/libexec/zmsetup.pl to configure the system"
-	echo ""
 
   if [ x"$CLUSTERTYPE" = "xstandby" ]; then
     clusterStandbyPostInstall
+  else
+	  echo "Run /opt/zimbra/libexec/zmsetup.pl to configure the system"
+	  echo ""
   fi
 
 	exit 0
@@ -246,4 +247,9 @@ if [ "x$DEFAULTFILE" != "x" ]; then
 	/opt/zimbra/libexec/zmsetup.pl -c $DEFAULTFILE
 else
 	/opt/zimbra/libexec/zmsetup.pl
+fi
+
+# Cluster postinstall for active node. 
+if [ x"$CLUSTERTYPE" = "xactive" ]; then
+  clusterActivePostInstall
 fi
