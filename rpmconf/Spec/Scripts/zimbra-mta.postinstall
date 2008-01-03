@@ -25,7 +25,7 @@ rm -f /opt/zimbra/postfix
 ln -s /opt/zimbra/postfix-2.4.3.3z /opt/zimbra/postfix
 
 rm -f /opt/zimbra/clamav
-ln -s /opt/zimbra/clamav-0.91.2 /opt/zimbra/clamav
+ln -s /opt/zimbra/clamav-0.92 /opt/zimbra/clamav
 
 if [ ! -d /opt/zimbra/zimbramon/mrtg/work/ ]; then
 	mkdir -p /opt/zimbra/zimbramon/mrtg/work/
