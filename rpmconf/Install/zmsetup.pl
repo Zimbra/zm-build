@@ -3527,6 +3527,10 @@ sub configSetMtaAuthHost {
   configLog("configSetMtaAuthHost");
 }
 
+sub configSetStoreDefaults {
+  runAsZimbra("$ZMPROV ms $config{HOSTNAME} zimbraReverseProxyLookupTarget TRUE");
+}
+
 sub configSetServicePorts {
 
   if ($configStatus{configSetServicePorts} eq "CONFIGURED") {
@@ -4069,6 +4073,8 @@ sub applyConfig {
     configSetCEFeatures();
 
     configSetNEFeatures() if isNetwork();
+
+    configSetStoreDefaults();
   }
 
   if (isEnabled("zimbra-mta")) {
