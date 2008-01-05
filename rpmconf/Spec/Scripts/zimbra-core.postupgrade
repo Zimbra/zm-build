@@ -93,6 +93,11 @@ if [ -d $SAVEDIR/zimlet -a -d /opt/zimbra/mailboxd/webapps/service ]; then
   cp -rf $SAVEDIR/zimlet /opt/zimbra/mailboxd/webapps/service/
 fi
 
+egrep -v -e '^%zimbra.*zmcertmgr' /etc/sudoers > /tmp/sudoers
+echo "%zimbra ALL=NOPASSWD:/opt/zimbra/bin/zmcertmgr" >> /tmp/sudoers
+mv -f /tmp/sudoers /etc/sudoers
+chmod 440 /etc/sudoers
+
 # log rotation
 if [ -d "/etc/periodic/daily" ]; then
   cp /opt/zimbra/libexec/600.zimbra /etc/periodic/daily/600.zimbra
