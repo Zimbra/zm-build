@@ -160,6 +160,11 @@ chown zimbra:zimbra /opt/zimbra/.ssh
 mkdir /opt/zimbra/zmstat
 chown zimbra:zimbra /opt/zimbra/zmstat
 
+egrep -v -e '^%zimbra.*zmcertmgr' /etc/sudoers > /tmp/sudoers
+echo "%zimbra ALL=NOPASSWD:/opt/zimbra/bin/zmcertmgr" >> /tmp/sudoers
+mv -f /tmp/sudoers /etc/sudoers
+chmod 440 /etc/sudoers
+
 if [ -x "/opt/zimbra/libexec/zmfixperms" ]; then
   /opt/zimbra/libexec/zmfixperms
 fi
