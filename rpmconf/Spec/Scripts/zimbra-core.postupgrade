@@ -107,7 +107,7 @@ fi
 
 VER="FOO"
 getPkgVersion() {
-	VER=`grep -C1 CFBundleGetInfoString ${PACKAGE_PATH}/Contents/Info.plist  | \
+	VER=`grep -C1 CFBundleGetInfoString "${PACKAGE_PATH}/Contents/Info.plist"  | \
 		tail -1 | \
 		sed -e 's/\<[^>]*\>//g' -e 's/^	*//g' | awk -F, '{print $1}'`
 }
