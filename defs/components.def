@@ -47,6 +47,7 @@ STORE_COMPONENTS := \
 	$(STORE_DEST_DIR)/zimlets-extra \
 	$(STORE_DEST_DIR)/zimlets-admin-extra \
 	$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/common/lib \
+	$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/common/endorsed \
 	$(MAILBOXD_COMPONENTS) \
 	$(STORE_DEST_DIR)/lib/ext/clamscanner/clamscanner.jar \
 	$(STORE_DEST_DIR)/lib/ext/zimbraldaputils/zimbraldaputils.jar \
