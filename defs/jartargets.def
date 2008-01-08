@@ -8,5 +8,9 @@ $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/common/lib: $(STORE_DEST_DIR)/$(MAILBOXD_DIR) 
 	mkdir -p $@
 	cp $(SERVICE_DIR)/build/dist/$(MAILBOXD_SERVER)/common/lib/*.jar $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/common/lib
 
+$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/common/endorsed: $(STORE_DEST_DIR)/$(MAILBOXD_DIR) $(WEBAPP_DIR)/service.war
+	mkdir -p $@
+	cp $(SERVICE_DIR)/build/dist/$(MAILBOXD_SERVER)/common/endorsed/*.jar $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/common/endorsed
+
 $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/lib/log4j-1.2.8.jar: $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/lib $(WEBAPP_DIR)/service.war
 	cp $(SERVICE_DIR)/build/dist/lib/jars/log4j-1.2.8.jar $@
