@@ -909,7 +909,7 @@ sub setDefaults {
   }
   chomp $config{HOSTNAME};
 
-  $config{ldap_dit_base_dn_config} eq "cn=zimbra" 
+  $config{ldap_dit_base_dn_config} = "cn=zimbra" 
     if ($config{ldap_dit_base_dn_config} eq "");
   $config{mailboxd_directory} = "/opt/zimbra/mailboxd";
   if ( -f "/opt/zimbra/jetty/start.jar" ) {
@@ -1263,7 +1263,7 @@ sub setDefaultsFromLocalConfig {
     if (getLocalConfig("zimbra_ldap_userdn") ne "");
 
   $config{ldap_dit_base_dn_config} = getLocalConfig("ldap_dit_base_dn_config");
-  $config{ldap_dit_base_dn_config} eq "cn=zimbra" 
+  $config{ldap_dit_base_dn_config} = "cn=zimbra" 
     if ($config{ldap_dit_base_dn_config} eq "");
 
   if (isEnabled("zimbra-snmp")) {
@@ -3206,7 +3206,8 @@ sub configLCValues {
   setLocalConfig ("mailboxd_truststore_password", "$config{mailboxd_truststore_password}");
   setLocalConfig ("mailboxd_keystore_password", "$config{mailboxd_keystore_password}");
   setLocalConfig ("zimbra_ldap_userdn", "$config{zimbra_ldap_userdn}");
-  setLocalConfig ("ldap_dit_base_dn_config", "$config{ldap_dit_base_dn_config}");
+  setLocalConfig ("ldap_dit_base_dn_config", "$config{ldap_dit_base_dn_config}")
+    if ($config{ldap_dit_base_dn_config} ne "cn=zimbra");
 
   configLog ("configLCValues");
 
