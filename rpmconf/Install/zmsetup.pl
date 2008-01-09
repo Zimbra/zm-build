@@ -909,6 +909,8 @@ sub setDefaults {
   }
   chomp $config{HOSTNAME};
 
+  $config{ldap_dit_base_dn_config} eq "cn=zimbra" 
+    if ($config{ldap_dit_base_dn_config} eq "");
   $config{mailboxd_directory} = "/opt/zimbra/mailboxd";
   if ( -f "/opt/zimbra/jetty/start.jar" ) {
     $config{mailboxd_keystore} = "$config{mailboxd_directory}/etc/keystore";
@@ -1010,8 +1012,7 @@ sub setDefaults {
 
   $config{zimbraPrefTimeZoneId} = '(GMT-08.00) Pacific Time (US & Canada)';
 
-  $config{zimbra_ldap_userdn} = "uid=zimbra,cn=admins,cn=zimbra"
-    if ($config{zimbra_ldap_userdn} eq "");
+  $config{zimbra_ldap_userdn} = "uid=zimbra,cn=admins,$config{ldap_dit_base_dn_config}";
 
   $config{SMTPSOURCE} = $config{CREATEADMIN};
   $config{SMTPDEST} = $config{CREATEADMIN};
@@ -1261,6 +1262,10 @@ sub setDefaultsFromLocalConfig {
   $config{zimbra_ldap_userdn} = getLocalConfig("zimbra_ldap_userdn")
     if (getLocalConfig("zimbra_ldap_userdn") ne "");
 
+  $config{ldap_dit_base_dn_config} = getLocalConfig("ldap_dit_base_dn_config");
+  $config{ldap_dit_base_dn_config} eq "cn=zimbra" 
+    if ($config{ldap_dit_base_dn_config} eq "");
+
   if (isEnabled("zimbra-snmp")) {
     $config{SNMPNOTIFY} = getLocalConfig("snmp_notify");
     $config{SNMPNOTIFY} = "yes" if ($config{SNMPNOTIFY} eq "");
@@ -1498,15 +1503,15 @@ sub setCreateDomain {
 
 }
 
-sub setLdapUserDN {
+sub setLdapBaseDN {
   while (1) {
     print "Warning: Do not change this from the default value unless\n";
     print "you are absolutely sure you know what you are doing!\n\n";
     my $new =
-      askNonBlank("Ldap bind DN:",
-        $config{zimbra_ldap_userdn});
-    if ($config{zimbra_ldap_userdn} ne $new) {
-      $config{zimbra_ldap_userdn} = $new;
+      askNonBlank("Ldap base DN:",
+        $config{ldap_dit_base_dn_config});
+    if ($config{ldap_dit_base_dn_config} ne $new) {
+      $config{ldap_dit_base_dn_config} = $new;
     }
     return;
   }
@@ -2189,9 +2194,9 @@ sub createCommonMenu {
   # ldap users
   if (!defined($installedPackages{"zimbra-ldap"})) {
     $$lm{menuitems}{$i} = { 
-      "prompt" => "Admin User LDAP Bind DN:", 
-      "var" => \$config{zimbra_ldap_userdn}, 
-      "callback" => \&setLdapUserDN,
+      "prompt" => "LDAP Base DN:", 
+      "var" => \$config{ldap_dit_base_dn_config}, 
+      "callback" => \&setLdapBaseDN,
       };
     $i++;
   }
@@ -2988,12 +2993,12 @@ sub verifyLdap {
       detail ("mta configuration not complete\n");
       return 1;
     }
-    my $binduser = "uid=zmpostfix,cn=appacts,cn=zimbra";
+    my $binduser = "uid=zmpostfix,cn=appacts,$config{ldap_dit_base_dn_config}";
     if (checkLdapBind($binduser,$config{LDAPPOSTPASS})) {
       detail ("Couldn't bind to $config{LDAPHOST} as $binduser\n");
       #return 1 
     }
-    my $binduser = "uid=zmamavis,cn=appacts,cn=zimbra";
+    my $binduser = "uid=zmamavis,cn=appacts,$config{ldap_dit_base_dn_config}";
     if (checkLdapBind($binduser,$config{LDAPAMAVISPASS})) {
       detail ("Couldn't bind to $config{LDAPHOST} as $binduser\n");
       #return 1 
@@ -3008,7 +3013,7 @@ sub verifyLdap {
       detail ("ldap configuration not complete\n");
       return 1;
     }
-    my $binduser = "uid=zmreplica,cn=admins,cn=zimbra";
+    my $binduser = "uid=zmreplica,cn=admins,$config{ldap_dit_base_dn_config}";
     if (checkLdapBind($binduser,$config{LDAPREPPASS})) {
       detail ("Couldn't bind to $config{LDAPHOST} as $binduser\n");
       #return 1 
@@ -3201,6 +3206,7 @@ sub configLCValues {
   setLocalConfig ("mailboxd_truststore_password", "$config{mailboxd_truststore_password}");
   setLocalConfig ("mailboxd_keystore_password", "$config{mailboxd_keystore_password}");
   setLocalConfig ("zimbra_ldap_userdn", "$config{zimbra_ldap_userdn}");
+  setLocalConfig ("ldap_dit_base_dn_config", "$config{ldap_dit_base_dn_config}");
 
   configLog ("configLCValues");
 
@@ -3634,16 +3640,13 @@ sub configSetCluster {
 sub zimletCleanup {
   my $ldap_pass = getLocalConfig("zimbra_ldap_password");
   my $ldap_master_url = getLocalConfig("ldap_master_url");
-  my $ldap_dit_base_dn_config = getLocalConfig("ldap_dit_base_dn_config");
   my $ldap;
   unless($ldap = Net::LDAP->new($ldap_master_url)) {
     detail("Unable to contact $ldap_master_url: $!");
     return 1;
   }
   my $ldap_dn = $config{zimbra_ldap_userdn};
-  my $ldap_base = "cn=zimlets,cn=zimbra";
-  $ldap_base = "$ldap_base,$ldap_dit_base_dn_config"
-    unless ($ldap_dit_base_dn_config eq "");
+  my $ldap_base = "cn=zimlets,$config{ldap_dit_base_dn_config}";
 
   my $result = $ldap->bind($ldap_dn, password => $ldap_pass);
   if ($result->code()) {
