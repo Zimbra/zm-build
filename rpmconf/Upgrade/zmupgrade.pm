@@ -1905,6 +1905,30 @@ sub upgrade500GA {
 sub upgrade501GA {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
 	main::progress("Updating from 5.0.1_GA\n");
+  if (main::isInstalled("zimbra-ldap")) {
+    main::runAsZimbra("$ZMPROV mcf zimbraGalLdapPageSize 0");
+    my %attrs = (
+      zimbraPrefCalendarReminderDuration1     => "-PT15",
+      zimbraPrefCalendarReminderSendEmail     => "FALSE",
+      zimbraPrefCalendarReminderMobile        => "FALSE",
+      zimbraPrefCalendarReminderYMessenger    => "FALSE",
+      zimbraFeatureComposeInNewWindowEnabled  => "TRUE",
+      zimbraFeatureOpenMailInNewWindowEnabled => "TRUE",
+    );
+	  my @coses = `su - zimbra -c "$ZMPROV gac"`;
+	  foreach my $cos (@coses) {
+		  chomp $cos;
+      main::progress("Updating attributes for $cos COS...");
+      my $attrs = "";
+      foreach my $attr (keys %attrs) {
+        my $cur_value = main::getLdapCOSValue($cos,$attr);
+        $attrs .= "$attr $attrs{$attr} "
+          if ($cur_value eq "");
+      }
+      main::runAsZimbra("$ZMPROV mc $cos $attrs")
+        unless ($attrs eq "");;
+    }
+  }
 	return 0;
 }
 sub upgrade502GA {
