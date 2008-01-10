@@ -127,6 +127,7 @@ my $ldapAmavisChanged = 0;
 my $ldapReplica = 0;
 my $starttls = 0;
 my $needNewCert = "";
+my $ssl_cert_type = "self";
 
 my @interfaces = ();
 
@@ -3403,27 +3404,54 @@ sub configCreateCert {
     return 0;
   }
 
+  if (!$newinstall) {
+    my $rc = runAsRoot("/opt/zimbra/bin/zmcertmgr verifycrt comm > /dev/null 2>&1");
+    if ($rc != 0) {
+      $rc = runAsRoot("/opt/zimbra/bin/zmcertmgr verifycrt self > /dev/null 2>&1");
+      progress("Warning: No valid SSL certificates were found.\n");
+      progress("New self-signed certificates will be generated and installed.\n");
+      $needNewCert = "-new" if ($rc != 0);
+      $ssl_cert_type="self";
+    } else {
+      $ssl_cert_type="comm";
+    }
+  }
+
   progress ( "Creating SSL certificate..." );
 
   if (isInstalled("zimbra-store")) {
-    if ( !-f "$config{mailboxd_keystore}" && !-f "/opt/zimbra/ssl/ssl/server/server.crt" ) {
+    if ( !-f "$config{mailboxd_keystore}" && !-f "/opt/zimbra/ssl/zimbra/server/server.crt" ) {
       if (!-d "$config{mailboxd_directory}") {
         `mkdir -p $config{mailboxd_directory}/etc`;
         `chown -R zimbra:zimbra $config{mailboxd_directory}`;
         `chmod 744 $config{mailboxd_directory}/etc`;
       }
       runAsRoot("/opt/zimbra/bin/zmcertmgr deploycrt self $needNewCert");
+    } elsif ( $needNewCert ne "" && $ssl_cert_type eq "self") {
+      runAsRoot("/opt/zimbra/bin/zmcertmgr deploycrt self $needNewCert");
     }
   }
 
   if (isInstalled("zimbra-ldap")) {
-    if ( !-f "/opt/zimbra/conf/slapd.crt" && !-f "/opt/zimbra/ssl/ssl/server.crt") {
+    if ( !-f "/opt/zimbra/conf/slapd.crt" && !-f "/opt/zimbra/ssl/zimbra/server/server.crt") {
+      runAsRoot("/opt/zimbra/bin/zmcertmgr deploycrt self $needNewCert");
+    } elsif ( $needNewCert ne "" && $ssl_cert_type eq "self") {
       runAsRoot("/opt/zimbra/bin/zmcertmgr deploycrt self $needNewCert");
     }
   }
 
   if (isInstalled("zimbra-mta")) {
-    if ( !-f "/opt/zimbra/conf/smtpd.crt" && !-f "/opt/zimbra/ssl/ssl/server.crt") {
+    if ( !-f "/opt/zimbra/conf/smtpd.crt" && !-f "/opt/zimbra/ssl/zimbra/server/server.crt") {
+      runAsRoot("/opt/zimbra/bin/zmcertmgr deploycrt self $needNewCert");
+    } elsif ( $needNewCert ne "" && $ssl_cert_type eq "self") {
+      runAsRoot("/opt/zimbra/bin/zmcertmgr deploycrt self $needNewCert");
+    }
+  }
+
+  if (isInstalled("zimbra-proxy")) {
+    if ( !-f "/opt/zimbra/conf/nginx.crt" && !-f "/opt/zimbra/ssl/zimbra/server/server.crt") {
+      runAsRoot("/opt/zimbra/bin/zmcertmgr deploycrt self $needNewCert");
+    } elsif ( $needNewCert ne "" && $ssl_cert_type eq "self") {
       runAsRoot("/opt/zimbra/bin/zmcertmgr deploycrt self $needNewCert");
     }
   }
@@ -3439,21 +3467,23 @@ sub configInstallCert {
     return 0;
   }
 
-  if (isEnabled("zimbra-store") || isEnabled("zimbra-mta")) {
-    progress ("Installing SSL certificate...");
-    if (isEnabled("zimbra-store")) {
-      if (!-f "$config{mailboxd_keystore}") {
-        runAsRoot("/opt/zimbra/bin/zmcertmgr deploycrt self $needNewCert");
-      }
+  if (isEnabled("zimbra-store")) {
+    if (!-f "$config{mailboxd_keystore}") {
+      progress ("Installing SSL certificates...");
+      runAsRoot("/opt/zimbra/bin/zmcertmgr deploycrt self $needNewCert");
+      progress ( "done.\n" );
     }
-    if (isEnabled("zimbra-mta")) {
-      if (! (-f "/opt/zimbra/conf/smtpd.key" || 
-        -f "/opt/zimbra/conf/smtpd.crt")) {
-        runAsRoot("/opt/zimbra/bin/zmcertmgr deploycrt self $needNewCert");
-      }
-    }
-    progress ( "done.\n" );
   }
+
+  if (isEnabled("zimbra-mta")) {
+    if (! (-f "/opt/zimbra/conf/smtpd.key" || 
+      -f "/opt/zimbra/conf/smtpd.crt")) {
+      progress ("Installing SSL certificates...");
+      runAsRoot("/opt/zimbra/bin/zmcertmgr deploycrt self $needNewCert");
+      progress ( "done.\n" );
+    }
+  }
+
   if (isEnabled("zimbra-ldap")) {
     if (! (-f "/opt/zimbra/conf/slapd.key" || 
       -f "/opt/zimbra/conf/slapd.crt")) {
