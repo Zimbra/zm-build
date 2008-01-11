@@ -130,18 +130,24 @@ if [ -f /etc/debian_version ]; then
 fi
 
 if [ -f /etc/lsb-release ]; then
+	i=`uname -m`
+	if [ "x$i" = "xx86_64" ]; then
+		i="_64"
+	else 
+		i=""
+	fi
 	grep "DISTRIB_ID=Ubuntu" /etc/lsb-release > /dev/null 2>&1
 	if [ $? = 0 ]; then
 		echo -n "UBUNTU"
 	fi
 	grep "DISTRIB_RELEASE=6" /etc/lsb-release > /dev/null 2>&1
 	if [ $? = 0 ]; then
-		echo "6"
+		echo "6${i}"
 		exit 0
 	fi
 	grep "DISTRIB_RELEASE=7" /etc/lsb-release > /dev/null 2>&1
 	if [ $? = 0 ]; then
-		echo "7"
+		echo "7${i}"
 		exit 0
 	else
 		echo "UNKNOWN"
