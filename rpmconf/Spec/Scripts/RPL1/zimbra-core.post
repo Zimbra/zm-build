@@ -21,12 +21,7 @@ I=`hostname -i`
 #Symlinks
 rm -f /opt/zimbra/java
 PLAT=`/opt/zimbra/libexec/get_plat_tag.sh`
-BIT=`echo $PLAT | awk -F_ '{print $2}'`
-if [ "x$BIT" = "x64" ]; then
-	ln -s /opt/zimbra/jdk1.6.0_02 /opt/zimbra/java
-else
-	ln -s /opt/zimbra/jdk1.6.0_02 /opt/zimbra/java
-fi
+ln -s /opt/zimbra/jdk1.6.0_04 /opt/zimbra/java
 
 rm -f /opt/zimbra/sleepycat
 ln -s /opt/zimbra/sleepycat-4.2.52.6 /opt/zimbra/sleepycat

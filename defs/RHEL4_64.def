@@ -11,7 +11,7 @@ include $(DEFS_DIR)/plat_common.def
 
 COMPAT_LIBSTDC := compat-libstdc++-33
 
-JAVA_VERSION	:= 1.6.0_02
+JAVA_VERSION	:= 1.6.0_04
 JAVA_SOURCE     := $(THIRD_PARTY_BUILDS)/x86_64/$(JAVA_DIR)/$(JAVA_FILE)$(JAVA_VERSION)
 JAVA_BINARY := /opt/zimbra/$(JAVA_FILE)$(JAVA_VERSION)/bin/java
 
