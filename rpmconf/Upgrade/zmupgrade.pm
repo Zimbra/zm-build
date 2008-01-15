@@ -1931,9 +1931,21 @@ sub upgrade501GA {
   }
 	return 0;
 }
+
 sub upgrade502GA {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
 	main::progress("Updating from 5.0.2_GA\n");
+  if (main::isInstalled("zimbra-store")) {
+    my $mailboxd_keystore = main::getLocalConfig("mailboxd_keystore");
+    if ( -f "${mailboxd_keystore}") {
+      my $keystore_pass = main::getLocalConfig("mailboxd_keystore_password");
+      chmod 0644, "${mailboxd_keystore}";
+      my $rc = main::runAsZimbra("/opt/zimbra/java/bin/keytool -list -alias tomcat -keystore ${mailboxd_keystore} -storepass ${keystore_pass} > /dev/null 2>&1");
+      if ($rc == 0) {
+        main::runAsZimbra("/opt/zimbra/java/bin/keytool -delete -alias tomcat -keystore ${mailboxd_keystore} -storepass ${keystore_pass}");
+      }
+    }
+  }
 	return 0;
 }
 
