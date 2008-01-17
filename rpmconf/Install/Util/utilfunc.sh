@@ -1017,6 +1017,7 @@ removeExistingInstall() {
     done
 
     /bin/rm -rf /opt/zimbra/*
+    /bin/rm -f /opt/zimbra/.enable_replica
 
     for mp in $MOUNTPOINTS; do
       if [ x$mp != "x/opt/zimbra" ]; then
