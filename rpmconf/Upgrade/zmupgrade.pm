@@ -37,6 +37,7 @@ my $hiLoggerVersion = 5;
 # Variables for the combo schema updater
 my $comboLowVersion = 20;
 my $comboHiVersion  = 27;
+my $needSlapIndexing = 0;
 
 my $hn = `su - zimbra -c "zmlocalconfig -m nokey zimbra_server_hostname"`;
 chomp $hn;
@@ -430,6 +431,10 @@ sub upgrade {
 			last;
 		}
 	}
+	if ($needSlapIndexing) {
+		main::detail("Updating slapd indices\n");
+		&indexLdap();
+        }
 	if (main::isInstalled ("zimbra-ldap")) {
 		stopLdap();
 	}
@@ -1668,8 +1673,7 @@ sub upgrade500RC2 {
     main::runAsZimbra("$ZMPROV mcf zimbraHttpNumThreads 100");
   }
   if (main::isInstalled("zimbra-ldap")) {
-	  main::detail("Updating slapd indices\n");
-	  indexLdap();
+          $needSlapIndexing = 1;
   }
 	return 0;
 }
@@ -1945,6 +1949,10 @@ sub upgrade502GA {
         main::runAsZimbra("/opt/zimbra/java/bin/keytool -delete -alias tomcat -keystore ${mailboxd_keystore} -storepass ${keystore_pass}");
       }
     }
+  }
+  #bug 23616
+  if (main::isInstalled("zimbra-ldap")) {
+          $needSlapIndexing = 1;
   }
 	return 0;
 }
