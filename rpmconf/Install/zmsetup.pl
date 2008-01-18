@@ -552,7 +552,7 @@ sub isInstalled {
   my $pkgQuery;
 
   my $good = 0;
-  if ($platform eq "DEBIAN3.1" || $platform eq "UBUNTU6" || $platform eq "UBUNTU7" || $platform eq "UBUNTUUNKNOWN" || $platform eq "DEBIAN4.0" ) {
+  if ($platform eq "DEBIAN3.1" || $platform eq "UBUNTU6" || $platform eq "UBUNTU7" || $platform eq "UBUNTUUNKNOWN" || $platform eq "DEBIAN4.0" || $platform eq "UBUNTU6_64" ) {
     $pkgQuery = "dpkg -s $pkg";
   } elsif ($platform =~ /MACOSX/) {
     my @l = sort glob ("/Library/Receipts/${pkg}*");
@@ -566,7 +566,7 @@ sub isInstalled {
 
   my $rc = 0xffff & system ("$pkgQuery > /dev/null 2>&1");
   $rc >>= 8;
-  if (($platform eq "DEBIAN3.1" || $platform eq "UBUNTU6" || $platform eq "UBUNTU7" || $platform eq "UBUNTUUNKNOWN" || $platform eq "DEBIAN4.0") && $rc == 0 ) {
+  if (($platform eq "DEBIAN3.1" || $platform eq "UBUNTU6" || $platform eq "UBUNTU7" || $platform eq "UBUNTUUNKNOWN" || $platform eq "DEBIAN4.0" || $platform eq "UBUNTU6_64" ) && $rc == 0 ) {
     $good = 1;
     $pkgQuery = "dpkg -s $pkg | egrep '^Status: ' | grep 'not-installed'";
     $rc = 0xffff & system ("$pkgQuery > /dev/null 2>&1");

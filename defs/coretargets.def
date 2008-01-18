@@ -173,6 +173,8 @@ $(LAUNCHER_DIR)/build/zmmailboxdmgr:
 
 pcre_UBUNTU6: 
 	mkdir -p $(CORE_DEST_DIR)/lib
+pcre_UBUNTU6_64:
+	mkdir -p $(CORE_DEST_DIR)/lib
 pcre_MACOSXx86: 
 	mkdir -p $(CORE_DEST_DIR)/lib
 	(cd $(CORE_DEST_DIR)/lib; tar xzf $(THIRD_PARTY_BUILDS)/$(BUILD_PLATFORM)/pcre/pcre-7.1.tgz)
