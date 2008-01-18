@@ -1053,7 +1053,7 @@ removeExistingInstall() {
       if [ x"$LD_LIBRARY_PATH" != x ]; then
         LD_LIBRARY_PATH=/opt/zimbra/sleepycat/lib:/opt/zimbra/openssl/lib:/opt/zimbra/cyrus-sasl/lib:/opt/zimbra/openldap/lib:/opt/zimbra/mysql/lib:$LD_LIBRARY_PATH
       fi
-      if [ -f "/opt/zimbra/openldap/sbin/slapcat" -a x"$UNINSTALL" != "xyes" ]; then
+      if [ -f "/opt/zimbra/openldap/sbin/slapcat" -a x"$UNINSTALL" != "xyes" -a x"$REMOVE" != "xyes" ]; then
         echo ""
         echo -n "Backing up the ldap database..."
         tmpfile=`mktemp -t slapcat.XXXXXX 2> /dev/null` || (echo "Failed to create tmpfile" && exit 1)
