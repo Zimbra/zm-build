@@ -171,10 +171,6 @@ $(NATIVE_DIR)/build/libsetuid.$(JNI_EXT):
 $(LAUNCHER_DIR)/build/zmmailboxdmgr:
 	(cd $(LAUNCHER_DIR); make JAVA_BINARY=$(JAVA_BINARY))
 
-pcre_UBUNTU6: 
-	mkdir -p $(CORE_DEST_DIR)/lib
-pcre_UBUNTU6_64:
-	mkdir -p $(CORE_DEST_DIR)/lib
 pcre_MACOSXx86: 
 	mkdir -p $(CORE_DEST_DIR)/lib
 	(cd $(CORE_DEST_DIR)/lib; tar xzf $(THIRD_PARTY_BUILDS)/$(BUILD_PLATFORM)/pcre/pcre-7.1.tgz)
@@ -202,6 +198,10 @@ pcre_RHEL5: ;
 pcre_DEBIAN3.1: ;
 
 pcre_DEBIAN4.0: ;
+
+pcre_UBUNTU6: ;
+
+pcre_UBUNTU6_64: ;
 
 pcre_SuSEES9: ;
 
