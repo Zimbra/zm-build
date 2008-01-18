@@ -1517,7 +1517,7 @@ isInstalled () {
 
 getPlatformVars() {
   PLATFORM=`bin/get_plat_tag.sh`
-  if [ $PLATFORM = "DEBIAN3.1" -o $PLATFORM = "UBUNTU6" -o $PLATFORM = "UBUNTU7" -o $PLATFORM = "DEBIAN4.0" -o $PLATFORM = "UBUNTUUNKNOWN" ]; then
+  if [ $PLATFORM = "DEBIAN3.1" -o $PLATFORM = "UBUNTU6" -o $PLATFORM = "UBUNTU7" -o $PLATFORM = "UBUNTU6_64" -o "UBUNTU7_64" -o $PLATFORM = "DEBIAN4.0" -o $PLATFORM = "UBUNTUUNKNOWN" ]; then
     checkUbuntuRelease
     PACKAGEINST='dpkg -i'
     PACKAGERM='dpkg --purge'
@@ -1526,6 +1526,9 @@ getPlatformVars() {
     PREREQ_PACKAGES="sudo libidn11 fetchmail libgmp3 libxml2 libstdc++6 openssl libltdl3"
     if [ $PLATFORM = "UBUNTU6" -o $PLATFORM = "UBUNTU7" ]; then
       PREREQ_PACKAGES="sudo libidn11 fetchmail libpcre3 libgmp3c2 libexpat1 libxml2 libstdc++6 libstdc++5 openssl libltdl3"
+    fi
+    if [ $PLATFORM = "UBUNTU6_64" -o $PLATFORM = "UBUNTU7_64" ]; then
+      PREREQ_PACKAGES="sudo libidn11 fetchmail libpcre3 libgmp3c2 libexpat1 libxml2 libstdc++6 libstdc++5 openssl libltdl3 libperl"
     fi
     if [ $PLATFORM = "DEBIAN4.0" ]; then
       PREREQ_PACKAGES="sudo libidn11 fetchmail libgmp3c2 libxml2 libstdc++6 openssl libltdl3"
