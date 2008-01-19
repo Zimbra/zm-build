@@ -3235,12 +3235,8 @@ sub configCASetup {
     if (-f "/opt/zimbra/conf/ca/ca.pem") {
       my $rc = runAsRoot("openssl verify -purpose sslserver -CAfile /opt/zimbra/conf/ca/ca.pem /opt/zimbra/conf/ca/ca.pem | egrep \"^error 10\"");
       $needNewCert = "-new" if ($rc == 0);
-    } else {
-      $needNewCert = "-new";
     }
-  } else {
-    $needNewCert = "-new";
-  }
+  } 
   runAsRoot("/opt/zimbra/bin/zmcertmgr createca $needNewCert");
   progress ( "done.\n" );
   configLog("configCASetup");
