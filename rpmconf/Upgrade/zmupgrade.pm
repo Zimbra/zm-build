@@ -111,6 +111,7 @@ my %updateFuncs = (
 	"4.5.8_GA" => \&upgrade458GA,
 	"4.5.9_GA" => \&upgrade459GA,
 	"4.5.10_GA" => \&upgrade4510GA,
+	"4.5.11_GA" => \&upgrade4511GA,
 	"5.0.0_BETA1" => \&upgrade500BETA1,
 	"5.0.0_BETA2" => \&upgrade500BETA2,
 	"5.0.0_RC1" => \&upgrade500RC1,
@@ -155,6 +156,7 @@ my @versionOrder = (
   "4.5.8_GA",
   "4.5.9_GA",
   "4.5.10_GA",
+  "4.5.11_GA",
 );
 
 my $startVersion;
@@ -1326,6 +1328,9 @@ sub upgrade500BETA2 {
   # bug 16425 rewrite default perms on localconfig.xml
   main::setLocalConfig("upgrade_dummy", "1");
   main::deleteLocalConfig("upgrade_dummy");
+	return 0;
+}
+sub upgrade4511GA {
 	return 0;
 }
 sub upgrade500RC1 {
