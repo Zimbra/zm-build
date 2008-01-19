@@ -2994,12 +2994,12 @@ sub verifyLdap {
       detail ("mta configuration not complete\n");
       return 1;
     }
-    my $binduser = "uid=zmpostfix,cn=appacts,$config{ldap_dit_base_dn_config}";
+    my $binduser = "uid=zmpostfix,cn=appaccts,$config{ldap_dit_base_dn_config}";
     if (checkLdapBind($binduser,$config{LDAPPOSTPASS})) {
       detail ("Couldn't bind to $config{LDAPHOST} as $binduser\n");
       #return 1 
     }
-    my $binduser = "uid=zmamavis,cn=appacts,$config{ldap_dit_base_dn_config}";
+    my $binduser = "uid=zmamavis,cn=appaccts,$config{ldap_dit_base_dn_config}";
     if (checkLdapBind($binduser,$config{LDAPAMAVISPASS})) {
       detail ("Couldn't bind to $config{LDAPHOST} as $binduser\n");
       #return 1 
