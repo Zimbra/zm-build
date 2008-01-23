@@ -1947,6 +1947,11 @@ sub upgrade501GA {
 sub upgrade502GA {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
 	main::progress("Updating from 5.0.2_GA\n");
+
+  #bug 23211
+  Migrate::log("Executing ${scriptDir}/migrate20080123-UpdateLimits.pl");
+  main::runAsRoot("perl -I${scriptDir} ${scriptDir}/migrate20080123-UpdateLimits.pl");
+
   if (main::isInstalled("zimbra-store")) {
     my $mailboxd_keystore = main::getLocalConfig("mailboxd_keystore");
     if ( -f "${mailboxd_keystore}") {
