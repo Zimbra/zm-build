@@ -2201,6 +2201,7 @@ sub movePostfixQueue {
 		foreach my $d (@dirs) {
 			if (-d "/opt/zimbra/postfix-${fromVersion}/spool/${d}/") {
 				main::progress("Moving $d\n");
+				`mkdir -p /opt/zimbra/postfix-${toVersion}/spool/${d}`;
 				`cp -Rf /opt/zimbra/postfix-${fromVersion}/spool/${d}/* /opt/zimbra/postfix-${toVersion}/spool/${d}`;
 				`chown -R postfix:postdrop /opt/zimbra/postfix-${toVersion}/spool/${d}`;
 			}
