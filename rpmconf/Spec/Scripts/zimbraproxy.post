@@ -18,7 +18,7 @@
 if [ -L "/opt/zimbra/memcached" ]; then
   rm -rf /opt/zimbra/memcached
 fi
-ln -s /opt/zimbra/memcached-1.2.2 /opt/zimbra/memcached
+ln -s /opt/zimbra/memcached-1.2.4 /opt/zimbra/memcached
 
 if [ -L "/opt/zimbra/nginx" ]; then
   rm -rf /opt/zimbra/nginx
