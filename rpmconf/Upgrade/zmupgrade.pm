@@ -1930,7 +1930,7 @@ sub upgrade501GA {
 	  my @coses = `su - zimbra -c "$ZMPROV gac"`;
 	  foreach my $cos (@coses) {
 		  chomp $cos;
-      main::progress("Updating attributes for $cos COS...");
+      main::progress("Updating attributes for $cos COS...\n");
       my $attrs = "";
       foreach my $attr (keys %attrs) {
         my $cur_value = main::getLdapCOSValue($cos,$attr);
