@@ -1150,6 +1150,7 @@ removeExistingInstall() {
         fi
       done
     fi
+  fi
 }
 
 setServiceIP() {
