@@ -1,1 +1,2 @@
 TLS_CACERTDIR /opt/zimbra/conf/ca
+TLS_REQCERT allow
