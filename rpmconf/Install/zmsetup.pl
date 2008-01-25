@@ -3404,10 +3404,12 @@ sub configCreateCert {
     my $rc = runAsRoot("/opt/zimbra/bin/zmcertmgr verifycrt comm > /dev/null 2>&1");
     if ($rc != 0) {
       $rc = runAsRoot("/opt/zimbra/bin/zmcertmgr verifycrt self > /dev/null 2>&1");
-      progress("Warning: No valid SSL certificates were found.\n");
-      progress("New self-signed certificates will be generated and installed.\n");
-      $needNewCert = "-new" if ($rc != 0);
-      $ssl_cert_type="self";
+      if ($rc != 0) {
+        progress("Warning: No valid SSL certificates were found.\n");
+        progress("New self-signed certificates will be generated and installed.\n");
+        $needNewCert = "-new" if ($rc != 0);
+        $ssl_cert_type="self";
+      }
     } else {
       $ssl_cert_type="comm";
     }
