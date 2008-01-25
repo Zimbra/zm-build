@@ -22,14 +22,14 @@ rm -f /opt/zimbra/dspam
 ln -s /opt/zimbra/dspam-3.8.0 /opt/zimbra/dspam
 
 rm -f /opt/zimbra/postfix
-ln -s /opt/zimbra/postfix-2.4.3.3z /opt/zimbra/postfix
+ln -s /opt/zimbra/postfix-2.4.3.4z /opt/zimbra/postfix
 
 rm -f /opt/zimbra/clamav
 ln -s /opt/zimbra/clamav-0.92 /opt/zimbra/clamav
 
 egrep -v '^%zimbra.*postfix' /etc/sudoers > /tmp/sudoers
 mv -f /tmp/sudoers /etc/sudoers
-echo "%zimbra   ALL=NOPASSWD:/opt/zimbra/postfix-2.4.3.3z/sbin/postfix, /opt/zimbra/postfix-2.4.3.3z/sbin/postalias, /opt/zimbra/postfix-2.4.3.3z/sbin/qshape.pl, /opt/zimbra/postfix-2.4.3.3z/sbin/postconf,/opt/zimbra/postfix-2.4.3.3z/sbin/postsuper" >> /etc/sudoers
+echo "%zimbra   ALL=NOPASSWD:/opt/zimbra/postfix-2.4.3.4z/sbin/postfix, /opt/zimbra/postfix-2.4.3.4z/sbin/postalias, /opt/zimbra/postfix-2.4.3.4z/sbin/qshape.pl, /opt/zimbra/postfix-2.4.3.4z/sbin/postconf,/opt/zimbra/postfix-2.4.3.4z/sbin/postsuper" >> /etc/sudoers
 
 egrep -v '^%zimbra.*zmqstat' /etc/sudoers > /tmp/sudoers
 mv -f /tmp/sudoers /etc/sudoers
