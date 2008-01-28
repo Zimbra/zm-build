@@ -376,6 +376,39 @@ EOF
     fi
   done
 
+  SUGGESTED="yes"
+  echo "Checking for standard system perl..."
+  for i in $PRESUG_PACKAGES; do
+    echo -n "    $i..."
+    suggestedVersion $i
+    if [ "x$PKGINSTALLED" != "x" ]; then
+       echo "FOUND standard system $i"
+    else
+       echo "Non-Standard system version of $i found"
+       SUGGESTED="no"
+    fi
+  done
+
+  if [ $SUGGESTED = "no" ]; then
+    echo ""
+    echo "###WARNING###"
+    echo ""
+    echo "The suggested version of one or more packages is not installed."
+    echo "This could cause problems with the operation of Zimbra."
+    while :; do
+     askYN "Do you wish to continue?" "N"
+     if [ $response = "no" ]; then
+      askYN "Exit?" "N"
+      if [ $response = "yes" ]; then
+        echo "Exiting."
+        exit 1
+      fi
+     else
+      break
+     fi
+    done
+  fi
+
   if [ $GOOD = "no" ]; then
     echo ""
     echo "###ERROR###"
@@ -1508,6 +1541,42 @@ isInstalled () {
   fi
 }
 
+suggestedVersion() {
+  pkg=$1
+  PKGINSTALLED=""
+  if [ $PACKAGEEXT = "rpm" ]; then
+    $PACKAGEQUERY $pkg >/dev/null 2>&1
+    if [ $? = 0 ]; then
+      PKGINSTALLED=`$PACKAGEQUERY $pkg | sed -e 's/\.[a-zA-Z].*$//' 2> /dev/null`
+    else
+      sugpkg=${pkg%-*}
+      PKGVERSION=`$PACKAGEQUERY $sugpkg 2> /dev/null | sort -u`
+    fi
+  elif [ $PACKAGEEXT = "ccs" ]; then
+    $PACKAGEQUERY $pkg >/dev/null 2>&1
+    if [ $? = 0 ]; then
+      PKGINSTALLED=`$PACKAGEQUERY $pkg | sed -e 's/\.[a-zA-Z].*$//' 2> /dev/null`
+    else 
+      sugpkg=${pkg%=*}
+      PKGVERSION=`$PACKAGEQUERY $sugpkg 2> /dev/null | sort -u`
+    fi
+  else
+    sugpkg=${pkg%:*}
+    sugversion=${pkg#*:}
+    Q=`$PACKAGEQUERY $sugpkg 2>/dev/null | egrep '^Status: ' `
+    if [ "x$Q" != "x" ]; then
+      echo $Q | grep 'not-installed' > /dev/null 2>&1
+      if [ $? != 0 ]; then
+        PKGVERSION=`$PACKAGEVERSION $sugpkg 2> /dev/null`
+        num=`expr match "$PKGVERSION" "${sugversion}*"`
+        if [ "$num" == 5 ]; then
+          PKGINSTALLED="${sugpkg}-${PKGVERSION}"
+        fi
+      fi
+    fi
+  fi
+}
+
 getPlatformVars() {
   PLATFORM=`bin/get_plat_tag.sh`
   if [ $PLATFORM = "DEBIAN3.1" -o $PLATFORM = "UBUNTU6" -o $PLATFORM = "UBUNTU7" -o $PLATFORM = "UBUNTU6_64" -o $PLATFORM = "UBUNTU7_64" -o $PLATFORM = "DEBIAN4.0" -o $PLATFORM = "UBUNTUUNKNOWN" ]; then
@@ -1516,15 +1585,19 @@ getPlatformVars() {
     PACKAGERM='dpkg --purge'
     PACKAGEQUERY='dpkg -s'
     PACKAGEEXT='deb'
+    PACKAGEVERSION="dpkg-query -W -f \${Version}"
     PREREQ_PACKAGES="sudo libidn11 fetchmail libgmp3 libxml2 libstdc++6 openssl libltdl3"
     if [ $PLATFORM = "UBUNTU6" -o $PLATFORM = "UBUNTU7" ]; then
       PREREQ_PACKAGES="sudo libidn11 fetchmail libpcre3 libgmp3c2 libexpat1 libxml2 libstdc++6 libstdc++5 openssl libltdl3"
+      PRESUG_PACKAGES="perl:5.8.7"
     fi
     if [ $PLATFORM = "UBUNTU6_64" -o $PLATFORM = "UBUNTU7_64" ]; then
       PREREQ_PACKAGES="sudo libidn11 fetchmail libpcre3 libgmp3c2 libexpat1 libxml2 libstdc++6 libstdc++5 openssl libltdl3 libperl"
+      PRESUG_PACKAGES="perl:5.8.7"
     fi
     if [ $PLATFORM = "DEBIAN4.0" ]; then
       PREREQ_PACKAGES="sudo libidn11 fetchmail libpcre3 libgmp3c2 libxml2 libstdc++6 openssl libltdl3"
+      PRESUG_PACKAGES="perl:5.8.8"
     fi
   elif echo $PLATFORM | grep RPL > /dev/null 2>&1; then
     PACKAGEINST='conary update'
@@ -1532,6 +1605,7 @@ getPlatformVars() {
     PACKAGEQUERY='conary q'
     PACKAGEEXT='ccs'
     PREREQ_PACKAGES="sudo libidn fetchmail gmp libxml2 libstdc++ openssl"
+    PRESUG_PACKGES="perl=5.8.7"
   else
     PACKAGEINST='rpm -iv'
     PACKAGERM='rpm -ev --nodeps --noscripts --allmatches'
@@ -1540,9 +1614,11 @@ getPlatformVars() {
     if [ $PLATFORM = "RHEL4" -o $PLATFORM = "CentOS4" ]; then
       PREREQ_PACKAGES="sudo libidn fetchmail gmp compat-libstdc++-296 compat-libstdc++-33 libtool-libs"
       PREREQ_LIBS="/usr/lib/libstdc++.so.5"
+      PRESUG_PACKAGES="perl-5.8.5"
     elif [ $PLATFORM = "RHEL5" -o $PLATFORM = "CentOS5" ]; then
       PREREQ_PACKAGES="sudo libidn fetchmail gmp compat-libstdc++-296 compat-libstdc++-33 libtool-ltdl"
       PREREQ_LIBS="/usr/lib/libstdc++.so.6"
+      PRESUG_PACKAGES="perl-5.8.8"
     elif [ $PLATFORM = "MANDRIVA2006" ]; then
       PREREQ_PACKAGES="sudo libidn11 fetchmail libgmp3 libxml2 libstdc++6 openssl"
     elif [ $PLATFORM = "FC3" -o $PLATFORM = "FC4" ]; then
@@ -1557,12 +1633,15 @@ getPlatformVars() {
     elif [ $PLATFORM = "RHEL5_64" -o $PLATFORM = "CentOS5_64" ]; then
       PREREQ_PACKAGES="sudo libidn fetchmail gmp compat-libstdc++-296 compat-libstdc++-33 libtool-ltdl"
       PREREQ_LIBS="/usr/lib/libstdc++.so.5 /usr/lib/libstdc++.so.6 /usr/lib64/libstdc++.so.5 /usr/lib64/libstdc++.so.6 /usr/lib64/libltdl.so.3"
+      PRESUG_PACKAGES="perl-5.8.8"
     elif [ $PLATFORM = "RHEL4_64" -o $PLATFORM = "CentOS4_64" ]; then
       PREREQ_PACKAGES="sudo libidn fetchmail gmp compat-libstdc++-296 compat-libstdc++-33 libtool-libs"
       PREREQ_LIBS="/usr/lib/libstdc++.so.5 /usr/lib64/libstdc++.so.5 /usr/lib64/libltdl.so.3"
+      PRESUG_PACKAGES="perl-5.8.5"
     elif [ $PLATFORM = "F7" ]; then
       PREREQ_PACKAGES="sudo libidn fetchmail gmp bind-libs vixie-cron libtool-ltdl"
       PREREQ_LIBS="/usr/lib/libstdc++.so.6"
+      PRESUG_PACKAGES="perl-5.8.8"
     else
       PREREQ_PACKAGES="sudo libidn fetchmail gmp"
       PREREQ_LIBS="/usr/lib/libstdc++.so.5"
