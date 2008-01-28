@@ -38,9 +38,3 @@ if [ $? = 0 ]; then
 else 
   usermod -g zimbra -G postfix,tty zimbra
 fi
-
-egrep -q 'zimbra' /etc/security/limits.conf
-if [ $? != 0 ]; then
-	echo "zimbra soft nofile 524288" >> /etc/security/limits.conf
-	echo "zimbra hard nofile 524288" >> /etc/security/limits.conf
-fi

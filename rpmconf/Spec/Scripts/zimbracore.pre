@@ -28,9 +28,9 @@ else
 fi
 
 if [ -f "/etc/security/limits.conf" ]; then
-  egrep -q 'zimbra' /etc/security/limits.conf
-  if [ $? != 0 ]; then
-    echo "zimbra soft nofile 524288" >> /etc/security/limits.conf
-    echo "zimbra hard nofile 524288" >> /etc/security/limits.conf
-  fi
+    egrep -v -e '^zimbra.*nofile' /etc/security/limits.conf > /tmp/limits.conf
+    echo "zimbra soft nofile 524288" >> /tmp/limits.conf
+    echo "zimbra hard nofile 524288" >> /tmp/limits.conf
+    mv -f /tmp/limits.conf /etc/security/limits.conf
+    chmod 640 /etc/security/limits.conf
 fi
