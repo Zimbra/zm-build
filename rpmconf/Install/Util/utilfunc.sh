@@ -375,6 +375,7 @@ EOF
       GOOD="no"
     fi
   done
+  echo "Prerequisite check complete."
 
   SUGGESTED="yes"
   echo "Checking for standard system perl..."
@@ -384,7 +385,7 @@ EOF
     if [ "x$PKGINSTALLED" != "x" ]; then
        echo "FOUND standard system $i"
     else
-       echo "Non-Standard system version of $i found"
+       echo "Unable to find expected $i.  Found version $PKGVERSION instead."
        SUGGESTED="no"
     fi
   done
@@ -1561,8 +1562,8 @@ suggestedVersion() {
       PKGVERSION=`$PACKAGEQUERY $sugpkg 2> /dev/null | sort -u`
     fi
   else
-    sugpkg=${pkg%:*}
-    sugversion=${pkg#*:}
+    sugpkg=${pkg%-*}
+    sugversion=${pkg#*-}
     Q=`$PACKAGEQUERY $sugpkg 2>/dev/null | egrep '^Status: ' `
     if [ "x$Q" != "x" ]; then
       echo $Q | grep 'not-installed' > /dev/null 2>&1
@@ -1589,15 +1590,15 @@ getPlatformVars() {
     PREREQ_PACKAGES="sudo libidn11 fetchmail libgmp3 libxml2 libstdc++6 openssl libltdl3"
     if [ $PLATFORM = "UBUNTU6" -o $PLATFORM = "UBUNTU7" ]; then
       PREREQ_PACKAGES="sudo libidn11 fetchmail libpcre3 libgmp3c2 libexpat1 libxml2 libstdc++6 libstdc++5 openssl libltdl3"
-      PRESUG_PACKAGES="perl:5.8.7"
+      PRESUG_PACKAGES="perl-5.8.7"
     fi
     if [ $PLATFORM = "UBUNTU6_64" -o $PLATFORM = "UBUNTU7_64" ]; then
       PREREQ_PACKAGES="sudo libidn11 fetchmail libpcre3 libgmp3c2 libexpat1 libxml2 libstdc++6 libstdc++5 openssl libltdl3 libperl"
-      PRESUG_PACKAGES="perl:5.8.7"
+      PRESUG_PACKAGES="perl-5.8.7"
     fi
     if [ $PLATFORM = "DEBIAN4.0" ]; then
       PREREQ_PACKAGES="sudo libidn11 fetchmail libpcre3 libgmp3c2 libxml2 libstdc++6 openssl libltdl3"
-      PRESUG_PACKAGES="perl:5.8.8"
+      PRESUG_PACKAGES="perl-5.8.8"
     fi
   elif echo $PLATFORM | grep RPL > /dev/null 2>&1; then
     PACKAGEINST='conary update'
