@@ -1955,6 +1955,10 @@ sub upgrade502GA {
       chmod 0644, "${mailboxd_keystore}";
       my $rc = main::runAsZimbra("/opt/zimbra/java/bin/keytool -list -alias tomcat -keystore ${mailboxd_keystore} -storepass ${keystore_pass} > /dev/null 2>&1");
       if ($rc == 0) {
+        my $rc = main::runAsZimbra("/opt/zimbra/java/bin/keytool -list -alias jetty -keystore ${mailboxd_keystore} -storepass ${keystore_pass} > /dev/null 2>&1");
+        if ($rc != 0) {
+          main::runAsZimbra("/opt/zimbra/java/bin/keytool -keystore ${mailboxd_keystore} -keyclone -alias tomcat -dest jetty -storepass ${keystore_pass} -new ${keystore_pass}");
+        }
         main::runAsZimbra("/opt/zimbra/java/bin/keytool -delete -alias tomcat -keystore ${mailboxd_keystore} -storepass ${keystore_pass}");
       }
     }
