@@ -137,8 +137,11 @@ checkRequired
 checkPackages
 
 if [ $AUTOINSTALL = "no" ]; then
-	setRemove
-	getInstallPackages
+  setRemove
+  if [ x"$CLUSTERTYPE" != "x" ]; then
+    clusterPreInstall
+  fi
+  getInstallPackages
 
     findLatestPackage zimbra-core
 	f=`basename $file`

@@ -497,7 +497,7 @@ checkExistingInstall() {
   for i in $PACKAGES $CORE_PACKAGES; do
     echo -n "    $i..."
     isInstalled $i
-    if [ x$PKGINSTALLED != "x" ]; then
+    if [ x"$PKGINSTALLED" != "x" ]; then
       echo "FOUND $PKGINSTALLED"
       INSTALLED="yes"
       INSTALLED_PACKAGES="$INSTALLED_PACKAGES $i"
@@ -528,7 +528,7 @@ checkExistingInstall() {
 determineVersionType() {
 
   isInstalled zimbra-core
-  if [ x$PKGINSTALLED != "x" ]; then
+  if [ x"$PKGINSTALLED" != "x" ]; then
     ZMVERSION_CURRENT=`echo $PKGVERSION | sed s/^zimbra-core-//`
     if [ -d "/opt/zimbra/zimlets-network" ]; then
       ZMTYPE_CURRENT="NETWORK"
@@ -623,6 +623,8 @@ verifyLicenseAvailable() {
     elif [ -f "/opt/zimbra/conf/ZCSLicense-Trial.xml" ]; then
       licenseCheck="license is OK"
       licensedUsers=`cat /opt/zimbra/conf/ZCSLicense-Trial.xml | grep AccountsLimit | head -1  | awk '{print $3}' | awk -F= '{print $2}' | awk -F\" '{print $2}'`
+    elif [ x"$CLUSTERTYPE" != "x" ]; then
+      echo "Not checking for license on cluster stand-by node."
     else
       echo "ERROR: The ZCS Network upgrade requires a license to be located in"
       echo "/opt/zimbra/conf/ZCSLicense.xml or a license previously installed."
