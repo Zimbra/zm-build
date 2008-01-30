@@ -1966,8 +1966,10 @@ sub upgrade502GA {
   if (main::isInstalled("zimbra-ldap")) {
     #bug 23616
     $needSlapIndexing = 1;
+    #bug 18503
+    main::runAsZimbra("$ZMPROV mcf zimbraGalLdapPageSize 1000");
+    main::runAsZimbra("$ZMPROV mcf zimbraGalSyncLdapPageSize 1000");
     #bug 23840
-    main::runAsZimbra("$ZMPROV mcf zimbraGalSyncLdapPageSize 0");
     main::runAsZimbra("$ZMPROV mcf zimbraReverseProxyLookupTarget FALSE");
     main::runAsZimbra("$ZMPROV mcf zimbraGalSyncInternalSearchBase DOMAIN");
 	  main::runAsZimbra("$ZMPROV mcf +zimbraGalLdapFilterDef 'zimbraAccountSync:(&(|(displayName=*%s*)(cn=*%s*)(sn=*%s*)(gn=*%s*)(mail=*%s*)(zimbraMailDeliveryAddress=*%s*)(zimbraMailAlias=*%s*))(|(objectclass=zimbraAccount)(objectclass=zimbraDistributionList))(!(objectclass=zimbraCalendarResource)))'");
