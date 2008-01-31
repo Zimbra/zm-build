@@ -1974,6 +1974,16 @@ sub upgrade502GA {
     main::runAsZimbra("$ZMPROV mcf zimbraGalSyncInternalSearchBase DOMAIN");
 	  main::runAsZimbra("$ZMPROV mcf +zimbraGalLdapFilterDef 'zimbraAccountSync:(&(|(displayName=*%s*)(cn=*%s*)(sn=*%s*)(gn=*%s*)(mail=*%s*)(zimbraMailDeliveryAddress=*%s*)(zimbraMailAlias=*%s*))(|(objectclass=zimbraAccount)(objectclass=zimbraDistributionList))(!(objectclass=zimbraCalendarResource)))'");
 	  main::runAsZimbra("$ZMPROV mcf +zimbraGalLdapFilterDef 'zimbraResourceSync:(&(|(displayName=*%s*)(cn=*%s*)(sn=*%s*)(gn=*%s*)(mail=*%s*)(zimbraMailDeliveryAddress=*%s*)(zimbraMailAlias=*%s*))(objectclass=zimbraCalendarResource))'");
+	  my @coses = `su - zimbra -c "$ZMPROV gac"`;
+    my %attrs = ( zimbraSpamApplyUserFilters => "FALSE");
+	  foreach my $cos (@coses) {
+		  chomp $cos;
+      foreach my $attr (keys %attrs) {
+        my $cur_value = main::getLdapCOSValue($cos, $attr);
+        main::runAsZimbra("$ZMPROV mc $cos $attr \'$attrs{$attr}\'")
+          if ($cur_value eq "");
+      }
+	  }
   }
   if (main::isInstalled("zimbra-mta")) {
     movePostfixQueue("2.4.3.3z","2.4.3.4z");
