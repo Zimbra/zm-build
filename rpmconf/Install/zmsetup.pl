@@ -922,10 +922,14 @@ sub setDefaults {
   } else {
     $config{mailboxd_keystore} = "/opt/zimbra/conf/keystore";
   }
-  if ( -f "/opt/zimbra/java/lib/security/cacerts") {
-    $config{mailboxd_truststore} = "/opt/zimbra/java/lib/security/cacerts";
+  if ($platform =~ /MACOSX/) {
+      $config{mailboxd_truststore} = "/System/Library/Frameworks/JavaVM.framework/Versions/1.5/Home/lib/security/cacerts";
   } else {
-    $config{mailboxd_truststore} = "/opt/zimbra/java/jre/lib/security/cacerts";
+    if ( -f "/opt/zimbra/java/lib/security/cacerts") {
+      $config{mailboxd_truststore} = "/opt/zimbra/java/lib/security/cacerts";
+    } else {
+      $config{mailboxd_truststore} = "/opt/zimbra/java/jre/lib/security/cacerts";
+    }
   }
   $config{mailboxd_keystore_password} = genRandomPass();
   $config{mailboxd_truststore_password} = "changeit";
