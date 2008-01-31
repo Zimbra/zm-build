@@ -1301,7 +1301,8 @@ sub setDefaultsFromLocalConfig {
       $config{LDAPREPPASS} = $config{LDAPADMINPASS};
       $ldapRepChanged = 1;
     }
-  } elsif (isEnabled("zimbra-ldap") || isEnabled("zimbra-mta")) {
+  } 
+  if (isEnabled("zimbra-ldap") || isEnabled("zimbra-mta")) {
     $config{LDAPPOSTPASS} = getLocalConfig ("ldap_postfix_password");
     if ($config{LDAPPOSTPASS} eq "") {
       $config{LDAPPOSTPASS} = $config{LDAPADMINPASS};
