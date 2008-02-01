@@ -31,7 +31,7 @@ chomp $rundir;
 my $scriptDir = "/opt/zimbra/libexec/scripts";
 
 my $lowVersion = 18;
-my $hiVersion = 50;
+my $hiVersion = 51;
 my $hiLoggerVersion = 5;
 
 # Variables for the combo schema updater
@@ -78,7 +78,8 @@ my %updateScripts = (
   '46' => "migrate20070921-ImapDataSourceUidValidity.pl", # 5.0.0_RC1
   '47' => "migrate20070928-ScheduledTaskIndex.pl",     # 5.0.0_RC2
   '48' => "migrate20071128-AccountId.pl",              # 5.0.0_RC3
-  '49' => "migrate20071206-WidenSizeColumns.pl"        # 5.0.0_GA
+  '49' => "migrate20071206-WidenSizeColumns.pl",        # 5.0.0_GA
+  '50' => "migrate20080130-ImapFlags.pl"               # 5.0.3_GA
 );
 
 my %loggerUpdateScripts = (
@@ -141,6 +142,8 @@ my %updateFuncs = (
   "5.0.0_GA" => \&upgrade500GA,
   "5.0.1_GA" => \&upgrade501GA,
   "5.0.2_GA" => \&upgrade502GA,
+  "5.0.3_GA" => \&upgrade503GA,
+  "5.5.0_GA" => \&upgrade550GA,
 );
 
 my @versionOrder = (
@@ -191,6 +194,8 @@ my @versionOrder = (
   "5.0.0_GA",
   "5.0.1_GA",
   "5.0.2_GA",
+  "5.0.3_GA",
+  "5.5.0_GA",
 );
 
 my ($startVersion,$startMajor,$startMinor,$startMicro);
@@ -354,6 +359,10 @@ sub upgrade {
 		main::progress("This appears to be 5.0.1_GA\n");
 	} elsif ($startVersion eq "5.0.2_GA") {
 		main::progress("This appears to be 5.0.2_GA\n");
+	} elsif ($startVersion eq "5.0.3_GA") {
+		main::progress("This appears to be 5.0.3_GA\n");
+	} elsif ($startVersion eq "5.5.0_GA") {
+		main::progress("This appears to be 5.5.0_GA\n");
 	} else {
 		main::progress("I can't upgrade version $startVersion\n\n");
 		return 1;
@@ -1988,6 +1997,16 @@ sub upgrade502GA {
   if (main::isInstalled("zimbra-mta")) {
     movePostfixQueue("2.4.3.3z","2.4.3.4z");
   }
+	return 0;
+}
+sub upgrade503GA {
+	my ($startBuild, $targetVersion, $targetBuild) = (@_);
+	main::progress("Updating from 5.0.3_GA\n");
+	return 0;
+}
+sub upgrade550GA {
+	my ($startBuild, $targetVersion, $targetBuild) = (@_);
+	main::progress("Updating from 5.5.0_GA\n");
 	return 0;
 }
 
