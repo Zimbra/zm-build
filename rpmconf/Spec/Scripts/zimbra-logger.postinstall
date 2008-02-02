@@ -16,7 +16,7 @@
 
 PLAT=`/opt/zimbra/libexec/get_plat_tag.sh`
 ARCH=powerpc
-if [ "x$PLAT" = "xMACOSXx86" ]; then
+if [ "x$PLAT" = "xMACOSXx86" -o "x$PLAT" = "xMACOSXx86_10.5" ]; then
 	ARCH=i686
 fi
 

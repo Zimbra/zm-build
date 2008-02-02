@@ -20,7 +20,7 @@ ARCH=powerpc
 zimbra_home=/opt/zimbra
 H=`hostname -s`
 
-if [ "x$PLAT" = "xMACOSXx86" ]; then
+if [ "x$PLAT" = "xMACOSXx86" -o "x$PLAT" = "xMACOSXx86_10.5" ]; then
     ARCH=i686
 fi
 

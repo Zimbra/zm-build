@@ -24,6 +24,63 @@ if [ "x$ID" != "x0" ]; then
   exit 1
 fi
 
+niutil=/usr/bin/nituil
+nireport=/usr/bin/nireport
+nifind=/usr/bin/nifind
+dscl=/usr/bin/dscl
+
+getGIDByName() {
+  if [ -x "${niutil}" ]; then
+    IDS=`${niutil} -read / /groups/$1 | egrep '^gid:' | sed -e 's/gid: //'`
+    if [ "x$IDS" != "x" ]; then
+      GID=$IDS
+    fi
+  elif [ -x "${dscl}" ]; then
+    IDS=`${dscl} . -read /groups/staff | egrep '^PrimaryGroupID' | awk '{print $NF}'`
+    if [ "x$IDS" != "x" ]; then
+      GID=$IDS
+    fi
+  fi
+  echo $GID
+}
+
+verifyExists() {
+  EXISTS=0
+  if [ -x "${nifind}" ]; then
+    NM=`${nifind} /$1/$2`
+    if [ "x$NM" != "x" ]; then
+     EXISTS=1
+    fi
+  elif [ -x "${dscl}" ]; then
+    NM=`${dscl} . -list /$1/$2 2> /dev/null`
+    if [ "x$NM" = "x" ]; then
+     EXISTS=1
+    fi
+  fi
+  if [ x"$EXISTS" = "x1" ]; then
+    echo "/$1/$2"
+  else 
+    echo ""
+  fi
+}
+
+checkUsersGroupMembership() {
+  if [ -x "${nireport}" ]; then
+    members="$(${nireport} . /groups name users | grep -w "^$1[[:space:]].*$2")"
+  elif [ -x "${dscl}" ]; then
+    members="$(${dscl} . -read /groups/$1 GroupMembership | sed -e 's/^GroupMembership: //g' | grep -w $2)"
+  fi
+  return $member
+}
+checkUsersPrimaryGID() {
+  if [ -x "${nireport}" ]; then
+    gid="$(${nireport} . /users name gid | grep -w "^$1[[:space:]]*$2")"
+  elif [ -x "${dscl}" ]; then
+    gid="$(${dscl} . -read /groups/$1 PrimaryGroupID | sed -e 's/^PrimaryGroupID: //g' | grep -w $2)"
+  fi
+  return $gid
+}
+
 removeUserFromGroup () {
 
   if [ $# -lt 2 ]; then
@@ -41,14 +98,14 @@ removeUserFromGroup () {
   #
   for group in $groups; do
     # get the group number from the name
-    gid="$(nireport . /groups name gid | grep -w "^$group" | cut -f 2)"
+    gid="$(getGIDByName $group)"
 
     # check if the group exists
-    strgroup="$(nifind /groups/$group .)"
+    strgroup="$(verifyExists groups $group)"
     # check if the user is listed for the group (not listed in own primary)
-    stringroup="$(nireport . /groups name users | grep -w "^$group[[:space:]].*$user")"
+    stringroup="$(checkUsersGroupMembership $group $user)"
     # check if this is the user's primary group
-    strprimary="$(nireport . /users name gid | grep -w "^$user[[:space:]]*$gid")"
+    strprimary="$(checkUsersPrimaryGID $user gid)"
   
     # ensure that the group exists...
     if [ -z "$strgroup" ]; then
@@ -58,10 +115,10 @@ removeUserFromGroup () {
       echo "Not removing from primary group $group"
     # ...and that the user is listed in the group
     elif [ -z "$stringroup" ]; then
-      echo "User $user not listed in $group"
+      echo "User $user not a member of group $group"
     else
       # remove user from the group
-      dscl . delete /groups/$group users $user
+      ${dscl} . delete /groups/$group users $user
       echo "User $user removed from group $group"
     fi
   done
@@ -145,7 +202,7 @@ if [ x$UNINSTALL == "xyes" ]; then
 
     # remove crontab
     echo -n "Removing crontab entry for $ZIMBRA_USER..."
-    crontab -u $ZIMBRA_USER -r
+    echo "y" | crontab -u $ZIMBRA_USER -r
     echo "done."
   fi
 
@@ -202,22 +259,22 @@ if [ x$UNINSTALL == "xyes" ]; then
   # remove group and user
   echo -n "Deleting group $ZIMBRA_USER..."
   tmp=""
-  tmp="$(nifind /groups/$ZIMBRA_USER .)"
+  tmp="$(verifyExists groups $ZIMBRA_USER)"
   if [ -z "$tmp" ]; then
     echo "group didn't exist."
   else 
-    dscl . delete /groups/$ZIMBRA_USER
+    ${dscl} . -delete /groups/$ZIMBRA_USER 2> /dev/null
     echo "done."
   fi
 
   removeUserFromGroup  "all" $ZIMBRA_USER;
 
   echo -n "Deleting user $ZIMBRA_USER..."
-  tmp="$(nifind /users/$ZIMBRA_USER .)"
+  tmp="$(verifyExists users $ZIMBRA_USER)"
   if [ -z "$tmp" ]; then
     echo "didn't exist."
   else 
-    dscl . delete /users/$ZIMBRA_USER
+    ${dscl} . -delete /users/$ZIMBRA_USER 2> /dev/null
     echo "done."
   fi
 

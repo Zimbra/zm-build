@@ -26,6 +26,7 @@ $|=1; # don't buffer stdout
 our $platform = `/opt/zimbra/libexec/get_plat_tag.sh`;
 chomp $platform;
 our $addr_space = (($platform =~ m/\w+_(\d+)/) ? "$1" : "32");
+$addr_space = 32 unless ($addr_space =~ m/32|64/);
 my $logfile = "/tmp/zmsetup.".getDateStamp().".log";
 open LOGFILE, ">$logfile" or die "Can't open $logfile: $!\n";
 unlink("/tmp/zmsetup.log") if (-e "/tmp/zmsetup.log");
@@ -1033,13 +1034,21 @@ sub setDefaults {
 
   if (isEnabled("zimbra-mta")) {
     progress  "setting defaults for zimbra-mta.\n" if $options{d};
-    my $tmpval = (`su - zimbra -c "postconf mynetworks"`);
+    my $tmpval = (`su - zimbra -c "/opt/zimbra/postfix/sbin/postconf mynetworks"`);
     chomp($tmpval);
     $tmpval =~ s/mynetworks = //;
     if ($tmpval eq "") {
       $config{zimbraMtaMyNetworks} = "127.0.0.0/8 @interfaces";
     } else {
       $config{zimbraMtaMyNetworks} = "$tmpval";
+    }
+
+    if ($platform eq "MACOSXx86_10.5") {
+      $config{postfix_mail_owner} = "_postfix";
+      $config{postfix_setgid_group} = "_postdrop";
+    } else {
+      $config{postfix_mail_owner} = "postfix";
+      $config{postfix_setgid_group} = "postdrop";
     }
   }
 
@@ -1294,6 +1303,26 @@ sub setDefaultsFromLocalConfig {
   $config{AVUSER} = getLocalConfig("av_notify_user");
   $config{AVUSER} = $config{CREATEADMIN}
     if ($config{AVUSER} eq "");
+
+  if (isEnabled("zimbra-mta")) {
+    $config{postfix_mail_owner} = getLocalConfig ("postfix_mail_owner");
+    if ($config{postfix_mail_owner} eq "") {
+      if ($platform eq "MACOSXx86_10.5") {
+        $config{postfix_mail_owner} = "_postfix";
+      } else {
+        $config{postfix_mail_owner} = "postfix";
+      }
+    }
+    $config{postfix_setgid_group} = getLocalConfig ("postfix_setgid_group");
+    if ($config{postfix_setgid_group} eq "") {
+      if ($platform eq "MACOSXx86_10.5") {
+        $config{postfix_setgid_group} = "_postdrop";
+      } else {
+        $config{postfix_setgid_group} = "postdrop";
+      }
+    }
+
+  }
 
   if (isEnabled("zimbra-ldap")) {
     $config{LDAPREPPASS} = getLocalConfig ("ldap_replication_password");
@@ -3877,6 +3906,10 @@ sub configInitMta {
 
   if (isEnabled("zimbra-mta")) {
     progress ( "Initializing mta config..." );
+
+    setLocalConfig("postfix_mail_owner", $config{postfix_mail_owner});
+    setLocalConfig("postfix_setgid_group", $config{postfix_setgid_group});
+
     runAsZimbra ("/opt/zimbra/libexec/zmmtainit $config{LDAPHOST} $config{LDAPPORT}");
     progress ( "done.\n" );
     $installedServiceStr .= "zimbraServiceInstalled antivirus ";
@@ -3894,6 +3927,7 @@ sub configInitMta {
 
     runAsZimbra ("$ZMPROV ms $config{HOSTNAME} zimbraMtaMyNetworks \'$config{zimbraMtaMyNetworks}\'")
       if ($config{zimbraMtaMyNetworks} ne "");
+
       
   }
   configLog("configInitMta");
@@ -4333,9 +4367,13 @@ sub getSystemMemory {
 
 sub mysqlMemoryPercent {
   my $system_mem = shift;
+  my $os = lc `uname -s`;
+  chomp($os);
   my $percent = 30;
-  $percent = int((2/$system_mem)*100)
-    if ($system_mem > 2 && $addr_space eq "32");
+  if ($system_mem > 2 && $addr_space eq "32") {
+    $percent = int((1.55/$system_mem)*100);
+    return 10 if ($os eq "darwin");
+  }
   return $percent;
 }
 
