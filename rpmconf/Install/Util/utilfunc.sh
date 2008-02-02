@@ -1595,7 +1595,7 @@ getPlatformVars() {
       PRESUG_PACKAGES="perl-5.8.7"
     fi
     if [ $PLATFORM = "UBUNTU6_64" -o $PLATFORM = "UBUNTU7_64" ]; then
-      PREREQ_PACKAGES="sudo libidn11 fetchmail libpcre3 libgmp3c2 libexpat1 libxml2 libstdc++6 libstdc++5 openssl libltdl3 libperl"
+      PREREQ_PACKAGES="sudo libidn11 fetchmail libpcre3 libgmp3c2 libexpat1 libxml2 libstdc++6 libstdc++5 openssl libltdl3 libperl5.8"
       PRESUG_PACKAGES="perl-5.8.7"
     fi
     if [ $PLATFORM = "DEBIAN4.0" ]; then
