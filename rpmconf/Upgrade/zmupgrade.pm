@@ -2005,7 +2005,7 @@ sub upgrade503GA {
   if (main::isInstalled("zimbra-store")) {
     # 18545
     my $mailboxd_java_options = main::getLocalConfig("mailboxd_java_options");
-    $mailboxd_java_options .= " -Xss 256k"
+    $mailboxd_java_options .= " -Xss256k"
       unless ($mailboxd_java_options =~ /Xss/);
     main::detail("Modified mailboxd_java_options=$mailboxd_java_options");
     main::setLocalConfig("mailboxd_java_options", "$mailboxd_java_options");
