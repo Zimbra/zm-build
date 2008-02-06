@@ -2002,6 +2002,14 @@ sub upgrade502GA {
 sub upgrade503GA {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
 	main::progress("Updating from 5.0.3_GA\n");
+  if (main::isInstalled("zimbra-store")) {
+    # 18545
+    my $mailboxd_java_options = main::getLocalConfig("mailboxd_java_options");
+    $mailboxd_java_options .= " -Xss 256k"
+      unless ($mailboxd_java_options =~ /Xss/);
+    main::detail("Modified mailboxd_java_options=$mailboxd_java_options");
+    main::setLocalConfig("mailboxd_java_options", "$mailboxd_java_options");
+  }
 	return 0;
 }
 sub upgrade550GA {
