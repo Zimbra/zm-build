@@ -1990,6 +1990,14 @@ sub upgrade502GA {
   }
 	return 0;
 }
+  if (main::isInstalled("zimbra-store")) {
+    # 18545
+    my $mailboxd_java_options = main::getLocalConfig("mailboxd_java_options");
+    $mailboxd_java_options .= " -Xss 256k"
+      unless ($mailboxd_java_options =~ /Xss/);
+    main::detail("Modified mailboxd_java_options=$mailboxd_java_options");
+    main::setLocalConfig("mailboxd_java_options", "$mailboxd_java_options");
+  }
 
 sub upgrade35M1 {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
