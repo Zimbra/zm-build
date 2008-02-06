@@ -141,6 +141,8 @@ my %updateFuncs = (
   "5.0.0_GA" => \&upgrade500GA,
   "5.0.1_GA" => \&upgrade501GA,
   "5.0.2_GA" => \&upgrade502GA,
+  "5.0.3_GA" => \&upgrade503GA,
+  "5.5.0_GA" => \&upgrade550GA,
 );
 
 my @versionOrder = (
@@ -191,6 +193,8 @@ my @versionOrder = (
   "5.0.0_GA",
   "5.0.1_GA",
   "5.0.2_GA",
+  "5.0.3_GA",
+  "5.5.0_GA",
 );
 
 my ($startVersion,$startMajor,$startMinor,$startMicro);
@@ -354,6 +358,10 @@ sub upgrade {
 		main::progress("This appears to be 5.0.1_GA\n");
 	} elsif ($startVersion eq "5.0.2_GA") {
 		main::progress("This appears to be 5.0.2_GA\n");
+	} elsif ($startVersion eq "5.0.3_GA") {
+		main::progress("This appears to be 5.0.3_GA\n");
+	} elsif ($startVersion eq "5.5.0_GA") {
+		main::progress("This appears to be 5.5.0_GA\n");
 	} else {
 		main::progress("I can't upgrade version $startVersion\n\n");
 		return 1;
@@ -1990,6 +1998,9 @@ sub upgrade502GA {
   }
 	return 0;
 }
+sub upgrade503GA {
+	my ($startBuild, $targetVersion, $targetBuild) = (@_);
+	main::progress("Updating from 5.0.3_GA\n");
   if (main::isInstalled("zimbra-store")) {
     # 18545
     my $mailboxd_java_options = main::getLocalConfig("mailboxd_java_options");
@@ -1998,6 +2009,13 @@ sub upgrade502GA {
     main::detail("Modified mailboxd_java_options=$mailboxd_java_options");
     main::setLocalConfig("mailboxd_java_options", "$mailboxd_java_options");
   }
+	return 0;
+}
+sub upgrade550GA {
+	my ($startBuild, $targetVersion, $targetBuild) = (@_);
+	main::progress("Updating from 5.5.0_GA\n");
+	return 0;
+}
 
 sub upgrade35M1 {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
