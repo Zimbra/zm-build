@@ -299,6 +299,44 @@ checkUbuntuRelease() {
   fi
 }
 
+checkVersionDowngrade() {
+
+  if [ x"${ZM_CUR_MAJOR}" = "x" -o x"${ZM_CUR_MINOR}" = "x" -o x"${ZM_CUR_MICRO}" = "x" ]; then
+    return
+  fi
+
+  if [ x"${ZM_INST_MAJOR}" = "x" -o x"${ZM_INST_MINOR}" = "x" -o x"${ZM_INST_MICRO}" = "x" ]; then
+    return
+  fi
+
+  ZM_CUR_VERSION="${ZM_CUR_MAJOR}.${ZM_CUR_MINOR}.${ZM_CUR_MICRO}"
+  ZM_INST_VERSION="${ZM_INST_MAJOR}.${ZM_INST_MINOR}.${ZM_INST_MICRO}"
+
+  DOWNGRADE=0
+  if [ ${ZM_CUR_MAJOR} -gt ${ZM_INST_MAJOR} ]; then
+    #echo "$ZM_CUR_VERSION is newer then $ZM_INST_VERSION MAJOR"
+    DOWNGRADE=1
+  elif [ ${ZM_CUR_MAJOR} -eq ${ZM_INST_MAJOR} ]; then
+    if [ ${ZM_CUR_MINOR} -gt ${ZM_INST_MINOR} ]; then
+      #echo "$ZM_CUR_VERSION is newer then $ZM_INST_VERSION MINOR"
+      DOWNGRADE=1
+    elif [ ${ZM_CUR_MINOR} -eq ${ZM_INST_MINOR} ]; then
+      if [ ${ZM_CUR_MICRO} -gt ${ZM_INST_MICRO} ]; then
+        #echo "$ZM_CUR_VERSION is newer then $ZM_INST_VERSION MICRO"
+        DOWNGRADE=1
+      fi
+    fi
+  fi
+
+  if [ $DOWNGRADE = 1 ]; then
+    echo "Downgrading from version $ZM_INST_VERSION to $ZM_CUR_VERSION is not supported."
+    exit 1
+  else
+    echo "ZCS upgrade from $ZM_CUR_VERSION to $ZM_INST_VERSION will be performed."
+  fi   
+
+}
+
 checkRequired() {
 
   if ! cat /etc/hosts | perl -ne 'if (/^\s*127\.0\.0\.1/ && !/^\s*127\.0\.0\.1\s+localhost/) { exit 11; }'; then
@@ -529,12 +567,15 @@ determineVersionType() {
 
   isInstalled zimbra-core
   if [ x"$PKGINSTALLED" != "x" ]; then
-    ZMVERSION_CURRENT=`echo $PKGVERSION | sed s/^zimbra-core-//`
+    export ZMVERSION_CURRENT=`echo $PKGVERSION | sed s/^zimbra-core-//`
     if [ -d "/opt/zimbra/zimlets-network" ]; then
       ZMTYPE_CURRENT="NETWORK"
     else 
       ZMTYPE_CURRENT="FOSS"
     fi
+    ZM_CUR_MAJOR=$(perl -e '$v=$ENV{ZMVERSION_CURRENT}; $v =~ s/^(\d+\.\d+\.[^_]*_[^_]+_[^.]+).*/\1/; ($maj,$min,$mic) = $v =~ m/^(\d+)\.(\d+)\.(\d+)/; print "$maj\n"') 
+    ZM_CUR_MINOR=$(perl -e '$v=$ENV{ZMVERSION_CURRENT}; $v =~ s/^(\d+\.\d+\.[^_]*_[^_]+_[^.]+).*/\1/; ($maj,$min,$mic) = $v =~ m/^(\d+)\.(\d+)\.(\d+)/; print "$min\n"') 
+    ZM_CUR_MICRO=$(perl -e '$v=$ENV{ZMVERSION_CURRENT}; $v =~ s/^(\d+\.\d+\.[^_]*_[^_]+_[^.]+).*/\1/; ($maj,$min,$mic) = $v =~ m/^(\d+)\.(\d+)\.(\d+)/; print "$mic\n"') 
   fi
   # need way to determine type for other package types
   if [ $PACKAGEEXT = "rpm" ]; then
@@ -550,10 +591,15 @@ determineVersionType() {
       ZMTYPE_INSTALLABLE="NETWORK"
     fi
   fi
+  ZM_INST_MAJOR=$(perl -e '$v=glob("packages/zimbra-core*"); $v =~ s/^packages\/zimbra-core[-_]//; $v =~ s/^(\d+\.\d+\.[^_]*_[^_]+_[^.]+).*/\1/; ($maj,$min,$mic) = $v =~ m/^(\d+)\.(\d+)\.(\d+)/; print "$maj\n"') 
+  ZM_INST_MINOR=$(perl -e '$v=glob("packages/zimbra-core*"); $v =~ s/^packages\/zimbra-core[-_]//; $v =~ s/^(\d+\.\d+\.[^_]*_[^_]+_[^.]+).*/\1/; ($maj,$min,$mic) = $v =~ m/^(\d+)\.(\d+)\.(\d+)/; print "$min\n"') 
+  ZM_INST_MICRO=$(perl -e '$v=glob("packages/zimbra-core*"); $v =~ s/^packages\/zimbra-core[-_]//; $v =~ s/^(\d+\.\d+\.[^_]*_[^_]+_[^.]+).*/\1/; ($maj,$min,$mic) = $v =~ m/^(\d+)\.(\d+)\.(\d+)/; print "$mic\n"') 
 
   if [ x"$UNINSTALL" = "xyes" ] || [ x"$AUTOINSTALL" = "xyes" ]; then
     return
   fi
+
+  checkVersionDowngrade
 
   if [ x"$ZMTYPE_CURRENT" = "xNETWORK" ] && [ x"$ZMTYPE_INSTALLABLE" = "xFOSS" ]; then
     echo "Warning: You are about to upgrade from the Network Edition to the"
@@ -573,6 +619,7 @@ determineVersionType() {
      fi
     done
   fi
+
 }
 
 verifyLicenseAvailable() {
