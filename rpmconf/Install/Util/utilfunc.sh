@@ -329,7 +329,7 @@ checkVersionDowngrade() {
   fi
 
   if [ $DOWNGRADE = 1 ]; then
-    echo "Downgrading from version $ZM_INST_VERSION to $ZM_CUR_VERSION is not supported."
+    echo "Downgrading to version $ZM_INST_VERSION from $ZM_CUR_VERSION is not supported."
     exit 1
   else
     echo "ZCS upgrade from $ZM_CUR_VERSION to $ZM_INST_VERSION will be performed."
