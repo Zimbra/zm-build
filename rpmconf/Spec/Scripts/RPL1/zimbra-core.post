@@ -63,10 +63,10 @@ if [ -f /etc/debian_version ]; then
 		mv -f /etc/ld.so.conf /etc/ld.so.conf.$$
 		cat /etc/ld.so.conf.$$ | grep -v zimbra > /etc/ld.so.conf
 	fi
-	cat /opt/zimbra/conf/zimbra.ld.conf >> /etc/ld.so.conf
-else
-	mkdir -p /etc/ld.so.conf.d
-	cp -f /opt/zimbra/conf/zimbra.ld.conf /etc/ld.so.conf.d
+#	cat /opt/zimbra/conf/zimbra.ld.conf >> /etc/ld.so.conf
+#else
+#	mkdir -p /etc/ld.so.conf.d
+#	cp -f /opt/zimbra/conf/zimbra.ld.conf /etc/ld.so.conf.d
 fi
 
 # update prelink.conf
