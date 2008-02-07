@@ -1,101 +1,165 @@
 #!/bin/bash
 # 
 # ***** BEGIN LICENSE BLOCK *****
-# Zimbra Collaboration Suite Server
-# Copyright (C) 2005, 2006, 2007 Zimbra, Inc.
+# Version: MPL 1.1
 # 
-# The contents of this file are subject to the Yahoo! Public License
-# Version 1.0 ("License"); you may not use this file except in
-# compliance with the License.  You may obtain a copy of the License at
-# http://www.zimbra.com/license.
+# The contents of this file are subject to the Mozilla Public License
+# Version 1.1 ("License"); you may not use this file except in
+# compliance with the License. You may obtain a copy of the License at
+# http://www.zimbra.com/license
 # 
 # Software distributed under the License is distributed on an "AS IS"
-# basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+# basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See
+# the License for the specific language governing rights and limitations
+# under the License.
+# 
+# The Original Code is: Zimbra Collaboration Suite Server.
+# 
+# The Initial Developer of the Original Code is Zimbra, Inc.
+# Portions created by Zimbra are Copyright (C) 2005, 2006 Zimbra, Inc.
+# All Rights Reserved.
+# 
+# Contributor(s):
+# 
 # ***** END LICENSE BLOCK *****
 # 
 
+nifind=/usr/bin/nifind
+nireport=/usr/bin/nireport
+niutil=/usr/bin/niutil
+dscl=/usr/bin/dscl
+
 verifyExists() {
-	EXISTS=0
-	NM=`/usr/bin/nifind /$1/$2`
-	if [ "x$NM" != "x" ]; then
-		EXISTS=1
-	fi
+  EXISTS=0
+  if [ -x "${nifind}" ]; then
+    NM=`${nifind} /$1/$2`   
+    if [ "x$NM" != "x" ]; then
+     EXISTS=1
+    fi
+  elif [ -x "${dscl}" ]; then
+    NM=`${dscl} . -list /$1/$2 2> /dev/null`
+    if [ "x$NM" = "x" ]; then
+     EXISTS=1
+    fi
+  fi
 }
 
 verifyAvailable() {
-	verifyExists $1 $2
+  verifyExists $1 $2
 }
 
 getNextGID() {
-	GID=`/usr/bin/nireport / /groups gid | sort -n | tail -1`
-	GID=`expr $GID + 1`
+  if [ -x "${nireport}" ]; then
+    GID=`${nireport} / /groups gid | sort -n | tail -1`
+    GID=`expr $GID + 1`       
+  elif [ -x "${dscl}" ]; then
+    GID=`${dscl} . -readall /users PrimaryGroupID | grep ^PrimaryGroupID | awk '{print $NF}' | sort -n | tail -1`
+    GID=`expr $GID + 1`
+  fi
 }
 
 getGIDByName() {
-	IDS=`/usr/bin/niutil -read / /groups/$1 | egrep '^gid:' | sed -e 's/gid: //'`
-	if [ "x$IDS" != "x" ]; then
-		GID=$IDS
-	fi
+  if [ -x "${niutil}" ]; then
+    IDS=`${niutil} -read / /groups/$1 | egrep '^gid:' | sed -e 's/gid: //'`
+    if [ "x$IDS" != "x" ]; then
+      GID=$IDS
+    fi      
+  elif [ -x "${dscl}" ]; then
+    IDS=`${dscl} . -read /groups/staff | egrep '^PrimaryGroupID' | awk '{print $NF}'`
+    if [ "x$IDS" != "x" ]; then
+      GID=$IDS
+    fi
+  fi
 }
 
+
 getNextUID() {
-	NUID=`/usr/bin/nireport / /users uid | sort -n | tail -1`
-	NUID=`expr $NUID + 1`
+  if [ -x "${nireport}" ]; then
+    NUID=`${nireport} / /users uid | sort -n | tail -1`
+  elif [ -x "${dscl}" ]; then
+    NUID=`${dscl} . -readall /users UniqueID | grep ^UniqueID | awk '{print $NF}' | sort -n | tail -1`
+  fi
+  NUID=`expr $NUID + 1`
 }
 
 addUser() {
-	auxgroups=`echo $auxgroups | sed -e 's/,/ /g'`
+  auxgroups=`echo $auxgroups | sed -e 's/,/ /g'`
 
-	verifyAvailable "users" $name
+  verifyAvailable "users" $name
 
-	if [ $EXISTS -eq 1 ]; then
-		return
-	fi
+  if [ $EXISTS -eq 1 ]; then
+    return
+  fi
 
-	for g in $auxgroups; do
-		verifyExists groups $g
-		if [ $EXISTS = 0 ]; then
-			:
-		else
-			/usr/bin/niutil -mergeprop / /groups/$g users $name
-		fi
-	done
+  for g in $auxgroups; do
+    verifyExists groups $g
+    if [ $EXISTS = 0 ]; then
+      :
+    else
+      if [ -x "${niutil}" ]; then
+        ${niutil} -mergeprop / /groups/$g users $name 
+      elif [ -x "${dscl}" ]; then
+        ${dscl} . -merge /groups/$g GroupMembership $name
+      fi
+    fi
+  done
 
-	verifyExists groups $maingroup
-	if [ $EXISTS = 1 ]; then
-		getGIDByName $maingroup
-		creategroup=0
-	else
-		getNextGID
-		creategroup=1
-	fi
-	maingid=$GID
-	getNextUID 
-	mainuid=$NUID
+  verifyExists groups $maingroup
+  if [ $EXISTS = 1 ]; then
+    getGIDByName $maingroup
+    creategroup=0
+  else
+    getNextGID
+    creategroup=1
+  fi
+  maingid=$GID
+  getNextUID 
+  mainuid=$NUID
 
-	echo "Creating $name with UID $mainuid, GID $maingid"
-	if [ $creategroup = 1 ]; then
-		/usr/bin/niutil -create / /groups/$maingroup
-		/usr/bin/niutil -createprop / /groups/$maingroup gid $maingid
-	fi
-	/usr/bin/niutil -mergeprop / /groups/$maingroup users $name
+  echo "Creating group $name with gid:$maingid"
+  if [ $creategroup = 1 ]; then
+    if [ -x "${niutil}" ]; then
+      ${niutil} -create / /groups/$maingroup
+      ${niutil} -createprop /groups/$maingroup gid $maingid               
+    elif [ -x "${dscl}" ]; then
+      ${dscl} . -create /groups/$maingroup
+      ${dscl} . -merge /groups/$maingroup RecordName $maingroup
+      ${dscl} . -create /groups/$maingroup PrimaryGroupID $maingid
+    fi
+  fi
+  echo "Creating user $name with uid:$mainuid"
+  if [ -x "${niutil}" ]; then
+    ${niutil} -mergeprop / /groups/$maingroup users $name
 
-	niutil -create / /users/$name
-	niutil -createprop / /users/$name realname $name
-	niutil -createprop / /users/$name uid $mainuid
-	niutil -createprop / /users/$name gid ${maingid}
-	niutil -createprop / /users/$name shell /bin/bash
-	niutil -createprop / /users/$name authentication_authority ";ShadowHash;"
-	niutil -createprop / /users/$name passwd '*'
-
-	if [ x$homedir != "x" ]; then
-		niutil -createprop / /users/$name home $homedir
-	fi
+    ${niutil} -create / /users/$name
+    ${niutil} -createprop / /users/$name realname $name
+    ${niutil} -createprop / /users/$name uid $mainuid
+    ${niutil} -createprop / /users/$name gid ${maingid}
+    ${niutil} -createprop / /users/$name shell /bin/bash
+    ${niutil} -createprop / /users/$name authentication_authority ";ShadowHash;"
+    ${niutil} -createprop / /users/$name passwd '*'                          
+    if [ x$homedir != "x" ]; then
+      ${niutil} -createprop / /users/$name home $homedir  
+    fi
+  elif [ -x "${dscl}" ]; then
+    ${dscl} . -merge /groups/$maingroup GroupMembership $name
+    ${dscl} . -create /users/$name
+    ${dscl} . -merge /users/$name RecordName $name
+    ${dscl} . -create /users/$name RealName $name
+    ${dscl} . -create /users/$name UniqueID $mainuid
+    ${dscl} . -create /users/$name PrimaryGroupID ${maingid}
+    ${dscl} . -create /users/$name UserShell /bin/bash
+    ${dscl} . -create /users/$name AuthenticationAuthority ";ShadowHash;"
+    ${dscl} . -create /users/$name Password '*'
+    if [ x$homedir != "x" ]; then
+      ${dscl} . -create /users/$name NFSHomeDirectory $homedir
+    fi
+  fi
 
 }
 
 maingroup="postfix"
-homedir="/opt/zimbra/postfix-2.4.3.4z"
+homedir="/opt/zimbra/postfix"
 name="postfix"
 addUser
 
@@ -106,20 +170,20 @@ name="zimbra"
 addUser
 
 if [ -f "/opt/zimbra/bin/zmcontrol" ]; then
-	su - zimbra -c "/opt/zimbra/bin/zmcontrol stop" > /dev/null 2>&1
+  su - zimbra -c "/opt/zimbra/bin/zmcontrol stop" > /dev/null 2>&1
 fi
 
 rm -f /opt/zimbra/.enable_replica
 if [ -f /opt/zimbra/conf/slapd.conf ]; then
-	egrep -q '^overlay syncprov' /opt/zimbra/conf/slapd.conf > /dev/null
-	if [ $? = 0 ]; then
-		touch /opt/zimbra/.enable_replica
-	else
-		egrep -q 'type=refreshAndPersist' /opt/zimbra/conf/slapd.conf > /dev/null
-		if [ $? = 0 ]; then
-			touch /opt/zimbra/.enable_replica
-		fi
-	fi
+  egrep -q '^overlay syncprov' /opt/zimbra/conf/slapd.conf > /dev/null
+  if [ $? = 0 ]; then
+    touch /opt/zimbra/.enable_replica
+  else
+    egrep -q 'type=refreshAndPersist' /opt/zimbra/conf/slapd.conf > /dev/null
+    if [ $? = 0 ]; then
+      touch /opt/zimbra/.enable_replica
+    fi
+  fi
 fi  
 
 D=`date +%s`

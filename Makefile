@@ -35,10 +35,6 @@ ifeq ($(BUILD_PLATFORM), RHEL4_64)
 include $(DEFS_DIR)/RHEL4_64_components.def
 endif
 
-ifeq ($(BUILD_PLATFORM), RHEL4_64)
-include $(DEFS_DIR)/MACOSXx86_components.def
-endif
-
 # PACKAGE TARGETS
 
 all: packages zcs-$(RELEASE).$(BUNDLE_EXT)
@@ -85,7 +81,7 @@ include $(DEFS_DIR)/clean.def
 
 include $(DEFS_DIR)/devclean.def
 
-ifeq ($(BUILD_PLATFORM), MACOSXx86)
+ifeq (MACOSXx86,$(findstring MACOSXx86,$(BUILD_PLATFORM)))
 include $(DEFS_DIR)/isync.def
 include $(DEFS_DIR)/app-mactoaster.def
 endif

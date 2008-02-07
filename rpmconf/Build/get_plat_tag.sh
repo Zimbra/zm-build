@@ -181,18 +181,32 @@ if [ -f /etc/distro-release ]; then
         exit 0
 fi
 
-p=`uname -p`
 if [ "x$p" = "xpowerpc" ]; then
 	echo "MACOSX"
 	exit 0
 fi
 
 a=`uname -a | awk '{print $1}'`
+p=`uname -p`
 if [ "x$a" = "xDarwin" ]; then
-	if [ "x$p" = "xi386" ]; then
-		echo "MACOSXx86"
-		exit 0
-	fi
+  v=`sw_vers | grep ^ProductVersion | awk '{print $NF}' | awk -F. '{print $1"."$2}'`
+  if [ "x$v" = "x10.4" ]; then
+	  if [ "x$p" = "xi386" ]; then
+		  echo "MACOSXx86"
+		  exit 0
+	  fi
+
+    if [ "x$p" = "xpowerpc" ]; then
+	    echo "MACOSX"
+	    exit 0
+    fi
+  else
+    if [ "x$p" = "xi386" ]; then
+      p=x86
+    fi
+    echo "MACOSX${p}_${v}"
+    exit 0
+  fi
 fi
 
 echo "UNKNOWN"
