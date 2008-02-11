@@ -16,7 +16,7 @@ PLATFORM_CORE_COMPONENTS = \
 
 include $(DEFS_DIR)/plat_common.def
 
-JAVA_BINARY := /usr/bin/java
+JAVA_BINARY := /opt/zimbra/java/bin/java
 
 MYSQL_VERSION   := standard-$(MYSQL_VERSION_STRING)-apple-darwin8.2.0-i686
 MYSQL_CLIENT_VERSION := standard-$(MYSQL_VERSION_STRING)-clientlibs

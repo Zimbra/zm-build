@@ -1,7 +1,7 @@
 # Definitions for RPL1
 
 LOCAL=0
-LABEL ?= zcs-foss.liquidsys.com@zimbra:zcs-foss-$(MAJOR)-devel
+LABEL := zcs-foss.liquidsys.com@zimbra:zcs-foss-$(MAJOR)-devel
 
 PACKAGING_COMMAND := $(BUILD_ROOT)/rpmconf/Build/cvc-wrapper.sh
 
