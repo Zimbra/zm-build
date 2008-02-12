@@ -2009,12 +2009,6 @@ sub upgrade503GA {
 	  main::runAsZimbra("$ZMPROV mcf +zimbraGalLdapFilterDef 'zimbraResourceAutoComplete:(&(|(displayName=%s*)(cn=%s*)(sn=%s*)(gn=%s*)(mail=%s*)(zimbraMailDeliveryAddress=%s*)(zimbraMailAlias=%s*))(objectclass=zimbraCalendarResource))'");
   }
   if (main::isInstalled("zimbra-store")) {
-    # 18545
-    my $mailboxd_java_options = main::getLocalConfig("mailboxd_java_options");
-    $mailboxd_java_options .= " -Xss256k"
-      unless ($mailboxd_java_options =~ /Xss/);
-    main::detail("Modified mailboxd_java_options=$mailboxd_java_options");
-    main::setLocalConfig("mailboxd_java_options", "$mailboxd_java_options");
   }
 	return 0;
 }
