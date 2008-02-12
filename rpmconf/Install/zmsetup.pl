@@ -3694,6 +3694,7 @@ sub configInitBackupPrefs {
 }
 
 sub configSetProxyPrefs {
+    runAsZimbra("$ZMPROV mcf zimbraImapCleartextLoginEnabled TRUE");
 }
 
 sub configSetCluster {
