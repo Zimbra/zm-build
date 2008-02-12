@@ -1716,29 +1716,32 @@ sub upgrade500RC3 {
       close ZMPROV;
   }
   if (main::isInstalled("zimbra-ldap") && $platform !~ /MACOSX/ ) {
-    my $ldap_pass = `su - zimbra -c "zmlocalconfig -s -m nokey zimbra_ldap_password"`;
-    my $ldap_master_url = `su - zimbra -c "zmlocalconfig -s -m nokey ldap_master_url"`;
-    my $ldap; 
-    chomp($ldap_master_url);
-    chomp($ldap_pass);
-    unless($ldap = Net::LDAP->new($ldap_master_url)) { 
-      main::progress("Unable to contact $ldap_master_url: $!\n"); 
-      return 1;
-    }
-    if ($ldap_master_url !~ /^ldaps/i) {
-      my $result = $ldap->start_tls(verify=>'none');
-      if ($result->code()) {
-        main::progress("Unable to startTLS: $!\n"); 
+    my $ldap_master = `su - zimbra -c "zmlocalconfig -s -m nokey ldap_is_master"`;
+    if ($ldap_master eq "true") {
+      my $ldap_pass = `su - zimbra -c "zmlocalconfig -s -m nokey zimbra_ldap_password"`;
+      my $ldap_master_url = `su - zimbra -c "zmlocalconfig -s -m nokey ldap_master_url"`;
+      my $ldap; 
+      chomp($ldap_master_url);
+      chomp($ldap_pass);
+      unless($ldap = Net::LDAP->new($ldap_master_url)) { 
+        main::progress("Unable to contact $ldap_master_url: $!\n"); 
         return 1;
       }
+      if ($ldap_master_url !~ /^ldaps/i) {
+        my $result = $ldap->start_tls(verify=>'none');
+        if ($result->code()) {
+          main::progress("Unable to startTLS: $!\n"); 
+          return 1;
+        }
+      }
+      my $dn = 'cn=mime,cn=config,cn=zimbra';
+      my $result = $ldap->bind("uid=zimbra,cn=admins,cn=zimbra", password => $ldap_pass);
+      unless($result->code()) {
+        $result = DeleteLdapTree($ldap,$dn);
+        main::progress($result->code() ? "Failed to delete $dn: ".$result->error()."\n" : "Deleted $dn\n");
+      }
+      $result = $ldap->unbind;
     }
-    my $dn = 'cn=mime,cn=config,cn=zimbra';
-    my $result = $ldap->bind("uid=zimbra,cn=admins,cn=zimbra", password => $ldap_pass);
-    unless($result->code()) {
-      $result = DeleteLdapTree($ldap,$dn);
-      main::progress($result->code() ? "Failed to delete $dn: ".$result->error()."\n" : "Deleted $dn\n");
-    }
-    $result = $ldap->unbind;
   }
   if (main::isInstalled("zimbra-mta")) {
     movePostfixQueue("2.4.3.3","2.4.3.3z");
