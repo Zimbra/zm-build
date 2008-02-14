@@ -2012,7 +2012,7 @@ sub upgrade503GA {
 	  main::runAsZimbra("$ZMPROV mcf +zimbraGalLdapFilterDef 'zimbraResourceAutoComplete:(&(|(displayName=%s*)(cn=%s*)(sn=%s*)(gn=%s*)(mail=%s*)(zimbraMailDeliveryAddress=%s*)(zimbraMailAlias=%s*))(objectclass=zimbraCalendarResource))'");
   }
   if (main::isInstalled("zimbra-store")) {
-    main::runAsZimbra("$ZMPROV mcf zimbraMailPurgeSleepInterval 1h");
+    #main::runAsZimbra("$ZMPROV mcf zimbraMailPurgeSleepInterval 1h");
   }
 	return 0;
 }
