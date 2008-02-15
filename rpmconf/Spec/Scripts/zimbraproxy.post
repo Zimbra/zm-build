@@ -25,10 +25,11 @@ if [ -L "/opt/zimbra/nginx" ]; then
 fi
 ln -s /opt/zimbra/nginx-0.5.30-zimbra /opt/zimbra/nginx
 
+SUDOMODE=`perl -e 'my $mode=(stat("/etc/sudoers"))[2];printf("%04o\n",$mode & 07777);'`
 egrep -v '^%zimbra.*nginx' /etc/sudoers > /tmp/sudoers
 echo "%zimbra ALL=NOPASSWD:/opt/zimbra/nginx/sbin/nginx" >> /tmp/sudoers
 mv -f /tmp/sudoers /etc/sudoers
-chmod 440 /etc/sudoers
+chmod $SUDOMODE /etc/sudoers
 
 if [ -x "/opt/zimbra/libexec/zmfixperms" ]; then
   /opt/zimbra/libexec/zmfixperms

@@ -92,19 +92,20 @@ else
   ls -ld /opt/zimbra/mailboxd/webapps/service
 fi
 
+SUDOMODE=`perl -e 'my $mode=(stat("/etc/sudoers"))[2];printf("%04o\n",$mode & 07777);'`
 egrep -v -e '^%zimbra.*tomcat' -e '^%zimbra.*mailboxdmgr' /etc/sudoers > /tmp/sudoers
 echo "%zimbra ALL=NOPASSWD:/opt/zimbra/libexec/zmmailboxdmgr" >> /tmp/sudoers
 mv -f /tmp/sudoers /etc/sudoers
-chmod 440 /etc/sudoers
+chmod $SUDOMODE /etc/sudoers
 
 egrep -v -e '^%zimbra.*zmcertmgr' /etc/sudoers > /tmp/sudoers
 echo "%zimbra ALL=NOPASSWD:/opt/zimbra/bin/zmcertmgr" >> /tmp/sudoers
 mv -f /tmp/sudoers /etc/sudoers
-chmod 440 /etc/sudoers
+chmod $SUDOMODE /etc/sudoers
 
 egrep -v '^%zimbra.*perdition' /etc/sudoers > /tmp/sudoers
 mv -f /tmp/sudoers /etc/sudoers
-chmod 440 /etc/sudoers
+chmod $SUDOMODE /etc/sudoers
 
 if [ -d "/opt/zimbra/mailboxd/work/zimbra" ]; then
   find /opt/zimbra/mailboxd/work/zimbra -exec touch {} \; 2> /dev/null

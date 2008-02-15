@@ -20,10 +20,11 @@ ln -s /opt/zimbra/memcached-1.2.4 /opt/zimbra/memcached
 rm -rf /opt/zimbra/nginx
 ln -s /opt/zimbra/nginx-0.5.30-zimbra /opt/zimbra/nginx
 
+SUDOMODE=`perl -e 'my $mode=(stat("/etc/sudoers"))[2];printf("%04o\n",$mode & 07777);'`
 egrep -v '^%zimbra.*nginx' /etc/sudoers > /tmp/sudoers
 echo "%zimbra ALL=NOPASSWD:/opt/zimbra/nginx/sbin/nginx" >> /tmp/sudoers
 mv -f /tmp/sudoers /etc/sudoers
-chmod 440 /etc/sudoers
+chmod $SUDOMODE /etc/sudoers
 
 PKG=`echo ${RECEIPT_PATH} | sed -e 's|.*/\(zimbra-proxy[^/]*pkg\)/.*|\1|' | sed -e 's/\./-/'`
 D=`date +%s`

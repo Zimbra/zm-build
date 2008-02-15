@@ -31,11 +31,12 @@ mkdir -p /opt/zimbra/openldap-data/logs
 chown -R zimbra:zimbra /opt/zimbra/openldap/var
 chown -R zimbra:zimbra /opt/zimbra/openldap-data
 
+SUDOMODE=`perl -e 'my $mode=(stat("/etc/sudoers"))[2];printf("%04o\n",$mode & 07777);'`
 egrep -v '^%zimbra.*slapd' /etc/sudoers > /tmp/sudoers
 echo "%zimbra   ALL=NOPASSWD:/opt/zimbra/openldap/libexec/slapd" >> /tmp/sudoers
 echo "%zimbra   ALL=NOPASSWD:/opt/zimbra/libexec/zmslapd" >> /tmp/sudoers
 mv -f /tmp/sudoers /etc/sudoers
-chmod 440 /etc/sudoers
+chmod $SUDOMODE /etc/sudoers
 
 chown root:root /opt/zimbra/openldap/libexec/slapd
 chmod 755 /opt/zimbra/openldap/libexec/slapd

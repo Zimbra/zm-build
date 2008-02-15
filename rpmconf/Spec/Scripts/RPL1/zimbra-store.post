@@ -67,19 +67,20 @@ mkdir -p /opt/zimbra/index
 mkdir -p /opt/zimbra/backup
 chown zimbra:zimbra /opt/zimbra/convertd /opt/zimbra/redolog /opt/zimbra/store /opt/zimbra/index /opt/zimbra/backup 
 
+SUDOMODE=`perl -e 'my $mode=(stat("/etc/sudoers"))[2];printf("%04o\n",$mode & 07777);'`
 egrep -v -e '^%zimbra.*tomcat' -e '^%zimbra.*mailboxdmgr'  /etc/sudoers > /tmp/sudoers
 echo "%zimbra ALL=NOPASSWD:/opt/zimbra/libexec/zmmailboxdmgr" >> /tmp/sudoers
 mv -f /tmp/sudoers /etc/sudoers
-chmod 440 /etc/sudoers
+chmod $SUDOMODE /etc/sudoers
 
 egrep -v -e '^%zimbra.*zmcertmgr' /etc/sudoers > /tmp/sudoers
 echo "%zimbra ALL=NOPASSWD:/opt/zimbra/bin/zmcertmgr" >> /tmp/sudoers
 mv -f /tmp/sudoers /etc/sudoers
-chmod 440 /etc/sudoers
+chmod $SUDOMODE /etc/sudoers
 
 egrep -v '^%zimbra.*perdition' /etc/sudoers > /tmp/sudoers
 mv -f /tmp/sudoers /etc/sudoers
-chmod 440 /etc/sudoers
+chmod $SUDOMODE /etc/sudoers
 
 ##### install_history
 PKG=@@PKGNAME@@
