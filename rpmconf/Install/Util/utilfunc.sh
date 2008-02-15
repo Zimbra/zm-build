@@ -1180,13 +1180,10 @@ removeExistingInstall() {
 
     rm -f /etc/ld.so.conf.d/zimbra.ld.conf
     if [ -f "/etc/sudoers" ]; then
+      SUDOMODE=`perl -e 'my $mode=(stat("/etc/sudoers"))[2];printf("%04o\n",$mode & 07777);'`
       cat /etc/sudoers | grep -v zimbra > /tmp/sudoers
       cat /tmp/sudoers > /etc/sudoers
-      if [ $PLATFORM = "SuSEES9" -o $PLATFORM = "SuSEES10" -o $PLATFORM = "SuSE10" -o $PLATFORM = "openSUSE_10.2" -o $PLATFORM = "openSUSE_10.1" -o $PLATFORM = "SLES10_64" ]; then
-        chmod 640 /etc/sudoers
-      else
-        chmod 440 /etc/sudoers
-      fi
+      chmod $SUDOMODE /etc/sudoers
       rm -f /tmp/sudoers
     fi
     echo ""

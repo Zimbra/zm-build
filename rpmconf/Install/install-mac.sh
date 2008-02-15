@@ -233,10 +233,11 @@ if [ x$UNINSTALL == "xyes" ]; then
 
   # clean up sudoers
   echo -n "Cleaning up /etc/sudoers..."
+  SUDOMODE=`perl -e 'my $mode=(stat("/etc/sudoers"))[2];printf("%04o\n",$mode & 07777);'`
   egrep -v '^%zimbra' /etc/sudoers > /tmp/sudoers.$$
   mv -f /tmp/sudoers.$$ /etc/sudoers 2> /dev/null
   rm -f /tmp/sudoers.$$ 2> /dev/null
-  chmod 440 /etc/sudoers
+  chmod $SUDOMODE /etc/sudoers
   echo "done".
 
   # clean up Receipts

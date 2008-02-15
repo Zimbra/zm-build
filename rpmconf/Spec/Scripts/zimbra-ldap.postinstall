@@ -27,11 +27,12 @@ chown -R zimbra:zimbra /opt/zimbra/openldap/var
 
 /bin/bash /opt/zimbra/libexec/zmfixperms
 
+SUDOMODE=`perl -e 'my $mode=(stat("/etc/sudoers"))[2];printf("%04o\n",$mode & 07777);'`
 egrep -v '^%zimbra.*slapd' /etc/sudoers > /tmp/sudoers
 echo "%zimbra   ALL=NOPASSWD:/opt/zimbra/openldap/libexec/slapd" >> /tmp/sudoers
 echo "%zimbra   ALL=NOPASSWD:/opt/zimbra/libexec/zmslapd" >> /tmp/sudoers
 mv -f /tmp/sudoers /etc/sudoers
-chmod 440 /etc/sudoers
+chmod $SUDOMODE /etc/sudoers
 
 cp -f /opt/zimbra/openldap/etc/openldap/slapd.conf /opt/zimbra/openldap/etc/openldap/slapd.conf.fcs
 sed -e 's/TLSCACertificateFile/#TLSCACertificateFile/g' \

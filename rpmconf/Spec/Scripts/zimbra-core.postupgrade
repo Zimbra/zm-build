@@ -93,10 +93,11 @@ if [ -d $SAVEDIR/zimlet -a -d /opt/zimbra/mailboxd/webapps/service ]; then
   cp -rf $SAVEDIR/zimlet /opt/zimbra/mailboxd/webapps/service/
 fi
 
+SUDOMODE=`perl -e 'my $mode=(stat("/etc/sudoers"))[2];printf("%04o\n",$mode & 07777);'`
 egrep -v -e '^%zimbra.*zmcertmgr' /etc/sudoers > /tmp/sudoers
 echo "%zimbra ALL=NOPASSWD:/opt/zimbra/bin/zmcertmgr" >> /tmp/sudoers
 mv -f /tmp/sudoers /etc/sudoers
-chmod 440 /etc/sudoers
+chmod $SUDOMODE /etc/sudoers
 
 # log rotation
 if [ -d "/etc/periodic/daily" ]; then

@@ -32,6 +32,7 @@ ln -s /opt/zimbra/clamav-0.92 /opt/zimbra/clamav
 H=`hostname -s`
 I=`hostname -i`
 
+SUDOMODE=`perl -e 'my $mode=(stat("/etc/sudoers"))[2];printf("%04o\n",$mode & 07777);'`
 egrep -v '^%zimbra.*postfix' /etc/sudoers > /tmp/sudoers
 mv -f /tmp/sudoers /etc/sudoers
 echo "%zimbra   ALL=NOPASSWD:/opt/zimbra/postfix-2.4.3.4z/sbin/postfix, /opt/zimbra/postfix-2.4.3.4z/sbin/postalias, /opt/zimbra/postfix-2.4.3.4z/sbin/qshape.pl, /opt/zimbra/postfix-2.4.3.4z/sbin/postconf,/opt/zimbra/postfix-2.4.3.4z/sbin/postsuper" >> /etc/sudoers
@@ -39,7 +40,7 @@ echo "%zimbra   ALL=NOPASSWD:/opt/zimbra/postfix-2.4.3.4z/sbin/postfix, /opt/zim
 egrep -v '^%zimbra.*zmqstat' /etc/sudoers > /tmp/sudoers
 mv -f /tmp/sudoers /etc/sudoers
 echo "%zimbra   ALL=NOPASSWD:/opt/zimbra/libexec/zmqstat,/opt/zimbra/libexec/zmmtastatus" >> /etc/sudoers
-chmod 440 /etc/sudoers
+chmod $SUDOMODE /etc/sudoers
 
 chown postfix /opt/zimbra/postfix/conf/master.cf
 chmod 644 /opt/zimbra/postfix/conf/master.cf
