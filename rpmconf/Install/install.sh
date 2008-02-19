@@ -69,6 +69,9 @@ while [ $# -ne 0 ]; do
 		  ;;
 		-x|--skipspacecheck) 
       SKIPSPACECHECK="yes"
+      ;;
+		-platform-override|--platform-override) 
+      ALLOW_PLATFORM_OVERRIDE="yes"
 		  ;;
     -h|-help|--help)
       usage
@@ -148,18 +151,35 @@ if [ $AUTOINSTALL = "no" ]; then
 	p=`bin/get_plat_tag.sh`
 	echo $f | grep -q $p > /dev/null 2>&1
 	if [ $? -ne 0 ]; then
+    echo ""
 		echo "You appear to be installing packages on a platform different"
-		echo "than the platform for which they were built"
+		echo "than the platform for which they were built."
 		echo ""
 		echo "This platform is $p"
 		echo "Packages found: $f"
-		echo "This may or may not work"
+		echo "This may or may not work."
 		echo ""
-		askYN "Install anyway?" "N"
-		if [ $response = "no" ]; then
-			echo "Exiting..."
-			exit 1
-		fi
+
+    if [ x"${ALLOW_PLATFORM_OVERRIDE}" = "xyes" ]; then
+
+      echo "Using packages for a platform in which they were not designed for"
+      echo "may result in an installation that is NOT usable. Your support"
+      echo "options may be limited if you choose to continue."
+      echo ""
+		  askYN "Install anyway?" "N"
+		  if [ $response = "no" ]; then
+			  echo "Exiting..."
+			  exit 1
+		  fi
+    else 
+      echo "Installation can not continue without manual override."
+      echo "You can override this safety check with $0 --platform-override"
+      echo ""
+      echo "WARNING: Bypassing this check may result in an install or"
+      echo "upgrade that is NOT usable."
+      echo ""
+      exit 1
+    fi
 	fi
 
 	verifyExecute
