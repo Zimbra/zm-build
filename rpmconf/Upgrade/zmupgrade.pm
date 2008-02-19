@@ -80,6 +80,7 @@ my %updateScripts = (
   '48' => "migrate20071128-AccountId.pl",              # 5.0.0_RC3
   '49' => "migrate20071206-WidenSizeColumns.pl",        # 5.0.0_GA
   '50' => "migrate20080130-ImapFlags.pl"               # 5.0.3_GA
+  '51' => "migrate20080213-IndexDeferredColumn.pl",    # 5.0.3_GA
 );
 
 my %loggerUpdateScripts = (
