@@ -137,7 +137,7 @@ $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/etc: force
 			$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/etc/jettyrc
 		cp -f $(SERVICE_DIR)/conf/$(MAILBOXD_SERVER)-$(MAILBOXD_MINOR_VERSION)/jetty.xml.production \
 			$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/etc/jetty.xml.in
-		cp -f $(SERVICE_DIR)/conf/$(MAILBOXD_SERVER)-$(MAILBOXD_MINOR_VERSION)/webdefault.xml \
+		cp -f $(SERVICE_DIR)/conf/$(MAILBOXD_SERVER)-$(MAILBOXD_MINOR_VERSION)/webdefault.xml.production \
 			$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/etc/webdefault.xml
 		cp -f $(SERVICE_DIR)/conf/$(MAILBOXD_SERVER)-$(MAILBOXD_MINOR_VERSION)/start.config \
 			$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/etc/start.config
