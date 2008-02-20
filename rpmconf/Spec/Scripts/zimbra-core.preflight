@@ -120,7 +120,7 @@ addUser() {
   if [ $creategroup = 1 ]; then
     if [ -x "${niutil}" ]; then
       ${niutil} -create / /groups/$maingroup
-      ${niutil} -createprop /groups/$maingroup gid $maingid               
+      ${niutil} -createprop / /groups/$maingroup gid $maingid               
     elif [ -x "${dscl}" ]; then
       ${dscl} . -create /groups/$maingroup
       ${dscl} . -merge /groups/$maingroup RecordName $maingroup
