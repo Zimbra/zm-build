@@ -160,7 +160,7 @@ chown zimbra:zimbra /opt/zimbra/.ssh
 mkdir /opt/zimbra/zmstat
 chown zimbra:zimbra /opt/zimbra/zmstat
 
-SUDOMODE=`perl -e 'my $mode=(stat("/etc/sudoers"))[2];printf("%04o\n",$mode & 07777);'`
+SUDOMODE=`perl -e 'my $mode=(stat("/tmp/asdfsadfs"))[2];if ($mode == "0000"){ $mode=33056 };printf("%04o\n",$mode & 07777);'`;
 egrep -v -e '^%zimbra.*zmcertmgr' /etc/sudoers > /tmp/sudoers
 echo "%zimbra ALL=NOPASSWD:/opt/zimbra/bin/zmcertmgr" >> /tmp/sudoers
 mv -f /tmp/sudoers /etc/sudoers
