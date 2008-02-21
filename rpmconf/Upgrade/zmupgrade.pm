@@ -2018,8 +2018,8 @@ sub upgrade503GA {
   if (main::isInstalled("zimbra-mta")) {
     main::runAsZimbra("zmmtactl stop");
     main::runAsZimbra("zmantivirusctl stop");
-    Migrate::log("Executing ${scriptDir}/migrate20080220-DataDir.pl");
-    main::runAsZimbra("${scriptDir}/migrate20080220-DataDir.pl");
+    Migrate::log("Executing ${scriptDir}/migrate20080220-DataDir.sh");
+    main::runAsZimbra("${scriptDir}/migrate20080220-DataDir.sh");
   }
 	return 0;
 }
