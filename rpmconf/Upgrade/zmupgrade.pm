@@ -2019,7 +2019,7 @@ sub upgrade503GA {
     main::runAsZimbra("zmmtactl stop");
     main::runAsZimbra("zmantivirusctl stop");
     Migrate::log("Executing ${scriptDir}/migrate20080220-DataDir.pl");
-    main::runAsZimbra("perl -I${scriptDir} ${scriptDir}/migrate20080220-DataDir.pl");
+    main::runAsZimbra("${scriptDir}/migrate20080220-DataDir.pl");
   }
 	return 0;
 }
