@@ -2015,6 +2015,12 @@ sub upgrade503GA {
   if (main::isInstalled("zimbra-store")) {
     main::runAsZimbra("$ZMPROV mcf zimbraMailPurgeSleepInterval 1h");
   }
+  if (main::isInstalled("zimbra-mta")) {
+    main::runAsZimbra("zmmtactl stop");
+    main::runAsZimbra("zmantivirusctl stop");
+    Migrate::log("Executing ${scriptDir}/migrate20080220-DataDir.pl");
+    main::runAsZimbra("perl -I${scriptDir} ${scriptDir}/migrate20080220-DataDir.pl");
+  }
 	return 0;
 }
 sub upgrade550GA {
