@@ -2013,6 +2013,7 @@ sub upgrade503GA {
 	  main::runAsZimbra("$ZMPROV mcf +zimbraGalLdapFilterDef 'zimbraResourceAutoComplete:(&(|(displayName=%s*)(cn=%s*)(sn=%s*)(gn=%s*)(mail=%s*)(zimbraMailDeliveryAddress=%s*)(zimbraMailAlias=%s*))(objectclass=zimbraCalendarResource))'");
   }
   if (main::isInstalled("zimbra-store")) {
+    updateMySQLcnf();
     main::runAsZimbra("$ZMPROV mcf zimbraMailPurgeSleepInterval 1m");
   }
   if (main::isInstalled("zimbra-mta")) {
@@ -2339,6 +2340,15 @@ sub updateMySQLcnf {
       } elsif (/^skip-external-locking/) {
         # 19749 remove skip-external-locking
         print TMP "external-locking\n";
+        $mycnfChanged=1;
+        next;
+     } elsif (/^innodb_open_files/) {
+        # 24906
+        print TMP;
+        print TMP "innobdb_max_dirty_pages_pct = 10\n"
+          unless(grep(/^innodb_max_dirty_pages_pct/, @CNF));
+        print TMP "innobdb_flush_method = O_DIRECT\n"
+          unless(grep(/^innodb_flush_method/, @CNF));
         $mycnfChanged=1;
         next;
       }
