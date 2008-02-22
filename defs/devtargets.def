@@ -118,6 +118,8 @@ $(DEV_INSTALL_ROOT)/$(AMAVISD_DIR): $(DEV_INSTALL_ROOT)
 	cp -f $(AMAVISD_SOURCE)/amavisd $@/sbin
 	mkdir -p $@/.spamassassin/init
 	cp -f $(PACKAGE_CONF_DIR)/SpamAssassin/bayes* $@/.spamassassin/init
+	mkdir -p $@/db
+	cp -f $(SERVICE_DIR)/conf/DB_CONFIG.amavisd $@/DB_CONFIG.amavisd
 
 devperllibs: 
 	mkdir -p $(DEV_INSTALL_ROOT)/zimbramon/lib
