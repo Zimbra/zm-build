@@ -65,6 +65,12 @@ if [ -d "/etc/periodic/daily" ]; then
   chmod 555 /etc/periodic/daily/600.zimbra
 fi
 
+# 24648
+if [ -d "/opt/zimbra/log" ]; then
+  echo 'exclude com/zimbra/cs/session/SessionMap.putAndPrune' > \
+    /opt/zimbra/log/.hotspot_compiler
+fi
+
 # Get the package version from the receipt, because, you know, putting it in an environment variable spoils the fun...
 
 VER="FOO"
