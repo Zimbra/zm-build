@@ -2345,9 +2345,9 @@ sub updateMySQLcnf {
      } elsif (/^innodb_open_files/) {
         # 24906
         print TMP;
-        print TMP "innobdb_max_dirty_pages_pct = 10\n"
+        print TMP "innodb_max_dirty_pages_pct = 10\n"
           unless(grep(/^innodb_max_dirty_pages_pct/, @CNF));
-        print TMP "innobdb_flush_method = O_DIRECT\n"
+        print TMP "innodb_flush_method = O_DIRECT\n"
           unless(grep(/^innodb_flush_method/, @CNF));
         $mycnfChanged=1;
         next;
