@@ -85,6 +85,8 @@ $(BUILD_ROOT)/zimbramta.spec:
 		$(BUILD_ROOT)/zimbramta.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/clamav-$(CLAMAV_VERSION)/share" >> \
 		$(BUILD_ROOT)/zimbramta.spec
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/clamav-$(CLAMAV_VERSION)/man" >> \
+		$(BUILD_ROOT)/zimbramta.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/postfix-$(POSTFIX_VERSION)" >> \
 		$(BUILD_ROOT)/zimbramta.spec
 
