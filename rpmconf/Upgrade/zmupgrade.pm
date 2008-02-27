@@ -2022,6 +2022,7 @@ sub upgrade503GA {
     Migrate::log("Executing ${scriptDir}/migrate20080220-DataDir.sh");
     main::runAsRoot("${scriptDir}/migrate20080220-DataDir.sh");
   }
+  main::setLocalConfig("zimbra_class_accessmanager", "com.zimbra.cs.account.DomainAccessManager"); 
 	return 0;
 }
 sub upgrade550GA {
