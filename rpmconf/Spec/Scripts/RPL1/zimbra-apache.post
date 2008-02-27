@@ -19,7 +19,7 @@ I=`hostname -i`
 
 #Symlinks
 rm -f /opt/zimbra/httpd
-ln -s /opt/zimbra/httpd-2.2.6 /opt/zimbra/httpd
+ln -s /opt/zimbra/httpd-2.2.8 /opt/zimbra/httpd
 
 ##### install_history
 PKG=@@PKGNAME@@

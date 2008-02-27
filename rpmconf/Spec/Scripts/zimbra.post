@@ -19,7 +19,7 @@ I=`hostname -i`
 
 #Symlinks
 rm -f /opt/zimbra/mysql
-ln -s /opt/zimbra/mysql-standard-5.0.45-pc-linux-gnu-i686-glibc23 /opt/zimbra/mysql
+ln -s /opt/zimbra/mysql-standard-5.0.51a-pc-linux-gnu-i686-glibc23 /opt/zimbra/mysql
 
 if [ -d "/opt/zimbra/keyview-10.2.0.2" ]; then
   rm -f /opt/zimbra/keyview

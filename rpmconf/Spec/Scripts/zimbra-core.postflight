@@ -36,14 +36,14 @@ if [ "x$PLAT" = "xMACOSXx86" -o "x$PLAT" = "xMACOSXx86_10.5" ]; then
 	ARCH=i686
 fi
 
-if [ ! -d /opt/zimbra/openldap-2.3.40.7z ]; then
-	mkdir -p /opt/zimbra/openldap-2.3.40.7z
-	ln -s /opt/zimbra/lib /opt/zimbra/openldap-2.3.40.7z/lib
+if [ ! -d /opt/zimbra/openldap-2.3.41.6z ]; then
+	mkdir -p /opt/zimbra/openldap-2.3.41.6z
+	ln -s /opt/zimbra/lib /opt/zimbra/openldap-2.3.41.6z/lib
 fi
-if [ ! -d /opt/zimbra/mysql-standard-5.0.45-apple-darwin8.2.0-$ARCH ]; then
-	mkdir -p /opt/zimbra/mysql-standard-5.0.45-apple-darwin8.2.0-$ARCH
-	ln -s /opt/zimbra/lib /opt/zimbra/mysql-standard-5.0.45-apple-darwin8.2.0-$ARCH/lib
-	ln -s /opt/zimbra/mysql-standard-5.0.45-apple-darwin8.2.0-$ARCH/lib /opt/zimbra/mysql-standard-5.0.45-apple-darwin8.2.0-$ARCH/lib/mysql
+if [ ! -d /opt/zimbra/mysql-standard-5.0.51a-apple-darwin8.2.0-$ARCH ]; then
+	mkdir -p /opt/zimbra/mysql-standard-5.0.51a-apple-darwin8.2.0-$ARCH
+	ln -s /opt/zimbra/lib /opt/zimbra/mysql-standard-5.0.51a-apple-darwin8.2.0-$ARCH/lib
+	ln -s /opt/zimbra/mysql-standard-5.0.51a-apple-darwin8.2.0-$ARCH/lib /opt/zimbra/mysql-standard-5.0.51a-apple-darwin8.2.0-$ARCH/lib/mysql
 fi
 
 /bin/sh /opt/zimbra/libexec/zmfixperms

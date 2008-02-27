@@ -67,8 +67,6 @@ $(BUILD_ROOT)/zimbraldap.spec:
 		$(BUILD_ROOT)/zimbraldap.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/openldap-$(LDAP_VERSION)" >> \
 		$(BUILD_ROOT)/zimbraldap.spec
-	echo "%attr(-, zimbra, zimbra) /opt/zimbra/tcmalloc-$(TCMALLOC_VERSION)" >> \
-		$(BUILD_ROOT)/zimbraldap.spec
 
 ldap_stage: $(LDAP_COMPONENTS)
 

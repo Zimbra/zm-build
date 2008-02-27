@@ -23,10 +23,10 @@ if [ "x$PLAT" = "xMACOSXx86" -o "x$PLAT" = "xMACOSXx86_10.5" ]; then
 fi
 
 rm -f /opt/zimbra/mysql
-ln -s /opt/zimbra/mysql-standard-5.0.45-apple-darwin8.2.0-$ARCH /opt/zimbra/mysql
+ln -s /opt/zimbra/mysql-standard-5.0.51a-apple-darwin8.2.0-$ARCH /opt/zimbra/mysql
 # Can't get the dylib to hold the correct path...
-rm -f /opt/zimbra/mysql-standard-5.0.45-apple-darwin8.2.0-$ARCH/lib/mysql
-ln -s /opt/zimbra/mysql-standard-5.0.45-apple-darwin8.2.0-$ARCH/lib /opt/zimbra/mysql-standard-5.0.45-apple-darwin8.2.0-$ARCH/lib/mysql
+rm -f /opt/zimbra/mysql-standard-5.0.51a-apple-darwin8.2.0-$ARCH/lib/mysql
+ln -s /opt/zimbra/mysql-standard-5.0.51a-apple-darwin8.2.0-$ARCH/lib /opt/zimbra/mysql-standard-5.0.51a-apple-darwin8.2.0-$ARCH/lib/mysql
 
 if [ -d "/opt/zimbra/keyview-10.2.0.2" ]; then
   rm -f /opt/zimbra/keyview

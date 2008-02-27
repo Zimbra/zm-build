@@ -19,7 +19,7 @@ I=`hostname -i`
 
 #Symlinks
 rm -f /opt/zimbra/logger/mysql
-ln -s /opt/zimbra/logger/mysql-standard-5.0.45-pc-linux-gnu-i686-glibc23 /opt/zimbra/logger/mysql
+ln -s /opt/zimbra/logger/mysql-standard-5.0.51a-pc-linux-gnu-i686-glibc23 /opt/zimbra/logger/mysql
 
 mv /opt/zimbra/db/loggerdb.sql /opt/zimbra/db/loggerdb.sql.in
 sed -e "/server.hostname/ s/local/$H/" /opt/zimbra/db/loggerdb.sql.in > /opt/zimbra/db/loggerdb.sql
