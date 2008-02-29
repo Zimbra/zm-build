@@ -629,6 +629,8 @@ verifyLicenseAvailable() {
       mkdir -p /opt/zimbra/conf
     fi
     cp -f $LICENSE /opt/zimbra/conf/ZCSLicense.xml
+    chown zimbra:zimbra /opt/zimbra/conf/ZCSLicense.xml 2> /dev/null
+    chmod 444 /opt/zimbra/conf/ZCSLicense.xml
   fi
 
   if [ x"$AUTOINSTALL" = "xyes" ] || [ x"$UNINSTALL" = "xyes" ] || [ x"$SOFTWAREONLY" = "yes" ]; then
