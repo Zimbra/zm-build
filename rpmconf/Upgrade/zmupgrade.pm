@@ -2012,16 +2012,25 @@ sub upgrade503GA {
 	  main::runAsZimbra("$ZMPROV mcf +zimbraGalLdapFilterDef 'zimbraAccountAutoComplete:(&(|(displayName=%s*)(cn=%s*)(sn=%s*)(gn=%s*)(mail=%s*)(zimbraMailDeliveryAddress=%s*)(zimbraMailAlias=%s*))(|(objectclass=zimbraAccount)(objectclass=zimbraDistributionList))(!(objectclass=zimbraCalendarResource)))'");
 	  main::runAsZimbra("$ZMPROV mcf +zimbraGalLdapFilterDef 'zimbraResourceAutoComplete:(&(|(displayName=%s*)(cn=%s*)(sn=%s*)(gn=%s*)(mail=%s*)(zimbraMailDeliveryAddress=%s*)(zimbraMailAlias=%s*))(objectclass=zimbraCalendarResource))'");
   }
+
+  if (main::isInstalled("zimbra-proxy")) {
+    my $refer = main::getLocalConfig("zimbra_auth_always_send_refer");
+    main::runAsZimbra("$ZMPROV ms $hn zimbraMailReferMode wronghost")
+      if (uc($refer) eq "TRUE");
+  }
+
   if (main::isInstalled("zimbra-store")) {
     updateMySQLcnf();
     main::runAsZimbra("$ZMPROV mcf zimbraMailPurgeSleepInterval 1m");
   }
+
   if (main::isInstalled("zimbra-mta")) {
     main::runAsZimbra("zmmtactl stop");
     main::runAsZimbra("zmantivirusctl stop");
     Migrate::log("Executing ${scriptDir}/migrate20080220-DataDir.sh");
     main::runAsRoot("${scriptDir}/migrate20080220-DataDir.sh");
   }
+
   main::setLocalConfig("zimbra_class_accessmanager", "com.zimbra.cs.account.DomainAccessManager"); 
 	return 0;
 }
