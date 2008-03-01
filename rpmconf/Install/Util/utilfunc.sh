@@ -1291,6 +1291,18 @@ checkConflicts() {
   fi
 
   echo ""
+  echo "Checking for exim4"
+  echo ""
+
+  if [ -f /var/run/exim4/exim.pid ]; then
+    askYN "Exim4 appears to be running.  Shut it down?" "Y"
+    if [ $response = "yes" ]; then
+      /etc/init.d/exim4 stop
+      /usr/sbin/update-rc.d -f exim4 remove
+    fi
+  fi
+
+  echo ""
   echo "Checking for mysqld"
   echo ""
 
