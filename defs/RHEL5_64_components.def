@@ -15,5 +15,6 @@ CORE_COMPONENTS	:= \
 	$(CORE_DEST_DIR)/$(CURL_DIR)-$(CURL_VERSION) \
 	$(CORE_DEST_DIR)/$(SASL_DIR)-$(SASL_VERSION) \
 	$(CORE_DEST_DIR)/$(LDAP_DIR)-clibs-$(LDAP_VERSION) \
+	$(CORE_DEST_DIR)/$(TCMALLOC_DIR) \
 	$(CORE_DEST_DIR)/lib/ext/com_zimbra_cert_manager/com_zimbra_cert_manager.jar \
 	$(PLATFORM_CORE_COMPONENTS)
