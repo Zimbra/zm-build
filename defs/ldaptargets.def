@@ -76,7 +76,6 @@ $(LDAP_DEST_DIR):
 $(LDAP_DEST_DIR)/$(LDAP_DIR)-$(LDAP_VERSION): $(LDAP_DEST_DIR) 
 	@echo "*** Creating openldap"
 	(cd $(LDAP_DEST_DIR); tar xzf $(LDAP_SOURCE).tgz;)
-	(cd $(LDAP_DEST_DIR); tar xfz $(TCMALLOC_SOURCE).tgz;)
 	cp $(SERVICE_DIR)/conf/ldap/DB_CONFIG \
 		$(LDAP_DEST_DIR)/$(LDAP_DIR)-$(LDAP_VERSION)/var/openldap-data
 	cp $(SERVICE_DIR)/conf/ldap/DB_CONFIG.accesslog \

@@ -365,3 +365,8 @@ $(CORE_DEST_DIR)/$(LDAP_DIR)-clibs-$(LDAP_VERSION):
 	@echo "*** Creating openldap client libraries"
 	mkdir -p $@
 	(cd $(CORE_DEST_DIR); tar xzf $(LDAP_CLIBS).tgz;)
+
+$(CORE_DEST_DIR)/$(TCMALLOC_DIR):
+	@echo "*** Creating tcmalloc client libraries"
+	mkdir -p $@
+	(cd $(CORE_DEST_DIR); tar xfz $(TCMALLOC_SOURCE).tgz;)
