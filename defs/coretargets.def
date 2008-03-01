@@ -111,7 +111,7 @@ $(BUILD_ROOT)/zimbracore.spec:
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/openldap-clibs-$(LDAP_VERSION)" >> \
 		$(BUILD_ROOT)/zimbracore.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/tcmalloc-$(TCMALLOC_VERSION)" >> \
-		$(BUILD_ROOT)/zimbraldap.spec
+		$(BUILD_ROOT)/zimbracore.spec
 
 core_stage: $(CORE_COMPONENTS)
 
