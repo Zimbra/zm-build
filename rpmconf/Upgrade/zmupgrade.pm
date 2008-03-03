@@ -2029,6 +2029,7 @@ sub upgrade503GA {
     main::runAsZimbra("zmantivirusctl stop");
     Migrate::log("Executing ${scriptDir}/migrate20080220-DataDir.sh");
     main::runAsRoot("${scriptDir}/migrate20080220-DataDir.sh");
+    main::setLocalConfig("postfix_in_flow_delay", "1s");
   }
 
   main::setLocalConfig("zimbra_class_accessmanager", "com.zimbra.cs.account.DomainAccessManager"); 
