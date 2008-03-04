@@ -54,8 +54,6 @@ if ($platform =~ /MACOSX/) {
   }
 }
 
-if ($platform =~ /SuSE|openSUSE|SLES/) { `chmod 640 /etc/sudoers`;}
-
 use preinstall;
 use postinstall;
 use zmupgrade;
