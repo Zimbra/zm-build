@@ -3790,6 +3790,7 @@ sub configInitBackupPrefs {
 
 sub configSetProxyPrefs {
    runAsZimbra("$ZMPROV mcf zimbraImapCleartextLoginEnabled TRUE")
+   runAsZimbra("$ZMPROV mcf zimbraPop3CleartextLoginEnabled TRUE")
 }
 
 sub configSetCluster {
