@@ -3787,8 +3787,10 @@ sub configInitBackupPrefs {
 }
 
 sub configSetProxyPrefs {
-   runAsZimbra("$ZMPROV mcf zimbraImapCleartextLoginEnabled TRUE")
-   runAsZimbra("$ZMPROV mcf zimbraPop3CleartextLoginEnabled TRUE")
+   if (isEnabled("zimbra-proxy")) {
+     runAsZimbra("$ZMPROV mcf zimbraImapCleartextLoginEnabled TRUE")
+     runAsZimbra("$ZMPROV mcf zimbraPop3CleartextLoginEnabled TRUE")
+   }
 }
 
 sub configSetCluster {
