@@ -3786,10 +3786,79 @@ sub configInitBackupPrefs {
   }
 }
 
+sub setProxyBits {
+  detail("Setting Proxy pieces\n");
+  my $zimbraReverseProxyMailHostQuery =
+        "\(\|\(zimbraMailDeliveryAddress=\${USER}\)\(zimbraMailAlias=\${USER}\)\)";
+  my $zimbraReverseProxyDomainNameQuery =
+        '\(\&\(zimbraVirtualIPAddress=\${IPADDR}\)\(objectClass=zimbraDomain\)\)';
+  my $zimbraReverseProxyPortQuery =
+        '\(\&\(zimbraServiceHostname=\${MAILHOST}\)\(objectClass=zimbraServer\)\)';
+  open(ZMPROV, "|su - zimbra -c 'zmprov -l'");
+
+  print ZMPROV "mcf zimbraReverseProxyMailHostQuery $zimbraReverseProxyMailHostQuery\n"
+    if(getLdapConfigValue("zimbraReverseProxyMailHostQuery") eq "");
+
+  print ZMPROV "mcf zimbraReverseProxyPortQuery $zimbraReverseProxyPortQuery\n"
+    if(getLdapConfigValue("zimbraReverseProxyPortQuery") eq "");
+
+  print ZMPROV "mcf zimbraReverseProxyDomainNameQuery $zimbraReverseProxyDomainNameQuery\n"
+    if(getLdapConfigValue("zimbraReverseProxyDomainNameQuery") eq "");
+
+  print ZMPROV "mcf zimbraMemcachedBindPort 11211\n"
+    if(getLdapConfigValue("zimbraMemcachedBindPort") eq "");
+
+  print ZMPROV "mcf zimbraReverseProxyMailHostAttribute zimbraMailHost\n"
+    if(getLdapConfigValue("zimbraReverseProxyMailHostAttribute") eq "");
+
+  print ZMPROV "mcf zimbraReverseProxyPop3PortAttribute zimbraPop3BindPort\n"
+    if(getLdapConfigValue("zimbraReverseProxyPop3PortAttribute") eq "");
+
+  print ZMPROV "mcf zimbraReverseProxyPop3SSLPortAttribute zimbraPop3SSLBindPort\n"
+    if(getLdapConfigValue("zimbraReverseProxyPop3SSLPortAttribute") eq "");
+
+  print ZMPROV "mcf zimbraReverseProxyImapPortAttribute zimbraImapBindPort\n"
+    if(getLdapConfigValue("zimbraReverseProxyImapPortAttribute") eq "");
+
+  print ZMPROV "mcf zimbraReverseProxyImapSSLPortAttribute zimbraImapSSLBindPort\n"
+    if(getLdapConfigValue("zimbraReverseProxyImapSSLPortAttribute") eq "");
+
+  print ZMPROV "mcf zimbraReverseProxyDomainNameAttribute zimbraDomainName\n"
+    if(getLdapConfigValue("zimbraReverseProxyDomainNameAttribute") eq "");
+
+  print ZMPROV "mcf zimbraReverseProxyAuthWaitInterval 10s\n"
+    if(getLdapConfigValue("zimbraReverseProxyAuthWaitInterval") eq "");
+
+  close ZMPROV;
+}
+
 sub configSetProxyPrefs {
    if (isEnabled("zimbra-proxy")) {
-     runAsZimbra("$ZMPROV mcf zimbraImapCleartextLoginEnabled TRUE")
-     runAsZimbra("$ZMPROV mcf zimbraPop3CleartextLoginEnabled TRUE")
+     if ((($config{IMAPPORT} == 143 || $config{IMAPPORT} == 7143) &&
+          ($config{IMAPPROXYPORT} == 143 || $config{IMAPPROXYPORT} == 7143)) &&
+         (($config{IMAPSSLPORT} == 993 || $config{IMAPSSLPORT} == 7993) &&
+          ($config{IMAPSSLPROXYPORT} == 993 || $config{IMAPSSLPROXYPORT} == 7993)) &&
+         (($config{POPPORT} == 110 || $config{POPPORT} == 7110) &&
+          ($config{POPPROXYPORT} == 110 || $config{POPPROXYPORT} == 7110)) &&
+         (($config{POPSSLPORT} == 995 || $config{POPSSLPORT} == 7995) &&
+          ($config{POPSSLPROXYPORT} == 995 || $config{POPSSLPROXYPORT} == 7995)))
+     {
+       runAsRoot("/opt/zimbra/libexec/zmproxyinit -e $config{HOSTNAME}");
+     }
+     runAsZimbra("$ZMPROV mcf zimbraImapCleartextLoginEnabled TRUE");
+     runAsZimbra("$ZMPROV mcf zimbraPop3CleartextLoginEnabled TRUE");
+   } else {
+     if ((($config{IMAPPORT} == 143 || $config{IMAPPORT} == 7143) &&
+          ($config{IMAPPROXYPORT} == 143 || $config{IMAPPROXYPORT} == 7143)) &&
+         (($config{IMAPSSLPORT} == 993 || $config{IMAPSSLPORT} == 7993) &&
+          ($config{IMAPSSLPROXYPORT} == 993 || $config{IMAPSSLPROXYPORT} == 7993)) &&
+         (($config{POPPORT} == 110 || $config{POPPORT} == 7110) &&
+          ($config{POPPROXYPORT} == 110 || $config{POPPROXYPORT} == 7110)) &&
+         (($config{POPSSLPORT} == 995 || $config{POPSSLPORT} == 7995) &&
+          ($config{POPSSLPROXYPORT} == 995 || $config{POPSSLPROXYPORT} == 7995)))
+      {
+        runAsRoot("/opt/zimbra/libexec/zmproxyinit -d $config{HOSTNAME}");
+      }
    }
 }
 
@@ -4257,6 +4326,9 @@ sub applyConfig {
     configSetProxyPrefs();
   }
 
+  if( (!$newinstall) && isInstalled("zimbra-ldap") ){
+    setProxyBits();
+  }
   if (isInstalled("zimbra-cluster")) {
     configSetCluster();
   }
