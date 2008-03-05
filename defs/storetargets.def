@@ -71,6 +71,8 @@ $(BUILD_ROOT)/zimbra.spec:
 		$(BUILD_ROOT)/zimbra.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/lib" >> \
 		$(BUILD_ROOT)/zimbra.spec
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/log" >> \
+		$(BUILD_ROOT)/zimbra.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/zimlets" >> \
 		$(BUILD_ROOT)/zimbra.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/zimlets-extra" >> \
@@ -167,6 +169,10 @@ $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/temp: force
 
 $(WEBAPP_DIR): 
 	mkdir -p $@
+
+$(STORE_DEST_DIR)/log:
+	mkdir -p $@
+	cp $(PACKAGE_CONF_DIR)/conf/hotspot_compiler $@/.hotspot_compiler
 
 $(STORE_DEST_DIR)/wiki:
 	mkdir -p $@

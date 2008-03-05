@@ -54,6 +54,7 @@ STORE_COMPONENTS := \
 	$(STORE_DEST_DIR)/lib/ext/zimbraldaputils/zimbraldaputils.jar \
 	$(STORE_DEST_DIR)/lib/ext/nginx-lookup/nginx-lookup.jar \
 	$(STORE_DEST_DIR)/wiki \
+	$(STORE_DEST_DIR)/log \
 	$(STORE_DEST_DIR)/$(MYSQL_DIR) 
 
 ZIMLET_COMPONENTS := \
