@@ -1657,7 +1657,7 @@ getPlatformVars() {
       PRESUG_PACKAGES="perl-5.8.7"
     fi
     if [ $PLATFORM = "DEBIAN4.0" ]; then
-      PREREQ_PACKAGES="sudo libidn11 fetchmail libpcre3 libgmp3c2 libxml2 libstdc++6 openssl libltdl3"
+      PREREQ_PACKAGES="sudo libidn11 fetchmail libpcre3 libgmp3c2 libexpat1 libxml2 libstdc++6 openssl libltdl3"
       PRESUG_PACKAGES="perl-5.8.8"
     fi
   elif echo $PLATFORM | grep RPL > /dev/null 2>&1; then
