@@ -2026,8 +2026,12 @@ sub upgrade503GA {
   if (main::isInstalled("zimbra-mta")) {
     main::runAsZimbra("zmmtactl stop");
     main::runAsZimbra("zmantivirusctl stop");
-    Migrate::log("Executing ${scriptDir}/migrate20080220-DataDir.sh");
-    main::runAsRoot("${scriptDir}/migrate20080220-DataDir.sh");
+    if ($main::configStatus{"AmavisMigrated"} ne "CONFIGURED") {
+        &relocateAmavisDB();
+    }
+    if($main::configStatus{"PostfixMigrated"} ne "CONFIGURED") {
+        &relocatePostfixQueue();
+    }
     main::setLocalConfig("postfix_in_flow_delay", "1s");
   }
 
@@ -2273,6 +2277,19 @@ sub movePostfixQueue {
 	}
 
 	main::runAsRoot("/opt/zimbra/libexec/zmfixperms");
+}
+
+sub relocatePostfixQueue {
+  my $toDir="/opt/zimbra/data/postfix";
+  my $fromDir="/opt/zimbra/postfix-2.4.3.4z";
+  my $curDir=main::getcwd();
+
+  main::progress("Migrating Postfix spool directory\n");
+  if ( -d "$fromDir/spool" && -d "$toDir/spool" && ! -d "$toDir/spool/active") {
+    chdir($fromDir);
+    `tar cf - spool | (cd $toDir; tar xfp -)`;
+    chdir($curDir);
+  }
 }
 
 sub updateLoggerMySQLcnf {
@@ -2582,6 +2599,21 @@ sub migrateAmavisDB($) {
   }
 }
 
+sub relocateAmavisDB() {
+  my $toDir = "/opt/zimbra/data/amavisd";
+  my $fromDir = "/opt/zimbra/amavisd-new-2.5.2";
+  main::progress("Migrating Amavis database directory\n");
+  if ( -d "$fromDir/db" && -d "$toDir" && ! -e "$toDir/db/cache.db") {
+    `rm -rf $toDir/db > /dev/null 2>&1`;
+    `mv $fromDir/db $toDir/db`;
+    `chown zimbra:zimbra $toDir/db`; 
+  } 
+  if (-d "$fromDir/.spamassassin/" && -d "$toDir" && ! -e "$toDir/.spamassassain/bayes_toks" ) {
+    `rm -rf $toDir/.spamassassin > /dev/null 2>&1`;
+    `mv $fromDir/.spamassassin $toDir/.spamassassin`;
+    `chown zimbra:zimbra $toDir/.spamassassin`; 
+  }
+}
 
 sub verifyDatabaseIntegrity {
   if (-x "/opt/zimbra/libexec/zmdbintegrityreport") {

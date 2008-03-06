@@ -20,6 +20,7 @@ use lib "/opt/zimbra/libexec";
 use lib "/opt/zimbra/zimbramon/lib";
 use Zimbra::Util::Common;
 use Net::LDAP;
+use Cwd;
 
 $|=1; # don't buffer stdout
 
