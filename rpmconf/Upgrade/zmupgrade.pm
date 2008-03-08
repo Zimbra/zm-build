@@ -2013,10 +2013,11 @@ sub upgrade503GA {
 	  main::runAsZimbra("$ZMPROV mcf +zimbraGalLdapFilterDef 'zimbraResourceAutoComplete:(&(|(displayName=%s*)(cn=%s*)(sn=%s*)(gn=%s*)(mail=%s*)(zimbraMailDeliveryAddress=%s*)(zimbraMailAlias=%s*))(objectclass=zimbraCalendarResource))'");
   }
 
-  #bug 25051  -  Anand says always set, regardless of what is installed.
-  my $refer = main::getLocalConfig("zimbra_auth_always_send_refer");
-  main::runAsZimbra("$ZMPROV ms $hn zimbraMailReferMode always")
-    if (uc($refer) eq "TRUE");
+  if (main::isInstalled("zimbra-proxy")) {
+    my $refer = main::getLocalConfig("zimbra_auth_always_send_refer");
+    main::runAsZimbra("$ZMPROV ms $hn zimbraMailReferMode wronghost")
+      if (uc($refer) eq "TRUE");
+  }
 
   if (main::isInstalled("zimbra-store")) {
     updateMySQLcnf();
