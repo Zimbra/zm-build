@@ -17,21 +17,16 @@ perlcode 0 my $hostname="@@HOSTNAME@@";
 
 perlcode 0 sub donotify {   my %args = (@_); if ($args{HOST} eq "localhost") {$args{HOST}=$hostname;} if ($notifications{smtp}) {dosmtp(%args);} if ($notifications{snmp}) {dosnmp(%args);}  }
 
-perlcode 0 sub dosmtp {   my %args = (@_);  print "SMTP notification: $args{MESSAGE}\n"; open (FOO, "|/usr/sbin/sendmail.sendmail -Am -t"); print FOO "To: $pwc\nFrom: $fr\nSubject: Service $args{SERVICE} $args{STATUS} on $args{HOST}\n\n$args{MESSAGE}\n"; close FOO; }
+perlcode 0 sub dosmtp {   my %args = (@_);  print "SMTP notification: $args{MESSAGE}\n"; open (FOO, "|/opt/zimbra/postfix/sbin/sendmail -Am -t"); print FOO "To: $pwc\nFrom: $fr\nSubject: Service $args{SERVICE} $args{STATUS} on $args{HOST}\n\n$args{MESSAGE}\n"; close FOO; }
 
 perlcode 0 sub dosnmp {   my %args = (@_); print "SNMP notification: $args{MESSAGE}\n"; `$snmptrap $snmpsvctrap $snmpsvcname s $args{SERVICE} $snmpsvcstatus i $statuses{$args{STATUS}}`; }
 
 ignore /DEBUG/
 
-watchfor /err: Service status change: (.*) 2 0/ 
-	donotify SERVICE=$1,STATUS=started,HOST=localhost
-watchfor /err: Service status change: (.*) 0 2/ 
-	donotify SERVICE=$1,STATUS=stopped ,HOST=localhost
-
-watchfor /err: Remote Service status change: (\S+) (.*) 2 0/ 
+watchfor /err: Service status change: (\S+) (.*) changed from stopped to running/ 
 	donotify SERVICE=$2,STATUS=started,HOST=$1
-watchfor /err: Remote Service status change: (\S+) (.*) 0 2/ 
-	donotify SERVICE=$2,STATUS=stopped,HOST=$1
+watchfor /err: Service status change: (\S+) (.*) changed from running to stopped/ 
+	donotify SERVICE=$2,STATUS=stopped ,HOST=$1
 
 watchfor /err: Disk warning: (\S+) (\S+) at (\d+)/ 
 	donotify SERVICE=$2,STATUS=started,HOST=$1
