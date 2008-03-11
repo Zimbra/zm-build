@@ -2590,7 +2590,7 @@ sub migrateAmavisDB($) {
       `chown zimbra:zimbra $toDir/db`; 
     }
     main::progress("Checking $fromDir/.spamassassin\n");
-    if (-d "$fromDir/.spamassassin/" && -d "$toDir" && ! -e "$toDir/.spamassassain/bayes_toks" ) {
+    if (-d "$fromDir/.spamassassin/" && -d "$toDir" && ! -e "$toDir/.spamassassin/bayes_toks" ) {
       main::progress("Migrating amavis-new .spamassassin from version $fromVersion to $toVersion\n");
       `rm -rf $toDir/.spamassassin > /dev/null 2>&1`;
       `mv $fromDir/.spamassassin $toDir/.spamassassin`;
