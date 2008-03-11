@@ -4323,9 +4323,7 @@ sub applyConfig {
     configSetTimeZonePref();
   }
 
-  if (isInstalled("zimbra-proxy")) {
-    configSetProxyPrefs();
-  }
+  configSetProxyPrefs();
 
   if( (!$newinstall) && isInstalled("zimbra-ldap") ){
     setProxyBits();
