@@ -50,14 +50,15 @@ if [ ! -d /opt/zimbra/zimbramon/mrtg/work/ ]; then
 fi
 chown -R zimbra:zimbra /opt/zimbra/zimbramon/mrtg
 
-mkdir -p /opt/zimbra/amavisd/db
-mkdir -p /opt/zimbra/amavisd/tmp
-mkdir -p /opt/zimbra/amavisd/var
-mkdir -p /opt/zimbra/amavisd/quarantine
+mkdir -p /opt/zimbra/data/amavisd/db
+mkdir -p /opt/zimbra/data/amavisd/tmp
+mkdir -p /opt/zimbra/data/amavisd/var
+mkdir -p /opt/zimbra/data/amavisd/quarantine
 chown -R zimbra:zimbra /opt/zimbra/amavisd/*
+chown -R zimbra:zimbra /opt/zimbra/data/amavisd/*
 
-mkdir -p /opt/zimbra/clamav/db
-chown -R zimbra:zimbra /opt/zimbra/clamav/db
+mkdir -p /opt/zimbra/data/clamav/db
+chown -R zimbra:zimbra /opt/zimbra/data/clamav/db
 
 /opt/zimbra/libexec/zmfixperms
 
