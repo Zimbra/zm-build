@@ -744,8 +744,7 @@ sub setLdapDefaults {
     $config{zimbraBackupReportEmailSender} = $config{CREATEADMIN}
       if ($config{zimbraBackupReportEmailSender} eq "");
   }
-  if (isInstalled("zimbra-proxy")) {
-    if (isEnabled("zimbra-proxy")) {
+  if (isInstalled("zimbra-proxy") && isEnabled("zimbra-proxy")) {
         if ($config{IMAPPORT} == $config{IMAPPROXYPORT} && $config{IMAPPORT} == 143) {
             $config{IMAPPORT} = 7143;
         }
@@ -770,7 +769,7 @@ sub setLdapDefaults {
         if ($config{POPSSLPORT} == $config{POPSSLPROXYPORT} && $config{POPSSLPORT} == 7995) {
             $config{POPSSLPROXYPORT} = 995;
         }
-    } else {
+  } else {
         if ($config{IMAPPORT} == $config{IMAPPROXYPORT} && $config{IMAPPORT} == 143) {
             $config{IMAPPROXYPORT} = 7143;
         }
@@ -795,7 +794,6 @@ sub setLdapDefaults {
         if ($config{POPSSLPORT} == $config{POPSSLPROXYPORT} && $config{POPSSLPORT} == 7995) {
             $config{POPSSLPORT} = 995;
         }
-    }
   }
  
   # default values for upgrades 
@@ -4323,7 +4321,9 @@ sub applyConfig {
     configSetTimeZonePref();
   }
 
-  configSetProxyPrefs();
+  if (isInstalled("zimbra-proxy")) {
+    configSetProxyPrefs();
+  }
 
   if( (!$newinstall) && isInstalled("zimbra-ldap") ){
     setProxyBits();
