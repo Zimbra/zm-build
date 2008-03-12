@@ -181,11 +181,6 @@ if [ -f /etc/distro-release ]; then
         exit 0
 fi
 
-if [ "x$p" = "xpowerpc" ]; then
-	echo "MACOSX"
-	exit 0
-fi
-
 a=`uname -a | awk '{print $1}'`
 p=`uname -p`
 if [ "x$a" = "xDarwin" ]; then
