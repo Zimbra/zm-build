@@ -2038,6 +2038,7 @@ sub upgrade503GA {
         &relocatePostfixQueue();
     }
     main::setLocalConfig("postfix_in_flow_delay", "1s");
+    main::setLocalConfig("postfix_queue_directory", "/opt/zimbra/data/postfix/spool");
   }
 
   main::setLocalConfig("zimbra_class_accessmanager", "com.zimbra.cs.account.DomainAccessManager"); 
