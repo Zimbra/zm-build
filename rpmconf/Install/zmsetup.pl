@@ -3882,7 +3882,7 @@ sub zimletCleanup {
     return 1;
   } else {
     detail("ldap bind done for $ldap_dn");
-    $result = $ldap->search(base => $ldap_base, scope => 'one', filter => "(|(cn=convertd)(cn=cluster)(cn=hsm)(cn=hotbackup)(cn=zimbra_cert_manager))", attrs => ['zimbraZimletKeyword']);
+    $result = $ldap->search(base => $ldap_base, scope => 'one', filter => "(|(cn=convertd)(cn=cluster)(cn=hsm)(cn=hotbackup)(cn=zimbra_cert_manager)(cn=com_zimbra_search))", attrs => ['zimbraZimletKeyword']);
     return $result if ($result->code());
     detail("processing ldap search results");
     foreach my $entry ($result->all_entries) {
@@ -4573,7 +4573,7 @@ sub addServerToHostPool {
 
   $n .= "zimbraMailHostPool $id";
 
-  `$ZMPROV mc default $n >> $logfile 2>&1`;
+  runAsZimbra("$ZMPROV mc default $n");
   progress ( "done.\n" );
 }
 
