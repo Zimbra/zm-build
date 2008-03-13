@@ -146,17 +146,15 @@ if [ $AUTOINSTALL = "no" ]; then
   fi
   getInstallPackages
 
-    findLatestPackage zimbra-core
-	f=`basename $file`
+  findLatestPackage zimbra-core
 	p=`bin/get_plat_tag.sh`
-	echo $f | grep -q $p > /dev/null 2>&1
-	if [ $? -ne 0 ]; then
+	if [ x"$p" != x"$installable_platform" ]; then
     echo ""
 		echo "You appear to be installing packages on a platform different"
 		echo "than the platform for which they were built."
 		echo ""
 		echo "This platform is $p"
-		echo "Packages found: $f"
+		echo "Packages found: $installable_platform"
 		echo "This may or may not work."
 		echo ""
 

@@ -78,6 +78,7 @@ findLatestPackage() {
 			#micro=${micro}_`echo $version | awk -F_ '{print $3}'`
 			stamp=`echo $f | awk -F_ '{print $3}' | awk -F. '{print $1}'`
 		fi
+    installable_platform=`echo $id | awk -F. '{print $4}'`
 
 		if [ $major -gt $himajor ]; then
 			himajor=$major
