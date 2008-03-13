@@ -61,21 +61,27 @@ findLatestPackage() {
 
 		
 		f=`basename $q`
-		if [ $PACKAGEEXT = "rpm" ]; then
+		if [ x"$PACKAGEEXT" = "xrpm" ]; then
 			id=`echo $f | awk -F- '{print $3}'`
 			version=`echo $id | awk -F_ '{print $1}'`
 			major=`echo $version | awk -F. '{print $1}'`
 			minor=`echo $version | awk -F. '{print $2}'`
 			micro=`echo $version | awk -F. '{print $3}'`
-			#micro=${micro}_`echo $version | awk -F_ '{print $3}'`
 			stamp=`echo $f | awk -F_ '{print $3}' | awk -F. '{print $1}'`
+    elif [ x"$PACKAGEEXT" = "xdeb" ]; then
+      id=`basename $f .deb | awk -F_ '{print $2"_"$3"_"$4"_"$5}'`
+      id=`echo $id | sed -e 's/_i386$//'`
+      version=`echo $id | awk -F_ '{print $1}'`
+      major=`echo $version | awk -F. '{print $1}'`
+      minor=`echo $version | awk -F. '{print $2}'`
+      micro=`echo $version | awk -F. '{print $3}'`
+      stamp=`echo $f | awk -F_ '{print $3}' | awk -F. '{print $1}'`
 		else
 			id=`echo $f | awk -F_ '{print $2}'`
 			version=`echo $id | awk -F_ '{print $1}'`
 			major=`echo $version | awk -F. '{print $1}'`
 			minor=`echo $version | awk -F. '{print $2}'`
 			micro=`echo $version | awk -F. '{print $3}'`
-			#micro=${micro}_`echo $version | awk -F_ '{print $3}'`
 			stamp=`echo $f | awk -F_ '{print $3}' | awk -F. '{print $1}'`
 		fi
     installable_platform=`echo $id | awk -F. '{print $4}'`
