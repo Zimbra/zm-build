@@ -3155,7 +3155,7 @@ sub deleteLocalConfig {
   my $key = shift;
 
   detail ( "Deleting local config $key" );
-  my $rc = 0xffff & system("/opt/zimbra/bin/zmlocalconfig -u ${key} 2> /dev/null");
+  my $rc = runAsZimbra("/opt/zimbra/bin/zmlocalconfig -u ${key} 2> /dev/null");
   if ($rc == 0) {
     detail ("DEBUG: deleted localconfig key $key") if $debug;
     delete($main::loaded{lc}{$key}) if (exists $main::loaded{lc}{$key});
