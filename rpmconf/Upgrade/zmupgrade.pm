@@ -2029,10 +2029,9 @@ sub upgrade503GA {
 	  }
   }
 
-  if (main::isInstalled("zimbra-proxy")) {
-    my $refer = main::getLocalConfig("zimbra_auth_always_send_refer");
-    main::runAsZimbra("$ZMPROV ms $hn zimbraMailReferMode wronghost")
-      if (uc($refer) eq "TRUE");
+  my $refer = main::getLocalConfig("zimbra_auth_always_send_refer");
+  main::runAsZimbra("$ZMPROV ms $hn zimbraMailReferMode wronghost")
+    if (uc($refer) eq "TRUE");
 
   #bug 9469 - ZCS Proxy bits
   if(main::isInstalled("zimbra-proxy") && main::isEnabled("zimbra-proxy")) {
