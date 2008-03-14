@@ -776,7 +776,7 @@ sub setLdapDefaults {
             $config{POPSSLPROXYPORT} = 995;
         }
      }
-     if ($config{HTTPPROXY eq "TRUE") {
+     if ($config{HTTPPROXY} eq "TRUE") {
         if ($config{HTTPPORT} == $config{HTTPPROXYPORT} && $config{HTTPPORT} == 80) {
             $config{HTTPPORT} = 8080;
         }
