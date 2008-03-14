@@ -2029,9 +2029,8 @@ sub upgrade503GA {
 	  }
   }
 
-  #bug 25051  -  Anand says always set, regardless of what is installed.
   my $refer = main::getLocalConfig("zimbra_auth_always_send_refer");
-  main::runAsZimbra("$ZMPROV ms $hn zimbraMailReferMode always")
+  main::runAsZimbra("$ZMPROV ms $hn zimbraMailReferMode wronghost")
     if (uc($refer) eq "TRUE");
 
   #bug 9469 - ZCS Proxy bits
