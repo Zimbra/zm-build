@@ -2040,13 +2040,11 @@ sub upgrade503GA {
 	  main::RunAsZimbra("$ZMPROV ms $hn zimbraReverseProxyIPLoginLimitTime 3600");
 	  main::RunAsZimbra("$ZMPROV ms $hn zimbraReverseProxyUserLoginLimit 0");
 	  main::RunAsZimbra("$ZMPROV ms $hn zimbraReverseProxyUserLoginLimitTime 3600");
-	  main::runAsZimbra("$zmprov ms $hn zimbraReverseProxyMailEnabled TRUE");
   } else {
 	  main::runAsZimbra("$ZMPROV ms $hn zimbraReverseProxyIPLoginLimit 0");
 	  main::RunAsZimbra("$ZMPROV ms $hn zimbraReverseProxyIPLoginLimitTime 3600");
 	  main::RunAsZimbra("$ZMPROV ms $hn zimbraReverseProxyUserLoginLimit 0");
 	  main::RunAsZimbra("$ZMPROV ms $hn zimbraReverseProxyUserLoginLimitTime 3600");
-	  main::runAsZimbra("$zmprov ms $hn zimbraReverseProxyMailEnabled FALSE");
   }
 
   if (main::isInstalled("zimbra-store")) {
