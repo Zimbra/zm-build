@@ -712,14 +712,19 @@ sub setLdapDefaults {
   $config{POPPORT}          = getLdapServerValue("zimbraPop3BindPort");
   $config{POPSSLPORT}       = getLdapServerValue("zimbraPop3SSLBindPort");
 
-  $config{MODE}             = getLdapServerValue("zimbraMailMode");
-  $config{HTTPPORT}         = getLdapServerValue("zimbraMailPort");
-  $config{HTTPSPORT}        = getLdapServerValue("zimbraMailSSLPort");
-
   $config{IMAPPROXYPORT}    = getLdapServerValue("zimbraImapProxyBindPort");
   $config{IMAPSSLPROXYPORT} = getLdapServerValue("zimbraImapSSLProxyBindPort");
   $config{POPPROXYPORT}     = getLdapServerValue("zimbraPop3ProxyBindPort");
   $config{POPSSLPROXYPORT}  = getLdapServerValue("zimbraPop3SSLProxyBindPort");
+  $config{MAILPROXY}        = getLdapServerValue("zimbraReverseProxyMailEnabled");
+
+  $config{MODE}             = getLdapServerValue("zimbraMailMode");
+  $config{HTTPPORT}         = getLdapServerValue("zimbraMailPort");
+  $config{HTTPSPORT}        = getLdapServerValue("zimbraMailSSLPort");
+
+  $config{HTTPPROXYPORT}    = getLdapServerValue("zimbraMailProxyPort");
+  $config{HTTPSPROXYPORT}   = getLdapServerValue("zimbraMailSSLProxyPort");
+  $config{HTTPPROXY}        = getLdapServerValue("zimbraReverseProxyHttpEnabled");
 
   $config{TRAINSASPAM}      = getLdapConfigValue("zimbraSpamIsSpamAccount");
   $config{TRAINSAHAM}       = getLdapConfigValue("zimbraSpamIsNotSpamAccount");
@@ -745,6 +750,7 @@ sub setLdapDefaults {
       if ($config{zimbraBackupReportEmailSender} eq "");
   }
   if (isInstalled("zimbra-proxy") && isEnabled("zimbra-proxy")) {
+     if ($config{MAILPROXY} eq "TRUE") {
         if ($config{IMAPPORT} == $config{IMAPPROXYPORT} && $config{IMAPPORT} == 143) {
             $config{IMAPPORT} = 7143;
         }
@@ -769,6 +775,21 @@ sub setLdapDefaults {
         if ($config{POPSSLPORT} == $config{POPSSLPROXYPORT} && $config{POPSSLPORT} == 7995) {
             $config{POPSSLPROXYPORT} = 995;
         }
+     }
+     if ($config{HTTPPROXY eq "TRUE") {
+        if ($config{HTTPPORT} == $config{HTTPPROXYPORT} && $config{HTTPPORT} == 80) {
+            $config{HTTPPORT} = 8080;
+        }
+        if ($config{HTTPSPORT} == $config{HTTPSPROXYPORT} && $config{HTTPSPORT} == 443) {
+            $config{HTTPSPORT} = 8443;
+        }
+        if ($config{HTTPPORT} == $config{HTTPPROXYPORT} && $config{HTTPPORT} == 8080) {
+            $config{HTTPPROXYPORT} = 80;
+        }
+        if ($config{HTTPSPORT} == $config{HTTPSPROXYPORT} && $config{HTTPSPORT} == 8443) {
+            $config{HTTPSPROXYPORT} = 443;
+        }
+     }
   } else {
         if ($config{IMAPPORT} == $config{IMAPPROXYPORT} && $config{IMAPPORT} == 143) {
             $config{IMAPPROXYPORT} = 7143;
@@ -794,6 +815,20 @@ sub setLdapDefaults {
         if ($config{POPSSLPORT} == $config{POPSSLPROXYPORT} && $config{POPSSLPORT} == 7995) {
             $config{POPSSLPORT} = 995;
         }
+        if ($config{HTTPPORT} == $config{HTTPPROXYPORT} && $config{HTTPPORT} == 80) {
+            $config{HTTPPROXYPORT=8080;
+        }
+        if ($config{HTTPSPORT == $config{HTTPSPROXYPORT} && $config{HTTPSPORT} == 443) {
+            $config{HTTPSPROXYPORT} = 8443;
+        }
+        if ($config{HTTPPORT} == $config{HTTPPROXYPORT} && $config{HTTPPORT} == 8080) {
+            $config{HTTPPORT} = 80;
+        }
+        if ($config{HTTPSPORT} == $config{HTTPSPROXYPORT} && $config{HTTPSPORT} == 8443) {
+            $config{HTTPSPORT} = 443;
+        }
+        $config{MAILPROXY} = "FALSE";
+        $config{HTTPPROXY} = "FALSE";
   }
  
   # default values for upgrades 
@@ -1143,11 +1178,21 @@ sub setDefaults {
     $config{IMAPSSLPORT} = 7993;
     $config{POPPORT} = 7110;
     $config{POPSSLPORT} = 7995;
+    $config{MAILPROXY} = "TRUE";
+    $config{HTTPPROXY} = "FALSE";
+    $config{HTTPPROXYPORT} = 8080;
+    $config{HTTPSPROXYPORT} = 8443;
+    $config{HTTPPORT} = 80;
+    $config{HTTPSPORT} = 43;
   } else {
     $config{IMAPPROXYPORT} = 7143;
     $config{IMAPSSLPROXYPORT} = 7993;
     $config{POPPROXYPORT} = 7110;
     $config{POPSSLPROXYPORT} = 7995;
+    $config{MAILPROXY} = "FALSE";
+    $config{HTTPPROXY} = "FALSE";
+    $config{HTTPPROXYPORT} = 8080;
+    $config{HTTPSPROXYPORT} = 8443;
   }
  
   if ($options{d}) {
@@ -1803,53 +1848,105 @@ sub toggleConfigEnabled {
 
 sub setUseImapProxy {
 
-  if (isEnabled("zimbra-proxy")) {
-    if ($config{IMAPPROXYPORT} == $config{IMAPPORT}) {
-      $config{IMAPPORT} = 7000+$config{IMAPPROXYPORT};
-    }
-    if ($config{IMAPPORT}+7000 == $config{IMAPPROXYPORT}) {
-      $config{IMAPPORT} = $config{IMAPPROXYPORT};
-      $config{IMAPPROXYPORT} = $config{IMAPPROXYPORT}-7000;
-    }
-    if ($config{IMAPSSLPROXYPORT} == $config{IMAPSSLPORT}) {
-      $config{IMAPSSLPORT} = 7000+$config{IMAPSSLPROXYPORT};
-    }
-    if ($config{IMAPSSLPORT}+7000 == $config{IMAPSSLPROXYPORT}) {
-      $config{IMAPSSLPORT} = $config{IMAPSSLPROXYPORT};
-      $config{IMAPSSLPROXYPORT} = $config{IMAPSSLPROXYPORT}-7000;  
-    }
-    if ($config{POPPROXYPORT} == $config{POPPORT}) {
-      $config{POPPORT} = 7000+$config{POPPROXYPORT};
-    }
-    if ($config{POPPORT}+7000 == $config{POPPROXYPORT}) {
-      $config{POPPORT} = $config{POPPROXYPORT};
-      $config{POPPROXYPORT} = $config{POPPROXYPORT}-7000;
-    }
-    if ($config{POPSSLPROXYPORT} == $config{POPSSLPORT}) {
-      $config{POPSSLPORT} = 7000+$config{POPSSLPROXYPORT};
-    }
-    if ($config{POPSSLPORT}+7000 == $config{POPSSLPROXYPORT}) {
-      $config{POPSSLPORT} = $config{POPSSLPROXYPORT};
-      $config{POPSSLPROXYPORT} = $config{POPSSLPROXYPORT}-7000;
-    }
-  } else {
-    if ($config{IMAPPROXYPORT}+7000 == $config{IMAPPORT}) {
-      $config{IMAPPORT} = $config{IMAPPROXYPORT};
-      $config{IMAPPROXYPORT} = $config{IMAPPROXYPORT}+7000;
-    }
-    if ($config{IMAPSSLPROXYPORT}+7000 == $config{IMAPSSLPORT}) {
-      $config{IMAPSSLPORT} = $config{IMAPSSLPROXYPORT};
-      $config{IMAPSSLPROXYPORT} = $config{IMAPSSLPROXYPORT} + 7000;
-    }
-    if ($config{POPPROXYPORT}+7000 == $config{POPPORT}) {
-      $config{POPPORT} = $config{POPPROXYPORT};
-      $config{POPPROXYPORT} = $config{POPPROXYPORT} + 7000;
-    }
-    if ($config{POPSSLPROXYPORT}+7000 == $config{POPSSLPORT}) {
-      $config{POPSSLPORT} = $config{POPSSLPROXYPORT};
-      $config{POPSSLPROXYPORT} = $config{POPSSLPROXYPORT}+7000;
-    }
-  }
+   if (isEnabled("zimbra-proxy")) {
+      if ($config{MAILPROXY} eq "TRUE") {
+         if ($config{IMAPPROXYPORT} == $config{IMAPPORT}) {
+             $config{IMAPPORT} = 7000+$config{IMAPPROXYPORT};
+         }
+         if ($config{IMAPPORT}+7000 == $config{IMAPPROXYPORT}) {
+             $config{IMAPPORT} = $config{IMAPPROXYPORT};
+             $config{IMAPPROXYPORT} = $config{IMAPPROXYPORT}-7000;
+         }
+         if ($config{IMAPSSLPROXYPORT} == $config{IMAPSSLPORT}) {
+             $config{IMAPSSLPORT} = 7000+$config{IMAPSSLPROXYPORT};
+         }
+         if ($config{IMAPSSLPORT}+7000 == $config{IMAPSSLPROXYPORT}) {
+             $config{IMAPSSLPORT} = $config{IMAPSSLPROXYPORT};
+             $config{IMAPSSLPROXYPORT} = $config{IMAPSSLPROXYPORT}-7000;  
+         }
+         if ($config{POPPROXYPORT} == $config{POPPORT}) {
+             $config{POPPORT} = 7000+$config{POPPROXYPORT};
+         }
+         if ($config{POPPORT}+7000 == $config{POPPROXYPORT}) {
+             $config{POPPORT} = $config{POPPROXYPORT};
+             $config{POPPROXYPORT} = $config{POPPROXYPORT}-7000;
+         }
+         if ($config{POPSSLPROXYPORT} == $config{POPSSLPORT}) {
+             $config{POPSSLPORT} = 7000+$config{POPSSLPROXYPORT};
+         }
+         if ($config{POPSSLPORT}+7000 == $config{POPSSLPROXYPORT}) {
+             $config{POPSSLPORT} = $config{POPSSLPROXYPORT};
+             $config{POPSSLPROXYPORT} = $config{POPSSLPROXYPORT}-7000;
+         }
+      } else {
+         if ($config{IMAPPROXYPORT}+7000 == $config{IMAPPORT}) {
+             $config{IMAPPORT} = $config{IMAPPROXYPORT};
+             $config{IMAPPROXYPORT} = $config{IMAPPROXYPORT}+7000;
+         }
+         if ($config{IMAPSSLPROXYPORT}+7000 == $config{IMAPSSLPORT}) {
+             $config{IMAPSSLPORT} = $config{IMAPSSLPROXYPORT};
+             $config{IMAPSSLPROXYPORT} = $config{IMAPSSLPROXYPORT} + 7000;
+         }
+         if ($config{POPPROXYPORT}+7000 == $config{POPPORT}) {
+             $config{POPPORT} = $config{POPPROXYPORT};
+             $config{POPPROXYPORT} = $config{POPPROXYPORT} + 7000;
+         }
+         if ($config{POPSSLPROXYPORT}+7000 == $config{POPSSLPORT}) {
+             $config{POPSSLPORT} = $config{POPSSLPROXYPORT};
+             $config{POPSSLPROXYPORT} = $config{POPSSLPROXYPORT}+7000;
+         }
+      }
+      if ($config{HTTPPROXY} eq "TRUE") {
+         if ($config{HTTPROXYPPORT} == $config{HTTPPORT}) {
+             $config{HTTPPORT} = 8000+$config{HTTPPROXYPORT};
+         }
+         if ($config{HTTPPORT}+8000 == $config{HTTPPROXYPORT}) {
+             $config{HTTPPORT} = $config{HTTPPROXYPORT};
+             $config{HTTPPROXYPORT} = $config{HTTPPORT} - 8000;
+         }
+         if ($config{HTTPSPROXYPORT} == $config{HTTPSPORT}) {
+             $config{HTTPSPORT} = 8000+$config{HTTPSPROXYPORT};
+         }
+         if ($config{HTTPSPORT}+8000 = $config{HTTPSPROXYPORT}) {
+             $config{HTTPSPORT} = $config{HTTPSPROXYPORT};
+             $config{HTTPSPROXYPORT} = $config{HTTPSPORT} - 8000;
+         }
+      } else {
+         if ($config{HTTPPROXYPORT}+8000 == $config{HTTPPORT}) {
+             $config{HTTPPORT} = $config{HTTPPROXYPORT};
+             $config{HTTPPROXYPORT} = $config{HTTPPORT}-8000;
+         }
+         if ($config{HTTPSPROXYPORT}+8000 == $config{HTTPSPORT}) {
+             $config{HTTPSPORT} = $config{HTTPSPROXYPORT};
+             $config{HTTPSPROXYPORT} = $config{$HTTPSPORT}-8000;
+         }
+      }
+   } else {
+      if ($config{IMAPPROXYPORT}+7000 == $config{IMAPPORT}) {
+          $config{IMAPPORT} = $config{IMAPPROXYPORT};
+          $config{IMAPPROXYPORT} = $config{IMAPPROXYPORT}+7000;
+      }
+      if ($config{IMAPSSLPROXYPORT}+7000 == $config{IMAPSSLPORT}) {
+          $config{IMAPSSLPORT} = $config{IMAPSSLPROXYPORT};
+          $config{IMAPSSLPROXYPORT} = $config{IMAPSSLPROXYPORT} + 7000;
+      }
+      if ($config{POPPROXYPORT}+7000 == $config{POPPORT}) {
+          $config{POPPORT} = $config{POPPROXYPORT};
+           $config{POPPROXYPORT} = $config{POPPROXYPORT} + 7000;
+      }
+      if ($config{POPSSLPROXYPORT}+7000 == $config{POPSSLPORT}) {
+          $config{POPSSLPORT} = $config{POPSSLPROXYPORT};
+          $config{POPSSLPROXYPORT} = $config{POPSSLPROXYPORT}+7000;
+      }
+      if ($config{HTTPPROXYPORT}+8000 == $config{HTTPPORT}) {
+          $config{HTTPPORT} = $config{HTTPPROXYPORT};
+          $config{HTTPPROXYPORT} = $config{HTTPPORT}-8000;
+      }
+      if ($config{HTTPSPROXYPORT}+8000 == $config{HTTPSPORT}) {
+          $config{HTTPSPORT} = $config{HTTPSPROXYPORT};
+          $config{HTTPSPROXYPORT} = $config{$HTTPSPORT}-8000;
+      }
+   }
 }
 
 sub setStoreMode {
@@ -2031,6 +2128,16 @@ sub setPopProxyPort {
 sub setPopSSLProxyPort {
   $config{POPSSLPROXYPORT} = askNum("Please enter the POP SSL Proxyserver port",
       $config{POPSSLPROXYPORT});
+}
+
+sub setHttpProxyPort {
+  $config{HTTPPROXYPORT} = askNum("Please enter the HTTP Proxyserver port",
+      $config{HTTPPROXYPORT});
+}
+
+sub setHttpsProxyPort {
+  $config{HTTPSPROXYPORT} = askNum("Please enter the HTTPS Proxyserver port",
+      $config{HTTPSPROXYPORT});
 }
 
 sub setSpellUrl {
@@ -2537,30 +2644,60 @@ sub createProxyMenu {
 
   my $i = 2;
   if (isInstalled($package)) {
-    $$lm{menuitems}{$i} = { 
-      "prompt" => "IMAP proxy port:", 
-      "var" => \$config{IMAPPROXYPORT}, 
-      "callback" => \&setImapProxyPort,
+    $$lm{menuitems}{$i} = {
+      "prompt" => "Enable POP/IMAP Proxy:",
+      "var" => \$config{MAILPROXY},
+      "callback" => \&toggleTF,
+      "arg" => "MAILPROXY",
     };
     $i++;
-    $$lm{menuitems}{$i} = { 
-      "prompt" => "IMAP SSL proxy port:", 
-      "var" => \$config{IMAPSSLPROXYPORT}, 
-      "callback" => \&setImapSSLProxyPort,
+    if($config{MAILPROXY} eq "TRUE") {
+       $$lm{menuitems}{$i} = { 
+         "prompt" => "IMAP proxy port:", 
+         "var" => \$config{IMAPPROXYPORT}, 
+         "callback" => \&setImapProxyPort,
+       };
+       $i++;
+       $$lm{menuitems}{$i} = { 
+         "prompt" => "IMAP SSL proxy port:", 
+         "var" => \$config{IMAPSSLPROXYPORT}, 
+         "callback" => \&setImapSSLProxyPort,
+       };
+       $i++;
+       $$lm{menuitems}{$i} = { 
+         "prompt" => "POP proxy port:", 
+         "var" => \$config{POPPROXYPORT}, 
+         "callback" => \&setPopProxyPort,
+       };
+       $i++;
+       $$lm{menuitems}{$i} = { 
+         "prompt" => "POP SSL proxy port:", 
+         "var" => \$config{POPSSLPROXYPORT}, 
+         "callback" => \&setPopSSLProxyPort,
+       };
+       $i++;
+    }
+    $$lm{menuitems}{$i} = {
+      "prompt" => "Enable HTTP[S] Proxy:",
+      "var" => \$config{HTTPPROXY},
+      "callback" => \&toggleTF,
+      "arg" => "HTTPPROXY",
     };
     $i++;
-    $$lm{menuitems}{$i} = { 
-      "prompt" => "POP proxy port:", 
-      "var" => \$config{POPPROXYPORT}, 
-      "callback" => \&setPopProxyPort,
-    };
-    $i++;
-    $$lm{menuitems}{$i} = { 
-      "prompt" => "POP SSL proxy port:", 
-      "var" => \$config{POPSSLPROXYPORT}, 
-      "callback" => \&setPopSSLProxyPort,
-    };
-    $i++;
+    if ($config{HTTPPROXY} eq "TRUE") {
+       $$lm{menuitems}{$i} = {
+         "prompt" => "HTTP proxy port:", 
+         "var" => \$config{HTTPPROXYPORT}, 
+         "callback" => \&setHttpProxyPort,
+       }
+       $i++;
+       $$lm{menuitems}{$i} = {
+         "prompt" => "HTTPS proxy port:", 
+         "var" => \$config{HTTPSPROXYPORT}, 
+         "callback" => \&setHttpsProxyPort,
+       }
+       $i++;
+    }
   }
   return $lm;
 }
@@ -3708,6 +3845,7 @@ sub configSetServicePorts {
     "zimbraPop3ProxyBindPort $config{POPPROXYPORT} zimbraPop3SSLProxyBindPort $config{POPSSLPROXYPORT} ");
   runAsZimbra("$ZMPROV ms $config{HOSTNAME} ".
     "zimbraMailPort $config{HTTPPORT} zimbraMailSSLPort $config{HTTPSPORT} ".
+    "zimbraMailProxyPort $config{HTTPPROXYPORT} zimbraMailSSLProxyPort $config{HTTPSPROXYPORT} ".
     "zimbraMailMode $config{MODE}");
 
   progress ( "done.\n" );
@@ -3825,27 +3963,92 @@ sub setProxyBits {
   print ZMPROV "mcf zimbraReverseProxyDomainNameAttribute zimbraDomainName\n"
     if(getLdapConfigValue("zimbraReverseProxyDomainNameAttribute") eq "");
 
+  print ZMPROV "mcf zimbraImapCleartextLoginEnabled FALSE\n"
+    if(getLdapConfigValue("zimbraImapCleartextLoginEnabled") eq "");
+
+  print ZMPROV "mcf zimbraPop3CleartextLoginEnabled FALSE\n"
+    if(getLdapConfigValue("zimbraPop3CleartextLoginEnabled") eq "");
+ 
   print ZMPROV "mcf zimbraReverseProxyAuthWaitInterval 10s\n"
     if(getLdapConfigValue("zimbraReverseProxyAuthWaitInterval") eq "");
+
+  print ZMPROV "mcf zimbraReverseProxyIPLoginLimit 0\n"
+    if(getLdapConfigValue("zimbraReverseProxyIPLoginLimit") eq "");
+
+  print ZMPROV "mcf zimbraReverseProxyIPLoginLimitTime 3600\n"
+    if(getLdapConfigValue("zimbraReverseProxyIPLoginLimitTime") eq "");
+
+  print ZMPROV "mcf zimbraReverseProxyUserLoginLimit 0\n"
+    if(getLdapConfigValue("zimbraReverseProxyUserLoginLimit") eq "");
+
+  print ZMPROV "mcf zimbraReverseProxyUserLoginLimitTime 3600\n"
+    if(getLdapConfigValue("zimbraReverseProxyUserLoginLimitTime") eq "");
+
+  print ZMPROV "mcf zimbraMailProxyPort 0\n"
+    if(getLdapConfigValue("zimbraMailProxyPort") eq "");
+
+  print ZMPROV "mcf zimbraMailSSLProxyPort 0\n"
+    if(getLdapConfigValue("zimbraMailSSLProxyPort") eq "");
+
+  print ZMPROV "mcf zimbraReverseProxyHttpEnabled FALSE\n"
+    if(getLdapConfigValue("zimbraReverseProxyHttpEnabled") eq "");
+
+  print ZMPROV "mcf zimbraReverseProxyMailEnabled TRUE\n"
+    if(getLdapConfigValue("zimbraReverseProxyMailEnabled") eq "");
 
   close ZMPROV;
 }
 
 sub configSetProxyPrefs {
    if (isEnabled("zimbra-proxy")) {
-     if ((($config{IMAPPORT} == 143 || $config{IMAPPORT} == 7143) &&
-          ($config{IMAPPROXYPORT} == 143 || $config{IMAPPROXYPORT} == 7143)) &&
-         (($config{IMAPSSLPORT} == 993 || $config{IMAPSSLPORT} == 7993) &&
-          ($config{IMAPSSLPROXYPORT} == 993 || $config{IMAPSSLPROXYPORT} == 7993)) &&
-         (($config{POPPORT} == 110 || $config{POPPORT} == 7110) &&
-          ($config{POPPROXYPORT} == 110 || $config{POPPROXYPORT} == 7110)) &&
-         (($config{POPSSLPORT} == 995 || $config{POPSSLPORT} == 7995) &&
-          ($config{POPSSLPROXYPORT} == 995 || $config{POPSSLPROXYPORT} == 7995)))
-     {
-       runAsRoot("/opt/zimbra/libexec/zmproxyinit -e $config{HOSTNAME}");
+     if ($config{MAILPROXY} eq "FALSE" && $config{HTTPPROXY} eq "FALSE") {
+        $enabledPackages("zimbra-proxy") = "Disabled";
+     } else {
+        if($config{MAILPROXY} eq "TRUE") {
+           if ((($config{IMAPPORT} == 143 || $config{IMAPPORT} == 7143) &&
+                ($config{IMAPPROXYPORT} == 143 || $config{IMAPPROXYPORT} == 7143)) &&
+               (($config{IMAPSSLPORT} == 993 || $config{IMAPSSLPORT} == 7993) &&
+                ($config{IMAPSSLPROXYPORT} == 993 || $config{IMAPSSLPROXYPORT} == 7993)) &&
+               (($config{POPPORT} == 110 || $config{POPPORT} == 7110) &&
+                ($config{POPPROXYPORT} == 110 || $config{POPPROXYPORT} == 7110)) &&
+               (($config{POPSSLPORT} == 995 || $config{POPSSLPORT} == 7995) &&
+                ($config{POPSSLPROXYPORT} == 995 || $config{POPSSLPROXYPORT} == 7995)))
+           {
+             runAsRoot("/opt/zimbra/libexec/zmproxyinit -m -e $config{HOSTNAME}");
+           }
+           runAsZimbra("$ZMPROV ms $config{HOSTNAME} zimbraImapCleartextLoginEnabled TRUE");
+           runAsZimbra("$ZMPROV ms $config{HOSTNAME} zimbraPop3CleartextLoginEnabled TRUE");
+        } else {
+            if ((($config{IMAPPORT} == 143 || $config{IMAPPORT} == 7143) &&
+             ($config{IMAPPROXYPORT} == 143 || $config{IMAPPROXYPORT} == 7143)) &&
+            (($config{IMAPSSLPORT} == 993 || $config{IMAPSSLPORT} == 7993) &&
+             ($config{IMAPSSLPROXYPORT} == 993 || $config{IMAPSSLPROXYPORT} == 7993)) &&
+            (($config{POPPORT} == 110 || $config{POPPORT} == 7110) &&
+             ($config{POPPROXYPORT} == 110 || $config{POPPROXYPORT} == 7110)) &&
+            (($config{POPSSLPORT} == 995 || $config{POPSSLPORT} == 7995) &&
+             ($config{POPSSLPROXYPORT} == 995 || $config{POPSSLPROXYPORT} == 7995)))
+            {
+               runAsRoot("/opt/zimbra/libexec/zmproxyinit -m -d $config{HOSTNAME}");
+            }
+        }
+        if ($config{HTTPPROXY}) eq "TRUE" ) {
+           if ((($config{HTTPPORT} == 80 || $config{HTTPPORT} == 8080) &&
+                ($config{HTTPPROXYPORT} == 80 || $config{HTTPPROXYPORT} == 8080)) &&
+               (($config{HTTPSPORT} == 443 || $config{HTTPSPORT} == 8443) &&
+                ($config{HTTPSPROXYPORT} == 8443 || $config{HTTPSPROXYPORT} == 8443)))
+           {
+             runAsRoot("/opt/zimbra/libexec/zmproxyinit -w -e $config{HOSTNAME}");
+           }
+        } else {
+           if ((($config{HTTPPORT} == 80 || $config{HTTPPORT} == 8080) &&
+                ($config{HTTPPROXYPORT} == 80 || $config{HTTPPROXYPORT} == 8080)) &&
+               (($config{HTTPSPORT} == 443 || $config{HTTPSPORT} == 8443) &&
+                ($config{HTTPSPROXYPORT} == 8443 || $config{HTTPSPROXYPORT} == 8443)))
+           {
+             runAsRoot("/opt/zimbra/libexec/zmproxyinit -w -d $config{HOSTNAME}");
+           }
+        }
      }
-     runAsZimbra("$ZMPROV mcf zimbraImapCleartextLoginEnabled TRUE");
-     runAsZimbra("$ZMPROV mcf zimbraPop3CleartextLoginEnabled TRUE");
    } else {
      if ((($config{IMAPPORT} == 143 || $config{IMAPPORT} == 7143) &&
           ($config{IMAPPROXYPORT} == 143 || $config{IMAPPROXYPORT} == 7143)) &&
@@ -3856,7 +4059,14 @@ sub configSetProxyPrefs {
          (($config{POPSSLPORT} == 995 || $config{POPSSLPORT} == 7995) &&
           ($config{POPSSLPROXYPORT} == 995 || $config{POPSSLPROXYPORT} == 7995)))
       {
-        runAsRoot("/opt/zimbra/libexec/zmproxyinit -d $config{HOSTNAME}");
+        runAsRoot("/opt/zimbra/libexec/zmproxyinit -m -d $config{HOSTNAME}");
+      }
+      if ((($config{HTTPPORT} == 80 || $config{HTTPPORT} == 8080) &&
+           ($config{HTTPPROXYPORT} == 80 || $config{HTTPPROXYPORT} == 8080)) &&
+          (($config{HTTPSPORT} == 443 || $config{HTTPSPORT} == 8443) &&
+           ($config{HTTPSPROXYPORT} == 8443 || $config{HTTPSPROXYPORT} == 8443)))
+      {
+        runAsRoot("/opt/zimbra/libexec/zmproxyinit -w -d $config{HOSTNAME}");
       }
    }
 }
