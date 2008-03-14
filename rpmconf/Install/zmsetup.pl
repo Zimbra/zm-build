@@ -816,9 +816,9 @@ sub setLdapDefaults {
             $config{POPSSLPORT} = 995;
         }
         if ($config{HTTPPORT} == $config{HTTPPROXYPORT} && $config{HTTPPORT} == 80) {
-            $config{HTTPPROXYPORT=8080;
+            $config{HTTPPROXYPORT} = 8080;
         }
-        if ($config{HTTPSPORT == $config{HTTPSPROXYPORT} && $config{HTTPSPORT} == 443) {
+        if ($config{HTTPSPORT} == $config{HTTPSPROXYPORT} && $config{HTTPSPORT} == 443) {
             $config{HTTPSPROXYPORT} = 8443;
         }
         if ($config{HTTPPORT} == $config{HTTPPROXYPORT} && $config{HTTPPORT} == 8080) {
@@ -1907,7 +1907,7 @@ sub setUseImapProxy {
          if ($config{HTTPSPROXYPORT} == $config{HTTPSPORT}) {
              $config{HTTPSPORT} = 8000+$config{HTTPSPROXYPORT};
          }
-         if ($config{HTTPSPORT}+8000 = $config{HTTPSPROXYPORT}) {
+         if ($config{HTTPSPORT}+8000 == $config{HTTPSPROXYPORT}) {
              $config{HTTPSPORT} = $config{HTTPSPROXYPORT};
              $config{HTTPSPROXYPORT} = $config{HTTPSPORT} - 8000;
          }
@@ -1918,7 +1918,7 @@ sub setUseImapProxy {
          }
          if ($config{HTTPSPROXYPORT}+8000 == $config{HTTPSPORT}) {
              $config{HTTPSPORT} = $config{HTTPSPROXYPORT};
-             $config{HTTPSPROXYPORT} = $config{$HTTPSPORT}-8000;
+             $config{HTTPSPROXYPORT} = $config{HTTPSPORT}-8000;
          }
       }
    } else {
@@ -1944,7 +1944,7 @@ sub setUseImapProxy {
       }
       if ($config{HTTPSPROXYPORT}+8000 == $config{HTTPSPORT}) {
           $config{HTTPSPORT} = $config{HTTPSPROXYPORT};
-          $config{HTTPSPROXYPORT} = $config{$HTTPSPORT}-8000;
+          $config{HTTPSPROXYPORT} = $config{HTTPSPORT}-8000;
       }
    }
 }
@@ -2689,13 +2689,13 @@ sub createProxyMenu {
          "prompt" => "HTTP proxy port:", 
          "var" => \$config{HTTPPROXYPORT}, 
          "callback" => \&setHttpProxyPort,
-       }
+       };
        $i++;
        $$lm{menuitems}{$i} = {
          "prompt" => "HTTPS proxy port:", 
          "var" => \$config{HTTPSPROXYPORT}, 
          "callback" => \&setHttpsProxyPort,
-       }
+       };
        $i++;
     }
   }
@@ -4002,7 +4002,7 @@ sub setProxyBits {
 sub configSetProxyPrefs {
    if (isEnabled("zimbra-proxy")) {
      if ($config{MAILPROXY} eq "FALSE" && $config{HTTPPROXY} eq "FALSE") {
-        $enabledPackages("zimbra-proxy") = "Disabled";
+        $enabledPackages{"zimbra-proxy"} = "Disabled";
      } else {
         if($config{MAILPROXY} eq "TRUE") {
            if ((($config{IMAPPORT} == 143 || $config{IMAPPORT} == 7143) &&
@@ -4031,7 +4031,7 @@ sub configSetProxyPrefs {
                runAsRoot("/opt/zimbra/libexec/zmproxyinit -m -d $config{HOSTNAME}");
             }
         }
-        if ($config{HTTPPROXY}) eq "TRUE" ) {
+        if ($config{HTTPPROXY} eq "TRUE" ) {
            if ((($config{HTTPPORT} == 80 || $config{HTTPPORT} == 8080) &&
                 ($config{HTTPPROXYPORT} == 80 || $config{HTTPPROXYPORT} == 8080)) &&
                (($config{HTTPSPORT} == 443 || $config{HTTPSPORT} == 8443) &&
