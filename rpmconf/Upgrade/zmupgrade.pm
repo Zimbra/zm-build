@@ -2014,13 +2014,13 @@ sub upgrade503GA {
 	  main::runAsZimbra("$ZMPROV mcf +zimbraGalLdapFilterDef 'zimbraResourceAutoComplete:(&(|(displayName=%s*)(cn=%s*)(sn=%s*)(gn=%s*)(mail=%s*)(zimbraMailDeliveryAddress=%s*)(zimbraMailAlias=%s*))(objectclass=zimbraCalendarResource))'");
           #bug 9469 - Add ZCS Proxy defaults
 	  main::runAsZimbra("$ZMPROV mcf zimbraReverseProxyIPLoginLimit 0");
-	  main::RunAsZimbra("$ZMPROV mcf zimbraReverseProxyIPLoginLimitTime 3600");
-	  main::RunAsZimbra("$ZMPROV mcf zimbraReverseProxyUserLoginLimit 0");
-	  main::RunAsZimbra("$ZMPROV mcf zimbraReverseProxyUserLoginLimitTime 3600");
-	  main::RunAsZimbra("$ZMPROV mcf zimbraMailProxyPort 0");
-	  main::RunAsZimbra("$ZMPROV mcf zimbraMailSSLProxyPort 0");
-	  main::RunAsZimbra("$ZMPROV mcf zimbraReverseProxyHttpEnabled FALSE");
-	  main::RunAsZimbra("$ZMPROV mcf zimbraReverseProxyMailEnabled TRUE");
+	  main::runAsZimbra("$ZMPROV mcf zimbraReverseProxyIPLoginLimitTime 3600");
+	  main::runAsZimbra("$ZMPROV mcf zimbraReverseProxyUserLoginLimit 0");
+	  main::runAsZimbra("$ZMPROV mcf zimbraReverseProxyUserLoginLimitTime 3600");
+	  main::runAsZimbra("$ZMPROV mcf zimbraMailProxyPort 0");
+	  main::runAsZimbra("$ZMPROV mcf zimbraMailSSLProxyPort 0");
+	  main::runAsZimbra("$ZMPROV mcf zimbraReverseProxyHttpEnabled FALSE");
+	  main::runAsZimbra("$ZMPROV mcf zimbraReverseProxyMailEnabled TRUE");
 
 	  my @coses = `su - zimbra -c "$ZMPROV gac"`;
 	  foreach my $cos (@coses) {
@@ -2037,14 +2037,14 @@ sub upgrade503GA {
   #bug 9469 - ZCS Proxy bits
   if(main::isInstalled("zimbra-proxy") && main::isEnabled("zimbra-proxy")) {
 	  main::runAsZimbra("$ZMPROV ms $hn zimbraReverseProxyIPLoginLimit 0");
-	  main::RunAsZimbra("$ZMPROV ms $hn zimbraReverseProxyIPLoginLimitTime 3600");
-	  main::RunAsZimbra("$ZMPROV ms $hn zimbraReverseProxyUserLoginLimit 0");
-	  main::RunAsZimbra("$ZMPROV ms $hn zimbraReverseProxyUserLoginLimitTime 3600");
+	  main::runAsZimbra("$ZMPROV ms $hn zimbraReverseProxyIPLoginLimitTime 3600");
+	  main::runAsZimbra("$ZMPROV ms $hn zimbraReverseProxyUserLoginLimit 0");
+	  main::runAsZimbra("$ZMPROV ms $hn zimbraReverseProxyUserLoginLimitTime 3600");
   } else {
 	  main::runAsZimbra("$ZMPROV ms $hn zimbraReverseProxyIPLoginLimit 0");
-	  main::RunAsZimbra("$ZMPROV ms $hn zimbraReverseProxyIPLoginLimitTime 3600");
-	  main::RunAsZimbra("$ZMPROV ms $hn zimbraReverseProxyUserLoginLimit 0");
-	  main::RunAsZimbra("$ZMPROV ms $hn zimbraReverseProxyUserLoginLimitTime 3600");
+	  main::runAsZimbra("$ZMPROV ms $hn zimbraReverseProxyIPLoginLimitTime 3600");
+	  main::runAsZimbra("$ZMPROV ms $hn zimbraReverseProxyUserLoginLimit 0");
+	  main::runAsZimbra("$ZMPROV ms $hn zimbraReverseProxyUserLoginLimitTime 3600");
   }
 
   if (main::isInstalled("zimbra-store")) {
