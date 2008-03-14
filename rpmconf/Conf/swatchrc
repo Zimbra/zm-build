@@ -26,7 +26,7 @@ ignore /DEBUG/
 watchfor /err: Service status change: (\S+) (.*) changed from stopped to running/ 
 	donotify SERVICE=$2,STATUS=started,HOST=$1
 watchfor /err: Service status change: (\S+) (.*) changed from running to stopped/ 
-	donotify SERVICE=$2,STATUS=stopped ,HOST=$1
+	donotify SERVICE=$2,STATUS=stopped,HOST=$1
 
 watchfor /err: Disk warning: (\S+) (\S+) at (\d+)/ 
 	donotify SERVICE=$2,STATUS=started,HOST=$1
