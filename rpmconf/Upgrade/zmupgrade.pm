@@ -2029,8 +2029,9 @@ sub upgrade503GA {
 	  }
   }
 
+  #bug 25051  -  Anand says always set, regardless of what is installed.
   my $refer = main::getLocalConfig("zimbra_auth_always_send_refer");
-  main::runAsZimbra("$ZMPROV ms $hn zimbraMailReferMode wronghost")
+  main::runAsZimbra("$ZMPROV ms $hn zimbraMailReferMode always")
     if (uc($refer) eq "TRUE");
 
   if (main::isInstalled("zimbra-store")) {
