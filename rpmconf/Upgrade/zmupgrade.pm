@@ -2034,19 +2034,6 @@ sub upgrade503GA {
   main::runAsZimbra("$ZMPROV ms $hn zimbraMailReferMode always")
     if (uc($refer) eq "TRUE");
 
-  #bug 9469 - ZCS Proxy bits
-  if(main::isInstalled("zimbra-proxy") && main::isEnabled("zimbra-proxy")) {
-	  main::runAsZimbra("$ZMPROV ms $hn zimbraReverseProxyIPLoginLimit 0");
-	  main::runAsZimbra("$ZMPROV ms $hn zimbraReverseProxyIPLoginLimitTime 3600");
-	  main::runAsZimbra("$ZMPROV ms $hn zimbraReverseProxyUserLoginLimit 0");
-	  main::runAsZimbra("$ZMPROV ms $hn zimbraReverseProxyUserLoginLimitTime 3600");
-  } else {
-	  main::runAsZimbra("$ZMPROV ms $hn zimbraReverseProxyIPLoginLimit 0");
-	  main::runAsZimbra("$ZMPROV ms $hn zimbraReverseProxyIPLoginLimitTime 3600");
-	  main::runAsZimbra("$ZMPROV ms $hn zimbraReverseProxyUserLoginLimit 0");
-	  main::runAsZimbra("$ZMPROV ms $hn zimbraReverseProxyUserLoginLimitTime 3600");
-  }
-
   if (main::isInstalled("zimbra-store")) {
     updateMySQLcnf();
     main::runAsZimbra("$ZMPROV mcf zimbraMailPurgeSleepInterval 1m");
