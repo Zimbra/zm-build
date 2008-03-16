@@ -2026,6 +2026,7 @@ sub upgrade503GA {
 	  foreach my $cos (@coses) {
 		  chomp $cos;
 		  main::runAsZimbra("$ZMPROV mc $cos zimbraBatchedIndexingSize 0");
+                  main::runAsZimbra("$ZMPROV mc $cos zimbraPrefMailDefaultCharset UTF-8");
 	  }
   }
 
@@ -2304,7 +2305,7 @@ sub relocatePostfixQueue {
   main::progress("Migrating Postfix spool directory\n");
   if ( -d "$fromDir/spool" && -d "$toDir/spool" && ! -d "$toDir/spool/active") {
     chdir($fromDir);
-    `tar cf - spool | (cd $toDir; tar xfp -)`;
+    `tar cf - spool | (cd $toDir; tar xfp -) >/dev/null 2>&1`;
     chdir($curDir);
   }
 }
