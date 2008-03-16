@@ -71,6 +71,7 @@ findLatestPackage() {
     elif [ x"$PACKAGEEXT" = "xdeb" ]; then
       id=`basename $f .deb | awk -F_ '{print $2"_"$3"_"$4"_"$5}'`
       id=`echo $id | sed -e 's/_i386$//'`
+      id=`echo $id | sed -e 's/_amd64$//'`
       version=`echo $id | awk -F_ '{print $1}'`
       major=`echo $version | awk -F. '{print $1}'`
       minor=`echo $version | awk -F. '{print $2}'`
@@ -85,6 +86,12 @@ findLatestPackage() {
 			stamp=`echo $f | awk -F_ '{print $3}' | awk -F. '{print $1}'`
 		fi
     installable_platform=`echo $id | awk -F. '{print $4}'`
+    if [ x"$installable_platform" = "xDEBIAN4" ]; then
+        installable_platform=`echo $id | awk -F. '{print $4"."$5}'`
+    fi
+    if [ x"$installable_platform" = "xopenSUSE_10" ]; then
+        installable_platform=`echo $id | awk -F. '{print $4"."$5}'`
+    fi
 
 		if [ $major -gt $himajor ]; then
 			himajor=$major
