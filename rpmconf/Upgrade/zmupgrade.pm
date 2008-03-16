@@ -2308,6 +2308,7 @@ sub relocatePostfixQueue {
     `tar cf - spool | (cd $toDir; tar xfp -) >/dev/null 2>&1`;
     chdir($curDir);
   }
+  main::runAsRoot("/opt/zimbra/libexec/zmfixperms");
 }
 
 sub updateLoggerMySQLcnf {
