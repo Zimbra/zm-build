@@ -37,6 +37,10 @@ mv -f /tmp/sudoers /etc/sudoers
 echo "%zimbra   ALL=NOPASSWD:/opt/zimbra/libexec/zmqstat,/opt/zimbra/libexec/zmmtastatus" >> /etc/sudoers
 chmod $SUDOMODE /etc/sudoers
 
+if [ -x "/opt/zimbra/libexec/zmfixperms" ]; then
+  /opt/zimbra/libexec/zmfixperms
+fi
+
 if [ ! -f /opt/zimbra/postfix/conf/main.cf ]; then
 	touch /opt/zimbra/postfix/conf/main.cf
 	chown zimbra:zimbra /opt/zimbra/postfix/conf/main.cf

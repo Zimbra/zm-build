@@ -47,7 +47,9 @@ mkdir -p /opt/zimbra/data/postfix/spool
 chown zimbra:zimbra /opt/zimbra/data/postfix
 chown root:postfix /opt/zimbra/data/postfix/spool
 
-/bin/sh /opt/zimbra/libexec/zmfixperms
+if [ -x "/opt/zimbra/libexec/zmfixperms" ]; then
+  /opt/zimbra/libexec/zmfixperms
+fi
 
 if [ ! -f /opt/zimbra/postfix/conf/main.cf ]; then
 	touch /opt/zimbra/postfix/conf/main.cf
