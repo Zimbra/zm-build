@@ -27,6 +27,22 @@ ln -s /opt/zimbra/postfix-2.4.3.4z /opt/zimbra/postfix
 rm -f /opt/zimbra/clamav
 ln -s /opt/zimbra/clamav-0.92.1 /opt/zimbra/clamav
 
+mkdir -p /opt/zimbra/data/amavisd/db
+mkdir -p /opt/zimbra/data/amavisd/tmp
+mkdir -p /opt/zimbra/data/amavisd/var
+mkdir -p /opt/zimbra/data/amavisd/quarantine
+chown -R zimbra:zimbra /opt/zimbra/amavisd/*
+chown -R zimbra:zimbra /opt/zimbra/data/amavisd/*
+
+mkdir -p /opt/zimbra/data/clamav/db
+chown -R zimbra:zimbra /opt/zimbra/data/clamav/db
+
+mkdir -p /opt/zimbra/data/postfix/spool
+chown zimbra:zimbra /opt/zimbra/data/postfix
+chown root:postfix /opt/zimbra/data/postfix/spool
+
+chown zimbra:zimbra /opt/zimbra/data
+
 SUDOMODE=`perl -e 'my $mode=(stat("/etc/sudoers"))[2];printf("%04o\n",$mode & 07777);'`
 egrep -v '^%zimbra.*postfix' /etc/sudoers > /tmp/sudoers
 mv -f /tmp/sudoers /etc/sudoers
