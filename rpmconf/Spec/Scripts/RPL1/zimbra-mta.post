@@ -60,6 +60,8 @@ chown -R zimbra:zimbra /opt/zimbra/data/amavisd/*
 mkdir -p /opt/zimbra/data/clamav/db
 chown -R zimbra:zimbra /opt/zimbra/data/clamav/db
 
+mkdir -p /opt/zimbra/data/postfix/spool
+
 /opt/zimbra/libexec/zmfixperms
 
 if [ ! -f /opt/zimbra/postfix/conf/main.cf ]; then

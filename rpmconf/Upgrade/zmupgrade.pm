@@ -2303,7 +2303,8 @@ sub relocatePostfixQueue {
   my $curDir=main::getcwd();
 
   main::progress("Migrating Postfix spool directory\n");
-  if ( -d "$fromDir/spool" && -d "$toDir/spool" && ! -d "$toDir/spool/active") {
+  mkdir -p "$toDir/spool";
+  if ( -d "$fromDir/spool" && ! -d "$toDir/spool/active") {
     chdir($fromDir);
     `tar cf - spool | (cd $toDir; tar xfp -) >/dev/null 2>&1`;
     chdir($curDir);
