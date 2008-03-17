@@ -64,6 +64,8 @@ mkdir -p /opt/zimbra/data/postfix/spool
 chown zimbra:zimbra /opt/zimbra/data/postfix
 chown root:postfix /opt/zimbra/data/postfix/spool
 
+chown zimbra:zimbra /opt/zimbra/data
+
 /opt/zimbra/libexec/zmfixperms
 
 if [ ! -f /opt/zimbra/postfix/conf/main.cf ]; then
