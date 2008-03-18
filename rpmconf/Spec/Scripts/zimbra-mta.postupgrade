@@ -39,8 +39,6 @@ chown -R zimbra:zimbra /opt/zimbra/data/clamav/db
 
 mkdir -p /opt/zimbra/data/postfix/spool
 chown zimbra:zimbra /opt/zimbra/data/postfix
-chown root:postfix /opt/zimbra/data/postfix/spool
-
 chown zimbra:zimbra /opt/zimbra/data
 
 SUDOMODE=`perl -e 'my $mode=(stat("/etc/sudoers"))[2];printf("%04o\n",$mode & 07777);'`
