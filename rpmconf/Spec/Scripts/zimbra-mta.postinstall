@@ -45,8 +45,6 @@ chown -R zimbra:zimbra /opt/zimbra/data/clamav/db
 
 mkdir -p /opt/zimbra/data/postfix/spool
 chown zimbra:zimbra /opt/zimbra/data/postfix
-chown root:postfix /opt/zimbra/data/postfix/spool
-
 chown zimbra:zimbra /opt/zimbra/data
 
 if [ -x "/opt/zimbra/libexec/zmfixperms" ]; then
