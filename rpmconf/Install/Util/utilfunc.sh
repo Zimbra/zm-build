@@ -1105,6 +1105,9 @@ saveExistingConfig() {
   if [ -x /opt/zimbra/bin/zmschedulebackup ]; then
     runAsZimbra "zmschedulebackup -s > $SAVEDIR/backup.save"
   fi
+  if [ -d /opt/zimbra/wiki ]; then
+    cp -rf /opt/zimbra/wiki $SAVEDIR
+  fi
 
   if [ -f "/opt/zimbra/.enable_replica" ]; then
     rm -f /opt/zimbra/.enable_replica

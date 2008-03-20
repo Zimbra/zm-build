@@ -24,3 +24,7 @@ elif [ -d "/opt/zimbra/mailboxd/webapps/service/zimlet" ]; then
   cp -rf /opt/zimbra/mailboxd/webapps/service/zimlet $SAVEDIR
 fi
 
+if [ -d "/opt/zimbra/wiki" ]; then
+  cp -rf /opt/zimbra/wiki $SAVEDIR
+fi
+
