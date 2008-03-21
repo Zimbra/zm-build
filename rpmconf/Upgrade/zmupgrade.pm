@@ -144,6 +144,7 @@ my %updateFuncs = (
   "5.0.1_GA" => \&upgrade501GA,
   "5.0.2_GA" => \&upgrade502GA,
   "5.0.3_GA" => \&upgrade503GA,
+  "5.0.4_GA" => \&upgrade504GA,
   "5.5.0_GA" => \&upgrade550GA,
 );
 
@@ -196,6 +197,7 @@ my @versionOrder = (
   "5.0.1_GA",
   "5.0.2_GA",
   "5.0.3_GA",
+  "5.0.4_GA",
   "5.5.0_GA",
 );
 
@@ -362,6 +364,8 @@ sub upgrade {
 		main::progress("This appears to be 5.0.2_GA\n");
 	} elsif ($startVersion eq "5.0.3_GA") {
 		main::progress("This appears to be 5.0.3_GA\n");
+	} elsif ($startVersion eq "5.0.4_GA") {
+		main::progress("This appears to be 5.0.4_GA\n");
 	} elsif ($startVersion eq "5.5.0_GA") {
 		main::progress("This appears to be 5.5.0_GA\n");
 	} else {
@@ -2054,6 +2058,11 @@ sub upgrade503GA {
   }
 
   main::setLocalConfig("zimbra_class_accessmanager", "com.zimbra.cs.account.DomainAccessManager"); 
+	return 0;
+}
+sub upgrade504GA {
+	my ($startBuild, $targetVersion, $targetBuild) = (@_);
+	main::progress("Updating from 5.0.4_GA\n");
 	return 0;
 }
 sub upgrade550GA {
