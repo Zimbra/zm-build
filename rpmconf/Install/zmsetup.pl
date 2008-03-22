@@ -21,6 +21,7 @@ use lib "/opt/zimbra/zimbramon/lib";
 use Zimbra::Util::Common;
 use Net::LDAP;
 use Cwd;
+use Time::localtime;
 
 $|=1; # don't buffer stdout
 
@@ -254,9 +255,10 @@ sub status {
 sub detail {
   my $msg = shift;
   my ($sub,$line) = (caller(1))[3,2];
+  my $date = ctime();
   $msg =~ s/\n$//;
   $msg = "$sub:$line $msg" if $options{d};
-  `echo "$msg" >> $logfile`;
+  `echo "$date $msg" >> $logfile`;
 }
 
 sub saveConfig {
