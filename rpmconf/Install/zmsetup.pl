@@ -1183,7 +1183,7 @@ sub setDefaults {
     $config{HTTPPROXYPORT} = 8080;
     $config{HTTPSPROXYPORT} = 8443;
     $config{HTTPPORT} = 80;
-    $config{HTTPSPORT} = 43;
+    $config{HTTPSPORT} = 443;
   } else {
     $config{IMAPPROXYPORT} = 7143;
     $config{IMAPSSLPROXYPORT} = 7993;
