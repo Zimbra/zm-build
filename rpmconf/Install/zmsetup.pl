@@ -4752,7 +4752,7 @@ sub mysqlMemoryPercent {
   my $percent = 30;
   if ($system_mem > 2 && $addr_space eq "32") {
     $percent = int((1.55/$system_mem)*100);
-    return 10 if ($os eq "darwin");
+    #return 10 if ($os eq "darwin");
   }
   return $percent;
 }

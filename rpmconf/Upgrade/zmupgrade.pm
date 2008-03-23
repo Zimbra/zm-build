@@ -20,8 +20,8 @@ use strict;
 use lib "/opt/zimbra/libexec/scripts";
 use Migrate;
 use Net::LDAP;
-
-my $type = `zmlocalconfig -m nokey convertd_stub_name 2> /dev/null`;
+my $zmlocalconfig="/opt/zimbra/bin/zmlocalconfig";
+my $type = `${zmlocalconfig} -m nokey convertd_stub_name 2> /dev/null`;
 chomp $type;
 if ($type eq "") {$type = "FOSS";}
 else {$type = "NETWORK";}
@@ -39,7 +39,7 @@ my $comboLowVersion = 20;
 my $comboHiVersion  = 27;
 my $needSlapIndexing = 0;
 
-my $hn = `su - zimbra -c "zmlocalconfig -m nokey zimbra_server_hostname"`;
+my $hn = `su - zimbra -c "${zmlocalconfig} -m nokey zimbra_server_hostname"`;
 chomp $hn;
 
 my $ZMPROV = "/opt/zimbra/bin/zmprov -l --";
@@ -2335,7 +2335,7 @@ sub updateLoggerMySQLcnf {
     my $i=0;
     my $mycnfChanged = 0;
     my $tmpfile = "/tmp/my.cnf.$$";;
-    my $zimbra_user = `zmlocalconfig -m nokey zimbra_user 2> /dev/null` || "zmbra";;
+    my $zimbra_user = `${zmlocalconfig} -m nokey zimbra_user 2> /dev/null` || "zmbra";;
     open(TMP, ">$tmpfile");
     foreach (@CNF) {
       if (/^port/ && $CNF[$i+1] !~ m/^user/) {
@@ -2380,7 +2380,7 @@ sub updateMySQLcnf {
     my $i=0;
     my $mycnfChanged = 0;
     my $tmpfile = "/tmp/my.cnf.$$";;
-    my $zimbra_user = `zmlocalconfig -m nokey zimbra_user 2> /dev/null` || "zimbra";;
+    my $zimbra_user = `${zmlocalconfig} -m nokey zimbra_user 2> /dev/null` || "zimbra";;
     open(TMP, ">$tmpfile");
     foreach (@CNF) {
       if (/^port/ && $CNF[$i+1] !~ m/^user/) {
