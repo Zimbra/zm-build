@@ -38,3 +38,12 @@ if [ $? = 0 ]; then
 else 
   usermod -g zimbra -G postfix,tty zimbra
 fi
+
+if [ -d "/opt/zimbra/mailboxd/work/zimbra" ]; then
+  rm -rf /opt/zimbra/mailboxd/work/zimbra > /dev/null 2>&1 
+fi
+
+if [ -d "/opt/zimbra/mailboxd/work/zimbraAdmin" ]; then
+  rm -rf /opt/zimbra/mailboxd/work/zimbraAdmin > /dev/null 2>&1 
+fi
+
