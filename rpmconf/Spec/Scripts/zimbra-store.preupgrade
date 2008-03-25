@@ -28,3 +28,11 @@ if [ -d "/opt/zimbra/wiki" ]; then
   cp -rf /opt/zimbra/wiki $SAVEDIR
 fi
 
+# remove this before upgrade so they are recompiled
+if [ -d "/opt/zimbra/mailboxd/work/zimbra" ]; then
+  rm -rf /opt/zimbra/mailboxd/work/zimbra
+fi
+
+if [ -d "/opt/zimbra/mailboxd/work/zimbraAdmin" ]; then
+  rm -rf /opt/zimbra/mailboxd/work/zimbraAdmin
+fi

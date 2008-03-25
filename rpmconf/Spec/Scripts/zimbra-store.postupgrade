@@ -111,11 +111,6 @@ if [ -d "/opt/zimbra/mailboxd/work/zimbra" ]; then
   find /opt/zimbra/mailboxd/work/zimbra -exec touch {} \; 2> /dev/null
 fi
 
-# make sure the class files get recompiled and are up-to-date
-if [ -d "/opt/zimbra/mailboxd/work/zimbraAdmin" ]; then
-  rm -rf /opt/zimbra/mailboxd/work/zimbraAdmin > /dev/null 2>&1
-fi
-
 PKG=`echo ${RECEIPT_PATH} | sed -e 's|.*/\(zimbra-store.[^/]*pkg\)/.*|\1|' | sed -e 's/\./-/'`
 D=`date +%s`
 echo "${D}: UPGRADED ${PKG}" >> /opt/zimbra/.install_history
