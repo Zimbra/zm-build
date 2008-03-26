@@ -114,18 +114,24 @@ if [ -f /etc/SuSE-release ]; then
 fi
 
 if [ -f /etc/debian_version ]; then
+	i=`uname -m`
+	if [ "x$i" = "xx86_64" ]; then
+		i="_64"
+	else 
+		i=""
+	fi
 	grep "3.1" /etc/debian_version > /dev/null 2>&1
 	if [ $? = 0 ]; then
-		echo "DEBIAN3.1"
+		echo "DEBIAN3.1${i}"
 		exit 0
 	fi
-fi
-
-if [ -f /etc/debian_version ]; then
 	grep "4.0" /etc/debian_version > /dev/null 2>&1
 	if [ $? = 0 ]; then
-		echo "DEBIAN4.0"
+		echo "DEBIAN4.0${i}"
 		exit 0
+	else
+        	echo "UNKNOWN"
+        	exit 0
 	fi
 fi
 
