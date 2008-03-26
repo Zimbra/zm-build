@@ -1643,7 +1643,7 @@ suggestedVersion() {
 
 getPlatformVars() {
   PLATFORM=`bin/get_plat_tag.sh`
-  if [ $PLATFORM = "DEBIAN3.1" -o $PLATFORM = "UBUNTU6" -o $PLATFORM = "UBUNTU7" -o $PLATFORM = "UBUNTU6_64" -o $PLATFORM = "UBUNTU7_64" -o $PLATFORM = "DEBIAN4.0" -o $PLATFORM = "UBUNTUUNKNOWN" ]; then
+  if [ $PLATFORM = "DEBIAN3.1" -o $PLATFORM = "UBUNTU6" -o $PLATFORM = "UBUNTU7" -o $PLATFORM = "UBUNTU6_64" -o $PLATFORM = "UBUNTU7_64" -o $PLATFORM = "DEBIAN4.0" -o $PLATFORM = "UBUNTUUNKNOWN" -o $PLATFORM = "DEBIANUNKNOWN" ]; then
     checkUbuntuRelease
     PACKAGEINST='dpkg -i'
     PACKAGERM='dpkg --purge'
