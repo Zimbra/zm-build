@@ -130,7 +130,7 @@ if [ -f /etc/debian_version ]; then
 		echo "DEBIAN4.0${i}"
 		exit 0
 	else
-        	echo "UNKNOWN"
+        	echo "DEBIANUNKNOWN"
         	exit 0
 	fi
 fi
