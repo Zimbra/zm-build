@@ -3705,41 +3705,49 @@ sub configCreateCert {
 
 sub configInstallCert {
 
-  if ($configStatus{configInstallCert} eq "CONFIGURED") {
-    configLog("configInstallCert");
-    return 0;
-  }
   my $rc;
-  if (isEnabled("zimbra-store")) {
-    if (!-f "$config{mailboxd_keystore}") {
-      progress ("Installing SSL certificates...");
+  if ($configStatus{configInstallCertStore} eq "CONFIGURED" && $needNewCert eq "") {
+    configLog("configInstallCertStore");
+  } elsif (isInstalled("zimbra-store")) {
+    if (! (-f "$config{mailboxd_keystore}" || $needNewCert ne "")) {
+      progress ("Installing mailboxd SSL certificates...");
       $rc = runAsRoot("/opt/zimbra/bin/zmcertmgr deploycrt self $needNewCert");
       if ($rc != 0) {
         progress ( "failed.\n" );
         exit 1;
       } else {
         progress ( "done.\n" );
+        configLog("configInstallCertStore");
       }
+    } else {
+      configLog("configInstallCertStore");
     }
   }
 
-  if (isEnabled("zimbra-mta")) {
+  if ($configStatus{configInstallCert} eq "CONFIGURED" && $needNewCert eq "") {
+    configLog("configInstallCertMTA");
+  } elsif (isInstalled("zimbra-mta")) {
     if (! (-f "/opt/zimbra/conf/smtpd.key" || 
-      -f "/opt/zimbra/conf/smtpd.crt")) {
-      progress ("Installing SSL certificates...");
+      -f "/opt/zimbra/conf/smtpd.crt" || $needNewCert ne ""))  {
+      progress ("Installing MTA SSL certificates...");
       $rc = runAsRoot("/opt/zimbra/bin/zmcertmgr deploycrt self $needNewCert");
       if ($rc != 0) {
         progress ( "failed.\n" );
         exit 1;
       } else {
         progress ( "done.\n" );
+        configLog("configInstallCertMTA");
       }
+    } else {
+      configLog("configInstallCertMTA");
     }
   }
 
-  if (isEnabled("zimbra-ldap")) {
+  if ($configStatus{configInstallCertLDAP} eq "CONFIGURED" && $needNewCert eq "") {
+    configLog("configInstallCertLDAP");
+  } elsif (isInstalled("zimbra-ldap")) {
     if (! (-f "/opt/zimbra/conf/slapd.key" || 
-      -f "/opt/zimbra/conf/slapd.crt")) {
+      -f "/opt/zimbra/conf/slapd.crt" || $needNewCert ne "")) {
       progress ("Installing LDAP SSL certificate...");
       $rc = runAsRoot("/opt/zimbra/bin/zmcertmgr deploycrt self $needNewCert");
       if ($rc != 0) {
@@ -3747,13 +3755,18 @@ sub configInstallCert {
         exit 1;
       } else {
         progress ( "done.\n" );
+        configLog("configInstallCertLDAP");
       }
+    } else {
+      configLog("configInstallCertLDAP");
     }
   }
 
-  if (isEnabled("zimbra-proxy")) {
+  if ($configStatus{configInstallCertProxy} eq "CONFIGURED" && $needNewCert eq "") {
+    configLog("configInstallCertProxy");
+  } elsif (isInstalled("zimbra-proxy")) {
     if (! (-f "/opt/zimbra/conf/nginx.key" || 
-      -f "/opt/zimbra/conf/nginx.crt")) {
+      -f "/opt/zimbra/conf/nginx.crt" || $needNewCert ne "") ) {
       progress ("Installing Proxy SSL certificate...");
       $rc = runAsRoot("/opt/zimbra/bin/zmcertmgr deploycrt self $needNewCert");
       if ($rc != 0) {
@@ -3761,11 +3774,13 @@ sub configInstallCert {
         exit 1;
       } else {
         progress ( "done.\n" );
+        configLog("configInstallCertProxy");
       }
+    } else {
+      configLog("configInstallCertProxy");
     }
   }
 
-  configLog("configInstallCert");
 }
 
 sub configCreateServerEntry {
@@ -4752,7 +4767,7 @@ sub mysqlMemoryPercent {
   my $percent = 30;
   if ($system_mem > 2 && $addr_space eq "32") {
     $percent = int((1.55/$system_mem)*100);
-    #return 10 if ($os eq "darwin");
+    return 10 if ($os eq "darwin");
   }
   return $percent;
 }
