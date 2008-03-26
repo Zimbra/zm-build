@@ -22,11 +22,11 @@
 #
 # Spam Bayes auto-expiry
 #
-20 23 * * * /opt/zimbra/libexec/sa-learn -p /opt/zimbra/conf/salocal.cf --dbpath /opt/zimbra/amavisd/.spamassassin --siteconfigpath /opt/zimbra/conf/spamassassin --force-expire --sync > /dev/null 2>&1 
+20 23 * * * /opt/zimbra/libexec/sa-learn -p /opt/zimbra/conf/salocal.cf --dbpath /opt/zimbra/data/amavisd/.spamassassin --siteconfigpath /opt/zimbra/conf/spamassassin --force-expire --sync > /dev/null 2>&1 
 # 
 # Clean up amavisd/tmp
 #
-15 5,20 * * * find /opt/zimbra/amavisd/tmp -maxdepth 1 -type d -name 'amavis-*' -mtime +1 -exec rm -rf {} \; > /dev/null 2>&1
+15 5,20 * * * find /opt/zimbra/data/amavisd/tmp -maxdepth 1 -type d -name 'amavis-*' -mtime +1 -exec rm -rf {} \; > /dev/null 2>&1
 #
 # Clean up the quarantine dir
 #
