@@ -86,7 +86,7 @@ EOF
 loadConfig() {
   FILE=$1
 
-  if [ ! -f $FILE ]; then
+  if [ ! -f "$FILE" ]; then
     echo ""
     echo "*** ERROR - can't find configuration file $FILE"
     echo ""
@@ -94,7 +94,7 @@ loadConfig() {
   fi
   echo ""
   echo -n "Loading configuration data from $FILE..."
-  source $FILE
+  source "$FILE"
   echo "done"
 }
 
