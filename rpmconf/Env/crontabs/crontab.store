@@ -5,10 +5,6 @@
 #
 30 2 * * * find /opt/zimbra/mailboxd/logs/ -type f -name \*log\* -mtime +8 -exec rm {} \; > /dev/null 2>&1
 #
-# Clean up the quarantine dir
-#
-0 1 * * * find /opt/zimbra/amavisd/quarantine -type f -mtime +7 -exec rm -f {} \; > /dev/null 2>&1
-#
 # Table maintenance
 #
 30 1 * * 7 /opt/zimbra/libexec/zmmaintaintables >> /dev/null 2>&1
