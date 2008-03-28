@@ -130,6 +130,7 @@ $(CORE_DEST_DIR)/doc:
 	cp $(LICENSE_DIR)/zimbra/ypl-full.txt $@/YPL.txt
 	cp $(LICENSE_DIR)/zimbra/zimbra_public_eula_2.1.txt $@/zimbra_public_eula_2.1.txt
 	cp $(SERVICE_DIR)/docs/soap*txt $@
+	cp $(SERVICE_DIR)/docs/rest*txt $@
 
 $(CORE_DEST_DIR)/zimbramon: $(CORE_DEST_DIR)/zimbramon/lib $(CORE_DEST_DIR)/zimbramon/crontabs $(CORE_DEST_DIR) 
 	@echo "*** Creating zimbramon"
