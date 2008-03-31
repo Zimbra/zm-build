@@ -21,7 +21,7 @@ if [ -d "/opt/zimbra/amavisd/tmp" ]; then
 fi
 
 rm -f /opt/zimbra/amavisd
-ln -s /opt/zimbra/amavisd-new-2.5.2 /opt/zimbra/amavisd
+ln -s /opt/zimbra/amavisd-new-2.5.4 /opt/zimbra/amavisd
 
 rm -f /opt/zimbra/dspam
 ln -s /opt/zimbra/dspam-3.8.0 /opt/zimbra/dspam
