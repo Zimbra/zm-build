@@ -185,6 +185,7 @@ my @versionOrder = (
   "4.5.7_GA",
   "4.5.8_GA",
   "4.5.9_GA",
+  "4.6.1_RC1",
   "4.5.10_GA",
   "4.5.11_GA",
   "5.0.0_BETA1",
@@ -1428,7 +1429,7 @@ sub upgrade460GA {
 }
 sub upgrade461RC1 {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
-	main::progress("Updating from 4.6.0_RC1\n");
+	main::progress("Updating from 4.6.1_RC1\n");
 	return 0;
 }
 
