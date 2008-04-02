@@ -2088,6 +2088,16 @@ sub upgrade505GA {
         main::runAsZimbra("$ZMPROV mc $cos $attr \'$attrs{$attr}\'");
       }
     }
+  #bug 26602
+    my $proxy = main::getLdapConfigValue("zimbraMailReferMode");
+    main::runAsZimbra("$ZMPROV mcf zimbraMailReferMode reverse-proxied")
+    if (uc($proxy) eq "NEVER");
+  }
+  #bug 26602
+  if (main::isInstalled("zimbra-store")) {
+     my $proxy = main::getLdapServerValue("zimbraMailReferMode");
+     main::runAsZimbra("$ZMPROV ms $hn zimbraMailReferMode reverse-proxied")
+     if (uc($proxy) eq "NEVER");
   }
 	return 0;
 }
