@@ -4031,7 +4031,7 @@ sub configSetProxyPrefs {
                (($config{POPSSLPORT} == 995 || $config{POPSSLPORT} == 7995) &&
                 ($config{POPSSLPROXYPORT} == 995 || $config{POPSSLPROXYPORT} == 7995)))
            {
-             runAsRoot("/opt/zimbra/libexec/zmproxyinit -m -e $config{HOSTNAME}");
+             runAsZimbra("/opt/zimbra/libexec/zmproxyinit -m -e $config{HOSTNAME}");
            }
            runAsZimbra("$ZMPROV ms $config{HOSTNAME} zimbraImapCleartextLoginEnabled TRUE");
            runAsZimbra("$ZMPROV ms $config{HOSTNAME} zimbraPop3CleartextLoginEnabled TRUE");
@@ -4045,7 +4045,7 @@ sub configSetProxyPrefs {
             (($config{POPSSLPORT} == 995 || $config{POPSSLPORT} == 7995) &&
              ($config{POPSSLPROXYPORT} == 995 || $config{POPSSLPROXYPORT} == 7995)))
             {
-               runAsRoot("/opt/zimbra/libexec/zmproxyinit -m -d $config{HOSTNAME}");
+               runAsZimbra("/opt/zimbra/libexec/zmproxyinit -m -d $config{HOSTNAME}");
             }
         }
         if ($config{HTTPPROXY} eq "TRUE" ) {
@@ -4054,7 +4054,7 @@ sub configSetProxyPrefs {
                (($config{HTTPSPORT} == 443 || $config{HTTPSPORT} == 8443) &&
                 ($config{HTTPSPROXYPORT} == 8443 || $config{HTTPSPROXYPORT} == 8443)))
            {
-             runAsRoot("/opt/zimbra/libexec/zmproxyinit -w -e $config{HOSTNAME}");
+             runAsZimbra("/opt/zimbra/libexec/zmproxyinit -w -e $config{HOSTNAME}");
            }
         } else {
            if ((($config{HTTPPORT} == 80 || $config{HTTPPORT} == 8080) &&
@@ -4062,7 +4062,7 @@ sub configSetProxyPrefs {
                (($config{HTTPSPORT} == 443 || $config{HTTPSPORT} == 8443) &&
                 ($config{HTTPSPROXYPORT} == 8443 || $config{HTTPSPROXYPORT} == 8443)))
            {
-             runAsRoot("/opt/zimbra/libexec/zmproxyinit -w -d $config{HOSTNAME}");
+             runAsZimbra("/opt/zimbra/libexec/zmproxyinit -w -d $config{HOSTNAME}");
            }
         }
      }
@@ -4076,14 +4076,14 @@ sub configSetProxyPrefs {
          (($config{POPSSLPORT} == 995 || $config{POPSSLPORT} == 7995) &&
           ($config{POPSSLPROXYPORT} == 995 || $config{POPSSLPROXYPORT} == 7995)))
       {
-        runAsRoot("/opt/zimbra/libexec/zmproxyinit -m -d $config{HOSTNAME}");
+        runAsZimbra("/opt/zimbra/libexec/zmproxyinit -m -d $config{HOSTNAME}");
       }
       if ((($config{HTTPPORT} == 80 || $config{HTTPPORT} == 8080) &&
            ($config{HTTPPROXYPORT} == 80 || $config{HTTPPROXYPORT} == 8080)) &&
           (($config{HTTPSPORT} == 443 || $config{HTTPSPORT} == 8443) &&
            ($config{HTTPSPROXYPORT} == 8443 || $config{HTTPSPROXYPORT} == 8443)))
       {
-        runAsRoot("/opt/zimbra/libexec/zmproxyinit -w -d $config{HOSTNAME}");
+        runAsZimbra("/opt/zimbra/libexec/zmproxyinit -w -d $config{HOSTNAME}");
       }
    }
 }
