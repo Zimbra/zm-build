@@ -3703,6 +3703,23 @@ sub configCreateCert {
   configLog("configCreateCert");
 }
 
+sub configSaveCert {
+
+  if ($configStatus{configSaveCert} eq "CONFIGURED") {
+    configLog("configSaveCert");
+    return 0;
+  }
+  progress ( "Saving SSL Certificate in ldap ..." );
+  my $rc = runAsRoot("/opt/zimbra/bin/zmcertmgr savecrt self");
+  if ($rc != 0) {
+    progress ( "failed.\n" );
+    exit 1;
+  } else {
+    progress ( "done.\n" );
+  }
+  configLog("configSaveCert");
+}
+
 sub configInstallCert {
 
   my $rc;
@@ -4519,6 +4536,8 @@ sub applyConfig {
   configSaveCA();
 
   configCreateServerEntry();
+
+  configSaveCert();
 
   if (isEnabled("zimbra-store")) {
     configSpellServer();
