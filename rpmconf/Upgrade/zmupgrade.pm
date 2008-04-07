@@ -125,14 +125,14 @@ my %updateFuncs = (
   "4.5.5_GA" => \&upgrade455GA,
   "4.5.6_GA" => \&upgrade456GA,
   "4.5.7_GA" => \&upgrade457GA,
-  "4.6.0_BETA" => \&upgrade460BETA,
-  "4.6.0_RC1" => \&upgrade460RC1,
-  "4.6.0_GA" => \&upgrade460GA,
-  "4.6.1_RC1" => \&upgrade461RC1,
   "4.5.8_GA" => \&upgrade458GA,
   "4.5.9_GA" => \&upgrade459GA,
   "4.5.10_GA" => \&upgrade4510GA,
   "4.5.11_GA" => \&upgrade4511GA,
+  "4.6.0_BETA" => \&upgrade460BETA,
+  "4.6.0_RC1" => \&upgrade460RC1,
+  "4.6.0_GA" => \&upgrade460GA,
+  "4.6.1_RC1" => \&upgrade461RC1,
   "5.0.0_BETA1" => \&upgrade500BETA1,
   "5.0.0_BETA2" => \&upgrade500BETA2,
   "5.0.0_BETA3" => \&upgrade500BETA3,
@@ -185,7 +185,6 @@ my @versionOrder = (
   "4.5.7_GA",
   "4.5.8_GA",
   "4.5.9_GA",
-  "4.6.1_RC1",
   "4.5.10_GA",
   "4.5.11_GA",
   "5.0.0_BETA1",
@@ -345,8 +344,6 @@ sub upgrade {
 		main::progress("This appears to be 4.6.0_RC1\n");
 	} elsif ($startVersion eq "4.6.0_GA") {
 		main::progress("This appears to be 4.6.0_GA\n");
-	} elsif ($startVersion eq "4.6.1_RC1") {
-		main::progress("This appears to be 4.6.1_RC1\n");
 	} elsif ($startVersion eq "5.0.0_BETA1") {
 		main::progress("This appears to be 5.0.0_BETA1\n");
 	} elsif ($startVersion eq "5.0.0_BETA2") {
@@ -1429,7 +1426,7 @@ sub upgrade460GA {
 }
 sub upgrade461RC1 {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
-	main::progress("Updating from 4.6.1_RC1\n");
+	main::progress("Updating from 4.6.0_RC1\n");
 	return 0;
 }
 
