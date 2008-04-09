@@ -1035,6 +1035,9 @@ sub setDefaults {
 
   }
 
+  $config{zimbra_require_interprocess_security} = 1;
+  $config{ZIMBRA_REQ_SECURITY}="yes";
+
   if (isEnabled("zimbra-ldap")) {
     progress "setting defaults for zimbra-ldap.\n" if $options{d};
     $config{DOCREATEDOMAIN} = "yes" if $newinstall;
@@ -1319,6 +1322,13 @@ sub setDefaultsFromLocalConfig {
     if (getLocalConfig("mailboxd_truststore_password") ne "");
   $config{zimbra_ldap_userdn} = getLocalConfig("zimbra_ldap_userdn")
     if (getLocalConfig("zimbra_ldap_userdn") ne "");
+
+  $config{zimbra_require_interprocess_security} = getLocalConfig("zimbra_require_interprocess_security");
+  if ($config{zimbra_require_interprocess_security}) {
+     $config{ZIMBRA_REQ_SECURITY} = "yes";
+  } else {
+     $config{ZIMBRA_REQ_SECURITY} = "no";
+  }
 
   $config{ldap_dit_base_dn_config} = getLocalConfig("ldap_dit_base_dn_config");
   $config{ldap_dit_base_dn_config} = "cn=zimbra" 
@@ -2341,6 +2351,19 @@ sub createCommonMenu {
       };
     $i++;
   }
+  # interprocess security
+  $$lm{menuitems}{$i} = {
+    "prompt" => "Require secure interprocess communications (SSL/TLS):",
+    "var" => \$config{ZIMBRA_REQ_SECURITY},
+    "callback" => \&toggleYN,
+    "arg" => "ZIMBRA_REQ_SECURITY",
+  };
+  if ($config{ZIMBRA_REQ_SECURITY} eq "yes") {
+     $config{zimbra_require_interprocess_security} = 1;
+  } else {
+     $config{zimbra_require_interprocess_security} = 0;
+     $starttls=0;
+  }
   $$lm{menuitems}{$i} = { 
     "prompt" => "TimeZone:", 
     "var" => \$config{zimbraPrefTimeZoneId},
@@ -3207,12 +3230,15 @@ sub checkLdapBind() {
     return 1;
   }
 
-  if ($ldap_secure ne "s") {
+  if ($ldap_secure ne "s" && $config{zimbra_require_interprocess_security}) {
     $starttls = 1;
     my $result = $ldap->start_tls(verify=>'none');
     if ($result->code()) {
       detail("Unable to startTLS: $!\n");
-      return 1;
+      detail("Disabling the requirement for interprocess security.\n");
+      $config{zimbra_require_interprocess_security} = 0;
+      $config{ZIMBRA_REQ_SECURITY}="no";
+      $starttls = 0;
     }
   } else {
     $starttls = 0;
@@ -3226,6 +3252,7 @@ sub checkLdapBind() {
     detail ("Verfied ldap running at $ldap_url\n");
     setLocalConfig ("ldap_url", $ldap_url);
     setLocalConfig ("ldap_starttls_supported", $starttls);
+    setLocalConfig ("zimbra_require_interprocess_security", $config{zimbra_require_interprocess_security});
     return 0;
   }
 
@@ -3329,6 +3356,7 @@ sub configLCValues {
 
   progress ("Setting local config values...");
   setLocalConfig ("zimbra_server_hostname", lc($config{HOSTNAME}));
+  setLocalConfig ("zimbra_require_interprocess_security", $config{zimbra_require_interprocess_security});
 
   if ($config{LDAPPORT} == 636) {
     setLocalConfig ("ldap_master_url", "ldaps://$config{LDAPHOST}:$config{LDAPPORT}");
@@ -3338,10 +3366,14 @@ sub configLCValues {
     setLocalConfig ("ldap_master_url", "ldap://$config{LDAPHOST}:$config{LDAPPORT}");
     if ($config{ldap_url} eq "") { 
       setLocalConfig ("ldap_url", "ldap://$config{LDAPHOST}:$config{LDAPPORT}");
-      setLocalConfig ("ldap_starttls_supported", 1);
+      if ($config{zimbra_require_interprocess_security}) {
+        setLocalConfig ("ldap_starttls_supported", 1);
+      } else {
+        setLocalConfig ("ldap_starttls_supported", 0);
+      }
     } else {
       setLocalConfig ("ldap_url", "$config{ldap_url}");
-      if ($config{ldap_url} !~ /^ldaps/i) {
+      if ($config{ldap_url} !~ /^ldaps/i && $config{zimbra_require_interprocess_security}) {
         setLocalConfig ("ldap_starttls_supported", 1);
       } else {
         setLocalConfig ("ldap_starttls_supported", 0);
