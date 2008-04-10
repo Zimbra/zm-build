@@ -73,7 +73,7 @@ elif [ x"$PLAT" = "xFC6" ]; then
   sed -i -e 's:\(^Defaults.*requiretty\):#\1:' /etc/sudoers
 fi
 
-if [ x"$PLAT" = "xUBUNTU6" -o x"$PLAT" = "xUBUNTU6_64" ]; then
+if [ x"$PLAT" = "xUBUNTU6" -o x"$PLAT" = "xUBUNTU6_64" -o x"$PLAT" = "xDEBIAN4.0" -o x"$PLAT" = "xDEBIAN4.0_64" ]; then
   sed -i -e 's/# session    required   pam_limits.so/session    required   pam_limits.so/' /etc/pam.d/su
 fi
 
