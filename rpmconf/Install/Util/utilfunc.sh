@@ -419,7 +419,7 @@ EOF
   echo "Checking for standard system perl..."
   for i in $PRESUG_PACKAGES; do
     echo -n "    $i..."
-    $PKGVERSION="notfound"
+    PKGVERSION="notfound"
     suggestedVersion $i
     if [ "x$PKGINSTALLED" != "x" ]; then
        echo "FOUND standard system $i"
