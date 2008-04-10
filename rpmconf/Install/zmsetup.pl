@@ -2353,7 +2353,7 @@ sub createCommonMenu {
   }
   # interprocess security
   $$lm{menuitems}{$i} = {
-    "prompt" => "Require secure interprocess communications (SSL/TLS):",
+    "prompt" => "Require secure interprocess communications:",
     "var" => \$config{ZIMBRA_REQ_SECURITY},
     "callback" => \&toggleYN,
     "arg" => "ZIMBRA_REQ_SECURITY",
