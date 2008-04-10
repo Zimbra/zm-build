@@ -2102,6 +2102,7 @@ sub upgrade505GA {
      my $proxy = main::getLdapServerValue("zimbraMailReferMode");
      main::runAsZimbra("$ZMPROV ms $hn zimbraMailReferMode reverse-proxied")
      if (uc($proxy) eq "NEVER");
+     main::runAsZimbra("$ZMPROV ms $hn zimbraReverseProxyLookupTarget TRUE");
   }
 	return 0;
 }
