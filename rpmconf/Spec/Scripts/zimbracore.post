@@ -75,6 +75,10 @@ fi
 
 if [ x"$PLAT" = "xUBUNTU6" -o x"$PLAT" = "xUBUNTU6_64" -o x"$PLAT" = "xDEBIAN4.0" -o x"$PLAT" = "xDEBIAN4.0_64" ]; then
   sed -i -e 's/# session    required   pam_limits.so/session    required   pam_limits.so/' /etc/pam.d/su
+  egrep -v -e '^session	required	pam_limits.so' /etc/pam.d/common-session >/tmp/common-session
+  echo "session	required	pam_limits.so" >> /tmp/common-session
+  mv -f /tmp/common-session /etc/pam.d/common-session
+  chmod 640 /etc/pam.d/common-session
 fi
 
 if [ -f /etc/debian_version ]; then
