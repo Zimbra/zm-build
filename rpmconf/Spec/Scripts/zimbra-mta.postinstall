@@ -22,7 +22,7 @@ rm -f /opt/zimbra/dspam
 ln -s /opt/zimbra/dspam-3.8.0 /opt/zimbra/dspam
 
 rm -f /opt/zimbra/postfix
-ln -s /opt/zimbra/postfix-2.4.3.4z /opt/zimbra/postfix
+ln -s /opt/zimbra/postfix-2.4.7.5z /opt/zimbra/postfix
 
 rm -f /opt/zimbra/clamav
 ln -s /opt/zimbra/clamav-0.92.1 /opt/zimbra/clamav
@@ -63,7 +63,7 @@ fi
 SUDOMODE=`perl -e 'my $mode=(stat("/etc/sudoers"))[2];printf("%04o\n",$mode & 07777);'`
 egrep -v '^%zimbra.*postfix' /etc/sudoers > /tmp/sudoers
 mv -f /tmp/sudoers /etc/sudoers
-echo "%zimbra   ALL=NOPASSWD:/opt/zimbra/postfix-2.4.3.4z/sbin/postfix, /opt/zimbra/postfix-2.4.3.4z/sbin/postalias, /opt/zimbra/postfix-2.4.3.4z/sbin/qshape.pl, /opt/zimbra/postfix-2.4.3.4z/sbin/postconf,/opt/zimbra/postfix-2.4.3.4z/sbin/postsuper" >> /etc/sudoers
+echo "%zimbra   ALL=NOPASSWD:/opt/zimbra/postfix-2.4.7.5z/sbin/postfix, /opt/zimbra/postfix-2.4.7.5z/sbin/postalias, /opt/zimbra/postfix-2.4.7.5z/sbin/qshape.pl, /opt/zimbra/postfix-2.4.7.5z/sbin/postconf,/opt/zimbra/postfix-2.4.7.5z/sbin/postsuper" >> /etc/sudoers
 
 egrep -v '^%zimbra.*zmqstat' /etc/sudoers > /tmp/sudoers
 mv -f /tmp/sudoers /etc/sudoers

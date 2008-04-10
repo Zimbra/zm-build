@@ -22,7 +22,7 @@ export JAVA_HOME
 JAVA_JVM_VERSION=1.5
 export JAVA_JVM_VERSION
 
-PATH=/opt/zimbra/bin:/opt/zimbra/zimbramon:/opt/zimbra/postfix-2.4.3.4z/sbin:/opt/zimbra/openldap/bin:/opt/zimbra/snmp/bin:/opt/zimbra/sleepycat/bin:/opt/zimbra/openssl/bin:${JAVA_HOME}/bin:${PATH}
+PATH=/opt/zimbra/bin:/opt/zimbra/zimbramon:/opt/zimbra/postfix/sbin:/opt/zimbra/openldap/bin:/opt/zimbra/snmp/bin:/opt/zimbra/sleepycat/bin:/opt/zimbra/openssl/bin:${JAVA_HOME}/bin:${PATH}
 export PATH
 
 unset LD_LIBRARY_PATH

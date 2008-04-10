@@ -2093,6 +2093,10 @@ sub upgrade505GA {
     main::runAsZimbra("$ZMPROV mcf zimbraMailReferMode reverse-proxied")
     if (uc($proxy) eq "NEVER");
   }
+  #bug 24827,26544
+  if (main::isInstalled("zimbra-mta")) {
+    &updatePostfixLC("2.4.3.4z", "2.4.7.5z");
+  }
   #bug 26602
   if (main::isInstalled("zimbra-store")) {
      my $proxy = main::getLdapServerValue("zimbraMailReferMode");
@@ -2306,6 +2310,24 @@ sub getInstalledPackages {
 
 }
 
+sub updatePostfixLC {
+  my ($fromVersion, $toVersion) = @_;
+
+  # update localconfig vars
+  my ($var,$val);
+  foreach $var qw(version command_directory daemon_directory mailq_path manpage_directory newaliases_path queue_directory sendmail_path) {
+    $val = main::getLocalConfig("postfix_${var}");
+    if ($val eq $toVersion) {
+      next;
+    }
+    if ($val =~ m/postfix-$toVersion/) {
+      next;
+    }
+    $val =~ s/$fromVersion//;
+    $val = $toVersion if ($var eq "version");
+    main::setLocalConfig("postfix_${var}", "$val"); 
+  }
+}
 
 sub movePostfixQueue {
   my ($fromVersion,$toVersion) = @_;
