@@ -73,6 +73,10 @@ elif [ x"$PLAT" = "xFC6" ]; then
   sed -i -e 's:\(^Defaults.*requiretty\):#\1:' /etc/sudoers
 fi
 
+if [ x"$PLAT" = "xUBUNTU6" -o x"$PLAT" = "xUBUNTU6_64" ]; then
+  sed -i -e 's/# session    required   pam_limits.so/session    required   pam_limits.so/' /etc/pam.d/su
+fi
+
 if [ -f /etc/debian_version ]; then
 	if [ -f /etc/ld.so.conf ]; then
 		mv -f /etc/ld.so.conf /etc/ld.so.conf.$$
