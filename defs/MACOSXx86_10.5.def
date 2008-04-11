@@ -1,0 +1,27 @@
+# Definitions for MACOSX
+
+
+PACKAGING_COMMAND := /Developer/Applications/Utilities/PackageMaker.app/Contents/MacOS/PackageMaker
+
+PACKAGING_OPTIONS = -build -v -p $(PACKAGE_DIR)/$(CUR_PACKAGE_NAME).$(PACKAGE_EXT) \
+	-f $(CUR_DEST_ROOT) -b /tmp -r $(BUILD_ROOT)/resources/$(CUR_PACKAGE_NAME) \
+	-i $(BUILD_ROOT)/$(CUR_PACKAGE_NAME).Info.plist \
+	-d $(BUILD_ROOT)/$(CUR_PACKAGE_NAME).Description.plist
+
+PACKAGE_EXT := pkg
+
+PLATFORM_CORE_COMPONENTS = \
+	$(CORE_DEST_DIR)/lib/libexpat.dylib \
+	$(CORE_DEST_DIR)/lib/libpopt.0.dylib
+
+include $(DEFS_DIR)/plat_common.def
+
+JAVA_BINARY := /usr/bin/java
+
+MYSQL_VERSION   := standard-$(MYSQL_VERSION_STRING)-apple-darwin8.2.0-i686
+MYSQL_CLIENT_VERSION := standard-$(MYSQL_VERSION_STRING)-clientlibs
+
+BUNDLE_EXT := dmg
+
+JNI_EXT := jnilib
+
