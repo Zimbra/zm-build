@@ -2077,6 +2077,7 @@ sub upgrade505GA {
 	  my @coses = `su - zimbra -c "$ZMPROV gac"`;
     my %attrs = ( zimbraPrefCalendarReminderDuration1 => "-PT15M",
                zimbraFeatureNewAddrBookEnabled => "TRUE",
+               zimbraSmtpSendAddMailer =>  "TRUE",
                zimbraPrefGalSearchEnabled => "TRUE",
                zimbraInterceptSendHeadersOnly => "FALSE",
                zimbraInterceptFrom => 'Postmaster <postmaster@\${ACCOUNT_DOMAIN}>',
