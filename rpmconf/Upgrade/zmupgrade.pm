@@ -2089,7 +2089,14 @@ sub upgrade505GA {
         main::runAsZimbra("$ZMPROV mc $cos $attr \'$attrs{$attr}\'");
       }
     }
-  #bug 26602
+    main::runAsZimbra("$ZMPROV mcf zimbraSSLExcludeCipherSuites SSL_DHE_DSS_EXPORT_WITH_DES40_CBC_SHA");
+    mail::runASZimbra("$ZMPROV mcf +zimbraSSLExcludeCipherSuites SSL_DHE_DSS_WITH_DES_CBC_SHA");
+    mail::runASZimbra("$ZMPROV mcf +zimbraSSLExcludeCipherSuites SSL_DHE_RSA_EXPORT_WITH_DES40_CBC_SHA");
+    mail::runASZimbra("$ZMPROV mcf +zimbraSSLExcludeCipherSuites SSL_DHE_RSA_WITH_DES_CBC_SHA");
+    mail::runASZimbra("$ZMPROV mcf +zimbraSSLExcludeCipherSuites SSL_RSA_EXPORT_WITH_DES40_CBC_SHA");
+    mail::runASZimbra("$ZMPROV mcf +zimbraSSLExcludeCipherSuites SSL_RSA_EXPORT_WITH_RC4_40_MD5");
+    mail::runASZimbra("$ZMPROV mcf +zimbraSSLExcludeCipherSuites SSL_RSA_WITH_DES_CBC_SHA");
+    #bug 26602
     my $proxy = main::getLdapConfigValue("zimbraMailReferMode");
     main::runAsZimbra("$ZMPROV mcf zimbraMailReferMode reverse-proxied")
     if (uc($proxy) eq "NEVER");
