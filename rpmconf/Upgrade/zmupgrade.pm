@@ -2099,6 +2099,8 @@ sub upgrade505GA {
     mail::runASZimbra("$ZMPROV mcf +zimbraSSLExcludeCipherSuites SSL_RSA_EXPORT_WITH_DES40_CBC_SHA");
     mail::runASZimbra("$ZMPROV mcf +zimbraSSLExcludeCipherSuites SSL_RSA_EXPORT_WITH_RC4_40_MD5");
     mail::runASZimbra("$ZMPROV mcf +zimbraSSLExcludeCipherSuites SSL_RSA_WITH_DES_CBC_SHA");
+    # 24757
+    mail::runASZimbra("$ZMPROV mcf zimbraReverseProxySSLCiphers HIGH");
     #bug 26602
     my $proxy = main::getLdapConfigValue("zimbraMailReferMode");
     main::runAsZimbra("$ZMPROV mcf zimbraMailReferMode reverse-proxied")
