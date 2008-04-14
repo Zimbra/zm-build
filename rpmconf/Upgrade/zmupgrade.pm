@@ -2334,7 +2334,7 @@ sub updatePostfixLC {
     if ($val =~ m/postfix-$toVersion/) {
       next;
     }
-    $val =~ s/$fromVersion//;
+    $val =~ s/postfix-$fromVersion/postfix/;
     $val = $toVersion if ($var eq "version");
     main::setLocalConfig("postfix_${var}", "$val"); 
   }
