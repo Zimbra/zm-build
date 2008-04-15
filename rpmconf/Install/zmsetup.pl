@@ -2358,7 +2358,7 @@ sub createCommonMenu {
     "callback" => \&toggleYN,
     "arg" => "ZIMBRA_REQ_SECURITY",
   };
-  $i++
+  $i++;
   if ($config{ZIMBRA_REQ_SECURITY} eq "yes") {
      $config{zimbra_require_interprocess_security} = 1;
   } else {
