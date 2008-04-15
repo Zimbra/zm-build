@@ -2084,8 +2084,8 @@ sub upgrade505GA {
                zimbraPrefGalSearchEnabled => "TRUE",
                zimbraInterceptSendHeadersOnly => "FALSE",
                zimbraInterceptFrom => 'Postmaster <postmaster@\${ACCOUNT_DOMAIN}>',
-               zimbraInterceptSubject => 'Intercepted message from \${ACCOUNT_ADDRESS}: \${MESSAGE_SUBJECT}',
-               zimbraInterceptBody => 'Intercepted message from \${ACCOUNT_ADDRESS}.\${NEWLINE}Operation=\${OPERATION}, folder=\${FOLDER_NAME}, folder ID=\${FOLDER_ID}.');
+               zimbraInterceptSubject => 'Intercepted message for \${ACCOUNT_ADDRESS}: \${MESSAGE_SUBJECT}',
+               zimbraInterceptBody => 'Intercepted message for \${ACCOUNT_ADDRESS}.\${NEWLINE}Operation=\${OPERATION}, folder=\${FOLDER_NAME}, folder ID=\${FOLDER_ID}.');
 	  foreach my $cos (@coses) {
 		  chomp $cos;
       foreach my $attr (keys %attrs) {
