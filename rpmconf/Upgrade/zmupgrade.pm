@@ -2080,7 +2080,6 @@ sub upgrade505GA {
 	  my @coses = `su - zimbra -c "$ZMPROV gac"`;
     my %attrs = ( zimbraPrefCalendarReminderDuration1 => "-PT15M",
                zimbraFeatureNewAddrBookEnabled => "TRUE",
-               zimbraSmtpSendAddMailer =>  "TRUE",
                zimbraPrefGalSearchEnabled => "TRUE",
                zimbraInterceptSendHeadersOnly => "FALSE",
                zimbraInterceptFrom => 'Postmaster <postmaster@\${ACCOUNT_DOMAIN}>',
@@ -2101,6 +2100,8 @@ sub upgrade505GA {
     main::runAsZimbra("$ZMPROV mcf +zimbraSSLExcludeCipherSuites SSL_RSA_WITH_DES_CBC_SHA");
     # 24757
     main::runAsZimbra("$ZMPROV mcf zimbraReverseProxySSLCiphers HIGH");
+    # 24153
+    main::runAsZimbra("$ZMPROV mcf zimbraSmtpSendAddMailer TRUE");
     #bug 26602
     my $proxy = main::getLdapConfigValue("zimbraMailReferMode");
     main::runAsZimbra("$ZMPROV mcf zimbraMailReferMode reverse-proxied")
