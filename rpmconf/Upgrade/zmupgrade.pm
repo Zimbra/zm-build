@@ -2103,6 +2103,12 @@ sub upgrade505GA {
     my $proxy = main::getLdapConfigValue("zimbraMailReferMode");
     main::runAsZimbra("$ZMPROV mcf zimbraMailReferMode reverse-proxied")
     if (uc($proxy) eq "NEVER");
+    #bug 27003
+    main::runAsZimbra("$ZMPROV mcf zimbraReverseProxyImapStartTlsMode only");
+    main::runAsZimbra("$ZMPROV mcf zimbraReverseProxyPop3StartTlsMode only");
+    main::runAsZimbra("$ZMPROV mcf zimbraReverseProxyImapSaslGssapiEnabled FALSE");
+    main::runAsZimbra("$ZMPROV mcf zimbraReverseProxyPop3SaslGssapiEnabled FALSE");
+    main::runAsZimbra("$ZMPROV mcf zimbraReverseProxyHttpPortAttribute zimbraMailPort");
   }
   #bug 24827,26544
   if (main::isInstalled("zimbra-mta")) {
