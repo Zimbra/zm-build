@@ -2096,7 +2096,7 @@ sub upgrade505GA {
     main::runAsZimbra("$ZMPROV mcf +zimbraSSLExcludeCipherSuites SSL_RSA_EXPORT_WITH_RC4_40_MD5");
     main::runAsZimbra("$ZMPROV mcf +zimbraSSLExcludeCipherSuites SSL_RSA_WITH_DES_CBC_SHA");
     # 24757
-    main::runAsZimbra("$ZMPROV mcf zimbraReverseProxySSLCiphers HIGH");
+    main::runAsZimbra("$ZMPROV mcf zimbraReverseProxySSLCiphers '!SSLv2:!MD5:HIGH'");
     # 24153
     main::runAsZimbra("$ZMPROV mcf zimbraSmtpSendAddMailer TRUE");
     #bug 26602
