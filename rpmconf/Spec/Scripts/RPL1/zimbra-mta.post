@@ -35,7 +35,7 @@ I=`hostname -i`
 SUDOMODE=`perl -e 'my $mode=(stat("/etc/sudoers"))[2];printf("%04o\n",$mode & 07777);'`
 egrep -v '^%zimbra.*postfix' /etc/sudoers > /tmp/sudoers
 mv -f /tmp/sudoers /etc/sudoers
-echo "%zimbra   ALL=NOPASSWD:/opt/zimbra/postfix-2.4.7.5z/sbin/postfix, /opt/zimbra/postfix-2.4.7.5z/sbin/postalias, /opt/zimbra/postfix-2.4.7.5z/sbin/qshape.pl, /opt/zimbra/postfix-2.4.7.5z/sbin/postconf,/opt/zimbra/postfix-2.4.7.5z/sbin/postsuper" >> /etc/sudoers
+echo "%zimbra   ALL=NOPASSWD:/opt/zimbra/postfix/sbin/postfix, /opt/zimbra/postfix/sbin/postalias, /opt/zimbra/postfix/sbin/qshape.pl, /opt/zimbra/postfix/sbin/postconf,/opt/zimbra/postfix/sbin/postsuper" >> /etc/sudoers
 
 egrep -v '^%zimbra.*zmqstat' /etc/sudoers > /tmp/sudoers
 mv -f /tmp/sudoers /etc/sudoers
