@@ -197,7 +197,7 @@ if [ x$UNINSTALL == "xyes" ]; then
     echo -n "Stopping all zimbra processes..."
     su $ZIMBRA_USER -c '/opt/zimbra/bin/zmcontrol stop > /dev/null 2>&1'
     # make sure all processes are really stopped
-    ps -aux  |grep $ZIMBRA_USER | egrep -v "install|grep" | awk '{print $2}' | xargs kill 2> /dev/null
+    ps aux  |grep $ZIMBRA_USER | egrep -v "install|grep" | awk '{print $2}' | xargs kill 2> /dev/null
     echo "done."
 
     # remove crontab
