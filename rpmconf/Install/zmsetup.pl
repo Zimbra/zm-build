@@ -2283,7 +2283,7 @@ sub isFoss {
 }
 
 sub isLicenseInstalled {
- return(runAsZimbra("zmlicense -c") ? 0 : 1); 
+ return(runAsZimbra("/opt/zimbra/bin/zmlicense -c") ? 0 : 1); 
 }
 
 sub createPackageMenu {
