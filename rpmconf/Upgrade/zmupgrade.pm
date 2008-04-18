@@ -146,6 +146,7 @@ my %updateFuncs = (
   "5.0.3_GA" => \&upgrade503GA,
   "5.0.4_GA" => \&upgrade504GA,
   "5.0.5_GA" => \&upgrade505GA,
+  "5.0.6_GA" => \&upgrade506GA,
   "5.5.0_GA" => \&upgrade550GA,
 );
 
@@ -200,6 +201,7 @@ my @versionOrder = (
   "5.0.3_GA",
   "5.0.4_GA",
   "5.0.5_GA",
+  "5.0.6_GA",
   "5.5.0_GA",
 );
 
@@ -370,6 +372,8 @@ sub upgrade {
 		main::progress("This appears to be 5.0.4_GA\n");
 	} elsif ($startVersion eq "5.0.5_GA") {
 		main::progress("This appears to be 5.0.5_GA\n");
+	} elsif ($startVersion eq "5.0.6_GA") {
+		main::progress("This appears to be 5.0.6_GA\n");
 	} elsif ($startVersion eq "5.5.0_GA") {
 		main::progress("This appears to be 5.5.0_GA\n");
 	} else {
@@ -2125,6 +2129,22 @@ sub upgrade505GA {
      if (uc($proxy) eq "NEVER");
      main::runAsZimbra("$ZMPROV ms $hn zimbraReverseProxyLookupTarget TRUE");
   }
+	return 0;
+}
+sub upgrade506GA {
+	my ($startBuild, $targetVersion, $targetBuild) = (@_);
+	main::progress("Updating from 5.0.6_GA\n");
+  if (main::isInstalled("zimbra-ldap")) {
+	  my @coses = `su - zimbra -c "$ZMPROV gac"`;
+    my %attrs = ( zimbraPrefZimletTreeOpen => "FALSE" );
+	  foreach my $cos (@coses) {
+		  chomp $cos;
+      foreach my $attr (keys %attrs) {
+        main::runAsZimbra("$ZMPROV mc $cos $attr \'$attrs{$attr}\'");
+      }
+    }
+  }
+
 	return 0;
 }
 
