@@ -2144,6 +2144,10 @@ sub upgrade506GA {
       }
     }
   }
+  #bug 24827,26544
+  if (main::isInstalled("zimbra-mta")) {
+    &updatePostfixLC("2.4.3.4z", "2.4.7.5z");
+  }
 
 	return 0;
 }
@@ -2358,17 +2362,15 @@ sub updatePostfixLC {
   # update localconfig vars
   my ($var,$val);
   foreach $var qw(version command_directory daemon_directory mailq_path manpage_directory newaliases_path queue_directory sendmail_path) {
+    if ($var eq "version") {
+      $val = $toVersion;
+      main::setLocalConfig("postfix_${var}", "$val");
+      next;
+    }
+
     $val = main::getLocalConfig("postfix_${var}");
-    if ($val eq $toVersion) {
-      next;
-    }
-    if ($val =~ m/postfix-$toVersion/) {
-      next;
-    }
     $val =~ s/postfix-$fromVersion/postfix/;
-    $val =~ s/postfix-\${postfix_version}/postfix/;
-    $val = $toVersion if ($var eq "version");
-    main::setLocalConfig("postfix_${var}", "$val"); 
+    $val =~ s/postfix-$toVersion/postfix/;
   }
 }
 
