@@ -2371,6 +2371,7 @@ sub updatePostfixLC {
     $val = main::getLocalConfig("postfix_${var}");
     $val =~ s/postfix-$fromVersion/postfix/;
     $val =~ s/postfix-$toVersion/postfix/;
+    main::setLocalConfig("postfix_${var}", "$val");
   }
 }
 
