@@ -2151,6 +2151,10 @@ sub upgrade506GA {
   if (main::isInstalled("zimbra-mta")) {
     &updatePostfixLC("2.4.3.4z", "2.4.7.5z");
   }
+  #bug 27342
+  if (!(main::isInstalled("zimbra-mta"))) {
+    main::runAsZimbra("$ZMPROV ms $hn zimbraMtaAuthTarget FALSE\n");
+  }
 
 	return 0;
 }
