@@ -3862,6 +3862,11 @@ sub configSpellServer {
   configLog("configSpellServer");
 }
 
+sub configSetMtaDefaults {
+   &configSetMtaAuthHost();
+   runAsZimbra("$ZMPROV ms $config{HOSTNAME} zimbraMtaAuthTarget TRUE");
+}
+
 sub configSetMtaAuthHost {
 
   if ($configStatus{configSetMtaAuthHost} eq "CONFIGURED") {
@@ -4593,7 +4598,7 @@ sub applyConfig {
   }
 
   if (isEnabled("zimbra-mta")) {
-    configSetMtaAuthHost();
+    configSetMtaDefaults();
   }
 
   if (isEnabled("zimbra-ldap")) {
