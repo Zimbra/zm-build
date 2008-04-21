@@ -2427,7 +2427,7 @@ sub relocatePostfixQueue {
   mkdir -p "$toDir/spool";
   if ( -d "$fromDir/spool" && ! -d "$toDir/spool/active") {
     chdir($fromDir);
-    `tar cf - spool | (cd $toDir; tar xfp -) >/dev/null 2>&1`;
+    `tar cf - spool 1>/dev/null 2>&1 | (cd $toDir; tar xfp -) >/dev/null 2>&1`;
     chdir($curDir);
   }
   main::runAsRoot("/opt/zimbra/libexec/zmfixperms");
