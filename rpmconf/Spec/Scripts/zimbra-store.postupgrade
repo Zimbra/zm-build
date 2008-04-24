@@ -36,9 +36,9 @@ ln -s /opt/zimbra/mysql-standard-5.0.51a-apple-darwin8.2.0-$ARCH /opt/zimbra/mys
 rm -f /opt/zimbra/mysql-standard-5.0.51a-apple-darwin8.2.0-$ARCH/lib/mysql
 ln -s /opt/zimbra/mysql-standard-5.0.51a-apple-darwin8.2.0-$ARCH/lib /opt/zimbra/mysql-standard-5.0.51a-apple-darwin8.2.0-$ARCH/lib/mysql
 
-if [ -d "/opt/zimbra/keyview-10.2.0.2" ]; then
+if [ -d "/opt/zimbra/keyview-10.4.0.1" ]; then
   rm -f /opt/zimbra/keyview
-  ln -s /opt/zimbra/keyview-10.2.0.2 /opt/zimbra/keyview
+  ln -s /opt/zimbra/keyview-10.4.0.1 /opt/zimbra/keyview
 fi
 
 if [ -e "/opt/zimbra/verity" ]; then
