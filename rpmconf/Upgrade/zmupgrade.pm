@@ -2146,6 +2146,31 @@ sub upgrade506GA {
         main::runAsZimbra("$ZMPROV mc $cos $attr \'$attrs{$attr}\'");
       }
     }
+    
+    # set global defaults if these were not defined. 27507
+    my $lockmethod = main::getLdapConfigValue("zimbraMtaAntiSpamLockMethod");
+    main::runAsZimbra("$ZMPROV mcf zimbraMtaAntiSpamLockMethod flock")
+      if ($lockmethod eq "");
+    
+    my $cacheint = main::getLdapConfigValue("zimbraFreebusyExchangeCachedInterval");
+    main::runAsZimbra("$ZMPROV mcf zimbraFreebusyExchangeCachedInterval 60d")
+      if ($cacheint eq "");
+
+    my $start= main::getLdapConfigValue("zimbraFreebusyExchangeCachedIntervalStart");
+    main::runAsZimbra("$ZMPROV mcf zimbraFreebusyExchangeCachedIntervalStart 7d")
+      if ($start eq ""); 
+
+    my $lmtp = main::getLdapConfigValue("zimbraLmtpServerEnabled");
+    main::runAsZimbra("$ZMPROV mcf zimbraLmtpServerEnabled TRUE")
+      if ($lmtp eq "");
+
+    my $dedupe = main::getLdapConfigValue("zimbraMessageIdDedeupeCacheSize");
+    main::runAsZimbra("$ZMPROV mcf zimbraMessageIdDedeupeCacheSize 3000")
+      if ($dedupe eq "" || $dedupe eq "1000");
+
+    my $refer = main::getLocalConfig("zimbraMailReferMode");
+    main::runAsZimbra("$ZMPROV mcf zimbraMailReferMode wronghost")
+      if ($refer eq "");
   }
   #bug 24827,26544
   if (main::isInstalled("zimbra-mta")) {
