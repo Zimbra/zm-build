@@ -2164,8 +2164,8 @@ sub upgrade506GA {
     main::runAsZimbra("$ZMPROV mcf zimbraLmtpServerEnabled TRUE")
       if ($lmtp eq "");
 
-    my $dedupe = main::getLdapConfigValue("zimbraMessageIdDedeupeCacheSize");
-    main::runAsZimbra("$ZMPROV mcf zimbraMessageIdDedeupeCacheSize 3000")
+    my $dedupe = main::getLdapConfigValue("zimbraMessageIdDedupeCacheSize");
+    main::runAsZimbra("$ZMPROV mcf zimbraMessageIdDedupeCacheSize 3000")
       if ($dedupe eq "" || $dedupe eq "1000");
 
     my $refer = main::getLocalConfig("zimbraMailReferMode");
