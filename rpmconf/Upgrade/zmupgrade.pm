@@ -2142,8 +2142,12 @@ sub upgrade506GA {
       foreach my $attr (keys %attrs) {
         main::runAsZimbra("$ZMPROV mc $cos $attr \'$attrs{$attr}\'");
       }
+      # bug 22010
+      my $cur_value = main::getLdapCOSValue($cos, "zimbraNotebookSanitizeHtml");
+      main::runAsZimbra("$ZMPROV mc $cos zimbraNotebookSanitizeHtml TRUE")
+          if ($cur_value eq "");
     }
-    
+
     # set global defaults if these were not defined. 27507
     my $lockmethod = main::getLdapConfigValue("zimbraMtaAntiSpamLockMethod");
     main::runAsZimbra("$ZMPROV mcf zimbraMtaAntiSpamLockMethod flock")
@@ -2165,7 +2169,7 @@ sub upgrade506GA {
     main::runAsZimbra("$ZMPROV mcf zimbraMessageIdDedupeCacheSize 3000")
       if ($dedupe eq "" || $dedupe eq "1000");
 
-    my $refer = main::getLocalConfig("zimbraMailReferMode");
+    my $refer = main::getLdapConfigValue("zimbraMailReferMode");
     main::runAsZimbra("$ZMPROV mcf zimbraMailReferMode wronghost")
       if ($refer eq "");
   }
