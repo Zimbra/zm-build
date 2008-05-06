@@ -307,7 +307,7 @@ sub checkPortConflicts {
     # Shutdown postfix in launchd
     if (-f "/System/Library/LaunchDaemons/org.postfix.master.plist") {
       progress ( "Disabling postfix in launchd\n");
-      system ("/bin/launchctl unload -w /System/Library/LaunchDaemons/org.postfix.master.plist");
+      system ("/bin/launchctl unload -w /System/Library/LaunchDaemons/org.postfix.master.plist > /dev/null 2>&1");
     }
   }
   progress ( "Checking for port conflicts\n" );
