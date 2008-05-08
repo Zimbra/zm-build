@@ -2136,7 +2136,8 @@ sub upgrade506GA {
 	main::progress("Updating from 5.0.6_GA\n");
   if (main::isInstalled("zimbra-ldap")) {
 	  my @coses = `su - zimbra -c "$ZMPROV gac"`;
-    my %attrs = ( zimbraPrefZimletTreeOpen => "FALSE" );
+    my %attrs = ( zimbraPrefZimletTreeOpen => "FALSE",
+                  zimbraPrefMarkMsgRead => "0");
 	  foreach my $cos (@coses) {
 		  chomp $cos;
       foreach my $attr (keys %attrs) {
