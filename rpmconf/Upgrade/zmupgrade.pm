@@ -2179,6 +2179,8 @@ sub upgrade506GA {
     upgradeLdapConfigValue("zimbraXMPPEnabled", "TRUE", "FALSE");
     upgradeLdapConfigValue("zimbraReverseProxySendPop3Xoip", "TRUE", "");
     upgradeLdapConfigValue("zimbraReverseProxySendImapId", "TRUE", "");
+    upgradeLdapConfigValue("zimbraCalendarCalDavDisableScheduling", "FALSE", "");
+
   }
   #bug 24827,26544
   if (main::isInstalled("zimbra-mta")) {
