@@ -2173,6 +2173,12 @@ sub upgrade506GA {
     my $refer = main::getLdapConfigValue("zimbraMailReferMode");
     main::runAsZimbra("$ZMPROV mcf zimbraMailReferMode wronghost")
       if ($refer eq "");
+
+    upgradeLdapConfigValue("zimbraClusterType", "none", "");
+    upgradeLdapConfigValue("zimbraAttachmentsIndexedTextLimit", "1048576", "");
+    upgradeLdapConfigValue("zimbraXMPPEnabled", "TRUE", "FALSE");
+    upgradeLdapConfigValue("zimbraReverseProxySendPop3Xoip", "TRUE", "");
+    upgradeLdapConfigValue("zimbraReverseProxySendImapId", "TRUE", "");
   }
   #bug 24827,26544
   if (main::isInstalled("zimbra-mta")) {
@@ -2809,6 +2815,13 @@ sub verifyMysqlConfig {
     }
   }
   return;
+}
+
+sub upgradeLdapConfigValue($$$) {
+  my ($key,$new_value,$cmp_value) = @_;
+  my $current_value = main::getLdapConfigValue($key);
+  main::runAsZimbra("$ZMPROV mcf $key $new_value")
+    if ($current_value eq $cmp_value);
 }
 
 1
