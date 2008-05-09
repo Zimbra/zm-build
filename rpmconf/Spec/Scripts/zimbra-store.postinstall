@@ -63,7 +63,7 @@ for i in jetty apache-tomcat ; do
   fi
   mkdir -p $SHORT/logs
   chown zimbra:zimbra $SHORT/logs
-  chown root:root $LONG
+  chown root:wheel $LONG
 done
 
 

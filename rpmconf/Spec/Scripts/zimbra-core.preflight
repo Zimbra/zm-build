@@ -186,6 +186,9 @@ if [ -f /opt/zimbra/conf/slapd.conf ]; then
   fi
 fi  
 
+if [ ! -d "/opt/zimbra" ]; then
+  mkdir /opt/zimbra
+fi
 D=`date +%s`
 echo "${D}: INSTALL SESSION START" >> /opt/zimbra/.install_history
 
