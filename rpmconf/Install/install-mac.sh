@@ -29,6 +29,18 @@ nireport=/usr/bin/nireport
 nifind=/usr/bin/nifind
 dscl=/usr/bin/dscl
 
+if [ -x "/opt/zimbra/libexec/get_plat_tag.sh" ]; then
+  platform=$(/opt/zimbra/libexec/get_plat_tag.sh)
+else
+  platform=unknown
+fi
+
+if [ x"$platform" = "xMACOSXx86_10.5" ]; then
+  PS="/bin/ps -elf"
+else
+  PS="/bin/ps -aux"
+fi
+
 getGIDByName() {
   if [ -x "${niutil}" ]; then
     IDS=`${niutil} -read / /groups/$1 | egrep '^gid:' | sed -e 's/gid: //'`
@@ -36,7 +48,7 @@ getGIDByName() {
       GID=$IDS
     fi
   elif [ -x "${dscl}" ]; then
-    IDS=`${dscl} . -read /groups/staff | egrep '^PrimaryGroupID' | awk '{print $NF}'`
+    IDS=$(${dscl} . -read /groups/staff | egrep '^PrimaryGroupID' | awk '{print $NF}')
     if [ "x$IDS" != "x" ]; then
       GID=$IDS
     fi
@@ -52,7 +64,7 @@ verifyExists() {
      EXISTS=1
     fi
   elif [ -x "${dscl}" ]; then
-    NM=`${dscl} . -list /$1/$2 2> /dev/null`
+    NM=$(${dscl} . -list /$1/$2 2> /dev/null)
     if [ "x$NM" = "x" ]; then
      EXISTS=1
     fi
@@ -68,7 +80,7 @@ checkUsersGroupMembership() {
   if [ -x "${nireport}" ]; then
     members="$(${nireport} . /groups name users | grep -w "^$1[[:space:]].*$2")"
   elif [ -x "${dscl}" ]; then
-    members="$(${dscl} . -read /groups/$1 GroupMembership | sed -e 's/^GroupMembership: //g' | grep -w $2)"
+    members="$(${dscl} . -read /groups/$1 GroupMembership 2>/dev/null | sed -e 's/^GroupMembership: //g' | grep -w $2)"
   fi
   return $member
 }
@@ -76,7 +88,7 @@ checkUsersPrimaryGID() {
   if [ -x "${nireport}" ]; then
     gid="$(${nireport} . /users name gid | grep -w "^$1[[:space:]]*$2")"
   elif [ -x "${dscl}" ]; then
-    gid="$(${dscl} . -read /groups/$1 PrimaryGroupID | sed -e 's/^PrimaryGroupID: //g' | grep -w $2)"
+    gid="$(${dscl} . -read /groups/$1 PrimaryGroupID 2> /dev/null | sed -e 's/^PrimaryGroupID: //g' | grep -w $2)"
   fi
   return $gid
 }
@@ -197,12 +209,12 @@ if [ x$UNINSTALL == "xyes" ]; then
     echo -n "Stopping all zimbra processes..."
     su $ZIMBRA_USER -c '/opt/zimbra/bin/zmcontrol stop > /dev/null 2>&1'
     # make sure all processes are really stopped
-    ps aux  |grep $ZIMBRA_USER | egrep -v "install|grep" | awk '{print $2}' | xargs kill 2> /dev/null
+    $PS  |grep $ZIMBRA_USER | egrep -v "install|grep" | awk '{print $2}' | xargs kill 2> /dev/null
     echo "done."
 
     # remove crontab
     echo -n "Removing crontab entry for $ZIMBRA_USER..."
-    echo "y" | crontab -u $ZIMBRA_USER -r
+    echo "y" | crontab -u $ZIMBRA_USER -r 2>/dev/null
     echo "done."
   fi
 
@@ -264,7 +276,7 @@ if [ x$UNINSTALL == "xyes" ]; then
   if [ -z "$tmp" ]; then
     echo "group didn't exist."
   else 
-    ${dscl} . -delete /groups/$ZIMBRA_USER 2> /dev/null
+    ${dscl} . -delete /groups/$ZIMBRA_USER > /dev/null 2>&1
     echo "done."
   fi
 
@@ -275,7 +287,7 @@ if [ x$UNINSTALL == "xyes" ]; then
   if [ -z "$tmp" ]; then
     echo "didn't exist."
   else 
-    ${dscl} . -delete /users/$ZIMBRA_USER 2> /dev/null
+    ${dscl} . -delete /users/$ZIMBRA_USER > /dev/null 2>&1
     echo "done."
   fi
 
