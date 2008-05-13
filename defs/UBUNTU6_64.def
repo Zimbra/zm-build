@@ -8,6 +8,6 @@ PACKAGE_EXT := deb
 
 include $(DEFS_DIR)/plat_common.def
 
-JAVA_VERSION	:= 1.6.0_06
+JAVA_VERSION	:= 1.5.0_15
 JAVA_SOURCE	:= $(THIRD_PARTY_BUILDS)/x86_64/$(JAVA_DIR)/$(JAVA_FILE)$(JAVA_VERSION)
 JAVA_BINARY	:= /opt/zimbra/java/bin/java
