@@ -3998,7 +3998,7 @@ sub configInitBackupPrefs {
 sub setProxyBits {
   detail("Setting Proxy pieces\n");
   my $zimbraReverseProxyMailHostQuery =
-        "\(\|\(zimbraMailDeliveryAddress=\${USER}\)\(zimbraMailAlias=\${USER}\)\)";
+        "\(\|\(zimbraMailDeliveryAddress=\${USER}\)\(zimbraMailAlias=\${USER}\)\(zimbraId=\${USER}\)\)";
   my $zimbraReverseProxyDomainNameQuery =
         '\(\&\(zimbraVirtualIPAddress=\${IPADDR}\)\(objectClass=zimbraDomain\)\)';
   my $zimbraReverseProxyPortQuery =

@@ -2182,6 +2182,12 @@ sub upgrade506GA {
     upgradeLdapConfigValue("zimbraCalendarCalDavDisableScheduling", "FALSE", "");
     upgradeLdapConfigValue("zimbraMtaAuthTarget", "FALSE", "TRUE");
 
+    # bug 27123, upgrade query
+    my $query = "\(\|\(zimbraMailDeliveryAddress=\${USER}\)\(zimbraMailAlias=\${USER}\)\(zimbraId=\${USER}\)\)";
+    # We have to use a pipe to write out the Query, otherwise ${USER} gets interpreted
+    open(ZMPROV, "|su - zimbra -c 'zmprov -l'");
+    print ZMPROV "mcf zimbraReverseProxyMailHostQuery $query\n";
+    close ZMPROV;
   }
   #bug 24827,26544
   if (main::isInstalled("zimbra-mta")) {
