@@ -2188,6 +2188,11 @@ sub upgrade506GA {
     open(ZMPROV, "|su - zimbra -c 'zmprov -l'");
     print ZMPROV "mcf zimbraReverseProxyMailHostQuery $query\n";
     close ZMPROV;
+
+    #bug 27699, update log level
+    my $ldap_log_level = main::getLocalConfig("ldap_log_level");
+    main::setLocalConfig("ldap_log_level", "16640")
+      if ($ldap_log_level == 32768); 
   }
   #bug 24827,26544
   if (main::isInstalled("zimbra-mta")) {
