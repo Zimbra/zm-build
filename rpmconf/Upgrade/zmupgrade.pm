@@ -2196,7 +2196,17 @@ sub upgrade506GA {
   }
   #bug 24827,26544
   if (main::isInstalled("zimbra-mta")) {
+    my $zimbra_home = main::getLocalConfig("zimbra_home");
+    $zimbra_home = "/opt/zimbra" if ($zimbra_home eq "");
+
     &updatePostfixLC("2.4.3.4z", "2.4.7.5z");
+    #bug 27165
+    if ( -d "${zimbra_home}/data/clamav/db/daily.inc" ) {
+     `rm -rf ${zimbra_home}/data/clamav/db/daily.inc`; 
+    }
+    if ( -d "${zimbra_home}/data/clamav/db/main.inc" ) {
+     `rm -rf ${zimbra_home}/data/clamav/db/main.inc`; 
+    } 
   }
   #bug 27342
   if (!(main::isInstalled("zimbra-mta"))) {
