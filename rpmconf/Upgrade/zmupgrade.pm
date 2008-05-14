@@ -2184,6 +2184,7 @@ sub upgrade506GA {
     upgradeLdapConfigValue("zimbraReverseProxySendImapId", "TRUE", "");
     upgradeLdapConfigValue("zimbraCalendarCalDavDisableScheduling", "FALSE", "");
     upgradeLdapConfigValue("zimbraMtaAuthTarget", "FALSE", "TRUE");
+    upgradeLdapConfigValue("zimbraLmtpPermanentFailureWhenOverQuota", "FALSE", "");
 
     # bug 27123, upgrade query
     my $query = "\(\|\(zimbraMailDeliveryAddress=\${USER}\)\(zimbraMailAlias=\${USER}\)\(zimbraId=\${USER}\)\)";
@@ -2205,10 +2206,10 @@ sub upgrade506GA {
     &updatePostfixLC("2.4.3.4z", "2.4.7.5z");
     #bug 27165
     if ( -d "${zimbra_home}/data/clamav/db/daily.inc" ) {
-     `rm -rf ${zimbra_home}/data/clamav/db/daily.inc`; 
+     unlink("${zimbra_home}/data/clamav/db/daily.inc");
     }
     if ( -d "${zimbra_home}/data/clamav/db/main.inc" ) {
-     `rm -rf ${zimbra_home}/data/clamav/db/main.inc`; 
+     unlink("${zimbra_home}/data/clamav/db/main.inc");
     } 
   }
   #bug 27342
