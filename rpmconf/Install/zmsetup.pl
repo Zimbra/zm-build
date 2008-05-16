@@ -41,10 +41,16 @@ $| = 1;
 progress("Operations logged to $logfile\n");
 
 our $ZMPROV = "/opt/zimbra/bin/zmprov -l";
+our $SU;
+if ($platform == "MACOSXx86_10.5") {
+  $SU = "su - zimbra -c -l "
+} else {
+  $SU = "su - zimbra -c "
+}
 
 if ($platform =~ /MACOSX/) {
   progress ("Checking java version...");
-  my $rc = 0xffff & system("su - zimbra -c \"java -version 2>&1 | grep 'java version' | grep -q 1.5\"");
+  my $rc = 0xffff & system("$SU \"java -version 2>&1 | grep 'java version' | grep -q 1.5\"");
   if ($rc) {
     progress ("\n\nERROR\n\n");
     progress ("Java version 1.5 required - please update your java version\n");
@@ -55,6 +61,7 @@ if ($platform =~ /MACOSX/) {
     progress ("1.5 found\n");
   }
 }
+
 
 use preinstall;
 use postinstall;
@@ -639,7 +646,7 @@ sub getLdapCOSValue {
   return $main::loaded{gc}{$cos}{$attrib} 
     if (exists $main::loaded{gc}{$cos}{$attrib});
   # Gotta love the triple escape: \\\  
-  my $rc = 0xffff & system("su - zimbra -c \"$ZMPROV gc $cos | grep $attrib | sed -e \\\"s/${attrib}: //\\\" > /tmp/ld.out\"");
+  my $rc = 0xffff & system("$SU \"$ZMPROV gc $cos | grep $attrib | sed -e \\\"s/${attrib}: //\\\" > /tmp/ld.out\"");
   my $val=`cat /tmp/ld.out`;
   unlink "/tmp/ld.out";
   chomp $val;
@@ -658,7 +665,7 @@ sub getLdapConfigValue {
 
   #detail ( "Getting global config attribute $attrib from ldap.\n" );
   # Gotta love the triple escape: \\\  
-  my $rc = 0xffff & system("su - zimbra -c \"$ZMPROV gcf $attrib 2> /tmp/ld.err 2> /tmp/ld.err | sed -e \\\"s/${attrib}: //\\\" > /tmp/ld.out\"");
+  my $rc = 0xffff & system("$SU \"$ZMPROV gcf $attrib 2> /tmp/ld.err 2> /tmp/ld.err | sed -e \\\"s/${attrib}: //\\\" > /tmp/ld.out\"");
   my $val=`cat /tmp/ld.out`;
   chomp($val);
   detail ("Global config attribute retrieved from ldap: $attrib=$val");
@@ -687,7 +694,7 @@ sub getLdapServerValue {
 
   #detail ( "Getting server config attribute $attrib for $hn from ldap." );
   # Gotta love the triple escape: \\\  
-  my $rc = 0xffff & system("su - zimbra -c \"$ZMPROV gs $hn | grep $attrib | sed -e \\\"s/${attrib}: //\\\" > /tmp/ld.out\"");
+  my $rc = 0xffff & system("$SU \"$ZMPROV gs $hn | grep $attrib | sed -e \\\"s/${attrib}: //\\\" > /tmp/ld.out\"");
   my $val=`cat /tmp/ld.out`;
   unlink "/tmp/ld.out";
   chomp $val;
@@ -1071,7 +1078,7 @@ sub setDefaults {
 
   if (isEnabled("zimbra-mta")) {
     progress  "setting defaults for zimbra-mta.\n" if $options{d};
-    my $tmpval = (`su - zimbra -c "/opt/zimbra/postfix/sbin/postconf mynetworks"`);
+    my $tmpval = (`$SU "/opt/zimbra/postfix/sbin/postconf mynetworks"`);
     chomp($tmpval);
     $tmpval =~ s/mynetworks = //;
     if ($tmpval eq "") {
@@ -3283,7 +3290,7 @@ sub runAsZimbra {
     detail ( "*** Running as zimbra user: $cmd\n" );
   }
   my $rc;
-  $rc = 0xffff & system("su - zimbra -c \"$cmd\" >> $logfile 2>&1");
+  $rc = 0xffff & system("$SU \"$cmd\" >> $logfile 2>&1");
   return $rc;
 }
 
@@ -3296,7 +3303,7 @@ sub runAsZimbraWithOutput {
   } else {
     detail ( "*** Running as zimbra user: $cmd\n" );
   }
-  system("su - zimbra -c \"$cmd\"");
+  system("$SU \"$cmd\"");
   my $exit_value = $? >> 8;
   my $signal_num = $? & 127;
   my $dumped_core = $? & 128;
@@ -4003,7 +4010,7 @@ sub setProxyBits {
         '\(\&\(zimbraVirtualIPAddress=\${IPADDR}\)\(objectClass=zimbraDomain\)\)';
   my $zimbraReverseProxyPortQuery =
         '\(\&\(zimbraServiceHostname=\${MAILHOST}\)\(objectClass=zimbraServer\)\)';
-  open(ZMPROV, "|su - zimbra -c 'zmprov -l'");
+  open(ZMPROV, "|$SU 'zmprov -l'");
 
   print ZMPROV "mcf zimbraReverseProxyMailHostQuery $zimbraReverseProxyMailHostQuery\n"
     if(getLdapConfigValue("zimbraReverseProxyMailHostQuery") eq "");
@@ -4453,10 +4460,10 @@ sub configInitNotebooks {
     close(ZM);
     foreach my $domain (@domains) {
       chomp($domain);
-      my $domainType = (split(/\s+/, `su - zimbra -c "$ZMPROV gd $domain | grep zimbraDomainType"`))[-1];
+      my $domainType = (split(/\s+/, `$SU "$ZMPROV gd $domain | grep zimbraDomainType"`))[-1];
       next unless $domainType eq "local";
     
-      my $domainWikiAcct = (split(/\s+/, `su - zimbra -c "$ZMPROV gd $domain | grep zimbraNotebookAccount"`))[-1];
+      my $domainWikiAcct = (split(/\s+/, `$SU "$ZMPROV gd $domain | grep zimbraNotebookAccount"`))[-1];
       next if ($domainWikiAcct eq "");
     
       # global and domain accounts cannot be the same
@@ -4648,7 +4655,7 @@ sub applyConfig {
     #runAsZimbra ("$ZMPROV ms $config{HOSTNAME} zimbraUserServicesEnabled FALSE");
     runAsZimbra ("/opt/zimbra/bin/zmcontrol start");
     # runAsZimbra swallows the output, so call status this way
-    `su - zimbra -c "/opt/zimbra/bin/zmcontrol status"`;
+    `$SU "/opt/zimbra/bin/zmcontrol status"`;
     progress ( "done.\n" );
 
     # Initialize application server specific items
@@ -4726,7 +4733,7 @@ sub setupCrontab {
   progress ("Setting up zimbra crontab...");
   if ( -x "/opt/zimbra/bin/zmschedulebackup") {
     detail("Getting current backup schedule in restorable format.");
-    @backupSchedule = (`su - zimbra -c "zmschedulebackup -s" 2> /dev/null`);
+    @backupSchedule = (`$SU "zmschedulebackup -s" 2> /dev/null`);
     for (my $i=0;$i<=$#backupSchedule;$i++) {
       $backupSchedule[$i] =~ s/"/\\"/g;
     }
@@ -4781,14 +4788,14 @@ sub setupCrontab {
     for (my $i=0;$i<=$#backupSchedule;$i++) {
       chomp($backupSchedule[$i]);
       if ($i == 0) {
-        `su - zimbra -c "/opt/zimbra/bin/zmschedulebackup -R $backupSchedule[$i]"`;
+        `$SU "/opt/zimbra/bin/zmschedulebackup -R $backupSchedule[$i]"`;
       } else {
-        `su - zimbra -c "/opt/zimbra/bin/zmschedulebackup -A $backupSchedule[$i]"`;
+        `$SU "/opt/zimbra/bin/zmschedulebackup -A $backupSchedule[$i]"`;
       }
     }
   } elsif ( -f "/opt/zimbra/bin/zmschedulebackup" && scalar @backupSchedule == 0 && !$newinstall) {
     detail("No backup schedule found: installing default schedule.");
-    `su - zimbra -c "/opt/zimbra/bin/zmschedulebackup -D" > /dev/null 2>&1`;
+    `$SU "/opt/zimbra/bin/zmschedulebackup -D" > /dev/null 2>&1`;
   }
 
   if (isEnabled("zimbra-cluster")) {
@@ -4870,7 +4877,7 @@ sub mainMenu {
 
 sub stopLdap {
   main::progress("Stopping ldap\n");
-  my $rc = 0xffff & system("su - zimbra -c \"/opt/zimbra/bin/ldap stop > /dev/null 2>&1\"");
+  my $rc = 0xffff & system("$SU \"/opt/zimbra/bin/ldap stop > /dev/null 2>&1\"");
   $rc = $rc >> 8;
   if ($rc) {
     main::progress("LDAP stop failed with exit code $rc\n");
@@ -4892,7 +4899,7 @@ sub startLdap {
       $rc = runAsZimbra("/opt/zimbra/bin/ldap start");
       if ($rc) { 
         main::progress("failed with exit code $rc.\n");
-        system("su - zimbra -c \"/opt/zimbra/bin/ldap start 2>&1 | grep failed\"");
+        system("$SU \"/opt/zimbra/bin/ldap start 2>&1 | grep failed\"");
         return $rc;
       } 
     }  else {

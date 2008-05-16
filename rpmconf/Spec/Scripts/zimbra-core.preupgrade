@@ -15,6 +15,13 @@
 # 
 
 SAVEDIR=/opt/zimbra/.saveconfig
+PLATFORM=$(/opt/zimbra/libexec/get_plat_tag.sh)
+if [ x"$PLATFORM" = "xMACOSXx86_10.5" ]; then
+  SU="su - zimbra -c -l "
+else
+  SU="su - zimbra -c "
+fi
+
 if [ ! -d "$SAVEDIR" ]; then
  mkdir -p $SAVEDIR
 fi
@@ -33,8 +40,8 @@ chown zimbra:zimbra $SAVEDIR
 chmod 750 $SAVEDIR
 
 # yes, it needs massaging to be fed back in...
-su - zimbra -c "/opt/zimbra/bin/zmcontrol stop"
-su - zimbra -c "/opt/zimbra/bin/zmlocalconfig -m shell > $SAVEDIR/config.save"
+$SU "/opt/zimbra/bin/zmcontrol stop"
+$SU "/opt/zimbra/bin/zmlocalconfig -m shell > $SAVEDIR/config.save"
 
 if [ -f "/opt/zimbra/java/jre/lib/security/cacerts" ]; then
   cp -f /opt/zimbra/java/jre/lib/security/cacerts $SAVEDIR
@@ -69,6 +76,6 @@ elif [ -d "/opt/zimbra/mailboxd/webapps/service/zimlet" ]; then
   cp -rf /opt/zimbra/mailboxd/webapps/service/zimlet $SAVEDIR
 fi
 if [ -x "/opt/zimbra/bin/zmschedulebackup" ]; then
-	su - zimbra -c "/opt/zimbra/bin/zmschedulebackup -s > $SAVEDIR/backup.save"
+	$SU "/opt/zimbra/bin/zmschedulebackup -s > $SAVEDIR/backup.save"
 fi
 

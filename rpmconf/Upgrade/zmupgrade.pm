@@ -39,7 +39,17 @@ my $comboLowVersion = 20;
 my $comboHiVersion  = 27;
 my $needSlapIndexing = 0;
 
-my $hn = `su - zimbra -c "${zmlocalconfig} -m nokey zimbra_server_hostname"`;
+my $platform = `/opt/zimbra/libexec/get_plat_tag.sh`;
+chomp $platform;
+my $addr_space = (($platform =~ m/\w+_(\d+)/) ? "$1" : "32");
+my $su;
+if ($platform eq "MACOSXx86_10.5") {
+  $su = "su - zimbra -c -l";
+} else {
+  $su = "su - zimbra -c";
+}
+
+my $hn = `$su "${zmlocalconfig} -m nokey zimbra_server_hostname"`;
 chomp $hn;
 
 my $ZMPROV = "/opt/zimbra/bin/zmprov -l --";
@@ -221,9 +231,6 @@ my @packageList = (
 	);
 
 my %installedPackages = ();
-my $platform = `/opt/zimbra/libexec/get_plat_tag.sh`;
-chomp $platform;
-my $addr_space = (($platform =~ m/\w+_(\d+)/) ? "$1" : "32");
 
 #####################
 
@@ -924,7 +931,7 @@ sub upgrade313GA {
 	main::progress("Updating from 3.1.3_GA\n");
 
   # removing this per bug 10901
-	#my @accounts = `su - zimbra -c "$ZMPROV gaa"`;
+	#my @accounts = `$su "$ZMPROV gaa"`;
 	#open (G, "| $ZMPROV ") or die "Can't open zmprov: $!";
 	#foreach (@accounts) {
 	# chomp;
@@ -956,8 +963,8 @@ EOF
   open L, ">/tmp/text-plain.ldif";
   print L $a;
   close L;
-  my $ldap_pass = `su - zimbra -c "zmlocalconfig -s -m nokey zimbra_ldap_password"`;
-  my $ldap_url = `su - zimbra -c "zmlocalconfig -s -m nokey ldap_url"`;
+  my $ldap_pass = `$su "zmlocalconfig -s -m nokey zimbra_ldap_password"`;
+  my $ldap_url = `$su "zmlocalconfig -s -m nokey ldap_url"`;
   chomp $ldap_pass;
   chomp $ldap_url;
   main::runAsZimbra("ldapmodify -c -H $ldap_url -D uid=zimbra,cn=admins,cn=zimbra -x -w $ldap_pass -f /tmp/text-plain.ldif");
@@ -990,7 +997,7 @@ sub upgrade32M1 {
 	main::runAsZimbra("$ZMPROV mc default zimbraPrefCalendarApptReminderWarningTime 5");
 
 	# Bug 7590
-	my @coses = `su - zimbra -c "$ZMPROV gac"`;
+	my @coses = `$su "$ZMPROV gac"`;
 	foreach my $cos (@coses) {
 		chomp $cos;
 		main::runAsZimbra("$ZMPROV mc $cos zimbraFeatureSkinChangeEnabled TRUE zimbraPrefSkin steel zimbraFeatureNotebookEnabled TRUE");
@@ -1009,11 +1016,11 @@ sub upgrade32M1 {
 
 	# Bug 5466
   my $acct;
-	$acct = (split(/\s+/, `su - zimbra -c "$ZMPROV gcf zimbraSpamIsSpamAccount"`))[-1];
+	$acct = (split(/\s+/, `$su "$ZMPROV gcf zimbraSpamIsSpamAccount"`))[-1];
   main::runAsZimbra("$ZMPROV ma $acct zimbraHideInGal TRUE")
 	  if ($acct ne "");
 
-	$acct = (split(/\s+/, `su - zimbra -c "$ZMPROV gcf zimbraSpamIsNotSpamAccount"`))[-1];
+	$acct = (split(/\s+/, `$su "$ZMPROV gcf zimbraSpamIsNotSpamAccount"`))[-1];
   main::runAsZimbra("$ZMPROV ma $acct zimbraHideInGal TRUE")
   	if ($acct ne "");
 
@@ -1044,13 +1051,13 @@ sub upgrade32M2 {
   updateMySQLcnf();
 
 	# Bug 9096
-	my $acct = `su - zimbra -c "$ZMPROV gcf zimbraSpamIsSpamAccount"`;
+	my $acct = `$su "$ZMPROV gcf zimbraSpamIsSpamAccount"`;
 	chomp $acct;
 	$acct =~ s/.* //;
 	if ($acct ne "") {
 		main::runAsZimbra("$ZMPROV ma $acct zimbraIsSystemResource TRUE");
 	}
-	$acct = `su - zimbra -c "$ZMPROV gcf zimbraSpamIsNotSpamAccount"`;
+	$acct = `$su "$ZMPROV gcf zimbraSpamIsNotSpamAccount"`;
 	chomp $acct;
 	$acct =~ s/.* //;
 	if ($acct ne "") {
@@ -1058,7 +1065,7 @@ sub upgrade32M2 {
 	}
 
   # Bug 7850
-	my @coses = `su - zimbra -c "$ZMPROV gac"`;
+	my @coses = `$su "$ZMPROV gac"`;
 	foreach my $cos (@coses) {
 		chomp $cos;
 		main::runAsZimbra("$ZMPROV mc $cos zimbraFeatureNewMailNotificationEnabled TRUE zimbraFeatureOutOfOfficeReplyEnabled TRUE");
@@ -1129,7 +1136,7 @@ sub upgrade402GA {
 
   if (main::isInstalled("zimbra-ldap")) {
     # bug 10401
-	  my @coses = `su - zimbra -c "$ZMPROV gac"`;
+	  my @coses = `$su "$ZMPROV gac"`;
 	  foreach my $cos (@coses) {
 		  chomp $cos;
       my $cur_value = 
@@ -1235,7 +1242,7 @@ sub upgrade450RC1 {
 	main::progress("Updating from 4.5.0_RC1\n");
   if (main::isInstalled("zimbra-ldap")) {
     # bug 12031
-	  my @coses = `su - zimbra -c "$ZMPROV gac"`;
+	  my @coses = `$su "$ZMPROV gac"`;
 	  foreach my $cos (@coses) {
 		  chomp $cos;
 		  main::runAsZimbra("$ZMPROV mc $cos zimbraFeaturePop3DataSourceEnabled TRUE zimbraPrefReadingPaneEnabled TRUE zimbraPrefUseRfc2231 FALSE zimbraFeatureIdentitiesEnabled TRUE zimbraPasswordLockoutDuration 1h zimbraPasswordLockoutEnabled FALSE zimbraPasswordLockoutFailureLifetime 1h zimbraPasswordLockoutMaxFailures 10");
@@ -1243,8 +1250,8 @@ sub upgrade450RC1 {
 
     # bah-bye timezones
     # replaced by /opt/zimbra/conf/timezones.ics
-    my $ldap_pass = `su - zimbra -c "zmlocalconfig -s -m nokey zimbra_ldap_password"`;
-    my $ldap_master_url = `su - zimbra -c "zmlocalconfig -s -m nokey ldap_master_url"`;
+    my $ldap_pass = `$su "zmlocalconfig -s -m nokey zimbra_ldap_password"`;
+    my $ldap_master_url = `$su "zmlocalconfig -s -m nokey ldap_master_url"`;
     my $ldap; 
     chomp($ldap_master_url);
     chomp($ldap_pass);
@@ -1357,7 +1364,7 @@ sub upgrade457GA {
     #bug 17794
     main::runAsZimbra("$ZMPROV mcf zimbraMtaMyDestination localhost");
     #bug 18388
-	  my $threads = (split(/\s+/, `su - zimbra -c "$ZMPROV gcf zimbraPop3NumThreads"`))[-1];
+	  my $threads = (split(/\s+/, `$su "$ZMPROV gcf zimbraPop3NumThreads"`))[-1];
     main::runAsZimbra("$ZMPROV mcf zimbraPop3NumThreads 100")
       if ($threads eq "20");
   }
@@ -1608,7 +1615,7 @@ sub upgrade500BETA3 {
     startLdap();
 
     #bug 14643
-	  my @coses = `su - zimbra -c "$ZMPROV gac"`;
+	  my @coses = `$su "$ZMPROV gac"`;
 	  foreach my $cos (@coses) {
 		  chomp $cos;
 		  main::runAsZimbra("$ZMPROV mc $cos zimbraFeatureGroupCalendarEnabled TRUE zimbraFeatureMailEnabled TRUE");
@@ -1667,7 +1674,7 @@ sub upgrade500BETA4 {
     main::runAsZimbra("$ZMPROV mcf zimbraBackupAutoGroupedInterval 1d zimbraBackupAutoGroupedNumGroups 7 zimbraBackupAutoGroupedThrottled FALSE zimbraBackupMode Standard");
 
     # 19826
-	  my @coses = `su - zimbra -c "$ZMPROV gac"`;
+	  my @coses = `$su "$ZMPROV gac"`;
     my %attrs = ( zimbraQuotaWarnPercent => "90",
                zimbraQuotaWarnInterval => "1d",
                zimbraQuotaWarnMessage  => 'From: Postmaster <postmaster@\${RECIPIENT_DOMAIN}>\${NEWLINE}To: \${RECIPIENT_NAME} <\${RECIPIENT_ADDRESS}>\${NEWLINE}Subject: Quota warning\${NEWLINE}Date: \${DATE}\${NEWLINE}Content-Type: text/plain\${NEWLINE}\${NEWLINE}Your mailbox size has reached \${MBOX_SIZE_MB}MB, which is over \${WARN_PERCENT}% of your \${QUOTA_MB}MB quota.\${NEWLINE}Please delete some messages to avoid exceeding your quota.\${NEWLINE}');
@@ -1727,16 +1734,16 @@ sub upgrade500RC3 {
   if (main::isInstalled("zimbra-proxy")) {
       my $query = "\(\|\(zimbraMailDeliveryAddress=\${USER}\)\(zimbraMailAlias=\${USER}\)\)";
       # We have to use a pipe to write out the Query, otherwise ${USER} gets interpreted
-      open(ZMPROV, "|su - zimbra -c 'zmprov -l'");
+      open(ZMPROV, "|$su 'zmprov -l'");
       print ZMPROV "mcf zimbraReverseProxyMailHostQuery $query\n";
       close ZMPROV;
   }
   if (main::isInstalled("zimbra-ldap") && $platform !~ /MACOSX/ ) {
-    my $ldap_master = `su - zimbra -c "zmlocalconfig -s -m nokey ldap_is_master"`;
+    my $ldap_master = `$su "zmlocalconfig -s -m nokey ldap_is_master"`;
     chomp($ldap_master);
     if ($ldap_master eq "true") {
-      my $ldap_pass = `su - zimbra -c "zmlocalconfig -s -m nokey zimbra_ldap_password"`;
-      my $ldap_master_url = `su - zimbra -c "zmlocalconfig -s -m nokey ldap_master_url"`;
+      my $ldap_pass = `$su "zmlocalconfig -s -m nokey zimbra_ldap_password"`;
+      my $ldap_master_url = `$su "zmlocalconfig -s -m nokey ldap_master_url"`;
       my $ldap; 
       chomp($ldap_master_url);
       chomp($ldap_pass);
@@ -1846,7 +1853,7 @@ sub upgrade500GA {
       zimbraSignatureMinNumEntries => "1",
       zimbraJunkMessagesIndexingEnabled => "TRUE",
     );
-	  my @coses = `su - zimbra -c "$ZMPROV gac"`;
+	  my @coses = `$su "$ZMPROV gac"`;
 	  foreach my $cos (@coses) {
 		  chomp $cos;
       main::progress("Updating attributes for $cos COS...");
@@ -1870,8 +1877,8 @@ sub upgrade500GA {
       startLdap();
 
       #bug 22746
-      my $ldap_pass = `su - zimbra -c "zmlocalconfig -s -m nokey zimbra_ldap_password"`;
-      my $ldap_master_url = `su - zimbra -c "zmlocalconfig -s -m nokey ldap_master_url"`;
+      my $ldap_pass = `$su "zmlocalconfig -s -m nokey zimbra_ldap_password"`;
+      my $ldap_master_url = `$su "zmlocalconfig -s -m nokey ldap_master_url"`;
       my $ldap;
       chomp($ldap_master_url);    chomp($ldap_pass);
       unless($ldap = Net::LDAP->new($ldap_master_url)) {      main::progress("Unable to contact $ldap_master_url: $!\n");
@@ -1905,7 +1912,7 @@ sub upgrade500GA {
       '\(\&\(zimbraServiceHostname=\${MAILHOST}\)\(objectClass=zimbraServer\)\)';
 
     # We have to use a pipe to write out the Query, otherwise ${USER} gets interpreted
-    open(ZMPROV, "|su - zimbra -c 'zmprov -l'");
+    open(ZMPROV, "|$su 'zmprov -l'");
     print ZMPROV "mcf zimbraReverseProxyMailHostQuery $zimbraReverseProxyMailHostQuery\n";
     print ZMPROV "mcf zimbraReverseProxyPortQuery $zimbraReverseProxyPortQuery\n";
     print ZMPROV "mcf zimbraReverseProxyDomainNameQuery $zimbraReverseProxyDomainNameQuery\n";
@@ -1956,7 +1963,7 @@ sub upgrade501GA {
       zimbraFeatureComposeInNewWindowEnabled  => "TRUE",
       zimbraFeatureOpenMailInNewWindowEnabled => "TRUE",
     );
-	  my @coses = `su - zimbra -c "$ZMPROV gac"`;
+	  my @coses = `$su "$ZMPROV gac"`;
 	  foreach my $cos (@coses) {
 		  chomp $cos;
       main::progress("Updating attributes for $cos COS...\n");
@@ -2002,7 +2009,7 @@ sub upgrade502GA {
     main::runAsZimbra("$ZMPROV mcf zimbraReverseProxyLookupTarget FALSE");
 	  main::runAsZimbra("$ZMPROV mcf +zimbraGalLdapFilterDef 'zimbraAccountSync:(&(|(displayName=*%s*)(cn=*%s*)(sn=*%s*)(gn=*%s*)(mail=*%s*)(zimbraMailDeliveryAddress=*%s*)(zimbraMailAlias=*%s*))(|(objectclass=zimbraAccount)(objectclass=zimbraDistributionList))(!(objectclass=zimbraCalendarResource)))'");
 	  main::runAsZimbra("$ZMPROV mcf +zimbraGalLdapFilterDef 'zimbraResourceSync:(&(|(displayName=*%s*)(cn=*%s*)(sn=*%s*)(gn=*%s*)(mail=*%s*)(zimbraMailDeliveryAddress=*%s*)(zimbraMailAlias=*%s*))(objectclass=zimbraCalendarResource))'");
-	  my @coses = `su - zimbra -c "$ZMPROV gac"`;
+	  my @coses = `$su "$ZMPROV gac"`;
     my %attrs = ( zimbraSpamApplyUserFilters => "FALSE");
 	  foreach my $cos (@coses) {
 		  chomp $cos;
@@ -2036,7 +2043,7 @@ sub upgrade503GA {
 	  main::runAsZimbra("$ZMPROV mcf zimbraReverseProxyHttpEnabled FALSE");
 	  main::runAsZimbra("$ZMPROV mcf zimbraReverseProxyMailEnabled TRUE");
 
-	  my @coses = `su - zimbra -c "$ZMPROV gac"`;
+	  my @coses = `$su "$ZMPROV gac"`;
 	  foreach my $cos (@coses) {
 		  chomp $cos;
 		  main::runAsZimbra("$ZMPROV mc $cos zimbraBatchedIndexingSize 0");
@@ -2081,7 +2088,7 @@ sub upgrade505GA {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
 	main::progress("Updating from 5.0.5_GA\n");
   if (main::isInstalled("zimbra-ldap")) {
-	  my @coses = `su - zimbra -c "$ZMPROV gac"`;
+	  my @coses = `$su "$ZMPROV gac"`;
     my %attrs = ( zimbraPrefCalendarReminderDuration1 => "-PT15M",
                zimbraFeatureNewAddrBookEnabled => "TRUE",
                zimbraPrefFolderTreeOpen => "TRUE",
@@ -2138,7 +2145,7 @@ sub upgrade506GA {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
 	main::progress("Updating from 5.0.6_GA\n");
   if (main::isInstalled("zimbra-ldap")) {
-	  my @coses = `su - zimbra -c "$ZMPROV gac"`;
+	  my @coses = `$su "$ZMPROV gac"`;
     my %attrs = ( zimbraPrefZimletTreeOpen => "FALSE",
                   zimbraPrefMarkMsgRead => "0");
 	  foreach my $cos (@coses) {
@@ -2189,7 +2196,7 @@ sub upgrade506GA {
     # bug 27123, upgrade query
     my $query = "\(\|\(zimbraMailDeliveryAddress=\${USER}\)\(zimbraMailAlias=\${USER}\)\(zimbraId=\${USER}\)\)";
     # We have to use a pipe to write out the Query, otherwise ${USER} gets interpreted
-    open(ZMPROV, "|su - zimbra -c 'zmprov -l'");
+    open(ZMPROV, "|$su 'zmprov -l'");
     print ZMPROV "mcf zimbraReverseProxyMailHostQuery $query\n";
     close ZMPROV;
 
@@ -2234,7 +2241,7 @@ sub upgrade35M1 {
 
 sub stopZimbra {
 	main::progress("Stopping zimbra services\n");
-	my $rc = 0xffff & system("su - zimbra -c \"/opt/zimbra/bin/zmcontrol stop > /dev/null 2>&1\"");
+	my $rc = 0xffff & system("$su \"/opt/zimbra/bin/zmcontrol stop > /dev/null 2>&1\"");
 	$rc = $rc >> 8;
 	if ($rc) {
 		main::progress("Stop failed - exiting\n");
@@ -2245,19 +2252,19 @@ sub stopZimbra {
 
 sub startLdap {
 	main::progress("Checking ldap status\n");
-	my $rc = 0xffff & system("su - zimbra -c \"/opt/zimbra/bin/ldap status > /dev/null 2>&1\"");
+	my $rc = 0xffff & system("$su \"/opt/zimbra/bin/ldap status > /dev/null 2>&1\"");
 	$rc = $rc >> 8;
 	if ($rc) {
 		main::progress("Starting ldap\n");
-		$rc = 0xffff & system("su - zimbra -c \"/opt/zimbra/libexec/zmldapapplyldif > /dev/null 2>&1\"");
-		$rc = 0xffff & system("su - zimbra -c \"/opt/zimbra/bin/ldap status > /dev/null 2>&1\"");
+		$rc = 0xffff & system("$su \"/opt/zimbra/libexec/zmldapapplyldif > /dev/null 2>&1\"");
+		$rc = 0xffff & system("$su \"/opt/zimbra/bin/ldap status > /dev/null 2>&1\"");
 		$rc = $rc >> 8;
 		if ($rc) {
-			$rc = 0xffff & system("su - zimbra -c \"/opt/zimbra/bin/ldap start > /dev/null 2>&1\"");
+			$rc = 0xffff & system("$su \"/opt/zimbra/bin/ldap start > /dev/null 2>&1\"");
 			$rc = $rc >> 8;
 			if ($rc) {
 				main::progress("ldap startup failed with exit code $rc\n");
-			  system("su - zimbra -c \"/opt/zimbra/bin/ldap start 2>&1 | grep failed\"");
+			  system("$su \"/opt/zimbra/bin/ldap start 2>&1 | grep failed\"");
 				return $rc;
 			}
 		}
@@ -2267,7 +2274,7 @@ sub startLdap {
 
 sub stopLdap {
 	main::progress("Stopping ldap\n");
-	my $rc = 0xffff & system("su - zimbra -c \"/opt/zimbra/bin/ldap stop > /dev/null 2>&1\"");
+	my $rc = 0xffff & system("$su \"/opt/zimbra/bin/ldap stop > /dev/null 2>&1\"");
 	$rc = $rc >> 8;
 	if ($rc) {
 		main::progress("LDAP stop failed with exit code $rc\n");
@@ -2278,7 +2285,7 @@ sub stopLdap {
 }
 
 sub isSqlRunning {
-	my $rc = 0xffff & system("su - zimbra -c \"/opt/zimbra/bin/mysqladmin status > /dev/null 2>&1\"");
+	my $rc = 0xffff & system("$su \"/opt/zimbra/bin/mysqladmin status > /dev/null 2>&1\"");
 	$rc = $rc >> 8;
   return($rc ? undef : 1);
 }
@@ -2287,10 +2294,10 @@ sub startSql {
 
 	unless (isSqlRunning()) {
 		main::progress("Starting mysql\n");
-		my $rc = 0xffff & system("su - zimbra -c \"/opt/zimbra/bin/mysql.server start > /dev/null 2>&1\"");
+		my $rc = 0xffff & system("$su \"/opt/zimbra/bin/mysql.server start > /dev/null 2>&1\"");
     my $timeout = sleep 10;
     while (!isSqlRunning() && $timeout <= 1200 ) {
-		  $rc = 0xffff & system("su - zimbra -c \"/opt/zimbra/bin/mysql.server start > /dev/null 2>&1\"");
+		  $rc = 0xffff & system("$su \"/opt/zimbra/bin/mysql.server start > /dev/null 2>&1\"");
       $timeout += sleep 10;
     }
 		$rc = $rc >> 8;
@@ -2306,10 +2313,10 @@ sub stopSql {
 
   if (isSqlRunning()) {
 	  main::progress("Stopping mysql\n");
-	  my $rc = 0xffff & system("su - zimbra -c \"/opt/zimbra/bin/mysql.server stop > /dev/null 2>&1\"");
+	  my $rc = 0xffff & system("$su \"/opt/zimbra/bin/mysql.server stop > /dev/null 2>&1\"");
     my $timeout = sleep 10;
     while (isSqlRunning() && $timeout <= 120 ) {
-		  $rc = 0xffff & system("su - zimbra -c \"/opt/zimbra/bin/mysql.server stop > /dev/null 2>&1\"");
+		  $rc = 0xffff & system("$su \"/opt/zimbra/bin/mysql.server stop > /dev/null 2>&1\"");
       $timeout += sleep 10;
     }
 	  $rc = $rc >> 8;
@@ -2322,7 +2329,7 @@ sub stopSql {
 }
 
 sub isLoggerSqlRunning {
-	my $rc = 0xffff & system("su - zimbra -c \"/opt/zimbra/bin/logmysqladmin status > /dev/null 2>&1\"");
+	my $rc = 0xffff & system("$su \"/opt/zimbra/bin/logmysqladmin status > /dev/null 2>&1\"");
 	$rc = $rc >> 8;
   return($rc ? undef : 1);
 }
@@ -2330,7 +2337,7 @@ sub isLoggerSqlRunning {
 sub startLoggerSql {
 	unless (isLoggerSqlRunning()) {
 		main::progress("Starting logger mysql\n");
-		my $rc = 0xffff & system("su - zimbra -c \"/opt/zimbra/bin/logmysql.server start > /dev/null 2>&1\"");
+		my $rc = 0xffff & system("$su \"/opt/zimbra/bin/logmysql.server start > /dev/null 2>&1\"");
 		$rc = $rc >> 8;
 		if ($rc) {
 			main::progress("logger mysql startup failed with exit code $rc\n");
@@ -2338,7 +2345,7 @@ sub startLoggerSql {
 		}
     my $timeout = sleep 10;
     while (!isLoggerSqlRunning() && $timeout <= 120 ) {
-		  system("su - zimbra -c \"/opt/zimbra/bin/logmysql.server start > /dev/null 2>&1\"");
+		  system("$su \"/opt/zimbra/bin/logmysql.server start > /dev/null 2>&1\"");
       $timeout += sleep 10;
     }
 	}
@@ -2348,7 +2355,7 @@ sub startLoggerSql {
 sub stopLoggerSql {
   if (isLoggerSqlRunning()) {
 	  main::progress("Stopping logger mysql\n");
-	  my $rc = 0xffff & system("su - zimbra -c \"/opt/zimbra/bin/logmysql.server stop > /dev/null 2>&1\"");
+	  my $rc = 0xffff & system("$su \"/opt/zimbra/bin/logmysql.server stop > /dev/null 2>&1\"");
 	  $rc = $rc >> 8;
 	  if ($rc) {
 		  main::progress("logger mysql stop failed with exit code $rc\n");
@@ -2356,7 +2363,7 @@ sub stopLoggerSql {
 	  }
     my $timeout = sleep 10;
     while (isLoggerSqlRunning() && $timeout <= 120 ) {
-		  $rc = 0xffff & system("su - zimbra -c \"/opt/zimbra/bin/logmysql.server stop > /dev/null 2>&1\"");
+		  $rc = 0xffff & system("$su \"/opt/zimbra/bin/logmysql.server stop > /dev/null 2>&1\"");
       $timeout += sleep 10;
     }
   }
@@ -2378,7 +2385,7 @@ sub runSchemaUpgrade {
 	}
 
 	main::progress ("Running ${scriptDir}/$updateScripts{$curVersion}\n");
-  open(MIG, "su - zimbra -c \"perl -I${scriptDir} ${scriptDir}/$updateScripts{$curVersion}\" 2>&1|");
+  open(MIG, "$su \"perl -I${scriptDir} ${scriptDir}/$updateScripts{$curVersion}\" 2>&1|");
   while (<MIG>) {
     main::progress($_);
   }
@@ -2405,7 +2412,7 @@ sub runLoggerSchemaUpgrade {
 	}
 
 	main::progress ("Running ${scriptDir}/$loggerUpdateScripts{$curVersion}\n");
-	my $rc = 0xffff & system("su - zimbra -c \"perl -I${scriptDir} ${scriptDir}/$loggerUpdateScripts{$curVersion}\"");
+	my $rc = 0xffff & system("$su \"perl -I${scriptDir} ${scriptDir}/$loggerUpdateScripts{$curVersion}\"");
 	$rc = $rc >> 8;
 	if ($rc) {
 		main::progress ("Script failed with code $rc - exiting\n");
@@ -2640,7 +2647,7 @@ sub doBackupRestoreVersionUpdate($) {
 
   my ($prevRedologVersion,$currentRedologVersion,$prevBackupVersion,$currentBackupVersion);
   $prevRedologVersion = &Migrate::getRedologVersion;
-  $currentRedologVersion = `su - zimbra -c "zmjava com.zimbra.cs.redolog.util.GetVersion"`;
+  $currentRedologVersion = `$su "zmjava com.zimbra.cs.redolog.util.GetVersion"`;
   chomp($currentRedologVersion);
 
   return unless ($currentRedologVersion);
@@ -2653,7 +2660,7 @@ sub doBackupRestoreVersionUpdate($) {
 
   if (-f "/opt/zimbra/lib/ext/backup/zimbrabackup.jar") {
     $prevBackupVersion = &Migrate::getBackupVersion; 
-    $currentBackupVersion = `su - zimbra -c "zmjava com.zimbra.cs.backup.util.GetVersion"`;
+    $currentBackupVersion = `$su "zmjava com.zimbra.cs.backup.util.GetVersion"`;
     chomp($currentBackupVersion);
 
     return unless ($currentBackupVersion);
