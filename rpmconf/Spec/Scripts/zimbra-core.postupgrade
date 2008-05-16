@@ -15,6 +15,12 @@
 # 
 
 SAVEDIR=/opt/zimbra/.saveconfig
+PLATFORM=$(/opt/zimbra/libexec/get_plat_tag.sh)
+if [ "x$PLATFORM" = "xMACOSXx86_10.5" ]; then
+  SU="su - zimbra -c -l"
+else
+  SU="su - zimbra -c"
+fi
 
 mkdir -p /opt/zimbra/zmstat/pid
 chown zimbra:zimbra /opt/zimbra/zmstat
@@ -58,16 +64,16 @@ fi
 RF="$SAVEDIR/config.save"
 while read i; do
 	# echo "Setting $i"
-	su - zimbra -c "zmlocalconfig -f -e $i"
+	$SU "zmlocalconfig -f -e $i"
 done < $RF
 if [ -f "$SAVEDIR/backup.save" -a -x "/opt/zimbra/bin/zmschedulebackup" ]; then
   first=1
   while read line; do
     if [ $first = 1 ]; then
-      su - zimbra -c "/opt/zimbra/bin/zmschedulebackup -R $line"
+      $SU "/opt/zimbra/bin/zmschedulebackup -R $line"
       first=0
     else
-      su - zimbra -c "/opt/zimbra/bin/zmschedulebackup -A $line"
+      $SU "/opt/zimbra/bin/zmschedulebackup -A $line"
     fi
   done < "$SAVEDIR/backup.save"
 fi
