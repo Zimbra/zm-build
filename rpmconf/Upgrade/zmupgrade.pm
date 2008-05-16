@@ -2231,6 +2231,21 @@ sub upgrade506GA {
 sub upgrade507GA {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
 	main::progress("Updating from 5.0.7_GA\n");
+  my $zimbra_home = main::getLocalConfig("zimbra_home");
+  $zimbra_home = "/opt/zimbra" if ($zimbra_home eq "");
+
+  if (main::isInstalled("zimbra-store")) {
+    my $old_mysql_errlogfile="${zimbra_home}/db/data/${hn}.err";
+    my $mysql_errlogfile="${zimbra_home}/log/mysql_error.log";
+    rename(${old_mysql_errlogfile}, ${mysql_errlogfile})
+      if (-f ${old_mysql_errlogfile});
+  }
+  if (main::isInstalled("zimbra-logger")) {
+    my $old_logger_mysql_errlogfile="${zimbra_home}/db/data/${hn}.err";
+    my $logger_mysql_errlogfile="${zimbra_home}/log/logger_mysql_error.log";
+    rename(${old_logger_mysql_errlogfile}, ${logger_mysql_errlogfile})
+      if (-f ${old_logger_mysql_errlogfile});
+  } 
 	return 0;
 }
 
