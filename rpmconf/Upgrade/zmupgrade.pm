@@ -147,6 +147,7 @@ my %updateFuncs = (
   "5.0.4_GA" => \&upgrade504GA,
   "5.0.5_GA" => \&upgrade505GA,
   "5.0.6_GA" => \&upgrade506GA,
+  "5.0.7_GA" => \&upgrade507GA,
   "5.5.0_GA" => \&upgrade550GA,
 );
 
@@ -202,6 +203,7 @@ my @versionOrder = (
   "5.0.4_GA",
   "5.0.5_GA",
   "5.0.6_GA",
+  "5.0.7_GA",
   "5.5.0_GA",
 );
 
@@ -374,6 +376,8 @@ sub upgrade {
 		main::progress("This appears to be 5.0.5_GA\n");
 	} elsif ($startVersion eq "5.0.6_GA") {
 		main::progress("This appears to be 5.0.6_GA\n");
+	} elsif ($startVersion eq "5.0.7_GA") {
+		main::progress("This appears to be 5.0.7_GA\n");
 	} elsif ($startVersion eq "5.5.0_GA") {
 		main::progress("This appears to be 5.5.0_GA\n");
 	} else {
@@ -2214,6 +2218,12 @@ sub upgrade506GA {
     main::runAsZimbra("$ZMPROV ms $hn zimbraMtaAuthTarget FALSE\n");
   }
 
+	return 0;
+}
+
+sub upgrade507GA {
+	my ($startBuild, $targetVersion, $targetBuild) = (@_);
+	main::progress("Updating from 5.0.7_GA\n");
 	return 0;
 }
 
