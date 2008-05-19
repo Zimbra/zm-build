@@ -42,10 +42,10 @@ progress("Operations logged to $logfile\n");
 
 our $ZMPROV = "/opt/zimbra/bin/zmprov -l";
 our $SU;
-if ($platform == "MACOSXx86_10.5") {
-  $SU = "su - zimbra -c -l "
+if ($platform eq "MACOSXx86_10.5") {
+  $SU = "su - zimbra -c -l ";
 } else {
-  $SU = "su - zimbra -c "
+  $SU = "su - zimbra -c ";
 }
 
 if ($platform =~ /MACOSX/) {
