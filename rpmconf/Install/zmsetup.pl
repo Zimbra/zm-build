@@ -86,6 +86,7 @@ my @packageList = (
   "zimbra-cluster",
   "zimbra-proxy",
   "zimbra-archiving",
+  "zimbra-convertd",
 );
 
 my %packageServiceMap = (
@@ -100,6 +101,7 @@ my %packageServiceMap = (
   stats     => "zimbra-core",
   imapproxy => "zimbra-proxy",
   archiving => "zimbra-archiving",
+  convertd  => "zimbra-convertd",
 );
 
 my %installedPackages = ();
@@ -329,6 +331,7 @@ sub checkPortConflicts {
     993 => 'zimbra-store',
     995 => 'zimbra-store',
     7025 => 'zimbra-store',
+    7047 => 'zimbra-convertd',
     7306 => 'zimbra-store',
     7307 => 'zimbra-store',
     7780 => 'zimbra-spell',
