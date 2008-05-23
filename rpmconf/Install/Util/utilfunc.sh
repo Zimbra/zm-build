@@ -153,17 +153,18 @@ askYN() {
   else
     DEFAULT="N"
   fi
-
+  
   while [ 1 ]; do
     ask "$PROMPT" "$DEFAULT"
+    response=$(perl -e "print lc(\"$reponse\");")
     if [ -z $response ]; then
       :
     else
-      if [ $response = "yes" -o $response = "YES" -o $response = "y" -o $response = "Y" ]; then
+      if [ $response = "yes" -o $response = "y" ]; then
         response="yes"
         break
       else 
-        if [ $response = "no" -o $response = "NO" -o $response = "n" -o $response = "N" ]; then
+        if [ $response = "no" -o $response = "n" ]; then
           response="no"
           break
         fi
