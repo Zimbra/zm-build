@@ -156,7 +156,7 @@ askYN() {
   
   while [ 1 ]; do
     ask "$PROMPT" "$DEFAULT"
-    response=$(perl -e "print lc(\"$reponse\");")
+    response=$(perl -e "print lc(\"$response\");")
     if [ -z $response ]; then
       :
     else
