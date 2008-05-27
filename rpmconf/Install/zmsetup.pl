@@ -3068,7 +3068,7 @@ sub createMainMenu {
     if ($package eq "zimbra-apache") {next;}
     if ($package eq "zimbra-archiving") {next;}
     if (defined($installedPackages{$package})) {
-      if ($package =~ /logger|spell/) {
+      if ($package =~ /logger|spell|convertd/) {
         $mm{menuitems}{$i} = { 
           "prompt" => "$package:", 
           "var" => \$enabledPackages{$package},
