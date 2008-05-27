@@ -25,6 +25,7 @@ zimbra-apache \
 zimbra-spell \
 zimbra-proxy \
 zimbra-archiving \
+zimbra-convertd \
 zimbra-cluster"
 
 SERVICES=""
