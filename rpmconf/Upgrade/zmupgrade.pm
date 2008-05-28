@@ -2234,6 +2234,27 @@ sub upgrade507GA {
   my $zimbra_home = main::getLocalConfig("zimbra_home");
   $zimbra_home = "/opt/zimbra" if ($zimbra_home eq "");
 
+  if (main::isInstalled("zimbra-ldap")) {
+
+	  my @coses = `$su "$ZMPROV gac"`;
+    my %attrs = ( zimbraPrefMailSoundsEnabled => "TRUE",
+                  zimbraPrefCalendarReminderSoundsEnabled => "TRUE");
+	  foreach my $cos (@coses) {
+		  chomp $cos;
+      foreach my $attr (keys %attrs) {
+        main::runAsZimbra("$ZMPROV mc $cos $attr \'$attrs{$attr}\'");
+      }
+    }
+
+    #24926
+    upgradeLdapConfigValue("zimbraCalendarRecurrenceMaxInstances", "0", "");
+    upgradeLdapConfigValue("zimbraCalendarRecurrenceDailyMaxDays", "730", "");
+    upgradeLdapConfigValue("zimbraCalendarRecurrenceWeeklyMaxWeeks", "520", "");
+    upgradeLdapConfigValue("zimbraCalendarRecurrenceMonthlyMaxMonths", "360", "");
+    upgradeLdapConfigValue("zimbraCalendarRecurrenceYearlyMaxYears", "100", "");
+    upgradeLdapConfigValue("zimbraCalendarRecurrenceOtherFrequencyMaxYears", "1", "");
+  }
+
   if (main::isInstalled("zimbra-store")) {
     my $old_mysql_errlogfile="${zimbra_home}/db/data/${hn}.err";
     my $mysql_errlogfile="${zimbra_home}/log/mysql_error.log";
