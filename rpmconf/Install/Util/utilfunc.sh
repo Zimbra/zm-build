@@ -245,7 +245,7 @@ checkRecentBackup() {
       echo "Checking for a recent backup"
       `bin/checkValidBackup > /dev/null 2>&1`
       if [ $? != 0 ]; then
-        echo "WARNING: Unable to find a system backup started within the last" 
+        echo "WARNING: Unable to find a full system backup started within the last" 
         echo "24hrs.  It is recommended to perform a full system backup and"
         echo "copy it to a safe location prior to performing an upgrade."
         echo ""
