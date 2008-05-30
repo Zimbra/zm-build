@@ -2237,6 +2237,9 @@ sub upgrade507GA {
   my $zimbra_home = main::getLocalConfig("zimbra_home");
   $zimbra_home = "/opt/zimbra" if ($zimbra_home eq "");
 
+  # 22913
+  main::setLocalConfig("zimbra_class_accessmanager", "com.zimbra.cs.account.accesscontrol.AclAccessManager.");
+
   if (main::isInstalled("zimbra-ldap")) {
 
 	  my @coses = `$su "$ZMPROV gac"`;
