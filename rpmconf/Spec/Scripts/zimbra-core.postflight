@@ -17,9 +17,9 @@
 mkdir -p /opt/zimbra/log
 chown zimbra:zimbra /opt/zimbra/log
 
-mkdir /opt/zimbra/ssl
+mkdir -p /opt/zimbra/ssl
 chown zimbra:zimbra /opt/zimbra/ssl
-mkdir /opt/zimbra/.ssh
+mkdir -p /opt/zimbra/.ssh
 chown zimbra:zimbra /opt/zimbra/.ssh
 
 rm -f /opt/zimbra/java
