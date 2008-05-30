@@ -3,7 +3,11 @@ zcs-$(RELEASE).dmg: $(ARCH)/zcs.mpkg packages
 	mkdir -p $(ARCH)/tmp/docs
 	-cp -f $(WEBAPP_DIR)/zimbra/downloads/* $(ARCH)
 	cp -f $(PACKAGE_CONF_DIR)/Install/install-mac.sh $(ARCH)/tmp/scripts/installZCS.sh
-	cp -f $(CONSOLE_DIR)/WebRoot/adminhelp/pdf/* $(ARCH)/tmp/docs/
+	-@(for d in `find $(CONSOLE_DIR)/WebRoot/help -mindepth 1 -maxdepth 1 -type d -exec basename "{}" \;`; do \
+		mkdir -p $(ARCH)/tmp/docs/$$d; \
+		cp $(CONSOLE_DIR)/WebRoot/help/$$d/admin/pdf/* $(ARCH)/tmp/docs/$$d; \
+	done)
+
 	cp -R $(ARCH)/zcs.mpkg $(ARCH)/tmp
 	hdiutil create -srcfolder $(ARCH)/tmp -volname zcs-$(VERSION_TAG).$(RELEASE) $(ARCH)/zcs-$(VERSION_TAG).$(RELEASE).dmg
 	rm -rf $(ARCH)/tmp
@@ -55,9 +59,14 @@ zcs_stage:
 	cp -f $(LICENSE_DIR)/zimbra/ypl-full.txt zcs-$(VERSION_TAG).$(RELEASE)/docs/YPL.txt
 	cp -f $(LICENSE_DIR)/zimbra/zcl.txt zcs-$(VERSION_TAG).$(RELEASE)/docs/zcl.txt
 	cp -f $(LICENSE_DIR)/zimbra/zimbra_public_eula_2.1.txt zcs-$(VERSION_TAG).$(RELEASE)/docs/zimbra_public_eula_2.1.txt
-	cp -f $(CONSOLE_DIR)/WebRoot/adminhelp/pdf/*pdf zcs-$(VERSION_TAG).$(RELEASE)/docs
-	cp -f $(CONSOLE_DIR)/WebRoot/adminhelp/txt/readme_source.txt zcs-$(VERSION_TAG).$(RELEASE)
-	cp -f $(CONSOLE_DIR)/WebRoot/adminhelp/txt/readme_binary.txt zcs-$(VERSION_TAG).$(RELEASE)
+	-@(for d in `find $(CONSOLE_DIR)/WebRoot/help -mindepth 1 -maxdepth 1 -type d -exec basename "{}" \;`; do \
+		mkdir -p zcs-$(VERSION_TAG).$(RELEASE)/docs/$$d; \
+		cp -f $(CONSOLE_DIR)/WebRoot/help/$$d/admin/pdf/* zcs-$(VERSION_TAG).$(RELEASE)/docs/$$d; \
+	done)
+	-@(for d in `find $(CONSOLE_DIR)/WebRoot/help -mindepth 1 -maxdepth 1 -type d -exec basename "{}" \;`; do \
+		cp -f $(CONSOLE_DIR)/WebRoot/help/$$d/admin/txt/readme_source.txt zcs-$(VERSION_TAG).$(RELEASE)/readme_source_$$d.txt; \
+		cp -f $(CONSOLE_DIR)/WebRoot/help/$$d/admin/txt/readme_binary.txt zcs-$(VERSION_TAG).$(RELEASE)/readme_binary_$$d.txt; \
+	done)
 	cp -f $(SERVICE_DIR)/build/versions-init.sql zcs-$(VERSION_TAG).$(RELEASE)/data
 	cp $(PACKAGE_CONF_DIR)/Install/install.sh zcs-$(VERSION_TAG).$(RELEASE)
 	cp -f $(PACKAGE_CONF_DIR)/Install/Util/*sh zcs-$(VERSION_TAG).$(RELEASE)/util
