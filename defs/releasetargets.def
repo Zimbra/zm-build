@@ -4,6 +4,7 @@ zcs-$(RELEASE).dmg: $(ARCH)/zcs.mpkg packages
 	-cp -f $(WEBAPP_DIR)/zimbra/downloads/* $(ARCH)
 	cp -f $(PACKAGE_CONF_DIR)/Install/install-mac.sh $(ARCH)/tmp/scripts/installZCS.sh
 	-@(for d in `find $(CONSOLE_DIR)/WebRoot/help -mindepth 1 -maxdepth 1 -type d -exec basename "{}" \;`; do \
+		[ ! -e $(CONSOLE_DIR)/WebRoot/help/$$d/admin/pdf ] && continue; \
 		mkdir -p $(ARCH)/tmp/docs/$$d; \
 		cp $(CONSOLE_DIR)/WebRoot/help/$$d/admin/pdf/* $(ARCH)/tmp/docs/$$d; \
 	done)
@@ -60,6 +61,7 @@ zcs_stage:
 	cp -f $(LICENSE_DIR)/zimbra/zcl.txt zcs-$(VERSION_TAG).$(RELEASE)/docs/zcl.txt
 	cp -f $(LICENSE_DIR)/zimbra/zimbra_public_eula_2.1.txt zcs-$(VERSION_TAG).$(RELEASE)/docs/zimbra_public_eula_2.1.txt
 	-@(for d in `find $(CONSOLE_DIR)/WebRoot/help -mindepth 1 -maxdepth 1 -type d -exec basename "{}" \;`; do \
+		[ ! -e $(CONSOLE_DIR)/WebRoot/help/$$d/admin/pdf ] && continue; \
 		mkdir -p zcs-$(VERSION_TAG).$(RELEASE)/docs/$$d; \
 		cp -f $(CONSOLE_DIR)/WebRoot/help/$$d/admin/pdf/* zcs-$(VERSION_TAG).$(RELEASE)/docs/$$d; \
 	done)
