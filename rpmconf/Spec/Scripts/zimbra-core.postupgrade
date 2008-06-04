@@ -66,17 +66,18 @@ while read i; do
 	# echo "Setting $i"
 	$SU "zmlocalconfig -f -e $i"
 done < $RF
-if [ -f "$SAVEDIR/backup.save" -a -x "/opt/zimbra/bin/zmschedulebackup" ]; then
-  first=1
-  while read line; do
-    if [ $first = 1 ]; then
-      $SU "/opt/zimbra/bin/zmschedulebackup -R $line"
-      first=0
-    else
-      $SU "/opt/zimbra/bin/zmschedulebackup -A $line"
-    fi
-  done < "$SAVEDIR/backup.save"
-fi
+
+#if [ -f "$SAVEDIR/backup.save" -a -x "/opt/zimbra/bin/zmschedulebackup" ]; then
+#  first=1
+#  while read line; do
+#    if [ $first = 1 ]; then
+#      $SU "/opt/zimbra/bin/zmschedulebackup -R $line"
+#      first=0
+#    else
+#      $SU "/opt/zimbra/bin/zmschedulebackup -A $line"
+#    fi
+#  done < "$SAVEDIR/backup.save"
+#fi
 
 if [ -f $SAVEDIR/cacerts ]; then
 	cp -f $SAVEDIR/cacerts /opt/zimbra/java/jre/lib/security/cacerts
