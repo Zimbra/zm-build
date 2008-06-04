@@ -2235,7 +2235,7 @@ sub upgrade507GA {
   $zimbra_home = "/opt/zimbra" if ($zimbra_home eq "");
 
   # 22913
-  main::setLocalConfig("zimbra_class_accessmanager", "com.zimbra.cs.account.accesscontrol.AclAccessManager.");
+  main::setLocalConfig("zimbra_class_accessmanager", "com.zimbra.cs.account.accesscontrol.AclAccessManager");
 
   if (main::isInstalled("zimbra-ldap")) {
 
