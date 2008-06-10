@@ -2240,8 +2240,13 @@ sub upgrade507GA {
   if (main::isInstalled("zimbra-ldap")) {
 
 	  my @coses = `$su "$ZMPROV gac"`;
-    my %attrs = ( zimbraPrefMailSoundsEnabled => "TRUE",
-                  zimbraPrefCalendarReminderSoundsEnabled => "TRUE");
+    my %attrs = ( zimbraPrefIMFlashTitle                    => "TRUE",
+                  zimbraPrefMailFlashIcon                   => "FALSE",
+                  zimbraPrefMailFlashTitle                  => "FALSE",
+                  zimbraPrefMailSoundsEnabled               => "FALSE",
+                  zimbraPrefAdvancedClientEnforceMinDisplay => "TRUE",
+                  zimbraPrefCalendarReminderFlashTitle      => "TRUE",
+                  zimbraPrefCalendarReminderSoundsEnabled   => "TRUE");
 	  foreach my $cos (@coses) {
 		  chomp $cos;
       foreach my $attr (keys %attrs) {
