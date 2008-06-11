@@ -3874,7 +3874,6 @@ sub configSpellServer {
 
 sub configSetMtaDefaults {
    &configSetMtaAuthHost();
-   runAsZimbra("$ZMPROV ms $config{HOSTNAME} zimbraMtaAuthTarget TRUE");
 }
 
 sub configSetMtaAuthHost {
@@ -3909,6 +3908,7 @@ sub configSetMtaAuthHost {
 
 sub configSetStoreDefaults {
   runAsZimbra("$ZMPROV ms $config{HOSTNAME} zimbraReverseProxyLookupTarget TRUE");
+  runAsZimbra("$ZMPROV ms $config{HOSTNAME} zimbraMtaAuthTarget TRUE");
 }
 
 sub configSetServicePorts {

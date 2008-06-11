@@ -2221,8 +2221,10 @@ sub upgrade506GA {
     } 
   }
   #bug 27342
-  if (!(main::isInstalled("zimbra-mta"))) {
+  if (!(main::isEnabled("zimbra-store"))) {
     main::runAsZimbra("$ZMPROV ms $hn zimbraMtaAuthTarget FALSE\n");
+  } else {
+    main::runAsZimbra("$ZMPROV ms $hn zimbraMtaAuthTarget TRUE\n");
   }
 
 	return 0;
@@ -2275,6 +2277,12 @@ sub upgrade507GA {
     rename(${old_logger_mysql_errlogfile}, ${logger_mysql_errlogfile})
       if (-f ${old_logger_mysql_errlogfile});
   } 
+  #bug 27342
+  if (!(main::isEnabled("zimbra-store"))) {
+    main::runAsZimbra("$ZMPROV ms $hn zimbraMtaAuthTarget FALSE\n");
+  } else {
+    main::runAsZimbra("$ZMPROV ms $hn zimbraMtaAuthTarget TRUE\n");
+  }
 	return 0;
 }
 
