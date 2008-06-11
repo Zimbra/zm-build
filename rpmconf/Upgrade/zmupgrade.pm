@@ -2187,11 +2187,13 @@ sub upgrade506GA {
 
     upgradeLdapConfigValue("zimbraClusterType", "none", "");
     upgradeLdapConfigValue("zimbraAttachmentsIndexedTextLimit", "1048576", "");
-    upgradeLdapConfigValue("zimbraXMPPEnabled", "TRUE", "FALSE");
+    # commented out #28280
+    #upgradeLdapConfigValue("zimbraXMPPEnabled", "TRUE", "FALSE");
     upgradeLdapConfigValue("zimbraReverseProxySendPop3Xoip", "TRUE", "");
     upgradeLdapConfigValue("zimbraReverseProxySendImapId", "TRUE", "");
     upgradeLdapConfigValue("zimbraCalendarCalDavDisableScheduling", "FALSE", "");
-    upgradeLdapConfigValue("zimbraMtaAuthTarget", "FALSE", "TRUE");
+    # commented out 27342
+    #upgradeLdapConfigValue("zimbraMtaAuthTarget", "FALSE", "TRUE");
     upgradeLdapConfigValue("zimbraLmtpPermanentFailureWhenOverQuota", "FALSE", "");
 
     # bug 27123, upgrade query
