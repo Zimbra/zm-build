@@ -2203,7 +2203,7 @@ sub upgrade506GA {
 
     #bug 27699, update log level
     my $ldap_log_level = main::getLocalConfig("ldap_log_level");
-    main::setLocalConfig("ldap_log_level", "16640")
+    main::setLocalConfig("ldap_log_level", "49152")
       if ($ldap_log_level == 32768); 
   }
   #bug 24827,26544
