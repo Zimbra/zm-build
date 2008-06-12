@@ -2192,8 +2192,7 @@ sub upgrade506GA {
     upgradeLdapConfigValue("zimbraReverseProxySendPop3Xoip", "TRUE", "");
     upgradeLdapConfigValue("zimbraReverseProxySendImapId", "TRUE", "");
     upgradeLdapConfigValue("zimbraCalendarCalDavDisableScheduling", "FALSE", "");
-    # commented out 27342
-    #upgradeLdapConfigValue("zimbraMtaAuthTarget", "FALSE", "TRUE");
+    upgradeLdapConfigValue("zimbraMtaAuthTarget", "FALSE", "TRUE");
     upgradeLdapConfigValue("zimbraLmtpPermanentFailureWhenOverQuota", "FALSE", "");
 
     # bug 27123, upgrade query
