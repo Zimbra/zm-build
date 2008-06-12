@@ -194,6 +194,23 @@ sub openLogFile($;$) {
         if (! -e $dir) {
             mkdir($dir, 0755) || die "Unable to create log directory $dir: $!";
         }
+        if (-f $logfile) { # check for stale data
+        	my $stale = 0;
+        	my $date = "";
+        	my $today = getDate();
+        	$fh->open("<$logfile") || die "Unable to read existing logfile: $!";
+        	while (<$fh>) {
+        		if (/^(\d{2})\/(\d{2})\/(\d{4})/o) {
+        			$date = "$3-$1-$2";
+        		}
+        	}
+        	$stale = 1 if $date ne $today;
+        	if ($stale) {
+        		print STDERR "$logfile was stale ($date) pre-rotating\n";
+        		return rotateLogFile($fh, $logfile, $heading, $date);
+        	}
+        	$fh->close();
+        }
         $fh->open(">> $logfile") || die "Unable to open log file $logfile: $!";
     } else {
         $fh = *STDOUT;
