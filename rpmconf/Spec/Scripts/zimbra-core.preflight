@@ -196,18 +196,18 @@ if [ x"$PLATFORM" = "xMACOSXx86_10.5" ]; then
     egrep -q 'kern.maxfiles=' /etc/sysctl.conf >/dev/null
     if [ $? != 0 ]; then
       echo "kern.maxfiles=524288" >>/etc/sysctl.conf
-      `sysctl -w kern.maxfiles=524288`
+      `sysctl -w kern.maxfiles=524288 >/dev/null`
     fi
     egrep -q 'kern.maxfilesperproc=' /etc/sysctl.conf >/dev/null
     if [ $? != 0 ]; then
       echo "kern.maxfilesperproc=524288" >>/etc/sysctl.conf
-      `sysctl -w kern.maxfilesperproc=524288`
+      `sysctl -w kern.maxfilesperproc=524288 >/dev/null`
     fi
   else
     echo "kern.maxfiles=524288" >/etc/sysctl.conf
     echo "kern.maxfilesperproc=524288" >>/etc/sysctl.conf
-    `sysctl -w kern.maxfiles=524288`
-    `sysctl -w kern.maxfilesperproc=524288`
+    `sysctl -w kern.maxfiles=524288 >/dev/null`
+    `sysctl -w kern.maxfilesperproc=524288 >/dev/null`
   fi
 fi
 
