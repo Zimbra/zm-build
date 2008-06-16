@@ -189,6 +189,28 @@ fi
 if [ ! -d "/opt/zimbra" ]; then
   mkdir /opt/zimbra
 fi
+
+PLATFORM=$(/opt/zimbra/libexec/get_plat_tag.sh)
+if [ x"$PLATFORM" = "xMACOSXx86_10.5" ]; then
+  if [ -f "/etc/sysctl.conf" ]; then
+    egrep -q 'kern.maxfiles=' /etc/sysctl.conf >/dev/null
+    if [ $? != 0 ]; then
+      echo "kern.maxfiles=524288" >>/etc/sysctl.conf
+      `sysctl -w kern.maxfiles=524288`
+    fi
+    egrep -q 'kern.maxfilesperproc=' /etc/sysctl.conf >/dev/null
+    if [ $? != 0 ]; then
+      echo "kern.maxfilesperproc=524288" >>/etc/sysctl.conf
+      `sysctl -w kern.maxfilesperproc=524288`
+    fi
+  else
+    echo "kern.maxfiles=524288" >/etc/sysctl.conf
+    echo "kern.maxfilesperproc=524288" >>/etc/sysctl.conf
+    `sysctl -w kern.maxfiles=524288`
+    `sysctl -w kern.maxfilesperproc=524288`
+  fi
+fi
+
 D=`date +%s`
 echo "${D}: INSTALL SESSION START" >> /opt/zimbra/.install_history
 
