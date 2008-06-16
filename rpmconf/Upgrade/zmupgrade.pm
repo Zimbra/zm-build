@@ -2271,13 +2271,18 @@ sub upgrade507GA {
     my $mysql_errlogfile="${zimbra_home}/log/mysql_error.log";
     rename(${old_mysql_errlogfile}, ${mysql_errlogfile})
       if (-f ${old_mysql_errlogfile});
+    # 29092
+    upgradeLocalConfigValue("zimbra_waitset_nodata_sleep_time", "3000", "3");
+    upgradeLocalConfigValue("zimbra_waitset_initial_sleep_time", "1000", "1");
   }
+
   if (main::isInstalled("zimbra-logger")) {
     my $old_logger_mysql_errlogfile="${zimbra_home}/db/data/${hn}.err";
     my $logger_mysql_errlogfile="${zimbra_home}/log/logger_mysql_error.log";
     rename(${old_logger_mysql_errlogfile}, ${logger_mysql_errlogfile})
       if (-f ${old_logger_mysql_errlogfile});
   } 
+
   #bug 27342
   if (!(main::isEnabled("zimbra-store"))) {
     main::runAsZimbra("$ZMPROV ms $hn zimbraMtaAuthTarget FALSE\n");
@@ -2916,6 +2921,13 @@ sub upgradeLdapConfigValue($$$) {
   my ($key,$new_value,$cmp_value) = @_;
   my $current_value = main::getLdapConfigValue($key);
   main::runAsZimbra("$ZMPROV mcf $key $new_value")
+    if ($current_value eq $cmp_value);
+}
+
+sub upgradeLocalConfigValue($$$) {
+  my ($key,$new_value,$cmp_value) = @_;
+  my $current_value = main::getLocalConfig($key);
+	main::setLocalConfig("$key", "$new_value")
     if ($current_value eq $cmp_value);
 }
 
