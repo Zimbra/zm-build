@@ -195,7 +195,7 @@ if [ ! -d "/opt/zimbra" ]; then
 fi
 
 getVersion
-if [ x"$VERSION" = "10.5" ]; then
+if [ x"$VERSION" = "x10.5" ]; then
   if [ -f "/etc/sysctl.conf" ]; then
     egrep -q 'kern.maxfiles=' /etc/sysctl.conf >/dev/null
     if [ $? != 0 ]; then
