@@ -28,25 +28,25 @@ $(WEBAPP_DIR)/zimbraAdmin.war: $(WEBAPP_DIR) $(CONSOLE_DIR)/$(WEBAPP_BUILD_DIR)/
 	mkdir $(WEBAPP_DIR)/zimbraAdmin
 	(cd $(WEBAPP_DIR)/zimbraAdmin; jar xf $(CONSOLE_DIR)/build/dist/$(MAILBOXD_SERVER)/webapps/zimbraAdmin.war)
 	for download in $(IWDOWNLOAD); do \
-		echo "IMPORT_WIZ_DOWNLOAD_LINK = <A HREF=\"/zimbra/downloads/$$download\" target=_blank onclick='ZaZimbraAdmin.unloadHackCallback();'>PST Import Wizard</A>" >> $(WEBAPP_DIR)/zimbraAdmin/WEB-INF/classes/messages/ZaMsg.properties; \
+		echo "IMPORT_WIZ_DOWNLOAD_LINK = \"/zimbra/downloads/$$download\" >> $(WEBAPP_DIR)/zimbraAdmin/WEB-INF/classes/messages/ZaMsg.properties; \
 	done
 	for download in $(MWDOWNLOAD); do \
-		echo "MIG_WIZ_DOWNLOAD_LINK = <A HREF=\"/zimbra/downloads/$$download\" target=_blank onclick='ZaZimbraAdmin.unloadHackCallback();'>ZCS Migration Wizard for Exchange</A>" >> $(WEBAPP_DIR)/zimbraAdmin/WEB-INF/classes/messages/ZaMsg.properties; \
+		echo "MIG_WIZ_DOWNLOAD_LINK = "/zimbra/downloads/$$download\" >> $(WEBAPP_DIR)/zimbraAdmin/WEB-INF/classes/messages/ZaMsg.properties; \
 	done
 	for download in $(CNDOWNLOAD); do \
-		echo "CONNECTOR_DOWNLOAD_LINK = <A HREF=\"/zimbra/downloads/$$download\" target=_blank onclick='ZaZimbraAdmin.unloadHackCallback();'>Zimbra Connector for Outlook</A>" >> $(WEBAPP_DIR)/zimbraAdmin/WEB-INF/classes/messages/ZaMsg.properties; \
+		echo "CONNECTOR_DOWNLOAD_LINK = \"/zimbra/downloads/$$download\" >> $(WEBAPP_DIR)/zimbraAdmin/WEB-INF/classes/messages/ZaMsg.properties; \
 	done
 	for download in $(CMDOWNLOAD); do \
-		echo "CONNECTOR_MSI_DOWNLOAD_LINK = <A HREF=\"/zimbra/downloads/$$download\" target=_blank onclick='ZaZimbraAdmin.unloadHackCallback();'>Zimbra Connector for Outlook MSI Customizer</A>" >> $(WEBAPP_DIR)/zimbraAdmin/WEB-INF/classes/messages/ZaMsg.properties; \
+		echo "CONNECTOR_MSI_DOWNLOAD_LINK = \"/zimbra/downloads/$$download\" >> $(WEBAPP_DIR)/zimbraAdmin/WEB-INF/classes/messages/ZaMsg.properties; \
 	done
 	for download in $(DMDOWNLOAD); do \
-		echo "DOMINO_MIG_WIZ_DOWNLOAD_LINK = <A HREF=\"/zimbra/downloads/$$download\" target=_blank onclick='ZaZimbraAdmin.unloadHackCallback();'>ZCS Migration Wizard for Domino</A>" >> $(WEBAPP_DIR)/zimbraAdmin/WEB-INF/classes/messages/ZaMsg.properties; \
+		echo "DOMINO_MIG_WIZ_DOWNLOAD_LINK = \"/zimbra/downloads/$$download\" >> $(WEBAPP_DIR)/zimbraAdmin/WEB-INF/classes/messages/ZaMsg.properties; \
 	done
 	for download in $(ZTDOWNLOAD); do \
-		echo "ZIMBRA_TOASTER_DOWNLOAD_LINK = <A HREF=\"/zimbra/downloads/$$download\" target=_blank onclick='ZaZimbraAdmin.unloadHackCallback();'>Zimbra Toaster</A>" >> $(WEBAPP_DIR)/zimbraAdmin/WEB-INF/classes/messages/ZaMsg.properties; \
+		echo "ZIMBRA_TOASTER_DOWNLOAD_LINK = \"/zimbra/downloads/$$download\" >> $(WEBAPP_DIR)/zimbraAdmin/WEB-INF/classes/messages/ZaMsg.properties; \
 	done
 #	for download in $(GWDOWNLOAD); do \
-#		echo "GROUPWISE_MIG_WIZ_DOWNLOAD_LINK = <A HREF=\"/zimbra/downloads/$$download\" target=_blank>ZCS Migration Wizard for GroupWise</A>" >> $(WEBAPP_DIR)/zimbraAdmin/WEB-INF/classes/msgs/ZaMsg.properties; \
+#		echo "GROUPWISE_MIG_WIZ_DOWNLOAD_LINK = \"/zimbra/downloads/$$download\" >> $(WEBAPP_DIR)/zimbraAdmin/WEB-INF/classes/msgs/ZaMsg.properties; \
 #	done
 #
 
