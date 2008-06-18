@@ -984,10 +984,10 @@ restoreExistingConfig() {
       # echo "Setting $i"
       runAsZimbra "zmlocalconfig -f -e $i"
     done < $RF
-    if [ -f $RESTORECONFIG/backup.save ]; then
-      echo -n "Restoring backup schedule..."
-      runAsZimbra "cat $RESTORECONFIG/backup.save | xargs zmschedulebackup -R"
-    fi
+    #if [ -f $RESTORECONFIG/backup.save ]; then
+    #  echo -n "Restoring backup schedule..."
+    #  runAsZimbra "cat $RESTORECONFIG/backup.save | xargs zmschedulebackup -R"
+    #fi
     echo "done"
   fi
 }
