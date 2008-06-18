@@ -4638,8 +4638,6 @@ sub applyConfig {
 
   configSetEnabledServices();
 
-  setupCrontab();
-
   setupSyslog();
 
   postinstall::configure();
@@ -4676,6 +4674,8 @@ sub applyConfig {
     progress ( "WARNING: Document and Zimlet initialization skipped because Application Server was not configured to start.\n")
       if (isEnabled("zimbra-store"));
   }
+
+  setupCrontab();
 
   if ($newinstall) {
     runAsZimbra ("/opt/zimbra/bin/zmsshkeygen");
