@@ -210,7 +210,7 @@ $(CORE_DEST_DIR)/conf: $(WEBAPP_DIR)/service.war
 	cp $(SERVICE_DIR)/conf/clamd.conf.in $@
 	cp $(SERVICE_DIR)/conf/freshclam.conf.in $@
 	cp $(SERVICE_DIR)/conf/postfix_header_checks.in $@
-	mkdir -p $@/conf/nginx
+	mkdir -p $@/nginx
 	cp $(SERVICE_DIR)/conf/nginx/nginx.conf.mail.imaps.template $@/nginx/
 	cp $(SERVICE_DIR)/conf/nginx/nginx.conf.mail.imap.template $@/nginx/
 	cp $(SERVICE_DIR)/conf/nginx/nginx.conf.mail.pop3s.template $@/nginx/
