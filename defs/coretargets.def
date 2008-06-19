@@ -1,7 +1,7 @@
 # __CORE
 
-core: CUR_DEST_ROOT := $(CORE_DEST_ROOT) 
-core: CUR_PACKAGE_SPEC := $(BUILD_ROOT)/zimbracore.spec 
+core: CUR_DEST_ROOT := $(CORE_DEST_ROOT)
+core: CUR_PACKAGE_SPEC := $(BUILD_ROOT)/zimbracore.spec
 core: CUR_PACKAGE_NAME := zimbra-core
 core: $(PACKAGE_DIR) core_stage core_pkg_spec_$(PACKAGE_EXT)
 	(cd $(CUR_DEST_ROOT); \
@@ -18,7 +18,7 @@ $(BUILD_ROOT)/zimbra-core.Description.plist:
 		-e 's/@@RELEASE@@/$(RELEASE)/' \
 		-e 's/@@MAJOR@@/$(MAJOR)/' \
 		-e 's/@@MINOR@@/$(MINOR)/' > $@
-	
+
 $(BUILD_ROOT)/zimbra-core.Info.plist:
 	cat $(PACKAGE_CONF_DIR)/Spec/zimbra-core.Info.plist | \
 		sed -e 's/@@VERSION@@/$(VERSION_TAG)/' \
@@ -26,7 +26,7 @@ $(BUILD_ROOT)/zimbra-core.Info.plist:
 		-e 's/@@MAJOR@@/$(MAJOR)/' \
 		-e 's/@@BUILDNUM@@/$(BUILDNUM)/' \
 		-e 's/@@MINOR@@/$(MINOR)/' > $@
-	
+
 $(BUILD_ROOT)/resources/zimbra-core:
 	mkdir -p $@
 	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-core.preflight $@/preflight
