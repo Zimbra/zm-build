@@ -745,6 +745,7 @@ sub setLdapDefaults {
   if ($config{HTTPPORT} eq 0) { $config{HTTPPORT} = 80; }
   if ($config{HTTPSPORT} eq 0) { $config{HTTPSPORT} = 443; }
   if ($config{MODE} eq "") { $config{MODE} = "mixed"; }
+  if ($config{zimbraReverseProxyLookupTarget} eq "") { $config{zimbraReverseProxyLookupTarget} = getLdapConfigValue("zimbraReverseProxyLookupTarget"); }
 
   if (isEnabled("zimbra-mta")) {
     my $tmpval = getLdapServerValue("zimbraMtaMyNetworks");
@@ -998,6 +999,13 @@ sub setDefaults {
     $config{MTAAUTHHOST} = $config{HOSTNAME};
     $config{DOCREATEADMIN} = "yes" if $newinstall;
     $config{DOTRAINSA} = "yes";
+    if (isEnabled("zimbra-proxy")) {
+      $config{zimbraReverseProxyLookupTarget} = "TRUE" if $newinstall;
+    } else {
+      $config{zimbraReverseProxyLookupTarget} = "FALSE" if $newinstall;
+      $config{zimbraMailProxy} = "FALSE" if $newinstall;
+      $config{zimbraWebProxy} = "FALSE" if $newinstall;
+    }
 
     # default values for upgrades 
     $config{NOTEBOOKACCOUNT} = "wiki".'@'.$config{CREATEDOMAIN}
@@ -2893,6 +2901,20 @@ sub createStoreMenu {
         };
       $i++;
     }
+    if (!isInstalled("zimbra-proxy") && $newinstall) {
+      $$lm{menuitems}{$i} = {
+        "prompt" => "Configure store for use with reverse mail proxy:",
+        "var" => \$config{zimbraMailProxy},
+        "callback" => \&toggleTF,
+      };
+      $i++;
+      $$lm{menuitems}{$i} = {
+        "prompt" => "Configure store for use with reverse web proxy:",
+        "var" => \$config{zimbraWebProxy},
+        "callback" => \&toggleTF,
+      };
+      $i++;
+    }
     # only prompt for license if we are network install and
     # a license doesn't exist in /opt/zimbra/conf or ldap.
     if (isNetwork() && !-f $config{DEFAULTLICENSEFILE} && !isLicenseInstalled() ) {
@@ -3907,8 +3929,22 @@ sub configSetMtaAuthHost {
 }
 
 sub configSetStoreDefaults {
-  runAsZimbra("$ZMPROV ms $config{HOSTNAME} zimbraReverseProxyLookupTarget TRUE");
+  if(isEnabled("zimbra-proxy")) {
+    $config{zimbraReverseProxyLookupTarget}="TRUE";
+  }
+  runAsZimbra("$ZMPROV ms $config{HOSTNAME} $config{zimbraReverseProxyLookupTarget}");
   runAsZimbra("$ZMPROV ms $config{HOSTNAME} zimbraMtaAuthTarget TRUE");
+  if ($newinstall && ($config{zimbraWebProxy} eq "TRUE" || $config{zimbraMailProxy} eq "TRUE")) {
+    if ($config{zimbraMailProxy} eq "TRUE") {
+           runAsZimbra("/opt/zimbra/libexec/zmproxyinit -m -e ".
+                       "-i $config{IMAPPORT}:$config{IMAPPROXYPORT}:$config{IMAPSSLPORT}:$config{IMAPSSLPROXYPORT} ".
+                       "-p $config{POPPORT}:$config{POPPROXYPORT}:$config{POPSSLPORT}:$config{POPSSLPROXYPORT} $config{HOSTNAME}");
+    }
+    if ($config{zimbraWebProxy} eq "TRUE") {
+           runAsZimbra("/opt/zimbra/libexec/zmproxyinit -w -e ".
+                       "-a $config{HTTPPORT}:$config{HTTPPROXYPORT}:$config{HTTPSPORT}:$config{HTTPSPROXYPORT} $config{HOSTNAME}");
+    }
+  }
 }
 
 sub configSetServicePorts {
@@ -4087,69 +4123,30 @@ sub configSetProxyPrefs {
         $enabledPackages{"zimbra-proxy"} = "Disabled";
      } else {
         if($config{MAILPROXY} eq "TRUE") {
-           if ((($config{IMAPPORT} == 143 || $config{IMAPPORT} == 7143) &&
-                ($config{IMAPPROXYPORT} == 143 || $config{IMAPPROXYPORT} == 7143)) &&
-               (($config{IMAPSSLPORT} == 993 || $config{IMAPSSLPORT} == 7993) &&
-                ($config{IMAPSSLPROXYPORT} == 993 || $config{IMAPSSLPROXYPORT} == 7993)) &&
-               (($config{POPPORT} == 110 || $config{POPPORT} == 7110) &&
-                ($config{POPPROXYPORT} == 110 || $config{POPPROXYPORT} == 7110)) &&
-               (($config{POPSSLPORT} == 995 || $config{POPSSLPORT} == 7995) &&
-                ($config{POPSSLPROXYPORT} == 995 || $config{POPSSLPROXYPORT} == 7995)))
-           {
-             runAsZimbra("/opt/zimbra/libexec/zmproxyinit -m -e $config{HOSTNAME}");
-           }
-           runAsZimbra("$ZMPROV ms $config{HOSTNAME} zimbraImapCleartextLoginEnabled TRUE");
-           runAsZimbra("$ZMPROV ms $config{HOSTNAME} zimbraPop3CleartextLoginEnabled TRUE");
+           runAsZimbra("/opt/zimbra/libexec/zmproxyinit -m -e ".
+                       "-i $config{IMAPPORT}:$config{IMAPPROXYPORT}:$config{IMAPSSLPORT}:$config{IMAPSSLPROXYPORT} ".
+                       "-p $config{POPPORT}:$config{POPPROXYPORT}:$config{POPSSLPORT}:$config{POPSSLPROXYPORT} $config{HOSTNAME}");
         } else {
-            if ((($config{IMAPPORT} == 143 || $config{IMAPPORT} == 7143) &&
-             ($config{IMAPPROXYPORT} == 143 || $config{IMAPPROXYPORT} == 7143)) &&
-            (($config{IMAPSSLPORT} == 993 || $config{IMAPSSLPORT} == 7993) &&
-             ($config{IMAPSSLPROXYPORT} == 993 || $config{IMAPSSLPROXYPORT} == 7993)) &&
-            (($config{POPPORT} == 110 || $config{POPPORT} == 7110) &&
-             ($config{POPPROXYPORT} == 110 || $config{POPPROXYPORT} == 7110)) &&
-            (($config{POPSSLPORT} == 995 || $config{POPSSLPORT} == 7995) &&
-             ($config{POPSSLPROXYPORT} == 995 || $config{POPSSLPROXYPORT} == 7995)))
-            {
-               runAsZimbra("/opt/zimbra/libexec/zmproxyinit -m -d $config{HOSTNAME}");
-            }
+           runAsZimbra("/opt/zimbra/libexec/zmproxyinit -m -d ".
+                       "-i $config{IMAPPORT}:$config{IMAPPROXYPORT}:$config{IMAPSSLPORT}:$config{IMAPSSLPROXYPORT} ".
+                       "-p $config{POPPORT}:$config{POPPROXYPORT}:$config{POPSSLPORT}:$config{POPSSLPROXYPORT} $config{HOSTNAME}");
         }
         if ($config{HTTPPROXY} eq "TRUE" ) {
-           if ((($config{HTTPPORT} == 80 || $config{HTTPPORT} == 8080) &&
-                ($config{HTTPPROXYPORT} == 80 || $config{HTTPPROXYPORT} == 8080)) &&
-               (($config{HTTPSPORT} == 443 || $config{HTTPSPORT} == 8443) &&
-                ($config{HTTPSPROXYPORT} == 8443 || $config{HTTPSPROXYPORT} == 8443)))
-           {
-             runAsZimbra("/opt/zimbra/libexec/zmproxyinit -w -e $config{HOSTNAME}");
-           }
+           runAsZimbra("/opt/zimbra/libexec/zmproxyinit -w -e ".
+                       "-a $config{HTTPPORT}:$config{HTTPPROXYPORT}:$config{HTTPSPORT}:$config{HTTPSPROXYPORT} $config{HOSTNAME}");
         } else {
-           if ((($config{HTTPPORT} == 80 || $config{HTTPPORT} == 8080) &&
-                ($config{HTTPPROXYPORT} == 80 || $config{HTTPPROXYPORT} == 8080)) &&
-               (($config{HTTPSPORT} == 443 || $config{HTTPSPORT} == 8443) &&
-                ($config{HTTPSPROXYPORT} == 8443 || $config{HTTPSPROXYPORT} == 8443)))
-           {
-             runAsZimbra("/opt/zimbra/libexec/zmproxyinit -w -d $config{HOSTNAME}");
-           }
+           runAsZimbra("/opt/zimbra/libexec/zmproxyinit -w -d ".
+                       "-x $config{MODE} ".
+                       "-a $config{HTTPPORT}:$config{HTTPPROXYPORT}:$config{HTTPSPORT}:$config{HTTPSPROXYPORT} $config{HOSTNAME}");
         }
      }
    } else {
-     if ((($config{IMAPPORT} == 143 || $config{IMAPPORT} == 7143) &&
-          ($config{IMAPPROXYPORT} == 143 || $config{IMAPPROXYPORT} == 7143)) &&
-         (($config{IMAPSSLPORT} == 993 || $config{IMAPSSLPORT} == 7993) &&
-          ($config{IMAPSSLPROXYPORT} == 993 || $config{IMAPSSLPROXYPORT} == 7993)) &&
-         (($config{POPPORT} == 110 || $config{POPPORT} == 7110) &&
-          ($config{POPPROXYPORT} == 110 || $config{POPPROXYPORT} == 7110)) &&
-         (($config{POPSSLPORT} == 995 || $config{POPSSLPORT} == 7995) &&
-          ($config{POPSSLPROXYPORT} == 995 || $config{POPSSLPROXYPORT} == 7995)))
-      {
-        runAsZimbra("/opt/zimbra/libexec/zmproxyinit -m -d $config{HOSTNAME}");
-      }
-      if ((($config{HTTPPORT} == 80 || $config{HTTPPORT} == 8080) &&
-           ($config{HTTPPROXYPORT} == 80 || $config{HTTPPROXYPORT} == 8080)) &&
-          (($config{HTTPSPORT} == 443 || $config{HTTPSPORT} == 8443) &&
-           ($config{HTTPSPROXYPORT} == 8443 || $config{HTTPSPROXYPORT} == 8443)))
-      {
-        runAsZimbra("/opt/zimbra/libexec/zmproxyinit -w -d $config{HOSTNAME}");
-      }
+        runAsZimbra("/opt/zimbra/libexec/zmproxyinit -m -d ".
+                    "-i $config{IMAPPORT}:$config{IMAPPROXYPORT}:$config{IMAPSSLPORT}:$config{IMAPSSLPROXYPORT} ".
+                    "-p $config{POPPORT}:$config{POPPROXYPORT}:$config{POPSSLPORT}:$config{POPSSLPROXYPORT} $config{HOSTNAME}");
+        runAsZimbra("/opt/zimbra/libexec/zmproxyinit -w -d ".
+                    "-x $config{MODE} ".
+                    "-a $config{HTTPPORT}:$config{HTTPPROXYPORT}:$config{HTTPSPORT}:$config{HTTPSPROXYPORT} $config{HOSTNAME}");
    }
 }
 
