@@ -534,7 +534,9 @@ sub isEnabled {
       if (isInstalled($p) and not defined $prevInstalledPackages{$p}) {
         detail("Marking $p as installed. Services for $p will be enabled.");
         $enabledPackages{$p} = "Enabled";
-        $enabledPackages{"zimbra-convertd"} = "Disabled";
+        if ($p eq "zimbra-convertd") {
+          $enabledPackages{$p} = "Disabled";
+        }
       } elsif (isInstalled($p) and not defined $enabledPackages{$p}) {
         detail("Marking $p as disabled.");
         $enabledPackages{$p} = "Disabled";
