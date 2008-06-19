@@ -203,7 +203,7 @@ checkUser() {
 checkDatabaseIntegrity() {
   isInstalled zimbra-store
   if [ x$PKGINSTALLED != "x" ]; then
-    if [ -x "bin/zmdbintegrityreport" ]; then
+    if [ -x "bin/zmdbintegrityreport" -a -x "/opt/zimbra/bin/mysqladmin" ]; then
       if [ x$DEFAULTFILE = "x" -o x$CLUSTERUPGRADE = "xyes" ]; then
         while :; do
           askYN "Do you want to verify message store database integrity?" "Y"
@@ -1070,7 +1070,9 @@ saveExistingConfig() {
     fi
   done
   # yes, it needs massaging to be fed back in...
-  runAsZimbra "zmlocalconfig -s | sed -e \"s/ = \(.*\)/=\'\1\'/\" > $SAVEDIR/config.save"
+  if [ -x "/opt/zimbra/bin/zmlocalconfig" ]; then
+    runAsZimbra "zmlocalconfig -s | sed -e \"s/ = \(.*\)/=\'\1\'/\" > $SAVEDIR/config.save"
+  fi
   if [ -f "/opt/zimbra/java/jre/lib/security/cacerts" ]; then
     cp -f /opt/zimbra/java/jre/lib/security/cacerts $SAVEDIR
   fi

@@ -141,9 +141,7 @@ checkPackages
 
 if [ $AUTOINSTALL = "no" ]; then
   setRemove
-  if [ x"$CLUSTERTYPE" != "x" ]; then
-    clusterPreInstall
-  fi
+
   getInstallPackages
 
   findLatestPackage zimbra-core
