@@ -456,6 +456,8 @@ sub upgrade {
 	  main::progress("Checking $v\n");
 		if ($v eq $startVersion) {
 			$found = 1;
+      # skip startVersion func unless we are on the same version and build increments
+      next unless ($startVersion eq $targetVersion && $targetBuild > $startBuild);
 		}
 		if ($found) {
 			if (defined ($updateFuncs{$v}) ) {
