@@ -299,7 +299,8 @@ $(CORE_DEST_DIR)/contrib:
 	cp -R $(SERVICE_DIR)/src/contrib/* $@
 
 $(CORE_DEST_DIR)/lib/libpcre.dylib: $(CORE_DEST_DIR)/lib
-	(cd $(CORE_DEST_DIR)/lib; tar xzf $(THIRD_PARTY_BUILDS)/$(BUILD_PLATFORM)/pcre/pcre-$(PCRE_VERSION).tgz)
+	(cd $(CORE_DEST_DIR); tar xzf $(THIRD_PARTY_BUILDS)/$(BUILD_PLATFORM)/pcre/pcre-$(PCRE_VERSION).tgz)
+	rm -rf $(CORE_DEST_DIR)/include
 
 $(CORE_DEST_DIR)/lib/libpopt.0.dylib: $(CORE_DEST_DIR)/lib
 	(cd $(CORE_DEST_DIR); tar xzf $(THIRD_PARTY_BUILDS)/$(BUILD_PLATFORM)/popt/popt-$(POPT_VERSION).tgz)
