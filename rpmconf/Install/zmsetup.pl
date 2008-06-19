@@ -544,6 +544,7 @@ sub isEnabled {
     detail("Newinstall enabling all installed packages");
     foreach my $p (@packageList) {
       if (isInstalled($p)) {
+        $enabledPackages{"zimbra-convertd"} = "Disabled";
         unless ($enabledPackages{$p} eq "Disabled") {
           detail("Enabling $p");
           $enabledPackages{$p} = "Enabled" 
@@ -3067,8 +3068,9 @@ sub createMainMenu {
     if ($package eq "zimbra-core") {next;}
     if ($package eq "zimbra-apache") {next;}
     if ($package eq "zimbra-archiving") {next;}
+    if ($package eq "zimbra-convertd") {next;}
     if (defined($installedPackages{$package})) {
-      if ($package =~ /logger|spell|convertd/) {
+      if ($package =~ /logger|spell/) {
         $mm{menuitems}{$i} = { 
           "prompt" => "$package:", 
           "var" => \$enabledPackages{$package},
