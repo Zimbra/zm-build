@@ -12,7 +12,8 @@ PACKAGE_EXT := pkg
 
 PLATFORM_CORE_COMPONENTS = \
 	$(CORE_DEST_DIR)/lib/libexpat.dylib \
-	$(CORE_DEST_DIR)/lib/libpopt.0.dylib
+	$(CORE_DEST_DIR)/lib/libpopt.0.dylib \
+	$(CORE_DEST_DIR)/lib/libpcre.dylib
 
 include $(DEFS_DIR)/plat_common.def
 

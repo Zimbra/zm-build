@@ -156,7 +156,7 @@ $(CORE_DEST_DIR)/zimbramon/lib:
 	tar xzf $(PERL_LIB_SOURCE)/perllib.tgz)
 	cp -R $(BUILD_ROOT)/lib/Zimbra $(CORE_DEST_DIR)/zimbramon/lib
 
-$(CORE_DEST_DIR)/lib: $(WEBAPP_DIR)/service.war $(LDAP_DEST_DIR)/$(LDAP_DIR)-$(LDAP_VERSION) pcre_$(BUILD_PLATFORM) $(NATIVE_DIR)/build/libzimbra-native.$(JNI_EXT) $(NATIVE_DIR)/build/libsetuid.$(JNI_EXT)
+$(CORE_DEST_DIR)/lib: $(WEBAPP_DIR)/service.war $(LDAP_DEST_DIR)/$(LDAP_DIR)-$(LDAP_VERSION) $(NATIVE_DIR)/build/libzimbra-native.$(JNI_EXT) $(NATIVE_DIR)/build/libsetuid.$(JNI_EXT)
 	mkdir -p $@
 	cp -pr $(SERVICE_DIR)/build/dist/lib/* $@
 	cp -pr $(LDAP_DEST_DIR)/$(LDAP_DIR)-$(LDAP_VERSION)/lib/* $@
@@ -173,56 +173,6 @@ $(NATIVE_DIR)/build/libsetuid.$(JNI_EXT):
 
 $(LAUNCHER_DIR)/build/zmmailboxdmgr:
 	(cd $(LAUNCHER_DIR); make JAVA_BINARY=$(JAVA_BINARY))
-
-pcre_MACOSXx86: 
-	mkdir -p $(CORE_DEST_DIR)/lib
-	(cd $(CORE_DEST_DIR)/lib; tar xzf $(THIRD_PARTY_BUILDS)/$(BUILD_PLATFORM)/pcre/pcre-7.7.tgz)
-
-pcre_MACOSXx86_10.5: 
-	mkdir -p $(CORE_DEST_DIR)/lib
-	(cd $(CORE_DEST_DIR)/lib; tar xzf $(THIRD_PARTY_BUILDS)/$(BUILD_PLATFORM)/pcre/pcre-7.7.tgz)
-
-pcre_MACOSX: 
-	mkdir -p $(CORE_DEST_DIR)/lib
-	(cd $(CORE_DEST_DIR)/lib; tar xzf $(THIRD_PARTY_BUILDS)/$(BUILD_PLATFORM)/pcre/pcre-7.7.tgz)
-
-pcre_F7: ;
-
-pcre_FC5: ;
-
-pcre_FC4: ;
-
-pcre_FC3: ;
-
-pcre_RHEL4_64: ;
-
-pcre_RHEL4: ;
-
-pcre_RHEL5_64: ;
-
-pcre_RHEL5: ;
-
-pcre_DEBIAN3.1: ;
-
-pcre_DEBIAN4.0: ;
-
-pcre_UBUNTU6: ;
-
-pcre_UBUNTU6_64: ;
-
-pcre_SuSEES9: ;
-
-pcre_MANDRIVA2006: ;
-
-pcre_SuSE10: ;
-
-pcre_openSUSE_10.2: ;
-
-pcre_SuSEES10: ;
-
-pcre_SLES10_64: ;
-
-pcre_RPL1: ;
 
 $(CORE_DEST_DIR)/jdk$(JAVA_VERSION):
 	@echo "*** Creating java"
@@ -348,12 +298,15 @@ $(CORE_DEST_DIR)/contrib:
 	mkdir -p $@
 	cp -R $(SERVICE_DIR)/src/contrib/* $@
 
+$(CORE_DEST_DIR)/lib/libpcre.dylib: $(CORE_DEST_DIR)/lib
+	(cd $(CORE_DEST_DIR)/lib; tar xzf $(THIRD_PARTY_BUILDS)/$(BUILD_PLATFORM)/pcre/pcre-$(PCRE_VERSION).tgz)
+
 $(CORE_DEST_DIR)/lib/libpopt.0.dylib: $(CORE_DEST_DIR)/lib
-	(cd $(CORE_DEST_DIR); tar xzf $(THIRD_PARTY_BUILDS)/$(BUILD_PLATFORM)/popt/popt-1.14.tgz)
+	(cd $(CORE_DEST_DIR); tar xzf $(THIRD_PARTY_BUILDS)/$(BUILD_PLATFORM)/popt/popt-$(POPT_VERSION).tgz)
 	rm -rf $(CORE_DEST_DIR)/include
 
 $(CORE_DEST_DIR)/lib/libexpat.dylib: $(CORE_DEST_DIR)/lib
-	(cd $(CORE_DEST_DIR); tar xzf $(THIRD_PARTY_BUILDS)/$(BUILD_PLATFORM)/expat/expat-2.0.1.tgz)
+	(cd $(CORE_DEST_DIR); tar xzf $(THIRD_PARTY_BUILDS)/$(BUILD_PLATFORM)/expat/expat-$(EXPAT_VERSION).tgz)
 	rm -rf $(CORE_DEST_DIR)/include
 
 $(CORE_DEST_DIR)/$(BDB_DIR):
