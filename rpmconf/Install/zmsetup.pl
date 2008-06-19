@@ -3932,7 +3932,7 @@ sub configSetStoreDefaults {
   if(isEnabled("zimbra-proxy")) {
     $config{zimbraReverseProxyLookupTarget}="TRUE";
   }
-  runAsZimbra("$ZMPROV ms $config{HOSTNAME} $config{zimbraReverseProxyLookupTarget}");
+  runAsZimbra("$ZMPROV ms $config{HOSTNAME} zimbraReverseProxyLookupTarget $config{zimbraReverseProxyLookupTarget}");
   runAsZimbra("$ZMPROV ms $config{HOSTNAME} zimbraMtaAuthTarget TRUE");
   if ($newinstall && ($config{zimbraWebProxy} eq "TRUE" || $config{zimbraMailProxy} eq "TRUE")) {
     if ($config{zimbraMailProxy} eq "TRUE") {
