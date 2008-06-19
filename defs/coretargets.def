@@ -210,28 +210,28 @@ $(CORE_DEST_DIR)/conf: $(WEBAPP_DIR)/service.war
 	cp $(SERVICE_DIR)/conf/clamd.conf.in $@
 	cp $(SERVICE_DIR)/conf/freshclam.conf.in $@
 	cp $(SERVICE_DIR)/conf/postfix_header_checks.in $@
-	mkdir -p $@/nginx
-	cp $(SERVICE_DIR)/conf/nginx/nginx.conf.mail.imaps.template $@/nginx/
-	cp $(SERVICE_DIR)/conf/nginx/nginx.conf.mail.imap.template $@/nginx/
-	cp $(SERVICE_DIR)/conf/nginx/nginx.conf.mail.pop3s.template $@/nginx/
-	cp $(SERVICE_DIR)/conf/nginx/nginx.conf.mail.pop3.template $@/nginx/
-	cp $(SERVICE_DIR)/conf/nginx/nginx.conf.mail.template $@/nginx/
-	cp $(SERVICE_DIR)/conf/nginx/nginx.conf.main.template $@/nginx/
-	cp $(SERVICE_DIR)/conf/nginx/nginx.conf.memcache.template $@/nginx/
-	cp $(SERVICE_DIR)/conf/nginx/nginx.conf.template $@/nginx/
-	cp $(SERVICE_DIR)/conf/nginx/nginx.conf.web.http.mode-both.template $@/nginx/
-	cp $(SERVICE_DIR)/conf/nginx/nginx.conf.web.http.mode-https.template $@/nginx/
-	cp $(SERVICE_DIR)/conf/nginx/nginx.conf.web.http.mode-http.template $@/nginx/
-	cp $(SERVICE_DIR)/conf/nginx/nginx.conf.web.http.mode-mixed.template $@/nginx/
-	cp $(SERVICE_DIR)/conf/nginx/nginx.conf.web.http.mode-redirect.template $@/nginx/
-	cp $(SERVICE_DIR)/conf/nginx/nginx.conf.web.https.mode-both.template $@/nginx/
-	cp $(SERVICE_DIR)/conf/nginx/nginx.conf.web.https.mode-https.template $@/nginx/
-	cp $(SERVICE_DIR)/conf/nginx/nginx.conf.web.https.mode-http.template $@/nginx/
-	cp $(SERVICE_DIR)/conf/nginx/nginx.conf.web.https.mode-mixed.template $@/nginx/
-	cp $(SERVICE_DIR)/conf/nginx/nginx.conf.web.https.mode-redirect.template $@/nginx/
-	cp $(SERVICE_DIR)/conf/nginx/nginx.conf.web.https.template $@/nginx/
-	cp $(SERVICE_DIR)/conf/nginx/nginx.conf.web.http.template $@/nginx/
-	cp $(SERVICE_DIR)/conf/nginx/nginx.conf.web.template $@/nginx/
+	mkdir -p $@/nginx/templates
+	cp $(SERVICE_DIR)/conf/nginx/nginx.conf.mail.imaps.template $@/nginx/templates/
+	cp $(SERVICE_DIR)/conf/nginx/nginx.conf.mail.imap.template $@/nginx/templates/
+	cp $(SERVICE_DIR)/conf/nginx/nginx.conf.mail.pop3s.template $@/nginx/templates/
+	cp $(SERVICE_DIR)/conf/nginx/nginx.conf.mail.pop3.template $@/nginx/templates/
+	cp $(SERVICE_DIR)/conf/nginx/nginx.conf.mail.template $@/nginx/templates/
+	cp $(SERVICE_DIR)/conf/nginx/nginx.conf.main.template $@/nginx/templates/
+	cp $(SERVICE_DIR)/conf/nginx/nginx.conf.memcache.template $@/nginx/templates/
+	cp $(SERVICE_DIR)/conf/nginx/nginx.conf.template $@/nginx/templates/
+	cp $(SERVICE_DIR)/conf/nginx/nginx.conf.web.http.mode-both.template $@/nginx/templates/
+	cp $(SERVICE_DIR)/conf/nginx/nginx.conf.web.http.mode-https.template $@/nginx/templates/
+	cp $(SERVICE_DIR)/conf/nginx/nginx.conf.web.http.mode-http.template $@/nginx/templates/
+	cp $(SERVICE_DIR)/conf/nginx/nginx.conf.web.http.mode-mixed.template $@/nginx/templates/
+	cp $(SERVICE_DIR)/conf/nginx/nginx.conf.web.http.mode-redirect.template $@/nginx/templates/
+	cp $(SERVICE_DIR)/conf/nginx/nginx.conf.web.https.mode-both.template $@/nginx/templates/
+	cp $(SERVICE_DIR)/conf/nginx/nginx.conf.web.https.mode-https.template $@/nginx/templates/
+	cp $(SERVICE_DIR)/conf/nginx/nginx.conf.web.https.mode-http.template $@/nginx/templates/
+	cp $(SERVICE_DIR)/conf/nginx/nginx.conf.web.https.mode-mixed.template $@/nginx/templates/
+	cp $(SERVICE_DIR)/conf/nginx/nginx.conf.web.https.mode-redirect.template $@/nginx/templates/
+	cp $(SERVICE_DIR)/conf/nginx/nginx.conf.web.https.template $@/nginx/templates/
+	cp $(SERVICE_DIR)/conf/nginx/nginx.conf.web.http.template $@/nginx/templates/
+	cp $(SERVICE_DIR)/conf/nginx/nginx.conf.web.template $@/nginx/templates/
 	cp $(SERVICE_DIR)/conf/nginx.conf.in $@
 	cp $(SERVICE_DIR)/conf/salocal.cf $@/salocal.cf.in
 	cp $(SERVICE_DIR)/conf/zmmta.cf-$(MAILBOXD_SERVER) $@/zmmta.cf
