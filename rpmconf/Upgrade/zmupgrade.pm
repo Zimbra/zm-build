@@ -158,6 +158,7 @@ my %updateFuncs = (
   "5.0.5_GA" => \&upgrade505GA,
   "5.0.6_GA" => \&upgrade506GA,
   "5.0.7_GA" => \&upgrade507GA,
+  "5.0.8_GA" => \&upgrade508GA,
   "5.5.0_GA" => \&upgrade550GA,
 );
 
@@ -2291,6 +2292,12 @@ sub upgrade507GA {
   } else {
     main::runAsZimbra("$ZMPROV ms $hn zimbraMtaAuthTarget TRUE\n");
   }
+	return 0;
+}
+
+sub upgrade508GA {
+	my ($startBuild, $targetVersion, $targetBuild) = (@_);
+	main::progress("Updating from 5.0.8_GA\n");
 	return 0;
 }
 
