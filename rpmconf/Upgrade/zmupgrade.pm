@@ -2909,7 +2909,7 @@ sub verifyMysqlConfig {
   my @lines = <CONF>;
   close(CONF);
   foreach (@lines) {
-    if (my ($buffer_size) = m/^innodb_buffer_pool_size\s+=\s+(\d+)/) {
+    if (my ($buffer_size) = m/^innodb_buffer_pool_size\s*=\s*(\d+)/) {
       if ($buffer_size > 2000000000) {
         main::progress("innodb_buffer_pool_size must be less then 2GB on a 32bit system\n");
         Migrate::myquit(1,"Please correct $mysqlConf and rerun zmsetup.pl");
