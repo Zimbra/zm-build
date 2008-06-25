@@ -731,6 +731,7 @@ sub setLdapDefaults {
   $config{MAILPROXY}        = getLdapServerValue("zimbraReverseProxyMailEnabled");
 
   $config{MODE}             = getLdapServerValue("zimbraMailMode");
+  $config{PROXYMODE}        = getLdapServerValue("zimbraReverseProxyMailMode");
   $config{HTTPPORT}         = getLdapServerValue("zimbraMailPort");
   $config{HTTPSPORT}        = getLdapServerValue("zimbraMailSSLPort");
 
@@ -745,6 +746,7 @@ sub setLdapDefaults {
   if ($config{HTTPPORT} eq 0) { $config{HTTPPORT} = 80; }
   if ($config{HTTPSPORT} eq 0) { $config{HTTPSPORT} = 443; }
   if ($config{MODE} eq "") { $config{MODE} = "mixed"; }
+  if ($config{PROXYMODE} eq "") { $config{PROXYMODE} = "mixed"; }
   if ($config{zimbraReverseProxyLookupTarget} eq "") { $config{zimbraReverseProxyLookupTarget} = getLdapConfigValue("zimbraReverseProxyLookupTarget"); }
 
   if (isEnabled("zimbra-mta")) {
@@ -1108,6 +1110,7 @@ sub setDefaults {
   }
 
   $config{MODE} = "http";
+  $config{PROXYMODE} = "http";
 
   $config{SYSTEMMEMORY} = getSystemMemory();
   $config{MYSQLMEMORYPERCENT} = mysqlMemoryPercent($config{SYSTEMMEMORY});
@@ -1992,6 +1995,19 @@ sub setStoreMode {
   }
 }
 
+sub setProxyMode {
+  while (1) {
+    my $m = 
+      askNonBlank("Please enter the proxy server mode (http,https,both,mixed,redirect)",
+        $config{PROXYMODE});
+    if ($m eq "http" || $m eq "https" || $m eq "mixed" || $m eq "both" || $m eq "redirect" ) {
+      $config{PROXYMODE} = $m;
+      return;
+    }
+    print "Please enter a valid mode!\n";
+  }
+}
+
 sub changeLdapHost {
   $config{LDAPHOST} = shift;
   $config{LDAPHOST} = lc($config{LDAPHOST});
@@ -2739,6 +2755,12 @@ sub createProxyMenu {
          "prompt" => "HTTPS proxy port:", 
          "var" => \$config{HTTPSPROXYPORT}, 
          "callback" => \&setHttpsProxyPort,
+       };
+       $i++;
+       $$lm{menuitems}{$i} = { 
+         "prompt" => "Proxy server mode:", 
+         "var" => \$config{PROXYMODE}, 
+         "callback" => \&setProxyMode,
        };
        $i++;
     }
@@ -4133,6 +4155,7 @@ sub configSetProxyPrefs {
         }
         if ($config{HTTPPROXY} eq "TRUE" ) {
            runAsZimbra("/opt/zimbra/libexec/zmproxyinit -w -e -o ".
+                       " -x $config{PROXYMODE} ".
                        "-a $config{HTTPPORT}:$config{HTTPPROXYPORT}:$config{HTTPSPORT}:$config{HTTPSPROXYPORT} $config{HOSTNAME}");
         } else {
            runAsZimbra("/opt/zimbra/libexec/zmproxyinit -w -d -o ".
