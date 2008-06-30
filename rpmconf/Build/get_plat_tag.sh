@@ -157,6 +157,11 @@ if [ -f /etc/lsb-release ]; then
 	if [ $? = 0 ]; then
 		echo "7${i}"
 		exit 0
+	fi 
+	grep "DISTRIB_RELEASE=8" /etc/lsb-release > /dev/null 2>&1
+	if [ $? = 0 ]; then
+		echo "8${i}"
+		exit 0
 	else
 		echo "UNKNOWN"
 		exit 0
