@@ -1669,7 +1669,11 @@ suggestedVersion() {
 
 getPlatformVars() {
   PLATFORM=`bin/get_plat_tag.sh`
-  if [ $PLATFORM = "DEBIAN3.1" -o $PLATFORM = "UBUNTU6" -o $PLATFORM = "UBUNTU7" -o $PLATFORM = "UBUNTU6_64" -o $PLATFORM = "UBUNTU7_64" -o $PLATFORM = "DEBIAN4.0" -o $PLATFORM = "DEBIAN4.0_64" -o $PLATFORM = "UBUNTUUNKNOWN" -o $PLATFORM = "DEBIANUNKNOWN" ]; then
+  if [ $PLATFORM = "DEBIAN3.1" -o $PLATFORM = "UBUNTU6" -o $PLATFORM = "UBUNTU6_64" \
+       -o $PLATFORM = "DEBIAN4.0" -o $PLATFORM = "DEBIAN4.0_64" \
+       -o $PLATFORM = "UBUNTU7" -o $PLATFORM = "UBUNTU7_64" \
+       -o $PLATFORM = "UBUNTU8" -o $PLATFORM = "UBUNTU8_64" \
+       -o $PLATFORM = "UBUNTUUNKNOWN" -o $PLATFORM = "DEBIANUNKNOWN" ]; then
     checkUbuntuRelease
     PACKAGEINST='dpkg -i'
     PACKAGERM='dpkg --purge'
@@ -1685,8 +1689,12 @@ getPlatformVars() {
       PREREQ_PACKAGES="sudo libidn11 fetchmail libpcre3 libgmp3c2 libexpat1 libxml2 libstdc++6 libstdc++5 openssl libltdl3 libperl5.8"
       PRESUG_PACKAGES="perl-5.8.7"
     fi
-    if [ $PLATFORM = "DEBIAN4.0" -o $PLATFORM = "DEBIAN4.0_64" ]; then
+    if [ $PLATFORM = "DEBIAN4.0" -o $PLATFORM = "UBUNTU8" ]; then
       PREREQ_PACKAGES="sudo libidn11 fetchmail libpcre3 libgmp3c2 libexpat1 libxml2 libstdc++6 openssl libltdl3"
+      PRESUG_PACKAGES="perl-5.8.8"
+    fi
+    if [ $PLATFORM = "DEBIAN4.0_64" -o $PLATFORM = "UBUNTU8_64" ]; then
+      PREREQ_PACKAGES="sudo libidn11 fetchmail libpcre3 libgmp3c2 libexpat1 libxml2 libstdc++6 openssl libltdl3 libperl5.8"
       PRESUG_PACKAGES="perl-5.8.8"
     fi
   elif echo $PLATFORM | grep RPL > /dev/null 2>&1; then
