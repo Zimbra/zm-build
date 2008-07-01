@@ -3970,11 +3970,11 @@ sub configSetStoreDefaults {
     if ($config{zimbraMailProxy} eq "TRUE") {
            runAsZimbra("/opt/zimbra/libexec/zmproxyinit -m -e -o ".
                        "-i $config{IMAPPORT}:$config{IMAPPROXYPORT}:$config{IMAPSSLPORT}:$config{IMAPSSLPROXYPORT} ".
-                       "-p $config{POPPORT}:$config{POPPROXYPORT}:$config{POPSSLPORT}:$config{POPSSLPROXYPORT} $config{HOSTNAME}");
+                       "-p $config{POPPORT}:$config{POPPROXYPORT}:$config{POPSSLPORT}:$config{POPSSLPROXYPORT} -H $config{HOSTNAME}");
     }
     if ($config{zimbraWebProxy} eq "TRUE") {
            runAsZimbra("/opt/zimbra/libexec/zmproxyinit -w -e -o ".
-                       "-a $config{HTTPPORT}:$config{HTTPPROXYPORT}:$config{HTTPSPORT}:$config{HTTPSPROXYPORT} $config{HOSTNAME}");
+                       "-a $config{HTTPPORT}:$config{HTTPPROXYPORT}:$config{HTTPSPORT}:$config{HTTPSPROXYPORT} -H $config{HOSTNAME}");
     }
   }
 }
@@ -4157,29 +4157,29 @@ sub configSetProxyPrefs {
         if($config{MAILPROXY} eq "TRUE") {
            runAsZimbra("/opt/zimbra/libexec/zmproxyinit -m -e -o ".
                        "-i $config{IMAPPORT}:$config{IMAPPROXYPORT}:$config{IMAPSSLPORT}:$config{IMAPSSLPROXYPORT} ".
-                       "-p $config{POPPORT}:$config{POPPROXYPORT}:$config{POPSSLPORT}:$config{POPSSLPROXYPORT} $config{HOSTNAME}");
+                       "-p $config{POPPORT}:$config{POPPROXYPORT}:$config{POPSSLPORT}:$config{POPSSLPROXYPORT} -H $config{HOSTNAME}");
         } else {
            runAsZimbra("/opt/zimbra/libexec/zmproxyinit -m -d -o ".
                        "-i $config{IMAPPORT}:$config{IMAPPROXYPORT}:$config{IMAPSSLPORT}:$config{IMAPSSLPROXYPORT} ".
-                       "-p $config{POPPORT}:$config{POPPROXYPORT}:$config{POPSSLPORT}:$config{POPSSLPROXYPORT} $config{HOSTNAME}");
+                       "-p $config{POPPORT}:$config{POPPROXYPORT}:$config{POPSSLPORT}:$config{POPSSLPROXYPORT} -H $config{HOSTNAME}");
         }
         if ($config{HTTPPROXY} eq "TRUE" ) {
            runAsZimbra("/opt/zimbra/libexec/zmproxyinit -w -e -o ".
                        " -x $config{PROXYMODE} ".
-                       "-a $config{HTTPPORT}:$config{HTTPPROXYPORT}:$config{HTTPSPORT}:$config{HTTPSPROXYPORT} $config{HOSTNAME}");
+                       "-a $config{HTTPPORT}:$config{HTTPPROXYPORT}:$config{HTTPSPORT}:$config{HTTPSPROXYPORT} -H $config{HOSTNAME}");
         } else {
            runAsZimbra("/opt/zimbra/libexec/zmproxyinit -w -d -o ".
                        "-x $config{MODE} ".
-                       "-a $config{HTTPPORT}:$config{HTTPPROXYPORT}:$config{HTTPSPORT}:$config{HTTPSPROXYPORT} $config{HOSTNAME}");
+                       "-a $config{HTTPPORT}:$config{HTTPPROXYPORT}:$config{HTTPSPORT}:$config{HTTPSPROXYPORT} -H $config{HOSTNAME}");
         }
      }
    } else {
         runAsZimbra("/opt/zimbra/libexec/zmproxyinit -m -d -o ".
                     "-i $config{IMAPPORT}:$config{IMAPPROXYPORT}:$config{IMAPSSLPORT}:$config{IMAPSSLPROXYPORT} ".
-                    "-p $config{POPPORT}:$config{POPPROXYPORT}:$config{POPSSLPORT}:$config{POPSSLPROXYPORT} $config{HOSTNAME}");
+                    "-p $config{POPPORT}:$config{POPPROXYPORT}:$config{POPSSLPORT}:$config{POPSSLPROXYPORT} -H $config{HOSTNAME}");
         runAsZimbra("/opt/zimbra/libexec/zmproxyinit -w -d -o ".
                     "-x $config{MODE} ".
-                    "-a $config{HTTPPORT}:$config{HTTPPROXYPORT}:$config{HTTPSPORT}:$config{HTTPSPROXYPORT} $config{HOSTNAME}");
+                    "-a $config{HTTPPORT}:$config{HTTPPROXYPORT}:$config{HTTPSPORT}:$config{HTTPSPROXYPORT} -H $config{HOSTNAME}");
    }
 }
 
