@@ -31,7 +31,7 @@ use strict;
 use File::Basename;
 use FileHandle;
 
-my %LC;
+our %LC;
 
 sub getLocalConfig(;@) {
     my @vars = @_;
