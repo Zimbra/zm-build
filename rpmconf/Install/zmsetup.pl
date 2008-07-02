@@ -3279,6 +3279,12 @@ sub verifyLdap {
     } else {
       detail ("Verified $binduser on $config{LDAPHOST}.\n");
     }
+    if (checkLdapReplicationEnabled($config{zimbra_ldap_userdn},$config{LDAPADMINPASS})) {
+      detail ("ldap configuration not complete\n");
+      return 1;
+    } else {
+      detail ("ldap replication ability verified\n");
+    }
   }
   return 0;
 }
@@ -3321,6 +3327,42 @@ sub checkLdapBind() {
     return 0;
   }
 
+}
+
+sub checkLdapReplicationEnabled() {
+  my ($binduser,$bindpass) = @_;
+  detail( "Checking ldap replication is enabled on $config{LDAPHOST}:$config{LDAPPORT}");
+  my $ldap;
+  my $ldap_secure = (($config{LDAPPORT} == "636") ? "s" : "");
+  my $ldap_url = "ldap${ldap_secure}://$config{LDAPHOST}:$config{LDAPPORT}";
+  unless($ldap = Net::LDAP->new($ldap_url)) {
+    detail("failed: Unable to contact ldap at $ldap_url: $!");
+    return 1;
+  }
+  if ($ldap_secure ne "s" && $starttls) {
+    my $result = $ldap->start_tls(verify=>'none');
+    if ($result->code()) {
+      detail("Unable to startTLS: $!\n");
+      detail("Disabling the requirement for interprocess security.\n");
+      $config{zimbra_require_interprocess_security} = 0;
+      $config{ZIMBRA_REQ_SECURITY}="no";
+      $starttls = 0;
+    }
+  }
+  my $result = $ldap->bind($binduser, password => $bindpass);
+  if ($result->code()) {
+    detail ("Unable to bind to $ldap_url with user $binduser and password $bindpass: $!");
+    return 1;
+  } else {
+    my $result = $ldap->search(base=>"cn=accesslog", scope=>"base", filter=>"cn=accesslog", attrs=>['cn']);
+    if ($result->code()) {
+      detail("Unable to find accesslog database on master.\n");
+      detail("Please run zmldapenablereplica on the master.\n");
+      return 1; 
+    } else {
+      detail("Verified ability to query accesslog on master.\n");
+    }
+  }
 }
 
 sub runAsRoot {
