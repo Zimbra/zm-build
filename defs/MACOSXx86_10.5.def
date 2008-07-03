@@ -11,6 +11,7 @@ PACKAGING_OPTIONS = -build -v -p $(PACKAGE_DIR)/$(CUR_PACKAGE_NAME).$(PACKAGE_EX
 PACKAGE_EXT := pkg
 
 PLATFORM_CORE_COMPONENTS = \
+	$(CORE_DEST_DIR)/conf/com.zimbra.zcs.plist \
 	$(CORE_DEST_DIR)/lib/libexpat.dylib \
 	$(CORE_DEST_DIR)/lib/libpopt.0.dylib \
 	$(CORE_DEST_DIR)/lib/libpcre.dylib

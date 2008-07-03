@@ -239,7 +239,6 @@ $(CORE_DEST_DIR)/conf: $(WEBAPP_DIR)/service.war
 	cp $(SERVICE_DIR)/conf/timezones.ics $@
 	cp $(SERVICE_DIR)/conf/zimbra.ld.conf $@
 	cp $(SERVICE_DIR)/conf/my.logger.cnf $@
-	cp $(SERVICE_DIR)/conf/com.zimbra.zcs.plist $@
 	cp $(SERVICE_DIR)/conf/postfix_recipient_restrictions.cf $@
 	cp -Rf $(SERVICE_DIR)/conf/externaldirsync $@/externaldirsync
 	cp -Rf $(SERVICE_DIR)/build/dist/conf/rights $@/rights
@@ -248,6 +247,10 @@ $(CORE_DEST_DIR)/conf: $(WEBAPP_DIR)/service.war
 	cp $(SERVICE_DIR)/conf/spamassassin/[^C]* $@/spamassassin
 	mkdir -p $@/attrs
 	cp -f $(SERVICE_DIR)/build/dist/conf/attrs/* $@/attrs
+
+$(CORE_DEST_DIR)/conf/com.zimbra.zcs.plist:
+	mkdir -p $(CORE_DEST_DIR)/conf
+	cp $(SERVICE_DIR)/conf/com.zimbra.zcs.plist $@
 
 $(CORE_DEST_DIR)/libexec: $(LAUNCHER_DIR)/build/zmmailboxdmgr
 	@echo "*** Installing libexec"
