@@ -192,9 +192,9 @@ $(CORE_DEST_DIR)/jdk$(JAVA_VERSION):
 
 $(CORE_DEST_DIR)/db: $(WEBAPP_DIR)/service.war
 	mkdir -p $@
-	cp -R $(SERVICE_DIR)/src/db/db.sql $@
+	cp -R $(SERVICE_DIR)/src/db/mysql/db.sql $@
 	cp -R $(SERVICE_DIR)/src/db/loggerdb.sql $@
-	cp -R $(SERVICE_DIR)/src/db/create_database.sql $@
+	cp -R $(SERVICE_DIR)/src/db/mysql/create_database.sql $@
 	cp -R $(SERVICE_DIR)/build/versions-init.sql $@
 
 $(CORE_DEST_DIR)/conf: $(WEBAPP_DIR)/service.war
