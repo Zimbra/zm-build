@@ -27,7 +27,7 @@ rm -f /opt/zimbra/postfix
 ln -s /opt/zimbra/postfix-2.4.7.5z /opt/zimbra/postfix
 
 rm -f /opt/zimbra/clamav
-ln -s /opt/zimbra/clamav-0.93.1 /opt/zimbra/clamav
+ln -s /opt/zimbra/clamav-0.93.2 /opt/zimbra/clamav
 
 H=`hostname -s`
 I=`hostname -i`
