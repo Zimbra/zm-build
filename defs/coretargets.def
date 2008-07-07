@@ -264,10 +264,10 @@ $(CORE_DEST_DIR)/libexec: $(LAUNCHER_DIR)/build/zmmailboxdmgr
 	cp -f $(PACKAGE_CONF_DIR)/Install/Util/*sh $@/installer/util
 	cp -f $(PACKAGE_CONF_DIR)/Install/Util/modules/*sh $@/installer/util/modules
 	mkdir -p $@/scripts
-	cp -f $(SERVICE_DIR)/src/db/Migrate.pm $@/scripts
-	cp -f $(SERVICE_DIR)/src/db/migrate*pl $@/scripts
-	cp -f $(SERVICE_DIR)/src/db/migrate*sh $@/scripts
-	cp -f $(SERVICE_DIR)/src/db/fix*pl $@/scripts
+	cp -f $(SERVICE_DIR)/src/db/migration/Migrate.pm $@/scripts
+	cp -f $(SERVICE_DIR)/src/db/migration/migrate*pl $@/scripts
+	cp -f $(SERVICE_DIR)/src/db/migration/migrate*sh $@/scripts
+	cp -f $(SERVICE_DIR)/src/db/migration/fix*pl $@/scripts
 	cp -f $(PACKAGE_CONF_DIR)/Install/postinstall.pm $@/postinstall.pm
 	cp -f $(PACKAGE_CONF_DIR)/Install/preinstall.pm $@/preinstall.pm
 	cp -f $(PACKAGE_CONF_DIR)/Install/Util/addUser.sh $@/addUser.sh
