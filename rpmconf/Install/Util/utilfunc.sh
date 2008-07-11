@@ -1466,6 +1466,11 @@ getInstallPackages() {
         INSTALL_PACKAGES="$INSTALL_PACKAGES zimbra-apache"
       fi
 
+      if [ $i = "zimbra-convertd" -a $STORE_SELECTED = "no" ]; then
+        STORE_SELECTED="yes"
+        INSTALL_PACKAGES="$INSTALL_PACKAGES zimbra-store"
+      fi
+
       if [ $i = "zimbra-store" -a $LOGGER_SELECTED = "no" -a $CLUSTER_SELECTED = "yes" ]; then
         LOGGER_SELECTED="yes"
         INSTALL_PACKAGES="$INSTALL_PACKAGES zimbra-logger"
