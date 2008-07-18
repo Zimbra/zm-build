@@ -1694,7 +1694,7 @@ getPlatformVars() {
       PRESUG_PACKAGES="perl-5.8.8"
     fi
     if [ $PLATFORM = "UBUNTU8" ]; then
-      PREREQ_PACKAGES="sudo libidn11 libpcre3 libgmp3c2 libexpat1 libstdc++6 libltdl3"
+      PREREQ_PACKAGES="sudo libidn11 libpcre3 libgmp3c2 libexpat1 libstdc++6 libstdc++5 libltdl3"
       PRESUG_PACKAGES="perl-5.8.8"
     fi
     if [ $PLATFORM = "DEBIAN4.0_64" ]; then
@@ -1702,7 +1702,7 @@ getPlatformVars() {
       PRESUG_PACKAGES="perl-5.8.8"
     fi
     if [ $PLATFORM = "UBUNTU8_64" ]; then
-      PREREQ_PACKAGES="sudo libidn11 libpcre3 libgmp3c2 libexpat1 libstdc++6 libltdl3 libperl5.8"
+      PREREQ_PACKAGES="sudo libidn11 libpcre3 libgmp3c2 libexpat1 libstdc++6 libstdc++5 libltdl3 libperl5.8"
       PRESUG_PACKAGES="perl-5.8.8"
     fi
   elif echo $PLATFORM | grep RPL > /dev/null 2>&1; then
