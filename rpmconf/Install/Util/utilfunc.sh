@@ -280,8 +280,8 @@ checkUbuntuRelease() {
     return
   fi
 
-  if [ "x$DISTRIB_ID" = "xUbuntu" -a "x$DISTRIB_RELEASE" != "x6.06" ]; then
-    echo "WARNING: ZCS is currently only supported on Ubuntu Server 6.06 LTS."
+  if [ "x$DISTRIB_ID" = "xUbuntu" -a "x$DISTRIB_RELEASE" != "x6.06" -a "x$DISTRIB_RELEASE" != "x8.04" -a "x$DISTRIB_RELEASE" != "x8.04.1" ]; then
+    echo "WARNING: ZCS is currently only supported on Ubuntu Server 6.06 and 8.04 LTS."
     echo "You are attempting to install on $DISTRIB_DESCRIPTION which may not work."
     echo "Support will not be provided if you choose to continue."
     echo ""
@@ -1689,12 +1689,20 @@ getPlatformVars() {
       PREREQ_PACKAGES="sudo libidn11 fetchmail libpcre3 libgmp3c2 libexpat1 libxml2 libstdc++6 libstdc++5 openssl libltdl3 libperl5.8"
       PRESUG_PACKAGES="perl-5.8.7"
     fi
-    if [ $PLATFORM = "DEBIAN4.0" -o $PLATFORM = "UBUNTU8" ]; then
+    if [ $PLATFORM = "DEBIAN4.0" ]; then
       PREREQ_PACKAGES="sudo libidn11 fetchmail libpcre3 libgmp3c2 libexpat1 libxml2 libstdc++6 openssl libltdl3"
       PRESUG_PACKAGES="perl-5.8.8"
     fi
-    if [ $PLATFORM = "DEBIAN4.0_64" -o $PLATFORM = "UBUNTU8_64" ]; then
+    if [ $PLATFORM = "UBUNTU8" ]; then
+      PREREQ_PACKAGES="sudo libidn11 libpcre3 libgmp3c2 libexpat1 libstdc++6 libltdl3"
+      PRESUG_PACKAGES="perl-5.8.8"
+    fi
+    if [ $PLATFORM = "DEBIAN4.0_64" ]; then
       PREREQ_PACKAGES="sudo libidn11 fetchmail libpcre3 libgmp3c2 libexpat1 libxml2 libstdc++6 openssl libltdl3 libperl5.8"
+      PRESUG_PACKAGES="perl-5.8.8"
+    fi
+    if [ $PLATFORM = "UBUNTU8_64" ]; then
+      PREREQ_PACKAGES="sudo libidn11 libpcre3 libgmp3c2 libexpat1 libstdc++6 libltdl3 libperl5.8"
       PRESUG_PACKAGES="perl-5.8.8"
     fi
   elif echo $PLATFORM | grep RPL > /dev/null 2>&1; then
