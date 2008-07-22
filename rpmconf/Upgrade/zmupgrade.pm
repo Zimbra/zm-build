@@ -2314,6 +2314,15 @@ sub upgrade508GA{
 sub upgrade509GA {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
 	main::progress("Updating from 5.0.9_GA\n");
+
+  # 29725
+  if (main::isInstalled("zimbra-store")) {
+    updateMySQLcnf();
+  }
+  if (main::isInstalled("zimbra-logger")) {
+    updateLoggerMySQLcnf();
+  }
+
   if (main::isInstalled("zimbra-ldap")) {
     upgradeLdapConfigValue("zimbraImapExposeVersionOnBanner", "FALSE", "");
   }
