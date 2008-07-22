@@ -2618,6 +2618,12 @@ sub updateLoggerMySQLcnf {
         print TMP "pid-file = ${mysql_pidfile}\n";
         $mycnfChanged=1;
         next;
+      } elsif (/^thread_cache/) {
+        # 29475 fix thread_cache_size
+        my $fix = 's/^thread_cache/thread_cache_size/g';
+        print TMP $fix;
+        $mycnfChanged=1;
+        next;
       } elsif (/^skip-external-locking/) {
         # 19749 remove skip-external-locking
         print TMP "external-locking\n";
@@ -2661,6 +2667,12 @@ sub updateMySQLcnf {
       } elsif (/^err-log/ && $CNF[$i+1] !~ m/^pid-file/) {
         print TMP;
         print TMP "pid-file = ${mysql_pidfile}\n";
+        $mycnfChanged=1;
+        next;
+      } elsif (/^thread_cache/) {
+        # 29475 fix thread_cache_size
+        my $fix = 's/^thread_cache/thread_cache_size/g';
+        print TMP $fix;
         $mycnfChanged=1;
         next;
       } elsif (/^skip-external-locking/) {
