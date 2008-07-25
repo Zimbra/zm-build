@@ -2329,10 +2329,10 @@ sub upgrade509GA {
                 "postfix_virtual_alias_domains", "postfix_virtual_alias_maps",
                 "postfix_virtual_mailbox_domains", "postfix_virtual_mailbox_maps");
     foreach my $map (@maps) {
-      my $mapValue=getLocalConfig($map);
+      my $mapValue=main::getLocalConfig($map);
       if ($mapValue =~ /^ldap:/) {
         $mapValue = "proxy:".$mapValue;
-        setLocalConfig($map, $mapValue);
+        main::setLocalConfig($map, $mapValue);
       } 
     }
   }
