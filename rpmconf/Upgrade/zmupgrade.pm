@@ -2323,6 +2323,19 @@ sub upgrade509GA {
   if (main::isInstalled("zimbra-ldap")) {
     upgradeLdapConfigValue("zimbraImapExposeVersionOnBanner", "FALSE", "");
   }
+
+  if (main::isInstalled("zimbra-mta")) {
+    my @maps = ("postfix_sender_canonical_maps", "postfix_transport_maps",
+                "postfix_virtual_alias_domains", "postfix_virtual_alias_maps",
+                "postfix_virtual_mailbox_domains", "postfix_virtual_mailbox_maps");
+    foreach my $map (@maps) {
+      my $mapValue=getLocalConfig($map);
+      if ($mapValue =~ /^ldap:/) {
+        $mapValue = "proxy:".$mapValue;
+        setLocalConfig($map, $mapValue);
+      } 
+    }
+  }
 	return 0;
 }
 
