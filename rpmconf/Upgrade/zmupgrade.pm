@@ -52,6 +52,14 @@ if ($platform eq "MACOSXx86_10.5") {
 my $hn = `$su "${zmlocalconfig} -m nokey zimbra_server_hostname"`;
 chomp $hn;
 
+my $isLdapMaster = `$su "${zmlocalconfig} -m nokey ldap_is_master"`;
+chomp($isLdapMaster);
+if ($isLdapMaster eq "true" ) {
+   $isLdapMaster = 1;
+} else {
+   $isLdapMaster = 0;
+}
+
 my $ZMPROV = "/opt/zimbra/bin/zmprov -l --";
 
 my %updateScripts = (
@@ -2321,14 +2329,19 @@ sub upgrade509GA {
   }
 
   if (main::isInstalled("zimbra-ldap")) {
-    upgradeLdapConfigValue("zimbraImapExposeVersionOnBanner", "FALSE", "");
-    upgradeLdapConfigValue("zimbraLmtpPermanentFailureWhenOverQuota", "FALSE", "");
+	if($isLdapMaster) {
+	  upgradeLdapConfigValue("zimbraImapExposeVersionOnBanner", "FALSE", "");
+	  upgradeLdapConfigValue("zimbraLmtpPermanentFailureWhenOverQuota", "FALSE", "");
 	  main::runAsZimbra("$ZMPROV mcf -zimbraGalLdapFilterDef 'ad:(&(|(displayName=*%s*)(cn=*%s*)(sn=*%s*)(givenName=*%s*)(mail=*%s*))(!(msExchHideFromAddressLists=TRUE))(mailnickname=*)(|(&(objectCategory=person)(objectClass=user)(!(homeMDB=*))(!(msExchHomeServerName=*)))(&(objectCategory=person)(objectClass=user)(|(homeMDB=*)(msExchHomeServerName=*)))(&(objectCategory=person)(objectClass=contact))(objectCategory=group)(objectCategory=publicFolder)(objectCategory=msExchDynamicDistributionList)))'");
 	  main::runAsZimbra("$ZMPROV mcf -zimbraGalLdapFilterDef 'adAutoComplete:(&(|(displayName=%s*)(cn=%s*)(sn=%s*)(givenName=%s*)(mail=%s*))(!(msExchHideFromAddressLists=TRUE))(mailnickname=*)(|(&(objectCategory=person)(objectClass=user)(!(homeMDB=*))(!(msExchHomeServerName=*)))(&(objectCategory=person)(objectClass=user)(|(homeMDB=*)(msExchHomeServerName=*)))(&(objectCategory=person)(objectClass=contact))(objectCategory=group)(objectCategory=publicFolder)(objectCategory=msExchDynamicDistributionList)))'");
 	  main::runAsZimbra("$ZMPROV mcf +zimbraGalLdapFilterDef 'ad:(&(|(displayName=*%s*)(cn=*%s*)(sn=*%s*)(givenName=*%s*)(mail=*%s*))(!(msExchHideFromAddressLists=TRUE))(mailnickname=*)(|(&(objectCategory=person)(objectClass=user)(!(homeMDB=*))(!(msExchHomeServerName=*)))(&(objectCategory=person)(objectClass=user)(|(homeMDB=*)(msExchHomeServerName=*)))(&(objectCategory=person)(objectClass=contact))(objectCategory=group)(objectCategory=publicFolder)(objectCategory=msExchDynamicDistributionList)))
 '");
 	  main::runAsZimbra("$ZMPROV mcf +zimbraGalLdapFilterDef 'adAutoComplete:(&(|(displayName=%s*)(cn=%s*)(sn=%s*)(givenName=%s*)(mail=%s*))(!(msExchHideFromAddressLists=TRUE))(mailnickname=*)(|(&(objectCategory=person)(objectClass=user)(!(homeMDB=*))(!(msExchHomeServerName=*)))(&(objectCategory=person)(objectClass=user)(|(homeMDB=*)(msExchHomeServerName=*)))(&(objectCategory=person)(objectClass=contact))(objectCategory=group)(objectCategory=publicFolder)(objectCategory=msExchDynamicDistributionList)))
 '");
+	  # bug 29978
+	  main::progress("Running zmjava com.zimbra.cs.account.ldap.upgrade.LdapUpgrade -b 29978 -v");
+          `$su "zmjava com.zimbra.cs.account.ldap.upgrade.LdapUpgrade -b 29978 -v`;
+	}
   }
 
   if (main::isInstalled("zimbra-mta")) {
