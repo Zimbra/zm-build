@@ -2342,7 +2342,17 @@ sub upgrade509GA {
 '");
 	  # bug 29978
 	  main::progress("Running zmjava com.zimbra.cs.account.ldap.upgrade.LdapUpgrade -b 29978 -v");
-    main::runAsZimbra("zmjava com.zimbra.cs.account.ldap.upgrade.LdapUpgrade -b 29978 -v");
+	  main::runAsZimbra("zmjava com.zimbra.cs.account.ldap.upgrade.LdapUpgrade -b 29978 -v");
+
+	  # bug 29777
+	  my @coses = `$su "$ZMPROV gac"`;
+	  my %attrs = ( zimbraPrefCalendarAllowCancelEmailToSelf                    => "FALSE");
+	  foreach my $cos (@coses) {
+		  chomp $cos;
+		  foreach my $attr (keys %attrs) {
+			main::runAsZimbra("$ZMPROV mc $cos $attr \'$attrs{$attr}\'");
+		  }
+	  }
 	}
   }
 
