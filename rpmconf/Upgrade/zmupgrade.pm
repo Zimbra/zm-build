@@ -2667,7 +2667,7 @@ sub updateLoggerMySQLcnf {
         next;
       } elsif (/^thread_cache\s/) {
         # 29475 fix thread_cache_size
-        s/^thread_cache\s/thread_cache_size\s/g;
+        s/^thread_cache/thread_cache_size/g;
         print TMP;
         $mycnfChanged=1;
         next;
@@ -2718,7 +2718,7 @@ sub updateMySQLcnf {
         next;
       } elsif (/^thread_cache\s/) {
         # 29475 fix thread_cache_size
-        s/^thread_cache\s/thread_cache_size\s/g;
+        s/^thread_cache/thread_cache_size/g;
         print TMP;
         $mycnfChanged=1;
         next;
