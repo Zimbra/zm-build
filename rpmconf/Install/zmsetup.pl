@@ -134,6 +134,7 @@ my $ldapAdminPassChanged = 0;
 my $ldapRepChanged = 0;
 my $ldapPostChanged = 0;
 my $ldapAmavisChanged = 0;
+my $ldapNginxChanged = 0;
 my $ldapReplica = 0;
 my $starttls = 0;
 my $needNewCert = "";
@@ -1066,9 +1067,11 @@ sub setDefaults {
     $config{LDAPREPPASS} =  $config{LDAPADMINPASS};
     $config{LDAPPOSTPASS} = $config{LDAPADMINPASS};
     $config{LDAPAMAVISPASS} =  $config{LDAPADMINPASS};
+    $config{ldap_nginx_password} = $config{LDAPADMINPASS};
     $ldapRepChanged = 1;
     $ldapPostChanged = 1;
     $ldapAmavisChanged = 1;
+    $ldapNginxChanged = 1;
   }
 
   $config{CREATEADMIN} = "admin\@$config{CREATEDOMAIN}";
@@ -1416,6 +1419,11 @@ sub setDefaultsFromLocalConfig {
     if ($config{LDAPAMAVISPASS} eq "") {
       $config{LDAPAMAVISPASS} = $config{LDAPADMINPASS};
       $ldapAmavisChanged = 1;
+    }
+    $config{ldap_nginx_password} = getLocalConfig ("ldap_nginx_password");
+    if ($config{ldap_nginx_password} eq "") {
+      $config{ldap_nginx_password} = $config{LDAPADMINPASS};
+      $ldapNginxChanged = 1;
     }
   }
 
@@ -1816,6 +1824,23 @@ sub setLdapAmavisPass {
       if ($config{LDAPAMAVISPASS} ne $new) {
         $config{LDAPAMAVISPASS} = $new;
         $ldapAmavisChanged = 1;
+      }
+      return;
+    } else {
+      print "Minimum length of 6 characters!\n";
+    }
+  }
+}
+
+sub setLdapNginxPass {
+  while (1) {
+    my $new =
+      askNonBlank("Password for ldap Nginx user (min 6 characters):",
+        $config{ldap_nginx_password});
+    if (length($new) >= 6) {
+      if ($config{ldap_nginx_password} ne $new) {
+        $config{ldap_nginx_password} = $new;
+        $ldapNginxChanged = 1;
       }
       return;
     } else {
@@ -2478,6 +2503,17 @@ sub createLdapMenu {
       "callback" => \&setLdapAmavisPass
       };
     $i++;
+    if ($config{ldap_nginx_password} ne "") {
+      $config{LDAPNGINXPASSSET} = "set";
+    } else {
+      $config{LDAPNGINXPASSSET} = "UNSET";
+    }
+    $$lm{menuitems}{$i} = {
+      "prompt" => "Ldap Nginx password:",
+      "var" => \$config{LDAPNGINXPASSSET},
+      "callback" => \&setLdapNginxPass
+      };
+    $i++;
   }
   return $lm;
 }
@@ -2734,6 +2770,17 @@ sub createProxyMenu {
          "prompt" => "POP SSL proxy port:", 
          "var" => \$config{POPSSLPROXYPORT}, 
          "callback" => \&setPopSSLProxyPort,
+       };
+       $i++;
+       if ($config{ldap_nginx_password} ne "") {
+         $config{LDAPNGINXPASSSET} = "set";
+       } else {
+         $config{LDAPNGINXPASSSET} = "UNSET";
+       }
+       $$lm{menuitems}{$i} = {
+         "prompt" => "Bind password for Nginx ldap user (Only required for GSSAPI auth):",
+         "var" => \$config{LDAPNGINXPASSSET},
+         "callback" => \&setLdapNginxPass
        };
        $i++;
     }
@@ -3587,6 +3634,11 @@ sub configSetupLdap {
          runAsZimbra ("/opt/zimbra/bin/zmldappasswd -a $config{LDAPAMAVISPASS}");
          progress ( "done.\n" );
       }
+      if ($ldapNginxChanged == 1) {
+         progress ( "Setting nginx password..." );
+         runAsZimbra ("/opt/zimbra/bin/zmldappasswd -n $config{ldap_nginx_password}");
+         progress ( "done.\n" );
+      }
     }
   } elsif (isEnabled("zimbra-ldap")) {
     # enable replica for both new and upgrade installs if we are adding ldap
@@ -3626,7 +3678,7 @@ sub configSetupLdap {
 
 
     # zmldappasswd starts ldap and re-applies the ldif
-    if ($ldapRootPassChanged || $ldapAdminPassChanged || $ldapRepChanged || $ldapPostChanged || $ldapAmavisChanged) {
+    if ($ldapRootPassChanged || $ldapAdminPassChanged || $ldapRepChanged || $ldapPostChanged || $ldapAmavisChanged || $ldapNginxChanged) {
       if ($ldapRootPassChanged) {
          progress ( "Setting ldap root password..." );
          runAsZimbra ("/opt/zimbra/bin/zmldappasswd -r $config{LDAPROOTPASS}");
@@ -3668,6 +3720,15 @@ sub configSetupLdap {
         }
          progress ( "done.\n" );
       }
+      if ($ldapNginxChanged == 1) {
+         progress ( "Setting amavis password..." );
+         if ($config{LDAPHOST} eq $config{HOSTNAME} ) {
+           runAsZimbra ("/opt/zimbra/bin/zmldappasswd -n $config{ldap_nginx_password}");
+         } else {
+           setLocalConfig ("ldap_nginx_password", "$config{ldap_nginx_password}");
+        }
+         progress ( "done.\n" );
+      }
     } else {
       progress("Stopping ldap...");
       runAsZimbra ("/opt/zimbra/bin/ldap stop");
@@ -3681,6 +3742,7 @@ sub configSetupLdap {
     setLocalConfig ("ldap_replication_password", "$config{LDAPREPPASS}");
     setLocalConfig ("ldap_postfix_password", "$config{LDAPPOSTPASS}");
     setLocalConfig ("ldap_amavis_password", "$config{LDAPAMAVISPASS}");
+    setLocalConfig ("ldap_nginx_password", "$config{ldap_nginx_password}");
   }
   # set default zmprov bahaviour
   if (isEnabled("zimbra-ldap")) {
