@@ -155,8 +155,8 @@ $(DEV_INSTALL_ROOT)/zimbramon: $(DEV_INSTALL_ROOT) devperllibs
 $(DEV_INSTALL_ROOT)/db:
 	@echo "*** Installing db"
 	mkdir -p $@
-	cp -f -R $(SERVICE_DIR)/src/db/db.sql $@
-	cp -f -R $(SERVICE_DIR)/src/db/create_database.sql $@
+	cp -f -R $(SERVICE_DIR)/src/db/mysql/db.sql $@
+	cp -f -R $(SERVICE_DIR)/src/db/mysql/create_database.sql $@
 	cp -f -R $(SERVICE_DIR)/build/versions-init.sql $@
 
 $(DEV_INSTALL_ROOT)/$(BDB_DIR): $(DEV_INSTALL_ROOT)
