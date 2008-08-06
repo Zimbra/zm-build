@@ -26,6 +26,10 @@ echo "%zimbra ALL=NOPASSWD:/opt/zimbra/nginx/sbin/nginx" >> /tmp/sudoers
 mv -f /tmp/sudoers /etc/sudoers
 chmod $SUDOMODE /etc/sudoers
 
+if [ -x "/opt/zimbra/libexec/zmfixperms" ]; then
+  /opt/zimbra/libexec/zmfixperms
+fi
+
 PKG=`echo ${RECEIPT_PATH} | sed -e 's|.*/\(zimbra-proxy[^/]*pkg\)/.*|\1|' | sed -e 's/\./-/'`
 D=`date +%s`
 echo "${D}: INSTALLED ${PKG}" >> /opt/zimbra/.install_history
