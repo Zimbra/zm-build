@@ -227,6 +227,14 @@ if [ x"$VERSION" = "x10.5" ]; then
     `sysctl -w kern.maxproc=2048 >/dev/null`
     `sysctl -w kern.maxprocperuid=2048 >/dev/null`
   fi
+  if [ -f "/etc/launchd.conf" ]; then
+    egrep -q 'limit maxproc 2048' /etc/launchd.conf >/dev/null
+    if [ $? != 0 ]; then
+      echo "limit maxproc 2048" >>/etc/launchd.conf
+    fi
+  else
+    echo "limit maxproc 2048" >/etc/launchd.conf
+  fi
 fi
 
 D=`date +%s`
