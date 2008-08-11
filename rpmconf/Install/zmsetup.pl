@@ -1078,6 +1078,11 @@ sub setDefaults {
     $ldapNginxChanged = 1;
   }
 
+  if(isInstalled("zimbra-proxy") && !isEnabled("zimbra-ldap")) {
+    $config{ldap_nginx_password} = genRandomPass();
+    $ldapNginxChanged = 1;
+  } 
+
   $config{CREATEADMIN} = "admin\@$config{CREATEDOMAIN}";
 
   $config{zimbraPrefTimeZoneId} = '(GMT-08.00) Pacific Time (US & Canada)';
@@ -3726,7 +3731,7 @@ sub configSetupLdap {
          progress ( "done.\n" );
       }
       if ($ldapNginxChanged == 1) {
-         progress ( "Setting amavis password..." );
+         progress ( "Setting nginx password..." );
          if ($config{LDAPHOST} eq $config{HOSTNAME} ) {
            runAsZimbra ("/opt/zimbra/bin/zmldappasswd -n $config{ldap_nginx_password}");
          } else {
