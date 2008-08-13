@@ -197,8 +197,8 @@ fi
 if [ -f "/etc/sysctl.conf" ]; then
   egrep -q 'kern.maxfiles=' /etc/sysctl.conf >/dev/null
   if [ $? != 0 ]; then
-    echo "kern.maxfiles=524288" >>/etc/sysctl.conf
-    `sysctl -w kern.maxfiles=524288 >/dev/null`
+    echo "kern.maxfiles=524289" >>/etc/sysctl.conf
+    `sysctl -w kern.maxfiles=524289 >/dev/null`
   fi
   egrep -q 'kern.maxfilesperproc=' /etc/sysctl.conf >/dev/null
   if [ $? != 0 ]; then
@@ -216,11 +216,11 @@ if [ -f "/etc/sysctl.conf" ]; then
     `sysctl -w kern.maxprocperuid=2048 >/dev/null`
   fi
 else
-  echo "kern.maxfiles=524288" >/etc/sysctl.conf
+  echo "kern.maxfiles=524289" >/etc/sysctl.conf
   echo "kern.maxfilesperproc=524288" >>/etc/sysctl.conf
   echo "kern.maxproc=2048" >>/etc/sysctl.conf
   echo "kern.maxprocperuid=2048" >>/etc/sysctl.conf
-  `sysctl -w kern.maxfiles=524288 >/dev/null`
+  `sysctl -w kern.maxfiles=524289 >/dev/null`
   `sysctl -w kern.maxfilesperproc=524288 >/dev/null`
   `sysctl -w kern.maxproc=2048 >/dev/null`
   `sysctl -w kern.maxprocperuid=2048 >/dev/null`
