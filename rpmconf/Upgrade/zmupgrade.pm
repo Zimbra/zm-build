@@ -2385,7 +2385,8 @@ sub upgrade5010GA {
 	main::progress("Updating from 5.0.10_GA\n");
   if (main::isInstalled("zimbra-ldap") && $isLdapMaster) {
 	  my @coses = `$su "$ZMPROV gac"`;
-    my %attrs = ( zimbraFeatureMailForwardingInFiltersEnabled => "TRUE");
+    my %attrs = ( zimbraFeatureMailForwardingInFiltersEnabled => "TRUE",
+                  zimbraCalendarMaxRevisions => "1" );
 	  foreach my $cos (@coses) {
 		  chomp $cos;
       foreach my $attr (keys %attrs) {
