@@ -267,6 +267,7 @@ $(CORE_DEST_DIR)/libexec: $(LAUNCHER_DIR)/build/zmmailboxdmgr
 	cp -f $(SERVICE_DIR)/src/db/migration/Migrate.pm $@/scripts
 	cp -f $(SERVICE_DIR)/src/db/migration/migrate*pl $@/scripts
 	cp -f $(SERVICE_DIR)/src/db/migration/migrate*sh $@/scripts
+	cp -f $(SERVICE_DIR)/src/db/migration/optimize*pl $@/scripts
 	cp -f $(SERVICE_DIR)/src/db/migration/fix*pl $@/scripts
 	cp -f $(PACKAGE_CONF_DIR)/Install/postinstall.pm $@/postinstall.pm
 	cp -f $(PACKAGE_CONF_DIR)/Install/preinstall.pm $@/preinstall.pm
