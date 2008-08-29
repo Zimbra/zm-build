@@ -2383,8 +2383,10 @@ sub upgrade5010GA {
   if (main::isInstalled("zimbra-ldap") && $isLdapMaster) {
 	  upgradeLdapConfigValue("zimbraReverseProxyImapExposeVersionOnBanner", "FALSE", "");
 	  upgradeLdapConfigValue("zimbraReverseProxyPop3ExposeVersionOnBanner", "FALSE", "");
+	  upgradeLdapConfigValue("zimbraSoapExposeVersion", "FALSE", "");
 	  my @coses = `$su "$ZMPROV gac"`;
     my %attrs = ( zimbraFeatureMailForwardingInFiltersEnabled => "TRUE",
+                  zimbraContactMaxNumEntries => "10000",
                   zimbraCalendarMaxRevisions => "1" );
 	  foreach my $cos (@coses) {
 		  chomp $cos;
