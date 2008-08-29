@@ -2389,6 +2389,8 @@ sub upgrade5010GA {
 	  upgradeLdapConfigValue("zimbraSoapExposeVersion", "FALSE", "");
 	  my @coses = `$su "$ZMPROV gac"`;
     my %attrs = ( zimbraFeatureMailForwardingInFiltersEnabled => "TRUE",
+                  zimbraPrefIMHideOfflineBuddies => "FALSE",
+                  zimbraPrefIMHideBlockedBuddies => "FALSE",
                   zimbraContactMaxNumEntries => "10000",
                   zimbraCalendarMaxRevisions => "1" );
 	  foreach my $cos (@coses) {
