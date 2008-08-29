@@ -2857,16 +2857,18 @@ sub doBackupRestoreVersionUpdate($) {
     Migrate::updateBackupVersion($prevBackupVersion,$currentBackupVersion)
       if ($prevBackupVersion != $currentBackupVersion);
   }
+  my ($currentMajorBackupVersion,$currentMinorBackupVersion) = split(/\./, $currentBackupVersion);
+  my ($prevMajorBackupVersion,$prevMinorBackupVersion) = split(/\./, $prevBackupVersion);
 
-  # clear both directories if the backup version changed.  we aren't going
-  # to automatically clear the redolog if the backup version didn't change 
-  # because it invalidates all the backups.
-  if ($prevBackupVersion != $currentBackupVersion) {
-    main::progress("Moving /opt/zimbra/backup/* to /opt/zimbra/backup/${startVersion}-${currentBackupVersion}.\n");
-    clearBackupDir("/opt/zimbra/backup", "${startVersion}-${currentBackupVersion}");
-    main::progress("Moving /opt/zimbra/redolog/* to /opt/zimbra/redolog/${startVersion}-${currentRedologVersion}.\n");
-    clearRedologDir("/opt/zimbra/redolog", "${startVersion}-${currentRedologVersion}");
-  }
+  # clear both directories only if the major backup version changed.  
+  # backups are backwards compatible between minor versions
+  return if ($prevBackupVersion == $currentBackupVersion);
+  return if ($prevMajorBackupVersion >= $currentMajorBackupVersion);
+
+  main::progress("Moving /opt/zimbra/backup/* to /opt/zimbra/backup/${startVersion}-${currentBackupVersion}.\n");
+  clearBackupDir("/opt/zimbra/backup", "${startVersion}-${currentBackupVersion}");
+  main::progress("Moving /opt/zimbra/redolog/* to /opt/zimbra/redolog/${startVersion}-${currentRedologVersion}.\n");
+  clearRedologDir("/opt/zimbra/redolog", "${startVersion}-${currentRedologVersion}");
 
 }
 
