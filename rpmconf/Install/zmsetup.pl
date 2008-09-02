@@ -2980,12 +2980,14 @@ sub createStoreMenu {
         "prompt" => "Configure store for use with reverse mail proxy:",
         "var" => \$config{zimbraMailProxy},
         "callback" => \&toggleTF,
+        "arg" => "zimbraMailProxy",
       };
       $i++;
       $$lm{menuitems}{$i} = {
         "prompt" => "Configure store for use with reverse web proxy:",
         "var" => \$config{zimbraWebProxy},
         "callback" => \&toggleTF,
+        "arg" => "zimbraWebProxy",
       };
       $i++;
     }
