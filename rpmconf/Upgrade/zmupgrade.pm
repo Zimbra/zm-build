@@ -169,7 +169,7 @@ my %updateFuncs = (
   "5.0.8_GA" => \&upgrade508GA,
   "5.0.9_GA" => \&upgrade509GA,
   "5.0.10_GA" => \&upgrade5010GA,
-  "5.5.0_GA" => \&upgrade550GA,
+  "6.0.0_GA" => \&upgrade600GA,
 );
 
 my @versionOrder = (
@@ -228,7 +228,7 @@ my @versionOrder = (
   "5.0.8_GA",
   "5.0.9_GA",
   "5.0.10_GA",
-  "5.5.0_GA",
+  "6.0.0_GA",
 );
 
 my ($startVersion,$startMajor,$startMinor,$startMicro);
@@ -405,8 +405,8 @@ sub upgrade {
 		main::progress("This appears to be 5.0.9_GA\n");
 	} elsif ($startVersion eq "5.0.10_GA") {
 		main::progress("This appears to be 5.0.10_GA\n");
-	} elsif ($startVersion eq "5.5.0_GA") {
-		main::progress("This appears to be 5.5.0_GA\n");
+	} elsif ($startVersion eq "6.0.0_GA") {
+		main::progress("This appears to be 6.0.0_GA\n");
 	} else {
 		main::progress("I can't upgrade version $startVersion\n\n");
 		return 1;
@@ -2396,9 +2396,9 @@ sub upgrade5010GA {
 	return 0;
 }
 
-sub upgrade550GA {
+sub upgrade600GA {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
-	main::progress("Updating from 5.5.0_GA\n");
+	main::progress("Updating from 6.0.0_GA\n");
 	return 0;
 }
 
