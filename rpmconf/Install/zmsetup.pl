@@ -3550,7 +3550,7 @@ sub checkLdapReplicationEnabled() {
 
 sub runAsRoot {
   my $cmd = shift;
-  if ($cmd =~ /init/ || $cmd =~ /zmprov -l ca/) {
+  if ($cmd =~ /init/ || $cmd =~ /zmprov -l ca/ && $cmd !~ /zmproxyinit/) {
     # Suppress passwords in log file
     my $c = (split ' ', $cmd)[0];
     detail ( "*** Running as root user: $c\n" );
@@ -3564,7 +3564,7 @@ sub runAsRoot {
 
 sub runAsZimbra {
   my $cmd = shift;
-  if ($cmd =~ /init/ || $cmd =~ /zmprov -l ca/) {
+  if ($cmd =~ /init/ || $cmd =~ /zmprov -l ca/ && $cmd !~ /zmproxyinit/) {
     # Suppress passwords in log file
     my $c = (split ' ', $cmd)[0];
     detail ( "*** Running as zimbra user: $c\n" );
@@ -3578,7 +3578,7 @@ sub runAsZimbra {
 
 sub runAsZimbraWithOutput {
   my $cmd = shift;
-  if ($cmd =~ /init/ || $cmd =~ /zmprov -l ca/) {
+  if ($cmd =~ /init/ || $cmd =~ /zmprov -l ca/ && $cmd !~ /zmproxyinit/) {
     # Suppress passwords in log file
     my $c = (split ' ', $cmd)[0];
     detail ( "*** Running as zimbra user: $c\n" );
