@@ -4062,7 +4062,7 @@ sub configSetMtaAuthHost {
 }
 
 sub configSetStoreDefaults {
-  if(isEnabled("zimbra-proxy")) {
+  if(isEnabled("zimbra-proxy") || $config{zimbraMailProxy} eq "TRUE" || $config{zimbraWebProxy} eq "TRUE") {
     $config{zimbraReverseProxyLookupTarget}="TRUE";
   }
   runAsZimbra("$ZMPROV ms $config{HOSTNAME} zimbraReverseProxyLookupTarget $config{zimbraReverseProxyLookupTarget}");
