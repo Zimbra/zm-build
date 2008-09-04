@@ -1977,11 +1977,11 @@ sub setUseImapProxy {
       } else {
          if ($config{HTTPPROXYPORT}+8000 == $config{HTTPPORT}) {
              $config{HTTPPORT} = $config{HTTPPROXYPORT};
-             $config{HTTPPROXYPORT} = $config{HTTPPORT}-8000;
+             $config{HTTPPROXYPORT} = $config{HTTPPORT}+8000;
          }
          if ($config{HTTPSPROXYPORT}+8000 == $config{HTTPSPORT}) {
              $config{HTTPSPORT} = $config{HTTPSPROXYPORT};
-             $config{HTTPSPROXYPORT} = $config{HTTPSPORT}-8000;
+             $config{HTTPSPROXYPORT} = $config{HTTPSPORT}+8000;
          }
       }
    } else {
