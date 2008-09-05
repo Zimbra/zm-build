@@ -1471,15 +1471,16 @@ getInstallPackages() {
         INSTALL_PACKAGES="$INSTALL_PACKAGES zimbra-store"
       fi
 
-      if [ $i = "zimbra-store" -a $LOGGER_SELECTED = "no" -a $CLUSTER_SELECTED = "yes" ]; then
-        LOGGER_SELECTED="yes"
-        INSTALL_PACKAGES="$INSTALL_PACKAGES zimbra-logger"
-      fi
+      # don't force logger to be installed especially on N+M clusters
+      #if [ $i = "zimbra-store" -a $LOGGER_SELECTED = "no" -a $CLUSTER_SELECTED = "yes" ]; then
+      #  LOGGER_SELECTED="yes"
+      #  INSTALL_PACKAGES="$INSTALL_PACKAGES zimbra-logger"
+      #fi
 
-      if [ $i = "zimbra-cluster" -a $STORE_SELECTED = "yes" -a $LOGGER_SELECTED = "no" ]; then
-        LOGGER_SELECTED="yes"
-        INSTALL_PACKAGES="$INSTALL_PACKAGES zimbra-logger"
-      fi
+      #if [ $i = "zimbra-cluster" -a $STORE_SELECTED = "yes" -a $LOGGER_SELECTED = "no" ]; then
+      #  LOGGER_SELECTED="yes"
+      #  INSTALL_PACKAGES="$INSTALL_PACKAGES zimbra-logger"
+      #fi
 
       INSTALL_PACKAGES="$INSTALL_PACKAGES $i"
     fi
