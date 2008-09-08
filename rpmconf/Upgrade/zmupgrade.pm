@@ -2340,7 +2340,6 @@ sub upgrade509GA {
 	  upgradeLdapConfigValue("zimbraPop3ExposeVersionOnBanner", "FALSE", "");
 	  upgradeLdapConfigValue("zimbraLmtpPermanentFailureWhenOverQuota", "FALSE", "");
 	  upgradeLdapConfigValue("zimbraReverseProxyAdminPortAttribute", "zimbraAdminPort", "");
-	  upgradeLdapConfigValue("zimbraReverseProxyDefaultRealm", "EXAMPLE.COM", "");
 	  main::runAsZimbra("$ZMPROV mcf -zimbraGalLdapFilterDef 'ad:(&(|(cn=*%s*)(sn=*%s*)(gn=*%s*)(mail=*%s*))(!(msExchHideFromAddressLists=TRUE))(mailnickname=*)(|(&(objectCategory=person)(objectClass=user)(!(homeMDB=*))(!(msExchHomeServerName=*)))(&(objectCategory=person)(objectClass=user)(|(homeMDB=*)(msExchHomeServerName=*)))(&(objectCategory=person)(objectClass=contact))(objectCategory=group)(objectCategory=publicFolder)(objectCategory=msExchDynamicDistributionList)))'");
 	  main::runAsZimbra("$ZMPROV mcf -zimbraGalLdapFilterDef 'adAutoComplete:(&(|(cn=%s*)(sn=%s*)(gn=%s*)(mail=%s*))(!(msExchHideFromAddressLists=TRUE))(mailnickname=*)(|(&(objectCategory=person)(objectClass=user)(!(homeMDB=*))(!(msExchHomeServerName=*)))(&(objectCategory=person)(objectClass=user)(|(homeMDB=*)(msExchHomeServerName=*)))(&(objectCategory=person)(objectClass=contact))(objectCategory=group)(objectCategory=publicFolder)(objectCategory=msExchDynamicDistributionList)))'");
 	  main::runAsZimbra("$ZMPROV mcf +zimbraGalLdapFilterDef 'ad:(&(|(displayName=*%s*)(cn=*%s*)(sn=*%s*)(givenName=*%s*)(mail=*%s*))(!(msExchHideFromAddressLists=TRUE))(mailnickname=*)(|(&(objectCategory=person)(objectClass=user)(!(homeMDB=*))(!(msExchHomeServerName=*)))(&(objectCategory=person)(objectClass=user)(|(homeMDB=*)(msExchHomeServerName=*)))(&(objectCategory=person)(objectClass=contact))(objectCategory=group)(objectCategory=publicFolder)(objectCategory=msExchDynamicDistributionList)))
@@ -2384,6 +2383,7 @@ sub upgrade5010GA {
     upgradeLocalConfigValue("zmmtaconfig_enable_config_restarts", "TRUE", "");
 
   if (main::isInstalled("zimbra-ldap") && $isLdapMaster) {
+	  upgradeLdapConfigValue("zimbraReverseProxyDefaultRealm", "", "EXAMPLE.COM");
 	  my @coses = `$su "$ZMPROV gac"`;
     my %attrs = ( zimbraFeatureMailForwardingInFiltersEnabled => "TRUE",
                   zimbraPrefIMHideOfflineBuddies => "FALSE",
