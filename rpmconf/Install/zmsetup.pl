@@ -2338,8 +2338,8 @@ sub setEnabledDependencies {
       $config{RUNSA} = "yes";
       $config{RUNARCHIVING} = "no";
     } else {
-      $config{RUNAV} = (isServiceEnabled("antispam") ? "yes" : "no");
-      $config{RUNSA} = (isServiceEnabled("antivirus") ? "yes" : "no");
+      $config{RUNSA} = (isServiceEnabled("antispam") ? "yes" : "no");
+      $config{RUNAV} = (isServiceEnabled("antivirus") ? "yes" : "no");
       $config{RUNARCHIVING} = (isServiceEnabled("archiving") ? "yes" : "no");
     }
   }
