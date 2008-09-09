@@ -2393,7 +2393,7 @@ sub upgrade5010GA {
 	  my @coses = `$su "$ZMPROV gac"`;
     my %attrs = ( zimbraFeatureMailForwardingInFiltersEnabled => "TRUE",
                   zimbraPrefIMHideOfflineBuddies => "FALSE",
-                  zimbraFeatureGalSyncEnabled => "TRUE",
+                  zimbraFeatureGalSyncEnabled => "FALSE",
                   zimbraPrefIMHideBlockedBuddies => "FALSE",
                   zimbraContactMaxNumEntries => "10000",
                   zimbraCalendarMaxRevisions => "1" );
