@@ -143,14 +143,14 @@ my %updateFuncs = (
   "4.5.5_GA" => \&upgrade455GA,
   "4.5.6_GA" => \&upgrade456GA,
   "4.5.7_GA" => \&upgrade457GA,
-  "4.6.0_BETA" => \&upgrade460BETA,
-  "4.6.0_RC1" => \&upgrade460RC1,
-  "4.6.0_GA" => \&upgrade460GA,
-  "4.6.1_RC1" => \&upgrade461RC1,
   "4.5.8_GA" => \&upgrade458GA,
   "4.5.9_GA" => \&upgrade459GA,
   "4.5.10_GA" => \&upgrade4510GA,
   "4.5.11_GA" => \&upgrade4511GA,
+  "4.6.0_BETA" => \&upgrade460BETA,
+  "4.6.0_RC1" => \&upgrade460RC1,
+  "4.6.0_GA" => \&upgrade460GA,
+  "4.6.1_RC1" => \&upgrade461RC1,
   "5.0.0_BETA1" => \&upgrade500BETA1,
   "5.0.0_BETA2" => \&upgrade500BETA2,
   "5.0.0_BETA3" => \&upgrade500BETA3,
@@ -208,7 +208,6 @@ my @versionOrder = (
   "4.5.7_GA",
   "4.5.8_GA",
   "4.5.9_GA",
-  "4.6.1_RC1",
   "4.5.10_GA",
   "4.5.11_GA",
   "5.0.0_BETA1",
@@ -370,8 +369,6 @@ sub upgrade {
 		main::progress("This appears to be 4.6.0_RC1\n");
 	} elsif ($startVersion eq "4.6.0_GA") {
 		main::progress("This appears to be 4.6.0_GA\n");
-	} elsif ($startVersion eq "4.6.1_RC1") {
-		main::progress("This appears to be 4.6.1_RC1\n");
 	} elsif ($startVersion eq "5.0.0_BETA1") {
 		main::progress("This appears to be 5.0.0_BETA1\n");
 	} elsif ($startVersion eq "5.0.0_BETA2") {
@@ -408,8 +405,8 @@ sub upgrade {
 		main::progress("This appears to be 5.0.9_GA\n");
 	} elsif ($startVersion eq "5.0.10_GA") {
 		main::progress("This appears to be 5.0.10_GA\n");
-	} elsif ($startVersion eq "5.5.0_GA") {
-		main::progress("This appears to be 5.5.0_GA\n");
+	} elsif ($startVersion eq "6.0.0_GA") {
+		main::progress("This appears to be 6.0.0_GA\n");
 	} else {
 		main::progress("I can't upgrade version $startVersion\n\n");
 		return 1;
@@ -1466,7 +1463,7 @@ sub upgrade460GA {
 }
 sub upgrade461RC1 {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
-	main::progress("Updating from 4.6.1_RC1\n");
+	main::progress("Updating from 4.6.0_RC1\n");
 	return 0;
 }
 
@@ -2317,7 +2314,7 @@ sub upgrade507GA {
 	return 0;
 }
 
-sub upgrade508GA{
+sub upgrade508GA {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
 	main::progress("Updating from 5.0.8_GA\n");
 	return 0;
@@ -2386,16 +2383,12 @@ sub upgrade5010GA {
     upgradeLocalConfigValue("zmmtaconfig_enable_config_restarts", "TRUE", "");
 
   if (main::isInstalled("zimbra-ldap") && $isLdapMaster) {
-	  upgradeLdapConfigValue("zimbraReverseProxyImapExposeVersionOnBanner", "FALSE", "");
-	  upgradeLdapConfigValue("zimbraReverseProxyPop3ExposeVersionOnBanner", "FALSE", "");
-	  upgradeLdapConfigValue("zimbraSoapExposeVersion", "FALSE", "");
 	  upgradeLdapConfigValue("zimbraReverseProxyDefaultRealm", "", "EXAMPLE.COM");
 	  my @coses = `$su "$ZMPROV gac"`;
     my %attrs = ( zimbraFeatureMailForwardingInFiltersEnabled => "TRUE",
                   zimbraPrefIMHideOfflineBuddies => "FALSE",
                   zimbraFeatureGalSyncEnabled => "TRUE",
                   zimbraPrefIMHideBlockedBuddies => "FALSE",
-                  zimbraContactMaxNumEntries => "10000",
                   zimbraCalendarMaxRevisions => "1" );
 	  foreach my $cos (@coses) {
 		  chomp $cos;
