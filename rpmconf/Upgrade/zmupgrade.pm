@@ -3042,6 +3042,9 @@ sub verifyMysqlConfig {
 sub upgradeLdapConfigValue($$$) {
   my ($key,$new_value,$cmp_value) = @_;
   my $current_value = main::getLdapConfigValue($key);
+  if ($new_value eq "") {
+      $new_value="\'\'";
+  }
   main::runAsZimbra("$ZMPROV mcf $key $new_value")
     if ($current_value eq $cmp_value);
 }
