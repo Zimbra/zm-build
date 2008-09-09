@@ -2215,58 +2215,105 @@ sub setLdapPort {
 sub setHttpPort {
   $config{HTTPPORT} = askNum("Please enter the HTTP server port:",
       $config{HTTPPORT});
+
+  if($config{HTTPPORT} == $config{HTTPPROXYPORT}) {
+      $config{HTTPPROXYPORT}="UNSET";
+  }
 }
 
 sub setHttpsPort {
   $config{HTTPSPORT} = askNum("Please enter the HTTPS server port:",
       $config{HTTPSPORT});
+
+  if($config{HTTPSPORT} == $config{HTTPSPROXYPORT}) {
+      $config{HTTPSPROXYPORT}="UNSET";
+  }
 }
 
 sub setImapPort {
   $config{IMAPPORT} = askNum("Please enter the IMAP server port:",
       $config{IMAPPORT});
+
+  if($config{IMAPPORT} == $config{IMAPPROXYPORT}) {
+      $config{IMAPPROXYPORT}="UNSET";
+  }
 }
 
 sub setImapSSLPort {
   $config{IMAPSSLPORT} = askNum("Please enter the IMAP SSL server port:",
       $config{IMAPSSLPORT});
+
+  if($config{IMAPSSLPORT} == $config{IMAPSSLPROXYPORT}) {
+      $config{IMAPSSLPROXYPORT}="UNSET";
+  }
 }
 
 sub setPopPort {
   $config{POPPORT} = askNum("Please enter the POP server port:",
       $config{POPPORT});
+      
+  if($config{POPPORT} == $config{POPPROXYPORT}) {
+      $config{POPPROXYPORT}="UNSET";
+  }
 }
 
 sub setPopSSLPort {
   $config{POPSSLPORT} = askNum("Please enter the POP SSL server port:",
       $config{POPSSLPORT});
+
+  if($config{POPSSLPORT} == $config{POPSSLPROXYPORT}) {
+      $config{POPSSLPROXYPORT}="UNSET";
+  }
 }
 
 sub setImapProxyPort {
   $config{IMAPPROXYPORT} = askNum("Please enter the IMAP Proxy server port:",
       $config{IMAPPROXYPORT});
+
+  if($config{IMAPPROXYPORT} == $config{IMAPPORT}) {
+      $config{IMAPPORT}="UNSET";
+  }
 }
 sub setImapSSLProxyPort {
   $config{IMAPSSLPROXYPORT} = askNum("Please enter the IMAP SSL Proxy server port:",
       $config{IMAPSSLPROXYPORT});
+
+  if($config{IMAPSSLPROXYPORT} == $config{IMAPSSLPORT}) {
+      $config{IMAPSSLPORT}="UNSET";
+  }
 }
 sub setPopProxyPort {
   $config{POPPROXYPORT} = askNum("Please enter the POP Proxy server port:",
       $config{POPPROXYPORT});
+
+  if($config{POPPROXYPORT} == $config{POPPORT}) {
+      $config{POPPORT}="UNSET";
+  }
 }
 sub setPopSSLProxyPort {
   $config{POPSSLPROXYPORT} = askNum("Please enter the POP SSL Proxyserver port:",
       $config{POPSSLPROXYPORT});
+
+  if($config{POPSSLPROXYPORT} == $config{POPSSLPORT}) {
+      $config{POPSSLPORT}="UNSET";
+  }
 }
 
 sub setHttpProxyPort {
   $config{HTTPPROXYPORT} = askNum("Please enter the HTTP Proxyserver port:",
       $config{HTTPPROXYPORT});
+
+  if($config{HTTPPROXYPORT} == $config{HTTPPORT}) {
+      $config{HTTPPORT}="UNSET";
+  }
 }
 
 sub setHttpsProxyPort {
   $config{HTTPSPROXYPORT} = askNum("Please enter the HTTPS Proxyserver port:",
       $config{HTTPSPROXYPORT});
+  if($config{HTTPSPROXYPORT} == $config{HTTPSPORT}) {
+      $config{HTTPSPORT}="UNSET";
+  }
 }
 
 sub setSpellUrl {
