@@ -38,6 +38,7 @@ my $hiLoggerVersion = 5;
 my $comboLowVersion = 20;
 my $comboHiVersion  = 27;
 my $needSlapIndexing = 0;
+my $mysqlcnfUpdated = 0;
 
 my $platform = `/opt/zimbra/libexec/get_plat_tag.sh`;
 chomp $platform;
@@ -2386,6 +2387,13 @@ sub upgrade5010GA {
     #bug 31177
     upgradeLocalConfigValue("zmmtaconfig_enable_config_restarts", "TRUE", "");
 
+  if (main::isInstalled("zimbra-store")) {
+    updateMySQLcnf();
+    my $conns=main::getLocalConfig("zimbra_mysql_connector_maxActive");
+    upgradeLocalConfigValue("zimbra_mysql_connector_maxActive", "100", "$conns") 
+      if ($conns < 100);
+  }
+
   if (main::isInstalled("zimbra-ldap") && $isLdapMaster) {
 	  upgradeLdapConfigValue("zimbraReverseProxyImapExposeVersionOnBanner", "FALSE", "");
 	  upgradeLdapConfigValue("zimbraReverseProxyPop3ExposeVersionOnBanner", "FALSE", "");
@@ -2735,6 +2743,7 @@ sub updateLoggerMySQLcnf {
 }
 sub updateMySQLcnf {
 
+  return if $mysqlcnfUpdated=1;
   my $mycnf = "/opt/zimbra/conf/my.cnf";
   my $mysql_pidfile = main::getLocalConfig("mysql_pidfile");
   $mysql_pidfile = "/opt/zimbra/db/mysql.pid" if ($mysql_pidfile eq "");
@@ -2760,11 +2769,26 @@ sub updateMySQLcnf {
         print TMP "pid-file = ${mysql_pidfile}\n";
         $mycnfChanged=1;
         next;
-      } elsif (/^thread_cache\s/) {
+      } elsif (/^thread_cache\s.*(\d+)$/) {
         # 29475 fix thread_cache_size
-        s/^thread_cache/thread_cache_size/g;
-        print TMP;
+        if ($1 >= 110) {
+          s/^thread_cache/thread_cache_size/g;
+          print TMP;
+        } else {
+          print TMP "thread_cache_size = 110\n";
+          next;
+        }
         $mycnfChanged=1;
+        next;
+      } elsif (/^thread_cache_size.*(\d+)$/) {
+        next if ($1 >= 110);
+        $mycnfChanged=1;
+        print TMP "thread_cache_size = 110\n";
+        next;
+      } elsif (/^max_connections.*(\d+)$/) {
+        next if ($1 >= 110);
+        $mycnfChanged=1;
+        print TMP "max_connections = 110\n";
         next;
       } elsif (/^skip-external-locking/) {
         # 19749 remove skip-external-locking
@@ -2790,6 +2814,7 @@ sub updateMySQLcnf {
       `mv $mycnf ${mycnf}.${startVersion}`;
       `cp -f $tmpfile $mycnf`;
       `chmod 644 $mycnf`;
+      $mysqlcnfUpdated=1;
     } 
   }
 }
