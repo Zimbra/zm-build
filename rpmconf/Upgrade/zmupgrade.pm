@@ -2769,7 +2769,7 @@ sub updateMySQLcnf {
         print TMP "pid-file = ${mysql_pidfile}\n";
         $mycnfChanged=1;
         next;
-      } elsif (/^thread_cache\s.*(\d+)$/) {
+      } elsif (/^thread_cache\s+=\s+(\d+)$/) {
         # 29475 fix thread_cache_size
         if ($1 >= 110) {
           s/^thread_cache/thread_cache_size/g;
@@ -2780,16 +2780,18 @@ sub updateMySQLcnf {
         }
         $mycnfChanged=1;
         next;
-      } elsif (/^thread_cache_size.*(\d+)$/) {
-        next if ($1 >= 110);
-        $mycnfChanged=1;
-        print TMP "thread_cache_size = 110\n";
-        next;
-      } elsif (/^max_connections.*(\d+)$/) {
-        next if ($1 >= 110);
-        $mycnfChanged=1;
-        print TMP "max_connections = 110\n";
-        next;
+      } elsif (/^thread_cache_size\s+=\s+(\d+)$/) {
+        if ($1 < 110) {
+          $mycnfChanged=1;
+          print TMP "thread_cache_size = 110\n";
+          next;
+        }
+      } elsif (/^max_connections\s+=\s+(\d+)$/) {
+        if ($1 < 110) {
+          $mycnfChanged=1;
+          print TMP "max_connections = 110\n";
+          next;
+        }
       } elsif (/^skip-external-locking/) {
         # 19749 remove skip-external-locking
         print TMP "external-locking\n";
