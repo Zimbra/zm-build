@@ -21,6 +21,7 @@ use lib "/opt/zimbra/zimbramon/lib";
 use Zimbra::Util::Common;
 use Net::LDAP;
 use Cwd;
+use Time::localtime qw(ctime);
 
 $|=1; # don't buffer stdout
 
