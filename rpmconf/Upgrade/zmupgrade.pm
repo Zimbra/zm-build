@@ -2743,7 +2743,7 @@ sub updateLoggerMySQLcnf {
 }
 sub updateMySQLcnf {
 
-  return if $mysqlcnfUpdated=1;
+  return if ($mysqlcnfUpdated == 1);
   my $mycnf = "/opt/zimbra/conf/my.cnf";
   my $mysql_pidfile = main::getLocalConfig("mysql_pidfile");
   $mysql_pidfile = "/opt/zimbra/db/mysql.pid" if ($mysql_pidfile eq "");
@@ -2771,7 +2771,7 @@ sub updateMySQLcnf {
         next;
       } elsif (/^thread_cache\s+=\s+(\d+)$/) {
         # 29475 fix thread_cache_size
-        if ($1 >= 110) {
+        if ($1 > 110) {
           s/^thread_cache/thread_cache_size/g;
           print TMP;
         } else {
