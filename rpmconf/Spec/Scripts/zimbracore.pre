@@ -33,4 +33,8 @@ if [ -f "/etc/security/limits.conf" ]; then
     echo "zimbra hard nofile 524288" >> /tmp/limits.conf
     mv -f /tmp/limits.conf /etc/security/limits.conf
     chmod 640 /etc/security/limits.conf
+else
+    echo "zimbra soft nofile 524288" > /etc/security/limits.conf
+    echo "zimbra hard nofile 524288" >> /etc/security/limits.conf
+    chmod 640 /etc/security/limits.conf
 fi
