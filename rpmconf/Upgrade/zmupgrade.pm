@@ -2412,6 +2412,8 @@ sub upgrade5010GA {
 	  upgradeLdapConfigValue("zimbraReverseProxyPassErrors", "TRUE", "");
 	  upgradeLdapConfigValue("zimbraReverseProxyImapSaslPlainEnabled", "TRUE", "");
 	  upgradeLdapConfigValue("zimbraReverseProxyPop3SaslPlainEnabled", "TRUE", "");
+    upgradeLdapConfigValue("zimbraAdminConsoleCatchAllAddressEnabled", "FALSE", "");
+    upgradeLdapConfigValue("zimbraAdminConsoleDNSCheckEnabled", "FALSE", "");
 	  my @coses = `$su "$ZMPROV gac"`;
     my %attrs = ( zimbraFeatureMailForwardingInFiltersEnabled => "TRUE",
                   zimbraPrefIMHideOfflineBuddies => "FALSE",
