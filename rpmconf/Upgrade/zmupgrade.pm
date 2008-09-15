@@ -2395,10 +2395,36 @@ sub upgrade5010GA {
   }
 
   if (main::isInstalled("zimbra-ldap") && $isLdapMaster) {
+	/* Todo -- Need some clarifications first
+	  main::runAsZimbra("$ZMPROV mcf +zimbraReverseProxyPop3SSLEnabledCapability 'EXPIRE 31 USER'");
+	  main::runAsZimbra("$ZMPROV mcf +zimbraReverseProxyPop3SSLEnabledCapability TOP");
+	  main::runAsZimbra("$ZMPROV mcf +zimbraReverseProxyPop3SSLEnabledCapability UIDL");
+	  main::runAsZimbra("$ZMPROV mcf +zimbraReverseProxyPop3SSLEnabledCapability USER");
+	  main::runAsZimbra("$ZMPROV mcf +zimbraReverseProxyPop3SSLEnabledCapability XOIP");
+	  upgradeLdapConfigValue("zimbraReverseProxyPop3Capabilities", "\"TOP\" \"USER\" \"UIDL\" \"EXPIRE 31 USER\"", "");
+	  upgradeLdapConfigValue("zimbraReverseProxyPop3EnabledCapability", "EXPIRE 31 USER,TOP,UIDL,USER,XOIP", "");
+	  upgradeLdapConfigValue("zimbraReverseProxyImapEnabledCapability", "ACL,BINARY,CATENATE,CHILDREN,CONDSTORE,ENABLE,ESEARCH,ESORT,I18NLEVEL=1,ID,IDLE,IMAP4rev1,LIST-EXTENDED,LITERAL+,MULTIAPPEND,NAMESPACE,QRESYNC,QUOTA,RIGHTS=ektx,SASL-IR,SEARCHRES,SORT,THREAD=ORDEREDSUBJECT,UIDPLUS,UNSELECT,WITHIN", "");
+	  upgradeLdapConfigValue("zimbraReverseProxyImapCapabilities", "\"IMAP4rev1\" \"ID\" \"LITERAL+\" \"SASL-IR\" \"IDLE\" \"NAMESPACE\"", "");
+	  upgradeLdapConfigValue("zimbraReverseProxyImapSSLEnabledCapability", "ACL,BINARY,CATENATE,CHILDREN,CONDSTORE,ENABLE,ESEARCH,ESORT,I18NLEVEL=1,ID,IDLE,IMAP4rev1,LIST-EXTENDED,LITERAL+,MULTIAPPEND,NAMESPACE,QRESYNC,QUOTA,RIGHTS=ektx,SASL-IR,SEARCHRES,SORT,THREAD=ORDEREDSUBJECT,UIDPLUS,UNSELECT,WITHIN", "");
+	*/
+
+	  main::runAsZimbra("$ZMPROV mcf zimbraReverseProxyIpThrottleMsg 'Login rejected from this IP'");
+	  main::runAsZimbra("$ZMPROV mcf zimbraReverseProxyUserThrottleMsg 'Login rejected for this user'");
 	  upgradeLdapConfigValue("zimbraReverseProxyImapExposeVersionOnBanner", "FALSE", "");
 	  upgradeLdapConfigValue("zimbraReverseProxyPop3ExposeVersionOnBanner", "FALSE", "");
 	  upgradeLdapConfigValue("zimbraSoapExposeVersion", "FALSE", "");
 	  upgradeLdapConfigValue("zimbraReverseProxyDefaultRealm", "", "EXAMPLE.COM");
+	  upgradeLdapConfigValue("zimbraReverseProxyWorkerConnections", "10240", "");
+	  upgradeLdapConfigValue("zimbraReverseProxyLogLevel", "info", "");
+	  upgradeLdapConfigValue("zimbraReverseProxyCacheFetchTimeout", "3s", "");
+	  upgradeLdapConfigValue("zimbraFeatureAdminConsoleDNSCheck", "FALSE", "");
+	  upgradeLdapConfigValue("zimbraReverseProxyWorkerProcesses", "4", "");
+	  upgradeLdapConfigValue("zimbraReverseProxyInactivityTimeout", "1h", "");
+	  upgradeLdapConfigValue("zimbraReverseProxyCacheEntryTTL", "1h", "");
+	  upgradeLdapConfigValue("zimbraReverseProxyCacheReconnectInterval", "1m", "");
+	  upgradeLdapConfigValue("zimbraReverseProxyPassErrors", "TRUE", "");
+	  upgradeLdapConfigValue("zimbraReverseProxyImapSaslPlainEnabled", "TRUE", "");
+	  upgradeLdapConfigValue("zimbraReverseProxyPop3SaslPlainEnabled", "TRUE", "");
 	  my @coses = `$su "$ZMPROV gac"`;
     my %attrs = ( zimbraFeatureMailForwardingInFiltersEnabled => "TRUE",
                   zimbraPrefIMHideOfflineBuddies => "FALSE",
