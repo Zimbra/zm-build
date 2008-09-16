@@ -1458,6 +1458,22 @@ sub ask {
   return $rc;
 }
 
+sub askPassword {
+  my $prompt = shift;
+  my $default = shift;
+  while (1) {
+    my $v = ask($prompt, $default);
+    # although they are valid pass characters avoid $ and |
+    # here because they cause quoting problems.
+    if ($v =~ /\$|\\/g) {
+      print "Invalid metacharater used.\n";
+      next;
+    }
+    if ($v ne "") {return $v;}
+    print "A non-blank answer is required\n";
+  }
+}
+
 sub askYN {
   my $prompt = shift;
   my $default = shift;
@@ -1759,7 +1775,7 @@ sub validEmailAddress {
 sub setLdapRootPass {
   while (1) {
     my $new =
-      askNonBlank("Password for ldap root user (min 6 characters):",
+      askPassword("Password for ldap root user (min 6 characters):",
         $config{LDAPROOTPASS});
     if (length($new) >= 6) {
       if ($config{LDAPROOTPASS} ne $new) {
@@ -1776,7 +1792,7 @@ sub setLdapRootPass {
 sub setLdapAdminPass {
   while (1) {
     my $new =
-      askNonBlank("Password for ldap admin user (min 6 characters):",
+      askPassword("Password for ldap admin user (min 6 characters):",
         $config{LDAPADMINPASS});
     if (length($new) >= 6) {
       if ($config{LDAPADMINPASS} ne $new) {
@@ -1793,7 +1809,7 @@ sub setLdapAdminPass {
 sub setLdapRepPass {
   while (1) {
     my $new =
-      askNonBlank("Password for ldap replication user (min 6 characters):",
+      askPassword("Password for ldap replication user (min 6 characters):",
         $config{LDAPREPPASS});
     if (length($new) >= 6) {
       if ($config{LDAPREPPASS} ne $new) {
@@ -1810,7 +1826,7 @@ sub setLdapRepPass {
 sub setLdapPostPass {
   while (1) {
     my $new =
-      askNonBlank("Password for ldap Postfix user (min 6 characters):",
+      askPassword("Password for ldap Postfix user (min 6 characters):",
         $config{LDAPPOSTPASS});
     if (length($new) >= 6) {
       if ($config{LDAPPOSTPASS} ne $new) {
@@ -1827,7 +1843,7 @@ sub setLdapPostPass {
 sub setLdapAmavisPass {
   while (1) {
     my $new =
-      askNonBlank("Password for ldap Amavis user (min 6 characters):",
+      askPassword("Password for ldap Amavis user (min 6 characters):",
         $config{LDAPAMAVISPASS});
     if (length($new) >= 6) {
       if ($config{LDAPAMAVISPASS} ne $new) {
@@ -1844,7 +1860,7 @@ sub setLdapAmavisPass {
 sub setLdapNginxPass {
   while (1) {
     my $new =
-      askNonBlank("Password for ldap Nginx user (min 6 characters):",
+      askPassword("Password for ldap Nginx user (min 6 characters):",
         $config{ldap_nginx_password});
     if (length($new) >= 6) {
       if ($config{ldap_nginx_password} ne $new) {
@@ -1863,7 +1879,7 @@ sub setAdminPass {
     while (1) {
       if ($config{CREATEADMINPASS} eq "") { $config{CREATEADMINPASS} = genRandomPass(); }
       my $new =
-        askNonBlank("Password for $config{CREATEADMIN} (min 6 characters):",
+        askPassword("Password for $config{CREATEADMIN} (min 6 characters):",
           $config{CREATEADMINPASS});
       if (length($new) >= 6) {
         $config{CREATEADMINPASS} = $new;
@@ -3622,7 +3638,7 @@ sub checkLdapReplicationEnabled() {
 
 sub runAsRoot {
   my $cmd = shift;
-  if ($cmd =~ /init/ || $cmd =~ /zmprov -l ca/ && $cmd !~ /zmproxyinit/) {
+  if ($cmd =~ /ldappass/ || $cmd =~ /init/ || $cmd =~ /zmprov -l ca/ && $cmd !~ /zmproxyinit/) {
     # Suppress passwords in log file
     my $c = (split ' ', $cmd)[0];
     detail ( "*** Running as root user: $c\n" );
@@ -3636,7 +3652,7 @@ sub runAsRoot {
 
 sub runAsZimbra {
   my $cmd = shift;
-  if ($cmd =~ /init/ || $cmd =~ /zmprov -l ca/ && $cmd !~ /zmproxyinit/) {
+  if ($cmd =~ /ldappass/ || $cmd =~ /init/ || $cmd =~ /zmprov -l ca/ && $cmd !~ /zmproxyinit/) {
     # Suppress passwords in log file
     my $c = (split ' ', $cmd)[0];
     detail ( "*** Running as zimbra user: $c\n" );
@@ -3650,7 +3666,7 @@ sub runAsZimbra {
 
 sub runAsZimbraWithOutput {
   my $cmd = shift;
-  if ($cmd =~ /init/ || $cmd =~ /zmprov -l ca/ && $cmd !~ /zmproxyinit/) {
+  if ($cmd =~ /ldappass/ || $cmd =~ /init/ || $cmd =~ /zmprov -l ca/ && $cmd !~ /zmproxyinit/) {
     # Suppress passwords in log file
     my $c = (split ' ', $cmd)[0];
     detail ( "*** Running as zimbra user: $c\n" );
@@ -3832,29 +3848,29 @@ sub configSetupLdap {
 
   if (!$ldapConfigured && isEnabled("zimbra-ldap") && ! -f "/opt/zimbra/.enable_replica" && $newinstall && ($config{LDAPHOST} eq $config{HOSTNAME})) {
     progress ( "Initializing ldap..." ) ;
-    if (my $rc = runAsZimbra("/opt/zimbra/libexec/zmldapinit $config{LDAPROOTPASS} $config{LDAPADMINPASS}")) {
+    if (my $rc = runAsZimbra("/opt/zimbra/libexec/zmldapinit \'$config{LDAPROOTPASS}\' \'$config{LDAPADMINPASS}\'")) {
       progress ( "failed. ($rc)\n" );
       failConfig();
     } else {
       progress ( "done.\n" );
       if ($ldapRepChanged == 1) {
          progress ( "Setting replication password..." );
-         runAsZimbra ("/opt/zimbra/bin/zmldappasswd -l $config{LDAPREPPASS}");
+         runAsZimbra ("/opt/zimbra/bin/zmldappasswd -l \'$config{LDAPREPPASS}\'");
          progress ( "done.\n" );
       }
       if ($ldapPostChanged == 1) {
          progress ( "Setting Postfix password..." );
-         runAsZimbra ("/opt/zimbra/bin/zmldappasswd -p $config{LDAPPOSTPASS}");
+         runAsZimbra ("/opt/zimbra/bin/zmldappasswd -p \'$config{LDAPPOSTPASS}\'");
          progress ( "done.\n" );
       }
       if ($ldapAmavisChanged == 1) {
          progress ( "Setting amavis password..." );
-         runAsZimbra ("/opt/zimbra/bin/zmldappasswd -a $config{LDAPAMAVISPASS}");
+         runAsZimbra ("/opt/zimbra/bin/zmldappasswd -a \'$config{LDAPAMAVISPASS}\'");
          progress ( "done.\n" );
       }
       if ($ldapNginxChanged == 1) {
          progress ( "Setting nginx password..." );
-         runAsZimbra ("/opt/zimbra/bin/zmldappasswd -n $config{ldap_nginx_password}");
+         runAsZimbra ("/opt/zimbra/bin/zmldappasswd -n \'$config{ldap_nginx_password}\'");
          progress ( "done.\n" );
       }
     }
@@ -4755,74 +4771,96 @@ sub configInitSnmp {
 sub configInitNotebooks {
 
   if (isEnabled("zimbra-store")) {
-    progress ( "Initializing Documents..." );
-    my ($notebookUser, $notebookDomain, $globalWikiAcct);
-    my $rc = 0;
+    my $globalWikiAcct = getLdapConfigValue("zimbraNotebookAccount");
 
-    # get the default state
-    my $zimbraFeatureNotebookEnabled = getLdapCOSValue("default", "zimbraFeatureNotebookEnabled");
-    $zimbraFeatureNotebookEnabled = "FALSE" unless $zimbraFeatureNotebookEnabled;
-
-    $globalWikiAcct = getLdapConfigValue("zimbraNotebookAccount");
-
-    if ($globalWikiAcct eq "") {
-      if ($config{NOTEBOOKACCOUNT} eq "") {
-        open DOMAINS, "$ZMPROV gad|" or die "Can't get domain list!";
-        my $domain = <DOMAINS>;
-        close DOMAINS;
-        chomp $domain;
-        $config{NOTEBOOKACCOUNT} = "wiki.".lc(genRandomPass())."\@$domain";
-        $config{NOTEBOOKPASS} = lc(genRandomPass());
-      }
-    }
-
-    # enable wiki before we do anything else.
-    runAsZimbra("/opt/zimbra/bin/zmprov mc default zimbraFeatureNotebookEnabled TRUE");
-
-    # global Documents
-    runAsZimbra("/opt/zimbra/bin/zmprov mcf zimbraNotebookAccount $config{NOTEBOOKACCOUNT}");
-    $rc = runAsZimbra("/opt/zimbra/bin/zmprov in $config{NOTEBOOKACCOUNT}");
-    if ($rc != 0) {
-      runAsZimbra("/opt/zimbra/bin/zmprov mc default zimbraFeatureNotebookEnabled FALSE");
-      progress ("failed to initialize documents...see logfile for details.\n");
-
+    if (! $newinstall && $globalWikiAcct ne "") {
+      progress "Upgrading Document templates..."; 
+      my $rc = runAsZimbra("/opt/zimbra/bin/zmprov ut /opt/zimbra/wiki/Template");
+      progress (($rc == 0) ? "done.\n" : "failed.\n");
     } else {
-      $rc = runAsZimbra("/opt/zimbra/bin/zmprov impn $config{NOTEBOOKACCOUNT} /opt/zimbra/wiki/Template Template");
-
+      progress ( "Initializing Documents..." );
+      my ($notebookUser, $notebookDomain);
+      my $rc = 0;
+  
+      # get the default state
+      my $zimbraFeatureNotebookEnabled = getLdapCOSValue("default", "zimbraFeatureNotebookEnabled");
+      $zimbraFeatureNotebookEnabled = "FALSE" unless $zimbraFeatureNotebookEnabled;
+ 
+      if ($globalWikiAcct eq "") {
+        if ($config{NOTEBOOKACCOUNT} eq "") {
+          my $domain;
+          if ($config{zimbraDefaultDomainName} eq "") {
+            open DOMAINS, "$ZMPROV gad|" or die "Can't get domain list!";
+            $domain = <DOMAINS>;
+            close DOMAINS;
+            chomp $domain;
+          } else {
+            $domain = $config{zimbraDefaultDomainName};
+          }
+          $config{NOTEBOOKACCOUNT} = "wiki.".lc(genRandomPass())."\@$domain";
+          $config{NOTEBOOKPASS} = lc(genRandomPass());
+          $config{NOTEBOOKACCOUNT} = lc($config{NOTEBOOKACCOUNT});
+          progress ( "Creating user $config{NOTEBOOKACCOUNT}..." );
+          runAsZimbra("$ZMPROV ca ".
+            "$config{NOTEBOOKACCOUNT} \'$config{NOTEBOOKPASS}\' ".
+            "amavisBypassSpamChecks TRUE ".
+            "zimbraAttachmentsIndexingEnabled FALSE ".
+            "zimbraIsSystemResource TRUE ".
+            "zimbraHideInGal TRUE ".
+            "zimbraMailQuota 0 ".
+            "description \'Global Documents account\'");
+          progress ( "done.\n" );
+        }
+      }
+  
+      # enable wiki before we do anything else.
+      runAsZimbra("/opt/zimbra/bin/zmprov mc default zimbraFeatureNotebookEnabled TRUE");
+  
+      # global Documents
+      runAsZimbra("/opt/zimbra/bin/zmprov mcf zimbraNotebookAccount $config{NOTEBOOKACCOUNT}");
+      $rc = runAsZimbra("/opt/zimbra/bin/zmprov in $config{NOTEBOOKACCOUNT}");
       if ($rc != 0) {
         runAsZimbra("/opt/zimbra/bin/zmprov mc default zimbraFeatureNotebookEnabled FALSE");
         progress ("failed to initialize documents...see logfile for details.\n");
+  
       } else {
-        runAsZimbra("/opt/zimbra/bin/zmprov ma $config{NOTEBOOKACCOUNT} zimbraFeatureNotebookEnabled TRUE");
-        progress ( "done.\n" );
+        $rc = runAsZimbra("/opt/zimbra/bin/zmprov impn $config{NOTEBOOKACCOUNT} /opt/zimbra/wiki/Template Template");
+  
+        if ($rc != 0) {
+          runAsZimbra("/opt/zimbra/bin/zmprov mc default zimbraFeatureNotebookEnabled FALSE");
+          progress ("failed to initialize documents...see logfile for details.\n");
+        } else {
+          runAsZimbra("/opt/zimbra/bin/zmprov ma $config{NOTEBOOKACCOUNT} zimbraFeatureNotebookEnabled TRUE");
+          progress ( "done.\n" );
+        }
       }
     }
-
+  
     # domain Documents only if the domain is local and wiki account
     # was previously setup.
-    open(ZM, "$ZMPROV gad|") or warn "Can't get domain list!";
-    my @domains = <ZM>;
-    close(ZM);
-    foreach my $domain (@domains) {
-      chomp($domain);
-      my $domainType = (split(/\s+/, `$SU "$ZMPROV gd $domain | grep zimbraDomainType"`))[-1];
-      next unless $domainType eq "local";
-    
-      my $domainWikiAcct = (split(/\s+/, `$SU "$ZMPROV gd $domain | grep zimbraNotebookAccount"`))[-1];
-      next if ($domainWikiAcct eq "");
-    
-      # global and domain accounts cannot be the same
-      next if ($domainWikiAcct eq $config{NOTEBOOKACCOUNT});
-      progress("Updating document templates for $domainWikiAcct...");
-      $rc = runAsZimbra("/opt/zimbra/bin/zmprov impn $domainWikiAcct /opt/zimbra/wiki/Template Template");
-      if ($rc != 0) {
-        progress ("failed...see logfile for details.\n");
-      } else {
-        progress ("done.\n");
-      }
-    }
+    #open(ZM, "$ZMPROV gad|") or warn "Can't get domain list!";
+    #my @domains = <ZM>;
+    #close(ZM);
+    #foreach my $domain (@domains) {
+    #  chomp($domain);
+    #  my $domainType = (split(/\s+/, `$SU "$ZMPROV gd $domain | grep zimbraDomainType"`))[-1];
+    #  next unless $domainType eq "local";
+   # 
+   #   my $domainWikiAcct = (split(/\s+/, `$SU "$ZMPROV gd $domain | grep zimbraNotebookAccount"`))[-1];
+   #   next if ($domainWikiAcct eq "");
+   # 
+   #   # global and domain accounts cannot be the same
+   #   next if ($domainWikiAcct eq $config{NOTEBOOKACCOUNT});
+   #   progress("Updating document templates for $domainWikiAcct...");
+   #   $rc = runAsZimbra("/opt/zimbra/bin/zmprov impn $domainWikiAcct /opt/zimbra/wiki/Template Template");
+   #   if ($rc != 0) {
+   #     progress ("failed...see logfile for details.\n");
+   #   } else {
+   #     progress ("done.\n");
+   #   }
+   # }
 
-    runAsZimbra("/opt/zimbra/bin/zmprov mc default zimbraFeatureNotebookEnabled $zimbraFeatureNotebookEnabled");
+   # runAsZimbra("/opt/zimbra/bin/zmprov mc default zimbraFeatureNotebookEnabled $zimbraFeatureNotebookEnabled");
   }
     
   configLog("configInitNotebooks");
