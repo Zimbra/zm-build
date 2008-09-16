@@ -4775,7 +4775,7 @@ sub configInitNotebooks {
 
     if (! $newinstall && $globalWikiAcct ne "") {
       progress "Upgrading Document templates..."; 
-      my $rc = runAsZimbra("/opt/zimbra/bin/zmprov ut /opt/zimbra/wiki/Template");
+      my $rc = runAsZimbra("/opt/zimbra/bin/zmprov ut -h $config{HOSTNAME} /opt/zimbra/wiki/Template");
       progress (($rc == 0) ? "done.\n" : "failed.\n");
     } else {
       progress ( "Initializing Documents..." );
