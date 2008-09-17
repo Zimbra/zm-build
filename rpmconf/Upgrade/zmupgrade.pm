@@ -2409,8 +2409,6 @@ sub upgrade5010GA {
 	  main::runAsZimbra("$ZMPROV mcf +zimbraReverseProxyImapEnabledCapability CONDSTORE");
 	  main::runAsZimbra("$ZMPROV mcf +zimbraReverseProxyImapEnabledCapability ENABLE");
 	  main::runAsZimbra("$ZMPROV mcf +zimbraReverseProxyImapEnabledCapability ESEARCH");
-	  main::runAsZimbra("$ZMPROV mcf +zimbraReverseProxyImapEnabledCapability ESORT");
-	  main::runAsZimbra("$ZMPROV mcf +zimbraReverseProxyImapEnabledCapability 'I18NLEVEL=1'");
 	  main::runAsZimbra("$ZMPROV mcf +zimbraReverseProxyImapEnabledCapability ID");
 	  main::runAsZimbra("$ZMPROV mcf +zimbraReverseProxyImapEnabledCapability IDLE");
 	  main::runAsZimbra("$ZMPROV mcf +zimbraReverseProxyImapEnabledCapability IMAP4rev1");
@@ -2423,8 +2421,6 @@ sub upgrade5010GA {
 	  main::runAsZimbra("$ZMPROV mcf +zimbraReverseProxyImapEnabledCapability 'RIGHTS=ektx'");
 	  main::runAsZimbra("$ZMPROV mcf +zimbraReverseProxyImapEnabledCapability 'SASL-IR'");
 	  main::runAsZimbra("$ZMPROV mcf +zimbraReverseProxyImapEnabledCapability SEARCHRES");
-	  main::runAsZimbra("$ZMPROV mcf +zimbraReverseProxyImapEnabledCapability SORT");
-	  main::runAsZimbra("$ZMPROV mcf +zimbraReverseProxyImapEnabledCapability 'THREAD=ORDEREDSUBJECT'");
 	  main::runAsZimbra("$ZMPROV mcf +zimbraReverseProxyImapEnabledCapability UIDPLUS");
 	  main::runAsZimbra("$ZMPROV mcf +zimbraReverseProxyImapEnabledCapability UNSELECT");
 	  main::runAsZimbra("$ZMPROV mcf +zimbraReverseProxyImapEnabledCapability WITHIN");
