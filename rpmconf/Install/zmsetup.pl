@@ -4369,9 +4369,11 @@ sub configSetTimeZonePref {
     configLog("zimbraPrefTimeZoneId");
     return 0;
   }
-  progress ( "Setting TimeZone Preference...");
-  runAsZimbra("$ZMPROV mc default zimbraPrefTimeZoneId \'$config{zimbraPrefTimeZoneId}\'");
-  progress ( "done.\n" );
+  if($config{LDAPHOST} eq $config{HOSTNAME}) {
+    progress ( "Setting TimeZone Preference...");
+    runAsZimbra("$ZMPROV mc default zimbraPrefTimeZoneId \'$config{zimbraPrefTimeZoneId}\'");
+    progress ( "done.\n" );
+  }
   configLog("zimbraPrefTimeZoneId");
 }
 
