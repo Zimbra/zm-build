@@ -38,6 +38,7 @@ my $hiLoggerVersion = 5;
 my $comboLowVersion = 20;
 my $comboHiVersion  = 27;
 my $needSlapIndexing = 0;
+my $mysqlcnfUpdated = 0;
 
 my $platform = `/opt/zimbra/libexec/get_plat_tag.sh`;
 chomp $platform;
