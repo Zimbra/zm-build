@@ -177,6 +177,8 @@ checkPackages() {
 			    AVAILABLE_PACKAGES="$AVAILABLE_PACKAGES $i"
         else 
           echo "Found $i but package is not installable. (possibly corrupt)"
+          echo "Unable to continue. Please correct package corruption and rerun the installation."
+          exit 1
         fi
       else 
 			  echo "Found $i"
