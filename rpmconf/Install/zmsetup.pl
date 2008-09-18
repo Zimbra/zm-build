@@ -4560,28 +4560,30 @@ sub configInstallZimlets {
 
   # Install zimlets
   if (opendir DIR, "/opt/zimbra/zimlets") {
-    progress ( "Installing zimlets... " );
+    progress ( "Installing common zimlets...\n" );
     my @zimlets = grep { !/^\./ } readdir(DIR);
     foreach my $zimletfile (@zimlets) {
       my $zimlet = $zimletfile;
       $zimlet =~ s/\.zip$//;
-      progress  ("\n\t$zimlet");
-      runAsZimbra ("/opt/zimbra/bin/zmzimletctl -l deploy zimlets/$zimletfile");
+      progress  ("\t$zimlet...");
+      my $rc = runAsZimbra ("/opt/zimbra/bin/zmzimletctl -l deploy zimlets/$zimletfile");
+      progress (($rc == 0) ? "done.\n" : "failed. This may impact system functionality.\n");
     }
-    progress ( "\ndone.\n" );
+    progress ( "Finished installing common zimlets.\n" );
   }
 
   # Install zimlets
   if (opendir DIR, "/opt/zimbra/zimlets-network") {
-    progress ( "Installing network zimlets... " );
+    progress ( "Installing network zimlets...\n" );
     my @zimlets = grep { !/^\./ } readdir(DIR);
     foreach my $zimletfile (@zimlets) {
       my $zimlet = $zimletfile;
       $zimlet =~ s/\.zip$//;
-      progress  ("\n\t$zimlet");
-      runAsZimbra ("/opt/zimbra/bin/zmzimletctl -l deploy zimlets-network/$zimletfile");
+      progress  ("\t$zimlet...");
+      my $rc = runAsZimbra ("/opt/zimbra/bin/zmzimletctl -l deploy zimlets-network/$zimletfile");
+      progress (($rc == 0) ? "done.\n" : "failed. This may impact system functionality.\n");
     }
-    progress ( "\ndone.\n" );
+    progress ( "Finished installing network zimlets.\n" );
   }
 
   configLog("configInstallZimlets");
