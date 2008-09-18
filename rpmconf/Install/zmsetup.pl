@@ -4773,7 +4773,6 @@ sub configInitNotebooks {
       my $rc = runAsZimbra("/opt/zimbra/bin/zmprov ut -h $config{HOSTNAME} /opt/zimbra/wiki/Template");
       progress (($rc == 0) ? "done.\n" : "failed.\n");
     } else {
-      progress ( "Initializing Documents..." );
       my ($notebookUser, $notebookDomain);
       my $rc = 0;
   
@@ -4807,6 +4806,7 @@ sub configInitNotebooks {
           progress ( "done.\n" );
         }
       }
+      progress ( "Initializing Documents..." );
   
       # enable wiki before we do anything else.
       runAsZimbra("/opt/zimbra/bin/zmprov mc default zimbraFeatureNotebookEnabled TRUE");
