@@ -1717,6 +1717,7 @@ getPlatformVars() {
     PACKAGEINST='rpm -iv'
     PACKAGERM='rpm -ev --nodeps --noscripts --allmatches'
     PACKAGEQUERY='rpm -q'
+    PACKAGEVERIFY='rpm -K'
     PACKAGEEXT='rpm'
     if [ $PLATFORM = "RHEL4" -o $PLATFORM = "CentOS4" ]; then
       PREREQ_PACKAGES="sudo libidn gmp compat-libstdc++-296 compat-libstdc++-33 libtool-libs"
