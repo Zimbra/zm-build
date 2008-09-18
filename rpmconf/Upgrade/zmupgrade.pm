@@ -2462,7 +2462,7 @@ sub upgrade5010GA {
 
 sub upgrade5011GA {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
-	main::progress("Updating from 6.0.0_GA\n");
+	main::progress("Updating from 5.0.11_GA\n");
 	return 0;
 }
 
