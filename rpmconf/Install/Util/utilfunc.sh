@@ -1245,7 +1245,101 @@ removeExistingInstall() {
       done
   
       /bin/rm -rf /opt/zimbra/*
-      /bin/rm -f /opt/zimbra/.enable_replica
+
+      if [ -e "/opt/zimbra/.enable_replica" ]; then
+        /bin/rm -f /opt/zimbra/.enable_replica
+      fi
+
+      if [ -x /usr/bin/crontab ]; then
+        echo -n "Removing zimbra crontab entry..."
+        /usr/bin/crontab -u zimbra -r 2> /dev/null
+        echo "done."
+      fi
+      
+
+      if [ -f /etc/syslog.conf ]; then
+        egrep -q 'zimbra.log' /etc/syslog.conf
+        if [ $? = 0 ]; then
+          echo -n "Cleaning up /etc/syslog.conf..."
+          sed -i -e '/zimbra.log/d' /etc/syslog.conf
+          sed -i -e '/^auth\.\* /d' /etc/syslog.conf
+          sed -i -e '/^local0\.\* /d' /etc/syslog.conf
+          sed -i -e 's/^*.info;local0.none;auth.none/*.info/' /etc/syslog.conf
+        fi
+        if [ -x /etc/init.d/syslog ]; then
+          /etc/init.d/syslog restart > /dev/null 2>&1
+          echo "done."
+        elif [ -x /etc/init.d/sysklogd ]; then
+          /etc/init.d/sysklogd restart > /dev/null 2>&1
+          echo "done."
+        else 
+          echo "Unable to restart syslog service.  Please do it manually."
+        fi
+      elif [ -f /etc/syslog-ng/syslog-ng.conf.in ]; then
+        egrep -q 'zimbra' /etc/syslog-ng/syslog-ng.conf.in
+        if [ $? = 0 ]; then
+          echo -n "Cleaning up /etc/syslog-ng/syslog-ng.conf.in..."
+          sed -i -e '/zimbra/d' /etc/syslog-ng/syslog-ng.conf.in
+          if [ -x /sbin/SuSEconfig ]; then
+            /sbin/SuSEconfig --module syslog-ng
+            echo "done."
+          else
+            echo "Unable to restart syslog-ng service.  Please do it manually."
+          fi
+        fi
+      elif [ -f /etc/syslog-ng/etc/syslog-ng.conf ]; then
+        egrep -q 'zimbra' /etc/syslog-ng/syslog-ng.conf
+        if [ $? = 0 ]; then
+          echo -n "Cleaning up /etc/syslog-ng/syslog-ng.conf..."
+          sed -i -e '/zimbra/d' /etc/syslog-ng/syslog-ng.conf.in
+          if [ -x /sbin/rcsyslog ]; then
+            /sbin/rcsyslog restart > /dev/null 2>&1
+            echo "done."
+          else
+            echo "Unable to restart syslog-ng service. Please do it manually."
+          fi
+        fi
+      fi
+
+      echo -n "Cleaning up zimbra init scripts..."
+      if [ -x /sbin/chkconfig ]; then
+        chkconfig zimbra off
+        chkconfig --del zimbra
+      else 
+        /bin/rm -f /etc/rc*.d/S99zimbra 2> /dev/null
+        /bin/rm -f /etc/rc*.d/K01zimbra 2> /dev/null
+      fi
+      if [ -f /etc/init.d/zimbra ]; then
+        /bin/rm -f /etc/init.d/zimbra
+      fi
+      echo "done."
+
+      if [ -f /etc/ld.so.conf ]; then
+        echo -n "Cleaning up /etc/ld.so.conf..."
+        egrep -q '/opt/zimbra' /etc/ld.so.conf
+        if [ $? = 0 ]; then
+          sed -i -e '!/opt/zimbra!d' /etc/ld.so.conf
+          if [ -x /sbin/ldconfig ]; then
+           /sbin/ldconfig
+          fi
+        fi
+        echo "done."
+      fi
+
+      if [ -f /etc/prelink.conf ]; then
+        echo -n "Cleaning up /etc/prelink.conf"
+        egrep -q 'zimbra' /etc/prelink.conf
+        if [ $? = 0 ]; then
+          sed -i -e '/zimbra/d' -e '/Zimbra/d' /etc/prelink.conf
+        fi
+        echo "done."
+      fi
+
+      if [ -f /etc/logrotate.d/zimbra ]; then
+        echo -n "Cleaning up /etc/logrotate.d/zimbra..."
+        /bin/rm -f /etc/logrotate.d/zimbra 2> /dev/null
+        echo "done."
+      fi
   
       for mp in $MOUNTPOINTS; do
         if [ x$mp != "x/opt/zimbra" ]; then
@@ -1253,6 +1347,10 @@ removeExistingInstall() {
           mount ${mp}
         fi
       done
+  
+      echo ""
+      echo "Finished removing Zimbra Collaboration Suite."
+      echo ""
     fi
   fi
 }
