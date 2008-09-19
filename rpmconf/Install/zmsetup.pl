@@ -1002,13 +1002,9 @@ sub setDefaults {
     $config{MTAAUTHHOST} = $config{HOSTNAME};
     $config{DOCREATEADMIN} = "yes" if $newinstall;
     $config{DOTRAINSA} = "yes";
-    if (isEnabled("zimbra-proxy")) {
-      $config{zimbraReverseProxyLookupTarget} = "TRUE" if $newinstall;
-    } else {
-      $config{zimbraReverseProxyLookupTarget} = "FALSE" if $newinstall;
-      $config{zimbraMailProxy} = "FALSE" if $newinstall;
-      $config{zimbraWebProxy} = "FALSE" if $newinstall;
-    }
+    $config{zimbraReverseProxyLookupTarget} = "TRUE" if $newinstall;
+    $config{zimbraMailProxy} = "FALSE" if $newinstall;
+    $config{zimbraWebProxy} = "FALSE" if $newinstall;
 
     # default values for upgrades 
     $config{NOTEBOOKACCOUNT} = "wiki".'@'.$config{CREATEDOMAIN}
