@@ -1011,7 +1011,7 @@ restoreCerts() {
   elif [ -f "$SAVEDIR/keystore" -a -d "/opt/zimbra/jetty/etc" ]; then
     cp $SAVEDIR/keystore /opt/zimbra/jetty/etc/keystore
     chown zimbra:zimbra /opt/zimbra/jetty/etc/keystore
-  else 
+  elif [ -f "$SAVEDIR/keystore" -a -d "/opt/zimbra/conf" ]; then
     cp $SAVEDIR/keystore /opt/zimbra/conf/keystore
     chown zimbra:zimbra /opt/zimbra/conf/keystore
   fi
