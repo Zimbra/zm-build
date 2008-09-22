@@ -2433,6 +2433,7 @@ sub upgrade5010GA {
 	  upgradeLdapConfigValue("zimbraReverseProxyCacheFetchTimeout", "3s", "");
 	  upgradeLdapConfigValue("zimbraReverseProxyWorkerProcesses", "4", "");
 	  upgradeLdapConfigValue("zimbraReverseProxyInactivityTimeout", "1h", "");
+	  upgradeLdapConfigValue("zimbraReverseProxyRouteLookupTimeout", "15s", "");
 	  upgradeLdapConfigValue("zimbraReverseProxyCacheEntryTTL", "1h", "");
 	  upgradeLdapConfigValue("zimbraReverseProxyCacheReconnectInterval", "1m", "");
 	  upgradeLdapConfigValue("zimbraReverseProxyPassErrors", "TRUE", "");
