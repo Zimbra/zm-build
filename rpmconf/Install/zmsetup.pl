@@ -748,7 +748,7 @@ sub setLdapDefaults {
   if ($config{HTTPSPORT} eq 0) { $config{HTTPSPORT} = 443; }
   if ($config{MODE} eq "") { $config{MODE} = "http"; }
   if ($config{PROXYMODE} eq "") { $config{PROXYMODE} = "http"; }
-  if ($config{zimbraReverseProxyLookupTarget} eq "") { $config{zimbraReverseProxyLookupTarget} = getLdapServer("zimbraReverseProxyLookupTarget"); }
+  if ($config{zimbraReverseProxyLookupTarget} eq "") { $config{zimbraReverseProxyLookupTarget} = getLdapServerValue("zimbraReverseProxyLookupTarget"); }
 
   if (isEnabled("zimbra-mta")) {
     my $tmpval = getLdapServerValue("zimbraMtaMyNetworks");
