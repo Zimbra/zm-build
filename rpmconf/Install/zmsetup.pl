@@ -3774,6 +3774,7 @@ sub configLCValues {
   }
 
   setLocalConfig ("ssl_allow_untrusted_certs", "TRUE");
+  setLocalConfig ("ssl_allow_mismatched_certs", "TRUE");
   setLocalConfig ("mysql_memory_percent", $config{MYSQLMEMORYPERCENT});
   setLocalConfig ("mailboxd_java_heap_memory_percent", $config{MAILBOXDMEMORYPERCENT});
   setLocalConfig ("mailboxd_directory", $config{mailboxd_directory});
