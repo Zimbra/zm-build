@@ -3773,8 +3773,8 @@ sub configLCValues {
     setLocalConfig ("av_notify_domain", $config{AVDOMAIN})
   }
 
-  setLocalConfig ("ssl_allow_untrusted_certs", "TRUE");
-  setLocalConfig ("ssl_allow_mismatched_certs", "TRUE");
+  setLocalConfig ("ssl_allow_untrusted_certs", "true");
+  setLocalConfig ("ssl_allow_mismatched_certs", "true");
   setLocalConfig ("mysql_memory_percent", $config{MYSQLMEMORYPERCENT});
   setLocalConfig ("mailboxd_java_heap_memory_percent", $config{MAILBOXDMEMORYPERCENT});
   setLocalConfig ("mailboxd_directory", $config{mailboxd_directory});
@@ -3978,9 +3978,9 @@ sub configSetupLdap {
   # set default zmprov bahaviour
   if (isEnabled("zimbra-ldap")) {
     if (isEnabled("zimbra-store")) {
-      setLocalConfig ("zimbra_zmprov_default_to_ldap", "FALSE");
+      setLocalConfig ("zimbra_zmprov_default_to_ldap", "false");
     } else {
-      setLocalConfig ("zimbra_zmprov_default_to_ldap", "TRUE");
+      setLocalConfig ("zimbra_zmprov_default_to_ldap", "true");
     }
   }
 
