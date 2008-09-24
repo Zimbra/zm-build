@@ -4509,6 +4509,60 @@ sub configSetCluster {
   runAsZimbra("$ZMPROV mcf zimbraClusterType $config{zimbraClusterType}"); 
 }
 
+sub removeNetworkComponents {
+    my $components = getLdapConfigValue("zimbraComponentAvailable"); 
+    my $comp_args = "";
+    foreach my $component (split(/\n/,$components)) {
+      $comp_args .= "-zimbraComponentAvailable $component "
+        if ($component =~ /HSM|cluster|convertd|archiving|hotbackup/);
+    }
+    if ($comp_args ne "") {
+      progress ("Removing network components from ldap...");
+      my $rc = runAsZimbra ("$ZMPROV mcf $comp_args");
+      progress (($rc == 0) ? "done.\n" : "failed. This may impact system functionality.\n");
+    }
+    foreach my $zimlet qw(com_zimbra_backuprestore com_zimbra_cluster com_zimbra_convertd com_zimbra_domainadmin com_zimbra_hsm com_zimbra_license com_zimbra_mobilesync zimbra_xmbxsearch) {
+      system("rm -rf $config{mailboxd_directory}/webapps/service/zimlet/$zimlet")
+        if (-d "$config{mailboxd_directory}/webapps/service/zimlet/$zimlet" );
+    }
+}
+
+sub removeNetworkZimlets {
+  my $ldap_pass = getLocalConfig("zimbra_ldap_password");
+  my $ldap_master_url = getLocalConfig("ldap_master_url");
+  my $ldap;
+  unless($ldap = Net::LDAP->new($ldap_master_url)) {
+    detail("Unable to contact $ldap_master_url: $!");
+    return 1;
+  }
+  my $ldap_dn = $config{zimbra_ldap_userdn};
+  my $ldap_base = "cn=zimlets,$config{ldap_dit_base_dn_config}";
+
+  my $result = $ldap->bind($ldap_dn, password => $ldap_pass);
+  if ($result->code()) {
+    detail("ldap bind failed for $ldap_dn");
+    return 1;
+  } else {
+    detail("ldap bind done for $ldap_dn");
+    progress("Checking for network zimlets in LDAP...");
+    $result = $ldap->search(base => $ldap_base, scope => 'one', filter => "(|(cn=com_zimbra_backuprestore)(cn=com_zimbra_domainadmin)(cn=com_zimbra_mobilesync)(cn=com_zimbra_cluster)(cn=com_zimbra_hsm)(cn=com_zimbra_convertd)(cn=com_zimbra_license)(cn=zimbra_xmbxsearch)", attrs => ['zimbraZimletKeyword']);
+    progress (($result->code()) ? "failed.\n" : "done.\n");
+    return $result if ($result->code());
+
+    detail("processing ldap search results");
+    progress("Removing network zimlets...");
+    foreach my $entry ($result->all_entries) {
+      my $zimlet = $entry->get_value('zimbraZimletKeyword');
+      progress("\tRemoving $zimlet...");
+      my $rc = runAsZimbra("/opt/zimbra/bin/zmzimletctl -l undeploy $zimlet");
+      progress (($rc == 0) ? "done.\n" : "failed. This may impact system functionality.\n");
+    }
+    progress("Finished removing network zimlets.\n");
+  }
+  $result = $ldap->unbind;
+  return 0;
+}
+
 sub zimletCleanup {
   my $ldap_pass = getLocalConfig("zimbra_ldap_password");
   my $ldap_master_url = getLocalConfig("ldap_master_url");
@@ -4553,6 +4607,12 @@ sub configInstallZimlets {
     progress("failed.\n");
   } else {
     progress("done.\n");
+  }
+
+  # remove any Network zimlets if we are upgrading to a FOSS version
+  if (isFoss() && !$newinstall) {
+    removeNetworkZimlets();
+    removeNetworkComponents();
   }
 
   # Install zimlets
