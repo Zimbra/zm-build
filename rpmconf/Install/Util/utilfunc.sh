@@ -385,50 +385,49 @@ EOF
 
   GOOD="yes"
   echo "Checking for prerequisites..."
-  echo -n "    NPTL..."
+  #echo -n "    NPTL..."
   /usr/bin/getconf GNU_LIBPTHREAD_VERSION | grep NPTL > /dev/null 2>&1
   if [ $? != 0 ]; then
-    echo "MISSING"
+    echo "     MISSING:  NPTL"
     GOOD="no"
   else
-    echo "FOUND"
+    echo "     FOUND: NPTL"
   fi
 
   for i in $PREREQ_PACKAGES; do
-    echo -n "    $i..."
+    #echo -n "    $i..."
     isInstalled $i
     if [ "x$PKGINSTALLED" != "x" ]; then
-      echo "FOUND $PKGINSTALLED"
+      echo "     FOUND: $PKGINSTALLED"
     else
-      echo "MISSING"
+      echo "     MISSING: $i"
       GOOD="no"
     fi
   done
 
   for i in $PREREQ_LIBS; do
-    echo -n "    $i..."
+    #echo -n "    $i..."
     if [ -L $i -o -f $i ]; then
-      echo "FOUND"
+      echo "     FOUND: $i"
     else
-      echo "MISSING"
+      echo "     MISSING: $i"
       GOOD="no"
     fi
   done
-  echo "Prerequisite check complete."
 
   SUGGESTED="yes"
-  echo "Checking for standard system perl..."
+  echo "Checking for suggested prerequisites..."
   for i in $PRESUG_PACKAGES; do
-    echo -n "    $i..."
+    #echo -n "    $i..."
     PKGVERSION="notfound"
     suggestedVersion $i
     if [ "x$PKGINSTALLED" != "x" ]; then
-       echo "FOUND standard system $i"
+       echo "    FOUND: $i"
     else
        if [ "x$PKGVERSION" = "xnotfound" ]; then
-         echo "$i does not appear to be installed."
+         echo "     $i does not appear to be installed."
        else
-         echo "Unable to find expected $i.  Found version $PKGVERSION instead."
+         echo "     Unable to find expected $i.  Found version $PKGVERSION instead."
        fi
        SUGGESTED="no"
     fi
@@ -464,6 +463,8 @@ EOF
     echo "Installation cancelled."
     echo ""
     exit 1
+  else
+    echo "Prerequisite check complete."
   fi
 
 
