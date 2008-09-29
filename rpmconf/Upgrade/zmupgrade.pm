@@ -32,7 +32,7 @@ my $scriptDir = "/opt/zimbra/libexec/scripts";
 
 my $lowVersion = 18;
 my $hiVersion = 53;
-my $hiLoggerVersion = 5;
+my $hiLoggerVersion = 6;
 
 # Variables for the combo schema updater
 my $comboLowVersion = 20;
@@ -109,6 +109,7 @@ my %loggerUpdateScripts = (
   '2' => "migrateLogger3-diskindex.pl",
   '3' => "migrateLogger4-loghostname.pl",
   '4' => "migrateLogger5-qid.pl",
+  '5' => "migrateLogger6-qid.pl",
 );
 
 my %updateFuncs = (
