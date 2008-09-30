@@ -198,6 +198,12 @@ $(ZIMLET_DIR)/build/dist/zimlets/nofile:
 		-Dzimbra.buildinfo.version=$(VERSION_TAG) \
 		-Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) \
 		-Dzimbra.buildinfo.host=$(HOST) package-zimlet ; )
+	(cd $(ADMIN_EXT_DIR); $(ANT) \
+		-Dplat.tag=$(BUILD_PLATFORM) \
+		-Dext.dir=BulkProvision -Dext.name=com_zimbra_bulkprovision \
+		-Dzimbra.buildinfo.version=$(VERSION_TAG) \
+		-Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) \
+		-Dzimbra.buildinfo.host=$(HOST) package-zimlet ; )
 
 $(ZIMLET_DIR)/build/dist/zimlets-experimental/nofile:
 	(cd $(ZIMLET_DIR); $(ANT) \
@@ -250,6 +256,20 @@ $(WEBAPP_DIR)/zimbra/downloads:
 	-cp $(SERVICE_DIR)/src/windows/*exe $@
 	-cp $(SERVICE_DIR)/src/windows/ZimbraToast*msi $@
 	-(rm -f $@/\%*.dmg)
+
+$(ADMIN_EXT_DIR)/build/com_zimbra_bulkprovision.jar:
+	(cd $(ADMIN_EXT_DIR); $(ANT) \
+		-Dplat.tag=$(BUILD_PLATFORM) \
+		-Dext.dir=BulkProvision -Dext.name=com_zimbra_bulkprovision \
+		-Dzimbra.buildinfo.version=$(VERSION_TAG) \
+		-Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) \
+		-Dzimbra.buildinfo.host=$(HOST) jar ; )
+	
+$(CORE_DEST_DIR)/lib/ext/com_zimbra_bulkprovision/com_zimbra_bulkprovision.jar: $(CORE_DEST_DIR)/lib/ext/com_zimbra_bulkprovision $(ADMIN_EXT_DIR)/build/com_zimbra_bulkprovision.jar
+	cp -f $(ADMIN_EXT_DIR)/build/com_zimbra_bulkprovision.jar $@
+
+$(CORE_DEST_DIR)/lib/ext/com_zimbra_bulkprovision:
+	mkdir -p $@
 
 $(ADMIN_EXT_DIR)/build/com_zimbra_cert_manager.jar:
 	(cd $(ADMIN_EXT_DIR); $(ANT) \
