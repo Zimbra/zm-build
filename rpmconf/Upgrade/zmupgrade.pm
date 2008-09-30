@@ -413,6 +413,8 @@ sub upgrade {
 		main::progress("This appears to be 5.0.9_GA\n");
 	} elsif ($startVersion eq "5.0.10_GA") {
 		main::progress("This appears to be 5.0.10_GA\n");
+	} elsif ($startVersion eq "5.0.11_GA") {
+		main::progress("This appears to be 5.0.11_GA\n");
 	} elsif ($startVersion eq "5.5.0_GA") {
 		main::progress("This appears to be 5.5.0_GA\n");
 	} else {
