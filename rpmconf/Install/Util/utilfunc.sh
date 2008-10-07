@@ -1399,7 +1399,9 @@ checkConflicts() {
     askYN "Postfix appears to be running.  Shut it down?" "Y"
     if [ $response = "yes" ]; then
       /etc/init.d/postfix stop
-      chkconfig postfix off
+      if [ -x /sbin/chkconfig ]; then
+        /sbin/chkconfig postfix off
+      fi
     fi
   fi
 
@@ -1407,7 +1409,9 @@ checkConflicts() {
     askYN "Sendmail appears to be running.  Shut it down?" "Y"
     if [ $response = "yes" ]; then
       /etc/init.d/sendmail stop
-      chkconfig sendmail off
+      if [ -x /sbin/chkconfig ]; then
+        /sbin/chkconfig sendmail off
+      fi
     fi
   fi
 
@@ -1432,7 +1436,9 @@ checkConflicts() {
       askYN "Mysql appears to be running.  Shut it down?" "Y"
       if [ $response = "yes" ]; then
         /etc/init.d/mysqld stop
-        chkconfig mysqld off
+        if [ -x /sbin/chkconfig ]; then
+          /sbin/chkconfig mysqld off
+        fi
         break
       else
         echo "Installation will probably fail with mysql running"
