@@ -1084,6 +1084,7 @@ sub setDefaults {
   $config{SMTPSOURCE} = $config{CREATEADMIN};
   $config{SMTPDEST} = $config{CREATEADMIN};
   $config{AVUSER} = $config{CREATEADMIN};
+  $config{AVDOMAIN} = $config{CREATEDOMAIN};
   $config{SNMPNOTIFY} = "yes";
   $config{SMTPNOTIFY} = "yes";
   $config{STARTSERVERS} = "yes";
@@ -1383,6 +1384,10 @@ sub setDefaultsFromLocalConfig {
   $config{AVUSER} = $config{CREATEADMIN}
     if ($config{AVUSER} eq "");
 
+  $config{AVDOMAIN} = getLocalConfig("av_notify_domain");
+  $config{AVDOMAIN} = $config{CREATEDOMAIN}
+    if ($config{AVDOMAIN} eq "");
+
   if (isEnabled("zimbra-mta")) {
     $config{postfix_mail_owner} = getLocalConfig ("postfix_mail_owner");
     if ($config{postfix_mail_owner} eq "") {
@@ -1614,9 +1619,12 @@ sub setCreateDomain {
   my $old = $config{CREATEADMIN};
   $config{CREATEADMIN} = $u.'@'.$config{CREATEDOMAIN};
 
-  if ($old eq $config{AVUSER}) {
-    $config{AVUSER} = $config{CREATEADMIN};
-  }
+  $config{AVUSER} = $config{CREATEADMIN}
+    if ($old eq $config{AVUSER});
+
+  $config{AVDOMAIN} = $config{CREATEDOMAIN}
+    if ($config{AVDOMAIN} eq $oldDomain);
+
   if ($old eq $config{SMTPDEST}) {
     $config{SMTPDEST} = $config{CREATEADMIN};
   }
@@ -1741,6 +1749,9 @@ sub setCreateAdmin {
   
       $config{TRAINSAHAM} = $hamUser.'@'.$d
         if ($hamDomain ne $d);
+
+      $config{AVDOMAIN} = $d
+        if ($config{AVDOMAIN} ne $d);
     }
 
     if ($config{CREATEADMIN} eq $config{AVUSER}) {
@@ -2176,6 +2187,11 @@ sub setHostName {
 
     my ($u,$d) = split ('@', $config{CREATEADMIN});
     $config{CREATEADMIN} = $u.'@'.$config{CREATEDOMAIN};
+
+    my ($u,$d) = split ('@', $config{AVUSER});
+    $config{AVUSER} = $u.'@'.$config{CREATEDOMAIN};
+
+    $config{AVDOMAIN} = $config{CREATEDOMAIN};
 
     my ($u,$d) = split ('@', $config{NOTEBOOKACCOUNT});
     $config{NOTEBOOKACCOUNT} = $u.'@'.$config{CREATEDOMAIN};
