@@ -74,7 +74,7 @@ dev-install: $(DEV_INSTALL_COMPONENTS)
 	ln -s $(DEV_INSTALL_ROOT)/$(LDAP_DIR)-$(LDAP_VERSION) $(DEV_INSTALL_ROOT)/openldap
 	ln -s $(DEV_INSTALL_ROOT)/$(JAVA_FILE)$(JAVA_VERSION) \
 		$(DEV_INSTALL_ROOT)/java
-	ln -s $(DEV_INSTALL_ROOT)/$(BDB_DIR) $(DEV_INSTALL_ROOT)/sleepycat
+	ln -s $(DEV_INSTALL_ROOT)/$(BDB_DIR) $(DEV_INSTALL_ROOT)/bdb
 	ln -s $(DEV_INSTALL_ROOT)/$(POSTFIX_DIR) $(DEV_INSTALL_ROOT)/postfix
 	ln -s $(DEV_INSTALL_ROOT)/$(SASL_DIR)-$(SASL_VERSION) \
 		$(DEV_INSTALL_ROOT)/cyrus-sasl
@@ -160,7 +160,7 @@ $(DEV_INSTALL_ROOT)/db:
 	cp -f -R $(SERVICE_DIR)/build/versions-init.sql $@
 
 $(DEV_INSTALL_ROOT)/$(BDB_DIR): $(DEV_INSTALL_ROOT)
-	@echo "*** Installing sleepycat"
+	@echo "*** Installing bdb"
 	(cd $(DEV_INSTALL_ROOT); tar xzf $(BDB_SOURCE).tgz; chmod u+w $(BDB_DIR)/bin/*)
 
 $(DEV_INSTALL_ROOT)/lib: $(DEV_INSTALL_ROOT)/$(LDAP_DIR)-$(LDAP_VERSION) $(DEV_INSTALL_ROOT)/$(BDB_DIR)

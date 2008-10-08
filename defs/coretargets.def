@@ -98,7 +98,7 @@ $(BUILD_ROOT)/zimbracore.spec:
 		$(BUILD_ROOT)/zimbracore.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/zimbramon" >> \
 		$(BUILD_ROOT)/zimbracore.spec
-	echo "%attr(-, zimbra, zimbra) /opt/zimbra/sleepycat-$(BDB_VERSION)" >> \
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/bdb-$(BDB_VERSION)" >> \
 		$(BUILD_ROOT)/zimbracore.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/openssl-$(OPENSSL_VERSION)" >> \
 		$(BUILD_ROOT)/zimbracore.spec
@@ -132,7 +132,7 @@ $(CORE_DEST_DIR)/doc:
 	cp $(SERVICE_DIR)/docs/soap*txt $@
 	cp $(SERVICE_DIR)/docs/rest*txt $@
 
-$(CORE_DEST_DIR)/zimbramon: $(CORE_DEST_DIR)/zimbramon/lib $(CORE_DEST_DIR)/zimbramon/crontabs $(CORE_DEST_DIR) 
+$(CORE_DEST_DIR)/zimbramon: $(CORE_DEST_DIR)/zimbramon/bin $(CORE_DEST_DIR)/zimbramon/lib $(CORE_DEST_DIR)/zimbramon/crontabs $(CORE_DEST_DIR) 
 	@echo "*** Creating zimbramon"
 	mkdir -p $@
 	(cd $(CORE_DEST_DIR)/zimbramon; tar xzf $(MRTG_SOURCE).tgz)
@@ -149,6 +149,11 @@ $(CORE_DEST_DIR)/zimbramon: $(CORE_DEST_DIR)/zimbramon/lib $(CORE_DEST_DIR)/zimb
 $(CORE_DEST_DIR)/zimbramon/crontabs:
 	mkdir -p $@
 	cp -f $(PACKAGE_CONF_DIR)/Env/crontabs/* $(CORE_DEST_DIR)/zimbramon/crontabs/
+
+$(CORE_DEST_DIR)/zimbramon/bin:
+	mkdir -p $(CORE_DEST_DIR)/zimbramon/bin
+	(cd $(CORE_DEST_DIR)/zimbramon/bin; \
+	tar xzf $(PERL_LIB_SOURCE)/perlbin.tgz)
 
 $(CORE_DEST_DIR)/zimbramon/lib:
 	mkdir -p $(CORE_DEST_DIR)/zimbramon/lib
@@ -316,7 +321,7 @@ $(CORE_DEST_DIR)/lib/libexpat.dylib: $(CORE_DEST_DIR)/lib
 	rm -rf $(CORE_DEST_DIR)/include
 
 $(CORE_DEST_DIR)/$(BDB_DIR):
-	@echo "*** Creating sleepycat"
+	@echo "*** Creating bdb"
 	mkdir -p $@
 	(cd $(CORE_DEST_DIR); tar xzf $(BDB_SOURCE).tgz; chmod u+w $(BDB_DIR)/bin/*)
 	rm -rf $(CORE_DEST_DIR)/$(BDB_DIR)/docs/java
