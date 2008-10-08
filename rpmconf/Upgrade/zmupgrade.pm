@@ -38,6 +38,7 @@ my $hiLoggerVersion = 6;
 my $comboLowVersion = 20;
 my $comboHiVersion  = 27;
 my $needSlapIndexing = 0;
+my $needLdapMigration = 0;
 my $mysqlcnfUpdated = 0;
 
 my $platform = `/opt/zimbra/libexec/get_plat_tag.sh`;
@@ -270,7 +271,6 @@ sub upgrade {
 
 	my $needVolumeHack = 0;
 	my $needMysqlTableCheck = 0;
-	my $needLdapMigration = 0;
 
 	getInstalledPackages();
 
@@ -2462,6 +2462,11 @@ sub upgrade5011GA {
 sub upgrade600GA {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
 	main::progress("Updating from 6.0.0_GA\n");
+
+  if (main::isInstalled("zimbra-ldap")) {
+    &updateLdapBdbConfig();
+  	$needLdapMigration=1;
+  }
 	return 0;
 }
 
@@ -2966,7 +2971,7 @@ sub migrateTomcatLCKey {
 sub indexLdap {
 	if (main::isInstalled ("zimbra-ldap")) {
 		stopLdap();
-		main::runAsZimbra("/opt/zimbra/sleepycat/bin/db_recover -h /opt/zimbra/openldap-data");
+		main::runAsZimbra("/opt/zimbra/sleepycat/bin/db_recover -h /opt/zimbra/data/ldap/hdb/db");
 		main::runAsZimbra ("/opt/zimbra/openldap/sbin/slapindex -b '' -q -f /opt/zimbra/conf/slapd.conf");
 		if (startLdap()) {return 1;}
 	}
@@ -2975,22 +2980,25 @@ sub indexLdap {
 
 sub migrateLdap {
 	if (main::isInstalled ("zimbra-ldap")) {
-		if (-f "/opt/zimbra/openldap-data/ldap.bak") {
+		if (-f "/opt/zimbra/data/ldap/ldap.bak") {
 			main::progress("Migrating ldap data\n");
-			if (-d "/opt/zimbra/openldap-data.prev") {
-				`mv /opt/zimbra/openldap-data.prev /opt/zimbra/openldap-data.prev.$$`;
+			if (-d "/opt/zimbra/data/ldap/hdb.prev") {
+				`mv /opt/zimbra/data/ldap/hdb.prev /opt/zimbra/data/ldap/hdb.prev.$$`;
 			}
-			`mv /opt/zimbra/openldap-data /opt/zimbra/openldap-data.prev`;
-			`mkdir /opt/zimbra/openldap-data`;
-			`mkdir -p /opt/zimbra/openldap-data/db`;
-			`mkdir -p /opt/zimbra/openldap-data/logs`;
-			`touch /opt/zimbra/openldap-data/DB_CONFIG`;
-			`chown -R zimbra:zimbra /opt/zimbra/openldap-data`;
-			main::runAsZimbra("/opt/zimbra/openldap/sbin/slapadd -b '' -f /opt/zimbra/conf/slapd.conf -l /opt/zimbra/openldap-data.prev/ldap.bak");
-      `chmod 640 /opt/zimbra/openldap-data.prev/ldap.bak`;
+			`mv /opt/zimbra/data/ldap/hdb /opt/zimbra/data/ldap/hdb.prev`;
+			`mkdir /opt/zimbra/data/ldap/hdb/db`;
+			`mkdir -p /opt/zimbra/data/ldap/hdb/logs`;
+			if (-f "/opt/zimbra/openldap/var/openldap-data/DB_CONFIG.custom") {
+				`cp -f /opt/zimbra/openldap/var/openldap-data/DB_CONFIG.custom /opt/zimbra/data/ldap/hdb/db`;
+			} else {
+				`cp -f /opt/zimbra/openldap/var/openldap-data/DB_CONFIG /opt/zimbra/data/ldap/hdb/db`;
+			}
+			`chown -R zimbra:zimbra /opt/zimbra/data/ldap`;
+			main::runAsZimbra("/opt/zimbra/openldap/sbin/slapadd -b '' -f /opt/zimbra/conf/slapd.conf -l /opt/zimbra/data/ldap/ldap.bak");
+			`chmod 640 /opt/zimbra/data/ldap/ldap.bak`;
 		} else {
                         stopLdap();
-                        main::runAsZimbra("/opt/zimbra/sleepycat/bin/db_recover -h /opt/zimbra/openldap-data");
+                        main::runAsZimbra("/opt/zimbra/sleepycat/bin/db_recover -h /opt/zimbra/data/ldap/hdb/db");
 			main::runAsZimbra("/opt/zimbra/openldap/sbin/slapindex -b '' -f /opt/zimbra/conf/slapd.conf");
 		}
 		if (startLdap()) {return 1;} 
@@ -3023,6 +3031,35 @@ sub migrateLdapBdbLogs {
   			}
 		} else {
 			`echo "set_lg_dir              /opt/zimbra/openldap-data/logs" >> /opt/zimbra/openldap-data/DB_CONFIG`;
+		}
+	}
+}
+
+sub updateLdapBdbConfig {
+	my $db_config;
+	if (main::isInstalled ("zimbra-ldap")) {
+		if ( -f "/opt/zimbra/openldap/var/openldap-data/DB_CONFIG.custom" ) {
+			my $lg_seen = 0;
+			my $auto_seen = 0;
+			open (DBCONFIG,"/opt/zimbra/openldap/var/openldap-data/DB_CONFIG.custom");
+			while ($db_config = <DBCONFIG>) {
+				if ($db_config =~ /set_lg_dir/) {
+					$lg_seen=1;
+				}
+				if ($db_config =~ /DB_LOG_AUTOREMOVE/) {
+					$auto_seen=1;
+				}
+			}
+			if ($lg_seen != 1) {
+				`echo "set_lg_dir	/opt/zimbra/data/ldap/hdb/logs" >> /opt/zimbra/openldap/var/openldap-data/DB_CONFIG.custom`;
+			} else {
+				`/usr/bin/perl -pi -e "s#set_lg_dir(.*)#set_lg_dir	/opt/zimbra/data/ldap/hdb/logs#" /opt/zimbra/openldap/var/openldap-data/DB_CONFIG.custom`;
+			}
+			if ($auto_seen != 1) {
+				`echo "log_set_config	DB_LOG_AUTO_REMOVE" >> /opt/zimbra/openldap/var/openldap-data/DB_CONFIG.custom`;
+			} else {
+				`/usr/bin/perl -pi -e "s#set_flags(\s+)DB_LOG_AUTOREMOVE#log_set_config	DB_LOG_AUTO_REMOVE#" /opt/zimbra/openldap/var/openldap-data/DB_CONFIG.custom`;
+			}
 		}
 	}
 }
