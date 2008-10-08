@@ -27,10 +27,10 @@ rm -f /opt/zimbra/dspam
 ln -s /opt/zimbra/dspam-3.8.0 /opt/zimbra/dspam
 
 rm -f /opt/zimbra/postfix
-ln -s /opt/zimbra/postfix-2.4.7.5z /opt/zimbra/postfix
+ln -s /opt/zimbra/postfix-2.5.3.2z /opt/zimbra/postfix
 
 rm -f /opt/zimbra/clamav
-ln -s /opt/zimbra/clamav-0.93.3 /opt/zimbra/clamav
+ln -s /opt/zimbra/clamav-0.94 /opt/zimbra/clamav
 
 H=`hostname -s`
 I=`hostname -i`

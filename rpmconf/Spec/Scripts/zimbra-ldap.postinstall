@@ -14,13 +14,17 @@
 # ***** END LICENSE BLOCK *****
 # 
 
+rm -f /opt/zimbra/libtool
+ln -s /opt/zimbra/libtool-2.2.4 /opt/zimbra/libtool
+
 rm -f /opt/zimbra/openldap
-ln -s /opt/zimbra/openldap-2.3.42.8z /opt/zimbra/openldap
+ln -s /opt/zimbra/openldap-2.4.12.2z /opt/zimbra/openldap
 
 mkdir -p /opt/zimbra/openldap/var/openldap-data
-mkdir -p /opt/zimbra/openldap-data/db
-mkdir -p /opt/zimbra/openldap-data/logs
-chown -R zimbra:zimbra /opt/zimbra/openldap-data
+mkdir -p /opt/zimbra/data/ldap/config
+mkdir -p /opt/zimbra/data/ldap/hdb/db
+mkdir -p /opt/zimbra/data/ldap/hdb/logs
+chown -R zimbra:zimbra /opt/zimbra/ldap/data
 chown -R zimbra:zimbra /opt/zimbra/openldap/var
 
 /bin/bash /opt/zimbra/libexec/zmfixperms
@@ -37,10 +41,6 @@ sed -e 's/TLSCACertificateFile/#TLSCACertificateFile/g' \
 	/opt/zimbra/openldap/etc/openldap/slapd.conf.fcs > \
 	/opt/zimbra/openldap/etc/openldap/slapd.conf
 chown zimbra:zimbra /opt/zimbra/openldap/etc/openldap/slapd.conf
-
-if [ ! -s /opt/zimbra/openldap-data/DB_CONFIG ]; then
-   mv /opt/zimbra/openldap-data/log.* /opt/zimbra/openldap-data/logs/
-fi
 
 PKG=`echo ${RECEIPT_PATH} | sed -e 's|.*/\(zimbra-ldap.[^/]*pkg\)/.*|\1|' | sed -e 's/\./-/'`
 D=`date +%s`

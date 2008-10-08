@@ -26,26 +26,26 @@ mkdir -p /opt/zimbra/zmstat/pid
 chown zimbra:zimbra /opt/zimbra/zmstat
 chown zimbra:zimbra /opt/zimbra/zmstat/pid
 
-rm -f /opt/zimbra/sleepycat
-ln -s /opt/zimbra/sleepycat-4.2.52.6 /opt/zimbra/sleepycat
+rm -f /opt/zimbra/bdb
+ln -s /opt/zimbra/bdb-4.7.25.2 /opt/zimbra/bdb
 
 rm -f /opt/zimbra/openssl
-ln -s /opt/zimbra/openssl-0.9.8g /opt/zimbra/openssl
+ln -s /opt/zimbra/openssl-0.9.8i /opt/zimbra/openssl
 
 rm -f /opt/zimbra/heimdal
-ln -s /opt/zimbra/heimdal-1.2 /opt/zimbra/heimdal
+ln -s /opt/zimbra/heimdal-1.2.1 /opt/zimbra/heimdal
 
 rm -f /opt/zimbra/curl
-ln -s /opt/zimbra/curl-7.18.1 /opt/zimbra/curl
+ln -s /opt/zimbra/curl-7.19.0 /opt/zimbra/curl
 
 rm -f /opt/zimbra/cyrus-sasl
 ln -s /opt/zimbra/cyrus-sasl-2.1.22.3z /opt/zimbra/cyrus-sasl
 
 rm -f /opt/zimbra/openldap-clibs
-ln -s /opt/zimbra/openldap-clibs-2.3.42.8z /opt/zimbra/openldap-clibs
+ln -s /opt/zimbra/openldap-clibs-2.4.12.2z /opt/zimbra/openldap-clibs
 
 rm -f /opt/zimbra/tcmalloc
-ln -s /opt/zimbra/tcmalloc-0.97 /opt/zimbra/tcmalloc
+ln -s /opt/zimbra/tcmalloc-0.99.2 /opt/zimbra/tcmalloc
 
 if [ -d "/opt/zimbra/zimbramon/rrdtool" ]; then
   rm -rf /opt/zimbra/zimbramon/rrdtool

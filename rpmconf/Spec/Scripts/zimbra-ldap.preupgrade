@@ -15,10 +15,10 @@
 # 
 
 /opt/zimbra/openldap/sbin/slapcat -f /opt/zimbra/conf/slapd.conf \
-	-b '' -l /opt/zimbra/openldap-data/ldap.bak 2> /dev/null
+	-b '' -l /opt/zimbra/data/ldap/ldap.bak 2> /dev/null
 if [ $? = 0 ]; then
   echo "ldap backup complete."
 fi
-chmod 640 /opt/zimbra/openldap-data/ldap.bak
+chmod 640 /opt/zimbra/data/ldap/ldap.bak
 
 exit 0
