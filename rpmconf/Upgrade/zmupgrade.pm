@@ -3056,9 +3056,9 @@ sub updateLdapBdbConfig {
 				`/usr/bin/perl -pi -e "s#set_lg_dir(.*)#set_lg_dir	/opt/zimbra/data/ldap/hdb/logs#" /opt/zimbra/openldap/var/openldap-data/DB_CONFIG.custom`;
 			}
 			if ($auto_seen != 1) {
-				`echo "log_set_config	DB_LOG_AUTO_REMOVE" >> /opt/zimbra/openldap/var/openldap-data/DB_CONFIG.custom`;
+				`echo "set_log_config	DB_LOG_AUTO_REMOVE" >> /opt/zimbra/openldap/var/openldap-data/DB_CONFIG.custom`;
 			} else {
-				`/usr/bin/perl -pi -e "s#set_flags(\s+)DB_LOG_AUTOREMOVE#log_set_config	DB_LOG_AUTO_REMOVE#" /opt/zimbra/openldap/var/openldap-data/DB_CONFIG.custom`;
+				`/usr/bin/perl -pi -e "s#set_flags(\s+)DB_LOG_AUTOREMOVE#set_log_config	DB_LOG_AUTO_REMOVE#" /opt/zimbra/openldap/var/openldap-data/DB_CONFIG.custom`;
 			}
 		}
 	}
