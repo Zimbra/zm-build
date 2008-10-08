@@ -915,7 +915,7 @@ EOF
     done
   else 
     # REMOVE = yes for non installed systems, to clean up /opt/zimbra
-    DETECTDIRS="db bin/zmcontrol redolog index store conf/localconfig.xml openldap-data"
+    DETECTDIRS="db bin/zmcontrol redolog index store conf/localconfig.xml data"
     for i in $DETECTDIRS; do
       if [ -e "/opt/zimbra/$i" ]; then
         INSTALLED="yes"
@@ -1148,14 +1148,14 @@ removeExistingInstall() {
     isInstalled "zimbra-ldap"
     if [ x$PKGINSTALLED != "x" ]; then
       if [ x"$LD_LIBRARY_PATH" != x ]; then
-        LD_LIBRARY_PATH=/opt/zimbra/sleepycat/lib:/opt/zimbra/openssl/lib:/opt/zimbra/cyrus-sasl/lib:/opt/zimbra/openldap/lib:/opt/zimbra/mysql/lib:$LD_LIBRARY_PATH
+        LD_LIBRARY_PATH=/opt/zimbra/bdb/lib:/opt/zimbra/openssl/lib:/opt/zimbra/cyrus-sasl/lib:/opt/zimbra/openldap/lib:/opt/zimbra/mysql/lib:$LD_LIBRARY_PATH
       fi
       if [ -f "/opt/zimbra/openldap/sbin/slapcat" -a x"$UNINSTALL" != "xyes" -a x"$REMOVE" != "xyes" ]; then
         echo ""
         echo -n "Backing up the ldap database..."
         tmpfile=`mktemp -t slapcat.XXXXXX 2> /dev/null` || (echo "Failed to create tmpfile" && exit 1)
         /opt/zimbra/openldap/sbin/slapcat -f /opt/zimbra/conf/slapd.conf \
-         -b '' -l /opt/zimbra/openldap-data/ldap.bak > $tmpfile 2>&1
+         -b '' -l /opt/zimbra/data/ldap/ldap.bak > $tmpfile 2>&1
         if [ $? != 0 ]; then
           echo "failed."
           echo 
@@ -1164,7 +1164,7 @@ removeExistingInstall() {
         else
           echo "done."
         fi
-        chmod 640 /opt/zimbra/openldap-data/ldap.bak
+        chmod 640 /opt/zimbra/data/ldap/ldap.bak
       fi
     fi
 
