@@ -1328,7 +1328,7 @@ removeExistingInstall() {
       fi
 
       if [ -f /etc/prelink.conf ]; then
-        echo -n "Cleaning up /etc/prelink.conf"
+        echo -n "Cleaning up /etc/prelink.conf..."
         egrep -q 'zimbra' /etc/prelink.conf
         if [ $? = 0 ]; then
           sed -i -e '/zimbra/d' -e '/Zimbra/d' /etc/prelink.conf
