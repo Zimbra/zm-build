@@ -63,9 +63,10 @@ chown -R zimbra:zimbra /opt/zimbra/data/amavisd/*
 mkdir -p /opt/zimbra/data/clamav/db
 chown -R zimbra:zimbra /opt/zimbra/data/clamav/db
 
-mkdir -p /opt/zimbra/data/postfix/spool
-chown zimbra:zimbra /opt/zimbra/data/postfix
+mkdir -p /opt/zimbra/data/postfix/spool/pid
+chown postfix:zimbra /opt/zimbra/data/postfix
 chown root:postfix /opt/zimbra/data/postfix/spool
+chown postfix:root /opt/zimbra/data/postfix/spool/pid
 
 chown zimbra:zimbra /opt/zimbra/data
 
