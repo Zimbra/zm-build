@@ -531,6 +531,11 @@ checkRequiredSpace() {
 
 checkExistingInstall() {
 
+  if [ -L /opt ]; then
+    echo "Installation cannot continue /opt is a symbolic link."
+    exit 1
+  fi
+
   echo "Checking for existing installation..."
   for i in $OPTIONAL_PACKAGES; do
     isInstalled $i
