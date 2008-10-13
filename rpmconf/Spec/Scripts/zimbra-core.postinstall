@@ -45,10 +45,10 @@ ln -s /opt/zimbra/tcmalloc-0.99.2 /opt/zimbra/tcmalloc
 
 if [ -d "/opt/zimbra/zimbramon/rrdtool" ]; then
   rm -rf /opt/zimbra/zimbramon/rrdtool
-  ln -s /opt/zimbra/zimbramon/rrdtool-1.2.27 /opt/zimbra/zimbramon/rrdtool
+  ln -s /opt/zimbra/zimbramon/rrdtool-1.2.28 /opt/zimbra/zimbramon/rrdtool
 else
   rm -f /opt/zimbra/zimbramon/rrdtool
-  ln -s /opt/zimbra/zimbramon/rrdtool-1.2.27 /opt/zimbra/zimbramon/rrdtool
+  ln -s /opt/zimbra/zimbramon/rrdtool-1.2.28 /opt/zimbra/zimbramon/rrdtool
 fi
 
 if [ -f "/opt/zimbra/conf/ca/ca.pem" ]; then
