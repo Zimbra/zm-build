@@ -920,7 +920,7 @@ EOF
     done
   else 
     # REMOVE = yes for non installed systems, to clean up /opt/zimbra
-    DETECTDIRS="db bin/zmcontrol redolog index store conf/localconfig.xml data"
+    DETECTDIRS="db bin/zmcontrol redolog index store conf/localconfig.xml openldap-data"
     for i in $DETECTDIRS; do
       if [ -e "/opt/zimbra/$i" ]; then
         INSTALLED="yes"
@@ -1153,14 +1153,14 @@ removeExistingInstall() {
     isInstalled "zimbra-ldap"
     if [ x$PKGINSTALLED != "x" ]; then
       if [ x"$LD_LIBRARY_PATH" != x ]; then
-        LD_LIBRARY_PATH=/opt/zimbra/bdb/lib:/opt/zimbra/openssl/lib:/opt/zimbra/cyrus-sasl/lib:/opt/zimbra/openldap/lib:/opt/zimbra/mysql/lib:$LD_LIBRARY_PATH
+        LD_LIBRARY_PATH=/opt/zimbra/sleepycat/lib:/opt/zimbra/openssl/lib:/opt/zimbra/cyrus-sasl/lib:/opt/zimbra/openldap/lib:/opt/zimbra/mysql/lib:$LD_LIBRARY_PATH
       fi
       if [ -f "/opt/zimbra/openldap/sbin/slapcat" -a x"$UNINSTALL" != "xyes" -a x"$REMOVE" != "xyes" ]; then
         echo ""
         echo -n "Backing up the ldap database..."
         tmpfile=`mktemp -t slapcat.XXXXXX 2> /dev/null` || (echo "Failed to create tmpfile" && exit 1)
         /opt/zimbra/openldap/sbin/slapcat -f /opt/zimbra/conf/slapd.conf \
-         -b '' -l /opt/zimbra/data/ldap/ldap.bak > $tmpfile 2>&1
+         -b '' -l /opt/zimbra/openldap-data/ldap.bak > $tmpfile 2>&1
         if [ $? != 0 ]; then
           echo "failed."
           echo 
@@ -1169,7 +1169,7 @@ removeExistingInstall() {
         else
           echo "done."
         fi
-        chmod 640 /opt/zimbra/data/ldap/ldap.bak
+        chmod 640 /opt/zimbra/openldap-data/ldap.bak
       fi
     fi
 
@@ -1333,7 +1333,7 @@ removeExistingInstall() {
       fi
 
       if [ -f /etc/prelink.conf ]; then
-        echo -n "Cleaning up /etc/prelink.conf..."
+        echo -n "Cleaning up /etc/prelink.conf"
         egrep -q 'zimbra' /etc/prelink.conf
         if [ $? = 0 ]; then
           sed -i -e '/zimbra/d' -e '/Zimbra/d' /etc/prelink.conf
@@ -1576,6 +1576,11 @@ getInstallPackages() {
         INSTALL_PACKAGES="$INSTALL_PACKAGES zimbra-apache"
       fi
 
+      if [ $i = "zimbra-convertd" -a $STORE_SELECTED = "no" ]; then
+        STORE_SELECTED="yes"
+        INSTALL_PACKAGES="$INSTALL_PACKAGES zimbra-store"
+      fi
+
       # don't force logger to be installed especially on N+M clusters
       #if [ $i = "zimbra-store" -a $LOGGER_SELECTED = "no" -a $CLUSTER_SELECTED = "yes" ]; then
       #  LOGGER_SELECTED="yes"
@@ -1791,17 +1796,17 @@ getPlatformVars() {
     PACKAGEQUERY='dpkg -s'
     PACKAGEEXT='deb'
     PACKAGEVERSION="dpkg-query -W -f \${Version}"
-    PREREQ_PACKAGES="sudo libidn11 libgmp3 libstdc++6 libltdl3"
+    PREREQ_PACKAGES="sudo libidn11 fetchmail libgmp3 libxml2 libstdc++6 openssl libltdl3"
     if [ $PLATFORM = "UBUNTU6" -o $PLATFORM = "UBUNTU7" ]; then
-      PREREQ_PACKAGES="sudo libidn11 libpcre3 libgmp3c2 libexpat1 libstdc++6 libstdc++5 libltdl3"
+      PREREQ_PACKAGES="sudo libidn11 fetchmail libpcre3 libgmp3c2 libexpat1 libxml2 libstdc++6 libstdc++5 openssl libltdl3"
       PRESUG_PACKAGES="perl-5.8.7"
     fi
     if [ $PLATFORM = "UBUNTU6_64" -o $PLATFORM = "UBUNTU7_64" ]; then
-      PREREQ_PACKAGES="sudo libidn11 libpcre3 libgmp3c2 libexpat1 libstdc++6 libstdc++5 libltdl3 libperl5.8"
+      PREREQ_PACKAGES="sudo libidn11 fetchmail libpcre3 libgmp3c2 libexpat1 libxml2 libstdc++6 libstdc++5 openssl libltdl3 libperl5.8"
       PRESUG_PACKAGES="perl-5.8.7"
     fi
     if [ $PLATFORM = "DEBIAN4.0" ]; then
-      PREREQ_PACKAGES="sudo libidn11 libpcre3 libgmp3c2 libexpat1 libstdc++6 libltdl3"
+      PREREQ_PACKAGES="sudo libidn11 fetchmail libpcre3 libgmp3c2 libexpat1 libxml2 libstdc++6 openssl libltdl3"
       PRESUG_PACKAGES="perl-5.8.8"
     fi
     if [ $PLATFORM = "UBUNTU8" ]; then
@@ -1809,7 +1814,7 @@ getPlatformVars() {
       PRESUG_PACKAGES="perl-5.8.8"
     fi
     if [ $PLATFORM = "DEBIAN4.0_64" ]; then
-      PREREQ_PACKAGES="sudo libidn11 libpcre3 libgmp3c2 libexpat1 libstdc++6 libltdl3 libperl5.8"
+      PREREQ_PACKAGES="sudo libidn11 fetchmail libpcre3 libgmp3c2 libexpat1 libxml2 libstdc++6 openssl libltdl3 libperl5.8"
       PRESUG_PACKAGES="perl-5.8.8"
     fi
     if [ $PLATFORM = "UBUNTU8_64" ]; then
@@ -1821,7 +1826,7 @@ getPlatformVars() {
     PACKAGERM='conary erase'
     PACKAGEQUERY='conary q'
     PACKAGEEXT='ccs'
-    PREREQ_PACKAGES="sudo libidn gmp libstdc++"
+    PREREQ_PACKAGES="sudo libidn fetchmail gmp libxml2 libstdc++ openssl"
     PRESUG_PACKGES="perl=5.8.7"
   else
     PACKAGEINST='rpm -iv'
@@ -1830,38 +1835,38 @@ getPlatformVars() {
     PACKAGEVERIFY='rpm -K'
     PACKAGEEXT='rpm'
     if [ $PLATFORM = "RHEL4" -o $PLATFORM = "CentOS4" ]; then
-      PREREQ_PACKAGES="sudo libidn gmp compat-libstdc++-296 compat-libstdc++-33 libtool-libs"
+      PREREQ_PACKAGES="sudo libidn fetchmail gmp compat-libstdc++-296 compat-libstdc++-33 libtool-libs"
       PREREQ_LIBS="/usr/lib/libstdc++.so.5"
       PRESUG_PACKAGES="perl-5.8.5"
     elif [ $PLATFORM = "RHEL5" -o $PLATFORM = "CentOS5" ]; then
-      PREREQ_PACKAGES="sudo libidn gmp compat-libstdc++-296 compat-libstdc++-33 libtool-ltdl"
+      PREREQ_PACKAGES="sudo libidn fetchmail gmp compat-libstdc++-296 compat-libstdc++-33 libtool-ltdl"
       PREREQ_LIBS="/usr/lib/libstdc++.so.6"
       PRESUG_PACKAGES="perl-5.8.8"
     elif [ $PLATFORM = "MANDRIVA2006" ]; then
-      PREREQ_PACKAGES="sudo libidn11 libgmp3 libstdc++6"
+      PREREQ_PACKAGES="sudo libidn11 fetchmail libgmp3 libxml2 libstdc++6 openssl"
     elif [ $PLATFORM = "FC3" -o $PLATFORM = "FC4" ]; then
-      PREREQ_PACKAGES="sudo libidn gmp bind-libs vixie-cron"
+      PREREQ_PACKAGES="sudo libidn fetchmail gmp bind-libs vixie-cron"
       PREREQ_LIBS="/usr/lib/libstdc++.so.5"
     elif [ $PLATFORM = "FC5" -o $PLATFORM = "FC6" -o $PLATFORM = "F7" ]; then
-      PREREQ_PACKAGES="sudo libidn gmp bind-libs vixie-cron libtool-ltdl"
+      PREREQ_PACKAGES="sudo libidn fetchmail gmp bind-libs vixie-cron libtool-ltdl"
       PREREQ_LIBS="/usr/lib/libstdc++.so.6"
     elif [ $PLATFORM = "FC5_64" -o $PLATFORM = "FC6_64" -o $PLATFORM = "F7_64" ]; then
-      PREREQ_PACKAGES="sudo libidn gmp bind-libs vixie-cron libtool-ltdl"
+      PREREQ_PACKAGES="sudo libidn fetchmail gmp bind-libs vixie-cron libtool-ltdl"
       PREREQ_LIBS="/usr/lib/libstdc++.so.6 /usr/lib64/libstdc++.so.6"
     elif [ $PLATFORM = "RHEL5_64" -o $PLATFORM = "CentOS5_64" ]; then
-      PREREQ_PACKAGES="sudo libidn gmp compat-libstdc++-296 compat-libstdc++-33 libtool-ltdl"
+      PREREQ_PACKAGES="sudo libidn fetchmail gmp compat-libstdc++-296 compat-libstdc++-33 libtool-ltdl"
       PREREQ_LIBS="/usr/lib/libstdc++.so.5 /usr/lib/libstdc++.so.6 /usr/lib64/libstdc++.so.5 /usr/lib64/libstdc++.so.6 /usr/lib64/libltdl.so.3"
       PRESUG_PACKAGES="perl-5.8.8"
     elif [ $PLATFORM = "RHEL4_64" -o $PLATFORM = "CentOS4_64" ]; then
-      PREREQ_PACKAGES="sudo libidn gmp compat-libstdc++-296 compat-libstdc++-33 libtool-libs"
+      PREREQ_PACKAGES="sudo libidn fetchmail gmp compat-libstdc++-296 compat-libstdc++-33 libtool-libs"
       PREREQ_LIBS="/usr/lib/libstdc++.so.5 /usr/lib64/libstdc++.so.5 /usr/lib64/libltdl.so.3"
       PRESUG_PACKAGES="perl-5.8.5"
     elif [ $PLATFORM = "F7" ]; then
-      PREREQ_PACKAGES="sudo libidn gmp bind-libs vixie-cron libtool-ltdl"
+      PREREQ_PACKAGES="sudo libidn fetchmail gmp bind-libs vixie-cron libtool-ltdl"
       PREREQ_LIBS="/usr/lib/libstdc++.so.6"
       PRESUG_PACKAGES="perl-5.8.8"
     else
-      PREREQ_PACKAGES="sudo libidn gmp"
+      PREREQ_PACKAGES="sudo libidn fetchmail gmp"
       PREREQ_LIBS="/usr/lib/libstdc++.so.5"
     fi
   fi

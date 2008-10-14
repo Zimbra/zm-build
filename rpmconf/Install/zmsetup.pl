@@ -535,6 +535,9 @@ sub isEnabled {
       if (isInstalled($p) and not defined $prevInstalledPackages{$p}) {
         detail("Marking $p as installed. Services for $p will be enabled.");
         $enabledPackages{$p} = "Enabled";
+        if ($p eq "zimbra-convertd") {
+          $enabledPackages{$p} = "Disabled";
+        }
       } elsif (isInstalled($p) and not defined $enabledPackages{$p}) {
         detail("Marking $p as disabled.");
         $enabledPackages{$p} = "Disabled";
@@ -545,6 +548,7 @@ sub isEnabled {
     detail("Newinstall enabling all installed packages");
     foreach my $p (@packageList) {
       if (isInstalled($p)) {
+        $enabledPackages{"zimbra-convertd"} = "Disabled";
         unless ($enabledPackages{$p} eq "Disabled") {
           detail("Enabling $p");
           $enabledPackages{$p} = "Enabled" 
@@ -602,7 +606,7 @@ sub genRandomPass {
 sub getSystemStatus {
 
   if (isEnabled("zimbra-ldap")) {
-    if (-f "$zimbraHome/data/ldap/hdb/db/mail.bdb") {
+    if (-f "$zimbraHome/openldap-data/mail.bdb") {
       $ldapConfigured = 1;
       $ldapRunning = 0xffff & system("/opt/zimbra/bin/ldap status > /dev/null 2>&1");
       if ($ldapRunning) {
@@ -3399,8 +3403,9 @@ sub createMainMenu {
     if ($package eq "zimbra-core") {next;}
     if ($package eq "zimbra-apache") {next;}
     if ($package eq "zimbra-archiving") {next;}
+    if ($package eq "zimbra-convertd") {next;}
     if (defined($installedPackages{$package})) {
-      if ($package =~ /logger|spell|convertd/) {
+      if ($package =~ /logger|spell/) {
         $mm{menuitems}{$i} = { 
           "prompt" => "$package:", 
           "var" => \$enabledPackages{$package},
@@ -3645,7 +3650,7 @@ sub checkLdapReplicationEnabled() {
 
 sub runAsRoot {
   my $cmd = shift;
-  if ($cmd =~ /ldappass/ || $cmd =~ /init/ || $cmd =~ /zmprov -l ca/) {
+  if ($cmd =~ /ldappass/ || $cmd =~ /init/ || $cmd =~ /zmprov -l ca/ && $cmd !~ /zmproxyinit/) {
     # Suppress passwords in log file
     my $c = (split ' ', $cmd)[0];
     detail ( "*** Running as root user: $c\n" );
@@ -3659,7 +3664,7 @@ sub runAsRoot {
 
 sub runAsZimbra {
   my $cmd = shift;
-  if ($cmd =~ /ldappass/ || $cmd =~ /init/ || $cmd =~ /zmprov -l ca/) {
+  if ($cmd =~ /ldappass/ || $cmd =~ /init/ || $cmd =~ /zmprov -l ca/ && $cmd !~ /zmproxyinit/) {
     # Suppress passwords in log file
     my $c = (split ' ', $cmd)[0];
     detail ( "*** Running as zimbra user: $c\n" );
@@ -3673,7 +3678,7 @@ sub runAsZimbra {
 
 sub runAsZimbraWithOutput {
   my $cmd = shift;
-  if ($cmd =~ /ldappass/ || $cmd =~ /init/ || $cmd =~ /zmprov -l ca/) {
+  if ($cmd =~ /ldappass/ || $cmd =~ /init/ || $cmd =~ /zmprov -l ca/ && $cmd !~ /zmproxyinit/) {
     # Suppress passwords in log file
     my $c = (split ' ', $cmd)[0];
     detail ( "*** Running as zimbra user: $c\n" );
@@ -4304,12 +4309,12 @@ sub configSetStoreDefaults {
   runAsZimbra("$ZMPROV ms $config{HOSTNAME} zimbraMtaAuthTarget TRUE");
   if ($newinstall && ($config{zimbraWebProxy} eq "TRUE" || $config{zimbraMailProxy} eq "TRUE")) {
     if ($config{zimbraMailProxy} eq "TRUE") {
-           runAsZimbra("/opt/zimbra/libexec/zmproxyconfig -m -e -o ".
+           runAsZimbra("/opt/zimbra/libexec/zmproxyinit -m -e -o ".
                        "-i $config{IMAPPORT}:$config{IMAPPROXYPORT}:$config{IMAPSSLPORT}:$config{IMAPSSLPROXYPORT} ".
                        "-p $config{POPPORT}:$config{POPPROXYPORT}:$config{POPSSLPORT}:$config{POPSSLPROXYPORT} -H $config{HOSTNAME}");
     }
     if ($config{zimbraWebProxy} eq "TRUE") {
-           runAsZimbra("/opt/zimbra/libexec/zmproxyconfig -w -e -o ".
+           runAsZimbra("/opt/zimbra/libexec/zmproxyinit -w -e -o ".
                        "-a $config{HTTPPORT}:$config{HTTPPROXYPORT}:$config{HTTPSPORT}:$config{HTTPSPROXYPORT} -H $config{HOSTNAME}");
     }
   }
@@ -4493,29 +4498,29 @@ sub configSetProxyPrefs {
         $enabledPackages{"zimbra-proxy"} = "Disabled";
      } else {
         if($config{MAILPROXY} eq "TRUE") {
-           runAsZimbra("/opt/zimbra/libexec/zmproxyconfig -m -e -o ".
+           runAsZimbra("/opt/zimbra/libexec/zmproxyinit -m -e -o ".
                        "-i $config{IMAPPORT}:$config{IMAPPROXYPORT}:$config{IMAPSSLPORT}:$config{IMAPSSLPROXYPORT} ".
                        "-p $config{POPPORT}:$config{POPPROXYPORT}:$config{POPSSLPORT}:$config{POPSSLPROXYPORT} -H $config{HOSTNAME}");
         } else {
-           runAsZimbra("/opt/zimbra/libexec/zmproxyconfig -m -d -o ".
+           runAsZimbra("/opt/zimbra/libexec/zmproxyinit -m -d -o ".
                        "-i $config{IMAPPORT}:$config{IMAPPROXYPORT}:$config{IMAPSSLPORT}:$config{IMAPSSLPROXYPORT} ".
                        "-p $config{POPPORT}:$config{POPPROXYPORT}:$config{POPSSLPORT}:$config{POPSSLPROXYPORT} -H $config{HOSTNAME}");
         }
         if ($config{HTTPPROXY} eq "TRUE" ) {
-           runAsZimbra("/opt/zimbra/libexec/zmproxyconfig -w -e -o ".
+           runAsZimbra("/opt/zimbra/libexec/zmproxyinit -w -e -o ".
                        " -x $config{PROXYMODE} ".
                        "-a $config{HTTPPORT}:$config{HTTPPROXYPORT}:$config{HTTPSPORT}:$config{HTTPSPROXYPORT} -H $config{HOSTNAME}");
         } else {
-           runAsZimbra("/opt/zimbra/libexec/zmproxyconfig -w -d -o ".
+           runAsZimbra("/opt/zimbra/libexec/zmproxyinit -w -d -o ".
                        "-x $config{MODE} ".
                        "-a $config{HTTPPORT}:$config{HTTPPROXYPORT}:$config{HTTPSPORT}:$config{HTTPSPROXYPORT} -H $config{HOSTNAME}");
         }
      }
    } else {
-        runAsZimbra("/opt/zimbra/libexec/zmproxyconfig -m -d -o ".
+        runAsZimbra("/opt/zimbra/libexec/zmproxyinit -m -d -o ".
                     "-i $config{IMAPPORT}:$config{IMAPPROXYPORT}:$config{IMAPSSLPORT}:$config{IMAPSSLPROXYPORT} ".
                     "-p $config{POPPORT}:$config{POPPROXYPORT}:$config{POPSSLPORT}:$config{POPSSLPROXYPORT} -H $config{HOSTNAME}");
-        runAsZimbra("/opt/zimbra/libexec/zmproxyconfig -w -d -o ".
+        runAsZimbra("/opt/zimbra/libexec/zmproxyinit -w -d -o ".
                     "-x $config{MODE} ".
                     "-a $config{HTTPPORT}:$config{HTTPPROXYPORT}:$config{HTTPSPORT}:$config{HTTPSPROXYPORT} -H $config{HOSTNAME}");
    }
@@ -5347,7 +5352,7 @@ sub startLdap {
   my $rc = runAsZimbra("/opt/zimbra/bin/ldap status");
   if ($rc) { 
     main::progress("Starting ldap...");
-    runAsZimbra("/opt/zimbra/sleepycat/bin/db_recover -h /opt/zimbra/data/ldap/hdb/db");
+    runAsZimbra("/opt/zimbra/sleepycat/bin/db_recover -h /opt/zimbra/openldap-data");
     $rc = runAsZimbra ("/opt/zimbra/libexec/zmldapapplyldif");
     $rc = runAsZimbra ("/opt/zimbra/bin/ldap status");
     if ($rc) {

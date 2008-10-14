@@ -38,7 +38,6 @@ my $hiLoggerVersion = 6;
 my $comboLowVersion = 20;
 my $comboHiVersion  = 27;
 my $needSlapIndexing = 0;
-my $needLdapMigration = 0;
 my $mysqlcnfUpdated = 0;
 
 my $platform = `/opt/zimbra/libexec/get_plat_tag.sh`;
@@ -101,10 +100,7 @@ my %updateScripts = (
   '49' => "migrate20071206-WidenSizeColumns.pl",        # 5.0.0_GA
   '50' => "migrate20080130-ImapFlags.pl",               # 5.0.3_GA
   '51' => "migrate20080213-IndexDeferredColumn.pl",    # 5.0.3_GA
-  '52' => "migrate20080909-DataSourceItemTable.pl",     # 5.0.10_GA
-  '53' => "migrate20080919-MucService.pl",             # this upgrades to 60 for 6_0_0 GA
-   # 54-59 skipped for possible FRANKLIN use
-                     
+  '52' => "migrate20080909-DataSourceItemTable.pl"     # 5.0.10_GA
 );
 
 my %loggerUpdateScripts = (
@@ -150,14 +146,14 @@ my %updateFuncs = (
   "4.5.5_GA" => \&upgrade455GA,
   "4.5.6_GA" => \&upgrade456GA,
   "4.5.7_GA" => \&upgrade457GA,
-  "4.5.8_GA" => \&upgrade458GA,
-  "4.5.9_GA" => \&upgrade459GA,
-  "4.5.10_GA" => \&upgrade4510GA,
-  "4.5.11_GA" => \&upgrade4511GA,
   "4.6.0_BETA" => \&upgrade460BETA,
   "4.6.0_RC1" => \&upgrade460RC1,
   "4.6.0_GA" => \&upgrade460GA,
   "4.6.1_RC1" => \&upgrade461RC1,
+  "4.5.8_GA" => \&upgrade458GA,
+  "4.5.9_GA" => \&upgrade459GA,
+  "4.5.10_GA" => \&upgrade4510GA,
+  "4.5.11_GA" => \&upgrade4511GA,
   "5.0.0_BETA1" => \&upgrade500BETA1,
   "5.0.0_BETA2" => \&upgrade500BETA2,
   "5.0.0_BETA3" => \&upgrade500BETA3,
@@ -216,6 +212,7 @@ my @versionOrder = (
   "4.5.7_GA",
   "4.5.8_GA",
   "4.5.9_GA",
+  "4.6.1_RC1",
   "4.5.10_GA",
   "4.5.11_GA",
   "5.0.0_BETA1",
@@ -271,6 +268,7 @@ sub upgrade {
 
 	my $needVolumeHack = 0;
 	my $needMysqlTableCheck = 0;
+	my $needLdapMigration = 0;
 
 	getInstalledPackages();
 
@@ -377,6 +375,8 @@ sub upgrade {
 		main::progress("This appears to be 4.6.0_RC1\n");
 	} elsif ($startVersion eq "4.6.0_GA") {
 		main::progress("This appears to be 4.6.0_GA\n");
+	} elsif ($startVersion eq "4.6.1_RC1") {
+		main::progress("This appears to be 4.6.1_RC1\n");
 	} elsif ($startVersion eq "5.0.0_BETA1") {
 		main::progress("This appears to be 5.0.0_BETA1\n");
 	} elsif ($startVersion eq "5.0.0_BETA2") {
@@ -415,8 +415,8 @@ sub upgrade {
 		main::progress("This appears to be 5.0.10_GA\n");
 	} elsif ($startVersion eq "5.0.11_GA") {
 		main::progress("This appears to be 5.0.11_GA\n");
-	} elsif ($startVersion eq "6.0.0_GA") {
-		main::progress("This appears to be 6.0.0_GA\n");
+	} elsif ($startVersion eq "5.5.0_GA") {
+		main::progress("This appears to be 5.5.0_GA\n");
 	} else {
 		main::progress("I can't upgrade version $startVersion\n\n");
 		return 1;
@@ -1473,7 +1473,7 @@ sub upgrade460GA {
 }
 sub upgrade461RC1 {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
-	main::progress("Updating from 4.6.0_RC1\n");
+	main::progress("Updating from 4.6.1_RC1\n");
 	return 0;
 }
 
@@ -2324,7 +2324,7 @@ sub upgrade507GA {
 	return 0;
 }
 
-sub upgrade508GA {
+sub upgrade508GA{
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
 	main::progress("Updating from 5.0.8_GA\n");
 	return 0;
@@ -2392,6 +2392,13 @@ sub upgrade5010GA {
     #bug 31177
     upgradeLocalConfigValue("zmmtaconfig_enable_config_restarts", "true", "");
 
+  if (main::isInstalled("zimbra-store")) {
+    updateMySQLcnf();
+    my $conns=main::getLocalConfig("zimbra_mysql_connector_maxActive");
+    upgradeLocalConfigValue("zimbra_mysql_connector_maxActive", "100", "$conns") 
+      if ($conns < 100);
+  }
+
   if (main::isInstalled("zimbra-ldap") && $isLdapMaster) {
 	  main::runAsZimbra("$ZMPROV mcf zimbraReverseProxyIpThrottleMsg 'Login rejected from this IP'");
 	  main::runAsZimbra("$ZMPROV mcf zimbraReverseProxyUserThrottleMsg 'Login rejected for this user'");
@@ -2422,6 +2429,9 @@ sub upgrade5010GA {
 	  main::runAsZimbra("$ZMPROV mcf +zimbraReverseProxyImapEnabledCapability UIDPLUS");
 	  main::runAsZimbra("$ZMPROV mcf +zimbraReverseProxyImapEnabledCapability UNSELECT");
 	  main::runAsZimbra("$ZMPROV mcf +zimbraReverseProxyImapEnabledCapability WITHIN");
+	  upgradeLdapConfigValue("zimbraReverseProxyImapExposeVersionOnBanner", "FALSE", "");
+	  upgradeLdapConfigValue("zimbraReverseProxyPop3ExposeVersionOnBanner", "FALSE", "");
+	  upgradeLdapConfigValue("zimbraSoapExposeVersion", "FALSE", "");
 	  upgradeLdapConfigValue("zimbraReverseProxyDefaultRealm", "", "EXAMPLE.COM");
 	  upgradeLdapConfigValue("zimbraReverseProxyWorkerConnections", "10240", "");
 	  upgradeLdapConfigValue("zimbraReverseProxyLogLevel", "info", "");
@@ -2442,6 +2452,7 @@ sub upgrade5010GA {
                   zimbraPrefIMHideOfflineBuddies => "FALSE",
                   zimbraFeatureGalSyncEnabled => "TRUE",
                   zimbraPrefIMHideBlockedBuddies => "FALSE",
+                  zimbraContactMaxNumEntries => "10000",
                   zimbraCalendarMaxRevisions => "1" );
 	  foreach my $cos (@coses) {
 		  chomp $cos;
@@ -2462,11 +2473,6 @@ sub upgrade5011GA {
 sub upgrade600GA {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
 	main::progress("Updating from 6.0.0_GA\n");
-
-  if (main::isInstalled("zimbra-ldap")) {
-    &updateLdapBdbConfig();
-  	$needLdapMigration=1;
-  }
 	return 0;
 }
 
@@ -2864,6 +2870,7 @@ sub updateMySQLcnf {
       `mv $mycnf ${mycnf}.${startVersion}`;
       `cp -f $tmpfile $mycnf`;
       `chmod 644 $mycnf`;
+      $mysqlcnfUpdated=1;
     } 
   }
 }
@@ -2971,7 +2978,7 @@ sub migrateTomcatLCKey {
 sub indexLdap {
 	if (main::isInstalled ("zimbra-ldap")) {
 		stopLdap();
-		main::runAsZimbra("/opt/zimbra/sleepycat/bin/db_recover -h /opt/zimbra/data/ldap/hdb/db");
+		main::runAsZimbra("/opt/zimbra/sleepycat/bin/db_recover -h /opt/zimbra/openldap-data");
 		main::runAsZimbra ("/opt/zimbra/openldap/sbin/slapindex -b '' -q -f /opt/zimbra/conf/slapd.conf");
 		if (startLdap()) {return 1;}
 	}
@@ -2980,25 +2987,22 @@ sub indexLdap {
 
 sub migrateLdap {
 	if (main::isInstalled ("zimbra-ldap")) {
-		if (-f "/opt/zimbra/data/ldap/ldap.bak") {
+		if (-f "/opt/zimbra/openldap-data/ldap.bak") {
 			main::progress("Migrating ldap data\n");
-			if (-d "/opt/zimbra/data/ldap/hdb.prev") {
-				`mv /opt/zimbra/data/ldap/hdb.prev /opt/zimbra/data/ldap/hdb.prev.$$`;
+			if (-d "/opt/zimbra/openldap-data.prev") {
+				`mv /opt/zimbra/openldap-data.prev /opt/zimbra/openldap-data.prev.$$`;
 			}
-			`mv /opt/zimbra/data/ldap/hdb /opt/zimbra/data/ldap/hdb.prev`;
-			`mkdir /opt/zimbra/data/ldap/hdb/db`;
-			`mkdir -p /opt/zimbra/data/ldap/hdb/logs`;
-			if (-f "/opt/zimbra/openldap/var/openldap-data/DB_CONFIG.custom") {
-				`cp -f /opt/zimbra/openldap/var/openldap-data/DB_CONFIG.custom /opt/zimbra/data/ldap/hdb/db`;
-			} else {
-				`cp -f /opt/zimbra/openldap/var/openldap-data/DB_CONFIG /opt/zimbra/data/ldap/hdb/db`;
-			}
-			`chown -R zimbra:zimbra /opt/zimbra/data/ldap`;
-			main::runAsZimbra("/opt/zimbra/openldap/sbin/slapadd -b '' -f /opt/zimbra/conf/slapd.conf -l /opt/zimbra/data/ldap/ldap.bak");
-			`chmod 640 /opt/zimbra/data/ldap/ldap.bak`;
+			`mv /opt/zimbra/openldap-data /opt/zimbra/openldap-data.prev`;
+			`mkdir /opt/zimbra/openldap-data`;
+			`mkdir -p /opt/zimbra/openldap-data/db`;
+			`mkdir -p /opt/zimbra/openldap-data/logs`;
+			`touch /opt/zimbra/openldap-data/DB_CONFIG`;
+			`chown -R zimbra:zimbra /opt/zimbra/openldap-data`;
+			main::runAsZimbra("/opt/zimbra/openldap/sbin/slapadd -b '' -f /opt/zimbra/conf/slapd.conf -l /opt/zimbra/openldap-data.prev/ldap.bak");
+      `chmod 640 /opt/zimbra/openldap-data.prev/ldap.bak`;
 		} else {
                         stopLdap();
-                        main::runAsZimbra("/opt/zimbra/sleepycat/bin/db_recover -h /opt/zimbra/data/ldap/hdb/db");
+                        main::runAsZimbra("/opt/zimbra/sleepycat/bin/db_recover -h /opt/zimbra/openldap-data");
 			main::runAsZimbra("/opt/zimbra/openldap/sbin/slapindex -b '' -f /opt/zimbra/conf/slapd.conf");
 		}
 		if (startLdap()) {return 1;} 
@@ -3031,35 +3035,6 @@ sub migrateLdapBdbLogs {
   			}
 		} else {
 			`echo "set_lg_dir              /opt/zimbra/openldap-data/logs" >> /opt/zimbra/openldap-data/DB_CONFIG`;
-		}
-	}
-}
-
-sub updateLdapBdbConfig {
-	my $db_config;
-	if (main::isInstalled ("zimbra-ldap")) {
-		if ( -f "/opt/zimbra/openldap/var/openldap-data/DB_CONFIG.custom" ) {
-			my $lg_seen = 0;
-			my $auto_seen = 0;
-			open (DBCONFIG,"/opt/zimbra/openldap/var/openldap-data/DB_CONFIG.custom");
-			while ($db_config = <DBCONFIG>) {
-				if ($db_config =~ /set_lg_dir/) {
-					$lg_seen=1;
-				}
-				if ($db_config =~ /DB_LOG_AUTOREMOVE/) {
-					$auto_seen=1;
-				}
-			}
-			if ($lg_seen != 1) {
-				`echo "set_lg_dir	/opt/zimbra/data/ldap/hdb/logs" >> /opt/zimbra/openldap/var/openldap-data/DB_CONFIG.custom`;
-			} else {
-				`/usr/bin/perl -pi -e "s#set_lg_dir(.*)#set_lg_dir	/opt/zimbra/data/ldap/hdb/logs#" /opt/zimbra/openldap/var/openldap-data/DB_CONFIG.custom`;
-			}
-			if ($auto_seen != 1) {
-				`echo "set_log_config	DB_LOG_AUTO_REMOVE" >> /opt/zimbra/openldap/var/openldap-data/DB_CONFIG.custom`;
-			} else {
-				`/usr/bin/perl -pi -e "s#set_flags(\s+)DB_LOG_AUTOREMOVE#set_log_config	DB_LOG_AUTO_REMOVE#" /opt/zimbra/openldap/var/openldap-data/DB_CONFIG.custom`;
-			}
 		}
 	}
 }
