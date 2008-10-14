@@ -1309,8 +1309,8 @@ removeExistingInstall() {
 
       echo -n "Cleaning up zimbra init scripts..."
       if [ -x /sbin/chkconfig ]; then
-        /sbin/chkconfig zimbra off
-        /sbin/chkconfig --del zimbra
+        /sbin/chkconfig zimbra off 2> /dev/null
+        /sbin/chkconfig --del zimbra 2> /dev/null
       else 
         /bin/rm -f /etc/rc*.d/S99zimbra 2> /dev/null
         /bin/rm -f /etc/rc*.d/K01zimbra 2> /dev/null
