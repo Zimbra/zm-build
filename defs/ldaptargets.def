@@ -65,6 +65,8 @@ $(BUILD_ROOT)/zimbraldap.spec:
 	rm -f zimbraldap.post
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/lib" >> \
 		$(BUILD_ROOT)/zimbraldap.spec
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/libtool-$(LIBTOOL_VERSION)" >> \
+		$(BUILD_ROOT)/zimbraldap.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/openldap-$(LDAP_VERSION)" >> \
 		$(BUILD_ROOT)/zimbraldap.spec
 
@@ -72,6 +74,10 @@ ldap_stage: $(LDAP_COMPONENTS)
 
 $(LDAP_DEST_DIR):
 	mkdir -p $@
+
+$(LDAP_DEST_DIR)/$(LIBTOOL_DIR)-$(LIBTOOL_VERSION): $(LDAP_DEST_DIR)
+	@echo "*** Creating libtool"
+	(cd $(LDAP_DEST_DIR); tar xzf $(LIBTOOL_SOURCE).tgz;)
 
 $(LDAP_DEST_DIR)/$(LDAP_DIR)-$(LDAP_VERSION): $(LDAP_DEST_DIR) 
 	@echo "*** Creating openldap"
