@@ -96,6 +96,7 @@ $(DEV_INSTALL_ROOT)/$(LDAP_DIR)-$(LDAP_VERSION): $(DEV_INSTALL_ROOT)
 	cp -f $(SERVICE_DIR)/conf/ldap/amavisd.schema $@/etc/openldap/schema
 	cp -f $(SERVICE_DIR)/conf/ldap/zimbra.schema $@/etc/openldap/schema
 	cp -f $(SERVICE_DIR)/conf/ldap/zimbra_schema.ldif $@/etc/openldap/schema/zimbra.ldif
+	cp -f $(SERVICE_DIR)/conf/ldap/amavisd.ldif $@/etc/openldap/schema/amavisd.ldif
 	cp -f $(SERVICE_DIR)/conf/ldap/zimbra.ldif $@/etc/openldap/zimbra.ldif
 	cp -f $(SERVICE_DIR)/conf/ldap/widgets.ldif $@/etc/openldap/widgets.ldif
 	cp $(SERVICE_DIR)/conf/ldap/zimbra_mimehandlers.ldif \

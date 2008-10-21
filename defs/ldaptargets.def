@@ -98,6 +98,8 @@ $(LDAP_DEST_DIR)/$(LDAP_DIR)-$(LDAP_VERSION): $(LDAP_DEST_DIR)
 		$(LDAP_DEST_DIR)/$(LDAP_DIR)-$(LDAP_VERSION)/etc/openldap/schema
 	cp $(SERVICE_DIR)/build/ldap-config/zimbra_schema.ldif \
 		$(LDAP_DEST_DIR)/$(LDAP_DIR)-$(LDAP_VERSION)/etc/openldap/schema/zimbra.ldif
+	cp $(SERVICE_DIR)/build/ldap-config/amavisd.ldif \
+		$(LDAP_DEST_DIR)/$(LDAP_DIR)-$(LDAP_VERSION)/etc/openldap/schema/amavisd.ldif
 	cp $(SERVICE_DIR)/build/ldap-config/zimbra.ldif \
 		$(LDAP_DEST_DIR)/$(LDAP_DIR)-$(LDAP_VERSION)/etc/openldap/schema
 	cp $(SERVICE_DIR)/conf/ldap/zimbra-ext.schema \
@@ -107,6 +109,7 @@ $(LDAP_DEST_DIR)/$(LDAP_DIR)-$(LDAP_VERSION): $(LDAP_DEST_DIR)
 	cp $(SERVICE_DIR)/build/ldap-config/*.ldif \
 		$(LDAP_DEST_DIR)/$(LDAP_DIR)-$(LDAP_VERSION)/etc/openldap
 	rm -f $(LDAP_DEST_DIR)/$(LDAP_DIR)-$(LDAP_VERSION)/etc/openldap/zimbra_schema.ldif
+	rm -f $(LDAP_DEST_DIR)/$(LDAP_DIR)-$(LDAP_VERSION)/etc/openldap/amavisd.ldif
 
 $(LDAP_DEST_DIR)/lib/conf/zimbra-ext.schema: $(LDAP_DEST_DIR)/lib/conf
 	cp -f $(SERVICE_DIR)/conf/ldap/zimbra-ext.schema $(LDAP_DEST_DIR)/lib/conf/zimbra-ext.schema
