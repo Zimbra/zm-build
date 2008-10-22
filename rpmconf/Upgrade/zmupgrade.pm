@@ -270,7 +270,6 @@ sub upgrade {
 
 	my $needVolumeHack = 0;
 	my $needMysqlTableCheck = 0;
-	my $needLdapMigration = 0;
 
 	getInstalledPackages();
 
@@ -424,13 +423,10 @@ sub upgrade {
 
   
 	my $found = 0;
-	my $needBdbMigration;
 	foreach my $v (@versionOrder) {
     $found = 1 if ($v eq $startVersion);
 		if ($found) {
       $needMysqlTableCheck=1 if ($v eq "4.5.2_GA");
-	$needBdbMigration=1 if ($v eq "6.0.0_GA");
-	$needLdapMigration=1 if ($v eq "6.0.0_GA");
 		}
 	  last if ($v eq $targetVersion);
   }
@@ -477,8 +473,10 @@ sub upgrade {
 
   # start ldap
 	if (main::isInstalled ("zimbra-ldap")) {
-    updateLdapBdbConfig() if $needBdbMigration;
-    migrateLdap() if $needLdapMigration;
+	if($startMajor < 6 && $targetMajor >= 6)
+		&updateLdapBdbConfig("6.0.0_GA");
+		&migrateLdap("6.0.0_GA");
+	}
     if (startLdap()) {return 1;} 
   }
 
@@ -2987,7 +2985,8 @@ sub indexLdap {
   return;
 }
 
-sub migrateLdap {
+sub migrateLdap($) {
+	my ($startVersion) = @_;
 	if (main::isInstalled ("zimbra-ldap")) {
 		if (-f "/opt/zimbra/data/ldap/ldap.bak") {
 			main::progress("Migrating ldap data\n");
@@ -3044,7 +3043,8 @@ sub migrateLdapBdbLogs {
 	}
 }
 
-sub updateLdapBdbConfig {
+sub updateLdapBdbConfig($) {
+	my ($startVersion) = @_;
 	my $db_config;
 	if (main::isInstalled ("zimbra-ldap")) {
 		if ( -f "/opt/zimbra/openldap/var/openldap-data/DB_CONFIG.custom" ) {
