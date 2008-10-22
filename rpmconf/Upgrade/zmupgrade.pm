@@ -20,6 +20,7 @@ use strict;
 use lib "/opt/zimbra/libexec/scripts";
 use Migrate;
 use Net::LDAP;
+use File::Grep qw (fgrep);
 my $zmlocalconfig="/opt/zimbra/bin/zmlocalconfig";
 my $type = `${zmlocalconfig} -m nokey convertd_stub_name 2> /dev/null`;
 chomp $type;
@@ -473,7 +474,7 @@ sub upgrade {
 
   # start ldap
 	if (main::isInstalled ("zimbra-ldap")) {
-	if($startMajor < 6 && $targetMajor >= 6)
+	if($startMajor < 6 && $targetMajor >= 6) {
 		&updateLdapBdbConfig("6.0.0_GA");
 		&migrateLdap("6.0.0_GA");
 	}
@@ -2986,28 +2987,31 @@ sub indexLdap {
 }
 
 sub migrateLdap($) {
-	my ($startVersion) = @_;
+	my ($migrateVersion) = @_;
 	if (main::isInstalled ("zimbra-ldap")) {
-		if (-f "/opt/zimbra/data/ldap/ldap.bak") {
-			main::progress("Migrating ldap data\n");
-			if (-d "/opt/zimbra/data/ldap/hdb.prev") {
-				`mv /opt/zimbra/data/ldap/hdb.prev /opt/zimbra/data/ldap/hdb.prev.$$`;
-			}
-			`mv /opt/zimbra/data/ldap/hdb /opt/zimbra/data/ldap/hdb.prev`;
-			`mkdir /opt/zimbra/data/ldap/hdb/db`;
-			`mkdir -p /opt/zimbra/data/ldap/hdb/logs`;
-			if (-f "/opt/zimbra/openldap/var/openldap-data/DB_CONFIG.custom") {
-				`cp -f /opt/zimbra/openldap/var/openldap-data/DB_CONFIG.custom /opt/zimbra/data/ldap/hdb/db`;
+		if($main::configStatus{"LdapMigrated$migrateVersion"} ne "CONFIGURED") {
+			if (-f "/opt/zimbra/data/ldap/ldap.bak") {
+				main::progress("Migrating ldap data\n");
+				if (-d "/opt/zimbra/data/ldap/hdb.prev") {
+					`mv /opt/zimbra/data/ldap/hdb.prev /opt/zimbra/data/ldap/hdb.prev.$$`;
+				}
+				`mv /opt/zimbra/data/ldap/hdb /opt/zimbra/data/ldap/hdb.prev`;
+				`mkdir /opt/zimbra/data/ldap/hdb/db`;
+				`mkdir -p /opt/zimbra/data/ldap/hdb/logs`;
+				if (-f "/opt/zimbra/openldap/var/openldap-data/DB_CONFIG.custom") {
+					`cp -f /opt/zimbra/openldap/var/openldap-data/DB_CONFIG.custom /opt/zimbra/data/ldap/hdb/db`;
+				} else {
+					`cp -f /opt/zimbra/openldap/var/openldap-data/DB_CONFIG /opt/zimbra/data/ldap/hdb/db`;
+				}
+				`chown -R zimbra:zimbra /opt/zimbra/data/ldap`;
+				main::runAsZimbra("/opt/zimbra/openldap/sbin/slapadd -b '' -f /opt/zimbra/conf/slapd.conf -l /opt/zimbra/data/ldap/ldap.bak");
+				`chmod 640 /opt/zimbra/data/ldap/ldap.bak`;
 			} else {
-				`cp -f /opt/zimbra/openldap/var/openldap-data/DB_CONFIG /opt/zimbra/data/ldap/hdb/db`;
+	                        stopLdap();
+	                        main::runAsZimbra("/opt/zimbra/sleepycat/bin/db_recover -h /opt/zimbra/data/ldap/hdb/db");
+				main::runAsZimbra("/opt/zimbra/openldap/sbin/slapindex -b '' -f /opt/zimbra/conf/slapd.conf");
 			}
-			`chown -R zimbra:zimbra /opt/zimbra/data/ldap`;
-			main::runAsZimbra("/opt/zimbra/openldap/sbin/slapadd -b '' -f /opt/zimbra/conf/slapd.conf -l /opt/zimbra/data/ldap/ldap.bak");
-			`chmod 640 /opt/zimbra/data/ldap/ldap.bak`;
-		} else {
-                        stopLdap();
-                        main::runAsZimbra("/opt/zimbra/sleepycat/bin/db_recover -h /opt/zimbra/data/ldap/hdb/db");
-			main::runAsZimbra("/opt/zimbra/openldap/sbin/slapindex -b '' -f /opt/zimbra/conf/slapd.conf");
+			main::configLog("LdapMigrated$migrateVersion");
 		}
 		if (startLdap()) {return 1;} 
 	}
@@ -3044,31 +3048,22 @@ sub migrateLdapBdbLogs {
 }
 
 sub updateLdapBdbConfig($) {
-	my ($startVersion) = @_;
-	my $db_config;
+	my ($migrateVersion) = @_;
 	if (main::isInstalled ("zimbra-ldap")) {
-		if ( -f "/opt/zimbra/openldap/var/openldap-data/DB_CONFIG.custom" ) {
-			my $lg_seen = 0;
-			my $auto_seen = 0;
-			open (DBCONFIG,"/opt/zimbra/openldap/var/openldap-data/DB_CONFIG.custom");
-			while ($db_config = <DBCONFIG>) {
-				if ($db_config =~ /set_lg_dir/) {
-					$lg_seen=1;
+		if($main::configStatus{"BdbMigrated$migrateVersion"} ne "CONFIGURED") {
+			if ( -f "/opt/zimbra/openldap/var/openldap-data/DB_CONFIG.custom" ) {
+				if (!fgrep { /set_lg_dir/ } "/opt/zimbra/openldap/var/openldap-data/DB_CONFIG.custom") { 
+					`echo "set_lg_dir	/opt/zimbra/data/ldap/hdb/logs" >> /opt/zimbra/openldap/var/openldap-data/DB_CONFIG.custom`;
+				} else {
+					`/usr/bin/perl -pi -e "s#set_lg_dir(.*)#set_lg_dir	/opt/zimbra/data/ldap/hdb/logs#" /opt/zimbra/openldap/var/openldap-data/DB_CONFIG.custom`;
 				}
-				if ($db_config =~ /DB_LOG_AUTOREMOVE/) {
-					$auto_seen=1;
+				if (!fgrep { /DB_LOG_AUTOREMOVE/ } "/opt/zimbra/openldap/var/openldap-data/DB_CONFIG.custom" ) {
+					`echo "set_log_config	DB_LOG_AUTO_REMOVE" >> /opt/zimbra/openldap/var/openldap-data/DB_CONFIG.custom`;
+				} else {
+					`/usr/bin/perl -pi -e "s#set_flags(\s+)DB_LOG_AUTOREMOVE#set_log_config	DB_LOG_AUTO_REMOVE#" /opt/zimbra/openldap/var/openldap-data/DB_CONFIG.custom`;
 				}
 			}
-			if ($lg_seen != 1) {
-				`echo "set_lg_dir	/opt/zimbra/data/ldap/hdb/logs" >> /opt/zimbra/openldap/var/openldap-data/DB_CONFIG.custom`;
-			} else {
-				`/usr/bin/perl -pi -e "s#set_lg_dir(.*)#set_lg_dir	/opt/zimbra/data/ldap/hdb/logs#" /opt/zimbra/openldap/var/openldap-data/DB_CONFIG.custom`;
-			}
-			if ($auto_seen != 1) {
-				`echo "set_log_config	DB_LOG_AUTO_REMOVE" >> /opt/zimbra/openldap/var/openldap-data/DB_CONFIG.custom`;
-			} else {
-				`/usr/bin/perl -pi -e "s#set_flags(\s+)DB_LOG_AUTOREMOVE#set_log_config	DB_LOG_AUTO_REMOVE#" /opt/zimbra/openldap/var/openldap-data/DB_CONFIG.custom`;
-			}
+			main::configLog("BdbMigrated$migrateVersion");
 		}
 	}
 }
