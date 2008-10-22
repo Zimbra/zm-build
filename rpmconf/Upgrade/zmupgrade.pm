@@ -2996,7 +2996,7 @@ sub migrateLdap($) {
 					`mv /opt/zimbra/data/ldap/hdb.prev /opt/zimbra/data/ldap/hdb.prev.$$`;
 				}
 				`mv /opt/zimbra/data/ldap/hdb /opt/zimbra/data/ldap/hdb.prev`;
-				`mkdir /opt/zimbra/data/ldap/hdb/db`;
+				`mkdir -p /opt/zimbra/data/ldap/hdb/db`;
 				`mkdir -p /opt/zimbra/data/ldap/hdb/logs`;
 				if (-f "/opt/zimbra/openldap/var/openldap-data/DB_CONFIG.custom") {
 					`cp -f /opt/zimbra/openldap/var/openldap-data/DB_CONFIG.custom /opt/zimbra/data/ldap/hdb/db`;
