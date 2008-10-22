@@ -151,8 +151,6 @@ my $debug = $options{d};
 
 getInstallStatus();
 
-getInstalledPackages();
-
 if ($0 =~ /testMenu/) {
   #delete $installedPackages{"zimbra-ldap"}; 
   #delete $installedPackages{"zimbra-mta"}; 
@@ -161,6 +159,21 @@ if ($0 =~ /testMenu/) {
   exit;
 }
 
+if (! $newinstall ) {
+  # if we're an upgrade, run the upgrader...
+  if (($prevVersion ne $curVersion )) {
+    progress ("Upgrading from $prevVersion to $curVersion\n");
+    if (zmupgrade::upgrade($prevVersion, $curVersion)){
+      progress ("UPGRADE FAILED - exiting\n");
+      exit 1;
+    } else {
+      progress ("Upgrade complete\n");
+    }
+  }
+
+}
+
+getInstalledPackages();
 
 unless (isEnabled("zimbra-core")) {
   progress("zimbra-core must be enabled.");
@@ -177,22 +190,7 @@ if ($options{d}) {
 } 
 
 setDefaults();
-
-if (! $newinstall ) {
-
-  # if we're an upgrade, run the upgrader...
-  if (($prevVersion ne $curVersion )) {
-    progress ("Upgrading from $prevVersion to $curVersion\n");
-    if (zmupgrade::upgrade($prevVersion, $curVersion)){
-      progress ("UPGRADE FAILED - exiting\n");
-      exit 1;
-    } else {
-      progress ("Upgrade complete\n");
-    }
-  }
-
-  setDefaultsFromLocalConfig();
-}
+setDefaultsFromLocalConfig();
 
 setEnabledDependencies();
 
