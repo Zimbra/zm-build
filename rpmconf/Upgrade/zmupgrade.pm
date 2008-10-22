@@ -38,7 +38,6 @@ my $hiLoggerVersion = 6;
 my $comboLowVersion = 20;
 my $comboHiVersion  = 27;
 my $needSlapIndexing = 0;
-my $needLdapMigration = 0;
 my $mysqlcnfUpdated = 0;
 
 my $platform = `/opt/zimbra/libexec/get_plat_tag.sh`;
@@ -271,6 +270,7 @@ sub upgrade {
 
 	my $needVolumeHack = 0;
 	my $needMysqlTableCheck = 0;
+	my $needLdapMigration = 0;
 
 	getInstalledPackages();
 
@@ -424,10 +424,13 @@ sub upgrade {
 
   
 	my $found = 0;
+	my $needBdbMigration;
 	foreach my $v (@versionOrder) {
     $found = 1 if ($v eq $startVersion);
 		if ($found) {
       $needMysqlTableCheck=1 if ($v eq "4.5.2_GA");
+	$needBdbMigration=1 if ($v eq "6.0.0_GA");
+	$needLdapMigration=1 if ($v eq "6.0.0_GA");
 		}
 	  last if ($v eq $targetVersion);
   }
@@ -474,6 +477,7 @@ sub upgrade {
 
   # start ldap
 	if (main::isInstalled ("zimbra-ldap")) {
+    updateLdapBdbConfig() if $needBdbMigration;
     migrateLdap() if $needLdapMigration;
     if (startLdap()) {return 1;} 
   }
@@ -2472,11 +2476,6 @@ sub upgrade5011GA {
 sub upgrade600GA {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
 	main::progress("Updating from 6.0.0_GA\n");
-
-  if (main::isInstalled("zimbra-ldap")) {
-    &updateLdapBdbConfig();
-  	$needLdapMigration=1;
-  }
 	return 0;
 }
 
