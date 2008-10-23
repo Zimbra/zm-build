@@ -2460,6 +2460,7 @@ sub upgrade5011GA {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
 	main::progress("Updating from 5.0.11_GA\n");
   if (main::isInstalled("zimbra-ldap") && $isLdapMaster) {
+    upgradeLdapConfigValue("zimbraAdminConsoleSkinEnabled", "FALSE", "");
 	  my @coses = `$su "$ZMPROV gac"`;
     my %attrs = ( zimbraFreebusyLocalMailboxNotActive => "FALSE");
 	  foreach my $cos (@coses) {
