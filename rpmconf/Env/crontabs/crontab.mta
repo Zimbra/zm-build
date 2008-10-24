@@ -16,9 +16,9 @@
 #
 # Dspam cleanup
 #
-#0 1 * * * find /opt/zimbra/dspam/var/dspam/data/z/i/zimbra/zimbra.sig/ -type f -name \*sig -mtime +7 -exec rm {} \; > /dev/null 2>&1
-#8 4 * * * /opt/zimbra/dspam/bin/dspam_logrotate -a 60 /opt/zimbra/dspam/var/dspam/system.log
-#8 8 * * * /opt/zimbra/dspam/bin/dspam_logrotate -a 60 /opt/zimbra/dspam/var/dspam/data/z/i/zimbra/zimbra.log
+0 1 * * * [ -d /opt/zimbra/data/dspam/data/z/i/zimbra/zimbra.sig ] && find /opt/zimbra/dspam/var/dspam/data/z/i/zimbra/zimbra.sig/ -type f -name \*sig -mtime +7 -exec rm {} \; > /dev/null 2>&1
+8 4 * * * [ -f /opt/zimbra/data/dspam/system.log ] && /opt/zimbra/dspam/bin/dspam_logrotate -a 60 -l /opt/zimbra/data/dspam/system.log
+8 8 * * * [ -f /opt/zimbra/data/dspam/data/z/i/zimbra/zimbra.log ] && /opt/zimbra/dspam/bin/dspam_logrotate -a 60 -l /opt/zimbra/data/dspam/data/z/i/zimbra/zimbra.log
 #
 # Spam Bayes auto-expiry
 #
