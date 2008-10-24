@@ -32,7 +32,7 @@ chomp $rundir;
 my $scriptDir = "/opt/zimbra/libexec/scripts";
 
 my $lowVersion = 18;
-my $hiVersion = 53;
+my $hiVersion = 60; # this should be set to the DB version expected by current server code
 my $hiLoggerVersion = 6;
 
 # Variables for the combo schema updater
@@ -104,7 +104,8 @@ my %updateScripts = (
   '52' => "migrate20080909-DataSourceItemTable.pl",     # 5.0.10_GA
   '53' => "migrate20080919-MucService.pl",             # this upgrades to 60 for 6_0_0 GA
    # 54-59 skipped for possible FRANKLIN use
-                     
+
+   # MAKE SURE YOU UPDATE $hiVersion IF YOU ADD ENTRIES HERE
 );
 
 my %loggerUpdateScripts = (
