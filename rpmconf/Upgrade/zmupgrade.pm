@@ -178,6 +178,10 @@ my %updateFuncs = (
   "5.0.9_GA" => \&upgrade509GA,
   "5.0.10_GA" => \&upgrade5010GA,
   "5.0.11_GA" => \&upgrade5011GA,
+  "6.0.0_B1" => \&upgrade600B1,
+  "6.0.0_B2" => \&upgrade600B2,
+  "6.0.0_RC1" => \&upgrade600RC1,
+  "6.0.0_RC2" => \&upgrade600RC2,
   "6.0.0_GA" => \&upgrade600GA,
 );
 
@@ -238,6 +242,10 @@ my @versionOrder = (
   "5.0.9_GA",
   "5.0.10_GA",
   "5.0.11_GA",
+  "6.0.0_B1",
+  "6.0.0_B2",
+  "6.0.0_RC1",
+  "6.0.0_RC2",
   "6.0.0_GA",
 );
 
@@ -416,6 +424,14 @@ sub upgrade {
 		main::progress("This appears to be 5.0.10_GA\n");
 	} elsif ($startVersion eq "5.0.11_GA") {
 		main::progress("This appears to be 5.0.11_GA\n");
+	} elsif ($startVersion eq "6.0.0_B1") {
+		main::progress("This appears to be 6.0.0_B1\n");
+	} elsif ($startVersion eq "6.0.0_B2") {
+		main::progress("This appears to be 6.0.0_B2\n");
+	} elsif ($startVersion eq "6.0.0_RC1") {
+		main::progress("This appears to be 6.0.0_RC1\n");
+	} elsif ($startVersion eq "6.0.0_RC2") {
+		main::progress("This appears to be 6.0.0_RC2\n");
 	} elsif ($startVersion eq "6.0.0_GA") {
 		main::progress("This appears to be 6.0.0_GA\n");
 	} else {
@@ -2474,15 +2490,36 @@ sub upgrade5011GA {
 	return 0;
 }
 
-sub upgrade600GA {
+sub upgrade600B1 {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
-	main::progress("Updating from 6.0.0_GA\n");
+	main::progress("Updating from 6.0.0_B1\n");
+  if (main::isInstalled("zimbra-ldap") && $isLdapMaster) {
+	  main::runAsZimbra("zmjava com.zimbra.cs.account.ldap.upgrade.LdapUpgrade -b 32557 -v");
+  }
 	return 0;
 }
 
-sub upgrade35M1 {
+sub upgrade600B2 {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
-	main::progress("Updating from 3.5.0_M1\n");
+	main::progress("Updating from 6.0.0_B2\n");
+	return 0;
+}
+
+sub upgrade600RC1 {
+	my ($startBuild, $targetVersion, $targetBuild) = (@_);
+	main::progress("Updating from 6.0.0_RC1\n");
+	return 0;
+}
+
+sub upgrade600RC2 {
+	my ($startBuild, $targetVersion, $targetBuild) = (@_);
+	main::progress("Updating from 6.0.0_RC2\n");
+	return 0;
+}
+
+sub upgrade600GA {
+	my ($startBuild, $targetVersion, $targetBuild) = (@_);
+	main::progress("Updating from 6.0.0_GA\n");
 	return 0;
 }
 
