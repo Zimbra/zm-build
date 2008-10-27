@@ -206,6 +206,7 @@ $(CORE_DEST_DIR)/conf: $(WEBAPP_DIR)/service.war
 	mkdir -p $@
 	cp $(PACKAGE_CONF_DIR)/Conf/swatchrc $@/swatchrc.in
 	cp $(PACKAGE_CONF_DIR)/Conf/logswatchrc $@/logswatchrc
+	cp $(PACKAGE_CONF_DIR)/Conf/auditswatchrc $@/logswatchrc.in
 	cp $(SERVICE_DIR)/build/dist/conf/localconfig.xml $@
 	cp $(SERVICE_DIR)/build/dist/conf/log4j.properties $@/log4j.properties.in
 	cp $(PACKAGE_CONF_DIR)/Conf/zmssl.cnf.in $@
@@ -281,6 +282,7 @@ $(CORE_DEST_DIR)/libexec: $(LAUNCHER_DIR)/build/zmmailboxdmgr
 	cp -f $(LAUNCHER_DIR)/build/zmmailboxdmgr.unrestricted $@
 	cp $(SERVICE_DIR)/src/libexec/* $@
 	cp $@/swatch $@/logswatch
+	cp $@/swatch $@/auditswatch
 	cp -f $(BUILD_ROOT)/rpmconf/Build/get_plat_tag.sh $@
 
 $(CORE_DEST_DIR)/bin:
@@ -290,6 +292,7 @@ $(CORE_DEST_DIR)/bin:
 	rm -rf $(CORE_DEST_DIR)/bin/zmexternaldirsync
 	cp $(ZIMBRA_BIN_DIR)/zmswatchctl $@
 	cp $(ZIMBRA_BIN_DIR)/zmlogswatchctl $@
+	cp $(ZIMBRA_BIN_DIR)/zmauditswatchctl $@
 	cp $(ZIMBRA_BIN_DIR)/zmcertmgr $@
 	cp $(ZIMBRA_BIN_DIR)/zmtlsctl $@
 	cp $(ZIMBRA_BIN_DIR)/zmsyslogsetup $@

@@ -1,0 +1,29 @@
+
+# Failures for an ip:account pair
+watchfor /\[\w+=(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3});.*\]\s+.*cmd=.*Auth; account=(.*?);.*error=authentication failed for .*/
+	exec /bin/echo "IP:Acct failure threshold exceeded: $1 $2"
+	mail addresses=@@zimbra_swatch_notice_user@@,subject="ABUSE: IP:Acct threshold exceeded: $1 $2"
+	threshold track_by=$1:$2,type=both,count=@@zimbra_swatch_ipacct_threshold@@,seconds=@@zimbra_swatch_threshold_seconds@@
+	continue
+
+# Failures for a specific account
+watchfor /\[\w+=(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3});.*\]\s+.*cmd=.*Auth; account=(.*?);.*error=authentication failed for .*/
+	exec /bin/echo "Account failure threshold exceeded: $1 $2"
+	mail addresses=@@zimbra_swatch_notice_user@@,subject="ABUSE: Account threshold exceeded: $1 $2"
+	threshold track_by=$2,type=both,count=@@zimbra_swatch_acct_threshold@@,seconds=@@zimbra_swatch_threshold_seconds@@
+	continue
+
+# Failures from a specific IP
+watchfor /\[\w+=(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3});.*\]\s+.*cmd=.*Auth; account=(.*?);.*error=authentication failed for .*/
+	mail addresses=@@zimbra_swatch_notice_user@@,subject="ABUSE: IP threshold exceeded: $1 $2"
+	exec /bin/echo "IP failure threshold exceeded: $1 exceeded threshold on failure for $2"
+	threshold track_by=$1,type=both,count=@@zimbra_swatch_ip_threshold@@,seconds=@@zimbra_swatch_threshold_seconds@@
+	continue
+	
+# All auth failures
+watchfor /\[\w+=(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3});.*\]\s+.*cmd=.*Auth; account=(.*?);.*error=authentication failed for .*/
+	mail addresses=@@zimbra_swatch_notice_user@@,subject="ABUSE: Excessive auth failures detected."
+	exec /bin/echo "Excessive authentication failures detected."
+	threshold track_by=$1,type=both,count=@@zimbra_swatch_total_threshold@@,seconds=@@zimbra_swatch_threshold_seconds@@
+	continue
+	
