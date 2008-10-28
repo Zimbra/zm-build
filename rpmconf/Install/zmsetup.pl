@@ -2567,7 +2567,7 @@ sub createCommonMenu {
   }
   # interprocess security
   $$lm{menuitems}{$i} = {
-    "prompt" => "Require secure interprocess communications:",
+    "prompt" => "Secure interprocess communications:",
     "var" => \$config{ZIMBRA_REQ_SECURITY},
     "callback" => \&toggleYN,
     "arg" => "ZIMBRA_REQ_SECURITY",
@@ -3209,14 +3209,14 @@ sub createStoreMenu {
     }
     if (!isInstalled("zimbra-proxy") && $newinstall) {
       $$lm{menuitems}{$i} = {
-        "prompt" => "Configure store for use with reverse mail proxy:",
+        "prompt" => "Configure for use with mail proxy:",
         "var" => \$config{zimbraMailProxy},
         "callback" => \&toggleTF,
         "arg" => "zimbraMailProxy",
       };
       $i++;
       $$lm{menuitems}{$i} = {
-        "prompt" => "Configure store for use with reverse web proxy:",
+        "prompt" => "Configure for use with web proxy:",
         "var" => \$config{zimbraWebProxy},
         "callback" => \&toggleTF,
         "arg" => "zimbraWebProxy",
