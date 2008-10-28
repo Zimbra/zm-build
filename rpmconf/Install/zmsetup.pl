@@ -1363,7 +1363,7 @@ sub setDefaultsFromLocalConfig {
     $config{SNMPNOTIFY} = "yes" if ($config{SNMPNOTIFY} eq "");
 
     $config{SMTPNOTIFY} = getLocalConfig("smtp_notify");
-    $config{SMTPNOTIFY} = "yes" if ($config{SNMPNOTIFY} eq "");
+    $config{SMTPNOTIFY} = "yes" if ($config{SMTPNOTIFY} eq "");
 
     $config{SNMPTRAPHOST} = getLocalConfig("snmp_trap_host");
     $config{SNMPTRAPHOST} = $config{CREATEADMIN}
