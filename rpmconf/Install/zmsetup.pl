@@ -190,7 +190,7 @@ if ($options{d}) {
 } 
 
 setDefaults();
-setDefaultsFromLocalConfig();
+setDefaultsFromLocalConfig() if (! $newinstall);
 
 setEnabledDependencies();
 
