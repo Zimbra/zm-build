@@ -1348,6 +1348,16 @@ removeExistingInstall() {
         /bin/rm -f /etc/logrotate.d/zimbra 2> /dev/null
         echo "done."
       fi
+
+      if [ -f /etc/security/limits.conf ]; then
+        echo -n "Cleaning up /etc/security/limits.conf..."
+        egrep -q '^zimbra|^liquid' /etc/security/limits.conf
+        if [ $? = 0 ]; then
+          sed -i -e '/^zimbra/d' -e '/^liquid/d' /etc/security/limits.conf
+        fi
+        echo "done."
+      fi
+
   
       for mp in $MOUNTPOINTS; do
         if [ x$mp != "x/opt/zimbra" ]; then
