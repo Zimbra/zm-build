@@ -102,7 +102,7 @@ my %updateScripts = (
   '50' => "migrate20080130-ImapFlags.pl",               # 5.0.3_GA
   '51' => "migrate20080213-IndexDeferredColumn.pl",    # 5.0.3_GA
   '52' => "migrate20080909-DataSourceItemTable.pl",     # 5.0.10_GA
-  '53' => "migrate20080919-MucService.pl",             # this upgrades to 60 for 6_0_0 GA
+  '53' => "migrate20080930-MucService.pl",             # this upgrades to 60 for 6_0_0 GA
    # 54-59 skipped for possible FRANKLIN use
 
    # MAKE SURE YOU UPDATE $hiVersion IF YOU ADD ENTRIES HERE
