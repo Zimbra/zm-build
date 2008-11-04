@@ -1161,12 +1161,9 @@ removeExistingInstall() {
         tmpfile=`mktemp -t slapcat.XXXXXX 2> /dev/null` || (echo "Failed to create tmpfile" && exit 1)
 	mkdir -p /opt/zimbra/data/ldap
 	chown -R zimbra:zimbra /opt/zimbra/data/ldap
-        /opt/zimbra/openldap/sbin/slapcat -f /opt/zimbra/conf/slapd.conf \
-         -b '' -l /opt/zimbra/data/ldap/ldap.bak > $tmpfile 2>&1
+        runAsZimbra "/opt/zimbra/libexec/zmslapcat /opt/zimbra/data/ldap"
         if [ $? != 0 ]; then
           echo "failed."
-          echo 
-          cat $tmpfile
           exit
         else
           echo "done."
