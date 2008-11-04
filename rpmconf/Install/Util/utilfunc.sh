@@ -1326,7 +1326,7 @@ removeExistingInstall() {
         echo -n "Cleaning up /etc/ld.so.conf..."
         egrep -q '/opt/zimbra' /etc/ld.so.conf
         if [ $? = 0 ]; then
-          sed -i -e '!/opt/zimbra!d' /etc/ld.so.conf
+          sed -i -e '/\/opt\/zimbra/d' /etc/ld.so.conf
           if [ -x /sbin/ldconfig ]; then
            /sbin/ldconfig
           fi
