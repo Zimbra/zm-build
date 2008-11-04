@@ -105,7 +105,6 @@ my %updateScripts = (
   '53' => "migrate20080930-MucService.pl",             # this upgrades to 60 for 6_0_0 GA
    # 54-59 skipped for possible FRANKLIN use
 
-   # MAKE SURE YOU UPDATE $hiVersion IF YOU ADD ENTRIES HERE
 );
 
 my %loggerUpdateScripts = (
@@ -471,7 +470,7 @@ sub upgrade {
 				if (runSchemaUpgrade ("UniqueVolume")) { return 1; }
 			} 
 			if (runSchemaUpgrade ($curSchemaVersion)) { return 1; }
-			$curSchemaVersion++;
+      $curSchemaVersion = Migrate::getSchemaVersion();
 		}
 		stopSql();
 	}
