@@ -98,7 +98,7 @@ $(BUILD_ROOT)/zimbracore.spec:
 		$(BUILD_ROOT)/zimbracore.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/zimbramon" >> \
 		$(BUILD_ROOT)/zimbracore.spec
-	echo "%attr(-, zimbra, zimbra) /opt/zimbra/bdb-$(BDB_VERSION)" >> \
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/sleepycat-$(BDB_VERSION)" >> \
 		$(BUILD_ROOT)/zimbracore.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/openssl-$(OPENSSL_VERSION)" >> \
 		$(BUILD_ROOT)/zimbracore.spec
@@ -132,7 +132,7 @@ $(CORE_DEST_DIR)/doc:
 	cp $(SERVICE_DIR)/docs/soap*txt $@
 	cp $(SERVICE_DIR)/docs/rest*txt $@
 
-$(CORE_DEST_DIR)/zimbramon: $(CORE_DEST_DIR)/zimbramon/bin $(CORE_DEST_DIR)/zimbramon/lib $(CORE_DEST_DIR)/zimbramon/crontabs $(CORE_DEST_DIR) 
+$(CORE_DEST_DIR)/zimbramon: $(CORE_DEST_DIR)/zimbramon/lib $(CORE_DEST_DIR)/zimbramon/crontabs $(CORE_DEST_DIR) 
 	@echo "*** Creating zimbramon"
 	mkdir -p $@
 	(cd $(CORE_DEST_DIR)/zimbramon; tar xzf $(MRTG_SOURCE).tgz)
@@ -149,11 +149,6 @@ $(CORE_DEST_DIR)/zimbramon: $(CORE_DEST_DIR)/zimbramon/bin $(CORE_DEST_DIR)/zimb
 $(CORE_DEST_DIR)/zimbramon/crontabs:
 	mkdir -p $@
 	cp -f $(PACKAGE_CONF_DIR)/Env/crontabs/* $(CORE_DEST_DIR)/zimbramon/crontabs/
-
-$(CORE_DEST_DIR)/zimbramon/bin:
-	mkdir -p $(CORE_DEST_DIR)/zimbramon/bin
-	(cd $(CORE_DEST_DIR)/zimbramon/bin; \
-	tar xzf $(PERL_LIB_SOURCE)/perlbin.tgz)
 
 $(CORE_DEST_DIR)/zimbramon/lib:
 	mkdir -p $(CORE_DEST_DIR)/zimbramon/lib
@@ -197,9 +192,9 @@ $(CORE_DEST_DIR)/jdk$(JAVA_VERSION):
 
 $(CORE_DEST_DIR)/db: $(WEBAPP_DIR)/service.war
 	mkdir -p $@
-	cp -R $(SERVICE_DIR)/src/db/mysql/db.sql $@
+	cp -R $(SERVICE_DIR)/src/db/db.sql $@
 	cp -R $(SERVICE_DIR)/src/db/loggerdb.sql $@
-	cp -R $(SERVICE_DIR)/src/db/mysql/create_database.sql $@
+	cp -R $(SERVICE_DIR)/src/db/create_database.sql $@
 	cp -R $(SERVICE_DIR)/build/versions-init.sql $@
 
 $(CORE_DEST_DIR)/conf: $(WEBAPP_DIR)/service.war
@@ -270,11 +265,11 @@ $(CORE_DEST_DIR)/libexec: $(LAUNCHER_DIR)/build/zmmailboxdmgr
 	cp -f $(PACKAGE_CONF_DIR)/Install/Util/*sh $@/installer/util
 	cp -f $(PACKAGE_CONF_DIR)/Install/Util/modules/*sh $@/installer/util/modules
 	mkdir -p $@/scripts
-	cp -f $(SERVICE_DIR)/src/db/migration/Migrate.pm $@/scripts
-	cp -f $(SERVICE_DIR)/src/db/migration/migrate*pl $@/scripts
-	cp -f $(SERVICE_DIR)/src/db/migration/migrate*sh $@/scripts
-	cp -f $(SERVICE_DIR)/src/db/migration/optimize*pl $@/scripts
-	cp -f $(SERVICE_DIR)/src/db/migration/fix*pl $@/scripts
+	cp -f $(SERVICE_DIR)/src/db/Migrate.pm $@/scripts
+	cp -f $(SERVICE_DIR)/src/db/migrate*pl $@/scripts
+	cp -f $(SERVICE_DIR)/src/db/migrate*sh $@/scripts
+	cp -f $(SERVICE_DIR)/src/db/optimize*pl $@/scripts
+	cp -f $(SERVICE_DIR)/src/db/fix*pl $@/scripts
 	cp -f $(PACKAGE_CONF_DIR)/Install/postinstall.pm $@/postinstall.pm
 	cp -f $(PACKAGE_CONF_DIR)/Install/preinstall.pm $@/preinstall.pm
 	cp -f $(PACKAGE_CONF_DIR)/Install/Util/addUser.sh $@/addUser.sh
@@ -324,7 +319,7 @@ $(CORE_DEST_DIR)/lib/libexpat.dylib: $(CORE_DEST_DIR)/lib
 	rm -rf $(CORE_DEST_DIR)/include
 
 $(CORE_DEST_DIR)/$(BDB_DIR):
-	@echo "*** Creating bdb"
+	@echo "*** Creating sleepycat"
 	mkdir -p $@
 	(cd $(CORE_DEST_DIR); tar xzf $(BDB_SOURCE).tgz; chmod u+w $(BDB_DIR)/bin/*)
 	rm -rf $(CORE_DEST_DIR)/$(BDB_DIR)/docs/java

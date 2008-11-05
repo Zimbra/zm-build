@@ -65,8 +65,6 @@ $(BUILD_ROOT)/zimbraldap.spec:
 	rm -f zimbraldap.post
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/lib" >> \
 		$(BUILD_ROOT)/zimbraldap.spec
-	echo "%attr(-, zimbra, zimbra) /opt/zimbra/libtool-$(LIBTOOL_VERSION)" >> \
-		$(BUILD_ROOT)/zimbraldap.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/openldap-$(LDAP_VERSION)" >> \
 		$(BUILD_ROOT)/zimbraldap.spec
 
@@ -74,10 +72,6 @@ ldap_stage: $(LDAP_COMPONENTS)
 
 $(LDAP_DEST_DIR):
 	mkdir -p $@
-
-$(LDAP_DEST_DIR)/$(LIBTOOL_DIR)-$(LIBTOOL_VERSION): $(LDAP_DEST_DIR)
-	@echo "*** Creating libtool"
-	(cd $(LDAP_DEST_DIR); tar xzf $(LIBTOOL_SOURCE).tgz;)
 
 $(LDAP_DEST_DIR)/$(LDAP_DIR)-$(LDAP_VERSION): $(LDAP_DEST_DIR) 
 	@echo "*** Creating openldap"
@@ -94,33 +88,14 @@ $(LDAP_DEST_DIR)/$(LDAP_DIR)-$(LDAP_VERSION): $(LDAP_DEST_DIR)
 		$(LDAP_DEST_DIR)/$(LDAP_DIR)-$(LDAP_VERSION)/etc/openldap
 	cp $(SERVICE_DIR)/build/ldap-config/amavisd.schema \
 		$(LDAP_DEST_DIR)/$(LDAP_DIR)-$(LDAP_VERSION)/etc/openldap/schema
-	cp $(SERVICE_DIR)/build/ldap-config/config/amavisd.ldif \
-		$(LDAP_DEST_DIR)/$(LDAP_DIR)-$(LDAP_VERSION)/etc/openldap/schema
 	cp $(SERVICE_DIR)/build/ldap-config/zimbra.schema \
 		$(LDAP_DEST_DIR)/$(LDAP_DIR)-$(LDAP_VERSION)/etc/openldap/schema
-	cp $(SERVICE_DIR)/build/ldap-config/config/zimbra.ldif \
-		$(LDAP_DEST_DIR)/$(LDAP_DIR)-$(LDAP_VERSION)/etc/openldap/schema/zimbra.ldif
 	cp $(SERVICE_DIR)/conf/ldap/zimbra-ext.schema \
 		$(LDAP_DEST_DIR)/$(LDAP_DIR)-$(LDAP_VERSION)/etc/openldap/schema
 	cp $(SERVICE_DIR)/conf/ldap/zimbra-hsm.schema \
 		$(LDAP_DEST_DIR)/$(LDAP_DIR)-$(LDAP_VERSION)/etc/openldap/schema
 	cp $(SERVICE_DIR)/build/ldap-config/*.ldif \
 		$(LDAP_DEST_DIR)/$(LDAP_DIR)-$(LDAP_VERSION)/etc/openldap
-	mkdir -p $(LDAP_DEST_DIR)/$(LDAP_DIR)-$(LDAP_VERSION)/etc/openldap/config/cn=config
-	cp $(SERVICE_DIR)/build/ldap-config/config/cn=config.ldif \
-		$(LDAP_DEST_DIR)/$(LDAP_DIR)-$(LDAP_VERSION)/etc/openldap/config
-	cp $(SERVICE_DIR)/build/ldap-config/config/cn=module{0}.ldif \
-		$(LDAP_DEST_DIR)/$(LDAP_DIR)-$(LDAP_VERSION)/etc/openldap/config/cn=config
-	cp $(SERVICE_DIR)/build/ldap-config/config/cn=schema.ldif \
-		$(LDAP_DEST_DIR)/$(LDAP_DIR)-$(LDAP_VERSION)/etc/openldap/config/cn=config
-	cp $(SERVICE_DIR)/build/ldap-config/config/olcDatabase={0}config.ldif \
-		$(LDAP_DEST_DIR)/$(LDAP_DIR)-$(LDAP_VERSION)/etc/openldap/config/cn=config
-	cp $(SERVICE_DIR)/build/ldap-config/config/olcDatabase={-1}frontend.ldif \
-		$(LDAP_DEST_DIR)/$(LDAP_DIR)-$(LDAP_VERSION)/etc/openldap/config/cn=config
-	cp $(SERVICE_DIR)/build/ldap-config/config/olcDatabase={1}monitor.ldif \
-		$(LDAP_DEST_DIR)/$(LDAP_DIR)-$(LDAP_VERSION)/etc/openldap/config/cn=config
-	cp $(SERVICE_DIR)/build/ldap-config/config/olcDatabase={2}hdb.ldif \
-		$(LDAP_DEST_DIR)/$(LDAP_DIR)-$(LDAP_VERSION)/etc/openldap/config/cn=config
 
 $(LDAP_DEST_DIR)/lib/conf/zimbra-ext.schema: $(LDAP_DEST_DIR)/lib/conf
 	cp -f $(SERVICE_DIR)/conf/ldap/zimbra-ext.schema $(LDAP_DEST_DIR)/lib/conf/zimbra-ext.schema
