@@ -63,6 +63,7 @@ postInstallConfig() {
 			runAsZimbra "zmlocalconfig -f -e ldap_postfix_password=$LDAPPOSTPW"
 			runAsZimbra "zmlocalconfig -f -e ldap_replication_password=$LDAPREPPW"
 			runAsZimbra "zmlocalconfig -f -e ldap_amavis_password=$LDAPAMAVISPW"
+			runAsZimbra "zmlocalconfig -f -e ldap_nginx_password=$LDAPNGINXPW"
 			echo "done"
 		fi
 

@@ -963,6 +963,7 @@ setDefaultsFromExistingConfig() {
   LDAPPOSTPW=${ldap_postfix_password}
   LDAPREPPW=${ldap_replication_password}
   LDAPAMAVISPW=${ldap_amavis_password}
+  LDAPNGINXPW=${ldap_nginx_password}
 
   echo "   HOSTNAME=${zimbra_server_hostname}"
   echo "   LDAPHOST=${ldap_host}"
@@ -977,6 +978,7 @@ setDefaultsFromExistingConfig() {
   echo "   LDAPPOSTPW=${ldap_postfix_password}"
   echo "   LDAPREPPW=${ldap_replication_password}"
   echo "   LDAPAMAVISPW=${ldap_amavis_password}"
+  echo "   LDAPNGINXPW=${ldap_nginx_password}"
 
 }
 
