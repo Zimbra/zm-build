@@ -159,6 +159,14 @@ if ($0 =~ /testMenu/) {
   exit;
 }
 
+if ($newinstall && isInstalled("zimbra-ldap")) {
+  installLdapConfig();
+}
+
+if(isInstalled("zimbra-ldap")) {
+  installLdapSchema();
+}
+
 if (! $newinstall ) {
   # if we're an upgrade, run the upgrader...
   if (($prevVersion ne $curVersion )) {
@@ -901,6 +909,29 @@ sub setLdapDefaults {
   }
 
   progress ( "done.\n" );
+}
+
+sub installLdapConfig {
+  my $config_src="/opt/zimbra/openldap/etc/openldap/config";
+  my $config_dest="/opt/zimbra/data/ldap/config";
+  if (-d "/opt/zimbra/data/ldap/config") {
+    main::progress("Installing LDAP configuration database\n");
+    `mkdir -p $config_dest/cn\=config`;
+    system("cp -f $config_src/cn\=config.ldif $config_dest/cn\=config.ldif");
+    system("cp -f $config_src/cn\=config/cn\=module\{0\}.ldif $config_dest/cn\=config/cn\=module\{0\}.ldif");
+    system("cp -f $config_src/cn\=config/cn\=schema.ldif $config_dest/cn\=config/cn\=schema.ldif");
+    system("cp -f $config_src/cn\=config/olcDatabase\=\{-1\}frontend.ldif $config_dest/cn\=config/olcDatabase\=\{-1\}frontend.ldif");
+    system("cp -f $config_src/cn\=config/olcDatabase\=\{0\}config.ldif $config_dest/cn\=config/olcDatabase\=\{0\}config.ldif");
+    system("cp -f $config_src/cn\=config/olcDatabase\=\{1\}monitor.ldif $config_dest/cn\=config/olcDatabase\=\{1\}monitor.ldif");
+    system("cp -f $config_src/cn\=config/olcDatabase\=\{2\}hdb.ldif $config_dest/cn\=config/olcDatabase\=\{2\}hdb.ldif");
+    `chmod 600 $config_dest/cn\=config.ldif`;
+    `chmod 600 $config_dest/cn\=config/*.ldif`;
+    `chown -R zimbra:zimbra $config_dest`;
+  }
+}
+
+sub installLdapSchema {
+  main::runAsZimbra("/opt/zimbra/libexec/zmldapschema 2>/dev/null");
 }
 
 sub setDefaults {
