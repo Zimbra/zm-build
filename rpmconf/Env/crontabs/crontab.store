@@ -4,6 +4,7 @@
 # Log pruning
 #
 30 2 * * * find /opt/zimbra/mailboxd/logs/ -type f -name \*log\* -mtime +8 -exec rm {} \; > /dev/null 2>&1
+30 2 * * * find /opt/zimbra/logs/ -type f -name stacktrace.\* -mtime +8 -exec rm {} \; > /dev/null 2>&1
 #
 # Table maintenance
 #
