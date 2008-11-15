@@ -79,3 +79,10 @@ if [ -x "/opt/zimbra/bin/zmschedulebackup" ]; then
 	$SU "/opt/zimbra/bin/zmschedulebackup -s > $SAVEDIR/backup.save"
 fi
 
+if [ -x "/opt/zimbra/openldap/sbin/slapcat" ]; then
+	mkdir -p /opt/zimbra/data/ldap
+	chown -R zimbra:zimbra /opt/zimbra/data/ldap
+	$SU "/opt/zimbra/libexec/zmslapcat /opt/zimbra/data/ldap"
+	chown zimbra:zimbra /opt/zimbra/data/ldap/ldap.bak
+	chmod 640 /opt/zimbra/data/ldap/ldap.bak
+fi
