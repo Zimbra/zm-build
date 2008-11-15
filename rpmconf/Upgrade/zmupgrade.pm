@@ -1927,7 +1927,7 @@ sub upgrade500GA {
       #bug 19348
       main::progress("Updating LDAP Locker values\n");
       stopLdap();
-      main::runAsZimbra("/opt/zimbra/sleepycat/bin/db_recover -h /opt/zimbra/openldap-data");
+      main::runAsZimbra("/opt/zimbra/bdb/bin/db_recover -h /opt/zimbra/openldap-data");
       Migrate::log("Executing ${scriptDir}/migrate20071206-UpdateDBCONFIG.pl");
       main::runAsZimbra("perl -I${scriptDir} ${scriptDir}/migrate20071206-UpdateDBCONFIG.pl");
       startLdap();
@@ -3027,7 +3027,7 @@ sub migrateTomcatLCKey {
 sub indexLdap {
 	if (main::isInstalled ("zimbra-ldap")) {
 		stopLdap();
-		main::runAsZimbra("/opt/zimbra/sleepycat/bin/db_recover -h /opt/zimbra/data/ldap/hdb/db");
+		main::runAsZimbra("/opt/zimbra/bdb/bin/db_recover -h /opt/zimbra/data/ldap/hdb/db");
 		main::runAsZimbra ("/opt/zimbra/openldap/sbin/slapindex -b '' -q -F /opt/zimbra/data/ldap/config");
 		if (startLdap()) {return 1;}
 	}
@@ -3057,7 +3057,7 @@ sub migrateLdap($) {
 				`chmod 640 /opt/zimbra/data/ldap/ldap.bak`;
 			} else {
 	                        stopLdap();
-	                        main::runAsZimbra("/opt/zimbra/sleepycat/bin/db_recover -h /opt/zimbra/data/ldap/hdb/db");
+	                        main::runAsZimbra("/opt/zimbra/bdb/bin/db_recover -h /opt/zimbra/data/ldap/hdb/db");
 				main::runAsZimbra("/opt/zimbra/openldap/sbin/slapindex -b '' -F /opt/zimbra/data/ldap/config");
 			}
 			main::configLog("LdapMigrated$migrateVersion");
