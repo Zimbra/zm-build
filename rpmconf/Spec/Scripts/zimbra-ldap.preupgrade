@@ -14,11 +14,19 @@
 # ***** END LICENSE BLOCK *****
 # 
 
+mkdir -p /opt/zimbra/data/ldap
+chown -R zimbra:zimbra /opt/zimbra/data/ldap
+if [ -e /opt/zimbra/sleepycat-4.2.52.6 ]; then
 /opt/zimbra/openldap/sbin/slapcat -f /opt/zimbra/conf/slapd.conf \
 	-b '' -l /opt/zimbra/data/ldap/ldap.bak 2> /dev/null
+else
+/opt/zimbra/openldap/sbin/slapcat -F /opt/zimbra/data/ldap/config \
+	-b '' -l /opt/zimbra/data/ldap/ldap.bak 2> /dev/null
+fi
 if [ $? = 0 ]; then
   echo "ldap backup complete."
 fi
 chmod 640 /opt/zimbra/data/ldap/ldap.bak
+chown zimbra:zimbra /opt/zimbra/data/ldap/ldap.bak
 
 exit 0
