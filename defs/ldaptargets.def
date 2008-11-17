@@ -29,8 +29,6 @@ $(BUILD_ROOT)/zimbra-ldap.Info.plist:
 
 $(BUILD_ROOT)/resources/zimbra-ldap:
 	mkdir -p $@
-	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-ldap.preupgrade $@/preupgrade
-	chmod 755 $@/preupgrade
 	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-ldap.postupgrade $@/postupgrade
 	chmod 755 $@/postupgrade
 	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-ldap.postinstall $@/postinstall
