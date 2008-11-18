@@ -2,7 +2,7 @@
 # __LDAP
 
 ldap: CUR_DEST_ROOT := $(LDAP_DEST_ROOT)
-ldap: CUR_PACKAGE_SPEC := $(BUILD_ROOT)/zimbraldap.spec
+ldap: CUR_PACKAGE_SPEC := $(BUILD_ROOT)/zimbra-ldap.spec
 ldap: CUR_PACKAGE_NAME := zimbra-ldap
 ldap: $(PACKAGE_DIR) ldap_stage ldap_pkg_spec_$(PACKAGE_EXT)
 	(cd $(CUR_DEST_ROOT); \
@@ -38,35 +38,35 @@ ldap_pkg_spec_deb: $(LDAP_DEST_ROOT)/DEBIAN/control
 
 $(LDAP_DEST_ROOT)/DEBIAN: force
 	mkdir -p $@
-	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbraldap.pre $@/preinst
-	cat $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbraldap.post >> $@/postinst
+	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-ldap.pre $@/preinst
+	cat $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-ldap.post >> $@/postinst
 	chmod 555 $@/*
 
 $(LDAP_DEST_ROOT)/DEBIAN/control: $(LDAP_DEST_ROOT)/DEBIAN force
-	cat $(PACKAGE_CONF_DIR)/Spec/zimbraldap.deb | \
+	cat $(PACKAGE_CONF_DIR)/Spec/zimbra-ldap.deb | \
 	sed -e 's/@@VERSION@@/$(VERSION_TAG)/' \
 	-e 's/@@RELEASE@@/$(RELEASE)/' \
 	-e 's/@@ARCH@@/$(ARCH)/' > $@
 
-ldap_pkg_spec_rpm: $(BUILD_ROOT)/zimbraldap.spec
+ldap_pkg_spec_rpm: $(BUILD_ROOT)/zimbra-ldap.spec
 
-$(BUILD_ROOT)/zimbraldap.spec:
-	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbraldap.pre $(BUILD_ROOT)
-	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbraldap.post $(BUILD_ROOT)
-	cat $(PACKAGE_CONF_DIR)/Spec/zimbraldap.spec | \
+$(BUILD_ROOT)/zimbra-ldap.spec:
+	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-ldap.pre $(BUILD_ROOT)
+	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-ldap.post $(BUILD_ROOT)
+	cat $(PACKAGE_CONF_DIR)/Spec/zimbra-ldap.spec | \
 		sed -e 's/@@VERSION@@/$(VERSION_TAG)/' \
 		-e 's/@@RELEASE@@/$(RELEASE)/' \
 		-e 's/^Copyright:/$(RPMCOPYRIGHTSTR):/' \
-		-e '/^%pre$$/ r zimbraldap.pre' \
-		-e '/^%post$$/ r zimbraldap.post' > $(BUILD_ROOT)/zimbraldap.spec
-	rm -f zimbraldap.pre
-	rm -f zimbraldap.post
+		-e '/^%pre$$/ r zimbra-ldap.pre' \
+		-e '/^%post$$/ r zimbra-ldap.post' > $(BUILD_ROOT)/zimbra-ldap.spec
+	rm -f zimbra-ldap.pre
+	rm -f zimbra-ldap.post
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/lib" >> \
-		$(BUILD_ROOT)/zimbraldap.spec
+		$(BUILD_ROOT)/zimbra-ldap.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/libtool-$(LIBTOOL_VERSION)" >> \
-		$(BUILD_ROOT)/zimbraldap.spec
+		$(BUILD_ROOT)/zimbra-ldap.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/openldap-$(LDAP_VERSION)" >> \
-		$(BUILD_ROOT)/zimbraldap.spec
+		$(BUILD_ROOT)/zimbra-ldap.spec
 
 ldap_stage: $(LDAP_COMPONENTS)
 

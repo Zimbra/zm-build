@@ -2,7 +2,7 @@
 # __PROXY
 
 proxy: CUR_DEST_ROOT := $(PROXY_DEST_ROOT)
-proxy: CUR_PACKAGE_SPEC := $(BUILD_ROOT)/zimbraproxy.spec
+proxy: CUR_PACKAGE_SPEC := $(BUILD_ROOT)/zimbra-proxy.spec
 proxy: CUR_PACKAGE_NAME := zimbra-proxy
 proxy: $(PACKAGE_DIR) proxy_stage proxy_pkg_spec_$(PACKAGE_EXT)
 	(cd $(CUR_DEST_ROOT); \
@@ -37,35 +37,35 @@ proxy_pkg_spec_deb: $(PROXY_DEST_ROOT)/DEBIAN/control
 
 $(PROXY_DEST_ROOT)/DEBIAN: force
 	mkdir -p $@
-	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbraproxy.pre $@/preinst
-	cat $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbraproxy.post >> $@/postinst
+	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-proxy.pre $@/preinst
+	cat $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-proxy.post >> $@/postinst
 	chmod 555 $@/*
 
 $(PROXY_DEST_ROOT)/DEBIAN/control: $(PROXY_DEST_ROOT)/DEBIAN force
-	cat $(PACKAGE_CONF_DIR)/Spec/zimbraproxy.deb | \
+	cat $(PACKAGE_CONF_DIR)/Spec/zimbra-proxy.deb | \
 	sed -e 's/@@VERSION@@/$(VERSION_TAG)/' \
 	-e 's/@@RELEASE@@/$(RELEASE)/' \
 	-e 's/@@ARCH@@/$(ARCH)/' > $@
 
 proxy_pkg_spec_ccs:
 
-proxy_pkg_spec_rpm: $(BUILD_ROOT)/zimbraproxy.spec
+proxy_pkg_spec_rpm: $(BUILD_ROOT)/zimbra-proxy.spec
 
-$(BUILD_ROOT)/zimbraproxy.spec:
-	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbraproxy.pre $(BUILD_ROOT)
-	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbraproxy.post $(BUILD_ROOT)
-	cat $(PACKAGE_CONF_DIR)/Spec/zimbraproxy.spec | \
+$(BUILD_ROOT)/zimbra-proxy.spec:
+	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-proxy.pre $(BUILD_ROOT)
+	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-proxy.post $(BUILD_ROOT)
+	cat $(PACKAGE_CONF_DIR)/Spec/zimbra-proxy.spec | \
 		sed -e 's/@@VERSION@@/$(VERSION_TAG)/' \
 		-e 's/@@RELEASE@@/$(RELEASE)/' \
 		-e 's/^Copyright:/$(RPMCOPYRIGHTSTR):/' \
-		-e '/^%pre$$/ r zimbraproxy.pre' \
-		-e '/^%post$$/ r zimbraproxy.post' > $(BUILD_ROOT)/zimbraproxy.spec
-	rm -f zimbraproxy.pre
-	rm -f zimbraproxy.post
+		-e '/^%pre$$/ r zimbra-proxy.pre' \
+		-e '/^%post$$/ r zimbra-proxy.post' > $(BUILD_ROOT)/zimbra-proxy.spec
+	rm -f zimbra-proxy.pre
+	rm -f zimbra-proxy.post
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/nginx-$(NGINX_VERSION)" >> \
-		$(BUILD_ROOT)/zimbraproxy.spec
+		$(BUILD_ROOT)/zimbra-proxy.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/memcached-$(MEMCACHED_VERSION)" >> \
-		$(BUILD_ROOT)/zimbraproxy.spec
+		$(BUILD_ROOT)/zimbra-proxy.spec
 
 proxy_stage: $(PROXY_COMPONENTS)
 

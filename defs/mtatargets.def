@@ -2,7 +2,7 @@
 # __MTA
 
 mta: CUR_DEST_ROOT := $(MTA_DEST_ROOT)
-mta: CUR_PACKAGE_SPEC := $(BUILD_ROOT)/zimbramta.spec
+mta: CUR_PACKAGE_SPEC := $(BUILD_ROOT)/zimbra-mta.spec
 mta: CUR_PACKAGE_NAME := zimbra-mta
 mta: $(PACKAGE_DIR) mta_stage mta_pkg_spec_$(PACKAGE_EXT)
 	(cd $(CUR_DEST_ROOT); \
@@ -38,57 +38,57 @@ mta_pkg_spec_deb: $(MTA_DEST_ROOT)/DEBIAN/control
 
 $(MTA_DEST_ROOT)/DEBIAN: force
 	mkdir -p $@
-	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbramta.pre $@/preinst
-	cat $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbramta.post >> $@/postinst
+	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-mta.pre $@/preinst
+	cat $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-mta.post >> $@/postinst
 	chmod 555 $@/*
 
 $(MTA_DEST_ROOT)/DEBIAN/control: $(MTA_DEST_ROOT)/DEBIAN force
-	cat $(PACKAGE_CONF_DIR)/Spec/zimbramta.deb | \
+	cat $(PACKAGE_CONF_DIR)/Spec/zimbra-mta.deb | \
 	sed -e 's/@@VERSION@@/$(VERSION_TAG)/' \
 	-e 's/@@RELEASE@@/$(RELEASE)/' \
 	-e 's/@@ARCH@@/$(ARCH)/' \
 	-e 's/^Copyright:/$(RPMCOPYRIGHTSTR):/' \
-	-e '/^%pre$$/ r zimbramta.pre' \
-	-e '/^%post$$/ r zimbramta.post' > $@
+	-e '/^%pre$$/ r zimbra-mta.pre' \
+	-e '/^%post$$/ r zimbra-mta.post' > $@
 
-mta_pkg_spec_rpm: $(BUILD_ROOT)/zimbramta.spec
+mta_pkg_spec_rpm: $(BUILD_ROOT)/zimbra-mta.spec
 
-$(BUILD_ROOT)/zimbramta.spec:
-	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbramta.pre $(BUILD_ROOT)
-	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbramta.post $(BUILD_ROOT)
-	cat $(PACKAGE_CONF_DIR)/Spec/zimbramta.spec | \
+$(BUILD_ROOT)/zimbra-mta.spec:
+	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-mta.pre $(BUILD_ROOT)
+	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-mta.post $(BUILD_ROOT)
+	cat $(PACKAGE_CONF_DIR)/Spec/zimbra-mta.spec | \
 		sed -e 's/@@VERSION@@/$(VERSION_TAG)/' \
 		-e 's/@@RELEASE@@/$(RELEASE)/' \
 		-e 's/^Copyright:/$(RPMCOPYRIGHTSTR):/' \
-		-e '/^%pre$$/ r zimbramta.pre' \
-		-e '/^%post$$/ r zimbramta.post' > $(BUILD_ROOT)/zimbramta.spec
-	rm -f zimbramta.pre
-	rm -f zimbramta.post
+		-e '/^%pre$$/ r zimbra-mta.pre' \
+		-e '/^%post$$/ r zimbra-mta.post' > $(BUILD_ROOT)/zimbra-mta.spec
+	rm -f zimbra-mta.pre
+	rm -f zimbra-mta.post
 	(cd $(MTA_DEST_ROOT); find opt -type f -o -type l -maxdepth 2 \
 		| sed -e 's|^|%attr(-, zimbra, zimbra) /|' >> \
-		$(BUILD_ROOT)/zimbramta.spec )
+		$(BUILD_ROOT)/zimbra-mta.spec )
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/amavisd-new-$(AMAVISD_VERSION)" >> \
-		$(BUILD_ROOT)/zimbramta.spec
+		$(BUILD_ROOT)/zimbra-mta.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/dspam-$(DSPAM_VERSION)" >> \
-		$(BUILD_ROOT)/zimbramta.spec
+		$(BUILD_ROOT)/zimbra-mta.spec
 	echo "%attr(555, zimbra, zimbra) /opt/zimbra/clamav-$(CLAMAV_VERSION)/bin" >> \
-		$(BUILD_ROOT)/zimbramta.spec
+		$(BUILD_ROOT)/zimbra-mta.spec
 	echo "%attr(755, zimbra, zimbra) /opt/zimbra/clamav-$(CLAMAV_VERSION)/db" >> \
-		$(BUILD_ROOT)/zimbramta.spec
+		$(BUILD_ROOT)/zimbra-mta.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/clamav-$(CLAMAV_VERSION)/etc/" >> \
-		$(BUILD_ROOT)/zimbramta.spec
+		$(BUILD_ROOT)/zimbra-mta.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/clamav-$(CLAMAV_VERSION)/include" >> \
-		$(BUILD_ROOT)/zimbramta.spec
+		$(BUILD_ROOT)/zimbra-mta.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/clamav-$(CLAMAV_VERSION)/lib" >> \
-		$(BUILD_ROOT)/zimbramta.spec
+		$(BUILD_ROOT)/zimbra-mta.spec
 	echo "%attr(555, zimbra, zimbra) /opt/zimbra/clamav-$(CLAMAV_VERSION)/sbin" >> \
-		$(BUILD_ROOT)/zimbramta.spec
+		$(BUILD_ROOT)/zimbra-mta.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/clamav-$(CLAMAV_VERSION)/share" >> \
-		$(BUILD_ROOT)/zimbramta.spec
+		$(BUILD_ROOT)/zimbra-mta.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/clamav-$(CLAMAV_VERSION)/man" >> \
-		$(BUILD_ROOT)/zimbramta.spec
+		$(BUILD_ROOT)/zimbra-mta.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/postfix-$(POSTFIX_VERSION)" >> \
-		$(BUILD_ROOT)/zimbramta.spec
+		$(BUILD_ROOT)/zimbra-mta.spec
 
 mta_stage: $(MTA_COMPONENTS)
 

@@ -1,7 +1,7 @@
 # __CORE
 
 core: CUR_DEST_ROOT := $(CORE_DEST_ROOT)
-core: CUR_PACKAGE_SPEC := $(BUILD_ROOT)/zimbracore.spec
+core: CUR_PACKAGE_SPEC := $(BUILD_ROOT)/zimbra-core.spec
 core: CUR_PACKAGE_NAME := zimbra-core
 core: $(PACKAGE_DIR) core_stage core_pkg_spec_$(PACKAGE_EXT)
 	(cd $(CUR_DEST_ROOT); \
@@ -48,70 +48,70 @@ core_pkg_spec_deb: $(CORE_DEST_ROOT)/DEBIAN/control
 
 $(CORE_DEST_ROOT)/DEBIAN: force
 	mkdir -p $@
-	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbracore.pre $@/preinst
-	cat $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbracore.post >> $@/postinst
+	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-core.pre $@/preinst
+	cat $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-core.post >> $@/postinst
 	chmod 555 $@/*
 
 $(CORE_DEST_ROOT)/DEBIAN/control: $(CORE_DEST_ROOT)/DEBIAN force
-	cat $(PACKAGE_CONF_DIR)/Spec/zimbracore.deb | \
+	cat $(PACKAGE_CONF_DIR)/Spec/zimbra-core.deb | \
 		sed -e 's/@@VERSION@@/$(VERSION_TAG)/' \
 		-e 's/@@RELEASE@@/$(RELEASE)/' \
 		-e 's/@@ARCH@@/$(ARCH)/' \
 		-e 's/^Copyright:/$(RPMCOPYRIGHTSTR):/' \
-		-e '/^%pre$$/ r zimbracore.pre' \
-		-e '/^%post$$/ r zimbracore.post' > $@
+		-e '/^%pre$$/ r zimbra-core.pre' \
+		-e '/^%post$$/ r zimbra-core.post' > $@
 
-core_pkg_spec_rpm: $(BUILD_ROOT)/zimbracore.spec
+core_pkg_spec_rpm: $(BUILD_ROOT)/zimbra-core.spec
 
-$(BUILD_ROOT)/zimbracore.spec:
-	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbracore.pre $(BUILD_ROOT)
-	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbracore.post $(BUILD_ROOT)
-	cat $(PACKAGE_CONF_DIR)/Spec/zimbracore.spec | \
+$(BUILD_ROOT)/zimbra-core.spec:
+	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-core.pre $(BUILD_ROOT)
+	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-core.post $(BUILD_ROOT)
+	cat $(PACKAGE_CONF_DIR)/Spec/zimbra-core.spec | \
 		sed -e 's/@@VERSION@@/$(VERSION_TAG)/' \
 		-e 's/@@RELEASE@@/$(RELEASE)/' \
 		-e 's/@@COMPAT_LIBSTDC@@/$(COMPAT_LIBSTDC)/' \
 		-e 's/^Copyright:/$(RPMCOPYRIGHTSTR):/' \
-		-e '/^%pre$$/ r zimbracore.pre' \
-		-e '/^%post$$/ r zimbracore.post' > $(BUILD_ROOT)/zimbracore.spec
-	rm -f zimbracore.pre
-	rm -f zimbracore.post
+		-e '/^%pre$$/ r zimbra-core.pre' \
+		-e '/^%post$$/ r zimbra-core.post' > $(BUILD_ROOT)/zimbra-core.spec
+	rm -f zimbra-core.pre
+	rm -f zimbra-core.post
 	(cd $(CORE_DEST_ROOT); find opt -type f -o -type l -maxdepth 2 \
 		| sed -e 's|^|%attr(-, zimbra, zimbra) /|' >> \
-		$(BUILD_ROOT)/zimbracore.spec )
+		$(BUILD_ROOT)/zimbra-core.spec )
 	echo "%attr(755, root, root) /opt/zimbra/bin" >> \
-		$(BUILD_ROOT)/zimbracore.spec
+		$(BUILD_ROOT)/zimbra-core.spec
 	echo "%attr(755, zimbra, zimbra) /opt/zimbra/doc" >> \
-		$(BUILD_ROOT)/zimbracore.spec
+		$(BUILD_ROOT)/zimbra-core.spec
 	echo "%attr(755, root, root) /opt/zimbra/contrib" >> \
-		$(BUILD_ROOT)/zimbracore.spec
+		$(BUILD_ROOT)/zimbra-core.spec
 	echo "%attr(755, root, root) /opt/zimbra/libexec" >> \
-		$(BUILD_ROOT)/zimbracore.spec
+		$(BUILD_ROOT)/zimbra-core.spec
 	echo "%attr(755, root, root) /opt/zimbra/logger" >> \
-		$(BUILD_ROOT)/zimbracore.spec
+		$(BUILD_ROOT)/zimbra-core.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/conf" >> \
-		$(BUILD_ROOT)/zimbracore.spec
+		$(BUILD_ROOT)/zimbra-core.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/db" >> \
-		$(BUILD_ROOT)/zimbracore.spec
+		$(BUILD_ROOT)/zimbra-core.spec
 	echo "%attr(-, root, root) /opt/zimbra/jdk$(JAVA_VERSION)" >> \
-		$(BUILD_ROOT)/zimbracore.spec
+		$(BUILD_ROOT)/zimbra-core.spec
 	echo "%attr(-, root, root) /opt/zimbra/lib" >> \
-		$(BUILD_ROOT)/zimbracore.spec
+		$(BUILD_ROOT)/zimbra-core.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/zimbramon" >> \
-		$(BUILD_ROOT)/zimbracore.spec
+		$(BUILD_ROOT)/zimbra-core.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/bdb-$(BDB_VERSION)" >> \
-		$(BUILD_ROOT)/zimbracore.spec
+		$(BUILD_ROOT)/zimbra-core.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/openssl-$(OPENSSL_VERSION)" >> \
-		$(BUILD_ROOT)/zimbracore.spec
+		$(BUILD_ROOT)/zimbra-core.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/heimdal-$(HEIMDAL_VERSION)" >> \
-		$(BUILD_ROOT)/zimbracore.spec
+		$(BUILD_ROOT)/zimbra-core.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/curl-$(CURL_VERSION)" >> \
-		$(BUILD_ROOT)/zimbracore.spec
+		$(BUILD_ROOT)/zimbra-core.spec
 	echo "%attr(-, root, zimbra) /opt/zimbra/$(SASL_DIR)-$(SASL_VERSION)" >> \
-		$(BUILD_ROOT)/zimbracore.spec
+		$(BUILD_ROOT)/zimbra-core.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/openldap-clibs-$(LDAP_VERSION)" >> \
-		$(BUILD_ROOT)/zimbracore.spec
+		$(BUILD_ROOT)/zimbra-core.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/tcmalloc-$(TCMALLOC_VERSION)" >> \
-		$(BUILD_ROOT)/zimbracore.spec
+		$(BUILD_ROOT)/zimbra-core.spec
 
 core_stage: $(CORE_COMPONENTS)
 
