@@ -61,8 +61,6 @@ $(BUILD_ROOT)/zimbra-ldap.spec:
 		-e '/^%post$$/ r zimbra-ldap.post' > $(BUILD_ROOT)/zimbra-ldap.spec
 	rm -f zimbra-ldap.pre
 	rm -f zimbra-ldap.post
-	echo "%attr(-, zimbra, zimbra) /opt/zimbra/lib" >> \
-		$(BUILD_ROOT)/zimbra-ldap.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/libtool-$(LIBTOOL_VERSION)" >> \
 		$(BUILD_ROOT)/zimbra-ldap.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/openldap-$(LDAP_VERSION)" >> \
