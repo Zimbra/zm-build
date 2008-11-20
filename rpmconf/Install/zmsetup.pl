@@ -980,11 +980,11 @@ sub setDefaults {
   if ($platform =~ /MACOSX/) {
     $config{JAVAHOME} = "/System/Library/Frameworks/JavaVM.framework/Versions/1.5/Home";
     setLocalConfig ("zimbra_java_home", "$config{JAVAHOME}");
-    $config{HOSTNAME} = `hostname`;
+    $config{HOSTNAME} = lc(`hostname`);
   } else {
     $config{JAVAHOME} = "/opt/zimbra/java";
     setLocalConfig ("zimbra_java_home", "$config{JAVAHOME}");
-    $config{HOSTNAME} = `hostname --fqdn`;
+    $config{HOSTNAME} = lc(`hostname --fqdn`);
   }
   chomp $config{HOSTNAME};
 
