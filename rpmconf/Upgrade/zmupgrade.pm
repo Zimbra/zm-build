@@ -2504,6 +2504,8 @@ sub upgrade600B1 {
 	main::progress("Updating from 6.0.0_B1\n");
   if (main::isInstalled("zimbra-ldap") && $isLdapMaster) {
 	  main::runAsZimbra("zmjava com.zimbra.cs.account.ldap.upgrade.LdapUpgrade -b 32557 -v");
+
+    # 33359
     my $rc;
     my $zimbraDefaultDomainName = main::getLdapConfigValue("zimbraDefaultDomainName");
     my @mbs = main::getAllServers("mailbox");
@@ -2515,6 +2517,17 @@ sub upgrade600B1 {
         main::progress("Initializing default IM conference room...");
         $rc = main::runAsZimbra("$ZMPROV cxc conference ${zimbraDefaultDomainName} $mbs[0] org.jivesoftware.wildfire.muc.spi.MultiUserChatServerImpl conference text");
         main::progress (($rc == 0) ? "done.\n" : "failed.\n");
+      }
+    }
+
+	  my @coses = `$su "$ZMPROV gac"`;
+    my %attrs = ( zimbraContactAutoCompleteEmailFields => "email,email2,email3",
+                  zimbraContactAutoCompleteFolderIds   => "0,7",
+                  zimbraContactRankingTableSize        => "40");
+	  foreach my $cos (@coses) {
+		  chomp $cos;
+      foreach my $attr (keys %attrs) {
+        main::runAsZimbra("$ZMPROV mc $cos $attr \'$attrs{$attr}\'");
       }
     }
   }
