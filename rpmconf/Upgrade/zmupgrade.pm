@@ -2505,6 +2505,11 @@ sub upgrade600B1 {
   if (main::isInstalled("zimbra-ldap") && $isLdapMaster) {
 	  main::runAsZimbra("zmjava com.zimbra.cs.account.ldap.upgrade.LdapUpgrade -b 32557 -v");
 
+    #33405
+    main::runAsZimbra("$ZMPROV mcf +zimbraReverseProxyImapEnabledCapability ESORT");
+    main::runAsZimbra("$ZMPROV mcf +zimbraReverseProxyImapEnabledCapability 'I18NLEVEL=1'");
+    main::runAsZimbra("$ZMPROV mcf +zimbraReverseProxyImapEnabledCapability SORT");
+    main::runAsZimbra("$ZMPROV mcf +zimbraReverseProxyImapEnabledCapability 'THREAD=ORDEREDSUBJECT'");
     # 33359
     my $rc;
     my $zimbraDefaultDomainName = main::getLdapConfigValue("zimbraDefaultDomainName");
