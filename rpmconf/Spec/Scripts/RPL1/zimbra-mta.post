@@ -42,8 +42,8 @@ mv -f /tmp/sudoers /etc/sudoers
 echo "%zimbra   ALL=NOPASSWD:/opt/zimbra/libexec/zmqstat,/opt/zimbra/libexec/zmmtastatus" >> /etc/sudoers
 chmod $SUDOMODE /etc/sudoers
 
-chown postfix /opt/zimbra/postfix/conf/master.cf
-chmod 644 /opt/zimbra/postfix/conf/master.cf
+chown zimbra:zimbra /opt/zimbra/postfix/conf/master.cf.in
+chmod 440 /opt/zimbra/postfix/conf/master.cf.in
 
 if [ ! -d /opt/zimbra/zimbramon/mrtg/work/ ]; then
 	mkdir -p /opt/zimbra/zimbramon/mrtg/work/
