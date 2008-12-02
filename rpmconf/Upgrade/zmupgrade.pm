@@ -2528,6 +2528,7 @@ sub upgrade600B1 {
 	  my @coses = `$su "$ZMPROV gac"`;
     my %attrs = ( zimbraContactAutoCompleteEmailFields => "email,email2,email3",
                   zimbraContactAutoCompleteFolderIds   => "0,7",
+                  zimbraMailPurgeUseChangeDateForTrash => "TRUE",
                   zimbraContactRankingTableSize        => "40");
 	  foreach my $cos (@coses) {
 		  chomp $cos;
