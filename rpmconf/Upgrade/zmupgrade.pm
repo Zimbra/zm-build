@@ -2488,6 +2488,35 @@ sub upgrade5011GA {
 sub upgrade5012GA {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
 	main::progress("Updating from 5.0.12_GA\n");
+  if (main::isInstalled("zimbra-ldap") && $isLdapMaster) {
+    my $ldap_pass = `$su "zmlocalconfig -s -m nokey zimbra_ldap_password"`;
+    my $ldap_master_url = `$su "zmlocalconfig -s -m nokey ldap_master_url"`;
+    my $start_tls_supported = `$su "zmlocalconfig -s -m nokey ldap_starttls_supported"`;
+    my $ldap; 
+    chomp($ldap_master_url);
+    chomp($ldap_pass);
+    chomp($start_tls_supported);
+    unless($ldap = Net::LDAP->new($ldap_master_url)) {
+      main::progress("Unable to contact $ldap_master_url: $!\n");
+      return 1;
+    }
+    if ($start_tls_supported) {
+      my $result = $ldap->start_tls(verify=>'none');
+      if ($result->code()) {
+        main::progress("Unable to startTLS: $!\n");
+        return 1;
+      }
+    }
+    my $result = $ldap->bind("uid=zimbra,cn=admins,cn=zimbra", password => $ldap_pass);
+    unless($result->code()) {
+        $result = $ldap->modify( "uid=zimbra,cn=admins,cn=zimbra", add => { 'zimbraIsSystemResource' => 'TRUE'});
+        $result = $ldap->modify( "uid=zmreplica,cn=admins,cn=zimbra", add => { 'zimbraIsSystemResource' => 'TRUE'});
+        $result = $ldap->modify( "uid=zmnginx,cn=appaccts,cn=zimbra", add => { 'zimbraIsSystemResource' => 'TRUE'});
+        $result = $ldap->modify( "uid=zmpostfix,cn=appaccts,cn=zimbra", add => { 'zimbraIsSystemResource' => 'TRUE'});
+        $result = $ldap->modify( "uid=zmamavis,cn=appaccts,cn=zimbra", add => { 'zimbraIsSystemResource' => 'TRUE'});
+    }
+    $result = $ldap->unbind;
+  }
 	return 0;
 }
 
