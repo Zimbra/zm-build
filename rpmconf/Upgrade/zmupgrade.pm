@@ -1496,7 +1496,7 @@ sub upgrade460GA {
 }
 sub upgrade461RC1 {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
-	main::progress("Updating from 4.6.0_RC1\n");
+	main::progress("Updating from 4.6.1_RC1\n");
 	return 0;
 }
 
@@ -2415,6 +2415,13 @@ sub upgrade5010GA {
     #bug 31177
     upgradeLocalConfigValue("zmmtaconfig_enable_config_restarts", "true", "");
 
+  if (main::isInstalled("zimbra-store")) {
+    updateMySQLcnf();
+    my $conns=main::getLocalConfig("zimbra_mysql_connector_maxActive");
+    upgradeLocalConfigValue("zimbra_mysql_connector_maxActive", "100", "$conns")
+      if ($conns < 100);
+  }
+
   if (main::isInstalled("zimbra-ldap") && $isLdapMaster) {
 	  main::runAsZimbra("$ZMPROV mcf zimbraReverseProxyIpThrottleMsg 'Login rejected from this IP'");
 	  main::runAsZimbra("$ZMPROV mcf zimbraReverseProxyUserThrottleMsg 'Login rejected for this user'");
@@ -2445,6 +2452,9 @@ sub upgrade5010GA {
 	  main::runAsZimbra("$ZMPROV mcf +zimbraReverseProxyImapEnabledCapability UIDPLUS");
 	  main::runAsZimbra("$ZMPROV mcf +zimbraReverseProxyImapEnabledCapability UNSELECT");
 	  main::runAsZimbra("$ZMPROV mcf +zimbraReverseProxyImapEnabledCapability WITHIN");
+	  upgradeLdapConfigValue("zimbraReverseProxyImapExposeVersionOnBanner", "FALSE", "");
+	  upgradeLdapConfigValue("zimbraReverseProxyPop3ExposeVersionOnBanner", "FALSE", "");
+	  upgradeLdapConfigValue("zimbraSoapExposeVersion", "FALSE", "");
 	  upgradeLdapConfigValue("zimbraReverseProxyDefaultRealm", "", "EXAMPLE.COM");
 	  upgradeLdapConfigValue("zimbraReverseProxyWorkerConnections", "10240", "");
 	  upgradeLdapConfigValue("zimbraReverseProxyLogLevel", "info", "");
