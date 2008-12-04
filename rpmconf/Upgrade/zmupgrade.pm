@@ -2328,7 +2328,7 @@ sub upgrade507GA {
 	return 0;
 }
 
-sub upgrade508GA{
+sub upgrade508GA {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
 	main::progress("Updating from 5.0.8_GA\n");
 	return 0;
@@ -2399,7 +2399,7 @@ sub upgrade5010GA {
   if (main::isInstalled("zimbra-store")) {
     updateMySQLcnf();
     my $conns=main::getLocalConfig("zimbra_mysql_connector_maxActive");
-    upgradeLocalConfigValue("zimbra_mysql_connector_maxActive", "100", "$conns") 
+    upgradeLocalConfigValue("zimbra_mysql_connector_maxActive", "100", "$conns")
       if ($conns < 100);
   }
 
