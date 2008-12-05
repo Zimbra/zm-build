@@ -171,6 +171,10 @@ if (! $newinstall ) {
   # if we're an upgrade, run the upgrader...
   if (($prevVersion ne $curVersion )) {
     progress ("Upgrading from $prevVersion to $curVersion\n");
+    open (H, ">>/opt/zimbra/.install_history");
+    print H time(),": CONFIG SESSION START\n";
+    # This is the postinstall config
+    configLog ("BEGIN");
     if (zmupgrade::upgrade($prevVersion, $curVersion)){
       progress ("UPGRADE FAILED - exiting\n");
       exit 1;
@@ -178,7 +182,6 @@ if (! $newinstall ) {
       progress ("Upgrade complete\n");
     }
   }
-
 }
 
 getInstalledPackages();
@@ -5068,12 +5071,12 @@ sub applyConfig {
   }
   progress ( "Operations logged to $logfile\n" );
 
-  open (H, ">>/opt/zimbra/.install_history");
-
-  print H time(),": CONFIG SESSION START\n";
-  # This is the postinstall config
-
-  configLog ("BEGIN");
+  if ($newinstall) {
+    open (H, ">>/opt/zimbra/.install_history");
+    print H time(),": CONFIG SESSION START\n";
+    # This is the postinstall config
+    configLog ("BEGIN");
+  }
 
   configLCValues();
 
