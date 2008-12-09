@@ -2568,6 +2568,8 @@ sub upgrade600B1 {
     my %attrs = ( zimbraContactAutoCompleteEmailFields => "email,email2,email3",
                   zimbraContactAutoCompleteFolderIds   => "0,7",
                   zimbraMailPurgeUseChangeDateForTrash => "TRUE",
+                  zimbraPrefCalendarAllowPublishMethodInvite => "FALSE",
+                  zimbraPrefCalendarAllowForwardedInvite => "TRUE",
                   zimbraContactRankingTableSize        => "40");
 	  foreach my $cos (@coses) {
 		  chomp $cos;
