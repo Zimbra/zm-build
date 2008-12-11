@@ -533,7 +533,7 @@ checkRequiredSpace() {
 checkExistingInstall() {
 
   echo $PLATFORM | egrep -q "UBUNTU|DEBIAN"
-  if [ $? != 0 ]; then
+  if [ $? = 0 ]; then
     if [ -L /opt -o -L /opt/zimbra ]; then
       echo "Installation cannot continue if either /opt or /opt/zimbra are symbolic links."
       exit 1
