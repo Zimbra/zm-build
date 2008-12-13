@@ -3112,6 +3112,21 @@ sub migrateLdap($) {
 	if (main::isInstalled ("zimbra-ldap")) {
 		if($main::configStatus{"LdapMigrated$migrateVersion"} ne "CONFIGURED") {
 			if (-f "/opt/zimbra/data/ldap/ldap.bak") {
+				my $infile = "/opt/zimbra/data/ldap/ldap.bak";
+				my $outfile = "/opt/zimbra/data/ldap/ldap.60";
+                                if ( -s $infile ) {
+					open(IN,"<$infile");
+					open(OUT,">$outfile");
+					while(<IN>) {
+						if ($_ =~ /^zimbraPrefStandardClientAccessilbityMode:/) {next;}
+						if ($_ =~ /^zimbraHsmGlobalConfig:/) {next;}
+						if ($_ =~ /^zimbraHsmServer:/) {next;}
+						print OUT $_;
+					}
+                                } else {
+					main::progress("Valid backup file not found, exiting.\n");
+					return 1;
+                                }
 				main::progress("Migrating ldap data\n");
 				main::installLdapConfig();
 				if (-d "/opt/zimbra/data/ldap/hdb.prev") {
@@ -3126,7 +3141,7 @@ sub migrateLdap($) {
 					`cp -f /opt/zimbra/openldap/var/openldap-data/DB_CONFIG /opt/zimbra/data/ldap/hdb/db`;
 				}
 				`chown -R zimbra:zimbra /opt/zimbra/data/ldap`;
-				main::runAsZimbra("/opt/zimbra/openldap/sbin/slapadd -b '' -F /opt/zimbra/data/ldap/config -l /opt/zimbra/data/ldap/ldap.bak");
+				main::runAsZimbra("/opt/zimbra/openldap/sbin/slapadd -b '' -F /opt/zimbra/data/ldap/config -l $outfile");
 				`chmod 640 /opt/zimbra/data/ldap/ldap.bak`;
 			} else {
 	                        stopLdap();
@@ -3137,7 +3152,7 @@ sub migrateLdap($) {
 		}
 		if (startLdap()) {return 1;} 
 	}
-  return;
+  return 0;
 }
 
 sub migrateLdapBdbLogs {
