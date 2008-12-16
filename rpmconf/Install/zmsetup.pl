@@ -3641,7 +3641,7 @@ sub checkLdapBind() {
     return 1;
   } else {
     $ldap->unbind;
-    detail ("Verfied ldap running at $ldap_url\n");
+    detail ("Verified ldap running at $ldap_url\n");
     setLocalConfig ("ldap_url", $ldap_url);
     setLocalConfig ("ldap_starttls_supported", $starttls);
     setLocalConfig ("zimbra_require_interprocess_security", $config{zimbra_require_interprocess_security});
