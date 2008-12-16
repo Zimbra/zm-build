@@ -3934,7 +3934,9 @@ sub configSetupLdap {
       setLocalConfig ("ldap_replication_password", "$config{LDAPREPPASS}");
       progress("done.\n");
       progress ( "Enabling ldap replication..." );
-      my $rc = runAsZimbra ("/opt/zimbra/libexec/zmldapenablereplica");
+      runAsZimbra("/opt/zimbra/bdb/bin/db_recover -h /opt/zimbra/data/ldap/hdb/db");
+      my $rc = runAsZimbra ("/opt/zimbra/libexec/zmldapapplyldif");
+      $rc = runAsZimbra ("/opt/zimbra/libexec/zmldapenablereplica");
       if ( ! -f "/opt/zimbra/.enable_replica" ) {
          my $file="/opt/zimbra/.enable_replica";
          open(ER,">>$file");
