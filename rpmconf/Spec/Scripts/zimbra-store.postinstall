@@ -73,12 +73,11 @@ ln -s /opt/zimbra/jetty-6.1.5 /opt/zimbra/jetty
 ln -s /opt/zimbra/jetty-6.1.5 /opt/zimbra/mailboxd
 
 mkdir -p /opt/zimbra/mailboxd/logs
-mkdir -p /opt/zimbra/convertd
 mkdir -p /opt/zimbra/redolog
 mkdir -p /opt/zimbra/store
 mkdir -p /opt/zimbra/index
 mkdir -p /opt/zimbra/backup
-chown zimbra:zimbra /opt/zimbra/convertd /opt/zimbra/redolog /opt/zimbra/store /opt/zimbra/index /opt/zimbra/backup  /opt/zimbra/mailboxd/logs
+chown zimbra:zimbra /opt/zimbra/redolog /opt/zimbra/store /opt/zimbra/index /opt/zimbra/backup  /opt/zimbra/mailboxd/logs
 
 /bin/bash /opt/zimbra/libexec/zmfixperms
 
