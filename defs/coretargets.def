@@ -80,7 +80,7 @@ $(BUILD_ROOT)/zimbracore.spec:
 		$(BUILD_ROOT)/zimbracore.spec )
 	echo "%attr(755, root, root) /opt/zimbra/bin" >> \
 		$(BUILD_ROOT)/zimbracore.spec
-	echo "%attr(755, zimbra, zimbra) /opt/zimbra/doc" >> \
+	echo "%attr(755, zimbra, zimbra) /opt/zimbra/docs" >> \
 		$(BUILD_ROOT)/zimbracore.spec
 	echo "%attr(755, root, root) /opt/zimbra/contrib" >> \
 		$(BUILD_ROOT)/zimbracore.spec
@@ -124,13 +124,13 @@ $(CORE_DEST_DIR):
 	cp $(LDAPRC_SOURCE) $(CORE_DEST_DIR)/$(LDAPRC_DEST)
 	chmod 644 $(CORE_DEST_DIR)/$(VIMINFO_DEST)
 
-$(CORE_DEST_DIR)/doc:
+$(CORE_DEST_DIR)/docs:
 	mkdir -p $@
 	cp $(LICENSE_DIR)/zimbra/zpl-full.txt $@/ZPL.txt
 	cp $(LICENSE_DIR)/zimbra/ypl-full.txt $@/YPL.txt
 	cp $(LICENSE_DIR)/zimbra/zimbra_public_eula_2.1.txt $@/zimbra_public_eula_2.1.txt
-	cp $(SERVICE_DIR)/docs/soap*txt $@
-	cp $(SERVICE_DIR)/docs/rest*txt $@
+	cp $(SERVICE_DIR)/docs/*txt $@
+	cp $(SERVICE_DIR)/docs/*html $@
 
 $(CORE_DEST_DIR)/zimbramon: $(CORE_DEST_DIR)/zimbramon/lib $(CORE_DEST_DIR)/zimbramon/crontabs $(CORE_DEST_DIR) 
 	@echo "*** Creating zimbramon"
