@@ -692,7 +692,9 @@ sub getLdapConfigValue {
   my $rc = 0xffff & system("$SU \"$ZMPROV gcf $attrib 2> /tmp/ld.err 2> /tmp/ld.err | sed -e \\\"s/${attrib}: //\\\" > /tmp/ld.out\"");
   my $val=`cat /tmp/ld.out`;
   chomp($val);
-  detail ("Global config attribute retrieved from ldap: $attrib=$val");
+  foreach my $v (split(/\n/, $val)) {
+    detail ("Global config attribute retrieved from ldap: $attrib=$v");
+  }
   $main::loaded{gcf}{$attrib} = $val;
 
   if (!-z "/tmp/ld.err") {
@@ -4451,8 +4453,12 @@ sub configSetNEFeatures {
 
 sub configInitBackupPrefs {
   if (isEnabled("zimbra-store") && isNetwork()) {
-    runAsZimbra("$ZMPROV mcf zimbraBackupReportEmailRecipients $config{zimbraBackupReportEmailRecipients}");
-    runAsZimbra("$ZMPROV mcf zimbraBackupReportEmailSender $config{zimbraBackupReportEmailSender}");
+    foreach my $recip (split(/\n/, $config{zimbraBackupReportEmailRecipients})) {
+      runAsZimbra("$ZMPROV mcf +zimbraBackupReportEmailRecipients $recip");
+    }
+    foreach my $sender (split(/\n/, $config{zimbraBackupReportEmailSender})) {
+      runAsZimbra("$ZMPROV mcf +zimbraBackupReportEmailSender $sender");
+    }
   }
 }
 
