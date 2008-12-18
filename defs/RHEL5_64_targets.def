@@ -15,7 +15,7 @@ $(BUILD_ROOT)/zimbracore.spec:
 		$(BUILD_ROOT)/zimbracore.spec )
 	echo "%attr(755, root, root) /opt/zimbra/bin" >> \
 		$(BUILD_ROOT)/zimbracore.spec
-	echo "%attr(755, zimbra, zimbra) /opt/zimbra/doc" >> \
+	echo "%attr(755, zimbra, zimbra) /opt/zimbra/docs" >> \
 		$(BUILD_ROOT)/zimbracore.spec
 	echo "%attr(755, root, root) /opt/zimbra/contrib" >> \
 		$(BUILD_ROOT)/zimbracore.spec
