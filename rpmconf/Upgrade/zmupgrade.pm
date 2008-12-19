@@ -2491,6 +2491,8 @@ sub upgrade5012GA {
   if (main::isInstalled("zimbra-ldap") && $isLdapMaster) {
     # 31353
 	  upgradeLdapConfigValue("zimbraAdminConsoleLDAPAuthEnabled", "FALSE", "");
+    # 31557
+	  upgradeLdapConfigValue("zimbraReverseProxyRouteLookupTimeoutCache", "60s", "");
 
     my $ldap_pass = `$su "zmlocalconfig -s -m nokey zimbra_ldap_password"`;
     my $ldap_master_url = `$su "zmlocalconfig -s -m nokey ldap_master_url"`;
