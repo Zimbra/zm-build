@@ -2507,6 +2507,9 @@ sub upgrade5012GA {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
 	main::progress("Updating from 5.0.12_GA\n");
   if (main::isInstalled("zimbra-ldap") && $isLdapMaster) {
+    # 31353
+	  upgradeLdapConfigValue("zimbraAdminConsoleLDAPAuthEnabled", "FALSE", "");
+
     my $ldap_pass = `$su "zmlocalconfig -s -m nokey zimbra_ldap_password"`;
     my $ldap_master_url = `$su "zmlocalconfig -s -m nokey ldap_master_url"`;
     my $start_tls_supported = `$su "zmlocalconfig -s -m nokey ldap_starttls_supported"`;
