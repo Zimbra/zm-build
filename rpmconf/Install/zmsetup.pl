@@ -5265,7 +5265,7 @@ sub setupCrontab {
   progress ("Setting up zimbra crontab...");
   if ( -x "/opt/zimbra/bin/zmschedulebackup") {
     detail("Getting current backup schedule in restorable format.");
-    @backupSchedule = (`$SU "zmschedulebackup -s" 2> /dev/null`);
+    @backupSchedule = (`$SU "zmschedulebackup -s" 2> $logfile`);
     for (my $i=0;$i<=$#backupSchedule;$i++) {
       $backupSchedule[$i] =~ s/"/\\"/g;
     }
@@ -5275,59 +5275,72 @@ sub setupCrontab {
       detail("Retrieved backup schedule:\n @backupSchedule");
     }
   }
+  detail("crontab: Taking a copy of zimbra user crontab file.");
   if ($platform =~ /SUSE/i) {
     `cp -f /var/spool/cron/tabs/zimbra /tmp/crontab.zimbra.orig`;
   } else {
     `crontab -u zimbra -l > /tmp/crontab.zimbra.orig 2> /dev/null`;
   }
+  detail("crontab: Looking for ZIMBRASTART in existing crontab entry.");
   my $rc = 0xffff & system("grep ZIMBRASTART /tmp/crontab.zimbra.orig > /dev/null 2>&1");
   if ($rc) {
-    `cat /dev/null > /tmp/crontab.zimbra.orig`;
+    detail("crontab: ZIMBRASTART not found truncating zimbra crontab and starting fresh.");
+    `cp -f /dev/null /tmp/crontab.zimbra.orig 2>> $logfile`;
   }
+  detail("crontab: Looking for ZIMBRAEND in existing crontab entry.");
   $rc = 0xffff & system("grep ZIMBRAEND /tmp/crontab.zimbra.orig > /dev/null 2>&1");
   if ($rc) {
-    `cat /dev/null > /tmp/crontab.zimbra.orig`;
+    detail("crontab: ZIMBRAEND not found truncating zimbra crontab and starting fresh.");
+    `cp -f /dev/null /tmp/crontab.zimbra.orig`;
   }
+  detail("crontab: Getting existing backup and custom entries from crontab file.");
   `cat /tmp/crontab.zimbra.orig | sed -e '/# ZIMBRASTART/,/# ZIMBRAEND/d' > /tmp/crontab.zimbra.proc`;
+  detail("crontab: Adding zimbra-core specific crontab entries");
   `cp -f /opt/zimbra/zimbramon/crontabs/crontab /tmp/crontab.zimbra`;
 
   if (isEnabled("zimbra-ldap")) {
-    detail("Crontab: Adding zimbra-ldap specific crontab entries");
-    `cat /opt/zimbra/zimbramon/crontabs/crontab.ldap >> /tmp/crontab.zimbra`;
+    detail("crontab: Adding zimbra-ldap specific crontab entries");
+    `cat /opt/zimbra/zimbramon/crontabs/crontab.ldap >> /tmp/crontab.zimbra 2>> $logfile`;
   }
 
   if (isEnabled("zimbra-store")) {
-    detail("Crontab: Adding zimbra-store specific crontab entries");
-    `cat /opt/zimbra/zimbramon/crontabs/crontab.store >> /tmp/crontab.zimbra`;
+    detail("crontab: Adding zimbra-store specific crontab entries");
+    `cat /opt/zimbra/zimbramon/crontabs/crontab.store >> /tmp/crontab.zimbra 2>> $logfile`;
   }
 
   if (isEnabled("zimbra-logger")) {
-    detail("Crontab: Adding zimbra-logger specific crontab entries");
-    `cat /opt/zimbra/zimbramon/crontabs/crontab.logger >> /tmp/crontab.zimbra`;
+    detail("crontab: Adding zimbra-logger specific crontab entries");
+    `cat /opt/zimbra/zimbramon/crontabs/crontab.logger >> /tmp/crontab.zimbra 2>> $logfile`;
   }
 
   if (isEnabled("zimbra-mta")) {
-    detail("Crontab: Adding zimbra-mta specific crontab entries");
-    `cat /opt/zimbra/zimbramon/crontabs/crontab.mta >> /tmp/crontab.zimbra`;
+    detail("crontab: Adding zimbra-mta specific crontab entries");
+    `cat /opt/zimbra/zimbramon/crontabs/crontab.mta >> /tmp/crontab.zimbra 2>> $logfile`;
   }
 
+  detail("crontab: adding backup block");
   `echo "# ZIMBRAEND -- DO NOT EDIT ANYTHING BETWEEN THIS LINE AND ZIMBRASTART" >> /tmp/crontab.zimbra`;
+  detail("crontab: Adding backup and custom entries to crontab.");
   `cat /tmp/crontab.zimbra.proc >> /tmp/crontab.zimbra`;
   detail("crontab: installing new crontab");
   `crontab -u zimbra /tmp/crontab.zimbra 2> /dev/null`;
   if ( -x "/opt/zimbra/bin/zmschedulebackup" && scalar @backupSchedule > 0) {
-    detail("Restoring previous backup schedule.");
+    detail("crontab: Restoring previous backup schedule.");
     for (my $i=0;$i<=$#backupSchedule;$i++) {
       chomp($backupSchedule[$i]);
       if ($i == 0) {
-        `$SU "/opt/zimbra/bin/zmschedulebackup -R $backupSchedule[$i]"`;
+        detail("crontab: $SU \"/opt/zimbra/bin/zmschedulebackup -R $backupSchedule[$i]\"");
+        runAsZimbra("/opt/zimbra/bin/zmschedulebackup -R $backupSchedule[$i]");
+        #`$SU "/opt/zimbra/bin/zmschedulebackup -R $backupSchedule[$i]" >> $logfile 2>&1`;
       } else {
-        `$SU "/opt/zimbra/bin/zmschedulebackup -A $backupSchedule[$i]"`;
+        detail("crontab: $SU \"/opt/zimbra/bin/zmschedulebackup -A $backupSchedule[$i]\"");
+        runAsZimbra("/opt/zimbra/bin/zmschedulebackup -A $backupSchedule[$i]");
+        #`$SU "/opt/zimbra/bin/zmschedulebackup -A $backupSchedule[$i]" >> $logfile 2>&1`;
       }
     }
   } elsif ( -f "/opt/zimbra/bin/zmschedulebackup" && scalar @backupSchedule == 0 && !$newinstall) {
-    detail("No backup schedule found: installing default schedule.");
-    `$SU "/opt/zimbra/bin/zmschedulebackup -D" > /dev/null 2>&1`;
+    detail("crontab: No backup schedule found: installing default schedule.");
+    `$SU "/opt/zimbra/bin/zmschedulebackup -D" >> $logfile 2>&1`;
   }
 
   if (isEnabled("zimbra-cluster")) {
