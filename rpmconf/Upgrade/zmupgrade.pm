@@ -2543,6 +2543,7 @@ sub upgrade600B1 {
 	main::progress("Updating from 6.0.0_B1\n");
   if (main::isInstalled("zimbra-ldap") && $isLdapMaster) {
 	  main::runAsZimbra("zmjava com.zimbra.cs.account.ldap.upgrade.LdapUpgrade -b 32557 -v");
+    upgradeLdapConfigValue("zimbraRedoLogRolloverFileSizeKB", "1048576", "102400");
 
     #33405
     main::runAsZimbra("$ZMPROV mcf +zimbraReverseProxyImapEnabledCapability ESORT");
