@@ -3133,6 +3133,9 @@ sub migrateLdap($) {
 					main::progress("Valid backup file not found, exiting.\n");
 					return 1;
                                 }
+				if ( -s $outfile ) {
+					chmod 0644, $outfile;
+				}
 				main::progress("Migrating ldap data\n");
 				main::installLdapConfig();
 				if (-d "/opt/zimbra/data/ldap/hdb.prev") {
