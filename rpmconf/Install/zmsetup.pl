@@ -3928,6 +3928,8 @@ sub configSetupLdap {
       }
     }
   } elsif (isEnabled("zimbra-ldap")) {
+
+
     # enable replica for both new and upgrade installs if we are adding ldap
     if ($config{LDAPHOST} ne $config{HOSTNAME} ||  -f "/opt/zimbra/.enable_replica") {
       progress("Updating ldap_root_password and zimbra_ldap_password...");
@@ -4024,6 +4026,8 @@ sub configSetupLdap {
       progress("done.\n");
       startLdap();
     }
+
+    
   } else {
     detail("Updating ldap user passwords\n");
     setLocalConfig ("ldap_root_password", $config{LDAPROOTPASS});
@@ -5140,6 +5144,10 @@ sub applyConfig {
 
   if (isEnabled("zimbra-ldap")) {
     configSetTimeZonePref();
+
+    # 32295
+    runAsZimbra("$ZMPROV mcf zimbraSkinLogoURL http://www.zimbra.com")
+      if isFoss();
   }
 
   if (isInstalled("zimbra-proxy")) {
