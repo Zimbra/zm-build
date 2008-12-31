@@ -178,8 +178,8 @@ my %updateFuncs = (
   "5.0.10_GA" => \&upgrade5010GA,
   "5.0.11_GA" => \&upgrade5011GA,
   "5.0.12_GA" => \&upgrade5012GA,
-  "6.0.0_B1" => \&upgrade600B1,
-  "6.0.0_B2" => \&upgrade600B2,
+  "6.0.0_BETA1" => \&upgrade600BETA1,
+  "6.0.0_BETA2" => \&upgrade600BETA2,
   "6.0.0_RC1" => \&upgrade600RC1,
   "6.0.0_RC2" => \&upgrade600RC2,
   "6.0.0_GA" => \&upgrade600GA,
@@ -243,8 +243,8 @@ my @versionOrder = (
   "5.0.10_GA",
   "5.0.11_GA",
   "5.0.12_GA",
-  "6.0.0_B1",
-  "6.0.0_B2",
+  "6.0.0_BETA1",
+  "6.0.0_BETA2",
   "6.0.0_RC1",
   "6.0.0_RC2",
   "6.0.0_GA",
@@ -427,10 +427,10 @@ sub upgrade {
 		main::progress("This appears to be 5.0.11_GA\n");
 	} elsif ($startVersion eq "5.0.12_GA") {
 		main::progress("This appears to be 5.0.12_GA\n");
-	} elsif ($startVersion eq "6.0.0_B1") {
-		main::progress("This appears to be 6.0.0_B1\n");
-	} elsif ($startVersion eq "6.0.0_B2") {
-		main::progress("This appears to be 6.0.0_B2\n");
+	} elsif ($startVersion eq "6.0.0_BETA1") {
+		main::progress("This appears to be 6.0.0_BETA1\n");
+	} elsif ($startVersion eq "6.0.0_BETA2") {
+		main::progress("This appears to be 6.0.0_BETA2\n");
 	} elsif ($startVersion eq "6.0.0_RC1") {
 		main::progress("This appears to be 6.0.0_RC1\n");
 	} elsif ($startVersion eq "6.0.0_RC2") {
@@ -2543,9 +2543,9 @@ sub upgrade5012GA {
 	return 0;
 }
 
-sub upgrade600B1 {
+sub upgrade600BETA1 {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
-	main::progress("Updating from 6.0.0_B1\n");
+	main::progress("Updating from 6.0.0_BETA1\n");
   if (main::isInstalled("zimbra-ldap") && $isLdapMaster) {
 	  main::runAsZimbra("zmjava com.zimbra.cs.account.ldap.upgrade.LdapUpgrade -b 32557 -v");
     upgradeLdapConfigValue("zimbraRedoLogRolloverFileSizeKB", "1048576", "102400");
@@ -2587,9 +2587,9 @@ sub upgrade600B1 {
 	return 0;
 }
 
-sub upgrade600B2 {
+sub upgrade600BETA2 {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
-	main::progress("Updating from 6.0.0_B2\n");
+	main::progress("Updating from 6.0.0_BETA2\n");
 	return 0;
 }
 
