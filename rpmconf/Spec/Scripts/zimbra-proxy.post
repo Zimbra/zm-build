@@ -15,11 +15,6 @@
 # 
 
 # Symlinks
-if [ -L "/opt/zimbra/memcached" ]; then
-  rm -rf /opt/zimbra/memcached
-fi
-ln -s /opt/zimbra/memcached-1.2.6 /opt/zimbra/memcached
-
 if [ -L "/opt/zimbra/nginx" ]; then
   rm -rf /opt/zimbra/nginx
 fi

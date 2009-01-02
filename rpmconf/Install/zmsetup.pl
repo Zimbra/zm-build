@@ -84,6 +84,7 @@ my @packageList = (
   "zimbra-apache",
   "zimbra-spell",
   "zimbra-cluster",
+  "zimbra-memcached",
   "zimbra-proxy",
   "zimbra-archiving",
   "zimbra-convertd",
@@ -99,6 +100,7 @@ my %packageServiceMap = (
   ldap      => "zimbra-ldap",
   spell     => "zimbra-spell",
   stats     => "zimbra-core",
+  memcached => "zimbra-memcached",
   imapproxy => "zimbra-proxy",
   archiving => "zimbra-archiving",
   convertd  => "zimbra-convertd",
@@ -4465,7 +4467,6 @@ sub configInitBackupPrefs {
     }
   }
 }
-
 
 sub setProxyBits {
   detail("Setting Proxy pieces\n");

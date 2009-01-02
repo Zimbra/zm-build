@@ -64,8 +64,6 @@ $(BUILD_ROOT)/zimbra-proxy.spec:
 	rm -f zimbra-proxy.post
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/nginx-$(NGINX_VERSION)" >> \
 		$(BUILD_ROOT)/zimbra-proxy.spec
-	echo "%attr(-, zimbra, zimbra) /opt/zimbra/memcached-$(MEMCACHED_VERSION)" >> \
-		$(BUILD_ROOT)/zimbra-proxy.spec
 
 proxy_stage: $(PROXY_COMPONENTS)
 
@@ -75,7 +73,3 @@ $(PROXY_DEST_DIR):
 $(PROXY_DEST_DIR)/$(NGINX_DIR): $(PROXY_DEST_DIR)
 	@echo "*** Creating nginx"
 	(cd $(PROXY_DEST_DIR); tar xzf $(NGINX_SOURCE).tgz;)
-
-$(PROXY_DEST_DIR)/$(MEMCACHED_DIR): $(PROXY_DEST_DIR)
-	@echo "*** Creating memcached"
-	(cd $(PROXY_DEST_DIR); tar xzf $(MEMCACHED_SOURCE).tgz;)

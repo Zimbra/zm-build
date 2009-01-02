@@ -1557,7 +1557,9 @@ getInstallPackages() {
     if [ $UPGRADE = "yes" ]; then
       askYN "Install $i" "N"
     else
-      if [ $i = "zimbra-proxy" ]; then
+      if [ $i = "zimbra-memcached" ]; then
+         askYN "Install $i" "N"
+      elif [ $i = "zimbra-proxy" ]; then
          askYN "Install $i" "N"
       elif [ $i = "zimbra-archiving" ]; then
          askYN "Install $i" "N"
