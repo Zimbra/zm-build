@@ -2291,6 +2291,14 @@ sub setHttpPort {
     if($config{HTTPPORT} == $config{HTTPPROXYPORT}) {
       $config{HTTPPROXYPORT}="UNSET";
     }
+  } elsif (isInstalled("zimbra-store") && !isInstalled("zimbra-proxy")) {
+    if($config{HTTPPORT} == $config{HTTPPROXYPORT}) {
+      if ($config{HTTPPORT} > 8000) {
+        $config{HTTPPROXYPORT} = $config{HTTPPORT} - 8000;
+      } else {
+        $config{HTTPPROXYPORT} = $config{HTTPPORT} + 8000;
+      }
+    }
   }
 }
 
@@ -2301,6 +2309,14 @@ sub setHttpsPort {
   if($config{HTTPPROXY} eq "TRUE" || $config{zimbraMailProxy} eq "TRUE") {
     if($config{HTTPSPORT} == $config{HTTPSPROXYPORT}) {
       $config{HTTPSPROXYPORT}="UNSET";
+    }
+  } elsif (isInstalled("zimbra-store") && !isInstalled("zimbra-proxy")) {
+    if($config{HTTPSPORT} == $config{HTTPSPROXYPORT}) {
+      if ($config{HTTPSPORT} > 8000) {
+        $config{HTTPSPROXYPORT} = $config{HTTPSPORT} - 8000;
+      } else {
+        $config{HTTPSPROXYPORT} = $config{HTTPSPORT} + 8000;
+      }
     }
   }
 }
@@ -2313,6 +2329,14 @@ sub setImapPort {
     if($config{IMAPPORT} == $config{IMAPPROXYPORT}) {
       $config{IMAPPROXYPORT}="UNSET";
     }
+  } elsif (isInstalled("zimbra-store") && !isInstalled("zimbra-proxy")) {
+    if($config{IMAPPORT} == $config{IMAPPROXYPORT}) {
+      if ($config{IMAPPORT} > 7000) {
+        $config{IMAPPROXYPORT} = $config{IMAPPORT} - 7000;
+      } else {
+        $config{IMAPPROXYPORT} = $config{IMAPPORT} + 7000;
+      }
+    }
   }
 }
 
@@ -2323,6 +2347,14 @@ sub setImapSSLPort {
   if($config{MAILPROXY} eq "TRUE" || $config{zimbraMailProxy} eq "TRUE") {
     if($config{IMAPSSLPORT} == $config{IMAPSSLPROXYPORT}) {
       $config{IMAPSSLPROXYPORT}="UNSET";
+    }
+  } elsif (isInstalled("zimbra-store") && !isInstalled("zimbra-proxy")) {
+    if($config{IMAPSSLPORT} == $config{IMAPSSLPROXYPORT}) {
+      if ($config{IMAPSSLPORT} > 7000) {
+        $config{IMAPSSLPROXYPORT} = $config{IMAPSSLPORT} - 7000;
+      } else {
+        $config{IMAPSSLPROXYPORT} = $config{IMAPSSLPORT} + 7000;
+      }
     }
   }
 }
@@ -2335,6 +2367,14 @@ sub setPopPort {
     if($config{POPPORT} == $config{POPPROXYPORT}) {
       $config{POPPROXYPORT}="UNSET";
     }
+  } elsif (isInstalled("zimbra-store") && !isInstalled("zimbra-proxy")) {
+    if($config{POPPORT} == $config{POPPROXYPORT}) {
+      if ($config{POPPORT} > 7000) {
+        $config{POPPROXYPORT} = $config{POPPORT} - 7000;
+      } else {
+        $config{POPPROXYPORT} = $config{POPPORT} + 7000;
+      }
+    }
   }
 }
 
@@ -2345,6 +2385,14 @@ sub setPopSSLPort {
   if($config{MAILPROXY} eq "TRUE" || $config{zimbraMailProxy} eq "TRUE") {
     if($config{POPSSLPORT} == $config{POPSSLPROXYPORT}) {
       $config{POPSSLPROXYPORT}="UNSET";
+    }
+  } elsif (isInstalled("zimbra-store") && !isInstalled("zimbra-proxy")) {
+    if($config{POPSSLPORT} == $config{POPSSLPROXYPORT}) {
+      if ($config{POPSSLPORT} > 7000) {
+        $config{POPSSLPROXYPORT} = $config{POPSSLPORT} - 7000;
+      } else {
+        $config{POPSSLPROXYPORT} = $config{POPSSLPORT} + 7000;
+      }
     }
   }
 }
