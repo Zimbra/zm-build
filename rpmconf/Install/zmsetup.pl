@@ -4364,6 +4364,19 @@ sub configSpellServer {
   configLog("configSpellServer");
 }
 
+sub configConvertdURL {
+  my $tmpval = getLdapConfigValue("zimbraConvertdURL");
+  if ( $tmpval eq "" ) {
+    my $host;
+    if (!$newinstall) {
+      $host = $config{zimbra_server_hostname};
+    } else {
+      $host = lc($config{HOSTNAME});
+    }
+    runAsZimbra("$ZMPROV mcf zimbraConvertdURL http://$host:7047/convert");
+  }
+}
+
 sub configSetMtaDefaults {
    &configSetMtaAuthHost();
 }
@@ -5188,6 +5201,10 @@ sub applyConfig {
     configSetStoreDefaults();
   }
 
+  if (isNetwork() && isEnabled("zimbra-convertd")) {
+    configConvertdURL();
+  }
+
   if (isEnabled("zimbra-mta")) {
     configSetMtaDefaults();
   }
@@ -5323,7 +5340,7 @@ sub setupCrontab {
   progress ("Setting up zimbra crontab...");
   if ( -x "/opt/zimbra/bin/zmschedulebackup") {
     detail("Getting current backup schedule in restorable format.");
-    @backupSchedule = (`$SU "zmschedulebackup -s" 2> $logfile`);
+    @backupSchedule = (`$SU "zmschedulebackup -s" 2>> $logfile`);
     for (my $i=0;$i<=$#backupSchedule;$i++) {
       $backupSchedule[$i] =~ s/"/\\"/g;
     }
