@@ -54,6 +54,8 @@ sub doLdap() {
       $ldap_key="olcToolThreads";
     } elsif ($key eq "ldap_common_require_tls") {
       $ldap_key="olcSecurity";
+      chomp($value);
+      $value="ssf=$value";
     } else {
       main::logMsg(2,"LDAP common: Unknown key: $key");
       $rc=1;
