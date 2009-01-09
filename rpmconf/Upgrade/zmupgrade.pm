@@ -2493,6 +2493,8 @@ sub upgrade5012GA {
 	  upgradeLdapConfigValue("zimbraAdminConsoleLDAPAuthEnabled", "FALSE", "");
     # 31557
 	  upgradeLdapConfigValue("zimbraReverseProxyRouteLookupTimeoutCache", "60s", "");
+    # 30787
+	  upgradeLdapConfigValue("zimbraCalendarCalDavUseDistinctAppointmentAndToDoCollection", "FALSE", "");
 
     my $ldap_pass = `$su "zmlocalconfig -s -m nokey zimbra_ldap_password"`;
     my $ldap_master_url = `$su "zmlocalconfig -s -m nokey ldap_master_url"`;
