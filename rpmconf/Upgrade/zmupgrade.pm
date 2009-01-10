@@ -2551,7 +2551,7 @@ sub upgrade5012GA {
 
 sub upgrade5013GA {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
-	main::progress("Updating from 5.0.13GA\n");
+	main::progress("Updating from 5.0.13_GA\n");
 	return 0;
 }
 
