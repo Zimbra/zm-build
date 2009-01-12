@@ -2495,11 +2495,11 @@ sub genSubMenu {
 }
 
 sub isNetwork {
-  return((-f "/opt/zimbra/lib/ext/zimbra-license/zimbra-license.jar") ? 1 : 0);
+  return((-f "/opt/zimbra/bin/zmbackup") ? 1 : 0);
 }
 
 sub isFoss {
-  return((-f "/opt/zimbra/lib/ext/zimbra-license/zimbra-license.jar") ? 0 : 1);
+  return((-f "/opt/zimbra/bin/zmbackup") ? 0 : 1);
 }
 
 sub isLicenseInstalled {
