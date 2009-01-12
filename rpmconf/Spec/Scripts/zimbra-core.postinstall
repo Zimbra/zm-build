@@ -23,10 +23,10 @@ chown zimbra:zimbra /opt/zimbra/zmstat
 chown zimbra:zimbra /opt/zimbra/zmstat/pid
 
 rm -f /opt/zimbra/bdb
-ln -s /opt/zimbra/bdb-4.7.25.2 /opt/zimbra/bdb
+ln -s /opt/zimbra/bdb-4.7.25.3 /opt/zimbra/bdb
 
 rm -f /opt/zimbra/openssl
-ln -s /opt/zimbra/openssl-0.9.8i /opt/zimbra/openssl
+ln -s /opt/zimbra/openssl-0.9.8j /opt/zimbra/openssl
 
 rm -f /opt/zimbra/heimdal
 ln -s /opt/zimbra/heimdal-1.2.1 /opt/zimbra/heimdal
@@ -45,10 +45,10 @@ ln -s /opt/zimbra/tcmalloc-0.99.2 /opt/zimbra/tcmalloc
 
 if [ -d "/opt/zimbra/zimbramon/rrdtool" ]; then
   rm -rf /opt/zimbra/zimbramon/rrdtool
-  ln -s /opt/zimbra/zimbramon/rrdtool-1.2.28 /opt/zimbra/zimbramon/rrdtool
+  ln -s /opt/zimbra/zimbramon/rrdtool-1.2.29 /opt/zimbra/zimbramon/rrdtool
 else
   rm -f /opt/zimbra/zimbramon/rrdtool
-  ln -s /opt/zimbra/zimbramon/rrdtool-1.2.28 /opt/zimbra/zimbramon/rrdtool
+  ln -s /opt/zimbra/zimbramon/rrdtool-1.2.29 /opt/zimbra/zimbramon/rrdtool
 fi
 
 if [ -f "/opt/zimbra/conf/ca/ca.pem" ]; then
