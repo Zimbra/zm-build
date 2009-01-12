@@ -2,7 +2,7 @@
 # __LOGGER
 
 logger: CUR_DEST_ROOT := $(LOGGER_DEST_ROOT)
-logger: CUR_PACKAGE_SPEC := $(BUILD_ROOT)/zimbralogger.spec
+logger: CUR_PACKAGE_SPEC := $(BUILD_ROOT)/zimbra-logger.spec
 logger: CUR_PACKAGE_NAME := zimbra-logger
 logger: $(PACKAGE_DIR) logger_stage logger_pkg_spec_$(PACKAGE_EXT)
 	(cd $(CUR_DEST_ROOT); \
@@ -37,31 +37,31 @@ logger_pkg_spec_deb: $(LOGGER_DEST_ROOT)/DEBIAN/control
 
 $(LOGGER_DEST_ROOT)/DEBIAN: force
 	mkdir -p $@
-	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbralogger.pre $@/preinst
-	cat $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbralogger.post >> $@/postinst
+	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-logger.pre $@/preinst
+	cat $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-logger.post >> $@/postinst
 	chmod 555 $@/*
 
 $(LOGGER_DEST_ROOT)/DEBIAN/control: $(LOGGER_DEST_ROOT)/DEBIAN force
-	cat $(PACKAGE_CONF_DIR)/Spec/zimbralogger.deb | \
+	cat $(PACKAGE_CONF_DIR)/Spec/zimbra-logger.deb | \
 	sed -e 's/@@VERSION@@/$(VERSION_TAG)/' \
 	-e 's/@@RELEASE@@/$(RELEASE)/' \
 	-e 's/@@ARCH@@/$(ARCH)/' > $@
 
-logger_pkg_spec_rpm: $(BUILD_ROOT)/zimbralogger.spec
+logger_pkg_spec_rpm: $(BUILD_ROOT)/zimbra-logger.spec
 
-$(BUILD_ROOT)/zimbralogger.spec:
-	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbralogger.pre $(BUILD_ROOT)
-	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbralogger.post $(BUILD_ROOT)
-	cat $(PACKAGE_CONF_DIR)/Spec/zimbralogger.spec | \
+$(BUILD_ROOT)/zimbra-logger.spec:
+	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-logger.pre $(BUILD_ROOT)
+	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-logger.post $(BUILD_ROOT)
+	cat $(PACKAGE_CONF_DIR)/Spec/zimbra-logger.spec | \
 		sed -e 's/@@VERSION@@/$(VERSION_TAG)/' \
 		-e 's/@@RELEASE@@/$(RELEASE)/' \
 		-e 's/^Copyright:/$(RPMCOPYRIGHTSTR):/' \
-		-e '/^%pre$$/ r zimbralogger.pre' \
-		-e '/^%post$$/ r zimbralogger.post' > $(BUILD_ROOT)/zimbralogger.spec
-	rm -f zimbralogger.pre
-	rm -f zimbralogger.post
+		-e '/^%pre$$/ r zimbra-logger.pre' \
+		-e '/^%post$$/ r zimbra-logger.post' > $(BUILD_ROOT)/zimbra-logger.spec
+	rm -f zimbra-logger.pre
+	rm -f zimbra-logger.post
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/logger" >> \
-		$(BUILD_ROOT)/zimbralogger.spec
+		$(BUILD_ROOT)/zimbra-logger.spec
 
 logger_stage: $(LOGGER_COMPONENTS)
 

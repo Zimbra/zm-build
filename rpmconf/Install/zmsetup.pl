@@ -84,6 +84,7 @@ my @packageList = (
   "zimbra-apache",
   "zimbra-spell",
   "zimbra-cluster",
+  "zimbra-memcached",
   "zimbra-proxy",
   "zimbra-archiving",
   "zimbra-convertd",
@@ -99,6 +100,7 @@ my %packageServiceMap = (
   ldap      => "zimbra-ldap",
   spell     => "zimbra-spell",
   stats     => "zimbra-core",
+  memcached => "zimbra-memcached",
   imapproxy => "zimbra-proxy",
   archiving => "zimbra-archiving",
   convertd  => "zimbra-convertd",
@@ -151,8 +153,6 @@ my $debug = $options{d};
 
 getInstallStatus();
 
-getInstalledPackages();
-
 if ($0 =~ /testMenu/) {
   #delete $installedPackages{"zimbra-ldap"}; 
   #delete $installedPackages{"zimbra-mta"}; 
@@ -161,6 +161,32 @@ if ($0 =~ /testMenu/) {
   exit;
 }
 
+if ($newinstall && isInstalled("zimbra-ldap")) {
+  installLdapConfig();
+}
+
+if(isInstalled("zimbra-ldap")) {
+  installLdapSchema();
+}
+
+if (! $newinstall ) {
+  # if we're an upgrade, run the upgrader...
+  if (($prevVersion ne $curVersion )) {
+    progress ("Upgrading from $prevVersion to $curVersion\n");
+    open (H, ">>/opt/zimbra/.install_history");
+    print H time(),": CONFIG SESSION START\n";
+    # This is the postinstall config
+    configLog ("BEGIN");
+    if (zmupgrade::upgrade($prevVersion, $curVersion)){
+      progress ("UPGRADE FAILED - exiting\n");
+      exit 1;
+    } else {
+      progress ("Upgrade complete\n");
+    }
+  }
+}
+
+getInstalledPackages();
 
 unless (isEnabled("zimbra-core")) {
   progress("zimbra-core must be enabled.");
@@ -177,22 +203,7 @@ if ($options{d}) {
 } 
 
 setDefaults();
-
-if (! $newinstall ) {
-
-  # if we're an upgrade, run the upgrader...
-  if (($prevVersion ne $curVersion )) {
-    progress ("Upgrading from $prevVersion to $curVersion\n");
-    if (zmupgrade::upgrade($prevVersion, $curVersion)){
-      progress ("UPGRADE FAILED - exiting\n");
-      exit 1;
-    } else {
-      progress ("Upgrade complete\n");
-    }
-  }
-
-  setDefaultsFromLocalConfig();
-}
+setDefaultsFromLocalConfig() if (! $newinstall);
 
 setEnabledDependencies();
 
@@ -535,9 +546,6 @@ sub isEnabled {
       if (isInstalled($p) and not defined $prevInstalledPackages{$p}) {
         detail("Marking $p as installed. Services for $p will be enabled.");
         $enabledPackages{$p} = "Enabled";
-        if ($p eq "zimbra-convertd") {
-          $enabledPackages{$p} = "Disabled";
-        }
       } elsif (isInstalled($p) and not defined $enabledPackages{$p}) {
         detail("Marking $p as disabled.");
         $enabledPackages{$p} = "Disabled";
@@ -548,7 +556,6 @@ sub isEnabled {
     detail("Newinstall enabling all installed packages");
     foreach my $p (@packageList) {
       if (isInstalled($p)) {
-        $enabledPackages{"zimbra-convertd"} = "Disabled";
         unless ($enabledPackages{$p} eq "Disabled") {
           detail("Enabling $p");
           $enabledPackages{$p} = "Enabled" 
@@ -606,7 +613,7 @@ sub genRandomPass {
 sub getSystemStatus {
 
   if (isEnabled("zimbra-ldap")) {
-    if (-f "$zimbraHome/openldap-data/mail.bdb") {
+    if (-f "$zimbraHome/data/ldap/hdb/db/mail.bdb") {
       $ldapConfigured = 1;
       $ldapRunning = 0xffff & system("/opt/zimbra/bin/ldap status > /dev/null 2>&1");
       if ($ldapRunning) {
@@ -665,6 +672,17 @@ sub getLdapCOSValue {
   return $val;
 }
 
+sub getAllServers {
+  my ($service) = @_;
+  my @servers;
+  detail("Running $ZMPROV gas $service");
+  open(ZMPROV, "$ZMPROV gas $service 2>/dev/null|");
+  chomp(@servers = <ZMPROV>);
+  close(ZMPROV);
+
+  return @servers;
+}
+
 sub getLdapConfigValue {
   my $attrib = shift;
   
@@ -676,7 +694,9 @@ sub getLdapConfigValue {
   my $rc = 0xffff & system("$SU \"$ZMPROV gcf $attrib 2> /tmp/ld.err 2> /tmp/ld.err | sed -e \\\"s/${attrib}: //\\\" > /tmp/ld.out\"");
   my $val=`cat /tmp/ld.out`;
   chomp($val);
-  detail ("Global config attribute retrieved from ldap: $attrib=$val");
+  foreach my $v (split(/\n/, $val)) {
+    detail ("Global config attribute retrieved from ldap: $attrib=$v");
+  }
   $main::loaded{gcf}{$attrib} = $val;
 
   if (!-z "/tmp/ld.err") {
@@ -909,6 +929,29 @@ sub setLdapDefaults {
   progress ( "done.\n" );
 }
 
+sub installLdapConfig {
+  my $config_src="/opt/zimbra/openldap/etc/openldap/config";
+  my $config_dest="/opt/zimbra/data/ldap/config";
+  if (-d "/opt/zimbra/data/ldap/config") {
+    main::progress("Installing LDAP configuration database\n");
+    `mkdir -p $config_dest/cn\=config`;
+    system("cp -f $config_src/cn\=config.ldif $config_dest/cn\=config.ldif");
+    system("cp -f $config_src/cn\=config/cn\=module\{0\}.ldif $config_dest/cn\=config/cn\=module\{0\}.ldif");
+    system("cp -f $config_src/cn\=config/cn\=schema.ldif $config_dest/cn\=config/cn\=schema.ldif");
+    system("cp -f $config_src/cn\=config/olcDatabase\=\{-1\}frontend.ldif $config_dest/cn\=config/olcDatabase\=\{-1\}frontend.ldif");
+    system("cp -f $config_src/cn\=config/olcDatabase\=\{0\}config.ldif $config_dest/cn\=config/olcDatabase\=\{0\}config.ldif");
+    system("cp -f $config_src/cn\=config/olcDatabase\=\{1\}monitor.ldif $config_dest/cn\=config/olcDatabase\=\{1\}monitor.ldif");
+    system("cp -f $config_src/cn\=config/olcDatabase\=\{2\}hdb.ldif $config_dest/cn\=config/olcDatabase\=\{2\}hdb.ldif");
+    `chmod 600 $config_dest/cn\=config.ldif`;
+    `chmod 600 $config_dest/cn\=config/*.ldif`;
+    `chown -R zimbra:zimbra $config_dest`;
+  }
+}
+
+sub installLdapSchema {
+  main::runAsZimbra("/opt/zimbra/libexec/zmldapschema 2>/dev/null");
+}
+
 sub setDefaults {
   progress ( "Setting defaults..." ) unless $options{d};
 
@@ -955,11 +998,11 @@ sub setDefaults {
   if ($platform =~ /MACOSX/) {
     $config{JAVAHOME} = "/System/Library/Frameworks/JavaVM.framework/Versions/1.5/Home";
     setLocalConfig ("zimbra_java_home", "$config{JAVAHOME}");
-    $config{HOSTNAME} = `hostname`;
+    $config{HOSTNAME} = lc(`hostname`);
   } else {
     $config{JAVAHOME} = "/opt/zimbra/java";
     setLocalConfig ("zimbra_java_home", "$config{JAVAHOME}");
-    $config{HOSTNAME} = `hostname --fqdn`;
+    $config{HOSTNAME} = lc(`hostname --fqdn`);
   }
   chomp $config{HOSTNAME};
 
@@ -1369,7 +1412,7 @@ sub setDefaultsFromLocalConfig {
     $config{SNMPNOTIFY} = "yes" if ($config{SNMPNOTIFY} eq "");
 
     $config{SMTPNOTIFY} = getLocalConfig("smtp_notify");
-    $config{SMTPNOTIFY} = "yes" if ($config{SNMPNOTIFY} eq "");
+    $config{SMTPNOTIFY} = "yes" if ($config{SMTPNOTIFY} eq "");
 
     $config{SNMPTRAPHOST} = getLocalConfig("snmp_trap_host");
     $config{SNMPTRAPHOST} = $config{CREATEADMIN}
@@ -2248,6 +2291,14 @@ sub setHttpPort {
     if($config{HTTPPORT} == $config{HTTPPROXYPORT}) {
       $config{HTTPPROXYPORT}="UNSET";
     }
+  } elsif (isInstalled("zimbra-store") && !isInstalled("zimbra-proxy")) {
+    if($config{HTTPPORT} == $config{HTTPPROXYPORT}) {
+      if ($config{HTTPPORT} > 8000) {
+        $config{HTTPPROXYPORT} = $config{HTTPPORT} - 8000;
+      } else {
+        $config{HTTPPROXYPORT} = $config{HTTPPORT} + 8000;
+      }
+    }
   }
 }
 
@@ -2258,6 +2309,14 @@ sub setHttpsPort {
   if($config{HTTPPROXY} eq "TRUE" || $config{zimbraMailProxy} eq "TRUE") {
     if($config{HTTPSPORT} == $config{HTTPSPROXYPORT}) {
       $config{HTTPSPROXYPORT}="UNSET";
+    }
+  } elsif (isInstalled("zimbra-store") && !isInstalled("zimbra-proxy")) {
+    if($config{HTTPSPORT} == $config{HTTPSPROXYPORT}) {
+      if ($config{HTTPSPORT} > 8000) {
+        $config{HTTPSPROXYPORT} = $config{HTTPSPORT} - 8000;
+      } else {
+        $config{HTTPSPROXYPORT} = $config{HTTPSPORT} + 8000;
+      }
     }
   }
 }
@@ -2270,6 +2329,14 @@ sub setImapPort {
     if($config{IMAPPORT} == $config{IMAPPROXYPORT}) {
       $config{IMAPPROXYPORT}="UNSET";
     }
+  } elsif (isInstalled("zimbra-store") && !isInstalled("zimbra-proxy")) {
+    if($config{IMAPPORT} == $config{IMAPPROXYPORT}) {
+      if ($config{IMAPPORT} > 7000) {
+        $config{IMAPPROXYPORT} = $config{IMAPPORT} - 7000;
+      } else {
+        $config{IMAPPROXYPORT} = $config{IMAPPORT} + 7000;
+      }
+    }
   }
 }
 
@@ -2280,6 +2347,14 @@ sub setImapSSLPort {
   if($config{MAILPROXY} eq "TRUE" || $config{zimbraMailProxy} eq "TRUE") {
     if($config{IMAPSSLPORT} == $config{IMAPSSLPROXYPORT}) {
       $config{IMAPSSLPROXYPORT}="UNSET";
+    }
+  } elsif (isInstalled("zimbra-store") && !isInstalled("zimbra-proxy")) {
+    if($config{IMAPSSLPORT} == $config{IMAPSSLPROXYPORT}) {
+      if ($config{IMAPSSLPORT} > 7000) {
+        $config{IMAPSSLPROXYPORT} = $config{IMAPSSLPORT} - 7000;
+      } else {
+        $config{IMAPSSLPROXYPORT} = $config{IMAPSSLPORT} + 7000;
+      }
     }
   }
 }
@@ -2292,6 +2367,14 @@ sub setPopPort {
     if($config{POPPORT} == $config{POPPROXYPORT}) {
       $config{POPPROXYPORT}="UNSET";
     }
+  } elsif (isInstalled("zimbra-store") && !isInstalled("zimbra-proxy")) {
+    if($config{POPPORT} == $config{POPPROXYPORT}) {
+      if ($config{POPPORT} > 7000) {
+        $config{POPPROXYPORT} = $config{POPPORT} - 7000;
+      } else {
+        $config{POPPROXYPORT} = $config{POPPORT} + 7000;
+      }
+    }
   }
 }
 
@@ -2302,6 +2385,14 @@ sub setPopSSLPort {
   if($config{MAILPROXY} eq "TRUE" || $config{zimbraMailProxy} eq "TRUE") {
     if($config{POPSSLPORT} == $config{POPSSLPROXYPORT}) {
       $config{POPSSLPROXYPORT}="UNSET";
+    }
+  } elsif (isInstalled("zimbra-store") && !isInstalled("zimbra-proxy")) {
+    if($config{POPSSLPORT} == $config{POPSSLPROXYPORT}) {
+      if ($config{POPSSLPORT} > 7000) {
+        $config{POPSSLPROXYPORT} = $config{POPSSLPORT} - 7000;
+      } else {
+        $config{POPSSLPROXYPORT} = $config{POPSSLPORT} + 7000;
+      }
     }
   }
 }
@@ -2573,7 +2664,7 @@ sub createCommonMenu {
   }
   # interprocess security
   $$lm{menuitems}{$i} = {
-    "prompt" => "Require secure interprocess communications:",
+    "prompt" => "Secure interprocess communications:",
     "var" => \$config{ZIMBRA_REQ_SECURITY},
     "callback" => \&toggleYN,
     "arg" => "ZIMBRA_REQ_SECURITY",
@@ -3215,14 +3306,14 @@ sub createStoreMenu {
     }
     if (!isInstalled("zimbra-proxy") && $newinstall) {
       $$lm{menuitems}{$i} = {
-        "prompt" => "Configure store for use with reverse mail proxy:",
+        "prompt" => "Configure for use with mail proxy:",
         "var" => \$config{zimbraMailProxy},
         "callback" => \&toggleTF,
         "arg" => "zimbraMailProxy",
       };
       $i++;
       $$lm{menuitems}{$i} = {
-        "prompt" => "Configure store for use with reverse web proxy:",
+        "prompt" => "Configure for use with web proxy:",
         "var" => \$config{zimbraWebProxy},
         "callback" => \&toggleTF,
         "arg" => "zimbraWebProxy",
@@ -3403,9 +3494,9 @@ sub createMainMenu {
     if ($package eq "zimbra-core") {next;}
     if ($package eq "zimbra-apache") {next;}
     if ($package eq "zimbra-archiving") {next;}
-    if ($package eq "zimbra-convertd") {next;}
+    if ($package eq "zimbra-memcached") {next;}
     if (defined($installedPackages{$package})) {
-      if ($package =~ /logger|spell/) {
+      if ($package =~ /logger|spell|convertd/) {
         $mm{menuitems}{$i} = { 
           "prompt" => "$package:", 
           "var" => \$enabledPackages{$package},
@@ -3603,7 +3694,7 @@ sub checkLdapBind() {
     return 1;
   } else {
     $ldap->unbind;
-    detail ("Verfied ldap running at $ldap_url\n");
+    detail ("Verified ldap running at $ldap_url\n");
     setLocalConfig ("ldap_url", $ldap_url);
     setLocalConfig ("ldap_starttls_supported", $starttls);
     setLocalConfig ("zimbra_require_interprocess_security", $config{zimbra_require_interprocess_security});
@@ -3650,7 +3741,7 @@ sub checkLdapReplicationEnabled() {
 
 sub runAsRoot {
   my $cmd = shift;
-  if ($cmd =~ /ldappass/ || $cmd =~ /init/ || $cmd =~ /zmprov -l ca/ && $cmd !~ /zmproxyinit/) {
+  if ($cmd =~ /ldappass/ || $cmd =~ /init/ || $cmd =~ /zmprov -l ca/) {
     # Suppress passwords in log file
     my $c = (split ' ', $cmd)[0];
     detail ( "*** Running as root user: $c\n" );
@@ -3664,7 +3755,7 @@ sub runAsRoot {
 
 sub runAsZimbra {
   my $cmd = shift;
-  if ($cmd =~ /ldappass/ || $cmd =~ /init/ || $cmd =~ /zmprov -l ca/ && $cmd !~ /zmproxyinit/) {
+  if ($cmd =~ /ldappass/ || $cmd =~ /init/ || $cmd =~ /zmprov -l ca/) {
     # Suppress passwords in log file
     my $c = (split ' ', $cmd)[0];
     detail ( "*** Running as zimbra user: $c\n" );
@@ -3678,7 +3769,7 @@ sub runAsZimbra {
 
 sub runAsZimbraWithOutput {
   my $cmd = shift;
-  if ($cmd =~ /ldappass/ || $cmd =~ /init/ || $cmd =~ /zmprov -l ca/ && $cmd !~ /zmproxyinit/) {
+  if ($cmd =~ /ldappass/ || $cmd =~ /init/ || $cmd =~ /zmprov -l ca/) {
     # Suppress passwords in log file
     my $c = (split ' ', $cmd)[0];
     detail ( "*** Running as zimbra user: $c\n" );
@@ -3898,7 +3989,9 @@ sub configSetupLdap {
       setLocalConfig ("ldap_replication_password", "$config{LDAPREPPASS}");
       progress("done.\n");
       progress ( "Enabling ldap replication..." );
-      my $rc = runAsZimbra ("/opt/zimbra/libexec/zmldapenablereplica");
+      runAsZimbra("/opt/zimbra/bdb/bin/db_recover -h /opt/zimbra/data/ldap/hdb/db");
+      my $rc = runAsZimbra ("/opt/zimbra/libexec/zmldapapplyldif");
+      $rc = runAsZimbra ("/opt/zimbra/libexec/zmldapenablereplica");
       if ( ! -f "/opt/zimbra/.enable_replica" ) {
          my $file="/opt/zimbra/.enable_replica";
          open(ER,">>$file");
@@ -4271,6 +4364,19 @@ sub configSpellServer {
   configLog("configSpellServer");
 }
 
+sub configConvertdURL {
+  my $tmpval = getLdapConfigValue("zimbraConvertdURL");
+  if ( $tmpval eq "" ) {
+    my $host;
+    if (!$newinstall) {
+      $host = $config{zimbra_server_hostname};
+    } else {
+      $host = lc($config{HOSTNAME});
+    }
+    runAsZimbra("$ZMPROV mcf zimbraConvertdURL http://$host:7047/convert");
+  }
+}
+
 sub configSetMtaDefaults {
    &configSetMtaAuthHost();
 }
@@ -4313,12 +4419,12 @@ sub configSetStoreDefaults {
   runAsZimbra("$ZMPROV ms $config{HOSTNAME} zimbraMtaAuthTarget TRUE");
   if ($newinstall && ($config{zimbraWebProxy} eq "TRUE" || $config{zimbraMailProxy} eq "TRUE")) {
     if ($config{zimbraMailProxy} eq "TRUE") {
-           runAsZimbra("/opt/zimbra/libexec/zmproxyinit -m -e -o ".
+           runAsZimbra("/opt/zimbra/libexec/zmproxyconfig -m -e -o ".
                        "-i $config{IMAPPORT}:$config{IMAPPROXYPORT}:$config{IMAPSSLPORT}:$config{IMAPSSLPROXYPORT} ".
                        "-p $config{POPPORT}:$config{POPPROXYPORT}:$config{POPSSLPORT}:$config{POPSSLPROXYPORT} -H $config{HOSTNAME}");
     }
     if ($config{zimbraWebProxy} eq "TRUE") {
-           runAsZimbra("/opt/zimbra/libexec/zmproxyinit -w -e -o ".
+           runAsZimbra("/opt/zimbra/libexec/zmproxyconfig -w -e -o ".
                        "-a $config{HTTPPORT}:$config{HTTPPROXYPORT}:$config{HTTPSPORT}:$config{HTTPSPROXYPORT} -H $config{HOSTNAME}");
     }
   }
@@ -4415,8 +4521,12 @@ sub configSetNEFeatures {
 
 sub configInitBackupPrefs {
   if (isEnabled("zimbra-store") && isNetwork()) {
-    runAsZimbra("$ZMPROV mcf zimbraBackupReportEmailRecipients $config{zimbraBackupReportEmailRecipients}");
-    runAsZimbra("$ZMPROV mcf zimbraBackupReportEmailSender $config{zimbraBackupReportEmailSender}");
+    foreach my $recip (split(/\n/, $config{zimbraBackupReportEmailRecipients})) {
+      runAsZimbra("$ZMPROV mcf +zimbraBackupReportEmailRecipients $recip");
+    }
+    foreach my $sender (split(/\n/, $config{zimbraBackupReportEmailSender})) {
+      runAsZimbra("$ZMPROV mcf +zimbraBackupReportEmailSender $sender");
+    }
   }
 }
 
@@ -4502,29 +4612,29 @@ sub configSetProxyPrefs {
         $enabledPackages{"zimbra-proxy"} = "Disabled";
      } else {
         if($config{MAILPROXY} eq "TRUE") {
-           runAsZimbra("/opt/zimbra/libexec/zmproxyinit -m -e -o ".
+           runAsZimbra("/opt/zimbra/libexec/zmproxyconfig -m -e -o ".
                        "-i $config{IMAPPORT}:$config{IMAPPROXYPORT}:$config{IMAPSSLPORT}:$config{IMAPSSLPROXYPORT} ".
                        "-p $config{POPPORT}:$config{POPPROXYPORT}:$config{POPSSLPORT}:$config{POPSSLPROXYPORT} -H $config{HOSTNAME}");
         } else {
-           runAsZimbra("/opt/zimbra/libexec/zmproxyinit -m -d -o ".
+           runAsZimbra("/opt/zimbra/libexec/zmproxyconfig -m -d -o ".
                        "-i $config{IMAPPORT}:$config{IMAPPROXYPORT}:$config{IMAPSSLPORT}:$config{IMAPSSLPROXYPORT} ".
                        "-p $config{POPPORT}:$config{POPPROXYPORT}:$config{POPSSLPORT}:$config{POPSSLPROXYPORT} -H $config{HOSTNAME}");
         }
         if ($config{HTTPPROXY} eq "TRUE" ) {
-           runAsZimbra("/opt/zimbra/libexec/zmproxyinit -w -e -o ".
+           runAsZimbra("/opt/zimbra/libexec/zmproxyconfig -w -e -o ".
                        " -x $config{PROXYMODE} ".
                        "-a $config{HTTPPORT}:$config{HTTPPROXYPORT}:$config{HTTPSPORT}:$config{HTTPSPROXYPORT} -H $config{HOSTNAME}");
         } else {
-           runAsZimbra("/opt/zimbra/libexec/zmproxyinit -w -d -o ".
+           runAsZimbra("/opt/zimbra/libexec/zmproxyconfig -w -d -o ".
                        "-x $config{MODE} ".
                        "-a $config{HTTPPORT}:$config{HTTPPROXYPORT}:$config{HTTPSPORT}:$config{HTTPSPROXYPORT} -H $config{HOSTNAME}");
         }
      }
    } else {
-        runAsZimbra("/opt/zimbra/libexec/zmproxyinit -m -d -o ".
+        runAsZimbra("/opt/zimbra/libexec/zmproxyconfig -m -d -o ".
                     "-i $config{IMAPPORT}:$config{IMAPPROXYPORT}:$config{IMAPSSLPORT}:$config{IMAPSSLPROXYPORT} ".
                     "-p $config{POPPORT}:$config{POPPROXYPORT}:$config{POPSSLPORT}:$config{POPSSLPROXYPORT} -H $config{HOSTNAME}");
-        runAsZimbra("/opt/zimbra/libexec/zmproxyinit -w -d -o ".
+        runAsZimbra("/opt/zimbra/libexec/zmproxyconfig -w -d -o ".
                     "-x $config{MODE} ".
                     "-a $config{HTTPPORT}:$config{HTTPPROXYPORT}:$config{HTTPSPORT}:$config{HTTPSPROXYPORT} -H $config{HOSTNAME}");
    }
@@ -4849,6 +4959,29 @@ sub configInitSnmp {
   configLog("configInitSnmp");
 }
 
+sub configInitInstantMessaging {
+
+  if ($configStatus{configInitIM} eq "CONFIGURED") {
+    configLog("configInitIM");
+    return 0;
+  }
+  my $rc;
+  if (isEnabled("zimbra-store")) {
+    progress("Checking for default IM conference room...");
+    $rc = runAsZimbra("$ZMPROV gxc conference.$config{CREATEDOMAIN}");
+    progress (($rc != 0) ? "not present.\n" : "already initialized.\n");
+    if ($rc != 0) {
+      progress("Initializing default IM conference room...");
+      $rc = runAsZimbra("$ZMPROV cxc conference $config{CREATEDOMAIN} $config{HOSTNAME} org.jivesoftware.wildfire.muc.spi.MultiUserChatServerImpl conference text");
+      progress (($rc == 0) ? "done.\n" : "failed.\n");
+      configLog("configInitIM") if ($rc == 0);
+    } else {
+      configLog("configInitIM");
+      return;
+    }
+  }
+}
+
 sub configInitNotebooks {
 
   if (isEnabled("zimbra-store")) {
@@ -5013,12 +5146,12 @@ sub applyConfig {
   }
   progress ( "Operations logged to $logfile\n" );
 
-  open (H, ">>/opt/zimbra/.install_history");
-
-  print H time(),": CONFIG SESSION START\n";
-  # This is the postinstall config
-
-  configLog ("BEGIN");
+  if ($newinstall) {
+    open (H, ">>/opt/zimbra/.install_history");
+    print H time(),": CONFIG SESSION START\n";
+    # This is the postinstall config
+    configLog ("BEGIN");
+  }
 
   configLCValues();
 
@@ -5068,6 +5201,10 @@ sub applyConfig {
     configSetStoreDefaults();
   }
 
+  if (isNetwork() && isEnabled("zimbra-convertd")) {
+    configConvertdURL();
+  }
+
   if (isEnabled("zimbra-mta")) {
     configSetMtaDefaults();
   }
@@ -5100,6 +5237,8 @@ sub applyConfig {
   configInitMta();
 
   configInitSnmp();
+
+  configInitInstantMessaging();
 
   configSetEnabledServices();
 
@@ -5201,7 +5340,7 @@ sub setupCrontab {
   progress ("Setting up zimbra crontab...");
   if ( -x "/opt/zimbra/bin/zmschedulebackup") {
     detail("Getting current backup schedule in restorable format.");
-    @backupSchedule = (`$SU "zmschedulebackup -s" 2> /dev/null`);
+    @backupSchedule = (`$SU "zmschedulebackup -s" 2>> $logfile`);
     for (my $i=0;$i<=$#backupSchedule;$i++) {
       $backupSchedule[$i] =~ s/"/\\"/g;
     }
@@ -5211,59 +5350,72 @@ sub setupCrontab {
       detail("Retrieved backup schedule:\n @backupSchedule");
     }
   }
+  detail("crontab: Taking a copy of zimbra user crontab file.");
   if ($platform =~ /SUSE/i) {
     `cp -f /var/spool/cron/tabs/zimbra /tmp/crontab.zimbra.orig`;
   } else {
     `crontab -u zimbra -l > /tmp/crontab.zimbra.orig 2> /dev/null`;
   }
+  detail("crontab: Looking for ZIMBRASTART in existing crontab entry.");
   my $rc = 0xffff & system("grep ZIMBRASTART /tmp/crontab.zimbra.orig > /dev/null 2>&1");
   if ($rc) {
-    `cat /dev/null > /tmp/crontab.zimbra.orig`;
+    detail("crontab: ZIMBRASTART not found truncating zimbra crontab and starting fresh.");
+    `cp -f /dev/null /tmp/crontab.zimbra.orig 2>> $logfile`;
   }
+  detail("crontab: Looking for ZIMBRAEND in existing crontab entry.");
   $rc = 0xffff & system("grep ZIMBRAEND /tmp/crontab.zimbra.orig > /dev/null 2>&1");
   if ($rc) {
-    `cat /dev/null > /tmp/crontab.zimbra.orig`;
+    detail("crontab: ZIMBRAEND not found truncating zimbra crontab and starting fresh.");
+    `cp -f /dev/null /tmp/crontab.zimbra.orig`;
   }
+  detail("crontab: Getting existing backup and custom entries from crontab file.");
   `cat /tmp/crontab.zimbra.orig | sed -e '/# ZIMBRASTART/,/# ZIMBRAEND/d' > /tmp/crontab.zimbra.proc`;
+  detail("crontab: Adding zimbra-core specific crontab entries");
   `cp -f /opt/zimbra/zimbramon/crontabs/crontab /tmp/crontab.zimbra`;
 
   if (isEnabled("zimbra-ldap")) {
-    detail("Crontab: Adding zimbra-ldap specific crontab entries");
-    `cat /opt/zimbra/zimbramon/crontabs/crontab.ldap >> /tmp/crontab.zimbra`;
+    detail("crontab: Adding zimbra-ldap specific crontab entries");
+    `cat /opt/zimbra/zimbramon/crontabs/crontab.ldap >> /tmp/crontab.zimbra 2>> $logfile`;
   }
 
   if (isEnabled("zimbra-store")) {
-    detail("Crontab: Adding zimbra-store specific crontab entries");
-    `cat /opt/zimbra/zimbramon/crontabs/crontab.store >> /tmp/crontab.zimbra`;
+    detail("crontab: Adding zimbra-store specific crontab entries");
+    `cat /opt/zimbra/zimbramon/crontabs/crontab.store >> /tmp/crontab.zimbra 2>> $logfile`;
   }
 
   if (isEnabled("zimbra-logger")) {
-    detail("Crontab: Adding zimbra-logger specific crontab entries");
-    `cat /opt/zimbra/zimbramon/crontabs/crontab.logger >> /tmp/crontab.zimbra`;
+    detail("crontab: Adding zimbra-logger specific crontab entries");
+    `cat /opt/zimbra/zimbramon/crontabs/crontab.logger >> /tmp/crontab.zimbra 2>> $logfile`;
   }
 
   if (isEnabled("zimbra-mta")) {
-    detail("Crontab: Adding zimbra-mta specific crontab entries");
-    `cat /opt/zimbra/zimbramon/crontabs/crontab.mta >> /tmp/crontab.zimbra`;
+    detail("crontab: Adding zimbra-mta specific crontab entries");
+    `cat /opt/zimbra/zimbramon/crontabs/crontab.mta >> /tmp/crontab.zimbra 2>> $logfile`;
   }
 
+  detail("crontab: adding backup block");
   `echo "# ZIMBRAEND -- DO NOT EDIT ANYTHING BETWEEN THIS LINE AND ZIMBRASTART" >> /tmp/crontab.zimbra`;
+  detail("crontab: Adding backup and custom entries to crontab.");
   `cat /tmp/crontab.zimbra.proc >> /tmp/crontab.zimbra`;
   detail("crontab: installing new crontab");
   `crontab -u zimbra /tmp/crontab.zimbra 2> /dev/null`;
   if ( -x "/opt/zimbra/bin/zmschedulebackup" && scalar @backupSchedule > 0) {
-    detail("Restoring previous backup schedule.");
+    detail("crontab: Restoring previous backup schedule.");
     for (my $i=0;$i<=$#backupSchedule;$i++) {
       chomp($backupSchedule[$i]);
       if ($i == 0) {
-        `$SU "/opt/zimbra/bin/zmschedulebackup -R $backupSchedule[$i]"`;
+        detail("crontab: $SU \"/opt/zimbra/bin/zmschedulebackup -R $backupSchedule[$i]\"");
+        runAsZimbra("/opt/zimbra/bin/zmschedulebackup -R $backupSchedule[$i]");
+        #`$SU "/opt/zimbra/bin/zmschedulebackup -R $backupSchedule[$i]" >> $logfile 2>&1`;
       } else {
-        `$SU "/opt/zimbra/bin/zmschedulebackup -A $backupSchedule[$i]"`;
+        detail("crontab: $SU \"/opt/zimbra/bin/zmschedulebackup -A $backupSchedule[$i]\"");
+        runAsZimbra("/opt/zimbra/bin/zmschedulebackup -A $backupSchedule[$i]");
+        #`$SU "/opt/zimbra/bin/zmschedulebackup -A $backupSchedule[$i]" >> $logfile 2>&1`;
       }
     }
   } elsif ( -f "/opt/zimbra/bin/zmschedulebackup" && scalar @backupSchedule == 0 && !$newinstall) {
-    detail("No backup schedule found: installing default schedule.");
-    `$SU "/opt/zimbra/bin/zmschedulebackup -D" > /dev/null 2>&1`;
+    detail("crontab: No backup schedule found: installing default schedule.");
+    `$SU "/opt/zimbra/bin/zmschedulebackup -D" >> $logfile 2>&1`;
   }
 
   if (isEnabled("zimbra-cluster")) {
@@ -5360,7 +5512,7 @@ sub startLdap {
   my $rc = runAsZimbra("/opt/zimbra/bin/ldap status");
   if ($rc) { 
     main::progress("Starting ldap...");
-    runAsZimbra("/opt/zimbra/sleepycat/bin/db_recover -h /opt/zimbra/openldap-data");
+    runAsZimbra("/opt/zimbra/bdb/bin/db_recover -h /opt/zimbra/data/ldap/hdb/db");
     $rc = runAsZimbra ("/opt/zimbra/libexec/zmldapapplyldif");
     $rc = runAsZimbra ("/opt/zimbra/bin/ldap status");
     if ($rc) {
