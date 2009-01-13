@@ -2559,6 +2559,8 @@ sub upgrade600BETA1 {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
 	main::progress("Updating from 6.0.0_BETA1\n");
   if (main::isInstalled("zimbra-ldap") && $isLdapMaster) {
+          # Upgrade step for bug#33814 *must* come before upgrade step for bug#27075
+	  main::runAsZimbra("zmjava com.zimbra.cs.account.ldap.upgrade.LdapUpgrade -b 33814 -v");
 	  main::runAsZimbra("zmjava com.zimbra.cs.account.ldap.upgrade.LdapUpgrade -b 32557 -v");
     upgradeLdapConfigValue("zimbraRedoLogRolloverFileSizeKB", "1048576", "102400");
 
