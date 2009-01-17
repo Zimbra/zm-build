@@ -498,10 +498,10 @@ sub upgrade {
 
   # start ldap
 	if (main::isInstalled ("zimbra-ldap")) {
-	if($startMajor < 6 && $targetMajor >= 6) {
-		&updateLdapBdbConfig("6.0.0_GA");
-		&migrateLdap("6.0.0_GA");
-	}
+	  if($startMajor < 6 && $targetMajor >= 6) {
+		  &updateLdapBdbConfig("6.0.0_GA");
+		  &migrateLdap("6.0.0_GA");
+	  }
     if (startLdap()) {return 1;} 
   }
 
@@ -527,6 +527,10 @@ sub upgrade {
 			last;
 		}
 	}
+  if ($isLdapMaster) {
+    main::progress("Updating global config and COS's with attributes introduced after $startVersion...");
+    main::progress((&runAttributeUpgrade($startVersion)) ? "failed.\n" : "done.\n");
+  }
 	if ($needSlapIndexing) {
 		main::detail("Updating slapd indices\n");
 		&indexLdap();
@@ -3331,6 +3335,12 @@ sub upgradeLocalConfigValue($$$) {
   my $current_value = main::getLocalConfig($key);
 	main::setLocalConfig("$key", "$new_value")
     if ($current_value eq $cmp_value);
+}
+
+sub runAttributeUpgrade($) {
+  my ($startVersion) = @_;
+  my $rc = main::runAsZimbra("zmjava com.zimbra.cs.account.ldap.upgrade.LdapUpgrade -b 27075 -v $startVersion");
+  return $rc;
 }
 
 1
