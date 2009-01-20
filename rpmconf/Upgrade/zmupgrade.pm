@@ -2601,6 +2601,19 @@ sub upgrade600BETA1 {
       }
     }
   }
+  # bug#33648
+  `$su "zmlocalconfig -u ldap_require_tls"`;
+  `$su "zmlocalconfig -u calendar_canonical_tzid"`;
+  `$su "zmlocalconfig -u convertd_version"`;
+  `$su "zmlocalconfig -u debug_update_config_use_old_scheme"`;
+ 
+   my $ldap_loglevel=main::getLocalConfig("ldap_log_level");
+   main::setLocalConfig("ldap_common_loglevel", $ldap_loglevel);
+  `$su "zmlocalconfig -u ldap_log_level"`;
+   upgradeLocalConfigValue("javamail_imap_timeout", "20", "60");
+   upgradeLocalConfigValue("javamail_pop3_timeout", "20", "60");
+   upgradeLocalConfigValue("mysql_table_cache", "1200", "500");
+   
 	return 0;
 }
 
