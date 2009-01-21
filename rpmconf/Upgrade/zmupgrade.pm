@@ -2522,9 +2522,12 @@ sub upgrade5012GA {
     unless($result->code()) {
         $result = $ldap->modify( "uid=zimbra,cn=admins,cn=zimbra", add => { 'zimbraIsSystemResource' => 'TRUE'});
         $result = $ldap->modify( "uid=zmreplica,cn=admins,cn=zimbra", add => { 'zimbraIsSystemResource' => 'TRUE'});
+        $result = $ldap->modify( "uid=zmreplica,cn=admins,cn=zimbra", delete => [ 'zimbraIsAdminAccount' ]);
         $result = $ldap->modify( "uid=zmnginx,cn=appaccts,cn=zimbra", add => { 'zimbraIsSystemResource' => 'TRUE'});
         $result = $ldap->modify( "uid=zmpostfix,cn=appaccts,cn=zimbra", add => { 'zimbraIsSystemResource' => 'TRUE'});
+        $result = $ldap->modify( "uid=zmpostfix,cn=appaccts,cn=zimbra", delete => [ 'zimbraIsAdminAccount' ]);
         $result = $ldap->modify( "uid=zmamavis,cn=appaccts,cn=zimbra", add => { 'zimbraIsSystemResource' => 'TRUE'});
+        $result = $ldap->modify( "uid=zmamavis,cn=appaccts,cn=zimbra", delete => [ 'zimbraIsAdminAccount' ]);
     }
     $result = $ldap->unbind;
   }
