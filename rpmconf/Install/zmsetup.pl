@@ -4778,6 +4778,46 @@ sub configInstallZimlets {
     progress ( "Finished installing network zimlets.\n" );
   }
 
+  # Reinstall extras that are deployed on upgrade
+  if (!$newinstall) {
+    my $ldap_pass = getLocalConfig("zimbra_ldap_password");
+    my $ldap_master_url = getLocalConfig("ldap_master_url");
+    my $zimbra_home = getLocalConfig("zimbra_home");
+    my $ldap;
+    unless($ldap = Net::LDAP->new($ldap_master_url)) {
+      detail("Unable to contact $ldap_master_url: $!");
+      return 1;
+    }
+    my $ldap_dn = $config{zimbra_ldap_userdn};
+    my $ldap_base = "cn=zimlets,$config{ldap_dit_base_dn_config}";
+
+    my $result = $ldap->bind($ldap_dn, password => $ldap_pass);
+    if ($result->code()) {
+      detail("ldap bind failed for $ldap_dn");
+      return 1;
+    } else {
+      detail("ldap bind done for $ldap_dn");
+      progress("Getting list of all zimlets...");
+      $result = $ldap->search(base => $ldap_base, scope => 'one', filter => '(objectClass=zimbraZimletEntry)', attrs => ['zimbraZimletKeyword']);
+      progress (($result->code()) ? "failed.\n" : "done.\n");
+      return $result if ($result->code());
+  
+      progress("Updating non-standard zimlets...\n");
+      foreach my $entry ($result->all_entries) {
+        my $zimlet = $entry->get_value('zimbraZimletKeyword');
+        foreach my $type qw(zimlets-admin-extra zimlets-experimental zimlets-extra) {
+          if (-e "${zimbra_home}/${type}/${zimlet}.zip") {
+           progress  ("\t$zimlet...");
+           my $rc = runAsZimbra ("/opt/zimbra/bin/zmzimletctl -l deploy ${type}/${zimlet}.zip");
+           progress (($rc == 0) ? "done.\n" : "failed. This may impact system functionality.\n");
+          }
+        }
+      }
+      progress("Finished updating non-standard zimlets.\n");
+    $result = $ldap->unbind;
+    }
+  }
+
   configLog("configInstallZimlets");
 }
 
