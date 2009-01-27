@@ -1,0 +1,51 @@
+# A Perforce Client Specification.
+#
+#  Client:      The client name.
+#  Update:      The date this specification was last modified.
+#  Access:      The date this client was last used in any way.
+#  Owner:       The user who created this client.
+#  Host:        If set, restricts access to the named host.
+#  Description: A short description of the client (optional).
+#  Root:        The base directory of the client workspace.
+#  AltRoots:    Up to two alternate client workspace roots.
+#  Options:     Client options:
+#                      [no]allwrite [no]clobber [no]compress
+#                      [un]locked [no]modtime [no]rmdir
+#  LineEnd:     Text file line endings on client: local/unix/mac/win/share.
+#  View:        Lines to map depot files into the client workspace.
+#
+# Use 'p4 help client' to see more about client views and options.
+
+Client: BUILD_@@TAG@@_@@RELEASE@@_@@ARCH@@
+
+Update: 2006/09/13 19:32:39
+
+Access: 2006/09/13 19:41:59
+
+Owner:  build
+
+Description:
+	Created by brian.
+
+Root:   @@BUILD_ROOT@@
+
+Options:        noallwrite noclobber nocompress unlocked nomodtime normdir
+
+LineEnd:        local
+
+View:
+	//depot/@@TAG@@/ThirdPartyBuilds/zdesktop/... //BUILD_@@TAG@@_@@RELEASE@@_@@ARCH@@/ThirdPartyBuilds/zdesktop/...
+	//depot/@@TAG@@/ThirdParty/prism/... //BUILD_@@TAG@@_@@RELEASE@@_@@ARCH@@/ThirdParty/prism/...
+	//depot/@@TAG@@/ThirdParty/jetty/... //BUILD_@@TAG@@_@@RELEASE@@_@@ARCH@@/ThirdParty/jetty/...
+	//depot/@@TAG@@/ThirdParty/xulrunner/... //BUILD_@@TAG@@_@@RELEASE@@_@@ARCH@@/ThirdParty/xulrunner/...
+	//depot/@@TAG@@/ZimbraNative/... //BUILD_@@TAG@@_@@RELEASE@@_@@ARCH@@/ZimbraNative/...
+	//depot/@@TAG@@/ZimbraBuild/... //BUILD_@@TAG@@_@@RELEASE@@_@@ARCH@@/ZimbraBuild/...
+	//depot/@@TAG@@/ZimbraCommon/... //BUILD_@@TAG@@_@@RELEASE@@_@@ARCH@@/ZimbraCommon/...
+	//depot/@@TAG@@/ZimbraIM/... //BUILD_@@TAG@@_@@RELEASE@@_@@ARCH@@/ZimbraIM/...
+	//depot/@@TAG@@/ZimbraServer/... //BUILD_@@TAG@@_@@RELEASE@@_@@ARCH@@/ZimbraServer/...
+	//depot/@@TAG@@/ZimbraOffline/... //BUILD_@@TAG@@_@@RELEASE@@_@@ARCH@@/ZimbraOffline/...
+	//depot/@@TAG@@/Ajax/... //BUILD_@@TAG@@_@@RELEASE@@_@@ARCH@@/Ajax/...
+	//depot/@@TAG@@/ZimbraTagLib/... //BUILD_@@TAG@@_@@RELEASE@@_@@ARCH@@/ZimbraTagLib/...
+	//depot/@@TAG@@/ZimbraWebClient/... //BUILD_@@TAG@@_@@RELEASE@@_@@ARCH@@/ZimbraWebClient/...
+	//depot/@@TAG@@/Zimlet/... //BUILD_@@TAG@@_@@RELEASE@@_@@ARCH@@/Zimlet/...
+
