@@ -1,0 +1,24 @@
+# A Perforce Label Specification.
+#
+#  Label:       The label name.
+#  Update:      The date this specification was last modified.
+#  Access:      The date of the last 'labelsync' on this label.
+#  Owner:       The user who created this label.
+#  Description: A short description of the label (optional).
+#  Options:     Label update options: locked or unlocked.
+#  View:        Lines to select depot files for the label.
+#
+# Use 'p4 help label' to see more about label views.
+
+Label:	BUILD_LABEL_@@TAG@@_@@RELEASE@@
+
+Owner:	build
+
+Description:
+	Created by build.
+
+Options:	unlocked
+
+View:
+	//depot/@@TAG@@/...
+
