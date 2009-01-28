@@ -31,6 +31,10 @@ fi
 rm -f /opt/zimbra/bdb
 ln -s /opt/zimbra/bdb-4.7.25.3 /opt/zimbra/bdb
 
+if [ -L /opt/zimbra/sleepycat ]; then
+	rm -f /opt/zimbra/sleepycat
+fi
+
 rm -f /opt/zimbra/openssl
 ln -s /opt/zimbra/openssl-0.9.8j /opt/zimbra/openssl
 
