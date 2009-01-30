@@ -4656,7 +4656,7 @@ sub removeNetworkComponents {
       my $rc = runAsZimbra ("$ZMPROV mcf $comp_args");
       progress (($rc == 0) ? "done.\n" : "failed. This may impact system functionality.\n");
     }
-    foreach my $zimlet qw(com_zimbra_backuprestore com_zimbra_cluster com_zimbra_convertd com_zimbra_domainadmin com_zimbra_hsm com_zimbra_license com_zimbra_mobilesync com_zimbra_xmbxsearch) {
+    foreach my $zimlet qw(com_zimbra_backuprestore com_zimbra_cluster com_zimbra_convertd com_zimbra_domainadmin com_zimbra_hsm com_zimbra_license com_zimbra_mobilesync zimbra_xmbxsearch com_zimbra_xmbxsearch) {
       system("rm -rf $config{mailboxd_directory}/webapps/service/zimlet/$zimlet")
         if (-d "$config{mailboxd_directory}/webapps/service/zimlet/$zimlet" );
     }
@@ -4715,7 +4715,7 @@ sub zimletCleanup {
     return 1;
   } else {
     detail("ldap bind done for $ldap_dn");
-    $result = $ldap->search(base => $ldap_base, scope => 'one', filter => "(|(cn=convertd)(cn=cluster)(cn=hsm)(cn=hotbackup)(cn=zimbra_cert_manager)(cn=com_zimbra_search))", attrs => ['zimbraZimletKeyword']);
+    $result = $ldap->search(base => $ldap_base, scope => 'one', filter => "(|(cn=convertd)(cn=cluster)(cn=hsm)(cn=hotbackup)(cn=zimbra_cert_manager)(cn=com_zimbra_search)(cn=zimbra_xmbxsearch))", attrs => ['zimbraZimletKeyword']);
     return $result if ($result->code());
     detail("processing ldap search results");
     foreach my $entry ($result->all_entries) {
