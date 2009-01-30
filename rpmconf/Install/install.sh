@@ -90,6 +90,8 @@ done
 
 . ./util/globals.sh
 
+getPlatformVars
+
 if [ x"$CLUSTERTYPE" != "x" -a -f "./util/clusterfunc.sh" ]; then
   . ./util/clusterfunc.sh
   checkClusterTypeArgs
@@ -98,8 +100,6 @@ fi
 if [ x"$CLUSTERTYPE" != "x" ]; then
   clusterPreInstall
 fi
-
-getPlatformVars
 
 mkdir -p $SAVEDIR
 chown zimbra:zimbra $SAVEDIR 2> /dev/null

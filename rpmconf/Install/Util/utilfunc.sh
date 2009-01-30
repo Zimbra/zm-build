@@ -594,13 +594,13 @@ determineVersionType() {
     ZM_CUR_MICRO=$(perl -e '$v=$ENV{ZMVERSION_CURRENT}; $v =~ s/^(\d+\.\d+\.[^_]*_[^_]+_[^.]+).*/\1/; ($maj,$min,$mic) = $v =~ m/^(\d+)\.(\d+)\.(\d+)/; print "$mic\n"') 
   fi
   # need way to determine type for other package types
-  if [ $PACKAGEEXT = "rpm" ]; then
+  if [ "x$PACKAGEEXT" = "xrpm" ]; then
     if [ x"`rpm --qf '%{description}' -qp ./packages/zimbra-core* | grep Network`" = "x" ]; then
       ZMTYPE_INSTALLABLE="FOSS"
     else 
       ZMTYPE_INSTALLABLE="NETWORK"
     fi
-  elif [ "$PACKAGEEXT" = "deb" ]; then
+  elif [ "x$PACKAGEEXT" = "xdeb" ]; then
     if [ x"`dpkg -f ./packages/zimbra-core* Description | grep Network`" = "x" ]; then
       ZMTYPE_INSTALLABLE="FOSS"
     else 
@@ -659,11 +659,11 @@ verifyLicenseAvailable() {
   fi
 
   # need to finish for other native packagers
-  if [ $PACKAGEEXT = "rpm" ]; then
+  if [ "x$PACKAGEEXT" = "xrpm" ]; then
     if [ x"`rpm --qf '%{description}' -qp ./packages/zimbra-core* | grep Network`" = "x" ]; then
      return
     fi
-  elif [ "$PACKAGEEXT" = "deb" ]; then
+  elif [ "x$PACKAGEEXT" = "xdeb" ]; then
     if [ x"`dpkg -f ./packages/zimbra-core* Description | grep Network`" = "x" ]; then
       return
     fi
@@ -1748,13 +1748,13 @@ isToBeInstalled() {
 isInstalled () {
   pkg=$1
   PKGINSTALLED=""
-  if [ $PACKAGEEXT = "rpm" ]; then
+  if [ "x$PACKAGEEXT" = "xrpm" ]; then
     $PACKAGEQUERY $pkg >/dev/null 2>&1
     if [ $? = 0 ]; then
       PKGVERSION=`$PACKAGEQUERY $pkg 2> /dev/null | sort -u`
       PKGINSTALLED=`$PACKAGEQUERY $pkg | sed -e 's/\.[a-zA-Z].*$//' 2> /dev/null`
     fi
-  elif [ $PACKAGEEXT = "ccs" ]; then
+  elif [ "x$PACKAGEEXT" = "xccs" ]; then
     $PACKAGEQUERY $pkg >/dev/null 2>&1
     if [ $? = 0 ]; then
       PKGVERSION=`$PACKAGEQUERY $pkg 2> /dev/null | sort -u`
@@ -1775,7 +1775,7 @@ isInstalled () {
 suggestedVersion() {
   pkg=$1
   PKGINSTALLED=""
-  if [ $PACKAGEEXT = "rpm" ]; then
+  if [ "x$PACKAGEEXT" = "xrpm" ]; then
     $PACKAGEQUERY $pkg >/dev/null 2>&1
     if [ $? = 0 ]; then
       PKGINSTALLED=`$PACKAGEQUERY $pkg | sed -e 's/\.[a-zA-Z].*$//' 2> /dev/null`
