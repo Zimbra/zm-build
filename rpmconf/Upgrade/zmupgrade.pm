@@ -2566,7 +2566,9 @@ sub upgrade600BETA1 {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
 	main::progress("Updating from 6.0.0_BETA1\n");
   if (main::isInstalled("zimbra-ldap") && $isLdapMaster) {
-          # Upgrade step for bug#33814 *must* come before upgrade step for bug#27075
+    # 34679
+    upgradeAllGlobalAdminAccounts();
+
 	  main::runAsZimbra("zmjava com.zimbra.cs.account.ldap.upgrade.LdapUpgrade -b 33814 -v");
 	  main::runAsZimbra("zmjava com.zimbra.cs.account.ldap.upgrade.LdapUpgrade -b 32557 -v");
     upgradeLdapConfigValue("zimbraRedoLogRolloverFileSizeKB", "1048576", "102400");
@@ -3334,6 +3336,16 @@ sub verifyMysqlConfig {
     }
   }
   return;
+}
+
+sub upgradeAllGlobalAdminAccounts {
+	my @admins = `$su "$ZMPROV gaaa"`;
+  main::detail("Upgrading all admin accounts @admins\n");
+	foreach my $admin (@admins) {
+		chomp $admin;
+    my $val = main::getAccountAttributeValue($admin, "zimbraIsAdminAccount");
+    main::runAsZimbra("$ZMPROV ma $admin zimbraAdminConsoleUIComponents cartBlancheUI") if (lc($val) eq "true");
+	}
 }
 
 sub upgradeLdapConfigValue($$$) {

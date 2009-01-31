@@ -20,6 +20,7 @@ use lib "/opt/zimbra/libexec";
 use lib "/opt/zimbra/zimbramon/lib";
 use Zimbra::Util::Common;
 use Net::LDAP;
+use IPC::Open3;
 use Cwd;
 use Time::localtime qw(ctime);
 
@@ -681,6 +682,37 @@ sub getAllServers {
   close(ZMPROV);
 
   return @servers;
+}
+
+sub getAccountAttributeValue($$) {
+  my ($account,$attribute) = @_;
+  my ($val,$err);
+  my ($rfh,$wfh,$efh,$cmd,$rc);
+  $rfh = new FileHandle;
+  $wfh = new FileHandle;
+  $efh = new FileHandle;
+  $cmd = "$ZMPROV ga $account $attribute";
+  my $pid = open3($wfh,$rfh,$efh,$cmd);
+  unless(defined($pid)) {
+    return undef;
+  }
+  close $wfh;
+  my @d = <$rfh>;
+  chomp($val = (split(/\s+/, $d[-2]))[-1]);
+  chomp($err = join "", <$efh>);
+  waitpid($pid,0);
+  if ($? == -1) {
+    # failed to execute
+    return undef;
+  } elsif ($? & 127) {
+    # died with signal 
+    return undef;
+  } else {
+    $rc = $? >> 8;
+    return undef if ($rc != 0);
+  }
+
+  return $val;
 }
 
 sub getLdapConfigValue {
@@ -4845,6 +4877,7 @@ sub configCreateDomain {
       runAsZimbra("$ZMPROV cd $d");
       runAsZimbra("$ZMPROV ca ".
         "$config{CREATEADMIN} \'$config{CREATEADMINPASS}\' ".
+        "zimbraAdminConsoleUIComponents cartBlancheUI ".
         "zimbraIsAdminAccount TRUE");
       progress ( "done.\n" );
 
