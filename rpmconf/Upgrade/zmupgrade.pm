@@ -3344,7 +3344,8 @@ sub upgradeAllGlobalAdminAccounts {
 	foreach my $admin (@admins) {
 		chomp $admin;
     my $val = main::getAccountAttributeValue($admin, "zimbraIsAdminAccount");
-    main::runAsZimbra("$ZMPROV ma $admin zimbraAdminConsoleUIComponents cartBlancheUI") if (lc($val) eq "true");
+    main::runAsZimbra("$ZMPROV ma $admin zimbraAdminConsoleUIComponents cartBlancheUI zimbraIsSystemAdminAccount TRUE") 
+      if (lc($val) eq "true");
 	}
 }
 

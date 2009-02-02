@@ -4878,6 +4878,7 @@ sub configCreateDomain {
       runAsZimbra("$ZMPROV ca ".
         "$config{CREATEADMIN} \'$config{CREATEADMINPASS}\' ".
         "zimbraAdminConsoleUIComponents cartBlancheUI ".
+        "zimbraIsSystemAdminAccount TRUE ".
         "zimbraIsAdminAccount TRUE");
       progress ( "done.\n" );
 
