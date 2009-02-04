@@ -836,6 +836,13 @@ runAsZimbra() {
 
 shutDownSystem() {
   runAsZimbra "zmcontrol shutdown"
+  # stop all zimbra process that may have been orphaned
+  local OS=$(uname -s | tr A-Z a-z)
+  if [ x"$OS" = "xlinux" ]; then
+    if [ -x /bin/ps -a -x  /usr/bin/awk -a -x /usr/bin/xargs ]; then
+      /bin/ps -eFw | /usr/bin/awk '{ if ($1 == "zimbra" && $3 == "1") print $2 }' | /usr/bin/xargs kill -9 > /dev/null 2>&1
+    fi
+  fi
 }
 
 getRunningSchemaVersion() {
