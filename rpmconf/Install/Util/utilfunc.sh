@@ -1863,29 +1863,29 @@ getPlatformVars() {
     PACKAGEQUERY='dpkg -s'
     PACKAGEEXT='deb'
     PACKAGEVERSION="dpkg-query -W -f \${Version}"
-    PREREQ_PACKAGES="sudo libidn11 libgmp3 libstdc++6 libltdl3"
+    PREREQ_PACKAGES="sudo libidn11 libgmp3 libstdc++6"
     if [ $PLATFORM = "UBUNTU6" -o $PLATFORM = "UBUNTU7" ]; then
-      PREREQ_PACKAGES="sudo libidn11 libpcre3 libgmp3c2 libexpat1 libstdc++6 libstdc++5 libltdl3"
+      PREREQ_PACKAGES="sudo libidn11 libpcre3 libgmp3c2 libexpat1 libstdc++6 libstdc++5"
       PRESUG_PACKAGES="perl-5.8.7 sysstat"
     fi
     if [ $PLATFORM = "UBUNTU6_64" -o $PLATFORM = "UBUNTU7_64" ]; then
-      PREREQ_PACKAGES="sudo libidn11 libpcre3 libgmp3c2 libexpat1 libstdc++6 libstdc++5 libltdl3 libperl5.8"
+      PREREQ_PACKAGES="sudo libidn11 libpcre3 libgmp3c2 libexpat1 libstdc++6 libstdc++5 libperl5.8"
       PRESUG_PACKAGES="perl-5.8.7 sysstat"
     fi
     if [ $PLATFORM = "DEBIAN4.0" ]; then
-      PREREQ_PACKAGES="sudo libidn11 libpcre3 libgmp3c2 libexpat1 libstdc++6 libltdl3"
+      PREREQ_PACKAGES="sudo libidn11 libpcre3 libgmp3c2 libexpat1 libstdc++6"
       PRESUG_PACKAGES="perl-5.8.8 sysstat"
     fi
     if [ $PLATFORM = "UBUNTU8" ]; then
-      PREREQ_PACKAGES="sudo libidn11 libpcre3 libgmp3c2 libexpat1 libstdc++6 libstdc++5 libltdl3"
+      PREREQ_PACKAGES="sudo libidn11 libpcre3 libgmp3c2 libexpat1 libstdc++6 libstdc++5"
       PRESUG_PACKAGES="perl-5.8.8 sysstat"
     fi
     if [ $PLATFORM = "DEBIAN4.0_64" ]; then
-      PREREQ_PACKAGES="sudo libidn11 libpcre3 libgmp3c2 libexpat1 libstdc++6 libltdl3 libperl5.8"
+      PREREQ_PACKAGES="sudo libidn11 libpcre3 libgmp3c2 libexpat1 libstdc++6 libperl5.8"
       PRESUG_PACKAGES="perl-5.8.8 sysstat"
     fi
     if [ $PLATFORM = "UBUNTU8_64" ]; then
-      PREREQ_PACKAGES="sudo libidn11 libpcre3 libgmp3c2 libexpat1 libstdc++6 libstdc++5 libltdl3 libperl5.8"
+      PREREQ_PACKAGES="sudo libidn11 libpcre3 libgmp3c2 libexpat1 libstdc++6 libstdc++5 libperl5.8"
       PRESUG_PACKAGES="perl-5.8.8 sysstat"
     fi
   elif echo $PLATFORM | grep RPL > /dev/null 2>&1; then
@@ -1902,11 +1902,11 @@ getPlatformVars() {
     PACKAGEVERIFY='rpm -K'
     PACKAGEEXT='rpm'
     if [ $PLATFORM = "RHEL4" -o $PLATFORM = "CentOS4" ]; then
-      PREREQ_PACKAGES="sudo libidn gmp compat-libstdc++-296 compat-libstdc++-33 libtool-libs"
+      PREREQ_PACKAGES="sudo libidn gmp compat-libstdc++-296 compat-libstdc++-33"
       PREREQ_LIBS="/usr/lib/libstdc++.so.5"
       PRESUG_PACKAGES="perl-5.8.5 sysstat"
     elif [ $PLATFORM = "RHEL5" -o $PLATFORM = "CentOS5" ]; then
-      PREREQ_PACKAGES="sudo libidn gmp compat-libstdc++-296 compat-libstdc++-33 libtool-ltdl"
+      PREREQ_PACKAGES="sudo libidn gmp compat-libstdc++-296 compat-libstdc++-33"
       PREREQ_LIBS="/usr/lib/libstdc++.so.6"
       PRESUG_PACKAGES="perl-5.8.8 sysstat"
     elif [ $PLATFORM = "MANDRIVA2006" ]; then
@@ -1917,23 +1917,23 @@ getPlatformVars() {
       PREREQ_LIBS="/usr/lib/libstdc++.so.5"
       PRESUG_PACKAGE="sysstat"
     elif [ $PLATFORM = "FC5" -o $PLATFORM = "FC6" -o $PLATFORM = "F7" ]; then
-      PREREQ_PACKAGES="sudo libidn gmp bind-libs vixie-cron libtool-ltdl"
+      PREREQ_PACKAGES="sudo libidn gmp bind-libs vixie-cron"
       PREREQ_LIBS="/usr/lib/libstdc++.so.6"
       PRESUG_PACKAGE="sysstat"
     elif [ $PLATFORM = "FC5_64" -o $PLATFORM = "FC6_64" -o $PLATFORM = "F7_64" ]; then
-      PREREQ_PACKAGES="sudo libidn gmp bind-libs vixie-cron libtool-ltdl"
+      PREREQ_PACKAGES="sudo libidn gmp bind-libs vixie-cron"
       PREREQ_LIBS="/usr/lib/libstdc++.so.6 /usr/lib64/libstdc++.so.6"
       PRESUG_PACKAGE="sysstat"
     elif [ $PLATFORM = "RHEL5_64" -o $PLATFORM = "CentOS5_64" ]; then
-      PREREQ_PACKAGES="sudo libidn gmp compat-libstdc++-296 compat-libstdc++-33 libtool-ltdl"
-      PREREQ_LIBS="/usr/lib/libstdc++.so.5 /usr/lib/libstdc++.so.6 /usr/lib64/libstdc++.so.5 /usr/lib64/libstdc++.so.6 /usr/lib64/libltdl.so.3"
+      PREREQ_PACKAGES="sudo libidn gmp compat-libstdc++-296 compat-libstdc++-33"
+      PREREQ_LIBS="/usr/lib/libstdc++.so.5 /usr/lib/libstdc++.so.6 /usr/lib64/libstdc++.so.5 /usr/lib64/libstdc++.so.6"
       PRESUG_PACKAGES="perl-5.8.8 sysstat"
     elif [ $PLATFORM = "RHEL4_64" -o $PLATFORM = "CentOS4_64" ]; then
-      PREREQ_PACKAGES="sudo libidn gmp compat-libstdc++-296 compat-libstdc++-33 libtool-libs"
-      PREREQ_LIBS="/usr/lib/libstdc++.so.5 /usr/lib64/libstdc++.so.5 /usr/lib64/libltdl.so.3"
+      PREREQ_PACKAGES="sudo libidn gmp compat-libstdc++-296 compat-libstdc++-33"
+      PREREQ_LIBS="/usr/lib/libstdc++.so.5 /usr/lib64/libstdc++.so.5"
       PRESUG_PACKAGES="perl-5.8.5 sysstat"
     elif [ $PLATFORM = "F7" ]; then
-      PREREQ_PACKAGES="sudo libidn gmp bind-libs vixie-cron libtool-ltdl"
+      PREREQ_PACKAGES="sudo libidn gmp bind-libs vixie-cron"
       PREREQ_LIBS="/usr/lib/libstdc++.so.6"
       PRESUG_PACKAGES="perl-5.8.8 sysstat"
     else
