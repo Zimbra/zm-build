@@ -23,9 +23,15 @@ I=`hostname -i`
 rm -f /opt/zimbra/openldap
 ln -s /opt/zimbra/openldap-2.3.43.7z /opt/zimbra/openldap
 
-mkdir -p /opt/zimbra/openldap/var/openldap-data
-mkdir -p /opt/zimbra/openldap-data/db
-mkdir -p /opt/zimbra/openldap-data/logs
+if [ ! -d /opt/zimbra/openldap/var/openldap-data ]; then
+  mkdir -p /opt/zimbra/openldap/var/openldap-data
+fi
+if [ ! -d /opt/zimbra/openldap-data/db ]; then
+  mkdir -p /opt/zimbra/openldap-data/db
+fi
+if [ ! -d /opt/zimbra/openldap-data/logs ]; then
+  mkdir -p /opt/zimbra/openldap-data/logs
+fi
 chown -R zimbra:zimbra /opt/zimbra/openldap/var
 chown -R zimbra:zimbra /opt/zimbra/openldap-data
 
@@ -46,7 +52,13 @@ if [ -x "/opt/zimbra/libexec/zmfixperms" ]; then
 fi
 
 if [ ! -s /opt/zimbra/openldap-data/DB_CONFIG ]; then
-   mv /opt/zimbra/openldap-data/log.* /opt/zimbra/openldap-data/logs/
+  if [ -d /opt/zimbra/openldap-data ]; then
+    for i in /opt/zimbra/openldap-data/log.*; do
+      mv $i /opt/zimbra/openldap-data/logs/
+    fi
+  fi
 fi
 
-ldconfig
+if [ -x /sbin/ldconfig ]; then
+  ldconfig
+fi

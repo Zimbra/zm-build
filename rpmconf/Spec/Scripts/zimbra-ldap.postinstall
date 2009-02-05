@@ -17,13 +17,21 @@
 rm -f /opt/zimbra/openldap
 ln -s /opt/zimbra/openldap-2.3.43.7z /opt/zimbra/openldap
 
-mkdir -p /opt/zimbra/openldap/var/openldap-data
-mkdir -p /opt/zimbra/openldap-data/db
-mkdir -p /opt/zimbra/openldap-data/logs
+if [ ! -d /opt/zimbra/openldap/var/openldap-data ]; then
+  mkdir -p /opt/zimbra/openldap/var/openldap-data
+fi
+if [ ! -d /opt/zimbra/openldap-data/db ]; then
+  mkdir -p /opt/zimbra/openldap-data/db
+fi
+if [ ! -d /opt/zimbra/openldap-data/logs ]; then
+  mkdir -p /opt/zimbra/openldap-data/logs
+fi
 chown -R zimbra:zimbra /opt/zimbra/openldap-data
 chown -R zimbra:zimbra /opt/zimbra/openldap/var
 
-/bin/bash /opt/zimbra/libexec/zmfixperms
+if [ -x /opt/zimbra/libexec/zmfixperms ]; then
+  /opt/zimbra/libexec/zmfixperms
+fi
 
 SUDOMODE=`perl -e 'my $mode=(stat("/etc/sudoers"))[2];printf("%04o\n",$mode & 07777);'`
 egrep -v '^%zimbra.*slapd' /etc/sudoers > /tmp/sudoers
@@ -39,7 +47,11 @@ sed -e 's/TLSCACertificateFile/#TLSCACertificateFile/g' \
 chown zimbra:zimbra /opt/zimbra/openldap/etc/openldap/slapd.conf
 
 if [ ! -s /opt/zimbra/openldap-data/DB_CONFIG ]; then
-   mv /opt/zimbra/openldap-data/log.* /opt/zimbra/openldap-data/logs/
+  if [ -d /opt/zimbra/openldap-data ]; then
+    for i in /opt/zimbra/openldap-data/log.*; do
+      mv $i /opt/zimbra/openldap-data/logs/
+    fi
+  fi
 fi
 
 PKG=`echo ${RECEIPT_PATH} | sed -e 's|.*/\(zimbra-ldap.[^/]*pkg\)/.*|\1|' | sed -e 's/\./-/'`
