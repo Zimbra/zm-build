@@ -34,6 +34,7 @@ RELEASE=${PATHDIR%/*}
 RELEASE=${RELEASE##*/}
 
 if [ x$BUILDTHIRDPARTY = x"yes" ]; then
+	echo "Starting 3rd Party build"
 	if [ -x "../ThirdParty/buildThirdParty.sh" ]; then
 		RC=`${PATHDIR}/../ThirdParty/buildThirdParty.sh -c`;
 		if [ RC != 0 ]; then
@@ -69,6 +70,6 @@ if [ x$BUILDNETWORK = x"no" ]; then
 else
 	cd $PATHDIR/../ZimbraNetwork/ZimbraBuild/Makefile
 fi
-
+echo "Starting ZCS build"
 make -f Makefile $TARGETS
 exit 0;
