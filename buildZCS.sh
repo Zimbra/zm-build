@@ -40,7 +40,7 @@ if [ x$BUILDTHIRDPARTY = x"yes" ]; then
 			echo "Error: Building third party failed"
 			echo "Please fix and retry"
 			exit 1;
-
+		fi
 	else
 		echo "Error: ${PATHDIR}/../ThirdParty/BuildThirdParty.sh does not exit"
 		exit 1;
