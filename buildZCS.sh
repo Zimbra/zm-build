@@ -39,6 +39,7 @@ RELEASE=${RELEASE##*/}
 
 if [ x$BUILDTHIRDPARTY = x"yes" ]; then
 	echo "Starting 3rd Party build"
+	echo "	Note: This could take quite some time"
 	if [ -x "../ThirdParty/buildThirdParty.sh" ]; then
 		RC=`${PATHDIR}/../ThirdParty/buildThirdParty.sh -c`;
 		if [ RC != 0 ]; then
