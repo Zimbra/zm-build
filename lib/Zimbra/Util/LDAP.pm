@@ -77,6 +77,8 @@ sub doLdap() {
       $ldap_key="olcDbDNcacheSize";
     } elsif ($key eq "ldap_db_idlcachesize") {
       $ldap_key="olcDbIDLcacheSize";
+    } elsif ($key eq "ldap_db_shmkey") {
+      $ldap_key="olcDbShmKey";
     } else {
       main::logMsg(2,"LDAP db: Unknown key: $key");
       $rc=1;
@@ -94,6 +96,8 @@ sub doLdap() {
         $ldap_key="olcDbDNcacheSize";
       } elsif ($key eq "ldap_accesslog_idlcachesize") {
         $ldap_key="olcDbIDLcacheSize";
+      } elsif ($key eq "ldap_accesslog_shmkey") {
+        $ldap_key="olcDbShmKey";
       } else {
         main::logMsg(2,"LDAP accesslog: Unknown key: $key");
         $rc=1;
