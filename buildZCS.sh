@@ -57,7 +57,7 @@ echo "Checking for prerequisite binaries"
 for req in ant java
 do
 	echo "  Checking $req"
-	`which $req 2>/dev/null`
+	which $req 2>/dev/null
 	RC=$?
 	if [ $RC != 0 ]; then
 		echo "Error: $req not found"
