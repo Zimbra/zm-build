@@ -39,11 +39,10 @@ RELEASE=${RELEASE##*/}
 
 if [ x$BUILDTHIRDPARTY = x"yes" ]; then
 	echo "Starting 3rd Party build"
-	echo "	Note: This could take quite some time"
 	if [ -x "../ThirdParty/buildThirdParty.sh" ]; then
 		${PATHDIR}/../ThirdParty/buildThirdParty.sh -c
 		RC=$?
-		if [ RC != 0 ]; then
+		if [ $RC != 0 ]; then
 			echo "Error: Building third party failed"
 			echo "Please fix and retry"
 			exit 1;
@@ -53,8 +52,20 @@ if [ x$BUILDTHIRDPARTY = x"yes" ]; then
 		exit 1;
 	fi
 fi
-TARGETS="sourcetar all"
 
+echo "Checking for prerequisite binaries"
+for req in ant java
+do
+	echo "  Checking $req"
+	`which $req 2>/dev/null`
+	RC=$?
+	if [ $RC != 0 ]; then
+		echo "Error: $req not found"
+		exit 1;
+	fi
+done
+
+TARGETS="sourcetar all"
 if [ x$BUILDNETWORK = x"yes" ]; then
 	if [ -f "$PATHDIR/../ZimbraNetwork/ZimbraBuild/Makefile" ]; then
 		if [ x$RELEASE = x"main" ]; then
