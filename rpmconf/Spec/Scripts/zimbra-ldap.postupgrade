@@ -43,7 +43,7 @@ if [ ! -s /opt/zimbra/openldap-data/DB_CONFIG ]; then
   if [ -d /opt/zimbra/openldap-data ]; then
     for i in /opt/zimbra/openldap-data/log.*; do
       mv $i /opt/zimbra/openldap-data/logs/
-    fi
+    done
   fi
 fi
 
