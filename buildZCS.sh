@@ -4,23 +4,28 @@ PROGDIR=`dirname $0`
 cd $PROGDIR
 PATHDIR=`pwd`
 BUILDTHIRDPARTY=no
-BUILDNETWORK=no
+BUILDTYPE=foss
 
 usage() {
 	echo ""
 	echo "Usage: "`basename $0`" [-t] [-n]" >&2
+	echo "-d: Perform a Zimbra Desktop build"
 	echo "-n: Perform a Network Edition build"
 	echo "-t: Build third party as well as ZCS"
 }
 
 while [ $# -gt 0 ]; do
 	case $1 in
+		-d|--desktop)
+			BUILDTYPE=desktop
+			shift;
+			;;
 		-h|--help)
 			usage;
 			exit 0;
 			;;
 		-n|--network)
-			BUILDNETWORK=yes
+			BUILDTYPE=network
 			shift;
 			;;
 		-t|--thirdparty)
@@ -66,7 +71,7 @@ do
 done
 
 TARGETS="sourcetar all"
-if [ x$BUILDNETWORK = x"yes" ]; then
+if [ x$BUILDTYPE = x"network" ]; then
 	if [ -f "$PATHDIR/../ZimbraNetwork/ZimbraBuild/Makefile" ]; then
 		if [ x$RELEASE = x"main" ]; then
 			TARGETS="$TARGETS velodrome"
@@ -78,15 +83,25 @@ if [ x$BUILDNETWORK = x"yes" ]; then
 		exit 1;
 	fi
 fi
-if [ x$BUILDNETWORK = x"no" ]; then
+if [ x$BUILDTYPE = x"foss" ]; then
 	TARGETS="ajaxtar $TARGETS"
 fi
 
-if [ x$BUILDNETWORK = x"no" ]; then
-	cd $PATHDIR
-else
+if [ x$BUILDTYPE = x"network" ]; then
 	cd $PATHDIR/../ZimbraNetwork/ZimbraBuild/Makefile
+elif [ x$BUILDTYPE = x"foss" ]; then
+	cd $PATHDIR
+elif [ x$BUILDTYPE = x"dekstop" ]; then
+	cd $PATHDIR/../ZimbraOffline
+else
+	echo "Error: Unknown build type $BUILDTYPE"
+	exit 1;
 fi
+
 echo "Starting ZCS build"
-make -f Makefile $TARGETS
+if [ x$BUILDTYPE = x"foss" -o x$BUILDTYPE = x"network" ]; then
+	make -f Makefile $TARGETS
+else
+	ant -f installer-ant.xml
+fi
 exit 0;
