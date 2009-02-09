@@ -46,13 +46,12 @@ echo "Checking for prerequisite binaries"
 for req in ant java
 do
 	echo "  Checking $req"
-	which $req 2>/dev/null
-	RC=$?
-	if [ $RC != 0 ]; then
-		echo "Error: $req not found"
+	if [ ! -x /usr/local/$req/bin/$req ]; then
+		echo "Error: /usr/local/$req/bin/$req not found"
 		exit 1;
 	fi
 done
+
 if [ ! -x /usr/bin/rpmbuild -a ! -x /usr/bin/dpkg -a ! -x /Developer/Applications/Utilities/PackageMaker.app/Contents/MacOS/PackageMaker ]; then
 	echo "Error: No package building software found."
 	echo "Make sure one of rpmbuild, dpkg, or PackageMaker is available"
