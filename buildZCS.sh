@@ -42,6 +42,23 @@ done
 RELEASE=${PATHDIR%/*}
 RELEASE=${RELEASE##*/}
 
+echo "Checking for prerequisite binaries"
+for req in ant java
+do
+	echo "  Checking $req"
+	which $req 2>/dev/null
+	RC=$?
+	if [ $RC != 0 ]; then
+		echo "Error: $req not found"
+		exit 1;
+	fi
+done
+if [ ! -x /usr/bin/rpmbuild -a ! -x /usr/bin/dpkg -a ! -x /Developer/Applications/Utilities/PackageMaker.app/Contents/MacOS/PackageMaker ]; then
+	echo "Error: No package building software found."
+	echo "Make sure one of rpmbuild, dpkg, or PackageMaker is available"
+	exit 1;
+fi
+
 if [ x$BUILDTHIRDPARTY = x"yes" ]; then
 	echo "Starting 3rd Party build"
 	if [ -x "../ThirdParty/buildThirdParty.sh" ]; then
@@ -57,18 +74,6 @@ if [ x$BUILDTHIRDPARTY = x"yes" ]; then
 		exit 1;
 	fi
 fi
-
-echo "Checking for prerequisite binaries"
-for req in ant java
-do
-	echo "  Checking $req"
-	which $req 2>/dev/null
-	RC=$?
-	if [ $RC != 0 ]; then
-		echo "Error: $req not found"
-		exit 1;
-	fi
-done
 
 TARGETS="sourcetar all"
 if [ x$BUILDTYPE = x"network" ]; then
