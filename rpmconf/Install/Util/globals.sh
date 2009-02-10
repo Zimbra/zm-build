@@ -23,9 +23,10 @@ zimbra-snmp \
 zimbra-store \
 zimbra-apache \
 zimbra-spell \
+zimbra-convertd \
+zimbra-memcached \
 zimbra-proxy \
 zimbra-archiving \
-zimbra-convertd \
 zimbra-cluster"
 
 SERVICES=""

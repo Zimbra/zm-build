@@ -110,7 +110,7 @@ class ZimbraBuildRecipe(PackageRecipe):
         r.Requires('openssh-client:runtime', '/opt/zimbra/libexec/zmrc')
         r.Requires('openssh-server:runtime', '/opt/zimbra/libexec/zmrc')
         # add requirements on zimbra-core (note that '' is for zimbra-store)
-        for pkg in ('apache', 'mta', 'ldap', 'store', 'logger', 'snmp', 'proxy'):
+        for pkg in ('apache', 'mta', 'ldap', 'store', 'logger', 'snmp', 'proxy', 'memcached'):
             r.Requires('zimbra-core:runtime',
                        '/opt/zimbra/scripts/zimbra-%s.post' %pkg)
         # add requirement from zimbra-spell -> zimbra-apache

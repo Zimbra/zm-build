@@ -1,11 +1,11 @@
 #
 # spec file for zimbra.rpm
 #
-Summary: Zimbra Customer Care
-Name: zimbra-customercare
+Summary: Zimbra Memcached
+Name: zimbra-memcached
 Version: @@VERSION@@
 Release: @@RELEASE@@
-Copyright: Various
+Copyright: ZPL and other
 Group: Applications/Messaging
 URL: http://www.zimbra.com
 Vendor: Zimbra, Inc.
@@ -13,7 +13,6 @@ Packager: Zimbra, Inc.
 BuildRoot: /opt/zimbra
 AutoReqProv: no
 requires: zimbra-core
-requires: zimbra-store
 
 %description
 Best email money can buy
