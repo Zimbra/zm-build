@@ -96,9 +96,7 @@ if [ x$BUILDTYPE = x"foss" ]; then
 	TARGETS="ajaxtar $TARGETS"
 fi
 
-if [ x$BUILDTYPE = x"network" ]; then
-		cd $PATHDIR/../ZimbraNetwork/ZimbraBuild
-elif [ x$BUILDTYPE = x"foss" ]; then
+if [ x$BUILDTYPE = x"network" -o x$BUILDTYPE = x"foss" ]; then
 	cd $PATHDIR
 elif [ x$BUILDTYPE = x"dekstop" ]; then
 	cd $PATHDIR/../ZimbraOffline
@@ -108,7 +106,9 @@ else
 fi
 
 echo "Starting ZCS build"
-if [ x$BUILDTYPE = x"foss" -o x$BUILDTYPE = x"network" ]; then
+if [ x$BUILDTYPE = x"network" ]; then
+	make -f $PATHDIR/../ZimbraNetwork/ZimbraBuild/Makefile $TARGETS
+elif [ x$BUILDTYPE = x"foss" ]; then
 	make -f Makefile $TARGETS
 else
 	ant -f installer-ant.xml
