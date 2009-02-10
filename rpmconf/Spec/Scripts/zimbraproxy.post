@@ -14,10 +14,15 @@
 # ***** END LICENSE BLOCK *****
 # 
 
-rm -rf /opt/zimbra/memcached
+# Symlinks
+if [ -L "/opt/zimbra/memcached" ]; then
+  rm -rf /opt/zimbra/memcached
+fi
 ln -s /opt/zimbra/memcached-1.2.5 /opt/zimbra/memcached
 
-rm -rf /opt/zimbra/nginx
+if [ -L "/opt/zimbra/nginx" ]; then
+  rm -rf /opt/zimbra/nginx
+fi
 ln -s /opt/zimbra/nginx-0.5.30-zimbra /opt/zimbra/nginx
 
 SUDOMODE=`perl -e 'my $mode=(stat("/etc/sudoers"))[2];printf("%04o\n",$mode & 07777);'`
@@ -29,8 +34,3 @@ chmod $SUDOMODE /etc/sudoers
 if [ -x "/opt/zimbra/libexec/zmfixperms" ]; then
   /opt/zimbra/libexec/zmfixperms
 fi
-
-PKG=`echo ${RECEIPT_PATH} | sed -e 's|.*/\(zimbra-proxy[^/]*pkg\)/.*|\1|' | sed -e 's/\./-/'`
-D=`date +%s`
-echo "${D}: INSTALLED ${PKG}" >> /opt/zimbra/.install_history
-exit 0
