@@ -58,7 +58,7 @@ if [ ! -x /usr/bin/rpmbuild -a ! -x /usr/bin/dpkg -a ! -x /Developer/Application
 	exit 1;
 fi
 
-if [ x$BUILDTHIRDPARTY = x"yes" and x$BUILDTYPE = x"desktop" ]; then
+if [ x$BUILDTHIRDPARTY = x"yes" -a x$BUILDTYPE = x"desktop" ]; then
 	echo "Error: ThirdParty builds and Desktop builds are mutually exclusive"
 	exit 1;
 fi
@@ -97,12 +97,7 @@ if [ x$BUILDTYPE = x"foss" ]; then
 fi
 
 if [ x$BUILDTYPE = x"network" ]; then
-	if [ -f $PATHDIR/../ZimbraNetwork/ZimbraBuild/Makefile ]; then
 		cd $PATHDIR/../ZimbraNetwork/ZimbraBuild
-	else
-		echo "Network edition build not available"
-		exit 1;
-	fi
 elif [ x$BUILDTYPE = x"foss" ]; then
 	cd $PATHDIR
 elif [ x$BUILDTYPE = x"dekstop" ]; then
