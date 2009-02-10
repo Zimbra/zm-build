@@ -97,7 +97,12 @@ if [ x$BUILDTYPE = x"foss" ]; then
 fi
 
 if [ x$BUILDTYPE = x"network" ]; then
-	cd $PATHDIR/../ZimbraNetwork/ZimbraBuild/Makefile
+	if [ -f $PATHDIR/../ZimbraNetwork/ZimbraBuild/Makefile ]; then
+		cd $PATHDIR/../ZimbraNetwork/ZimbraBuild
+	else
+		echo "Network edition build not available"
+		exit 1;
+	fi
 elif [ x$BUILDTYPE = x"foss" ]; then
 	cd $PATHDIR
 elif [ x$BUILDTYPE = x"dekstop" ]; then
