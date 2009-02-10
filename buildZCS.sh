@@ -58,6 +58,11 @@ if [ ! -x /usr/bin/rpmbuild -a ! -x /usr/bin/dpkg -a ! -x /Developer/Application
 	exit 1;
 fi
 
+if [ x$BUILDTHIRDPARTY = x"yes" and x$BUILDTYPE = x"desktop" ]; then
+	echo "Error: ThirdParty builds and Desktop builds are mutually exclusive"
+	exit 1;
+fi
+
 if [ x$BUILDTHIRDPARTY = x"yes" ]; then
 	echo "Starting 3rd Party build"
 	if [ -x "../ThirdParty/buildThirdParty.sh" ]; then
