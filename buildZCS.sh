@@ -106,11 +106,14 @@ else
 fi
 
 echo "Starting ZCS build"
+mkdir -p $PATHDIR/../logs
 if [ x$BUILDTYPE = x"network" ]; then
-	make -f $PATHDIR/../ZimbraNetwork/ZimbraBuild/Makefile $TARGETS
+	make -f $PATHDIR/../ZimbraNetwork/ZimbraBuild/Makefile clean
+	make -f $PATHDIR/../ZimbraNetwork/ZimbraBuild/Makefile $TARGETS | tee $PATHDIR/../logs/NE-build.log
 elif [ x$BUILDTYPE = x"foss" ]; then
-	make -f Makefile $TARGETS
+	make -f Makefile clean
+	make -f Makefile $TARGETS | tee $PATHDIR/../logs/FOSS-build.log
 else
-	ant -f installer-ant.xml
+	ant -f installer-ant.xml | tee $PATHDIR/../logs/Desktop-build.log
 fi
 exit 0;
