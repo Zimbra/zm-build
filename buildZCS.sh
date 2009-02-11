@@ -48,6 +48,10 @@ do
 	echo "  Checking $req"
 	if [ ! -x /usr/local/$req/bin/$req ]; then
 		echo "Error: /usr/local/$req/bin/$req not found"
+		if [ x$req = x"ant" ]; then
+			echo "You can obtain $req from:"
+			echo "http://ant.apache.org/bindownload.cgi"
+		fi
 		exit 1;
 	fi
 done
