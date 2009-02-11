@@ -70,13 +70,39 @@ echo "Checking for prerequisite binaries"
 for req in ant java
 do
 	echo "  Checking $req"
-	if [ ! -x /usr/local/$req/bin/$req ]; then
-		echo "Error: /usr/local/$req/bin/$req not found"
+	command=`which $req 2>/dev/null`
+	RC=$?
+	if [ $RC -eq 0 ]; then
+		if [ x$req = x"ant" ]; then
+			VERSION=`$command -version | sed -e 's/Apache Ant version //' -e 's/ compiled on .*$//'`
+			MAJOR=`echo $VERSION | awk -F. '{print $1}'`
+			MINOR=`echo $VERSION | awk -F. '{print $2}'`
+			PATCH=`echo $VERSION | awk -F. '{print $3}'`
+			if [ $MAJOR -eq 1 -a $MINOR -lt 6  -a $PATCH -lt 5 ]; then
+				echo "Error: Unsupported version of $req: $VERSION"
+				echo "You can obtain $req from:"
+				echo "http://ant.apache.org/bindownload.cgi"
+				exit 1;
+			fi
+		elif [ x$req = x"java" ]; then
+			VERSION=$(${command} -version 2>&1 | grep "java version" | sed -e 's/"//g' | awk '{print $NF}' | awk -F_ '{print $1}')
+			MAJOR=`echo $VERSION | awk -F. '{print $1}'`
+			MINOR=`echo $VERSION | awk -F. '{print $2}'`
+			PATCH=`echo $VERSION | awk -F. '{print $3}'`
+			if [ $MAJOR -eq 1 -a $MINOR -ne 5 ]; then
+				echo "Error: Unsupported version of $req: $VERSION"
+				echo "You can obtain $req from:"
+				echo "http://java.sun.com/javase/downloads/index_jdk5.jsp"
+				echo "Make sure the downloaded version appears first in your path"
+				exit 1;
+			fi
+		fi
+	else
+		echo "Error: $req not found"
 		if [ x$req = x"ant" ]; then
 			echo "You can obtain $req from:"
 			echo "http://ant.apache.org/bindownload.cgi"
-		fi
-		if [ x$req = x"java" ]; then
+		elif [ x$req = x"java" ]; then
 			if [[ $PLAT == "MACOSX"* ]]; then
 				echo "Please create a symlink from:"
 				echo "/System/Library/Frameworks/JavaVM.framework/Home to /usr/local/$req"
@@ -140,7 +166,7 @@ if [ x$BUILDTHIRDPARTY = x"yes" ]; then
 	if [ -x "../ThirdParty/buildThirdParty.sh" ]; then
 		${PATHDIR}/../ThirdParty/buildThirdParty.sh $TPOPTS
 		RC=$?
-		if [ $RC != 0 ]; then
+		if [ $RC -ne 0 ]; then
 			echo "Error: Building third party failed"
 			echo "Please fix and retry"
 			exit 1;
