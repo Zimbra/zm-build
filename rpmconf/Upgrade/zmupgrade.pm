@@ -2547,6 +2547,18 @@ sub upgrade5013GA {
 sub upgrade5014GA {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
 	main::progress("Updating from 5.0.14_GA\n");
+  if (main::isInstalled("zimbra-ldap") && $isLdapMaster) {
+    # 35259
+	  my @calres = `$su "$ZMPROV gacr"`;
+    my %attrs = ( zimbraCalResMaxNumConflictsAllowed => "0",
+                  zimbraCalResMaxPercentConflictsAllowed => "0");
+	  foreach my $resource (@calres) {
+		  chomp $resource;
+      foreach my $attr (keys %attrs) {
+        main::runAsZimbra("$ZMPROV mcr $resource $attr \'$attrs{$attr}\'");
+      }
+    }
+  }
 	return 0;
 }
 
