@@ -66,11 +66,37 @@ do
 				echo "/System/Library/Frameworks/JavaVM.framework/Home to /usr/local/$req"
 				echo "cd /usr/local"
 				echo "ln -s /System/Library/Frameworks/JavaVM.framework/Home $req"
+			else
+				echo "Please obtain JDK 1.5 from:"
+				echo "http://java.sun.com/javase/downloads/index_jdk5.jsp"
+				echo "And install it in /usr/local"
+				echo "Then symlink it to /usr/local/java"
 			fi
 		fi
 		exit 1;
 	fi
 done
+
+JVERSION=`grep ^JAVA_VERSION $PATHDIR/defs/plat_common.def | sed -e 's/JAVA_VERSION[\t]*:=[\t]*[ ]*//'`
+if [[ $PLAT == *"_64" ]]; then
+	if [ ! -f $PATHDIR/../ThirdPartyBuilds/x86_64/java/jdk${JVERSION}.tgz ]; then
+		echo "Error: jdk file needed for ZCS packaging not available"
+		echo "Necessary version is: $JVERSION"
+		echo "Please create $PATHDIR/../ThirdPartyBuilds/x86_64/java/jdk${JVERSION}.tgz"
+		echo "Which is an extracted then retarred version of JDK 1.5 downloaded from"
+		echo "http://java.sun.com/javase/downloads/index_jdk5.jsp"
+		exit 1;
+	fi
+elif [[ $PLAT != "MACOSX"* ]]; then
+	if [ ! -f $PATHDIR/../ThirdPartyBuilds/i386/java/jdk${JVERSION}.tgz ]; then
+		echo "Error: jdk file needed for ZCS packaging not available"
+		echo "Necessary version is: $JVERSION"
+		echo "Please create $PATHDIR/../ThirdPartyBuilds/i386/java/jdk${JVERSION}.tgz"
+		echo "Which is an extracted then retarred version of JDK 1.5 downloaded from"
+		echo "http://java.sun.com/javase/downloads/index_jdk5.jsp"
+		exit 1;
+	fi
+fi
 
 if [ ! -x /usr/bin/rpmbuild -a ! -x /usr/bin/dpkg -a ! -x /Developer/Applications/Utilities/PackageMaker.app/Contents/MacOS/PackageMaker ]; then
 	echo "Error: No package building software found."
