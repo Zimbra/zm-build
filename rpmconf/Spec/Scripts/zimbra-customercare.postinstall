@@ -2,7 +2,7 @@
 # 
 # ***** BEGIN LICENSE BLOCK *****
 # Zimbra Collaboration Suite Server
-# Copyright (C) 2007 Zimbra, Inc.
+# Copyright (C) 2005, 2006, 2007 Zimbra, Inc.
 # 
 # The contents of this file are subject to the Yahoo! Public License
 # Version 1.0 ("License"); you may not use this file except in
@@ -14,12 +14,8 @@
 # ***** END LICENSE BLOCK *****
 # 
 
-# Symlinks
-if [ -L "/opt/zimbra/memcached" ]; then
-  rm -rf /opt/zimbra/memcached
-fi
-ln -s /opt/zimbra/memcached-1.2.6 /opt/zimbra/memcached
 
-if [ -x "/opt/zimbra/libexec/zmfixperms" ]; then
-  /opt/zimbra/libexec/zmfixperms
-fi
+PKG=`echo ${RECEIPT_PATH} | sed -e 's|.*/\(zimbra-customercare.[^/]*pkg\)/.*|\1|' | sed -e 's/\./-/'`
+D=`date +%s`
+echo "${D}: INSTALLED ${PKG}" >> /opt/zimbra/.install_history
+
