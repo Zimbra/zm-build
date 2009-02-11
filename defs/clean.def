@@ -22,6 +22,7 @@ CLEAN_TARGETS	=	\
 
 clean:
 	rm -rf $(CLEAN_TARGETS)
+	rm -f ../zcs-*-src
 
 allclean: clean
 	(cd $(SERVICE_DIR); $(ANT) clean)
