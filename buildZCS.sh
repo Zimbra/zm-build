@@ -48,6 +48,8 @@ done
 RELEASE=${PATHDIR%/*}
 RELEASE=${RELEASE##*/}
 
+PLAT=`$PATHDIR/../ZimbraBuild/rpmconf/Build/get_plat_tag.sh`;
+
 echo "Checking for prerequisite binaries"
 for req in ant java
 do
@@ -57,6 +59,14 @@ do
 		if [ x$req = x"ant" ]; then
 			echo "You can obtain $req from:"
 			echo "http://ant.apache.org/bindownload.cgi"
+		fi
+		if [ x$req = x"java" ]; then
+			if [[ $PLAT == "MACOSX"* ]]; then
+				echo "Please create a symlink from:"
+				echo "/System/Library/Frameworks/JavaVM.framework/Home to /usr/local/$req"
+				echo "cd /usr/local"
+				echo "ln -s /System/Library/Frameworks/JavaVM.framework/Home $req"
+			fi
 		fi
 		exit 1;
 	fi
