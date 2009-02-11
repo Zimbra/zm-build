@@ -5,12 +5,14 @@ cd $PROGDIR
 PATHDIR=`pwd`
 BUILDTHIRDPARTY=no
 BUILDTYPE=foss
+PMIRROR=no
 
 usage() {
 	echo ""
-	echo "Usage: "`basename $0`" [-t] [-n]" >&2
+	echo "Usage: "`basename $0`" [-d] [-t [-p]] [-n]" >&2
 	echo "-d: Perform a Zimbra Desktop build"
 	echo "-n: Perform a Network Edition build"
+	echo "-p: Use public Perl mirror when building 3rd party"
 	echo "-t: Build third party as well as ZCS"
 }
 
@@ -26,6 +28,10 @@ while [ $# -gt 0 ]; do
 			;;
 		-n|--network)
 			BUILDTYPE=network
+			shift;
+			;;
+		-p|--public)
+			PMIRROR=yes
 			shift;
 			;;
 		-t|--thirdparty)
@@ -67,10 +73,20 @@ if [ x$BUILDTHIRDPARTY = x"yes" -a x$BUILDTYPE = x"desktop" ]; then
 	exit 1;
 fi
 
+if [ x$BUILDTHIRDPARTY = x"no" -a x$PMIRROR = x"yes" ]; then
+	echo "Error: Cannot use -p without -t"
+	exit 1;
+fi
+
+TPOPTS="-c"
+if [ x$PMIRROR = x"yes" ]; then
+	TPOPTS="$TPOPTS -p"
+fi
+
 if [ x$BUILDTHIRDPARTY = x"yes" ]; then
 	echo "Starting 3rd Party build"
 	if [ -x "../ThirdParty/buildThirdParty.sh" ]; then
-		${PATHDIR}/../ThirdParty/buildThirdParty.sh -c
+		${PATHDIR}/../ThirdParty/buildThirdParty.sh $TPOPTS
 		RC=$?
 		if [ $RC != 0 ]; then
 			echo "Error: Building third party failed"
