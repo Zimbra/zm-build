@@ -202,6 +202,11 @@ checkUser() {
 }
 
 checkDatabaseIntegrity() {
+
+  if [ x"$CLUSTERTYPE" = "xstandby" ]; then
+    return
+  fi
+
   isInstalled zimbra-store
   if [ x$PKGINSTALLED != "x" ]; then
     if [ -x "bin/zmdbintegrityreport" -a -x "/opt/zimbra/bin/mysqladmin" ]; then
@@ -275,6 +280,11 @@ checkDatabaseIntegrity() {
 }
 
 checkRecentBackup() {
+
+  if [ x"$CLUSTERTYPE" = "xstandby" ]; then
+    return
+  fi
+
   isInstalled zimbra-store
   if [ x$PKGINSTALLED != "x" ]; then
     if [ -x "bin/checkValidBackup" ]; then
@@ -723,8 +733,9 @@ verifyLicenseAvailable() {
     elif [ -f "/opt/zimbra/conf/ZCSLicense-Trial.xml" ]; then
       licenseCheck="license is OK"
       licensedUsers=`cat /opt/zimbra/conf/ZCSLicense-Trial.xml | grep AccountsLimit | head -1  | awk '{print $3}' | awk -F= '{print $2}' | awk -F\" '{print $2}'`
-    elif [ x"$CLUSTERTYPE" != "x" ]; then
+    elif [ x"$CLUSTERTYPE" != "xstandby" ]; then
       echo "Not checking for license on cluster stand-by node."
+      return
     else
       echo "ERROR: The ZCS Network upgrade requires a license to be located in"
       echo "/opt/zimbra/conf/ZCSLicense.xml or a license previously installed."
