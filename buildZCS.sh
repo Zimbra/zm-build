@@ -28,7 +28,7 @@ usage() {
 	echo "Usage: "`basename $0`" [-d] [-t [-p]] [-n]" >&2
 	echo "-d: Perform a Zimbra Desktop build"
 	echo "-n: Perform a Network Edition build"
-	echo "-p: Use public Perl mirror when building 3rd party"
+	echo "-p: Use private Perl mirror when building 3rd party"
 	echo "-t: Build third party as well as ZCS"
 }
 
@@ -46,7 +46,7 @@ while [ $# -gt 0 ]; do
 			BUILDTYPE=network
 			shift;
 			;;
-		-p|--public)
+		-p|--private)
 			PMIRROR=yes
 			shift;
 			;;
