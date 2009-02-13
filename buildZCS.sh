@@ -196,7 +196,7 @@ fi
 
 if [ x$BUILDTYPE = x"network" -o x$BUILDTYPE = x"foss" ]; then
 	cd $PATHDIR
-elif [ x$BUILDTYPE = x"dekstop" ]; then
+elif [ x$BUILDTYPE = x"desktop" ]; then
 	cd $PATHDIR/../ZimbraOffline
 else
 	echo "Error: Unknown build type $BUILDTYPE"
