@@ -3,8 +3,8 @@
 <plist version="1.0">
 <dict>
 	<key>IFPkgDescriptionTitle</key>
-	<string>zimbra-memcached @@VERSION@@</string>
+	<string>zimbra-customercare @@VERSION@@</string>
 	<key>IFPkgDescriptionTitle</key>
-	<string>Zimbra Memcached Utilities</string>
+	<string>Zimbra Customer Care Utilities</string>
 </dict>
 </plist>

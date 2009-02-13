@@ -22,23 +22,23 @@ export JAVA_HOME
 JAVA_JVM_VERSION=1.5
 export JAVA_JVM_VERSION
 
-PATH=/opt/zimbra/bin:/opt/zimbra/zimbramon:/opt/zimbra/postfix/sbin:/opt/zimbra/openldap/bin:/opt/zimbra/snmp/bin:/opt/zimbra/bdb/bin:/opt/zimbra/openssl/bin:${JAVA_HOME}/bin:${PATH}
+PATH=/opt/zimbra/bin:/opt/zimbra/zimbramon:/opt/zimbra/postfix/sbin:/opt/zimbra/openldap/bin:/opt/zimbra/snmp/bin:/opt/zimbra/sleepycat/bin:/opt/zimbra/openssl/bin:${JAVA_HOME}/bin:${PATH}
 export PATH
 
 unset LD_LIBRARY_PATH
 #if [ "x$LD_LIBRARY_PATH" = "x" ]; then
-#  LD_LIBRARY_PATH=/opt/zimbra/lib:/opt/zimbra/bdb/lib:/opt/zimbra/openssl/lib:/opt/zimbra/heimdal/lib:/opt/zimbra/curl/lib:/opt/zimbra/cyrus-sasl/lib:/opt/zimbra/openldap-clibs/lib:/opt/zimbra/openldap/lib:/opt/zimbra/mysql/lib:/opt/zimra/mysql/lib/mysql
+#  LD_LIBRARY_PATH=/opt/zimbra/lib:/opt/zimbra/sleepycat/lib:/opt/zimbra/openssl/lib:/opt/zimbra/heimdal/lib:/opt/zimbra/curl/lib:/opt/zimbra/cyrus-sasl/lib:/opt/zimbra/openldap-clibs/lib:/opt/zimbra/openldap/lib:/opt/zimbra/mysql/lib:/opt/zimra/mysql/lib/mysql
 #else
-#  LD_LIBRARY_PATH=/opt/zimbra/lib:/opt/zimbra/bdb/lib:/opt/zimbra/openssl/lib:/opt/zimbra/heimdal/lib:/opt/zimbra/curl/lib:/opt/zimbra/cyrus-sasl/lib:/opt/zimbra/openldap-clibs/lib:/opt/zimbra/openldap/lib:/opt/zimbra/mysql/lib:/opt/zimbra/mysql/lib/mysql:${LD_LIBRARY_PATH}
+#  LD_LIBRARY_PATH=/opt/zimbra/lib:/opt/zimbra/sleepycat/lib:/opt/zimbra/openssl/lib:/opt/zimbra/heimdal/lib:/opt/zimbra/curl/lib:/opt/zimbra/cyrus-sasl/lib:/opt/zimbra/openldap-clibs/lib:/opt/zimbra/openldap/lib:/opt/zimbra/mysql/lib:/opt/zimbra/mysql/lib/mysql:${LD_LIBRARY_PATH}
 #fi
 #export LD_LIBRARY_PATH
 
 if [ `uname -s` == "Darwin" ]; then
 unset DYLD_LIBRARY_PATH
 #  if [ "x$DYLD_LIBRARY_PATH" = "x" ]; then
-#    DYLD_LIBRARY_PATH=/opt/zimbra/lib:/opt/zimbra/bdb/lib:/opt/zimbra/openssl/lib:/opt/zimbra/heimdal/lib:/opt/zimbra/curl/lib:/opt/zimbra/cyrus-sasl/lib:/opt/zimbra/openldap-clibs/lib:/opt/zimbra/openldap/lib:/opt/zimbra/mysql/lib:/opt/zimbra/mysql/lib/mysql
+#    DYLD_LIBRARY_PATH=/opt/zimbra/lib:/opt/zimbra/sleepycat/lib:/opt/zimbra/openssl/lib:/opt/zimbra/heimdal/lib:/opt/zimbra/curl/lib:/opt/zimbra/cyrus-sasl/lib:/opt/zimbra/openldap-clibs/lib:/opt/zimbra/openldap/lib:/opt/zimbra/mysql/lib:/opt/zimbra/mysql/lib/mysql
 #  else
-#    DYLD_LIBRARY_PATH=/opt/zimbra/lib:/opt/zimbra/bdb/lib:/opt/zimbra/openssl/lib:/opt/zimbra/heimdal/lib:/opt/zimbra/curl/lib:/opt/zimbra/cyrus-sasl/lib:/opt/zimbra/openldap-clibs/lib:/opt/zimbra/openldap/lib:/opt/zimbra/mysql/lib:/opt/zimbra/mysql/lib/mysql:${DYLD_LIBRARY_PATH}
+#    DYLD_LIBRARY_PATH=/opt/zimbra/lib:/opt/zimbra/sleepycat/lib:/opt/zimbra/openssl/lib:/opt/zimbra/heimdal/lib:/opt/zimbra/curl/lib:/opt/zimbra/cyrus-sasl/lib:/opt/zimbra/openldap-clibs/lib:/opt/zimbra/openldap/lib:/opt/zimbra/mysql/lib:/opt/zimbra/mysql/lib/mysql:${DYLD_LIBRARY_PATH}
 #  fi
 fi
 #export DYLD_LIBRARY_PATH
