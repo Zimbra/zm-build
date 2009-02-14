@@ -5,9 +5,9 @@
 	<key>CFBundleGetInfoString</key>
 	<string>@@VERSION@@, Zimbra, Inc.</string>
 	<key>CFBundleIdentifier</key>
-	<string>com.zimbra.zcs.memcached</string>
+	<string>com.zimbra.zcs.customercare</string>
 	<key>CFBundleName</key>
-	<string>zimbra-memcached</string>
+	<string>zimbra-customercare</string>
 	<key>CFBundleShortVersionString</key>
 	<string>@@MAJOR@@.@@MINOR@@</string>
 	<key>BuildVersion</key>
@@ -29,7 +29,7 @@
 	<key>IFPkgFlagInstallFat</key>
 	<false/>
 	<key>IFPkgFlagIsRequired</key>
-	<true/>
+	<false/>
 	<key>IFPkgFlagOverwritePermissions</key>
 	<false/>
 	<key>IFPkgFlagRelocatable</key>
