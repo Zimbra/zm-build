@@ -4,7 +4,7 @@
 # __STORE
 
 store: CUR_DEST_ROOT := $(STORE_DEST_ROOT)
-store: CUR_PACKAGE_SPEC := $(BUILD_ROOT)/zimbra.spec
+store: CUR_PACKAGE_SPEC := $(BUILD_ROOT)/zimbra-store.spec
 store: CUR_PACKAGE_NAME := zimbra-store
 store: $(PACKAGE_DIR) store_stage store_pkg_spec_$(PACKAGE_EXT)
 	(cd $(CUR_DEST_ROOT); \
@@ -42,51 +42,51 @@ store_pkg_spec_deb: $(STORE_DEST_ROOT)/DEBIAN/control
 
 $(STORE_DEST_ROOT)/DEBIAN: force
 	mkdir -p $@
-	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra.pre $@/preinst
+	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-store.pre $@/preinst
 	echo "#!/bin/bash" > $@/postinst
 	echo "sh /opt/zimbra/libexec/zmfixperms" >> $@/postinst
-	cat $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra.post >> $@/postinst
+	cat $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-store.post >> $@/postinst
 	chmod 555 $@/*
 
 $(STORE_DEST_ROOT)/DEBIAN/control: $(STORE_DEST_ROOT)/DEBIAN force
-	cat $(PACKAGE_CONF_DIR)/Spec/zimbrastore.deb | \
+	cat $(PACKAGE_CONF_DIR)/Spec/zimbra-store.deb | \
 	sed -e 's/@@VERSION@@/$(VERSION_TAG)/' \
 	-e 's/@@RELEASE@@/$(RELEASE)/' \
 	-e 's/@@ARCH@@/$(ARCH)/' > $@
 
-store_pkg_spec_rpm: $(BUILD_ROOT)/zimbra.spec
+store_pkg_spec_rpm: $(BUILD_ROOT)/zimbra-store.spec
 
-$(BUILD_ROOT)/zimbra.spec:
-	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra.pre $(BUILD_ROOT)
-	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra.post $(BUILD_ROOT)
-	cat $(PACKAGE_CONF_DIR)/Spec/zimbra.spec | \
+$(BUILD_ROOT)/zimbra-store.spec:
+	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-store.pre $(BUILD_ROOT)
+	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-store.post $(BUILD_ROOT)
+	cat $(PACKAGE_CONF_DIR)/Spec/zimbra-store.spec | \
 		sed -e 's/@@VERSION@@/$(VERSION_TAG)/' \
 		-e 's/@@RELEASE@@/$(RELEASE)/' \
 		-e 's/^Copyright:/$(RPMCOPYRIGHTSTR):/' \
-		-e '/^%pre$$/ r zimbra.pre' \
-		-e '/^%post$$/ r zimbra.post' > $(BUILD_ROOT)/zimbra.spec
-	rm -f zimbra.pre
-	rm -f zimbra.post
+		-e '/^%pre$$/ r zimbra-store.pre' \
+		-e '/^%post$$/ r zimbra-store.post' > $(BUILD_ROOT)/zimbra-store.spec
+	rm -f zimbra-store.pre
+	rm -f zimbra-store.post
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/conf" >> \
-		$(BUILD_ROOT)/zimbra.spec
+		$(BUILD_ROOT)/zimbra-store.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/lib" >> \
-		$(BUILD_ROOT)/zimbra.spec
+		$(BUILD_ROOT)/zimbra-store.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/log" >> \
-		$(BUILD_ROOT)/zimbra.spec
+		$(BUILD_ROOT)/zimbra-store.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/zimlets" >> \
-		$(BUILD_ROOT)/zimbra.spec
+		$(BUILD_ROOT)/zimbra-store.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/zimlets-extra" >> \
-		$(BUILD_ROOT)/zimbra.spec
+		$(BUILD_ROOT)/zimbra-store.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/zimlets-admin-extra" >> \
-		$(BUILD_ROOT)/zimbra.spec
+		$(BUILD_ROOT)/zimbra-store.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/zimlets-experimental" >> \
-		$(BUILD_ROOT)/zimbra.spec
+		$(BUILD_ROOT)/zimbra-store.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/$(MAILBOXD_DIR)" >> \
-		$(BUILD_ROOT)/zimbra.spec
+		$(BUILD_ROOT)/zimbra-store.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/wiki" >> \
-		$(BUILD_ROOT)/zimbra.spec
+		$(BUILD_ROOT)/zimbra-store.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/mysql-standard-$(MYSQL_VERSION_STRING)-pc-linux-gnu-i686-glibc23" >> \
-		$(BUILD_ROOT)/zimbra.spec
+		$(BUILD_ROOT)/zimbra-store.spec
 
 store_stage: $(STORE_COMPONENTS) $(ZIMLET_COMPONENTS)
 

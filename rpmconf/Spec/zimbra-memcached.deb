@@ -1,4 +1,4 @@
-Package: zimbra-customercare
+Package: zimbra-memcached
 Version: @@VERSION@@
 Description: Best email money can buy
 Maintainer: build@zimbra.com
