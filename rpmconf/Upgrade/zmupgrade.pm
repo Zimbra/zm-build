@@ -2571,13 +2571,22 @@ sub upgrade5014GA {
 	main::progress("Updating from 5.0.14_GA\n");
   if (main::isInstalled("zimbra-ldap") && $isLdapMaster) {
     # 35259
-	  my @calres = `$su "$ZMPROV gacr"`;
+    my @calres = `$su "$ZMPROV gacr"`;
     my %attrs = ( zimbraCalResMaxNumConflictsAllowed => "0",
                   zimbraCalResMaxPercentConflictsAllowed => "0");
-	  foreach my $resource (@calres) {
-		  chomp $resource;
+    foreach my $resource (@calres) {
+      chomp $resource;
       foreach my $attr (keys %attrs) {
         main::runAsZimbra("$ZMPROV mcr $resource $attr \'$attrs{$attr}\'");
+      }
+    }
+    # 34899
+    my @coses = `$su "$ZMPROV gac"`;
+    my %attrs = ( zimbraCalendarCalDavSharedFolderCacheDuration => "1m");
+    foreach my $cos (@coses) {
+      chomp $cos;
+      foreach my $attr (keys %attrs) {
+        main::runAsZimbra("$ZMPROV mc $cos $attr \'$attrs{$attr}\'");
       }
     }
   }
