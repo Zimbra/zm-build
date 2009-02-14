@@ -733,7 +733,7 @@ verifyLicenseAvailable() {
     elif [ -f "/opt/zimbra/conf/ZCSLicense-Trial.xml" ]; then
       licenseCheck="license is OK"
       licensedUsers=`cat /opt/zimbra/conf/ZCSLicense-Trial.xml | grep AccountsLimit | head -1  | awk '{print $3}' | awk -F= '{print $2}' | awk -F\" '{print $2}'`
-    elif [ x"$CLUSTERTYPE" != "xstandby" ]; then
+    elif [ x"$CLUSTERTYPE" = "xstandby" ]; then
       echo "Not checking for license on cluster stand-by node."
       return
     else
