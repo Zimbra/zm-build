@@ -28,6 +28,9 @@ SPELL_DEST_DIR		:= $(SPELL_DEST_ROOT)/opt/zimbra
 PROXY_DEST_ROOT		:= $(BUILD_ROOT)/proxybuild
 PROXY_DEST_DIR		:= $(PROXY_DEST_ROOT)/opt/zimbra
 
+MEMCACHED_DEST_ROOT		:= $(BUILD_ROOT)/memcachedbuild
+MEMCACHED_DEST_DIR		:= $(MEMCACHED_DEST_ROOT)/opt/zimbra
+
 WEBAPP_DIR		:= $(STORE_DEST_ROOT)/opt/zimbra/$(MAILBOXD_DIR)/webapps
 WEBAPP_BUILD_DIR := build/dist/$(MAILBOXD_SERVER)/webapps
 
