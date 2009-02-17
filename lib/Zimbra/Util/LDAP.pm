@@ -132,13 +132,41 @@ sub doLdap() {
     main::logMsg(2,"LDAP: Unknown key: $key");
     $rc=1;
   }
+
+  if ($rc) { $ldap->unbind; return $rc; }
+
   if (!$real_master && ($key =~ /ldap_access/ || $key =~ /ldap_overlay/)) {
     main::logMsg(2,"LDAP: Trying to modify key: $key when not a master");
     $ldap->unbind;
     return 0;
   }
-  if ($rc) { $ldap->unbind; return $rc; }
 
+  if ($key =~ /_shmkey/ && $value != 0 && $real_master) {
+    my ($alt_key, $alt_value, $alt_dn, $entry);
+
+    if ($key =~ /ldap_db_shmkey/) {
+      $alt_key="ldap_accesslog_shmkey";
+      $alt_dn="olcDatabase={2}hdb,cn=config";
+    } else {
+      $alt_key="ldap_db_shmkey";
+      $alt_dn="olcDatabase={3}hdb,cn=config";
+    }
+    $mesg=$ldap->search(base=>$alt_dn,
+                  scope=>"base",
+                  filter=>'objectClass=*',
+                  attrs=>[ "$ldap_key" ],
+                 );
+   
+    $entry=$mesg->entry(0);
+    $alt_value = $entry->get_value("$ldap_key");
+    if ($alt_value == $value) {
+      main::logMsg(2,"LDAP: Trying to set unique key value : $key:$value");
+      main::logMsg(2,"LDAP: When alternate key has value   : $alt_key:$alt_value");
+      main::logMsg(2,"LDAP: Values must differ if non-zero");
+      $ldap->unbind;
+      return 1;
+    }
+  }
   main::logMsg(3,"LDAP: Changing key: $key");
   $mesg = $ldap->modify(
          $dn,
