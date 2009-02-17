@@ -2548,6 +2548,8 @@ sub upgrade5014GA {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
 	main::progress("Updating from 5.0.14_GA\n");
   if (main::isInstalled("zimbra-ldap") && $isLdapMaster) {
+    # 35448
+    upgradeLdapConfigValue("zimbraCalendarCalDavClearTextPasswordEnabled", "TRUE", "");
     # 35259
     my @calres = `$su "$ZMPROV gacr"`;
     my %attrs = ( zimbraCalResMaxNumConflictsAllowed => "0",
