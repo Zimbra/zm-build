@@ -18,6 +18,7 @@ package zmupgrade;
 
 use strict;
 use lib "/opt/zimbra/libexec/scripts";
+use lib "/opt/zimbra/zimbramon/lib";
 use Migrate;
 use Net::LDAP;
 use File::Grep qw (fgrep);
@@ -2649,20 +2650,32 @@ sub upgrade600BETA1 {
       }
     }
   }
+  if (main::isInstalled("zimbra-store")) {
+    #35284
+    my $mailboxd_java_options=main::getLocalConfig("mailboxd_java_options");
+    my $new_mailboxd_options;
+    foreach my $option (split(/\s+/, $mailboxd_java_options)) {
+      $new_mailboxd_options.=" $option" if ($option !~ /^-Xss/); 
+    }
+    $new_mailboxd_options =~ s/^\s+//;
+    main::setLocalConfig("mailboxd_java_options", $new_mailboxd_options)
+      if ($new_mailboxd_options ne "");
+  }
+
   # bug#33648
-  `$su "zmlocalconfig -u ldap_require_tls"`;
-  `$su "zmlocalconfig -u calendar_canonical_tzid"`;
-  `$su "zmlocalconfig -u convertd_version"`;
-  `$su "zmlocalconfig -u debug_update_config_use_old_scheme"`;
+  main::deleteLocalConfig("ldap_require_tls");
+  main::deleteLocalConfig("calendar_canonical_tzid");
+  main::deleteLocalConfig("convertd_version");
+  main::deleteLocalConfig("debug_update_config_use_old_scheme");
 
   if (main::isInstalled("zimbra-ldap")) {
     my $ldap_loglevel=main::getLocalConfig("ldap_log_level");
     main::setLocalConfig("ldap_common_loglevel", $ldap_loglevel);
   }
-  `$su "zmlocalconfig -u ldap_log_level"`;
-   upgradeLocalConfigValue("javamail_imap_timeout", "20", "60");
-   upgradeLocalConfigValue("javamail_pop3_timeout", "20", "60");
-   upgradeLocalConfigValue("mysql_table_cache", "1200", "500");
+  main::deleteLocalConfig("ldap_log_level");
+  upgradeLocalConfigValue("javamail_imap_timeout", "20", "60");
+  upgradeLocalConfigValue("javamail_pop3_timeout", "20", "60");
+  upgradeLocalConfigValue("mysql_table_cache", "1200", "500");
    
 	return 0;
 }
