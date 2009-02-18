@@ -2609,11 +2609,34 @@ sub upgrade600BETA1 {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
 	main::progress("Updating from 6.0.0_BETA1\n");
   if (main::isInstalled("zimbra-ldap") && $isLdapMaster) {
+    my $ldap_pass = `$su "zmlocalconfig -s -m nokey zimbra_ldap_password"`;
+    my $ldap_master_url = `$su "zmlocalconfig -s -m nokey ldap_master_url"`;
+    my $start_tls_supported = `$su "zmlocalconfig -s -m nokey ldap_starttls_supported"`;
+    my $ldap; 
+    chomp($ldap_master_url);
+    chomp($ldap_pass);
+    chomp($start_tls_supported);
+    unless($ldap = Net::LDAP->new($ldap_master_url)) {
+      main::progress("Unable to contact $ldap_master_url: $!\n");
+      return 1;
+    }
+    if ($start_tls_supported) {
+      my $result = $ldap->start_tls(verify=>'none');
+      if ($result->code()) {
+        main::progress("Unable to startTLS: $!\n");
+        return 1;
+      }
+    }
+    my $result = $ldap->bind("uid=zimbra,cn=admins,cn=zimbra", password => $ldap_pass);
+    unless($result->code()) {
+        $result = $ldap->modify( "uid=zimbra,cn=admins,cn=zimbra", add => { 'zimbraIsSystemAdminAccount' => 'TRUE'});
+    }
+    $result = $ldap->unbind;
     # 34679
     upgradeAllGlobalAdminAccounts();
 
-	  main::runAsZimbra("zmjava com.zimbra.cs.account.ldap.upgrade.LdapUpgrade -b 33814 -v");
-	  main::runAsZimbra("zmjava com.zimbra.cs.account.ldap.upgrade.LdapUpgrade -b 32557 -v");
+    main::runAsZimbra("zmjava com.zimbra.cs.account.ldap.upgrade.LdapUpgrade -b 33814 -v");
+    main::runAsZimbra("zmjava com.zimbra.cs.account.ldap.upgrade.LdapUpgrade -b 32557 -v");
     upgradeLdapConfigValue("zimbraRedoLogRolloverFileSizeKB", "1048576", "102400");
 
     #33405
@@ -2636,14 +2659,14 @@ sub upgrade600BETA1 {
       }
     }
 
-	  my @coses = `$su "$ZMPROV gac"`;
+    my @coses = `$su "$ZMPROV gac"`;
     my %attrs = ( zimbraContactAutoCompleteEmailFields => "email,email2,email3",
                   zimbraMailPurgeUseChangeDateForTrash => "TRUE",
                   zimbraPrefCalendarAllowPublishMethodInvite => "FALSE",
                   zimbraPrefCalendarAllowForwardedInvite => "TRUE",
                   zimbraContactRankingTableSize        => "40");
-	  foreach my $cos (@coses) {
-		  chomp $cos;
+    foreach my $cos (@coses) {
+      chomp $cos;
       foreach my $attr (keys %attrs) {
         main::runAsZimbra("$ZMPROV mc $cos $attr \'$attrs{$attr}\'");
       }
@@ -2654,9 +2677,11 @@ sub upgrade600BETA1 {
   `$su "zmlocalconfig -u calendar_canonical_tzid"`;
   `$su "zmlocalconfig -u convertd_version"`;
   `$su "zmlocalconfig -u debug_update_config_use_old_scheme"`;
- 
-   my $ldap_loglevel=main::getLocalConfig("ldap_log_level");
-   main::setLocalConfig("ldap_common_loglevel", $ldap_loglevel);
+
+  if (main::isInstalled("zimbra-ldap")) {
+    my $ldap_loglevel=main::getLocalConfig("ldap_log_level");
+    main::setLocalConfig("ldap_common_loglevel", $ldap_loglevel);
+  }
   `$su "zmlocalconfig -u ldap_log_level"`;
    upgradeLocalConfigValue("javamail_imap_timeout", "20", "60");
    upgradeLocalConfigValue("javamail_pop3_timeout", "20", "60");
