@@ -223,13 +223,28 @@ checkDatabaseIntegrity() {
               for ((i = 0; i < 60; i++)) do
                 su - zimbra -c "/opt/zimbra/bin/mysqladmin -s ping" 2>/dev/null
                 if [ $? = 0 ]; then
+                  SQLSTARTED=1
                   break
                 fi
                 sleep 2
               done
             fi
             perl -I/opt/zimbra/zimbramon/lib bin/zmdbintegrityreport -v -r
-            if [ $? != 0 ]; then
+            MAILBOXDBINTEGRITYSTATUS=$?
+            if [ x"$SQLSTARTED" != "x" ]; then
+              su - zimbra -c "/opt/zimbra/bin/mysqladmin -s ping" 2>/dev/null
+              if [ $? = 0 ]; then
+                su - zimbra -c "/opt/zimbra/bin/mysql.server stop" 2> /dev/null
+                for ((i = 0; i < 60; i++)) do
+                  su - zimbra -c "/opt/zimbra/bin/mysqladmin -s ping" 2>/dev/null
+                  if [ $? != 0 ]; then
+                    break
+                  fi
+                  sleep 2
+                done
+              fi
+            fi
+            if [ $MAILBOXDBINTEGRITYSTATUS != 0 ]; then
               exit $?
             fi
             break
@@ -258,13 +273,28 @@ checkDatabaseIntegrity() {
               for ((i = 0; i < 60; i++)) do
                 su - zimbra -c "/opt/zimbra/bin/logmysqladmin -s ping" 2>/dev/null
                 if [ $? = 0 ]; then
+                  LOGGERSQLSTARTED=1
                   break
                 fi
                 sleep 2
               done
             fi
             perl -I/opt/zimbra/zimbramon/lib bin/zmdbintegrityreport -l -v -r
-            if [ $? != 0 ]; then
+            LOGGERDBINTEGRITYSTATUS=$?
+            if [ x"$LOGGERSQLSTARTED" != "x" ]; then
+              su - zimbra -c "/opt/zimbra/bin/logmysqladmin -s ping" 2>/dev/null
+              if [ $? = 0 ]; then
+                su - zimbra -c "/opt/zimbra/bin/logmysql.server stop" 2> /dev/null
+                for ((i = 0; i < 60; i++)) do
+                  su - zimbra -c "/opt/zimbra/bin/logmysqladmin -s ping" 2>/dev/null
+                  if [ $? != 0 ]; then
+                    break
+                  fi
+                  sleep 2
+                done
+              fi
+            fi
+            if [ $LOGGERDBINTEGRITYSTATUS != 0 ]; then
               exit $?
             fi
             break
