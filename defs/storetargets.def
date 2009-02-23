@@ -255,7 +255,9 @@ $(WEBAPP_DIR)/zimbra/downloads:
 	mkdir -p $@
 	-cp $(SERVICE_DIR)/src/windows/*exe $@
 	-cp $(SERVICE_DIR)/src/windows/ZimbraToast*msi $@
-	-cp $(THIRD_PARTY_BUILDS)/zdesktop/zdesktop*.{sh,exe,dmg} $@
+	-cp $(THIRD_PARTY_BUILDS)/zdesktop/zdesktop*.sh $@
+	-cp $(THIRD_PARTY_BUILDS)/zdesktop/zdesktop*.dmg $@
+	-cp $(THIRD_PARTY_BUILDS)/zdesktop/zdesktop*.exe $@
 	-(rm -f $@/\%*.dmg)
 
 $(ADMIN_EXT_DIR)/build/com_zimbra_bulkprovision.jar:
