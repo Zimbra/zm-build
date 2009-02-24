@@ -86,7 +86,7 @@ $(LDAP_DEST_DIR)/$(LDAP_DIR)-$(LDAP_VERSION): $(LDAP_DEST_DIR)
 		$(LDAP_DEST_DIR)/$(LDAP_DIR)-$(LDAP_VERSION)/etc/openldap
 	cp $(SERVICE_DIR)/conf/ldap/syncprov-replica.ldif \
 		$(LDAP_DEST_DIR)/$(LDAP_DIR)-$(LDAP_VERSION)/etc/openldap
-	cp -f $(AMAVISD_SOURCE)/amavisd.schema \
+	cp $(SERVICE_DIR)/build/ldap-config/amavisd.schema \
 		$(LDAP_DEST_DIR)/$(LDAP_DIR)-$(LDAP_VERSION)/etc/openldap/schema
 	cp -f $(AMAVISD_SOURCE)/LDAP.ldif \
 		$(LDAP_DEST_DIR)/$(LDAP_DIR)-$(LDAP_VERSION)/etc/openldap/schema/amavisd.ldif
