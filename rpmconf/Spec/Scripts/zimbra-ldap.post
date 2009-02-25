@@ -24,7 +24,7 @@ rm -f /opt/zimbra/libtool
 ln -s /opt/zimbra/libtool-2.2.6a /opt/zimbra/libtool
 
 rm -f /opt/zimbra/openldap
-ln -s /opt/zimbra/openldap-2.4.14.2z /opt/zimbra/openldap
+ln -s /opt/zimbra/openldap-2.4.15.2z /opt/zimbra/openldap
 
 mkdir -p /opt/zimbra/openldap/var/openldap-data
 mkdir -p /opt/zimbra/data/ldap/config
