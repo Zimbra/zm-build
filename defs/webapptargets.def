@@ -49,13 +49,13 @@ $(WEBAPP_DIR)/zimbraAdmin.war: $(WEBAPP_DIR) $(CONSOLE_DIR)/$(WEBAPP_BUILD_DIR)/
 		echo "ZIMBRA_TOASTER_DOWNLOAD_LINK = \"/zimbra/downloads/$$download\"" >> $(WEBAPP_DIR)/zimbraAdmin/WEB-INF/classes/messages/ZaMsg.properties; \
 	done
 	for download in $(ZDLDOWNLOAD); do \
-		echo "ZDESKTOP_LINUX_DOWNLOAD_LINK = \"/zimbra/downloads/$$download\"" >> $(WEBAPP_DIR)/zimbraAdmin/WEB-INF/classes/msgs/ZaMsg.properties; \
+		echo "ZDESKTOP_LINUX_DOWNLOAD_LINK = \"/zimbra/downloads/$$download\"" >> $(WEBAPP_DIR)/zimbraAdmin/WEB-INF/classes/messages/ZaMsg.properties; \
 	done
 	for download in $(ZDMDOWNLOAD); do \
-		echo "ZDESKTOP_MAC_DOWNLOAD_LINK = \"/zimbra/downloads/$$download\"" >> $(WEBAPP_DIR)/zimbraAdmin/WEB-INF/classes/msgs/ZaMsg.properties; \
+		echo "ZDESKTOP_MAC_DOWNLOAD_LINK = \"/zimbra/downloads/$$download\"" >> $(WEBAPP_DIR)/zimbraAdmin/WEB-INF/classes/messages/ZaMsg.properties; \
 	done
 	for download in $(ZDWDOWNLOAD); do \
-		echo "ZDESKTOP_WINDOWS_DOWNLOAD_LINK = \"/zimbra/downloads/$$download\"" >> $(WEBAPP_DIR)/zimbraAdmin/WEB-INF/classes/msgs/ZaMsg.properties; \
+		echo "ZDESKTOP_WINDOWS_DOWNLOAD_LINK = \"/zimbra/downloads/$$download\"" >> $(WEBAPP_DIR)/zimbraAdmin/WEB-INF/classes/messages/ZaMsg.properties; \
 	done
 	@(for download in $(ZDMDOWNLOAD); do \
 		echo "ZDESKTOP_MAC_DOWNLOAD_LINK = /zimbra/downloads/$$download" >> $(WEBAPP_DIR)/zimbraAdmin/WEB-INF/classes/messages/ZaMsg.properties; \
@@ -67,7 +67,7 @@ $(WEBAPP_DIR)/zimbraAdmin.war: $(WEBAPP_DIR) $(CONSOLE_DIR)/$(WEBAPP_BUILD_DIR)/
 		echo "ZDESKTOP_WIN_DOWNLOAD_LINK = /zimbra/downloads/$$download" >> $(WEBAPP_DIR)/zimbraAdmin/WEB-INF/classes/messages/ZaMsg.properties; \
 	done)
 #	for download in $(GWDOWNLOAD); do \
-#		echo "GROUPWISE_MIG_WIZ_DOWNLOAD_LINK = \"/zimbra/downloads/$$download\"" >> $(WEBAPP_DIR)/zimbraAdmin/WEB-INF/classes/msgs/ZaMsg.properties; \
+#		echo "GROUPWISE_MIG_WIZ_DOWNLOAD_LINK = \"/zimbra/downloads/$$download\"" >> $(WEBAPP_DIR)/zimbraAdmin/WEB-INF/classes/messages/ZaMsg.properties; \
 #	done
 #
 
