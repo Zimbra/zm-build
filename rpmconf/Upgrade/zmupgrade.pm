@@ -2609,9 +2609,17 @@ sub upgrade5015GA {
 sub upgrade600BETA1 {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
 	main::progress("Updating from 6.0.0_BETA1\n");
+
+  # Convert access manager to new ACL based manager
+  main::setLocalConfig("zimbra_class_accessmanager", "com.zimbra.cs.account.accesscontrol.ACLAccessManager");
+
   if (main::isInstalled("zimbra-ldap") && $isLdapMaster) {
     # 34679
     upgradeAllGlobalAdminAccounts();
+
+    main::progress("Migrating all domain admins to ACL based access manager...");
+    my $rc = main::runAsZimbra("zmjava com.zimbra.cs.account.ldap.upgrade.LdapUpgrade -b 18277");
+    main::progress(($rc == 0) ? "done.\n" : "failed.\n");
 
     main::runAsZimbra("zmjava com.zimbra.cs.account.ldap.upgrade.LdapUpgrade -b 33814 -v");
     main::runAsZimbra("zmjava com.zimbra.cs.account.ldap.upgrade.LdapUpgrade -b 32557 -v");
@@ -2676,6 +2684,7 @@ sub upgrade600BETA1 {
   upgradeLocalConfigValue("javamail_imap_timeout", "20", "60");
   upgradeLocalConfigValue("javamail_pop3_timeout", "20", "60");
   upgradeLocalConfigValue("mysql_table_cache", "1200", "500");
+
    
 	return 0;
 }
@@ -3398,12 +3407,19 @@ sub verifyMysqlConfig {
 
 sub upgradeAllGlobalAdminAccounts {
 	my @admins = `$su "$ZMPROV gaaa"`;
-  main::detail("Upgrading all admin accounts @admins\n");
+  my @domains = `$su "$ZMPROV gad"`;
+  my @coses = `$su "$ZMPROV gac"`;
+  main::detail("Upgrading ACLs for all admin accounts.\n");
 	foreach my $admin (@admins) {
 		chomp $admin;
     my $val = main::getAccountAttributeValue($admin, "zimbraIsAdminAccount");
-    main::runAsZimbra("$ZMPROV ma $admin zimbraAdminConsoleUIComponents cartBlancheUI zimbraIsSystemAdminAccount TRUE") 
-      if (lc($val) eq "true");
+    if (lc($val) eq "true") {
+      main::progress("\tUpgrading global admin: $admin...");
+      my $rc = main::runAsZimbra("$ZMPROV ma $admin zimbraAdminConsoleUIComponents cartBlancheUI zimbraIsSystemAdminAccount TRUE");
+      main::progress(($rc == 0) ? "done.\n" : "failed.\n");
+      next;
+    }
+
 	}
 }
 
