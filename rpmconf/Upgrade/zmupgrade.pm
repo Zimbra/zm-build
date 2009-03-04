@@ -2657,6 +2657,33 @@ sub upgrade600BETA1 {
         main::runAsZimbra("$ZMPROV mc $cos $attr \'$attrs{$attr}\'");
       }
     }
+    my $ldap_pass = main::getLocalConfig("zimbra_ldap_password");
+    my $ldap_master_url = main::getLocalConfig("ldap_master_url");
+    my $start_tls_supported = main::getLocalConfig("ldap_starttls_supported");
+    my $ldap; 
+    chomp($ldap_master_url);
+    chomp($ldap_pass);
+    chomp($start_tls_supported);
+    unless($ldap = Net::LDAP->new($ldap_master_url)) {
+      main::progress("Unable to contact $ldap_master_url: $!\n");
+      return 1;
+    }
+    if ($ldap_master_url !~ /^ldaps/i) {
+      if ($start_tls_supported) {
+        my $result = $ldap->start_tls(verify=>'none');
+        if ($result->code()) {
+          main::progress("Unable to startTLS: $!\n");
+          return 1;
+        }
+      }
+    }
+    my $result = $ldap->bind("uid=zimbra,cn=admins,cn=zimbra", password => $ldap_pass);
+    unless($result->code()) {
+      my $dn = 'cn=mime,cn=config,cn=zimbra';
+      $result = DeleteLdapTree($ldap,$dn);
+      main::progress($result->code() ? "Failed to delete $dn: ".$result->error()."\n" : "Deleted $dn\n");
+    }
+    $result = $ldap->unbind;
   }
   if (main::isInstalled("zimbra-store")) {
     #35284
