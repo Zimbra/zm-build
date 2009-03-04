@@ -509,7 +509,7 @@ EOF
     fi
   done
 
-  if [ $SUGGESTED = "no" ]; then
+  if [ $SUGGESTED = "no" -a x$DEFAULTFILE = "x" ]; then
     echo ""
     echo "###WARNING###"
     echo ""
