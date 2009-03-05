@@ -1705,9 +1705,11 @@ sub upgrade500BETA3 {
   if (main::isInstalled("zimbra-proxy")) {
      if (! (-f "/opt/zimbra/conf/nginx.key" ||
         -f "/opt/zimbra/conf/nginx.crt" )) {
-        main::runAsZimbra("cd /opt/zimbra; zmcertinstall proxy ".
-        "/opt/zimbra/ssl/ssl/server/server.crt ".
-        "/opt/zimbra/ssl/ssl/server/server.key");
+        if ( -x "/opt/zimbra/bin/zmcertinstall") {
+          main::runAsZimbra("cd /opt/zimbra; zmcertinstall proxy ".
+          "/opt/zimbra/ssl/ssl/server/server.crt ".
+          "/opt/zimbra/ssl/ssl/server/server.key");
+        }
      }
   }
 
