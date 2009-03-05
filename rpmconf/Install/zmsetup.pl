@@ -5277,6 +5277,7 @@ sub applyConfig {
 
   if (isNetwork() && isEnabled("zimbra-convertd")) {
     configConvertdURL();
+    runAsZimbra("/opt/zimbra/libexec/zmconvertdmod -e");
   }
 
   if (isEnabled("zimbra-mta")) {
