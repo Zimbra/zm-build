@@ -2700,8 +2700,12 @@ sub upgrade600BETA1 {
     main::setLocalConfig("mailboxd_java_options", $new_mailboxd_options)
       if ($new_mailboxd_options ne "");
   }
+  if (main::isInstalled("zimbra-store") && main::isInstalled("zimbra-convertd")) {
+    #28851
+    main::runAsZimbra("$ZMPROV ms $hn zimbraConvertdURL http://localhost:7047/convert\n");
+  }
 
-  # bug#33648
+  #33648
   main::deleteLocalConfig("ldap_require_tls");
   main::deleteLocalConfig("calendar_canonical_tzid");
   main::deleteLocalConfig("convertd_version");
