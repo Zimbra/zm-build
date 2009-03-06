@@ -1638,7 +1638,13 @@ getInstallPackages() {
     fi
 
     if [ $UPGRADE = "yes" ]; then
-      if [ ${ZM_CUR_MAJOR} -eq 5 -a $i = "zimbra-memcached" ]; then
+      if [ ${ZM_CUR_MAJOR} -eq 5 -a $i = "zimbra-convertd"]; then
+        echo $INSTALLED_PACKAGES | grep "zimbra-store" > /dev/null 2>&1
+        if [ $? = 0 ]; then
+          INSTALL_PACKAGES="$INSTALL_PACKAGES $i"
+        fi
+      fi
+      elif [ ${ZM_CUR_MAJOR} -eq 5 -a $i = "zimbra-memcached" ]; then
         echo $INSTALLED_PACKAGES | grep "zimbra-proxy" > /dev/null 2>&1
         if [ $? = 0 ]; then
           askYN "Install $i" "Y"
