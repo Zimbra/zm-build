@@ -4866,7 +4866,49 @@ sub configCreateDomain {
       runAsZimbra("$ZMPROV cd $config{CREATEDOMAIN}");
       runAsZimbra("$ZMPROV mcf zimbraDefaultDomainName $config{CREATEDOMAIN}");
       progress ( "done.\n" );
+    }
 
+    if (isNetwork() && $newinstall) {
+      progress ("Setting up default domain admin UI components..");
+      my $rc = runAsZimbra("$ZMPROV cdl zimbraDomainAdmins\@$config{CREATEDOMAIN} ".
+        "zimbraIsAdminGroup TRUE ".
+        "zimbraMailStatus disabled ".
+        "zimbraAdminConsoleUIComponents accountListView ".
+        "zimbraAdminConsoleUIComponents aliasListView ".
+        "zimbraAdminConsoleUIComponents DLListView ".
+        "zimbraAdminConsoleUIComponents resourceListView ".
+        "zimbraAdminConsoleUIComponents saveSearch ".
+        "zimbraAdminConsoleUIComponents accountsContactTab ".
+        "zimbraAdminConsoleUIComponents accountsMemberOfTab ".
+        "zimbraAdminConsoleUIComponents accountsAliasesTab ".
+        "zimbraAdminConsoleUIComponents accountsForwardingTab ".
+        "zimbraAdminConsoleUIComponents dlMembersTab ".
+        "zimbraAdminConsoleUIComponents dlAliasesTab ".
+        "zimbraAdminConsoleUIComponents dlMemberOfTab ".
+        "zimbraAdminConsoleUIComponents dlNotesOfTab ".
+        "zimbraAdminConsoleUIComponents resourcePropertiesTab ".
+        "zimbraAdminConsoleUIComponents resourceContactTab");
+      progress(($rc == 0) ? "done.\n" : "failed.\n");
+      progress ("Setting up default help desk admin UI components..");
+      my $rc = runAsZimbra("$ZMPROV cdl zimbraHelpDeskAdmins\@$config{CREATEDOMAIN} ".
+        "zimbraIsAdminGroup TRUE ".
+        "zimbraMailStatus disabled ".
+        "zimbraAdminConsoleUIComponents accountListView ".
+        "zimbraAdminConsoleUIComponents aliasListView ".
+        "zimbraAdminConsoleUIComponents DLListView ".
+        "zimbraAdminConsoleUIComponents resourceListView ".
+        "zimbraAdminConsoleUIComponents saveSearch ".
+        "zimbraAdminConsoleUIComponents accountsContactTab ".
+        "zimbraAdminConsoleUIComponents accountsMemberOfTab ".
+        "zimbraAdminConsoleUIComponents accountsAliasesTab ".
+        "zimbraAdminConsoleUIComponents accountsForwardingTab ".
+        "zimbraAdminConsoleUIComponents dlMembersTab ".
+        "zimbraAdminConsoleUIComponents dlAliasesTab ".
+        "zimbraAdminConsoleUIComponents dlMemberOfTab ".
+        "zimbraAdminConsoleUIComponents dlNotesOfTab ".
+        "zimbraAdminConsoleUIComponents resourcePropertiesTab ".
+        "zimbraAdminConsoleUIComponents resourceContactTab");
+      progress(($rc == 0) ? "done.\n" : "failed.\n");
     }
   }
   if (isEnabled("zimbra-store")) {
@@ -5303,19 +5345,19 @@ sub applyConfig {
     configSetCluster();
   }
 
+  configInitMta();
+
+  configSetEnabledServices();
+
   configCreateDomain();
 
   configInitSql();
 
   configInitLogger();
 
-  configInitMta();
-
   configInitSnmp();
 
   configInitInstantMessaging();
-
-  configSetEnabledServices();
 
   setupSyslog();
 
