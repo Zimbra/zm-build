@@ -1643,7 +1643,6 @@ getInstallPackages() {
         if [ $? = 0 ]; then
           INSTALL_PACKAGES="$INSTALL_PACKAGES $i"
         fi
-      fi
       elif [ ${ZM_CUR_MAJOR} -eq 5 -a $i = "zimbra-memcached" ]; then
         echo $INSTALLED_PACKAGES | grep "zimbra-proxy" > /dev/null 2>&1
         if [ $? = 0 ]; then
