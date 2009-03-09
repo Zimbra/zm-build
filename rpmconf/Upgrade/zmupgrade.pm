@@ -3441,21 +3441,46 @@ sub verifyMysqlConfig {
 }
 
 sub upgradeAllGlobalAdminAccounts {
+
 	my @admins = `$su "$ZMPROV gaaa"`;
-  my @domains = `$su "$ZMPROV gad"`;
-  my @coses = `$su "$ZMPROV gac"`;
   main::detail("Upgrading ACLs for all admin accounts.\n");
 	foreach my $admin (@admins) {
 		chomp $admin;
     my $val = main::getAccountAttributeValue($admin, "zimbraIsAdminAccount");
     if (lc($val) eq "true") {
-      main::progress("\tUpgrading global admin: $admin...");
+      main::progress("Upgrading global admin: $admin...");
       my $rc = main::runAsZimbra("$ZMPROV ma $admin zimbraAdminConsoleUIComponents cartBlancheUI zimbraIsSystemAdminAccount TRUE");
       main::progress(($rc == 0) ? "done.\n" : "failed.\n");
       next;
     }
-
 	}
+
+  main::progress("Upgrading master zimbra admin account.\n");
+  my $ldap_pass = `$su "zmlocalconfig -s -m nokey zimbra_ldap_password"`;
+  my $ldap_master_url = `$su "zmlocalconfig -s -m nokey ldap_master_url"`;
+  my $start_tls_supported = `$su "zmlocalconfig -s -m nokey ldap_starttls_supported"`;
+  my $ldap; 
+  chomp($ldap_master_url);
+  chomp($ldap_pass);
+  chomp($start_tls_supported);
+  if ($ldap = Net::LDAP->new($ldap_master_url)) {
+    if ($start_tls_supported) {
+      my $result = $ldap->start_tls(verify=>'none');
+      if ($result->code()) {
+        main::progress("Unable to startTLS: $!\n");
+        return 1;
+      }
+    }
+    my $result = $ldap->bind("uid=zimbra,cn=admins,cn=zimbra", password => $ldap_pass);
+    unless($result->code()) {
+        $result = $ldap->modify( "uid=zimbra,cn=admins,cn=zimbra", add => { 'zimbraIsSystemAdminAccount' => 'TRUE'});
+        main::progress(($result->code()) ? "done.\n" : "failed.\n");
+    }
+    $result = $ldap->unbind;
+  } else {
+    main::progress("Unable to contact $ldap_master_url: $!\n");
+    return 1;
+  }
 }
 
 sub upgradeLdapConfigValue($$$) {
