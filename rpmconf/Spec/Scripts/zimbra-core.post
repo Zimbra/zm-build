@@ -55,10 +55,10 @@ ln -s /opt/zimbra/tcmalloc-1.0 /opt/zimbra/tcmalloc
 
 if [ -d "/opt/zimbra/zimbramon/rrdtool" ]; then
   rm -rf /opt/zimbra/zimbramon/rrdtool
-  ln -s /opt/zimbra/zimbramon/rrdtool-1.2.29 /opt/zimbra/zimbramon/rrdtool
+  ln -s /opt/zimbra/zimbramon/rrdtool-1.2.30 /opt/zimbra/zimbramon/rrdtool
 else
   rm -f /opt/zimbra/zimbramon/rrdtool
-  ln -s /opt/zimbra/zimbramon/rrdtool-1.2.29 /opt/zimbra/zimbramon/rrdtool
+  ln -s /opt/zimbra/zimbramon/rrdtool-1.2.30 /opt/zimbra/zimbramon/rrdtool
 fi
 
 if [ -d "/opt/zimbra/logger/db" ]; then
