@@ -179,10 +179,10 @@ if (! $newinstall ) {
     # This is the postinstall config
     configLog ("BEGIN");
     if (zmupgrade::upgrade($prevVersion, $curVersion)){
-      progress ("UPGRADE FAILED - exiting\n");
+      progress ("UPGRADE FAILED - exiting.\n");
       exit 1;
     } else {
-      progress ("Upgrade complete\n");
+      progress ("Upgrade complete.\n\n");
     }
   }
 }
@@ -328,8 +328,9 @@ sub checkPortConflicts {
   if ($platform =~ /MACOSX/) {
     # Shutdown postfix in launchd
     if (-f "/System/Library/LaunchDaemons/org.postfix.master.plist") {
-      progress ( "Disabling postfix in launchd\n");
+      progress ( "Disabling postfix in launchd...");
       system ("/bin/launchctl unload -w /System/Library/LaunchDaemons/org.postfix.master.plist > /dev/null 2>&1");
+      progress ("done.\n");
     }
   }
   progress ( "Checking for port conflicts\n" );
@@ -965,7 +966,7 @@ sub installLdapConfig {
   my $config_src="/opt/zimbra/openldap/etc/openldap/config";
   my $config_dest="/opt/zimbra/data/ldap/config";
   if (-d "/opt/zimbra/data/ldap/config") {
-    main::progress("Installing LDAP configuration database\n");
+    main::progress("Installing LDAP configuration database...");
     `mkdir -p $config_dest/cn\=config`;
     system("cp -f $config_src/cn\=config.ldif $config_dest/cn\=config.ldif");
     system("cp -f $config_src/cn\=config/cn\=module\{0\}.ldif $config_dest/cn\=config/cn\=module\{0\}.ldif");
@@ -977,6 +978,7 @@ sub installLdapConfig {
     `chmod 600 $config_dest/cn\=config.ldif`;
     `chmod 600 $config_dest/cn\=config/*.ldif`;
     `chown -R zimbra:zimbra $config_dest`;
+    main::progress("done.\n");
   }
 }
 
@@ -4492,17 +4494,18 @@ sub configSetInstalledSkins {
   }
 
   if (opendir DIR, "$config{mailboxd_directory}/webapps/zimbra/skins") {
-    progress ( "Installing skins... " );
+    progress ( "Installing webclient skins...\n" );
     runAsZimbra("$ZMPROV mcf zimbraInstalledSkin ''");
     my @skins = grep { !/^[\._]/ } readdir(DIR);
     foreach my $skindir (@skins) {
       if (-d "$config{mailboxd_directory}/webapps/zimbra/skins/$skindir") {
         my $skin = $skindir;
-        runAsZimbra("$ZMPROV mcf +zimbraInstalledSkin $skin");
-        print  ("\n\t$skin");
+        progress ("\t$skin...");
+        my $rc = runAsZimbra("$ZMPROV mcf +zimbraInstalledSkin $skin");
+        progress (($rc == 0) ? "done.\n" : "failed.\n");
       }
     }
-    progress ( "\ndone.\n" );
+    progress ( "Finished installing webclient skins.\n" );
   }
 
   configLog("configSetInstalledSkins");
@@ -4769,13 +4772,10 @@ sub configInstallZimlets {
     return 0;
   }
 
-  # cleanup renamed zimlets, this is really an upgrade task but
-  # mailboxd needs to be be running here.
-  progress("Checking for deprecated zimlets...");
-  if (zimletCleanup()) {
-    progress("failed.\n");
-  } else {
-    progress("done.\n");
+  # remove deprecated zimlets on upgrades
+  if (!$newinstall) {
+    progress("Checking for deprecated zimlets...");
+    progress((zimletCleanup()) ? "failed.\n" : "done.\n");
   }
 
   # remove any Network zimlets if we are upgrading to a FOSS version
@@ -5615,37 +5615,40 @@ sub mainMenu {
 }
 
 sub stopLdap {
-  main::progress("Stopping ldap\n");
-  my $rc = 0xffff & system("$SU \"/opt/zimbra/bin/ldap stop > /dev/null 2>&1\"");
-  $rc = $rc >> 8;
-  if ($rc) {
-    main::progress("LDAP stop failed with exit code $rc\n");
-    return $rc;
-  }
-  sleep 5; # give it a chance to shutdown.
-  return 0;
+  main::progress("Stopping ldap...");
+  my $rc = runAsZimbra("/opt/zimbra/bin/ldap stop");
+  main::progress(($rc == 0) ? "done.\n" : "failed. ldap had exit status: $rc.\n");
+  sleep 5 unless $rc; # give it a chance to shutdown.
+  return $rc;
 }
 
 sub startLdap {
-  main::detail("Checking ldap status.");
+  main::detail("Checking ldap status....");
   my $rc = runAsZimbra("/opt/zimbra/bin/ldap status");
+  main::detail(($rc == 0) ? "already running.\n" : "not running.\n");
+
   if ($rc) { 
-    main::progress("Starting ldap...");
-    runAsZimbra("/opt/zimbra/bdb/bin/db_recover -h /opt/zimbra/data/ldap/hdb/db");
+    main::progress("Running bdb db_recover...");
+    $rc = runAsZimbra("/opt/zimbra/bdb/bin/db_recover -h /opt/zimbra/data/ldap/hdb/db");
+    main::progress(($rc == 0) ? "done.\n" : "failed.\n");
+  
+    main::progress("Running zmldapapplyldif...");
     $rc = runAsZimbra ("/opt/zimbra/libexec/zmldapapplyldif");
+    main::progress(($rc == 0) ? "done.\n" : "failed.\n");
+
+    main::progress("Checking ldap status....");
     $rc = runAsZimbra ("/opt/zimbra/bin/ldap status");
+    main::progress(($rc == 0) ? "already running.\n" : "not running.\n");
+
     if ($rc) {
+      main::progress("Starting ldap...");
       $rc = runAsZimbra("/opt/zimbra/bin/ldap start");
+      main::progress(($rc == 0) ? "done.\n" : "failed with exit code: $rc.\n");
       if ($rc) { 
-        main::progress("failed with exit code $rc.\n");
         system("$SU \"/opt/zimbra/bin/ldap start 2>&1 | grep failed\"");
         return $rc;
       } 
-    }  else {
-      main::progress("done.\n");
     }
-  } else {
-    main::detail("slapd already running.\n");
   }
   return 0;
 }
