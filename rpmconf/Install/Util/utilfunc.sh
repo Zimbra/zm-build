@@ -501,9 +501,9 @@ EOF
        echo "    FOUND: $i"
     else
        if [ "x$PKGVERSION" = "xnotfound" ]; then
-         echo "     $i does not appear to be installed."
+         echo "    MISSING: $i does not appear to be installed."
        else
-         echo "     Unable to find expected $i.  Found version $PKGVERSION instead."
+         echo "    Unable to find expected $i.  Found version $PKGVERSION instead."
        fi
        SUGGESTED="no"
     fi
@@ -1248,8 +1248,8 @@ removeExistingInstall() {
         echo ""
         echo -n "Backing up the ldap database..."
         tmpfile=`mktemp -t slapcat.XXXXXX 2> /dev/null` || (echo "Failed to create tmpfile" && exit 1)
-	mkdir -p /opt/zimbra/data/ldap
-	chown -R zimbra:zimbra /opt/zimbra/data/ldap
+  mkdir -p /opt/zimbra/data/ldap
+  chown -R zimbra:zimbra /opt/zimbra/data/ldap
         runAsZimbra "/opt/zimbra/libexec/zmslapcat /opt/zimbra/data/ldap"
         if [ $? != 0 ]; then
           echo "failed."
@@ -1641,7 +1641,11 @@ getInstallPackages() {
       if [ ${ZM_CUR_MAJOR} -eq 5 -a $i = "zimbra-convertd" ]; then
         echo $INSTALLED_PACKAGES | grep "zimbra-store" > /dev/null 2>&1
         if [ $? = 0 ]; then
-          INSTALL_PACKAGES="$INSTALL_PACKAGES $i"
+          echo $INSTALLED_PACKAGES | grep "zimbra-convertd" > /dev/null 2>&1
+          if [ $? != 0 ]; then
+            INSTALL_PACKAGES="$INSTALL_PACKAGES $i"
+            continue
+          fi
         fi
       elif [ ${ZM_CUR_MAJOR} -eq 5 -a $i = "zimbra-memcached" ]; then
         echo $INSTALLED_PACKAGES | grep "zimbra-proxy" > /dev/null 2>&1
@@ -1661,11 +1665,11 @@ getInstallPackages() {
       elif [ $i = "zimbra-archiving" ]; then
          askYN "Install $i" "N"
       elif [ $i = "zimbra-convertd" ]; then
-	    if [ $STORE_SELECTED = "yes" ]; then
+      if [ $STORE_SELECTED = "yes" ]; then
           askYN "Install $i" "Y"
-		else
-          askYN "Install $i" "N"
-		fi
+    else
+      askYN "Install $i" "N"
+    fi
       elif [ $i = "zimbra-cluster" -a "x$CLUSTERTYPE" = "x" ]; then
          askYN "Install $i" "N"
       else
@@ -1869,7 +1873,8 @@ suggestedVersion() {
       PKGINSTALLED=`$PACKAGEQUERY $pkg | sed -e 's/\.[a-zA-Z].*$//' 2> /dev/null`
     else
       sugpkg=${pkg%-*}
-      PKGVERSION=`$PACKAGEQUERY $sugpkg 2> /dev/null | sort -u`
+      PKGVERSION=`$PACKAGEQUERY $sugpkg 2> /dev/null | sort -u | grep -v 'not installed$'`
+      PKGVERSION=${PKGVERSION:-notfound}
     fi
   elif [ $PACKAGEEXT = "ccs" ]; then
     $PACKAGEQUERY $pkg >/dev/null 2>&1
