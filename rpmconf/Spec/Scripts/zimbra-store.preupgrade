@@ -18,6 +18,9 @@ SAVEDIR=/opt/zimbra/.saveconfig
 if [ ! -d "$SAVEDIR" ]; then
  mkdir -p $SAVEDIR
 fi
+if [ -d "$SAVEDIR/zimlet" ]; then
+  rm -rf $SAVEDIR/zimlet > /dev/null 2>&1
+fi
 if [ -d "/opt/zimbra/tomcat/webapps/service/zimlet" ]; then
   cp -rf /opt/zimbra/tomcat/webapps/service/zimlet $SAVEDIR
 elif [ -d "/opt/zimbra/mailboxd/webapps/service/zimlet" ]; then

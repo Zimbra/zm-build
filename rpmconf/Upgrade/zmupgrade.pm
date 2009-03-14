@@ -2828,7 +2828,7 @@ sub stopSql {
 }
 
 sub isLoggerSqlRunning {
-  my $rc = main::runAsZimbra("/opt/zimbra/bin/logmysqladmin status");
+  my $rc = main::runAsZimbra("/opt/zimbra/bin/logmysqladmin status > /dev/null 2>&1");
   return($rc ? undef : 1);
 }
 

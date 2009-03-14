@@ -70,6 +70,9 @@ fi
 if [ -f "/opt/zimbra/conf/ca/ca.pem" ]; then
   cp -f /opt/zimbra/conf/ca/ca.pem $SAVEDIR
 fi
+if [ -d "$SAVEDIR/zimlet" ]; then
+  rm -rf $SAVEDIR/zimlet
+fi
 if [ -d "/opt/zimbra/tomcat/webapps/service/zimlet" ]; then
   cp -rf /opt/zimbra/tomcat/webapps/service/zimlet $SAVEDIR
 elif [ -d "/opt/zimbra/mailboxd/webapps/service/zimlet" ]; then
