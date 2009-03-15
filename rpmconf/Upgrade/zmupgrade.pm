@@ -106,6 +106,7 @@ my %updateScripts = (
   '52' => "migrate20080909-DataSourceItemTable.pl",     # 5.0.10_GA
   '53' => "migrate20080930-MucService.pl",             # this upgrades to 60 for 6_0_0 GA
    # 54-59 skipped for possible FRANKLIN use
+	'60' => "migrate20090315-MobileDevices.pl",
 
 );
 
