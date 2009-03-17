@@ -4554,6 +4554,69 @@ sub configSetNEFeatures {
   return unless isNetwork();
 }
 
+sub configInitDomainAdminGroups {
+  main::progress ("Setting up default domain admin UI components..");
+  $config{zimbraDefaultDomainName} = getLdapConfigValue("zimbraDefaultDomainName") || $config{CREATEDOMAIN};
+  my $domainGroup = "zimbraDomainAdmins\@". 
+    (($newinstall) ? "$config{CREATEDOMAIN}" : "$config{zimbraDefaultDomainName}");
+  my $rc = main::runAsZimbra("$ZMPROV cdl $domainGroup ".
+    "zimbraIsAdminGroup TRUE ".
+    "zimbraMailStatus disabled ".
+    "zimbraAdminConsoleUIComponents accountListView ".
+    "zimbraAdminConsoleUIComponents aliasListView ".
+    "zimbraAdminConsoleUIComponents DLListView ".
+    "zimbraAdminConsoleUIComponents resourceListView ".
+    "zimbraAdminConsoleUIComponents saveSearch ".
+    "zimbraAdminConsoleUIComponents accountsContactTab ".
+    "zimbraAdminConsoleUIComponents accountsMemberOfTab ".
+    "zimbraAdminConsoleUIComponents accountsAliasesTab ".
+    "zimbraAdminConsoleUIComponents accountsForwardingTab ".
+    "zimbraAdminConsoleUIComponents dlMembersTab ".
+    "zimbraAdminConsoleUIComponents dlAliasesTab ".
+    "zimbraAdminConsoleUIComponents dlMemberOfTab ".
+    "zimbraAdminConsoleUIComponents dlNotesOfTab ".
+    "zimbraAdminConsoleUIComponents resourcePropertiesTab ".
+    "zimbraAdminConsoleUIComponents resourceContactTab");
+  main::progress(($rc == 0) ? "done.\n" : "failed.\n");
+
+  main::progress ("Granting right +domainAdminRights for $config{CREATEDOMAIN} to group $domainGroup...");
+  $rc = main::runAsZimbra("$ZMPROV grr domain $config{CREATEDOMAIN} grp $domainGroup +domainAdminRights");
+  main::progress(($rc == 0) ? "done.\n" : "failed.\n");
+    
+  main::progress ("Setting up default help desk admin UI components..");
+  $domainGroup = "zimbraHelpDeskAdmins\@". 
+    (($newinstall) ? "$config{CREATEDOMAIN}" : "$config{zimbraDefaultDomainName}");
+  my $rc = main::runAsZimbra("$ZMPROV cdl $domainGroup ".
+    "zimbraIsAdminGroup TRUE ".
+    "zimbraMailStatus disabled ".
+    "zimbraAdminConsoleUIComponents accountListView ".
+    "zimbraAdminConsoleUIComponents aliasListView ".
+    "zimbraAdminConsoleUIComponents DLListView ".
+    "zimbraAdminConsoleUIComponents resourceListView ".
+    "zimbraAdminConsoleUIComponents saveSearch ".
+    "zimbraAdminConsoleUIComponents accountsContactTab ".
+    "zimbraAdminConsoleUIComponents accountsMemberOfTab ".
+    "zimbraAdminConsoleUIComponents accountsAliasesTab ".
+    "zimbraAdminConsoleUIComponents accountsForwardingTab ".
+    "zimbraAdminConsoleUIComponents accountsFeaturesTab ".
+    "zimbraAdminConsoleUIComponents domainListView ".
+    "zimbraAdminConsoleUIComponents domainGeneralTab ".
+    "zimbraAdminConsoleUIComponents dlMembersTab ".
+    "zimbraAdminConsoleUIComponents dlAliasesTab ".
+    "zimbraAdminConsoleUIComponents dlMemberOfTab ".
+    "zimbraAdminConsoleUIComponents dlNotesOfTab ".
+    "zimbraAdminConsoleUIComponents resourcePropertiesTab ".
+    "zimbraAdminConsoleUIComponents resourceContactTab");
+  main::progress(($rc == 0) ? "done.\n" : "failed.\n");
+
+  foreach my $right qw(getAccount getCalendarResource getDistributionList getDomain getCos listAccount listCalendarResource listDistributionList listDomain listCos listDomain getDomain getAccountInfo countAccount getAccountMembership ) {
+    main::progress ("Granting global right $right to group $domainGroup...");
+    $rc = main::runAsZimbra("$ZMPROV grr global grp $domainGroup $right");
+    main::progress(($rc == 0) ? "done.\n" : "failed.\n");
+  }
+
+}
+
 sub configInitBackupPrefs {
   if (isEnabled("zimbra-store") && isNetwork()) {
     foreach my $recip (split(/\n/, $config{zimbraBackupReportEmailRecipients})) {
@@ -4870,48 +4933,8 @@ sub configCreateDomain {
       progress ( "done.\n" );
     }
 
-    if (isNetwork() && $newinstall) {
-      progress ("Setting up default domain admin UI components..");
-      my $rc = runAsZimbra("$ZMPROV cdl zimbraDomainAdmins\@$config{CREATEDOMAIN} ".
-        "zimbraIsAdminGroup TRUE ".
-        "zimbraMailStatus disabled ".
-        "zimbraAdminConsoleUIComponents accountListView ".
-        "zimbraAdminConsoleUIComponents aliasListView ".
-        "zimbraAdminConsoleUIComponents DLListView ".
-        "zimbraAdminConsoleUIComponents resourceListView ".
-        "zimbraAdminConsoleUIComponents saveSearch ".
-        "zimbraAdminConsoleUIComponents accountsContactTab ".
-        "zimbraAdminConsoleUIComponents accountsMemberOfTab ".
-        "zimbraAdminConsoleUIComponents accountsAliasesTab ".
-        "zimbraAdminConsoleUIComponents accountsForwardingTab ".
-        "zimbraAdminConsoleUIComponents dlMembersTab ".
-        "zimbraAdminConsoleUIComponents dlAliasesTab ".
-        "zimbraAdminConsoleUIComponents dlMemberOfTab ".
-        "zimbraAdminConsoleUIComponents dlNotesOfTab ".
-        "zimbraAdminConsoleUIComponents resourcePropertiesTab ".
-        "zimbraAdminConsoleUIComponents resourceContactTab");
-      progress(($rc == 0) ? "done.\n" : "failed.\n");
-      progress ("Setting up default help desk admin UI components..");
-      my $rc = runAsZimbra("$ZMPROV cdl zimbraHelpDeskAdmins\@$config{CREATEDOMAIN} ".
-        "zimbraIsAdminGroup TRUE ".
-        "zimbraMailStatus disabled ".
-        "zimbraAdminConsoleUIComponents accountListView ".
-        "zimbraAdminConsoleUIComponents aliasListView ".
-        "zimbraAdminConsoleUIComponents DLListView ".
-        "zimbraAdminConsoleUIComponents resourceListView ".
-        "zimbraAdminConsoleUIComponents saveSearch ".
-        "zimbraAdminConsoleUIComponents accountsContactTab ".
-        "zimbraAdminConsoleUIComponents accountsMemberOfTab ".
-        "zimbraAdminConsoleUIComponents accountsAliasesTab ".
-        "zimbraAdminConsoleUIComponents accountsForwardingTab ".
-        "zimbraAdminConsoleUIComponents dlMembersTab ".
-        "zimbraAdminConsoleUIComponents dlAliasesTab ".
-        "zimbraAdminConsoleUIComponents dlMemberOfTab ".
-        "zimbraAdminConsoleUIComponents dlNotesOfTab ".
-        "zimbraAdminConsoleUIComponents resourcePropertiesTab ".
-        "zimbraAdminConsoleUIComponents resourceContactTab");
-      progress(($rc == 0) ? "done.\n" : "failed.\n");
-    }
+    configInitDomainAdminGroups()
+      if (isNetwork());
   }
   if (isEnabled("zimbra-store")) {
     if ($config{DOCREATEADMIN} eq "yes") {

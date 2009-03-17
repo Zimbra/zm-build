@@ -2631,6 +2631,8 @@ sub upgrade600BETA1 {
     # 34679
     upgradeAllGlobalAdminAccounts();
 
+    main::configInitDomainAdminGroups() if (main::isNetwork());
+
     main::progress("Migrating all domain admins to ACL based access manager...");
     my $rc = main::runAsZimbra("zmjava com.zimbra.cs.account.ldap.upgrade.LdapUpgrade -b 18277");
     main::progress(($rc == 0) ? "done.\n" : "failed.\n");
