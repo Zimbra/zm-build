@@ -34,7 +34,7 @@ chomp $rundir;
 my $scriptDir = "/opt/zimbra/libexec/scripts";
 
 my $lowVersion = 18;
-my $hiVersion = 60; # this should be set to the DB version expected by current server code
+my $hiVersion = 61; # this should be set to the DB version expected by current server code
 my $hiLoggerVersion = 6;
 
 # Variables for the combo schema updater
