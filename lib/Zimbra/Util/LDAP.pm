@@ -46,7 +46,6 @@ sub doLdap() {
     }
   }
   if ($key =~ /^ldap_common_/) {
-    $dn="cn=config";
     if ($key eq "ldap_common_loglevel") {
       $ldap_key="olcLogLevel";
     } elsif ($key eq "ldap_common_threads") {
@@ -61,8 +60,13 @@ sub doLdap() {
       main::logMsg(2,"LDAP common: Unknown key: $key");
       $rc=1;
     }
+    $dn="cn=config";
   } elsif ($key =~ /^ldap_db_/) {
-    $dn="olcDatabase={2}hdb,cn=config";
+    if ($real_master) {
+      $dn="olcDatabase={3}hdb,cn=config";
+    } else {
+      $dn="olcDatabase={2}hdb,cn=config";
+    }
     if ($key eq "ldap_db_cachefree") {
       $ldap_key="olcDbCacheFree";
     } elsif ($key eq "ldap_db_cachesize") {
@@ -81,7 +85,7 @@ sub doLdap() {
     }
   } elsif ($key =~ /ldap_access/) {
     if ($real_master) {
-      $dn="olcDatabase={3}hdb,cn=config";
+      $dn="olcDatabase={2}hdb,cn=config";
       if ($key eq "ldap_accesslog_cachefree") {
         $ldap_key="olcDbCacheFree";
       } elsif ($key eq "ldap_accesslog_cachesize") {
@@ -102,7 +106,7 @@ sub doLdap() {
   } elsif ($key =~ /ldap_overlay/) {
     if ($real_master) {
       if ($key =~ /ldap_overlay_syncprov/) {
-        $dn="olcOverlay=syncprov,olcDatabase={2}hdb,cn=config";
+        $dn="olcOverlay=syncprov,olcDatabase={3}hdb,cn=config";
         if ($key eq "ldap_overlay_syncprov_checkpoint") {
           $ldap_key="olcSpCheckpoint";
         } elsif ($key eq "ldap_overlay_syncprov_sessionlog") {
@@ -112,7 +116,7 @@ sub doLdap() {
           $rc=1;
         }
       } elsif ($key =~ /ldap_overlay_accesslog/) {
-        $dn="olcOverlay=accesslog,olcDatabase={2}hdb,cn=config";
+        $dn="olcOverlay=accesslog,olcDatabase={3}hdb,cn=config";
         if ($key eq "ldap_overlay_accesslog_logpurge") {
           $ldap_key="olcAccessLogPurge";
         } else {
@@ -142,10 +146,10 @@ sub doLdap() {
 
     if ($key =~ /ldap_db_shmkey/) {
       $alt_key="ldap_accesslog_shmkey";
-      $alt_dn="olcDatabase={3}hdb,cn=config";
+      $alt_dn="olcDatabase={2}hdb,cn=config";
     } else {
       $alt_key="ldap_db_shmkey";
-      $alt_dn="olcDatabase={2}hdb,cn=config";
+      $alt_dn="olcDatabase={3}hdb,cn=config";
     }
     $mesg=$ldap->search(base=>$alt_dn,
                   scope=>"base",
