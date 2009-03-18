@@ -19,6 +19,7 @@ package Zimbra::Mon::Logger;
 use strict;
 
 use Sys::Syslog qw(:DEFAULT setlogsock);;
+use Data::UUID;
 
 require Exporter;
 
@@ -32,6 +33,7 @@ my @EXPORT = qw (Log);
 our %loglevels = ('debug' => 0, 'info' => 1, 'err' => 3, 'crit' => 4);
 
 my $LOG_LEVEL = $loglevels{'info'};
+my $ug = new Data::UUID;
 
 sub Log
 {
@@ -39,7 +41,23 @@ sub Log
 	if ($loglevels{$level} >= $LOG_LEVEL) {
     setlogsock('unix');
 		openlog($ident, "pid,ndelay,nowait", $facility);
-		syslog($level, "$$:$level: $msg");
+		if (length($msg) <= 900) {
+			 syslog($level, "$$:$level: $msg");
+		} else {
+			my $last_uuid = undef;
+			my $m = $msg;
+			do {
+				my $substring = substr $m, 0, 900;
+				$m = substr $m, 900;
+				if (defined $last_uuid) {
+					$substring = ":::${last_uuid}:::${substring}";
+				}
+				$last_uuid = $ug->to_string($ug->create());
+				syslog($level, "$$:$level: ${substring}:::${last_uuid}:::");
+			} while (length($m) > 900);
+			syslog($level, ":::${last_uuid}:::${m}");
+			
+		}
 		if ($::DEBUG) {
 			print STDERR scalar localtime().":$$:$level: $msg\n";
 		}
