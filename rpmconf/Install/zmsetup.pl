@@ -4579,8 +4579,8 @@ sub configInitDomainAdminGroups {
     "zimbraAdminConsoleUIComponents resourceContactTab");
   main::progress(($rc == 0) ? "done.\n" : "failed.\n");
 
-  main::progress ("Granting right +domainAdminRights for $config{CREATEDOMAIN} to group $domainGroup...");
-  $rc = main::runAsZimbra("$ZMPROV grr domain $config{CREATEDOMAIN} grp $domainGroup +domainAdminRights");
+  main::progress ("Granting group $domainGroup domain right +domainAdminRights on $config{zimbraDefaultDomainName}...");
+  $rc = main::runAsZimbra("$ZMPROV grr domain $config{zimbraDefaultDomainName} grp $domainGroup +domainAdminRights");
   main::progress(($rc == 0) ? "done.\n" : "failed.\n");
     
   main::progress ("Setting up default help desk admin UI components..");
@@ -4601,6 +4601,7 @@ sub configInitDomainAdminGroups {
     "zimbraAdminConsoleUIComponents accountsFeaturesTab ".
     "zimbraAdminConsoleUIComponents domainListView ".
     "zimbraAdminConsoleUIComponents domainGeneralTab ".
+    "zimbraAdminConsoleUIComponents domainSkinsTab ".
     "zimbraAdminConsoleUIComponents dlMembersTab ".
     "zimbraAdminConsoleUIComponents dlAliasesTab ".
     "zimbraAdminConsoleUIComponents dlMemberOfTab ".
@@ -4609,8 +4610,8 @@ sub configInitDomainAdminGroups {
     "zimbraAdminConsoleUIComponents resourceContactTab");
   main::progress(($rc == 0) ? "done.\n" : "failed.\n");
 
-  foreach my $right qw(getAccount getCalendarResource getDistributionList getDomain getCos listAccount listCalendarResource listDistributionList listDomain listCos listDomain getDomain getAccountInfo countAccount getAccountMembership ) {
-    main::progress ("Granting global right $right to group $domainGroup...");
+  foreach my $right qw(getAccount getCalendarResource getDistributionList getDomain getCos listAccount listCalendarResource listDistributionList listDomain listCos listDomain getDomain getAccountInfo countAccount getAccountMembership getMailboxInfo ) {
+    main::progress ("Granting group $domainGroup global right $right...");
     $rc = main::runAsZimbra("$ZMPROV grr global grp $domainGroup $right");
     main::progress(($rc == 0) ? "done.\n" : "failed.\n");
   }
