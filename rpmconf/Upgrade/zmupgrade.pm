@@ -309,21 +309,21 @@ sub upgrade {
     $curSchemaVersion = Migrate::getSchemaVersion();
   }
 
-  if (main::isInstalled("zimbra-logger") && -d "/opt/zimbra/logger/db/data/zimbra_logger/") {
-    if (startLoggerSql()) { return 1; }
+  #if (main::isInstalled("zimbra-logger") && -d "/opt/zimbra/logger/db/data/zimbra_logger/") {
+    #if (startLoggerSql()) { return 1; }
+#
+    #if ($startVersion eq "3.0.0_M2") {
+      #$curLoggerSchemaVersion = 0;
+    #} elsif ($startVersion eq "3.0.0_M3" && $startBuild < 285) {
+      #$curLoggerSchemaVersion = 1;
+    #} else {
+      #$curLoggerSchemaVersion = Migrate::getLoggerSchemaVersion();
+    #}
 
-    if ($startVersion eq "3.0.0_M2") {
-      $curLoggerSchemaVersion = 0;
-    } elsif ($startVersion eq "3.0.0_M3" && $startBuild < 285) {
-      $curLoggerSchemaVersion = 1;
-    } else {
-      $curLoggerSchemaVersion = Migrate::getLoggerSchemaVersion();
-    }
-
-    if ($curLoggerSchemaVersion eq "") {
-      $curLoggerSchemaVersion = 1;
-    }
-  }
+    #if ($curLoggerSchemaVersion eq "") {
+      #$curLoggerSchemaVersion = 1;
+    #}
+  #}
 
   if ($startVersion eq "3.0.0_GA") {
     main::progress("This appears to be 3.0.0_GA\n");
@@ -498,17 +498,17 @@ sub upgrade {
     stopSql();
   }
 
-  if (main::isInstalled ("zimbra-logger") && -d "/opt/zimbra/logger/db/data/zimbra_logger/") {
-    if ($curLoggerSchemaVersion < $hiLoggerVersion) {
-      main::progress("An upgrade of the logger schema is necessary from version $curLoggerSchemaVersion to $hiLoggerVersion.\n");
-    }
-
-    while ($curLoggerSchemaVersion < $hiLoggerVersion) {
-      if (runLoggerSchemaUpgrade ($curLoggerSchemaVersion)) { return 1; }
-      $curLoggerSchemaVersion++;
-    }
-    stopLoggerSql();
-  }
+  #if (main::isInstalled ("zimbra-logger") && -d "/opt/zimbra/logger/db/data/zimbra_logger/") {
+    #if ($curLoggerSchemaVersion < $hiLoggerVersion) {
+      #main::progress("An upgrade of the logger schema is necessary from version $curLoggerSchemaVersion to $hiLoggerVersion.\n");
+    #}
+#
+    #while ($curLoggerSchemaVersion < $hiLoggerVersion) {
+      #if (runLoggerSchemaUpgrade ($curLoggerSchemaVersion)) { return 1; }
+      #$curLoggerSchemaVersion++;
+    #}
+    #stopLoggerSql();
+  #}
 
 
   # start ldap
@@ -3000,6 +3000,8 @@ sub relocatePostfixQueue {
 sub updateLoggerMySQLcnf {
 
   my $mycnf = "/opt/zimbra/conf/my.logger.cnf";
+
+  return unless (-f $mycnf);
   my $mysql_pidfile = main::getLocalConfig("logger_mysql_pidfile");
   $mysql_pidfile = "/opt/zimbra/logger/db/mysql.pid" if ($mysql_pidfile eq "");
   if (-e "$mycnf") {
