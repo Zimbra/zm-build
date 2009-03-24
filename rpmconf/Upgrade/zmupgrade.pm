@@ -2497,6 +2497,7 @@ sub upgrade5010GA {
     upgradeLdapConfigValue("zimbraAdminConsoleDNSCheckEnabled", "FALSE", "");
     my @coses = `$su "$ZMPROV gac"`;
     my %attrs = ( zimbraFeatureMailForwardingInFiltersEnabled => "TRUE",
+                  zimbraContactMaxNumEntries => "10000",
                   zimbraPrefIMHideOfflineBuddies => "FALSE",
                   zimbraFeatureGalSyncEnabled => "TRUE",
                   zimbraPrefIMHideBlockedBuddies => "FALSE",
