@@ -35,7 +35,6 @@ my $scriptDir = "/opt/zimbra/libexec/scripts";
 
 my $lowVersion = 18;
 my $hiVersion = 61; # this should be set to the DB version expected by current server code
-my $hiLoggerVersion = 6;
 
 # Variables for the combo schema updater
 my $comboLowVersion = 20;
@@ -108,15 +107,6 @@ my %updateScripts = (
    # 54-59 skipped for possible FRANKLIN use
 	'60' => "migrate20090315-MobileDevices.pl",
 
-);
-
-my %loggerUpdateScripts = (
-  '0' => "migrateLogger1-index.pl",
-  '1' => "migrateLogger2-config.pl",
-  '2' => "migrateLogger3-diskindex.pl",
-  '3' => "migrateLogger4-loghostname.pl",
-  '4' => "migrateLogger5-qid.pl",
-  '5' => "migrateLogger6-qid.pl",
 );
 
 my %updateFuncs = (
@@ -298,7 +288,6 @@ sub upgrade {
   if (stopZimbra()) { return 1; }
 
   my $curSchemaVersion;
-  my $curLoggerSchemaVersion;
 
   if (main::isInstalled("zimbra-store")) {
 
@@ -308,22 +297,6 @@ sub upgrade {
 
     $curSchemaVersion = Migrate::getSchemaVersion();
   }
-
-  #if (main::isInstalled("zimbra-logger") && -d "/opt/zimbra/logger/db/data/zimbra_logger/") {
-    #if (startLoggerSql()) { return 1; }
-#
-    #if ($startVersion eq "3.0.0_M2") {
-      #$curLoggerSchemaVersion = 0;
-    #} elsif ($startVersion eq "3.0.0_M3" && $startBuild < 285) {
-      #$curLoggerSchemaVersion = 1;
-    #} else {
-      #$curLoggerSchemaVersion = Migrate::getLoggerSchemaVersion();
-    #}
-
-    #if ($curLoggerSchemaVersion eq "") {
-      #$curLoggerSchemaVersion = 1;
-    #}
-  #}
 
   if ($startVersion eq "3.0.0_GA") {
     main::progress("This appears to be 3.0.0_GA\n");
@@ -497,18 +470,6 @@ sub upgrade {
     }
     stopSql();
   }
-
-  #if (main::isInstalled ("zimbra-logger") && -d "/opt/zimbra/logger/db/data/zimbra_logger/") {
-    #if ($curLoggerSchemaVersion < $hiLoggerVersion) {
-      #main::progress("An upgrade of the logger schema is necessary from version $curLoggerSchemaVersion to $hiLoggerVersion.\n");
-    #}
-#
-    #while ($curLoggerSchemaVersion < $hiLoggerVersion) {
-      #if (runLoggerSchemaUpgrade ($curLoggerSchemaVersion)) { return 1; }
-      #$curLoggerSchemaVersion++;
-    #}
-    #stopLoggerSql();
-  #}
 
 
   # start ldap
@@ -2890,29 +2851,6 @@ sub runSchemaUpgrade {
   my $rc = $?;
   if ($rc != 0) {
     main::progress ("Script failed with code $rc: $! - exiting\n");
-    return $rc;
-  }
-  return 0;
-}
-
-sub runLoggerSchemaUpgrade {
-  my $curVersion = shift;
-
-  if (! defined ($loggerUpdateScripts{$curVersion})) {
-    main::progress ("Can't upgrade from version $curVersion - no script!\n");
-    return 1;
-  }
-
-  if (! -x "${scriptDir}/$loggerUpdateScripts{$curVersion}" ) {
-    main::progress ("Can't run ${scriptDir}/$loggerUpdateScripts{$curVersion} - no script!\n");
-    return 1;
-  }
-
-  main::progress ("Running ${scriptDir}/$loggerUpdateScripts{$curVersion}\n");
-  my $rc = 0xffff & system("$su \"perl -I${scriptDir} ${scriptDir}/$loggerUpdateScripts{$curVersion}\"");
-  $rc = $rc >> 8;
-  if ($rc) {
-    main::progress ("Script failed with code $rc - exiting\n");
     return $rc;
   }
   return 0;
