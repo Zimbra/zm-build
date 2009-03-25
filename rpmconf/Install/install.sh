@@ -38,11 +38,11 @@ usage() {
   echo "-c|--cluster type      Cluster install type active|standby."
   echo "-h|--help              Usage"
   echo "-l|--license <file>    License file to install."
-  echo "-p|--platform-override Allows installer to continue on an unknown OS."
   echo "-r|--restore <file>    Restore contents of <file> to localconfig" 
   echo "-s|--softwareonly      Software only installation."
   echo "-u|--uninstall         Uninstall ZCS"
   echo "-x|--skipspacecheck    Skip filesystem capacity checks."
+  echo "--platform-override    Allows installer to continue on an unknown OS."
   echo "[defaultsfile]         File containing default install values."
   echo ""
   exit
