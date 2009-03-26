@@ -2681,6 +2681,7 @@ sub upgrade600BETA1 {
     my $ldap_loglevel=main::getLocalConfig("ldap_log_level");
     main::setLocalConfig("ldap_common_loglevel", $ldap_loglevel)
       if ($ldap_loglevel ne "");
+    main::runAsZimbra("/opt/zimbra/libexec/zmldapanon -e");
   }
   main::deleteLocalConfig("ldap_log_level");
   upgradeLocalConfigValue("javamail_imap_timeout", "20", "60");
