@@ -65,9 +65,5 @@ $(BUILD_ROOT)/zimbra-logger.spec:
 
 logger_stage: $(LOGGER_COMPONENTS)
 
-$(LOGGER_DEST_DIR)/$(MYSQL_DIR): $(LOGGER_DEST_DIR)
-	@echo "*** Creating mysql"
-	(cd $(LOGGER_DEST_DIR); tar xzf $(MYSQL_SOURCE).tar.gz;)
-
 $(LOGGER_DEST_DIR):
 	mkdir -p $@

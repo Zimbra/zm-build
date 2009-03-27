@@ -2671,6 +2671,38 @@ sub upgrade600BETA1 {
     main::runAsZimbra("$ZMPROV ms $hn zimbraConvertdURL http://localhost:7047/convert\n");
   }
 
+  if (main::isInstalled("zimbra-logger")) {
+    # clean up old logger database and work directory
+    my $logger_data_directory = main::getLocalConfig("logger_data_directory") || "/opt/zimbra/logger";
+    my $stats_img_directory = main::getLocalConfig("stats_img_directory") || "/opt/zimbra/logger/db/work";
+    my $logger_mysql_data_directory = main::getLocalConfig("logger_mysql_data_directory") || "${logger_data_directory}/db/data";
+    my $logger_mysql_mycnf = main::getLocalConfig("logger_mysql_mycnf") || "/opt/zimbra/conf/my.logger.cnf";
+    my $logger_mysql_errlogfile = main::getLocalConfig("logger_mysql_errlogfile") || "/opt/zimbra/log/my.logger.cnf";
+    my $logger_mysql_pidfile = main::getLocalConfig("logger_mysql_pidfile") || "${logger_data_directory}/db/mysql.pid";
+
+    system("rm -rf ${logger_mysql_data_directory} 2> /dev/null")
+      if ( -d "${logger_mysql_data_directory}/");
+    system("rm -rf ${stats_img_directory} 2> /dev/null")
+      if ( -d "${stats_img_directory}");
+    unlink("$logger_data_directory/mysql") if (-l "$logger_data_directory/mysql");
+    unlink($logger_mysql_mycnf) if (-f $logger_mysql_mycnf);
+    unlink($logger_mysql_errlogfile) if (-f $logger_mysql_errlogfile);
+    unlink($logger_mysql_pidfile) if (-f $logger_mysql_pidfile);
+
+    # clean up localconfig  
+    main::deleteLocalConfig("logger_mysql_bind_address");
+    main::deleteLocalConfig("logger_mysql_data_directory");
+    main::deleteLocalConfig("logger_mysql_directory");
+    main::deleteLocalConfig("logger_mysql_errlogfile");
+    main::deleteLocalConfig("logger_mysql_mycnf");
+    main::deleteLocalConfig("logger_mysql_pidfile");
+    main::deleteLocalConfig("logger_mysql_port");
+    main::deleteLocalConfig("logger_mysql_socket");
+    main::deleteLocalConfig("mysql_logger_root_password");
+    main::deleteLocalConfig("stats_img_directory");
+    main::deleteLocalConfig("zimbra_logger_mysql_password");
+  }
+
   #33648
   main::deleteLocalConfig("ldap_require_tls");
   main::deleteLocalConfig("calendar_canonical_tzid");
