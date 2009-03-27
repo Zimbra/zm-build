@@ -234,7 +234,7 @@ sub rotateLogFile($$;$$) {
     if (! -d $rotatedir) {
         die "Unable to create log rotation directory $rotatedir";
     }
-    $fh->close();
+    $fh->close() if defined $fh;
 
     my $rotatefile = "$rotatedir/$name";
 
