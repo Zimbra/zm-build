@@ -8,7 +8,7 @@
 # Status logging
 #
 */2 * * * * /opt/zimbra/libexec/zmstatuslog
-*/10 * * * * /opt/zimbra/libexec/zmdisklog
+#*/10 * * * * /opt/zimbra/libexec/zmdisklog
 #
 # SSL Certificate Expiration Checks
 #
