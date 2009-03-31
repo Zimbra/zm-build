@@ -82,6 +82,8 @@ ifeq ($(ANT), )
 	$(error ant not found - exiting)
 endif
 
+ANT_DEBUG ?= -Ddebug=false
+
 PACKAGE_CONF_DIR	:= $(BUILD_ROOT)/rpmconf
 
 PROFILE_SOURCE      := $(PACKAGE_CONF_DIR)/Env/zimbra.bash_profile
