@@ -71,3 +71,9 @@ logger_stage: $(LOGGER_COMPONENTS)
 
 $(LOGGER_DEST_DIR):
 	mkdir -p $@
+
+$(LOGGER_DEST_DIR)/db:
+	mkdir -p $@
+
+$(LOGGER_DEST_DIR)/db/data:
+	mkdir -p $@
