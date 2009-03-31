@@ -62,6 +62,10 @@ $(BUILD_ROOT)/zimbra-logger.spec:
 	rm -f zimbra-logger.post
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/logger" >> \
 		$(BUILD_ROOT)/zimbra-logger.spec
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/logger/db" >> \
+		$(BUILD_ROOT)/zimbra-logger.spec
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/logger/db/data" >> \
+		$(BUILD_ROOT)/zimbra-logger.spec
 
 logger_stage: $(LOGGER_COMPONENTS)
 
