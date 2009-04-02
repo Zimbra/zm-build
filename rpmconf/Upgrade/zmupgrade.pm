@@ -63,7 +63,7 @@ if ($isLdapMaster eq "true" ) {
    $isLdapMaster = 0;
 }
 
-my $ZMPROV = "/opt/zimbra/bin/zmprov -l --";
+my $ZMPROV = "/opt/zimbra/bin/zmprov -m -l --";
 
 my %updateScripts = (
   'ComboUpdater' => "migrate-ComboUpdater.pl",
@@ -1776,7 +1776,7 @@ sub upgrade500RC3 {
   if (main::isInstalled("zimbra-proxy")) {
       my $query = "\(\|\(zimbraMailDeliveryAddress=\${USER}\)\(zimbraMailAlias=\${USER}\)\)";
       # We have to use a pipe to write out the Query, otherwise ${USER} gets interpreted
-      open(ZMPROV, "|$su 'zmprov -l'");
+      open(ZMPROV, "|$su 'zmprov -m -l'");
       print ZMPROV "mcf zimbraReverseProxyMailHostQuery $query\n";
       close ZMPROV;
   }
@@ -1954,7 +1954,7 @@ sub upgrade500GA {
       '\(\&\(zimbraServiceHostname=\${MAILHOST}\)\(objectClass=zimbraServer\)\)';
 
     # We have to use a pipe to write out the Query, otherwise ${USER} gets interpreted
-    open(ZMPROV, "|$su 'zmprov -l'");
+    open(ZMPROV, "|$su 'zmprov -m -l'");
     print ZMPROV "mcf zimbraReverseProxyMailHostQuery $zimbraReverseProxyMailHostQuery\n";
     print ZMPROV "mcf zimbraReverseProxyPortQuery $zimbraReverseProxyPortQuery\n";
     print ZMPROV "mcf zimbraReverseProxyDomainNameQuery $zimbraReverseProxyDomainNameQuery\n";
@@ -2239,7 +2239,7 @@ sub upgrade506GA {
     # bug 27123, upgrade query
     my $query = "\(\|\(zimbraMailDeliveryAddress=\${USER}\)\(zimbraMailAlias=\${USER}\)\(zimbraId=\${USER}\)\)";
     # We have to use a pipe to write out the Query, otherwise ${USER} gets interpreted
-    open(ZMPROV, "|$su 'zmprov -l'");
+    open(ZMPROV, "|$su 'zmprov -m -l'");
     print ZMPROV "mcf zimbraReverseProxyMailHostQuery $query\n";
     close ZMPROV;
 

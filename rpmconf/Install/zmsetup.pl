@@ -41,7 +41,7 @@ $| = 1;
 
 progress("Operations logged to $logfile\n");
 
-our $ZMPROV = "/opt/zimbra/bin/zmprov -l";
+our $ZMPROV = "/opt/zimbra/bin/zmprov -m -l";
 our $SU;
 if ($platform eq "MACOSXx86_10.5") {
   $SU = "su - zimbra -c -l ";
@@ -3775,7 +3775,7 @@ sub checkLdapReplicationEnabled() {
 
 sub runAsRoot {
   my $cmd = shift;
-  if ($cmd =~ /ldappass/ || $cmd =~ /init/ || $cmd =~ /zmprov -l ca/) {
+  if ($cmd =~ /ldappass/ || $cmd =~ /init/ || $cmd =~ /zmprov -m -l ca/) {
     # Suppress passwords in log file
     my $c = (split ' ', $cmd)[0];
     detail ( "*** Running as root user: $c\n" );
@@ -3789,7 +3789,7 @@ sub runAsRoot {
 
 sub runAsZimbra {
   my $cmd = shift;
-  if ($cmd =~ /ldappass/ || $cmd =~ /init/ || $cmd =~ /zmprov -l ca/) {
+  if ($cmd =~ /ldappass/ || $cmd =~ /init/ || $cmd =~ /zmprov -m -l ca/) {
     # Suppress passwords in log file
     my $c = (split ' ', $cmd)[0];
     detail ( "*** Running as zimbra user: $c\n" );
@@ -3803,7 +3803,7 @@ sub runAsZimbra {
 
 sub runAsZimbraWithOutput {
   my $cmd = shift;
-  if ($cmd =~ /ldappass/ || $cmd =~ /init/ || $cmd =~ /zmprov -l ca/) {
+  if ($cmd =~ /ldappass/ || $cmd =~ /init/ || $cmd =~ /zmprov -m -l ca/) {
     # Suppress passwords in log file
     my $c = (split ' ', $cmd)[0];
     detail ( "*** Running as zimbra user: $c\n" );
@@ -4637,7 +4637,7 @@ sub setProxyBits {
         '\(\&\(zimbraVirtualIPAddress=\${IPADDR}\)\(objectClass=zimbraDomain\)\)';
   my $zimbraReverseProxyPortQuery =
         '\(\&\(zimbraServiceHostname=\${MAILHOST}\)\(objectClass=zimbraServer\)\)';
-  open(ZMPROV, "|$SU 'zmprov -l'");
+  open(ZMPROV, "|$SU 'zmprov -m -l'");
 
   print ZMPROV "mcf zimbraReverseProxyMailHostQuery $zimbraReverseProxyMailHostQuery\n"
     if(getLdapConfigValue("zimbraReverseProxyMailHostQuery") eq "");
