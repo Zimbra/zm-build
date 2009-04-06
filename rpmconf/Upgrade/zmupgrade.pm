@@ -3232,6 +3232,7 @@ sub migrateLdap($) {
           while(<IN>) {
             if ($_ =~ /^zimbraPrefStandardClientAccessilbityMode:/) {next;}
             if ($_ =~ /^zimbraHsmGlobalConfig:/) {next;}
+            if ($_ =~ /^objectClass: zimbraHsmGlobalConfig/) {next;}
             if ($_ =~ /^zimbraHsmServer:/) {next;}
             print OUT $_;
           }
