@@ -3231,9 +3231,8 @@ sub migrateLdap($) {
           open(OUT,">$outfile");
           while(<IN>) {
             if ($_ =~ /^zimbraPrefStandardClientAccessilbityMode:/) {next;}
-            if ($_ =~ /^zimbraHsmGlobalConfig:/) {next;}
             if ($_ =~ /^objectClass: zimbraHsmGlobalConfig/) {next;}
-            if ($_ =~ /^zimbraHsmServer:/) {next;}
+            if ($_ =~ /^objectClass: zimbraHsmServer/) {next;}
             print OUT $_;
           }
         } else {
