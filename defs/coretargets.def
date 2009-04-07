@@ -135,10 +135,6 @@ $(CORE_DEST_DIR)/docs:
 $(CORE_DEST_DIR)/zimbramon: $(CORE_DEST_DIR)/zimbramon/bin $(CORE_DEST_DIR)/zimbramon/lib $(CORE_DEST_DIR)/zimbramon/crontabs $(CORE_DEST_DIR) 
 	@echo "*** Creating zimbramon"
 	mkdir -p $@
-	(cd $(CORE_DEST_DIR)/zimbramon; tar xzf $(MRTG_SOURCE).tgz)
-	mkdir -p $(CORE_DEST_DIR)/zimbramon/mrtg/work
-	mkdir -p $(CORE_DEST_DIR)/zimbramon/mrtg/conf
-	cp $(PACKAGE_CONF_DIR)/Conf/mrtg.cfg $(CORE_DEST_DIR)/zimbramon/mrtg/conf
 	(cd $(CORE_DEST_DIR)/zimbramon; tar xzf $(RRD_SOURCE).tar.gz)
 	mkdir -p $(CORE_DEST_DIR)/logger/db/work
 	cp -f $(PACKAGE_CONF_DIR)/Img/connection_failed.gif \

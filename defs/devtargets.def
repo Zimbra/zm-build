@@ -147,10 +147,6 @@ $(DEV_INSTALL_ROOT)/zimbramon: $(DEV_INSTALL_ROOT) devperllibs
 	@cp -f $(wildcard $(BUILD_ROOT)/lib/Zimbra/Mon/*.pm) $@/lib/Zimbra/Mon
 	mkdir -p $@/lib/Zimbra/Mon/SOAP
 	@cp -f $(wildcard $(SERVICE_DIR)/src/perl/soap/*.pm) $@/lib/Zimbra/Mon/SOAP
-	(cd $(DEV_INSTALL_ROOT)/zimbramon; tar xzf $(MRTG_SOURCE).tgz)
-	mkdir -p $(DEV_INSTALL_ROOT)/zimbramon/mrtg/work
-	mkdir -p $(DEV_INSTALL_ROOT)/zimbramon/mrtg/conf
-	cp -f $(PACKAGE_CONF_DIR)/Conf/mrtg.cfg $(DEV_INSTALL_ROOT)/zimbramon/mrtg/conf
 	cat $(PACKAGE_CONF_DIR)/Env/crontabs/crontab* > $(DEV_INSTALL_ROOT)/zimbramon/crontab
 	(cd $(DEV_INSTALL_ROOT)/zimbramon; tar xzf $(RRD_SOURCE).tar.gz)
 

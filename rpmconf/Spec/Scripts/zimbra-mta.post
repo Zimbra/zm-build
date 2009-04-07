@@ -48,11 +48,6 @@ chmod $SUDOMODE /etc/sudoers
 chown zimbra:zimbra /opt/zimbra/postfix/conf/master.cf.in
 chmod 440 /opt/zimbra/postfix/conf/master.cf.in
 
-if [ ! -d /opt/zimbra/zimbramon/mrtg/work/ ]; then
-	mkdir -p /opt/zimbra/zimbramon/mrtg/work/
-fi
-chown -R zimbra:zimbra /opt/zimbra/zimbramon/mrtg
-
 mkdir -p /opt/zimbra/data/amavisd/db
 mkdir -p /opt/zimbra/data/amavisd/tmp
 mkdir -p /opt/zimbra/data/amavisd/var

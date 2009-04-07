@@ -115,11 +115,6 @@ if [ -f /etc/prelink.conf ]; then
   fi
 fi
 
-if [ ! -d /opt/zimbra/zimbramon/mrtg/work/ ]; then
-	mkdir -p /opt/zimbra/zimbramon/mrtg/work/
-fi
-chown -R zimbra:zimbra /opt/zimbra/zimbramon/mrtg
-
 if [ -x /sbin/ldconfig ]; then
   /sbin/ldconfig
 fi
