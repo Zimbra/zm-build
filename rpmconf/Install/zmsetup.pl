@@ -4760,6 +4760,38 @@ sub removeNetworkComponents {
         if (-d "$config{mailboxd_directory}/webapps/service/zimlet/$zimlet" );
     }
 }
+sub countUsers {
+  return $main::loaded{stats}{numAccts}
+    if (exists $main::loaded{stats}{numAccts});
+  my $count = 0;
+  my $ldap_pass = getLocalConfig("zimbra_ldap_password");
+  my $ldap_master_url = getLocalConfig("ldap_master_url");
+  my $ldap;
+  unless($ldap = Net::LDAP->new($ldap_master_url)) {
+    detail("Unable to contact $ldap_master_url: $!");
+    return undef;
+  }
+  my $ldap_dn = $config{zimbra_ldap_userdn};
+  my $ldap_base = "";
+
+  my $result = $ldap->bind($ldap_dn, password => $ldap_pass);
+  if ($result->code()) {
+    detail("ldap bind failed for $ldap_dn");
+    return undef;
+  } else {
+    detail("ldap bind done for $ldap_dn");
+    progress("Searching LDAP for zimbra accounts...");
+    $result = $ldap->search(filter => "(objectclass=zimbraAccount)", \
+      attrs => ['zimbraMailDeliveryAddress']);
+    progress (($result->code()) ? "failed.\n" : "done.\n");
+    return undef if ($result->code());
+    $count = $result->count;
+  }
+  $result = $ldap->unbind;
+  $main::loaded{stats}{numAccts} = $count 
+    if ($count > 0);
+  return(($count > 0) ? "$count" : undef);
+}
 
 sub removeNetworkZimlets {
   my $ldap_pass = getLocalConfig("zimbra_ldap_password");
