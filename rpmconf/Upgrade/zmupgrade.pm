@@ -2604,7 +2604,11 @@ sub upgrade600BETA1 {
     main::runAsZimbra("zmjava com.zimbra.cs.account.ldap.upgrade.LdapUpgrade -b 32557 -v");
     main::runAsZimbra("zmjava com.zimbra.cs.account.ldap.upgrade.LdapUpgrade -b 31694 -v");
     main::runAsZimbra("zmjava com.zimbra.cs.account.ldap.upgrade.LdapUpgrade -b 14531 -v");
-    main::runAsZimbra("zmjava com.zimbra.cs.account.ldap.upgrade.LdapUpgrade -b 31284 -v");
+
+    # this touches all accounts so only run it by default on small sites.
+    # releasenotes to indicate larger deployments run it by hand after upgrade.
+    #main::runAsZimbra("zmjava com.zimbra.cs.account.ldap.upgrade.LdapUpgrade -b 31284 -v");
+      #if ($main::countUsers < 500);
 
  
     upgradeLdapConfigValue("zimbraRedoLogRolloverFileSizeKB", "1048576", "102400");
