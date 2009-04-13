@@ -176,6 +176,7 @@ my %updateFuncs = (
   "5.0.14_GA" => \&upgrade5014GA,
   "5.0.15_GA" => \&upgrade5015GA,
   "5.0.16_GA" => \&upgrade5016GA,
+  "5.0.17_GA" => \&upgrade5017GA,
   "6.0.0_BETA1" => \&upgrade600BETA1,
   "6.0.0_BETA2" => \&upgrade600BETA2,
   "6.0.0_RC1" => \&upgrade600RC1,
@@ -245,6 +246,7 @@ my @versionOrder = (
   "5.0.14_GA",
   "5.0.15_GA",
   "5.0.16_GA",
+  "5.0.17_GA",
   "6.0.0_BETA1",
   "6.0.0_BETA2",
   "6.0.0_RC1",
@@ -420,6 +422,8 @@ sub upgrade {
     main::progress("This appears to be 5.0.15_GA\n");
   } elsif ($startVersion eq "5.0.16_GA") {
     main::progress("This appears to be 5.0.16_GA\n");
+  } elsif ($startVersion eq "5.0.17_GA") {
+    main::progress("This appears to be 5.0.17_GA\n");
   } elsif ($startVersion eq "6.0.0_BETA1") {
     main::progress("This appears to be 6.0.0_BETA1\n");
   } elsif ($startVersion eq "6.0.0_BETA2") {
@@ -2580,6 +2584,12 @@ sub upgrade5015GA {
 sub upgrade5016GA {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
   main::progress("Updating from 5.0.16_GA\n");
+  return 0;
+}
+
+sub upgrade5017GA {
+  my ($startBuild, $targetVersion, $targetBuild) = (@_);
+  main::progress("Updating from 5.0.17_GA\n");
   return 0;
 }
 
