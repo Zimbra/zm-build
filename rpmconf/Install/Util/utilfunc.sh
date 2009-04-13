@@ -257,56 +257,6 @@ checkDatabaseIntegrity() {
       fi
     fi
   fi
-  isInstalled zimbra-logger
-  if [ x$PKGINSTALLED != "x" ]; then
-    if [ -x "bin/zmdbintegrityreport" -a -x "/opt/zimbra/bin/logmysqladmin" ]; then
-      if [ x$DEFAULTFILE = "x" -o x$CLUSTERUPGRADE = "xyes" ]; then
-        while :; do
-          askYN "Do you want to verify logger database integrity?" "Y"
-          if [ $response = "no" ]; then
-            break
-          elif [ $response = "yes" ]; then
-            echo "Verifying integrity of logger database.  This may take a while."
-            su - zimbra -c "/opt/zimbra/bin/logmysqladmin -s ping" 2>/dev/null
-            if [ $? != 0 ]; then
-              su - zimbra -c "/opt/zimbra/bin/logmysql.server start" 2> /dev/null
-              for ((i = 0; i < 60; i++)) do
-                su - zimbra -c "/opt/zimbra/bin/logmysqladmin -s ping" 2>/dev/null
-                if [ $? = 0 ]; then
-                  LOGGERSQLSTARTED=1
-                  break
-                fi
-                sleep 2
-              done
-            fi
-            perl -I/opt/zimbra/zimbramon/lib bin/zmdbintegrityreport -l -v -r
-            LOGGERDBINTEGRITYSTATUS=$?
-            if [ x"$LOGGERSQLSTARTED" != "x" ]; then
-              su - zimbra -c "/opt/zimbra/bin/logmysqladmin -s ping" 2>/dev/null
-              if [ $? = 0 ]; then
-                su - zimbra -c "/opt/zimbra/bin/logmysql.server stop" 2> /dev/null
-                for ((i = 0; i < 60; i++)) do
-                  su - zimbra -c "/opt/zimbra/bin/logmysqladmin -s ping" 2>/dev/null
-                  if [ $? != 0 ]; then
-                    break
-                  fi
-                  sleep 2
-                done
-              fi
-            fi
-            if [ $LOGGERDBINTEGRITYSTATUS != 0 ]; then
-              exit $?
-            fi
-            break
-          else
-            break
-          fi
-        done
-      else 
-        echo "Automated install detected...continuing."
-      fi
-    fi
-  fi
 }
 
 checkRecentBackup() {
