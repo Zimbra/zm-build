@@ -3287,7 +3287,12 @@ sub migrateLdap($) {
           `cp -f /opt/zimbra/openldap/var/openldap-data/DB_CONFIG /opt/zimbra/data/ldap/hdb/db`;
         }
         `chown -R zimbra:zimbra /opt/zimbra/data/ldap`;
-        main::runAsZimbra("/opt/zimbra/openldap/sbin/slapadd -b '' -F /opt/zimbra/data/ldap/config -l $outfile");
+        my $rc;
+        $rc=main::runAsZimbra("/opt/zimbra/openldap/sbin/slapadd -b '' -F /opt/zimbra/data/ldap/config -l $outfile");
+        if ($rc != 0) {
+          main::progress("slapadd import failed.\n");
+          return 1;
+        }
         `chmod 640 /opt/zimbra/data/ldap/ldap.bak`;
         main::progress("done.\n");
       } else {
