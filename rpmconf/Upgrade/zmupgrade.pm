@@ -2744,6 +2744,20 @@ sub upgrade600BETA1 {
 sub upgrade600BETA2 {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
   main::progress("Updating from 6.0.0_BETA2\n");
+  if (main::isInstalled("zimbra-store")) {
+    # 36598
+    my $mailboxd_java_options = main::getLocalConfig("mailboxd_java_options");
+    $mailboxd_java_options .= " -verbose:gc"
+      unless ($mailboxd_java_options =~ /verbose:gc/);
+    $mailboxd_java_options .= " -XX:+PrintGCDetails"
+      unless ($mailboxd_java_options =~ /PrintGCDetails/);
+    $mailboxd_java_options .= " -XX:+PrintGCTimeStamps"
+      unless ($mailboxd_java_options =~ /PrintGCTimeStamps/);
+    $mailboxd_java_options .= " -XX:+PrintGCApplicationTime"
+      unless ($mailboxd_java_options =~ /PrintGCApplicationTime/);
+    main::detail("Modified mailboxd_java_options=$mailboxd_java_options");
+    main::setLocalConfig("mailboxd_java_options", "$mailboxd_java_options");
+  }
   return 0;
 }
 
