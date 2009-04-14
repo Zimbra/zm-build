@@ -27,6 +27,7 @@ my @ISA = qw(Exporter);
 
 my $ident="zimbramon";
 my $facility="local0";
+my $stats_facility = "local1";
 
 my @EXPORT = qw (Log);
 
@@ -64,6 +65,37 @@ sub Log
 		closelog();
 	}
 }
+
+sub LogStats
+{
+	my ($level,$msg) = (@_);
+	if ($loglevels{$level} >= $LOG_LEVEL) {
+    setlogsock('unix');
+		openlog($ident, "pid,ndelay,nowait", $stats_facility);
+		if (length($msg) <= 900) {
+			 syslog($level, "$$:$level: $msg");
+		} else {
+			my $last_uuid = undef;
+			my $m = $msg;
+			do {
+				my $substring = substr $m, 0, 900;
+				$m = substr $m, 900;
+				if (defined $last_uuid) {
+					$substring = ":::${last_uuid}:::${substring}";
+				}
+				$last_uuid = $ug->to_string($ug->create());
+				syslog($level, "$$:$level: ${substring}:::${last_uuid}:::");
+			} while (length($m) > 900);
+			syslog($level, ":::${last_uuid}:::${m}");
+			
+		}
+		if ($::DEBUG) {
+			print STDERR scalar localtime().":$$:$level: $msg\n";
+		}
+		closelog();
+	}
+}
+
 
 1
 
