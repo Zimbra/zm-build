@@ -18,13 +18,4 @@ PKG=`echo ${RECEIPT_PATH} | sed -e 's|.*/\(zimbra-logger.[^/]*pkg\)/.*|\1|' | se
 D=`date +%s`
 echo "${D}: UPGRADED ${PKG}" >> /opt/zimbra/.install_history
 
-PLAT=`/opt/zimbra/libexec/get_plat_tag.sh`
-ARCH=powerpc
-if [ "x$PLAT" = "xMACOSXx86" -o "x$PLAT" = "xMACOSXx86_10.5" ]; then
-	ARCH=i686
-fi
-
-rm -f /opt/zimbra/logger/mysql
-ln -s /opt/zimbra/logger/mysql-standard-5.0.77-apple-darwin8.2.0-$ARCH /opt/zimbra/logger/mysql
-
 exit 0
