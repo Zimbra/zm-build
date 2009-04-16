@@ -57,6 +57,16 @@ while [ $# -ne 0 ]; do
 		-l|--license) 
       shift
 			LICENSE=$1
+      if [ x"$LICENSE" = "x" ]; then
+        echo "Valid license file required for -l."
+        usage
+      fi
+
+      if [ ! -f "$LICENSE" ]; then
+        echo "Valid license file required for -l."
+        echo "${LICENSE}: file not found."
+        usage
+      fi
 		;;
 		-u|--uninstall) 
       UNINSTALL="yes"
