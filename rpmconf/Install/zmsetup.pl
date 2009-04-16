@@ -4967,7 +4967,7 @@ sub configCreateDomain {
     }
 
     configInitDomainAdminGroups()
-      if (isNetwork());
+      if (isNetwork() && $config{LDAPHOST} eq $config{HOSTNAME});
   }
   if (isEnabled("zimbra-store")) {
     if ($config{DOCREATEADMIN} eq "yes") {
