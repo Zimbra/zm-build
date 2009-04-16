@@ -5,7 +5,7 @@ Summary: Zimbra SNMP
 Name: zimbra-snmp
 Version: @@VERSION@@
 Release: @@RELEASE@@
-Copyright: Various
+License: Various
 Group: Applications/Messaging
 URL: http://www.zimbra.com
 Vendor: Zimbra, Inc.

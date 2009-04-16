@@ -5,7 +5,7 @@ Summary: Zimbra LDAP
 Name: zimbra-ldap
 Version: @@VERSION@@
 Release: @@RELEASE@@
-Copyright: OpenLDAP
+License: OpenLDAP
 Group: Applications/Messaging
 URL: http://www.zimbra.com
 Vendor: Zimbra, Inc.

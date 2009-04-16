@@ -5,7 +5,7 @@ Summary: Zimbra Spell
 Name: zimbra-spell
 Version: @@VERSION@@
 Release: @@RELEASE@@
-Copyright: Various
+License: Various
 Group: Applications/Messaging
 URL: http://www.zimbra.com
 Vendor: Zimbra, Inc.
