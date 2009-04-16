@@ -5062,12 +5062,6 @@ sub configInitLogger {
     return 0;
   }
 
-  if (!$loggerSqlConfigured && isEnabled("zimbra-logger")) {
-    progress ( "Initializing logger sql database..." );
-    runAsZimbra ("/opt/zimbra/libexec/zmloggerinit");
-    progress ( "done.\n" );
-  } 
-
   if (isEnabled("zimbra-logger")) {
     runAsZimbra ("$ZMPROV mcf zimbraLogHostname $config{HOSTNAME}");
     setLocalConfig ("smtp_source", $config{SMTPSOURCE});
