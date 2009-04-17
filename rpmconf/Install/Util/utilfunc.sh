@@ -1616,7 +1616,7 @@ getInstallPackages() {
       elif [ $i = "zimbra-archiving" ]; then
          askYN "Install $i" "N"
       elif [ $i = "zimbra-convertd" ]; then
-         askYN "Install $i" "N"
+         askYN "Install $i" "Y"
       elif [ $i = "zimbra-cluster" -a "x$CLUSTERTYPE" = "x" ]; then
          askYN "Install $i" "N"
       else
