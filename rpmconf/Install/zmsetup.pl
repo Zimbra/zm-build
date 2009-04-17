@@ -535,9 +535,6 @@ sub isEnabled {
       if (isInstalled($p) and not defined $prevInstalledPackages{$p}) {
         detail("Marking $p as installed. Services for $p will be enabled.");
         $enabledPackages{$p} = "Enabled";
-        if ($p eq "zimbra-convertd") {
-          $enabledPackages{$p} = "Disabled";
-        }
       } elsif (isInstalled($p) and not defined $enabledPackages{$p}) {
         detail("Marking $p as disabled.");
         $enabledPackages{$p} = "Disabled";
@@ -548,7 +545,6 @@ sub isEnabled {
     detail("Newinstall enabling all installed packages");
     foreach my $p (@packageList) {
       if (isInstalled($p)) {
-        $enabledPackages{"zimbra-convertd"} = "Disabled";
         unless ($enabledPackages{$p} eq "Disabled") {
           detail("Enabling $p");
           $enabledPackages{$p} = "Enabled" 
@@ -5134,10 +5130,16 @@ sub applyConfig {
       runAsZimbra("/opt/zimbra/bin/zmmailboxdctl restart");
       progress ( "done.\n" );
     }
+    if ($newinstall && isEnabled("zimbra-convertd") && isEnabled("zimbra-store")) {
+      runAsZimbra("/opt/zimbra/convertd/bin/upgrade_v2");
+    }
     #runAsZimbra ("$ZMPROV ms $config{HOSTNAME} zimbraUserServicesEnabled TRUE");
   } else {
     progress ( "WARNING: Document and Zimlet initialization skipped because Application Server was not configured to start.\n")
       if (isEnabled("zimbra-store"));
+    if ($newinstall && isEnabled("zimbra-convertd")) {
+      progress ( "WARNING: Convertd version 2 migration skipped because Application Server was not configured to start.\n");
+    }
   }
 
   setupCrontab();
