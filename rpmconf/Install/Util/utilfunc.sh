@@ -366,8 +366,9 @@ checkVersionDowngrade() {
 
 checkRequired() {
 
-  if ! cat /etc/hosts | perl -ne 'if (/^\s*127\.0\.0\.1/ && !/^\s*127\.0\.0\.1\s+localhost/) { exit 11; }'; then
-  cat<<EOF
+  if [ -x "/usr/bin/getent" ]; then
+    if ! /usr/bin/getent hosts 127.0.0.1 | perl -ne 'if (! m|^\d+\.\d+\.\d+\.\d+\s+localhost\s*| && ! m|^\d+\.\d+\.\d+\.\d+\s+localhost\.localdomain\s*|) { exit 11;}'; then
+      cat<<EOF
 
   ERROR: Installation can not proceeed.  Please fix your /etc/hosts file
   to contain:
@@ -387,13 +388,11 @@ checkRequired() {
 
 EOF
 
-  exit 1
-  fi
+      exit 1
+    fi
 
-  if ! cat /etc/hosts | \
-    perl -ne 'if (/^\s*\d+\.\d+\.\d+\.\d+\s+(\S+)/ && !/^\s*127\.0\.0\.1/) { my @foo = split (/\./,$1); if ($#foo == "0") {exit 11;} }'; then
-
-  cat<<EOF
+    if perl -e "while (<>) { next if /^#|^127.0/; exit 1 if /\s+$HOSTNAME\s+/; }" /etc/hosts; then
+      cat<<EOF
 
   ERROR: Installation can not proceeed.  Please fix your /etc/hosts file
   to contain:
@@ -406,7 +405,8 @@ EOF
 
 EOF
 
-  exit 1
+      exit 1
+    fi
   fi
 
   GOOD="yes"
