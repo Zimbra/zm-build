@@ -2769,8 +2769,8 @@ sub upgrade600BETA2 {
       unless ($mailboxd_java_options =~ /PrintGCDetails/);
     $mailboxd_java_options .= " -XX:+PrintGCTimeStamps"
       unless ($mailboxd_java_options =~ /PrintGCTimeStamps/);
-    $mailboxd_java_options .= " -XX:+PrintGCApplicationTime"
-      unless ($mailboxd_java_options =~ /PrintGCApplicationTime/);
+    $mailboxd_java_options .= " -XX:+PrintGCApplicationStoppedTime"
+      unless ($mailboxd_java_options =~ /PrintGCApplicationStoppedTime/);
     main::detail("Modified mailboxd_java_options=$mailboxd_java_options");
     main::setLocalConfig("mailboxd_java_options", "$mailboxd_java_options");
   }
