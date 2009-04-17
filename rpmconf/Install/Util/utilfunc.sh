@@ -1910,7 +1910,7 @@ getPlatformVars() {
       PREREQ_PACKAGES="sudo libidn gmp bind-libs vixie-cron"
       PREREQ_LIBS="/usr/lib/libstdc++.so.5"
       PRESUG_PACKAGE="sysstat"
-    elif [ $PLATFORM = "FC5" -o $PLATFORM = "FC6" -o $PLATFORM = "F7" ]; then
+    elif [ $PLATFORM = "FC5" -o $PLATFORM = "FC6" ]; then
       PREREQ_PACKAGES="sudo libidn gmp bind-libs vixie-cron"
       PREREQ_LIBS="/usr/lib/libstdc++.so.6"
       PRESUG_PACKAGE="sysstat"
@@ -1930,6 +1930,14 @@ getPlatformVars() {
       PREREQ_PACKAGES="sudo libidn gmp bind-libs vixie-cron"
       PREREQ_LIBS="/usr/lib/libstdc++.so.6"
       PRESUG_PACKAGES="perl-5.8.8 sysstat"
+    elif [ $PLATFORM = "F10" ]; then
+      PREREQ_PACKAGES="sudo libidn gmp bind-libs vixie-cron"
+      PREREQ_LIBS="/usr/lib/libstdc++.so.6"
+      PRESUG_PACKAGE="perl-5.10.0 sysstat"
+    elif [ $PLATFORM = "F10_64" ]; then
+      PREREQ_PACKAGES="sudo libidn gmp bind-libs vixie-cron"
+      PREREQ_LIBS="/usr/lib64/libstdc++.so.6"
+      PRESUG_PACKAGE="perl-5.10.0 sysstat"
     else
       PREREQ_PACKAGES="sudo libidn gmp"
       PREREQ_LIBS="/usr/lib/libstdc++.so.5"
