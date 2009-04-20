@@ -25,14 +25,26 @@ our @LOGGER_SCHEMA_UPGRADE = (
     [ q{
     	CREATE TABLE config (
     	    version INTEGER NOT NULL UNIQUE
-    	)},
+    	)
+      },
       q{
         INSERT INTO config VALUES (0);
       }
     ],
     # version 1, column mapping
-    [
-    ],
+    #[ q{
+    #	CREATE TABLE column_type (
+    #	)
+    #  },
+    #  q{
+    #  	INSERT INTO column_type VALUES
+    #  	( ),
+    #  	( )
+    #  },
+    #  q{
+    #  	UPDATE config SET version = 1
+    #  }
+    #],
 );
 
 1;
