@@ -4582,6 +4582,10 @@ sub configInitDomainAdminGroups {
   main::progress ("Granting group $domainGroup domain right +domainAdminRights on $config{zimbraDefaultDomainName}...");
   $rc = main::runAsZimbra("$ZMPROV grr domain $config{zimbraDefaultDomainName} grp $domainGroup +domainAdminRights");
   main::progress(($rc == 0) ? "done.\n" : "failed.\n");
+
+  main::progress ("Granting group $domainGroup domain right +domainAdminZimletRights on $config{zimbraDefaultDomainName}...");
+  $rc = main::runAsZimbra("$ZMPROV grr domain $config{zimbraDefaultDomainName} grp $domainGroup +domainAdminZimletRights");
+  main::progress(($rc == 0) ? "done.\n" : "failed.\n");
     
   main::progress ("Setting up default help desk admin UI components..");
   $domainGroup = "zimbraHelpDeskAdmins\@". 
