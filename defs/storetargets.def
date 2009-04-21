@@ -71,6 +71,8 @@ $(BUILD_ROOT)/zimbra-store.spec:
 		$(BUILD_ROOT)/zimbra-store.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/lib" >> \
 		$(BUILD_ROOT)/zimbra-store.spec
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/libexec" >> \
+		$(BUILD_ROOT)/zimbra-store.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/log" >> \
 		$(BUILD_ROOT)/zimbra-store.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/zimlets" >> \
@@ -265,6 +267,30 @@ $(WEBAPP_DIR)/zimbra/downloads:
 	-cp $(THIRD_PARTY_BUILDS)/zdesktop/zdesktop*.dmg $@
 	-cp $(THIRD_PARTY_BUILDS)/zdesktop/zdesktop*.exe $@
 	-(rm -f $@/\%*.dmg)
+
+$(MIG_TOOLS_DIR)/build/zmzimbratozimbramig.jar:
+	(cd $(MIG_TOOLS_DIR); $(ANT) $(ANT_DEBUG) \
+		-Dplat.tag=$(BUILD_PLATFORM) \
+		-Dext.dir=BulkProvision -Dext.name=com_zimbra_bulkprovision \
+		-Dzimbra.buildinfo.version=$(VERSION_TAG) \
+		-Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) \
+		-Dzimbra.buildinfo.host=$(HOST) zmzimbratozimbramig ; )
+
+$(STORE_DEST_DIR)/lib/jars/zmzimbratozimbramig.jar: $(STORE_DEST_DIR)/lib/jars $(MIG_TOOLS_DIR)/build/zmzimbratozimbramig.jar
+	cp -f $(MIG_TOOLS_DIR)/build/zmzimbratozimbramig.jar $@
+
+$(STORE_DEST_DIR)/lib/jars: 
+	mkdir -p $@
+
+$(STORE_DEST_DIR)/conf/zmztozmig.conf:
+	cp -f $(MIG_TOOLS_DIR)/zmztozmig.conf $@
+
+$(STORE_DEST_DIR)/libexec/zmztozmig: $(STORE_DEST_DIR)/libexec
+	cp -f $(MIG_TOOLS_DIR)/src/libexec/zmztozmig $@
+
+$(STORE_DEST_DIR)/libexec:
+	mkdir -p $@
+
 
 $(ADMIN_EXT_DIR)/build/com_zimbra_bulkprovision.jar:
 	(cd $(ADMIN_EXT_DIR); $(ANT) $(ANT_DEBUG)\
