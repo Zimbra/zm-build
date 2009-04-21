@@ -14,5 +14,6 @@ POSIX_EXT_DIR := $(BUILD_ROOT)/../ZimbraPosixAccountsExtension
 SAMBA_EXT_DIR := $(BUILD_ROOT)/../ZimbraSambaExtension
 LDAP_EXT_DIR := $(BUILD_ROOT)/../ZimbraLDAPUtilsExtension
 ADMIN_EXT_DIR := $(BUILD_ROOT)/../ZimbraAdminExt
+MIG_TOOLS_DIR := $(BUILD_ROOT)/../ZimbraMigrationTools
 EVO_DIR := $(BUILD_ROOT)/../ZimbraEvolution
 NGINX_LOOKUP_DIR := $(BUILD_ROOT)/../ZimbraNginxLookup
