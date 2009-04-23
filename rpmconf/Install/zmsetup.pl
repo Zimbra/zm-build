@@ -1835,6 +1835,11 @@ sub setCreateAdmin {
         if ($config{AVDOMAIN} ne $d);
     }
 
+    $config{zimbraBackupReportEmailRecipients} = $new
+      if ($config{zimbraBackupReportEmailRecipients} eq $config{CREATEADMIN});
+    $config{zimbraBackupReportEmailSender} = $new
+      if ($config{zimbraBackupReportEmailSender} eq $config{CREATEADMIN});
+
     if ($config{CREATEADMIN} eq $config{AVUSER}) {
       $config{AVUSER} = $new;
     }
@@ -2282,6 +2287,12 @@ sub setHostName {
 
     my ($u,$d) = split ('@', $config{TRAINSAHAM});
     $config{TRAINSAHAM} = $u.'@'.$config{CREATEDOMAIN};
+
+    my ($u,$d) = split ('@', $config{zimbraBackupReportEmailRecipients});
+    $config{zimbraBackupReportEmailRecipients} = $u.'@'.$config{CREATEDOMAIN};
+
+    my ($u,$d) = split ('@', $config{zimbraBackupReportEmailRecipients});
+    $config{zimbraBackupReportEmailRecipients} = $u.'@'.$config{CREATEDOMAIN};
   }
   my ($suser,$sdomain) = split ('@', $config{SMTPSOURCE}, 2);
   if ($sdomain eq $old) {
