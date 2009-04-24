@@ -4434,16 +4434,22 @@ sub configSetMtaAuthHost {
   }
 
   if (isEnabled ("zimbra-ldap") && ! isEnabled ("zimbra-store")) {
-    progress ( "WARNING\n\nYou are configuring this host as an MTA server, but there are no\n");
-    progress ( "currently configured mailstore servers.  This will cause smtp authentication\n");
-    progress ( "to fail.\n");
-    progress ( "To correct this - after installing a mailstore server, reset the zimbraMtaAuthHost\n");
-    progress ( "attribute for this server:\n");
-    progress ( "$ZMPROV ms $config{HOSTNAME} zimbraMtaAuthHost $config{MTAAUTHHOST}\n\n");
-    progress ( "\nOnce done, start the MTA:\n");
-    progress ( "zmmtactl start\n\n");
-    if (!$options{c}) {
-      ask ("Press return to continue\n","");
+    if ($config{MTAAUTHHOST} ne "") {
+      my $mtahostservices = getLdapServerValue("zimbraServiceEnabled", $config{MTAAUTHHOST});
+      if (index($mtahostservices, "mailbox") == -1) {
+        progress ( "WARNING\n\n");
+        progress ( "You are configuring this host as an MTA server, but the specified mailstore\n");
+        progress ( "used for authentication has not been configured to run the mailbox service yet.\n");
+        progress ( "This will cause smtp authentication to fail.\n\n");
+        progress ( "To correct this - after installing a mailstore server,\n"); 
+        progress ( "reset the zimbraMtaAuthHost attribute for this server:\n");
+        progress ( "$ZMPROV ms $config{HOSTNAME} zimbraMtaAuthHost $config{MTAAUTHHOST}\n\n");
+        progress ( "Once done, start the MTA:\n");
+        progress ( "zmmtactl start\n\n");
+        if (!$options{c}) {
+          ask ("Press return to continue\n","");
+        }
+      }
     }
   }
   if ($config{MTAAUTHHOST} ne "") {
