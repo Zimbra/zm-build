@@ -78,7 +78,8 @@ sub osCheck() {
 sub zmstatInit() {
     osCheck();
     getLocalConfig('zimbra_home', 'zimbra_user', 'zimbra_server_hostname',
-                   'zmstat_log_directory', 'zmstat_interval');
+                   'zmstat_log_directory', 'zmstat_interval',
+                   'zmstat_disk_interval');
     userCheck();
 }
 
