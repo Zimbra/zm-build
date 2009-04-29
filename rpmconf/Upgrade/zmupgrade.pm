@@ -2740,7 +2740,6 @@ sub upgrade600BETA1 {
   #33648
   main::deleteLocalConfig("ldap_require_tls");
   main::deleteLocalConfig("calendar_canonical_tzid");
-  main::deleteLocalConfig("convertd_version");
   main::deleteLocalConfig("debug_update_config_use_old_scheme");
 
   if (main::isInstalled("zimbra-ldap")) {
@@ -2774,6 +2773,14 @@ sub upgrade600BETA2 {
     main::detail("Modified mailboxd_java_options=$mailboxd_java_options");
     main::setLocalConfig("mailboxd_java_options", "$mailboxd_java_options");
   }
+  if (main::isInstalled("zimbra-convertd")) {
+    my $convertd_version=main::getLocalConfig("convertd_version");
+    if ($convertd_version eq "1" && !(main::isEnabled("zimbra-convertd"))) {
+      main::runAsZimbra("$ZMPROV ms $hn +zimbraServiceEnabled convertd");
+    }
+  }
+  main::deleteLocalConfig("convertd_version");
+
   return 0;
 }
 
