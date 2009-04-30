@@ -107,6 +107,7 @@ my %updateScripts = (
    # 54-59 skipped for possible FRANKLIN use
 	'60' => "migrate20090315-MobileDevices.pl",
 	'61' => "migrate20090406-DataSourceItemTable.pl",    # 6.0.0_BETA1
+    '62' => "migrate20090430-highestindexed.pl",       # 6.0.0_BETA2
 
 );
 
