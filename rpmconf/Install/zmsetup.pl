@@ -533,8 +533,12 @@ sub isEnabled {
     } 
     foreach my $p (@packageList) {
       if (isInstalled($p) and not defined $prevInstalledPackages{$p}) {
-        detail("Marking $p as installed. Services for $p will be enabled.");
-        $enabledPackages{$p} = "Enabled";
+        if ($p eq "zimbra-convertd") {
+          detail("Marking $p as installed.");
+        } else {
+          detail("Marking $p as installed. Services for $p will be enabled.");
+          $enabledPackages{$p} = "Enabled";
+        }
       } elsif (isInstalled($p) and not defined $enabledPackages{$p}) {
         detail("Marking $p as disabled.");
         $enabledPackages{$p} = "Disabled";
