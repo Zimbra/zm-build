@@ -2762,6 +2762,24 @@ sub upgrade600BETA1 {
 sub upgrade600BETA2 {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
   main::progress("Updating from 6.0.0_BETA2\n");
+  if (main::isInstalled("zimbra-ldap") && $isLdapMaster) {
+    # an unfortunate affair because the default didn't get 
+    # changed properly in 5.0.16 so we have to redo it here.
+    my @coses = `$su "$ZMPROV gac"`;
+    my %attrs = ( zimbraBatchedIndexingSize => "20");
+    foreach my $cos (@coses) {
+      chomp $cos;
+      foreach my $attr (keys %attrs) {
+        if ($attr = "zimbraBatchedIndexingSize") {
+          my $value = main::getLdapCOSValue($cos,$attr);
+          main::runAsZimbra("$ZMPROV mc $cos $attr \'$attrs{$attr}\'")
+            if ($value eq "0" || $value eq "");
+        } else {
+          main::runAsZimbra("$ZMPROV mc $cos $attr \'$attrs{$attr}\'");
+        }
+      }
+    }
+  }
   if (main::isInstalled("zimbra-store")) {
     # 36598
     my $mailboxd_java_options = main::getLocalConfig("mailboxd_java_options");
