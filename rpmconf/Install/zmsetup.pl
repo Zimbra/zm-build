@@ -5194,12 +5194,12 @@ sub configInitGALSyncAccts {
   return 1 unless 
     (isEnabled("zimbra-ldap") && $config{LDAPHOST} eq $config{HOSTNAME});
 
-  if ($config{ENABLEGALSYNCACCOUNTS} eq "yes") {
+  #if ($config{ENABLEGALSYNCACCOUNTS} eq "yes") {
     #progress("Creating galsync accounts in all domains...");
     #my $rc = runAsZimbra("zmjava com.zimbra.cs.account.ldap.upgrade.LdapUpgrade -b 14531 -v");
     #progress(($rc == 0) ? "done.\n" : "failed.\n");
-    configLog("configInitGALSyncAccts") if ($rc == 0);
-  }
+    #configLog("configInitGALSyncAccts") if ($rc == 0);
+  #}
 }
 
 sub configInitInstantMessaging {
