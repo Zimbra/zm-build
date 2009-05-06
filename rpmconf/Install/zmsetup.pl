@@ -781,7 +781,7 @@ sub getLdapServerValue {
 
   #detail ( "Getting server config attribute $attrib for $hn from ldap." );
   # Gotta love the triple escape: \\\  
-  my $rc = 0xffff & system("$SU \"$ZMPROV gs $hn | grep $attrib | sed -e \\\"s/${attrib}: //\\\" > /tmp/ld.out\"");
+  my $rc = 0xffff & system("$SU \"$ZMPROV gs $hn | grep $attrib | sed -e \\\"s/${attrib}: //\\\" > /tmp/ld.out 2> /dev/null\"");
   my $val=`cat /tmp/ld.out`;
   unlink "/tmp/ld.out";
   chomp $val;
@@ -792,8 +792,60 @@ sub getLdapServerValue {
 }
 
 sub setLdapDefaults {
+
+  return if exists $config{LDAPDEFAULTSLOADED};
   progress ( "Setting defaults from ldap..." );
 
+  # 
+  # Load server specific attributes only if server exists
+  #
+  my $serverid = getLdapServerValue("zimbraId");
+  if ($serverid ne "")  {
+
+    $config{IMAPPORT}         = getLdapServerValue("zimbraImapBindPort");
+    $config{IMAPSSLPORT}      = getLdapServerValue("zimbraImapSSLBindPort");
+    $config{POPPORT}          = getLdapServerValue("zimbraPop3BindPort");
+    $config{POPSSLPORT}       = getLdapServerValue("zimbraPop3SSLBindPort");
+  
+    $config{IMAPPROXYPORT}    = getLdapServerValue("zimbraImapProxyBindPort");
+    $config{IMAPSSLPROXYPORT} = getLdapServerValue("zimbraImapSSLProxyBindPort");
+    $config{POPPROXYPORT}     = getLdapServerValue("zimbraPop3ProxyBindPort");
+    $config{POPSSLPROXYPORT}  = getLdapServerValue("zimbraPop3SSLProxyBindPort");
+    $config{MAILPROXY}        = getLdapServerValue("zimbraReverseProxyMailEnabled");
+  
+    $config{MODE}             = getLdapServerValue("zimbraMailMode");
+    $config{PROXYMODE}        = getLdapServerValue("zimbraReverseProxyMailMode");
+    $config{HTTPPORT}         = getLdapServerValue("zimbraMailPort");
+    $config{HTTPSPORT}        = getLdapServerValue("zimbraMailSSLPort");
+
+    $config{HTTPPROXYPORT}    = getLdapServerValue("zimbraMailProxyPort");
+    $config{HTTPSPROXYPORT}   = getLdapServerValue("zimbraMailSSLProxyPort");
+    $config{HTTPPROXY}        = getLdapServerValue("zimbraReverseProxyHttpEnabled");
+
+    $config{zimbraReverseProxyLookupTarget} = getLdapServerValue("zimbraReverseProxyLookupTarget")
+      if ($config{zimbraReverseProxyLookupTarget} eq "");
+
+    if (isEnabled("zimbra-mta")) {
+      my $tmpval = getLdapServerValue("zimbraMtaMyNetworks");
+      $config{zimbraMtaMyNetworks} = $tmpval
+        unless ($tmpval eq "");
+    }
+
+    my $smtphost=getLdapServerValue("zimbraSmtpHostname");
+    if ( $smtphost ne "") {
+      $config{SMTPHOST} = $smtphost;
+    }
+  
+    my $mtaauthhost=getLdapServerValue("zimbraMtaAuthHost");
+    if ( $mtaauthhost ne "") {
+      $config{MTAAUTHHOST} = $mtaauthhost;
+    }
+  
+  }
+
+  # 
+  # Load Global config values
+  #
   # default domainname
   $config{zimbraDefaultDomainName} = getLdapConfigValue("zimbraDefaultDomainName");
   if ($config{zimbraDefaultDomainName} eq "") {
@@ -803,41 +855,12 @@ sub setLdapDefaults {
     $config{CREATEADMIN} = "admin\@$config{CREATEDOMAIN}";
   }
 
-  $config{IMAPPORT}         = getLdapServerValue("zimbraImapBindPort");
-  $config{IMAPSSLPORT}      = getLdapServerValue("zimbraImapSSLBindPort");
-  $config{POPPORT}          = getLdapServerValue("zimbraPop3BindPort");
-  $config{POPSSLPORT}       = getLdapServerValue("zimbraPop3SSLBindPort");
-
-  $config{IMAPPROXYPORT}    = getLdapServerValue("zimbraImapProxyBindPort");
-  $config{IMAPSSLPROXYPORT} = getLdapServerValue("zimbraImapSSLProxyBindPort");
-  $config{POPPROXYPORT}     = getLdapServerValue("zimbraPop3ProxyBindPort");
-  $config{POPSSLPROXYPORT}  = getLdapServerValue("zimbraPop3SSLProxyBindPort");
-  $config{MAILPROXY}        = getLdapServerValue("zimbraReverseProxyMailEnabled");
-
-  $config{MODE}             = getLdapServerValue("zimbraMailMode");
-  $config{PROXYMODE}        = getLdapServerValue("zimbraReverseProxyMailMode");
-  $config{HTTPPORT}         = getLdapServerValue("zimbraMailPort");
-  $config{HTTPSPORT}        = getLdapServerValue("zimbraMailSSLPort");
-
-  $config{HTTPPROXYPORT}    = getLdapServerValue("zimbraMailProxyPort");
-  $config{HTTPSPROXYPORT}   = getLdapServerValue("zimbraMailSSLProxyPort");
-  $config{HTTPPROXY}        = getLdapServerValue("zimbraReverseProxyHttpEnabled");
-
   $config{TRAINSASPAM}      = getLdapConfigValue("zimbraSpamIsSpamAccount");
   $config{TRAINSAHAM}       = getLdapConfigValue("zimbraSpamIsNotSpamAccount");
+
   $config{NOTEBOOKACCOUNT}  = getLdapConfigValue("zimbraNotebookAccount");
-
-  if ($config{HTTPPORT} eq 0) { $config{HTTPPORT} = 80; }
-  if ($config{HTTPSPORT} eq 0) { $config{HTTPSPORT} = 443; }
-  if ($config{MODE} eq "") { $config{MODE} = "http"; }
-  if ($config{PROXYMODE} eq "") { $config{PROXYMODE} = "http"; }
-  if ($config{zimbraReverseProxyLookupTarget} eq "") { $config{zimbraReverseProxyLookupTarget} = getLdapServerValue("zimbraReverseProxyLookupTarget"); }
-
-  if (isEnabled("zimbra-mta")) {
-    my $tmpval = getLdapServerValue("zimbraMtaMyNetworks");
-    $config{zimbraMtaMyNetworks} = $tmpval
-      unless ($tmpval eq "");
-  }
+  $config{NOTEBOOKACCOUNT} = "wiki".'@'.$config{CREATEDOMAIN}
+    if ($config{NOTEBOOKACCOUNT} eq "");
 
   if (isNetwork() && isEnabled("zimbra-store")) {
     $config{zimbraBackupReportEmailRecipients} = getLdapConfigValue("zimbraBackupReportEmailRecipients");
@@ -848,6 +871,61 @@ sub setLdapDefaults {
     $config{zimbraBackupReportEmailSender} = $config{CREATEADMIN}
       if ($config{zimbraBackupReportEmailSender} eq "");
   }
+
+ 
+
+  # 
+  # Load default COS
+  #
+  $config{USEKBSHORTCUTS} = getLdapCOSValue("default", "zimbraPrefUseKeyboardShortcuts");
+  $config{zimbraPrefTimeZoneId}=getLdapCOSValue("default", "zimbraPrefTimeZoneId");
+
+  if ($prevVersionMajor < 5) {
+    $config{zimbraFeatureIMEnabled} = "Disabled";
+    $config{zimbraFeatureBriefcasesEnabled} = "Disabled";
+    $config{zimbraFeatureTasksEnabled} = "Disabled";
+    $config{zimbraFeatureNotebookEnabled} = "Enabled";
+  } else {
+    $config{zimbraFeatureIMEnabled}=getLdapCOSValue("default", "zimbraFeatureIMEnabled");
+    $config{zimbraFeatureIMEnabled}="Enabled"
+      if (lc($config{zimbraFeatureIMEnabled}) eq "true");
+    $config{zimbraFeatureIMEnabled}="Disabled"
+      if (lc($config{zimbraFeatureIMEnabled}) eq "false");
+    
+    $config{zimbraFeatureTasksEnabled}=getLdapCOSValue("default", "zimbraFeatureTasksEnabled");
+    $config{zimbraFeatureTasksEnabled}="Enabled"
+      if (lc($config{zimbraFeatureTasksEnabled}) eq "true");
+    $config{zimbraFeatureTasksEnabled}="Disabled"
+      if (lc($config{zimbraFeatureTasksEnabled}) eq "false");
+  
+    $config{zimbraFeatureBriefcasesEnabled}=getLdapCOSValue("default", "zimbraFeatureBriefcasesEnabled");
+    $config{zimbraFeatureBriefcasesEnabled}="Enabled"
+      if (lc($config{zimbraFeatureBriefcasesEnabled}) eq "true");
+    $config{zimbraFeatureBriefcasesEnabled}="Disabled"
+      if (lc($config{zimbraFeatureBriefcasesEnabled}) eq "false");
+  
+    $config{zimbraFeatureNotebookEnabled}=getLdapCOSValue("default", "zimbraFeatureNotebookEnabled");
+    $config{zimbraFeatureNotebookEnabled}="Enabled"
+      if (lc($config{zimbraFeatureNotebookEnabled}) eq "true");
+    $config{zimbraFeatureNotebookEnabled}="Disabled"
+      if (lc($config{zimbraFeatureNotebookEnabled}) eq "false");
+  }
+
+  #
+  # Load default domain values
+  #
+  my $galacct = getLdapDomainValue("zimbraGalAccountId");
+  $config{ENABLEGALSYNCACCOUNTS}=(($galacct eq "") ? "no" : "yes");
+  $config{ENABLEGALSYNCACCOUNTS}="" if ($prevVersionMajor < 6);
+
+  # 
+  # Set some sane defaults if values were missing in LDAP
+  #
+  $config{HTTPPORT} = 80 if ($config{HTTPPORT} eq 0);
+  $config{HTTPSPORT} = 443 if ($config{HTTPSPORT} eq 0);
+  $config{MODE} = "http" if ($config{MODE} eq "");
+  $config{PROXYMODE} = "http" if ($config{PROXYMODE} eq "");
+
   if (isInstalled("zimbra-proxy") && isEnabled("zimbra-proxy")) {
      if ($config{MAILPROXY} eq "TRUE") {
         if ($config{IMAPPORT} == $config{IMAPPROXYPORT} && $config{IMAPPORT} == 143) {
@@ -929,67 +1007,16 @@ sub setLdapDefaults {
         $config{MAILPROXY} = "FALSE";
         $config{HTTPPROXY} = "FALSE";
   }
- 
-  # default values for upgrades 
-  $config{NOTEBOOKACCOUNT} = "wiki".'@'.$config{CREATEDOMAIN}
-    if ($config{NOTEBOOKACCOUNT} eq "");
-
-  $config{USEKBSHORTCUTS} = getLdapCOSValue("default", "zimbraPrefUseKeyboardShortcuts");
-
-  $config{zimbraPrefTimeZoneId}=getLdapCOSValue("default", "zimbraPrefTimeZoneId");
-
-  if ($prevVersionMajor < 5) {
-    $config{zimbraFeatureIMEnabled} = "Disabled";
-    $config{zimbraFeatureBriefcasesEnabled} = "Disabled";
-    $config{zimbraFeatureTasksEnabled} = "Disabled";
-    $config{zimbraFeatureNotebookEnabled} = "Enabled";
-  } else {
-    $config{zimbraFeatureIMEnabled}=getLdapCOSValue("default", "zimbraFeatureIMEnabled");
-    $config{zimbraFeatureIMEnabled}="Enabled"
-      if (lc($config{zimbraFeatureIMEnabled}) eq "true");
-    $config{zimbraFeatureIMEnabled}="Disabled"
-      if (lc($config{zimbraFeatureIMEnabled}) eq "false");
-    
-    $config{zimbraFeatureTasksEnabled}=getLdapCOSValue("default", "zimbraFeatureTasksEnabled");
-    $config{zimbraFeatureTasksEnabled}="Enabled"
-      if (lc($config{zimbraFeatureTasksEnabled}) eq "true");
-    $config{zimbraFeatureTasksEnabled}="Disabled"
-      if (lc($config{zimbraFeatureTasksEnabled}) eq "false");
   
-    $config{zimbraFeatureBriefcasesEnabled}=getLdapCOSValue("default", "zimbraFeatureBriefcasesEnabled");
-    $config{zimbraFeatureBriefcasesEnabled}="Enabled"
-      if (lc($config{zimbraFeatureBriefcasesEnabled}) eq "true");
-    $config{zimbraFeatureBriefcasesEnabled}="Disabled"
-      if (lc($config{zimbraFeatureBriefcasesEnabled}) eq "false");
-  
-    $config{zimbraFeatureNotebookEnabled}=getLdapCOSValue("default", "zimbraFeatureNotebookEnabled");
-    $config{zimbraFeatureNotebookEnabled}="Enabled"
-      if (lc($config{zimbraFeatureNotebookEnabled}) eq "true");
-    $config{zimbraFeatureNotebookEnabled}="Disabled"
-      if (lc($config{zimbraFeatureNotebookEnabled}) eq "false");
-  }
-
-  my $galacct = getLdapDomainValue("zimbraGalAccountId", $config{zimbraDefaultDomainName});
-  $config{ENABLEGALSYNCACCOUNTS}=(($galacct eq "") ? "no" : "yes");
-
-  $config{ENABLEGALSYNCACCOUNTS}="" if ($prevVersionMajor < 6);
-  
-  my $smtphost=getLdapServerValue("zimbraSmtpHostname");
-  if ( $smtphost ne "") {
-    $config{SMTPHOST} = $smtphost;
-  }
-
-  my $mtaauthhost=getLdapServerValue("zimbraMtaAuthHost");
-  if ( $mtaauthhost ne "") {
-    $config{MTAAUTHHOST} = $mtaauthhost;
-  }
-
+  #
+  # debug output
+  #
   if ($options{d}) {
     foreach my $key (sort keys %config) {
       print "\tDEBUG: $key=$config{$key}\n";
     }
   }
-
+  $config{LDAPDEFAULTSLOADED}=1;
   progress ( "done.\n" );
 }
 
@@ -3700,6 +3727,7 @@ sub verifyLdap {
   } else {
     detail ("Verified $config{zimbra_ldap_userdn} on $config{LDAPHOST}.\n");
     setLocalConfig ("zimbra_ldap_password", $config{LDAPADMINPASS});
+    setLdapDefaults() if ($config{LDAPHOST} ne $config{HOSTNAME});
   }
 
   # check postfix and amavis user binding to the master
