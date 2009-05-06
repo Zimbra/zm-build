@@ -157,7 +157,9 @@ getInstallStatus();
 if ($0 =~ /testMenu/) {
   #delete $installedPackages{"zimbra-ldap"}; 
   #delete $installedPackages{"zimbra-mta"}; 
+  getInstalledPackages();
   setDefaults();
+  setLdapDefaults();
   mainMenu();
   exit;
 }
@@ -743,6 +745,30 @@ sub getLdapConfigValue {
   return $val;
 }
 
+sub getLdapDomainValue {
+  my $attrib = shift;
+  my $domain = shift;
+
+  $domain = $config{zimbraDefaultDomainName}
+    if ($domain eq "");
+
+  return undef if ($domain eq "");
+
+  return $main::loaded{domain}{$domain}{$attrib}
+    if (exists $main::loaded{domain}{$domain}{$attrib});
+
+  #detail ( "Getting server config attribute $attrib for $hn from ldap." );
+  # Gotta love the triple escape: \\\  
+  my $rc = 0xffff & system("$SU \"$ZMPROV gd $domain $attrib | grep $attrib | sed -e \\\"s/${attrib}: //\\\" > /tmp/ld.out\"");
+  my $val=`cat /tmp/ld.out`;
+  unlink "/tmp/ld.out";
+  chomp $val;
+  detail("Server config attribute retrieved for $domain: $attrib=$val");
+  $main::loaded{domain}{$domain}{$attrib} = $val;
+
+  return $val;
+}
+
 sub getLdapServerValue {
   my $attrib = shift;
   my $hn = shift;
@@ -942,6 +968,11 @@ sub setLdapDefaults {
     $config{zimbraFeatureNotebookEnabled}="Disabled"
       if (lc($config{zimbraFeatureNotebookEnabled}) eq "false");
   }
+
+  my $galacct = getLdapDomainValue("zimbraGalAccountId", $config{zimbraDefaultDomainName});
+  $config{ENABLEGALSYNCACCOUNTS}=(($galacct eq "") ? "no" : "yes");
+
+  $config{ENABLEGALSYNCACCOUNTS}="" if ($prevVersionMajor < 6);
   
   my $smtphost=getLdapServerValue("zimbraSmtpHostname");
   if ( $smtphost ne "") {
@@ -1063,7 +1094,6 @@ sub setDefaults {
   }
   $config{mailboxd_keystore_password} = genRandomPass();
   $config{mailboxd_truststore_password} = "changeit";
-  print "DEBUG: \$config{mailboxd_directory}=$config{mailboxd_directory}\n" if $debug;
 
   $config{SMTPHOST} = "";
   $config{SNMPTRAPHOST} = $config{HOSTNAME};
@@ -1626,7 +1656,7 @@ sub setCreateDomain {
   my $good = 0;
   while (1) {
     $config{CREATEDOMAIN} =
-      ask("Create Domain:",
+      ask("Create domain:",
         $config{CREATEDOMAIN});
     my $ans = getDnsRecords($config{CREATEDOMAIN}, 'MX');
     if (!defined ($ans)) {
@@ -2756,13 +2786,20 @@ sub createLdapMenu {
         };
       $i++;
     }
+    $$lm{menuitems}{$i} = { 
+      "prompt" => "Sync domain GALs to contact folders:",
+      "var" => \$config{ENABLEGALSYNCACCOUNTS}, 
+      "callback" => \&toggleYN,
+      "arg" => "ENABLEGALSYNCACCOUNTS",
+      };
+    $i++;
     if ($config{LDAPROOTPASS} ne "") {
       $config{LDAPROOTPASSSET} = "set";
     } else {
       $config{LDAPROOTPASSSET} = "UNSET";
     }
     $$lm{menuitems}{$i} = {
-      "prompt" => "Ldap Root password:",
+      "prompt" => "Ldap root password:",
       "var" => \$config{LDAPROOTPASSSET},
       "callback" => \&setLdapRootPass
       };
@@ -2773,7 +2810,7 @@ sub createLdapMenu {
       $config{LDAPREPPASSSET} = "UNSET";
     }
     $$lm{menuitems}{$i} = {
-      "prompt" => "Ldap Replication password:",
+      "prompt" => "Ldap replication password:",
       "var" => \$config{LDAPREPPASSSET},
       "callback" => \&setLdapRepPass
       };
@@ -2784,7 +2821,7 @@ sub createLdapMenu {
       $config{LDAPPOSTPASSSET} = "UNSET";
     }
     $$lm{menuitems}{$i} = {
-      "prompt" => "Ldap Postfix password:",
+      "prompt" => "Ldap postfix password:",
       "var" => \$config{LDAPPOSTPASSSET},
       "callback" => \&setLdapPostPass
       };
@@ -2795,7 +2832,7 @@ sub createLdapMenu {
       $config{LDAPAMAVISPASSSET} = "UNSET";
     }
     $$lm{menuitems}{$i} = {
-      "prompt" => "Ldap Amavis password:",
+      "prompt" => "Ldap amavis password:",
       "var" => \$config{LDAPAMAVISPASSSET},
       "callback" => \&setLdapAmavisPass
       };
@@ -2806,7 +2843,7 @@ sub createLdapMenu {
       $config{LDAPNGINXPASSSET} = "UNSET";
     }
     $$lm{menuitems}{$i} = {
-      "prompt" => "Ldap Nginx password:",
+      "prompt" => "Ldap nginx password:",
       "var" => \$config{LDAPNGINXPASSSET},
       "callback" => \&setLdapNginxPass
       };
@@ -5147,6 +5184,24 @@ sub configInitSnmp {
   configLog("configInitSnmp");
 }
 
+sub configInitGALSyncAccts {
+
+  if ($configStatus{configInitGALSyncAccts} eq "CONFIGURED") {
+    configLog("configInitGALSyncAccts");
+    return 0;
+  }
+
+  return 1 unless 
+    (isEnabled("zimbra-ldap") && $config{LDAPHOST} eq $config{HOSTNAME});
+
+  if ($config{ENABLEGALSYNCACCOUNTS} eq "yes") {
+    progress("Creating galsync accounts in all domains...");
+    my $rc = runAsZimbra("zmjava com.zimbra.cs.account.ldap.upgrade.LdapUpgrade -b 14531 -v");
+    progress(($rc == 0) ? "done.\n" : "failed.\n");
+    configLog("configInitGALSyncAccts") if ($rc == 0);
+  }
+}
+
 sub configInitInstantMessaging {
 
   if ($configStatus{configInitIM} eq "CONFIGURED") {
@@ -5430,6 +5485,8 @@ sub applyConfig {
   configInitSnmp();
 
   configInitInstantMessaging();
+
+  configInitGALSyncAccts();
 
   setupSyslog();
 
