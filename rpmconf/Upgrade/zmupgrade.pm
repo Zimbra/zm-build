@@ -2632,7 +2632,7 @@ sub upgrade600BETA1 {
     main::runAsZimbra("zmjava com.zimbra.cs.account.ldap.upgrade.LdapUpgrade -b 33814 -v");
     main::runAsZimbra("zmjava com.zimbra.cs.account.ldap.upgrade.LdapUpgrade -b 32557 -v");
     main::runAsZimbra("zmjava com.zimbra.cs.account.ldap.upgrade.LdapUpgrade -b 31694 -v");
-    #main::runAsZimbra("zmjava com.zimbra.cs.account.ldap.upgrade.LdapUpgrade -b 14531 -v");
+    main::runAsZimbra("zmjava com.zimbra.cs.account.ldap.upgrade.LdapUpgrade -b 14531 -v");
 
     # this touches all accounts so only run it by default on small sites.
     # releasenotes to indicate larger deployments run it by hand after upgrade.

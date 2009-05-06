@@ -2786,13 +2786,13 @@ sub createLdapMenu {
         };
       $i++;
     }
-    $$lm{menuitems}{$i} = { 
-      "prompt" => "Sync domain GALs to contact folders:",
-      "var" => \$config{ENABLEGALSYNCACCOUNTS}, 
-      "callback" => \&toggleYN,
-      "arg" => "ENABLEGALSYNCACCOUNTS",
-      };
-    $i++;
+    #$$lm{menuitems}{$i} = { 
+      #"prompt" => "Sync domain GALs to contact folders:",
+      #"var" => \$config{ENABLEGALSYNCACCOUNTS}, 
+      #"callback" => \&toggleYN,
+      #"arg" => "ENABLEGALSYNCACCOUNTS",
+      #};
+    #$i++;
     if ($config{LDAPROOTPASS} ne "") {
       $config{LDAPROOTPASSSET} = "set";
     } else {
@@ -5195,9 +5195,9 @@ sub configInitGALSyncAccts {
     (isEnabled("zimbra-ldap") && $config{LDAPHOST} eq $config{HOSTNAME});
 
   if ($config{ENABLEGALSYNCACCOUNTS} eq "yes") {
-    progress("Creating galsync accounts in all domains...");
-    my $rc = runAsZimbra("zmjava com.zimbra.cs.account.ldap.upgrade.LdapUpgrade -b 14531 -v");
-    progress(($rc == 0) ? "done.\n" : "failed.\n");
+    #progress("Creating galsync accounts in all domains...");
+    #my $rc = runAsZimbra("zmjava com.zimbra.cs.account.ldap.upgrade.LdapUpgrade -b 14531 -v");
+    #progress(($rc == 0) ? "done.\n" : "failed.\n");
     configLog("configInitGALSyncAccts") if ($rc == 0);
   }
 }
