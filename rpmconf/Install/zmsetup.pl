@@ -4787,6 +4787,40 @@ sub configSetProxyPrefs {
                        "-a $config{HTTPPORT}:$config{HTTPPROXYPORT}:$config{HTTPSPORT}:$config{HTTPSPROXYPORT} -H $config{HOSTNAME}");
         }
      }
+     if (!(isEnabled("zimbra-store"))) {
+       my @storetargets;
+       detail("Running $ZMPROV garpu");
+       open(ZMPROV, "$ZMPROV garpu 2>/dev/null|");
+       chomp(@storetargets = <ZMPROV>);
+       close(ZMPROV);
+       if ( $storetargets[0] !~ /nginx-lookup/ ) {
+         progress ( "WARNING\n\n");
+         progress ( "You are configuring this host as a proxy server, but there is currently no \n");
+         progress ( "mailstore to proxy.  This will cause proxy startup to fail.\n");
+         progress ( "Once you have installed a store server, start the proxy service:\n");
+         progress ( "zmproxyctl start\n\n");
+         if (!$options{c}) {
+           ask ("Press return to continue\n","");
+         }
+       }
+     }
+     if (!(isEnabled("zimbra-memcached"))) {
+       my @memcachetargets;
+       detail("Running $ZMPROV gamcs");
+       open(ZMPROV, "$ZMPROV gamcs 2>/dev/null|");
+       chomp(@memcachetargets = <ZMPROV>);
+       close(ZMPROV);
+       if ( $memcachetargets[0] !~ /:11211/ ) {
+         progress ( "WARNING\n\n");
+         progress ( "You are configuring this host as a proxy server, but there is currently no \n");
+         progress ( "memcached service for proxy.  This will cause proxy startup to fail.\n");
+         progress ( "Once you have installed a memcached server, start the proxy service:\n");
+         progress ( "zmproxyctl start\n\n");
+         if (!$options{c}) {
+           ask ("Press return to continue\n","");
+         }
+       }
+     }
    } else {
         runAsZimbra("/opt/zimbra/libexec/zmproxyconfig -m -d -o ".
                     "-i $config{IMAPPORT}:$config{IMAPPROXYPORT}:$config{IMAPSSLPORT}:$config{IMAPSSLPROXYPORT} ".
