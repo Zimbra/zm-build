@@ -4554,12 +4554,34 @@ sub configSetServicePorts {
   }
 
   progress ( "Setting service ports on $config{HOSTNAME}..." );
+  if ($config{MAILPROXY} eq "FALSE") {
+    if ($config{IMAPPORT} == 7143 && $config{IMAPPROXYPORT} == $config{IMAPPORT}) {
+      $config{IMAPPROXYPORT} = 143;
+    }
+    if ($config{IMAPSSLPORT} == 7993 && $config{IMAPSSLPROXYPORT} == $config{IMAPSSLPORT}) {
+      $config{IMAPSSLPROXYPORT} = 993;
+    }
+    if ($config{POPPORT} == 7110 && $config{POPPROXYPORT} == $config{POPPORT}) {
+      $config{POPPROXYPORT} = 110;
+    }
+    if ($config{POPSSLPORT} == 7995 && $config{POPSSLPROXYPORT} == $config{POPSSLPORT}) {
+      $config{POPSSLPORT} = 995;
+    }
+  }
   runAsZimbra("$ZMPROV ms $config{HOSTNAME} ".
     "zimbraImapBindPort $config{IMAPPORT} zimbraImapSSLBindPort $config{IMAPSSLPORT} ".
     "zimbraImapProxyBindPort $config{IMAPPROXYPORT} zimbraImapSSLProxyBindPort $config{IMAPSSLPROXYPORT} ");
   runAsZimbra("$ZMPROV ms $config{HOSTNAME} ".
     "zimbraPop3BindPort $config{POPPORT} zimbraPop3SSLBindPort $config{POPSSLPORT} ".
     "zimbraPop3ProxyBindPort $config{POPPROXYPORT} zimbraPop3SSLProxyBindPort $config{POPSSLPROXYPORT} ");
+  if ($config{HTTPPROXY} eq "FALSE") {
+    if ($config{HTTPPORT} == 8080 && $config{HTTPPROXYPORT} == $config{HTTPPORT}) {
+      $config{HTTPPROXYPORT} = 80;
+    }
+    if ($config{HTTPSPORT} == 8443 && $config{HTTPSPROXYPORT} == $config{HTTPSPORT}){
+      $config{HTTPSPROXYPORT} = 443;
+    }
+  }
   runAsZimbra("$ZMPROV ms $config{HOSTNAME} ".
     "zimbraMailPort $config{HTTPPORT} zimbraMailSSLPort $config{HTTPSPORT} ".
     "zimbraMailProxyPort $config{HTTPPROXYPORT} zimbraMailSSLProxyPort $config{HTTPSPROXYPORT} ".
