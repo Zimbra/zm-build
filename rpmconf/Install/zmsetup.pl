@@ -1215,7 +1215,7 @@ sub setDefaults {
 
   $config{CREATEADMIN} = "admin\@$config{CREATEDOMAIN}";
 
-  $config{zimbraPrefTimeZoneId} = '(GMT-08.00) Pacific Time (US & Canada)';
+  $config{zimbraPrefTimeZoneId} = 'America/Los_Angeles';
 
   $config{zimbra_ldap_userdn} = "uid=zimbra,cn=admins,$config{ldap_dit_base_dn_config}";
 
@@ -2594,7 +2594,7 @@ sub setTimeZone {
     my %RTZID = reverse %TZID;
     close(ICS);
     my $new;
-    my $default = $TZID{$config{zimbraPrefTimeZoneId}} || "5";
+    my $default = $TZID{$config{zimbraPrefTimeZoneId}} || "23";
     while ($new eq "") {
       foreach (sort {$TZID{$a} <=> $TZID{$b}} keys %TZID) {
         print "$TZID{$_} $_\n";
