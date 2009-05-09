@@ -1188,7 +1188,7 @@ sub upgrade402GA {
     foreach my $cos (@coses) {
       chomp $cos;
       my $cur_value = 
-        main::getLdapCOSValue($cos,"zimbraFeatureMobileSyncEnabled");
+        main::getLdapCOSValue("zimbraFeatureMobileSyncEnabled",$cos);
 
       main::runAsZimbra("$ZMPROV mc $cos zimbraFeatureMobileSyncEnabled FALSE")
         if ($cur_value ne "TRUE");
@@ -1731,7 +1731,7 @@ sub upgrade500BETA4 {
     foreach my $cos (@coses) {
       chomp $cos;
       foreach my $attr (keys %attrs) {
-        my $cur_value = main::getLdapCOSValue($cos, $attr);
+        my $cur_value = main::getLdapCOSValue($attr,$cos);
         main::runAsZimbra("$ZMPROV mc $cos $attr \'$attrs{$attr}\'")
           if ($cur_value eq "");
       }
@@ -1909,7 +1909,7 @@ sub upgrade500GA {
       main::progress("Updating attributes for $cos COS...");
       my $attrs = "";
       foreach my $attr (keys %attrs) {
-        my $cur_value = main::getLdapCOSValue($cos,$attr);
+        my $cur_value = main::getLdapCOSValue($attr,$cos);
         $attrs .= "$attr $attrs{$attr} "
           if ($cur_value eq "");
       }
@@ -2019,7 +2019,7 @@ sub upgrade501GA {
       main::progress("Updating attributes for $cos COS...\n");
       my $attrs = "";
       foreach my $attr (keys %attrs) {
-        my $cur_value = main::getLdapCOSValue($cos,$attr);
+        my $cur_value = main::getLdapCOSValue($attr,$cos);
         $attrs .= "$attr $attrs{$attr} "
           if ($cur_value eq "");
       }
@@ -2064,7 +2064,7 @@ sub upgrade502GA {
     foreach my $cos (@coses) {
       chomp $cos;
       foreach my $attr (keys %attrs) {
-        my $cur_value = main::getLdapCOSValue($cos, $attr);
+        my $cur_value = main::getLdapCOSValue($attr,$cos);
         main::runAsZimbra("$ZMPROV mc $cos $attr \'$attrs{$attr}\'")
           if ($cur_value eq "");
       }
@@ -2204,7 +2204,7 @@ sub upgrade506GA {
         main::runAsZimbra("$ZMPROV mc $cos $attr \'$attrs{$attr}\'");
       }
       # bug 22010
-      my $cur_value = main::getLdapCOSValue($cos, "zimbraNotebookSanitizeHtml");
+      my $cur_value = main::getLdapCOSValue("zimbraNotebookSanitizeHtml",$cos);
       main::runAsZimbra("$ZMPROV mc $cos zimbraNotebookSanitizeHtml TRUE")
           if ($cur_value eq "");
     }
@@ -2594,7 +2594,7 @@ sub upgrade5016GA {
       chomp $cos;
       foreach my $attr (keys %attrs) {
         if ($attr = "zimbraBatchedIndexingSize") {
-          my $value = main::getLdapCOSValue($cos,$attr);
+          my $value = main::getLdapCOSValue($attr,$cos);
           main::runAsZimbra("$ZMPROV mc $cos $attr \'$attrs{$attr}\'")
             if ($value eq "0" || $value eq "");
         } else {
@@ -2771,7 +2771,7 @@ sub upgrade600BETA2 {
       chomp $cos;
       foreach my $attr (keys %attrs) {
         if ($attr = "zimbraBatchedIndexingSize") {
-          my $value = main::getLdapCOSValue($cos,$attr);
+          my $value = main::getLdapCOSValue($attr,$cos);
           main::runAsZimbra("$ZMPROV mc $cos $attr \'$attrs{$attr}\'")
             if ($value eq "0" || $value eq "");
         } else {
@@ -3502,7 +3502,7 @@ sub upgradeAllGlobalAdminAccounts {
   main::detail("Upgrading ACLs for all admin accounts.\n");
   foreach my $admin (@admins) {
     chomp $admin;
-    my $val = main::getAccountAttributeValue($admin, "zimbraIsAdminAccount");
+    my $val = main::getLdapAccountValue("zimbraIsAdminAccount",$admin);
     if (lc($val) eq "true") {
       main::progress("Upgrading global admin: $admin...");
       my $rc = main::runAsZimbra("$ZMPROV ma $admin zimbraAdminConsoleUIComponents cartBlancheUI");
