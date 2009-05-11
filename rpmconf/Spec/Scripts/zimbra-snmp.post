@@ -22,7 +22,11 @@ I=`hostname -i`
 if [ -L "/opt/zimbra/snmp" ]; then
   rm -f /opt/zimbra/snmp
 fi
+if [ -L "/opt/zimbra/net-snmp" ]; then
+  rm -f /opt/zimbra/snmp
+fi
 ln -s /opt/zimbra/net-snmp-5.4.2.1 /opt/zimbra/snmp
+ln -s /opt/zimbra/net-snmp-5.4.2.1 /opt/zimbra/net-snmp
 
 if [ -x "/opt/zimbra/libexec/zmfixperms" ]; then
   /opt/zimbra/libexec/zmfixperms
