@@ -22,7 +22,11 @@ I=`hostname -i`
 if [ -L "/opt/zimbra/snmp" ]; then
   rm -f /opt/zimbra/snmp
 fi
+if [ -L "/opt/zimbra/net-snmp" ]; then
+  rm -f /opt/zimbra/net-snmp
+fi
 ln -s /opt/zimbra/net-snmp-5.4.1 /opt/zimbra/snmp
+ln -s /opt/zimbra/net-snmp-5.4.1 /opt/zimbra/net-snmp
 
 if [ ! -d "/opt/zimbra/zimbramon/mrtg/work/" ]; then
 	mkdir -p /opt/zimbra/zimbramon/mrtg/work/
