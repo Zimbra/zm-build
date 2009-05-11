@@ -2117,6 +2117,7 @@ sub setLdapAdminPass {
         $config{LDAPADMINPASS} = $new;
         $ldapAdminPassChanged = 1;
       }
+      ldapIsAvailable() if ($config{HOSTNAME} ne $config{LDAPHOST});
       return;
     } else {
       print "Minimum length of 6 characters!\n";
@@ -2916,10 +2917,10 @@ sub createCommonMenu {
     "callback" => \&setLdapPort
     };
   $i++;
-  if ($config{LDAPADMINPASS} ne "") {
-    $config{LDAPADMINPASSSET} = "set";
-  } else {
+  if ($config{LDAPADMINPASS} eq "") {
     $config{LDAPADMINPASSSET} = "UNSET";
+  } else {
+    $config{LDAPADMINPASSSET} = "set" unless ($config{LDAPADMINPASSSET} eq "Not Verified");;
   }
   $$lm{menuitems}{$i} = { 
     "prompt" => "Ldap Admin password:", 
@@ -2995,7 +2996,7 @@ sub createLdapMenu {
     if ($config{LDAPROOTPASS} ne "") {
       $config{LDAPROOTPASSSET} = "set";
     } else {
-      $config{LDAPROOTPASSSET} = "UNSET";
+      $config{LDAPROOTPASSSET} = "UNSET" unless ($config{LDAPROOTPASSSET} eq "Not Verfied");
     }
     $$lm{menuitems}{$i} = {
       "prompt" => "Ldap root password:",
@@ -3003,10 +3004,10 @@ sub createLdapMenu {
       "callback" => \&setLdapRootPass
       };
     $i++;
-    if ($config{LDAPREPPASS} ne "") {
-      $config{LDAPREPPASSSET} = "set";
-    } else {
+    if ($config{LDAPREPPASS} eq "") {
       $config{LDAPREPPASSSET} = "UNSET";
+    } else {
+      $config{LDAPREPPASSSET} = "set" unless ($config{LDAPREPPASSSET} eq "Not Verfied");
     }
     $$lm{menuitems}{$i} = {
       "prompt" => "Ldap replication password:",
@@ -3014,39 +3015,43 @@ sub createLdapMenu {
       "callback" => \&setLdapRepPass
       };
     $i++;
-    if ($config{LDAPPOSTPASS} ne "") {
-      $config{LDAPPOSTPASSSET} = "set";
-    } else {
-      $config{LDAPPOSTPASSSET} = "UNSET";
+    if ($config{HOSTNAME} eq $config{LDAPHOST} || isEnabled("zimbra-mta")) {
+      if ($config{LDAPPOSTPASS} eq "") {
+        $config{LDAPPOSTPASSSET} = "UNSET";
+      } else {
+        $config{LDAPPOSTPASSSET} = "set" unless ($config{LDAPPOSTPASSSET} eq "Not Verified");
+      }
+      $$lm{menuitems}{$i} = {
+        "prompt" => "Ldap postfix password:",
+        "var" => \$config{LDAPPOSTPASSSET},
+        "callback" => \&setLdapPostPass
+        };
+      $i++;
+      if ($config{LDAPAMAVISPASS} eq "") {
+        $config{LDAPAMAVISPASSSET} = "UNSET";
+      } else {
+        $config{LDAPAMAVISPASSSET} = "set" unless ($config{LDAPAMAVISPASSSET} eq "Not Verified");
+      }
+      $$lm{menuitems}{$i} = {
+        "prompt" => "Ldap amavis password:",
+        "var" => \$config{LDAPAMAVISPASSSET},
+        "callback" => \&setLdapAmavisPass
+        };
+      $i++;
     }
-    $$lm{menuitems}{$i} = {
-      "prompt" => "Ldap postfix password:",
-      "var" => \$config{LDAPPOSTPASSSET},
-      "callback" => \&setLdapPostPass
-      };
-    $i++;
-    if ($config{LDAPAMAVISPASS} ne "") {
-      $config{LDAPAMAVISPASSSET} = "set";
-    } else {
-      $config{LDAPAMAVISPASSSET} = "UNSET";
+    if ($config{HOSTNAME} eq $config{LDAPHOST} || isEnabled("zimbra-proxy")) {
+      if ($config{ldap_nginx_password} eq "") {
+        $config{LDAPNGINXPASSSET} = "UNSET";
+      } else {
+        $config{LDAPNGINXPASSSET} = "set" unless ($config{LDAPNGINXPASSSET} eq "Not Verfied");
+      }
+      $$lm{menuitems}{$i} = {
+        "prompt" => "Ldap nginx password:",
+        "var" => \$config{LDAPNGINXPASSSET},
+        "callback" => \&setLdapNginxPass
+        };
+      $i++;
     }
-    $$lm{menuitems}{$i} = {
-      "prompt" => "Ldap amavis password:",
-      "var" => \$config{LDAPAMAVISPASSSET},
-      "callback" => \&setLdapAmavisPass
-      };
-    $i++;
-    if ($config{ldap_nginx_password} ne "") {
-      $config{LDAPNGINXPASSSET} = "set";
-    } else {
-      $config{LDAPNGINXPASSSET} = "UNSET";
-    }
-    $$lm{menuitems}{$i} = {
-      "prompt" => "Ldap nginx password:",
-      "var" => \$config{LDAPNGINXPASSSET},
-      "callback" => \&setLdapNginxPass
-      };
-    $i++;
   }
   return $lm;
 }
@@ -3236,10 +3241,10 @@ sub createMtaMenu {
         };
       $i++;
     }
-    if ($config{LDAPPOSTPASS} ne "") {
-      $config{LDAPPOSTPASSSET} = "set";
-    } else {
+    if ($config{LDAPPOSTPASS} eq "") {
       $config{LDAPPOSTPASSSET} = "UNSET";
+    } else {
+      $config{LDAPPOSTPASSSET} = "set" unless ($config{LDAPPOSTPASSSET} eq "Not Verified");;
     }
     $$lm{menuitems}{$i} = {
       "prompt" => "Bind password for postfix ldap user:",
@@ -3247,10 +3252,10 @@ sub createMtaMenu {
       "callback" => \&setLdapPostPass
       };
     $i++;
-    if ($config{LDAPAMAVISPASS} ne "") {
-      $config{LDAPAMAVISPASSSET} = "set";
-    } else {
+    if ($config{LDAPAMAVISPASS} eq "") {
       $config{LDAPAMAVISPASSSET} = "UNSET";
+    } else {
+      $config{LDAPAMAVISPASSSET} = "set" unless ($config{LDAPAMAVISPASSSET} eq "Not Verified");;
     }
     $$lm{menuitems}{$i} = {
       "prompt" => "Bind password for amavis ldap user:",
@@ -3333,13 +3338,13 @@ sub createProxyMenu {
          "callback" => \&setPopSSLProxyPort,
        };
        $i++;
-       if ($config{ldap_nginx_password} ne "") {
-         $config{LDAPNGINXPASSSET} = "set";
-       } else {
+       if ($config{ldap_nginx_password} eq "") {
          $config{LDAPNGINXPASSSET} = "UNSET";
+       } else {
+         $config{LDAPNGINXPASSSET} = "set" unless ($config{LDAPNGINXPASSSET} eq "Not Verified");
        }
        $$lm{menuitems}{$i} = {
-         "prompt" => "Bind password for Nginx ldap user (Only required for GSSAPI auth):",
+         "prompt" => "Bind password for nginx ldap user:",
          "var" => \$config{LDAPNGINXPASSSET},
          "callback" => \&setLdapNginxPass
        };
@@ -3633,6 +3638,7 @@ sub displaySubMenuItems {
     if (defined $$items{menuitems}{$i}{var}) {
       $v = ${$$items{menuitems}{$i}{var}};
       if ($v eq "" || $v eq "none" || $v eq "UNSET") { $v = "UNSET"; $ind=~s/ /*/g; }
+      if ($v eq "Not Verified") { $v = "Not Verified"; $ind=~s/ /*/g; }
     }
     printf ("%s +%-${len}s %-30s\n", $ind,
       $$items{menuitems}{$i}{prompt}, $v);
@@ -3663,6 +3669,7 @@ sub displayMenu {
       if (defined $$items{menuitems}{$i}{var}) {
         $v = ${$$items{menuitems}{$i}{var}};
         if ($v eq "" || $v eq "none" || $v eq "UNSET") { $v = "UNSET"; $ind="**"; }
+        if ($v eq "Not Verified") { $ind="**"; }
       }
       my $subMenuCheck = 1;
       if (defined ($$items{menuitems}{$i}{submenu}) || 
@@ -3861,7 +3868,7 @@ sub checkMenuConfig {
     my $ind = "  ";
     if (defined $$items{menuitems}{$i}{var}) {
       $v = ${$$items{menuitems}{$i}{var}};
-      if ($v eq "" || $v eq "none" || $v eq "UNSET") { return 0; }
+      if ($v eq "" || $v eq "none" || $v eq "UNSET" || $v eq "Not Verified") { return 0; }
       if ($$items{menuitems}{$i}{var} == \$config{LDAPHOST}) {
         $needldapverified = 1;
       }
@@ -3883,7 +3890,7 @@ sub checkMenuConfig {
 }
 
 sub ldapIsAvailable {
-
+  my $failedcheck=0;
   if (($config{LDAPHOST} eq $config{HOSTNAME}) && !$ldapConfigured) {
     detail("This is the ldap master and ldap hasn't been configured yet.");
     return 0;
@@ -3897,54 +3904,84 @@ sub ldapIsAvailable {
 
   if (checkLdapBind($config{zimbra_ldap_userdn},$config{LDAPADMINPASS})) {
     detail ("Couldn't bind to $config{LDAPHOST} as $config{zimbra_ldap_userdn}\n");
-    return 0 
+    $config{LDAPADMINPASSSET} = "Not Verified";
+    $failedcheck++;
   } else {
     detail ("Verified $config{zimbra_ldap_userdn} on $config{LDAPHOST}.\n");
+    $config{LDAPADMINPASSSET} = "set";
     setLocalConfig ("zimbra_ldap_password", $config{LDAPADMINPASS});
     setLdapDefaults() if ($config{LDAPHOST} ne $config{HOSTNAME});
+  }
+  
+  # check nginx user binding to the master
+  if (isInstalled("zimbra-proxy")) {
+    if ($config{LDAPNGINXPASS} eq "") {
+      detail ("nginx configuration not complete\n");
+      #$failedcheck++;
+    }
+    my $binduser = "uid=zmnginx,cn=appaccts,$config{ldap_dit_base_dn_config}";
+    if (checkLdapBind($binduser,$config{LDAPNGINXPASS})) {
+      detail ("Couldn't bind to $config{LDAPHOST} as $binduser\n");
+      #$config{LDAPNGINXPASSSET} = "Not Verified";
+      #$failedcheck++;
+    } else {
+      detail ("Verified $binduser on $config{LDAPHOST}.\n");
+      $config{LDAPNGINXPASSSET} = "set";
+    }
   }
 
   # check postfix and amavis user binding to the master
   if (isInstalled("zimbra-mta")) {
     if ($config{LDAPPOSTPASS} eq "" || $config{LDAPAMAVISPASS} eq "") {
       detail ("mta configuration not complete\n");
-      return 0;
+      $failedcheck++;
     }
     my $binduser = "uid=zmpostfix,cn=appaccts,$config{ldap_dit_base_dn_config}";
     if (checkLdapBind($binduser,$config{LDAPPOSTPASS})) {
       detail ("Couldn't bind to $config{LDAPHOST} as $binduser\n");
-      #return 1 
+      $config{LDAPPOSTPASSSET} = "Not Verified";
+      detail ("Setting LDAPPOSTPASSSET to $config{LDAPPOSTPASSSET}") if $debug;
+      $failedcheck++;
+    } else {
+      detail ("Verified $binduser on $config{LDAPHOST}.\n");
+      $config{LDAPPOSTPASSSET} = "set";
     }
     my $binduser = "uid=zmamavis,cn=appaccts,$config{ldap_dit_base_dn_config}";
     if (checkLdapBind($binduser,$config{LDAPAMAVISPASS})) {
       detail ("Couldn't bind to $config{LDAPHOST} as $binduser\n");
-      #return 1 
+      $config{LDAPAMAVISPASSSET} = "Not Verified";
+      detail ("Setting LDAPAMAVISPASSSET to $config{LDAPAMAVISPASSSET}") if $debug;
+      $failedcheck++;
     } else {
       detail ("Verified $binduser on $config{LDAPHOST}.\n");
+      $config{LDAPAMAVISPASSSET}="set";
     }
   }
 
   # check replication user binding to master
   if (isInstalled("zimbra-ldap") && $config{LDAPHOST} ne $config{HOSTNAME}) {
     if ($config{LDAPREPPASS} eq "") {
-      detail ("ldap configuration not complete\n");
-      return 0;
+      detail ("ldap configuration not complete. Ldap Replication password is not set.\n");
+      $failedcheck++;
     }
     my $binduser = "uid=zmreplica,cn=admins,$config{ldap_dit_base_dn_config}";
     if (checkLdapBind($binduser,$config{LDAPREPPASS})) {
       detail ("Couldn't bind to $config{LDAPHOST} as $binduser\n");
-      #return 1 
+      $config{LDAPREPPASSSET}="Not Verfied";
+      detail ("Setting LDAPREPPASSSET to $config{LDAPREPPASSSET}") if $debug;
+      $failedcheck++;
     } else {
       detail ("Verified $binduser on $config{LDAPHOST}.\n");
+      $config{LDAPREPPASSSET}="set";
     }
     if (checkLdapReplicationEnabled($config{zimbra_ldap_userdn},$config{LDAPADMINPASS})) {
-      detail ("ldap configuration not complete\n");
-      return 0;
+      detail ("ldap configuration not complete. Unable to verify ldap replication is enabled on $config{LDAPHOST}\n");
+      $failedcheck++;
     } else {
       detail ("ldap replication ability verified\n");
     }
   }
-  return 1;
+  return ($failedcheck > 0) ? 0 : 1;
 }
 
 sub checkLdapBind() {
@@ -3974,7 +4011,7 @@ sub checkLdapBind() {
   }
   my $result = $ldap->bind($binduser, password => $bindpass);
   if ($result->code()) {
-    detail ("Unable to bind to $ldap_url with user $binduser and password $bindpass: $!");
+    detail ("Unable to bind to $ldap_url with user $binduser: $!");
     return 1;
   } else {
     $ldap->unbind;
@@ -4010,7 +4047,7 @@ sub checkLdapReplicationEnabled() {
   }
   my $result = $ldap->bind($binduser, password => $bindpass);
   if ($result->code()) {
-    detail ("Unable to bind to $ldap_url with user $binduser and password $bindpass: $!");
+    detail ("Unable to bind to $ldap_url with user $binduser: $!");
     return 1;
   } else {
     my $result = $ldap->search(base=>"cn=accesslog", scope=>"base", filter=>"cn=accesslog", attrs=>['cn']);
@@ -4022,6 +4059,7 @@ sub checkLdapReplicationEnabled() {
       detail("Verified ability to query accesslog on master.\n");
     }
   }
+  return 0;
 }
 
 sub runAsRoot {
