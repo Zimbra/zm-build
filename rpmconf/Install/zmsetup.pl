@@ -1028,7 +1028,13 @@ sub setLdapDefaults {
   }
 
   $config{TRAINSASPAM}      = getLdapConfigValue("zimbraSpamIsSpamAccount");
+  if ($config{TRAINSASPAM} eq "") {
+    $config{TRAINSASPAM} = "spam.".lc(genRandomPass()).'@'.$config{CREATEDOMAIN};
+  }
   $config{TRAINSAHAM}       = getLdapConfigValue("zimbraSpamIsNotSpamAccount");
+  if ($config{TRAINSAHAM} eq "") {
+    $config{TRAINSAHAM} = "ham.".lc(genRandomPass()).'@'.$config{CREATEDOMAIN};
+  }
 
   $config{NOTEBOOKACCOUNT}  = getLdapConfigValue("zimbraNotebookAccount");
   $config{NOTEBOOKACCOUNT} = "wiki".'@'.$config{CREATEDOMAIN}
