@@ -2800,6 +2800,8 @@ sub upgrade600BETA2 {
       unless ($mailboxd_java_options =~ /PrintGCApplicationStoppedTime/);
     main::detail("Modified mailboxd_java_options=$mailboxd_java_options");
     main::setLocalConfig("mailboxd_java_options", "$mailboxd_java_options");
+    #26022
+    updateMySQLcnf();
   }
   if (main::isInstalled("zimbra-convertd")) {
     my $convertd_version=main::getLocalConfig("convertd_version");
@@ -3121,6 +3123,7 @@ sub updateMySQLcnf {
     my $mycnfChanged = 0;
     my $tmpfile = "/tmp/my.cnf.$$";;
     my $zimbra_user = `${zmlocalconfig} -m nokey zimbra_user 2> /dev/null` || "zimbra";;
+    my $zimbra_tmp_directory = `${zmlocalconfig} -m nokey zimbra_tmp_directory 2> /dev/null` || "zimbra";;
     open(TMP, ">$tmpfile");
     foreach (@CNF) {
       if (/^port/ && $CNF[$i+1] !~ m/^user/) {
@@ -3168,6 +3171,11 @@ sub updateMySQLcnf {
           unless(grep(/^innodb_max_dirty_pages_pct/, @CNF));
         print TMP "innodb_flush_method = O_DIRECT\n"
           unless(grep(/^innodb_flush_method/, @CNF));
+        $mycnfChanged=1;
+        next;
+      } elsif (/^user/ && $CNF[$i+1] !~ m/^tmpdir/) {
+        print TMP;
+        print TMP "tmpdir       = $zimbra_tmp_directory\n";
         $mycnfChanged=1;
         next;
       }
