@@ -2762,6 +2762,13 @@ sub upgrade600BETA1 {
 sub upgrade600BETA2 {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
   main::progress("Updating from 6.0.0_BETA2\n");
+
+  my $zimbra_tmp_directory=main::getLocalConfig("zimbra_tmp_directory");
+  if ($zimbra_tmp_directory eq "/tmp/zimbra") {
+    my $zimbra_home = main::getLocalConfig("zimbra_home");
+    main::setLocalConfig("zimbra_tmp_directory", "{$zimbra_home}/data/tmp");
+  }
+
   if (main::isInstalled("zimbra-ldap") && $isLdapMaster) {
     # an unfortunate affair because the default didn't get 
     # changed properly in 5.0.16 so we have to redo it here.
