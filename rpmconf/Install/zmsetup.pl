@@ -4309,6 +4309,13 @@ sub configLCValues {
     }
   }
 
+  # set default zmprov bahaviour
+  if (isEnabled("zimbra-store")) {
+    setLocalConfig ("zimbra_zmprov_default_to_ldap", "false");
+  } else {
+    setLocalConfig ("zimbra_zmprov_default_to_ldap", "true");
+  }
+
   setLocalConfig ("ldap_port", "$config{LDAPPORT}");
   setLocalConfig ("ldap_host", "$config{LDAPHOST}");
 
@@ -4534,14 +4541,6 @@ sub configSetupLdap {
     setLocalConfig ("ldap_postfix_password", "$config{LDAPPOSTPASS}");
     setLocalConfig ("ldap_amavis_password", "$config{LDAPAMAVISPASS}");
     setLocalConfig ("ldap_nginx_password", "$config{ldap_nginx_password}");
-  }
-  # set default zmprov bahaviour
-  if (isEnabled("zimbra-ldap")) {
-    if (isEnabled("zimbra-store")) {
-      setLocalConfig ("zimbra_zmprov_default_to_ldap", "false");
-    } else {
-      setLocalConfig ("zimbra_zmprov_default_to_ldap", "true");
-    }
   }
 
   configLog("configSetupLdap");
