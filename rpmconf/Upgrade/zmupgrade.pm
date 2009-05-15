@@ -2766,7 +2766,7 @@ sub upgrade600BETA2 {
   my $zimbra_tmp_directory=main::getLocalConfig("zimbra_tmp_directory");
   if ($zimbra_tmp_directory eq "/tmp/zimbra") {
     my $zimbra_home = main::getLocalConfig("zimbra_home");
-    main::setLocalConfig("zimbra_tmp_directory", "{$zimbra_home}/data/tmp");
+    main::setLocalConfig("zimbra_tmp_directory", "$zimbra_home/data/tmp");
   }
 
   if (main::isInstalled("zimbra-ldap") && $isLdapMaster) {
