@@ -2801,7 +2801,11 @@ sub upgrade600BETA2 {
     main::detail("Modified mailboxd_java_options=$mailboxd_java_options");
     main::setLocalConfig("mailboxd_java_options", "$mailboxd_java_options");
     #26022
-    updateMySQLcnf();
+    main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-tmpdir-fixup --section=mysqld --key=tmpdir --set --value=/opt/zimbra/data/tmp /opt/zimbra/conf/my.cnf");
+
+    # 32897
+    main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-table_cache-fixup --section=mysqld --key=table_cache --setmin --value=1200 /opt/zimbra/conf/my.cnf");
+    main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-innodb_open_files-fixup --section=mysqld --key=innodb_open_files --setmin --value=2710 /opt/zimbra/conf/my.cnf");
   }
   if (main::isInstalled("zimbra-convertd")) {
     my $convertd_version=main::getLocalConfig("convertd_version");
@@ -2810,6 +2814,13 @@ sub upgrade600BETA2 {
     }
   }
   main::deleteLocalConfig("convertd_version");
+  main::deleteLocalConfig("mysql_memory_percent");
+  main::deleteLocalConfig("mysql_innodb_log_buffer_size");
+  main::deleteLocalConfig("mysql_innodb_log_file_size");
+  main::deleteLocalConfig("mysql_sort_buffer_size");
+  main::deleteLocalConfig("mysql_read_buffer_size");
+  main::deleteLocalConfig("mysql_table_cache");
+
   upgradeLocalConfigValue("zimbra_http_originating_ip_header", "X-Forwarded-For", "X-Originating-IP"); #31633
 
   return 0;

@@ -1655,7 +1655,6 @@ sub setDefaultsFromLocalConfig {
   $config{ZIMBRASQLPASS} = getLocalConfig ("zimbra_mysql_password");
   $config{ZIMBRALOGSQLPASS} = getLocalConfig ("zimbra_logger_mysql_password");
   $config{MAILBOXDMEMORYPERCENT} = getLocalConfig ("mailboxd_java_heap_memory_percent");
-  $config{MYSQLMEMORYPERCENT} = getLocalConfig ("mysql_memory_percent");
   $config{mailboxd_directory} = getLocalConfig("mailboxd_directory");
   $config{mailboxd_keystore} = getLocalConfig("mailboxd_keystore");
   $config{mailboxd_keystore_password} = getLocalConfig ("mailboxd_keystore_password")
@@ -4336,7 +4335,6 @@ sub configLCValues {
 
   setLocalConfig ("ssl_allow_untrusted_certs", "true");
   setLocalConfig ("ssl_allow_mismatched_certs", "true");
-  setLocalConfig ("mysql_memory_percent", $config{MYSQLMEMORYPERCENT});
   setLocalConfig ("mailboxd_java_heap_memory_percent", $config{MAILBOXDMEMORYPERCENT});
   setLocalConfig ("mailboxd_directory", $config{mailboxd_directory});
   setLocalConfig ("mailboxd_keystore", $config{mailboxd_keystore});
@@ -5576,7 +5574,7 @@ sub configInitSql {
 
   if (!$sqlConfigured && isEnabled("zimbra-store")) {
     progress ( "Initializing store sql database..." );
-    runAsZimbra ("/opt/zimbra/libexec/zmmyinit");
+    runAsZimbra ("/opt/zimbra/libexec/zmmyinit --mysql_memory_percent $config{MYSQLMEMORYPERCENT}");
     progress ( "done.\n" );
     progress ( "Setting zimbraSmtpHostname for $config{HOSTNAME}..." );
     my $rc = setLdapServerConfig("zimbraSmtpHostname", $config{SMTPHOST});
