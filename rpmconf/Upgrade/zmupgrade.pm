@@ -2810,6 +2810,7 @@ sub upgrade600BETA2 {
     }
   }
   main::deleteLocalConfig("convertd_version");
+  upgradeLocalConfigValue("zimbra_http_originating_ip_header", "X-Forwarded-For", "X-Originating-IP"); #31633
 
   return 0;
 }
