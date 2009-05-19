@@ -265,7 +265,7 @@ sub usage {
 
 sub progress {
   my $msg = shift;
-  print $msg;
+  print "$msg";
   my ($sub,$line) = (caller(1))[3,2];
   $msg = "$sub:$line $msg" if $options{d};
   detail ($msg);
