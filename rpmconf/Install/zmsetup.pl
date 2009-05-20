@@ -5033,7 +5033,7 @@ sub configInitDomainAdminGroups {
   $rc = main::runAsZimbra("$ZMPROV grr domain $config{zimbraDefaultDomainName} grp $domainGroup +domainAdminRights");
   main::progress(($rc == 0) ? "done.\n" : "failed.\n");
 
-  main::progress ("Granting group $domainGroup global right +domainAdminZimletRights");
+  main::progress ("Granting group $domainGroup global right +domainAdminZimletRights...");
   $rc = main::runAsZimbra("$ZMPROV grr global grp $domainGroup +domainAdminZimletRights");
   main::progress(($rc == 0) ? "done.\n" : "failed.\n");
     
@@ -5064,12 +5064,22 @@ sub configInitDomainAdminGroups {
     "zimbraAdminConsoleUIComponents resourceContactTab");
   main::progress(($rc == 0) ? "done.\n" : "failed.\n");
 
-  foreach my $right qw(getAccount getCalendarResource getDistributionList getDomain getCos listAccount listCalendarResource listDistributionList listDomain listCos listDomain getDomain getAccountInfo countAccount getAccountMembership getMailboxInfo ) {
-    main::progress ("Granting group $domainGroup global right $right...");
-    $rc = main::runAsZimbra("$ZMPROV grr global grp $domainGroup $right");
-    main::progress(($rc == 0) ? "done.\n" : "failed.\n");
+  main::progress ("Granting domain admin rights to group $domainGroup...");
+  my $wfh= new FileHandle;
+  my $efh= new FileHandle;
+  my @errors;
+  if (my $pid = open3($wfh,undef,$efh,"$SU \"$ZMPROV\"")) {
+    foreach my $right qw(getAccount getCalendarResource getDistributionList getDomain getCos listAccount listCalendarResource listDistributionList listDomain listCos listDomain getDomain getAccountInfo countAccount getAccountMembership getMailboxInfo ) {
+      print ZMPROV "grr global grp $domainGroup $right\n";
+    }
+    print $wfh "exit\n";
+    @errors = <$efh>;
+    detail("@errors") if (scalar(@errors) != 0) ;
+    close($wfh);
+    close($efh);
+    waitpid($pid, 0);
   }
-
+  main::progress(($? == 0 && scalar(@errors) == 0) ? "done.\n" : "failed.\n");
 }
 
 sub configInitBackupPrefs {

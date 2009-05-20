@@ -22,6 +22,8 @@ use lib "/opt/zimbra/libexec/scripts";
 use lib "/opt/zimbra/zimbramon/lib";
 use Migrate;
 use Net::LDAP;
+use IPC::Open3;
+use FileHandle;
 use File::Grep qw (fgrep);
 my $zmlocalconfig="/opt/zimbra/bin/zmlocalconfig";
 my $type = `${zmlocalconfig} -m nokey convertd_stub_name 2> /dev/null`;
@@ -3527,16 +3529,33 @@ sub upgradeAllGlobalAdminAccounts {
 
   my @admins = `$su "$ZMPROV gaaa"`;
   main::detail("Upgrading ACLs for all admin accounts.\n");
+  my @adminUpgrades;
   foreach my $admin (@admins) {
     chomp $admin;
     my $val = main::getLdapAccountValue("zimbraIsAdminAccount",$admin);
     if (lc($val) eq "true") {
-      main::progress("Upgrading global admin: $admin...");
-      my $rc = main::runAsZimbra("$ZMPROV ma $admin zimbraAdminConsoleUIComponents cartBlancheUI");
-      main::progress(($rc == 0) ? "done.\n" : "failed.\n");
+      push(@adminUpgrades,$admin);
       next;
     }
   }
+  main::progress("Upgrading global admin accounts...");
+  my $wfh= new FileHandle;
+  my $efh= new FileHandle;
+  my @errors;
+  main::detail("Executing $su $ZMPROV");
+  if (my $pid = open3($wfh,undef,$efh,"$su \"$ZMPROV\"")) {
+    foreach my $admin (@adminUpgrades) {
+      main::detail("$ZMPROV ma $admin zimbraAdminConsoleUIComponents cartBlancheUI");
+      print $wfh "ma $admin zimbraAdminConsoleUIComponents cartBlancheUI\n";
+    }
+    print $wfh "exit\n";
+    @errors = <$efh>;
+    main::detail("@errors") if (scalar(@errors) != 0) ;
+    close($wfh);
+    close($efh);
+    waitpid $pid, 0;
+  }
+  main::progress(($? == 0 && scalar(@errors) == 0) ? "done.\n" : "failed.\n");
 }
 
 sub upgradeLdapConfigValue($$$) {
