@@ -2788,6 +2788,8 @@ sub upgrade600BETA2 {
         }
       }
     }
+
+    main::runAsZimbra("zmjava com.zimbra.cs.account.ldap.upgrade.LdapUpgrade -b 32719 -v");
   }
   if (main::isInstalled("zimbra-store")) {
     # 36598
