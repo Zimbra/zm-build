@@ -81,6 +81,18 @@ mta_stage: $(MTA_COMPONENTS)
 $(MTA_DEST_DIR):
 	mkdir -p $@
 
+$(MTA_DEST_DIR)/data/postfix:
+	mkdir -p $@
+$(MTA_DEST_DIR)/data/dspam:
+	mkdir -p $@
+$(MTA_DEST_DIR)/data/amavisd:
+	mkdir -p $@
+$(MTA_DEST_DIR)/data/clamav:
+	mkdir -p $@
+$(MTA_DEST_DIR)/data/cbpolicyd:
+	mkdir -p $@
+
+
 $(MTA_DEST_DIR)/$(POSTFIX_DIR): $(MTA_DEST_DIR)
 	@echo "*** Creating postfix"
 	(cd $(MTA_DEST_DIR); tar xzf $(POSTFIX_SOURCE).tgz;)
@@ -93,6 +105,24 @@ $(MTA_DEST_DIR)/$(CLAMAV_DIR): $(MTA_DEST_DIR)
 	mkdir -p $(MTA_DEST_DIR)/$(CLAMAV_DIR)-$(CLAMAV_VERSION)/db
 	cp $(PACKAGE_CONF_DIR)/ClamAv/main.cvd $(MTA_DEST_DIR)/$(CLAMAV_DIR)-$(CLAMAV_VERSION)/db/main.cvd.init
 	cp $(PACKAGE_CONF_DIR)/ClamAv/daily.cvd $(MTA_DEST_DIR)/$(CLAMAV_DIR)-$(CLAMAV_VERSION)/db/daily.cvd.init
+
+$(MTA_DEST_DIR)/$(CBPOLICYD_DIR): $(MTA_DEST_DIR)
+	@echo "*** Creating cbpolicyd"
+	(cd $(MTA_DEST_DIR); tar xzf $(CBPOLICYD_SOURCE);)
+	mkdir -p $(MTA_DEST_DIR)/conf
+	cp $(ZMCBPOLICYD_DIR)/conf/cbpolicyd.conf.in $(MTA_DEST_DIR)/conf
+
+$(MTA_DEST_DIR)/bin/zmcbpolicydctl: 
+	mkdir -p $(@D)
+	cp $(ZMCBPOLICYD_DIR)/src/bin/$(@F) $@
+
+$(MTA_DEST_DIR)/libexec/zmcbpolicydinit: 
+	mkdir -p $(@D)
+	cp $(ZMCBPOLICYD_DIR)/src/libexec/$(@F) $@
+
+$(MTA_DEST_DIR)/conf/cbpolicyd.conf.in: 
+	mkdir -p $(@D)
+	cp $(ZMCBPOLICYD_DIR)/conf/$(@F) $@
 
 $(MTA_DEST_DIR)/$(AMAVISD_DIR)-new-$(AMAVISD_VERSION): $(MTA_DEST_DIR)
 	@echo "*** Creating amavisd"

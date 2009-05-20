@@ -26,11 +26,27 @@ CORE_COMPONENTS	:= \
 	$(CORE_DEST_DIR)/lib/ext/com_zimbra_bulkprovision/com_zimbra_bulkprovision.jar \
 	$(PLATFORM_CORE_COMPONENTS)
 
+
+ifeq ($(ZIMBRA_USE_CBPOLICYD), 1)
+CBPOLICYD_COMPONENTS := \
+	$(MTA_DEST_DIR)/$(CBPOLICYD_DIR) \
+	$(MTA_DEST_DIR)/bin/zmcbpolicydctl \
+	$(MTA_DEST_DIR)/conf/cbpolicyd.conf.in \
+	$(MTA_DEST_DIR)/data/cbpolicyd \
+	$(MTA_DEST_DIR)/libexec/zmcbpolicydinit
+endif
+
 MTA_COMPONENTS	:= \
+	$(MTA_DEST_DIR) \
 	$(MTA_DEST_DIR)/$(POSTFIX_DIR) \
+	$(MTA_DEST_DIR)/data/postfix \
 	$(MTA_DEST_DIR)/$(AMAVISD_DIR)-new-$(AMAVISD_VERSION) \
+	$(MTA_DEST_DIR)/data/amavisd \
 	$(MTA_DEST_DIR)/$(CLAMAV_DIR)  \
-	$(MTA_DEST_DIR)/$(DSPAM_DIR)-$(DSPAM_VERSION)
+	$(MTA_DEST_DIR)/data/clamav \
+	$(MTA_DEST_DIR)/$(DSPAM_DIR)-$(DSPAM_VERSION) \
+	$(MTA_DEST_DIR)/data/dspam \
+	$(CBPOLICYD_COMPONENTS)
 
 LOGGER_COMPONENTS := \
 	$(LOGGER_DEST_DIR) \
@@ -92,6 +108,7 @@ PROXY_COMPONENTS := \
 
 MEMCACHED_COMPONENTS := \
 	$(MEMCACHED_DEST_DIR)/$(MEMCACHED_DIR)
+
 
 EVO_COMPONENTS := \
 	$(EVO_DEST_DIR)
