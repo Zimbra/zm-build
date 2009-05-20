@@ -70,6 +70,19 @@ our @LOGGER_SCHEMA_UPGRADE = (
       	UPDATE config SET version = 1
       }
     ],
+    # version 2, column globs
+    [ q{
+    	 UPDATE rrd_column_type SET col_interval = 60 WHERE csv_file = 'mailboxd.csv'
+      },
+      q{
+      	INSERT INTO rrd_column_type
+      	          select 'mailboxd.csv', '*',    'G', 60
+      	union all select 'zmstatuslog',  '*',    'G', 120
+      },
+      q{
+      	UPDATE config SET version = 2
+      }
+    ],
 );
 
 1;
