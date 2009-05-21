@@ -5895,11 +5895,11 @@ sub applyConfig {
 
   configInstallCert();
 
+  configCreateServerEntry();
+
   configSetupLdap();
 
   configSaveCA();
-
-  configCreateServerEntry();
 
   configSaveCert();
 
