@@ -2140,6 +2140,7 @@ sub setLdapRepPass {
         $config{LDAPREPPASS} = $new;
         $ldapRepChanged = 1;
       }
+      ldapIsAvailable() if ($config{HOSTNAME} ne $config{LDAPHOST});
       return;
     } else {
       print "Minimum length of 6 characters!\n";
@@ -2157,6 +2158,7 @@ sub setLdapPostPass {
         $config{LDAPPOSTPASS} = $new;
         $ldapPostChanged = 1;
       }
+      ldapIsAvailable() if ($config{HOSTNAME} ne $config{LDAPHOST});
       return;
     } else {
       print "Minimum length of 6 characters!\n";
@@ -2174,6 +2176,7 @@ sub setLdapAmavisPass {
         $config{LDAPAMAVISPASS} = $new;
         $ldapAmavisChanged = 1;
       }
+      ldapIsAvailable() if ($config{HOSTNAME} ne $config{LDAPHOST});
       return;
     } else {
       print "Minimum length of 6 characters!\n";
@@ -2191,6 +2194,7 @@ sub setLdapNginxPass {
         $config{ldap_nginx_password} = $new;
         $ldapNginxChanged = 1;
       }
+      ldapIsAvailable() if ($config{HOSTNAME} ne $config{LDAPHOST});
       return;
     } else {
       print "Minimum length of 6 characters!\n";
@@ -3858,6 +3862,10 @@ sub createMainMenu {
       };
     if (!ldapIsAvailable() && $ldapConfigured) {
       $mm{promptitem}{prompt} .= "or correct ldap configuration ";
+    } 
+    if ($config{LDAPHOST} ne $config{HOSTNAME} && !ldapIsAvailable()) {
+      $mm{promptitem}{prompt} .= "and enable ldap replication on ldap master "
+        if (checkLdapReplicationEnabled($config{zimbra_ldap_userdn},$config{LDAPADMINPASS}));
     }
   }
   return \%mm;
@@ -3874,11 +3882,10 @@ sub checkMenuConfig {
     if (defined $$items{menuitems}{$i}{var}) {
       $v = ${$$items{menuitems}{$i}{var}};
       if ($v eq "" || $v eq "none" || $v eq "UNSET" || $v eq "Not Verified") { return 0; }
-      if ($$items{menuitems}{$i}{var} == \$config{LDAPHOST}) {
-        $needldapverified = 1;
-      }
-      if ($$items{menuitems}{$i}{var} == \$config{LDAPPORT}) {
-        $needldapverified = 1;
+      foreach my $var qw(LDAPHOST LDAPPORT) {
+        if ($$items{menuitems}{$i}{var} == \$config{$var}) {
+          $needldapverified = 1;
+        }
       }
     }
     if (defined ($$items{menuitems}{$i}{submenu}) ) {
