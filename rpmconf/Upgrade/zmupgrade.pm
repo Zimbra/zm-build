@@ -2818,6 +2818,7 @@ sub upgrade600BETA2 {
     }
   }
   main::deleteLocalConfig("convertd_version");
+  main::deleteLocalConfig("postfix_version");
   main::deleteLocalConfig("mysql_memory_percent");
   main::deleteLocalConfig("mysql_innodb_log_buffer_size");
   main::deleteLocalConfig("mysql_innodb_log_file_size");
