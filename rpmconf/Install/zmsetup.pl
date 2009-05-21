@@ -5902,9 +5902,15 @@ sub applyConfig {
 
   configInstallCert();
 
-  configCreateServerEntry();
+  if ($ldapReplica) {
+    configCreateServerEntry();
+  }
 
   configSetupLdap();
+
+  if (!$ldapReplica) {
+    configCreateServerEntry();
+  }
 
   configSaveCA();
 
