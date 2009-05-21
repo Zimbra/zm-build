@@ -3001,7 +3001,7 @@ sub createLdapMenu {
     if ($config{LDAPROOTPASS} ne "") {
       $config{LDAPROOTPASSSET} = "set";
     } else {
-      $config{LDAPROOTPASSSET} = "UNSET" unless ($config{LDAPROOTPASSSET} eq "Not Verfied");
+      $config{LDAPROOTPASSSET} = "UNSET" unless ($config{LDAPROOTPASSSET} eq "Not Verified");
     }
     $$lm{menuitems}{$i} = {
       "prompt" => "Ldap root password:",
@@ -3012,7 +3012,7 @@ sub createLdapMenu {
     if ($config{LDAPREPPASS} eq "") {
       $config{LDAPREPPASSSET} = "UNSET";
     } else {
-      $config{LDAPREPPASSSET} = "set" unless ($config{LDAPREPPASSSET} eq "Not Verfied");
+      $config{LDAPREPPASSSET} = "set" unless ($config{LDAPREPPASSSET} eq "Not Verified");
     }
     $$lm{menuitems}{$i} = {
       "prompt" => "Ldap replication password:",
@@ -3048,7 +3048,7 @@ sub createLdapMenu {
       if ($config{ldap_nginx_password} eq "") {
         $config{LDAPNGINXPASSSET} = "UNSET";
       } else {
-        $config{LDAPNGINXPASSSET} = "set" unless ($config{LDAPNGINXPASSSET} eq "Not Verfied");
+        $config{LDAPNGINXPASSSET} = "set" unless ($config{LDAPNGINXPASSSET} eq "Not Verified");
       }
       $$lm{menuitems}{$i} = {
         "prompt" => "Ldap nginx password:",
@@ -3972,7 +3972,7 @@ sub ldapIsAvailable {
     my $binduser = "uid=zmreplica,cn=admins,$config{ldap_dit_base_dn_config}";
     if (checkLdapBind($binduser,$config{LDAPREPPASS})) {
       detail ("Couldn't bind to $config{LDAPHOST} as $binduser\n");
-      $config{LDAPREPPASSSET}="Not Verfied";
+      $config{LDAPREPPASSSET}="Not Verified";
       detail ("Setting LDAPREPPASSSET to $config{LDAPREPPASSSET}") if $debug;
       $failedcheck++;
     } else {
