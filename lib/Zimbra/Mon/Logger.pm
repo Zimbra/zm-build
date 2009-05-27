@@ -42,20 +42,20 @@ sub Log
 	if ($loglevels{$level} >= $LOG_LEVEL) {
     setlogsock('unix');
 		openlog($ident, "pid,ndelay,nowait", $facility);
-		if (length($msg) <= 900) {
+		if (length($msg) <= 800) {
 			 syslog($level, "$$:$level: $msg");
 		} else {
 			my $last_uuid = undef;
 			my $m = $msg;
 			do {
-				my $substring = substr $m, 0, 900;
-				$m = substr $m, 900;
+				my $substring = substr $m, 0, 800;
+				$m = substr $m, 800;
 				if (defined $last_uuid) {
 					$substring = ":::${last_uuid}:::${substring}";
 				}
 				$last_uuid = $ug->to_string($ug->create());
 				syslog($level, "$$:$level: ${substring}:::${last_uuid}:::");
-			} while (length($m) > 900);
+			} while (length($m) > 800);
 			syslog($level, ":::${last_uuid}:::${m}");
 			
 		}
@@ -72,20 +72,20 @@ sub LogStats
 	if ($loglevels{$level} >= $LOG_LEVEL) {
     setlogsock('unix');
 		openlog($ident, "pid,ndelay,nowait", $stats_facility);
-		if (length($msg) <= 900) {
+		if (length($msg) <= 800) {
 			 syslog($level, "$$:$level: $msg");
 		} else {
 			my $last_uuid = undef;
 			my $m = $msg;
 			do {
-				my $substring = substr $m, 0, 900;
-				$m = substr $m, 900;
+				my $substring = substr $m, 0, 800;
+				$m = substr $m, 800;
 				if (defined $last_uuid) {
 					$substring = ":::${last_uuid}:::${substring}";
 				}
 				$last_uuid = $ug->to_string($ug->create());
 				syslog($level, "$$:$level: ${substring}:::${last_uuid}:::");
-			} while (length($m) > 900);
+			} while (length($m) > 800);
 			syslog($level, ":::${last_uuid}:::${m}");
 			
 		}
