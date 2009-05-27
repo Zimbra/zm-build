@@ -3863,7 +3863,7 @@ sub createMainMenu {
     if (!ldapIsAvailable() && $ldapConfigured) {
       $mm{promptitem}{prompt} .= "or correct ldap configuration ";
     } 
-    if ($config{LDAPHOST} ne $config{HOSTNAME} && !ldapIsAvailable()) {
+    if ($config{LDAPHOST} ne $config{HOSTNAME} && !ldapIsAvailable() && isInstalled("zimbra-ldap")) {
       $mm{promptitem}{prompt} .= "and enable ldap replication on ldap master "
         if (checkLdapReplicationEnabled($config{zimbra_ldap_userdn},$config{LDAPADMINPASS}));
     }
@@ -5023,17 +5023,7 @@ sub configInitDomainAdminGroups {
     "zimbraAdminConsoleUIComponents aliasListView ".
     "zimbraAdminConsoleUIComponents DLListView ".
     "zimbraAdminConsoleUIComponents resourceListView ".
-    "zimbraAdminConsoleUIComponents saveSearch ".
-    "zimbraAdminConsoleUIComponents accountsContactTab ".
-    "zimbraAdminConsoleUIComponents accountsMemberOfTab ".
-    "zimbraAdminConsoleUIComponents accountsAliasesTab ".
-    "zimbraAdminConsoleUIComponents accountsForwardingTab ".
-    "zimbraAdminConsoleUIComponents dlMembersTab ".
-    "zimbraAdminConsoleUIComponents dlAliasesTab ".
-    "zimbraAdminConsoleUIComponents dlMemberOfTab ".
-    "zimbraAdminConsoleUIComponents dlNotesOfTab ".
-    "zimbraAdminConsoleUIComponents resourcePropertiesTab ".
-    "zimbraAdminConsoleUIComponents resourceContactTab");
+    "zimbraAdminConsoleUIComponents saveSearch ");
   main::progress(($rc == 0) ? "done.\n" : "failed.\n");
 
   main::progress ("Granting group $domainGroup domain right +domainAdminRights on $config{zimbraDefaultDomainName}...");
@@ -5055,20 +5045,6 @@ sub configInitDomainAdminGroups {
     "zimbraAdminConsoleUIComponents DLListView ".
     "zimbraAdminConsoleUIComponents resourceListView ".
     "zimbraAdminConsoleUIComponents saveSearch ".
-    "zimbraAdminConsoleUIComponents accountsContactTab ".
-    "zimbraAdminConsoleUIComponents accountsMemberOfTab ".
-    "zimbraAdminConsoleUIComponents accountsAliasesTab ".
-    "zimbraAdminConsoleUIComponents accountsForwardingTab ".
-    "zimbraAdminConsoleUIComponents accountsFeaturesTab ".
-    "zimbraAdminConsoleUIComponents domainListView ".
-    "zimbraAdminConsoleUIComponents domainGeneralTab ".
-    "zimbraAdminConsoleUIComponents domainSkinsTab ".
-    "zimbraAdminConsoleUIComponents dlMembersTab ".
-    "zimbraAdminConsoleUIComponents dlAliasesTab ".
-    "zimbraAdminConsoleUIComponents dlMemberOfTab ".
-    "zimbraAdminConsoleUIComponents dlNotesOfTab ".
-    "zimbraAdminConsoleUIComponents resourcePropertiesTab ".
-    "zimbraAdminConsoleUIComponents resourceContactTab");
   main::progress(($rc == 0) ? "done.\n" : "failed.\n");
 
   main::progress ("Granting domain admin rights to group $domainGroup...");
