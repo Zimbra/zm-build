@@ -13,6 +13,9 @@
 # basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 # ***** END LICENSE BLOCK *****
 # 
+if [ -L /opt/zimbra/logger/mysql ]; then
+  rm -f /opt/zimbra/logger/mysql
+fi
 
 if [ -x "/opt/zimbra/libexec/zmfixperms" ]; then
   /opt/zimbra/libexec/zmfixperms
