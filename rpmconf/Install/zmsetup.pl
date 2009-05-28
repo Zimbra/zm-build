@@ -5044,7 +5044,7 @@ sub configInitDomainAdminGroups {
     "zimbraAdminConsoleUIComponents aliasListView ".
     "zimbraAdminConsoleUIComponents DLListView ".
     "zimbraAdminConsoleUIComponents resourceListView ".
-    "zimbraAdminConsoleUIComponents saveSearch ".
+    "zimbraAdminConsoleUIComponents saveSearch ");
   main::progress(($rc == 0) ? "done.\n" : "failed.\n");
 
   main::progress ("Granting domain admin rights to group $domainGroup...");
