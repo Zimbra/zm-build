@@ -2810,6 +2810,8 @@ sub upgrade600BETA2 {
     # 32897
     main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-table_cache-fixup --section=mysqld --key=table_cache --setmin --value=1200 /opt/zimbra/conf/my.cnf");
     main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-innodb_open_files-fixup --section=mysqld --key=innodb_open_files --setmin --value=2710 /opt/zimbra/conf/my.cnf");
+    # 32413
+    main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-innodb_flush_log-fixup --section=mysqld --key=innodb_flush_log_at_trx_commit --set --value=0 /opt/zimbra/conf/my.cnf");
   }
   if (main::isInstalled("zimbra-convertd")) {
     my $convertd_version=main::getLocalConfig("convertd_version");
