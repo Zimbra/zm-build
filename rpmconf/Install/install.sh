@@ -2,7 +2,7 @@
 # 
 # ***** BEGIN LICENSE BLOCK *****
 # Zimbra Collaboration Suite Server
-# Copyright (C) 2005, 2006, 2007 Zimbra, Inc.
+# Copyright (C) 2005, 2006, 2007, 2008, 2009 Zimbra, Inc.
 # 
 # The contents of this file are subject to the Yahoo! Public License
 # Version 1.0 ("License"); you may not use this file except in
@@ -35,14 +35,15 @@ SOFTWAREONLY="no"
 usage() {
   echo "$0 [-r <file> -l <file> -u -s -c type -x -h] [defaultsfile]"
   echo ""
-  echo "-c|--cluster type     Cluster install type active|standby."
-  echo "-h|--help             Usage"
-  echo "-l|--license <file>   License file to install."
-  echo "-r|--restore <file>   Restore contents of <file> to localconfig" 
-  echo "-s|--softwareonly     Software only installation."
-  echo "-u|--uninstall        Uninstall ZCS"
-  echo "-x|--skipspacecheck   Skip filesystem capacity checks."
-  echo "[defaultsfile]        File containing default install values."
+  echo "-c|--cluster type      Cluster install type active|standby."
+  echo "-h|--help              Usage"
+  echo "-l|--license <file>    License file to install."
+  echo "-r|--restore <file>    Restore contents of <file> to localconfig" 
+  echo "-s|--softwareonly      Software only installation."
+  echo "-u|--uninstall         Uninstall ZCS"
+  echo "-x|--skipspacecheck    Skip filesystem capacity checks."
+  echo "--platform-override    Allows installer to continue on an unknown OS."
+  echo "[defaultsfile]         File containing default install values."
   echo ""
   exit
 }
@@ -56,6 +57,16 @@ while [ $# -ne 0 ]; do
 		-l|--license) 
       shift
 			LICENSE=$1
+      if [ x"$LICENSE" = "x" ]; then
+        echo "Valid license file required for -l."
+        usage
+      fi
+
+      if [ ! -f "$LICENSE" ]; then
+        echo "Valid license file required for -l."
+        echo "${LICENSE}: file not found."
+        usage
+      fi
 		;;
 		-u|--uninstall) 
       UNINSTALL="yes"

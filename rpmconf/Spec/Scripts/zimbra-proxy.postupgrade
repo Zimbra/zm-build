@@ -2,7 +2,7 @@
 # 
 # ***** BEGIN LICENSE BLOCK *****
 # Zimbra Collaboration Suite Server
-# Copyright (C) 2007 Zimbra, Inc.
+# Copyright (C) 2007, 2008, 2009 Zimbra, Inc.
 # 
 # The contents of this file are subject to the Yahoo! Public License
 # Version 1.0 ("License"); you may not use this file except in
@@ -14,11 +14,8 @@
 # ***** END LICENSE BLOCK *****
 # 
 
-rm -rf /opt/zimbra/memcached
-ln -s /opt/zimbra/memcached-1.2.5 /opt/zimbra/memcached
-
 rm -rf /opt/zimbra/nginx
-ln -s /opt/zimbra/nginx-0.5.30-zimbra /opt/zimbra/nginx
+ln -s /opt/zimbra/nginx-0.5.37-zimbra /opt/zimbra/nginx
 
 if [ -x "/opt/zimbra/libexec/zmfixperms" ]; then
   /opt/zimbra/libexec/zmfixperms

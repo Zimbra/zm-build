@@ -1,0 +1,52 @@
+#!/bin/bash
+# 
+# ***** BEGIN LICENSE BLOCK *****
+# Zimbra Collaboration Suite Server
+# Copyright (C) 2005, 2006, 2007, 2008, 2009 Zimbra, Inc.
+# 
+# The contents of this file are subject to the Yahoo! Public License
+# Version 1.0 ("License"); you may not use this file except in
+# compliance with the License.  You may obtain a copy of the License at
+# http://www.zimbra.com/license.
+# 
+# Software distributed under the License is distributed on an "AS IS"
+# basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+# ***** END LICENSE BLOCK *****
+# 
+# Create group, user for zimbra and postfix.
+
+H=`hostname -s`
+I=`hostname -i`
+
+#Symlinks
+
+rm -f /opt/zimbra/libtool
+ln -s /opt/zimbra/libtool-2.2.6a /opt/zimbra/libtool
+
+rm -f /opt/zimbra/openldap
+ln -s /opt/zimbra/openldap-2.4.16.11z /opt/zimbra/openldap
+
+mkdir -p /opt/zimbra/openldap/var/openldap-data
+mkdir -p /opt/zimbra/data/ldap/config
+mkdir -p /opt/zimbra/data/ldap/hdb/db
+mkdir -p /opt/zimbra/data/ldap/hdb/logs
+chown -R zimbra:zimbra /opt/zimbra/openldap/var
+chown -R zimbra:zimbra /opt/zimbra/data/ldap
+
+SUDOMODE=`perl -e 'my $mode=(stat("/etc/sudoers"))[2];printf("%04o\n",$mode & 07777);'`
+egrep -v '^%zimbra.*slapd' /etc/sudoers > /tmp/sudoers
+echo "%zimbra   ALL=NOPASSWD:/opt/zimbra/openldap/libexec/slapd" >> /tmp/sudoers
+echo "%zimbra   ALL=NOPASSWD:/opt/zimbra/libexec/zmslapd" >> /tmp/sudoers
+mv -f /tmp/sudoers /etc/sudoers
+chmod $SUDOMODE /etc/sudoers
+
+if [ -d "/opt/zimbra/openldap/libexec/slapd" ]; then
+  chown root:root /opt/zimbra/openldap/libexec/slapd
+  chmod 755 /opt/zimbra/openldap/libexec/slapd
+fi
+
+if [ -x "/opt/zimbra/libexec/zmfixperms" ]; then
+  /opt/zimbra/libexec/zmfixperms
+fi
+
+ldconfig

@@ -2,7 +2,7 @@
 # 
 # ***** BEGIN LICENSE BLOCK *****
 # Zimbra Collaboration Suite Server
-# Copyright (C) 2005, 2006, 2007 Zimbra, Inc.
+# Copyright (C) 2005, 2006, 2007, 2008, 2009 Zimbra, Inc.
 # 
 # The contents of this file are subject to the Yahoo! Public License
 # Version 1.0 ("License"); you may not use this file except in
@@ -70,6 +70,9 @@ fi
 if [ -f "/opt/zimbra/conf/ca/ca.pem" ]; then
   cp -f /opt/zimbra/conf/ca/ca.pem $SAVEDIR
 fi
+if [ -d "$SAVEDIR/zimlet" ]; then
+  rm -rf $SAVEDIR/zimlet
+fi
 if [ -d "/opt/zimbra/tomcat/webapps/service/zimlet" ]; then
   cp -rf /opt/zimbra/tomcat/webapps/service/zimlet $SAVEDIR
 elif [ -d "/opt/zimbra/mailboxd/webapps/service/zimlet" ]; then
@@ -79,8 +82,10 @@ if [ -x "/opt/zimbra/bin/zmschedulebackup" ]; then
 	$SU "/opt/zimbra/bin/zmschedulebackup -s > $SAVEDIR/backup.save"
 fi
 if [ -x "/opt/zimbra/openldap/sbin/slapcat" ]; then
-        $SU "/opt/zimbra/libexec/zmslapcat /opt/zimbra/openldap-data"
-        chown zimbra:zimbra /opt/zimbra/openldap-data/ldap.bak
-        chmod 640 /opt/zimbra/openldap-data/ldap.bak
+	mkdir -p /opt/zimbra/data/ldap
+	chown -R zimbra:zimbra /opt/zimbra/data/ldap
+	$SU "/opt/zimbra/libexec/zmslapcat /opt/zimbra/data/ldap"
+	chown zimbra:zimbra /opt/zimbra/data/ldap/ldap.bak
+	chmod 640 /opt/zimbra/data/ldap/ldap.bak
 fi
 

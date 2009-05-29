@@ -2,7 +2,7 @@
 # __SNMP
 
 snmp: CUR_DEST_ROOT := $(SNMP_DEST_ROOT)
-snmp: CUR_PACKAGE_SPEC := $(BUILD_ROOT)/zimbrasnmp.spec
+snmp: CUR_PACKAGE_SPEC := $(BUILD_ROOT)/zimbra-snmp.spec
 snmp: CUR_PACKAGE_NAME := zimbra-snmp
 snmp: $(PACKAGE_DIR) snmp_stage snmp_pkg_spec_$(PACKAGE_EXT)
 	(cd $(CUR_DEST_ROOT); \
@@ -38,31 +38,31 @@ snmp_pkg_spec_deb: $(SNMP_DEST_ROOT)/DEBIAN/control
 
 $(SNMP_DEST_ROOT)/DEBIAN: force
 	mkdir -p $@
-	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbrasnmp.pre $@/preinst
-	cat $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbrasnmp.post >> $@/postinst
+	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-snmp.pre $@/preinst
+	cat $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-snmp.post >> $@/postinst
 	chmod 555 $@/*
 
 $(SNMP_DEST_ROOT)/DEBIAN/control: $(SNMP_DEST_ROOT)/DEBIAN force
-	cat $(PACKAGE_CONF_DIR)/Spec/zimbrasnmp.deb | \
+	cat $(PACKAGE_CONF_DIR)/Spec/zimbra-snmp.deb | \
 	sed -e 's/@@VERSION@@/$(VERSION_TAG)/' \
 	-e 's/@@RELEASE@@/$(RELEASE)/' \
 	-e 's/@@ARCH@@/$(ARCH)/' > $@
 
-snmp_pkg_spec_rpm: $(BUILD_ROOT)/zimbrasnmp.spec
+snmp_pkg_spec_rpm: $(BUILD_ROOT)/zimbra-snmp.spec
 
-$(BUILD_ROOT)/zimbrasnmp.spec:
-	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbrasnmp.pre $(BUILD_ROOT)
-	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbrasnmp.post $(BUILD_ROOT)
-	cat $(PACKAGE_CONF_DIR)/Spec/zimbrasnmp.spec | \
+$(BUILD_ROOT)/zimbra-snmp.spec:
+	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-snmp.pre $(BUILD_ROOT)
+	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-snmp.post $(BUILD_ROOT)
+	cat $(PACKAGE_CONF_DIR)/Spec/zimbra-snmp.spec | \
 		sed -e 's/@@VERSION@@/$(VERSION_TAG)/' \
 		-e 's/@@RELEASE@@/$(RELEASE)/' \
 		-e 's/^Copyright:/$(RPMCOPYRIGHTSTR):/' \
-		-e '/^%pre$$/ r zimbrasnmp.pre' \
-		-e '/^%post$$/ r zimbrasnmp.post' > $(BUILD_ROOT)/zimbrasnmp.spec
-	rm -f zimbrasnmp.pre
-	rm -f zimbrasnmp.post
+		-e '/^%pre$$/ r zimbra-snmp.pre' \
+		-e '/^%post$$/ r zimbra-snmp.post' > $(BUILD_ROOT)/zimbra-snmp.spec
+	rm -f zimbra-snmp.pre
+	rm -f zimbra-snmp.post
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/$(SNMP_DIR)" >> \
-		$(BUILD_ROOT)/zimbrasnmp.spec
+		$(BUILD_ROOT)/zimbra-snmp.spec
 
 snmp_stage: $(SNMP_COMPONENTS)
 

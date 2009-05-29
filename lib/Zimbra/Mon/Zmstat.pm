@@ -1,7 +1,7 @@
 # 
 # ***** BEGIN LICENSE BLOCK *****
 # Zimbra Collaboration Suite Server
-# Copyright (C) 2007 Zimbra, Inc.
+# Copyright (C) 2007, 2008 Zimbra, Inc.
 # 
 # The contents of this file are subject to the Yahoo! Public License
 # Version 1.0 ("License"); you may not use this file except in
@@ -78,7 +78,8 @@ sub osCheck() {
 sub zmstatInit() {
     osCheck();
     getLocalConfig('zimbra_home', 'zimbra_user', 'zimbra_server_hostname',
-                   'zmstat_log_directory', 'zmstat_interval');
+                   'zmstat_log_directory', 'zmstat_interval',
+                   'zmstat_disk_interval');
     userCheck();
 }
 
@@ -234,7 +235,7 @@ sub rotateLogFile($$;$$) {
     if (! -d $rotatedir) {
         die "Unable to create log rotation directory $rotatedir";
     }
-    $fh->close();
+    $fh->close() if defined $fh;
 
     my $rotatefile = "$rotatedir/$name";
 

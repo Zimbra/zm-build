@@ -84,5 +84,5 @@ zcs_stage:
 	-cp -f $(WEBAPP_DIR)/zimbra/downloads/* $(PACKAGE_DIR)
 	@echo "*** BUILD COMPLETED ***"
 
-packages: core proxy mta apache store ldap snmp logger spell
+packages: core proxy memcached mta apache store ldap snmp logger spell
 	@echo "*** Creating PACKAGES in $(PACKAGE_DIR)"

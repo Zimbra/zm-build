@@ -17,3 +17,4 @@ ADMIN_EXT_DIR := $(BUILD_ROOT)/../ZimbraAdminExt
 MIG_TOOLS_DIR := $(BUILD_ROOT)/../ZimbraMigrationTools
 EVO_DIR := $(BUILD_ROOT)/../ZimbraEvolution
 NGINX_LOOKUP_DIR := $(BUILD_ROOT)/../ZimbraNginxLookup
+ZMCBPOLICYD_DIR := $(BUILD_ROOT)/../ZimbraCBPolicyd

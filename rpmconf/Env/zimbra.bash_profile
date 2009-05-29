@@ -16,3 +16,4 @@ USERNAME="zimbra"
 export USERNAME
 
 export LANG=C
+export LC_ALL=C

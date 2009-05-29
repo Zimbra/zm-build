@@ -1,0 +1,191 @@
+#!/bin/bash
+# 
+# ***** BEGIN LICENSE BLOCK *****
+# Zimbra Collaboration Suite Server
+# Copyright (C) 2005, 2006, 2007, 2008, 2009 Zimbra, Inc.
+# 
+# The contents of this file are subject to the Yahoo! Public License
+# Version 1.0 ("License"); you may not use this file except in
+# compliance with the License.  You may obtain a copy of the License at
+# http://www.zimbra.com/license.
+# 
+# Software distributed under the License is distributed on an "AS IS"
+# basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+# ***** END LICENSE BLOCK *****
+# 
+# Create group, user for zimbra and postfix.
+
+H=`hostname --fqdn`
+I=`hostname -i`
+
+#Symlinks
+rm -f /opt/zimbra/java
+PLAT=`/opt/zimbra/libexec/get_plat_tag.sh`
+BIT=`echo $PLAT | awk -F_ '{print $2}'`
+if [ "x$BIT" = "x64" ]; then
+	ln -s /opt/zimbra/jdk1.5.0_17 /opt/zimbra/java
+else
+	ln -s /opt/zimbra/jdk1.5.0_17 /opt/zimbra/java
+fi
+
+rm -f /opt/zimbra/bdb
+ln -s /opt/zimbra/bdb-4.7.25.4 /opt/zimbra/bdb
+
+if [ -L /opt/zimbra/sleepycat ]; then
+	rm -f /opt/zimbra/sleepycat
+fi
+
+rm -f /opt/zimbra/openssl
+ln -s /opt/zimbra/openssl-0.9.8k /opt/zimbra/openssl
+
+rm -f /opt/zimbra/heimdal
+ln -s /opt/zimbra/heimdal-1.2.1 /opt/zimbra/heimdal
+
+rm -f /opt/zimbra/curl
+ln -s /opt/zimbra/curl-7.19.4 /opt/zimbra/curl
+
+rm -f /opt/zimbra/cyrus-sasl
+ln -s /opt/zimbra/cyrus-sasl-2.1.23.3z /opt/zimbra/cyrus-sasl
+
+rm -f /opt/zimbra/openldap-clibs
+ln -s /opt/zimbra/openldap-clibs-2.4.16.11z /opt/zimbra/openldap-clibs
+
+rm -f /opt/zimbra/tcmalloc
+ln -s /opt/zimbra/tcmalloc-1.2 /opt/zimbra/tcmalloc
+
+if [ -d "/opt/zimbra/zimbramon/rrdtool" ]; then
+  rm -rf /opt/zimbra/zimbramon/rrdtool
+  ln -s /opt/zimbra/zimbramon/rrdtool-1.2.30 /opt/zimbra/zimbramon/rrdtool
+else
+  rm -f /opt/zimbra/zimbramon/rrdtool
+  ln -s /opt/zimbra/zimbramon/rrdtool-1.2.30 /opt/zimbra/zimbramon/rrdtool
+fi
+
+if [ -d "/opt/zimbra/logger/db" ]; then
+  chown zimbra:zimbra /opt/zimbra/logger/db
+fi
+
+if [ -f "/opt/zimbra/conf/ca/ca.pem" ]; then
+  ln -f -s ca.pem /opt/zimbra/conf/ca/`openssl x509 -hash -noout -in /opt/zimbra/conf/ca/ca.pem`.0
+fi
+
+if [ x"$PLAT" = "xRHEL5" -o x"$PLAT" = "xCentOS5" ]; then
+  sed -i -e 's:\(^Defaults.*requiretty\):#\1:' /etc/sudoers
+elif [ x"$PLAT" = "xRHEL5_64" -o x"$PLAT" = "xCentOS5_64" ]; then
+  sed -i -e 's:\(^Defaults.*requiretty\):#\1:' /etc/sudoers
+elif [ x"$PLAT" = "xFC6" ]; then
+  sed -i -e 's:\(^Defaults.*requiretty\):#\1:' /etc/sudoers
+fi
+
+if [ x"$PLAT" = "xUBUNTU6" -o x"$PLAT" = "xUBUNTU6_64" \
+     -o x"$PLAT" = "xUBUNTU7" -o x"$PLAT" = "xUBUNTU7_64" \
+     -o x"$PLAT" = "xUBUNTU8" -o x"$PLAT" = "xUBUNTU8_64" \
+     -o x"$PLAT" = "xDEBIAN4.0" -o x"$PLAT" = "xDEBIAN4.0_64" ]; then
+  sed -i -e 's/# session    required   pam_limits.so/session    required   pam_limits.so/' /etc/pam.d/su
+  egrep -v -e '^session[[:space:]]+required[[:space:]]+pam_limits.so' /etc/pam.d/common-session >/tmp/common-session
+  echo "session	required	pam_limits.so" >> /tmp/common-session
+  mv -f /tmp/common-session /etc/pam.d/common-session
+  chmod 640 /etc/pam.d/common-session
+fi
+
+if [ -f /etc/debian_version ]; then
+	if [ -f /etc/ld.so.conf ]; then
+		mv -f /etc/ld.so.conf /etc/ld.so.conf.$$
+		cat /etc/ld.so.conf.$$ | grep -v zimbra > /etc/ld.so.conf
+	fi
+#	cat /opt/zimbra/conf/zimbra.ld.conf >> /etc/ld.so.conf
+#else
+#	mkdir -p /etc/ld.so.conf.d
+#	cp -f /opt/zimbra/conf/zimbra.ld.conf /etc/ld.so.conf.d
+fi
+
+# update prelink.conf
+if [ -f /etc/prelink.conf ]; then
+  egrep -q 'zimbra' /etc/prelink.conf
+  if [ $? != 0 ]; then
+    echo "# added for Zimbra" >> /etc/prelink.conf
+    echo "-l /opt/zimbra/lib" >> /etc/prelink.conf
+    echo "-l /opt/zimbra/bdb/lib" >> /etc/prelink.conf
+    echo "-l /opt/zimbra/openldap/lib" >> /etc/prelink.conf
+    echo "-l /opt/zimbra/cyrus-sasl/lib" >> /etc/prelink.conf
+    echo "-l /opt/zimbra/mysql/lib" >> /etc/prelink.conf
+    if [ -x /usr/sbin/prelink ]; then
+      /usr/sbin/prelink -amR > /dev/null 2>&1
+    fi
+  fi
+fi
+
+if [ -x /sbin/ldconfig ]; then
+  /sbin/ldconfig
+fi
+
+# Setup syslog
+
+if [ -d /etc/logrotate.d ]; then
+	cp -f /opt/zimbra/conf/zmlogrotate /etc/logrotate.d/zimbra
+fi
+
+#/opt/zimbra/bin/zmsyslogsetup local
+
+cp -f /opt/zimbra/libexec/zimbra /etc/init.d/zimbra
+chmod 755 /etc/init.d/zimbra
+if [ -x /sbin/chkconfig ]; then
+	chkconfig --add zimbra 
+	chkconfig zimbra on
+else
+	rm -f /etc/rc*.d/S99zimbra
+	rm -f /etc/rc*.d/K01zimbra
+
+  if [ -d /etc/rc0.d ]; then
+    ln -s /etc/init.d/zimbra /etc/rc0.d/S99zimbra
+  fi
+  if [ -d /etc/rc2.d ]; then
+	  ln -s /etc/init.d/zimbra /etc/rc2.d/S99zimbra
+	  ln -s /etc/init.d/zimbra /etc/rc2.d/K01zimbra
+  fi
+  if [ -d /etc/rc3.d ]; then
+	  ln -s /etc/init.d/zimbra /etc/rc3.d/S99zimbra
+	  ln -s /etc/init.d/zimbra /etc/rc3.d/K01zimbra
+  fi
+  if [ -d /etc/rc4.d ]; then
+	  ln -s /etc/init.d/zimbra /etc/rc4.d/S99zimbra
+	  ln -s /etc/init.d/zimbra /etc/rc4.d/K01zimbra
+  fi
+  if [ -d /etc/rc5.d ]; then
+	  ln -s /etc/init.d/zimbra /etc/rc5.d/S99zimbra
+	  ln -s /etc/init.d/zimbra /etc/rc5.d/K01zimbra
+  fi
+  if [ -d /etc/rc6.d ]; then
+	  ln -s /etc/init.d/zimbra /etc/rc6.d/S99zimbra
+	  ln -s /etc/init.d/zimbra /etc/rc6.d/K01zimbra
+  fi
+  
+fi
+
+mkdir -p /opt/zimbra/backup
+chown zimbra:zimbra /opt/zimbra/backup
+mkdir -p /opt/zimbra/log
+chown zimbra:zimbra /opt/zimbra/log
+mkdir -p /opt/zimbra/ssl
+chown zimbra:zimbra /opt/zimbra/ssl
+mkdir -p /opt/zimbra/.ssh
+chown zimbra:zimbra /opt/zimbra/.ssh
+mkdir -p /opt/zimbra/zmstat
+chown zimbra:zimbra /opt/zimbra/zmstat
+
+SUDOMODE=`perl -e 'my $mode=(stat("/etc/sudoers"))[2];if ($mode == "0000"){ $mode=33056 };printf("%04o\n",$mode & 07777);'`;
+egrep -v -e '^%zimbra.*zmcertmgr' /etc/sudoers > /tmp/sudoers
+echo "%zimbra ALL=NOPASSWD:/opt/zimbra/bin/zmcertmgr" >> /tmp/sudoers
+mv -f /tmp/sudoers /etc/sudoers
+chmod $SUDOMODE /etc/sudoers
+
+if [ -x "/opt/zimbra/libexec/zmfixperms" ]; then
+  /opt/zimbra/libexec/zmfixperms
+fi
+
+# 64 bit jvm doesn't support the dump
+if [ "x$BIT" = "x64" ]; then
+	exit 0
+fi
+
+/opt/zimbra/java/bin/java -client -Xshare:dump

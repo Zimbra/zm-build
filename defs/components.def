@@ -26,17 +26,36 @@ CORE_COMPONENTS	:= \
 	$(CORE_DEST_DIR)/lib/ext/com_zimbra_bulkprovision/com_zimbra_bulkprovision.jar \
 	$(PLATFORM_CORE_COMPONENTS)
 
+
+ifeq ($(ZIMBRA_USE_CBPOLICYD), 1)
+CBPOLICYD_COMPONENTS := \
+	$(MTA_DEST_DIR)/$(CBPOLICYD_DIR) \
+	$(MTA_DEST_DIR)/bin/zmcbpolicydctl \
+	$(MTA_DEST_DIR)/conf/cbpolicyd.conf.in \
+	$(MTA_DEST_DIR)/data/cbpolicyd \
+	$(MTA_DEST_DIR)/libexec/zmcbpolicydinit
+endif
+
 MTA_COMPONENTS	:= \
+	$(MTA_DEST_DIR) \
 	$(MTA_DEST_DIR)/$(POSTFIX_DIR) \
+	$(MTA_DEST_DIR)/data/postfix \
 	$(MTA_DEST_DIR)/$(AMAVISD_DIR)-new-$(AMAVISD_VERSION) \
+	$(MTA_DEST_DIR)/data/amavisd \
 	$(MTA_DEST_DIR)/$(CLAMAV_DIR)  \
-	$(MTA_DEST_DIR)/$(DSPAM_DIR)-$(DSPAM_VERSION)
+	$(MTA_DEST_DIR)/data/clamav \
+	$(MTA_DEST_DIR)/$(DSPAM_DIR)-$(DSPAM_VERSION) \
+	$(MTA_DEST_DIR)/data/dspam \
+	$(CBPOLICYD_COMPONENTS)
 
 LOGGER_COMPONENTS := \
-	$(LOGGER_DEST_DIR)/$(MYSQL_DIR) \
+	$(LOGGER_DEST_DIR) \
+	$(LOGGER_DEST_DIR)/db \
+	$(LOGGER_DEST_DIR)/db/data
 
 ifndef $(ZIMBRA_USE_TOMCAT)
 	MAILBOXD_COMPONENTS := \
+		$(STORE_DEST_DIR)/lib/libsetuid \
 		$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/lib/log4j-1.2.8.jar \
 		$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/resources/log4j.properties
 endif
@@ -68,9 +87,8 @@ ZIMLET_COMPONENTS := \
 	$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/webapps/service/WEB-INF/zimbra.tld
 
 LDAP_COMPONENTS := \
-	$(LDAP_DEST_DIR)/$(LDAP_DIR)-$(LDAP_VERSION) \
-	$(LDAP_DEST_DIR)/lib/conf/zimbra-ext.schema \
-	$(LDAP_DEST_DIR)/lib/conf/zimbra-hsm.schema
+	$(LDAP_DEST_DIR)/$(LIBTOOL_DIR)-$(LIBTOOL_VERSION) \
+	$(LDAP_DEST_DIR)/$(LDAP_DIR)-$(LDAP_VERSION)
 
 APACHE_COMPONENTS := \
 	$(APACHE_DEST_DIR)/$(APACHE_DIR) \
@@ -86,8 +104,11 @@ SNMP_COMPONENTS := \
 	$(SNMP_DEST_DIR)/$(SNMP_DIR) 
 
 PROXY_COMPONENTS := \
-	$(PROXY_DEST_DIR)/$(NGINX_DIR) \
-	$(PROXY_DEST_DIR)/$(MEMCACHED_DIR)
+	$(PROXY_DEST_DIR)/$(NGINX_DIR)
+
+MEMCACHED_COMPONENTS := \
+	$(MEMCACHED_DEST_DIR)/$(MEMCACHED_DIR)
+
 
 EVO_COMPONENTS := \
 	$(EVO_DEST_DIR)

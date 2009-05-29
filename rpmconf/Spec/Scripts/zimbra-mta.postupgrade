@@ -2,7 +2,7 @@
 # 
 # ***** BEGIN LICENSE BLOCK *****
 # Zimbra Collaboration Suite Server
-# Copyright (C) 2005, 2006, 2007 Zimbra, Inc.
+# Copyright (C) 2005, 2006, 2007, 2008, 2009 Zimbra, Inc.
 # 
 # The contents of this file are subject to the Yahoo! Public License
 # Version 1.0 ("License"); you may not use this file except in
@@ -16,16 +16,16 @@
 
 umount -f /opt/zimbra/amavisd/tmp
 rm -f /opt/zimbra/amavisd
-ln -s /opt/zimbra/amavisd-new-2.5.4 /opt/zimbra/amavisd
+ln -s /opt/zimbra/amavisd-new-2.6.2 /opt/zimbra/amavisd
 
 rm -f /opt/zimbra/dspam
 ln -s /opt/zimbra/dspam-3.8.0 /opt/zimbra/dspam
 
 rm -f /opt/zimbra/postfix
-ln -s /opt/zimbra/postfix-2.4.7.5z /opt/zimbra/postfix
+ln -s /opt/zimbra/postfix-2.5.6.3z /opt/zimbra/postfix
 
 rm -f /opt/zimbra/clamav
-ln -s /opt/zimbra/clamav-0.94.1 /opt/zimbra/clamav
+ln -s /opt/zimbra/clamav-0.95.1 /opt/zimbra/clamav
 
 mkdir -p /opt/zimbra/data/amavisd/db
 mkdir -p /opt/zimbra/data/amavisd/tmp
@@ -37,9 +37,10 @@ chown -R zimbra:zimbra /opt/zimbra/data/amavisd/*
 mkdir -p /opt/zimbra/data/clamav/db
 chown -R zimbra:zimbra /opt/zimbra/data/clamav/db
 
-mkdir -p /opt/zimbra/data/postfix/spool
-chown zimbra:zimbra /opt/zimbra/data/postfix
+mkdir -p /opt/zimbra/data/postfix/spool/pid
+chown postfix:zimbra /opt/zimbra/data/postfix
 chown zimbra:zimbra /opt/zimbra/data
+chown postfix:root /opt/zimbra/data/postfix/spool/pid
 
 SUDOMODE=`perl -e 'my $mode=(stat("/etc/sudoers"))[2];printf("%04o\n",$mode & 07777);'`
 egrep -v '^%zimbra.*postfix' /etc/sudoers > /tmp/sudoers
