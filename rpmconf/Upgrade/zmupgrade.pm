@@ -2616,6 +2616,16 @@ sub upgrade5016GA {
 sub upgrade5017GA {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
 	main::progress("Updating from 5.0.17_GA\n");
+  if (main::isInstalled("zimbra-ldap") && $isLdapMaster) {
+    my @coses = `$su "$ZMPROV gac"`;
+    my %attrs = ( zimbraMailPurgeUseChangeDateForTrash => "TRUE");
+    foreach my $cos (@coses) {
+      chomp $cos;
+      foreach my $attr (keys %attrs) {
+          main::runAsZimbra("$ZMPROV mc $cos $attr \'$attrs{$attr}\'")
+      }
+    }
+  }
 	return 0;
 }
 
