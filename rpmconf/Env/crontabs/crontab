@@ -12,7 +12,7 @@
 #
 # SSL Certificate Expiration Checks
 #
-* * 1 * * /opt/zimbra/libexec/zmcheckexpiredcerts -days 30 -email
+0 0 1 * * /opt/zimbra/libexec/zmcheckexpiredcerts -days 30 -email
 #
 # Backups
 #
