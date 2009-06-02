@@ -486,7 +486,8 @@ sub upgrade {
   if (main::isInstalled ("zimbra-ldap")) {
     if($startMajor < 6 && $targetMajor >= 6) {
       &updateLdapBdbConfig("6.0.0_GA");
-      &migrateLdap("6.0.0_GA");
+      my $rc=&migrateLdap("6.0.0_GA");
+      if ($rc) { return 1; }
     }
     if (startLdap()) {return 1;} 
   }
