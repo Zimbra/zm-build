@@ -18,4 +18,6 @@
 
 /bin/sh /opt/zimbra/libexec/addUser.sh -g zimbra -G postfix zimbra
 
-/bin/bash /opt/zimbra/libexec/zmfixperms
+if [ -x "/opt/zimbra/libexec/zmfixperms" ]; then
+  /opt/zimbra/libexec/zmfixperms
+fi

@@ -63,7 +63,9 @@ if [ -f "/opt/zimbra/conf/ca/ca.pem" ]; then
   ln -f -s ca.pem /opt/zimbra/conf/ca/`openssl x509 -hash -noout -in /opt/zimbra/conf/ca/ca.pem`.0
 fi
 
-/bin/bash /opt/zimbra/libexec/zmfixperms
+if [ -x "/opt/zimbra/libexec/zmfixperms" ]; then
+  /opt/zimbra/libexec/zmfixperms
+fi
 
 RF="$SAVEDIR/config.save"
 while read i; do

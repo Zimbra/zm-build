@@ -74,7 +74,9 @@ mkdir -p /opt/zimbra/index
 mkdir -p /opt/zimbra/backup
 chown zimbra:zimbra /opt/zimbra/redolog /opt/zimbra/store /opt/zimbra/index /opt/zimbra/backup  /opt/zimbra/mailboxd/logs
 
-/bin/bash /opt/zimbra/libexec/zmfixperms
+if [ -x "/opt/zimbra/libexec/zmfixperms" ]; then
+  /opt/zimbra/libexec/zmfixperms
+fi
 
 if [ -d $SAVEDIR/zimlet -a -d /opt/zimbra/mailboxd/webapps/service ]; then
   cp -rf $SAVEDIR/zimlet /opt/zimbra/mailboxd/webapps/service/
