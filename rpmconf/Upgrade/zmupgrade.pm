@@ -2619,6 +2619,9 @@ sub upgrade5017GA {
     upgradeLdapConfigValue("zimbraMemcachedClientBinaryProtocolEnabled ", "FALSE", "");
     upgradeLdapConfigValue("zimbraMemcachedClientTimeoutMillis", "10000", "");
     upgradeLdapConfigValue("zimbraMemcachedClientHashAlgorithm", "KETAMA_HASH", "");
+    # 37817
+    upgradeLdapConfigValue("zimbraRedoLogRolloverMinFileAge", "60", "");
+    upgradeLdapConfigValue("zimbraRedoLogRolloverHardMaxFileSizeKB", "4194304", "");
 
     my @coses = `$su "$ZMPROV gac"`;
     my %attrs = ( zimbraMailPurgeUseChangeDateForTrash => "TRUE");
