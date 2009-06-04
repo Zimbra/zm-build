@@ -2614,6 +2614,12 @@ sub upgrade5017GA {
   main::progress("Updating from 5.0.17_GA\n");
   return 0;
   if (main::isInstalled("zimbra-ldap") && $isLdapMaster) {
+    # 37683
+    upgradeLdapConfigValue("zimbraMemcachedClientExpirySeconds", "86400", "");
+    upgradeLdapConfigValue("zimbraMemcachedClientBinaryProtocolEnabled ", "FALSE", "");
+    upgradeLdapConfigValue("zimbraMemcachedClientTimeoutMillis", "10000", "");
+    upgradeLdapConfigValue("zimbraMemcachedClientHashAlgorithm", "KETAMA_HASH", "");
+
     my @coses = `$su "$ZMPROV gac"`;
     my %attrs = ( zimbraMailPurgeUseChangeDateForTrash => "TRUE");
     foreach my $cos (@coses) {
