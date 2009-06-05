@@ -661,6 +661,14 @@ determineVersionType() {
     done
   fi
 
+  if [ x"$ZMTYPE_CURRENT" = "xNETWORK" ]; then
+    echo $ZMVERSION_CURRENT | grep -v ^6.0 > /dev/null 2>&1
+    if [ $? = 0 ]; then
+      echo "This is an Network Edition beta and is not intended for production."
+      echo "Upgrades from $ZMVERSION_CURRENT are not supported."
+      exit 1
+    fi
+  fi
 }
 
 verifyLicenseAvailable() {
