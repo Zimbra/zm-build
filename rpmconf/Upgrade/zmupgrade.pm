@@ -3000,7 +3000,7 @@ sub runSchemaUpgrade {
   }
 
   main::progress ("Running ${scriptDir}/$updateScripts{$curVersion}\n");
-  open(MIG, "$su \"perl -I${scriptDir} ${scriptDir}/$updateScripts{$curVersion}\" 2>&1|");
+  open(MIG, "$su \"/usr/bin/perl -I${scriptDir} ${scriptDir}/$updateScripts{$curVersion}\" 2>&1|");
   while (<MIG>) {
     main::progress($_);
   }
