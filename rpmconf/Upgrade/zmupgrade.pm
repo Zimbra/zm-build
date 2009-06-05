@@ -2823,7 +2823,7 @@ sub runLoggerSchemaUpgrade {
 	}
 
 	main::progress ("Running ${scriptDir}/$loggerUpdateScripts{$curVersion}\n");
-	my $rc = 0xffff & system("$su \"perl -I${scriptDir} ${scriptDir}/$loggerUpdateScripts{$curVersion}\"");
+	my $rc = 0xffff & system("$su \"/usr/bin/perl -I${scriptDir} ${scriptDir}/$loggerUpdateScripts{$curVersion}\"");
 	$rc = $rc >> 8;
 	if ($rc) {
 		main::progress ("Script failed with code $rc - exiting\n");
