@@ -1602,6 +1602,10 @@ getInstallPackages() {
         else
           askYN "Install $i" "N"
         fi
+      elif [ $i = "zimbra-archiving" ]; then
+        if [ $STORE_SELECTED = "yes" ]; then
+          askYN "Install $i" "N"
+        fi
       else
         askYN "Install $i" "N"
       fi
@@ -1611,17 +1615,20 @@ getInstallPackages() {
       elif [ $i = "zimbra-proxy" ]; then
          askYN "Install $i" "N"
       elif [ $i = "zimbra-archiving" ]; then
-         askYN "Install $i" "N"
+        # only prompt to install archiving if zimbra-store is selected
+        if [ $STORE_SELECTED = "yes" ]; then
+          askYN "Install $i" "N"
+        fi
       elif [ $i = "zimbra-convertd" ]; then
-      if [ $STORE_SELECTED = "yes" ]; then
+        if [ $STORE_SELECTED = "yes" ]; then
           askYN "Install $i" "Y"
-    else
-      askYN "Install $i" "N"
-    fi
+        else
+          askYN "Install $i" "N"
+        fi
       elif [ $i = "zimbra-cluster" -a "x$CLUSTERTYPE" = "x" ]; then
-         askYN "Install $i" "N"
+        askYN "Install $i" "N"
       else
-         askYN "Install $i" "Y"
+        askYN "Install $i" "Y"
       fi
     fi
 
