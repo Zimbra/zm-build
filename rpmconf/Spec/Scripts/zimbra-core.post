@@ -71,8 +71,10 @@ fi
 
 if [ x"$PLAT" = "xRHEL5" -o x"$PLAT" = "xCentOS5" ]; then
   sed -i -e 's:\(^Defaults.*requiretty\):#\1:' /etc/sudoers
+  sed -i -e 's:PS2 QTDIR USERNAME:PS2 QTDIR USERNAME PATH:' /etc/sudoers
 elif [ x"$PLAT" = "xRHEL5_64" -o x"$PLAT" = "xCentOS5_64" ]; then
   sed -i -e 's:\(^Defaults.*requiretty\):#\1:' /etc/sudoers
+  sed -i -e 's:PS2 QTDIR USERNAME:PS2 QTDIR USERNAME PATH:' /etc/sudoers
 elif [ x"$PLAT" = "xFC6" ]; then
   sed -i -e 's:\(^Defaults.*requiretty\):#\1:' /etc/sudoers
 fi
