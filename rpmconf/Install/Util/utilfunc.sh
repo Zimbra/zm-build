@@ -609,7 +609,7 @@ determineVersionType() {
   isInstalled zimbra-core
   if [ x"$PKGINSTALLED" != "x" ]; then
     export ZMVERSION_CURRENT=`echo $PKGVERSION | sed s/^zimbra-core-//`
-    if [ -d "/opt/zimbra/zimlets-network" ]; then
+    if [ -f "/opt/zimbra/bin/zmbackupquery" ]; then
       ZMTYPE_CURRENT="NETWORK"
     else 
       ZMTYPE_CURRENT="FOSS"
@@ -639,6 +639,9 @@ determineVersionType() {
   if [ x"$UNINSTALL" = "xyes" ] || [ x"$AUTOINSTALL" = "xyes" ]; then
     return
   fi
+
+  #echo "TYPE: CURRENT: $ZMTYPE_CURRENT INSTALLABLE: $ZMTYPE_INSTALLABLE"
+  #echo "VERSION: CURRENT: $ZM_CUR_MAJOR INSTALLABLE: $ZM_INST_MAJOR" 
 
   checkVersionDowngrade
 
