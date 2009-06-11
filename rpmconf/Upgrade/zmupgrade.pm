@@ -2856,10 +2856,24 @@ sub upgrade600BETA2 {
 sub upgrade600RC1 {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
   main::progress("Updating from 6.0.0_RC1\n");
+
+  
+  main::runAsZimbra("zmjava com.zimbra.common.localconfig.LocalConfigUpgrade --bug 37842 --bug 37844 --bug 37802 --tag .pre.${targetVersion}");
+
   if (main::isInstalled("zimbra-store")) {
     my $mailboxd_java_options = main::getLocalConfig("mailboxd_java_options");
     $mailboxd_java_options =~ s/-client/-server/
       if ($mailboxd_java_options =~ /-client/);
+    $mailboxd_java_options .= " -XX:+UseConcMarkSweepGC"
+      unless ($mailboxd_java_options =~ /UseConcMarkSweepGC/);
+    $mailboxd_java_options .= " -XX:NewRatio"
+      unless ($mailboxd_java_options =~ /XX:NewRatio/);
+    $mailboxd_java_options .= " -XX:PermSize"
+      unless ($mailboxd_java_options =~ /XX:Permsize/);
+    $mailboxd_java_options .= " -XX:MaxPermSize"
+      unless ($mailboxd_java_options =~ /XX:MaxPermSize/);
+    $mailboxd_java_options .= " -XX:SoftRefLRUPolicyMSPerMB"
+      unless ($mailboxd_java_options =~ /XX:SoftRefLRUPolicyMSPerMB/);
     main::detail("Modified mailboxd_java_options=$mailboxd_java_options");
     main::setLocalConfig("mailboxd_java_options", "$mailboxd_java_options");
   }
