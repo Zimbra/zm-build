@@ -2625,6 +2625,9 @@ sub upgrade5017GA {
     # 37817
     upgradeLdapConfigValue("zimbraRedoLogRolloverMinFileAge", "60", "");
     upgradeLdapConfigValue("zimbraRedoLogRolloverHardMaxFileSizeKB", "4194304", "");
+    # 38157
+    upgradeLdapConfigValue("zimbraFreebusyPropagationRetryInterval", "1m", "");
+    
 
     my @coses = `$su "$ZMPROV gac"`;
     my %attrs = ( zimbraMailPurgeUseChangeDateForTrash => "TRUE");
