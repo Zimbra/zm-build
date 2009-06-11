@@ -2856,6 +2856,13 @@ sub upgrade600BETA2 {
 sub upgrade600RC1 {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
   main::progress("Updating from 6.0.0_RC1\n");
+  if (main::isInstalled("zimbra-store")) {
+    my $mailboxd_java_options = main::getLocalConfig("mailboxd_java_options");
+    $mailboxd_java_options =~ s/-client/-server/
+      if ($mailboxd_java_options =~ /-client/);
+    main::detail("Modified mailboxd_java_options=$mailboxd_java_options");
+    main::setLocalConfig("mailboxd_java_options", "$mailboxd_java_options");
+  }
   return 0;
 }
 
