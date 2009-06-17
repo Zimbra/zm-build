@@ -2860,6 +2860,13 @@ sub upgrade600RC1 {
   
   main::runAsZimbra("zmjava com.zimbra.common.localconfig.LocalConfigUpgrade --bug 37842 --bug 37844 --bug 37802 --tag .pre.${targetVersion}");
 
+  if (main::isInstalled("zimbra-store")) {
+    # 35835
+    my $zimbra_home=main::getLocalConfig("zimbra_home");
+    system("mv ${zimbra_home}/store/calcache ${zimbra_home}/data/tmp 2> /dev/null")
+      if ( -d "${zimbra_home}/store/calcache");
+  }
+
   return 0;
 }
 
