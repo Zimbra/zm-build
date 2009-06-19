@@ -3397,7 +3397,7 @@ sub migrateLdap($) {
         }
         `chown -R zimbra:zimbra /opt/zimbra/data/ldap`;
         my $rc;
-        $rc=main::runAsZimbra("/opt/zimbra/openldap/sbin/slapadd -b '' -F /opt/zimbra/data/ldap/config -l $outfile");
+        $rc=main::runAsZimbra("/opt/zimbra/openldap/sbin/slapadd -q -b '' -F /opt/zimbra/data/ldap/config -l $outfile");
         if ($rc != 0) {
           main::progress("slapadd import failed.\n");
           return 1;
