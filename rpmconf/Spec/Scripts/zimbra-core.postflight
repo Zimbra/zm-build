@@ -23,7 +23,7 @@ mkdir -p /opt/zimbra/.ssh
 chown zimbra:zimbra /opt/zimbra/.ssh
 
 rm -f /opt/zimbra/java
-ln -s /usr /opt/zimbra/java
+ln -s /Library/Java/Home /opt/zimbra/java
 
 mkdir -p /opt/zimbra/zmstat/pid
 chown zimbra:zimbra /opt/zimbra/zmstat
