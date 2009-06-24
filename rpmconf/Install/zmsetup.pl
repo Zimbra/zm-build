@@ -5027,7 +5027,7 @@ sub configInitDomainAdminGroups {
   main::progress(($rc == 0) ? "done.\n" : "failed.\n");
 
   main::progress ("Granting group $domainGroup domain right +domainAdminRights on $config{zimbraDefaultDomainName}...");
-  $rc = main::runAsZimbra("$ZMPROV grr domain $config{zimbraDefaultDomainName} grp $domainGroup +domainAdminRights");
+  $rc = main::runAsZimbra("$ZMPROV grr domain $config{zimbraDefaultDomainName} grp $domainGroup +LegacyAdminConsoleDomainAdminRights");
   main::progress(($rc == 0) ? "done.\n" : "failed.\n");
 
   main::progress ("Granting group $domainGroup global right +domainAdminZimletRights...");
