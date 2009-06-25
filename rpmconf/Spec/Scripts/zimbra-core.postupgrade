@@ -129,6 +129,12 @@ elif [ x"$PLAT" = "xRHEL5_64" -o x"$PLAT" = "xCentOS5_64" ]; then
   fi
 elif [ x"$PLAT" = "xFC6" ]; then
   sed -i -e 's:\(^Defaults.*requiretty\):#\1:' /etc/sudoers
+elif [ x"$PLAT" = "xF7" -o x"$PLAT" = "xF10" -o x"$PLAT" = "xF11" ]; then
+  sed -i -e 's:\(^Defaults.*requiretty\):#\1:' /etc/sudoers
+  sed -i -e 's:PS2 QTDIR USERNAME:PS2 QTDIR USERNAME PATH:' /etc/sudoers
+elif [ x"$PLAT" = "xF10_64" -o x"$PLAT" = "xF11_64" ]; then
+  sed -i -e 's:\(^Defaults.*requiretty\):#\1:' /etc/sudoers
+  sed -i -e 's:PS2 QTDIR USERNAME:PS2 QTDIR USERNAME PATH:' /etc/sudoers
 fi
 
 # log rotation
