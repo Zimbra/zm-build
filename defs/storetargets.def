@@ -262,6 +262,7 @@ $(SAMBA_EXT_DIR)/build/zimlet/zimbra_samba.zip:
 $(WEBAPP_DIR)/zimbra/downloads:
 	mkdir -p $@
 	-cp $(SERVICE_DIR)/src/windows/*exe $@
+	-cp $(SERVICE_DIR)/src/windows/*zip $@
 	-cp $(SERVICE_DIR)/src/windows/ZimbraToast*msi $@
 	-cp $(THIRD_PARTY_BUILDS)/zdesktop/zdesktop*.sh $@
 	-cp $(THIRD_PARTY_BUILDS)/zdesktop/zdesktop*.dmg $@
