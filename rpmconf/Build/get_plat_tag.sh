@@ -36,6 +36,12 @@ if [ -f /etc/redhat-release ]; then
 		exit 0
 	fi
 
+	grep "Fedora release 11" /etc/redhat-release >/dev/null 2>&1
+	if [ $? = 0 ]; then
+		echo "F11${i}"
+		exit 0
+	fi
+
 	grep "Fedora release 10" /etc/redhat-release >/dev/null 2>&1
 	if [ $? = 0 ]; then
 		echo "F10${i}"
