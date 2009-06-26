@@ -1957,6 +1957,14 @@ getPlatformVars() {
       PREREQ_PACKAGES="sudo libidn gmp bind-libs cronie"
       PREREQ_LIBS="/usr/lib64/libstdc++.so.6"
       PRESUG_PACKAGE="perl-5.10.0 sysstat"
+    elif [ $PLATFORM = "F11" ]; then
+      PREREQ_PACKAGES="sudo libidn gmp bind-libs cronie"
+      PREREQ_LIBS="/usr/lib/libstdc++.so.6"
+      PRESUG_PACKAGE="perl-5.10.0 sysstat"
+    elif [ $PLATFORM = "F11_64" ]; then
+      PREREQ_PACKAGES="sudo libidn gmp bind-libs cronie"
+      PREREQ_LIBS="/usr/lib64/libstdc++.so.6"
+      PRESUG_PACKAGE="perl-5.10.0 sysstat"
     else
       PREREQ_PACKAGES="sudo libidn gmp"
       PREREQ_LIBS="/usr/lib/libstdc++.so.5"
