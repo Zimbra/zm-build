@@ -183,6 +183,7 @@ my %updateFuncs = (
   "5.0.16_GA" => \&upgrade5016GA,
   "5.0.17_GA" => \&upgrade5017GA,
   "5.0.18_GA" => \&upgrade5018GA,
+  "5.0.19_GA" => \&upgrade5019GA,
   "6.0.0_BETA1" => \&upgrade600BETA1,
   "6.0.0_BETA2" => \&upgrade600BETA2,
   "6.0.0_RC1" => \&upgrade600RC1,
@@ -254,6 +255,7 @@ my @versionOrder = (
   "5.0.16_GA",
   "5.0.17_GA",
   "5.0.18_GA",
+  "5.0.19_GA",
   "6.0.0_BETA1",
   "6.0.0_BETA2",
   "6.0.0_RC1",
@@ -433,6 +435,8 @@ sub upgrade {
     main::progress("This appears to be 5.0.17_GA\n");
   } elsif ($startVersion eq "5.0.18_GA") {
     main::progress("This appears to be 5.0.18_GA\n");
+  } elsif ($startVersion eq "5.0.19_GA") {
+    main::progress("This appears to be 5.0.19_GA\n");
   } elsif ($startVersion eq "6.0.0_BETA1") {
     main::progress("This appears to be 6.0.0_BETA1\n");
   } elsif ($startVersion eq "6.0.0_BETA2") {
@@ -2617,6 +2621,12 @@ sub upgrade5017GA {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
   main::progress("Updating from 5.0.17_GA\n");
   return 0;
+}
+
+sub upgrade5018GA {
+  my ($startBuild, $targetVersion, $targetBuild) = (@_);
+  main::progress("Updating from 5.0.18_GA\n");
+  return 0;
   if (main::isInstalled("zimbra-ldap") && $isLdapMaster) {
     # 37683
     upgradeLdapConfigValue("zimbraMemcachedClientExpirySeconds", "86400", "");
@@ -2638,9 +2648,9 @@ sub upgrade5017GA {
   }
 }
 
-sub upgrade5018GA {
+sub upgrade5019GA {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
-  main::progress("Updating from 5.0.18_GA\n");
+  main::progress("Updating from 5.0.19_GA\n");
   return 0;
 }
 
