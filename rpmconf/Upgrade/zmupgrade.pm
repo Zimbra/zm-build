@@ -2886,6 +2886,7 @@ sub upgrade600RC1 {
     system("mv ${zimbra_home}/store/calcache ${zimbra_home}/data/tmp 2> /dev/null")
       if ( -d "${zimbra_home}/store/calcache");
   }
+  main::deleteLocalConfig("soap_max_in_memory_buffer_size");
 
   return 0;
 }
