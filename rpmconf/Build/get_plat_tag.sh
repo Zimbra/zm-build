@@ -125,7 +125,7 @@ if [ -f /etc/SuSE-release ]; then
 	fi
 	grep "openSUSE" /etc/SuSE-release > /dev/null 2>&1
 	if [ $? = 0 ]; then
-		echo "openSUSEUNKNOWN"
+		echo "openSUSEUNKNOWN${i}"
 		exit 0
 	fi
 fi
@@ -148,7 +148,7 @@ if [ -f /etc/debian_version ]; then
 			echo "DEBIAN4.0${i}"
 			exit 0
 		else
-	        	echo "DEBIANUNKNOWN"
+	        	echo "DEBIANUNKNOWN${i}"
 	        	exit 0
 		fi
 	fi
@@ -180,7 +180,7 @@ if [ -f /etc/lsb-release ]; then
 		echo "8${i}"
 		exit 0
 	else
-		echo "UNKNOWN"
+		echo "UNKNOWN${i}"
 		exit 0
 	fi
 fi
@@ -234,5 +234,5 @@ if [ "x$a" = "xDarwin" ]; then
   fi
 fi
 
-echo "UNKNOWN"
+echo "UNKNOWN${i}"
 exit 1
