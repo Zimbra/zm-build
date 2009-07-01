@@ -128,7 +128,7 @@ our @LOGGER_SCHEMA_UPGRADE = (
       },
       q{
       	INSERT INTO rrd_column_type
-      	          select 'mtaqueue.csv', 'gc_minor_ms',       'G', 30, 'msgs'
+      	          select 'mtaqueue.csv', 'requests',          'G', 30, 'msgs'
       	union all select 'fd.csv',       'fd_count',          'G', 30, 'fd'
       	union all select 'cpu.csv',      '*',                 'G', 30, '% cpu'
       	union all select 'vmstat.csv',   'pageins',           'G', 30, 'KB/s'
