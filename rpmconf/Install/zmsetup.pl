@@ -5026,43 +5026,30 @@ sub configInitDomainAdminGroups {
     "zimbraAdminConsoleUIComponents saveSearch ");
   main::progress(($rc == 0) ? "done.\n" : "failed.\n");
 
-  main::progress ("Granting group $domainGroup domain right +domainAdminRights on $config{zimbraDefaultDomainName}...");
-  $rc = main::runAsZimbra("$ZMPROV grr domain $config{zimbraDefaultDomainName} grp $domainGroup +LegacyAdminConsoleDomainAdminRights");
+  main::progress ("Granting group $domainGroup domain right +domainAdminConsoleRights on $config{zimbraDefaultDomainName}...");
+  $rc = main::runAsZimbra("$ZMPROV grr domain $config{zimbraDefaultDomainName} grp $domainGroup +domainAdminConsoleRights");
   main::progress(($rc == 0) ? "done.\n" : "failed.\n");
 
   main::progress ("Granting group $domainGroup global right +domainAdminZimletRights...");
   $rc = main::runAsZimbra("$ZMPROV grr global grp $domainGroup +domainAdminZimletRights");
   main::progress(($rc == 0) ? "done.\n" : "failed.\n");
     
-  main::progress ("Setting up default help desk admin UI components..");
-  $domainGroup = "zimbraHelpDeskAdmins\@". 
+  main::progress ("Setting up global distribution list admin UI components..");
+  $domainGroup = "zimbraDLAdmins\@". 
     (($newinstall) ? "$config{CREATEDOMAIN}" : "$config{zimbraDefaultDomainName}");
   my $rc = main::runAsZimbra("$ZMPROV cdl $domainGroup ".
     "zimbraIsAdminGroup TRUE ".
     "zimbraMailStatus disabled ".
-    "zimbraAdminConsoleUIComponents accountListView ".
-    "zimbraAdminConsoleUIComponents aliasListView ".
-    "zimbraAdminConsoleUIComponents DLListView ".
-    "zimbraAdminConsoleUIComponents resourceListView ".
-    "zimbraAdminConsoleUIComponents saveSearch ");
+    "zimbraAdminConsoleUIComponents DLListView ");
   main::progress(($rc == 0) ? "done.\n" : "failed.\n");
 
-  main::progress ("Granting domain admin rights to group $domainGroup...");
-  my $wfh= new FileHandle;
-  my $efh= new FileHandle;
-  my @errors;
-  if (my $pid = open3($wfh,undef,$efh,"$SU \"$ZMPROV\"")) {
-    foreach my $right qw(getAccount getCalendarResource getDistributionList getDomain getCos listAccount listCalendarResource listDistributionList listDomain listCos listDomain getDomain getAccountInfo countAccount getAccountMembership getMailboxInfo ) {
-      print ZMPROV "grr global grp $domainGroup $right\n";
-    }
-    print $wfh "exit\n";
-    @errors = <$efh>;
-    detail("@errors") if (scalar(@errors) != 0) ;
-    close($wfh);
-    close($efh);
-    waitpid($pid, 0);
-  }
-  main::progress(($? == 0 && scalar(@errors) == 0) ? "done.\n" : "failed.\n");
+  main::progress ("Granting group $domainGroup global right +adminConsoleDLRights...");
+  $rc = main::runAsZimbra("$ZMPROV grr global grp $domainGroup +adminConsoleDLRights");
+  main::progress(($rc == 0) ? "done.\n" : "failed.\n");
+  main::progress ("Granting group $domainGroup global right +listAccount...");
+  $rc = main::runAsZimbra("$ZMPROV grr global grp $domainGroup +listAccount");
+  main::progress(($rc == 0) ? "done.\n" : "failed.\n");
+
 }
 
 sub configInitBackupPrefs {
