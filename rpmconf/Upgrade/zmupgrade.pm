@@ -2885,6 +2885,12 @@ sub upgrade600RC1 {
     my $zimbra_home=main::getLocalConfig("zimbra_home");
     system("mv ${zimbra_home}/store/calcache ${zimbra_home}/data/tmp 2> /dev/null")
       if ( -d "${zimbra_home}/store/calcache");
+
+    # 39085
+    system("mv ${zimbra_home}/jetty/webapps/service/zimlet ${zimbra_home}/zimlets-deployed")
+      if ( -d "${zimbra_home}/jetty/webapps/service/zimlet");
+    main::setLocalConfig("zimlet_directory", "${zimbra_home}/zimlets-deployed");
+    main::setLocalConfig("zimlet_properties_directory", "${zimbra_home}/zimlets-properties");
   }
   main::deleteLocalConfig("soap_max_in_memory_buffer_size");
 

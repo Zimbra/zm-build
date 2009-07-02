@@ -5336,6 +5336,20 @@ sub configInstallZimlets {
     return 0;
   }
 
+  my $zimlet_directory = getLocalConfig("zimlet_directory") || "/opt/zimbra/zimlets-deployed";
+  my $zimlet_properties = getLocalConfig("zimlet_properties_directory") || "/opt/zimbra/zimlets-properties";
+  my (undef,undef,$uid,$gid) = getpwnam("zimbra");
+
+  mkdir($zimlet_directory)
+    if (! -d $zimlet_directory);
+  chown($uid,$gid, $zimlet_directory);
+  chmod(0755, $zimlet_directory);
+
+  mkdir($zimlet_properties)
+    if (! -d $zimlet_properties);
+  chown($uid,$gid, $zimlet_properties);
+  chmod(0755, $zimlet_properties);
+
   # remove deprecated zimlets on upgrades
   if (!$newinstall) {
     progress("Checking for deprecated zimlets...");
