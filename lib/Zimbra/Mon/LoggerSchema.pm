@@ -163,6 +163,9 @@ our @LOGGER_SCHEMA_UPGRADE = (
       	union all select 'nginx.csv',    'utime',             'G', 30, 'seconds/100'
       	union all select 'nginx.csv',    'rss',               'G', 30, 'KB'
       },
+      q{
+      	UPDATE config SET version = 3
+      },
     ],
 );
 
