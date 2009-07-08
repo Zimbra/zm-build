@@ -13,6 +13,7 @@
 # basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 # ***** END LICENSE BLOCK *****
 # 
+shopt -s nullglob
 
 rm -f /opt/zimbra/openldap
 ln -s /opt/zimbra/openldap-2.3.43.10z /opt/zimbra/openldap

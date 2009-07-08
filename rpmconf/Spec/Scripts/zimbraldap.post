@@ -14,7 +14,7 @@
 # ***** END LICENSE BLOCK *****
 # 
 # Create group, user for zimbra and postfix.
-
+shopt -s nullglob
 H=`hostname -s`
 I=`hostname -i`
 
