@@ -15,8 +15,7 @@
 # 
 # Create group, user for zimbra and postfix.
 
-H=`hostname -s`
-I=`hostname -i`
+shopt -s nullglob 
 
 #Symlinks
 
