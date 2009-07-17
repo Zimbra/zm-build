@@ -1336,12 +1336,24 @@ removeExistingInstall() {
         egrep -q 'zimbra' /etc/syslog-ng/syslog-ng.conf
         if [ $? = 0 ]; then
           echo -n "Cleaning up /etc/syslog-ng/syslog-ng.conf..."
-          sed -i -e '/zimbra/d' /etc/syslog-ng/syslog-ng.conf.in
+          sed -i -e '/zimbra/d' /etc/syslog-ng/syslog-ng.conf
           if [ -x /sbin/rcsyslog ]; then
             /sbin/rcsyslog restart > /dev/null 2>&1
             echo "done."
           else
             echo "Unable to restart syslog-ng service. Please do it manually."
+          fi
+        fi
+      elif [ -f /etc/rsyslog.conf ]; then
+        egrep -q 'zimbra' /etc/rsyslog.conf
+        if [ $? = 0 ]; then
+          echo -n "Cleaning up /etc/rsyslog.conf..."
+          sed -i -e '/zimbra/d' /etc/rsyslog.conf
+          if [ -x /etc/init.d/rsyslog ]; then
+            /etc/init.d/rsyslog restart > /dev/null 2>&1
+            echo "done."
+          else
+            echo "Unable to restart rsyslog service. Please do it manually."
           fi
         fi
       fi
