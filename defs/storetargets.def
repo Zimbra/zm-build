@@ -264,9 +264,9 @@ $(WEBAPP_DIR)/zimbra/downloads:
 	-cp $(SERVICE_DIR)/src/windows/*exe $@
 	-cp $(SERVICE_DIR)/src/windows/*zip $@
 	-cp $(SERVICE_DIR)/src/windows/ZimbraToast*msi $@
-	-cp $(THIRD_PARTY_BUILDS)/zdesktop/zdesktop*.sh $@
-	-cp $(THIRD_PARTY_BUILDS)/zdesktop/zdesktop*.dmg $@
-	-cp $(THIRD_PARTY_BUILDS)/zdesktop/zdesktop*.exe $@
+#	-cp $(THIRD_PARTY_BUILDS)/zdesktop/zdesktop*.sh $@
+#	-cp $(THIRD_PARTY_BUILDS)/zdesktop/zdesktop*.dmg $@
+#	-cp $(THIRD_PARTY_BUILDS)/zdesktop/zdesktop*.exe $@
 	-(rm -f $@/\%*.dmg)
 
 $(MIG_TOOLS_DIR)/build/zmzimbratozimbramig.jar:
