@@ -635,6 +635,8 @@ determineVersionType() {
   ZM_INST_MAJOR=$(perl -e '$v=glob("packages/zimbra-core*"); $v =~ s/^packages\/zimbra-core[-_]//; $v =~ s/^(\d+\.\d+\.[^_]*_[^_]+_[^.]+).*/\1/; ($maj,$min,$mic) = $v =~ m/^(\d+)\.(\d+)\.(\d+)/; print "$maj\n"') 
   ZM_INST_MINOR=$(perl -e '$v=glob("packages/zimbra-core*"); $v =~ s/^packages\/zimbra-core[-_]//; $v =~ s/^(\d+\.\d+\.[^_]*_[^_]+_[^.]+).*/\1/; ($maj,$min,$mic) = $v =~ m/^(\d+)\.(\d+)\.(\d+)/; print "$min\n"') 
   ZM_INST_MICRO=$(perl -e '$v=glob("packages/zimbra-core*"); $v =~ s/^packages\/zimbra-core[-_]//; $v =~ s/^(\d+\.\d+\.[^_]*_[^_]+_[^.]+).*/\1/; ($maj,$min,$mic) = $v =~ m/^(\d+)\.(\d+)\.(\d+)/; print "$mic\n"') 
+  ZM_INST_RTYPE=$(perl -e '$v=glob("packages/zimbra-core*"); $v =~ s/^packages\/zimbra-core[-_]//; $v =~ s/^(\d+\.\d+\.[^_]*_[^_]+_[^.]+).*/\1/; ($maj,$min,$mic,$rtype,$build) = $v =~ m/^(\d+)\.(\d+)\.(\d+)_(\w+[^_])_(\d+)/; print "$rtype\n"') 
+  ZM_INST_BUILD=$(perl -e '$v=glob("packages/zimbra-core*"); $v =~ s/^packages\/zimbra-core[-_]//; $v =~ s/^(\d+\.\d+\.[^_]*_[^_]+_[^.]+).*/\1/; ($maj,$min,$mic,$rtype,$build) = $v =~ m/^(\d+)\.(\d+)\.(\d+)_(\w+[^_])_(\d+)/; print "$build\n"') 
 
   if [ x"$UNINSTALL" = "xyes" ] || [ x"$AUTOINSTALL" = "xyes" ]; then
     return
@@ -665,11 +667,30 @@ determineVersionType() {
   fi
 
   if [ x"$ZMTYPE_CURRENT" = "xNETWORK" ]; then
-    echo $ZMVERSION_CURRENT | grep -v ^6.0 > /dev/null 2>&1
+    echo $ZM_INST_RTYPE | grep -v GA$ > /dev/null 2>&1
     if [ $? = 0 ]; then
-      echo "This is an Network Edition beta and is not intended for production."
-      echo "Upgrades from $ZMVERSION_CURRENT are not supported."
-      exit 1
+      if [ ${ZM_CUR_MAJOR} -lt ${ZM_INST_MAJOR} ]; then
+        echo "This is a Network Edition ${ZM_INST_RTYPE} build and is not intended for production."
+        if [ x"$BETA_SUPPORT" = "x" ]; then
+          echo "Upgrades from $ZMVERSION_CURRENT are not supported."
+          exit 1
+        else
+          echo "Support for developer versions of ZCS maybe limited to bugzilla and Zimbra forums."
+          #echo "Installing non-GA versions in production is not recommended."
+          while :; do
+            askYN "Do you wish to continue?" "N"
+            if [ $response = "no" ]; then
+              askYN "Exit?" "N"
+              if [ $response = "yes" ]; then
+                echo "Exiting."
+                exit 1
+              fi
+            else
+              break
+            fi
+          done
+        fi
+      fi
     fi
   fi
 }

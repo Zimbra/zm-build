@@ -42,6 +42,7 @@ usage() {
   echo "-s|--softwareonly      Software only installation."
   echo "-u|--uninstall         Uninstall ZCS"
   echo "-x|--skipspacecheck    Skip filesystem capacity checks."
+  echo "--beta-support         Allows installer to upgrade Network Edition Betas."
   echo "--platform-override    Allows installer to continue on an unknown OS."
   echo "[defaultsfile]         File containing default install values."
   echo ""
@@ -83,6 +84,9 @@ while [ $# -ne 0 ]; do
       ;;
 		-platform-override|--platform-override) 
       ALLOW_PLATFORM_OVERRIDE="yes"
+		  ;;
+		-beta-support|--beta-support) 
+      BETA_SUPPORT="yes"
 		  ;;
     -h|-help|--help)
       usage
