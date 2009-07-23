@@ -25,7 +25,7 @@ fi
 if [ ! -d "$SAVEDIR" ]; then
  mkdir -p $SAVEDIR
 fi
-for f in config.save keystore cacerts perdition.pem smtpd.key smtpd.crt slapd.key slapd.crt ca.key backup.save; do
+for f in localconfig.xml config.save keystore cacerts perdition.pem smtpd.key smtpd.crt slapd.key slapd.crt ca.key backup.save; do
   if [ -f "${SAVEDIR}/${f}" ]; then
     for (( i=0 ;; i++ )); do
       if [ ! -f "${SAVEDIR}/${i}/${f}" ]; then
@@ -41,8 +41,11 @@ chmod 750 $SAVEDIR
 
 # yes, it needs massaging to be fed back in...
 $SU "/opt/zimbra/bin/zmcontrol stop"
-$SU "/opt/zimbra/bin/zmlocalconfig -m shell > $SAVEDIR/config.save"
+#$SU "/opt/zimbra/bin/zmlocalconfig -m shell > $SAVEDIR/config.save"
 
+if [ -f "/opt/zimbra/conf/localconfig.xml" ]; then
+  cp -f /opt/zimbra/conf/localconfig.xml $SAVEDIR
+fi
 if [ -f "/opt/zimbra/java/jre/lib/security/cacerts" ]; then
   cp -f /opt/zimbra/java/jre/lib/security/cacerts $SAVEDIR
 fi

@@ -67,11 +67,12 @@ if [ -x "/opt/zimbra/libexec/zmfixperms" ]; then
   /opt/zimbra/libexec/zmfixperms
 fi
 
-RF="$SAVEDIR/config.save"
-while read i; do
+RF="$SAVEDIR/localconfig.xml"
+#while read i; do
 	# echo "Setting $i"
-	$SU "zmlocalconfig -f -e $i"
-done < $RF
+	#$SU "zmlocalconfig -f -e $i"
+#done < $RF
+cp -f $RF /opt/zimbra/conf/localconfig.xml
 
 #if [ -f "$SAVEDIR/backup.save" -a -x "/opt/zimbra/bin/zmschedulebackup" ]; then
 #  first=1
