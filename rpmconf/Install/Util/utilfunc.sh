@@ -1053,18 +1053,19 @@ setDefaultsFromExistingConfig() {
 
 restoreExistingConfig() {
   if [ -d $RESTORECONFIG ]; then
-    RF="$RESTORECONFIG/config.save"
+    RF="$RESTORECONFIG/localconfig.xml"
   fi
   if [ -f $RF ]; then
     echo -n "Restoring existing configuration file from $RF..."
-    while read i; do
+    #while read i; do
       # echo "Setting $i"
-      runAsZimbra "zmlocalconfig -f -e $i"
-    done < $RF
+      #runAsZimbra "zmlocalconfig -f -e $i"
+    #done < $RF
     #if [ -f $RESTORECONFIG/backup.save ]; then
     #  echo -n "Restoring backup schedule..."
     #  runAsZimbra "cat $RESTORECONFIG/backup.save | xargs zmschedulebackup -R"
     #fi
+    cp -f $RF /opt/zimbra/conf/localconfig.xml
     echo "done"
   fi
 }
@@ -1135,7 +1136,7 @@ saveExistingConfig() {
     mkdir -p $SAVEDIR
   fi
   # make copies of existing save files
-  for f in config.save keystore cacerts perdition.pem smtpd.key smtpd.crt slapd.key slapd.crt ca.key backup.save; do
+  for f in localconfig.xml config.save keystore cacerts perdition.pem smtpd.key smtpd.crt slapd.key slapd.crt ca.key backup.save; do
     if [ -f "${SAVEDIR}/${f}" ]; then
       for (( i=0 ;; i++ )); do
         if [ ! -f "${SAVEDIR}/${ZMVERSION_CURRENT}/${i}/${f}" ]; then
@@ -1149,6 +1150,9 @@ saveExistingConfig() {
   # yes, it needs massaging to be fed back in...
   if [ -x "/opt/zimbra/bin/zmlocalconfig" ]; then
     runAsZimbra "zmlocalconfig -s | sed -e \"s/ = \(.*\)/=\'\1\'/\" > $SAVEDIR/config.save"
+  fi
+  if [ -f "/opt/zimbra/conf/localconfig.xml" ]; then
+    cp -f /opt/zimbra/conf/localconfig.xml $SAVEDIR/localconfig.xml
   fi
   if [ -f "/opt/zimbra/java/jre/lib/security/cacerts" ]; then
     cp -f /opt/zimbra/java/jre/lib/security/cacerts $SAVEDIR
