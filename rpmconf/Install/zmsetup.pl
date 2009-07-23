@@ -164,8 +164,10 @@ if ($0 =~ /testMenu/) {
   exit;
 }
 
-if ($newinstall && isInstalled("zimbra-ldap")) {
-  installLdapConfig();
+if (isInstalled("zimbra-ldap")) {
+  if ($newinstall || ! -f "/opt/zimbra/data/ldap/config/cn\=config.ldif") {
+    installLdapConfig();
+  }
 }
 
 if(isInstalled("zimbra-ldap")) {
