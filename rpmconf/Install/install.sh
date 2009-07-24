@@ -241,7 +241,8 @@ if [ $UPGRADE = "yes" ]; then
 
 	restoreCerts
 
-  restoreZimlets
+  # deprecated by move of zimlets to /opt/zimbra/zimlets-deployed which isn't removed on upgrade
+  #restoreZimlets
 
 fi
 

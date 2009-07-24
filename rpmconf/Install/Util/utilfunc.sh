@@ -1070,6 +1070,7 @@ restoreExistingConfig() {
   fi
 }
 
+# deprecated by the move of zimlets to /opt/zimbra/zimlets-deployed which isn't removed on upgrade
 restoreZimlets() {
   if [ -d $SAVEDIR/zimlet -a -d /opt/zimbra/mailboxd/webapps/service ]; then
     cp -rf $SAVEDIR/zimlet /opt/zimbra/mailboxd/webapps/service/
