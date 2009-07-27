@@ -2906,6 +2906,12 @@ sub upgrade600RC2 {
 sub upgrade600GA {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
   main::progress("Updating from 6.0.0_GA\n");
+  if (main::isInstalled("zimbra-mta")) {
+    my @mtalist = main::getAllServers("mta");
+    my $servername = getLocalConfig("zimbra_server_hostname");
+    main::setLocalConfig("zmtrainsa_cleanup_host", "true")
+      if ("$servername" eq "$mtalist[0]");
+  }
   return 0;
 }
 
