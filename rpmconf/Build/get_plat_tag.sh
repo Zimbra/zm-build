@@ -93,6 +93,19 @@ if [ -f /etc/redhat-release ]; then
 fi
 
 if [ -f /etc/SuSE-release ]; then
+
+	i=`uname -i`
+	if [ "x$i" = "xx86_64" ]; then
+		i="_64"
+	else 
+		i=""
+	fi
+
+	grep "SUSE Linux Enterprise Server 11" /etc/SuSE-release >/dev/null 2>&1
+	if [ $? = 0 ]; then
+		echo "SLES11${i}"
+		exit 0
+	fi
 	grep "SUSE Linux Enterprise Server 10 (x86_64)" /etc/SuSE-release >/dev/null 2>&1
 	if [ $? = 0 ]; then
 		echo "SLES10_64"
