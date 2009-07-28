@@ -1,2 +1,3 @@
 exclude com/zimbra/cs/session/SessionMap.putAndPrune
 exclude com/zimbra/cs/mailbox/MailItem.delete
+exclude org/apache/xerces/impl/XMLDocumentFragmentScannerImpl$FragmentContentDispatcher.dispatch
