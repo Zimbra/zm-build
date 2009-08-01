@@ -34,7 +34,8 @@ fi
 SNMPCONFPATH=/opt/zimbra/conf
 export SNMPCONFPATH
 
-PERLLIB=/opt/zimbra/zimbramon/lib/x86_64-linux-thread-multi:/opt/zimbra/zimbramon/lib:/opt/zimbra/zimbramon/lib/i386-linux-thread-multi:/opt/zimbra/zimbramon/lib/i486-linux-gnu-thread-multi:/opt/zimbra/zimbramon/lib/i586-linux-thread-multi:/opt/zimbra/zimbramon/lib/x86_64-linux-gnu-thread-multi:/opt/zimbra/zimbramon/lib/darwin-thread-multi-2level
+eval `/usr/bin/perl -V:archname`
+PERLLIB=/opt/zimbra/zimbramon/lib/$archname:/opt/zimbra/zimbramon/lib
 export PERLLIB
 
 PERL5LIB=$PERLLIB
