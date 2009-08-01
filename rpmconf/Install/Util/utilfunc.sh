@@ -2008,19 +2008,19 @@ getPlatformVars() {
       PREREQ_LIBS="/usr/lib64/libstdc++.so.6"
       PRESUG_PACKAGE="perl-5.10.0 sysstat"
     elif [ $PLATFORM = "SuSEES10" ]; then
-      PREREQ_PACKAGES="sudo libidn gmp"
+      PREREQ_PACKAGES="sudo libidn gmp compat-libstdc++-5.0.7"
       PREREQ_LIBS="/usr/lib/libstdc++.so.5 /usr/lib/libstdc++.so.6"
       PRESUG_PACKAGES="perl-5.8.8 sysstat"
     elif [ $PLATFORM = "SLES10_64" ]; then
-      PREREQ_PACKAGES="sudo libidn gmp"
+      PREREQ_PACKAGES="sudo libidn gmp compat-libstdc++-5.0.7"
       PREREQ_LIBS="/usr/lib64/libstdc++.so.5 /usr/lib64/libstdc++.so.6"
       PRESUG_PACKAGES="perl-5.8.8 sysstat"
     elif [ $PLATFORM = "SLES11" ]; then
-      PREREQ_PACKAGES="sudo libidn gmp"
+      PREREQ_PACKAGES="sudo libidn gmp libstdc++33"
       PREREQ_LIBS="/usr/lib/libstdc++.so.5 /usr/lib/libstdc++.so.6"
       PRESUG_PACKAGES="perl-5.10.0 sysstat"
     elif [ $PLATFORM = "SLES11_64" ]; then
-      PREREQ_PACKAGES="sudo libidn gmp"
+      PREREQ_PACKAGES="sudo libidn gmp libstdc++33"
       PREREQ_LIBS="/usr/lib64/libstdc++.so.5 /usr/lib64/libstdc++.so.6"
       PRESUG_PACKAGES="perl-5.10.0 sysstat"
     else
