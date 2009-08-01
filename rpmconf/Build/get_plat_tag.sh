@@ -160,6 +160,11 @@ if [ -f /etc/debian_version ]; then
 		if [ $? = 0 ]; then
 			echo "DEBIAN4.0${i}"
 			exit 0
+		fi
+		grep "5.0.2" /etc/debian_version > /dev/null 2>&1
+		if [ $? = 0 ]; then
+			echo "DEBIAN5${i}"
+			exit 0
 		else
 	        	echo "DEBIANUNKNOWN${i}"
 	        	exit 0
