@@ -1,4 +1,4 @@
-# Definitions for SLES10_64
+# Definitions for SLES11
 
 PACKAGING_COMMAND := rpmbuild
 
@@ -8,5 +8,3 @@ PACKAGING_OPTIONS = --target $(ARCH) --quiet --define '_rpmdir $(BUILD_ROOT)' \
 PACKAGE_EXT := rpm
 
 include $(DEFS_DIR)/plat_common.def
-
-JAVA_SOURCE     := $(THIRD_PARTY_BUILDS)/x86_64/$(JAVA_DIR)/$(JAVA_FILE)$(JAVA_VERSION)
