@@ -1943,6 +1943,14 @@ getPlatformVars() {
       PREREQ_PACKAGES="sudo libidn11 libpcre3 libgmp3c2 libexpat1 libstdc++6 libstdc++5 libperl5.8"
       PRESUG_PACKAGES="perl-5.8.8 sysstat"
     fi
+    if [ $PLATFORM = "DEBIAN5" ]; then
+      PREREQ_PACKAGES="sudo libidn11 libpcre3 libgmp3c2 libexpat1 libstdc++6 libstdc++5"
+      PRESUG_PACKAGES="perl-5.10.0 sysstat"
+    fi
+    if [ $PLATFORM = "DEBIAN5_64" ]; then
+      PREREQ_PACKAGES="sudo libidn11 libpcre3 libgmp3c2 libexpat1 libstdc++6 libstdc++5 libperl5.10"
+      PRESUG_PACKAGES="perl-5.10.0 sysstat"
+    fi
   elif echo $PLATFORM | grep RPL > /dev/null 2>&1; then
     PACKAGEINST='conary update'
     PACKAGERM='conary erase'
