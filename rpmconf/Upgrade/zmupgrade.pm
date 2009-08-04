@@ -2908,7 +2908,7 @@ sub upgrade600GA {
   main::progress("Updating from 6.0.0_GA\n");
   if (main::isInstalled("zimbra-mta")) {
     my @mtalist = main::getAllServers("mta");
-    my $servername = getLocalConfig("zimbra_server_hostname");
+    my $servername = main::getLocalConfig("zimbra_server_hostname");
     main::setLocalConfig("zmtrainsa_cleanup_host", "true")
       if ("$servername" eq "$mtalist[0]");
   }
