@@ -11,4 +11,4 @@
 #
 # Daily reports
 #
-#10 1 * * * /opt/zimbra/libexec/zmdailyreport -m
+30 23 * * * /opt/zimbra/libexec/zmdailyreport -m
