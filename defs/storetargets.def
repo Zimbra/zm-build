@@ -155,6 +155,8 @@ $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/etc: force
 			$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/etc/jetty.properties.in
 		cp -f $(SERVICE_DIR)/conf/web.xml.production \
 			$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/etc/service.web.xml.in
+		cp -f $(ZIMLET_DIR)/conf/web.xml.production \
+			$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/conf/zimlet.web.xml.in
 		cp -f zimbraConf/web.xml \
 			$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/etc/zimbra.web.xml.in
 		cp -f zimbraAdminConf/web.xml \
