@@ -189,6 +189,7 @@ my %updateFuncs = (
   "6.0.0_RC1" => \&upgrade600RC1,
   "6.0.0_RC2" => \&upgrade600RC2,
   "6.0.0_GA" => \&upgrade600GA,
+  "6.0.1_GA" => \&upgrade601GA,
 );
 
 my @versionOrder = (
@@ -261,6 +262,7 @@ my @versionOrder = (
   "6.0.0_RC1",
   "6.0.0_RC2",
   "6.0.0_GA",
+  "6.0.1_GA",
 );
 
 my ($startVersion,$startMajor,$startMinor,$startMicro);
@@ -447,6 +449,8 @@ sub upgrade {
     main::progress("This appears to be 6.0.0_RC2\n");
   } elsif ($startVersion eq "6.0.0_GA") {
     main::progress("This appears to be 6.0.0_GA\n");
+  } elsif ($startVersion eq "6.0.1_GA") {
+    main::progress("This appears to be 6.0.1_GA\n");
   } else {
     main::progress("I can't upgrade version $startVersion\n\n");
     return 1;
@@ -2912,6 +2916,12 @@ sub upgrade600GA {
     main::setLocalConfig("zmtrainsa_cleanup_host", "true")
       if ("$servername" eq "$mtalist[0]");
   }
+  return 0;
+}
+
+sub upgrade601GA {
+  my ($startBuild, $targetVersion, $targetBuild) = (@_);
+  main::progress("Updating from 6.0.1_GA\n");
   return 0;
 }
 
