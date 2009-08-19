@@ -1895,7 +1895,11 @@ suggestedVersion() {
       echo $Q | grep 'not-installed' > /dev/null 2>&1
       if [ $? != 0 ]; then
         PKGVERSION=`$PACKAGEVERSION $sugpkg 2> /dev/null`
-	if [[ "$PKGVERSION" == "$sugversion"* ]]; then
+        if [ x"$sugversion" != x"$sugpkg" ]; then
+	  if [[ "$PKGVERSION" == "$sugversion"* ]]; then
+            PKGINSTALLED="${sugpkg}-${PKGVERSION}"
+          fi
+        else
           PKGINSTALLED="${sugpkg}-${PKGVERSION}"
         fi
       fi
