@@ -141,7 +141,7 @@ checkPackages() {
 		fi
 	done
 
-	if [[ $PLAT == "DEBIAN"* || $PLAT == "UBUNTU"*  || $PLAT = "MANDRIVA2006" ]]; then
+	if [[ $PLATFORM == "DEBIAN"* || $PLATFORM == "UBUNTU"*  || $PLATFORM = "MANDRIVA2006" ]]; then
 		LOCALPROC=$PROC
 	else
 		LOCALPROC=`uname -i`
