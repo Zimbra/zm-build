@@ -5285,13 +5285,15 @@ sub removeNetworkZimlets {
     progress (($result->code()) ? "failed.\n" : "done.\n");
     return $result if ($result->code());
 
-    detail("processing ldap search results");
+    detail("Processing ldap search results");
     progress("Removing network zimlets...\n");
     foreach my $entry ($result->all_entries) {
       my $zimlet = $entry->get_value('zimbraZimletKeyword');
-      progress("\tRemoving $zimlet...");
-      my $rc = runAsZimbra("/opt/zimbra/bin/zmzimletctl -l undeploy $zimlet");
-      progress (($rc == 0) ? "done.\n" : "failed. This may impact system functionality.\n");
+      if ( $zimlet ne "" ) {
+        progress("\tRemoving $zimlet...");
+        my $rc = runAsZimbra("/opt/zimbra/bin/zmzimletctl -l undeploy $zimlet");
+        progress (($rc == 0) ? "done.\n" : "failed. This may impact system functionality.\n");
+      }
     }
     progress("Finished removing network zimlets.\n");
   }
@@ -5318,13 +5320,15 @@ sub zimletCleanup {
     detail("ldap bind done for $ldap_dn");
     $result = $ldap->search(base => $ldap_base, scope => 'one', filter => "(|(cn=convertd)(cn=cluster)(cn=hsm)(cn=hotbackup)(cn=zimbra_cert_manager)(cn=com_zimbra_search)(cn=zimbra_xmbxsearch)(cn=com_zimbra_domainadmin))", attrs => ['zimbraZimletKeyword']);
     return $result if ($result->code());
-    detail("processing ldap search results");
+    detail("Processing ldap search results");
     foreach my $entry ($result->all_entries) {
       my $zimlet = $entry->get_value('zimbraZimletKeyword');
-      detail("Removing $zimlet");
-      runAsZimbra("/opt/zimbra/bin/zmzimletctl undeploy $zimlet");
-      system("rm -rf $config{mailboxd_directory}/webapps/service/zimlet/$zimlet")
-        if (-d "$config{mailboxd_directory}/webapps/service/zimlet/$zimlet" );
+      if ( $zimlet ne "" ) {
+        detail("Removing $zimlet");
+        runAsZimbra("/opt/zimbra/bin/zmzimletctl undeploy $zimlet");
+        system("rm -rf $config{mailboxd_directory}/webapps/service/zimlet/$zimlet")
+          if (-d "$config{mailboxd_directory}/webapps/service/zimlet/$zimlet" );
+      }
     }
   }
   $result = $ldap->unbind;
