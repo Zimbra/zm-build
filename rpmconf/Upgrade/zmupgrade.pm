@@ -2891,7 +2891,7 @@ sub upgrade600RC1 {
       if ( -d "${zimbra_home}/store/calcache");
 
     # 39085
-    system("mv ${zimbra_home}/jetty/webapps/service/zimlet ${zimbra_home}/zimlets-deployed")
+    system("mv ${zimbra_home}/jetty/webapps/service/zimlet/* ${zimbra_home}/zimlets-deployed/")
       if ( -d "${zimbra_home}/jetty/webapps/service/zimlet");
     main::setLocalConfig("zimlet_directory", "${zimbra_home}/zimlets-deployed");
     main::setLocalConfig("zimlet_properties_directory", "${zimbra_home}/zimlets-properties");
@@ -2922,6 +2922,12 @@ sub upgrade600GA {
 sub upgrade601GA {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
   main::progress("Updating from 6.0.1_GA\n");
+  if (main::isInstalled("zimbra-store")) {
+    # 40536
+    my $zimbra_home=main::getLocalConfig("zimbra_home");
+    system("rm -rf ${zimbra_home}/zimlets-deployed/zimlet")
+      if ( -d "${zimbra_home}/zimlets-deployed/zimlet");
+  }
   return 0;
 }
 
