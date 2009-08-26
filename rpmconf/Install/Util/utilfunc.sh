@@ -1600,6 +1600,9 @@ getInstallPackages() {
   CLUSTER_SELECTED="no"
 
   for i in $AVAILABLE_PACKAGES; do
+    # Reset the response before processing the next package.
+    response="no"
+
     # If we're upgrading, and it's installed, don't ask stoopid questions
     if [ $UPGRADE = "yes" ]; then
       echo $INSTALLED_PACKAGES | grep $i > /dev/null 2>&1
