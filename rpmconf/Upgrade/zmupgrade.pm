@@ -2926,18 +2926,18 @@ sub upgrade600GA {
 sub upgrade601GA {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
   main::progress("Updating from 6.0.1_GA\n");
-  if (main::isInstalled("zimbra-store")) {
-    # 40536
-    my $zimbra_home=main::getLocalConfig("zimbra_home");
-    system("rm -rf ${zimbra_home}/zimlets-deployed/zimlet")
-      if ( -d "${zimbra_home}/zimlets-deployed/zimlet");
-  }
   return 0;
 }
 
 sub upgrade602GA {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
   main::progress("Updating from 6.0.2_GA\n");
+  if (main::isInstalled("zimbra-store")) {
+    # 40536
+    my $zimbra_home=main::getLocalConfig("zimbra_home");
+    system("rm -rf ${zimbra_home}/zimlets-deployed/zimlet")
+      if ( -d "${zimbra_home}/zimlets-deployed/zimlet");
+  }
   return 0;
 }
 
