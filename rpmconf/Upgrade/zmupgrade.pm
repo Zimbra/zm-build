@@ -190,6 +190,7 @@ my %updateFuncs = (
   "6.0.0_RC2" => \&upgrade600RC2,
   "6.0.0_GA" => \&upgrade600GA,
   "6.0.1_GA" => \&upgrade601GA,
+  "6.0.2_GA" => \&upgrade602GA,
 );
 
 my @versionOrder = (
@@ -263,6 +264,7 @@ my @versionOrder = (
   "6.0.0_RC2",
   "6.0.0_GA",
   "6.0.1_GA",
+  "6.0.2_GA",
 );
 
 my ($startVersion,$startMajor,$startMinor,$startMicro);
@@ -451,6 +453,8 @@ sub upgrade {
     main::progress("This appears to be 6.0.0_GA\n");
   } elsif ($startVersion eq "6.0.1_GA") {
     main::progress("This appears to be 6.0.1_GA\n");
+  } elsif ($startVersion eq "6.0.2_GA") {
+    main::progress("This appears to be 6.0.2_GA\n");
   } else {
     main::progress("I can't upgrade version $startVersion\n\n");
     return 1;
@@ -2928,6 +2932,12 @@ sub upgrade601GA {
     system("rm -rf ${zimbra_home}/zimlets-deployed/zimlet")
       if ( -d "${zimbra_home}/zimlets-deployed/zimlet");
   }
+  return 0;
+}
+
+sub upgrade602GA {
+  my ($startBuild, $targetVersion, $targetBuild) = (@_);
+  main::progress("Updating from 6.0.2_GA\n");
   return 0;
 }
 
