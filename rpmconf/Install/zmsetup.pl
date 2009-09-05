@@ -19,6 +19,7 @@ use strict;
 use lib "/opt/zimbra/libexec";
 use lib "/opt/zimbra/zimbramon/lib";
 use Zimbra::Util::Common;
+use Zimbra::Util::Timezone;
 use Net::LDAP;
 use IPC::Open3;
 use Cwd;
@@ -1395,7 +1396,18 @@ sub setDefaults {
 
   $config{CREATEADMIN} = "admin\@$config{CREATEDOMAIN}";
 
-  $config{zimbraPrefTimeZoneId} = 'America/Los_Angeles';
+  my $tzname=`/bin/date '+%Z'`;
+  chomp($tzname);
+
+  detail("Local timezone detected as $tzname\n");
+  my $tzdata = Zimbra::Util::Timezone->parse;
+  my $tz = $tzdata->gettzbyname($tzname);
+  $config{zimbraPrefTimeZoneId} = $tz->tzid if (defined $tz);
+  $config{zimbraPrefTimeZoneId} = 'America/Los_Angeles'
+    if ($config{zimbraPrefTimeZoneId} eq "");
+  detail("Default Olson timezone name $config{zimbraPrefTimeZoneId}\n");
+
+  progress("tzname=$tzname tzid=$config{zimbraPrefTimeZoneId}");
 
   $config{zimbra_ldap_userdn} = "uid=zimbra,cn=admins,$config{ldap_dit_base_dn_config}";
 
@@ -2766,19 +2778,15 @@ sub setTimeZone {
   my $timezones="/opt/zimbra/conf/timezones.ics";
   if (-f $timezones) {
     detail ("DEBUG: Checking for timezones in $timezones\n");
-    open (ICS, "$timezones");
-    my %TZID;
-    my $i=0;
-    foreach my $tz (grep(/^TZID/, <ICS>)) {
-      chomp $tz;
-      $tz =~ s/^TZID://;
-      $i++;
-      $TZID{$tz} = $i;
-    }
+    my $localtzname=`/bin/date '+%Z'`;
+    chomp($localtzname);
+    my $tz = Zimbra::Util::Timezone->parse($timezones);
+    my $ctr=1;
+    my %TZID = undef;
+    $TZID{$_} = $ctr++ foreach sort $tz->dump;
     my %RTZID = reverse %TZID;
-    close(ICS);
     my $new;
-    my $default = $TZID{$config{zimbraPrefTimeZoneId}} || "23";
+    my $default = $TZID{$tz->gettzbyname($localtzname)} || "23";
     while ($new eq "") {
       foreach (sort {$TZID{$a} <=> $TZID{$b}} keys %TZID) {
         print "$TZID{$_} $_\n";
@@ -2787,7 +2795,7 @@ sub setTimeZone {
       $new = $RTZID{$ans};
     }
     $config{zimbraPrefTimeZoneId} = $new;
-    
+    $tz = undef;
   }
 }
 
