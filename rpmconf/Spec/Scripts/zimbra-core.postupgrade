@@ -15,8 +15,8 @@
 # 
 
 SAVEDIR=/opt/zimbra/.saveconfig
-PLATFORM=$(/opt/zimbra/libexec/get_plat_tag.sh)
-if [ "x$PLATFORM" = "xMACOSXx86_10.5" ]; then
+PLAT=$(/opt/zimbra/libexec/get_plat_tag.sh)
+if [ "x$PLAT" = "xMACOSXx86_10.5" ]; then
   SU="su - zimbra -c -l"
 else
   SU="su - zimbra -c"
@@ -116,7 +116,7 @@ echo "%zimbra ALL=NOPASSWD:/opt/zimbra/bin/zmcertmgr" >> /tmp/sudoers
 mv -f /tmp/sudoers /etc/sudoers
 chmod $SUDOMODE /etc/sudoers
 
-if [ x"$PLATFORM" = "xRHEL5" -o x"$PLATFORM" = "xCentOS5" ]; then 
+if [ x"$PLAT" = "xRHEL5" -o x"$PLAT" = "xCentOS5" ]; then 
   sed -i -e 's:\(^Defaults.*requiretty\):#\1:' /etc/sudoers
   egrep -q "PS2 QTDIR USERNAME PATH" /etc/sudoers
   if [ $? = 1 ]; then
