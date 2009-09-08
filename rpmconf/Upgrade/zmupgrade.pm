@@ -2670,8 +2670,8 @@ sub upgrade600BETA1 {
   main::setLocalConfig("zimbra_class_accessmanager", "com.zimbra.cs.account.accesscontrol.ACLAccessManager");
 
   if (main::isInstalled("zimbra-ldap") && $isLdapMaster) {
-    # 34679
-    upgradeAllGlobalAdminAccounts();
+    # 34679 replaced by 18277 in 6.0.1
+    #upgradeAllGlobalAdminAccounts();
 
     main::configInitDomainAdminGroups() if (main::isNetwork());
 
