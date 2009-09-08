@@ -85,7 +85,7 @@ elif [ x"$PLAT" = "xF10_64" -o x"$PLAT" = "xF11_64" ]; then
   sed -i -e 's:PS2 QTDIR USERNAME:PS2 QTDIR USERNAME PATH:' /etc/sudoers
 fi
 
-if [[ $PLATFORM == "DEBIAN"* || $PLATFORM == "UBUNTU"* ]]; then
+if [[ $PLAT == "DEBIAN"* || $PLAT == "UBUNTU"* ]]; then
   sed -i -e 's/# session    required   pam_limits.so/session    required   pam_limits.so/' /etc/pam.d/su
   egrep -v -e '^session[[:space:]]+required[[:space:]]+pam_limits.so' /etc/pam.d/common-session >/tmp/common-session
   echo "session	required	pam_limits.so" >> /tmp/common-session
