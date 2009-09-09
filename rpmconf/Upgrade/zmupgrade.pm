@@ -2926,14 +2926,6 @@ sub upgrade600GA {
 sub upgrade601GA {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
   main::progress("Updating from 6.0.1_GA\n");
-  if (main::isInstalled("zimbra-ldap")) {
-    # 40649
-    upgradeLdapConfigValue("zimbraRedoLogCrashRecoveryLookbackSec", "0", "10");
-  }
-  if (main::isInstalled("zimbra-store")) {
-    # 40649
-    main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-innodb_flush_log-fixup --section=mysqld --key=innodb_flush_log_at_trx_commit --set --value=1 /opt/zimbra/conf/my.cnf");
-  }
   return 0;
 }
 
