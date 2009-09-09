@@ -116,28 +116,6 @@ echo "%zimbra ALL=NOPASSWD:/opt/zimbra/bin/zmcertmgr" >> /tmp/sudoers
 mv -f /tmp/sudoers /etc/sudoers
 chmod $SUDOMODE /etc/sudoers
 
-if [ x"$PLAT" = "xRHEL5" -o x"$PLAT" = "xCentOS5" ]; then 
-  sed -i -e 's:\(^Defaults.*requiretty\):#\1:' /etc/sudoers
-  egrep -q "PS2 QTDIR USERNAME PATH" /etc/sudoers
-  if [ $? = 1 ]; then
-    sed -i -e 's:PS2 QTDIR USERNAME:PS2 QTDIR USERNAME PATH:' /etc/sudoers
-  fi
-elif [ x"$PLAT" = "xRHEL5_64" -o x"$PLAT" = "xCentOS5_64" ]; then
-  sed -i -e 's:\(^Defaults.*requiretty\):#\1:' /etc/sudoers
-  egrep -q "PS2 QTDIR USERNAME PATH" /etc/sudoers
-  if [ $? = 1 ]; then
-    sed -i -e 's:PS2 QTDIR USERNAME:PS2 QTDIR USERNAME PATH:' /etc/sudoers
-  fi
-elif [ x"$PLAT" = "xFC6" ]; then
-  sed -i -e 's:\(^Defaults.*requiretty\):#\1:' /etc/sudoers
-elif [ x"$PLAT" = "xF7" -o x"$PLAT" = "xF10" -o x"$PLAT" = "xF11" ]; then
-  sed -i -e 's:\(^Defaults.*requiretty\):#\1:' /etc/sudoers
-  sed -i -e 's:PS2 QTDIR USERNAME:PS2 QTDIR USERNAME PATH:' /etc/sudoers
-elif [ x"$PLAT" = "xF10_64" -o x"$PLAT" = "xF11_64" ]; then
-  sed -i -e 's:\(^Defaults.*requiretty\):#\1:' /etc/sudoers
-  sed -i -e 's:PS2 QTDIR USERNAME:PS2 QTDIR USERNAME PATH:' /etc/sudoers
-fi
-
 # log rotation
 if [ -d "/etc/periodic/daily" ]; then
   cp /opt/zimbra/libexec/600.zimbra /etc/periodic/daily/600.zimbra
