@@ -1466,7 +1466,7 @@ sub setDefaults {
 
     my $good = 0;
 
-    if ($config{DOCREATEDOMAIN} = "yes") {
+    if ($config{DOCREATEDOMAIN} eq "yes") {
       my $ans = getDnsRecords($config{CREATEDOMAIN}, 'MX');
       if (!defined($ans)) {
         progress("\n\nDNS ERROR resolving MX for $config{CREATEDOMAIN}\n");
@@ -5036,7 +5036,9 @@ sub configSetNEFeatures {
 }
 
 sub configInitDomainAdminGroups {
+  return if ($config{DOCREATEDOMAIN} eq "no");
   main::progress ("Setting up default domain admin UI components..");
+  
   $config{zimbraDefaultDomainName} = getLdapConfigValue("zimbraDefaultDomainName") || $config{CREATEDOMAIN};
   my $domainGroup = "zimbraDomainAdmins\@". 
     (($newinstall) ? "$config{CREATEDOMAIN}" : "$config{zimbraDefaultDomainName}");
