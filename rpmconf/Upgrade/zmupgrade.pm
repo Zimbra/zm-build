@@ -2937,6 +2937,9 @@ sub upgrade602GA {
     my $zimbra_home=main::getLocalConfig("zimbra_home");
     system("rm -rf ${zimbra_home}/zimlets-deployed/zimlet")
       if ( -d "${zimbra_home}/zimlets-deployed/zimlet");
+    # 40839
+    main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-pid-file-fixup --section=mysqld_safe --key=pid-file --unset /opt/zimbra/conf/my.cnf");
+    main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.post-${targetVersion}-pid-file-fixup --section=mysqld_safe --key=pid-file --set --value=/opt/zimbra/db/mysql.pid /opt/zimbra/conf/my.cnf");
   }
   return 0;
 }
