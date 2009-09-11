@@ -59,6 +59,8 @@ sub parse {
     $tz->primary(1) if (/X-ZIMBRA-TZ-PRIMARY:TRUE/);
     next if (/END:VTIMEZONE/);
   }
+  close(FILE);
+  $_PARSED=1;
   return $tz;
 }
 
@@ -67,6 +69,14 @@ sub gettzbyname {
   my $name = shift;
   foreach (sort values %TIMEZONES) {
     return $_ if ($_->tzname eq $name && $_->primary == 1);
+  }
+  return undef;
+}
+sub gettzbyid {
+  my $self = shift;
+  my $name = shift;
+  foreach (sort values %TIMEZONES) {
+    return $_ if ($_->tzid eq $name && $_->primary == 1);
   }
   return undef;
 }

@@ -1407,7 +1407,7 @@ sub setDefaults {
     if ($config{zimbraPrefTimeZoneId} eq "");
   detail("Default Olson timezone name $config{zimbraPrefTimeZoneId}\n");
 
-  progress("tzname=$tzname tzid=$config{zimbraPrefTimeZoneId}");
+  #progress("tzname=$tzname tzid=$config{zimbraPrefTimeZoneId}");
 
   $config{zimbra_ldap_userdn} = "uid=zimbra,cn=admins,$config{ldap_dit_base_dn_config}";
 
@@ -2777,16 +2777,31 @@ sub setLicenseFile {
 sub setTimeZone {
   my $timezones="/opt/zimbra/conf/timezones.ics";
   if (-f $timezones) {
-    detail ("DEBUG: Checking for timezones in $timezones\n");
-    my $localtzname=`/bin/date '+%Z'`;
-    chomp($localtzname);
-    my $tz = Zimbra::Util::Timezone->parse($timezones);
-    my $ctr=1;
+    detail("Loading default list of timezones.\n");
+    my $tz = new Zimbra::Util::Timezone;
+    $tz->parse;
+  
+    my $new;
+
+    # build a hash of the timezone objects with a unique number as the value
     my %TZID = undef;
+    my $ctr=1;
     $TZID{$_} = $ctr++ foreach sort $tz->dump;
     my %RTZID = reverse %TZID;
-    my $new;
-    my $default = $TZID{$tz->gettzbyname($localtzname)} || "23";
+
+    # get a reference to the default value or attempt to lookup the system locale.
+    detail("Previous TimeZoneID $config{zimbraPrefTimeZoneId}\n");
+    my $ltzref=$tz->gettzbyid("$config{zimbraPrefTimeZoneId}");
+    unless (defined $ltzref) {
+      detail ("Determining system locale.\n");
+      my $localtzname=`/bin/date '+%Z'`;
+      chomp($localtzname);
+      detail("DEBUG: Local tz name $localtzname\n");
+      $ltzref=$tz->gettzbyname($localtzname);
+    }
+
+    # look up the current value and present a list
+    my $default = $TZID{$ltzref->tzid} || "21";
     while ($new eq "") {
       foreach (sort {$TZID{$a} <=> $TZID{$b}} keys %TZID) {
         print "$TZID{$_} $_\n";
@@ -2795,7 +2810,6 @@ sub setTimeZone {
       $new = $RTZID{$ans};
     }
     $config{zimbraPrefTimeZoneId} = $new;
-    $tz = undef;
   }
 }
 
