@@ -4400,7 +4400,7 @@ sub configCASetup {
   progress ( "Setting up CA..." );
   if (! $newinstall) {
     if (-f "/opt/zimbra/conf/ca/ca.pem") {
-      my $rc = runAsRoot("openssl verify -purpose sslserver -CAfile /opt/zimbra/conf/ca/ca.pem /opt/zimbra/conf/ca/ca.pem | egrep \"^error 10\"");
+      my $rc = runAsRoot("/opt/zimbra/openssl/bin/openssl verify -purpose sslserver -CAfile /opt/zimbra/conf/ca/ca.pem /opt/zimbra/conf/ca/ca.pem | egrep \"^error 10\"");
       $needNewCert = "-new" if ($rc == 0);
     }
   } 
