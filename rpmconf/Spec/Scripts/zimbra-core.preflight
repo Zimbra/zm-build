@@ -222,12 +222,47 @@ else
   sysctl -w kern.maxprocperuid=2048 >/dev/null
 fi
 if [ -f "/etc/launchd.conf" ]; then
-  egrep -q 'limit maxproc 2048' /etc/launchd.conf >/dev/null
+  PFIXIT=0
+  FFIXIT=0
+  egrep -q 'limit maxproc' /etc/launchd.conf >/dev/null
   if [ $? != 0 ]; then
     echo "limit maxproc 2048" >>/etc/launchd.conf
+  else
+    MAXPROC=`egrep -e 'limit maxproc' /etc/launchd.conf | awk '{print $3}'`
+    if [ X$MAXPROC != "Xunlimited" ]; then
+      if [ $MAXPROC -lt 2048 ]; then
+        PFIXIT=1
+      fi
+    fi
+  fi
+  egrep -q 'limit maxfiles' /etc/launchd.conf >/dev/null
+  if [ $? != 0 ]; then
+    echo "limit maxfiles 524288 unlimited" >/etc/launchd.conf
+  else
+    MAXFILES=`egrep -e 'limit maxfiles' /etc/launchd.conf | awk '{print $3}'`
+    if [ X$MAXFILES != "Xunlimited" ]; then
+      if [ $MAXFILES -lt 524288 ]; then
+        FFIXIT=1
+      fi
+    fi
+  fi
+  if [ $PFIXIT -eq 1 -a $FFIXIT -eq 1 ]; then
+    cat /etc/launchd.conf | egrep -v maxproc | egrep -v maxfiles >/tmp/launchd.conf
+    echo "limit maxproc 2048" >>/tmp/launchd.conf
+    echo "limit maxfiles 524288 unlimited" >>/tmp/launchd.conf
+    mv -f /tmp/launchd.conf /etc/launchd.conf
+  elif [ $PFIXIT -eq 1 ]; then
+    cat /etc/launchd.conf | egrep -v maxproc >/tmp/launchd.conf
+    echo "limit maxproc 2048" >>/tmp/launchd.conf
+    mv -f /tmp/launchd.conf /etc/launchd.conf
+  elif [ $FFIXIT -eq 1 ]; then
+    cat /etc/launchd.conf | egrep -v maxfiles >/tmp/launchd.conf
+    echo "limit maxfiles 524288 unlimited" >>/tmp/launchd.conf
+    mv -f /tmp/launchd.conf /etc/launchd.conf
   fi
 else
   echo "limit maxproc 2048" >/etc/launchd.conf
+  echo "limit maxfiles 524288 unlimited" >/etc/launchd.conf
 fi
 
 D=`date +%s`
