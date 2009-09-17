@@ -224,22 +224,22 @@ fi
 if [ -f "/etc/launchd.conf" ]; then
   PFIXIT=0
   FFIXIT=0
-  egrep -q 'limit maxproc' /etc/launchd.conf >/dev/null
+  egrep -q '^limit maxproc' /etc/launchd.conf >/dev/null
   if [ $? != 0 ]; then
     echo "limit maxproc 2048" >>/etc/launchd.conf
   else
-    MAXPROC=`egrep -e 'limit maxproc' /etc/launchd.conf | awk '{print $3}'`
+    MAXPROC=`egrep -e '^limit maxproc' /etc/launchd.conf | awk '{print $3}'`
     if [ X$MAXPROC != "Xunlimited" ]; then
       if [ $MAXPROC -lt 2048 ]; then
         PFIXIT=1
       fi
     fi
   fi
-  egrep -q 'limit maxfiles' /etc/launchd.conf >/dev/null
+  egrep -q '^limit maxfiles' /etc/launchd.conf >/dev/null
   if [ $? != 0 ]; then
     echo "limit maxfiles 524288 unlimited" >/etc/launchd.conf
   else
-    MAXFILES=`egrep -e 'limit maxfiles' /etc/launchd.conf | awk '{print $3}'`
+    MAXFILES=`egrep -e '^limit maxfiles' /etc/launchd.conf | awk '{print $3}'`
     if [ X$MAXFILES != "Xunlimited" ]; then
       if [ $MAXFILES -lt 524288 ]; then
         FFIXIT=1
