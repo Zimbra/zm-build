@@ -69,8 +69,8 @@ done
 
 rm -f /opt/zimbra/mailboxd
 rm -f /opt/zimbra/jetty
-ln -s /opt/zimbra/jetty-6.1.15 /opt/zimbra/jetty
-ln -s /opt/zimbra/jetty-6.1.15 /opt/zimbra/mailboxd
+ln -s /opt/zimbra/jetty-6.1.15.z6 /opt/zimbra/jetty
+ln -s /opt/zimbra/jetty-6.1.15.z6 /opt/zimbra/mailboxd
 
 mkdir -p /opt/zimbra/mailboxd/logs
 chown zimbra:zimbra /opt/zimbra/mailboxd/logs
