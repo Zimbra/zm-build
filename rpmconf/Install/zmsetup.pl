@@ -5238,11 +5238,18 @@ sub configSetCluster {
 }
 
 sub removeNetworkComponents {
+    my $zimbra_home = getLocalConfig("zimbra_home");
     my $components = getLdapConfigValue("zimbraComponentAvailable"); 
     my $comp_args = "";
     foreach my $component (split(/\n/,$components)) {
       $comp_args .= "-zimbraComponentAvailable $component "
         if ($component =~ /HSM|cluster|convertd|archiving|hotbackup/);
+    
+      if ($component eq "convertd") {
+        progress ("Removing convertd mime tree from ldap...");
+        my $rc = runAsZimbra("${zimbra_home}/libexec/zmconvertdmod -d");
+        progress (($rc == 0) ? "done.\n" : "failed. This may impact system functionality.\n");
+      }
     }
     if ($comp_args ne "") {
       progress ("Removing network components from ldap...");
@@ -5413,6 +5420,7 @@ sub configInstallZimlets {
     foreach my $zimletfile (@zimlets) {
       my $zimlet = $zimletfile;
       $zimlet =~ s/\.zip$//;
+      next if (! isInstalled("zimbra-cluster") && $zimlet eq "com_zimbra_cluster");
       progress  ("\t$zimlet...");
       my $rc = runAsZimbra ("/opt/zimbra/bin/zmzimletctl -l deploy zimlets-network/$zimletfile");
       progress (($rc == 0) ? "done.\n" : "failed. This may impact system functionality.\n");
