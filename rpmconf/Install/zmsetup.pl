@@ -5245,7 +5245,7 @@ sub removeNetworkComponents {
       $comp_args .= "-zimbraComponentAvailable $component "
         if ($component =~ /HSM|cluster|convertd|archiving|hotbackup/);
     
-      if ($component eq "convertd") {
+      if ($component =~ /convertd/) {
         progress ("Removing convertd mime tree from ldap...");
         my $rc = runAsZimbra("${zimbra_home}/libexec/zmconvertdmod -d");
         progress (($rc == 0) ? "done.\n" : "failed. This may impact system functionality.\n");
@@ -5259,6 +5259,15 @@ sub removeNetworkComponents {
     foreach my $zimlet qw(com_zimbra_backuprestore com_zimbra_cluster com_zimbra_convertd com_zimbra_domainadmin com_zimbra_hsm com_zimbra_license com_zimbra_mobilesync zimbra_xmbxsearch com_zimbra_xmbxsearch) {
       system("rm -rf $config{mailboxd_directory}/webapps/service/zimlet/$zimlet")
         if (-d "$config{mailboxd_directory}/webapps/service/zimlet/$zimlet" );
+      system("rm -rf ${zimbra_home}/zimlets-deployed/$zimlet")
+        if (-d "${zimbra_home}/zimlets-deployed/$zimlet" );
+
+    }
+
+    if (isEnabled("zimbra-ldap") && -x "${zimbra_home}/libexec/zmconvertdmod") {
+      progress ("Removing convertd mime tree from ldap...");
+      my $rc = runAsZimbra("${zimbra_home}/libexec/zmconvertdmod -d");
+      progress (($rc == 0) ? "done.\n" : "failed. This may impact system functionality.\n");
     }
 }
 sub countUsers {
