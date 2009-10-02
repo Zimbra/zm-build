@@ -167,6 +167,14 @@ our @LOGGER_SCHEMA_UPGRADE = (
       	UPDATE config SET version = 3
       },
     ],
+    [
+      q{
+      	DELETE FROM rrds WHERE csv_file = 'allprocs.csv';
+      },
+      q{
+      	UPDATE config SET version = 4
+      },
+    ],
 );
 
 1;
