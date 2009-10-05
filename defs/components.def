@@ -66,6 +66,7 @@ STORE_COMPONENTS := \
 	$(STORE_DEST_DIR)/zimlets \
 	$(STORE_DEST_DIR)/libexec \
 	$(STORE_DEST_DIR)/libexec/zmztozmig \
+	$(STORE_DEST_DIR)/libexec/zmcheckversion \
 	$(STORE_DEST_DIR)/conf/zimbra-contact-fields.xml \
 	$(STORE_DEST_DIR)/conf/zmztozmig.conf \
 	$(STORE_DEST_DIR)/zimlets-extra \
@@ -77,6 +78,7 @@ STORE_COMPONENTS := \
 	$(STORE_DEST_DIR)/lib/ext/clamscanner/clamscanner.jar \
 	$(STORE_DEST_DIR)/lib/ext/zimbraldaputils/zimbraldaputils.jar \
 	$(STORE_DEST_DIR)/lib/ext/nginx-lookup/nginx-lookup.jar \
+	$(STORE_DEST_DIR)/lib/ext/zimbraadminversioncheck/zimbraadminversioncheck.jar \
 	$(STORE_DEST_DIR)/lib/jars/zmzimbratozimbramig.jar \
 	$(STORE_DEST_DIR)/wiki \
 	$(STORE_DEST_DIR)/log \
