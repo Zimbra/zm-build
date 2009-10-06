@@ -6142,8 +6142,9 @@ sub applyConfig {
   if ($config{STARTSERVERS} eq "yes") {
 
     # bug 6270 
-    if (($platform =~ m/DEBIAN/ || $platform =~ m/UBUNTU/) && ! $newinstall) {
-      `chown zimbra:zimbra /opt/zimbra/redolog/redo.log`;
+    if (isEnabled("zimbra-store")) {
+      `chown zimbra:zimbra /opt/zimbra/redolog/redo.log`
+        if (($platform =~ m/DEBIAN/ || $platform =~ m/UBUNTU/) && ! $newinstall);
     }
 
     progress ( "Starting servers..." );
