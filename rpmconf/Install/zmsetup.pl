@@ -5449,11 +5449,14 @@ sub zimletCleanup {
     return 1;
   } else {
     detail("ldap bind done for $ldap_dn");
-    $result = $ldap->search(base => $ldap_base, scope => 'one', filter => "(|(cn=convertd)(cn=cluster)(cn=hsm)(cn=hotbackup)(cn=zimbra_cert_manager)(cn=com_zimbra_search)(cn=zimbra_xmbxsearch)(cn=com_zimbra_domainadmin))", attrs => ['zimbraZimletKeyword']);
+    $result = $ldap->search(base => $ldap_base, scope => 'one', filter => "(|(cn=convertd)(cn=cluster)(cn=hsm)(cn=hotbackup)(cn=zimbra_cert_manager)(cn=com_zimbra_search)(cn=zimbra_xmbxsearch)(cn=com_zimbra_domainadmin)(cn=com_zimbra_cluster))", attrs => ['zimbraZimletKeyword']);
     return $result if ($result->code());
     detail("Processing ldap search results");
     foreach my $entry ($result->all_entries) {
       my $zimlet = $entry->get_value('zimbraZimletKeyword');
+      if ($zimlet eq "com_zimbra_cluster" && isInstalled("zimbra-cluster")) {
+        next;
+      }
       if ( $zimlet ne "" ) {
         detail("Removing $zimlet");
         runAsZimbra("/opt/zimbra/bin/zmzimletctl undeploy $zimlet");
