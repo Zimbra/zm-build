@@ -1053,6 +1053,15 @@ sub setLdapDefaults {
       if ($config{zimbraBackupReportEmailSender} eq "");
   }
 
+  $config{zimbraVersionCheckInterval} = 
+    getLdapConfigValue("zimbraVersionCheckInterval");
+  if ($config{zimbraVersionCheckInterval} eq "") {
+    $config{VERSIONUPDATECHECKS}="";
+  } else {
+    $config{VERSIONUPDATECHECKS} =
+      (($config{zimbraVersionCheckInterval} eq "0") ? "FALSE" : "TRUE");
+  }
+
   $config{zimbraVersionCheckSendNotifications} = 
     getLdapConfigValue("zimbraVersionCheckSendNotifications");
   $config{zimbraVersionCheckSendNotifications} = "TRUE"
@@ -1069,9 +1078,6 @@ sub setLdapDefaults {
     $config{zimbraVersionCheckNotificationEmailFrom} = $config{CREATEADMIN}
       if ($config{zimbraVersionCheckNotificationEmailFrom} eq "");
   }
-    
-
- 
 
   # 
   # Load default COS
@@ -1415,12 +1421,13 @@ sub setDefaults {
   $config{CREATEADMIN} = "admin\@$config{CREATEDOMAIN}";
 
   if (isEnabled("zimbra-store")) {
+    $config{VERSIONUPDATECHECKS} = "TRUE";
     $config{zimbraVersionCheckSendNotifications} = "TRUE"
       if ($config{zimbraVersionCheckSendNotifications} eq "");
     $config{zimbraVersionCheckNotificationEmail} = $config{CREATEADMIN}
       if ($config{zimbraVersionCheckNotificationEmail} eq "");
-    $config{zimbraVersionCheckNotificationEmail} = $config{CREATEADMIN}
-      if ($config{zimbraVersionCheckNotificationEmail} eq "");
+    $config{zimbraVersionCheckNotificationEmailFrom} = $config{CREATEADMIN}
+      if ($config{zimbraVersionCheckNotificationEmailFrom} eq "");
   }
 
   my $tzname=`/bin/date '+%Z'`;
@@ -1987,18 +1994,25 @@ sub setCreateDomain {
   if ($old eq $config{SMTPSOURCE}) {
     $config{SMTPSOURCE} = $config{CREATEADMIN};
   }
-  my ($spamUser, $spamDomain) = split ('@', $config{TRAINSASPAM});
-  my ($hamUser, $hamDomain) = split ('@', $config{TRAINSAHAM});
   my ($notebookUser, $notebookDomain) = split ('@', $config{NOTEBOOKACCOUNT});
-
   $config{NOTEBOOKACCOUNT} = $notebookUser.'@'.$config{CREATEDOMAIN}
     if ($notebookDomain eq $oldDomain);
 
+  my ($spamUser, $spamDomain) = split ('@', $config{TRAINSASPAM});
   $config{TRAINSASPAM} = $spamUser.'@'.$config{CREATEDOMAIN}
     if ($spamDomain eq $oldDomain);
 
+  my ($hamUser, $hamDomain) = split ('@', $config{TRAINSAHAM});
   $config{TRAINSAHAM} = $hamUser.'@'.$config{CREATEDOMAIN}
     if ($hamDomain eq $oldDomain);
+
+  my ($vcFromUser, $vcFromDomain) = split ('@', $config{zimbraVersionCheckNotificationEmailFrom});
+  $config{zimbraVersionCheckNotificationEmailFrom} = $vcFromUser.'@'.$config{CREATEDOMAIN}
+    if ($vcFromDomain eq $oldDomain);
+
+  my ($vcUser, $vcDomain) = split ('@', $config{zimbraVersionCheckNotificationEmail});
+  $config{zimbraVersionCheckNotificationEmail} = $vcUser.'@'.$config{CREATEDOMAIN}
+    if ($vcDomain eq $oldDomain);
 
 }
 
@@ -2098,6 +2112,7 @@ sub setVersionCheckNotificationEmailFrom {
       next;
     }
     $config{zimbraVersionCheckNotificationEmailFrom} = $new;
+    last;
   }
 }
 
@@ -3692,42 +3707,51 @@ sub createStoreMenu {
       $i++;
     }
     $$lm{menuitems}{$i} = { 
-      "prompt" => "Enable version update notifications:", 
-      "var" => \$config{zimbraVersionCheckSendNotifications}, 
+      "prompt" => "Enable version update checks:", 
+      "var" => \$config{VERSIONUPDATECHECKS}, 
       "callback" => \&toggleTF,
-      "arg" => "zimbraVersionCheckSendNotifications",
+      "arg" => "VERSIONUPDATECHECKS",
       };
     $i++;
-    if ($config{zimbraVersionCheckSendNotifications} eq "TRUE") {
-
-      my $version_dst_addr = 
-        getLdapConfigValue("zimbraVersionCheckNotificationEmail")
-        if (ldapIsAvailable());
-
-      if ($version_dst_addr eq "") {
-        $$lm{menuitems}{$i} = { 
-          "prompt" => "Version update notification email:", 
-          "var" => \$config{zimbraVersionCheckNotificationEmail}, 
-          "callback" => \&setVersionCheckNotificationEmail
-          };
-        $i++;
-      } else {
-        $config{zimbraVersionCheckNotificationEmail} = $version_dst_addr;
-      }
-
-      my $version_src_addr = 
+    if ($config{VERSIONUPDATECHECKS} eq "TRUE") {
+      $$lm{menuitems}{$i} = { 
+        "prompt" => "Enable version update notifications:", 
+        "var" => \$config{zimbraVersionCheckSendNotifications}, 
+        "callback" => \&toggleTF,
+        "arg" => "zimbraVersionCheckSendNotifications",
+        };
+      $i++;
+      if ($config{zimbraVersionCheckSendNotifications} eq "TRUE") {
+  
+        my $version_dst_addr = 
+          getLdapConfigValue("zimbraVersionCheckNotificationEmail")
+          if (ldapIsAvailable());
+  
+        if ($version_dst_addr eq "") {
+          $$lm{menuitems}{$i} = { 
+            "prompt" => "Version update notification email:", 
+            "var" => \$config{zimbraVersionCheckNotificationEmail}, 
+            "callback" => \&setVersionCheckNotificationEmail
+            };
+          $i++;
+        } else {
+          $config{zimbraVersionCheckNotificationEmail} = $version_dst_addr;
+        }
+  
+        my $version_src_addr = 
         getLdapConfigValue("zimbraVersionCheckNotificationEmailFrom")
-        if (ldapIsAvailable());
-
-      if ($version_src_addr eq "") {
-        $$lm{menuitems}{$i} = { 
+          if (ldapIsAvailable());
+  
+        if ($version_src_addr eq "") {
+          $$lm{menuitems}{$i} = { 
           "prompt" => "Version update source email:", 
-          "var" => \$config{zimbraVersionCheckNotificationEmailFrom}, 
-          "callback" => \&setVersionCheckNotificationEmailFrom
-          };
-        $i++;
-      } else {
-        $config{zimbraVersionCheckNotificationEmailFrom} = $version_src_addr;
+            "var" => \$config{zimbraVersionCheckNotificationEmailFrom}, 
+            "callback" => \&setVersionCheckNotificationEmailFrom
+            };
+          $i++;
+        } else {
+          $config{zimbraVersionCheckNotificationEmailFrom} = $version_src_addr;
+        }
       }
     }
     # only prompt for license if we are network install and
@@ -5006,6 +5030,16 @@ sub configSetStoreDefaults {
                        "-a $config{HTTPPORT}:$config{HTTPPROXYPORT}:$config{HTTPSPORT}:$config{HTTPSPROXYPORT} -H $config{HOSTNAME}");
     }
   }
+
+  # this should probably be in a global config section
+  setLdapGlobalConfig("zimbraVersionCheckSendNotifications", 
+    $config{zimbraVersionCheckSendNotifications}); 
+  setLdapGlobalConfig("zimbraVersionCheckNotificationEmail",
+    $config{zimbraVersionCheckNotificationEmail});
+  setLdapGlobalConfig("zimbraVersionCheckNotificationEmailFrom",
+    $config{zimbraVersionCheckNotificationEmailFrom});
+  setLdapGlobalConfig("zimbraVersionCheckInterval", "0")
+    if ($config{VERSIONUPDATECHECKS} eq "FALSE");
 }
 
 sub configSetServicePorts {
