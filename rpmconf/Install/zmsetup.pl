@@ -447,7 +447,7 @@ sub getInstalledPackages {
     detail ("DEBUG: ldap_url=$config{ldap_url}") 
       if $options{d};
 
-    if (index($config{ldap_url}, $config{zimbra_server_hostname}) != -1) {
+    if (index($config{ldap_url}, "/".$config{zimbra_server_hostname}) != -1) {
       detail ("zimbra_server_hostname contained in ldap_url checking ldap status");
       if (startLdap()) {return 1;}
     } else {
@@ -523,7 +523,7 @@ sub isEnabled {
     detail ("DEBUG: ldap_url=$config{ldap_url}") 
       if $options{d};
 
-    if (index($config{ldap_url}, $config{zimbra_server_hostname}) != -1) {
+    if (index($config{ldap_url}, "/".$config{zimbra_server_hostname}) != -1) {
       detail ("zimbra_server_hostname contained in ldap_url checking ldap status");
       if (startLdap()) {return 1;}
     } else {
