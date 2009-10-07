@@ -1070,6 +1070,12 @@ sub setLdapDefaults {
   if ($config{zimbraVersionCheckSendNotifications} eq "TRUE") {
     $config{zimbraVersionCheckNotificationEmail} = 
       getLdapConfigValue("zimbraVersionCheckNotificationEmail");
+
+    # force confirmation of choice during upgrade if this was never setup before
+    if (!$newinstall && $config{zimbraVersionCheckNotificationEmail} eq "") { 
+      $config{VERSIONUPDATECHECKS}="";
+    }
+
     $config{zimbraVersionCheckNotificationEmail} = $config{CREATEADMIN}
       if ($config{zimbraVersionCheckNotificationEmail} eq "");
 
