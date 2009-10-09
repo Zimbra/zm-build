@@ -192,6 +192,7 @@ my %updateFuncs = (
   "6.0.0_GA" => \&upgrade600GA,
   "6.0.1_GA" => \&upgrade601GA,
   "6.0.2_GA" => \&upgrade602GA,
+  "6.0.3_GA" => \&upgrade603GA,
 );
 
 my @versionOrder = (
@@ -267,6 +268,7 @@ my @versionOrder = (
   "6.0.0_GA",
   "6.0.1_GA",
   "6.0.2_GA",
+  "6.0.3_GA",
 );
 
 my ($startVersion,$startMajor,$startMinor,$startMicro);
@@ -459,6 +461,8 @@ sub upgrade {
     main::progress("This appears to be 6.0.1_GA\n");
   } elsif ($startVersion eq "6.0.2_GA") {
     main::progress("This appears to be 6.0.2_GA\n");
+  } elsif ($startVersion eq "6.0.3_GA") {
+    main::progress("This appears to be 6.0.3_GA\n");
   } else {
     main::progress("I can't upgrade version $startVersion\n\n");
     return 1;
@@ -2954,6 +2958,12 @@ sub upgrade602GA {
     main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-pid-file-fixup --section=mysqld_safe --key=pid-file --unset /opt/zimbra/conf/my.cnf");
     main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.post-${targetVersion}-pid-file-fixup --section=mysqld_safe --key=pid-file --set --value=/opt/zimbra/db/mysql.pid /opt/zimbra/conf/my.cnf");
   }
+  return 0;
+}
+
+sub upgrade603GA {
+  my ($startBuild, $targetVersion, $targetBuild) = (@_);
+  main::progress("Updating from 6.0.3_GA\n");
   return 0;
 }
 
