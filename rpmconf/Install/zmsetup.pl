@@ -1072,7 +1072,7 @@ sub setLdapDefaults {
       getLdapConfigValue("zimbraVersionCheckNotificationEmail");
 
     # force confirmation of choice during upgrade if this was never setup before
-    if (!$newinstall && $config{zimbraVersionCheckNotificationEmail} eq "") { 
+    if (!$newinstall && $config{zimbraVersionCheckNotificationEmail} eq "" && !$options{c}) { 
       $config{VERSIONUPDATECHECKS}="";
     }
 
@@ -5452,14 +5452,14 @@ sub removeNetworkZimlets {
   } else {
     detail("ldap bind done for $ldap_dn");
     progress("Checking for network zimlets in LDAP...");
-    $result = $ldap->search(base => $ldap_base, scope => 'one', filter => "(|(cn=com_zimbra_backuprestore)(cn=com_zimbra_domainadmin)(cn=com_zimbra_mobilesync)(cn=com_zimbra_cluster)(cn=com_zimbra_hsm)(cn=com_zimbra_convertd)(cn=com_zimbra_license)(cn=zimbra_xmbxsearch)(cn=com_zimbra_xmbxsearch))", attrs => ['zimbraZimletKeyword']);
+    $result = $ldap->search(base => $ldap_base, scope => 'one', filter => "(|(cn=com_zimbra_backuprestore)(cn=com_zimbra_domainadmin)(cn=com_zimbra_mobilesync)(cn=com_zimbra_cluster)(cn=com_zimbra_hsm)(cn=com_zimbra_convertd)(cn=com_zimbra_license)(cn=zimbra_xmbxsearch)(cn=com_zimbra_xmbxsearch))", attrs => ['cn']);
     progress (($result->code()) ? "failed.\n" : "done.\n");
     return $result if ($result->code());
 
     detail("Processing ldap search results");
     progress("Removing network zimlets...\n");
     foreach my $entry ($result->all_entries) {
-      my $zimlet = $entry->get_value('zimbraZimletKeyword');
+      my $zimlet = $entry->get_value('cn');
       if ( $zimlet ne "" ) {
         progress("\tRemoving $zimlet...");
         my $rc = runAsZimbra("/opt/zimbra/bin/zmzimletctl -l undeploy $zimlet");
@@ -5489,11 +5489,11 @@ sub zimletCleanup {
     return 1;
   } else {
     detail("ldap bind done for $ldap_dn");
-    $result = $ldap->search(base => $ldap_base, scope => 'one', filter => "(|(cn=convertd)(cn=cluster)(cn=hsm)(cn=hotbackup)(cn=zimbra_cert_manager)(cn=com_zimbra_search)(cn=zimbra_xmbxsearch)(cn=com_zimbra_domainadmin)(cn=com_zimbra_cluster))", attrs => ['zimbraZimletKeyword']);
+    $result = $ldap->search(base => $ldap_base, scope => 'one', filter => "(|(cn=convertd)(cn=cluster)(cn=hsm)(cn=hotbackup)(cn=zimbra_cert_manager)(cn=com_zimbra_search)(cn=zimbra_xmbxsearch)(cn=com_zimbra_domainadmin)(cn=com_zimbra_cluster))", attrs => ['cn']);
     return $result if ($result->code());
     detail("Processing ldap search results");
     foreach my $entry ($result->all_entries) {
-      my $zimlet = $entry->get_value('zimbraZimletKeyword');
+      my $zimlet = $entry->get_value('cn');
       if ($zimlet eq "com_zimbra_cluster" && isInstalled("zimbra-cluster")) {
         next;
       }
@@ -5591,13 +5591,13 @@ sub configInstallZimlets {
     } else {
       detail("ldap bind done for $ldap_dn");
       progress("Getting list of all zimlets...");
-      $result = $ldap->search(base => $ldap_base, scope => 'one', filter => '(objectClass=zimbraZimletEntry)', attrs => ['zimbraZimletKeyword']);
+      $result = $ldap->search(base => $ldap_base, scope => 'one', filter => '(objectClass=zimbraZimletEntry)', attrs => ['cn']);
       progress (($result->code()) ? "failed.\n" : "done.\n");
       return $result if ($result->code());
   
       progress("Updating non-standard zimlets...\n");
       foreach my $entry ($result->all_entries) {
-        my $zimlet = $entry->get_value('zimbraZimletKeyword');
+        my $zimlet = $entry->get_value('cn');
         foreach my $type qw(zimlets-admin-extra zimlets-experimental zimlets-extra) {
           if (-e "${zimbra_home}/${type}/${zimlet}.zip") {
            progress  ("\t$zimlet...");
