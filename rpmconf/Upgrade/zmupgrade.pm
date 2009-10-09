@@ -2948,6 +2948,7 @@ sub upgrade602GA {
   main::progress("Updating from 6.0.2_GA\n");
   if (main::isInstalled("zimbra-ldap") && $isLdapMaster) {
     main::runAsZimbra("zmjava com.zimbra.cs.account.ldap.upgrade.LdapUpgrade -b 41000 -v");
+    main::setLdapGlobalConfig("zimbraHttpDebugHandlerEnabled", "TRUE");
   }
   if (main::isInstalled("zimbra-store")) {
     # 40536
