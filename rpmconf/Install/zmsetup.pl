@@ -4734,6 +4734,7 @@ sub configCreateCert {
       }
     } else {
       $ssl_cert_type="comm";
+      $needNewCert="";
     }
   }
 
