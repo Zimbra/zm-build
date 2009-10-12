@@ -355,10 +355,10 @@ $(ADMIN_VERSIONCHECK_DIR)/build/zimbraadminversioncheck.jar:
 		-Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) \
 		-Dzimbra.buildinfo.host=$(HOST) jar ; )
 	
-$(CORE_DEST_DIR)/lib/ext/zimbraadminversioncheck/zimbraadminversioncheck.jar: $(CORE_DEST_DIR)/lib/ext/zimbraadminversioncheck $(ADMIN_VERSIONCHECK_DIR)/build/zimbraadminversioncheck.jar
+$(STORE_DEST_DIR)/lib/ext/zimbraadminversioncheck/zimbraadminversioncheck.jar: $(STORE_DEST_DIR)/lib/ext/zimbraadminversioncheck $(ADMIN_VERSIONCHECK_DIR)/build/zimbraadminversioncheck.jar
 	cp -f $(ADMIN_VERSIONCHECK_DIR)/build/zimbraadminversioncheck.jar $@
 
-$(CORE_DEST_DIR)/lib/ext/zimbraadminversioncheck:
+$(STORE_DEST_DIR)/lib/ext/zimbraadminversioncheck:
 	mkdir -p $@
 
 $(STORE_DEST_DIR)/lib/ext/zimbraldaputils/zimbraldaputils.jar: $(STORE_DEST_DIR)/lib/ext/zimbraldaputils $(LDAP_EXT_DIR)/build/zimbraldaputils.jar
