@@ -1255,7 +1255,7 @@ removeExistingInstall() {
         fi
       fi
       if [ x"$OLD_LDR_PATH" != "x" ]; then
-        LD_LIBARY_PATH=$OLD_LDR_PATH
+        LD_LIBRARY_PATH=$OLD_LDR_PATH
       fi
     fi
 
