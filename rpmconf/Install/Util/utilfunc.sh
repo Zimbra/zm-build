@@ -1234,6 +1234,7 @@ removeExistingInstall() {
     isInstalled "zimbra-ldap"
     if [ x$PKGINSTALLED != "x" ]; then
       if [ x"$LD_LIBRARY_PATH" != x ]; then
+        OLD_LDR_PATH=$LD_LIBRARY_PATH
         LD_LIBRARY_PATH=/opt/zimbra/bdb/lib:/opt/zimbra/openssl/lib:/opt/zimbra/cyrus-sasl/lib:/opt/zimbra/libtool/lib:/opt/zimbra/openldap/lib:/opt/zimbra/mysql/lib:$LD_LIBRARY_PATH
       fi
       if [ -f "/opt/zimbra/openldap/sbin/slapcat" -a x"$UNINSTALL" != "xyes" -a x"$REMOVE" != "xyes" ]; then
@@ -1252,6 +1253,9 @@ removeExistingInstall() {
           fi
           chmod 640 /opt/zimbra/data/ldap/ldap.bak
         fi
+      fi
+      if [ x"$OLD_LDR_PATH" != x ]; then
+        LD_LIBARY_PATH=$OLD_LDR_PATH
       fi
     fi
 
