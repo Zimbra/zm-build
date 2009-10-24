@@ -4850,7 +4850,7 @@ sub configSaveCert {
     return 0;
   }
   progress ( "Saving SSL Certificate in ldap ..." );
-  my $rc = runAsRoot("/opt/zimbra/bin/zmcertmgr savecrt self");
+  my $rc = runAsRoot("/opt/zimbra/bin/zmcertmgr savecrt $ssl_cert_type");
   if ($rc != 0) {
     progress ( "failed.\n" );
     exit 1;
@@ -4866,7 +4866,7 @@ sub configInstallCert {
   if ($configStatus{configInstallCertStore} eq "CONFIGURED" && $needNewCert eq "") {
     configLog("configInstallCertStore");
   } elsif (isInstalled("zimbra-store")) {
-    if (! (-f "$config{mailboxd_keystore}" || $needNewCert ne "")) {
+    if (! (-f "$config{mailboxd_keystore}") || $needNewCert ne "") {
       progress ("Installing mailboxd SSL certificates...");
       $rc = runAsRoot("/opt/zimbra/bin/zmcertmgr deploycrt self $needNewCert");
       if ($rc != 0) {
