@@ -38,9 +38,10 @@ mkdir -p /opt/zimbra/data/clamav/db
 chown -R zimbra:zimbra /opt/zimbra/data/clamav/db
 
 mkdir -p /opt/zimbra/data/postfix/spool/pid
-chown postfix:zimbra /opt/zimbra/data/postfix
-chown zimbra:zimbra /opt/zimbra/data
-chown postfix:root /opt/zimbra/data/postfix/spool/pid
+
+if [ -d /opt/zimbra/data ]; then
+  chown zimbra:zimbra /opt/zimbra/data
+fi
 
 if [ -x "/opt/zimbra/libexec/zmfixperms" ]; then
   /opt/zimbra/libexec/zmfixperms

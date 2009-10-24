@@ -16,12 +16,18 @@
 
 SAVEDIR=/opt/zimbra/.saveconfig
 PLAT=`/opt/zimbra/libexec/get_plat_tag.sh`
-ARCH=powerpc
+H=$(hostname -s)
+OS_ARCH=powerpc
 zimbra_home=/opt/zimbra
-H=`hostname -s`
+MYSQL_VERSION=5.0.85
+JETTY_VERSION=6.1.15.z6
 
 if [ "x$PLAT" = "xMACOSXx86" -o "x$PLAT" = "xMACOSXx86_10.5" ]; then
-    ARCH=i686
+  OS_ARCH=i686
+  OS_REL=8.2.0
+elif [ x"$PLAT" = "xMACOSXx86_10.6" ]; then
+  OS_ARCH=$(uname -p)
+  OS_REL=10
 fi
 
 if [ -e "${zimbra_home}/perdition" ]; then
@@ -31,10 +37,11 @@ fi
 if [ -e "${zimbra_home}/mysql" ]; then
   rm -f ${zimbra_home}/mysql
 fi
-ln -s /opt/zimbra/mysql-standard-5.0.85-apple-darwin8.2.0-$ARCH /opt/zimbra/mysql
+
+ln -s /opt/zimbra/mysql-standard-${MYSQL_VERSION}-apple-darwin${OS_REL}-${OS_ARCH} /opt/zimbra/mysql
 # Can't get the dylib to hold the correct path...
-rm -f /opt/zimbra/mysql-standard-5.0.85-apple-darwin8.2.0-$ARCH/lib/mysql
-ln -s /opt/zimbra/mysql-standard-5.0.85-apple-darwin8.2.0-$ARCH/lib /opt/zimbra/mysql-standard-5.0.85-apple-darwin8.2.0-$ARCH/lib/mysql
+rm -f /opt/zimbra/mysql-standard-${MYSQL_VERSION}-apple-darwin${OS_REL}-${OS_ARCH}/lib/mysql
+ln -s /opt/zimbra/mysql-standard-${MYSQL_VERSION}-apple-darwin${OS_REL}-${OS_ARCH}/lib /opt/zimbra/mysql-standard-${MYSQL_VERSION}-apple-darwin${OS_REL}-${OS_ARCH}/lib/mysql
 
 if [ -e "/opt/zimbra/verity" ]; then
   rm -rf /opt/zimbra/verity
@@ -69,23 +76,11 @@ done
 
 rm -f /opt/zimbra/mailboxd
 rm -f /opt/zimbra/jetty
-ln -s /opt/zimbra/jetty-6.1.15.z6 /opt/zimbra/jetty
-ln -s /opt/zimbra/jetty-6.1.15.z6 /opt/zimbra/mailboxd
+ln -s /opt/zimbra/jetty-${JETTY_VERSION} /opt/zimbra/jetty
+ln -s /opt/zimbra/jetty-${JETTY_VERSION} /opt/zimbra/mailboxd
 
 mkdir -p /opt/zimbra/mailboxd/logs
 chown zimbra:zimbra /opt/zimbra/mailboxd/logs
-
-
-if [ -d $SAVEDIR/zimlet -a -d /opt/zimbra/mailboxd/webapps/service ]; then
-  echo "Restoring $SAVEDIR/zimlet"
-  cp -rf $SAVEDIR/zimlet /opt/zimbra/mailboxd/webapps/service/
-  chown -R zimbra:zimbra /opt/zimbra/mailboxd/webapps/service/zimlet
-  chmod 755 /opt/zimbra/mailboxd/webapps/service/zimlet
-else
-  echo "zimlet directories not present to restore."
-  ls -ld $SAVEDIR/zimlet
-  ls -ld /opt/zimbra/mailboxd/webapps/service
-fi
 
 SUDOMODE=`perl -e 'my $mode=(stat("/etc/sudoers"))[2];printf("%04o\n",$mode & 07777);'`
 egrep -v -e '^%zimbra.*tomcat' -e '^%zimbra.*mailboxdmgr' /etc/sudoers > /tmp/sudoers

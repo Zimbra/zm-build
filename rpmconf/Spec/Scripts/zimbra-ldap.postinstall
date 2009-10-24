@@ -25,7 +25,7 @@ mkdir -p /opt/zimbra/openldap/var/openldap-data
 mkdir -p /opt/zimbra/data/ldap/config
 mkdir -p /opt/zimbra/data/ldap/hdb/db
 mkdir -p /opt/zimbra/data/ldap/hdb/logs
-chown -R zimbra:zimbra /opt/zimbra/ldap/data
+chown -R zimbra:zimbra /opt/zimbra/data/ldap
 chown -R zimbra:zimbra /opt/zimbra/openldap/var
 
 if [ -x "/opt/zimbra/libexec/zmfixperms" ]; then

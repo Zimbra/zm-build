@@ -16,7 +16,7 @@
 
 SAVEDIR=/opt/zimbra/.saveconfig
 PLAT=$(/opt/zimbra/libexec/get_plat_tag.sh)
-if [ "x$PLAT" = "xMACOSXx86_10.5" ]; then
+if [ "x$PLAT" = "xMACOSXx86_10.5" -o "x$PLAT" = "xMACOSXx86_10.6" ]; then
   SU="su - zimbra -c -l"
 else
   SU="su - zimbra -c"

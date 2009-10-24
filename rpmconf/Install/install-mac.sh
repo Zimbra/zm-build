@@ -35,7 +35,7 @@ else
   platform=unknown
 fi
 
-if [ x"$platform" = "xMACOSXx86_10.5" ]; then
+if [ x"$platform" = "xMACOSXx86_10.5" -o x"$platform" = "xMACOSXx86_10.6" ]; then
   PS="/bin/ps -elf"
 else
   PS="/bin/ps -aux"
@@ -253,12 +253,33 @@ if [ x$UNINSTALL == "xyes" ]; then
   echo "done".
 
   # clean up Receipts
-  echo -n "Removing packaging receipts..."
+  echo -n "Removing packaging receipts from /Library/Receipts..."
   rm -rf /Library/Receipts/zimbra-* 2> /dev/null
   if [ $? = 0 ]; then
     echo "done."
   else
     echo "failed."
+  fi
+
+  if [ -x /usr/sbin/pkgutil ]; then
+    for pkg in `/usr/sbin/pkgutil --pkgs='com.zimbra.zcs.*'`; do
+      echo -n "Removing package history for $pkg..."
+      /usr/sbin/pkgutil --forget $pkg > /dev/null 2>&1
+      if [ $? = 0 ]; then
+        echo "done."
+      else
+        echo "failed."
+      fi
+    done
+  fi
+  if [ -d /private/var/db/receipts ]; then
+    echo -n "Removing packaging receipts from /private/var/db/receipts..."
+    rm -rf /private/var/db/receipts/com.zimbra.zcs.*
+    if [ $? = 0 ]; then
+      echo "done."
+    else
+      echo "failed."
+    fi
   fi
 
   echo -n "Removing /opt/zimbra..."

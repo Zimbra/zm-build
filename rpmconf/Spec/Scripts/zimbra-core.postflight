@@ -31,35 +31,39 @@ chown zimbra:zimbra /opt/zimbra/zmstat/pid
 
 # Bug 6645
 PLAT=`/opt/zimbra/libexec/get_plat_tag.sh`
-ARCH=powerpc
+OS_ARCH=powerpc
+MYSQL_VERSION=5.0.85
+LDAP_VERSION=2.4.19.2z
+
 if [ "x$PLAT" = "xMACOSXx86" -o "x$PLAT" = "xMACOSXx86_10.5" ]; then
-	ARCH=i686
+  OS_ARCH=i686
+  OS_REL=8.2.0
+elif [ x"$PLAT" = "xMACOSXx86_10.6" ]; then
+  OS_ARCH=$(uname -p)
+  OS_REL=10
 fi
 
-if [ ! -d /opt/zimbra/openldap-2.4.19.2z ]; then
-	mkdir -p /opt/zimbra/openldap-2.4.19.2z
-	ln -s /opt/zimbra/lib /opt/zimbra/openldap-2.4.19.2z/lib
+if [ ! -d /opt/zimbra/openldap-${LDAP_VERSION} ]; then
+	mkdir -p /opt/zimbra/openldap-${LDAP_VERSION}
+	ln -s /opt/zimbra/lib /opt/zimbra/openldap-${LDAP_VERSION}/lib
 fi
-if [ ! -d /opt/zimbra/mysql-standard-5.0.85-apple-darwin8.2.0-$ARCH ]; then
-	mkdir -p /opt/zimbra/mysql-standard-5.0.85-apple-darwin8.2.0-$ARCH
-	ln -s /opt/zimbra/lib /opt/zimbra/mysql-standard-5.0.85-apple-darwin8.2.0-$ARCH/lib
-	ln -s /opt/zimbra/mysql-standard-5.0.85-apple-darwin8.2.0-$ARCH/lib /opt/zimbra/mysql-standard-5.0.85-apple-darwin8.2.0-$ARCH/lib/mysql
+if [ ! -d /opt/zimbra/mysql-standard-${MYSQL_VERSION}-apple-darwin${OS_REL}-${OS_ARCH} ]; then
+	mkdir -p /opt/zimbra/mysql-standard-${MYSQL_VERSION}-apple-darwin${OS_REL}-${OS_ARCH}
+	ln -s /opt/zimbra/lib /opt/zimbra/mysql-standard-${MYSQL_VERSION}-apple-darwin${OS_REL}-${OS_ARCH}/lib
+	ln -s /opt/zimbra/mysql-standard-${MYSQL_VERSION}-apple-darwin${OS_REL}-${OS_ARCH}/lib /opt/zimbra/mysql-standard-${MYSQL_VERSION}-apple-darwin${OS_REL}-${OS_ARCH}/lib/mysql
 fi
 
 if [ -x "/opt/zimbra/libexec/zmfixperms" ]; then
   /opt/zimbra/libexec/zmfixperms
 fi
 
-echo "Setting up syslog"
-#/opt/zimbra/bin/zmsyslogsetup local
 
-rm -rf /Users/zimbra
+if [ -d /Users/zimbra ]; then
+  rm -rf /Users/zimbra
+  ln -s /opt/zimbra /Users/zimbra
+fi
 
-ln -s /opt/zimbra /Users/zimbra
-
-# echo "Launching ZmSetup.app"
-# /opt/zimbra/libexec/ZmSetup.app/Contents/MacOS/ZmSetup
-D=`date +%s`
+D=$(date +%s)
 echo "${D}: INSTALL SESSION COMPLETE" >> /opt/zimbra/.install_history
 
 # Fix dspam.conf dylib/so for mac

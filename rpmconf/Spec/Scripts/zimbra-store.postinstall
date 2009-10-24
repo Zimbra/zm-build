@@ -17,20 +17,31 @@
 rm -f /opt/zimbra/perdition
 
 PLAT=`/opt/zimbra/libexec/get_plat_tag.sh`
-ARCH=powerpc
+OS_ARCH=powerpc
+MYSQL_VERSION=5.0.85
+JETTY_VERSION=6.1.15.z6
+
 if [ "x$PLAT" = "xMACOSXx86" -o "x$PLAT" = "xMACOSXx86_10.5" ]; then
-	ARCH=i686
+  OS_ARCH=i686
+  OS_REL=8.2.0
+elif [ x"$PLAT" = "xMACOSXx86_10.6" ]; then
+  OS_ARCH=$(uname -p)
+  OS_REL=10
 fi
 
-rm -f /opt/zimbra/mysql
-ln -s /opt/zimbra/mysql-standard-5.0.85-apple-darwin8.2.0-$ARCH /opt/zimbra/mysql
+if [ -L /opt/zimbra/mysql ]; then
+  rm -f /opt/zimbra/mysql
+fi
+ln -s /opt/zimbra/mysql-standard-${MYSQL_VERSION}-apple-darwin${OS_REL}-${OS_ARCH} /opt/zimbra/mysql
 # Can't get the dylib to hold the correct path...
-rm -f /opt/zimbra/mysql-standard-5.0.85-apple-darwin8.2.0-$ARCH/lib/mysql
-ln -s /opt/zimbra/mysql-standard-5.0.85-apple-darwin8.2.0-$ARCH/lib /opt/zimbra/mysql-standard-5.0.85-apple-darwin8.2.0-$ARCH/lib/mysql
+rm -f /opt/zimbra/mysql-standard-${MYSQL_VERSION}-apple-darwin${OS_REL}-${OS_ARCH}/lib/mysql
+ln -s /opt/zimbra/mysql-standard-${MYSQL_VERSION}-apple-darwin${OS_REL}-${OS_ARCH}/lib /opt/zimbra/mysql-standard-${MYSQL_VERSION}-apple-darwin${OS_REL}-${OS_ARCH}/lib/mysql
 
-rm -rf /opt/zimbra/verity
+if [ -e /opt/zimbra/verity ]; then
+  rm -rf /opt/zimbra/verity
+fi
 
-H=`hostname -s`
+H=$(hostname -s)
 
 if [ -f /opt/zimbra/db/db.sql ]; then
   mv /opt/zimbra/db/db.sql /opt/zimbra/db/db.sql.in
@@ -64,8 +75,8 @@ done
 
 rm -f /opt/zimbra/mailboxd
 rm -f /opt/zimbra/jetty
-ln -s /opt/zimbra/jetty-6.1.15.z6 /opt/zimbra/jetty
-ln -s /opt/zimbra/jetty-6.1.15.z6 /opt/zimbra/mailboxd
+ln -s /opt/zimbra/jetty-${JETTY_VERSION} /opt/zimbra/jetty
+ln -s /opt/zimbra/jetty-${JETTY_VERSION} /opt/zimbra/mailboxd
 
 mkdir -p /opt/zimbra/mailboxd/logs
 mkdir -p /opt/zimbra/redolog
@@ -76,10 +87,6 @@ chown zimbra:zimbra /opt/zimbra/redolog /opt/zimbra/store /opt/zimbra/index /opt
 
 if [ -x "/opt/zimbra/libexec/zmfixperms" ]; then
   /opt/zimbra/libexec/zmfixperms
-fi
-
-if [ -d $SAVEDIR/zimlet -a -d /opt/zimbra/mailboxd/webapps/service ]; then
-  cp -rf $SAVEDIR/zimlet /opt/zimbra/mailboxd/webapps/service/
 fi
 
 SUDOMODE=`perl -e 'my $mode=(stat("/etc/sudoers"))[2];printf("%04o\n",$mode & 07777);'`

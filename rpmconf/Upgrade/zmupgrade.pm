@@ -48,7 +48,7 @@ my $platform = `/opt/zimbra/libexec/get_plat_tag.sh`;
 chomp $platform;
 my $addr_space = (($platform =~ m/\w+_(\d+)/) ? "$1" : "32");
 my $su;
-if ($platform eq "MACOSXx86_10.5") {
+if ($platform =~ /MACOSXx86_10/) {
   $su = "su - zimbra -c -l";
 } else {
   $su = "su - zimbra -c";

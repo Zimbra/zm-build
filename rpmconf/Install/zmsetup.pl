@@ -44,13 +44,14 @@ progress("Operations logged to $logfile\n");
 
 our $ZMPROV = "/opt/zimbra/bin/zmprov -m -l";
 our $SU;
-if ($platform eq "MACOSXx86_10.5") {
+if ($platform =~ /MACOSXx86_10/) {
   $SU = "su - zimbra -c -l ";
 } else {
   $SU = "su - zimbra -c ";
 }
 
-if ($platform =~ /MACOSX/) {
+if ($platform =~ /MACOSX/ && $platform ne "MACOSXx86_10.6") {
+  
   progress ("Checking java version...");
   my $rc = 0xffff & system("$SU \"java -version 2>&1 | grep 'java version' | grep -q 1.5\"");
   if ($rc) {
@@ -586,6 +587,9 @@ sub isInstalled {
   my $good = 0;
   if ($platform =~ /^DEBIAN/ || $platform =~ /^UBUNTU/) {
     $pkgQuery = "dpkg -s $pkg";
+  } elsif ($platform eq "MACOSXx86_10.6") {
+    $pkg =~ s/zimbra-//;
+    $pkgQuery = "pkgutil --pkg-info com.zimbra.zcs.${pkg}";
   } elsif ($platform =~ /MACOSX/) {
     my @l = sort glob ("/Library/Receipts/${pkg}*");
     if ( $#l < 0 ) { return 0; }
@@ -1298,8 +1302,12 @@ sub setDefaults {
   $config{HTTPPORT} = 80;
   $config{HTTPSPORT} = 443;
 
-  if ($platform =~ /MACOSX/) {
+  if ($platform =~ /MACOSX/ && $platform ne "MACOSXx86_10.6") {
     $config{JAVAHOME} = "/System/Library/Frameworks/JavaVM.framework/Versions/1.5/Home";
+    setLocalConfig ("zimbra_java_home", "$config{JAVAHOME}");
+    $config{HOSTNAME} = lc(`hostname`);
+  } elsif ($platform eq "MACOSXx86_10.6") {
+    $config{JAVAHOME} = "/Library/Java/Home";
     setLocalConfig ("zimbra_java_home", "$config{JAVAHOME}");
     $config{HOSTNAME} = lc(`hostname`);
   } else {
@@ -1475,7 +1483,7 @@ sub setDefaults {
       $config{zimbraMtaMyNetworks} = "$tmpval";
     }
 
-    if ($platform eq "MACOSXx86_10.5") {
+    if ($platform =~ /MACOSXx86_10/) {
       $config{postfix_mail_owner} = "_postfix";
       $config{postfix_setgid_group} = "_postdrop";
     } else {
@@ -1760,7 +1768,7 @@ sub setDefaultsFromLocalConfig {
   if (isEnabled("zimbra-mta")) {
     $config{postfix_mail_owner} = getLocalConfig ("postfix_mail_owner");
     if ($config{postfix_mail_owner} eq "") {
-      if ($platform eq "MACOSXx86_10.5") {
+      if ($platform =~ /MACOSXx86_10/) {
         $config{postfix_mail_owner} = "_postfix";
       } else {
         $config{postfix_mail_owner} = "postfix";
@@ -1768,7 +1776,7 @@ sub setDefaultsFromLocalConfig {
     }
     $config{postfix_setgid_group} = getLocalConfig ("postfix_setgid_group");
     if ($config{postfix_setgid_group} eq "") {
-      if ($platform eq "MACOSXx86_10.5") {
+      if ($platform =~ /MACOSXx86_10/) {
         $config{postfix_setgid_group} = "_postdrop";
       } else {
         $config{postfix_setgid_group} = "postdrop";
