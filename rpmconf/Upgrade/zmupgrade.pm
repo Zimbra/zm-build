@@ -2673,6 +2673,7 @@ sub upgrade5020GA {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
   main::progress("Updating from 5.0.20_GA\n");
   if (main::isInstalled("zimbra-ldap") && $isLdapMaster) {
+    upgradeLdapConfigValue("zimbraSaslGssapiRequiresTls", "FALSE", "");
     my @coses = `$su "$ZMPROV gac"`;
     my %attrs = ( zimbraBatchedIndexingSize => "20");
     foreach my $cos (@coses) {
