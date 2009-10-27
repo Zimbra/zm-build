@@ -2677,6 +2677,22 @@ sub upgrade5019GA {
 sub upgrade5020GA {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
   main::progress("Updating from 5.0.20_GA\n");
+  if (main::isInstalled("zimbra-ldap") && $isLdapMaster) {
+    my @coses = `$su "$ZMPROV gac"`;
+    my %attrs = ( zimbraBatchedIndexingSize => "20");
+    foreach my $cos (@coses) {
+      chomp $cos;
+      foreach my $attr (keys %attrs) {
+        if ($attr = "zimbraBatchedIndexingSize") {
+          my $value = main::getLdapCOSValue($attr,$cos);
+          main::runAsZimbra("$ZMPROV mc $cos $attr \'$attrs{$attr}\'")
+            if ($value eq "0" || $value eq "");
+        } else {
+          main::runAsZimbra("$ZMPROV mc $cos $attr \'$attrs{$attr}\'");
+        }
+      }
+    }
+  }
   return 0;
 }
 
