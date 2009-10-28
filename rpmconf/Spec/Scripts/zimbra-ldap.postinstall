@@ -16,7 +16,7 @@
 shopt -s nullglob
 
 rm -f /opt/zimbra/openldap
-ln -s /opt/zimbra/openldap-2.3.43.10z /opt/zimbra/openldap
+ln -s /opt/zimbra/openldap-2.3.43.11z /opt/zimbra/openldap
 
 if [ ! -d /opt/zimbra/openldap/var/openldap-data ]; then
   mkdir -p /opt/zimbra/openldap/var/openldap-data
