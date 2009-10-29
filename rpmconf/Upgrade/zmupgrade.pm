@@ -2680,7 +2680,7 @@ sub upgrade5020GA {
       chomp $cos;
       foreach my $attr (keys %attrs) {
         if ($attr = "zimbraBatchedIndexingSize") {
-          my $value = main::getLdapCOSValue($attr,$cos);
+          my $value = main::getLdapCOSValue($cos,$attr);
           main::runAsZimbra("$ZMPROV mc $cos $attr \'$attrs{$attr}\'")
             if ($value eq "0" || $value eq "");
         } else {
