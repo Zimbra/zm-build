@@ -32,8 +32,8 @@ chown zimbra:zimbra /opt/zimbra/zmstat/pid
 # Bug 6645
 PLAT=`/opt/zimbra/libexec/get_plat_tag.sh`
 OS_ARCH=powerpc
-MYSQL_VERSION=5.0.85
-LDAP_VERSION=2.4.19.2z
+MYSQL_VERSION=5.0.87
+LDAP_VERSION=2.4.19.3z
 
 if [ "x$PLAT" = "xMACOSXx86" -o "x$PLAT" = "xMACOSXx86_10.5" ]; then
   OS_ARCH=i686

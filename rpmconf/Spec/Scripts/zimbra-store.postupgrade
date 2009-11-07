@@ -19,7 +19,7 @@ PLAT=`/opt/zimbra/libexec/get_plat_tag.sh`
 H=$(hostname -s)
 OS_ARCH=powerpc
 zimbra_home=/opt/zimbra
-MYSQL_VERSION=5.0.85
+MYSQL_VERSION=5.0.87
 JETTY_VERSION=6.1.15.z6
 
 if [ "x$PLAT" = "xMACOSXx86" -o "x$PLAT" = "xMACOSXx86_10.5" ]; then
