@@ -141,7 +141,12 @@ checkPackages() {
 		fi
 	done
 
-	if [[ $PLATFORM == "DEBIAN"* || $PLATFORM == "UBUNTU"*  || $PLATFORM = "MANDRIVA2006" ]]; then
+	if [[ $PLATFORM == "DEBIAN"* || $PLATFORM == "UBUNTU"* ]]; then
+		LOCALPROC=`dpkg --print-architecture`
+		if [ x"$LOCALPROC" == "xamd64" ]; then
+			LOCALPROC="x86_64"
+		fi
+	elif [  $PLATFORM = "MANDRIVA2006" ]; then
 		LOCALPROC=$PROC
 	else
 		LOCALPROC=`uname -i`

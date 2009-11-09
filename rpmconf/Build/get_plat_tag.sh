@@ -145,8 +145,8 @@ fi
 
 if [ -f /etc/debian_version ]; then
 	if [ ! -f /etc/lsb-release ]; then
-		i=`uname -m`
-		if [ "x$i" = "xx86_64" ]; then
+		i=`dpkg --print-architecture`
+		if [ "x$i" = "xamd64" ]; then
 			i="_64"
 		else 
 			i=""
@@ -173,8 +173,8 @@ if [ -f /etc/debian_version ]; then
 fi
 
 if [ -f /etc/lsb-release ]; then
-	i=`uname -m`
-	if [ "x$i" = "xx86_64" ]; then
+	i=`dpkg --print-architecture`
+	if [ "x$i" = "xamd64" ]; then
 		i="_64"
 	else 
 		i=""
