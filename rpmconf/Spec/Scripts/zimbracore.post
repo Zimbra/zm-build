@@ -32,7 +32,7 @@ rm -f /opt/zimbra/sleepycat
 ln -s /opt/zimbra/sleepycat-4.2.52.6 /opt/zimbra/sleepycat
 
 rm -f /opt/zimbra/openssl
-ln -s /opt/zimbra/openssl-0.9.8k /opt/zimbra/openssl
+ln -s /opt/zimbra/openssl-0.9.8l /opt/zimbra/openssl
 
 rm -f /opt/zimbra/heimdal
 ln -s /opt/zimbra/heimdal-1.2 /opt/zimbra/heimdal
