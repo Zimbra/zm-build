@@ -19,7 +19,7 @@ rm -f /opt/zimbra/perdition
 PLAT=`/opt/zimbra/libexec/get_plat_tag.sh`
 OS_ARCH=powerpc
 MYSQL_VERSION=5.0.87
-JETTY_VERSION=6.1.15.z6
+JETTY_VERSION=6.1.22.z6
 
 if [ "x$PLAT" = "xMACOSXx86" -o "x$PLAT" = "xMACOSXx86_10.5" ]; then
   OS_ARCH=i686
