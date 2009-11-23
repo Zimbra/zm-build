@@ -17,7 +17,7 @@
 #Symlinks
 
 if [ -d "/opt/zimbra/amavisd/tmp" ]; then
-  umount -f /opt/zimbra/amavisd/tmp
+  umount -f /opt/zimbra/amavisd/tmp 2> /dev/null
 fi
 
 rm -f /opt/zimbra/amavisd
@@ -32,8 +32,10 @@ ln -s /opt/zimbra/postfix-2.6.5.2z /opt/zimbra/postfix
 rm -f /opt/zimbra/clamav
 ln -s /opt/zimbra/clamav-0.95.3 /opt/zimbra/clamav
 
-H=`hostname -s`
-I=`hostname -i`
+if [ -e /opt/zimbra/altermime ]; then
+  rm -f /opt/zimbra/altermime
+fi
+ln -s /opt/zimbra/altermime-0.3-dev /opt/zimbra/altermime
 
 SUDOMODE=`perl -e 'my $mode=(stat("/etc/sudoers"))[2];printf("%04o\n",$mode & 07777);'`
 egrep -v '^%zimbra.*postfix' /etc/sudoers > /tmp/sudoers

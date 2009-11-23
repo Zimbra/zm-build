@@ -27,6 +27,11 @@ ln -s /opt/zimbra/postfix-2.6.5.2z /opt/zimbra/postfix
 rm -f /opt/zimbra/clamav
 ln -s /opt/zimbra/clamav-0.95.3 /opt/zimbra/clamav
 
+if [ -e /opt/zimbra/altermime ]; then
+  rm -rf /opt/zimbra/altermime
+fi
+ln -s /opt/zimbra/altermime-0.3-dev /opt/zimbra/altermime
+
 mkdir -p /opt/zimbra/data/amavisd/db
 mkdir -p /opt/zimbra/data/amavisd/tmp
 mkdir -p /opt/zimbra/data/amavisd/var
