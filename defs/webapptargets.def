@@ -8,7 +8,7 @@ IWDOWNLOAD = $(shell cd $(WEBAPP_DIR)/zimbra/downloads; ls ZCSPSTImportWizard*)
 CNDOWNLOAD = $(shell cd $(WEBAPP_DIR)/zimbra/downloads; ls ZimbraOl*)
 CMDOWNLOAD = $(shell cd $(WEBAPP_DIR)/zimbra/downloads; ls ZmCus*)
 DMDOWNLOAD = $(shell cd $(WEBAPP_DIR)/zimbra/downloads; ls ZCSDominoMigrationWizard*)
-ZTDOWNLOAD = $(shell cd $(WEBAPP_DIR)/zimbra/downloads; ls ZimbraToast*)
+#ZTDOWNLOAD = $(shell cd $(WEBAPP_DIR)/zimbra/downloads; ls ZimbraToast*)
 #ZDMDOWNLOAD = $(shell cd $(THIRD_PARTY_BUILDS)/zdesktop; ls zdesktop*.dmg)
 #ZDLDOWNLOAD = $(shell cd $(THIRD_PARTY_BUILDS)/zdesktop; ls zdesktop*.sh)
 #ZDWDOWNLOAD = $(shell cd $(THIRD_PARTY_BUILDS)/zdesktop; ls zdesktop*.exe)
@@ -45,9 +45,9 @@ $(WEBAPP_DIR)/zimbraAdmin.war: $(WEBAPP_DIR) $(CONSOLE_DIR)/$(WEBAPP_BUILD_DIR)/
 	for download in $(DMDOWNLOAD); do \
 		echo "DOMINO_MIG_WIZ_DOWNLOAD_LINK = /zimbra/downloads/$$download" >> $(WEBAPP_DIR)/zimbraAdmin/WEB-INF/classes/messages/ZaMsg.properties; \
 	done
-	for download in $(ZTDOWNLOAD); do \
-		echo "ZIMBRA_TOASTER_DOWNLOAD_LINK = /zimbra/downloads/$$download" >> $(WEBAPP_DIR)/zimbraAdmin/WEB-INF/classes/messages/ZaMsg.properties; \
-	done
+#	for download in $(ZTDOWNLOAD); do \
+#		echo "ZIMBRA_TOASTER_DOWNLOAD_LINK = /zimbra/downloads/$$download" >> $(WEBAPP_DIR)/zimbraAdmin/WEB-INF/classes/messages/ZaMsg.properties; \
+#	done
 #	for download in $(ZDLDOWNLOAD); do \
 #		echo "ZDESKTOP_LINUX_DOWNLOAD_LINK = /zimbra/downloads/$$download" >> $(WEBAPP_DIR)/zimbraAdmin/WEB-INF/classes/messages/ZaMsg.properties; \
 #	done
