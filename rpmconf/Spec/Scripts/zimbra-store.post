@@ -17,10 +17,6 @@
 H=`hostname -s`
 I=`hostname -i`
 
-#Symlinks
-rm -f /opt/zimbra/mysql
-ln -s /opt/zimbra/mysql-standard-5.0.87-pc-linux-gnu-i686-glibc23 /opt/zimbra/mysql
-
 if [ -f /opt/zimbra/db/db.sql ]; then
   mv /opt/zimbra/db/db.sql /opt/zimbra/db/db.sql.in
   sed -e "/server.hostname/ s/local/$H/" /opt/zimbra/db/db.sql.in > /opt/zimbra/db/db.sql

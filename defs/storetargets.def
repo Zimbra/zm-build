@@ -98,7 +98,6 @@ $(STORE_DEST_DIR):
 $(STORE_DEST_DIR)/$(MYSQL_DIR):
 	@echo "*** Creating mysql"
 	(cd $(STORE_DEST_DIR); tar xzf $(MYSQL_SOURCE).tar.gz;)
-	(cd $(STORE_DEST_DIR)/$(MYSQL_DIR)/lib; tar xzf $(THIRD_PARTY_BUILDS)/$(BUILD_PLATFORM)/mysql/mysql-$(MYSQL_CLIENT_VERSION).tgz)
 	rm -f $(STORE_DEST_DIR)/$(MYSQL_DIR)/bin/mysqltest_embedded
 	rm -f $(STORE_DEST_DIR)/$(MYSQL_DIR)/bin/mysql_client_test_embedded
 	rm -rf $(STORE_DEST_DIR)/$(MYSQL_DIR)/mysql-test

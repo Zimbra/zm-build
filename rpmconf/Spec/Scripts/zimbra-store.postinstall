@@ -17,25 +17,8 @@
 rm -f /opt/zimbra/perdition
 
 PLAT=`/opt/zimbra/libexec/get_plat_tag.sh`
-OS_ARCH=powerpc
 MYSQL_VERSION=5.0.87
 JETTY_VERSION=6.1.22.z6
-
-if [ "x$PLAT" = "xMACOSXx86" -o "x$PLAT" = "xMACOSXx86_10.5" ]; then
-  OS_ARCH=i686
-  OS_REL=8.2.0
-elif [ x"$PLAT" = "xMACOSXx86_10.6" ]; then
-  OS_ARCH=$(uname -p)
-  OS_REL=10
-fi
-
-if [ -L /opt/zimbra/mysql ]; then
-  rm -f /opt/zimbra/mysql
-fi
-ln -s /opt/zimbra/mysql-standard-${MYSQL_VERSION}-apple-darwin${OS_REL}-${OS_ARCH} /opt/zimbra/mysql
-# Can't get the dylib to hold the correct path...
-rm -f /opt/zimbra/mysql-standard-${MYSQL_VERSION}-apple-darwin${OS_REL}-${OS_ARCH}/lib/mysql
-ln -s /opt/zimbra/mysql-standard-${MYSQL_VERSION}-apple-darwin${OS_REL}-${OS_ARCH}/lib /opt/zimbra/mysql-standard-${MYSQL_VERSION}-apple-darwin${OS_REL}-${OS_ARCH}/lib/mysql
 
 if [ -e /opt/zimbra/verity ]; then
   rm -rf /opt/zimbra/verity

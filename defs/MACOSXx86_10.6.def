@@ -22,7 +22,6 @@ JAVA_BINARY := /opt/zimbra/java/bin/java
 OS_PLATFORM ?= $(shell uname -p)
 OS_RELEASE ?= darwin$(shell uname -r)
 MYSQL_VERSION   := standard-$(MYSQL_VERSION_STRING)-apple-$(OS_RELEASE)-$(OS_PLATFORM)
-MYSQL_CLIENT_VERSION := standard-$(MYSQL_VERSION_STRING)-clientlibs
 
 BUNDLE_EXT := dmg
 

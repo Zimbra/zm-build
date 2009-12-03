@@ -28,6 +28,10 @@ else
 	ln -s /opt/zimbra/jdk1.6.0_17 /opt/zimbra/java
 fi
 
+#Symlinks
+rm -f /opt/zimbra/mysql
+ln -s /opt/zimbra/mysql-standard-5.0.87-pc-linux-gnu-i686-glibc23 /opt/zimbra/mysql
+
 rm -f /opt/zimbra/bdb
 ln -s /opt/zimbra/bdb-4.7.25.4 /opt/zimbra/bdb
 
