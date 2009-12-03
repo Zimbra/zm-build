@@ -117,7 +117,7 @@ if [ -f /etc/prelink.conf ]; then
     echo "-l /opt/zimbra/bdb/lib" >> /etc/prelink.conf
     echo "-l /opt/zimbra/openldap/lib" >> /etc/prelink.conf
     echo "-l /opt/zimbra/cyrus-sasl/lib" >> /etc/prelink.conf
-    echo "-l /opt/zimbra/mysql/lib" >> /etc/prelink.conf
+    echo "-l /opt/zimbra/mysql/lib/mysql" >> /etc/prelink.conf
     if [ -x /usr/sbin/prelink ]; then
       /usr/sbin/prelink -amR > /dev/null 2>&1
     fi
