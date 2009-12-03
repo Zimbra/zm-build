@@ -3017,9 +3017,6 @@ sub upgrade603GA {
 sub upgrade604GA {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
   main::progress("Updating from 6.0.4_GA\n");
-  if (main::isInstalled("zimbra-ldap") && $isLdapMaster) {
-    main::runAsZimbra("zmjava com.zimbra.cs.account.ldap.upgrade.LdapUpgrade -b 42896 -v");
-  }
   return 0;
 }
 
