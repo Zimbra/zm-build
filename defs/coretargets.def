@@ -349,7 +349,7 @@ $(CORE_DEST_DIR)/$(SASL_DIR)-$(SASL_VERSION):
 
 $(CORE_DEST_DIR)/$(LDAP_DIR)-libs-$(LDAP_VERSION):
 	@echo "*** Creating openldap client libraries"
-	mkdir -p $@
+	mkdir -p $(CORE_DEST_DIR)/$(LDAP_DIR)-$(LDAP_VERSION)
 	(cd $(CORE_DEST_DIR); tar xzf $(LDAP_LIBS).tgz;)
 
 $(CORE_DEST_DIR)/$(TCMALLOC_DIR):
