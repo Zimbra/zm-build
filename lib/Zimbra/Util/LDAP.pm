@@ -56,6 +56,8 @@ sub doLdap() {
       $ldap_key="olcSecurity";
       chomp($value);
       $value="ssf=$value";
+    } elsif ($key eq "ldap_common_writetimeout") {
+      $ldap_key="olcWriteTimeout";
     } else {
       main::logMsg(2,"LDAP common: Unknown key: $key");
       $rc=1;
