@@ -3023,6 +3023,41 @@ sub upgrade604GA {
 sub upgrade605GA {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
   main::progress("Updating from 6.0.5_GA\n");
+  if (main::isInstalled("zimbra-ldap")) {
+    # 43040, must be done on all LDAP servers
+    my $ldap_pass = `$su "zmlocalconfig -s -m nokey ldap_root_password`;
+    my $bind_url;
+    if ($isLdapMaster) {
+      $bind_url = `$su "zmlocalconfig -s -m nokey ldap_master_url`;
+    } else {
+      $bind_url = `$su "zmlocalconfig -s -m nokey ldap_bind_url`;
+      if ($bind_url eq "" ) {
+        $bind_url = `$su "zmlocalconfig -s -m nokey ldap_url`;
+        my $junk;
+        ($bind_url, $junk) = split / /, $bind_url, 2;
+      } 
+    }
+    my $start_tls_supported = su "zmlocalconfig -s -m nokey ldap_starttls_supported"
+    my $ldap;
+    chomp($bind_url);
+    chomp($ldap_pass);
+    chomp($start_tls_supported);
+    unless($ldap = Net::LDAP->new($bind_url)) {
+       main::progress("Unable to contact $bind_url: $!\n");
+    }
+    if ($start_tls_supported) {
+      my $result = $ldap->start_tls(verify=>'none');
+      if ($result->code()) {
+        main::progress("Unable to startTLS: $!\n");
+        return 1;
+      }
+    }
+    my $result = $ldap->bind("cn=config", password => $ldap_pass);
+    unless($result->code()) {
+      $result = $ldap->modify( "cn=config", add => { 'olcWriteTimeout' => '0'});
+    }
+    $result = $ldap->unbind;
+  }
   return 0;
 }
 
