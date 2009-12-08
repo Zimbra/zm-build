@@ -3037,7 +3037,7 @@ sub upgrade605GA {
         ($bind_url, $junk) = split / /, $bind_url, 2;
       } 
     }
-    my $start_tls_supported = su "zmlocalconfig -s -m nokey ldap_starttls_supported"
+    my $start_tls_supported = `$su "zmlocalconfig -s -m nokey ldap_starttls_supported"`;
     my $ldap;
     chomp($bind_url);
     chomp($ldap_pass);
