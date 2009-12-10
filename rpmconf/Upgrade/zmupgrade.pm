@@ -3024,6 +3024,9 @@ sub upgrade605GA {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
   main::progress("Updating from 6.0.5_GA\n");
   if (main::isInstalled("zimbra-ldap")) {
+    # 43147
+    main::runAsZimbra("zmjava com.zimbra.cs.account.ldap.upgrade.LdapUpgrade -b 43147 -v")
+      if $isLdapMaster;
     # 43040, must be done on all LDAP servers
     my $ldap_pass = `$su "zmlocalconfig -s -m nokey ldap_root_password`;
     my $bind_url;
