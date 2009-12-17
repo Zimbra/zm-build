@@ -21,6 +21,4 @@
 # Check zimbraVersionCheckURL for new update. 
 # Only runs if this server matches zimbraVersionCheckServer 
 #
-30 2 * * 7 /opt/zimbra/libexec/zmcheckversion >> /dev/null 2>&1
-
-
+30 2 * * 7 /opt/zimbra/libexec/zmcheckversion -c >> /dev/null 2>&1
