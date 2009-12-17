@@ -6229,7 +6229,7 @@ sub configLog {
 sub setupSyslog {
   progress ("Setting up syslog.conf...");
   if ( -f "/opt/zimbra/bin/zmsyslogsetup") {
-    my $rc = 0xffff & system("/opt/zimbra/bin/zmsyslogsetup local");
+    my $rc = runAsRoot("/opt/zimbra/bin/zmsyslogsetup local");
     if ($rc) {
       progress ("Failed\n");
       } else {
