@@ -3558,7 +3558,7 @@ sub migrateLdap($) {
             print OUT $_;
           }
         } else {
-          main::progress("Valid backup file not found, exiting.\n");
+          main::progress("Valid LDAP backup file not found, exiting.\n");
           return 1;
         }
         chmod 0644, $outfile if ( -s $outfile );
