@@ -494,6 +494,16 @@ sub upgrade {
     last if ($v eq $targetVersion);
   }
 
+  # start ldap
+  if (main::isInstalled ("zimbra-ldap")) {
+    if($startMajor < 6 && $targetMajor >= 6) {
+      &updateLdapBdbConfig("6.0.0_GA");
+      my $rc=&migrateLdap("6.0.0_GA");
+      if ($rc) { return 1; }
+    }
+    if (startLdap()) {return 1;} 
+  }
+
   if (main::isInstalled("zimbra-store")) {
 
     doMysqlTableCheck() if ($needMysqlTableCheck);
@@ -519,17 +529,6 @@ sub upgrade {
       $curSchemaVersion = Migrate::getSchemaVersion();
     }
     stopSql();
-  }
-
-
-  # start ldap
-  if (main::isInstalled ("zimbra-ldap")) {
-    if($startMajor < 6 && $targetMajor >= 6) {
-      &updateLdapBdbConfig("6.0.0_GA");
-      my $rc=&migrateLdap("6.0.0_GA");
-      if ($rc) { return 1; }
-    }
-    if (startLdap()) {return 1;} 
   }
 
   $found = 0;
@@ -3558,6 +3557,7 @@ sub migrateLdap($) {
             print OUT $_;
           }
         } else {
+          main::progress("LDAP backup file /opt/zimbra/data/ldap/ldap.bak is empty.\n");
           main::progress("Valid LDAP backup file not found, exiting.\n");
           return 1;
         }
