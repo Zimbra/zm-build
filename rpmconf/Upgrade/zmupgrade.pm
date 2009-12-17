@@ -3028,14 +3028,14 @@ sub upgrade605GA {
       main::runAsZimbra("zmjava com.zimbra.cs.account.ldap.upgrade.LdapUpgrade -b 43147 -v");
     }
     # 43040, must be done on all LDAP servers
-    my $ldap_pass = `$su "zmlocalconfig -s -m nokey ldap_root_password`;
+    my $ldap_pass = `$su "zmlocalconfig -s -m nokey ldap_root_password"`;
     my $bind_url;
     if ($isLdapMaster) {
-      $bind_url = `$su "zmlocalconfig -s -m nokey ldap_master_url`;
+      $bind_url = `$su "zmlocalconfig -s -m nokey ldap_master_url"`;
     } else {
-      $bind_url = `$su "zmlocalconfig -s -m nokey ldap_bind_url`;
+      $bind_url = `$su "zmlocalconfig -s -m nokey ldap_bind_url"`;
       if ($bind_url eq "" ) {
-        $bind_url = `$su "zmlocalconfig -s -m nokey ldap_url`;
+        $bind_url = `$su "zmlocalconfig -s -m nokey ldap_url"`;
         my $junk;
         ($bind_url, $junk) = split / /, $bind_url, 2;
       } 
