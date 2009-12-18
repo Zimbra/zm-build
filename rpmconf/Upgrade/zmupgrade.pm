@@ -3022,6 +3022,12 @@ sub upgrade604GA {
 sub upgrade605GA {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
   main::progress("Updating from 6.0.5_GA\n");
+  if (main::isInstalled("zimbra-store")) {
+    my $servername = main::getLocalConfig("zimbra_server_hostname");
+    my $serverId = main::getLdapServerValue("zimbraId", $servername);
+    upgradeLdapConfigValue("zimbraVersionCheckServer", $serverId, "");
+  }
+
   if (main::isInstalled("zimbra-ldap")) {
     if ($isLdapMaster) {
       main::runAsZimbra("zmjava com.zimbra.cs.account.ldap.upgrade.LdapUpgrade -b 42877 -v");

@@ -1072,6 +1072,9 @@ sub setLdapDefaults {
     if ($config{zimbraVersionCheckSendNotifications} eq "");
 
   if ($config{zimbraVersionCheckSendNotifications} eq "TRUE") {
+    $config{zimbraVersionCheckServer} =
+      getLdapConfigValue("zimbraVersionCheckServer");
+
     $config{zimbraVersionCheckNotificationEmail} = 
       getLdapConfigValue("zimbraVersionCheckNotificationEmail");
 
@@ -5044,6 +5047,11 @@ sub configSetStoreDefaults {
            runAsZimbra("/opt/zimbra/libexec/zmproxyconfig -w -e -o ".
                        "-a $config{HTTPPORT}:$config{HTTPPROXYPORT}:$config{HTTPSPORT}:$config{HTTPSPROXYPORT} -H $config{HOSTNAME}");
     }
+  }
+
+  if ($config{zimbraVersionCheckServer} eq "") { 
+    my $serverId = getLdapServerValue("zimbraId");
+    setLdapGlobalConfig("zimbraVersionCheckServer", $serverId);
   }
 
   # this should probably be in a global config section
