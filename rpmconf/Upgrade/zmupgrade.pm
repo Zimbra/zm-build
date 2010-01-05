@@ -3035,35 +3035,32 @@ sub upgrade605GA {
     }
     # 43040, must be done on all LDAP servers
     my $ldap_pass = `$su "zmlocalconfig -s -m nokey ldap_root_password"`;
-    my $bind_url;
-    if ($isLdapMaster) {
-      $bind_url = `$su "zmlocalconfig -s -m nokey ldap_master_url"`;
-    } else {
-      $bind_url = `$su "zmlocalconfig -s -m nokey ldap_bind_url"`;
-      if ($bind_url eq "" ) {
-        $bind_url = `$su "zmlocalconfig -s -m nokey ldap_url"`;
-        my $junk;
-        ($bind_url, $junk) = split / /, $bind_url, 2;
-      } 
-    }
-    my $start_tls_supported = `$su "zmlocalconfig -s -m nokey ldap_starttls_supported"`;
     my $ldap;
-    chomp($bind_url);
     chomp($ldap_pass);
-    chomp($start_tls_supported);
-    unless($ldap = Net::LDAP->new($bind_url)) {
-       main::progress("Unable to contact $bind_url: $!\n");
-    }
-    if ($start_tls_supported) {
-      my $result = $ldap->start_tls(verify=>'none');
-      if ($result->code()) {
-        main::progress("Unable to startTLS: $!\n");
-        return 1;
-      }
+    unless($ldap = Net::LDAP->new('ldapi://%2fopt%2fzimbra%2fopenldap%2fvar%2frun%2fldapi/')) {
+       main::progress("Unable to contact to ldapi: $!\n");
     }
     my $result = $ldap->bind("cn=config", password => $ldap_pass);
     unless($result->code()) {
       $result = $ldap->modify( "cn=config", add => { 'olcWriteTimeout' => '0'});
+    }
+    # 43701, replica's only
+    if (!$isLdapMaster) {
+      $result = $ldap->search(
+        base => "olcDatabase={2}hdb,cn=config",
+        filter => "(olcSyncrepl=*)",
+        attrs => ['olcSyncrepl']
+      );
+      my $entry=$result->entry(0);
+      my $attr = $entry->get_value("olcSyncrepl");
+      $attr =  $attr . " tls_cacertdir=/opt/zimbra/conf/ca";
+
+      $result = $ldap->modify(
+        $entry->dn,
+        replace => {
+          olcSyncrepl => "$attr",
+        }
+      );
     }
     $result = $ldap->unbind;
   }
