@@ -20,16 +20,16 @@
 echo "Performing installation check"
 
 for i in core mta store ldap snmp logger apache spell; do
-	echo "Looking for $i"
+	echo -n "Looking for $i..."
 	pkgs=`find /Library/Receipts/zimbra-${i}* -type d -maxdepth 0 | sort -r`
 	first=1
 	for pkg in $pkgs; do
     if [ -f "${pkg}/Contents/Info.plist" ]; then
       VER=`grep -C1 CFBundleGetInfoString ${pkg}/Contents/Info.plist | tail -1 | sed -e 's/\<[^>]*\>//g' -e 's/^ *//g' | awk -F, '{print $1}' | awk '{print $1}'`
     fi
-		echo "Found $pkg $VER"
+		echo "found $VER."
 		if [ $first -ne 1 ]; then
-			echo Removing $pkg
+			echo "Removing $pkg"
 			/bin/rm -rf $pkg
 		fi
 		first=2

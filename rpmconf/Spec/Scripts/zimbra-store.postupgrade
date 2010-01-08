@@ -64,6 +64,18 @@ ln -s /opt/zimbra/jetty-${JETTY_VERSION} /opt/zimbra/mailboxd
 mkdir -p /opt/zimbra/mailboxd/logs
 chown zimbra:zimbra /opt/zimbra/mailboxd/logs
 
+if [ -f $SAVEDIR/keystore -a -d /opt/zimbra/tomcat/conf ]; then
+	cp -f $SAVEDIR/keystore /opt/zimbra/tomcat/conf/keystore
+	chown zimbra:zimbra /opt/zimbra/tomcat/conf/keystore 
+fi
+if [ -f $SAVEDIR/keystore -a -d /opt/zimbra/jetty/etc ]; then
+  echo "Restoring $SAVEDIR/keystore to /opt/zimbra/jetty/etc"
+	cp -f $SAVEDIR/keystore /opt/zimbra/jetty/etc/keystore
+	chown zimbra:zimbra /opt/zimbra/jetty/etc/keystore 
+else 
+  echo "Couldn't restore /opt/zimbra/jetty/etc/keystore"
+fi
+
 SUDOMODE=`perl -e 'my $mode=(stat("/etc/sudoers"))[2];printf("%04o\n",$mode & 07777);'`
 egrep -v -e '^%zimbra.*tomcat' -e '^%zimbra.*mailboxdmgr' /etc/sudoers > /tmp/sudoers
 echo "%zimbra ALL=NOPASSWD:/opt/zimbra/libexec/zmmailboxdmgr" >> /tmp/sudoers

@@ -106,14 +106,6 @@ if [ -f $SAVEDIR/cacerts ]; then
 	cp -f $SAVEDIR/cacerts /opt/zimbra/java/jre/lib/security/cacerts
 	chown zimbra:zimbra /opt/zimbra/java/jre/lib/security/cacerts 
 fi
-if [ -f $SAVEDIR/keystore -a -d /opt/zimbra/tomcat/conf ]; then
-	cp -f $SAVEDIR/keystore /opt/zimbra/tomcat/conf/keystore
-	chown zimbra:zimbra /opt/zimbra/tomcat/conf/keystore 
-fi
-if [ -f $SAVEDIR/keystore -a -d /opt/zimbra/jetty/etc ]; then
-	cp -f $SAVEDIR/keystore /opt/zimbra/jetty/etc/keystore
-	chown zimbra:zimbra /opt/zimbra/jetty/etc/keystore 
-fi
 if [ -f $SAVEDIR/smtpd.key ]; then
 	cp -f $SAVEDIR/smtpd.key /opt/zimbra/conf/smtpd.key
 	chown zimbra:zimbra /opt/zimbra/conf/smtpd.key 
@@ -122,9 +114,9 @@ if [ -f $SAVEDIR/smtpd.crt ]; then
 	cp -f $SAVEDIR/smtpd.crt /opt/zimbra/conf/smtpd.crt 
 	chown zimbra:zimbra /opt/zimbra/conf/smtpd.crt
 fi
-if [ -d $SAVEDIR/zimlet -a -d /opt/zimbra/mailboxd/webapps/service ]; then
-  cp -rf $SAVEDIR/zimlet /opt/zimbra/mailboxd/webapps/service/
-fi
+#if [ -d $SAVEDIR/zimlet -a -d /opt/zimbra/mailboxd/webapps/service ]; then
+#  cp -rf $SAVEDIR/zimlet /opt/zimbra/mailboxd/webapps/service/
+#fi
 
 SUDOMODE=`perl -e 'my $mode=(stat("/etc/sudoers"))[2];printf("%04o\n",$mode & 07777);'`
 egrep -v -e '^%zimbra.*zmcertmgr' /etc/sudoers > /tmp/sudoers

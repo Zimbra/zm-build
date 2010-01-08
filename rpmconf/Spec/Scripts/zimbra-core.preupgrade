@@ -39,7 +39,6 @@ done
 chown zimbra:zimbra $SAVEDIR
 chmod 750 $SAVEDIR
 
-# yes, it needs massaging to be fed back in...
 $SU "/opt/zimbra/bin/zmcontrol stop"
 #$SU "/opt/zimbra/bin/zmlocalconfig -m shell > $SAVEDIR/config.save"
 
@@ -52,8 +51,14 @@ fi
 if [ -f "/opt/zimbra/tomcat/conf/keystore" ]; then
 	cp -f /opt/zimbra/tomcat/conf/keystore $SAVEDIR
 fi 
-if [ -f "/opt/zimbra/jetty/conf/keystore" ]; then
-	cp -f /opt/zimbra/jetty/conf/keystore $SAVEDIR
+if [ -f "/opt/zimbra/jetty/etc/keystore" ]; then
+  echo "Saving backup copy of /opt/zimbra/jetty/etc/keystore"
+	cp -f /opt/zimbra/jetty/etc/keystore $SAVEDIR
+else 
+  echo "Keystore didn't exist in /opt/zimbra/jetty/etc/keystore"
+  ls -ld /opt/zimbra/jetty
+  ls -ld /opt/zimbra/jetty/etc
+  ls -ld /opt/zimbra/jetty/etc/keystore
 fi 
 if [ -f "/opt/zimbra/conf/smtpd.key" ]; then
 	cp -f /opt/zimbra/conf/smtpd.key $SAVEDIR
