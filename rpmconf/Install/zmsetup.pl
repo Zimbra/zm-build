@@ -4871,6 +4871,10 @@ sub configInstallCert {
   } elsif (isInstalled("zimbra-store")) {
     if (! (-f "$config{mailboxd_keystore}") || $needNewCert ne "") {
       progress ("Installing mailboxd SSL certificates...");
+      detail("$config{mailboxd_keystore} didn't exist.")
+        if (! -f "$config{mailboxd_keystore}");
+      detail("$needNewCert was ne \"\".")
+        if ($needNewCert ne "");
       $rc = runAsRoot("/opt/zimbra/bin/zmcertmgr deploycrt self $needNewCert");
       if ($rc != 0) {
         progress ( "failed.\n" );
@@ -5542,10 +5546,8 @@ sub configInstallZimlets {
   chown($uid,$gid, $zimlet_directory);
   chmod(0755, $zimlet_directory);
 
-  mkdir($zimlet_properties)
-    if (! -d $zimlet_properties);
-  chown($uid,$gid, $zimlet_properties);
-  chmod(0755, $zimlet_properties);
+  system("/bin/rm -rf $zimlet_properties")
+    if ( -d $zimlet_properties);
 
   # remove deprecated zimlets on upgrades
   if (!$newinstall) {
