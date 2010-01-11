@@ -2923,6 +2923,7 @@ sub upgrade600BETA2 {
     }
   }
   main::deleteLocalConfig("convertd_version");
+  &cleanPostfixLC;
   main::deleteLocalConfig("postfix_version");
   main::deleteLocalConfig("mysql_memory_percent");
   main::deleteLocalConfig("mysql_innodb_log_buffer_size");
@@ -3020,6 +3021,7 @@ sub upgrade604GA {
 sub upgrade605GA {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
   main::progress("Updating from 6.0.5_GA\n");
+  &cleanPostfixLC;
   if (main::isInstalled("zimbra-store")) {
     my $servername = main::getLocalConfig("zimbra_server_hostname");
     my $serverId = main::getLdapServerValue("zimbraId", $servername);
@@ -3215,6 +3217,19 @@ sub getInstalledPackages {
     }
   }
 
+}
+sub cleanPostfixLC {
+
+  my ($var,$val);
+  foreach $var qw(command_directory daemon_directory mailq_path manpage_directory newaliases_path queue_directory sendmail_path) {
+
+    $val = main::getLocalConfig("postfix_${var}");
+    if ($val =~ /postfix-(\d.*)\//) {
+      main::detail("Removing $1 from postfix_${var}");
+      $val =~ s/postfix-\d.*\//postfix\//;
+      main::setLocalConfig("postfix_${var}", "$val");
+    }
+  }
 }
 
 sub updatePostfixLC {
