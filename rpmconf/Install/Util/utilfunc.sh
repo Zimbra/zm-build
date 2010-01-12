@@ -431,6 +431,26 @@ EOF
     fi
   done
 
+  if [ $PLATFORM = "SuSEES10" -o $PLATFORM = "SLES10_64" ]; then
+    SGOOD=yes
+    isInstalled libstdc++33
+    if [ "x$PKGINSTALLED" = "x" ]; then
+      SGOOD="no"
+    fi
+    if [ "x$SGOOD" = "xno" ]; then
+      isInstalled compat-libstdc++-5.0.7
+      if [ "x$PKGINSTALLED" != "x" ]; then
+        SGOOD="yes"
+      fi
+    fi
+    if [ "x$SGOOD" = "xno" ]; then
+      GOOD="no"
+      echo "     MISSING: libstdc++33 or compat-libstdc++-5.0.7"
+    else
+      echo "     FOUND: libstdc++33 or compat-libstdc++-5.0.7"
+    fi
+  fi
+
   for i in $PREREQ_LIBS; do
     #echo -n "    $i..."
     if [ -L $i -o -f $i ]; then
@@ -2022,11 +2042,11 @@ getPlatformVars() {
       PREREQ_LIBS="/usr/lib64/libstdc++.so.6"
       PRESUG_PACKAGE="perl-5.10.0 sysstat"
     elif [ $PLATFORM = "SuSEES10" ]; then
-      PREREQ_PACKAGES="sudo libidn gmp compat-libstdc++-5.0.7"
+      PREREQ_PACKAGES="sudo libidn gmp"
       PREREQ_LIBS="/usr/lib/libstdc++.so.5 /usr/lib/libstdc++.so.6"
       PRESUG_PACKAGES="perl-5.8.8 sysstat"
     elif [ $PLATFORM = "SLES10_64" ]; then
-      PREREQ_PACKAGES="sudo libidn gmp compat-libstdc++-5.0.7"
+      PREREQ_PACKAGES="sudo libidn gmp"
       PREREQ_LIBS="/usr/lib64/libstdc++.so.5 /usr/lib64/libstdc++.so.6"
       PRESUG_PACKAGES="perl-5.8.8 sysstat"
     elif [ $PLATFORM = "SLES11" ]; then
