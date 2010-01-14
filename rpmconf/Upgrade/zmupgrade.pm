@@ -3053,7 +3053,9 @@ sub upgrade605GA {
       );
       my $entry=$result->entry(0);
       my $attr = $entry->get_value("olcSyncrepl");
-      $attr =  $attr . " tls_cacertdir=/opt/zimbra/conf/ca";
+      if ($attr !~ /tls_cacertdir/) {
+        $attr =  $attr . " tls_cacertdir=/opt/zimbra/conf/ca";
+      }
 
       $result = $ldap->modify(
         $entry->dn,
