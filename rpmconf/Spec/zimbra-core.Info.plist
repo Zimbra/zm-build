@@ -9,7 +9,7 @@
 	<key>CFBundleName</key>
 	<string>zimbra-core</string>
 	<key>CFBundleShortVersionString</key>
-	<string>@@MAJOR@@.@@MINOR@@</string>
+	<string>@@MAJOR@@.@@MINOR@@.@@MICRO@@</string>
 	<key>BuildVersion</key>
 	<string>@@BUILDNUM@@</string>
 	<key>SourceVersion</key>
