@@ -185,6 +185,7 @@ my %updateFuncs = (
   "5.0.20_GA" => \&upgrade5020GA,
   "5.0.21_GA" => \&upgrade5021GA,
   "5.0.22_GA" => \&upgrade5022GA,
+  "5.0.23_GA" => \&upgrade5023GA,
   "6.0.0_BETA1" => \&upgrade600BETA1,
   "6.0.0_BETA2" => \&upgrade600BETA2,
   "6.0.0_RC1" => \&upgrade600RC1,
@@ -195,6 +196,7 @@ my %updateFuncs = (
   "6.0.3_GA" => \&upgrade603GA,
   "6.0.4_GA" => \&upgrade604GA,
   "6.0.5_GA" => \&upgrade605GA,
+  "6.0.6_GA" => \&upgrade606GA,
 );
 
 my @versionOrder = (
@@ -265,6 +267,7 @@ my @versionOrder = (
   "5.0.20_GA",
   "5.0.21_GA",
   "5.0.22_GA",
+  "5.0.23_GA",
   "6.0.0_BETA1",
   "6.0.0_BETA2",
   "6.0.0_RC1",
@@ -275,6 +278,7 @@ my @versionOrder = (
   "6.0.3_GA",
   "6.0.4_GA",
   "6.0.5_GA",
+  "6.0.6_GA",
 );
 
 my ($startVersion,$startMajor,$startMinor,$startMicro);
@@ -457,6 +461,8 @@ sub upgrade {
     main::progress("This appears to be 5.0.21_GA\n");
   } elsif ($startVersion eq "5.0.22_GA") {
     main::progress("This appears to be 5.0.22_GA\n");
+  } elsif ($startVersion eq "5.0.23_GA") {
+    main::progress("This appears to be 5.0.23_GA\n");
   } elsif ($startVersion eq "6.0.0_BETA1") {
     main::progress("This appears to be 6.0.0_BETA1\n");
   } elsif ($startVersion eq "6.0.0_BETA2") {
@@ -477,6 +483,8 @@ sub upgrade {
     main::progress("This appears to be 6.0.4_GA\n");
   } elsif ($startVersion eq "6.0.5_GA") {
     main::progress("This appears to be 6.0.5_GA\n");
+  } elsif ($startVersion eq "6.0.6_GA") {
+    main::progress("This appears to be 6.0.6_GA\n");
   } else {
     main::progress("I can't upgrade version $startVersion\n\n");
     return 1;
@@ -2717,6 +2725,12 @@ sub upgrade5022GA {
   return 0;
 }
 
+sub upgrade5023GA {
+  my ($startBuild, $targetVersion, $targetBuild) = (@_);
+  main::progress("Updating from 5.0.23_GA\n");
+  return 0;
+}
+
 sub upgrade600BETA1 {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
   main::progress("Updating from 6.0.0_BETA1\n");
@@ -3066,6 +3080,12 @@ sub upgrade605GA {
     }
     $result = $ldap->unbind;
   }
+  return 0;
+}
+
+sub upgrade606GA {
+  my ($startBuild, $targetVersion, $targetBuild) = (@_);
+  main::progress("Updating from 6.0.6_GA\n");
   return 0;
 }
 
