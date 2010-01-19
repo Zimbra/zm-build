@@ -1,5 +1,4 @@
-# Definitions for MACOSX
-
+# Definitions for MACOSXx86_10.6
 
 PACKAGING_COMMAND := /Developer/Applications/Utilities/PackageMaker.app/Contents/MacOS/PackageMaker
 
@@ -18,10 +17,11 @@ PLATFORM_CORE_COMPONENTS = \
 
 include $(DEFS_DIR)/plat_common.def
 
+OS_RELEASE := 10
+OS_PLATFORM := $(shell uname -p)
+
 JAVA_BINARY := /opt/zimbra/java/bin/java
-OS_PLATFORM ?= $(shell uname -p)
-OS_RELEASE ?= 10
-MYSQL_VERSION   := standard-$(MYSQL_VERSION_STRING)-apple-$(OS_RELEASE)-$(OS_PLATFORM)
+MYSQL_VERSION   := standard-$(MYSQL_VERSION_STRING)-apple-darwin$(OS_RELEASE)-$(OS_PLATFORM)
 
 BUNDLE_EXT := dmg
 
