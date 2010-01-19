@@ -2709,6 +2709,9 @@ sub upgrade5021GA {
 sub upgrade5022GA {
 	my ($startBuild, $targetVersion, $targetBuild) = (@_);
 	main::progress("Updating from 5.0.22_GA\n");
+  if (main::isInstalled("zimbra-ldap") && $isLdapMaster) {
+    upgradeLdapConfigValue("zimbraMailUseDirectBuffers", "FALSE", "");
+  }
 	return 0;
 }
 
