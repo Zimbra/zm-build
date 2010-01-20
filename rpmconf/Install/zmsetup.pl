@@ -2214,8 +2214,8 @@ sub setHostName {
     my ($u,$d) = split ('@', $config{zimbraBackupReportEmailRecipients});
     $config{zimbraBackupReportEmailRecipients} = $u.'@'.$config{CREATEDOMAIN};
 
-    my ($u,$d) = split ('@', $config{zimbraBackupReportEmailRecipients});
-    $config{zimbraBackupReportEmailRecipients} = $u.'@'.$config{CREATEDOMAIN};
+    my ($u,$d) = split ('@', $config{zimbraBackupReportEmailSender});
+    $config{zimbraBackupReportEmailSender} = $u.'@'.$config{CREATEDOMAIN};
   }
   my ($suser,$sdomain) = split ('@', $config{SMTPSOURCE}, 2);
   if ($sdomain eq $old) {
