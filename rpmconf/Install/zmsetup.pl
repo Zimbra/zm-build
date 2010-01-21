@@ -4426,11 +4426,14 @@ sub configSetNEFeatures {
 
 sub configInitBackupPrefs {
   if (isEnabled("zimbra-store") && isNetwork()) {
-    foreach my $bit (split (/ /, $config{zimbraBackupReportEmailRecipients})) {
-      chomp ($bit);
-      runAsZimbra("$ZMPROV mcf +zimbraBackupReportEmailRecipients $bit");
+    foreach my $recip (split(/\n/, $config{zimbraBackupReportEmailRecipients})) {
+      chomp($recip);
+      runAsZimbra("$ZMPROV mcf +zimbraBackupReportEmailRecipients $recip");
     }
-    runAsZimbra("$ZMPROV mcf zimbraBackupReportEmailSender $config{zimbraBackupReportEmailSender}");
+    foreach my $sender (split(/\n/, $config{zimbraBackupReportEmailSender})) {
+      chomp($sender);
+      runAsZimbra("$ZMPROV mcf +zimbraBackupReportEmailSender $sender");
+    }
   }
 }
 
