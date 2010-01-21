@@ -4428,7 +4428,7 @@ sub configInitBackupPrefs {
   if (isEnabled("zimbra-store") && isNetwork()) {
     foreach my $bit (split (/ /, $config{zimbraBackupReportEmailRecipients})) {
       chomp ($bit);
-      runAsZimbra("$ZMPROV mcf zimbraBackupReportEmailRecipients $bit");
+      runAsZimbra("$ZMPROV mcf +zimbraBackupReportEmailRecipients $bit");
     }
     runAsZimbra("$ZMPROV mcf zimbraBackupReportEmailSender $config{zimbraBackupReportEmailSender}");
   }
