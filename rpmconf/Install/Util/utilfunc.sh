@@ -1292,6 +1292,14 @@ removeExistingInstall() {
         MOREPACKAGES="zimbra-apache $MOREPACKAGES"
         continue
       fi
+      if [ $p = "zimbra-store" -a ${ZM_CUR_MAJOR} -lt 6 ]; then
+        isInstalled "zimbra-convertd"
+        if [ x$PKGINSTALLED != "x" ]; then
+          echo -n "   zimbra-convertd..."
+          $PACKAGERM zimbra-convertd >/dev/null 2>&1
+          echo "done"
+        fi
+      fi
       echo -n "   $p..."
       $PACKAGERM $p > /dev/null 2>&1
       echo "done"
