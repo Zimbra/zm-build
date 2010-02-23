@@ -1,6 +1,6 @@
 source: sourcetar ajaxtar
 
-sourcetar: zcs-$(SOURCE_TAG)-src.tgz 
+sourcetar: zcs-$(SOURCE_TAG)-src.tgz  zcs-$(SOURCE_TAG)-yahoo-src.tgz
 
 ajaxtar: AjaxTK-$(SOURCE_TAG)-src.tgz
 
@@ -9,3 +9,26 @@ AjaxTK-$(SOURCE_TAG)-src.tgz: $(PACKAGE_DIR)
 
 zcs-$(SOURCE_TAG)-src.tgz: $(PACKAGE_DIR)
 	(cd $(BUILD_ROOT)/..; ln -s . zcs-$(SOURCE_TAG)-src; tar chzf $(PACKAGE_DIR)/zcs-$(SOURCE_TAG)-src.tgz --exclude ZimbraBuild/$(ARCH) --exclude logs --exclude Velodrome --exclude ZimbraVoice --exclude ZimbraSyncCommon --exclude ThirdParty --exclude ThirdPartyBuilds --exclude ZimbraCluster --exclude ZimbraMAPIInstaller --exclude ZimbraSync --exclude ZimbraIsync --exclude ZimbraBackup --exclude ZimbraLicenseExtension --exclude ZimbraHSM --exclude ZimbraLicenseTools --exclude ZimbraQA --exclude ZimbraServer/src/windows --exclude ZimbraServer/src/macosx --exclude ZimbraIMInterop --exclude ZimbraNetwork/ZimbraImportWizard --exclude ZimbraCustomerServices --exclude zcs-$(SOURCE_TAG)-src/zcs-$(SOURCE_TAG)-src zcs-$(SOURCE_TAG)-src; rm -f zcs-$(SOURCE_TAG)-src; cd $(PACKAGE_DIR); ln -s zcs-$(SOURCE_TAG)-src.tgz zcs-src.tgz)
+
+# Contract source for Yahoo through 12/31/2010 but no later then 6/30/2011
+zcs-$(SOURCE_TAG)-yahoo-src.tgz: $(PACKAGE_DIR)
+	(cd $(BUILD_ROOT)/..; ln -s . zcs-$(SOURCE_TAG)-yahoo-src; tar chzf $(PACKAGE_DIR)/zcs-$(SOURCE_TAG)-yahoo-src.tgz \
+			--exclude ZimbraSyncCommon/src/java/com/zimbra/zimbrasync/Device.java \
+			--exclude ZimbraSyncCommon/src/java/com/zimbra/zimbrasync/ProvisionManager.java \
+			--exclude ZimbraSyncCommon/src/java/com/zimbra/zimbrasync/commands/Provision.java \
+			--exclude ZimbraSyncCommon/src/java/com/zimbra/zimbrasync/service/CancelPendingRemoteWipe.java \
+			--exclude ZimbraSyncCommon/src/java/com/zimbra/zimbrasync/service/GetDeviceStatus.java \
+			--exclude ZimbraSyncCommon/src/java/com/zimbra/zimbrasync/service/RemoteWipe.java \
+			--exclude ZimbraSyncCommon/src/java/com/zimbra/zimbrasync/service/RemoveDevice.java \
+			--exclude ZimbraSyncCommon/src/java/com/zimbra/zimbrasync/service/ResumeDevice.java \
+			--exclude ZimbraSyncCommon/src/java/com/zimbra/zimbrasync/service/SuspendDevice.java \
+			--exclude zcs-$(SOURCE_TAG)-yahoo-src/zcs-$(SOURCE_TAG)-yahoo-src \
+			zcs-$(SOURCE_TAG)-yahoo-src/ZimbraMAPI/src/INCLUDE \
+			zcs-$(SOURCE_TAG)-yahoo-src/ZimbraMAPI/src/SP \
+			zcs-$(SOURCE_TAG)-yahoo-src/ZimbraMAPI/src/UTIL \
+			zcs-$(SOURCE_TAG)-yahoo-src/ZimbraMAPI/src/ZCOLogCtl \
+			zcs-$(SOURCE_TAG)-yahoo-src/ZimbraMAPI/src/ZIMBRA \
+			zcs-$(SOURCE_TAG)-yahoo-src/ZimbraMAPI/vcproj/*.vcproj \
+			zcs-$(SOURCE_TAG)-yahoo-src/ZimbraSync \
+			zcs-$(SOURCE_TAG)-yahoo-src/ZimbraSyncCommon; \
+			rm -f zcs-$(SOURCE_TAG)-src; cd $(PACKAGE_DIR); ln -s zcs-$(SOURCE_TAG)-src.tgz zcs-yahoo-src.tgz)
