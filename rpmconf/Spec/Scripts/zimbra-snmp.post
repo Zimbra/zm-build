@@ -23,7 +23,7 @@ if [ -L "/opt/zimbra/snmp" ]; then
   rm -f /opt/zimbra/snmp
 fi
 if [ -L "/opt/zimbra/net-snmp" ]; then
-  rm -f /opt/zimbra/snmp
+  rm -f /opt/zimbra/net-snmp
 fi
 ln -s /opt/zimbra/net-snmp-5.5 /opt/zimbra/snmp
 ln -s /opt/zimbra/net-snmp-5.5 /opt/zimbra/net-snmp
