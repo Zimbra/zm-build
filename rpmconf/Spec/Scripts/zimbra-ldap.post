@@ -18,7 +18,7 @@
 shopt -s nullglob 
 
 #Symlinks
-
+rm -f /opt/zimbra/openldap-clibs
 rm -f /opt/zimbra/libtool
 ln -s /opt/zimbra/libtool-2.2.6b /opt/zimbra/libtool
 
