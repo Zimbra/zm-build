@@ -81,6 +81,8 @@ $(CONSOLE_DIR)/$(WEBAPP_BUILD_DIR)/zimbraAdmin.war:
 	rm -rf zimbraAdminConf
 	mkdir zimbraAdminConf
 	cp $(CONSOLE_DIR)/build/web.xml zimbraAdminConf
+	cp $(CONSOLE_DIR)/build/docs/jsapi-inventory.zip $(PACKAGE_DIR)/jsapi-inventory.zip
+	cp $(CONSOLE_DIR)/build/docs/jsapi-zimbra-doc.zip $(PACKAGE_DIR)/jsapi-zimbra-doc.zip
 
 $(WEBAPP_DIR)/zimbra.war: $(WEBAPP_DIR) $(CONSOLE_DIR)/$(WEBAPP_BUILD_DIR)/zimbra.war $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/work
 	mkdir $(WEBAPP_DIR)/zimbra
