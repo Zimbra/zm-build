@@ -431,26 +431,6 @@ EOF
     fi
   done
 
-  if [ $PLATFORM = "SuSEES10" -o $PLATFORM = "SLES10_64" ]; then
-    SGOOD=yes
-    isInstalled libstdc++33
-    if [ "x$PKGINSTALLED" = "x" ]; then
-      SGOOD="no"
-    fi
-    if [ "x$SGOOD" = "xno" ]; then
-      isInstalled compat-libstdc++-5.0.7
-      if [ "x$PKGINSTALLED" != "x" ]; then
-        SGOOD="yes"
-      fi
-    fi
-    if [ "x$SGOOD" = "xno" ]; then
-      GOOD="no"
-      echo "     MISSING: libstdc++33 or compat-libstdc++-5.0.7"
-    else
-      echo "     FOUND: libstdc++33 or compat-libstdc++-5.0.7"
-    fi
-  fi
-
   for i in $PREREQ_LIBS; do
     #echo -n "    $i..."
     if [ -L $i -o -f $i ]; then
@@ -1966,7 +1946,7 @@ getPlatformVars() {
       PRESUG_PACKAGES="perl-5.8.8 sysstat"
     fi
     if [ $PLATFORM = "UBUNTU8" ]; then
-      PREREQ_PACKAGES="sudo libidn11 libpcre3 libgmp3c2 libexpat1 libstdc++6 libstdc++5"
+      PREREQ_PACKAGES="sudo libidn11 libpcre3 libgmp3c2 libexpat1 libstdc++6"
       PRESUG_PACKAGES="perl-5.8.8 sysstat"
     fi
     if [ $PLATFORM = "DEBIAN4.0_64" ]; then
@@ -1974,15 +1954,15 @@ getPlatformVars() {
       PRESUG_PACKAGES="perl-5.8.8 sysstat"
     fi
     if [ $PLATFORM = "UBUNTU8_64" ]; then
-      PREREQ_PACKAGES="sudo libidn11 libpcre3 libgmp3c2 libexpat1 libstdc++6 libstdc++5 libperl5.8"
+      PREREQ_PACKAGES="sudo libidn11 libpcre3 libgmp3c2 libexpat1 libstdc++6 libperl5.8"
       PRESUG_PACKAGES="perl-5.8.8 sysstat"
     fi
     if [ $PLATFORM = "DEBIAN5" ]; then
-      PREREQ_PACKAGES="sudo libidn11 libpcre3 libgmp3c2 libexpat1 libstdc++6 libstdc++5"
+      PREREQ_PACKAGES="sudo libidn11 libpcre3 libgmp3c2 libexpat1 libstdc++6"
       PRESUG_PACKAGES="perl-5.10.0 sysstat"
     fi
     if [ $PLATFORM = "DEBIAN5_64" ]; then
-      PREREQ_PACKAGES="sudo libidn11 libpcre3 libgmp3c2 libexpat1 libstdc++6 libstdc++5 libperl5.10"
+      PREREQ_PACKAGES="sudo libidn11 libpcre3 libgmp3c2 libexpat1 libstdc++6 libperl5.10"
       PRESUG_PACKAGES="perl-5.10.0 sysstat"
     fi
   elif echo $PLATFORM | grep RPL > /dev/null 2>&1; then
@@ -2003,8 +1983,8 @@ getPlatformVars() {
       PREREQ_LIBS="/usr/lib/libstdc++.so.5 /usr/lib/libstdc++.so.6"
       PRESUG_PACKAGES="perl-5.8.5 sysstat"
     elif [ $PLATFORM = "RHEL5" -o $PLATFORM = "CentOS5" ]; then
-      PREREQ_PACKAGES="sudo libidn gmp compat-libstdc++-33"
-      PREREQ_LIBS="/usr/lib/libstdc++.so.5 /usr/lib/libstdc++.so.6"
+      PREREQ_PACKAGES="sudo libidn gmp"
+      PREREQ_LIBS="/usr/lib/libstdc++.so.6"
       PRESUG_PACKAGES="perl-5.8.8 sysstat"
     elif [ $PLATFORM = "MANDRIVA2006" ]; then
       PREREQ_PACKAGES="sudo libidn11 libgmp3 libstdc++6"
@@ -2022,8 +2002,8 @@ getPlatformVars() {
       PREREQ_LIBS="/usr/lib64/libstdc++.so.6"
       PRESUG_PACKAGE="sysstat"
     elif [ $PLATFORM = "RHEL5_64" -o $PLATFORM = "CentOS5_64" ]; then
-      PREREQ_PACKAGES="sudo libidn gmp compat-libstdc++-33"
-      PREREQ_LIBS="/usr/lib64/libstdc++.so.5 /usr/lib64/libstdc++.so.6"
+      PREREQ_PACKAGES="sudo libidn gmp"
+      PREREQ_LIBS="/usr/lib64/libstdc++.so.6"
       PRESUG_PACKAGES="perl-5.8.8 sysstat"
     elif [ $PLATFORM = "RHEL4_64" -o $PLATFORM = "CentOS4_64" ]; then
       PREREQ_PACKAGES="sudo libidn gmp compat-libstdc++-33"
@@ -2051,23 +2031,23 @@ getPlatformVars() {
       PRESUG_PACKAGE="perl-5.10.0 sysstat"
     elif [ $PLATFORM = "SuSEES10" ]; then
       PREREQ_PACKAGES="sudo libidn gmp"
-      PREREQ_LIBS="/usr/lib/libstdc++.so.5 /usr/lib/libstdc++.so.6"
+      PREREQ_LIBS="/usr/lib/libstdc++.so.6"
       PRESUG_PACKAGES="perl-5.8.8 sysstat"
     elif [ $PLATFORM = "SLES10_64" ]; then
       PREREQ_PACKAGES="sudo libidn gmp"
-      PREREQ_LIBS="/usr/lib64/libstdc++.so.5 /usr/lib64/libstdc++.so.6"
+      PREREQ_LIBS="/usr/lib64/libstdc++.so.6"
       PRESUG_PACKAGES="perl-5.8.8 sysstat"
     elif [ $PLATFORM = "SLES11" ]; then
-      PREREQ_PACKAGES="sudo libidn gmp libstdc++33"
-      PREREQ_LIBS="/usr/lib/libstdc++.so.5 /usr/lib/libstdc++.so.6"
+      PREREQ_PACKAGES="sudo libidn gmp"
+      PREREQ_LIBS="/usr/lib/libstdc++.so.6"
       PRESUG_PACKAGES="perl-5.10.0 sysstat"
     elif [ $PLATFORM = "SLES11_64" ]; then
-      PREREQ_PACKAGES="sudo libidn gmp libstdc++33"
-      PREREQ_LIBS="/usr/lib64/libstdc++.so.5 /usr/lib64/libstdc++.so.6"
+      PREREQ_PACKAGES="sudo libidn gmp"
+      PREREQ_LIBS="/usr/lib64/libstdc++.so.6"
       PRESUG_PACKAGES="perl-5.10.0 sysstat"
     else
       PREREQ_PACKAGES="sudo libidn gmp"
-      PREREQ_LIBS="/usr/lib/libstdc++.so.5"
+      PREREQ_LIBS="/usr/lib/libstdc++.so.6"
       PRESUG_PACKAGES="sysstat"
     fi
   fi
