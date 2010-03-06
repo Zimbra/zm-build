@@ -17,7 +17,7 @@
 rm -f /opt/zimbra/perdition
 
 PLAT=`/opt/zimbra/libexec/get_plat_tag.sh`
-MYSQL_VERSION=5.0.87
+MYSQL_VERSION=5.0.90
 JETTY_VERSION=6.1.22.z6
 
 if [ -e /opt/zimbra/verity ]; then

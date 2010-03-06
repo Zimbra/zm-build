@@ -17,7 +17,7 @@
 SAVEDIR=/opt/zimbra/.saveconfig
 PLAT=$(/opt/zimbra/libexec/get_plat_tag.sh)
 OS_ARCH=powerpc
-MYSQL_VERSION=5.0.87
+MYSQL_VERSION=5.0.90
 
 if [ "x$PLAT" = "xMACOSXx86_10.5" -o "x$PLAT" = "xMACOSXx86_10.6" ]; then
   SU="su - zimbra -c -l"
@@ -50,22 +50,22 @@ if [ -L /opt/zimbra/sleepycat ]; then
 fi
 
 rm -f /opt/zimbra/openssl
-ln -s /opt/zimbra/openssl-0.9.8l /opt/zimbra/openssl
+ln -s /opt/zimbra/openssl-0.9.8m /opt/zimbra/openssl
 
 rm -f /opt/zimbra/heimdal
 ln -s /opt/zimbra/heimdal-1.3.1 /opt/zimbra/heimdal
 
 rm -f /opt/zimbra/curl
-ln -s /opt/zimbra/curl-7.19.7 /opt/zimbra/curl
+ln -s /opt/zimbra/curl-7.20.0 /opt/zimbra/curl
 
 rm -f /opt/zimbra/cyrus-sasl
 ln -s /opt/zimbra/cyrus-sasl-2.1.23.3z /opt/zimbra/cyrus-sasl
 
 rm -f /opt/zimbra/openldap
-ln -s /opt/zimbra/openldap-2.4.21.3z /opt/zimbra/openldap
+ln -s /opt/zimbra/openldap-2.4.21.7z /opt/zimbra/openldap
 
 rm -f /opt/zimbra/tcmalloc
-ln -s /opt/zimbra/tcmalloc-1.4 /opt/zimbra/tcmalloc
+ln -s /opt/zimbra/tcmalloc-1.5 /opt/zimbra/tcmalloc
 
 if [ -d "/opt/zimbra/zimbramon/rrdtool" ]; then
   rm -rf /opt/zimbra/zimbramon/rrdtool

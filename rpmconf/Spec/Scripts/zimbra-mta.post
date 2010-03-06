@@ -24,7 +24,7 @@ rm -f /opt/zimbra/amavisd
 ln -s /opt/zimbra/amavisd-new-2.6.4 /opt/zimbra/amavisd
 
 rm -f /opt/zimbra/dspam
-ln -s /opt/zimbra/dspam-3.9.0-RC2 /opt/zimbra/dspam
+ln -s /opt/zimbra/dspam-3.9.0 /opt/zimbra/dspam
 
 rm -f /opt/zimbra/postfix
 ln -s /opt/zimbra/postfix-2.6.5.2z /opt/zimbra/postfix
