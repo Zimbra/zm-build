@@ -73,11 +73,6 @@ echo "%zimbra ALL=NOPASSWD:/opt/zimbra/bin/zmcertmgr" >> /tmp/sudoers
 mv -f /tmp/sudoers /etc/sudoers
 chmod $SUDOMODE /etc/sudoers
 
-egrep -v -e '^%zimbra.*zmstat-fd' /etc/sudoers > /tmp/sudoers
-echo "%zimbra ALL=NOPASSWD:/opt/zimbra/libexec/zmstat-fd *" >> /tmp/sudoers
-mv -f /tmp/sudoers /etc/sudoers
-chmod $SUDOMODE /etc/sudoers
-
 if [ -d "/opt/zimbra/mailboxd/work/zimbra" ]; then
   find /opt/zimbra/mailboxd/work/zimbra -exec touch {} \; 2> /dev/null
 fi

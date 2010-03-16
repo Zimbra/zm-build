@@ -81,6 +81,11 @@ echo "%zimbra ALL=NOPASSWD:/opt/zimbra/bin/zmcertmgr" >> /tmp/sudoers
 mv -f /tmp/sudoers /etc/sudoers
 chmod $SUDOMODE /etc/sudoers
 
+egrep -v -e '^%zimbra.*zmstat-fd' /etc/sudoers > /tmp/sudoers
+echo "%zimbra ALL=NOPASSWD:/opt/zimbra/libexec/zmstat-fd *" >> /tmp/sudoers
+mv -f /tmp/sudoers /etc/sudoers
+chmod $SUDOMODE /etc/sudoers
+
 # log rotation
 if [ -d "/etc/periodic/daily" ]; then
   cp /opt/zimbra/libexec/600.zimbra /etc/periodic/daily/600.zimbra
