@@ -4614,7 +4614,9 @@ sub configSetupLdap {
       }
       if ($rc == 0) {
         #unlink "/opt/zimbra/.enable_replica";
-        $config{DOCREATEADMIN} = "no";
+        if (!isEnabled("zimbra-store")) {
+          $config{DOCREATEADMIN} = "no";
+        }
         $config{DOCREATEDOMAIN} = "no";
         progress ( "done.\n" );
         progress("Stopping ldap...");
