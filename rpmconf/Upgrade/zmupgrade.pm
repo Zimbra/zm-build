@@ -2011,7 +2011,7 @@ sub upgrade500GA {
     main::runAsZimbra("$ZMPROV mcf zimbraMemcachedBindPort 11211");
 
     my $zimbraReverseProxyMailHostQuery = 
-      "\(\|\(zimbraMailDeliveryAddress=\${USER}\)\(zimbraMailAlias=\${USER}\)\)";
+      "\(\|\(zimbraMailDeliveryAddress=\${USER}\)\(zimbraMailAlias=\${USER}\)\(zimbraId=\${USER}\)\)";
     my $zimbraReverseProxyDomainNameQuery = 
       "\(\&\(zimbraVirtualIPAddress=\${IPADDR}\)\(objectClass=zimbraDomain\)\)";
     my $zimbraReverseProxyPortQuery = 
