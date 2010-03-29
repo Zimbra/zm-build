@@ -32,7 +32,7 @@ else
 fi
 export JAVA_JVM_VERSION
 
-PATH=${ZIMBRA_HOME}/bin:${ZIMBRA_HOME}/postfix/sbin:${ZIMBRA_HOME}/openldap/bin:${ZIMBRA_HOME}/snmp/bin:${ZIMBRA_HOME}/bdb/bin:${ZIMBRA_HOME}/openssl/bin:${JAVA_HOME}/bin:${PATH}
+PATH=${ZIMBRA_HOME}/bin:${ZIMBRA_HOME}/postfix/sbin:${ZIMBRA_HOME}/openldap/bin:${ZIMBRA_HOME}/snmp/bin:${ZIMBRA_HOME}/bdb/bin:${ZIMBRA_HOME}/openssl/bin:${JAVA_HOME}/bin:/usr/sbin:${PATH}
 export PATH
 
 if [ `uname -s` == "Darwin" ]; then
