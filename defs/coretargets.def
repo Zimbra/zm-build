@@ -301,6 +301,9 @@ $(CORE_DEST_DIR)/bin:
 	cp $(ZIMBRA_BIN_DIR)/zmmtactl $@
 	cp $(ZIMBRA_BIN_DIR)/zmspellctl $@
 	cp $(ZIMBRA_BIN_DIR)/zmapachectl $@
+	cp $(ZIMBRA_BIN_DIR)/zmprov.server $@
+	mv $@/zmprov $@/zmprov.java
+	(cd $@; ln -s zmprov.server zmprov)
 
 $(CORE_DEST_DIR)/contrib:
 	mkdir -p $@
