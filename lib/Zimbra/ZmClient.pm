@@ -3,6 +3,7 @@
 package ZmClient;
 
 use IPC::Open2;
+use POSIX ":sys_wait_h";
 use IO::Handle;
 use Net::HTTP;
 use LWP::UserAgent;
@@ -115,6 +116,7 @@ sub sendZmprovRequestLdap($) {
 }
 
 sub sendZmprovRequest($) {
+	waitpid (-1, WNOHANG);
     my $cmd = shift @_;
 	my @lines;
 	if ($cmd =~ m/\s*-l/) {
