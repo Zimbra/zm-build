@@ -1325,7 +1325,7 @@ removeExistingInstall() {
       echo ""
       echo "Removing /opt/zimbra"
       umount /opt/zimbra/amavisd/tmp > /dev/null 2>&1
-      MOUNTPOINTS=`mount | awk '{print $3}' | grep /opt/zimbra`
+      MOUNTPOINTS=`mount | awk '{print $3}' | grep /opt/zimbra/`
       for mp in $MOUNTPOINTS; do
         if [ x$mp != "x/opt/zimbra" ]; then
           /bin/rm -rf ${mp}/*
