@@ -108,7 +108,7 @@ sub doLdap() {
   } elsif ($key =~ /ldap_overlay/) {
     if ($real_master) {
       if ($key =~ /ldap_overlay_syncprov/) {
-        $dn="olcOverlay=syncprov,olcDatabase={3}hdb,cn=config";
+        $dn="olcOverlay={0}syncprov,olcDatabase={3}hdb,cn=config";
         if ($key eq "ldap_overlay_syncprov_checkpoint") {
           $ldap_key="olcSpCheckpoint";
         } elsif ($key eq "ldap_overlay_syncprov_sessionlog") {
@@ -118,7 +118,7 @@ sub doLdap() {
           $rc=1;
         }
       } elsif ($key =~ /ldap_overlay_accesslog/) {
-        $dn="olcOverlay=accesslog,olcDatabase={3}hdb,cn=config";
+        $dn="olcOverlay={1}accesslog,olcDatabase={3}hdb,cn=config";
         if ($key eq "ldap_overlay_accesslog_logpurge") {
           $ldap_key="olcAccessLogPurge";
         } else {
