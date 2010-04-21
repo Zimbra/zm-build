@@ -29,7 +29,6 @@ if [ -f /etc/redhat-release ]; then
 		echo "RHEL5${i}"
 		exit 0
 	fi
-
 	grep "Red Hat Enterprise Linux.*release 4" /etc/redhat-release > /dev/null 2>&1
 	if [ $? = 0 ]; then
 		echo "RHEL4${i}"
@@ -41,37 +40,31 @@ if [ -f /etc/redhat-release ]; then
 		echo "F11${i}"
 		exit 0
 	fi
-
 	grep "Fedora release 10" /etc/redhat-release >/dev/null 2>&1
 	if [ $? = 0 ]; then
 		echo "F10${i}"
 		exit 0
 	fi
-
 	grep "Fedora release 7" /etc/redhat-release >/dev/null 2>&1
 	if [ $? = 0 ]; then
 		echo "F7${i}"
 		exit 0
 	fi
-
 	grep "Fedora Core release 6" /etc/redhat-release > /dev/null 2>&1
 	if [ $? = 0 ]; then
 		echo "FC6${i}"
 		exit 0
 	fi
-
 	grep "Fedora Core release 5" /etc/redhat-release > /dev/null 2>&1
 	if [ $? = 0 ]; then
 		echo "FC5${i}"
 		exit 0
 	fi
-
 	grep "Fedora Core release 4" /etc/redhat-release > /dev/null 2>&1
 	if [ $? = 0 ]; then
 		echo "FC4${i}"
 		exit 0
 	fi
-
 	grep "Fedora Core release 3" /etc/redhat-release > /dev/null 2>&1
 	if [ $? = 0 ]; then
 		echo "FC3${i}"
@@ -83,13 +76,27 @@ if [ -f /etc/redhat-release ]; then
 		echo "CentOS5${i}"
 		exit 0
 	fi
-
 	grep "CentOS release 4" /etc/redhat-release > /dev/null 2>&1
 	if [ $? = 0 ]; then
 		echo "CentOS4${i}"
 		exit 0
 	fi
-
+	
+	grep "Red Hat Enterprise Linux.*release" /etc/redhat-release > /dev/null 2>&1
+	if [ $? = 0 ]; then
+		echo "RHELUNKNOWN${i}"
+		exit 0
+	fi
+	grep "CentOS release" /etc/redhat-release > /dev/null 2>&1
+	if [ $? = 0 ]; then
+		echo "CentOSUNKNOWN${i}"
+		exit 0
+	fi
+	grep "Fedora Core release" /etc/redhat-release > /dev/null 2>&1
+	if [ $? = 0 ]; then
+		echo "FCUNKNOWN${i}"
+		exit 0
+	fi
 fi
 
 if [ -f /etc/SuSE-release ]; then
@@ -134,6 +141,11 @@ if [ -f /etc/SuSE-release ]; then
 	grep "openSUSE 10.2" /etc/SuSE-release > /dev/null 2>&1
 	if [ $? = 0 ]; then
 		echo "openSUSE_10.2"
+		exit 0
+	fi
+	grep "SUSE Linux Enterprise Server" /etc/SuSE-release >/dev/null 2>&1
+	if [ $? = 0 ]; then
+		echo "SLESUNKNOWN${i}"
 		exit 0
 	fi
 	grep "openSUSE" /etc/SuSE-release > /dev/null 2>&1
@@ -219,6 +231,8 @@ if [ -f /etc/mandriva-release ]; then
 		echo "MANDRIVA2006"
 		exit 0
 	fi
+	echo "MANDRIVAUNKNOWN"
+	exit 0
 fi
 
 if [ -f /etc/release ]; then
@@ -227,6 +241,7 @@ if [ -f /etc/release ]; then
 		echo "SOLARISX86"
 		exit 0
 	fi
+	echo "SOLARISUNKNOWN"
 fi
 
 if [ -f /etc/distro-release ]; then
