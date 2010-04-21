@@ -17,6 +17,7 @@ $(BUILD_ROOT)/zimbra-ldap.Description.plist:
 	sed -e 's/@@VERSION@@/$(VERSION_TAG)/' \
 	-e 's/@@RELEASE@@/$(RELEASE)/' \
 	-e 's/@@MAJOR@@/$(MAJOR)/' \
+	-e 's/@@MICRO@@/$(MICRO)/' \
 	-e 's/@@MINOR@@/$(MINOR)/' > $@
 
 $(BUILD_ROOT)/zimbra-ldap.Info.plist:
@@ -24,6 +25,7 @@ $(BUILD_ROOT)/zimbra-ldap.Info.plist:
 	sed -e 's/@@VERSION@@/$(VERSION_TAG)/' \
 	-e 's/@@RELEASE@@/$(RELEASE)/' \
 	-e 's/@@MAJOR@@/$(MAJOR)/' \
+	-e 's/@@MICRO@@/$(MICRO)/' \
 	-e 's/@@BUILDNUM@@/$(BUILDNUM)/' \
 	-e 's/@@MINOR@@/$(MINOR)/' > $@
 
