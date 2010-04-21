@@ -194,6 +194,8 @@ sub openLogFile($;$) {
         my $dir = File::Basename::dirname($logfile);
         if (! -e $dir) {
             mkdir($dir, 0755) || die "Unable to create log directory $dir: $!";
+            my (undef,undef,$uid,$gid) = getpwnam('zimbra');
+            chown $uid,$gid,$dir;
         }
         if (-f $logfile) { # check for stale data
         	my $stale = 0;
@@ -235,6 +237,8 @@ sub rotateLogFile($$;$$) {
     if (! -d $rotatedir) {
         die "Unable to create log rotation directory $rotatedir";
     }
+    my (undef,undef,$uid,$gid) = getpwnam('zimbra');
+    chown $uid,$gid,$rotatedir;
     $fh->close() if defined $fh;
 
     my $rotatefile = "$rotatedir/$name";
