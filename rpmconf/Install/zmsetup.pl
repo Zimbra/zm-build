@@ -1273,6 +1273,8 @@ sub setDefaults {
     s/.*inet //;
     s/\s.*//;
     s/[a-zA-Z:]//g;
+    s/^\n//g;
+    next if ($_ eq "");
     push @interfaces, $_;
   }
   close INTS;
@@ -1284,6 +1286,8 @@ sub setDefaults {
       s/\s.*//;
       s/\/\d+$//;
       s/[a-zA-Z:]//g;
+      s/^\n//g;
+      next if ($_ eq "");
       push @interfaces, $_;
     }
   close INTS;
