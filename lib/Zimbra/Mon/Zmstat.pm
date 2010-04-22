@@ -126,11 +126,14 @@ sub getDate() {
 }
 
 sub waitUntilNiceRoundSecond($) {
+    # Maximum interval allowed is 1 day (24 * 60 * 60 seconds)
+    my $maxInterval = 24 * 60 * 60;
     my $interval = shift;
-    $interval %= 3600;
+    $interval %= $maxInterval;
+    $interval = $interval ? $interval : $maxInterval;
     while (1) {
-        my ($sec, $min) = localtime();
-        my $t = $min * 60 + $sec;
+        my ($sec, $min, $hour) = localtime();
+        my $t = $hour * 60 * 60 + $min * 60 + $sec;
         my $howlong = $t % $interval;
         last if ($howlong == 0);
         select(undef, undef, undef, 0.05);
