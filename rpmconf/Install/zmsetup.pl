@@ -6244,8 +6244,8 @@ sub configLog {
 
 sub setupSyslog {
   progress ("Setting up syslog.conf...");
-  if ( -f "/opt/zimbra/bin/zmsyslogsetup") {
-    my $rc = runAsRoot("/opt/zimbra/bin/zmsyslogsetup local");
+  if ( -f "/opt/zimbra/libexec/zmsyslogsetup") {
+    my $rc = runAsRoot("/opt/zimbra/libexec/zmsyslogsetup");
     if ($rc) {
       progress ("Failed\n");
       } else {

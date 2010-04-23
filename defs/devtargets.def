@@ -195,7 +195,6 @@ $(DEV_INSTALL_ROOT)/bin:
 	cp -f $(ZIMBRA_BIN_DIR)/zmcertmgr $@
 	cp -f $(ZIMBRA_BIN_DIR)/zmroll_catalina.sh $@
 	cp -f $(ZIMBRA_BIN_DIR)/zmtlsctl $@
-	cp -f $(ZIMBRA_BIN_DIR)/zmsyslogsetup $@
 	chmod u+x $@/*
 
 $(DEV_INSTALL_ROOT)/conf: $(SERVICE_DIR)/$(WEBAPP_BUILD_DIR)/service.war

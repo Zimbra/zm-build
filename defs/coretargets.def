@@ -292,7 +292,6 @@ $(CORE_DEST_DIR)/bin:
 	cp $(ZIMBRA_BIN_DIR)/zmauditswatchctl $@
 	cp $(ZIMBRA_BIN_DIR)/zmcertmgr $@
 	cp $(ZIMBRA_BIN_DIR)/zmtlsctl $@
-	cp $(ZIMBRA_BIN_DIR)/zmsyslogsetup $@
 	cp $(LDAP_DEST_ROOT)/opt/zimbra/$(LDAP_DIR)-$(LDAP_VERSION)/bin/ldapsearch $@
 	cp $(ZIMBRA_BIN_DIR)/zmantispamctl $@
 	cp $(ZIMBRA_BIN_DIR)/zmantivirusctl $@
