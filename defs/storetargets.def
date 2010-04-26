@@ -194,6 +194,8 @@ $(STORE_DEST_DIR)/conf:
 	mkdir -p $@
 	cp $(SERVICE_DIR)/conf/globs2 $@
 	cp $(SERVICE_DIR)/conf/magic $@
+	cp $(SERVICE_DIR)/conf/magic.zimbra $@
+	cp $(SERVICE_DIR)/conf/globs2.zimbra $@
 
 $(STORE_DEST_DIR)/conf/zimbra-contact-fields.xml: $(STORE_DEST_DIR)/conf
 	cp $(SERVICE_DIR)/conf/contacts/zimbra-contact-fields.xml $@
