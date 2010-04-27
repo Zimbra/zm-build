@@ -3162,6 +3162,36 @@ sub upgrade606GA {
 sub upgrade607GA {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
   main::progress("Updating from 6.0.7_GA\n");
+  if (main::isInstalled("zimbra-ldap")) {
+    if (!$isLdapMaster) {
+      # 46508 upgrade step for keepalive setting
+      my $ldap_pass = `$su "zmlocalconfig -s -m nokey ldap_root_password"`;
+      my $ldap;
+      chomp($ldap_pass);
+      unless($ldap = Net::LDAP->new('ldapi://%2fopt%2fzimbra%2fopenldap%2fvar%2frun%2fldapi/')) {
+         main::progress("Unable to contact to ldapi: $!\n");
+      }
+      my $result = $ldap->bind("cn=config", password => $ldap_pass);
+      $result = $ldap->search(
+        base => "olcDatabase={2}hdb,cn=config",
+        filter => "(olcSyncrepl=*)",
+        attrs => ['olcSyncrepl']
+      );
+      my $entry=$result->entry(0);
+      my $attr = $entry->get_value("olcSyncrepl");
+      if ($attr !~ /keepalive=/) {
+        $attr =  $attr . " keepalive=240:10:30";
+      }
+
+      $result = $ldap->modify(
+        $entry->dn,
+        replace => {
+          olcSyncrepl => "$attr",
+        }
+      );
+      $result = $ldap->unbind;
+    }
+  }
   return 0;
 }
 
