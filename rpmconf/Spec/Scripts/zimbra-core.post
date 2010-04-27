@@ -43,16 +43,16 @@ rm -f /opt/zimbra/openssl
 ln -s /opt/zimbra/openssl-0.9.8n /opt/zimbra/openssl
 
 rm -f /opt/zimbra/heimdal
-ln -s /opt/zimbra/heimdal-1.3.1 /opt/zimbra/heimdal
+ln -s /opt/zimbra/heimdal-1.3.2 /opt/zimbra/heimdal
 
 rm -f /opt/zimbra/curl
-ln -s /opt/zimbra/curl-7.20.0 /opt/zimbra/curl
+ln -s /opt/zimbra/curl-7.20.1 /opt/zimbra/curl
 
 rm -f /opt/zimbra/cyrus-sasl
 ln -s /opt/zimbra/cyrus-sasl-2.1.23.3z /opt/zimbra/cyrus-sasl
 
 rm -f /opt/zimbra/openldap
-ln -s /opt/zimbra/openldap-2.4.21.7z /opt/zimbra/openldap
+ln -s /opt/zimbra/openldap-2.4.22.2z /opt/zimbra/openldap
 
 rm -f /opt/zimbra/tcmalloc
 ln -s /opt/zimbra/tcmalloc-1.5 /opt/zimbra/tcmalloc

@@ -21,4 +21,4 @@ fi
 if [ -L "/opt/zimbra/httpd" ]; then
   rm -f /opt/zimbra/httpd
 fi
-ln -s /opt/zimbra/httpd-2.2.14 /opt/zimbra/httpd
+ln -s /opt/zimbra/httpd-2.2.15 /opt/zimbra/httpd

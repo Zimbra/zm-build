@@ -25,10 +25,10 @@ rm -f /opt/zimbra/dspam
 ln -s /opt/zimbra/dspam-3.9.0 /opt/zimbra/dspam
 
 rm -f /opt/zimbra/postfix
-ln -s /opt/zimbra/postfix-2.6.5.2z /opt/zimbra/postfix
+ln -s /opt/zimbra/postfix-2.6.6.2z /opt/zimbra/postfix
 
 rm -f /opt/zimbra/clamav
-ln -s /opt/zimbra/clamav-0.95.3 /opt/zimbra/clamav
+ln -s /opt/zimbra/clamav-0.96 /opt/zimbra/clamav
 
 if [ -e /opt/zimbra/altermime ]; then
   rm -rf /opt/zimbra/altermime
