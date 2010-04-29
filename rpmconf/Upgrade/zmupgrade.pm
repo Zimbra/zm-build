@@ -3162,6 +3162,17 @@ sub upgrade606GA {
 sub upgrade607GA {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
   main::progress("Updating from 6.0.7_GA\n");
+  if (main::isInstalled("zimbra-mta")) {
+    my $zimbra_home = main::getLocalConfig("zimbra_home");
+    $zimbra_home = "/opt/zimbra" if ($zimbra_home eq "");
+    #bug 27165
+    if ( -d "${zimbra_home}/data/clamav/db/daily.cvd" ) {
+     unlink("${zimbra_home}/data/clamav/db/daily.cvd");
+    }
+    if ( -d "${zimbra_home}/data/clamav/db/main.cvd" ) {
+     unlink("${zimbra_home}/data/clamav/db/main.cvd");
+    } 
+  }
   if (main::isInstalled("zimbra-ldap")) {
     if (!$isLdapMaster) {
       # 46508 upgrade step for keepalive setting
