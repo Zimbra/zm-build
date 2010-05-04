@@ -3202,6 +3202,12 @@ sub upgrade607GA {
       );
       $result = $ldap->unbind;
     }
+  if (main::isInstalled("zimbra-store")) {
+    my $mailboxd_java_options = main::getLocalConfig("mailboxd_java_options");
+    $mailboxd_java_options .= " -Dsun.net.inetaddr.ttl=\${networkaddress_cache_ttl}"
+      unless ($mailboxd_java_options =~ /sun.net.inetaddr.ttl/);
+    main::detail("Modified mailboxd_java_options=$mailboxd_java_options");
+    main::setLocalConfig("mailboxd_java_options", "$mailboxd_java_options");
   }
   return 0;
 }
