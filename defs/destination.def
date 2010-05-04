@@ -45,3 +45,5 @@ TOASTER_DEST_DIR := $(TOASTER_DEST_ROOT)/root/Applications
 
 EVO_DEST_ROOT := $(BUILD_ROOT)/evolutionbuild
 EVO_DEST_DIR := $(EVO_DEST_ROOT)
+
+PATCH_DEST_DIR := $(BUILD_ROOT)/zcs-patch-$(SOURCE_TAG)

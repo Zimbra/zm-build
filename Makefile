@@ -37,7 +37,7 @@ endif
 
 # PACKAGE TARGETS
 
-all: packages zcs-$(RELEASE).$(BUNDLE_EXT)
+all: packages patch zcs-$(RELEASE).$(BUNDLE_EXT)
 
 include $(DEFS_DIR)/misctargets.def
 
@@ -74,6 +74,8 @@ include $(DEFS_DIR)/jartargets.def
 include $(DEFS_DIR)/snmptargets.def
 
 include $(DEFS_DIR)/sourcetargets.def
+
+include $(DEFS_DIR)/patchtargets.def
 
 include $(DEFS_DIR)/spelltargets.def
 

@@ -21,3 +21,4 @@ ZMCBPOLICYD_DIR := $(BUILD_ROOT)/../ZimbraCBPolicyd
 SYNC_COMMON_DIR := $(BUILD_ROOT)/../ZimbraSyncCommon
 ARCHIVE_DIR := $(BUILD_ROOT)/../ZimbraArchive
 ADMIN_VERSIONCHECK_DIR := $(BUILD_ROOT)/../ZimbraAdminVersionCheck
+PATCH_DIR := $(BUILD_ROOT)/../ZimbraBuild/rpmconf/Patch
