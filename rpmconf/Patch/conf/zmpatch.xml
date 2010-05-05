@@ -48,6 +48,11 @@
         <target>/opt/zimbra/lib/jars/zimbracommon.jar</target>
         <perms owner="root" mode="444"/>
       </file>
+      <file>
+        <source>ZimbraSyncCommon/build/zsynccommon.jar</source>
+        <target>/opt/zimbra/lib/ext/zimbrasync/zsynccommon.jar</target>
+        <perms owner="root" mode="444"/>
+      </file>
       <zimlet deploy="true" flushcache="true">
         <source>Zimlet/build/dist/zimlets/com_zimbra_email.zip</source>
         <target>/opt/zimbra/zimlets/com_zimbra_email.zip</target>
