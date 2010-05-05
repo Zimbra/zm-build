@@ -1,0 +1,9 @@
+# Definitions for UBUNTU10
+
+PACKAGING_COMMAND := dpkg
+
+PACKAGING_OPTIONS = -b $(CUR_DEST_ROOT) $(PACKAGE_DIR)/$(CUR_PKG_NAME)
+
+PACKAGE_EXT := deb
+
+include $(DEFS_DIR)/plat_common.def
