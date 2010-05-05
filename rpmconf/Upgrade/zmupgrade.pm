@@ -3162,6 +3162,17 @@ sub upgrade606GA {
 sub upgrade607GA {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
   main::progress("Updating from 6.0.7_GA\n");
+
+  if (main::isInstalled("zimbra-core")) {
+    #46801
+    my $micro = $startMicro =~ /(\d+)_.*/;
+    if ($startMajor < 6 || ($startMajor == 6 && $micro < 5) ) {
+      main::setLocalConfig("migrate_user_zimlet_prefs", "true");
+    } else {
+      main::setLocalConfig("migrate_user_zimlet_prefs", "false");
+    }
+  }
+
   if (main::isInstalled("zimbra-mta")) {
     my $zimbra_home = main::getLocalConfig("zimbra_home");
     $zimbra_home = "/opt/zimbra" if ($zimbra_home eq "");
@@ -3202,6 +3213,7 @@ sub upgrade607GA {
       );
       $result = $ldap->unbind;
     }
+  }
   if (main::isInstalled("zimbra-store")) {
     my $mailboxd_java_options = main::getLocalConfig("mailboxd_java_options");
     $mailboxd_java_options .= " -Dsun.net.inetaddr.ttl=\${networkaddress_cache_ttl}"
