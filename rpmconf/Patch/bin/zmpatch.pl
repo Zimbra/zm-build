@@ -26,7 +26,6 @@ use File::Basename;
 use Time::localtime qw(ctime);
 
 my %options = ();
-($>) and usage();
 
 sub getDateStamp();
 sub progress($$$);
@@ -46,6 +45,8 @@ GetOptions ("config=s"  => \$options{config},
             "source=s"  => \$options{build_source},
             "target=s"  => \$options{build_target},
             "version=s" => \$options{build_version});
+
+($>) and usage() unless $options{build};
 
 my $progName = "zmpatch";
 my $patchBuildNumber;
