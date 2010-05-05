@@ -5373,9 +5373,9 @@ sub configSetProxyPrefs {
        if ( $memcachetargets[0] !~ /:11211/ ) {
          progress ( "WARNING\n\n");
          progress ( "You are configuring this host as a proxy server, but there is currently no \n");
-         progress ( "memcached service for proxy.  This will cause proxy startup to fail.\n");
-         progress ( "Once you have installed a memcached server, start the proxy service:\n");
-         progress ( "zmproxyctl start\n\n");
+         progress ( "memcached service for proxy.  The proxy service will not work correctly.\n");
+         progress ( "Once you have installed a memcached server, restart the proxy service:\n");
+         progress ( "zmproxyctl restart\n\n");
          if (!$options{c}) {
            ask ("Press return to continue\n","");
          }
