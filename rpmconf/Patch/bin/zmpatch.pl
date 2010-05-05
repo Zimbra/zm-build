@@ -94,7 +94,7 @@ unless ($options{config} && -f $options{config}) {
 }
 
 if ($options{config} && -f $options{config}) {
-  $config = XMLin($options{config}, ForceArray => [ 'name', 'patch', 'package', 'file'], KeyAttr => [ 'name', 'patch', 'package', 'target', 'version' ]);
+  $config = XMLin($options{config}, ForceArray => [ 'name', 'patch', 'package', 'file', 'zimlet','target'], KeyAttr => [ 'name', 'patch', 'package', 'source', 'version' ]);
   my $debug_text = Dumper($config);
   debugLog($debug_text);
   
@@ -121,6 +121,8 @@ sub initPatchDir() {
   make_path($src_dir);
   copy("$options{build_source}/ZimbraBuild/rpmconf/Patch/bin/zmpatch.pl", $bin_dir);
   copy("$options{build_source}/ZimbraBuild/rpmconf/Patch/conf/zmpatch.xml", $conf_dir);
+  copy("$options{build_source}/ZimbraBuild/rpmconf/Patch/installPatch.sh", $options{build_target});
+  system("chmod 755 $options{build_target}/installPatch.sh");
   open(B, ">${src_dir}/build");
   print B "$patchBuildNumber\n";
   close(B);
@@ -134,24 +136,46 @@ sub doPatchBuild() {
   my $buildStatus=0;
   foreach my $patch (keys %{$config->{patch}}) {
     progress("$config->{patch}->{$patch}->{version}\n",1,1);
+
     my $patchName=$config->{patch}->{$patch}->{version};
+
     foreach my $package (keys %{$config->{patch}->{$patch}->{package}}) {
       my $pref = $config->{patch}->{$patch}->{package}->{$package};
       progress("$package\n",2,1);
+
       foreach my $file (keys %{$pref->{file}}) {
         my $fref=$pref->{file}->{$file};
-        my $fpath="$options{build_target}/source/$patchName/$package/" . dirname($file);
-        progress("$file\n",3,1);
-        unless (make_path($fpath)) {
-          progress("Failed to make_path $fpath.\n",3,0);
+        foreach my $target (@{$fref->{target}}) {
+          my $fpath="$options{build_target}/source/$patchName/$package/" . dirname($target);
+          progress("$target\n",3,1);
+          unless (make_path($fpath)) {
+            progress("Failed to make_path $fpath.\n",3,0);
+            $buildStatus++;
+            next;
+          }
+          my $source="$options{build_source}/$file";
+          if (-f $source) {
+            copy($source,$fpath);
+          } else {
+            progress("Failed to copy $source\n",3,0);
+            $buildStatus++;
+          }
+        }
+      }
+      foreach my $zimlet (keys %{$pref->{zimlet}}) {
+        my $zref = $pref->{zimlet}->{$zimlet};
+        progress("$zref->{target}[0]\n", 3,1);
+        my $zpath="$options{build_target}/source/$patchName/$package/" . dirname($zref->{target}[0]);
+        unless (make_path($zpath)) {
+          progress("Failed to make_path $zpath.\n",3,0);
           $buildStatus++;
           next;
         }
-        my $sfile="$options{build_source}/$fref->{source}";
-        if (-f $sfile) {
-          copy($sfile,$fpath);
+        my $source="$options{build_source}/$zimlet";
+        if (-f $source) {
+          copy($source,$zpath);
         } else {
-          progress("Failed to copy $sfile\n",3,0);
+          progress("Failed to copy $source\n",3,0);
           $buildStatus++;
         }
       }
@@ -219,31 +243,62 @@ sub deployPatch($) {
   # loop through each package 
   foreach my $package (keys %{$patch->{package}}) {
     # make sure package is installed
+    my $pref = $patch->{package}->{$package};
     next unless (isInstalled($package)); 
     progress("Updating files for package $package\n", 1, 0);
-    # deploy the files
-      foreach my $file (keys %{$patch->{package}->{$package}->{file}}) {
-        my $fref = $patch->{package}->{$package}->{file}->{$file};
-        progress("$file...",2,1); 
-        my $src="./source/$patch->{version}/$package/$file";
-        if ( -f "$src" ) {
-          debugLog("cp $src $file");
-          system("cp $src $file") unless $options{dryrun};
+      # deploy the files
+      foreach my $file (keys %{$pref->{file}}) {
+        my $fref = $pref->{file}->{$file};
+        
+        foreach my $dstfile (@{$fref->{target}}) {
+          progress("$dstfile...",2,1); 
+          my $srcfile="./source/$patch->{version}/$package/$dstfile";
+          unless (-f "$srcfile") {
+            progress("No such source file $srcfile\n",0,1);
+            next;
+          }
+          debugLog("cp $srcfile $dstfile");
+          copy($srcfile, $dstfile) unless $options{dryrun};
           # verify the perms/ownershiA
           my ($owner,$group,$mode);
           unless ($options{dryrun}) {
-            chown($owner,$file)
+            chown($owner,$dstfile)
               if ($owner = $fref->{perms}->{owner});
-            system("chgrp $group $file")
+            system("chgrp $group $dstfile")
               if ($group = $fref->{perms}->{group});
-            system("chmod $mode $file")
+            system("chmod $mode $dstfile")
               if ($mode = $fref->{perms}->{mode});
           }
           progress("copied.\n", 1, 1);
-        } else {
-          progress("skipped.\n\t\tNo such file $src\n",0,1);
         }
         
+      }
+      # deploy the zimlets
+      foreach my $zimlet (keys %{$pref->{zimlet}}) {
+        my $zref = $pref->{zimlet}->{$zimlet};
+        my $zimletname=basename($zref->{target}[0]);
+        progress("$zimletname...",2,1);
+
+        my $srcfile="./source/$patch->{version}/$package/$zref->{target}[0]";
+        my $dstfile=$zref->{target}[0];
+        if (-f "$srcfile") {
+          debugLog("cp $srcfile $dstfile");
+          copy($srcfile, $dstfile) unless $options{dryrun};
+        } else {
+          progress("skipped. No such file $srcfile.\n",0,1);
+        }
+        unless ($options{dryrun}) {
+          if (lc($zref->{deploy}) eq "true") {
+            my $rc;
+            progress("undeployed...",0,1)
+              unless (runAsZimbra("zmzimletctl -l undeploy $zimletname"));
+            progress("deployed...",0,1) 
+              unless (runAsZimbra("zmzimletctl -l deploy $dstfile"));
+            runAsZimbra("zmprov flushcache zimlet") 
+             if (lc($zref->{flushcache}) eq "true");
+          }
+        }
+        progress("updated.\n", 0, 1);
       }
     # update the installed version of package
     logSession("UPGRADED $package-${currentRelease}_${patchBuildNumber}")
@@ -263,11 +318,26 @@ sub deployPatch($) {
 }
 sub logSession($) {
   my ($msg) = @_;
+  return if $options{dryrun};
   my $date = `date +%s`;
   chomp($date);
   open(SESS, ">>${zimbra_home}/.install_history");
   print SESS "$date: $msg\n";
   close(SESS);
+}
+
+sub runAsZimbra {
+  my $cmd = shift;
+  my $SU;
+  if ($platform =~ /MACOSXx86_10/) {
+    $SU = "su - zimbra -c -l ";
+  } else {
+    $SU = "su - zimbra -c ";
+  }
+  detail ( "*** Running as zimbra user: $cmd\n" );
+  my $rc;
+  $rc = 0xffff & system("$SU \"$cmd\" >> $logfile 2>&1");
+  return $rc;
 }
 
 sub make_path($) {

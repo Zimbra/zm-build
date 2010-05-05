@@ -26,55 +26,35 @@
   
 -->
 <patches>
-<!-- 
   <patch name="6.0.6_GA" version="6.0.6_P1">
     <desc>Patch to address issues in Bug 45511</desc>
-    <bug>45511</bug>
+    <bug>45545</bug>
+    <bug>45677</bug>
+    <bug>45852</bug>
+    <bug>45886</bug>
+    <bug>46476</bug>
     <package name="zimbra-store">
       <file>
-        <target>/opt/zimbra/jetty/webapps/zimbra/js/Briefcase_all.js</target>
-        <source>ZimbraBuild/storebuild/opt/zimbra/jetty-6.1.22.z6/webapps/zimbra/js/Briefcase_all.js</source>
-        <perms owner="root" mode="0755"/>
+        <source>ZimbraBuild/corebuild/opt/zimbra/lib/jars/zimbrastore.jar</source>
+        <target>/opt/zimbra/jetty/webapps/service/WEB-INF/lib/zimbrastore.jar</target>
+        <target>/opt/zimbra/jetty/webapps/zimbra/WEB-INF/lib/zimbrastore.jar</target>
+        <target>/opt/zimbra/jetty/webapps/zimbraAdmin/WEB-INF/lib/zimbrastore.jar</target>
+        <target>/opt/zimbra/lib/jars/zimbrastore.jar</target>
+        <perms owner="root" mode="444"/>
       </file>
       <file>
-        <target>/opt/zimbra/jetty/webapps/zimbra/js/Briefcase_all.js.zgz</target>
-        <source>ZimbraBuild/storebuild/opt/zimbra/jetty-6.1.22.z6/webapps/zimbra/js/Briefcase_all.js.zgz</source>
-        <perms owner="zimbra" group="zimbra" mode="0755"/>
+        <source>ZimbraBuild/corebuild/opt/zimbra/lib/jars/zimbracommon.jar</source>
+        <target>/opt/zimbra/jetty/common/lib/zimbracommon.jar</target>
+        <target>/opt/zimbra/lib/jars/zimbracommon.jar</target>
+        <perms owner="root" mode="444"/>
       </file>
-      <file>
-        <target>/opt/zimbra/jetty/webapps/zimbra/js/zimbraMail/briefcase/view/ZmColListView.js</target>
-        <source>ZimbraWebClient/WebRoot/js/zimbraMail/briefcase/view/ZmColListView.js</source>
-        <perms owner="zimbra" group="zimbra" mode="0755"/>
-      </file>
+      <zimlet deploy="true" flushcache="true">
+        <source>Zimlet/build/dist/zimlets/com_zimbra_email.zip</source>
+        <target>/opt/zimbra/zimlets/com_zimbra_email.zip</target>
+      </zimlet>
     </package>
     <preinstall></preinstall>
     <postinstall></postinstall>
-  </patch>
-  
-  <patch name="6.0.6_P1" version="6.0.6_P2">
-    <desc>Patch to address issues in Bug 45512</desc>
-    <bug>45512</bug>
-    <bug>45513</bug>
-    <package name="zimbra-store">
-      <file>
-        <target>/opt/zimbra/jetty/webapps/zimbra/js/Briefcase_all.js</target> 
-        <source>ZimbraBuild/storebuild/opt/zimbra/jetty-6.1.22.z6/webapps/zimbra/js/Briefcase_all.js</source>
-      </file>
-    </package>
-    <package name="zimbra-core">
-      <file>
-        <target>/opt/zimbra/bin/zmstatctl</target>
-        <source>ZimbraServer/src/bin/zmstatctl</source>
-        <perms owner="root" mode="0755"/>
-      </file>
-    </package>
-    <preinstall></preinstall>
-    <postinstall></postinstall>
-  </patch>
--->
-  
-  <patch name="6.0.7_GA" version="6.0.7_P1">
-    <desc> Place holder for patches to be addressed in 6.0.7 </desc>
   </patch>
 </patches>
   
