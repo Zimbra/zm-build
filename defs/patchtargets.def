@@ -5,5 +5,5 @@ zcs-patch-$(SOURCE_TAG).tgz: $(PATCH_DEST_DIR) $(PACKAGE_DIR)
 
 $(PATCH_DEST_DIR): 
 	-mkdir $@
-	perl $(PATCH_DIR)/bin/zmpatch.pl -c $(PATCH_DIR)/conf/zmpatch.xml -build -target $(PATCH_DEST_DIR) -version $(SOURCE_TAG) -source $(BUILD_ROOT)/.. -v -v
+	-perl $(PATCH_DIR)/bin/zmpatch.pl -c $(PATCH_DIR)/conf/zmpatch.xml -build -target $(PATCH_DEST_DIR) -version $(SOURCE_TAG) -source $(BUILD_ROOT)/.. -v -v
 
