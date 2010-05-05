@@ -15,7 +15,7 @@
 #  
 
 use strict;
-use lib "/opt/zimbra/zimbramon/lib";
+use lib qw(/opt/zimbra/zimbramon/lib lib corebuild/opt/zimbra/zimbramon/lib);
 use Zimbra::Util::Common;
 use XML::Simple;
 use Data::Dumper;
@@ -52,6 +52,7 @@ my $patchBuildNumber;
 my $zimbra_home = "/opt/zimbra";
 my $config;
 my %versionInfo;
+my $platform;
 $options{verbose} = 0 unless $options{verbose};
 
 if ($options{build}) {
@@ -60,8 +61,6 @@ if ($options{build}) {
 }
 
 
-my $platform = `${zimbra_home}/libexec/get_plat_tag.sh`;
-chomp($platform);
 my $logfile = "/tmp/${progName}.".getDateStamp().".log";
 open LOGFILE, ">$logfile" or die "Can't open $logfile: $!\n";
 unlink("/tmp/${progName}.log") if (-e "/tmp/${progName}.log");
@@ -75,6 +74,8 @@ if ($options{build}) {
     exit 1;
   }
 } else {
+  $platform = `${zimbra_home}/libexec/get_plat_tag.sh`;
+  chomp($platform);
   if (-f "source/build") {
     open(BUILD, "source/build");
   } else {
