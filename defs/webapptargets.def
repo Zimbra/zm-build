@@ -77,12 +77,13 @@ $(CONSOLE_DIR)/$(WEBAPP_BUILD_DIR)/zimbraAdmin.war:
 		-Dzimbra.buildinfo.version=$(VERSION_TAG) \
 		-Dzimbra.buildinfo.type=$(BUILD_TYPE) \
 		-Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) \
-		-Dzimbra.buildinfo.host=$(HOST) clean admin prod war package-jsapi-zimbra-doc package-jsapi-inventory ; )
+		-Dzimbra.buildinfo.host=$(HOST) clean admin prod war package-jsapi-zimbra-doc package-jsapi-inventory package-jsapi-changelog ; )
 	rm -rf zimbraAdminConf
 	mkdir zimbraAdminConf
 	cp $(CONSOLE_DIR)/build/web.xml zimbraAdminConf
 	cp $(CONSOLE_DIR)/build/docs/jsapi-inventory.zip $(PACKAGE_DIR)/jsapi-inventory.zip
 	cp $(CONSOLE_DIR)/build/docs/jsapi-zimbra-doc.zip $(PACKAGE_DIR)/jsapi-zimbra-doc.zip
+	cp $(CONSOLE_DIR)/build/docs/jsapi-changelog.zip $(PACKAGE_DIR)/jsapi-changelog.zip
 
 $(WEBAPP_DIR)/zimbra.war: $(WEBAPP_DIR) $(CONSOLE_DIR)/$(WEBAPP_BUILD_DIR)/zimbra.war $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/work
 	mkdir $(WEBAPP_DIR)/zimbra
