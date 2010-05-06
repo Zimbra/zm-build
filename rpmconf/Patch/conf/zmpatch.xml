@@ -27,12 +27,13 @@
 -->
 <patches>
   <patch name="6.0.6_GA" version="6.0.6_P1">
-    <desc>Patch to address issues in Bug 45511</desc>
+    <desc>Patch 6.0.6_P1</desc>
     <bug>45545</bug>
     <bug>45677</bug>
     <bug>45852</bug>
     <bug>45886</bug>
     <bug>46476</bug>
+    <bug>44353</bug>
     <package name="zimbra-store">
       <file>
         <source>ZimbraBuild/corebuild/opt/zimbra/lib/jars/zimbrastore.jar</source>
@@ -48,7 +49,7 @@
         <target>/opt/zimbra/lib/jars/zimbracommon.jar</target>
         <perms owner="root" mode="444"/>
       </file>
-      <file>
+      <file type="network">
         <source>ZimbraSyncCommon/build/zsynccommon.jar</source>
         <target>/opt/zimbra/lib/ext/zimbrasync/zsynccommon.jar</target>
         <perms owner="root" mode="444"/>

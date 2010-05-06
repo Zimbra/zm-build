@@ -32,6 +32,7 @@ sub progress($$$);
 sub detail($);
 sub debugLog($);
 sub getInstalledVersion();
+sub getInstalledType();
 sub usage;
 sub doPatchBuild();
 sub doPatchDeploy();
@@ -51,9 +52,8 @@ GetOptions ("config=s"  => \$options{config},
 my $progName = "zmpatch";
 my $patchBuildNumber;
 my $zimbra_home = "/opt/zimbra";
-my $config;
 my %versionInfo;
-my $platform;
+my ($platform, $zmtype, $config);
 $options{verbose} = 0 unless $options{verbose};
 
 if ($options{build}) {
@@ -75,6 +75,12 @@ if ($options{build}) {
     exit 1;
   }
 } else {
+  $zmtype=getInstalledType();
+  debugLog("Install type: $zmtype\n");
+  unless (-x "${zimbra_home}/libexec/get_plat_tag.sh") {
+    print "ZCS Install not found.\n";
+    exit 1;
+  }
   $platform = `${zimbra_home}/libexec/get_plat_tag.sh`;
   chomp($platform);
   if (-f "source/build") {
@@ -147,6 +153,7 @@ sub doPatchBuild() {
 
       foreach my $file (keys %{$pref->{file}}) {
         my $fref=$pref->{file}->{$file};
+        
         foreach my $target (@{$fref->{target}}) {
           my $fpath="$options{build_target}/source/$patchName/$package/" . dirname($target);
           progress("$target\n",3,1);
@@ -251,7 +258,7 @@ sub deployPatch($) {
       # deploy the files
       foreach my $file (keys %{$pref->{file}}) {
         my $fref = $pref->{file}->{$file};
-        
+        next if ($zmtype eq "FOSS" && lc($fref->{type}) eq "network");
         foreach my $dstfile (@{$fref->{target}}) {
           progress("$dstfile...",2,1); 
           my $srcfile="./source/$patch->{version}/$package/$dstfile";
@@ -278,6 +285,7 @@ sub deployPatch($) {
       # deploy the zimlets
       foreach my $zimlet (keys %{$pref->{zimlet}}) {
         my $zref = $pref->{zimlet}->{$zimlet};
+        next if ($zmtype eq "FOSS" && lc($zref->{type}) eq "network");
         my $zimletname=basename($zref->{target}[0]);
         progress("$zimletname...",2,1);
 
@@ -449,6 +457,10 @@ sub getInstalledVersion() {
   progress("Current  version: $versionInfo{current}\n",0,2);
   
   return $versionInfo{current};
+}
+
+sub getInstalledType() {
+  return ((-f "${zimbra_home}/bin/zmbackupquery") ? "NETWORK" : "FOSS");
 }
 
 sub getReleaseString($) {
