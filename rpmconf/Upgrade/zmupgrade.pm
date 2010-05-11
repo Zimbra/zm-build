@@ -199,6 +199,7 @@ my %updateFuncs = (
   "6.0.5_GA" => \&upgrade605GA,
   "6.0.6_GA" => \&upgrade606GA,
   "6.0.7_GA" => \&upgrade607GA,
+  "6.0.8_GA" => \&upgrade608GA,
 );
 
 my @versionOrder = (
@@ -283,6 +284,7 @@ my @versionOrder = (
   "6.0.5_GA",
   "6.0.6_GA",
   "6.0.7_GA",
+  "6.0.8_GA",
 );
 
 my ($startVersion,$startMajor,$startMinor,$startMicro);
@@ -493,6 +495,8 @@ sub upgrade {
     main::progress("This appears to be 6.0.6_GA\n");
   } elsif ($startVersion eq "6.0.7_GA") {
     main::progress("This appears to be 6.0.7_GA\n");
+  } elsif ($startVersion eq "6.0.8_GA") {
+    main::progress("This appears to be 6.0.8_GA\n");
   } else {
     main::progress("I can't upgrade version $startVersion\n\n");
     return 1;
@@ -3221,6 +3225,12 @@ sub upgrade607GA {
     main::detail("Modified mailboxd_java_options=$mailboxd_java_options");
     main::setLocalConfig("mailboxd_java_options", "$mailboxd_java_options");
   }
+  return 0;
+}
+
+sub upgrade608GA {
+  my ($startBuild, $targetVersion, $targetBuild) = (@_);
+  main::progress("Updating from 6.0.8_GA\n");
   return 0;
 }
 
