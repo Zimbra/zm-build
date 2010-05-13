@@ -22,7 +22,7 @@ $(SERVICE_DIR)/$(WEBAPP_BUILD_DIR)/service.war:
 	(cd $(SERVICE_DIR); $(ANT) $(ANT_DEBUG) \
 		-Dzimbra.buildinfo.platform=$(BUILD_PLATFORM) \
 		-Dis-production=1 \
-		-Dzimbra.buildinfo.version=$(VERSION_TAG) \
+		-Dzimbra.buildinfo.version=$(SOURCE_TAG) \
 		-Dzimbra.buildinfo.type=$(BUILD_TYPE) \
 		-Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) \
 		-Dzimbra.buildinfo.host=$(HOST) dev-dist ; )
@@ -74,7 +74,7 @@ $(WEBAPP_DIR)/zimbraAdmin.war: $(WEBAPP_DIR) $(CONSOLE_DIR)/$(WEBAPP_BUILD_DIR)/
 $(CONSOLE_DIR)/$(WEBAPP_BUILD_DIR)/zimbraAdmin.war:
 	(cd $(CONSOLE_DIR); $(ANT) $(ANT_DEBUG) \
 		-Dzimbra.buildinfo.platform=$(BUILD_PLATFORM) \
-		-Dzimbra.buildinfo.version=$(VERSION_TAG) \
+		-Dzimbra.buildinfo.version=$(SOURCE_TAG) \
 		-Dzimbra.buildinfo.type=$(BUILD_TYPE) \
 		-Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) \
 		-Dzimbra.buildinfo.host=$(HOST) clean admin prod war package-jsapi-zimbra-doc package-jsapi-inventory package-jsapi-changelog ; )
@@ -97,7 +97,7 @@ $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/work: $(CONSOLE_DIR)/$(WEBAPP_BUILD_DIR)/zimbr
 $(CONSOLE_DIR)/$(WEBAPP_BUILD_DIR)/zimbra.war:  $(TAGLIB_DIR)/build/zimbrataglib.jar
 	(cd $(CONSOLE_DIR); $(ANT) $(ANT_DEBUG) \
 		-Dzimbra.buildinfo.platform=$(BUILD_PLATFORM) \
-		-Dzimbra.buildinfo.version=$(VERSION_TAG) \
+		-Dzimbra.buildinfo.version=$(SOURCE_TAG) \
 		-Dzimbra.buildinfo.type=$(BUILD_TYPE) \
 		-Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) \
 		-Dzimbra.buildinfo.host=$(HOST) clean prod-build; )
@@ -109,7 +109,7 @@ $(TAGLIB_DIR)/build/zimbrataglib.jar:
 	(cd $(TAGLIB_DIR); $(ANT) $(ANT_DEBUG) \
 		-Dzimbra.buildinfo.platform=$(BUILD_PLATFORM) \
 		-Dis-production=1 \
-		-Dzimbra.buildinfo.version=$(VERSION_TAG) \
+		-Dzimbra.buildinfo.version=$(SOURCE_TAG) \
 		-Dzimbra.buildinfo.type=$(BUILD_TYPE) \
 		-Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) \
 		-Dzimbra.buildinfo.host=$(HOST) clean jar ; )

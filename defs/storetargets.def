@@ -204,31 +204,31 @@ $(STORE_DEST_DIR)/conf/zimbra-contact-fields.xml: $(STORE_DEST_DIR)/conf
 $(ZIMLET_DIR)/build/dist/zimlets/nofile:
 	(cd $(ZIMLET_DIR); $(ANT) $(ANT_DEBUG) \
 		-Dzimbra.buildinfo.platform=$(BUILD_PLATFORM) \
-		-Dzimbra.buildinfo.version=$(VERSION_TAG) \
+		-Dzimbra.buildinfo.version=$(SOURCE_TAG) \
 		-Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) \
 		-Dzimbra.buildinfo.host=$(HOST) package-zimlets ; )
 	(cd $(ADMIN_EXT_DIR); $(ANT) $(ANT_DEBUG)\
 		-Dzimbra.buildinfo.platform=$(BUILD_PLATFORM) \
 		-Dext.dir=CertificateMgr -Dext.name=com_zimbra_cert_manager \
-		-Dzimbra.buildinfo.version=$(VERSION_TAG) \
+		-Dzimbra.buildinfo.version=$(SOURCE_TAG) \
 		-Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) \
 		-Dzimbra.buildinfo.host=$(HOST) package-zimlet ; )
 	(cd $(ADMIN_EXT_DIR); $(ANT) $(ANT_DEBUG)\
 		-Dzimbra.buildinfo.platform=$(BUILD_PLATFORM) \
 		-Dext.dir=BulkProvision -Dext.name=com_zimbra_bulkprovision \
-		-Dzimbra.buildinfo.version=$(VERSION_TAG) \
+		-Dzimbra.buildinfo.version=$(SOURCE_TAG) \
 		-Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) \
 		-Dzimbra.buildinfo.host=$(HOST) package-zimlet ; )
 	(cd $(ADMIN_VERSIONCHECK_DIR); $(ANT) $(ANT_DEBUG)\
 		-Dzimbra.buildinfo.platform=$(BUILD_PLATFORM) \
-		-Dzimbra.buildinfo.version=$(VERSION_TAG) \
+		-Dzimbra.buildinfo.version=$(SOURCE_TAG) \
 		-Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) \
 		-Dzimbra.buildinfo.host=$(HOST) package-zimlet ; )
 
 $(ZIMLET_DIR)/build/dist/zimlets-experimental/nofile:
 	(cd $(ZIMLET_DIR); $(ANT) $(ANT_DEBUG)\
 		-Dzimbra.buildinfo.platform=$(BUILD_PLATFORM) \
-		-Dzimbra.buildinfo.version=$(VERSION_TAG) \
+		-Dzimbra.buildinfo.version=$(SOURCE_TAG) \
 		-Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) \
 		-Dzimbra.buildinfo.host=$(HOST) package-zimlets-experimental ; )
 
@@ -239,7 +239,7 @@ $(STORE_DEST_DIR)/zimlets-experimental: $(ZIMLET_DIR)/build/dist/zimlets-experim
 $(ZIMLET_DIR)/build/dist/zimlets-extra/nofile:
 	(cd $(ZIMLET_DIR); $(ANT) $(ANT_DEBUG)\
 		-Dzimbra.buildinfo.platform=$(BUILD_PLATFORM) \
-		-Dzimbra.buildinfo.version=$(VERSION_TAG) \
+		-Dzimbra.buildinfo.version=$(SOURCE_TAG) \
 		-Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) \
 		-Dzimbra.buildinfo.host=$(HOST) package-zimlets-extra ; )
 
@@ -261,14 +261,14 @@ $(STORE_DEST_DIR)/zimlets: $(ZIMLET_DIR)/build/dist/zimlets/nofile
 $(POSIX_EXT_DIR)/build/zimlet/zimbra_posixaccount.zip:
 	(cd $(POSIX_EXT_DIR); $(ANT) $(ANT_DEBUG)\
 		-Dzimbra.buildinfo.platform=$(BUILD_PLATFORM) \
-		-Dzimbra.buildinfo.version=$(VERSION_TAG) \
+		-Dzimbra.buildinfo.version=$(SOURCE_TAG) \
 		-Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) \
 		-Dzimbra.buildinfo.host=$(HOST) package-zimlet ; )
 	
 $(SAMBA_EXT_DIR)/build/zimlet/zimbra_samba.zip:
 	(cd $(SAMBA_EXT_DIR); $(ANT) $(ANT_DEBUG)\
 		-Dzimbra.buildinfo.platform=$(BUILD_PLATFORM) \
-		-Dzimbra.buildinfo.version=$(VERSION_TAG) \
+		-Dzimbra.buildinfo.version=$(SOURCE_TAG) \
 		-Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) \
 		-Dzimbra.buildinfo.host=$(HOST) package-zimlet ; )
 
@@ -286,7 +286,7 @@ $(MIG_TOOLS_DIR)/build/zmzimbratozimbramig.jar:
 	(cd $(MIG_TOOLS_DIR); $(ANT) $(ANT_DEBUG) \
 		-Dzimbra.buildinfo.platform=$(BUILD_PLATFORM) \
 		-Dext.dir=BulkProvision -Dext.name=com_zimbra_bulkprovision \
-		-Dzimbra.buildinfo.version=$(VERSION_TAG) \
+		-Dzimbra.buildinfo.version=$(SOURCE_TAG) \
 		-Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) \
 		-Dzimbra.buildinfo.host=$(HOST) zmzimbratozimbramig ; )
 
@@ -312,7 +312,7 @@ $(ADMIN_EXT_DIR)/build/com_zimbra_bulkprovision.jar:
 	(cd $(ADMIN_EXT_DIR); $(ANT) $(ANT_DEBUG)\
 		-Dzimbra.buildinfo.platform=$(BUILD_PLATFORM) \
 		-Dext.dir=BulkProvision -Dext.name=com_zimbra_bulkprovision \
-		-Dzimbra.buildinfo.version=$(VERSION_TAG) \
+		-Dzimbra.buildinfo.version=$(SOURCE_TAG) \
 		-Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) \
 		-Dzimbra.buildinfo.host=$(HOST) jar ; )
 	
@@ -326,7 +326,7 @@ $(ADMIN_EXT_DIR)/build/com_zimbra_cert_manager.jar:
 	(cd $(ADMIN_EXT_DIR); $(ANT) $(ANT_DEBUG)\
 		-Dzimbra.buildinfo.platform=$(BUILD_PLATFORM) \
 		-Dext.dir=CertificateMgr -Dext.name=com_zimbra_cert_manager \
-		-Dzimbra.buildinfo.version=$(VERSION_TAG) \
+		-Dzimbra.buildinfo.version=$(SOURCE_TAG) \
 		-Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) \
 		-Dzimbra.buildinfo.host=$(HOST) jar ; )
 	
@@ -347,14 +347,14 @@ $(CLAMSCANNER_DIR)/build/clamscanner.jar:
 	(cd $(CLAMSCANNER_DIR); $(ANT) $(ANT_DEBUG)\
 		-Dzimbra.buildinfo.platform=$(BUILD_PLATFORM) \
 		-Dis-production=1 \
-		-Dzimbra.buildinfo.version=$(VERSION_TAG) \
+		-Dzimbra.buildinfo.version=$(SOURCE_TAG) \
 		-Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) \
 		-Dzimbra.buildinfo.host=$(HOST) jar ; )
 
 $(ADMIN_VERSIONCHECK_DIR)/build/zimbraadminversioncheck.jar:
 	(cd $(ADMIN_VERSIONCHECK_DIR); $(ANT) $(ANT_DEBUG)\
 		-Dzimbra.buildinfo.platform=$(BUILD_PLATFORM) \
-		-Dzimbra.buildinfo.version=$(VERSION_TAG) \
+		-Dzimbra.buildinfo.version=$(SOURCE_TAG) \
 		-Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) \
 		-Dzimbra.buildinfo.host=$(HOST) jar ; )
 	
@@ -374,7 +374,7 @@ $(LDAP_EXT_DIR)/build/zimbraldaputils.jar:
 	(cd $(LDAP_EXT_DIR); $(ANT) $(ANT_DEBUG)\
 		-Dzimbra.buildinfo.platform=$(BUILD_PLATFORM) \
 		-Dis-production=1 \
-		-Dzimbra.buildinfo.version=$(VERSION_TAG) \
+		-Dzimbra.buildinfo.version=$(SOURCE_TAG) \
 		-Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) \
 		-Dzimbra.buildinfo.host=$(HOST) jar ; )
 
@@ -402,6 +402,6 @@ $(NGINX_LOOKUP_DIR)/build/nginx-lookup.jar:
 	(cd $(NGINX_LOOKUP_DIR); $(ANT) $(ANT_DEBUG) \
 		-Dzimbra.buildinfo.platform=$(BUILD_PLATFORM) \
 		-Dis-production=1 \
-		-Dzimbra.buildinfo.version=$(VERSION_TAG) \
+		-Dzimbra.buildinfo.version=$(SOURCE_TAG) \
 		-Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) \
 		-Dzimbra.buildinfo.host=$(HOST) jar; )
