@@ -3175,6 +3175,8 @@ sub upgrade607GA {
     } else {
       main::setLocalConfig("migrate_user_zimlet_prefs", "false");
     }
+    # 46840
+    upgradeLocalConfigValue("ldap_cache_group_maxsize", "2000", "200");
   }
 
   if (main::isInstalled("zimbra-mta")) {
