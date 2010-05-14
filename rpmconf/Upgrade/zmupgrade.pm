@@ -3169,7 +3169,7 @@ sub upgrade607GA {
 
   if (main::isInstalled("zimbra-core")) {
     #46801
-    my $micro = $startMicro =~ /(\d+)_.*/;
+    my ($micro) = $startMicro =~ /(\d+)_.*/;
     if ($startMajor < 6 || ($startMajor == 6 && $micro < 5) ) {
       main::setLocalConfig("migrate_user_zimlet_prefs", "true");
     } else {
