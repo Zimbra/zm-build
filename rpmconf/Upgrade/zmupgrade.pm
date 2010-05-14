@@ -3187,6 +3187,8 @@ sub upgrade607GA {
     if ( -f "${zimbra_home}/data/clamav/db/main.cvd" ) {
      unlink("${zimbra_home}/data/clamav/db/main.cvd");
     } 
+    # bug 47066
+    main::setLocalConfig("postfix_always_add_missing_headers", "yes");
   }
   if (main::isInstalled("zimbra-ldap")) {
     if (!$isLdapMaster) {
