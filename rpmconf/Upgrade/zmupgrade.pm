@@ -3231,7 +3231,7 @@ sub upgrade607GA {
     #45891
     my $imap_max_request_size = main::getLocalConfig("imap_max_request_size");
     if ($imap_max_request_size ne "" and $imap_max_request_size ne "10240") {
-      main::runAsZimbra("$ZMPROV ms $hn zimbraImapMaxRequestBytes $imap_max_request_size");
+      main::runAsZimbra("$ZMPROV ms $hn zimbraImapMaxRequestSize $imap_max_request_size");
     }
   }
   return 0;
