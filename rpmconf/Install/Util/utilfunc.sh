@@ -1945,19 +1945,27 @@ getPlatformVars() {
       PREREQ_PACKAGES="sudo libidn11 libpcre3 libgmp3c2 libexpat1 libstdc++6 libstdc++5 libperl5.8"
       PRESUG_PACKAGES="perl-5.8.7 sysstat"
     fi
-    if [ $PLATFORM = "DEBIAN4.0" ]; then
-      PREREQ_PACKAGES="sudo libidn11 libpcre3 libgmp3c2 libexpat1 libstdc++6"
-      PRESUG_PACKAGES="perl-5.8.8 sysstat"
-    fi
     if [ $PLATFORM = "UBUNTU8" ]; then
       PREREQ_PACKAGES="sudo libidn11 libpcre3 libgmp3c2 libexpat1 libstdc++6"
       PRESUG_PACKAGES="perl-5.8.8 sysstat"
     fi
-    if [ $PLATFORM = "DEBIAN4.0_64" ]; then
+    if [ $PLATFORM = "UBUNTU8_64" ]; then
       PREREQ_PACKAGES="sudo libidn11 libpcre3 libgmp3c2 libexpat1 libstdc++6 libperl5.8"
       PRESUG_PACKAGES="perl-5.8.8 sysstat"
     fi
-    if [ $PLATFORM = "UBUNTU8_64" ]; then
+    if [ $PLATFORM = "UBUNTU10" ]; then
+      PREREQ_PACKAGES="sudo libidn11 libpcre3 libgmp3c2 libexpat1 libstdc++6"
+      PRESUG_PACKAGES="perl-5.10.1 sysstat"
+    fi
+    if [ $PLATFORM = "UBUNTU10_64" ]; then
+      PREREQ_PACKAGES="sudo libidn11 libpcre3 libgmp3c2 libexpat1 libstdc++6 libperl5.10"
+      PRESUG_PACKAGES="perl-5.10.1 sysstat"
+    fi
+    if [ $PLATFORM = "DEBIAN4.0" ]; then
+      PREREQ_PACKAGES="sudo libidn11 libpcre3 libgmp3c2 libexpat1 libstdc++6"
+      PRESUG_PACKAGES="perl-5.8.8 sysstat"
+    fi
+    if [ $PLATFORM = "DEBIAN4.0_64" ]; then
       PREREQ_PACKAGES="sudo libidn11 libpcre3 libgmp3c2 libexpat1 libstdc++6 libperl5.8"
       PRESUG_PACKAGES="perl-5.8.8 sysstat"
     fi
