@@ -3228,6 +3228,11 @@ sub upgrade607GA {
       unless ($mailboxd_java_options =~ /sun.net.inetaddr.ttl/);
     main::detail("Modified mailboxd_java_options=$mailboxd_java_options");
     main::setLocalConfig("mailboxd_java_options", "$mailboxd_java_options");
+    #45891
+    my $imap_max_request_size = main::getLocalConfig("imap_max_request_size");
+    if ($imap_max_request_size ne "" and $imap_max_request_size ne "10240") {
+      main::runAsZimbra("$ZMPROV ms $hn zimbraImapMaxRequestBytes $imap_max_request_size");
+    }
   }
   return 0;
 }
