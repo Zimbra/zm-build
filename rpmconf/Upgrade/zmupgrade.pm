@@ -3240,6 +3240,7 @@ sub upgrade607GA {
 sub upgrade608GA {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
   main::progress("Updating from 6.0.8_GA\n");
+  main::deleteLocalConfig("zimlet_properties_directory"); 
   return 0;
 }
 
