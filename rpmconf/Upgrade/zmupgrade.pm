@@ -3220,7 +3220,11 @@ sub upgrade607GA {
         }
       );
       $result = $ldap->unbind;
+    } else {
+      runLdapAttributeUpgrade("46297");
     }
+
+
   }
   if (main::isInstalled("zimbra-store")) {
     my $mailboxd_java_options = main::getLocalConfig("mailboxd_java_options");
@@ -3992,5 +3996,13 @@ sub runAttributeUpgrade($) {
   my $rc = main::runAsZimbra("zmjava com.zimbra.cs.account.ldap.upgrade.LdapUpgrade -b 27075 -v $startVersion");
   return $rc;
 }
+
+sub runLdapAttributeUpgrade($) {
+  my ($bug) = @_;
+  return if ($bug eq "");
+  my $rc = main::runAsZimbra("zmjava com.zimbra.cs.account.ldap.upgrade.LdapUpgrade -b $bug -v");
+  return $rc;
+}
+    
 
 1
