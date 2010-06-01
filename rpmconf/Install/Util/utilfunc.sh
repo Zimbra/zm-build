@@ -1087,8 +1087,7 @@ restoreCerts() {
   if [ -f "$SAVEDIR/keystore" -a -d "/opt/zimbra/tomcat/conf" ]; then
     cp $SAVEDIR/keystore /opt/zimbra/tomcat/conf/keystore
     chown zimbra:zimbra /opt/zimbra/tomcat/conf/keystore
-  fi
-  if [ -f "$SAVEDIR/keystore" -a -d "/opt/zimbra/jetty/etc" ]; then
+  elif [ -f "$SAVEDIR/keystore" -a -d "/opt/zimbra/jetty/etc" ]; then
     cp $SAVEDIR/keystore /opt/zimbra/jetty/etc/keystore
     chown zimbra:zimbra /opt/zimbra/jetty/etc/keystore
   elif [ -f "$SAVEDIR/keystore" -a -d "/opt/zimbra/conf" ]; then
@@ -1126,8 +1125,7 @@ restoreCerts() {
   fi
   if [ -f "/opt/zimbra/tomcat/conf/keystore" ]; then
     chown zimbra:zimbra /opt/zimbra/tomcat/conf/keystore
-  fi
-  if [ -f "/opt/zimbra/jetty/etc/keystore" ]; then
+  elif [ -f "/opt/zimbra/jetty/etc/keystore" ]; then
     chown zimbra:zimbra /opt/zimbra/jetty/etc/keystore
   fi
 }
@@ -1311,8 +1309,7 @@ removeExistingInstall() {
       /bin/rm -rf /opt/zimbra/tomcat/webapps/service
       /bin/rm -rf /opt/zimbra/tomcat/webapps/service.war
       /bin/rm -rf /opt/zimbra/tomcat/work
-    fi
-    if [ -d "/opt/zimbra/jetty/webapps" ]; then
+    elif [ -d "/opt/zimbra/jetty/webapps" ]; then
       /bin/rm -rf /opt/zimbra/jetty/webapps/zimbra
       /bin/rm -rf /opt/zimbra/jetty/webapps/zimbra.war
       /bin/rm -rf /opt/zimbra/jetty/webapps/zimbraAdmin
