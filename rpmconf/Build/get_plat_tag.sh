@@ -194,30 +194,53 @@ if [ -f /etc/lsb-release ]; then
 	grep "DISTRIB_ID=Ubuntu" /etc/lsb-release > /dev/null 2>&1
 	if [ $? = 0 ]; then
 		echo -n "UBUNTU"
+		grep "DISTRIB_RELEASE=6" /etc/lsb-release > /dev/null 2>&1
+		if [ $? = 0 ]; then
+			echo "6${i}"
+			exit 0
+		fi
+		grep "DISTRIB_RELEASE=7" /etc/lsb-release > /dev/null 2>&1
+		if [ $? = 0 ]; then
+			echo "7${i}"
+			exit 0
+		fi 
+		grep "DISTRIB_RELEASE=8" /etc/lsb-release > /dev/null 2>&1
+		if [ $? = 0 ]; then
+			echo "8${i}"
+			exit 0
+		fi
+		grep "DISTRIB_RELEASE=10" /etc/lsb-release > /dev/null 2>&1
+		if [ $? = 0 ]; then
+			echo "10${i}"
+			exit 0
+		else
+			echo "UNKNOWN${i}"
+			exit 0
+		fi
 	fi
-	grep "DISTRIB_RELEASE=6" /etc/lsb-release > /dev/null 2>&1
+	grep "DISTRIB_ID=Debian" /etc/lsb-release > /dev/null 2>&1
 	if [ $? = 0 ]; then
-		echo "6${i}"
-		exit 0
+		grep "3.1" /etc/debian_version > /dev/null 2>&1
+		if [ $? = 0 ]; then
+			echo "DEBIAN3.1${i}"
+			exit 0
+		fi
+		grep "4.0" /etc/debian_version > /dev/null 2>&1
+		if [ $? = 0 ]; then
+			echo "DEBIAN4.0${i}"
+			exit 0
+		fi
+		grep "5.0" /etc/debian_version > /dev/null 2>&1
+		if [ $? = 0 ]; then
+			echo "DEBIAN5${i}"
+			exit 0
+		else
+	        	echo "DEBIANUNKNOWN${i}"
+	        	exit 0
+		fi
 	fi
-	grep "DISTRIB_RELEASE=7" /etc/lsb-release > /dev/null 2>&1
-	if [ $? = 0 ]; then
-		echo "7${i}"
-		exit 0
-	fi 
-	grep "DISTRIB_RELEASE=8" /etc/lsb-release > /dev/null 2>&1
-	if [ $? = 0 ]; then
-		echo "8${i}"
-		exit 0
-	fi
-	grep "DISTRIB_RELEASE=10" /etc/lsb-release > /dev/null 2>&1
-	if [ $? = 0 ]; then
-		echo "10${i}"
-		exit 0
-	else
-		echo "UNKNOWN${i}"
-		exit 0
-	fi
+	echo "DEBIANUNKNOWN${i}"
+	exit 0
 fi
 
 if [ -f /etc/mandriva-release ]; then
