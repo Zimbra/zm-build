@@ -5,6 +5,10 @@
 30 2 * * * find /opt/zimbra/log/ -type f -name \*.log\* -mtime +8 -exec rm {} \; > /dev/null 2>&1
 35 2 * * * find /opt/zimbra/log/ -type f -name \*.out.???????????? -mtime +8 -exec rm {} \; > /dev/null 2>&1
 #
+# tmp dir cleaning
+#
+40 2 * * * /opt/zimbra/bin/zmcleantmp
+#
 # Status logging
 #
 */2 * * * * /opt/zimbra/libexec/zmstatuslog
