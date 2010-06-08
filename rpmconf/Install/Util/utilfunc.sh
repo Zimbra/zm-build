@@ -1379,7 +1379,7 @@ removeExistingInstall() {
             echo "Unable to restart syslog-ng service.  Please do it manually."
           fi
         fi
-      elif [ -f /etc/syslog-ng/etc/syslog-ng.conf ]; then
+      elif [ -f /etc/syslog-ng/syslog-ng.conf ]; then
         egrep -q 'zimbra' /etc/syslog-ng/syslog-ng.conf
         if [ $? = 0 ]; then
           echo -n "Cleaning up /etc/syslog-ng/syslog-ng.conf..."
