@@ -1354,6 +1354,8 @@ removeExistingInstall() {
           sed -i -e '/^auth\.\* /d' /etc/syslog.conf
           sed -i -e '/^local0\.\* /d' /etc/syslog.conf
           sed -i -e '/^local1\.\* /d' /etc/syslog.conf
+          sed -i -e '/^	local0,local1\.none/d' /etc/syslog.conf
+          sed -i -e 's/^\*\.\*;auth,authpriv\.none;local0\.none;local1\.none;mail\.none/*.*;auth,authpriv.none;local0.none;local1.none/' /etc/syslog.conf
           sed -i -e 's/^*.info;local0.none;auth.none/*.info/' /etc/syslog.conf
         fi
         if [ -x /etc/init.d/syslog ]; then
