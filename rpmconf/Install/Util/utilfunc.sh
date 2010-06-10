@@ -1371,7 +1371,7 @@ removeExistingInstall() {
           echo -n "Cleaning up /etc/syslog-ng/syslog-ng.conf.in..."
           sed -i -e '/zimbra/d' /etc/syslog-ng/syslog-ng.conf.in
           sed -i -e 's/filter f_messages   { not facility(news, mail) and not filter(f_iptables) and/filter f_messages   { not facility(news, mail) and not filter(f_iptables); };/' /etc/syslog-ng/syslog-ng.conf.in
-          sed -i -e 's/^                               local4, local5, local6, local7) and not/                               local4, local5, local6, local7); };/' /etc/syslog-ng/syslog-ng.conf
+          sed -i -e 's/^                               local4, local5, local6, local7) and not/                               local4, local5, local6, local7); };/' /etc/syslog-ng/syslog-ng.conf.in
           if [ -x /sbin/SuSEconfig ]; then
             /sbin/SuSEconfig --module syslog-ng
             echo "done."
