@@ -200,6 +200,7 @@ my %updateFuncs = (
   "6.0.6_GA" => \&upgrade606GA,
   "6.0.7_GA" => \&upgrade607GA,
   "6.0.8_GA" => \&upgrade608GA,
+  "7.0.0_BETA1" => \&upgrade700BETA1,
 );
 
 my @versionOrder = (
@@ -285,6 +286,7 @@ my @versionOrder = (
   "6.0.6_GA",
   "6.0.7_GA",
   "6.0.8_GA",
+  "7.0.0_BETA1",
 );
 
 my ($startVersion,$startMajor,$startMinor,$startMicro);
@@ -497,6 +499,8 @@ sub upgrade {
     main::progress("This appears to be 6.0.7_GA\n");
   } elsif ($startVersion eq "6.0.8_GA") {
     main::progress("This appears to be 6.0.8_GA\n");
+  } elsif ($startVersion eq "7.0.0_BETA1") {
+    main::progress("This appears to be 7.0.0_BETA1\n");
   } else {
     main::progress("I can't upgrade version $startVersion\n\n");
     return 1;
@@ -3248,6 +3252,12 @@ sub upgrade608GA {
   if ($isLdapMaster) {
     runLdapAttributeUpgrade("46961");
   }
+  return 0;
+}
+
+sub upgrade700BETA1 {
+  my ($startBuild, $targetVersion, $targetBuild) = (@_);
+  main::progress("Updating from 7.0.0_BETA1\n");
   return 0;
 }
 
