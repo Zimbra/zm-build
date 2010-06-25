@@ -97,6 +97,9 @@
         <target>/opt/zimbra/jetty/webapps/zimbra/h/printmessage</target>
         <perms owner="zimbra" mode="664"/>
       </file>
+    </package>
+    <preinstall></preinstall>
+    <postinstall></postinstall>
   </patch>
 </patches>
   
