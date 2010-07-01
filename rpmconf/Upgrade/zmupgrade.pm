@@ -582,6 +582,7 @@ sub upgrade {
   if ($isLdapMaster) {
     main::progress("Updating global config and COS's with attributes introduced after $startVersion...");
     main::progress((&runAttributeUpgrade($startVersion)) ? "failed.\n" : "done.\n");
+    main::setLdapGlobalConfig("zimbraVersionCheckLastResponse", "");
   }
   if ($needSlapIndexing) {
     main::detail("Updating slapd indices\n");
