@@ -25,8 +25,10 @@ displayLicense() {
   echo ""
   echo ""
   if [ x$DEFAULTFILE = "x" -o x$CLUSTERUPGRADE = "xyes" ]; then
-    echo -n "Press Return to continue"
-    read response
+    askYN "Do you agree with the terms of the software license agreement?" "N"
+    if [ $response != "yes" ]; then
+      exit
+    fi
   fi
   echo ""
 }
