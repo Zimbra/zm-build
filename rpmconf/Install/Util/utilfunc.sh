@@ -17,7 +17,11 @@
 displayLicense() {
   echo ""
   echo ""
-  cat $MYDIR/docs/zcl.txt
+  if [ -f ${MYDIR}/docs/zcl.txt ]; then
+    cat $MYDIR/docs/zcl.txt
+  elif [ -f ${MYDIR}/docs/zimbra_network_eula.txt ]; then
+    cat ${MYDIR}/docs/zimbra_network_eula.txt
+  fi
   echo ""
   echo ""
   if [ x$DEFAULTFILE = "x" -o x$CLUSTERUPGRADE = "xyes" ]; then
