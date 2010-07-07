@@ -65,8 +65,7 @@ mkdir -p /opt/zimbra/mailboxd/logs
 chown zimbra:zimbra /opt/zimbra/mailboxd/logs
 
 if [ -f $SAVEDIR/keystore -a -d /opt/zimbra/tomcat/conf ]; then
-	cp -f $SAVEDIR/keystore /opt/zimbra/tomcat/conf/keystore
-	chown zimbra:zimbra /opt/zimbra/tomcat/conf/keystore 
+  rm -f /opt/zimbra/tomcat/conf > /dev/null 2>&1
 fi
 if [ -f $SAVEDIR/keystore -a -d /opt/zimbra/jetty/etc ]; then
   echo "Restoring $SAVEDIR/keystore to /opt/zimbra/jetty/etc"

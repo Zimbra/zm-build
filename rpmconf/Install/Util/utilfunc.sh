@@ -1090,12 +1090,12 @@ restoreCerts() {
     cp $SAVEDIR/cacerts /opt/zimbra/java/jre/lib/security/cacerts
     chown zimbra:zimbra /opt/zimbra/java/jre/lib/security/cacerts
   fi
-  if [ -f "$SAVEDIR/keystore" -a -d "/opt/zimbra/tomcat/conf" ]; then
-    cp $SAVEDIR/keystore /opt/zimbra/tomcat/conf/keystore
-    chown zimbra:zimbra /opt/zimbra/tomcat/conf/keystore
-  elif [ -f "$SAVEDIR/keystore" -a -d "/opt/zimbra/jetty/etc" ]; then
+  if [ -f "$SAVEDIR/keystore" -a -d "/opt/zimbra/jetty/etc" ]; then
     cp $SAVEDIR/keystore /opt/zimbra/jetty/etc/keystore
     chown zimbra:zimbra /opt/zimbra/jetty/etc/keystore
+  elif [ -f "$SAVEDIR/keystore" -a -d "/opt/zimbra/tomcat/conf" ]; then
+    cp $SAVEDIR/keystore /opt/zimbra/tomcat/conf/keystore
+    chown zimbra:zimbra /opt/zimbra/tomcat/conf/keystore
   elif [ -f "$SAVEDIR/keystore" -a -d "/opt/zimbra/conf" ]; then
     cp $SAVEDIR/keystore /opt/zimbra/conf/keystore
     chown zimbra:zimbra /opt/zimbra/conf/keystore
@@ -1129,10 +1129,10 @@ restoreCerts() {
     cp $SAVEDIR/ca.pem /opt/zimbra/conf/ca/ca.pem 
     chown zimbra:zimbra /opt/zimbra/conf/ca/ca.pem
   fi
-  if [ -f "/opt/zimbra/tomcat/conf/keystore" ]; then
-    chown zimbra:zimbra /opt/zimbra/tomcat/conf/keystore
-  elif [ -f "/opt/zimbra/jetty/etc/keystore" ]; then
+  if [ -f "/opt/zimbra/jetty/etc/keystore" ]; then
     chown zimbra:zimbra /opt/zimbra/jetty/etc/keystore
+  elif [ -f "/opt/zimbra/tomcat/conf/keystore" ]; then
+    chown zimbra:zimbra /opt/zimbra/tomcat/conf/keystore
   fi
 }
 
@@ -1164,10 +1164,10 @@ saveExistingConfig() {
   if [ -f "/opt/zimbra/java/jre/lib/security/cacerts" ]; then
     cp -f /opt/zimbra/java/jre/lib/security/cacerts $SAVEDIR
   fi
-  if [ -f "/opt/zimbra/tomcat/conf/keystore" ]; then
-    cp -f /opt/zimbra/tomcat/conf/keystore $SAVEDIR
-  elif [ -f "/opt/zimbra/jetty/etc/keystore" ]; then
+  if [ -f "/opt/zimbra/jetty/etc/keystore" ]; then
     cp -f /opt/zimbra/jetty/etc/keystore $SAVEDIR
+  elif [ -f "/opt/zimbra/tomcat/conf/keystore" ]; then
+    cp -f /opt/zimbra/tomcat/conf/keystore $SAVEDIR
   fi
   if [ -f "/opt/zimbra/conf/smtpd.key" ]; then
     cp -f /opt/zimbra/conf/smtpd.key $SAVEDIR
