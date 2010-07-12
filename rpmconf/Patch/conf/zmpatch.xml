@@ -26,7 +26,6 @@
   
 -->
 <patches>
-  <!--
   <patch name="6.0.6_GA" version="6.0.6_P1">
     <desc>Patch 6.0.6_P1</desc>
     <bug>45545</bug>
@@ -62,9 +61,7 @@
     </package>
     <preinstall></preinstall>
     <postinstall></postinstall>
-  </patch> 
-  -->
-  <!--
+  </patch>
   <patch name="6.0.7_GA" version="6.0.7_P1">
     <desc>Patch 6.0.7_P1</desc>
     <bug>46552</bug>
@@ -103,8 +100,7 @@
     </package>
     <preinstall></preinstall>
     <postinstall></postinstall>
-  </patch> 
-  -->
+  </patch>
 </patches>
   
   
