@@ -113,6 +113,8 @@ VIMINFO_SOURCE      := $(PACKAGE_CONF_DIR)/Env/zimbra.viminfo
 VIMINFO_DEST        := .viminfo
 LDAPRC_SOURCE       := $(PACKAGE_CONF_DIR)/Env/zimbra.ldaprc
 LDAPRC_DEST         := .ldaprc
+PLATFORM_DOT_SOURCE := $(PACKAGE_CONF_DIR)/ENV/zimbra.platform
+PLATFORM_DOT_DEST   := .platform
 
 JAVA_HOME       ?= /usr/local/java
 export JAVA_HOME
