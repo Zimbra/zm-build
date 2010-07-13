@@ -23,9 +23,9 @@ rm -f /opt/zimbra/java
 PLAT=`/opt/zimbra/libexec/get_plat_tag.sh`
 BIT=`echo $PLAT | awk -F_ '{print $2}'`
 if [ "x$BIT" = "x64" ]; then
-	ln -s /opt/zimbra/jdk1.6.0_16 /opt/zimbra/java
+	ln -s /opt/zimbra/jdk1.6.0_21 /opt/zimbra/java
 else
-	ln -s /opt/zimbra/jdk1.6.0_16 /opt/zimbra/java
+	ln -s /opt/zimbra/jdk1.6.0_21 /opt/zimbra/java
 fi
 
 #Symlinks
