@@ -3272,6 +3272,12 @@ sub upgrade609GA {
   return 0;
 }
 
+sub upgrade700BETA1 {
+  my ($startBuild, $targetVersion, $targetBuild) = (@_);
+  main::progress("Updating from 7.0.0_BETA1\n");
+  return 0;
+}
+
 sub stopZimbra {
   main::progress("Stopping zimbra services...");
   my $rc = main::runAsZimbra("/opt/zimbra/bin/zmcontrol stop");
