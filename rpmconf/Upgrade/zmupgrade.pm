@@ -3265,6 +3265,7 @@ sub upgrade608GA {
   main::progress("Updating from 6.0.8_GA\n");
   main::deleteLocalConfig("zimlet_properties_directory"); 
   if ($isLdapMaster) {
+    runLdapAttributeUpgrade("46883");
     runLdapAttributeUpgrade("46961");
   }
   return 0;
