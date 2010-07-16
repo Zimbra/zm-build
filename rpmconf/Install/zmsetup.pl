@@ -5687,6 +5687,7 @@ sub configCreateDomain {
         my $rc = runAsZimbra("$ZMPROV ca ".
           "$config{CREATEADMIN} \'$config{CREATEADMINPASS}\' ".
           "zimbraAdminConsoleUIComponents cartBlancheUI ".
+          "description \'Administrative Account\' ".
           "zimbraIsAdminAccount TRUE");
         progress(($rc == 0) ? "done.\n" : "failed.\n");
       }
@@ -5714,7 +5715,7 @@ sub configCreateDomain {
           "zimbraIsSystemResource TRUE ".
           "zimbraHideInGal TRUE ".
           "zimbraMailQuota 0 ".
-          "description \'Global Documents account\'");
+          "description \'System account for Global Documents.\'");
         progress(($rc == 0) ? "done.\n" : "failed.\n");
       }
     }
@@ -5733,7 +5734,7 @@ sub configCreateDomain {
           "zimbraIsSystemResource TRUE ".
           "zimbraHideInGal TRUE ".
           "zimbraMailQuota 0 ".
-          "description \'Spam training account\'");
+          "description \'System account for spam training.\'");
         progress(($rc == 0) ? "done.\n" : "failed.\n");
       }
 
@@ -5751,7 +5752,7 @@ sub configCreateDomain {
           "zimbraIsSystemResource TRUE ".
           "zimbraHideInGal TRUE ".
           "zimbraMailQuota 0 ".
-          "description \'Spam training account\'");
+          "description \'System account for Non-Spam (Ham) training.\'");
         progress(($rc == 0) ? "done.\n" : "failed.\n");
       }
 
