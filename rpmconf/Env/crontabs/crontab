@@ -7,7 +7,7 @@
 #
 # tmp dir cleaning
 #
-40 2 * * * /opt/zimbra/bin/zmcleantmp
+40 2 * * * /opt/zimbra/libexec/zmcleantmp
 #
 # Status logging
 #
