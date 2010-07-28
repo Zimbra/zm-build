@@ -1042,6 +1042,10 @@ sub setLdapDefaults {
   if ($config{TRAINSAHAM} eq "") {
     $config{TRAINSAHAM} = "ham.".lc(genRandomPass()).'@'.$config{CREATEDOMAIN};
   }
+  $config{VIRUSQUARANTINE}       = getLdapConfigValue("zimbraAmavisQuarantineAccount");
+  if ($config{VIRUSQUARANTINE} eq "") {
+    $config{VIRUSQUARANTINE} = "virus-quarantine-".lc(genRandomPass()).'@'.$config{CREATEDOMAIN};
+  }
 
   $config{NOTEBOOKACCOUNT}  = getLdapConfigValue("zimbraNotebookAccount");
   $config{NOTEBOOKACCOUNT} = "wiki".'@'.$config{CREATEDOMAIN}
@@ -1381,6 +1385,10 @@ sub setDefaults {
     if ($config{TRAINSAHAM} eq "") {
       $config{TRAINSAHAM} = "ham.".lc(genRandomPass());
       $config{TRAINSAHAM} .= '@'.$config{CREATEDOMAIN};
+    }
+    if ($config{VIRUSQUARANTINE} eq "") {
+      $config{VIRUSQUARANTINE} = "virus-quarantine-.".lc(genRandomPass());
+      $config{VIRUSQUARANTINE} .= '@'.$config{CREATEDOMAIN};
     }
 
     # bug. we shouldn't update this on upgrade.
@@ -2027,6 +2035,10 @@ sub setCreateDomain {
   $config{TRAINSAHAM} = $hamUser.'@'.$config{CREATEDOMAIN}
     if ($hamDomain eq $oldDomain);
 
+  my ($virusUser, $virusDomain) = split ('@', $config{VIRUSQUARANTINE});
+  $config{VIRUSQUARANTINE} = $virusUser.'@'.$config{CREATEDOMAIN}
+    if ($virusDomain eq $oldDomain);
+
   my ($vcFromUser, $vcFromDomain) = split ('@', $config{zimbraVersionCheckNotificationEmailFrom});
   $config{zimbraVersionCheckNotificationEmailFrom} = $vcFromUser.'@'.$config{CREATEDOMAIN}
     if ($vcFromDomain eq $oldDomain);
@@ -2111,6 +2123,26 @@ sub setTrainSAHam {
   }
 }
 
+sub setAmavisVirusQuarantine{
+  while (1) {
+    my $new = 
+      ask("Amavis Virus Quarantine user:",
+        $config{VIRUSQUARANTINE});
+    my ($u,$d) = split ('@', $new);
+    my ($adminUser,$adminDomain) = split('@', $config{CREATEADMIN});
+    if ($d ne $config{CREATEDOMAIN} && $d ne $adminDomain) {
+      if ($config{CREATEDOMAIN} eq $adminDomain) {
+        progress ( "You must create the user under the domain $config{CREATEDOMAIN}\n" );
+      } else {
+        progress ( "You must create the user under the domain $config{CREATEDOMAIN} or $adminDomain\n" );
+      }
+    } else {
+      $config{VIRUSQUARANTINE} = $new;
+      last;
+    }
+  }
+}
+
 sub setVersionCheckNotificationEmail {
   while (1) {
     my $new = ask("Version update destination address:",
@@ -2154,6 +2186,7 @@ sub setCreateAdmin {
     if (!isEnabled("zimbra-ldap")) {
       my ($spamUser, $spamDomain) = split ('@', $config{TRAINSASPAM});
       my ($hamUser, $hamDomain) = split ('@', $config{TRAINSAHAM});
+      my ($virusUser, $virusDomain) = split ('@', $config{VIRUSQUARANTINE});
       my ($notebookUser, $notebookDomain) = split ('@', $config{NOTEBOOKACCOUNT});
       $config{CREATEDOMAIN} = $d
         if ($config{CREATEDOMAIN} ne $d);
@@ -2166,6 +2199,9 @@ sub setCreateAdmin {
   
       $config{TRAINSAHAM} = $hamUser.'@'.$d
         if ($hamDomain ne $d);
+
+      $config{VIRUSQUARANTINE} = $virusUser.'@'.$d
+        if ($virusDomain ne $d);
 
       $config{AVDOMAIN} = $d
         if ($config{AVDOMAIN} ne $d);
@@ -2628,6 +2664,9 @@ sub setHostName {
 
     my ($u,$d) = split ('@', $config{TRAINSAHAM});
     $config{TRAINSAHAM} = $u.'@'.$config{CREATEDOMAIN};
+
+    my ($u,$d) = split ('@', $config{VIRUSQUARANTINE});
+    $config{VIRUSQUARANTINE} = $u.'@'.$config{CREATEDOMAIN};
 
     my ($u,$d) = split ('@', $config{zimbraBackupReportEmailRecipients});
     $config{zimbraBackupReportEmailRecipients} = $u.'@'.$config{CREATEDOMAIN};
@@ -3553,6 +3592,20 @@ sub createStoreMenu {
         };
       $i++;
     }
+    my $ldap_virusquarantine = getLdapConfigValue("zimbraAmavisQuarantineAccount")
+      if (ldapIsAvailable());
+
+    if ($ldap_virusquarantine eq "") {
+      $$lm{menuitems}{$i} = { 
+        "prompt" => "Amavis Virus Quarantine user:", 
+        "var" => \$config{VIRUSQUARANTINE}, 
+        "callback" => \&setAmavisVirusQuarantine
+        };
+      $i++;
+    } else {
+      $config{VIRUSQUARANTINE} = $ldap_virusquarantine;
+    }
+
     $$lm{menuitems}{$i} = { 
       "prompt" => "Enable automated spam training:", 
       "var" => \$config{DOTRAINSA}, 
@@ -5756,10 +5809,29 @@ sub configCreateDomain {
         progress(($rc == 0) ? "done.\n" : "failed.\n");
       }
 
-      progress ( "Setting spam training accounts..." );
+      $config{VIRUSQUARANTINE} = lc($config{VIRUSQUARANTINE});
+      progress ( "Creating user $config{VIRUSQUARANTINE}..." );
+      my $acctId = getLdapAccountValue("zimbraId", $config{VIRUSQUARANTINE});
+      if ($acctId ne "") {
+        progress("already exists.\n");
+      } else {
+        my $pass = genRandomPass();
+        my $rc = runAsZimbra("$ZMPROV ca ".
+          "$config{VIRUSQUARANTINE} \'$pass\' ".
+          "amavisBypassSpamChecks TRUE ".
+          "zimbraAttachmentsIndexingEnabled FALSE ".
+          "zimbraIsSystemResource TRUE ".
+          "zimbraHideInGal TRUE ".
+          "zimbraMailQuota 0 ".
+          "description \'System account for Amavis Virus Quarantine.\'");
+        progress(($rc == 0) ? "done.\n" : "failed.\n");
+      }
+
+      progress ( "Setting spam training and virus quarantine accounts..." );
       my $rc = runAsZimbra("$ZMPROV mcf ".
         "zimbraSpamIsSpamAccount $config{TRAINSASPAM} ".
-        "zimbraSpamIsNotSpamAccount $config{TRAINSAHAM}");
+        "zimbraSpamIsNotSpamAccount $config{TRAINSAHAM}".
+        "zimbraAmavisQuarantineAccount $config{VIRUSQUARANTINE}");
       progress(($rc == 0) ? "done.\n" : "failed.\n");
     }
   }
