@@ -101,6 +101,7 @@ APACHE_COMPONENTS := \
 
 SPELL_COMPONENTS := \
 	$(SPELL_DEST_DIR)/$(SPELL_DIR) \
+	$(SPELL_DEST_DIR)/spell_zimbra_dictionary \
 	$(SPELL_DEST_DIR)/$(APACHE_DIR)/htdocs/aspell.php
 
 SNMP_COMPONENTS := \
