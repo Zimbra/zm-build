@@ -3,7 +3,7 @@
 .PHONY: core proxy memcached mta store ldap snmp
 
 # BASE VARIABLES
-
+SHELL	:= /bin/bash
 BUILD_ROOT	:= $(shell pwd)
 
 DEFS_DIR := $(BUILD_ROOT)/defs
