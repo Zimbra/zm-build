@@ -71,7 +71,7 @@ $(BUILD_ROOT)/zimbra-spell.spec:
 spell_stage: $(SPELL_COMPONENTS)
 
 $(SPELL_DEST_DIR)/spell_zimbra_dictionary:
-	echo -e "zimbra\nzimlet\nzimlets\ncomcast\nvmware" | $(SPELL_DEST_DIR)/$(SPELL_DIR)/bin/aspell create master --lang=en $(SPELL_DEST_DIR)/$(SPELL_DIR)/lib/aspell-0.60/zimbra.rws
+	echo -e "zimbra\nzimlet\nzimlets\ncomcast\nvmware" | LD_LIBRARY_PATH=$(SPELL_DEST_DIR)/$(SPELL_DIR)/lib $(SPELL_DEST_DIR)/$(SPELL_DIR)/bin/aspell create master --lang=en $(SPELL_DEST_DIR)/$(SPELL_DIR)/lib/aspell-0.60/zimbra.rws
 
 $(SPELL_DEST_DIR):
 	mkdir -p $@
