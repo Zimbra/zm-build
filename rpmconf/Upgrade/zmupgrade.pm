@@ -3280,6 +3280,11 @@ sub upgrade609GA {
 sub upgrade700BETA1 {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
   main::progress("Updating from 7.0.0_BETA1\n");
+  if (main::isInstalled("zimbra-store")) {
+    # 49320
+    main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-table_cache-fixup --section=mysqld --key=ignore-builtin-innodb --set /opt/zimbra/conf/my.cnf");
+    main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-innodb_plugin --section=mysqld --set --key=plugin-load --value=ha_innodb_plugin.so /opt/zimbra/conf/my.cnf");
+  }
   return 0;
 }
 
