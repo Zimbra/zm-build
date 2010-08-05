@@ -5830,7 +5830,7 @@ sub configCreateDomain {
       progress ( "Setting spam training and virus quarantine accounts..." );
       my $rc = runAsZimbra("$ZMPROV mcf ".
         "zimbraSpamIsSpamAccount $config{TRAINSASPAM} ".
-        "zimbraSpamIsNotSpamAccount $config{TRAINSAHAM}".
+        "zimbraSpamIsNotSpamAccount $config{TRAINSAHAM} ".
         "zimbraAmavisQuarantineAccount $config{VIRUSQUARANTINE}");
       progress(($rc == 0) ? "done.\n" : "failed.\n");
     }
