@@ -87,7 +87,7 @@ do
 			MAJOR=`echo $VERSION | awk -F. '{print $1}'`
 			MINOR=`echo $VERSION | awk -F. '{print $2}'`
 			PATCH=`echo $VERSION | awk -F. '{print $3}'`
-			if [ $MAJOR -eq 1 -a $MINOR -ne 5 ]; then
+			if [ $MAJOR -eq 1 -a $MINOR -lt 6 ]; then
 				echo "Error: Unsupported version of $req: $VERSION"
 				echo "You can obtain $req from:"
 				echo "http://java.sun.com/javase/downloads/index_jdk5.jsp"
