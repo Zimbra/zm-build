@@ -213,56 +213,53 @@ checkDatabaseIntegrity() {
     return
   fi
 
-  isInstalled zimbra-store
-  if [ x$PKGINSTALLED != "x" ]; then
-    if [ -x "bin/zmdbintegrityreport" -a -x "/opt/zimbra/bin/mysqladmin" ]; then
-      if [ x$DEFAULTFILE = "x" -o x$CLUSTERUPGRADE = "xyes" ]; then
-        while :; do
-          askYN "Do you want to verify message store database integrity?" "Y"
-          if [ $response = "no" ]; then
-            break
-          elif [ $response = "yes" ]; then
-            echo "Verifying integrity of message store databases.  This may take a while."
-            su - zimbra -c "/opt/zimbra/bin/mysqladmin -s ping" 2>/dev/null
-            if [ $? != 0 ]; then
-              su - zimbra -c "/opt/zimbra/bin/mysql.server start" 2> /dev/null
-              for ((i = 0; i < 60; i++)) do
-                su - zimbra -c "/opt/zimbra/bin/mysqladmin -s ping" 2>/dev/null
-                if [ $? = 0 ]; then
-                  SQLSTARTED=1
-                  break
-                fi
-                sleep 2
-              done
-            fi
-            perl -I/opt/zimbra/zimbramon/lib bin/zmdbintegrityreport -v -r
-            MAILBOXDBINTEGRITYSTATUS=$?
-            if [ x"$SQLSTARTED" != "x" ]; then
-              su - zimbra -c "/opt/zimbra/bin/mysqladmin -s ping" 2>/dev/null
-              if [ $? = 0 ]; then
-                su - zimbra -c "/opt/zimbra/bin/mysql.server stop" 2> /dev/null
-                for ((i = 0; i < 60; i++)) do
-                  su - zimbra -c "/opt/zimbra/bin/mysqladmin -s ping" 2>/dev/null
-                  if [ $? != 0 ]; then
-                    break
-                  fi
-                  sleep 2
-                done
-              fi
-            fi
-            if [ $MAILBOXDBINTEGRITYSTATUS != 0 ]; then
-              exit $?
-            fi
-            break
-          else
-            break
-          fi
-        done
-      else 
-        echo "Automated install detected...continuing."
-      fi
-    fi
-  fi
+	isInstalled zimbra-store
+	if [ x$PKGINSTALLED != "x" ]; then
+		if [ -x "bin/zmdbintegrityreport" -a -x "/opt/zimbra/bin/mysqladmin" ]; then
+			while :; do
+				if [ x$DEFAULTFILE = "x" ]; then
+					askYN "Do you want to verify message store database integrity?" "Y"
+					if [ $response = "no" ]; then
+						break
+					fi
+				elif [ x$VERIFYMSGDB != "xyes" ]; then
+					break
+				fi
+				echo "Verifying integrity of message store databases.  This may take a while."
+				su - zimbra -c "/opt/zimbra/bin/mysqladmin -s ping" 2>/dev/null
+				if [ $? != 0 ]; then
+					su - zimbra -c "/opt/zimbra/bin/mysql.server start" 2> /dev/null
+					for ((i = 0; i < 60; i++)) do
+						su - zimbra -c "/opt/zimbra/bin/mysqladmin -s ping" 2>/dev/null
+						if [ $? = 0 ]; then
+							SQLSTARTED=1
+							break
+						fi
+						sleep 2
+					done
+				fi
+				perl -I/opt/zimbra/zimbramon/lib bin/zmdbintegrityreport -v -r
+				MAILBOXDBINTEGRITYSTATUS=$?
+				if [ x"$SQLSTARTED" != "x" ]; then
+					su - zimbra -c "/opt/zimbra/bin/mysqladmin -s ping" 2>/dev/null
+					if [ $? = 0 ]; then
+						su - zimbra -c "/opt/zimbra/bin/mysql.server stop" 2> /dev/null
+						for ((i = 0; i < 60; i++)) do
+							su - zimbra -c "/opt/zimbra/bin/mysqladmin -s ping" 2>/dev/null
+							if [ $? != 0 ]; then
+								break
+							fi
+							sleep 2
+						done
+					fi
+				fi
+				if [ $MAILBOXDBINTEGRITYSTATUS != 0 ]; then
+					exit $?
+				fi
+				break
+			done
+		fi
+	fi
 }
 
 checkRecentBackup() {
