@@ -283,6 +283,10 @@ if [ "x$DEFAULTFILE" != "x" ]; then
 else
 	/opt/zimbra/libexec/zmsetup.pl
 fi
+RC=$?
+if [ $RC -ne 0 ]; then
+	exit $RC
+fi
 
 # Cluster postinstall for active node. 
 if [ x"$CLUSTERTYPE" = "xactive" ]; then
