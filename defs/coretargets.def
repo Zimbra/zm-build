@@ -140,7 +140,7 @@ $(CORE_DEST_DIR)/docs:
 	cp $(SERVICE_DIR)/docs/*html $@
 	cp $(MIG_TOOLS_DIR)/ReadMe.txt $@/zmztozmig.txt
 
-$(CORE_DEST_DIR)/zimbramon: $(CORE_DEST_DIR)/zimbramon/bin $(CORE_DEST_DIR)/zimbramon/lib $(CORE_DEST_DIR)/zimbramon/crontabs $(CORE_DEST_DIR) 
+$(CORE_DEST_DIR)/zimbramon: $(CORE_DEST_DIR)/zimbramon/bin $(CORE_DEST_DIR)/zimbramon/lib $(CORE_DEST_DIR)/zimbramon/pylibs $(CORE_DEST_DIR)/zimbramon/crontabs $(CORE_DEST_DIR) 
 	@echo "*** Creating zimbramon"
 	mkdir -p $@
 	(cd $(CORE_DEST_DIR)/zimbramon; tar xzf $(RRD_SOURCE).tar.gz)
@@ -160,6 +160,10 @@ $(CORE_DEST_DIR)/zimbramon/bin:
 	tar xzf $(PERL_LIB_SOURCE)/perlbin.tgz)
 	mkdir -p $(CORE_DEST_DIR)/libexec
 	cp -pr $(CORE_DEST_DIR)/zimbramon/bin/sa-learn $(CORE_DEST_DIR)/libexec/
+
+$(CORE_DEST_DIR)/zimbramon/pylibs:
+	mkdir -p $(CORE_DEST_DIR)/zimbramon
+	cp -R $(SERVICE_DIR)/src/python/pylibs $(CORE_DEST_DIR)/zimbramon
 
 $(CORE_DEST_DIR)/zimbramon/lib:
 	mkdir -p $(CORE_DEST_DIR)/zimbramon/lib
@@ -239,6 +243,7 @@ $(CORE_DEST_DIR)/conf: $(WEBAPP_DIR)/service.war
 	cp $(SERVICE_DIR)/conf/nginx/nginx.conf.web.http.template $@/nginx/templates/
 	cp $(SERVICE_DIR)/conf/nginx/nginx.conf.web.template $@/nginx/templates/
 	cp $(SERVICE_DIR)/conf/nginx.conf.in $@
+	cp $(SERVICE_DIR)/conf/stats.conf.in $@
 	cp $(SERVICE_DIR)/conf/salocal.cf $@/salocal.cf.in
 	cp $(SERVICE_DIR)/conf/zmmta.cf-$(MAILBOXD_SERVER) $@/zmmta.cf
 	cp $(SERVICE_DIR)/conf/timezones.ics $@
