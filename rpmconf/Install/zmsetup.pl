@@ -352,6 +352,8 @@ sub checkPortConflicts {
     993 => 'zimbra-store',
     995 => 'zimbra-store',
     7025 => 'zimbra-store',
+    7071 => 'zimbra-store',
+    7072 => 'zimbra-store',
     7047 => 'zimbra-convertd',
     7306 => 'zimbra-store',
     7307 => 'zimbra-store',
@@ -1044,7 +1046,7 @@ sub setLdapDefaults {
   }
   $config{VIRUSQUARANTINE}       = getLdapConfigValue("zimbraAmavisQuarantineAccount");
   if ($config{VIRUSQUARANTINE} eq "") {
-    $config{VIRUSQUARANTINE} = "virus-quarantine-".lc(genRandomPass()).'@'.$config{CREATEDOMAIN};
+    $config{VIRUSQUARANTINE} = "virus-quarantine.".lc(genRandomPass()).'@'.$config{CREATEDOMAIN};
   }
 
   $config{NOTEBOOKACCOUNT}  = getLdapConfigValue("zimbraNotebookAccount");
@@ -1387,7 +1389,7 @@ sub setDefaults {
       $config{TRAINSAHAM} .= '@'.$config{CREATEDOMAIN};
     }
     if ($config{VIRUSQUARANTINE} eq "") {
-      $config{VIRUSQUARANTINE} = "virus-quarantine-.".lc(genRandomPass());
+      $config{VIRUSQUARANTINE} = "virus-quarantine.".lc(genRandomPass());
       $config{VIRUSQUARANTINE} .= '@'.$config{CREATEDOMAIN};
     }
 
@@ -3597,7 +3599,7 @@ sub createStoreMenu {
 
     if ($ldap_virusquarantine eq "") {
       $$lm{menuitems}{$i} = { 
-        "prompt" => "Amavis Virus Quarantine user:", 
+        "prompt" => "Anti-virus quarantine user:", 
         "var" => \$config{VIRUSQUARANTINE}, 
         "callback" => \&setAmavisVirusQuarantine
         };
@@ -5823,7 +5825,7 @@ sub configCreateDomain {
           "zimbraIsSystemResource TRUE ".
           "zimbraHideInGal TRUE ".
           "zimbraMailQuota 0 ".
-          "description \'System account for Amavis Virus Quarantine.\'");
+          "description \'System account for Anti-Virus quarantine.\'");
         progress(($rc == 0) ? "done.\n" : "failed.\n");
       }
 
