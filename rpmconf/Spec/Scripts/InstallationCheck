@@ -1,16 +1,8 @@
 #!/bin/bash
 # 
 # ***** BEGIN LICENSE BLOCK *****
-# Zimbra Collaboration Suite Server
-# Copyright (C) 2006, 2007, 2010 Zimbra, Inc.
-# 
-# The contents of this file are subject to the Zimbra Public License
-# Version 1.3 ("License"); you may not use this file except in
-# compliance with the License.  You may obtain a copy of the License at
-# http://www.zimbra.com/license.
-# 
-# Software distributed under the License is distributed on an "AS IS"
-# basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+# Zimbra Collaboration Suite, Network Edition.
+# Copyright (C) 2006, 2007, 2009, 2010 Zimbra, Inc.  All Rights Reserved.
 # ***** END LICENSE BLOCK *****
 # 
 # Exit strings available are 17-31 with bits 5 and 6 set to 1.
@@ -21,19 +13,61 @@ echo "Performing installation check"
 
 for i in core mta store ldap snmp logger apache spell; do
 	echo -n "Looking for $i..."
-	pkgs=`find /Library/Receipts/zimbra-${i}* -type d -maxdepth 0 | sort -r`
-	first=1
-	for pkg in $pkgs; do
-    if [ -f "${pkg}/Contents/Info.plist" ]; then
-      VER=`grep -C1 CFBundleGetInfoString ${pkg}/Contents/Info.plist | tail -1 | sed -e 's/\<[^>]*\>//g' -e 's/^ *//g' | awk -F, '{print $1}' | awk '{print $1}'`
+  if [ -x /usr/sbin/pkgutil ]; then
+    pkgs=$(/usr/sbin/pkgutil --pkgs='com.zimbra.zcs.$i' 2> /dev/null)
+    first=1
+    if [ x"$pkg" = "x" ]; then
+      echo "not found."
+      continue
     fi
-		echo "found $VER."
-		if [ $first -ne 1 ]; then
-			echo "Removing $pkg"
-			/bin/rm -rf $pkg
-		fi
-		first=2
-	done
+    for pkg in $pkgs; do
+      VER=""
+      VER=$(/usr/sbin/pkgutil --pkg-info $pkg 2> /dev/null | grep ^version | awk '{print $NF}')
+      if [ x"$VER" != "x" ]; then
+        echo "found $VER."
+      else
+        echo "not found." 
+      fi
+
+      if [ $first -ne 1 ]; then
+        echo "removing $pkg"
+        /usr/sbin/pkgutil --forget $pkg > /dev/null 2>&1
+      fi
+      first=2
+    done
+  else
+	  pkgs=`find /Library/Receipts/zimbra-${i}* -type d -maxdepth 0 | sort -r`
+	  first=1
+    if [ x"$pkg" = "x" ]; then
+      echo "not found."
+      continue
+    fi
+	  for pkg in $pkgs; do
+      if [ -f "${pkg}/Contents/Info.plist" ]; then
+        VER=`grep -C1 CFBundleGetInfoString ${pkg}/Contents/Info.plist | tail -1 | sed -e 's/\<[^>]*\>//g' -e 's/^ *//g' | awk -F, '{print $1}' | awk '{print $1}'`
+      fi
+		  echo "found $VER."
+		  if [ $first -ne 1 ]; then
+			  echo "Removing $pkg"
+			  /bin/rm -rf $pkg
+		  fi
+		  first=2
+	  done
+  fi
 done
 
+if [ "x$VER" != "x" ]; then
+  MAJOR=`echo $VER | awk -F. '{print $1}'`
+  REL=`echo $VER | awk -F_ '{print $1"_"$2}'`
+  if [ "x$MAJOR" = "x" ]; then
+    MAJOR=4
+  fi
+  if [ $MAJOR -gt 3 -a "x$REL" != "x3.2.0_M2" ]; then
+    #check for a license file
+    if [ ! -e "/opt/zimbra/conf/ZCSLicense.xml" -a ! -e "/opt/zimbra/conf/ZCSLicense-Trial.xml" ]; then
+      exit 112
+    fi
+  fi
+
+fi
 exit 0
