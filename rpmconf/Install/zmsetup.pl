@@ -5824,6 +5824,7 @@ sub configCreateDomain {
           "zimbraAttachmentsIndexingEnabled FALSE ".
           "zimbraIsSystemResource TRUE ".
           "zimbraHideInGal TRUE ".
+          "zimbraMailMessageLifetime 7d ".
           "zimbraMailQuota 0 ".
           "description \'System account for Anti-Virus quarantine.\'");
         progress(($rc == 0) ? "done.\n" : "failed.\n");
