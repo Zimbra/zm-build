@@ -247,7 +247,8 @@ close LOGFILE;
 chmod 0600, $logfile;
 if (-d "/opt/zimbra/log") {
   main::progress("Moving $logfile to /opt/zimbra/log\n");
-  system("cp -f $logfile /opt/zimbra/log");
+  my $dstlog = "zmsetup.".getDateStamp().".txt";
+  system("cp -f $logfile /opt/zimbra/log/$dstlog");
 }
 
 ################################################################
@@ -6298,7 +6299,8 @@ sub applyConfig {
   chmod 0600, $logfile;
   if (-d "/opt/zimbra/log") {
     main::progress("Moving $logfile to /opt/zimbra/log\n");
-    system("cp -f $logfile /opt/zimbra/log");
+    my $dstlog = "zmsetup.".getDateStamp().".txt";
+    system("cp -f $logfile /opt/zimbra/log/$dstlog");
   } else {
     progress ( "Operations logged to $logfile\n" );
   }
