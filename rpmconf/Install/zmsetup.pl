@@ -1515,7 +1515,7 @@ sub setDefaults {
 
   $config{SYSTEMMEMORY} = getSystemMemory();
   $config{MYSQLMEMORYPERCENT} = mysqlMemoryPercent($config{SYSTEMMEMORY});
-  $config{MAILBOXDMEMORYPERCENT} = mailboxdMemoryPercent($config{SYSTEMMEMORY});
+  $config{MAILBOXDMEMORY} = mailboxdMemoryMB($config{SYSTEMMEMORY});
 
   $config{CREATEADMINPASS} = "" unless ($config{CREATEADMINPASS});
 
@@ -1734,7 +1734,7 @@ sub setDefaultsFromLocalConfig {
   $config{LOGSQLROOTPASS} = getLocalConfig ("mysql_logger_root_password");
   $config{ZIMBRASQLPASS} = getLocalConfig ("zimbra_mysql_password");
   $config{ZIMBRALOGSQLPASS} = getLocalConfig ("zimbra_logger_mysql_password");
-  $config{MAILBOXDMEMORYPERCENT} = getLocalConfig ("mailboxd_java_heap_memory_percent");
+  $config{MAILBOXDMEMORY} = getLocalConfig ("mailboxd_java_heap_size");
   $config{mailboxd_directory} = getLocalConfig("mailboxd_directory");
   $config{mailboxd_keystore} = getLocalConfig("mailboxd_keystore");
   $config{mailboxd_keystore_password} = getLocalConfig ("mailboxd_keystore_password")
@@ -4558,7 +4558,7 @@ sub configLCValues {
 
   setLocalConfig ("ssl_allow_untrusted_certs", "true");
   setLocalConfig ("ssl_allow_mismatched_certs", "true");
-  setLocalConfig ("mailboxd_java_heap_memory_percent", $config{MAILBOXDMEMORYPERCENT});
+  setLocalConfig ("mailboxd_java_heap_size", $config{MAILBOXDMEMORY});
   setLocalConfig ("mailboxd_directory", $config{mailboxd_directory});
   setLocalConfig ("mailboxd_keystore", $config{mailboxd_keystore});
   setLocalConfig ("mailboxd_server", $config{mailboxd_server});
@@ -6456,13 +6456,18 @@ sub mysqlMemoryPercent {
   return $percent;
 }
 
-sub mailboxdMemoryPercent {
+sub mailboxdMemoryMB {
   my $system_mem = shift;
-  my $percent = 40;
+  my $memory;
+  if ($system_mem > 16) {
+    $memory = 0.2*$system_mem;
+  } else {
+    $memory = 0.25*$system_mem;
+  }
   # can only allocate about 1.6GB on a 32 bit system
-  $percent = int((1.5/$system_mem)*100)
+  $memory = 1.5
     if ($system_mem > 2 && $addr_space eq "32");
-  return $percent;
+  return $memory*1024;
 }
 
 sub addServerToHostPool {

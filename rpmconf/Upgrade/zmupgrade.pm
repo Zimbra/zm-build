@@ -3284,6 +3284,14 @@ sub upgrade700BETA1 {
     # 49320
     main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-table_cache-fixup --section=mysqld --key=ignore-builtin-innodb --set /opt/zimbra/conf/my.cnf");
     main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-innodb_plugin --section=mysqld --set --key=plugin-load --value=ha_innodb_plugin.so /opt/zimbra/conf/my.cnf");
+    # 43140
+    my $mailboxd_java_heap_memory_percent =
+      main::getLocalConfig("mailboxd_java_heap_memory_percent");
+    $mailboxd_java_heap_memory_percent = 30
+      if ($mailboxd_java_heap_memory_percent eq "");
+    $systemMemorySize = main::getSystemMemory();
+    main::setLocalConfig("mailboxd_java_heap_size",
+      int($systemMemorySize*1024*$mailboxd_java_heap_memory_percent/100));
   }
   return 0;
 }
