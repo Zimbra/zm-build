@@ -150,6 +150,10 @@ displayLicense
 
 checkUser root
 
+if [ $AUTOINSTALL = "yes" ]; then
+	loadConfig $DEFAULTFILE
+fi
+
 checkRequired
 
 checkPackages
@@ -196,8 +200,6 @@ if [ $AUTOINSTALL = "no" ]; then
 	verifyExecute
 
 else
-	loadConfig $DEFAULTFILE
-
 	checkVersionMatches
 
 	if [ $VERSIONMATCH = "no" ]; then
