@@ -3280,6 +3280,9 @@ sub upgrade609GA {
 sub upgrade700BETA1 {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
   main::progress("Updating from 7.0.0_BETA1\n");
+  if (main::isInstalled("zimbra-ldap")) {
+    runLdapAttributeUpgrade("42828");
+  }
   if (main::isInstalled("zimbra-store")) {
     # 49320
     main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-table_cache-fixup --section=mysqld --key=ignore-builtin-innodb --set /opt/zimbra/conf/my.cnf");
@@ -3289,7 +3292,7 @@ sub upgrade700BETA1 {
       main::getLocalConfig("mailboxd_java_heap_memory_percent");
     $mailboxd_java_heap_memory_percent = 30
       if ($mailboxd_java_heap_memory_percent eq "");
-    $systemMemorySize = main::getSystemMemory();
+    my $systemMemorySize = main::getSystemMemory();
     main::setLocalConfig("mailboxd_java_heap_size",
       int($systemMemorySize*1024*$mailboxd_java_heap_memory_percent/100));
   }
