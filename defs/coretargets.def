@@ -257,6 +257,9 @@ $(CORE_DEST_DIR)/conf: $(WEBAPP_DIR)/service.war
 	cp $(SERVICE_DIR)/conf/spamassassin/* $@/spamassassin
 	mkdir -p $@/attrs
 	cp -f $(SERVICE_DIR)/build/dist/conf/attrs/* $@/attrs
+ifeq ($(ZIMBRA_USE_CBPOLICYD), 1)
+	cp $(ZMCBPOLICYD_DIR)/conf/* $@
+endif
 
 $(CORE_DEST_DIR)/conf/com.zimbra.zcs.plist:
 	mkdir -p $(CORE_DEST_DIR)/conf
@@ -289,6 +292,9 @@ $(CORE_DEST_DIR)/libexec: $(LAUNCHER_DIR)/build/zmmailboxdmgr
 	cp $@/swatch $@/logswatch
 	cp $@/swatch $@/auditswatch
 	cp -f $(BUILD_ROOT)/rpmconf/Build/get_plat_tag.sh $@
+ifeq ($(ZIMBRA_USE_CBPOLICYD), 1)
+	cp $(ZMCBPOLICYD_DIR)/src/libexec/* $@
+endif
 
 $(CORE_DEST_DIR)/bin:
 	mkdir -p $@
@@ -312,6 +318,9 @@ $(CORE_DEST_DIR)/bin:
 	cp $(ZIMBRA_BIN_DIR)/zmapachectl $@
 	cp $(ZIMBRA_BIN_DIR)/zmprov.server $@
 	cp $@/zmprov $@/zmprov.java
+ifeq ($(ZIMBRA_USE_CBPOLICYD), 1)
+	cp $(ZMCBPOLICYD_DIR)/src/bin/* $@
+endif
 
 $(CORE_DEST_DIR)/contrib:
 	mkdir -p $@
