@@ -33,6 +33,7 @@ CBPOLICYD_COMPONENTS := \
 	$(MTA_DEST_DIR)/bin/zmcbpolicydctl \
 	$(MTA_DEST_DIR)/conf/cbpolicyd.conf.in \
 	$(MTA_DEST_DIR)/data/cbpolicyd \
+	$(MTA_DEST_DIR)/data/cbpolicyd/db \
 	$(MTA_DEST_DIR)/libexec/zmcbpolicydinit
 endif
 

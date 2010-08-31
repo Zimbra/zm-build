@@ -21,6 +21,13 @@ fi
 rm -f /opt/zimbra/amavisd
 ln -s /opt/zimbra/amavisd-new-2.6.4 /opt/zimbra/amavisd
 
+if [ -e /opt/zimbra/cbpolicyd ]; then
+  rm -f /opt/zimbra/cbpolicyd
+fi
+if [ -d /opt/zimbra/cbpolicyd-2.0.10 ]; then
+  ln -s /opt/zimbra/cbpolicyd-2.0.10 /opt/zimbra/cbpolicyd
+fi
+
 rm -f /opt/zimbra/dspam
 ln -s /opt/zimbra/dspam-3.9.0 /opt/zimbra/dspam
 
