@@ -82,6 +82,8 @@ $(BUILD_ROOT)/zimbra-mta.spec:
 ifeq ($(ZIMBRA_USE_CBPOLICYD), 1)
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/$(CBPOLICYD_DIR)" >> \
 		$(BUILD_ROOT)/zimbra-mta.spec
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/conf" >> \
+		$(BUILD_ROOT)/zimbra-mta.spec
 endif
 
 mta_stage: $(MTA_COMPONENTS)
