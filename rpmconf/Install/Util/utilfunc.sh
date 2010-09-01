@@ -1399,15 +1399,31 @@ removeExistingInstall() {
           fi
         fi
       elif [ -f /etc/rsyslog.conf ]; then
-        egrep -q 'zimbra' /etc/rsyslog.conf
-        if [ $? = 0 ]; then
-          echo -n "Cleaning up /etc/rsyslog.conf..."
-          sed -i -e '/zimbra/d' /etc/rsyslog.conf
-          if [ -x /etc/init.d/rsyslog ]; then
-            /etc/init.d/rsyslog restart > /dev/null 2>&1
-            echo "done."
-          else
-            echo "Unable to restart rsyslog service. Please do it manually."
+	if [ -d /etc/rsyslog.d ]; then
+          if [ -f /etc/rsyslog.d/30-zimbra.conf ]; then
+            echo -n "Cleaning up /etc/rsyslog.d..."
+            rm -f /etc/rsyslog.d/30-zimbra.conf
+            if [ -x /usr/bin/service ]; then
+              /usr/sbin/service rsyslog restart >/dev/null 2>&1
+              echo "done."
+            elif [ -x /etc/init.d/rsyslog ]; then
+              /etc/init.d/rsyslog restart > /dev/null 2>&1
+              echo "done."
+            else
+              echo "Unable to restart rsyslog service. Please do it manually."
+            fi
+          fi
+        else
+          egrep -q 'zimbra' /etc/rsyslog.conf
+          if [ $? = 0 ]; then
+            echo -n "Cleaning up /etc/rsyslog.conf..."
+            sed -i -e '/zimbra/d' /etc/rsyslog.conf
+            if [ -x /etc/init.d/rsyslog ]; then
+              /etc/init.d/rsyslog restart > /dev/null 2>&1
+              echo "done."
+            else
+              echo "Unable to restart rsyslog service. Please do it manually."
+            fi
           fi
         fi
       fi
