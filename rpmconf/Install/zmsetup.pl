@@ -6467,7 +6467,7 @@ sub mailboxdMemoryMB {
   # can only allocate about 1.6GB on a 32 bit system
   $memory = 1.5
     if ($system_mem > 2 && $addr_space eq "32");
-  return $memory*1024;
+  return int($memory*1024);
 }
 
 sub addServerToHostPool {
