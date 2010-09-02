@@ -6352,7 +6352,12 @@ sub setupCrontab {
   }
   detail("crontab: Taking a copy of zimbra user crontab file.");
   if ($platform =~ /SUSE/i) {
-    `cp -f /var/spool/cron/tabs/zimbra /tmp/crontab.zimbra.orig`;
+    if (-e '/var/spool/cron/tabs/zimbra') {
+      `cp -f /var/spool/cron/tabs/zimbra /tmp/crontab.zimbra.orig`;
+    } else {
+      unlink("/tmp/crontab.zimbra.orig");
+      `touch /tmp/crontab.zimbra.orig`;
+    }
   } else {
     `crontab -u zimbra -l > /tmp/crontab.zimbra.orig 2> /dev/null`;
   }
