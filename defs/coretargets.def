@@ -242,7 +242,6 @@ $(CORE_DEST_DIR)/conf: $(WEBAPP_DIR)/service.war
 	cp $(SERVICE_DIR)/conf/nginx/nginx.conf.web.https.template $@/nginx/templates/
 	cp $(SERVICE_DIR)/conf/nginx/nginx.conf.web.http.template $@/nginx/templates/
 	cp $(SERVICE_DIR)/conf/nginx/nginx.conf.web.template $@/nginx/templates/
-	cp $(SERVICE_DIR)/conf/nginx.conf.in $@
 	cp $(SERVICE_DIR)/conf/stats.conf.in $@
 	cp $(SERVICE_DIR)/conf/salocal.cf $@/salocal.cf.in
 	cp $(SERVICE_DIR)/conf/zmmta.cf-$(MAILBOXD_SERVER) $@/zmmta.cf
