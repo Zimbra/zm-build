@@ -1,0 +1,21 @@
+CORE_COMPONENTS	:= \
+	$(CORE_DEST_DIR) \
+	$(CORE_DEST_DIR)/db \
+	$(CORE_DEST_DIR)/lib \
+	$(CORE_DEST_DIR)/libexec \
+	$(CORE_DEST_DIR)/bin \
+	$(CORE_DEST_DIR)/contrib \
+	$(CORE_DEST_DIR)/zimbramon \
+	$(CORE_DEST_DIR)/$(JAVA_FILE)$(JAVA_VERSION) \
+	$(CORE_DEST_DIR)/conf \
+	$(CORE_DEST_DIR)/docs \
+	$(CORE_DEST_DIR)/$(BDB_DIR) \
+	$(CORE_DEST_DIR)/$(OPENSSL_DIR)-$(OPENSSL_VERSION) \
+	$(CORE_DEST_DIR)/$(HEIMDAL_DIR)-$(HEIMDAL_VERSION) \
+	$(CORE_DEST_DIR)/$(CURL_DIR)-$(CURL_VERSION) \
+	$(CORE_DEST_DIR)/$(SASL_DIR)-$(SASL_VERSION) \
+	$(CORE_DEST_DIR)/$(LDAP_DIR)-libs-$(LDAP_VERSION) \
+	$(CORE_DEST_DIR)/$(TCMALLOC_DIR) \
+	$(CORE_DEST_DIR)/lib/ext/com_zimbra_cert_manager/com_zimbra_cert_manager.jar \
+	$(CORE_DEST_DIR)/lib/ext/com_zimbra_bulkprovision/com_zimbra_bulkprovision.jar \
+	$(PLATFORM_CORE_COMPONENTS)
