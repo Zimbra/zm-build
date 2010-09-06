@@ -4,7 +4,6 @@ $(BUILD_ROOT)/zimbra-core.spec:
 	cat $(PACKAGE_CONF_DIR)/Spec/zimbra-core.spec | \
 	sed -e 's/@@VERSION@@/$(VERSION_TAG)/' \
 	-e 's/@@RELEASE@@/$(RELEASE)/' \
-	-e 's/@@COMPAT_LIBSTDC@@/$(COMPAT_LIBSTDC)/' \
 	-e 's/^Copyright:/$(RPMCOPYRIGHTSTR):/' \
 	-e '/^%pre$$/ r zimbra-core.pre' \
 	-e '/^%post$$/ r zimbra-core.post' > $(BUILD_ROOT)/zimbra-core.spec

@@ -15,8 +15,6 @@ ifeq ($(PACKAGING_VERSION), RPM version 4.4.2)
 	RPMCOPYRIGHTSTR := License
 endif
 
-COMPAT_LIBSTDC := compat-libstdc++
-
 BUNDLE_EXT := tgz
 
 THIRD_PARTY	:= $(BUILD_ROOT)/../ThirdParty
