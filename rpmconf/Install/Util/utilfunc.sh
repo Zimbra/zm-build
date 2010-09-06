@@ -2019,6 +2019,10 @@ getPlatformVars() {
       PREREQ_PACKAGES="sudo libidn gmp"
       PREREQ_LIBS="/usr/lib/libstdc++.so.6"
       PRESUG_PACKAGES="perl-5.8.8 sysstat"
+    elif [ $PLATFORM = "RHEL6" -o $PLATFORM = "CentOS6" ]; then
+      PREREQ_PACKAGES="sudo libidn gmp"
+      PREREQ_LIBS="/usr/lib/libstdc++.so.6"
+      PRESUG_PACKAGES="perl-5.10.1 sysstat"
     elif [ $PLATFORM = "MANDRIVA2006" ]; then
       PREREQ_PACKAGES="sudo libidn11 libgmp3 libstdc++6"
       PRESUG_PACKAGE="sysstat"
@@ -2034,6 +2038,10 @@ getPlatformVars() {
       PREREQ_PACKAGES="sudo libidn gmp bind-libs vixie-cron"
       PREREQ_LIBS="/usr/lib64/libstdc++.so.6"
       PRESUG_PACKAGE="sysstat"
+    elif [ $PLATFORM = "RHEL6_64" -o $PLATFORM = "CentOS6_64" ]; then
+      PREREQ_PACKAGES="sudo libidn gmp"
+      PREREQ_LIBS="/usr/lib64/libstdc++.so.6"
+      PRESUG_PACKAGES="perl-5.10.1 sysstat"
     elif [ $PLATFORM = "RHEL5_64" -o $PLATFORM = "CentOS5_64" ]; then
       PREREQ_PACKAGES="sudo libidn gmp"
       PREREQ_LIBS="/usr/lib64/libstdc++.so.6"
