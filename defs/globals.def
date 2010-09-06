@@ -29,11 +29,19 @@ ifeq ($(BUILD_PLATFORM), RHEL5_64)
 	ARCH := x86_64
 endif
 
+ifeq ($(BUILD_PLATFORM), RHEL6_64)
+	ARCH := x86_64
+endif
+
 ifeq ($(BUILD_PLATFORM), CentOS4_64)
 	ARCH := x86_64
 endif
 
 ifeq ($(BUILD_PLATFORM), CentOS5_64)
+	ARCH := x86_64
+endif
+
+ifeq ($(BUILD_PLATFORM), CentOS6_64)
 	ARCH := x86_64
 endif
 

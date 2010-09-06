@@ -76,6 +76,11 @@ if [ -f /etc/redhat-release ]; then
 		exit 0
 	fi
 
+	grep "CentOS release 6" /etc/redhat-release > /dev/null 2>&1
+	if [ $? = 0 ]; then
+		echo "CentOS6${i}"
+		exit 0
+	fi
 	grep "CentOS release 5" /etc/redhat-release > /dev/null 2>&1
 	if [ $? = 0 ]; then
 		echo "CentOS5${i}"

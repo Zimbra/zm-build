@@ -87,6 +87,12 @@ elif [ x"$PLAT" = "xF7" -o x"$PLAT" = "xF10" -o x"$PLAT" = "xF11" ]; then
 elif [ x"$PLAT" = "xF10_64" -o x"$PLAT" = "xF11_64" ]; then
   sed -i -e 's:\(^Defaults.*requiretty\):#\1:' /etc/sudoers
   sed -i -e 's:PS2 QTDIR USERNAME:PS2 QTDIR USERNAME PATH:' /etc/sudoers
+elif [ x"$PLAT" = "xRHEL6" -o x"$PLAT" = "xCentOS6" ]; then
+  sed -i -e 's:\(^Defaults.*requiretty\):#\1:' /etc/sudoers
+  sed -i -e 's:PS2 QTDIR USERNAME:PS2 QTDIR USERNAME PATH:' /etc/sudoers
+elif [ x"$PLAT" = "xRHEL6_64" -o x"$PLAT" = "xCentOS6_64" ]; then
+  sed -i -e 's:\(^Defaults.*requiretty\):#\1:' /etc/sudoers
+  sed -i -e 's:PS2 QTDIR USERNAME:PS2 QTDIR USERNAME PATH:' /etc/sudoers
 fi
 
 if [[ $PLAT == "DEBIAN"* || $PLAT == "UBUNTU"* ]]; then
