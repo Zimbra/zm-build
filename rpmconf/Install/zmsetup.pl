@@ -6469,9 +6469,8 @@ sub mailboxdMemoryMB {
   } else {
     $memory = 0.25*$system_mem;
   }
-  # can only allocate about 1.6GB on a 32 bit system
   $memory = 1.5
-    if ($system_mem > 2 && $addr_space eq "32");
+    if ($addr_space eq "32" && $memory > 1.5);
   return int($memory*1024);
 }
 
