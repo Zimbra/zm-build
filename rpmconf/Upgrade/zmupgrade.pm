@@ -3283,6 +3283,7 @@ sub upgrade700BETA1 {
   if (main::isInstalled("zimbra-ldap")) {
     runLdapAttributeUpgrade("42828");
     runLdapAttributeUpgrade("43779");
+    runLdapAttributeUpgrade("50258");
   }
   if (main::isInstalled("zimbra-store")) {
     # 49320
