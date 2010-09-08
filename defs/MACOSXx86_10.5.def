@@ -20,6 +20,7 @@ include $(DEFS_DIR)/plat_common.def
 
 JAVA_BINARY := /opt/zimbra/java/bin/java
 MYSQL_VERSION   := standard-$(MYSQL_VERSION_STRING)-apple-darwin8.2.0-i686
+MYSQL2_VERSION   := standard-$(MYSQL2_VERSION_STRING)-apple-darwin8.2.0-i686
 
 BUNDLE_EXT := dmg
 
