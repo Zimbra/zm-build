@@ -82,8 +82,6 @@ $(BUILD_ROOT)/zimbra-mta.spec:
 ifeq ($(ZIMBRA_USE_CBPOLICYD), 1)
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/$(CBPOLICYD_DIR)" >> \
 		$(BUILD_ROOT)/zimbra-mta.spec
-	echo "%attr(-, zimbra, zimbra) /opt/zimbra/conf" >> \
-		$(BUILD_ROOT)/zimbra-mta.spec
 endif
 
 mta_stage: $(MTA_COMPONENTS)
@@ -123,18 +121,16 @@ $(MTA_DEST_DIR)/$(CLAMAV_DIR): $(MTA_DEST_DIR)
 $(MTA_DEST_DIR)/$(CBPOLICYD_DIR): $(MTA_DEST_DIR)
 	@echo "*** Creating cbpolicyd"
 	(cd $(MTA_DEST_DIR); tar xzf $(CBPOLICYD_SOURCE);)
-	mkdir -p $(MTA_DEST_DIR)/conf
-	cp $(ZMCBPOLICYD_DIR)/conf/cbpolicyd.conf.in $(MTA_DEST_DIR)/conf
 
-$(MTA_DEST_DIR)/bin/zmcbpolicydctl: 
+$(CORE_DEST_DIR)/bin/zmcbpolicydctl: 
 	mkdir -p $(@D)
 	cp $(ZMCBPOLICYD_DIR)/src/bin/$(@F) $@
 
-$(MTA_DEST_DIR)/libexec/zmcbpolicydinit: 
+$(CORE_DEST_DIR)/libexec/zmcbpolicydinit: 
 	mkdir -p $(@D)
 	cp $(ZMCBPOLICYD_DIR)/src/libexec/$(@F) $@
 
-$(MTA_DEST_DIR)/conf/cbpolicyd.conf.in: 
+$(CORE_DEST_DIR)/conf/cbpolicyd.conf.in: 
 	mkdir -p $(@D)
 	cp $(ZMCBPOLICYD_DIR)/conf/$(@F) $@
 

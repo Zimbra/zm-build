@@ -4,6 +4,18 @@ WEBAPPS	:= \
 	$(WEBAPP_DIR)/zimbra/downloads \
 	$(WEBAPP_DIR)/zimbraAdmin.war
 
+ifeq ($(ZIMBRA_USE_CBPOLICYD), 1)
+CBPOLICYD_COMPONENTS := \
+	$(MTA_DEST_DIR)/$(CBPOLICYD_DIR) \
+	$(MTA_DEST_DIR)/data/cbpolicyd \
+	$(MTA_DEST_DIR)/data/cbpolicyd/db
+
+CBPOLICYD_CORE_COMPONENTS := \
+	$(CORE_DEST_DIR)/bin/zmcbpolicydctl \
+	$(CORE_DEST_DIR)/conf/cbpolicyd.conf.in \
+	$(CORE_DEST_DIR)/libexec/zmcbpolicydinit
+endif
+
 CORE_COMPONENTS	:= \
 	$(CORE_DEST_DIR) \
 	$(CORE_DEST_DIR)/db \
@@ -26,20 +38,6 @@ CORE_COMPONENTS	:= \
 	$(CORE_DEST_DIR)/lib/ext/com_zimbra_bulkprovision/com_zimbra_bulkprovision.jar \
 	$(CBPOLICYD_CORE_COMPONENTS) \
 	$(PLATFORM_CORE_COMPONENTS)
-
-
-
-ifeq ($(ZIMBRA_USE_CBPOLICYD), 1)
-CBPOLICYD_COMPONENTS := \
-	$(MTA_DEST_DIR)/$(CBPOLICYD_DIR) \
-	$(MTA_DEST_DIR)/data/cbpolicyd \
-	$(MTA_DEST_DIR)/data/cbpolicyd/db
-
-CBPOLICYD_CORE_COMPONENTS := \
-	$(CORE_DEST_DIR)/bin/zmcbpolicydctl \
-	$(CORE_DEST_DIR)/conf/cbpolicyd.conf.in \
-	$(CORE_DEST_DIR)/libexec/zmcbpolicydinit
-endif
 
 MTA_COMPONENTS	:= \
 	$(MTA_DEST_DIR) \
