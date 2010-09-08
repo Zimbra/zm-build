@@ -3282,6 +3282,7 @@ sub upgrade700BETA1 {
   main::progress("Updating from 7.0.0_BETA1\n");
   if (main::isInstalled("zimbra-ldap")) {
     runLdapAttributeUpgrade("42828");
+    runLdapAttributeUpgrade("43779");
   }
   if (main::isInstalled("zimbra-store")) {
     # 49320
