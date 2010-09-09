@@ -117,6 +117,8 @@ $(BUILD_ROOT)/zimbra-core.spec:
 		$(BUILD_ROOT)/zimbra-core.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/tcmalloc-$(TCMALLOC_VERSION)" >> \
 		$(BUILD_ROOT)/zimbra-core.spec
+	echo "" >>  $(BUILD_ROOT)/zimbra-core.spec
+	echo "%clean" >>  $(BUILD_ROOT)/zimbra-core.spec
 
 core_stage: $(CORE_COMPONENTS)
 

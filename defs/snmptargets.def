@@ -65,6 +65,8 @@ $(BUILD_ROOT)/zimbra-snmp.spec:
 	rm -f zimbra-snmp.post
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/$(SNMP_DIR)" >> \
 		$(BUILD_ROOT)/zimbra-snmp.spec
+	echo "" >> $(BUILD_ROOT)/zimbra-snmp.spec
+	echo "%clean" >> $(BUILD_ROOT)/zimbra-snmp.spec
 
 snmp_stage: $(SNMP_COMPONENTS)
 

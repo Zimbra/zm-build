@@ -67,6 +67,8 @@ $(BUILD_ROOT)/zimbra-ldap.spec:
 		$(BUILD_ROOT)/zimbra-ldap.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/openldap-$(LDAP_VERSION)" >> \
 		$(BUILD_ROOT)/zimbra-ldap.spec
+	echo "" >> $(BUILD_ROOT)/zimbra-ldap.spec
+	echo "%clean" >> $(BUILD_ROOT)/zimbra-ldap.spec
 
 ldap_stage: $(LDAP_COMPONENTS)
 

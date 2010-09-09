@@ -93,6 +93,8 @@ $(BUILD_ROOT)/zimbra-store.spec:
 		$(BUILD_ROOT)/zimbra-store.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/mysql-standard-$(MYSQL2_VERSION_STRING)-pc-linux-gnu-i686-glibc23" >> \
 		$(BUILD_ROOT)/zimbra-store.spec
+	echo "" >> $(BUILD_ROOT)/zimbra-store.spec
+	echo "%clean" >> $(BUILD_ROOT)/zimbra-store.spec
 
 store_stage: $(STORE_COMPONENTS) $(ZIMLET_COMPONENTS)
 
