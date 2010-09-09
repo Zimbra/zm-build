@@ -34,3 +34,5 @@ Best email money can buy
 %postun
 
 %files
+
+%clean
