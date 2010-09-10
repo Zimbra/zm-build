@@ -1050,10 +1050,6 @@ sub setLdapDefaults {
     $config{VIRUSQUARANTINE} = "virus-quarantine.".lc(genRandomPass()).'@'.$config{CREATEDOMAIN};
   }
 
-  $config{NOTEBOOKACCOUNT}  = getLdapConfigValue("zimbraNotebookAccount");
-  $config{NOTEBOOKACCOUNT} = "wiki".'@'.$config{CREATEDOMAIN}
-    if ($config{NOTEBOOKACCOUNT} eq "");
-
   if (isNetwork() && isEnabled("zimbra-store")) {
     $config{zimbraBackupReportEmailRecipients} = getLdapConfigValue("zimbraBackupReportEmailRecipients");
     $config{zimbraBackupReportEmailRecipients} = $config{CREATEADMIN}
@@ -1109,7 +1105,6 @@ sub setLdapDefaults {
     $config{zimbraFeatureIMEnabled} = "Disabled";
     $config{zimbraFeatureBriefcasesEnabled} = "Disabled";
     $config{zimbraFeatureTasksEnabled} = "Disabled";
-    $config{zimbraFeatureNotebookEnabled} = "Enabled";
   } else {
     $config{zimbraFeatureIMEnabled}=getLdapCOSValue("zimbraFeatureIMEnabled");
     $config{zimbraFeatureIMEnabled}="Enabled"
@@ -1128,12 +1123,6 @@ sub setLdapDefaults {
       if (lc($config{zimbraFeatureBriefcasesEnabled}) eq "true");
     $config{zimbraFeatureBriefcasesEnabled}="Disabled"
       if (lc($config{zimbraFeatureBriefcasesEnabled}) eq "false");
-  
-    $config{zimbraFeatureNotebookEnabled}=getLdapCOSValue("zimbraFeatureNotebookEnabled");
-    $config{zimbraFeatureNotebookEnabled}="Enabled"
-      if (lc($config{zimbraFeatureNotebookEnabled}) eq "true");
-    $config{zimbraFeatureNotebookEnabled}="Disabled"
-      if (lc($config{zimbraFeatureNotebookEnabled}) eq "false");
   }
 
   #
@@ -1378,9 +1367,6 @@ sub setDefaults {
     $config{zimbraWebProxy} = "FALSE" if $newinstall;
 
     # default values for upgrades 
-    $config{NOTEBOOKACCOUNT} = "wiki".'@'.$config{CREATEDOMAIN}
-      if ($config{NOTEBOOKACCOUNT} eq "");
-
     if ($config{TRAINSASPAM} eq "") {
       $config{TRAINSASPAM} = "spam.".lc(genRandomPass());
       $config{TRAINSASPAM} .= '@'.$config{CREATEDOMAIN};
@@ -1393,9 +1379,6 @@ sub setDefaults {
       $config{VIRUSQUARANTINE} = "virus-quarantine.".lc(genRandomPass());
       $config{VIRUSQUARANTINE} .= '@'.$config{CREATEDOMAIN};
     }
-
-    # bug. we shouldn't update this on upgrade.
-    $config{NOTEBOOKPASS} = genRandomPass();
 
     # license files locations this is associated with the store
     # for now as there is a dependancy on the store jar file. 
@@ -1412,13 +1395,9 @@ sub setDefaults {
         if ($config{zimbraFeatureBriefcasesEnabled} eq "");
       $config{zimbraFeatureTasksEnabled} = "Disabled"
         if ($config{zimbraFeatureTasksEnabled} eq "");
-      $config{zimbraFeatureNotebookEnabled} = "Enabled"
-        if ($config{zimbraFeatureNotebookEnabled} eq "");
     } else {
       $config{zimbraFeatureIMEnabled} = "Disabled"
         if ($config{zimbraFeatureIMEnabled} eq "");
-      $config{zimbraFeatureNotebookEnabled} = "Enabled"
-        if ($config{zimbraFeatureNotebookEnabled} eq "");
       $config{zimbraFeatureBriefcasesEnabled} = "Enabled"
         if ($config{zimbraFeatureBriefcasesEnabled} eq "");
       $config{zimbraFeatureTasksEnabled} = "Enabled"
@@ -2026,10 +2005,6 @@ sub setCreateDomain {
   if ($old eq $config{SMTPSOURCE}) {
     $config{SMTPSOURCE} = $config{CREATEADMIN};
   }
-  my ($notebookUser, $notebookDomain) = split ('@', $config{NOTEBOOKACCOUNT});
-  $config{NOTEBOOKACCOUNT} = $notebookUser.'@'.$config{CREATEDOMAIN}
-    if ($notebookDomain eq $oldDomain);
-
   my ($spamUser, $spamDomain) = split ('@', $config{TRAINSASPAM});
   $config{TRAINSASPAM} = $spamUser.'@'.$config{CREATEDOMAIN}
     if ($spamDomain eq $oldDomain);
@@ -2184,18 +2159,14 @@ sub setCreateAdmin {
       next;
     }
 
-    # spam/ham/notebook accounts follow admin domain if ldap isn't install
+    # spam/ham/quanrantine accounts follow admin domain if ldap isn't install
     # this prevents us from trying to provision in a non-existent domain
     if (!isEnabled("zimbra-ldap")) {
       my ($spamUser, $spamDomain) = split ('@', $config{TRAINSASPAM});
       my ($hamUser, $hamDomain) = split ('@', $config{TRAINSAHAM});
       my ($virusUser, $virusDomain) = split ('@', $config{VIRUSQUARANTINE});
-      my ($notebookUser, $notebookDomain) = split ('@', $config{NOTEBOOKACCOUNT});
       $config{CREATEDOMAIN} = $d
         if ($config{CREATEDOMAIN} ne $d);
-
-      $config{NOTEBOOKACCOUNT} = $notebookUser.'@'.$d
-        if ($notebookDomain ne $d);
 
       $config{TRAINSASPAM} = $spamUser.'@'.$d
         if ($spamDomain ne $d);
@@ -2658,9 +2629,6 @@ sub setHostName {
     $config{AVUSER} = $u.'@'.$config{CREATEDOMAIN};
 
     $config{AVDOMAIN} = $config{CREATEDOMAIN};
-
-    my ($u,$d) = split ('@', $config{NOTEBOOKACCOUNT});
-    $config{NOTEBOOKACCOUNT} = $u.'@'.$config{CREATEDOMAIN};
 
     my ($u,$d) = split ('@', $config{TRAINSASPAM});
     $config{TRAINSASPAM} = $u.'@'.$config{CREATEDOMAIN};
@@ -3249,13 +3217,6 @@ sub createCOSMenu {
     "arg" => "zimbraFeatureTasksEnabled",
     };
   $i++;
-  $$lm{menuitems}{$i} = { 
-    "prompt" => "Enable Notebook Feature:", 
-    "var" => \$config{zimbraFeatureNotebookEnabled}, 
-    "callback" => \&toggleConfigEnabled,
-    "arg" => "zimbraFeatureNotebookEnabled",
-    };
-  $i++;
   return $lm;
 }
 
@@ -3646,20 +3607,6 @@ sub createStoreMenu {
       } else {
         $config{TRAINSAHAM} = $ldap_trainsaham;
       }
-    }
-
-    my $ldap_wikiAccount = getLdapConfigValue("zimbraNotebookAccount")
-      if (ldapIsAvailable());
-
-    if ($ldap_wikiAccount eq "") {
-      $$lm{menuitems}{$i} = { 
-        "prompt" => "Global Documents Account:", 
-        "var" => \$config{NOTEBOOKACCOUNT}, 
-        "callback" => \&setNotebookAccount
-      };
-      $i++;
-    } else {
-      $config{NOTEBOOKACCOUNT} = $ldap_wikiAccount;
     }
 
     $$lm{menuitems}{$i} = { 
@@ -5757,24 +5704,8 @@ sub configCreateDomain {
       $rc = runAsZimbra("$ZMPROV aaa ".
         "$config{CREATEADMIN} postmaster\@$config{CREATEDOMAIN}");
       progress(($rc == 0) ? "done.\n" : "failed.\n");
-
-      $config{NOTEBOOKACCOUNT} = lc($config{NOTEBOOKACCOUNT});
-      progress ( "Creating user $config{NOTEBOOKACCOUNT}..." );
-      my $acctId = getLdapAccountValue("zimbraId", $config{NOTEBOOKACCOUNT});
-      if ($acctId ne "") {
-        progress("already exists.\n");
-      } else {
-        my $rc = runAsZimbra("$ZMPROV ca ".
-          "$config{NOTEBOOKACCOUNT} \'$config{NOTEBOOKPASS}\' ".
-          "amavisBypassSpamChecks TRUE ".
-          "zimbraAttachmentsIndexingEnabled FALSE ".
-          "zimbraIsSystemResource TRUE ".
-          "zimbraHideInGal TRUE ".
-          "zimbraMailQuota 0 ".
-          "description \'System account for Global Documents.\'");
-        progress(($rc == 0) ? "done.\n" : "failed.\n");
-      }
     }
+
     if ($config{DOTRAINSA} eq "yes") {
       $config{TRAINSASPAM} = lc($config{TRAINSASPAM});
       progress ( "Creating user $config{TRAINSASPAM}..." );
@@ -6266,7 +6197,6 @@ sub applyConfig {
     # only after the application server is running.
     if (isEnabled("zimbra-store")) {
       configInstallZimlets();
-      configInitNotebooks();
 
       progress ( "Restarting mailboxd...");
       runAsZimbra("/opt/zimbra/bin/zmmailboxdctl restart");

@@ -3297,6 +3297,7 @@ sub upgrade700BETA1 {
     runLdapAttributeUpgrade("42828");
     runLdapAttributeUpgrade("43779");
     runLdapAttributeUpgrade("50258");
+    runLdapAttributeUpgrade("50465");
   }
   if (main::isInstalled("zimbra-store")) {
     # 43140
