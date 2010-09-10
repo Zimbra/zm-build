@@ -57,6 +57,10 @@ ifeq ($(BUILD_PLATFORM), F11_64)
 	ARCH := x86_64
 endif
 
+ifeq ($(BUILD_PLATFORM), F13_64)
+	ARCH := x86_64
+endif
+
 ifeq ($(BUILD_PLATFORM), UBUNTU6_64)
 	ARCH := amd64
 endif
