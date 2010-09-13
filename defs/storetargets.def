@@ -91,8 +91,6 @@ $(BUILD_ROOT)/zimbra-store.spec:
 		$(BUILD_ROOT)/zimbra-store.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/mysql-standard-$(MYSQL_VERSION_STRING)-pc-linux-gnu-i686-glibc23" >> \
 		$(BUILD_ROOT)/zimbra-store.spec
-	echo "%attr(-, zimbra, zimbra) /opt/zimbra/mysql-standard-$(MYSQL2_VERSION_STRING)-pc-linux-gnu-i686-glibc23" >> \
-		$(BUILD_ROOT)/zimbra-store.spec
 	echo "" >> $(BUILD_ROOT)/zimbra-store.spec
 	echo "%clean" >> $(BUILD_ROOT)/zimbra-store.spec
 
@@ -110,13 +108,6 @@ $(STORE_DEST_DIR)/$(MYSQL_DIR):
 	rm -rf $(STORE_DEST_DIR)/$(MYSQL_DIR)/sql-bench
 	rm -rf $(STORE_DEST_DIR)/$(MYSQL_DIR)/docs/mysql.info
 	rm -rf $(STORE_DEST_DIR)/$(MYSQL_DIR)/docs/manual.txt
-	(cd $(STORE_DEST_DIR); tar xzf $(MYSQL2_SOURCE).tar.gz;)
-	rm -f $(STORE_DEST_DIR)/$(MYSQL2_DIR)/bin/mysqltest_embedded
-	rm -f $(STORE_DEST_DIR)/$(MYSQL2_DIR)/bin/mysql_client_test_embedded
-	rm -rf $(STORE_DEST_DIR)/$(MYSQL2_DIR)/mysql-test
-	rm -rf $(STORE_DEST_DIR)/$(MYSQL2_DIR)/sql-bench
-	rm -rf $(STORE_DEST_DIR)/$(MYSQL2_DIR)/docs/mysql.info
-	rm -rf $(STORE_DEST_DIR)/$(MYSQL2_DIR)/docs/manual.txt
 
 $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/bin: $(STORE_DEST_DIR) force
 	@echo "*** Creating $(MAILBOXD_SERVER)"
