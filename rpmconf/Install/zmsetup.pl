@@ -1312,6 +1312,7 @@ sub setDefaults {
   } elsif ($platform eq "MACOSXx86_10.6") {
     $config{JAVAHOME} = "/Library/Java/Home";
     setLocalConfig ("zimbra_java_home", "$config{JAVAHOME}");
+    setLocalConfig("ldap_read_timeout", "0"); #41959
     $config{HOSTNAME} = lc(`hostname`);
   } else {
     $config{JAVAHOME} = "/opt/zimbra/java";
