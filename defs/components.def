@@ -36,8 +36,8 @@ CORE_COMPONENTS	:= \
 	$(CORE_DEST_DIR)/$(TCMALLOC_DIR) \
 	$(CORE_DEST_DIR)/lib/ext/com_zimbra_cert_manager/com_zimbra_cert_manager.jar \
 	$(CORE_DEST_DIR)/lib/ext/com_zimbra_bulkprovision/com_zimbra_bulkprovision.jar \
-	$(CBPOLICYD_CORE_COMPONENTS) \
-	$(PLATFORM_CORE_COMPONENTS)
+	$(PLATFORM_CORE_COMPONENTS) \
+	$(CBPOLICYD_CORE_COMPONENTS)
 
 MTA_COMPONENTS	:= \
 	$(MTA_DEST_DIR) \
@@ -51,6 +51,7 @@ MTA_COMPONENTS	:= \
 	$(MTA_DEST_DIR)/data/dspam \
 	$(MTA_DEST_DIR)/$(ALTERMIME_DIR)-$(ALTERMIME_VERSION) \
 	$(MTA_DEST_DIR)/data/altermime \
+	$(MTA_MYSQL_DEST_DIR)/$(MYSQL_DIR) \
 	$(CBPOLICYD_COMPONENTS)
 
 LOGGER_COMPONENTS := \

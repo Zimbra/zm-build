@@ -39,6 +39,9 @@ ln -s /opt/zimbra/postfix-2.7.1.2z /opt/zimbra/postfix
 rm -f /opt/zimbra/clamav
 ln -s /opt/zimbra/clamav-0.96.2 /opt/zimbra/clamav
 
+rm -f /opt/zimbra/mta/mysql
+ln -s /opt/zimbra/mta/mysql-standard-5.1.50-pc-linux-gnu-i686-glibc23 /opt/zimbra/mta/mysql
+
 if [ -e /opt/zimbra/altermime ]; then
   rm -f /opt/zimbra/altermime
 fi

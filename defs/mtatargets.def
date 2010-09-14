@@ -79,6 +79,8 @@ $(BUILD_ROOT)/zimbra-mta.spec:
 		$(BUILD_ROOT)/zimbra-mta.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/postfix-$(POSTFIX_VERSION)" >> \
 		$(BUILD_ROOT)/zimbra-mta.spec
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/mta" >> \
+		$(BUILD_ROOT)/zimbra-mta.spec
 ifeq ($(ZIMBRA_USE_CBPOLICYD), 1)
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/$(CBPOLICYD_DIR)" >> \
 		$(BUILD_ROOT)/zimbra-mta.spec
@@ -87,6 +89,9 @@ endif
 mta_stage: $(MTA_COMPONENTS)
 
 $(MTA_DEST_DIR):
+	mkdir -p $@
+
+$(MTA_MYSQL_DEST_DIR):
 	mkdir -p $@
 
 $(MTA_DEST_DIR)/data/postfix:
@@ -151,3 +156,7 @@ $(MTA_DEST_DIR)/$(AMAVISD_DIR)-new-$(AMAVISD_VERSION): $(MTA_DEST_DIR)
 $(MTA_DEST_DIR)/$(DSPAM_DIR)-$(DSPAM_VERSION): $(MTA_DEST_DIR)
 	@echo "*** Creating dspam"
 	(cd $(MTA_DEST_DIR); tar xzf $(DSPAM_SOURCE).tgz;)
+
+$(MTA_MYSQL_DEST_DIR)/$(MYSQL_DIR): $(MTA_MYSQL_DEST_DIR)
+        @echo "*** Creating mysql"
+        (cd $(MTA_MYSQL_DEST_DIR); tar xzf $(MYSQL_SOURCE).tar.gz;)

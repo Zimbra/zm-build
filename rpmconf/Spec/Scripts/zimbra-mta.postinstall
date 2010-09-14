@@ -42,6 +42,23 @@ if [ -e /opt/zimbra/altermime ]; then
 fi
 ln -s /opt/zimbra/altermime-0.3-dev /opt/zimbra/altermime
 
+PLAT=$(/opt/zimbra/libexec/get_plat_tag.sh)
+OS_ARCH=powerpc
+MYSQL_VERSION=5.1.50
+
+if [ "x$PLAT" = "xMACOSXx86" -o "x$PLAT" = "xMACOSXx86_10.5" ]; then
+  OS_ARCH=i686
+  OS_REL=8.2.0
+elif [ x"$PLAT" = "xMACOSXx86_10.6" ]; then
+  OS_ARCH=$(uname -p)
+  OS_REL=10
+fi
+
+if [ -L /opt/zimbra/mta/mysql ]; then
+  rm -f /opt/zimbra/mta/mysql
+fi
+ln -s /opt/zimbra/mta/mysql-standard-${MYSQL_VERSION}-apple-darwin${OS_REL}-${OS_ARCH} /opt/zimbra/mta/mysql
+
 mkdir -p /opt/zimbra/data/amavisd/db
 mkdir -p /opt/zimbra/data/amavisd/tmp
 mkdir -p /opt/zimbra/data/amavisd/var
