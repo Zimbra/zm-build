@@ -3294,6 +3294,7 @@ sub upgrade700BETA1 {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
   main::progress("Updating from 7.0.0_BETA1\n");
   if (main::isInstalled("zimbra-ldap")) {
+    runLdapAttributeUpgrade("10287");
     runLdapAttributeUpgrade("42828");
     runLdapAttributeUpgrade("43779");
     runLdapAttributeUpgrade("50258");
