@@ -3736,9 +3736,8 @@ sub doMysql51Upgrade {
     main::runAsZimbra("${zimbra_home}/libexec/zminiutil --backup=.pre-${targetVersion} --section=mysqld --set --key=plugin-load --value='innodb=ha_innodb_plugin.so;innodb_trx=ha_innodb_plugin.so;innodb_locks=ha_innodb_plugin.so;innodb_lock_waits=ha_innodb_plugin.so;innodb_cmp=ha_innodb_plugin.so;innodb_cmp_reset=ha_innodb_plugin.so;innodb_cmpmem=ha_innodb_plugin.so;innodb_cmpmem_reset=ha_innodb_plugin.so' ${mysql_mycnf}");
     main::runAsZimbra("${zimbra_home}/libexec/zminiutil --backup=.pre-${targetVersion} --section=mysqld --unset --key=log-long-format ${mysql_mycnf}");
     main::runAsZimbra("${zimbra_home}/libexec/zminiutil --backup=.pre-${targetVersion} --section=mysqld --unset --key=log-slow-queries ${mysql_mycnf}");
-    main::runAsZimbra("${zimbra_home}/libexec/zminiutil --backup=.pre-${targetVersion} --section=mysqld --set --key=log-short-format --value=FALSE ${mysql_mycnf}");
-    main::runAsZimbra("${zimbra_home}/libexec/zminiutil --backup=.pre-${targetVersion} --section=mysqld --set --key=slow_query_log --value=${zimbra_log_directory}/myslow.log ${mysql_mycnf}");
-    main::runAsZimbra("${zimbra_home}/libexec/zminiutil --backup=.pre-${targetVersion} --section=mysqld --set --key=log_slow_queries ${mysql_mycnf}");
+    main::runAsZimbra("${zimbra_home}/libexec/zminiutil --backup=.pre-${targetVersion} --section=mysqld --set --key=slow_query_log --value=1 ${mysql_mycnf}");
+    main::runAsZimbra("${zimbra_home}/libexec/zminiutil --backup=.pre-${targetVersion} --section=mysqld --set --key=slow_query_log_file --value=${zimbra_log_directory}/myslow.log ${mysql_mycnf}");
 }
 
 sub doMysqlUpgrade {
