@@ -158,5 +158,5 @@ $(MTA_DEST_DIR)/$(DSPAM_DIR)-$(DSPAM_VERSION): $(MTA_DEST_DIR)
 	(cd $(MTA_DEST_DIR); tar xzf $(DSPAM_SOURCE).tgz;)
 
 $(MTA_MYSQL_DEST_DIR)/$(MYSQL_DIR): $(MTA_MYSQL_DEST_DIR)
-        @echo "*** Creating mysql"
-        (cd $(MTA_MYSQL_DEST_DIR); tar xzf $(MYSQL_SOURCE).tar.gz;)
+	@echo "*** Creating mysql"
+	(cd $(MTA_MYSQL_DEST_DIR); tar xzf $(MYSQL_SOURCE).tar.gz;)
