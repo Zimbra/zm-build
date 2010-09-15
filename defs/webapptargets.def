@@ -5,7 +5,8 @@ BUILD_TYPE := FOSS
 
 MWDOWNLOAD = $(shell cd $(WEBAPP_DIR)/zimbra/downloads; ls ZCSExchangeMigrationWizard*)
 IWDOWNLOAD = $(shell cd $(WEBAPP_DIR)/zimbra/downloads; ls ZCSPSTImportWizard*)
-CNDOWNLOAD = $(shell cd $(WEBAPP_DIR)/zimbra/downloads; ls ZimbraOl*)
+CN32DOWNLOAD = $(shell cd $(WEBAPP_DIR)/zimbra/downloads; ls ZimbraConnectorOLK*x86.msi)
+CN64DOWNLOAD = $(shell cd $(WEBAPP_DIR)/zimbra/downloads; ls ZimbraConnectorOLK*x64.msi)
 CMDOWNLOAD = $(shell cd $(WEBAPP_DIR)/zimbra/downloads; ls ZmCus*)
 DMDOWNLOAD = $(shell cd $(WEBAPP_DIR)/zimbra/downloads; ls ZCSDominoMigrationWizard*)
 #ZTDOWNLOAD = $(shell cd $(WEBAPP_DIR)/zimbra/downloads; ls ZimbraToast*)
@@ -36,8 +37,11 @@ $(WEBAPP_DIR)/zimbraAdmin.war: $(WEBAPP_DIR) $(CONSOLE_DIR)/$(WEBAPP_BUILD_DIR)/
 	for download in $(MWDOWNLOAD); do \
 		echo "MIG_WIZ_DOWNLOAD_LINK = /zimbra/downloads/$$download" >> $(WEBAPP_DIR)/zimbraAdmin/WEB-INF/classes/messages/ZaMsg.properties; \
 	done
-	for download in $(CNDOWNLOAD); do \
-		echo "CONNECTOR_DOWNLOAD_LINK = /zimbra/downloads/$$download" >> $(WEBAPP_DIR)/zimbraAdmin/WEB-INF/classes/messages/ZaMsg.properties; \
+	for download in $(CN32DOWNLOAD); do \
+		echo "CONNECTOR_32_DOWNLOAD_LINK = /zimbra/downloads/$$download" >> $(WEBAPP_DIR)/zimbraAdmin/WEB-INF/classes/messages/ZaMsg.properties; \
+	done
+	for download in $(CN64DOWNLOAD); do \
+		echo "CONNECTOR_64_DOWNLOAD_LINK = /zimbra/downloads/$$download" >> $(WEBAPP_DIR)/zimbraAdmin/WEB-INF/classes/messages/ZaMsg.properties; \
 	done
 	for download in $(CMDOWNLOAD); do \
 		echo "CONNECTOR_MSI_DOWNLOAD_LINK = /zimbra/downloads/$$download" >> $(WEBAPP_DIR)/zimbraAdmin/WEB-INF/classes/messages/ZaMsg.properties; \
