@@ -3309,6 +3309,7 @@ sub upgrade700BETA1 {
     my $systemMemorySize = main::getSystemMemory();
     main::setLocalConfig("mailboxd_java_heap_size",
       int($systemMemorySize*1024*$mailboxd_java_heap_memory_percent/100));
+    main::deleteLocalConfig("mailboxd_java_heap_memory_percent"); 
   }
   return 0;
 }
