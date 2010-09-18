@@ -26,8 +26,7 @@
   
 -->
 <patches>
-  <!--
-  <patch name="6.0.6_GA" version="6.0.6_P1">
+  <!-- <patch name="6.0.6_GA" version="6.0.6_P1">
     <desc>Patch 6.0.6_P1</desc>
     <bug>45545</bug>
     <bug>45677</bug>
@@ -62,9 +61,7 @@
     </package>
     <preinstall></preinstall>
     <postinstall></postinstall>
-  </patch> 
-  -->
-  <!--
+  </patch>
   <patch name="6.0.7_GA" version="6.0.7_P1">
     <desc>Patch 6.0.7_P1</desc>
     <bug>46552</bug>
@@ -103,8 +100,78 @@
     </package>
     <preinstall></preinstall>
     <postinstall></postinstall>
-  </patch> 
-  -->
+  </patch>
+  <patch name="6.0.8_GA" version="6.0.8_P1">
+    <desc>Patch 6.0.8_P1</desc>
+    <bug>49412</bug>
+    <bug>49624</bug>
+    <bug>50191</bug>
+    <package name="zimbra-store">
+      <file>
+        <source>ZimbraBuild/corebuild/opt/zimbra/lib/jars/zimbrastore.jar</source>
+        <target>/opt/zimbra/jetty/webapps/service/WEB-INF/lib/zimbrastore.jar</target>
+        <target>/opt/zimbra/jetty/webapps/zimbra/WEB-INF/lib/zimbrastore.jar</target>
+        <target>/opt/zimbra/jetty/webapps/zimbraAdmin/WEB-INF/lib/zimbrastore.jar</target>
+        <target>/opt/zimbra/lib/jars/zimbrastore.jar</target>
+        <perms owner="root" mode="444"/>
+      </file>
+      <file>
+        <source>ZimbraBuild/storebuild/opt/zimbra/jetty-6.1.22.z6/webapps/zimbra/js/Notebook_all.js.zgz</source>
+        <target>/opt/zimbra/jetty/webapps/zimbra/js/Notebook_all.js.zgz</target>
+        <perms owner="zimbra" mode="664"/>
+      </file>
+    </package>
+    <preinstall></preinstall>
+    <postinstall></postinstall>
+  </patch> -->
+  <patch name="6.0.8_GA" version="6.0.8_P2">
+  <desc>Patch 6.0.8_P2</desc>
+  <bug>47488</bug>
+  <bug>49412</bug>
+  <bug>49624</bug>
+  <bug>50191</bug>
+  <bug>50398</bug>
+  <bug>50419</bug>
+  <bug>50603</bug>
+  <package name="zimbra-core">
+      <file>
+        <source>ZimbraBuild/corebuild/opt/zimbra/lib/jars/zimbracommon.jar</source>
+        <target>/opt/zimbra/lib/jars/zimbracommon.jar</target>
+        <perms owner="root" mode="444"/>
+      </file>
+      <file>
+        <source>ZimbraBuild/corebuild/opt/zimbra/lib/jars/ical4j-0.9.16-patched.jar</source>
+        <target>/opt/zimbra/lib/jars/ical4j-0.9.16-patched.jar</target>
+        <perms owner="root" mode="444"/>
+      </file>
+  </package>
+  <package name="zimbra-store">
+      <file>
+        <source>ZimbraBuild/corebuild/opt/zimbra/lib/jars/zimbrastore.jar</source>
+        <target>/opt/zimbra/jetty/webapps/service/WEB-INF/lib/zimbrastore.jar</target>
+        <target>/opt/zimbra/jetty/webapps/zimbra/WEB-INF/lib/zimbrastore.jar</target>
+        <target>/opt/zimbra/jetty/webapps/zimbraAdmin/WEB-INF/lib/zimbrastore.jar</target>
+        <target>/opt/zimbra/lib/jars/zimbrastore.jar</target>
+        <perms owner="root" mode="444"/>
+      </file>
+      <file>
+        <source>ZimbraBuild/corebuild/opt/zimbra/lib/jars/zimbracommon.jar</source>
+        <target>/opt/zimbra/jetty/common/lib/zimbracommon.jar</target>
+        <perms owner="root" mode="444"/>
+      </file>
+      <file>
+        <source>ZimbraBuild/corebuild/opt/zimbra/lib/jars/ical4j-0.9.16-patched.jar</source>
+        <target>/opt/zimbra/jetty/common/lib/ical4j-0.9.16-patched.jar</target>
+        <perms owner="root" mode="444"/>
+      </file>
+      <file>
+        <source>ZimbraBuild/storebuild/opt/zimbra/jetty-6.1.22.z6/webapps/zimbra/js/Notebook_all.js.zgz</source>
+        <target>/opt/zimbra/jetty/webapps/zimbra/js/Notebook_all.js.zgz</target>
+        <perms owner="zimbra" mode="664"/>
+      </file>
+  </package>
+  <preinstall></preinstall>
+  <postinstall></postinstall>
+  </patch>
 </patches>
-  
   
