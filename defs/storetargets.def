@@ -87,8 +87,6 @@ $(BUILD_ROOT)/zimbra-store.spec:
 		$(BUILD_ROOT)/zimbra-store.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/$(MAILBOXD_DIR)" >> \
 		$(BUILD_ROOT)/zimbra-store.spec
-	echo "%attr(-, zimbra, zimbra) /opt/zimbra/wiki" >> \
-		$(BUILD_ROOT)/zimbra-store.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/mysql-standard-$(MYSQL_VERSION_STRING)-pc-linux-gnu-i686-glibc23" >> \
 		$(BUILD_ROOT)/zimbra-store.spec
 	echo "" >> $(BUILD_ROOT)/zimbra-store.spec
@@ -191,10 +189,6 @@ $(WEBAPP_DIR):
 $(STORE_DEST_DIR)/log:
 	mkdir -p $@
 	cp $(PACKAGE_CONF_DIR)/Conf/hotspot_compiler $@/.hotspot_compiler
-
-$(STORE_DEST_DIR)/wiki:
-	mkdir -p $@
-	cp -R $(SERVICE_DIR)/build/dist/wiki/Template $@
 
 $(STORE_DEST_DIR)/conf:
 	mkdir -p $@
