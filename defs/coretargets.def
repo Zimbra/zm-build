@@ -214,6 +214,7 @@ $(CORE_DEST_DIR)/conf: $(WEBAPP_DIR)/service.war
 	cp $(SERVICE_DIR)/build/dist/conf/localconfig.xml $@
 	cp $(SERVICE_DIR)/build/dist/conf/log4j.properties $@/log4j.properties.in
 	cp $(PACKAGE_CONF_DIR)/Conf/zmssl.cnf.in $@
+	cp $(SERVICE_DIR)/conf/datasource.xml $@
 	cp $(SERVICE_DIR)/conf/amavisd.conf.in $@
 	cp $(SERVICE_DIR)/conf/dspam.conf $@
 	cp $(SERVICE_DIR)/conf/zmlogrotate $@
