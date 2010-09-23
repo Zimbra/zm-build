@@ -15,7 +15,7 @@
 # 
 
 rm -rf /opt/zimbra/nginx
-ln -s /opt/zimbra/nginx-0.8-zimbra /opt/zimbra/nginx
+ln -s /opt/zimbra/nginx-0.5.37-zimbra /opt/zimbra/nginx
 
 SUDOMODE=`perl -e 'my $mode=(stat("/etc/sudoers"))[2];printf("%04o\n",$mode & 07777);'`
 egrep -v '^%zimbra.*nginx' /etc/sudoers > /tmp/sudoers
