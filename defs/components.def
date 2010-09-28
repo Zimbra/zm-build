@@ -36,8 +36,8 @@ CORE_COMPONENTS	:= \
 	$(CORE_DEST_DIR)/$(TCMALLOC_DIR) \
 	$(CORE_DEST_DIR)/lib/ext/com_zimbra_cert_manager/com_zimbra_cert_manager.jar \
 	$(CORE_DEST_DIR)/lib/ext/com_zimbra_bulkprovision/com_zimbra_bulkprovision.jar \
-	$(PLATFORM_CORE_COMPONENTS) \
-	$(CBPOLICYD_CORE_COMPONENTS)
+	$(CBPOLICYD_CORE_COMPONENTS) \
+	$(PLATFORM_CORE_COMPONENTS)
 
 MTA_COMPONENTS	:= \
 	$(MTA_DEST_DIR) \
