@@ -62,7 +62,7 @@ LOGGER_COMPONENTS := \
 ifndef $(ZIMBRA_USE_TOMCAT)
 	MAILBOXD_COMPONENTS := \
 		$(STORE_DEST_DIR)/lib/libsetuid \
-		$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/lib/log4j-1.2.15.jar \
+		$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/lib/log4j-1.2.16.jar \
 		$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/resources/log4j.properties
 endif
 

@@ -12,5 +12,5 @@ $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/common/endorsed: $(STORE_DEST_DIR)/$(MAILBOXD_
 	mkdir -p $@
 	cp $(SERVICE_DIR)/build/dist/$(MAILBOXD_SERVER)/common/endorsed/*.jar $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/common/endorsed
 
-$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/lib/log4j-1.2.15.jar: $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/lib $(WEBAPP_DIR)/service.war
-	cp $(SERVICE_DIR)/build/dist/lib/jars/log4j-1.2.15.jar $@
+$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/lib/log4j-1.2.16.jar: $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/lib $(WEBAPP_DIR)/service.war
+	cp $(COMMON_DIR)/jars/log4j-1.2.16.jar $@
