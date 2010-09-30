@@ -108,6 +108,8 @@ $(MTA_DEST_DIR)/data/cbpolicyd/db:
 	mkdir -p $@
 $(MTA_DEST_DIR)/data/altermime:
 	mkdir -p $@
+$(MTA_DEST_DIR)/data/amavisd/mysql:
+    mkdir -p $@
 
 
 $(MTA_DEST_DIR)/$(POSTFIX_DIR): $(MTA_DEST_DIR)
@@ -160,3 +162,7 @@ $(MTA_DEST_DIR)/$(DSPAM_DIR)-$(DSPAM_VERSION): $(MTA_DEST_DIR)
 $(MTA_MYSQL_DEST_DIR)/$(MYSQL_DIR): $(MTA_MYSQL_DEST_DIR)
 	@echo "*** Creating mysql"
 	(cd $(MTA_MYSQL_DEST_DIR); tar xzf $(MYSQL_SOURCE).tar.gz;)
+
+$(MTA_DEST_DIR)/data/amavisd/mysql/antispamdb.sql: $(MTA_DEST_DIR)/data/amavisd/mysql
+    cp -f $(SERVICE_DIR)/conf/amavisd/mysql/antispamdb.sql $(MTA_DEST_DIR)/data/amavisd/mysql/antispamdb.sql
+
