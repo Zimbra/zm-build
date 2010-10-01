@@ -1,4 +1,5 @@
 WEBAPPS	:= \
+	$(WEBAPP_DIR)/spnego.war \
 	$(WEBAPP_DIR)/service.war \
 	$(WEBAPP_DIR)/zimbra.war \
 	$(WEBAPP_DIR)/zimbra/downloads \

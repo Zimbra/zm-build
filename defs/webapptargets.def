@@ -15,6 +15,19 @@ DMDOWNLOAD = $(shell cd $(WEBAPP_DIR)/zimbra/downloads; ls ZCSDominoMigrationWiz
 #ZDWDOWNLOAD = $(shell cd $(THIRD_PARTY_BUILDS)/zdesktop; ls zdesktop*.exe)
 #GWDOWNLOAD = $(shell cd $(WEBAPP_DIR)/zimbra/downloads; ls ZCSGroupwiseMigrationWizard*)
 
+$(WEBAPP_DIR)/spnego.war: $(WEBAPP_DIR) $(SERVICE_DIR)/$(WEBAPP_BUILD_DIR)/spnego.war
+	-mkdir $(WEBAPP_DIR)/spnego
+	(cd $(WEBAPP_DIR)/spnego; jar xf $(SERVICE_DIR)/build/dist/$(MAILBOXD_SERVER)/webapps/spnego.war)
+
+$(SERVICE_DIR)/$(WEBAPP_BUILD_DIR)/spnego.war:
+	(cd $(SERVICE_DIR); $(ANT) $(ANT_DEBUG) \
+		-Dzimbra.buildinfo.platform=$(BUILD_PLATFORM) \
+		-Dis-production=1 \
+		-Dzimbra.buildinfo.version=$(SOURCE_TAG) \
+		-Dzimbra.buildinfo.type=$(BUILD_TYPE) \
+		-Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) \
+		-Dzimbra.buildinfo.host=$(HOST) dev-dist ; )
+
 $(WEBAPP_DIR)/service.war: $(WEBAPP_DIR) $(SERVICE_DIR)/$(WEBAPP_BUILD_DIR)/service.war
 	-mkdir $(WEBAPP_DIR)/service
 	(cd $(WEBAPP_DIR)/service; jar xf $(SERVICE_DIR)/build/dist/$(MAILBOXD_SERVER)/webapps/service.war)

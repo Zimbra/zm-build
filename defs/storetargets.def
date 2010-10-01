@@ -154,6 +154,14 @@ $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/etc: force
 			$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/etc/jetty-setuid.xml
 		cp -f $(SERVICE_DIR)/conf/$(MAILBOXD_SERVER)-$(MAILBOXD_MINOR_VERSION)/jetty.properties \
 			$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/etc/jetty.properties.in
+		cp -f $(SERVICE_DIR)/conf/jetty-6.1/spnego/spnego.properties \
+			$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/etc/spnego.properties.in
+		cp -f $(SERVICE_DIR)/conf/jetty-6.1/spnego/spnego.conf \
+			$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/etc/spnego.conf.in
+		cp -f $(SERVICE_DIR)/conf/jetty-6.1/spnego/krb5.ini \
+			$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/etc/krb5.ini.in
+		cp -f $(SERVICE_DIR)/conf/jetty-6.1/spnego/web.xml \
+			$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/etc/spnego.web.xml.in
 		cp -f $(SERVICE_DIR)/conf/web.xml.production \
 			$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/etc/service.web.xml.in
 		cp -f $(ZIMLET_DIR)/conf/web.xml.production \
