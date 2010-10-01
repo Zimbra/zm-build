@@ -81,7 +81,7 @@ $(BUILD_ROOT)/zimbra-mta.spec:
 		$(BUILD_ROOT)/zimbra-mta.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/mta" >> \
 		$(BUILD_ROOT)/zimbra-mta.spec
-	echo "%attr(-, zimbra, zimbra) /opt/zimbra/amavisd/mysql" >> 
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/amavisd/mysql" >> \
 		$(BUILD_ROOT)/zimbra-mta.spec
 ifeq ($(ZIMBRA_USE_CBPOLICYD), 1)
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/$(CBPOLICYD_DIR)" >> \
