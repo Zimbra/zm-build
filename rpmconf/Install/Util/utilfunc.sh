@@ -598,6 +598,7 @@ checkExistingInstall() {
   done
 
   determineVersionType
+  verifyLicenseActivationServer
   verifyLicenseAvailable
 
   if [ $INSTALLED = "yes" ]; then
@@ -696,6 +697,58 @@ determineVersionType() {
       fi
     fi
   fi
+}
+
+verifyLicenseActivationServer() {
+
+  if [ x"$SKIP_ACTIVATION_CHECK" = "xyes" ]; then
+    return
+  fi
+
+  # sometimes we just don't want to check
+  if [ x"$AUTOINSTALL" = "xyes" ] || [ x"$UNINSTALL" = "xyes" ] || [ x"$SOFTWAREONLY" = "yes" ]; then
+    return
+  fi
+
+  # make sure this is an upgrade
+  isInstalled zimbra-store
+  if [ x$PKGINSTALLED = "x" ]; then
+    return
+  fi
+
+  # make sure the current version we are trying to install is a NE version
+  if [ x"$ZMTYPE_INSTALLABLE" != "xNETWORK" ]; then
+    return
+  fi
+
+  # if we specify an activation presume its valid
+  if [ x"$ACTIVATION" != "x" ] && [ -e $ACTIVATION ]; then
+    if [ ! -d "/opt/zimbra/conf" ]; then
+      mkdir -p /opt/zimbra/conf
+    fi
+    cp -f $ACTIVATION /opt/zimbra/conf/ZCSLicense-activated.xml
+    chown zimbra:zimbra /opt/zimbra/conf/ZCSLicense-activated.xml
+    chmod 444 /opt/zimbra/conf/ZCSLicense-activated.xml
+    return
+  fi
+
+  # if all else fails make sure we can contact the activation server for automated activation
+  /opt/zimbra/java/bin/java -XX:ErrorFile=/opt/zimbra/log -client -Xmx256m -Dzimbra.home=/opt/zimbra -Djava.library.path=/opt/zimbra/lib -Djava.ext.dirs=/opt/zimbra/java/jre/lib/ext:/opt/zimbra/lib/jars -classpath ./lib/jars/zimbra-license-tools.jar com.zimbra.cs.license.LicenseCLI --ping > /dev/null 2>&1
+  if [ $? != 0 ]; then
+    echo "ERROR: Unable to reach the Zimbra License Activation Server."
+    echo ""
+    echo "Please obtain a manual activation key and re-run the upgrade"
+    echo "by specifying the -A activation.xml option."
+    echo ""
+    echo "The ZCS Network upgrade will automatically attempt to activate the"
+    echo "current license as long as the activation server can be contacted."
+    echo ""
+    echo "Manual license activation can be done by either visiting the Zimbra"
+    echo "support portal or contacting Zimbra support or sales."
+    echo ""
+    exit 1;
+  fi
+  
 }
 
 verifyLicenseAvailable() {

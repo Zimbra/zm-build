@@ -33,18 +33,20 @@ UNINSTALL="no"
 SOFTWAREONLY="no"
 
 usage() {
-  echo "$0 [-r <file> -l <file> -u -s -c type -x -h] [defaultsfile]"
+  echo "$0 [-r <file> -l <file> -a <file> -u -s -c type -x -h] [defaultsfile]"
   echo ""
-  echo "-c|--cluster type      Cluster install type active|standby."
-  echo "-h|--help              Usage"
-  echo "-l|--license <file>    License file to install."
-  echo "-r|--restore <file>    Restore contents of <file> to localconfig" 
-  echo "-s|--softwareonly      Software only installation."
-  echo "-u|--uninstall         Uninstall ZCS"
-  echo "-x|--skipspacecheck    Skip filesystem capacity checks."
-  echo "--beta-support         Allows installer to upgrade Network Edition Betas."
-  echo "--platform-override    Allows installer to continue on an unknown OS."
-  echo "[defaultsfile]         File containing default install values."
+  echo "-c|--cluster type       Cluster install type active|standby."
+  echo "-h|--help               Usage"
+  echo "-l|--license <file>     License file to install."
+  echo "-a|--activation <file>  License activation file to install."
+  echo "-r|--restore <file>     Restore contents of <file> to localconfig" 
+  echo "-s|--softwareonly       Software only installation."
+  echo "-u|--uninstall          Uninstall ZCS"
+  echo "-x|--skipspacecheck     Skip filesystem capacity checks."
+  echo "--beta-support          Allows installer to upgrade Network Edition Betas."
+  echo "--platform-override     Allows installer to continue on an unknown OS."
+  echo "--skip-activation-check Allows installer to continue if license activation checks fail."
+  echo "[defaultsfile]          File containing default install values."
   echo ""
   exit
 }
@@ -69,6 +71,20 @@ while [ $# -ne 0 ]; do
         usage
       fi
 		;;
+		-a|--activation) 
+      shift
+			ACTIVATION=$1
+      if [ x"$ACTIVATION" = "x" ]; then
+        echo "Valid license activation file required for -a."
+        usage
+      fi
+
+      if [ ! -f "$ACTIVATION" ]; then
+        echo "Valid license activation file required for -a."
+        echo "${ACTIVATION}: file not found."
+        usage
+      fi
+		;;
 		-u|--uninstall) 
       UNINSTALL="yes"
 		  ;;
@@ -87,6 +103,9 @@ while [ $# -ne 0 ]; do
 		  ;;
 		-beta-support|--beta-support) 
       BETA_SUPPORT="yes"
+		  ;;
+		-skip-activation-check|--skip-activation-check) 
+      SKIP_ACTIVATION_CHECK="yes"
 		  ;;
     -h|-help|--help)
       usage
@@ -133,6 +152,15 @@ if [ x"$LICENSE" != "x" ] && [ -e $LICENSE ]; then
   cp $LICENSE /opt/zimbra/conf/ZCSLicense.xml
   chown zimbra:zimbra /opt/zimbra/conf/ZCSLicense.xml 2> /dev/null
   chmod 444 /opt/zimbra/conf/ZCSLicense.xml
+fi
+
+if [ x"$ACTIVATION" != "x" ] && [ -e $ACTIVATION ]; then
+  if [ ! -d "/opt/zimbra/conf" ]; then
+    mkdir -p /opt/zimbra/conf
+  fi
+  cp $ACTIVATION /opt/zimbra/conf/ZCSLicense-activated.xml
+  chown zimbra:zimbra /opt/zimbra/conf/ZCSLicense-activated.xml 2> /dev/null
+  chmod 444 /opt/zimbra/conf/ZCSLicense-activated.xml
 fi
 
 checkExistingInstall
@@ -256,6 +284,15 @@ if [ "x$LICENSE" != "x" ] && [ -f "$LICENSE" ]; then
   cp -f $LICENSE /opt/zimbra/conf/ZCSLicense.xml
   chown zimbra:zimbra /opt/zimbra/conf/ZCSLicense.xml
   chmod 644 /opt/zimbra/conf/ZCSLicense.xml
+fi
+if [ "x$ACTIVATION" != "x" ] && [ -f "$ACTIVATION" ]; then
+  echo "Installing /opt/zimbra/conf/ZCSLicense.xml"
+  if [ ! -d "/opt/zimbra/conf" ]; then
+    mkdir -p /opt/zimbra/conf
+  fi
+  cp -f $ACTIVATION /opt/zimbra/conf/ZCSLicense-activated.xml
+  chown zimbra:zimbra /opt/zimbra/conf/ZCSLicense-activated.xml
+  chmod 644 /opt/zimbra/conf/ZCSLicense-activated.xml
 fi
 
 
