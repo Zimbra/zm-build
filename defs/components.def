@@ -45,6 +45,7 @@ MTA_COMPONENTS	:= \
 	$(MTA_DEST_DIR)/$(POSTFIX_DIR) \
 	$(MTA_DEST_DIR)/data/postfix \
 	$(MTA_DEST_DIR)/$(AMAVISD_DIR)-new-$(AMAVISD_VERSION) \
+	$(MTA_DEST_DIR)/data/amavisd \
 	$(MTA_DEST_DIR)/amavisd/mysql/antispamdb.sql \
 	$(MTA_DEST_DIR)/$(CLAMAV_DIR)  \
 	$(MTA_DEST_DIR)/data/clamav \
