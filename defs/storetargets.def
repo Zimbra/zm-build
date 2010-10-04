@@ -204,6 +204,7 @@ $(STORE_DEST_DIR)/conf:
 	cp $(SERVICE_DIR)/conf/magic $@
 	cp $(SERVICE_DIR)/conf/magic.zimbra $@
 	cp $(SERVICE_DIR)/conf/globs2.zimbra $@
+	cp $(SERVICE_DIR)/conf/spnego_java_options.in $@
 
 $(STORE_DEST_DIR)/conf/zimbra-contact-fields.xml: $(STORE_DEST_DIR)/conf
 	cp $(SERVICE_DIR)/conf/contacts/zimbra-contact-fields.xml $@
