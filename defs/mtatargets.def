@@ -81,8 +81,6 @@ $(BUILD_ROOT)/zimbra-mta.spec:
 		$(BUILD_ROOT)/zimbra-mta.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/mta" >> \
 		$(BUILD_ROOT)/zimbra-mta.spec
-	echo "%attr(-, zimbra, zimbra) /opt/zimbra/amavisd/mysql" >> \
-		$(BUILD_ROOT)/zimbra-mta.spec
 ifeq ($(ZIMBRA_USE_CBPOLICYD), 1)
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/$(CBPOLICYD_DIR)" >> \
 		$(BUILD_ROOT)/zimbra-mta.spec
@@ -110,7 +108,7 @@ $(MTA_DEST_DIR)/data/cbpolicyd/db:
 	mkdir -p $@
 $(MTA_DEST_DIR)/data/altermime:
 	mkdir -p $@
-$(MTA_DEST_DIR)/amavisd/mysql:
+$(MTA_DEST_DIR)/$(AMAVISD_DIR)-new-$(AMAVISD_VERSION)/conf/mysql:
 	mkdir -p $@
 
 
@@ -165,6 +163,6 @@ $(MTA_MYSQL_DEST_DIR)/$(MYSQL_DIR): $(MTA_MYSQL_DEST_DIR)
 	@echo "*** Creating mysql"
 	(cd $(MTA_MYSQL_DEST_DIR); tar xzf $(MYSQL_SOURCE).tar.gz;)
 
-$(MTA_DEST_DIR)/amavisd/mysql/antispamdb.sql: $(MTA_DEST_DIR)/amavisd/mysql
-	cp -f $(SERVICE_DIR)/conf/amavisd/mysql/antispamdb.sql $(MTA_DEST_DIR)/amavisd/mysql/antispamdb.sql
+$(MTA_DEST_DIR)/i$(AMAVISD_DIR)-new-$(AMAVISD_VERSION)/conf/mysql/antispamdb.sql: $(MTA_DEST_DIR)/$(AMAVISD_DIR)-new-$(AMAVISD_VERSION)/conf/mysql
+	cp -f $(SERVICE_DIR)/conf/amavisd/mysql/antispamdb.sql $(MTA_DEST_DIR)/$(AMAVISD_DIR)-new-$(AMAVISD_VERSION)/conf/mysql/antispamdb.sql
 
