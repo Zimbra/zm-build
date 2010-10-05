@@ -2067,66 +2067,66 @@ getPlatformVars() {
     if [ $PLATFORM = "RHEL4" -o $PLATFORM = "CentOS4" ]; then
       PREREQ_PACKAGES="sudo libidn gmp compat-libstdc++-33"
       PREREQ_LIBS="/usr/lib/libstdc++.so.5 /usr/lib/libstdc++.so.6"
-      PRESUG_PACKAGES="perl-5.8.5 sysstat sqlite3"
+      PRESUG_PACKAGES="perl-5.8.5 sysstat"
     elif [ $PLATFORM = "RHEL5" -o $PLATFORM = "CentOS5" ]; then
       PREREQ_PACKAGES="sudo libidn gmp"
       PREREQ_LIBS="/usr/lib/libstdc++.so.6"
-      PRESUG_PACKAGES="perl-5.8.8 sysstat sqlite3"
+      PRESUG_PACKAGES="perl-5.8.8 sysstat sqlite"
     elif [ $PLATFORM = "RHEL6" -o $PLATFORM = "CentOS6" ]; then
       PREREQ_PACKAGES="sudo libidn gmp"
       PREREQ_LIBS="/usr/lib/libstdc++.so.6"
-      PRESUG_PACKAGES="perl-5.10.1 sysstat sqlite3"
+      PRESUG_PACKAGES="perl-5.10.1 sysstat sqlite"
     elif [ $PLATFORM = "MANDRIVA2006" ]; then
       PREREQ_PACKAGES="sudo libidn11 libgmp3 libstdc++6"
       PRESUG_PACKAGE="sysstat sqlite3"
     elif [ $PLATFORM = "FC3" -o $PLATFORM = "FC4" ]; then
       PREREQ_PACKAGES="sudo libidn gmp bind-libs vixie-cron"
       PREREQ_LIBS="/usr/lib/libstdc++.so.5"
-      PRESUG_PACKAGE="sysstat sqlite3"
+      PRESUG_PACKAGE="sysstat sqlite"
     elif [ $PLATFORM = "FC5" -o $PLATFORM = "FC6" ]; then
       PREREQ_PACKAGES="sudo libidn gmp bind-libs vixie-cron"
       PREREQ_LIBS="/usr/lib/libstdc++.so.6"
-      PRESUG_PACKAGE="sysstat sqlite3"
+      PRESUG_PACKAGE="sysstat sqlite"
     elif [ $PLATFORM = "FC5_64" -o $PLATFORM = "FC6_64" -o $PLATFORM = "F7_64" ]; then
       PREREQ_PACKAGES="sudo libidn gmp bind-libs vixie-cron"
       PREREQ_LIBS="/usr/lib64/libstdc++.so.6"
-      PRESUG_PACKAGE="sysstat sqlite3"
+      PRESUG_PACKAGE="sysstat sqlite"
     elif [ $PLATFORM = "RHEL6_64" -o $PLATFORM = "CentOS6_64" ]; then
       PREREQ_PACKAGES="sudo libidn gmp"
       PREREQ_LIBS="/usr/lib64/libstdc++.so.6"
-      PRESUG_PACKAGES="perl-5.10.1 sysstat sqlite3"
+      PRESUG_PACKAGES="perl-5.10.1 sysstat sqlite"
     elif [ $PLATFORM = "RHEL5_64" -o $PLATFORM = "CentOS5_64" ]; then
       PREREQ_PACKAGES="sudo libidn gmp"
       PREREQ_LIBS="/usr/lib64/libstdc++.so.6"
-      PRESUG_PACKAGES="perl-5.8.8 sysstat sqlite3"
+      PRESUG_PACKAGES="perl-5.8.8 sysstat sqlite"
     elif [ $PLATFORM = "RHEL4_64" -o $PLATFORM = "CentOS4_64" ]; then
       PREREQ_PACKAGES="sudo libidn gmp compat-libstdc++-33"
       PREREQ_LIBS="/usr/lib64/libstdc++.so.5 /usr/lib64/libstdc++.so.6"
-      PRESUG_PACKAGES="perl-5.8.5 sysstat sqlite3"
+      PRESUG_PACKAGES="perl-5.8.5 sysstat"
     elif [ $PLATFORM = "F7" ]; then
       PREREQ_PACKAGES="sudo libidn gmp bind-libs vixie-cron"
       PREREQ_LIBS="/usr/lib/libstdc++.so.6"
-      PRESUG_PACKAGES="perl-5.8.8 sysstat sqlite3"
+      PRESUG_PACKAGES="perl-5.8.8 sysstat sqlite"
     elif [ $PLATFORM = "F10" ]; then
       PREREQ_PACKAGES="sudo libidn gmp bind-libs cronie"
       PREREQ_LIBS="/usr/lib/libstdc++.so.6"
-      PRESUG_PACKAGE="perl-5.10.0 sysstat sqlite3"
+      PRESUG_PACKAGE="perl-5.10.0 sysstat sqlite"
     elif [ $PLATFORM = "F10_64" ]; then
       PREREQ_PACKAGES="sudo libidn gmp bind-libs cronie"
       PREREQ_LIBS="/usr/lib64/libstdc++.so.6"
-      PRESUG_PACKAGE="perl-5.10.0 sysstat sqlite3"
+      PRESUG_PACKAGE="perl-5.10.0 sysstat sqlite"
     elif [ $PLATFORM = "F11" ]; then
       PREREQ_PACKAGES="sudo libidn gmp bind-libs cronie"
       PREREQ_LIBS="/usr/lib/libstdc++.so.6"
-      PRESUG_PACKAGE="perl-5.10.0 sysstat sqlite3"
+      PRESUG_PACKAGE="perl-5.10.0 sysstat sqlite"
     elif [ $PLATFORM = "F11_64" ]; then
       PREREQ_PACKAGES="sudo libidn gmp bind-libs cronie"
       PREREQ_LIBS="/usr/lib64/libstdc++.so.6"
-      PRESUG_PACKAGE="perl-5.10.0 sysstat sqlite3"
+      PRESUG_PACKAGE="perl-5.10.0 sysstat sqlite"
     elif [ $PLATFORM = "F13_64" ]; then
       PREREQ_PACKAGES="sudo libidn gmp bind-libs cronie"
       PREREQ_LIBS="/usr/lib64/libstdc++.so.6"
-      PRESUG_PACKAGE="perl-5.10.1 sysstat sqlite3"
+      PRESUG_PACKAGE="perl-5.10.1 sysstat sqlite"
     elif [ $PLATFORM = "SuSEES10" ]; then
       PREREQ_PACKAGES="sudo libidn gmp"
       PREREQ_LIBS="/usr/lib/libstdc++.so.6"
@@ -2146,7 +2146,7 @@ getPlatformVars() {
     else
       PREREQ_PACKAGES="sudo libidn gmp"
       PREREQ_LIBS="/usr/lib/libstdc++.so.6"
-      PRESUG_PACKAGES="sysstat sqlite3"
+      PRESUG_PACKAGES="sysstat sqlite"
     fi
   fi
 }
