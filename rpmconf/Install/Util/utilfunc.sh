@@ -733,22 +733,56 @@ verifyLicenseActivationServer() {
   fi
 
   # if all else fails make sure we can contact the activation server for automated activation
-  /opt/zimbra/java/bin/java -XX:ErrorFile=/opt/zimbra/log -client -Xmx256m -Dzimbra.home=/opt/zimbra -Djava.library.path=/opt/zimbra/lib -Djava.ext.dirs=/opt/zimbra/java/jre/lib/ext:/opt/zimbra/lib/jars -classpath ./lib/jars/zimbra-license-tools.jar com.zimbra.cs.license.LicenseCLI --ping > /dev/null 2>&1
-  if [ $? != 0 ]; then
-    echo "ERROR: Unable to reach the Zimbra License Activation Server."
-    echo ""
-    echo "Please obtain a manual activation key and re-run the upgrade"
-    echo "by specifying the -A activation.xml option."
-    echo ""
-    echo "The ZCS Network upgrade will automatically attempt to activate the"
-    echo "current license as long as the activation server can be contacted."
-    echo ""
-    echo "Manual license activation can be done by either visiting the Zimbra"
-    echo "support portal or contacting Zimbra support or sales."
-    echo ""
-    exit 1;
+  if [ ${ZM_CUR_MAJOR} -ge "7" ]; then
+    /opt/zimbra/java/bin/java -XX:ErrorFile=/opt/zimbra/log -client -Xmx256m -Dzimbra.home=/opt/zimbra -Djava.library.path=/opt/zimbra/lib -Djava.ext.dirs=/opt/zimbra/java/jre/lib/ext:/opt/zimbra/lib/jars -classpath ./lib/jars/zimbra-license-tools.jar com.zimbra.cs.license.LicenseCLI --ping > /dev/null 2>&1
+    if [ $? != 0 ]; then
+      activationWarning
+    fi
+  else
+    echo $HOSTNAME | egrep -qe 'vmware.com$|zimbra.com$' > /dev/null 2>&1
+    if [ $? = 0 ]; then
+      url='http://build.lab.zimbra.com:9080/zimbraLicensePortal/public/activation?action=test'
+    else 
+      url='https://license.zimbra.com/zimbraLicensePortal/public/activation?action=test'
+    fi
+      
+    cmd=$(which curl 2>/dev/null)
+    if [ -x "$cmd" ]; then
+      output=$($cmd --connect-timeout 5 -s -f $url)
+      if [ $? != 0 ]; then
+        activationWarning
+      else 
+        return
+      fi
+    fi
+    cmd=$(which wget 2>/dev/null)
+    if [ -x "$cmd" ]; then
+      output=$($cmd --tries 1 -T 5 -q -O /tmp/zmlicense.tmp $url)
+      if [ $? != 0 ]; then
+        activationWarning
+      else
+        return
+      fi
+    fi
+    activationWarning
   fi
-  
+}
+
+activationWarning() {
+  echo "ERROR: Unable to reach the Zimbra License Activation Server."
+  echo ""
+  echo "License Activation is required when upgrading to ZCS 7 or later."
+  echo ""
+  echo "The ZCS Network upgrade will automatically attempt to activate the"
+  echo "current license as long as the activation server can be contacted."
+  echo ""
+  echo "You can obtain a manual activation key and re-run the upgrade"
+  echo "by specifying the -A activation.xml option."
+  echo ""
+  echo "A manual license activation key can be obtained by either visiting"
+  echo "the Zimbra support portal or contacting Zimbra support or sales."
+  echo ""
+  exit 1;
 }
 
 verifyLicenseAvailable() {
