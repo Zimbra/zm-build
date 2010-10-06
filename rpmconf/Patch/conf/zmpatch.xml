@@ -180,6 +180,7 @@
   <bug>49624</bug>
   <bug>49987</bug>
   <bug>50191</bug>
+  <bug>50251</bug>
   <bug>50398</bug>
   <bug>50419</bug>
   <bug>50603</bug>
@@ -221,6 +222,26 @@
       <file>
         <source>ZimbraBuild/storebuild/opt/zimbra/jetty-6.1.22.z6/webapps/zimbra/js/Notebook_all.js.zgz</source>
         <target>/opt/zimbra/jetty/webapps/zimbra/js/Notebook_all.js.zgz</target>
+        <perms owner="zimbra" mode="664"/>
+      </file>
+      <file>
+        <source>ZimbraBuild/storebuild/opt/zimbra/jetty-6.1.22.z6/webapps/zimbra/js/NewWindow_2_all.js</source>
+        <target>/opt/zimbra/jetty/webapps/zimbra/js/NewWindow_2_all.js</target>
+        <perms owner="zimbra" mode="664"/>
+      </file>
+      <file>
+        <source>ZimbraBuild/storebuild/opt/zimbra/jetty-6.1.22.z6/webapps/zimbra/js/NewWindow_2_all.js.zgz</source>
+        <target>/opt/zimbra/jetty/webapps/zimbra/js/NewWindow_2_all.js.zgz</target>
+        <perms owner="zimbra" mode="664"/>
+      </file>
+      <file>
+        <source>ZimbraBuild/storebuild/opt/zimbra/jetty-6.1.22.z6/webapps/zimbra/js/Startup1_2_all.js</source>
+        <target>/opt/zimbra/jetty/webapps/zimbra/js/Startup1_2_all.js</target>
+        <perms owner="zimbra" mode="664"/>
+      </file>
+      <file>
+        <source>ZimbraBuild/storebuild/opt/zimbra/jetty-6.1.22.z6/webapps/zimbra/js/Startup1_2_all.js.zgz</source>
+        <target>/opt/zimbra/jetty/webapps/zimbra/js/Startup1_2_all.js.zgz</target>
         <perms owner="zimbra" mode="664"/>
       </file>
   </package>
