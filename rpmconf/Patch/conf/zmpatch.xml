@@ -186,6 +186,7 @@
   <bug>50603</bug>
   <bug>50953</bug>
   <bug>51092</bug>
+  <bug>51005</bug>
   <bug>51175</bug>
   <bug>51328</bug>
   <package name="zimbra-core">
@@ -243,6 +244,11 @@
         <source>ZimbraBuild/storebuild/opt/zimbra/jetty-6.1.22.z6/webapps/zimbra/js/Startup1_2_all.js.zgz</source>
         <target>/opt/zimbra/jetty/webapps/zimbra/js/Startup1_2_all.js.zgz</target>
         <perms owner="zimbra" mode="664"/>
+      </file>
+      <file type="network">
+        <source>ZimbraBuild/storebuild/opt/zimbra/lib/ext/zimbrasync/zimbrasync.jar</source>
+        <target>/opt/zimbra/lib/ext/zimbrasync/zsynccommon.jar</target>
+        <perms owner="root" mode="444"/>
       </file>
   </package>
   <preinstall></preinstall>
