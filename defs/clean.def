@@ -11,6 +11,7 @@ CLEAN_TARGETS	=	\
 		$(PROXY_DEST_ROOT) \
 		$(MEMCACHED_DEST_ROOT) \
 		zcs \
+		zcs-patch* \
 		zcs-*.tgz \
 		zimbra.rpmrc \
 		zimbra*.spec \
@@ -40,5 +41,6 @@ allclean: clean
 	-(cd $(MIG_TOOLS_DIR); $(ANT) clean)
 	-(cd $(NGINX_LOOKUP_DIR); $(ANT) clean)
 	-(cd $(SYNC_COMMON_DIR); $(ANT) clean)
+	-(cd $(ADMIN_VERSIONCHECK_DIR); $(ANT) clean)
 	-(cd $(ZIMLET_DIR); $(ANT) clean)
 	

@@ -36,7 +36,7 @@ chomp $rundir;
 my $scriptDir = "/opt/zimbra/libexec/scripts";
 
 my $lowVersion = 18;
-my $hiVersion = 64; # this should be set to the DB version expected by current server code
+my $hiVersion = 65; # this should be set to the DB version expected by current server code
 
 # Variables for the combo schema updater
 my $comboLowVersion = 20;
@@ -111,6 +111,7 @@ my %updateScripts = (
 	'61' => "migrate20090406-DataSourceItemTable.pl",    # 6.0.0_BETA1
 	'62' => "migrate20090430-highestindexed.pl",       # 6.0.0_BETA2
   '63' => "migrate20100106-MobileDevices.pl",        # 6.0.5_GA
+  '64' => "migrate20100926-Dumpster.pl",             # 7.0.0_BETA1
 );
 
 my %updateFuncs = (
@@ -202,6 +203,8 @@ my %updateFuncs = (
   "6.0.7_GA" => \&upgrade607GA,
   "6.0.8_GA" => \&upgrade608GA,
   "6.0.9_GA" => \&upgrade609GA,
+  "7.0.0_BETA1" => \&upgrade700BETA1,
+  "7.0.0_BETA2" => \&upgrade700BETA2,
 );
 
 my @versionOrder = (
@@ -289,6 +292,8 @@ my @versionOrder = (
   "6.0.7_GA",
   "6.0.8_GA",
   "6.0.9_GA",
+  "7.0.0_BETA1",
+  "7.0.0_BETA2",
 );
 
 my ($startVersion,$startMajor,$startMinor,$startMicro);
@@ -322,6 +327,7 @@ sub upgrade {
 
   my $needVolumeHack = 0;
   my $needMysqlTableCheck = 0;
+  my $needMysqlUpgrade = 0;
 
   getInstalledPackages();
 
@@ -332,6 +338,15 @@ sub upgrade {
   if (main::isInstalled("zimbra-store")) {
 
     &verifyMysqlConfig;
+
+    my $found = 0;
+    foreach my $v (@versionOrder) {
+      $found = 1 if ($v eq $startVersion);
+      if ($found) {
+        &doMysql51Upgrade if ($v eq "7.0.0_BETA1");
+      }
+      last if ($v eq $targetVersion);
+    }
 
     if (startSql()) { return 1; };
 
@@ -505,6 +520,10 @@ sub upgrade {
     main::progress("This appears to be 6.0.8_GA\n");
   } elsif ($startVersion eq "6.0.9_GA") {
     main::progress("This appears to be 6.0.9_GA\n");
+  } elsif ($startVersion eq "7.0.0_BETA1") {
+    main::progress("This appears to be 7.0.0_BETA1\n");
+  } elsif ($startVersion eq "7.0.0_BETA2") {
+    main::progress("This appears to be 7.0.0_BETA2\n");
   } else {
     main::progress("I can't upgrade version $startVersion\n\n");
     return 1;
@@ -516,6 +535,8 @@ sub upgrade {
     $found = 1 if ($v eq $startVersion);
     if ($found) {
       $needMysqlTableCheck=1 if ($v eq "4.5.2_GA");
+      $needMysqlUpgrade=1 if ($v eq "7.0.0_BETA1");
+      
     }
     last if ($v eq $targetVersion);
   }
@@ -533,6 +554,7 @@ sub upgrade {
   if (main::isInstalled("zimbra-store")) {
 
     doMysqlTableCheck() if ($needMysqlTableCheck);
+    doMysqlUpgrade() if ($needMysqlUpgrade);
   
     doBackupRestoreVersionUpdate($startVersion);
 
@@ -3276,6 +3298,30 @@ sub upgrade609GA {
 sub upgrade700BETA1 {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
   main::progress("Updating from 7.0.0_BETA1\n");
+  if (main::isInstalled("zimbra-ldap")) {
+    runLdapAttributeUpgrade("10287");
+    runLdapAttributeUpgrade("42828");
+    runLdapAttributeUpgrade("43779");
+    runLdapAttributeUpgrade("50258");
+    runLdapAttributeUpgrade("50465");
+  }
+  if (main::isInstalled("zimbra-store")) {
+    # 43140
+    my $mailboxd_java_heap_memory_percent =
+      main::getLocalConfig("mailboxd_java_heap_memory_percent");
+    $mailboxd_java_heap_memory_percent = 30
+      if ($mailboxd_java_heap_memory_percent eq "");
+    my $systemMemorySize = main::getSystemMemory();
+    main::setLocalConfig("mailboxd_java_heap_size",
+      int($systemMemorySize*1024*$mailboxd_java_heap_memory_percent/100));
+    main::deleteLocalConfig("mailboxd_java_heap_memory_percent"); 
+  }
+  return 0;
+}
+
+sub upgrade700BETA2 {
+  my ($startBuild, $targetVersion, $targetBuild) = (@_);
+  main::progress("Updating from 7.0.0_BETA2\n");
   return 0;
 }
 
@@ -3691,6 +3737,32 @@ sub doMysqlTableCheck {
     main::progress("Executing $cmd\n");
     main::runAsZimbra("$cmd > /tmp/mysql_fix_perms.out 2>&1");
   }
+}
+
+sub doMysql51Upgrade {
+    my $zimbra_home = main::getLocalConfig("zimbra_home") || "/opt/zimbra";
+    my $mysql_mycnf = main::getLocalConfig("mysql_mycnf"); 
+    my $zimbra_log_directory = main::getLocalConfig("zimbra_log_directory") || "${zimbra_home}/log"; 
+
+    main::runAsZimbra("${zimbra_home}/libexec/zminiutil --backup=.pre-${targetVersion} --section=mysqld --key=ignore-builtin-innodb --set ${mysql_mycnf}");
+    main::runAsZimbra("${zimbra_home}/libexec/zminiutil --backup=.pre-${targetVersion} --section=mysqld --set --key=plugin-load --value='innodb=ha_innodb_plugin.so;innodb_trx=ha_innodb_plugin.so;innodb_locks=ha_innodb_plugin.so;innodb_lock_waits=ha_innodb_plugin.so;innodb_cmp=ha_innodb_plugin.so;innodb_cmp_reset=ha_innodb_plugin.so;innodb_cmpmem=ha_innodb_plugin.so;innodb_cmpmem_reset=ha_innodb_plugin.so' ${mysql_mycnf}");
+    main::runAsZimbra("${zimbra_home}/libexec/zminiutil --backup=.pre-${targetVersion} --section=mysqld --unset --key=log-long-format ${mysql_mycnf}");
+    main::runAsZimbra("${zimbra_home}/libexec/zminiutil --backup=.pre-${targetVersion} --section=mysqld --unset --key=log-slow-queries ${mysql_mycnf}");
+    main::runAsZimbra("${zimbra_home}/libexec/zminiutil --backup=.pre-${targetVersion} --section=mysqld --set --key=slow_query_log --value=1 ${mysql_mycnf}");
+    main::runAsZimbra("${zimbra_home}/libexec/zminiutil --backup=.pre-${targetVersion} --section=mysqld --set --key=slow_query_log_file --value=${zimbra_log_directory}/myslow.log ${mysql_mycnf}");
+}
+
+sub doMysqlUpgrade {
+    my $db_pass = main::getLocalConfig("mysql_root_password");
+    my $zimbra_tmp = main::getLocalConfig("zimbra_tmp_directory") || "/tmp";
+    my $zimbra_home = main::getLocalConfig("zimbra_home") || "/opt/zimbra";
+    my $mysql_socket = main::getLocalConfig("mysql_socket");
+    my $mysql_mycnf = main::getLocalConfig("mysql_mycnf"); 
+    my $mysqlUpgrade = "${zimbra_home}/mysql/bin/mysql_upgrade";
+    my $cmd = "$mysqlUpgrade --defaults-file=$mysql_mycnf -S $mysql_socket --user=root --password=$db_pass";
+    main::progress("Running mysql_upgrade...");
+    main::runAsZimbra("$cmd > ${zimbra_tmp}/mysql_upgrade.out 2>&1");
+    main::progress("done.\n");
 }
 
 sub doBackupRestoreVersionUpdate($) {

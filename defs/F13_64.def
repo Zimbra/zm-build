@@ -1,4 +1,4 @@
-# Definitions for RHEL4_64
+# Definitions for F13_64
 
 PACKAGING_COMMAND := rpmbuild
 

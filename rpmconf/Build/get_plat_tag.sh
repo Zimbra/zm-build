@@ -24,6 +24,11 @@ if [ -f /etc/redhat-release ]; then
 		i=""
 	fi
 
+	grep "Red Hat Enterprise Linux.*release 6" /etc/redhat-release > /dev/null 2>&1
+	if [ $? = 0 ]; then
+		echo "RHEL6${i}"
+		exit 0
+	fi
 	grep "Red Hat Enterprise Linux.*release 5" /etc/redhat-release > /dev/null 2>&1
 	if [ $? = 0 ]; then
 		echo "RHEL5${i}"
@@ -35,6 +40,11 @@ if [ -f /etc/redhat-release ]; then
 		exit 0
 	fi
 
+	grep "Fedora release 13" /etc/redhat-release >/dev/null 2>&1
+	if [ $? = 0 ]; then
+		echo "F13${i}"
+		exit 0
+	fi
 	grep "Fedora release 11" /etc/redhat-release >/dev/null 2>&1
 	if [ $? = 0 ]; then
 		echo "F11${i}"
@@ -71,6 +81,11 @@ if [ -f /etc/redhat-release ]; then
 		exit 0
 	fi
 
+	grep "CentOS release 6" /etc/redhat-release > /dev/null 2>&1
+	if [ $? = 0 ]; then
+		echo "CentOS6${i}"
+		exit 0
+	fi
 	grep "CentOS release 5" /etc/redhat-release > /dev/null 2>&1
 	if [ $? = 0 ]; then
 		echo "CentOS5${i}"

@@ -18,11 +18,18 @@ umount -f /opt/zimbra/amavisd/tmp
 rm -f /opt/zimbra/amavisd
 ln -s /opt/zimbra/amavisd-new-2.6.4 /opt/zimbra/amavisd
 
+if [ -e /opt/zimbra/cbpolicyd ]; then
+  rm -f /opt/zimbra/cbpolicyd
+fi
+if [ -d /opt/zimbra/cbpolicyd-2.0.10 ]; then
+  ln -s /opt/zimbra/cbpolicyd-2.0.10 /opt/zimbra/cbpolicyd
+fi
+
 rm -f /opt/zimbra/dspam
 ln -s /opt/zimbra/dspam-3.9.0 /opt/zimbra/dspam
 
 rm -f /opt/zimbra/postfix
-ln -s /opt/zimbra/postfix-2.6.7.2z /opt/zimbra/postfix
+ln -s /opt/zimbra/postfix-2.7.1.2z /opt/zimbra/postfix
 
 rm -f /opt/zimbra/clamav
 ln -s /opt/zimbra/clamav-0.96.2 /opt/zimbra/clamav
@@ -31,6 +38,23 @@ if [ -e /opt/zimbra/altermime ]; then
   rm -rf /opt/zimbra/altermime
 fi
 ln -s /opt/zimbra/altermime-0.3-dev /opt/zimbra/altermime
+
+PLAT=$(/opt/zimbra/libexec/get_plat_tag.sh)
+OS_ARCH=powerpc
+MYSQL_VERSION=5.1.50
+
+if [ "x$PLAT" = "xMACOSXx86" -o "x$PLAT" = "xMACOSXx86_10.5" ]; then
+  OS_ARCH=i686
+  OS_REL=8.2.0
+elif [ x"$PLAT" = "xMACOSXx86_10.6" ]; then
+  OS_ARCH=$(uname -p)
+  OS_REL=10
+fi
+
+if [ -L /opt/zimbra/mta/mysql ]; then
+  rm -f /opt/zimbra/mta/mysql
+fi
+ln -s /opt/zimbra/mta/mysql-standard-${MYSQL_VERSION}-apple-darwin${OS_REL}-${OS_ARCH} /opt/zimbra/mta/mysql
 
 mkdir -p /opt/zimbra/data/amavisd/db
 mkdir -p /opt/zimbra/data/amavisd/tmp

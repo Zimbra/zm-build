@@ -51,5 +51,8 @@ export PERLLIB
 PERL5LIB=$PERLLIB
 export PERL5LIB
 
+JYTHONPATH=/opt/zimbra/zimbramon/pylibs
+export JYTHONPATH
+
 ulimit -n 524288 > /dev/null 2>&1
 umask 0027

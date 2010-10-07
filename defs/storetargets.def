@@ -87,10 +87,10 @@ $(BUILD_ROOT)/zimbra-store.spec:
 		$(BUILD_ROOT)/zimbra-store.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/$(MAILBOXD_DIR)" >> \
 		$(BUILD_ROOT)/zimbra-store.spec
-	echo "%attr(-, zimbra, zimbra) /opt/zimbra/wiki" >> \
-		$(BUILD_ROOT)/zimbra-store.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/mysql-standard-$(MYSQL_VERSION_STRING)-pc-linux-gnu-i686-glibc23" >> \
 		$(BUILD_ROOT)/zimbra-store.spec
+	echo "" >> $(BUILD_ROOT)/zimbra-store.spec
+	echo "%clean" >> $(BUILD_ROOT)/zimbra-store.spec
 
 store_stage: $(STORE_COMPONENTS) $(ZIMLET_COMPONENTS)
 
@@ -154,14 +154,26 @@ $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/etc: force
 			$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/etc/jetty-setuid.xml
 		cp -f $(SERVICE_DIR)/conf/$(MAILBOXD_SERVER)-$(MAILBOXD_MINOR_VERSION)/jetty.properties \
 			$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/etc/jetty.properties.in
+		cp -f $(SERVICE_DIR)/conf/jetty-6.1/spnego/spnego.properties \
+			$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/etc/spnego.properties.in
+		cp -f $(SERVICE_DIR)/conf/jetty-6.1/spnego/spnego.conf \
+			$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/etc/spnego.conf.in
+		cp -f $(SERVICE_DIR)/conf/jetty-6.1/spnego/krb5.ini \
+			$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/etc/krb5.ini.in
+		cp -f $(SERVICE_DIR)/conf/jetty-6.1/spnego/web.xml \
+			$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/etc/spnego.web.xml.in
 		cp -f $(SERVICE_DIR)/conf/web.xml.production \
 			$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/etc/service.web.xml.in
 		cp -f $(ZIMLET_DIR)/conf/web.xml.production \
 			$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/etc/zimlet.web.xml.in
-		cp -f zimbraConf/web.xml \
-			$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/etc/zimbra.web.xml.in
-		cp -f zimbraAdminConf/web.xml \
-			$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/etc/zimbraAdmin.web.xml.in
+		cat zimbraConf/web.xml | \
+			sed -e '/REDIRECTBEGIN/ s/$$/ %%comment VAR:zimbraMailMode,-->,redirect%%/' \
+				-e '/REDIRECTEND/ s/^/%%comment VAR:zimbraMailMode,<!--,redirect%% /' \
+				> $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/etc/zimbra.web.xml.in
+		cat zimbraAdminConf/web.xml | \
+			sed -e '/REDIRECTBEGIN/ s/$$/ %%comment VAR:zimbraMailMode,-->,redirect%%/' \
+				-e '/REDIRECTEND/ s/^/%%comment VAR:zimbraMailMode,<!--,redirect%% /' \
+				> $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/etc/zimbraAdmin.web.xml.in
 
 $(STORE_DEST_DIR)/$(MAILBOXD_DIR): $(STORE_DEST_DIR) $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/bin $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/etc $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/temp $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/common/lib $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/common/endorsed
 
@@ -186,16 +198,13 @@ $(STORE_DEST_DIR)/log:
 	mkdir -p $@
 	cp $(PACKAGE_CONF_DIR)/Conf/hotspot_compiler $@/.hotspot_compiler
 
-$(STORE_DEST_DIR)/wiki:
-	mkdir -p $@
-	cp -R $(SERVICE_DIR)/build/dist/wiki/Template $@
-
 $(STORE_DEST_DIR)/conf:
 	mkdir -p $@
 	cp $(SERVICE_DIR)/conf/globs2 $@
 	cp $(SERVICE_DIR)/conf/magic $@
 	cp $(SERVICE_DIR)/conf/magic.zimbra $@
 	cp $(SERVICE_DIR)/conf/globs2.zimbra $@
+	cp $(SERVICE_DIR)/conf/spnego_java_options.in $@
 
 $(STORE_DEST_DIR)/conf/zimbra-contact-fields.xml: $(STORE_DEST_DIR)/conf
 	cp $(SERVICE_DIR)/conf/contacts/zimbra-contact-fields.xml $@

@@ -67,6 +67,8 @@ $(BUILD_ROOT)/zimbra-apache.spec:
 		$(BUILD_ROOT)/zimbra-apache.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/httpd-$(APACHE_VERSION)" >> \
 		$(BUILD_ROOT)/zimbra-apache.spec
+	echo "" >> $(BUILD_ROOT)/zimbra-apache.spec
+	echo "%clean" >> $(BUILD_ROOT)/zimbra-apache.spec
 
 apache_stage: $(APACHE_COMPONENTS)
 

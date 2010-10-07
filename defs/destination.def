@@ -3,6 +3,7 @@
 
 MTA_DEST_ROOT		:= $(BUILD_ROOT)/mtabuild
 MTA_DEST_DIR		:= $(MTA_DEST_ROOT)/opt/zimbra
+MTA_MYSQL_DEST_DIR	:= $(MTA_DEST_DIR)/mta
 
 LDAP_DEST_ROOT		:= $(BUILD_ROOT)/ldapbuild
 LDAP_DEST_DIR		:= $(LDAP_DEST_ROOT)/opt/zimbra

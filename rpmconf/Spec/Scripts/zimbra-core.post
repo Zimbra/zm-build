@@ -30,7 +30,7 @@ fi
 
 #Symlinks
 rm -f /opt/zimbra/mysql
-ln -s /opt/zimbra/mysql-standard-5.0.90-pc-linux-gnu-i686-glibc23 /opt/zimbra/mysql
+ln -s /opt/zimbra/mysql-standard-5.1.50-pc-linux-gnu-i686-glibc23 /opt/zimbra/mysql
 
 rm -f /opt/zimbra/bdb
 ln -s /opt/zimbra/bdb-4.7.25.4 /opt/zimbra/bdb
@@ -40,7 +40,7 @@ if [ -L /opt/zimbra/sleepycat ]; then
 fi
 
 rm -f /opt/zimbra/openssl
-ln -s /opt/zimbra/openssl-0.9.8o /opt/zimbra/openssl
+ln -s /opt/zimbra/openssl-1.0.0a /opt/zimbra/openssl
 
 rm -f /opt/zimbra/heimdal
 ln -s /opt/zimbra/heimdal-1.3.3 /opt/zimbra/heimdal
@@ -84,7 +84,13 @@ elif [ x"$PLAT" = "xFC6" ]; then
 elif [ x"$PLAT" = "xF7" -o x"$PLAT" = "xF10" -o x"$PLAT" = "xF11" ]; then
   sed -i -e 's:\(^Defaults.*requiretty\):#\1:' /etc/sudoers
   sed -i -e 's:PS2 QTDIR USERNAME:PS2 QTDIR USERNAME PATH:' /etc/sudoers
-elif [ x"$PLAT" = "xF10_64" -o x"$PLAT" = "xF11_64" ]; then
+elif [ x"$PLAT" = "xF10_64" -o x"$PLAT" = "xF11_64" -o x"$PLAT" = "xF13_64" ]; then
+  sed -i -e 's:\(^Defaults.*requiretty\):#\1:' /etc/sudoers
+  sed -i -e 's:PS2 QTDIR USERNAME:PS2 QTDIR USERNAME PATH:' /etc/sudoers
+elif [ x"$PLAT" = "xRHEL6" -o x"$PLAT" = "xCentOS6" ]; then
+  sed -i -e 's:\(^Defaults.*requiretty\):#\1:' /etc/sudoers
+  sed -i -e 's:PS2 QTDIR USERNAME:PS2 QTDIR USERNAME PATH:' /etc/sudoers
+elif [ x"$PLAT" = "xRHEL6_64" -o x"$PLAT" = "xCentOS6_64" ]; then
   sed -i -e 's:\(^Defaults.*requiretty\):#\1:' /etc/sudoers
   sed -i -e 's:PS2 QTDIR USERNAME:PS2 QTDIR USERNAME PATH:' /etc/sudoers
 fi

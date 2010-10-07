@@ -9,5 +9,3 @@ PACKAGE_EXT := rpm
 
 include $(DEFS_DIR)/plat_common.def
 
-COMPAT_LIBSTDC := compat-libstdc++-33
-

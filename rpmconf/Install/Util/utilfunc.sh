@@ -598,6 +598,7 @@ checkExistingInstall() {
   done
 
   determineVersionType
+  verifyLicenseActivationServer
   verifyLicenseAvailable
 
   if [ $INSTALLED = "yes" ]; then
@@ -696,6 +697,92 @@ determineVersionType() {
       fi
     fi
   fi
+}
+
+verifyLicenseActivationServer() {
+
+  if [ x"$SKIP_ACTIVATION_CHECK" = "xyes" ]; then
+    return
+  fi
+
+  # sometimes we just don't want to check
+  if [ x"$AUTOINSTALL" = "xyes" ] || [ x"$UNINSTALL" = "xyes" ] || [ x"$SOFTWAREONLY" = "yes" ]; then
+    return
+  fi
+
+  # make sure this is an upgrade
+  isInstalled zimbra-store
+  if [ x$PKGINSTALLED = "x" ]; then
+    return
+  fi
+
+  # make sure the current version we are trying to install is a NE version
+  if [ x"$ZMTYPE_INSTALLABLE" != "xNETWORK" ]; then
+    return
+  fi
+
+  # if we specify an activation presume its valid
+  if [ x"$ACTIVATION" != "x" ] && [ -e $ACTIVATION ]; then
+    if [ ! -d "/opt/zimbra/conf" ]; then
+      mkdir -p /opt/zimbra/conf
+    fi
+    cp -f $ACTIVATION /opt/zimbra/conf/ZCSLicense-activated.xml
+    chown zimbra:zimbra /opt/zimbra/conf/ZCSLicense-activated.xml
+    chmod 444 /opt/zimbra/conf/ZCSLicense-activated.xml
+    return
+  fi
+
+  # if all else fails make sure we can contact the activation server for automated activation
+  if [ ${ZM_CUR_MAJOR} -ge "7" ]; then
+    /opt/zimbra/java/bin/java -XX:ErrorFile=/opt/zimbra/log -client -Xmx256m -Dzimbra.home=/opt/zimbra -Djava.library.path=/opt/zimbra/lib -Djava.ext.dirs=/opt/zimbra/java/jre/lib/ext:/opt/zimbra/lib/jars -classpath ./lib/jars/zimbra-license-tools.jar com.zimbra.cs.license.LicenseCLI --ping > /dev/null 2>&1
+    if [ $? != 0 ]; then
+      activationWarning
+    fi
+  else
+    echo $HOSTNAME | egrep -qe 'vmware.com$|zimbra.com$' > /dev/null 2>&1
+    if [ $? = 0 ]; then
+      url='http://build.lab.zimbra.com:9080/zimbraLicensePortal/public/activation?action=test'
+    else 
+      url='https://license.zimbra.com/zimbraLicensePortal/public/activation?action=test'
+    fi
+      
+    cmd=$(which curl 2>/dev/null)
+    if [ -x "$cmd" ]; then
+      output=$($cmd --connect-timeout 5 -s -f $url)
+      if [ $? != 0 ]; then
+        activationWarning
+      else 
+        return
+      fi
+    fi
+    cmd=$(which wget 2>/dev/null)
+    if [ -x "$cmd" ]; then
+      output=$($cmd --tries 1 -T 5 -q -O /tmp/zmlicense.tmp $url)
+      if [ $? != 0 ]; then
+        activationWarning
+      else
+        return
+      fi
+    fi
+    activationWarning
+  fi
+}
+
+activationWarning() {
+  echo "ERROR: Unable to reach the Zimbra License Activation Server."
+  echo ""
+  echo "License Activation is required when upgrading to ZCS 7 or later."
+  echo ""
+  echo "The ZCS Network upgrade will automatically attempt to activate the"
+  echo "current license as long as the activation server can be contacted."
+  echo ""
+  echo "You can obtain a manual activation key and re-run the upgrade"
+  echo "by specifying the -A activation.xml option."
+  echo ""
+  echo "A manual license activation key can be obtained by either visiting"
+  echo "the Zimbra support portal or contacting Zimbra support or sales."
+  echo ""
+  exit 1;
 }
 
 verifyLicenseAvailable() {
@@ -1960,43 +2047,43 @@ getPlatformVars() {
     PREREQ_PACKAGES="sudo libidn11 libgmp3 libstdc++6"
     if [ $PLATFORM = "UBUNTU6" -o $PLATFORM = "UBUNTU7" ]; then
       PREREQ_PACKAGES="sudo libidn11 libpcre3 libgmp3c2 libexpat1 libstdc++6 libstdc++5"
-      PRESUG_PACKAGES="perl-5.8.7 sysstat"
+      PRESUG_PACKAGES="perl-5.8.7 sysstat sqlite3"
     fi
     if [ $PLATFORM = "UBUNTU6_64" -o $PLATFORM = "UBUNTU7_64" ]; then
       PREREQ_PACKAGES="sudo libidn11 libpcre3 libgmp3c2 libexpat1 libstdc++6 libstdc++5 libperl5.8"
-      PRESUG_PACKAGES="perl-5.8.7 sysstat"
+      PRESUG_PACKAGES="perl-5.8.7 sysstat sqlite3"
     fi
     if [ $PLATFORM = "UBUNTU8" ]; then
       PREREQ_PACKAGES="sudo libidn11 libpcre3 libgmp3c2 libexpat1 libstdc++6"
-      PRESUG_PACKAGES="perl-5.8.8 sysstat"
+      PRESUG_PACKAGES="perl-5.8.8 sysstat sqlite3"
     fi
     if [ $PLATFORM = "UBUNTU8_64" ]; then
       PREREQ_PACKAGES="sudo libidn11 libpcre3 libgmp3c2 libexpat1 libstdc++6 libperl5.8"
-      PRESUG_PACKAGES="perl-5.8.8 sysstat"
+      PRESUG_PACKAGES="perl-5.8.8 sysstat sqlite3"
     fi
     if [ $PLATFORM = "UBUNTU10" ]; then
       PREREQ_PACKAGES="sudo libidn11 libpcre3 libgmp3c2 libexpat1 libstdc++6"
-      PRESUG_PACKAGES="perl-5.10.1 sysstat"
+      PRESUG_PACKAGES="perl-5.10.1 sysstat sqlite3"
     fi
     if [ $PLATFORM = "UBUNTU10_64" ]; then
       PREREQ_PACKAGES="sudo libidn11 libpcre3 libgmp3c2 libexpat1 libstdc++6 libperl5.10"
-      PRESUG_PACKAGES="perl-5.10.1 sysstat"
+      PRESUG_PACKAGES="perl-5.10.1 sysstat sqlite3"
     fi
     if [ $PLATFORM = "DEBIAN4.0" ]; then
       PREREQ_PACKAGES="sudo libidn11 libpcre3 libgmp3c2 libexpat1 libstdc++6"
-      PRESUG_PACKAGES="perl-5.8.8 sysstat"
+      PRESUG_PACKAGES="perl-5.8.8 sysstat sqlite3"
     fi
     if [ $PLATFORM = "DEBIAN4.0_64" ]; then
       PREREQ_PACKAGES="sudo libidn11 libpcre3 libgmp3c2 libexpat1 libstdc++6 libperl5.8"
-      PRESUG_PACKAGES="perl-5.8.8 sysstat"
+      PRESUG_PACKAGES="perl-5.8.8 sysstat sqlite3"
     fi
     if [ $PLATFORM = "DEBIAN5" ]; then
       PREREQ_PACKAGES="sudo libidn11 libpcre3 libgmp3c2 libexpat1 libstdc++6"
-      PRESUG_PACKAGES="perl-5.10.0 sysstat"
+      PRESUG_PACKAGES="perl-5.10.0 sysstat sqlite3"
     fi
     if [ $PLATFORM = "DEBIAN5_64" ]; then
       PREREQ_PACKAGES="sudo libidn11 libpcre3 libgmp3c2 libexpat1 libstdc++6 libperl5.10"
-      PRESUG_PACKAGES="perl-5.10.0 sysstat"
+      PRESUG_PACKAGES="perl-5.10.0 sysstat sqlite3"
     fi
   elif echo $PLATFORM | grep RPL > /dev/null 2>&1; then
     PACKAGEINST='conary update'
@@ -2018,26 +2105,34 @@ getPlatformVars() {
     elif [ $PLATFORM = "RHEL5" -o $PLATFORM = "CentOS5" ]; then
       PREREQ_PACKAGES="sudo libidn gmp"
       PREREQ_LIBS="/usr/lib/libstdc++.so.6"
-      PRESUG_PACKAGES="perl-5.8.8 sysstat"
+      PRESUG_PACKAGES="perl-5.8.8 sysstat sqlite"
+    elif [ $PLATFORM = "RHEL6" -o $PLATFORM = "CentOS6" ]; then
+      PREREQ_PACKAGES="sudo libidn gmp"
+      PREREQ_LIBS="/usr/lib/libstdc++.so.6"
+      PRESUG_PACKAGES="perl-5.10.1 sysstat sqlite"
     elif [ $PLATFORM = "MANDRIVA2006" ]; then
       PREREQ_PACKAGES="sudo libidn11 libgmp3 libstdc++6"
-      PRESUG_PACKAGE="sysstat"
+      PRESUG_PACKAGE="sysstat sqlite3"
     elif [ $PLATFORM = "FC3" -o $PLATFORM = "FC4" ]; then
       PREREQ_PACKAGES="sudo libidn gmp bind-libs vixie-cron"
       PREREQ_LIBS="/usr/lib/libstdc++.so.5"
-      PRESUG_PACKAGE="sysstat"
+      PRESUG_PACKAGE="sysstat sqlite"
     elif [ $PLATFORM = "FC5" -o $PLATFORM = "FC6" ]; then
       PREREQ_PACKAGES="sudo libidn gmp bind-libs vixie-cron"
       PREREQ_LIBS="/usr/lib/libstdc++.so.6"
-      PRESUG_PACKAGE="sysstat"
+      PRESUG_PACKAGE="sysstat sqlite"
     elif [ $PLATFORM = "FC5_64" -o $PLATFORM = "FC6_64" -o $PLATFORM = "F7_64" ]; then
       PREREQ_PACKAGES="sudo libidn gmp bind-libs vixie-cron"
       PREREQ_LIBS="/usr/lib64/libstdc++.so.6"
-      PRESUG_PACKAGE="sysstat"
+      PRESUG_PACKAGE="sysstat sqlite"
+    elif [ $PLATFORM = "RHEL6_64" -o $PLATFORM = "CentOS6_64" ]; then
+      PREREQ_PACKAGES="sudo libidn gmp"
+      PREREQ_LIBS="/usr/lib64/libstdc++.so.6"
+      PRESUG_PACKAGES="perl-5.10.1 sysstat sqlite"
     elif [ $PLATFORM = "RHEL5_64" -o $PLATFORM = "CentOS5_64" ]; then
       PREREQ_PACKAGES="sudo libidn gmp"
       PREREQ_LIBS="/usr/lib64/libstdc++.so.6"
-      PRESUG_PACKAGES="perl-5.8.8 sysstat"
+      PRESUG_PACKAGES="perl-5.8.8 sysstat sqlite"
     elif [ $PLATFORM = "RHEL4_64" -o $PLATFORM = "CentOS4_64" ]; then
       PREREQ_PACKAGES="sudo libidn gmp compat-libstdc++-33"
       PREREQ_LIBS="/usr/lib64/libstdc++.so.5 /usr/lib64/libstdc++.so.6"
@@ -2045,43 +2140,47 @@ getPlatformVars() {
     elif [ $PLATFORM = "F7" ]; then
       PREREQ_PACKAGES="sudo libidn gmp bind-libs vixie-cron"
       PREREQ_LIBS="/usr/lib/libstdc++.so.6"
-      PRESUG_PACKAGES="perl-5.8.8 sysstat"
+      PRESUG_PACKAGES="perl-5.8.8 sysstat sqlite"
     elif [ $PLATFORM = "F10" ]; then
       PREREQ_PACKAGES="sudo libidn gmp bind-libs cronie"
       PREREQ_LIBS="/usr/lib/libstdc++.so.6"
-      PRESUG_PACKAGE="perl-5.10.0 sysstat"
+      PRESUG_PACKAGE="perl-5.10.0 sysstat sqlite"
     elif [ $PLATFORM = "F10_64" ]; then
       PREREQ_PACKAGES="sudo libidn gmp bind-libs cronie"
       PREREQ_LIBS="/usr/lib64/libstdc++.so.6"
-      PRESUG_PACKAGE="perl-5.10.0 sysstat"
+      PRESUG_PACKAGE="perl-5.10.0 sysstat sqlite"
     elif [ $PLATFORM = "F11" ]; then
       PREREQ_PACKAGES="sudo libidn gmp bind-libs cronie"
       PREREQ_LIBS="/usr/lib/libstdc++.so.6"
-      PRESUG_PACKAGE="perl-5.10.0 sysstat"
+      PRESUG_PACKAGE="perl-5.10.0 sysstat sqlite"
     elif [ $PLATFORM = "F11_64" ]; then
       PREREQ_PACKAGES="sudo libidn gmp bind-libs cronie"
       PREREQ_LIBS="/usr/lib64/libstdc++.so.6"
-      PRESUG_PACKAGE="perl-5.10.0 sysstat"
+      PRESUG_PACKAGE="perl-5.10.0 sysstat sqlite"
+    elif [ $PLATFORM = "F13_64" ]; then
+      PREREQ_PACKAGES="sudo libidn gmp bind-libs cronie"
+      PREREQ_LIBS="/usr/lib64/libstdc++.so.6"
+      PRESUG_PACKAGE="perl-5.10.1 sysstat sqlite"
     elif [ $PLATFORM = "SuSEES10" ]; then
       PREREQ_PACKAGES="sudo libidn gmp"
       PREREQ_LIBS="/usr/lib/libstdc++.so.6"
-      PRESUG_PACKAGES="perl-5.8.8 sysstat"
+      PRESUG_PACKAGES="perl-5.8.8 sysstat sqlite3"
     elif [ $PLATFORM = "SLES10_64" ]; then
       PREREQ_PACKAGES="sudo libidn gmp"
       PREREQ_LIBS="/usr/lib64/libstdc++.so.6"
-      PRESUG_PACKAGES="perl-5.8.8 sysstat"
+      PRESUG_PACKAGES="perl-5.8.8 sysstat sqlite3"
     elif [ $PLATFORM = "SLES11" ]; then
       PREREQ_PACKAGES="sudo libidn gmp"
       PREREQ_LIBS="/usr/lib/libstdc++.so.6"
-      PRESUG_PACKAGES="perl-5.10.0 sysstat"
+      PRESUG_PACKAGES="perl-5.10.0 sysstat sqlite3"
     elif [ $PLATFORM = "SLES11_64" ]; then
       PREREQ_PACKAGES="sudo libidn gmp"
       PREREQ_LIBS="/usr/lib64/libstdc++.so.6"
-      PRESUG_PACKAGES="perl-5.10.0 sysstat"
+      PRESUG_PACKAGES="perl-5.10.0 sysstat sqlite3"
     else
       PREREQ_PACKAGES="sudo libidn gmp"
       PREREQ_LIBS="/usr/lib/libstdc++.so.6"
-      PRESUG_PACKAGES="sysstat"
+      PRESUG_PACKAGES="sysstat sqlite"
     fi
   fi
 }

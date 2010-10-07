@@ -71,13 +71,12 @@ $(BUILD_ROOT)/zimbra-core.spec:
 	cat $(PACKAGE_CONF_DIR)/Spec/zimbra-core.spec | \
 		sed -e 's/@@VERSION@@/$(VERSION_TAG)/' \
 		-e 's/@@RELEASE@@/$(RELEASE)/' \
-		-e 's/@@COMPAT_LIBSTDC@@/$(COMPAT_LIBSTDC)/' \
 		-e 's/^Copyright:/$(RPMCOPYRIGHTSTR):/' \
 		-e '/^%pre$$/ r zimbra-core.pre' \
 		-e '/^%post$$/ r zimbra-core.post' > $(BUILD_ROOT)/zimbra-core.spec
 	rm -f zimbra-core.pre
 	rm -f zimbra-core.post
-	(cd $(CORE_DEST_ROOT); find opt -type f -o -type l -maxdepth 2 \
+	(cd $(CORE_DEST_ROOT); find opt -maxdepth 2 -type f -o -type l \
 		| sed -e 's|^|%attr(-, zimbra, zimbra) /|' >> \
 		$(BUILD_ROOT)/zimbra-core.spec )
 	echo "%attr(755, root, root) /opt/zimbra/bin" >> \
@@ -116,6 +115,8 @@ $(BUILD_ROOT)/zimbra-core.spec:
 		$(BUILD_ROOT)/zimbra-core.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/tcmalloc-$(TCMALLOC_VERSION)" >> \
 		$(BUILD_ROOT)/zimbra-core.spec
+	echo "" >>  $(BUILD_ROOT)/zimbra-core.spec
+	echo "%clean" >>  $(BUILD_ROOT)/zimbra-core.spec
 
 core_stage: $(CORE_COMPONENTS)
 
@@ -140,7 +141,7 @@ $(CORE_DEST_DIR)/docs:
 	cp $(SERVICE_DIR)/docs/*html $@
 	cp $(MIG_TOOLS_DIR)/ReadMe.txt $@/zmztozmig.txt
 
-$(CORE_DEST_DIR)/zimbramon: $(CORE_DEST_DIR)/zimbramon/bin $(CORE_DEST_DIR)/zimbramon/lib $(CORE_DEST_DIR)/zimbramon/crontabs $(CORE_DEST_DIR) 
+$(CORE_DEST_DIR)/zimbramon: $(CORE_DEST_DIR)/zimbramon/bin $(CORE_DEST_DIR)/zimbramon/lib $(CORE_DEST_DIR)/zimbramon/pylibs $(CORE_DEST_DIR)/zimbramon/crontabs $(CORE_DEST_DIR) 
 	@echo "*** Creating zimbramon"
 	mkdir -p $@
 	(cd $(CORE_DEST_DIR)/zimbramon; tar xzf $(RRD_SOURCE).tar.gz)
@@ -160,6 +161,10 @@ $(CORE_DEST_DIR)/zimbramon/bin:
 	tar xzf $(PERL_LIB_SOURCE)/perlbin.tgz)
 	mkdir -p $(CORE_DEST_DIR)/libexec
 	cp -pr $(CORE_DEST_DIR)/zimbramon/bin/sa-learn $(CORE_DEST_DIR)/libexec/
+
+$(CORE_DEST_DIR)/zimbramon/pylibs:
+	mkdir -p $(CORE_DEST_DIR)/zimbramon
+	cp -R $(SERVICE_DIR)/src/python/pylibs $(CORE_DEST_DIR)/zimbramon
 
 $(CORE_DEST_DIR)/zimbramon/lib:
 	mkdir -p $(CORE_DEST_DIR)/zimbramon/lib
@@ -209,6 +214,7 @@ $(CORE_DEST_DIR)/conf: $(WEBAPP_DIR)/service.war
 	cp $(SERVICE_DIR)/build/dist/conf/localconfig.xml $@
 	cp $(SERVICE_DIR)/build/dist/conf/log4j.properties $@/log4j.properties.in
 	cp $(PACKAGE_CONF_DIR)/Conf/zmssl.cnf.in $@
+	cp $(SERVICE_DIR)/conf/datasource.xml $@
 	cp $(SERVICE_DIR)/conf/amavisd.conf.in $@
 	cp $(SERVICE_DIR)/conf/dspam.conf $@
 	cp $(SERVICE_DIR)/conf/zmlogrotate $@
@@ -238,7 +244,7 @@ $(CORE_DEST_DIR)/conf: $(WEBAPP_DIR)/service.war
 	cp $(SERVICE_DIR)/conf/nginx/nginx.conf.web.https.template $@/nginx/templates/
 	cp $(SERVICE_DIR)/conf/nginx/nginx.conf.web.http.template $@/nginx/templates/
 	cp $(SERVICE_DIR)/conf/nginx/nginx.conf.web.template $@/nginx/templates/
-	cp $(SERVICE_DIR)/conf/nginx.conf.in $@
+	cp $(SERVICE_DIR)/conf/stats.conf.in $@
 	cp $(SERVICE_DIR)/conf/salocal.cf $@/salocal.cf.in
 	cp $(SERVICE_DIR)/conf/zmmta.cf-$(MAILBOXD_SERVER) $@/zmmta.cf
 	cp $(SERVICE_DIR)/conf/timezones.ics $@
@@ -252,6 +258,9 @@ $(CORE_DEST_DIR)/conf: $(WEBAPP_DIR)/service.war
 	cp $(SERVICE_DIR)/conf/spamassassin/* $@/spamassassin
 	mkdir -p $@/attrs
 	cp -f $(SERVICE_DIR)/build/dist/conf/attrs/* $@/attrs
+ifeq ($(ZIMBRA_USE_CBPOLICYD), 1)
+	cp $(ZMCBPOLICYD_DIR)/conf/* $@
+endif
 
 $(CORE_DEST_DIR)/conf/com.zimbra.zcs.plist:
 	mkdir -p $(CORE_DEST_DIR)/conf
@@ -284,6 +293,9 @@ $(CORE_DEST_DIR)/libexec: $(LAUNCHER_DIR)/build/zmmailboxdmgr
 	cp $@/swatch $@/logswatch
 	cp $@/swatch $@/auditswatch
 	cp -f $(BUILD_ROOT)/rpmconf/Build/get_plat_tag.sh $@
+ifeq ($(ZIMBRA_USE_CBPOLICYD), 1)
+	cp $(ZMCBPOLICYD_DIR)/src/libexec/* $@
+endif
 
 $(CORE_DEST_DIR)/bin:
 	mkdir -p $@
@@ -307,6 +319,9 @@ $(CORE_DEST_DIR)/bin:
 	cp $(ZIMBRA_BIN_DIR)/zmapachectl $@
 	cp $(ZIMBRA_BIN_DIR)/zmprov.server $@
 	cp $@/zmprov $@/zmprov.java
+ifeq ($(ZIMBRA_USE_CBPOLICYD), 1)
+	cp $(ZMCBPOLICYD_DIR)/src/bin/* $@
+endif
 
 $(CORE_DEST_DIR)/contrib:
 	mkdir -p $@
