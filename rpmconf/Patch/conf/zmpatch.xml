@@ -183,6 +183,7 @@
   <bug>50251</bug>
   <bug>50398</bug>
   <bug>50419</bug>
+  <bug>50517</bug>
   <bug>50603</bug>
   <bug>50953</bug>
   <bug>51092</bug>
@@ -248,6 +249,11 @@
       <file type="network">
         <source>ZimbraBuild/storebuild/opt/zimbra/lib/ext/zimbrasync/zimbrasync.jar</source>
         <target>/opt/zimbra/lib/ext/zimbrasync/zsynccommon.jar</target>
+        <perms owner="root" mode="444"/>
+      </file>
+      <file type="network">
+        <source>ZimbraBuild/storebuild/opt/zimbra/lib/ext/zimbrahsm/zimbrahsm.jar</source>
+        <target>/opt/zimbra/lib/ext/zimbrahsm/zimbrahsm.jar</target>
         <perms owner="root" mode="444"/>
       </file>
   </package>
