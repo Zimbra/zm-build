@@ -248,7 +248,7 @@
       </file>
       <file type="network">
         <source>ZimbraBuild/storebuild/opt/zimbra/lib/ext/zimbrasync/zimbrasync.jar</source>
-        <target>/opt/zimbra/lib/ext/zimbrasync/zsynccommon.jar</target>
+        <target>/opt/zimbra/lib/ext/zimbrasync/zimbrasync.jar</target>
         <perms owner="root" mode="444"/>
       </file>
       <file type="network">
