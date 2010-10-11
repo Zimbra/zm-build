@@ -178,6 +178,7 @@
   <bug>47488</bug>
   <bug>49412</bug>
   <bug>49624</bug>
+  <bug>49717</bug>
   <bug>49987</bug>
   <bug>50191</bug>
   <bug>50251</bug>
@@ -254,6 +255,11 @@
       <file type="network">
         <source>ZimbraBuild/storebuild/opt/zimbra/lib/ext/zimbrahsm/zimbrahsm.jar</source>
         <target>/opt/zimbra/lib/ext/zimbrahsm/zimbrahsm.jar</target>
+        <perms owner="root" mode="444"/>
+      </file>
+      <file type="network">
+        <source>ZimbraBuild/storebuild/opt/zimbra/lib/ext/backup/zimbrabackup.jar</source>
+        <target>/opt/zimbra/lib/ext/backup/zimbrabackup.jar</target>
         <perms owner="root" mode="444"/>
       </file>
   </package>
