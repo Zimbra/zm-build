@@ -2105,7 +2105,7 @@ sub setTrainSAHam {
 sub setAmavisVirusQuarantine{
   while (1) {
     my $new = 
-      ask("Amavis Virus Quarantine user:",
+      ask("Anti-virus quarantine user:", 
         $config{VIRUSQUARANTINE});
     my ($u,$d) = split ('@', $new);
     my ($adminUser,$adminDomain) = split('@', $config{CREATEADMIN});
@@ -5759,11 +5759,11 @@ sub configCreateDomain {
           "zimbraHideInGal TRUE ".
           "zimbraMailMessageLifetime 7d ".
           "zimbraMailQuota 0 ".
-          "description \'System account for Anti-Virus quarantine.\'");
+          "description \'System account for Anti-virus quarantine.\'");
         progress(($rc == 0) ? "done.\n" : "failed.\n");
       }
 
-      progress ( "Setting spam training and virus quarantine accounts..." );
+      progress ( "Setting spam training and Anti-virus quarantine accounts..." );
       my $rc = runAsZimbra("$ZMPROV mcf ".
         "zimbraSpamIsSpamAccount $config{TRAINSASPAM} ".
         "zimbraSpamIsNotSpamAccount $config{TRAINSAHAM} ".
