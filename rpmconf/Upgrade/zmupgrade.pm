@@ -59,7 +59,7 @@ chomp $hn;
 
 my $isLdapMaster = `$su "${zmlocalconfig} -m nokey ldap_is_master"`;
 chomp($isLdapMaster);
-if ($isLdapMaster eq "true" ) {
+if (lc($isLdapMaster) eq "true" ) {
    $isLdapMaster = 1;
 } else {
    $isLdapMaster = 0;
