@@ -199,6 +199,7 @@ $(CORE_DEST_DIR)/jdk$(JAVA_VERSION):
 	rm -rf $@/jre/lib/javaws
 	rm -rf $@/jre/lib/javaws.jar
 	rm -rf $@/jre/lib/i386/client/classes.jsa
+	cp -f $(JCE_SOURCE)/* $@/jre/lib/security/
 
 $(CORE_DEST_DIR)/db: $(WEBAPP_DIR)/service.war
 	mkdir -p $@
