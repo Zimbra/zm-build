@@ -32,7 +32,7 @@ sub doLdap() {
 	$ldap->unbind;
     return 1;
   }
-  if ($is_master) {
+  if (lc($is_master) eq "true") {
     $mesg = $ldap->search(
                           base=> "cn=accesslog",
                           filter=>"(objectClass=*)",

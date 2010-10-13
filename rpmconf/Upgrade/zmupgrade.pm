@@ -1882,7 +1882,7 @@ sub upgrade500RC3 {
   if (main::isInstalled("zimbra-ldap") && $platform !~ /MACOSX/ ) {
     my $ldap_master = `$su "zmlocalconfig -s -m nokey ldap_is_master"`;
     chomp($ldap_master);
-    if ($ldap_master eq "true") {
+    if (lc($ldap_master) eq "true") {
       my $ldap_pass = `$su "zmlocalconfig -s -m nokey zimbra_ldap_password"`;
       my $ldap_master_url = `$su "zmlocalconfig -s -m nokey ldap_master_url"`;
       my $ldap; 
