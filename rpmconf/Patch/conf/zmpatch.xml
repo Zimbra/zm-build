@@ -186,6 +186,7 @@
   <bug>50419</bug>
   <bug>50517</bug>
   <bug>50603</bug>
+  <bug>50785</bug>
   <bug>50953</bug>
   <bug>51092</bug>
   <bug>51005</bug>
@@ -260,6 +261,21 @@
       <file type="network">
         <source>ZimbraBuild/storebuild/opt/zimbra/lib/ext/backup/zimbrabackup.jar</source>
         <target>/opt/zimbra/lib/ext/backup/zimbrabackup.jar</target>
+        <perms owner="root" mode="444"/>
+      </file>
+      <file type="network">
+        <source>ZimbraBuild/storebuild/opt/zimbra/jetty-6.1.22.z6/webapps/zimbraAdmin/js/zimbraAdmin/dl/view/ZaDLXFormView.js</source>
+        <target>/opt/zimbra/jetty/webapps/zimbraAdmin/js/zimbraAdmin/dl/view/ZaDLXFormView.js</target>
+        <perms owner="root" mode="444"/>
+      </file>
+      <file type="network">
+        <source>ZimbraBuild/storebuild/opt/zimbra/jetty-6.1.22.z6/webapps/zimbraAdmin/js/Admin_all.js.zgz</source>
+        <target>/opt/zimbra/jetty/webapps/zimbraAdmin/js/Admin_all.js.zgz</target>
+        <perms owner="root" mode="444"/>
+      </file>
+      <file type="network">
+        <source>ZimbraBuild/storebuild/opt/zimbra/jetty-6.1.22.z6/webapps/zimbraAdmin/js/Admin_all.js</source>
+        <target>/opt/zimbra/jetty/webapps/zimbraAdmin/js/Admin_all.js</target>
         <perms owner="root" mode="444"/>
       </file>
   </package>
