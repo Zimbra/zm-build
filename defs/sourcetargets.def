@@ -1,6 +1,10 @@
 source: sourcetar ajaxtar
 
-sourcetar: zcs-$(SOURCE_TAG)-src.tgz  zcs-$(SOURCE_TAG)-yahoo-src.tgz
+sourcetar: zcs-$(SOURCE_TAG)-src.tgz  sumitomosrc yahoosrc
+
+sumitomosrc: zcs-$(SOURCE_TAG)-sumitomo-src.tgz
+
+yahoosrc: zcs-$(SOURCE_TAG)-yahoo-src.tgz
 
 ajaxtar: AjaxTK-$(SOURCE_TAG)-src.tgz
 
@@ -8,11 +12,78 @@ AjaxTK-$(SOURCE_TAG)-src.tgz: $(PACKAGE_DIR)
 	(cd $(BUILD_ROOT)/../ZimbraWebClient; tar czf $(PACKAGE_DIR)/AjaxTK-$(SOURCE_TAG)-src.tgz WebRoot/js/ajax src/com/zimbra/kabuki)
 
 zcs-$(SOURCE_TAG)-src.tgz: $(PACKAGE_DIR)
-	(cd $(BUILD_ROOT)/..; ln -s . zcs-$(SOURCE_TAG)-src; tar chzf $(PACKAGE_DIR)/zcs-$(SOURCE_TAG)-src.tgz --exclude ZimbraBuild/$(ARCH) --exclude logs --exclude Velodrome --exclude ZimbraVoice --exclude ZimbraSyncCommon --exclude ThirdParty --exclude ThirdPartyBuilds --exclude ZimbraCluster --exclude ZimbraMAPIInstaller --exclude ZimbraSync --exclude ZimbraIsync --exclude ZimbraBackup --exclude ZimbraLicenseExtension --exclude ZimbraHSM --exclude ZimbraLicenseTools --exclude ZimbraQA --exclude ZimbraServer/src/windows --exclude ZimbraServer/src/macosx --exclude ZimbraIMInterop --exclude ZimbraNetwork/ZimbraImportWizard --exclude ZimbraCustomerServices --exclude zcs-$(SOURCE_TAG)-src/zcs-$(SOURCE_TAG)-src zcs-$(SOURCE_TAG)-src; rm -f zcs-$(SOURCE_TAG)-src; cd $(PACKAGE_DIR); ln -s zcs-$(SOURCE_TAG)-src.tgz zcs-src.tgz)
+	(cd $(BUILD_ROOT)/..; ln -s . zcs-$(SOURCE_TAG)-src; tar chzf $(PACKAGE_DIR)/$@ \
+		--exclude logs \
+		--exclude ThirdParty \
+		--exclude ThirdPartyBuilds \
+		--exclude Velodrome \
+		--exclude ZimbraAppliance \
+		--exclude ZimbraBackup \
+		--exclude ZimbraBuild/$(ARCH) \
+		--exclude ZimbraCluster \
+		--exclude ZimbraCustomerServices \
+		--exclude ZimbraHSM \
+		--exclude ZimbraIM \
+		--exclude ZimbraIMInterop \
+		--exclude ZimbraIsync \
+		--exclude ZimbraLicenseTools \
+		--exclude ZimbraLicenseExtension \
+		--exclude ZimbraLicensePortal \
+		--exclude ZimbraMAPI \
+		--exclude ZimbraMAPIInstaller \
+		--exclude ZimbraMigrationTools \
+		--exclude ZimbraNetwork/ZimbraImportWizard \
+		--exclude ZimbraNetwork/DashBoard \
+		--exclude ZimbraPosixAccountsExtension \
+		--exclude ZimbraSambaExtension \
+		--exclude ZimbraServer/src/windows \
+		--exclude ZimbraServer/src/macosx \
+		--exclude ZimbraServer/data \
+		--exclude ZimbraSync \
+		--exclude ZimbraSyncClient \
+		--exclude ZimbraSyncCommon \
+		--exclude ZimbraSync \
+		--exclude ZimbraQA \
+		--exclude ZimbraVoice \
+		--exclude zcs-$(SOURCE_TAG)-src/zcs-$(SOURCE_TAG)-src zcs-$(SOURCE_TAG)-src; \
+		rm -f zcs-$(SOURCE_TAG)-src; ln -s $@ zcs-src.tgz)
+
+zcs-$(SOURCE_TAG)-sumitomo-src.tgz: $(PACKAGE_DIR)
+	(cd $(BUILD_ROOT)/..; ln -s . zcs-$(SOURCE_TAG)-sumitomo-src; tar chzf $(PACKAGE_DIR)/$@ \
+		--exclude logs \
+		--exclude ThirdParty \
+		--exclude ThirdPartyBuilds \
+		--exclude Velodrome \
+		--exclude ZimbraAppliance \
+		--exclude ZimbraBuild/$(ARCH) \
+		--exclude ZimbraCustomerServices \
+		--exclude ZimbraIM \
+		--exclude ZimbraIMInterop \
+		--exclude ZimbraIsync \
+		--exclude ZimbraLicenseTools \
+		--exclude ZimbraLicenseExtension \
+		--exclude ZimbraLicensePortal \
+		--exclude ZimbraMAPI \
+		--exclude ZimbraMAPIInstaller \
+		--exclude ZimbraMigrationTools \
+		--exclude ZimbraNetwork/ZimbraImportWizard \
+		--exclude ZimbraNetwork/DashBoard \
+		--exclude ZimbraPosixAccountsExtension \
+		--exclude ZimbraSambaExtension \
+		--exclude ZimbraServer/src/windows \
+		--exclude ZimbraServer/src/macosx \
+		--exclude ZimbraServer/data \
+		--exclude ZimbraSync \
+		--exclude ZimbraSyncClient \
+		--exclude ZimbraSyncCommon \
+		--exclude ZimbraQA \
+		--exclude ZimbraVoice \
+		--exclude zcs-$(SOURCE_TAG)-sumitomo-src/zcs-$(SOURCE_TAG)-sumitomo-src zcs-$(SOURCE_TAG)-sumitomo-src; \
+		rm -f zcs-$(SOURCE_TAG)-sumitomo-src; cd $(PACKAGE_DIR); ln -s $@ zcs-sumitomo-src.tgz)
 
 # Contract source for Yahoo through 12/31/2010 but no later then 6/30/2011
 zcs-$(SOURCE_TAG)-yahoo-src.tgz: $(PACKAGE_DIR)
-	(cd $(BUILD_ROOT)/..; ln -s . zcs-$(SOURCE_TAG)-yahoo-src; tar chzf $(PACKAGE_DIR)/zcs-$(SOURCE_TAG)-yahoo-src.tgz \
+	(cd $(BUILD_ROOT)/..; ln -s . zcs-$(SOURCE_TAG)-yahoo-src; tar chzf $(PACKAGE_DIR)/$@ \
 			--exclude ZimbraSyncCommon/src/java/com/zimbra/zimbrasync/Device.java \
 			--exclude ZimbraSyncCommon/src/java/com/zimbra/zimbrasync/ProvisionManager.java \
 			--exclude ZimbraSyncCommon/src/java/com/zimbra/zimbrasync/commands/Provision.java \
@@ -31,4 +102,4 @@ zcs-$(SOURCE_TAG)-yahoo-src.tgz: $(PACKAGE_DIR)
 			zcs-$(SOURCE_TAG)-yahoo-src/ZimbraMAPI/vcproj/*.vcproj \
 			zcs-$(SOURCE_TAG)-yahoo-src/ZimbraSync \
 			zcs-$(SOURCE_TAG)-yahoo-src/ZimbraSyncCommon; \
-			rm -f zcs-$(SOURCE_TAG)-src; cd $(PACKAGE_DIR); ln -s zcs-$(SOURCE_TAG)-src.tgz zcs-yahoo-src.tgz)
+			rm -f zcs-$(SOURCE_TAG)-yahoo-src; cd $(PACKAGE_DIR); ln -s $@ zcs-yahoo-src.tgz)
