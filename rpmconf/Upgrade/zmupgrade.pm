@@ -293,7 +293,7 @@ my @versionOrder = (
   "6.0.8_GA",
   "6.0.9_GA",
   "7.0.0_BETA1",
-  "7.0.0_BETA2",
+  "7.0.0_RC1",
 );
 
 my ($startVersion,$startMajor,$startMinor,$startMicro);
@@ -522,8 +522,8 @@ sub upgrade {
     main::progress("This appears to be 6.0.9_GA\n");
   } elsif ($startVersion eq "7.0.0_BETA1") {
     main::progress("This appears to be 7.0.0_BETA1\n");
-  } elsif ($startVersion eq "7.0.0_BETA2") {
-    main::progress("This appears to be 7.0.0_BETA2\n");
+  } elsif ($startVersion eq "7.0.0_RC1") {
+    main::progress("This appears to be 7.0.0_RC1\n");
   } else {
     main::progress("I can't upgrade version $startVersion\n\n");
     return 1;
