@@ -741,7 +741,7 @@ verifyLicenseActivationServer() {
   else
     echo $HOSTNAME | egrep -qe 'vmware.com$|zimbra.com$' > /dev/null 2>&1
     if [ $? = 0 ]; then
-      url='http://build.lab.zimbra.com:9080/zimbraLicensePortal/public/activation?action=test'
+      url='http://zre-lp-test.eng.vmware.com:9080/zimbraLicensePortal/public/activation?action=test'
     else 
       url='https://license.zimbra.com/zimbraLicensePortal/public/activation?action=test'
     fi
@@ -777,7 +777,7 @@ activationWarning() {
   echo "current license as long as the activation server can be contacted."
   echo ""
   echo "You can obtain a manual activation key and re-run the upgrade"
-  echo "by specifying the -A activation.xml option."
+  echo "by specifying the -a activation.xml option."
   echo ""
   echo "A manual license activation key can be obtained by either visiting"
   echo "the Zimbra support portal or contacting Zimbra support or sales."
