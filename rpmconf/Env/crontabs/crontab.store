@@ -6,10 +6,6 @@
 30 2 * * * find /opt/zimbra/mailboxd/logs/ -type f -name \*log\* -mtime +8 -exec rm {} \; > /dev/null 2>&1
 30 2 * * * find /opt/zimbra/log/ -type f -name stacktrace.\* -mtime +8 -exec rm {} \; > /dev/null 2>&1
 #
-# Table maintenance
-#
-30 1 * * 7 /opt/zimbra/libexec/zmmaintaintables >> /dev/null 2>&1
-#
 # Report on any database inconsistencies
 #
 0 23 * * 7 /opt/zimbra/libexec/zmdbintegrityreport -m
