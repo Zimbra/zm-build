@@ -3327,6 +3327,58 @@ sub upgrade700RC1 {
   main::progress("Updating from 7.0.0_RC1\n");
   if (main::isInstalled("zimbra-ldap")) {
     runLdapAttributeUpgrade("50458");
+
+    my $ldap_pass = `$su "zmlocalconfig -s -m nokey ldap_root_password"`;
+    chomp($ldap_pass);
+    my $ldap;
+    unless($ldap = Net::LDAP->new('ldapi://%2fopt%2fzimbra%2fopenldap%2fvar%2frun%2fldapi/')) {
+       main::progress("Unable to contact to ldapi: $!\n");
+    }
+    my $result = $ldap->bind("cn=config", password => $ldap_pass);
+    my $dn="olcDatabase={2}hdb,cn=config";
+    if ($isLdapMaster) {
+      $result = $ldap->search(
+                        base=> "cn=accesslog",
+                        filter=>"(objectClass=*)",
+                        scope => "base",
+                        attrs => ['1.1'],
+      );
+      my $size = $result->count;
+      if ($size > 0 ) {
+        $dn="olcDatabase={3}hdb,cn=config";
+      }
+    }
+    $result = $ldap->search(
+      base=> "$dn",
+      filter=>"(objectClass=*)",
+      scope => "base",
+      attrs => ['olcAccess'],
+    );
+    my $entry=$result->entry($result->count-1);
+    my @attrvals=$entry->get_value("olcAccess");
+    my $aclNumber=-1;
+    my $attrMod="";
+
+    foreach my $attr (@attrvals) {
+      if ($attr =~ /zimbraDomainName/) {
+        ($aclNumber) = $attr =~ /^\{(\d+)\}*/;
+        if ($attr !~ /uid=zmamavis,cn=appaccts,cn=zimbra/) {
+          $attrMod =~ s/by \* none/by dn.base="uid=zmamavis,cn=appaccts,cn=zimbra" read  by \* none/;
+        }
+      }
+    }
+
+    if ($aclNumber != -1 && $attrMod ne "") {
+      $result = $ldap->modify(
+          $dn,
+          delete => {olcAccess => "{$aclNumber}"},
+      );
+      $result = $ldap->modify(
+          $dn,
+          add =>{olcAccess=>"$attrMod"},
+      );
+    }
+    $ldap->unbind;
   }
   return 0;
 }
