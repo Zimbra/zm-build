@@ -70,6 +70,7 @@ endif
 
 STORE_COMPONENTS := \
 	$(WEBAPPS) \
+	$(WEBAPP_DIR)/zimbra/robots.txt \
 	$(STORE_DEST_DIR)/$(MAILBOXD_DIR) \
 	$(STORE_DEST_DIR)/zimlets \
 	$(STORE_DEST_DIR)/libexec \

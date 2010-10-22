@@ -102,6 +102,9 @@ $(CONSOLE_DIR)/$(WEBAPP_BUILD_DIR)/zimbraAdmin.war:
 	cp $(CONSOLE_DIR)/build/docs/jsapi-zimbra-doc.zip $(PACKAGE_DIR)/jsapi-zimbra-doc.zip
 	cp $(CONSOLE_DIR)/build/docs/jsapi-changelog.zip $(PACKAGE_DIR)/jsapi-changelog.zip
 
+$(WEBAPP_DIR)/zimbra/robots.txt: $(WEBAPP_DIR)/zimbra.war
+	cp $(SERVICE_DIR)/conf/robots.txt $@
+
 $(WEBAPP_DIR)/zimbra.war: $(WEBAPP_DIR) $(CONSOLE_DIR)/$(WEBAPP_BUILD_DIR)/zimbra.war $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/work
 	mkdir $(WEBAPP_DIR)/zimbra
 	(cd $(WEBAPP_DIR)/zimbra; jar xf $(CONSOLE_DIR)/build/dist/$(MAILBOXD_SERVER)/webapps/zimbra.war)
@@ -109,7 +112,6 @@ $(WEBAPP_DIR)/zimbra.war: $(WEBAPP_DIR) $(CONSOLE_DIR)/$(WEBAPP_BUILD_DIR)/zimbr
 $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/work: $(CONSOLE_DIR)/$(WEBAPP_BUILD_DIR)/zimbra.war
 	mkdir -p $@
 	cp -rf $(CONSOLE_DIR)/build/dist/$(MAILBOXD_SERVER)/work/* $@
-    
 
 $(CONSOLE_DIR)/$(WEBAPP_BUILD_DIR)/zimbra.war:  $(TAGLIB_DIR)/build/zimbrataglib.jar
 	(cd $(CONSOLE_DIR); $(ANT) $(ANT_DEBUG) \
