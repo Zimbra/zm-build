@@ -205,6 +205,7 @@ my %updateFuncs = (
   "6.0.9_GA" => \&upgrade609GA,
   "7.0.0_BETA1" => \&upgrade700BETA1,
   "7.0.0_RC1" => \&upgrade700RC1,
+  "7.0.0_GA" => \&upgrade700GA,
 );
 
 my @versionOrder = (
@@ -294,6 +295,7 @@ my @versionOrder = (
   "6.0.9_GA",
   "7.0.0_BETA1",
   "7.0.0_RC1",
+  "7.0.0_GA",
 );
 
 my ($startVersion,$startMajor,$startMinor,$startMicro);
@@ -524,6 +526,8 @@ sub upgrade {
     main::progress("This appears to be 7.0.0_BETA1\n");
   } elsif ($startVersion eq "7.0.0_RC1") {
     main::progress("This appears to be 7.0.0_RC1\n");
+  } elsif ($startVersion eq "7.0.0_GA") {
+    main::progress("This appears to be 7.0.0_GA\n");
   } else {
     main::progress("I can't upgrade version $startVersion\n\n");
     return 1;
@@ -3380,6 +3384,12 @@ sub upgrade700RC1 {
     }
     $ldap->unbind;
   }
+  return 0;
+}
+
+sub upgrade700GA {
+  my ($startBuild, $targetVersion, $targetBuild) = (@_);
+  main::progress("Updating from 7.0.0_GA\n");
   return 0;
 }
 
