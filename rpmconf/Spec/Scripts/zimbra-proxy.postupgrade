@@ -15,7 +15,7 @@
 # 
 
 rm -rf /opt/zimbra/nginx
-ln -s /opt/zimbra/nginx-0.5.37-zimbra /opt/zimbra/nginx
+ln -s /opt/zimbra/nginx-0.8-zimbra /opt/zimbra/nginx
 
 if [ -x "/opt/zimbra/libexec/zmfixperms" ]; then
   /opt/zimbra/libexec/zmfixperms
