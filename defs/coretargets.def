@@ -226,9 +226,13 @@ $(CORE_DEST_DIR)/conf: $(WEBAPP_DIR)/service.war
 	mkdir -p $@/nginx/includes
 	mkdir -p $@/nginx/templates
 	cp $(SERVICE_DIR)/conf/nginx/nginx.conf.mail.imaps.template $@/nginx/templates/
+	cp $(SERVICE_DIR)/conf/nginx/nginx.conf.mail.imaps.default.template $@/nginx/templates/
 	cp $(SERVICE_DIR)/conf/nginx/nginx.conf.mail.imap.template $@/nginx/templates/
+	cp $(SERVICE_DIR)/conf/nginx/nginx.conf.mail.imap.default.template $@/nginx/templates/
 	cp $(SERVICE_DIR)/conf/nginx/nginx.conf.mail.pop3s.template $@/nginx/templates/
+	cp $(SERVICE_DIR)/conf/nginx/nginx.conf.mail.pop3s.default.template $@/nginx/templates/
 	cp $(SERVICE_DIR)/conf/nginx/nginx.conf.mail.pop3.template $@/nginx/templates/
+	cp $(SERVICE_DIR)/conf/nginx/nginx.conf.mail.pop3.default.template $@/nginx/templates/
 	cp $(SERVICE_DIR)/conf/nginx/nginx.conf.mail.template $@/nginx/templates/
 	cp $(SERVICE_DIR)/conf/nginx/nginx.conf.main.template $@/nginx/templates/
 	cp $(SERVICE_DIR)/conf/nginx/nginx.conf.memcache.template $@/nginx/templates/
@@ -244,7 +248,9 @@ $(CORE_DEST_DIR)/conf: $(WEBAPP_DIR)/service.war
 	cp $(SERVICE_DIR)/conf/nginx/nginx.conf.web.https.mode-mixed.template $@/nginx/templates/
 	cp $(SERVICE_DIR)/conf/nginx/nginx.conf.web.https.mode-redirect.template $@/nginx/templates/
 	cp $(SERVICE_DIR)/conf/nginx/nginx.conf.web.https.template $@/nginx/templates/
+	cp $(SERVICE_DIR)/conf/nginx/nginx.conf.web.https.default.template $@/nginx/templates/
 	cp $(SERVICE_DIR)/conf/nginx/nginx.conf.web.http.template $@/nginx/templates/
+	cp $(SERVICE_DIR)/conf/nginx/nginx.conf.web.http.default.template $@/nginx/templates/
 	cp $(SERVICE_DIR)/conf/nginx/nginx.conf.web.template $@/nginx/templates/
 	cp $(SERVICE_DIR)/conf/stats.conf.in $@
 	cp $(SERVICE_DIR)/conf/salocal.cf $@/salocal.cf.in
