@@ -160,6 +160,8 @@ $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/etc: force
 			$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/etc/spnego.conf.in
 		cp -f $(SERVICE_DIR)/conf/jetty-6.1/spnego/etc/krb5.ini \
 			$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/etc/krb5.ini.in
+		cp -f $(SERVICE_DIR)/conf/jetty-6.1/spnego/spnego_error.jsp \
+			$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/etc/spnego_error.jsp.in
 		cp -f $(SERVICE_DIR)/conf/jetty-6.1/spnego/web.xml \
 			$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/etc/spnego.web.xml.in
 		cp -f $(SERVICE_DIR)/conf/web.xml.production \
