@@ -81,6 +81,8 @@ $(BUILD_ROOT)/zimbra-store.spec:
 		$(BUILD_ROOT)/zimbra-store.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/zimlets-extra" >> \
 		$(BUILD_ROOT)/zimbra-store.spec
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/extensions-extra" >> \
+		$(BUILD_ROOT)/zimbra-store.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/zimlets-admin-extra" >> \
 		$(BUILD_ROOT)/zimbra-store.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/zimlets-experimental" >> \
@@ -282,6 +284,9 @@ $(SAMBA_EXT_DIR)/build/zimlet/zimbra_samba.zip:
 		-Dzimbra.buildinfo.version=$(SOURCE_TAG) \
 		-Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) \
 		-Dzimbra.buildinfo.host=$(HOST) package-zimlet ; )
+
+$(STORE_DEST_DIR)/extensions-extra:
+	mkdir -p $@
 
 $(WEBAPP_DIR)/zimbra/downloads:
 	mkdir -p $@

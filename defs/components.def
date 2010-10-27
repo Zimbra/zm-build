@@ -81,6 +81,7 @@ STORE_COMPONENTS := \
 	$(STORE_DEST_DIR)/zimlets-extra \
 	$(STORE_DEST_DIR)/zimlets-admin-extra \
 	$(STORE_DEST_DIR)/zimlets-experimental \
+	$(STORE_DEST_DIR)/extensions-extra \
 	$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/common/lib \
 	$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/common/endorsed \
 	$(MAILBOXD_COMPONENTS) \
@@ -118,7 +119,6 @@ PROXY_COMPONENTS := \
 
 MEMCACHED_COMPONENTS := \
 	$(MEMCACHED_DEST_DIR)/$(MEMCACHED_DIR)
-
 
 EVO_COMPONENTS := \
 	$(EVO_DEST_DIR)
