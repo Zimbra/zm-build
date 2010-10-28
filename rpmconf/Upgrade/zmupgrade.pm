@@ -3367,6 +3367,7 @@ sub upgrade700RC1 {
       if ($attr =~ /zimbraDomainName/) {
         ($aclNumber) = $attr =~ /^\{(\d+)\}*/;
         if ($attr !~ /uid=zmamavis,cn=appaccts,cn=zimbra/) {
+          $attrMod=$attr;
           $attrMod =~ s/by \* none/by dn.base="uid=zmamavis,cn=appaccts,cn=zimbra" read  by \* none/;
         }
       }
