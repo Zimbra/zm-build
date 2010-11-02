@@ -204,8 +204,8 @@ my %updateFuncs = (
   "6.0.8_GA" => \&upgrade608GA,
   "6.0.9_GA" => \&upgrade609GA,
   "7.0.0_BETA1" => \&upgrade700BETA1,
-  "7.0.0_RC1" => \&upgrade700RC1,
-  "7.0.0_GA" => \&upgrade700GA,
+  "7.0.0_BETA2" => \&upgrade700BETA2,
+  "7.0.0_BETA3" => \&upgrade700BETA3,
 );
 
 my @versionOrder = (
@@ -294,8 +294,8 @@ my @versionOrder = (
   "6.0.8_GA",
   "6.0.9_GA",
   "7.0.0_BETA1",
-  "7.0.0_RC1",
-  "7.0.0_GA",
+  "7.0.0_BETA2",
+  "7.0.0_BETA3",
 );
 
 my ($startVersion,$startMajor,$startMinor,$startMicro);
@@ -524,10 +524,10 @@ sub upgrade {
     main::progress("This appears to be 6.0.9_GA\n");
   } elsif ($startVersion eq "7.0.0_BETA1") {
     main::progress("This appears to be 7.0.0_BETA1\n");
-  } elsif ($startVersion eq "7.0.0_RC1") {
-    main::progress("This appears to be 7.0.0_RC1\n");
-  } elsif ($startVersion eq "7.0.0_GA") {
-    main::progress("This appears to be 7.0.0_GA\n");
+  } elsif ($startVersion eq "7.0.0_BETA2") {
+    main::progress("This appears to be 7.0.0_BETA2\n");
+  } elsif ($startVersion eq "7.0.0_BETA3") {
+    main::progress("This appears to be 7.0.0_BETA3\n");
   } else {
     main::progress("I can't upgrade version $startVersion\n\n");
     return 1;
@@ -3326,9 +3326,9 @@ sub upgrade700BETA1 {
   return 0;
 }
 
-sub upgrade700RC1 {
+sub upgrade700BETA2 {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
-  main::progress("Updating from 7.0.0_RC1\n");
+  main::progress("Updating from 7.0.0_BETA2\n");
   if (main::isInstalled("zimbra-ldap")) {
     runLdapAttributeUpgrade("50458");
 
@@ -3388,9 +3388,9 @@ sub upgrade700RC1 {
   return 0;
 }
 
-sub upgrade700GA {
+sub upgrade700BETA3 {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
-  main::progress("Updating from 7.0.0_GA\n");
+  main::progress("Updating from 7.0.0_BETA3\n");
   return 0;
 }
 
