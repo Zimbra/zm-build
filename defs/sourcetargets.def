@@ -46,7 +46,7 @@ zcs-$(SOURCE_TAG)-src.tgz: $(PACKAGE_DIR)
 		--exclude ZimbraQA \
 		--exclude ZimbraVoice \
 		--exclude zcs-$(SOURCE_TAG)-src/zcs-$(SOURCE_TAG)-src zcs-$(SOURCE_TAG)-src; \
-		rm -f zcs-$(SOURCE_TAG)-src; ln -s $@ zcs-src.tgz)
+		rm -f zcs-$(SOURCE_TAG)-src; cd $(PACKAGE_DIR); ln -s $@ zcs-src.tgz)
 
 zcs-$(SOURCE_TAG)-sumitomo-src.tgz: $(PACKAGE_DIR)
 	(cd $(BUILD_ROOT)/..; ln -s . zcs-$(SOURCE_TAG)-sumitomo-src; tar chzf $(PACKAGE_DIR)/$@ \
