@@ -40,8 +40,11 @@ sub Log
 {
 	my ($level,$msg) = (@_);
 	if ($loglevels{$level} >= $LOG_LEVEL) {
-    setlogsock('unix');
-		openlog($ident, "pid,ndelay,nowait", $facility);
+		# native is a better choice but unix provide a consistent output
+		# across multiple nodes that makes parsing easier
+		setlogsock('unix');
+		eval { openlog($ident, "pid,ndelay,nowait,nofatal", $facility); };
+		return if ($@);
 		if (length($msg) <= 800) {
 			 syslog($level, "$$:$level: $msg");
 		} else {
@@ -70,8 +73,9 @@ sub LogStats
 {
 	my ($level,$msg) = (@_);
 	if ($loglevels{$level} >= $LOG_LEVEL) {
-    setlogsock('unix');
-		openlog($ident, "pid,ndelay,nowait", $stats_facility);
+		setlogsock('unix');
+		eval { openlog($ident, "pid,ndelay,nowait,nofatal", $stats_facility);};
+		return if ($@);
 		if (length($msg) <= 800) {
 			 syslog($level, "$$:$level: $msg");
 		} else {
