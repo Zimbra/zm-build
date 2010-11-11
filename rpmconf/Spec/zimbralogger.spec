@@ -5,7 +5,7 @@ Summary: Zimbra Mail
 Name: zimbra-logger
 Version: @@VERSION@@
 Release: @@RELEASE@@
-Copyright: ZPL and other
+License: ZPL and other
 Group: Applications/Messaging
 URL: http://www.zimbra.com
 Vendor: Zimbra, Inc.

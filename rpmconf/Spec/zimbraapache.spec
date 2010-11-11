@@ -5,7 +5,7 @@ Summary: Zimbra Apache HTTPD server
 Name: zimbra-apache
 Version: @@VERSION@@
 Release: @@RELEASE@@
-Copyright: Various
+License: Various
 Group: Applications/Messaging
 URL: http://www.zimbra.com
 Vendor: Zimbra, Inc.
