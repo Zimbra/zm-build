@@ -528,6 +528,8 @@ sub upgrade {
     main::progress("This appears to be 7.0.0_BETA1\n");
   } elsif ($startVersion eq "7.0.0_BETA2") {
     main::progress("This appears to be 7.0.0_BETA2\n");
+  } elsif ($startVersion eq "7.0.0_BETA3") {
+    main::progress("This appears to be 7.0.0_BETA3\n");
   } elsif ($startVersion eq "8.0.0_BETA1") {
     main::progress("This appears to be 8.0.0_BETA1\n");
   } else {
