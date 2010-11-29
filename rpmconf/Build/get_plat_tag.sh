@@ -192,6 +192,11 @@ if [ -f /etc/debian_version ]; then
 		if [ $? = 0 ]; then
 			echo "DEBIAN5${i}"
 			exit 0
+		fi
+		grep "6.0" /etc/debian_version > /dev/null 2>&1
+		if [ $? = 0 ]; then
+			echo "DEBIAN6${i}"
+			exit 0
 		else
 	        	echo "DEBIANUNKNOWN${i}"
 	        	exit 0
