@@ -203,6 +203,7 @@ my %updateFuncs = (
   "6.0.7_GA" => \&upgrade607GA,
   "6.0.8_GA" => \&upgrade608GA,
   "6.0.9_GA" => \&upgrade609GA,
+  "6.0.10_GA" => \&upgrade6010GA,
   "7.0.0_BETA1" => \&upgrade700BETA1,
   "7.0.0_BETA2" => \&upgrade700BETA2,
   "7.0.0_BETA3" => \&upgrade700BETA3,
@@ -294,6 +295,7 @@ my @versionOrder = (
   "6.0.7_GA",
   "6.0.8_GA",
   "6.0.9_GA",
+  "6.0.10_GA",
   "7.0.0_BETA1",
   "7.0.0_BETA2",
   "7.0.0_BETA3",
@@ -524,6 +526,8 @@ sub upgrade {
     main::progress("This appears to be 6.0.8_GA\n");
   } elsif ($startVersion eq "6.0.9_GA") {
     main::progress("This appears to be 6.0.9_GA\n");
+  } elsif ($startVersion eq "6.0.10_GA") {
+    main::progress("This appears to be 6.0.10_GA\n");
   } elsif ($startVersion eq "7.0.0_BETA1") {
     main::progress("This appears to be 7.0.0_BETA1\n");
   } elsif ($startVersion eq "7.0.0_BETA2") {
@@ -3300,6 +3304,12 @@ sub upgrade608GA {
 sub upgrade609GA {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
   main::progress("Updating from 6.0.9_GA\n");
+  return 0;
+}
+
+sub upgrade6010GA {
+  my ($startBuild, $targetVersion, $targetBuild) = (@_);
+  main::progress("Updating from 6.0.10_GA\n");
   if (main::isInstalled("zimbra-ldap")) {
     runLdapAttributeUpgrade("50458");
   }
