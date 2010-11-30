@@ -36,7 +36,7 @@ chomp $rundir;
 my $scriptDir = "/opt/zimbra/libexec/scripts";
 
 my $lowVersion = 18;
-my $hiVersion = 65; # this should be set to the DB version expected by current server code
+my $hiVersion = 66; # this should be set to the DB version expected by current server code
 
 # Variables for the combo schema updater
 my $comboLowVersion = 20;
@@ -101,17 +101,18 @@ my %updateScripts = (
   '46' => "migrate20070921-ImapDataSourceUidValidity.pl", # 5.0.0_RC1
   '47' => "migrate20070928-ScheduledTaskIndex.pl",     # 5.0.0_RC2
   '48' => "migrate20071128-AccountId.pl",              # 5.0.0_RC3
-  '49' => "migrate20071206-WidenSizeColumns.pl",        # 5.0.0_GA
-  '50' => "migrate20080130-ImapFlags.pl",               # 5.0.3_GA
+  '49' => "migrate20071206-WidenSizeColumns.pl",       # 5.0.0_GA
+  '50' => "migrate20080130-ImapFlags.pl",              # 5.0.3_GA
   '51' => "migrate20080213-IndexDeferredColumn.pl",    # 5.0.3_GA
-  '52' => "migrate20080909-DataSourceItemTable.pl",     # 5.0.10_GA
+  '52' => "migrate20080909-DataSourceItemTable.pl",    # 5.0.10_GA
   '53' => "migrate20080930-MucService.pl",             # this upgrades to 60 for 6_0_0 GA
    # 54-59 skipped for possible FRANKLIN use
-	'60' => "migrate20090315-MobileDevices.pl",
-	'61' => "migrate20090406-DataSourceItemTable.pl",    # 6.0.0_BETA1
-	'62' => "migrate20090430-highestindexed.pl",       # 6.0.0_BETA2
-  '63' => "migrate20100106-MobileDevices.pl",        # 6.0.5_GA
-  '64' => "migrate20100926-Dumpster.pl",             # 7.0.0_BETA1
+  '60' => "migrate20090315-MobileDevices.pl",
+  '61' => "migrate20090406-DataSourceItemTable.pl",    # 6.0.0_BETA1
+  '62' => "migrate20090430-highestindexed.pl",         # 6.0.0_BETA2
+  '63' => "migrate20100106-MobileDevices.pl",          # 6.0.5_GA
+  '64' => "migrate20100926-Dumpster.pl",               # 7.0.0_BETA1
+  '65' => "migrate20101123-MobileDevices.pl",          # 8.0.0_BETA1
 );
 
 my %updateFuncs = (
