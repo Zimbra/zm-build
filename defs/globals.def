@@ -85,6 +85,10 @@ ifeq ($(BUILD_PLATFORM), DEBIAN5_64)
 	ARCH := amd64
 endif
 
+ifeq ($(BUILD_PLATFORM), DEBIAN6_64)
+	ARCH := amd64
+endif
+
 ifeq ($(BUILD_PLATFORM), MACOSX)
 	ARCH := ppc
 endif
