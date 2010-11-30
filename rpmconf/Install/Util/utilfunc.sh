@@ -1493,9 +1493,9 @@ removeExistingInstall() {
         fi
       elif [ -f /etc/rsyslog.conf ]; then
 	if [ -d /etc/rsyslog.d ]; then
-          if [ -f /etc/rsyslog.d/30-zimbra.conf ]; then
+          if [ -f /etc/rsyslog.d/60-zimbra.conf ]; then
             echo -n "Cleaning up /etc/rsyslog.d..."
-            rm -f /etc/rsyslog.d/30-zimbra.conf
+            rm -f /etc/rsyslog.d/60-zimbra.conf
             if [ -x /usr/bin/service ]; then
               /usr/sbin/service rsyslog restart >/dev/null 2>&1
               echo "done."
