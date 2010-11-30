@@ -3314,6 +3314,18 @@ sub upgrade6010GA {
   if (main::isInstalled("zimbra-ldap")) {
     runLdapAttributeUpgrade("50458");
   }
+  if (main::isInstalled("zimbra-store")) {
+    my $mailboxd_java_options=main::getLocalConfig("mailboxd_java_options");
+    if ($mailboxd_java_options =~ /-Dsun.net.inetaddr.ttl=$/) {
+      my $new_mailboxd_options;
+      foreach my $option (split(/\s+/, $mailboxd_java_options)) {
+        $new_mailboxd_options.=" $option" if ($option !~ /^-Dsun.net.inetaddr.ttl=/); 
+      }
+      $new_mailboxd_options =~ s/^\s+//;
+      main::setLocalConfig("mailboxd_java_options", $new_mailboxd_options)
+        if ($new_mailboxd_options ne "");
+    }
+  }
   return 0;
 }
 
@@ -3408,6 +3420,18 @@ sub upgrade700BETA3 {
   main::progress("Updating from 7.0.0_BETA3\n");
   if (main::isInstalled("zimbra-ldap")) {
     runLdapAttributeUpgrade("47934");
+  }
+  if (main::isInstalled("zimbra-store")) {
+    my $mailboxd_java_options=main::getLocalConfig("mailboxd_java_options");
+    if ($mailboxd_java_options =~ /-Dsun.net.inetaddr.ttl=$/) {
+      my $new_mailboxd_options;
+      foreach my $option (split(/\s+/, $mailboxd_java_options)) {
+        $new_mailboxd_options.=" $option" if ($option !~ /^-Dsun.net.inetaddr.ttl=/); 
+      }
+      $new_mailboxd_options =~ s/^\s+//;
+      main::setLocalConfig("mailboxd_java_options", $new_mailboxd_options)
+        if ($new_mailboxd_options ne "");
+    }
   }
   return 0;
 }
