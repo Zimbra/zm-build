@@ -3287,6 +3287,18 @@ sub upgrade6010GA {
   if (main::isInstalled("zimbra-ldap")) {
     runLdapAttributeUpgrade("50458");
   }
+  if (main::isInstalled("zimbra-store")) {
+    my $mailboxd_java_options=main::getLocalConfig("mailboxd_java_options");
+    if ($mailboxd_java_options =~ /-Dsun.net.inetaddr.ttl=$/) {
+      my $new_mailboxd_options;
+      foreach my $option (split(/\s+/, $mailboxd_java_options)) {
+        $new_mailboxd_options.=" $option" if ($option !~ /^-Dsun.net.inetaddr.ttl=/); 
+      }
+      $new_mailboxd_options =~ s/^\s+//;
+      main::setLocalConfig("mailboxd_java_options", $new_mailboxd_options)
+        if ($new_mailboxd_options ne "");
+    }
+  }
   return 0;
 }
 
@@ -3302,6 +3314,13 @@ sub upgrade700RC1 {
   if (main::isInstalled("zimbra-ldap")) {
     runLdapAttributeUpgrade("50458");
   }
+  return 0;
+}
+
+
+sub upgrade800BETA1 {
+  my ($startBuild, $targetVersion, $targetBuild) = (@_);
+  main::progress("Updating from 8.0.0_BETA1\n");
   return 0;
 }
 
