@@ -1440,7 +1440,15 @@ removeExistingInstall() {
         /usr/bin/crontab -u zimbra -r 2> /dev/null
         echo "done."
       fi
-      
+     
+      if [ -e /usr/sbin/sendmail ]; then
+        if [ -x /bin/readlink ]; then
+          SMPATH=$(/bin/readlink /usr/sbin/sendmail)
+          if [ x$SMPATH = x"/opt/zimbra/postfix/sbin/sendmail" ]; then
+            /bin/rm -f /usr/sbin/sendmail
+          fi
+        fi
+      fi 
 
       if [ -f /etc/syslog.conf ]; then
         egrep -q 'zimbra.log' /etc/syslog.conf

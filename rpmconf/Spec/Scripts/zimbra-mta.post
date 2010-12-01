@@ -47,6 +47,13 @@ if [ -e /opt/zimbra/altermime ]; then
 fi
 ln -s /opt/zimbra/altermime-0.3-dev /opt/zimbra/altermime
 
+PLAT=$(/opt/zimbra/libexec/get_plat_tag.sh)
+if [[ $PLAT == "UBUNTU"* || $PLAT == "DEBIAN"* ]]; then
+  if [ !-e /usr/sbin/sendmail ]; then
+    ln -s /opt/zimbra/postfix/sbin/sendmail /usr/sbin/sendmail
+  fi
+fi
+
 SUDOMODE=`perl -e 'my $mode=(stat("/etc/sudoers"))[2];printf("%04o\n",$mode & 07777);'`
 egrep -v '^%zimbra.*postfix' /etc/sudoers > /tmp/sudoers
 mv -f /tmp/sudoers /etc/sudoers
