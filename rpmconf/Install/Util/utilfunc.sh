@@ -447,16 +447,16 @@ EOF
   SUGGESTED="yes"
   echo "Checking for suggested prerequisites..."
   for i in $PRESUG_PACKAGES; do
-    #echo -n "    $i..."
+    #echo -n "     $i..."
     PKGVERSION="notfound"
     suggestedVersion $i
     if [ "x$PKGINSTALLED" != "x" ]; then
-       echo "    FOUND: $i"
+       echo "     FOUND: $i"
     else
        if [ "x$PKGVERSION" = "xnotfound" ]; then
-         echo "    MISSING: $i does not appear to be installed."
+         echo "     MISSING: $i does not appear to be installed."
        else
-         echo "    Unable to find expected $i.  Found version $PKGVERSION instead."
+         echo "     Unable to find expected $i.  Found version $PKGVERSION instead."
        fi
        SUGGESTED="no"
     fi
@@ -831,16 +831,22 @@ verifyLicenseAvailable() {
   if [ -f "/opt/zimbra/bin/zmlicense" ]; then
     licenseCheck=`su - zimbra -c "zmlicense -c" 2> /dev/null`
     licensedUsers=`su - zimbra -c "zmlicense -p | grep ^AccountsLimit | sed -e 's/AccountsLimit=//'" 2> /dev/null`
+    licenseValidUntil=`su - zimbra -c "zmlicense -p | grep ^ValidUntil= | sed -e 's/ValidUntil=//'" 2> /dev/null`
+    licenseType=`su - zimbra -c "zmlicense -p | grep ^InstallType= | sed -e 's/InstallType=//'" 2> /dev/null`
   fi
 
-  # parse files is license tool wasn't there or didn't return a valid license
+  # parse files if license tool wasn't there or didn't return a valid license
   if [ x"$licenseCheck" = "xlicense not installed" -o x"$licenseCheck" = "x" ]; then
     if [ -f "/opt/zimbra/conf/ZCSLicense.xml" ]; then
       licenseCheck="license is OK"
       licensedUsers=`cat /opt/zimbra/conf/ZCSLicense.xml | grep AccountsLimit | head -1  | awk '{print $3}' | awk -F= '{print $2}' | awk -F\" '{print $2}'`
+      licenseValidUntil=`cat /opt/zimbra/conf/ZCSLicense.xml | awk -F\" '{ if ($2 ~ /^ValidUntil$/) {print $4 } }'`
+      licenseType=`cat /opt/zimbra/conf/ZCSLicense.xml | awk -F\" '{ if ($2 ~ /^InstallType$/) {print $4 } }'`
     elif [ -f "/opt/zimbra/conf/ZCSLicense-Trial.xml" ]; then
       licenseCheck="license is OK"
       licensedUsers=`cat /opt/zimbra/conf/ZCSLicense-Trial.xml | grep AccountsLimit | head -1  | awk '{print $3}' | awk -F= '{print $2}' | awk -F\" '{print $2}'`
+      licenseValidUntil=`cat /opt/zimbra/conf/ZCSLicense-Trial.xml | awk -F\" '{ if ($2 ~ /^ValidUntil$/) {print $4 } }'`
+      licenseType=`cat /opt/zimbra/conf/ZCSLicense-Trial.xml | awk -F\" '{ if ($2 ~ /^InstallType$/) {print $4 } }'`
     elif [ x"$CLUSTERTYPE" = "xstandby" ]; then
       echo "Not checking for license on cluster stand-by node."
       return
@@ -849,7 +855,7 @@ verifyLicenseAvailable() {
       echo "/opt/zimbra/conf/ZCSLicense.xml or a license previously installed."
       echo "The upgrade will not continue without a license."
       echo ""
-      echo "Your system has not been modified"
+      echo "Your system has not been modified."
       echo ""
       echo "New customers wanting to purchase or obtain a trial license"
       echo "should contact Zimbra sales.  Contact information for Zimbra is"
@@ -860,6 +866,48 @@ verifyLicenseAvailable() {
       exit 1;
     fi
   fi
+
+  now=`date -u "+%Y%m%d%H%M%SZ"`
+  if [ \( x"$licenseValidUntil" \< x"$now" -o x"$licenseValidUntil" == x"$now" \) -a x"$ZMTYPE_INSTALLABLE" == x"NETWORK" ]; then
+    if [ x"$licenseType" == x"perpetual" ]; then
+      echo ""
+      echo "ERROR: The ZCS Network upgrade requires a previously installed license"
+      echo "or the license file located in /opt/zimbra/conf/ZCSLicense.xml to be"
+      echo "valid and not expired."
+      echo ""
+      echo "The upgrade cannot occur with an expired perpetual license.  In order"
+      echo "to perform an upgrade, you will need to have a valid support contract"
+      echo "in place."
+      echo ""
+      echo "Your system has not been modified."
+      echo ""
+      exit 1;
+    else
+      echo ""
+      echo "WARNING: The ZCS Network upgrade requires a previously installed license"
+      echo "or the license file located in /opt/zimbra/conf/ZCSLicense.xml to be"
+      echo "valid and not expired."
+      echo ""
+      echo "The upgrade can continue, but there will be some loss of functionality."
+      echo ""
+      while :; do
+        askYN "Do you wish to contunue? " "N"
+        if [ $response == "no" ]; then
+          askYN "Exit?" "N"
+          if [ $response == "yes" ]; then
+            echo ""
+            echo "Your system has not been modified."
+            echo""
+            exit 1;
+          fi
+        else
+          break
+        fi
+      done
+    fi
+  fi
+
+
   if [ x"$licensedUsers" = "x" ]; then
     licensedUsers=0
   fi
