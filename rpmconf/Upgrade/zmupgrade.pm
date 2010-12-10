@@ -3470,11 +3470,24 @@ sub upgrade700BETA3 {
   return 0;
 }
 
+
 sub upgrade700BETA4 {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
   main::progress("Updating from 7.0.0_BETA4\n");
+
+  if (main::isInstalled("zimbra-store")) {
+    # Bug #53821
+    my $mailboxd_java_options=main::getLocalConfig("mailboxd_java_options");
+
+    $mailboxd_java_options .= " -XX:-OmitStackTraceInFastThrow"
+      unless ($mailboxd_java_options =~ /OmitStackTraceInFastThrow/);
+    main::detail("Modified mailboxd_java_options=$mailboxd_java_options");
+    main::setLocalConfig("mailboxd_java_options", "$mailboxd_java_options");
+  }
+
   return 0;
 }
+
 
 sub upgrade800BETA1 {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
