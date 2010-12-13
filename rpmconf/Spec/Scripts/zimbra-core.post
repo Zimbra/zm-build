@@ -150,10 +150,12 @@ if [ -x /sbin/chkconfig ]; then
 	chkconfig zimbra on
 else
 	rm -f /etc/rc*.d/S99zimbra
+	rm -f /etc/rc*.d/S89zimbra
 	rm -f /etc/rc*.d/K01zimbra
 
   if [ -d /etc/rc0.d ]; then
-    ln -s /etc/init.d/zimbra /etc/rc0.d/S99zimbra
+    ln -s /etc/init.d/zimbra /etc/rc0.d/S89zimbra
+    ln -s /etc/init.d/zimbra /etc/rc0.d/K01zimbra
   fi
   if [ -d /etc/rc2.d ]; then
 	  ln -s /etc/init.d/zimbra /etc/rc2.d/S99zimbra
@@ -172,7 +174,7 @@ else
 	  ln -s /etc/init.d/zimbra /etc/rc5.d/K01zimbra
   fi
   if [ -d /etc/rc6.d ]; then
-	  ln -s /etc/init.d/zimbra /etc/rc6.d/S99zimbra
+	  ln -s /etc/init.d/zimbra /etc/rc6.d/S89zimbra
 	  ln -s /etc/init.d/zimbra /etc/rc6.d/K01zimbra
   fi
   
