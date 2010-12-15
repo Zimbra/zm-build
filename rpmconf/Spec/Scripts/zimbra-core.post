@@ -33,14 +33,14 @@ rm -f /opt/zimbra/mysql
 ln -s /opt/zimbra/mysql-standard-5.1.52-pc-linux-gnu-i686-glibc23 /opt/zimbra/mysql
 
 rm -f /opt/zimbra/bdb
-ln -s /opt/zimbra/bdb-4.7.25.4 /opt/zimbra/bdb
+ln -s /opt/zimbra/bdb-5.1.19 /opt/zimbra/bdb
 
 if [ -L /opt/zimbra/sleepycat ]; then
 	rm -f /opt/zimbra/sleepycat
 fi
 
 rm -f /opt/zimbra/openssl
-ln -s /opt/zimbra/openssl-1.0.0a /opt/zimbra/openssl
+ln -s /opt/zimbra/openssl-1.0.0c /opt/zimbra/openssl
 
 rm -f /opt/zimbra/heimdal
 ln -s /opt/zimbra/heimdal-1.3.3 /opt/zimbra/heimdal

@@ -576,6 +576,8 @@ sub upgrade {
       &updateLdapBdbConfig("6.0.0_GA");
       my $rc=&migrateLdap("6.0.0_GA");
       if ($rc) { return 1; }
+    } elsif($startMajor < 8 && $targetMajor >= 8) {
+      my $rc=&upgradeLdap("8.0.0_GA");
     }
     if (startLdap()) {return 1;} 
   }
@@ -4010,6 +4012,51 @@ sub indexLdap {
   return;
 }
 
+sub upgradeLdap($) {
+  my ($upgradeVersion) = @_;
+  if (main::isInstalled ("zimbra-ldap")) {
+    if($main::configStatus{"LdapUpgraded$upgradeVersion"} ne "CONFIGURED") {
+      my $ldifFile="/opt/zimbra/data/ldap/ldap.bak";
+      if (-f $ldifFile && -s $ldifFile) {
+        chmod 0644, $ldifFile;
+
+        main::progress("Upgrading ldap data...");
+        if (-d "/opt/zimbra/data/ldap/hdb.prev") {
+          `mv /opt/zimbra/data/ldap/hdb.prev /opt/zimbra/data/ldap/hdb.prev.$$`;
+        }
+
+        `mv /opt/zimbra/data/ldap/hdb /opt/zimbra/data/ldap/hdb.prev`;
+        `mkdir -p /opt/zimbra/data/ldap/hdb/db`;
+        `mkdir -p /opt/zimbra/data/ldap/hdb/logs`;
+        if (-f "/opt/zimbra/conf/custom/ldap/DB_CONFIG") {
+          `cp -f /opt/zimbra/conf/custom/ldap/DB_CONFIG /opt/zimbra/data/ldap/hdb/db/DB_CONFIG`;
+        } else {
+          `cp -f /opt/zimbra/openldap/var/openldap-data/DB_CONFIG /opt/zimbra/data/ldap/hdb/db`;
+        }
+        `chown -R zimbra:zimbra /opt/zimbra/data/ldap`;
+        my $rc;
+        $rc=main::runAsZimbra("/opt/zimbra/openldap/sbin/slapadd -q -b '' -F /opt/zimbra/data/ldap/config -l $ldifFile");
+        if ($rc != 0) {
+          main::progress("slapadd import failed.\n");
+          return 1;
+        }
+	chmod 0640, $ldifFile;
+        main::progress("done.\n");
+      } else {
+        if (! -f $ldifFile) {
+          main::progress("Error: Unable to find /opt/zimbra/data/ldap/ldap.bak\n");
+        } else {
+          main::progress("Error: /opt/zimbra/data/ldap/ldap.bak is empty\n");
+        }
+        return 1;
+      }
+      main::configLog("LdapUpgraded$upgradeVersion");
+    }
+    if (startLdap()) {return 1;} 
+  }
+  return 0;
+}
+
 sub migrateLdap($) {
   my ($migrateVersion) = @_;
   if (main::isInstalled ("zimbra-ldap")) {
@@ -4055,7 +4102,7 @@ sub migrateLdap($) {
           main::progress("slapadd import failed.\n");
           return 1;
         }
-        `chmod 640 /opt/zimbra/data/ldap/ldap.bak`;
+        chmod 0640, "/opt/zimbra/data/ldap/ldap.bak";
         main::progress("done.\n");
       } else {
         stopLdap();
