@@ -142,6 +142,34 @@ $(CORE_DEST_DIR)/docs:
 	cp $(SERVICE_DIR)/docs/*txt $@
 	cp $(SERVICE_DIR)/docs/*html $@
 	cp $(MIG_TOOLS_DIR)/ReadMe.txt $@/zmztozmig.txt
+	echo "Zimbra Third Party Software version information" >$@/zimbra-software-versions.txt
+	echo "Altermime version: $(ALTERMIME_VERSION)" >> $@/zimbra-software-versions.txt
+	echo "Amavisd-new version: $(AMAVISD_VERSION)" >> $@/zimbra-software-versions.txt
+	echo "Apache HTTPD version: $(APACHE_VERSION)" >> $@/zimbra-software-versions.txt
+	echo "Aspell version: $(SPELL_VERSION)" >> $@/zimbra-software-versions.txt
+	echo "BDB version: $(BDB_VERSION)" >> $@/zimbra-software-versions.txt
+	echo "Cbpolicyd version: $(CBPOLICYD_VERSION)" >> $@/zimbra-software-versions.txt
+	echo "ClamAV version: $(CLAMAV_VERSION)" >> $@/zimbra-software-versions.txt
+	echo "Curl version: $(CURL_VERSION)" >> $@/zimbra-software-versions.txt
+	echo "Cyrus SASL version: $(SASL_VERSION)" >> $@/zimbra-software-versions.txt
+	echo "Dspam version: $(DSPAM_VERSION)" >> $@/zimbra-software-versions.txt
+	echo "Expat version (OSX only): $(EXPAT_VERSION)" >> $@/zimbra-software-versions.txt
+	echo "Heimdal version: $(HEIMDAL_VERSION)" >> $@/zimbra-software-versions.txt
+	echo "JDK version: $(JAVA_VERSION)" >> $@/zimbra-software-versions.txt
+	echo "Jetty version: $(JETTY_VERSION)" >> $@/zimbra-software-versions.txt
+	echo "Libtool version: $(LIBTOOL_VERSION)" >> $@/zimbra-software-versions.txt
+	echo "Memcached version: $(MEMCACHED_VERSION)" >> $@/zimbra-software-versions.txt
+	echo "MySQL version: $(MYSQL_VERSION_STRING)" >> $@/zimbra-software-versions.txt
+	echo "NetSNMP version: $(SNMP_VERSION)" >> $@/zimbra-software-versions.txt
+	echo "Nginx version: $(NGINX_VERSION)" >> $@/zimbra-software-versions.txt
+	echo "OpenLDAP version: $(LDAP_VERSION)" >> $@/zimbra-software-versions.txt
+	echo "OpenSSL version: $(OPENSSL_VERSION)" >> $@/zimbra-software-versions.txt
+	echo "Pcre version (OSX only): $(PCRE_VERSION)" >> $@/zimbra-software-versions.txt
+	echo "Popt version (OSX only): $(POPT_VERSION)" >> $@/zimbra-software-versions.txt
+	echo "Postfix version: $(POSTFIX_VERSION)" >> $@/zimbra-software-versions.txt
+	echo "Rlfe version: $(RLFE_VERSION)" >> $@/zimbra-software-versions.txt
+	echo "RRDtool version: $(RRD_VERSION)" >> $@/zimbra-software-versions.txt
+	echo "Tcmalloc version: $(TCMALLOC_VERSION)" >> $@/zimbra-software-versions.txt
 
 $(CORE_DEST_DIR)/zimbramon: $(CORE_DEST_DIR)/zimbramon/bin $(CORE_DEST_DIR)/zimbramon/lib $(CORE_DEST_DIR)/zimbramon/pylibs $(CORE_DEST_DIR)/zimbramon/crontabs $(CORE_DEST_DIR) 
 	@echo "*** Creating zimbramon"
