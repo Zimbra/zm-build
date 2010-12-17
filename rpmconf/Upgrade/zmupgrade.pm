@@ -211,7 +211,6 @@ my %updateFuncs = (
   "7.0.0_BETA1" => \&upgrade700BETA1,
   "7.0.0_BETA2" => \&upgrade700BETA2,
   "7.0.0_BETA3" => \&upgrade700BETA3,
-  "7.0.0_BETA4" => \&upgrade700BETA4,
   "7.0.0_RC1" => \&upgrade700RC1,
   "8.0.0_BETA1" => \&upgrade800BETA1,
 );
@@ -308,7 +307,6 @@ my @versionOrder = (
   "7.0.0_BETA1",
   "7.0.0_BETA2",
   "7.0.0_BETA3",
-  "7.0.0_BETA4",
   "7.0.0_RC1",
   "8.0.0_BETA1",
 );
@@ -551,8 +549,6 @@ sub upgrade {
     main::progress("This appears to be 7.0.0_BETA2\n");
   } elsif ($startVersion eq "7.0.0_BETA3") {
     main::progress("This appears to be 7.0.0_BETA3\n");
-  } elsif ($startVersion eq "7.0.0_BETA4") {
-    main::progress("This appears to be 7.0.0_BETA4\n");
   } elsif ($startVersion eq "7.0.0_RC1") {
     main::progress("This appears to be 7.0.0_RC1\n");
   } elsif ($startVersion eq "8.0.0_BETA1") {
@@ -3473,12 +3469,6 @@ sub upgrade700BETA3 {
         if ($new_mailboxd_options ne "");
     }
   }
-  return 0;
-}
-
-sub upgrade700BETA4 {
-  my ($startBuild, $targetVersion, $targetBuild) = (@_);
-  main::progress("Updating from 7.0.0_BETA4\n");
   return 0;
 }
 
