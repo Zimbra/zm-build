@@ -49,7 +49,7 @@ ln -s /opt/zimbra/altermime-0.3-dev /opt/zimbra/altermime
 
 PLAT=$(/opt/zimbra/libexec/get_plat_tag.sh)
 if [[ $PLAT == "UBUNTU"* || $PLAT == "DEBIAN"* ]]; then
-  if [ !-e /usr/sbin/sendmail ]; then
+  if [ !-e "/usr/sbin/sendmail" ]; then
     ln -s /opt/zimbra/postfix/sbin/sendmail /usr/sbin/sendmail
   fi
 fi
