@@ -4167,22 +4167,35 @@ sub updateLdapBdbConfig($) {
             `/usr/bin/perl -pi -e "s#set_flags(\s+)DB_LOG_AUTOREMOVE#log_set_config  DB_LOG_AUTO_REMOVE#" /opt/zimbra/conf/custom/ldap/DB_CONFIG`;
           }
         }
+        if ( -f "/opt/zimbra/conf/custom/ldap/DB_CONFIG.accesslog") {
+          if (!fgrep { /set_lg_dir/ } "/opt/zimbra/conf/custom/ldap/DB_CONFIG.accesslog") { 
+            `echo "set_lg_dir  /opt/zimbra/data/ldap/accesslog/logs" >> /opt/zimbra/conf/custom/ldap/DB_CONFIG.accesslog`;
+          } else {
+            `/usr/bin/perl -pi -e "s#set_lg_dir(.*)#set_lg_dir  /opt/zimbra/data/ldap/accesslog/logs#" /opt/zimbra/conf/custom/ldap/DB_CONFIG.accesslog`;
+          }
+          if (!fgrep { /DB_LOG_AUTOREMOVE/ } "/opt/zimbra/conf/custom/ldap/DB_CONFIG.accesslog" ) {
+            `echo "log_set_config  DB_LOG_AUTO_REMOVE" >> /opt/zimbra/conf/custom/ldap/DB_CONFIG.accesslog`;
+          } else {
+            `/usr/bin/perl -pi -e "s#set_flags(\s+)DB_LOG_AUTOREMOVE#log_set_config  DB_LOG_AUTO_REMOVE#" /opt/zimbra/conf/custom/ldap/DB_CONFIG.accesslog`;
+          }
+        }
       }
       if($migrateVersion eq "8.0.0_GA") {
         if ( -f "/opt/zimbra/conf/custom/ldap/DB_CONFIG" ) {
-          if (!fgrep { /DB_LOG_AUTOREMOVE/ } "/opt/zimbra/conf/custom/ldap/DB_CONFIG" ) {
+          if (!fgrep { /DB_LOG_AUTO_REMOVE/ } "/opt/zimbra/conf/custom/ldap/DB_CONFIG" ) {
             `echo "log_set_config  DB_LOG_AUTO_REMOVE" >> /opt/zimbra/conf/custom/ldap/DB_CONFIG`;
-          } else {
-            `/usr/bin/perl -pi -e "s#set_log_config(.*)#log_set_config  DB_LOG_AUTO_REMOVE#" /opt/zimbra/conf/custom/ldap/DB_CONFIG`;
-          }
+        }
+        if ( -f "/opt/zimbra/conf/custom/ldap/DB_CONFIG.accesslog") {
+          if (!fgrep { /DB_LOG_AUTO_REMOVE/ } "/opt/zimbra/conf/custom/ldap/DB_CONFIG.accesslog" ) {
+            `echo "log_set_config  DB_LOG_AUTO_REMOVE" >> /opt/zimbra/conf/custom/ldap/DB_CONFIG.accesslog`;
         }
         if ( -f "/opt/zimbra/data/ldap/hdb/db/DB_CONFIG" ) {
-          if (fgrep { /DB_LOG_AUTOREMOVE/ } "/opt/zimbra/data/ldap/hdb/db/DB_CONFIG" ) {
+          if (fgrep { /DB_LOG_AUTO_REMOVE/ } "/opt/zimbra/data/ldap/hdb/db/DB_CONFIG" ) {
             `/usr/bin/perl -pi -e "s#set_log_config(.*)#log_set_config  DB_LOG_AUTO_REMOVE#" /opt/zimbra/data/ldap/hdb/db/DB_CONFIG`;
           }
         }
         if ( -f "/opt/zimbra/data/ldap/accesslog/db/DB_CONFIG") {
-          if (fgrep { /DB_LOG_AUTOREMOVE/ } "/opt/zimbra/data/ldap/accesslog/db/DB_CONFIG" ) {
+          if (fgrep { /DB_LOG_AUTO_REMOVE/ } "/opt/zimbra/data/ldap/accesslog/db/DB_CONFIG" ) {
             `/usr/bin/perl -pi -e "s#set_log_config(.*)#log_set_config  DB_LOG_AUTO_REMOVE#" /opt/zimbra/data/ldap/accesslog/db/DB_CONFIG`;
           }
         }
