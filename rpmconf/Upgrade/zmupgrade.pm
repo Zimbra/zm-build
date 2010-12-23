@@ -4182,13 +4182,13 @@ sub updateLdapBdbConfig($) {
       }
       if($migrateVersion eq "8.0.0_GA") {
         if ( -f "/opt/zimbra/conf/custom/ldap/DB_CONFIG" ) {
-          if (!fgrep { /DB_LOG_AUTO_REMOVE/ } "/opt/zimbra/conf/custom/ldap/DB_CONFIG" ) {
-            `echo "log_set_config  DB_LOG_AUTO_REMOVE" >> /opt/zimbra/conf/custom/ldap/DB_CONFIG`;
+          if (fgrep { /DB_LOG_AUTO_REMOVE/ } "/opt/zimbra/conf/custom/ldap/DB_CONFIG" ) {
+            `/usr/bin/perl -pi -e "s#set_log_config(.*)#log_set_config  DB_LOG_AUTO_REMOVE#" /opt/zimbra/conf/custom/ldap/DB_CONFIG`;
           }
         }
         if ( -f "/opt/zimbra/conf/custom/ldap/DB_CONFIG.accesslog") {
-          if (!fgrep { /DB_LOG_AUTO_REMOVE/ } "/opt/zimbra/conf/custom/ldap/DB_CONFIG.accesslog" ) {
-            `echo "log_set_config  DB_LOG_AUTO_REMOVE" >> /opt/zimbra/conf/custom/ldap/DB_CONFIG.accesslog`;
+          if (fgrep { /DB_LOG_AUTO_REMOVE/ } "/opt/zimbra/conf/custom/ldap/DB_CONFIG.accesslog" ) {
+            `/usr/bin/perl -pi -e "s#set_log_config(.*)#log_set_config  DB_LOG_AUTO_REMOVE#" /opt/zimbra/conf/custom/ldap/DB_CONFIG.accesslog`;
           }
         }
         if ( -f "/opt/zimbra/data/ldap/hdb/db/DB_CONFIG" ) {
