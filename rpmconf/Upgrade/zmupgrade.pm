@@ -3300,8 +3300,6 @@ sub upgrade607GA {
     } else {
       runLdapAttributeUpgrade("46297");
     }
-
-
   }
   if (main::isInstalled("zimbra-store")) {
     my $mailboxd_java_options = main::getLocalConfig("mailboxd_java_options");
