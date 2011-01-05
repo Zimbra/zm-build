@@ -43,7 +43,7 @@ fi
 ln -s /opt/zimbra/mysql-standard-${MYSQL_VERSION}-apple-darwin${OS_REL}-${OS_ARCH} /opt/zimbra/mysql
 
 rm -f /opt/zimbra/bdb
-ln -s /opt/zimbra/bdb-5.1.19 /opt/zimbra/bdb
+ln -s /opt/zimbra/bdb-4.7.25.4 /opt/zimbra/bdb
 
 if [ -L /opt/zimbra/sleepycat ]; then
 	rm -f /opt/zimbra/sleepycat

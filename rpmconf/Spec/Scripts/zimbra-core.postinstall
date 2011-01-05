@@ -39,7 +39,7 @@ chown zimbra:zimbra /opt/zimbra/zmstat
 chown zimbra:zimbra /opt/zimbra/zmstat/pid
 
 rm -f /opt/zimbra/bdb
-ln -s /opt/zimbra/bdb-5.1.19 /opt/zimbra/bdb
+ln -s /opt/zimbra/bdb-4.7.25.4 /opt/zimbra/bdb
 
 if [ -L /opt/zimbra/sleepycat ]; then
 	rm -f /opt/zimbra/sleepycat

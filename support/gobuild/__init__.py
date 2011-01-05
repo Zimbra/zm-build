@@ -6,7 +6,7 @@ Support code for building products with gobuild.
 import helpers
 import helpers.access
 
-import targets.zimbra
+import targets.helloworld
 
 # The targets dictionary maps target names to classes which
 # implement the gobuild Target interface.  The dictionary is not
@@ -16,7 +16,7 @@ import targets.zimbra
 # tree!
 
 TARGETS = {
-   'zimbra_va'    : targets.zimbra.ZimbraVA,
+   'gsk-helloworld'    : targets.helloworld.HelloWorld,
 }
 
 # Add an access target for each already-defined target.
