@@ -157,6 +157,9 @@ else
     ln -s /etc/init.d/zimbra /etc/rc0.d/S89zimbra
     ln -s /etc/init.d/zimbra /etc/rc0.d/K01zimbra
   fi
+  if [ -d /etc/rc1.d ]; then
+	ln -s /etc/init.d/zimbra /etc/rc1.d/K01zimbra
+  fi
   if [ -d /etc/rc2.d ]; then
 	  ln -s /etc/init.d/zimbra /etc/rc2.d/S99zimbra
 	  ln -s /etc/init.d/zimbra /etc/rc2.d/K01zimbra
