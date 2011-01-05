@@ -3369,7 +3369,7 @@ sub upgrade6011GA {
 sub upgrade700BETA1 {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
   main::progress("Updating from 7.0.0_BETA1\n");
-  if (main::isInstalled("zimbra-ldap")) {
+  if($isLdapMaster) {
     runLdapAttributeUpgrade("10287");
     runLdapAttributeUpgrade("42828");
     runLdapAttributeUpgrade("43779");
@@ -3458,7 +3458,7 @@ sub upgrade700BETA3 {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
   main::progress("Updating from 7.0.0_BETA3\n");
   if (main::isInstalled("zimbra-ldap")) {
-    runLdapAttributeUpgrade("47934");
+    runLdapAttributeUpgrade("47934") if ($isLdapMaster);
   }
   if (main::isInstalled("zimbra-store")) {
     my $mailboxd_java_options=main::getLocalConfig("mailboxd_java_options");
