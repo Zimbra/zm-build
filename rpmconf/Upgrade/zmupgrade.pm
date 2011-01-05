@@ -3350,6 +3350,52 @@ sub upgrade6011GA {
     if($isLdapMaster) {
       runLdapAttributeUpgrade("50458");
     }
+    my $ldap_pass = `$su "zmlocalconfig -s -m nokey ldap_root_password"`;
+    chomp($ldap_pass);
+    my $ldap;
+    unless($ldap = Net::LDAP->new('ldapi://%2fopt%2fzimbra%2fopenldap%2fvar%2frun%2fldapi/')) {
+       main::progress("Unable to contact to ldapi: $!\n");
+    }
+    my $result = $ldap->bind("cn=config", password => $ldap_pass);
+    my $dn="olcDatabase={2}hdb,cn=config";
+    if ($isLdapMaster) {
+      $result = $ldap->search(
+                        base=> "cn=accesslog",
+                        filter=>"(objectClass=*)",
+                        scope => "base",
+                        attrs => ['1.1'],
+      );
+      my $size = $result->count;
+      if ($size > 0 ) {
+        $dn="olcDatabase={3}hdb,cn=config";
+      }
+    }
+    $result = $ldap->search(
+      base=> "$dn",
+      filter=>"(objectClass=*)",
+      scope => "base",
+      attrs => ['olcDbIndex'],
+    );
+    my $entry=$result->entry($result->count-1);
+    my @attrvals=$entry->get_value("olcDbIndex");
+    my $needModify=1;
+
+    foreach my $attr (@attrvals) {
+      if ($attr =~ /zimbraMailHost/) {
+        $needModify=0;
+      }
+    }
+
+    if ($needModify) {
+      $result = $ldap->modify(
+          $dn,
+          add =>{olcDbIndex=>"zimbraMailHost eq"},
+      );
+    }
+    $ldap->unbind;
+    if ($needModify) {
+      &indexLdapAttribute("zimbraMailHost");
+    }
   }
   if (main::isInstalled("zimbra-store")) {
     my $mailboxd_java_options=main::getLocalConfig("mailboxd_java_options");
@@ -3479,6 +3525,54 @@ sub upgrade700RC1 {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
   main::progress("Updating from 7.0.0_RC1\n");
 
+  if (main::isInstalled("zimbra-ldap")) {
+    my $ldap_pass = `$su "zmlocalconfig -s -m nokey ldap_root_password"`;
+    chomp($ldap_pass);
+    my $ldap;
+    unless($ldap = Net::LDAP->new('ldapi://%2fopt%2fzimbra%2fopenldap%2fvar%2frun%2fldapi/')) {
+       main::progress("Unable to contact to ldapi: $!\n");
+    }
+    my $result = $ldap->bind("cn=config", password => $ldap_pass);
+    my $dn="olcDatabase={2}hdb,cn=config";
+    if ($isLdapMaster) {
+      $result = $ldap->search(
+                        base=> "cn=accesslog",
+                        filter=>"(objectClass=*)",
+                        scope => "base",
+                        attrs => ['1.1'],
+      );
+      my $size = $result->count;
+      if ($size > 0 ) {
+        $dn="olcDatabase={3}hdb,cn=config";
+      }
+    }
+    $result = $ldap->search(
+      base=> "$dn",
+      filter=>"(objectClass=*)",
+      scope => "base",
+      attrs => ['olcDbIndex'],
+    );
+    my $entry=$result->entry($result->count-1);
+    my @attrvals=$entry->get_value("olcDbIndex");
+    my $needModify=1;
+
+    foreach my $attr (@attrvals) {
+      if ($attr =~ /zimbraMailHost/) {
+        $needModify=0;
+      }
+    }
+
+    if ($needModify) {
+      $result = $ldap->modify(
+          $dn,
+          add =>{olcDbIndex=>"zimbraMailHost eq"},
+      );
+    }
+    $ldap->unbind;
+    if ($needModify) {
+      &indexLdapAttribute("zimbraMailHost");
+    }
+  }
   if (main::isInstalled("zimbra-store")) {
     # Bug #53821
     my $mailboxd_java_options=main::getLocalConfig("mailboxd_java_options");
@@ -4008,6 +4102,16 @@ sub indexLdap {
     stopLdap();
     main::runAsZimbra("/opt/zimbra/bdb/bin/db_recover -h /opt/zimbra/data/ldap/hdb/db");
     main::runAsZimbra ("/opt/zimbra/openldap/sbin/slapindex -b '' -q -F /opt/zimbra/data/ldap/config");
+    if (startLdap()) {return 1;}
+  }
+  return;
+}
+
+sub indexLdapAttribute {
+  my ($key) = @_;
+  if (main::isInstalled ("zimbra-ldap")) {
+    stopLdap();
+    main::runAsZimbra ("/opt/zimbra/openldap/sbin/slapindex -b '' -q -F /opt/zimbra/data/ldap/config $key");
     if (startLdap()) {return 1;}
   }
   return;
