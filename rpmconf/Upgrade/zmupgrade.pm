@@ -3347,7 +3347,9 @@ sub upgrade6011GA {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
   main::progress("Updating from 6.0.11_GA\n");
   if (main::isInstalled("zimbra-ldap")) {
-    runLdapAttributeUpgrade("50458");
+    if($isLdapMaster) {
+      runLdapAttributeUpgrade("50458");
+    }
   }
   if (main::isInstalled("zimbra-store")) {
     my $mailboxd_java_options=main::getLocalConfig("mailboxd_java_options");
@@ -3392,7 +3394,9 @@ sub upgrade700BETA2 {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
   main::progress("Updating from 7.0.0_BETA2\n");
   if (main::isInstalled("zimbra-ldap")) {
-    runLdapAttributeUpgrade("50458");
+    if($isLdapMaster) {
+      runLdapAttributeUpgrade("50458");
+    }
 
     my $ldap_pass = `$su "zmlocalconfig -s -m nokey ldap_root_password"`;
     chomp($ldap_pass);
