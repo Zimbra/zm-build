@@ -285,8 +285,22 @@ $(SAMBA_EXT_DIR)/build/zimlet/zimbra_samba.zip:
 		-Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) \
 		-Dzimbra.buildinfo.host=$(HOST) package-zimlet ; )
 
-$(STORE_DEST_DIR)/extensions-extra:
+$(STORE_DEST_DIR)/extensions-extra: $(STORE_DEST_DIR)/extensions-extra/oauth
 	mkdir -p $@
+
+$(STORE_DEST_DIR)/extensions-extra/oauth: $(OAUTH_EXT_DIR)/build/jars/sampleoauthprov.jar
+	mkdir -p $@
+	cp $(OAUTH_EXT_DIR)/README.txt $@
+	cp $(OAUTH_EXT_DIR/authorize.jsp $@
+	cp $(AUTH_EXT_DIR)/jars/oauth-1.4.jar $@
+	cp $(OAUTH_EXT_DIR)/build/jars/sampleoauthprov.jar $@
+
+$(OAUTH_EXT_DIR)/build/jars/sampleoauthprov.jar:
+	(cd $(OAUTH_EXT_DIR); $(ANT) $(ANT_DEBUG) \
+		-Dzimbra.buildinfo.platform=$(BUILD_PLATFORM) \
+		-Dzimbra.buildinfo.version=$(SOURCE_TAG) \
+		-Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) \
+		-Dzimbra.buildinfo.host=$(HOST) package ; )
 
 $(WEBAPP_DIR)/zimbra/downloads:
 	mkdir -p $@
