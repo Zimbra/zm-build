@@ -3581,6 +3581,8 @@ sub upgrade700RC1 {
       unless ($mailboxd_java_options =~ /OmitStackTraceInFastThrow/);
     main::detail("Modified mailboxd_java_options=$mailboxd_java_options");
     main::setLocalConfig("mailboxd_java_options", "$mailboxd_java_options");
+    
+    
   }
 
   return 0;
@@ -4017,6 +4019,9 @@ sub doMysql51Upgrade {
     main::runAsZimbra("${zimbra_home}/libexec/zminiutil --backup=.pre-${targetVersion} --section=mysqld --unset --key=log-slow-queries ${mysql_mycnf}");
     main::runAsZimbra("${zimbra_home}/libexec/zminiutil --backup=.pre-${targetVersion} --section=mysqld --set --key=slow_query_log --value=1 ${mysql_mycnf}");
     main::runAsZimbra("${zimbra_home}/libexec/zminiutil --backup=.pre-${targetVersion} --section=mysqld --set --key=slow_query_log_file --value=${zimbra_log_directory}/myslow.log ${mysql_mycnf}");
+    if (fgrep { /^log-bin/ } ${mysql_mycnf}) {
+      main::runAsZimbra("${zimbra_home}/libexec/zminiutil --backup=.pre-${targetVersion} --section=mysqld --set --key=binlog-format --value=MIXED ${mysql_mycnf}");
+    }
 }
 
 sub doMysqlUpgrade {
