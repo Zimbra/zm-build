@@ -46,13 +46,13 @@ rm -f /opt/zimbra/heimdal
 ln -s /opt/zimbra/heimdal-1.3.3 /opt/zimbra/heimdal
 
 rm -f /opt/zimbra/curl
-ln -s /opt/zimbra/curl-7.21.2 /opt/zimbra/curl
+ln -s /opt/zimbra/curl-7.21.3 /opt/zimbra/curl
 
 rm -f /opt/zimbra/cyrus-sasl
 ln -s /opt/zimbra/cyrus-sasl-2.1.23.3z /opt/zimbra/cyrus-sasl
 
 rm -f /opt/zimbra/openldap
-ln -s /opt/zimbra/openldap-2.4.23.4z /opt/zimbra/openldap
+ln -s /opt/zimbra/openldap-2.4.23.5z /opt/zimbra/openldap
 
 rm -f /opt/zimbra/tcmalloc
 ln -s /opt/zimbra/tcmalloc-1.6 /opt/zimbra/tcmalloc
