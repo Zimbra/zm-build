@@ -291,8 +291,8 @@ $(STORE_DEST_DIR)/extensions-extra: $(STORE_DEST_DIR)/extensions-extra/oauth
 $(STORE_DEST_DIR)/extensions-extra/oauth: $(OAUTH_EXT_DIR)/build/jars/sampleoauthprov.jar
 	mkdir -p $@
 	cp $(OAUTH_EXT_DIR)/README.txt $@
-	cp $(OAUTH_EXT_DIR/authorize.jsp $@
-	cp $(AUTH_EXT_DIR)/jars/oauth-1.4.jar $@
+	cp $(OAUTH_EXT_DIR)/authorize.jsp $@
+	cp $(OAUTH_EXT_DIR)/jars/oauth-1.4.jar $@
 	cp $(OAUTH_EXT_DIR)/build/jars/sampleoauthprov.jar $@
 
 $(OAUTH_EXT_DIR)/build/jars/sampleoauthprov.jar:
