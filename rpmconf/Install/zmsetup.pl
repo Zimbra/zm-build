@@ -1102,16 +1102,9 @@ sub setLdapDefaults {
   $config{zimbraPrefTimeZoneId}=getLdapCOSValue("zimbraPrefTimeZoneId");
 
   if ($prevVersionMajor < 5) {
-    $config{zimbraFeatureIMEnabled} = "Disabled";
     $config{zimbraFeatureBriefcasesEnabled} = "Disabled";
     $config{zimbraFeatureTasksEnabled} = "Disabled";
   } else {
-    $config{zimbraFeatureIMEnabled}=getLdapCOSValue("zimbraFeatureIMEnabled");
-    $config{zimbraFeatureIMEnabled}="Enabled"
-      if (lc($config{zimbraFeatureIMEnabled}) eq "true");
-    $config{zimbraFeatureIMEnabled}="Disabled"
-      if (lc($config{zimbraFeatureIMEnabled}) eq "false");
-    
     $config{zimbraFeatureTasksEnabled}=getLdapCOSValue("zimbraFeatureTasksEnabled");
     $config{zimbraFeatureTasksEnabled}="Enabled"
       if (lc($config{zimbraFeatureTasksEnabled}) eq "true");
@@ -1390,15 +1383,11 @@ sub setDefaults {
       if (-f "$config{DEFAULTLICENSEFILE}" && isNetwork());
 
     if (!$newinstall) {
-      $config{zimbraFeatureIMEnabled} = "Disabled"
-        if ($config{zimbraFeatureIMEnabled} eq "");
       $config{zimbraFeatureBriefcasesEnabled} = "Disabled"
         if ($config{zimbraFeatureBriefcasesEnabled} eq "");
       $config{zimbraFeatureTasksEnabled} = "Disabled"
         if ($config{zimbraFeatureTasksEnabled} eq "");
     } else {
-      $config{zimbraFeatureIMEnabled} = "Disabled"
-        if ($config{zimbraFeatureIMEnabled} eq "");
       $config{zimbraFeatureBriefcasesEnabled} = "Enabled"
         if ($config{zimbraFeatureBriefcasesEnabled} eq "");
       $config{zimbraFeatureTasksEnabled} = "Enabled"
@@ -3197,13 +3186,6 @@ sub createCOSMenu {
   $$lm{createarg} = $package;
 
   my $i = 1;
-  $$lm{menuitems}{$i} = { 
-    "prompt" => "Enable Instant Messaging Feature:", 
-    "var" => \$config{zimbraFeatureIMEnabled}, 
-    "callback" => \&toggleConfigEnabled,
-    "arg" => "zimbraFeatureIMEnabled",
-    };
-  $i++;
   $$lm{menuitems}{$i} = { 
     "prompt" => "Enable Briefcases Feature:", 
     "var" => \$config{zimbraFeatureBriefcasesEnabled}, 
@@ -5179,7 +5161,7 @@ sub configSetTimeZonePref {
 }
 
 sub configSetCEFeatures {
-  foreach my $feature qw(IM Tasks Briefcases Notebook) {
+  foreach my $feature qw(Tasks Briefcases) {
     my $key = "zimbraFeature${feature}Enabled";
     my $val = ($config{$key} eq "Enabled" ? "TRUE" : "FALSE");; 
     if ($configStatus{$key} eq "CONFIGURED") {
