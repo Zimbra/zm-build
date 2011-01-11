@@ -1101,7 +1101,7 @@ sub setLdapDefaults {
   $config{USEKBSHORTCUTS} = getLdapCOSValue("zimbraPrefUseKeyboardShortcuts");
   $config{zimbraPrefTimeZoneId}=getLdapCOSValue("zimbraPrefTimeZoneId");
 
-  if ($prevVersionMajor < 5) {
+  if ($prevVersionMajor ne "" && $prevVersionMajor < 5) {
     $config{zimbraFeatureBriefcasesEnabled} = "Disabled";
     $config{zimbraFeatureTasksEnabled} = "Disabled";
   } else {
