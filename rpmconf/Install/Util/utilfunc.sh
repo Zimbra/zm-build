@@ -2230,11 +2230,11 @@ getPlatformVars() {
     elif [ $PLATFORM = "SuSEES10" ]; then
       PREREQ_PACKAGES="sudo libidn gmp"
       PREREQ_LIBS="/usr/lib/libstdc++.so.6"
-      PRESUG_PACKAGES="perl-5.8.8 sysstat sqlite3"
+      PRESUG_PACKAGES="perl-5.8.8 sysstat sqlite"
     elif [ $PLATFORM = "SLES10_64" ]; then
       PREREQ_PACKAGES="sudo libidn gmp"
       PREREQ_LIBS="/usr/lib64/libstdc++.so.6"
-      PRESUG_PACKAGES="perl-5.8.8 sysstat sqlite3"
+      PRESUG_PACKAGES="perl-5.8.8 sysstat sqlite"
     elif [ $PLATFORM = "SLES11" ]; then
       PREREQ_PACKAGES="sudo libidn gmp"
       PREREQ_LIBS="/usr/lib/libstdc++.so.6"
