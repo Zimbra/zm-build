@@ -212,6 +212,7 @@ my %updateFuncs = (
   "7.0.0_BETA3" => \&upgrade700BETA3,
   "7.0.0_RC1" => \&upgrade700RC1,
   "7.0.0_GA" => \&upgrade700GA,
+  "7.0.1_GA" => \&upgrade701GA,
   "8.0.0_BETA1" => \&upgrade800BETA1,
 );
 
@@ -309,6 +310,7 @@ my @versionOrder = (
   "7.0.0_BETA3",
   "7.0.0_RC1",
   "7.0.0_GA",
+  "7.0.1_GA",
   "8.0.0_BETA1",
 );
 
@@ -554,6 +556,8 @@ sub upgrade {
     main::progress("This appears to be 7.0.0_RC1\n");
   } elsif ($startVersion eq "7.0.0_GA") {
     main::progress("This appears to be 7.0.0_GA\n");
+  } elsif ($startVersion eq "7.0.1_GA") {
+    main::progress("This appears to be 7.0.1_GA\n");
   } elsif ($startVersion eq "8.0.0_BETA1") {
     main::progress("This appears to be 8.0.0_BETA1\n");
   } else {
@@ -3591,6 +3595,12 @@ sub upgrade700RC1 {
 sub upgrade700GA {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
   main::progress("Updating from 7.0.0_GA\n");
+  return 0;
+}
+
+sub upgrade701GA {
+  my ($startBuild, $targetVersion, $targetBuild) = (@_);
+  main::progress("Updating from 7.0.1_GA\n");
   return 0;
 }
 
