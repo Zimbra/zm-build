@@ -891,7 +891,7 @@ verifyLicenseAvailable() {
       echo "The upgrade can continue, but there will be some loss of functionality."
       echo ""
       while :; do
-        askYN "Do you wish to contunue? " "N"
+        askYN "Do you wish to continue? " "N"
         if [ $response == "no" ]; then
           askYN "Exit?" "N"
           if [ $response == "yes" ]; then
