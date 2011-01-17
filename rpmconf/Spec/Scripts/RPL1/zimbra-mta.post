@@ -2,7 +2,7 @@
 # 
 # ***** BEGIN LICENSE BLOCK *****
 # Zimbra Collaboration Suite Server
-# Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
+# Copyright (C) 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
 # 
 # The contents of this file are subject to the Zimbra Public License
 # Version 1.3 ("License"); you may not use this file except in
@@ -16,36 +16,21 @@
 
 #Symlinks
 
-if [ -d "/opt/zimbra/amavisd/tmp" ]; then
-  umount -f /opt/zimbra/amavisd/tmp 2> /dev/null
-fi
-
+umount -f /opt/zimbra/amavisd/tmp
 rm -f /opt/zimbra/amavisd
-ln -s /opt/zimbra/amavisd-new-2.6.4 /opt/zimbra/amavisd
-
-if [ -e /opt/zimbra/cbpolicyd ]; then
-  rm -f /opt/zimbra/cbpolicyd
-fi
-if [ -d /opt/zimbra/cbpolicyd-2.0.10 ]; then
-  ln -s /opt/zimbra/cbpolicyd-2.0.10 /opt/zimbra/cbpolicyd
-fi
+ln -s /opt/zimbra/amavisd-new-2.6.1 /opt/zimbra/amavisd
 
 rm -f /opt/zimbra/dspam
-ln -s /opt/zimbra/dspam-3.9.0 /opt/zimbra/dspam
+ln -s /opt/zimbra/dspam-3.8.0 /opt/zimbra/dspam
 
 rm -f /opt/zimbra/postfix
-ln -s /opt/zimbra/postfix-2.7.2.2z /opt/zimbra/postfix
+ln -s /opt/zimbra/postfix-2.5.3.2z /opt/zimbra/postfix
 
 rm -f /opt/zimbra/clamav
-ln -s /opt/zimbra/clamav-0.96.5 /opt/zimbra/clamav
+ln -s /opt/zimbra/clamav-0.94 /opt/zimbra/clamav
 
-rm -f /opt/zimbra/mta/mysql
-ln -s /opt/zimbra/mta/mysql-standard-5.1.52-pc-linux-gnu-i686-glibc23 /opt/zimbra/mta/mysql
-
-if [ -e /opt/zimbra/altermime ]; then
-  rm -f /opt/zimbra/altermime
-fi
-ln -s /opt/zimbra/altermime-0.3-dev /opt/zimbra/altermime
+H=`hostname -s`
+I=`hostname -i`
 
 SUDOMODE=`perl -e 'my $mode=(stat("/etc/sudoers"))[2];printf("%04o\n",$mode & 07777);'`
 egrep -v '^%zimbra.*postfix' /etc/sudoers > /tmp/sudoers
@@ -59,6 +44,11 @@ chmod $SUDOMODE /etc/sudoers
 
 chown zimbra:zimbra /opt/zimbra/postfix/conf/master.cf.in
 chmod 440 /opt/zimbra/postfix/conf/master.cf.in
+
+if [ ! -d /opt/zimbra/zimbramon/mrtg/work/ ]; then
+	mkdir -p /opt/zimbra/zimbramon/mrtg/work/
+fi
+chown -R zimbra:zimbra /opt/zimbra/zimbramon/mrtg
 
 mkdir -p /opt/zimbra/data/amavisd/db
 mkdir -p /opt/zimbra/data/amavisd/tmp
@@ -77,13 +67,11 @@ chown postfix:root /opt/zimbra/data/postfix/spool/pid
 
 chown zimbra:zimbra /opt/zimbra/data
 
+/opt/zimbra/libexec/zmfixperms
+
 if [ ! -f /opt/zimbra/postfix/conf/main.cf ]; then
 	touch /opt/zimbra/postfix/conf/main.cf
 	chown zimbra:zimbra /opt/zimbra/postfix/conf/main.cf
-fi
-
-if [ ! -f /etc/aliases ]; then
-  ln -s /opt/zimbra/postfix/conf/aliases /etc/aliases
 fi
 
 # bug 8081 remove tmpfs
@@ -94,8 +82,26 @@ fi
 	#echo "/dev/shm	/opt/zimbra/amavisd-new-2.4.1/tmp	tmpfs	defaults,users,size=150m,mode=777 0 0" >> /etc/fstab
 #fi
 
-if [ -x "/opt/zimbra/libexec/zmfixperms" ]; then
-  /opt/zimbra/libexec/zmfixperms
+##### install_history
+PKG=@@PKGNAME@@
+VERSION=@@VERSION@@
+INSTALL_HISTORY=/opt/zimbra/.install_history
+D=`date +%s`
+UPGRADE=`grep "INSTALLED $PKG" $INSTALL_HISTORY`
+if [ x"$UPGRADE" = "x" ]; then
+  ACTION="INSTALLED"
+else
+  ACTION="UPGRADED"
 fi
 
-ldconfig
+if [ $PKG = "zimbra-core" ]; then
+  echo "${D}: INSTALL SESSION START" >> $INSTALL_HISTORY
+fi
+
+echo "${D}: $ACTION ${PKG}_${VERSION}" >> /opt/zimbra/.install_history
+
+if [ $PKG = "zimbra-store" ]; then
+  echo "${D}: INSTALL SESSION COMPLETE" >> $INSTALL_HISTORY
+fi
+
+exit 0
