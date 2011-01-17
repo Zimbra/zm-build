@@ -104,6 +104,11 @@ if [[ $PLAT == "DEBIAN"* || $PLAT == "UBUNTU"* ]]; then
   echo "session	required	pam_limits.so" >> /tmp/common-session
   mv -f /tmp/common-session /etc/pam.d/common-session
   chmod 640 /etc/pam.d/common-session
+  egrep -v -e '^root.*nofile' /etc/security/limits.conf > /tmp/limits.conf
+  echo "root soft nofile 524288" >> /tmp/limits.conf
+  echo "root hard nofile 524288" >> /tmp/limits.conf
+  mv -f /tmp/limits.conf /etc/security/limits.conf
+  chmod 640 /etc/security/limits.conf
 fi
 
 if [ -f /etc/debian_version ]; then
