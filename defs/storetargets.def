@@ -45,8 +45,6 @@ store_pkg_spec_deb: $(STORE_DEST_ROOT)/DEBIAN/control
 $(STORE_DEST_ROOT)/DEBIAN: force
 	mkdir -p $@
 	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-store.pre $@/preinst
-	echo "#!/bin/bash" > $@/postinst
-	echo "/bin/bash /opt/zimbra/libexec/zmfixperms" >> $@/postinst
 	cat $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-store.post >> $@/postinst
 	chmod 555 $@/*
 
