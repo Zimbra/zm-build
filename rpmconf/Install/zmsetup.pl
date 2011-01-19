@@ -6170,8 +6170,11 @@ sub applyConfig {
     }
 
     progress ( "Starting servers..." );
-    #runAsZimbra ("$ZMPROV ms $config{HOSTNAME} zimbraUserServicesEnabled FALSE");
-    runAsZimbra ("/opt/zimbra/bin/zmcontrol start");
+    if ($main::platform =~ /MACOSX/) {
+      runAsRoot("/bin/launchctl load /System/Library/LaunchDaemons/com.zimbra.zcs.plist");
+    } else {
+      runAsZimbra ("/opt/zimbra/bin/zmcontrol start");
+    }
     # runAsZimbra swallows the output, so call status this way
     `$SU "/opt/zimbra/bin/zmcontrol status"`;
     progress ( "done.\n" );
@@ -6182,10 +6185,14 @@ sub applyConfig {
       configInstallZimlets();
 
       progress ( "Restarting mailboxd...");
-      runAsZimbra("/opt/zimbra/bin/zmmailboxdctl restart");
+      if ($main::platform =~ /MACOSX/) {
+        runAsRoot("/bin/launchctl unload /System/Library/LaunchDaemons/com.zimbra.zcs.plist");
+        runAsRoot("/bin/launchctl load /System/Library/LaunchDaemons/com.zimbra.zcs.plist");
+      } else {
+        runAsZimbra("/opt/zimbra/bin/zmmailboxdctl restart");
+      }
       progress ( "done.\n" );
     }
-    #runAsZimbra ("$ZMPROV ms $config{HOSTNAME} zimbraUserServicesEnabled TRUE");
   } else {
     progress ( "WARNING: Document and Zimlet initialization skipped because Application Server was not configured to start.\n")
       if (isEnabled("zimbra-store"));
