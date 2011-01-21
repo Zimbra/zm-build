@@ -79,4 +79,4 @@ $(PROXY_DEST_DIR):
 $(PROXY_DEST_DIR)/$(NGINX_DIR): $(PROXY_DEST_DIR)
 	@echo "*** Creating nginx"
 	(cd $(PROXY_DEST_DIR); tar xzf $(NGINX_SOURCE).tgz;)
-	(cd $(PROXY_DEST_DIR); tar xzf $(NGINX__OLD_SOURCE).tgz;)
+	(cd $(PROXY_DEST_DIR); tar xzf $(NGINX_OLD_SOURCE).tgz;)
