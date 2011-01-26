@@ -3416,6 +3416,7 @@ sub upgrade6011GA {
       main::setLocalConfig("mailboxd_java_options", $new_mailboxd_options)
         if ($new_mailboxd_options ne "");
     }
+    main::deleteLocalConfig("calendar_outlook_compatible_allday_events");
   }
   return 0;
 }
@@ -3599,6 +3600,9 @@ sub upgrade700RC1 {
 sub upgrade700GA {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
   main::progress("Updating from 7.0.0_GA\n");
+  if (main::isInstalled("zimbra-store")) {
+    main::deleteLocalConfig("calendar_outlook_compatible_allday_events");
+  }
   return 0;
 }
 
