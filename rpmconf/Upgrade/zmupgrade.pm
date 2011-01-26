@@ -3374,6 +3374,7 @@ sub upgrade6011GA {
       main::setLocalConfig("mailboxd_java_options", $new_mailboxd_options)
         if ($new_mailboxd_options ne "");
     }
+    main::deleteLocalConfig("calendar_outlook_compatible_allday_events");
   }
   return 0;
 }
