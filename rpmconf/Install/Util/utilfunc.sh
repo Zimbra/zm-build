@@ -500,7 +500,7 @@ EOF
   # limitation of ext3
   if [ -d "/opt/zimbra/db/data" ]; then
     echo "Checking current number of databases..."
-    TYPECHECK=`df -t ext3 /opt/zimbra/db/data 2>/dev/null`
+    TYPECHECK=`df -t ext3 /opt/zimbra/db/data`
     if [ x"$TYPECHECK" != "x" ]; then
       DBCOUNT=`find /opt/zimbra/db/data -type d | wc -l | awk '{if ($NF-1 >= 31998) print $NF-1}'`
       if [ x"$DBCOUNT" != "x" ]; then
@@ -1488,15 +1488,7 @@ removeExistingInstall() {
         /usr/bin/crontab -u zimbra -r 2> /dev/null
         echo "done."
       fi
-     
-      if [ -e /usr/sbin/sendmail ]; then
-        if [ -x /bin/readlink ]; then
-          SMPATH=$(/bin/readlink /usr/sbin/sendmail)
-          if [ x$SMPATH = x"/opt/zimbra/postfix/sbin/sendmail" ]; then
-            /bin/rm -f /usr/sbin/sendmail
-          fi
-        fi
-      fi 
+      
 
       if [ -f /etc/syslog.conf ]; then
         egrep -q 'zimbra.log' /etc/syslog.conf
