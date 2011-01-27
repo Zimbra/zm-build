@@ -4075,13 +4075,13 @@ sub ldapIsAvailable {
   if (isInstalled("zimbra-proxy")) {
     if ($config{ldap_nginx_password} eq "") {
       detail ("nginx configuration not complete\n");
-      #$failedcheck++;
+      $failedcheck++;
     }
     my $binduser = "uid=zmnginx,cn=appaccts,$config{ldap_dit_base_dn_config}";
     if (checkLdapBind($binduser,$config{ldap_nginx_password})) {
       detail ("Couldn't bind to $config{LDAPHOST} as $binduser\n");
-      #$config{LDAPNGINXPASSSET} = "Not Verified";
-      #$failedcheck++;
+      $config{LDAPNGINXPASSSET} = "Not Verified";
+      $failedcheck++;
     } else {
       detail ("Verified $binduser on $config{LDAPHOST}.\n");
       $config{LDAPNGINXPASSSET} = "set";
