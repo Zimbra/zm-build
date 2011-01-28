@@ -11,7 +11,7 @@ RCS_FILE = '$File$'[7:-2]
 
 # This line needs to be modified appropriately when the gobuild
 # starter kit is imported into a new branch.
-BRANCH_REGEX = re.compile(r'^(//.+/)/([^/]+)/ZimbraBuild/support/gobuild/')
+BRANCH_REGEX = re.compile(r'^(//.+/)zimbra/([^/]+)/ZimbraBuild/support/gobuild/')
 
 DEFAULT_DEPOT = '//depot/'
 DEFAULT_BRANCH = '%(branch)'
