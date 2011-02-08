@@ -1094,6 +1094,10 @@ setRemove() {
         response="no"
       fi
       if [ $response = "no" ]; then
+        askYN "Exit now?" "Y"
+        if [ $response = "yes" ]; then
+          exit 1;
+        fi
         echo ""
         echo $INSTALLED_PACKAGES | grep zimbra-ldap > /dev/null 2>&1
         if [ $? = 0 ]; then
