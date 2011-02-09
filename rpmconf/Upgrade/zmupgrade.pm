@@ -3612,6 +3612,13 @@ sub upgrade700GA {
 sub upgrade701GA {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
   main::progress("Updating from 7.0.1_GA\n");
+  if (main::isInstalled("zimbra-store")) {
+    #56318
+    my $mysql_mycnf = main::getLocalConfig("mysql_mycnf"); 
+    if (!fgrep { /^max_allowed_packet/ } ${mysql_mycnf}) {
+      main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-allowed-packet --section=mysqld --key=max_allowed_packet --set --value=16777216 ${mysql_mycnf}");
+    }
+  }
   return 0;
 }
 
