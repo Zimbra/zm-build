@@ -3416,7 +3416,7 @@ sub upgrade6011GA {
       main::setLocalConfig("mailboxd_java_options", $new_mailboxd_options)
         if ($new_mailboxd_options ne "");
     }
-    main::deleteLocalConfig("calendar_outlook_compatible_allday_events");
+    main::setLocalConfig("calendar_outlook_compatible_allday_events", "false");
 
     #56318
     main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-allowed-packet --section=mysqld --key=max_allowed_packet --set --value=16777216 /opt/zimbra/conf/my.cnf");
