@@ -3600,7 +3600,7 @@ sub upgrade700GA {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
   main::progress("Updating from 7.0.0_GA\n");
   if (main::isInstalled("zimbra-store")) {
-    main::setLocalConfig("calendar_outlook_compatible_allday_events", "false");
+    main::deleteLocalConfig("calendar_outlook_compatible_allday_events");
   }
   return 0;
 }
