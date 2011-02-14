@@ -36,14 +36,14 @@ class ZimbraVA(helpers.target.Target, helpers.make.MakeHelper):
    def GetRepositories(self, hosttype):
       repos = [
             helpers.target.PerforceRepo(
-               '%(branch)/ZimbraBuild',
-               'ZimbraBuild'),
+               'zimbra/%(branch)/ZimbraBuild',
+               'zimbra/ZimbraBuild'),
             helpers.target.PerforceRepo(
-               '%(branch)/ZimbraAppliance',
-               'ZimbraAppliance'),
+               'zimbra/%(branch)/ZimbraAppliance',
+               'zimbra/ZimbraAppliance'),
             helpers.target.PerforceRepo(
-               '%(branch)/ZimbraNetwork',
-               'ZimbraNetwork'),
+               'zimbra/%(branch)/ZimbraNetwork',
+               'zimbra/ZimbraNetwork'),
          ]
       return repos
 
@@ -71,7 +71,7 @@ class ZimbraVA(helpers.target.Target, helpers.make.MakeHelper):
       flags = {}
       flags['--makefile'] = 'Makefile.vai'
       return [ { 'desc'    : 'Running Zimbra VA build',
-                 'root'    : 'ZimbraAppliance',
+                 'root'    : 'zimbra/ZimbraAppliance',
                  'log'     : 'zimbra-va-%s.log' % target,
                  'command' : self._Command(hosttype,
                                            target,
@@ -82,16 +82,14 @@ class ZimbraVA(helpers.target.Target, helpers.make.MakeHelper):
    def GetStorageInfo(self, hosttype):
       storages = []
       if hosttype == 'linux':
-         storages += [{'type': 'source', 'src': 'ZimbraAppliance/'}]
-         storages += [{'type': 'source', 'src': 'ZimbraBuild/'}]
-         storages += [{'type': 'source', 'src': 'ZimbraNetwork/'}]
+         storages += [{'type': 'source', 'src': 'zimbra/'}]
       storages += [{'type': 'build',
-                     'src': 'ZimbraAppliance/build/'}]
+                     'src': 'zimbra/ZimbraAppliance/build/'}]
       return storages
 
    def GetBuildProductVersion(self, hosttype):
       if hosttype.startswith('linux'):
-         vfile = "%s/ZimbraAppliance/defs.mk" % self.options.get('buildroot')
+         vfile = "%s/zimbra/ZimbraAppliance/defs.mk" % self.options.get('buildroot')
          vregexp = re.compile(r'^VA_PRODUCT_VERSION\s*:=\s*(.*)')
          try:
             for line in file(vfile):
