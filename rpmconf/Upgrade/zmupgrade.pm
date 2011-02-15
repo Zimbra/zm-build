@@ -3393,21 +3393,27 @@ sub upgrade6012GA {
 }
 
 sub upgrade700BETA1 {
-  my ($startBuild, $targetVersion, $targetBuild) = (@_);
+  my ($startBuild, $targetVersion, $targetBuild) = (@_);                                                                                                                                                              
   main::progress("Updating from 7.0.0_BETA1\n");
-  return 0;
-}
-
-sub upgrade700RC1 {
-  my ($startBuild, $targetVersion, $targetBuild) = (@_);
-  main::progress("Updating from 7.0.0_RC1\n");
-  return 0;
-}
-
-sub upgrade800BETA1 {
-  my ($startBuild, $targetVersion, $targetBuild) = (@_);
-  main::progress("Updating from 8.0.0_BETA1\n");
-  return 0;
+  if($isLdapMaster) {                                                                                                                                                                                                 
+    runLdapAttributeUpgrade("10287");
+    runLdapAttributeUpgrade("42828");                                                                                                                                                                                 
+    runLdapAttributeUpgrade("43779");
+    runLdapAttributeUpgrade("50258");                                                                                                                                                                                 
+    runLdapAttributeUpgrade("50465");
+  }                                                                                                                                                                                                                   
+  if (main::isInstalled("zimbra-store")) {
+    # 43140                                                                                                                                                                                                           
+    my $mailboxd_java_heap_memory_percent =
+      main::getLocalConfig("mailboxd_java_heap_memory_percent");                                                                                                                                                      
+    $mailboxd_java_heap_memory_percent = 30
+      if ($mailboxd_java_heap_memory_percent eq "");                                                                                                                                                                  
+    my $systemMemorySize = main::getSystemMemory();
+    main::setLocalConfig("mailboxd_java_heap_size",                                                                                                                                                                   
+      int($systemMemorySize*1024*$mailboxd_java_heap_memory_percent/100));
+    main::deleteLocalConfig("mailboxd_java_heap_memory_percent");                                                                                                                                                     
+  }
+  return 0;                                                                                                                                                                                                           
 }
 
 sub stopZimbra {
