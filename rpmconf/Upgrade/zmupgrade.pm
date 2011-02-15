@@ -3424,6 +3424,12 @@ sub upgrade6011GA {
   return 0;
 }
 
+sub upgrade6012GA {                                                                                                                                                                                                   
+  my ($startBuild, $targetVersion, $targetBuild) = (@_);
+  main::progress("Updating from 6.0.12_GA\n");                                                                                                                                                                        
+  return 0;
+}                                                                                                                                                                                                                     
+
 sub upgrade700BETA1 {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
   main::progress("Updating from 7.0.0_BETA1\n");
