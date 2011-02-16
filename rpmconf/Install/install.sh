@@ -38,7 +38,7 @@ usage() {
   echo "-c|--cluster type       Cluster install type active|standby."
   echo "-h|--help               Usage"
   echo "-l|--license <file>     License file to install."
-  echo "-a|--activation <file>  License activation file to install."
+  echo "-a|--activation <file>  License activation file to install. [Upgrades only]"
   echo "-r|--restore <file>     Restore contents of <file> to localconfig" 
   echo "-s|--softwareonly       Software only installation."
   echo "-u|--uninstall          Uninstall ZCS"
@@ -164,6 +164,12 @@ if [ x"$ACTIVATION" != "x" ] && [ -e $ACTIVATION ]; then
 fi
 
 checkExistingInstall
+
+if [ x"$INSTALLED" != "xyes" ] && [ x"$ACTIVATION" != "x" ]; then
+  echo "License activation file option is only available on upgrade."
+  usage
+fi
+  
 
 if [ x$UNINSTALL = "xyes" ]; then
 	askYN "Completely remove existing installation?" "N"
