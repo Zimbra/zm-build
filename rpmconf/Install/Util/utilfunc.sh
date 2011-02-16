@@ -756,7 +756,12 @@ verifyLicenseActivationServer() {
     if [ -x "$cmd" ]; then
       output=$($cmd --connect-timeout 5 -s -f $url)
       if [ $? != 0 ]; then
-        activationWarning
+        output=$($cmd -k --connect-timeout 5 -s -f $url)
+        if [ $? != 0 ]; then
+          activationWarning
+        else 
+          return
+        fi
       else 
         return
       fi
@@ -765,6 +770,12 @@ verifyLicenseActivationServer() {
     if [ -x "$cmd" ]; then
       output=$($cmd --tries 1 -T 5 -q -O /tmp/zmlicense.tmp $url)
       if [ $? != 0 ]; then
+        output=$($cmd --no-check-certificate --tries 1 -T 5 -q -O /tmp/zmlicense.tmp $url)
+        if [ $? != 0 ]; then
+          activationWarning
+        else
+          return
+        fi
         activationWarning
       else
         return
