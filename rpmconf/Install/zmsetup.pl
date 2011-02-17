@@ -5188,6 +5188,7 @@ sub configInitDomainAdminGroups {
     (($newinstall) ? "$config{CREATEDOMAIN}" : "$config{zimbraDefaultDomainName}");
   my $rc = main::runAsZimbra("$ZMPROV cdl $domainGroup ".
     "zimbraIsAdminGroup TRUE ".
+    "zimbraHideInGal TRUE ".
     "zimbraMailStatus disabled ".
     "zimbraAdminConsoleUIComponents accountListView ".
     "zimbraAdminConsoleUIComponents aliasListView ".
@@ -5209,6 +5210,7 @@ sub configInitDomainAdminGroups {
     (($newinstall) ? "$config{CREATEDOMAIN}" : "$config{zimbraDefaultDomainName}");
   my $rc = main::runAsZimbra("$ZMPROV cdl $domainGroup ".
     "zimbraIsAdminGroup TRUE ".
+    "zimbraHideInGal TRUE ".
     "zimbraMailStatus disabled ".
     "zimbraAdminConsoleUIComponents DLListView ");
   main::progress(($rc == 0) ? "done.\n" : "failed.\n");
