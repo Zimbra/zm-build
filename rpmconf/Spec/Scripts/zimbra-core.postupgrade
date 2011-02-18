@@ -17,7 +17,7 @@
 SAVEDIR=/opt/zimbra/.saveconfig
 PLAT=$(/opt/zimbra/libexec/get_plat_tag.sh)
 OS_ARCH=powerpc
-MYSQL_VERSION=5.1.52
+MYSQL_VERSION=5.1.55
 
 if [ "x$PLAT" = "xMACOSXx86_10.5" -o "x$PLAT" = "xMACOSXx86_10.6" ]; then
   SU="su - zimbra -c -l"
@@ -43,26 +43,26 @@ fi
 ln -s /opt/zimbra/mysql-standard-${MYSQL_VERSION}-apple-darwin${OS_REL}-${OS_ARCH} /opt/zimbra/mysql
 
 rm -f /opt/zimbra/bdb
-ln -s /opt/zimbra/bdb-5.1.19 /opt/zimbra/bdb
+ln -s /opt/zimbra/bdb-5.1.25 /opt/zimbra/bdb
 
 if [ -L /opt/zimbra/sleepycat ]; then
 	rm -f /opt/zimbra/sleepycat
 fi
 
 rm -f /opt/zimbra/openssl
-ln -s /opt/zimbra/openssl-1.0.0c /opt/zimbra/openssl
+ln -s /opt/zimbra/openssl-1.0.0d /opt/zimbra/openssl
 
 rm -f /opt/zimbra/heimdal
 ln -s /opt/zimbra/heimdal-1.3.3 /opt/zimbra/heimdal
 
 rm -f /opt/zimbra/curl
-ln -s /opt/zimbra/curl-7.21.3 /opt/zimbra/curl
+ln -s /opt/zimbra/curl-7.21.4 /opt/zimbra/curl
 
 rm -f /opt/zimbra/cyrus-sasl
 ln -s /opt/zimbra/cyrus-sasl-2.1.23.3z /opt/zimbra/cyrus-sasl
 
 rm -f /opt/zimbra/openldap
-ln -s /opt/zimbra/openldap-2.4.23.5z /opt/zimbra/openldap
+ln -s /opt/zimbra/openldap-2.4.23.6z /opt/zimbra/openldap
 
 rm -f /opt/zimbra/tcmalloc
 ln -s /opt/zimbra/tcmalloc-1.6 /opt/zimbra/tcmalloc
