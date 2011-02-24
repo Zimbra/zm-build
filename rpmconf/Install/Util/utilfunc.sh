@@ -2164,7 +2164,7 @@ getPlatformVars() {
     fi
     if [ $PLATFORM = "DEBIAN6_64" ]; then
       PREREQ_PACKAGES="sudo libidn11 libpcre3 libgmp3c2 libexpat1 libstdc++6 libperl5.10"
-      PRESUG_PACKAGES="perl-5.10.0 sysstat sqlite3"
+      PRESUG_PACKAGES="perl-5.10.1 sysstat sqlite3"
     fi
   elif echo $PLATFORM | grep RPL > /dev/null 2>&1; then
     PACKAGEINST='conary update'
