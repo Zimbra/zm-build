@@ -124,8 +124,8 @@ if [[ $PLAT == *"_64" ]]; then
 		echo "Error: jdk file needed for ZCS packaging not available"
 		echo "Necessary version is: $JVERSION"
 		echo "Please create $PATHDIR/../ThirdPartyBuilds/x86_64/java/jdk${JVERSION}.tgz"
-		echo "Which is an extracted then retarred version of JDK 1.5 downloaded from"
-		echo "http://java.sun.com/javase/downloads/index_jdk5.jsp"
+		echo "Which is an extracted then retarred version of JDK 1.6 downloaded from"
+		echo "http://www.oracle.com/technetwork/java/javase/downloads/index.html"
 		exit 1;
 	fi
 elif [[ $PLAT != "MACOSX"* ]]; then
@@ -133,8 +133,41 @@ elif [[ $PLAT != "MACOSX"* ]]; then
 		echo "Error: jdk file needed for ZCS packaging not available"
 		echo "Necessary version is: $JVERSION"
 		echo "Please create $PATHDIR/../ThirdPartyBuilds/i386/java/jdk${JVERSION}.tgz"
-		echo "Which is an extracted then retarred version of JDK 1.5 downloaded from"
-		echo "http://java.sun.com/javase/downloads/index_jdk5.jsp"
+		echo "Which is an extracted then retarred version of JDK 1.6 downloaded from"
+		echo "http://www.oracle.com/technetwork/java/javase/downloads/index.html"
+		exit 1;
+	fi
+fi
+
+echo "Checking for required JCE jars"
+if [[ $PLAT == *"_64" ]]; then
+	if [ ! -f $PATHDIR/../ThirdPartyBuilds/x86_64/java/jce/US_export_policy.jar ]; then
+		echo "Error: JCE file \"US_export_policy.jar\" needed for ZCS packaging not available"
+		echo "Please create $PATHDIR/../ThirdPartyBuilds/x86_64/java/jce/US_export_policy.jar"
+		echo "Which can be downloaded from"
+		echo "http://www.oracle.com/technetwork/java/javase/downloads/index.html"
+		exit 1;
+	fi
+	if [ ! -f $PATHDIR/../ThirdPartyBuilds/x86_64/java/jce/local_policy.jar ]; then
+		echo "Error: JCE file \"local_policy.jar\" needed for ZCS packaging not available"
+		echo "Please create $PATHDIR/../ThirdPartyBuilds/x86_64/java/jce/local_policy.jar"
+		echo "Which can be downloaded from"
+		echo "http://www.oracle.com/technetwork/java/javase/downloads/index.html"
+		exit 1;
+	fi
+elif [[ $PLAT != "MACOSX"* ]]; then
+	if [ ! -f $PATHDIR/../ThirdPartyBuilds/i386/java/jce/US_export_policy.jar ]; then
+		echo "Error: JCE file \"US_export_policy.jar\" needed for ZCS packaging not available"
+		echo "Please create $PATHDIR/../ThirdPartyBuilds/i386/java/jce/US_export_policy.jar"
+		echo "Which can be downloaded from"
+		echo "http://www.oracle.com/technetwork/java/javase/downloads/index.html"
+		exit 1;
+	fi
+	if [ ! -f $PATHDIR/../ThirdPartyBuilds/i386/java/jce/local_policy.jar ]; then
+		echo "Error: JCE file \"local_policy.jar\" needed for ZCS packaging not available"
+		echo "Please create $PATHDIR/../ThirdPartyBuilds/i386/java/jce/local_policy.jar"
+		echo "Which can be downloaded from"
+		echo "http://www.oracle.com/technetwork/java/javase/downloads/index.html"
 		exit 1;
 	fi
 fi
