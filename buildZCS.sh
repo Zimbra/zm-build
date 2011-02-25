@@ -72,7 +72,7 @@ do
 	RC=$?
 	if [ $RC -eq 0 ]; then
 		if [ x$req = x"ant" ]; then
-			VERSION=`$command -version | sed -e 's/Apache Ant version //' -e 's/ compiled on .*$//'`
+			VERSION=`$command -version | sed -e 's/Apache Ant.* version //' -e 's/ compiled on .*$//'`
 			MAJOR=`echo $VERSION | awk -F. '{print $1}'`
 			MINOR=`echo $VERSION | awk -F. '{print $2}'`
 			PATCH=`echo $VERSION | awk -F. '{print $3}'`
