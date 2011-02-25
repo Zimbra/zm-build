@@ -3628,6 +3628,9 @@ sub upgrade701GA {
     if (!fgrep { /^max_allowed_packet/ } ${mysql_mycnf}) {
       main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-allowed-packet --section=mysqld --key=max_allowed_packet --set --value=16777216 ${mysql_mycnf}");
     }
+    if ( -d "/opt/zimbra/data/mailboxd/imap/cache" ) {
+      system("/bin/rm -rf /opt/zimbra/data/mailboxd/imap/cache/* 2> /dev/null");
+    }
   }
   return 0;
 }
