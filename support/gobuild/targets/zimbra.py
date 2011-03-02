@@ -65,6 +65,12 @@ class ZimbraVA(helpers.target.Target, helpers.make.MakeHelper):
 	    helpers.target.PerforceRepo(
                'zimbra/%(branch)/ZimbraServer',
                'zimbra/ZimbraServer'),	
+	    helpers.target.PerforceRepo(
+               'zimbra/%(branch)/ZimbraIM',
+               'zimbra/ZimbraIM'),
+            helpers.target.PerforceRepo(
+               'zimbra/%(branch)/ZimbraIM/jars',
+               'zimbra/ZimbraIM/jars'),
          ]
       return repos
 
