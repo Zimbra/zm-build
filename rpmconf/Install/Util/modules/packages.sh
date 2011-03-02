@@ -84,7 +84,13 @@ findLatestPackage() {
 			stamp=`echo $f | awk -F_ '{print $3}' | awk -F. '{print $1}'`
 		fi
 		if [ x"$PACKAGEEXT" = "xdeb" ]; then
-			installable_platform=`echo $id | awk -F. '{print $6"_"$7}'`
+			debos=`echo $id | awk -F. '{print $6}'`
+			hwbits=`echo $id | awk -F. '{print $7}'`
+			if [ x"$hwbits" = "x64" ]; then
+				installable_platform=${debos}_${hwbits}
+			else
+				installable_platform=${debos}
+			fi
 		else
 			installable_platform=`echo $id | awk -F. '{print $4}'`
 		fi
