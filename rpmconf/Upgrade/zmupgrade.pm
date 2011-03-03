@@ -3642,6 +3642,7 @@ sub upgrade710GA {
     if ($isLdapMaster) {
       runLdapAttributeUpgrade("53745");
       runLdapAttributeUpgrade("55649");
+      runLdapAttributeUpgrade("57039");
     }
   }
   return 0;
