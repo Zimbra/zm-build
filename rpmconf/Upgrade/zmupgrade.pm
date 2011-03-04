@@ -207,6 +207,8 @@ my %updateFuncs = (
   "6.0.9_GA" => \&upgrade609GA,
   "6.0.10_GA" => \&upgrade6010GA,
   "6.0.11_GA" => \&upgrade6011GA,
+  "6.0.12_GA" => \&upgrade6012GA,
+  "6.0.13_GA" => \&upgrade6013GA,
   "7.0.0_BETA1" => \&upgrade700BETA1,
   "7.0.0_BETA2" => \&upgrade700BETA2,
   "7.0.0_BETA3" => \&upgrade700BETA3,
@@ -306,6 +308,8 @@ my @versionOrder = (
   "6.0.9_GA",
   "6.0.10_GA",
   "6.0.11_GA",
+  "6.0.12_GA",
+  "6.0.13_GA",
   "7.0.0_BETA1",
   "7.0.0_BETA2",
   "7.0.0_BETA3",
@@ -548,6 +552,10 @@ sub upgrade {
     main::progress("This appears to be 6.0.10_GA\n");
   } elsif ($startVersion eq "6.0.11_GA") {
     main::progress("This appears to be 6.0.11_GA\n");
+  } elsif ($startVersion eq "6.0.12_GA") {
+    main::progress("This appears to be 6.0.12_GA\n");
+  } elsif ($startVersion eq "6.0.13_GA") {
+    main::progress("This appears to be 6.0.13_GA\n");
   } elsif ($startVersion eq "7.0.0_BETA1") {
     main::progress("This appears to be 7.0.0_BETA1\n");
   } elsif ($startVersion eq "7.0.0_BETA2") {
@@ -3424,11 +3432,17 @@ sub upgrade6011GA {
   return 0;
 }
 
-sub upgrade6012GA {                                                                                                                                                                                                   
+sub upgrade6012GA {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
-  main::progress("Updating from 6.0.12_GA\n");                                                                                                                                                                        
+  main::progress("Updating from 6.0.12_GA\n");
   return 0;
-}                                                                                                                                                                                                                     
+}
+
+sub upgrade6013GA {
+  my ($startBuild, $targetVersion, $targetBuild) = (@_);
+  main::progress("Updating from 6.0.13_GA\n");
+  return 0;
+}
 
 sub upgrade700BETA1 {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
