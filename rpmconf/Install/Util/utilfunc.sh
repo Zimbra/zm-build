@@ -413,19 +413,6 @@ EOF
   fi
 
   GOOD="yes"
-  CONFLICTS="no"
-  echo "Checking for package conflicts..."
-  for i in $CONFLICT_PACKAGES; do
-    conflictInstalled $i
-    if [ "x$CONFLICTINSTALLED" != "x" ]; then
-      echo "     Conflicting package: $CONFLICTINSTALLED"
-      CONFLICTS="yes"
-    else
-      echo "     All clear"
-    fi
-  done
-
-  echo ""
 
   echo "Checking for prerequisites..."
   #echo -n "    NPTL..."
@@ -498,17 +485,6 @@ EOF
     done
   fi
 
-  if [ $CONFLICTS = "yes" ]; then
-    echo ""
-    echo "###ERROR###"
-    echo ""
-    echo "One or more package conflicts exists."
-    echo "Please remove them before running this installer."
-    echo ""
-    echo "Installation cancelled."
-    echo ""
-    exit 1
-  fi
   if [ $GOOD = "no" ]; then
     echo ""
     echo "###ERROR###"
@@ -1922,6 +1898,31 @@ getInstallPackages() {
         CLUSTER_SELECTED="yes"
       fi
 
+      if [ $i = "zimbra-mta" ]; then
+        CONFLICTS="no"
+        echo "Checking for package conflicts..."
+        for i in $CONFLICT_PACKAGES; do
+          conflictInstalled $i
+          if [ "x$CONFLICTINSTALLED" != "x" ]; then
+            echo "     Conflicting package: $CONFLICTINSTALLED"
+            CONFLICTS="yes"
+          else
+            echo "     All clear"
+          fi
+        done
+        echo ""
+        if [ $CONFLICTS = "yes" ]; then
+          echo ""
+          echo "###ERROR###"
+          echo ""
+          echo "One or more package conflicts exists."
+          echo "Please remove them before running this installer."
+          echo ""
+          echo "Installation cancelled."
+          echo ""
+          exit 1
+        fi
+      fi
       if [ $i = "zimbra-spell" -a $APACHE_SELECTED = "no" ]; then
         APACHE_SELECTED="yes"
         INSTALL_PACKAGES="$INSTALL_PACKAGES zimbra-apache"
