@@ -413,7 +413,6 @@ EOF
   fi
 
   GOOD="yes"
-
   echo "Checking for prerequisites..."
   #echo -n "    NPTL..."
   /usr/bin/getconf GNU_LIBPTHREAD_VERSION | grep NPTL > /dev/null 2>&1
@@ -444,8 +443,6 @@ EOF
       GOOD="no"
     fi
   done
-
-  echo ""
 
   SUGGESTED="yes"
   echo "Checking for suggested prerequisites..."
@@ -503,7 +500,7 @@ EOF
   # limitation of ext3
   if [ -d "/opt/zimbra/db/data" ]; then
     echo "Checking current number of databases..."
-    TYPECHECK=`df -t ext3 /opt/zimbra/db/data 2>/dev/null`
+    TYPECHECK=`df -t ext3 /opt/zimbra/db/data`
     if [ x"$TYPECHECK" != "x" ]; then
       DBCOUNT=`find /opt/zimbra/db/data -type d | wc -l | awk '{if ($NF-1 >= 31998) print $NF-1}'`
       if [ x"$DBCOUNT" != "x" ]; then
@@ -1506,15 +1503,7 @@ removeExistingInstall() {
         /usr/bin/crontab -u zimbra -r 2> /dev/null
         echo "done."
       fi
-     
-      if [ -e /usr/sbin/sendmail ]; then
-        if [ -x /bin/readlink ]; then
-          SMPATH=$(/bin/readlink /usr/sbin/sendmail)
-          if [ x$SMPATH = x"/opt/zimbra/postfix/sbin/sendmail" ]; then
-            /bin/rm -f /usr/sbin/sendmail
-          fi
-        fi
-      fi 
+      
 
       if [ -f /etc/syslog.conf ]; then
         egrep -q 'zimbra.log' /etc/syslog.conf
@@ -1898,31 +1887,6 @@ getInstallPackages() {
         CLUSTER_SELECTED="yes"
       fi
 
-      if [ $i = "zimbra-mta" ]; then
-        CONFLICTS="no"
-        echo "Checking for package conflicts..."
-        for i in $CONFLICT_PACKAGES; do
-          conflictInstalled $i
-          if [ "x$CONFLICTINSTALLED" != "x" ]; then
-            echo "     Conflicting package: $CONFLICTINSTALLED"
-            CONFLICTS="yes"
-          else
-            echo "     All clear"
-          fi
-        done
-        echo ""
-        if [ $CONFLICTS = "yes" ]; then
-          echo ""
-          echo "###ERROR###"
-          echo ""
-          echo "One or more package conflicts exists."
-          echo "Please remove them before running this installer."
-          echo ""
-          echo "Installation cancelled."
-          echo ""
-          exit 1
-        fi
-      fi
       if [ $i = "zimbra-spell" -a $APACHE_SELECTED = "no" ]; then
         APACHE_SELECTED="yes"
         INSTALL_PACKAGES="$INSTALL_PACKAGES zimbra-apache"
@@ -2099,15 +2063,6 @@ isInstalled () {
   fi
 }
 
-conflictInstalled() {
-  pkg=$1
-  CONFLICTINSTALLED=""
-  Q=`dpkg-query -W -f='\${Package}: \${Provides}\n' '*' | grep ": .*$pkg" | sed -e 's/:.*//'`
-  if [ "x$Q" != "x" ]; then
-    CONFLICTINSTALLED=$Q
-  fi
-}
-
 suggestedVersion() {
   pkg=$1
   PKGINSTALLED=""
@@ -2150,18 +2105,15 @@ suggestedVersion() {
 
 getPlatformVars() {
   PLATFORM=`bin/get_plat_tag.sh`
-  CONFLICT_PACKAGES=""
   echo $PLATFORM | egrep -q "UBUNTU|DEBIAN"
   if [ $? = 0 ]; then
     checkUbuntuRelease
     PACKAGEINST='dpkg -i'
     PACKAGERM='dpkg --purge'
     PACKAGEQUERY='dpkg -s'
-    #CONFLICTQUERY="/usr/bin/dpkg-query -W -f='\${Package}: \${Provides}\n' '*'"
     PACKAGEEXT='deb'
     PACKAGEVERSION="dpkg-query -W -f \${Version}"
     PREREQ_PACKAGES="sudo libidn11 libgmp3 libstdc++6"
-    CONFLICT_PACKAGES="mail-transport-agent"
     if [ $PLATFORM = "UBUNTU6" -o $PLATFORM = "UBUNTU7" ]; then
       PREREQ_PACKAGES="sudo libidn11 libpcre3 libgmp3c2 libexpat1 libstdc++6 libstdc++5"
       PRESUG_PACKAGES="perl-5.8.7 sysstat sqlite3"
