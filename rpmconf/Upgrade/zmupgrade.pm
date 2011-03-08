@@ -3643,6 +3643,7 @@ sub upgrade710GA {
       runLdapAttributeUpgrade("53745");
       runLdapAttributeUpgrade("55649");
       runLdapAttributeUpgrade("57039");
+      runLdapAttributeUpgrade("57425");
     }
   }
   return 0;
