@@ -3893,7 +3893,7 @@ sub indexLdap {
   if (main::isInstalled ("zimbra-ldap")) {
     stopLdap();
     main::runAsZimbra("/opt/zimbra/bdb/bin/db_recover -h /opt/zimbra/data/ldap/hdb/db");
-    main::runAsZimbra ("/opt/zimbra/openldap/sbin/slapindex -b '' -q -F /opt/zimbra/data/ldap/config");
+    main::runAsZimbra ("/opt/zimbra/openldap/sbin/slapindex -b '' -F /opt/zimbra/data/ldap/config");
     if (startLdap()) {return 1;}
   }
   return;
@@ -3903,7 +3903,7 @@ sub indexLdapAttribute {
   my ($key) = @_;
   if (main::isInstalled ("zimbra-ldap")) {
     stopLdap();
-    main::runAsZimbra ("/opt/zimbra/openldap/sbin/slapindex -b '' -q -F /opt/zimbra/data/ldap/config $key");
+    main::runAsZimbra ("/opt/zimbra/openldap/sbin/slapindex -b '' -F /opt/zimbra/data/ldap/config $key");
     if (startLdap()) {return 1;}
   }
   return;
