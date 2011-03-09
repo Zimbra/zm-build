@@ -2092,8 +2092,11 @@ isInstalled () {
     if [ "x$Q" != "x" ]; then
       echo $Q | grep 'not-installed' > /dev/null 2>&1
       if [ $? != 0 ]; then
-        PKGVERSION=`$PACKAGEQUERY $pkg | egrep '^Version: ' | sed -e 's/Version: //' 2> /dev/null`
-        PKGINSTALLED="${pkg}-${PKGVERSION}"
+        echo $Q | grep 'deinstall ok' > /dev/null 2>&1
+        if [ $? != 0 ]; then
+          PKGVERSION=`$PACKAGEQUERY $pkg | egrep '^Version: ' | sed -e 's/Version: //' 2> /dev/null`
+          PKGINSTALLED="${pkg}-${PKGVERSION}"
+        fi
       fi
     fi
   fi
@@ -2102,9 +2105,12 @@ isInstalled () {
 conflictInstalled() {
   pkg=$1
   CONFLICTINSTALLED=""
-  Q=`dpkg-query -W -f='\${Package}: \${Provides}\n' '*' | grep ": .*$pkg" | sed -e 's/:.*//'`
-  if [ "x$Q" != "x" ]; then
-    CONFLICTINSTALLED=$Q
+  QP=`dpkg-query -W -f='\${Package}: \${Provides}\n' '*' | grep ": .*$pkg" | sed -e 's/:.*//'`
+  if [ "x$QP" != "x" ]; then
+    isInstalled $QP
+    if [ x$PKGINSTALLED != "x" ]; then
+      CONFLICTINSTALLED=$QP
+    fi
   fi
 }
 
