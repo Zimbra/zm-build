@@ -1901,8 +1901,8 @@ getInstallPackages() {
       if [ $i = "zimbra-mta" ]; then
         CONFLICTS="no"
         echo "Checking for package conflicts..."
-        for i in $CONFLICT_PACKAGES; do
-          conflictInstalled $i
+        for j in $CONFLICT_PACKAGES; do
+          conflictInstalled $j
           if [ "x$CONFLICTINSTALLED" != "x" ]; then
             echo "     Conflicting package: $CONFLICTINSTALLED"
             CONFLICTS="yes"
