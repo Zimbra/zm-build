@@ -215,6 +215,7 @@ my %updateFuncs = (
   "7.0.0_GA" => \&upgrade700GA,
   "7.0.1_GA" => \&upgrade701GA,
   "7.1.0_GA" => \&upgrade710GA,
+  "7.1.1_GA" => \&upgrade711GA,
   "8.0.0_BETA1" => \&upgrade800BETA1,
 );
 
@@ -314,6 +315,7 @@ my @versionOrder = (
   "7.0.0_GA",
   "7.0.1_GA",
   "7.1.0_GA",
+  "7.1.1_GA",
   "8.0.0_BETA1",
 );
 
@@ -563,6 +565,8 @@ sub upgrade {
     main::progress("This appears to be 7.0.1_GA\n");
   } elsif ($startVersion eq "7.1.0_GA") {
     main::progress("This appears to be 7.1.0_GA\n");
+  } elsif ($startVersion eq "7.1.1_GA") {
+    main::progress("This appears to be 7.1.1_GA\n");
   } elsif ($startVersion eq "8.0.0_BETA1") {
     main::progress("This appears to be 8.0.0_BETA1\n");
   } else {
@@ -3665,6 +3669,12 @@ sub upgrade710GA {
     main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-dirty-pages --section=mysqld --key=innodb_max_dirty_pages_pct --set --value=30 ${mysql_mycnf}");
      
   }
+  return 0;
+}
+
+sub upgrade711GA {
+  my ($startBuild, $targetVersion, $targetBuild) = (@_);
+  main::progress("Updating from 7.1.1_GA\n");
   return 0;
 }
 
