@@ -2113,7 +2113,7 @@ getPlatformVars() {
     PACKAGEQUERY='dpkg -s'
     PACKAGEEXT='deb'
     PACKAGEVERSION="dpkg-query -W -f \${Version}"
-    PREREQ_PACKAGES="sudo libidn11 libgmp3 libstdc++6"
+    PREREQ_PACKAGES="sudo libidn11 libgmp3c2 libstdc++6"
     if [ $PLATFORM = "UBUNTU6" -o $PLATFORM = "UBUNTU7" ]; then
       PREREQ_PACKAGES="sudo libidn11 libpcre3 libgmp3c2 libexpat1 libstdc++6 libstdc++5"
       PRESUG_PACKAGES="perl-5.8.7 sysstat sqlite3"
