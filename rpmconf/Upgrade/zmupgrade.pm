@@ -3638,6 +3638,14 @@ sub upgrade701GA {
 sub upgrade710GA {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
   main::progress("Updating from 7.1.0_GA\n");
+  my $zimbra_home = main::getLocalConfig("zimbra_home") || "/opt/zimbra";
+  my $mysql_data_directory = 
+    main::getLocalConfig("mysql_data_directory") || "${zimbra_home}/db/data";
+  my $zimbra_tmp_directory = 
+    main::getLocalConfig("zimbra_tmp_directory") || "${zimbra_home}/data/tmp";
+  my $mysql_mycnf = 
+    main::getLocalConfig("mysql_mycnf") || "${zimbra_home}/conf/my.cnf";
+
   if (main::isInstalled("zimbra-ldap")) {
     if ($isLdapMaster) {
       runLdapAttributeUpgrade("53745");
@@ -3645,6 +3653,17 @@ sub upgrade710GA {
       runLdapAttributeUpgrade("57039");
       runLdapAttributeUpgrade("57425");
     }
+  }
+  if (main::isInstalled("zimbra-store")) {
+    foreach my $i qw(ib_logfile0 ib_logfile1) {
+      my $dbfile="${mysql_data_directory}/${i}";
+      main::detail("Moving $dbfile to ${zimbra_tmp_directory}/$i");
+      system("mv -f ${dbfile} ${zimbra_tmp_directory}/$i")
+        if (-f ${dbfile});
+    }
+    main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-log_file_size --section=mysqld --key=innodb_log_file_size --set --value=524288000 ${mysql_mycnf}");
+    main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-dirty-pages --section=mysqld --key=innodb_max_dirty_pages_pct --set --value=30 ${mysql_mycnf}");
+     
   }
   return 0;
 }
