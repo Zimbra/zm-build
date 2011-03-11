@@ -7,6 +7,7 @@ $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/lib: $(STORE_DEST_DIR)/$(MAILBOXD_DIR)
 $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/common/lib: $(STORE_DEST_DIR)/$(MAILBOXD_DIR) $(WEBAPP_DIR)/service.war
 	mkdir -p $@
 	cp $(SERVICE_DIR)/build/dist/$(MAILBOXD_SERVER)/common/lib/*.jar $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/common/lib
+	-rm -rf $@/junit*.jar
 
 $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/common/endorsed: $(STORE_DEST_DIR)/$(MAILBOXD_DIR) $(WEBAPP_DIR)/service.war
 	mkdir -p $@
