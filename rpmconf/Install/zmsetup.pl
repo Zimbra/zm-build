@@ -2354,10 +2354,52 @@ sub toggleYN {
 sub toggleTF {
   my $key = shift;
   $config{$key} = ($config{$key} eq "TRUE")?"FALSE":"TRUE";
+  if ($key eq "MAILPROXY") {
+    &toggleMailProxy();
+  }
+  if ($key eq "HTTPPROXY") {
+    &toggleWebProxy();
+  }
 }
 sub toggleConfigEnabled {
   my $key = shift;
   $config{$key} = ($config{$key} eq "Enabled")?"Disabled":"Enabled";
+}
+
+sub toggleMailProxy() {
+  if ($config{MAILPROXY} eq "TRUE") {
+    $config{IMAPPORT} = 7143;
+    $config{IMAPSSLPORT} = 7993;
+    $config{POPPORT} = 7110;
+    $config{POPSSLPORT} = 7995;
+    $config{IMAPPROXYPORT} = 143;
+    $config{IMAPSSLPROXYPORT} = 993;
+    $config{POPPROXYPORT} = 110;
+    $config{POPSSLPROXYPORT} = 995;
+  } else {
+    $config{IMAPPORT} = 143;
+    $config{IMAPSSLPORT} = 993;
+    $config{POPPORT} = 110;
+    $config{POPSSLPORT} = 995;
+    $config{IMAPPROXYPORT} = 7143;
+    $config{IMAPSSLPROXYPORT} = 7993;
+    $config{POPPROXYPORT} = 7110;
+    $config{POPSSLPROXYPORT} = 7995;
+  }
+}
+
+sub toggleWebProxy() {
+  if ($config{HTTPPROXY} eq "TRUE") {
+    $config{HTTPPORT} = 8080;
+    $config{HTTPSPORT} = 8443;
+    $config{HTTPPROXYPORT} = 80;
+    $config{HTTPSPROXYPORT} = 443;
+  } else {
+    $config{HTTPPORT} = 80;
+    $config{HTTPSPORT} = 443;
+    $config{HTTPPROXYPORT} = 8080;
+    $config{HTTPSPROXYPORT} = 8443;
+  }
 }
 
 sub setUseProxy {
