@@ -16,7 +16,7 @@
 
 umount -f /opt/zimbra/amavisd/tmp
 rm -f /opt/zimbra/amavisd
-ln -s /opt/zimbra/amavisd-new-2.6.4 /opt/zimbra/amavisd
+ln -s /opt/zimbra/amavisd-new-2.7.0-pre14 /opt/zimbra/amavisd
 
 if [ -e /opt/zimbra/cbpolicyd ]; then
   rm -f /opt/zimbra/cbpolicyd
