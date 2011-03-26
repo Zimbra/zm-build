@@ -380,7 +380,7 @@ sub checkPortConflicts {
   }
 
   if (!$options{c}) {
-    if ($any) { ask("Port conflicts detected! - Any key to continue", ""); }
+    if ($any) { ask("Port conflicts detected! - Press Enter/Return key to continue", ""); }
   }
 
 }
