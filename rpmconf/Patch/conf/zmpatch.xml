@@ -282,7 +282,6 @@
   <preinstall></preinstall>
   <postinstall></postinstall>
   </patch> -->
-  <patch>
   <patch name="7.0.1_GA" version="7.0.1_P1">
   <desc>Patch 7.0.1_P1</desc>
   <bug>57499</bug>
