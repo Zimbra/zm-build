@@ -3,7 +3,7 @@
 # 
 # ***** BEGIN LICENSE BLOCK *****
 # Zimbra Collaboration Suite Server
-# Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
+# Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011 Zimbra, Inc.
 # 
 # The contents of this file are subject to the Zimbra Public License
 # Version 1.3 ("License"); you may not use this file except in
@@ -207,6 +207,7 @@ my %updateFuncs = (
   "6.0.10_GA" => \&upgrade6010GA,
   "6.0.11_GA" => \&upgrade6011GA,
   "6.0.12_GA" => \&upgrade6012GA,
+  "6.0.13_GA" => \&upgrade6013GA,
   "7.0.0_RC1" => \&upgrade700RC1,
 );
 
@@ -300,6 +301,7 @@ my @versionOrder = (
   "6.0.10_GA",
   "6.0.11_GA",
   "6.0.12_GA",
+  "6.0.13_GA",
   "7.0.0_RC1",
 );
 
@@ -527,6 +529,8 @@ sub upgrade {
     main::progress("This appears to be 6.0.11_GA\n");
   } elsif ($startVersion eq "6.0.12_GA") {
     main::progress("This appears to be 6.0.12_GA\n");
+  } elsif ($startVersion eq "6.0.13_GA") {
+    main::progress("This appears to be 6.0.13_GA\n");
   } elsif ($startVersion eq "7.0.0_RC1") {
     main::progress("This appears to be 7.0.0_RC1\n");
   } else {
@@ -3392,22 +3396,34 @@ sub upgrade6012GA {
   return 0;
 }
 
+sub upgrade6013GA {
+  my ($startBuild, $targetVersion, $targetBuild) = (@_);
+  main::progress("Updating from 6.0.13_GA\n");
+  return 0;
+}
+
 sub upgrade700BETA1 {
-  my ($startBuild, $targetVersion, $targetBuild) = (@_);
+  my ($startBuild, $targetVersion, $targetBuild) = (@_);                                                                                                                                                              
   main::progress("Updating from 7.0.0_BETA1\n");
-  return 0;
-}
-
-sub upgrade700RC1 {
-  my ($startBuild, $targetVersion, $targetBuild) = (@_);
-  main::progress("Updating from 7.0.0_RC1\n");
-  return 0;
-}
-
-sub upgrade800BETA1 {
-  my ($startBuild, $targetVersion, $targetBuild) = (@_);
-  main::progress("Updating from 8.0.0_BETA1\n");
-  return 0;
+  if($isLdapMaster) {                                                                                                                                                                                                 
+    runLdapAttributeUpgrade("10287");
+    runLdapAttributeUpgrade("42828");                                                                                                                                                                                 
+    runLdapAttributeUpgrade("43779");
+    runLdapAttributeUpgrade("50258");                                                                                                                                                                                 
+    runLdapAttributeUpgrade("50465");
+  }                                                                                                                                                                                                                   
+  if (main::isInstalled("zimbra-store")) {
+    # 43140                                                                                                                                                                                                           
+    my $mailboxd_java_heap_memory_percent =
+      main::getLocalConfig("mailboxd_java_heap_memory_percent");                                                                                                                                                      
+    $mailboxd_java_heap_memory_percent = 30
+      if ($mailboxd_java_heap_memory_percent eq "");                                                                                                                                                                  
+    my $systemMemorySize = main::getSystemMemory();
+    main::setLocalConfig("mailboxd_java_heap_size",                                                                                                                                                                   
+      int($systemMemorySize*1024*$mailboxd_java_heap_memory_percent/100));
+    main::deleteLocalConfig("mailboxd_java_heap_memory_percent");                                                                                                                                                     
+  }
+  return 0;                                                                                                                                                                                                           
 }
 
 sub stopZimbra {
