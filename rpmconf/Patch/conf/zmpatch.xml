@@ -283,8 +283,9 @@
   <postinstall></postinstall>
   </patch> -->
   <patch>
-  <patch name="6.0.12_GA" version="6.0.12_P1">
-  <desc>Patch 6.0.12_P1</desc>
+  <patch name="7.0.1_GA" version="7.0.1_P1">
+  <desc>Patch 7.0.1_P1</desc>
+  <bug>57499</bug>
   <bug>57684</bug>
   <bug>57727</bug>
   <bug>58024</bug>
@@ -306,6 +307,31 @@
         <source>ZimbraTagLib/build/zimbrataglib.jar</source>
         <target>/opt/zimbra/jetty/webapps/zimbra/WEB-INF/lib/zimbrataglib.jar</target>
         <target>/opt/zimbra/jetty/webapps/zimbraAdmin/WEB-INF/lib/zimbrataglib.jar</target>
+        <perms owner="zimbra" mode="664"/>
+      </file>
+      <file>
+        <source>ZimbraBuild/storebuild/opt/zimbra/jetty-6.1.22.z6/webapps/zimbra/js/Mail_all.js.zgz</source>
+        <target>/opt/zimbra/jetty/webapps/zimbra/js/Mail_all.js.zgz</target>
+        <perms owner="zimbra" mode="664"/>
+      </file>
+      <file>
+        <source>ZimbraBuild/storebuild/opt/zimbra/jetty-6.1.22.z6/webapps/zimbra/js/zimbraMail/mail/view/ZmComposeView.js</source>
+        <target>/opt/zimbra/jetty/webapps/zimbra/js/zimbraMail/mail/view/ZmComposeView.js</target>
+        <perms owner="zimbra" mode="664"/>
+      </file>
+      <file>
+        <source>ZimbraBuild/storebuild/opt/zimbra/jetty-6.1.22.z6/webapps/zimbra/js/Mail_all.js</source>
+        <target>/opt/zimbra/jetty/webapps/zimbra/js/Mail_all.js</target>
+        <perms owner="zimbra" mode="664"/>
+      </file>
+      <file>
+        <source>ZimbraBuild/storebuild/opt/zimbra/jetty-6.1.22.z6/webapps/zimbra/js/NewWindow_2_all.js</source>
+        <target>/opt/zimbra/jetty/webapps/zimbra/js/NewWindow_2_all.js</target>
+        <perms owner="zimbra" mode="664"/>
+      </file>
+      <file>
+        <source>ZimbraBuild/storebuild/opt/zimbra/jetty-6.1.22.z6/webapps/zimbra/js/NewWindow_2_all.js.zgz</source>
+        <target>/opt/zimbra/jetty/webapps/zimbra/js/NewWindow_2_all.js.zgz</target>
         <perms owner="zimbra" mode="664"/>
       </file>
   </package>
