@@ -195,6 +195,11 @@ sub doPatchBuild() {
     }
 
   }
+  if(!$buildStatus) {
+    # Clean up zmpatch files on successful build
+    unlink("$logfile");
+    unlink("/tmp/${progName}.log");
+  }
   exit($buildStatus);
 }
 
