@@ -44,6 +44,33 @@ class ZimbraVA(helpers.target.Target, helpers.make.MakeHelper):
             helpers.target.PerforceRepo(
                'zimbra/%(branch)/ZimbraNetwork',
                'zimbra/ZimbraNetwork'),
+	    helpers.target.PerforceRepo(
+               'zimbra/%(branch)/ZimbraCommon',
+               'zimbra/ZimbraCommon'),
+	    helpers.target.PerforceRepo(
+               'zimbra/%(branch)/ZimbraSoap',
+               'zimbra/ZimbraSoap'),
+	    helpers.target.PerforceRepo(
+               'zimbra/%(branch)/ZimbraWebClient',
+               'zimbra/ZimbraWebClient'),
+	    helpers.target.PerforceRepo(
+               'zimbra/%(branch)/ZimbraWebClient/jars',
+               'zimbra/ZimbraWebClient/jars'),	
+ 	    helpers.target.PerforceRepo(
+               'zimbra/%(branch)/ZimbraLicenses',
+               'zimbra/ZimbraLicenses'),		
+	    helpers.target.PerforceRepo(
+               'zimbra/%(branch)/ZimbraTagLib',
+               'zimbra/ZimbraTagLib'),
+	    helpers.target.PerforceRepo(
+               'zimbra/%(branch)/ZimbraServer',
+               'zimbra/ZimbraServer'),	
+	    helpers.target.PerforceRepo(
+               'zimbra/%(branch)/ZimbraIM',
+               'zimbra/ZimbraIM'),
+            helpers.target.PerforceRepo(
+               'zimbra/%(branch)/ZimbraIM/jars',
+               'zimbra/ZimbraIM/jars'),
          ]
       return repos
 

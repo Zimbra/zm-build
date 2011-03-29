@@ -214,6 +214,8 @@ my %updateFuncs = (
   "7.0.0_RC1" => \&upgrade700RC1,
   "7.0.0_GA" => \&upgrade700GA,
   "7.0.1_GA" => \&upgrade701GA,
+  "7.1.0_GA" => \&upgrade710GA,
+  "7.1.1_GA" => \&upgrade711GA,
   "8.0.0_BETA1" => \&upgrade800BETA1,
 );
 
@@ -313,6 +315,8 @@ my @versionOrder = (
   "7.0.0_RC1",
   "7.0.0_GA",
   "7.0.1_GA",
+  "7.1.0_GA",
+  "7.1.1_GA",
   "8.0.0_BETA1",
 );
 
@@ -562,6 +566,10 @@ sub upgrade {
     main::progress("This appears to be 7.0.0_GA\n");
   } elsif ($startVersion eq "7.0.1_GA") {
     main::progress("This appears to be 7.0.1_GA\n");
+  } elsif ($startVersion eq "7.1.0_GA") {
+    main::progress("This appears to be 7.1.0_GA\n");
+  } elsif ($startVersion eq "7.1.1_GA") {
+    main::progress("This appears to be 7.1.1_GA\n");
   } elsif ($startVersion eq "8.0.0_BETA1") {
     main::progress("This appears to be 8.0.0_BETA1\n");
   } else {
@@ -3631,6 +3639,50 @@ sub upgrade701GA {
   return 0;
 }
 
+sub upgrade710GA {
+  my ($startBuild, $targetVersion, $targetBuild) = (@_);
+  main::progress("Updating from 7.1.0_GA\n");
+  my $zimbra_home = main::getLocalConfig("zimbra_home") || "/opt/zimbra";
+  my $mysql_data_directory = 
+    main::getLocalConfig("mysql_data_directory") || "${zimbra_home}/db/data";
+  my $zimbra_tmp_directory = 
+    main::getLocalConfig("zimbra_tmp_directory") || "${zimbra_home}/data/tmp";
+  my $mysql_mycnf = 
+    main::getLocalConfig("mysql_mycnf") || "${zimbra_home}/conf/my.cnf";
+
+  if (main::isInstalled("zimbra-ldap")) {
+    if ($isLdapMaster) {
+      runLdapAttributeUpgrade("53745");
+      runLdapAttributeUpgrade("55649");
+      runLdapAttributeUpgrade("57039");
+      runLdapAttributeUpgrade("57425");
+    }
+  }
+  if (main::isInstalled("zimbra-store")) {
+    foreach my $i qw(ib_logfile0 ib_logfile1) {
+      my $dbfile="${mysql_data_directory}/${i}";
+      main::detail("Moving $dbfile to ${zimbra_tmp_directory}/$i");
+      system("mv -f ${dbfile} ${zimbra_tmp_directory}/$i")
+        if (-f ${dbfile});
+    }
+    main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-log_file_size --section=mysqld --key=innodb_log_file_size --set --value=524288000 ${mysql_mycnf}");
+    main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-dirty-pages --section=mysqld --key=innodb_max_dirty_pages_pct --set --value=30 ${mysql_mycnf}");
+     
+  }
+  return 0;
+}
+
+sub upgrade711GA {
+  my ($startBuild, $targetVersion, $targetBuild) = (@_);
+  main::progress("Updating from 7.1.1_GA\n");
+  if (main::isInstalled("zimbra-ldap")) {
+    if ($isLdapMaster) {
+      runLdapAttributeUpgrade("57855");
+    }
+  }
+  return 0;
+}
+
 sub upgrade800BETA1 {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
   main::progress("Updating from 8.0.0_BETA1\n");
@@ -4149,7 +4201,7 @@ sub indexLdap {
   if (main::isInstalled ("zimbra-ldap")) {
     stopLdap();
     main::runAsZimbra("/opt/zimbra/bdb/bin/db_recover -h /opt/zimbra/data/ldap/hdb/db");
-    main::runAsZimbra ("/opt/zimbra/openldap/sbin/slapindex -b '' -q -F /opt/zimbra/data/ldap/config");
+    main::runAsZimbra ("/opt/zimbra/openldap/sbin/slapindex -b '' -F /opt/zimbra/data/ldap/config");
     if (startLdap()) {return 1;}
   }
   return;
@@ -4159,7 +4211,7 @@ sub indexLdapAttribute {
   my ($key) = @_;
   if (main::isInstalled ("zimbra-ldap")) {
     stopLdap();
-    main::runAsZimbra ("/opt/zimbra/openldap/sbin/slapindex -b '' -q -F /opt/zimbra/data/ldap/config $key");
+    main::runAsZimbra ("/opt/zimbra/openldap/sbin/slapindex -b '' -F /opt/zimbra/data/ldap/config $key");
     if (startLdap()) {return 1;}
   }
   return;

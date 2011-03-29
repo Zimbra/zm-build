@@ -747,7 +747,7 @@ verifyLicenseActivationServer() {
   else
     echo $HOSTNAME | egrep -qe 'vmware.com$|zimbra.com$' > /dev/null 2>&1
     if [ $? = 0 ]; then
-      url='http://zre-lp-test.eng.vmware.com:9080/zimbraLicensePortal/public/activation?action=test'
+      url='https://zimbra-stage-license-vip.vmware.com/zimbraLicensePortal/public/activation?action=test'
     else 
       url='https://license.zimbra.com/zimbraLicensePortal/public/activation?action=test'
     fi
@@ -2113,7 +2113,7 @@ getPlatformVars() {
     PACKAGEQUERY='dpkg -s'
     PACKAGEEXT='deb'
     PACKAGEVERSION="dpkg-query -W -f \${Version}"
-    PREREQ_PACKAGES="sudo libidn11 libgmp3 libstdc++6"
+    PREREQ_PACKAGES="sudo libidn11 libgmp3c2 libstdc++6"
     if [ $PLATFORM = "UBUNTU6" -o $PLATFORM = "UBUNTU7" ]; then
       PREREQ_PACKAGES="sudo libidn11 libpcre3 libgmp3c2 libexpat1 libstdc++6 libstdc++5"
       PRESUG_PACKAGES="perl-5.8.7 sysstat sqlite3"
@@ -2156,7 +2156,7 @@ getPlatformVars() {
     fi
     if [ $PLATFORM = "DEBIAN6_64" ]; then
       PREREQ_PACKAGES="sudo libidn11 libpcre3 libgmp3c2 libexpat1 libstdc++6 libperl5.10"
-      PRESUG_PACKAGES="perl-5.10.0 sysstat sqlite3"
+      PRESUG_PACKAGES="perl-5.10.1 sysstat sqlite3"
     fi
   elif echo $PLATFORM | grep RPL > /dev/null 2>&1; then
     PACKAGEINST='conary update'
