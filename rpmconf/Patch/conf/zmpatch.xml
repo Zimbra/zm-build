@@ -333,6 +333,10 @@
         <target>/opt/zimbra/jetty/webapps/zimbra/js/NewWindow_2_all.js.zgz</target>
         <perms owner="zimbra" mode="664"/>
       </file>
+      <zimlet deploy="true" flushcache="true">
+        <source>Zimlet/build/dist/zimlets/com_zimbra_email.zip</source>
+        <target>/opt/zimbra/zimlets/com_zimbra_email.zip</target>
+      </zimlet>
   </package>
   <preinstall></preinstall>
   <postinstall></postinstall>
