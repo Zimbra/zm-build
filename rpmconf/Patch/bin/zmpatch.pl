@@ -151,6 +151,24 @@ sub doPatchBuild() {
       my $pref = $config->{patch}->{$patch}->{package}->{$package};
       progress("$package\n",2,1);
 
+      foreach my $zimlet (keys %{$pref->{zimlet}}) {
+        my $zref = $pref->{zimlet}->{$zimlet};
+        progress("$zref->{target}[0]\n", 3,1);
+        my $zpath="$options{build_target}/source/$patchName/$package/" . dirname($zref->{target}[0]);
+        unless (make_path($zpath)) {
+          progress("Failed to make_path $zpath.\n",3,0);
+          $buildStatus++;
+          next;
+        }
+        my $source="$options{build_source}/$zimlet";
+        if (-f $source) {
+          copy($source,$zpath);
+        } else {
+          progress("Failed to copy $source\n",3,0);
+          $buildStatus++;
+        }
+      }
+
       foreach my $file (keys %{$pref->{file}}) {
         my $fref=$pref->{file}->{$file};
         
@@ -169,23 +187,6 @@ sub doPatchBuild() {
             progress("Failed to copy $source\n",3,0);
             $buildStatus++;
           }
-        }
-      }
-      foreach my $zimlet (keys %{$pref->{zimlet}}) {
-        my $zref = $pref->{zimlet}->{$zimlet};
-        progress("$zref->{target}[0]\n", 3,1);
-        my $zpath="$options{build_target}/source/$patchName/$package/" . dirname($zref->{target}[0]);
-        unless (make_path($zpath)) {
-          progress("Failed to make_path $zpath.\n",3,0);
-          $buildStatus++;
-          next;
-        }
-        my $source="$options{build_source}/$zimlet";
-        if (-f $source) {
-          copy($source,$zpath);
-        } else {
-          progress("Failed to copy $source\n",3,0);
-          $buildStatus++;
         }
       }
       # future
