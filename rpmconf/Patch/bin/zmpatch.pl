@@ -260,62 +260,61 @@ sub deployPatch($) {
     # make sure package is installed
     my $pref = $patch->{package}->{$package};
     next unless (isInstalled($package)); 
-    progress("Updating files for package $package\n", 1, 0);
-      # deploy the files
-      foreach my $file (keys %{$pref->{file}}) {
-        my $fref = $pref->{file}->{$file};
-        next if ($zmtype eq "FOSS" && lc($fref->{type}) eq "network");
-        foreach my $dstfile (@{$fref->{target}}) {
-          progress("$dstfile...",2,1); 
-          my $srcfile="./source/$patch->{version}/$package/$dstfile";
-          unless (-f "$srcfile") {
-            progress("No such source file $srcfile\n",0,1);
-            next;
-          }
-          debugLog("cp $srcfile $dstfile");
-          copy($srcfile, $dstfile) unless $options{dryrun};
-          # verify the perms/ownershiA
-          my ($owner,$group,$mode);
-          unless ($options{dryrun}) {
-            chown($owner,$dstfile)
-              if ($owner = $fref->{perms}->{owner});
-            system("chgrp $group $dstfile")
-              if ($group = $fref->{perms}->{group});
-            system("chmod $mode $dstfile")
-              if ($mode = $fref->{perms}->{mode});
-          }
-          progress("copied.\n", 1, 1);
-        }
-        
-      }
-      # deploy the zimlets
-      foreach my $zimlet (keys %{$pref->{zimlet}}) {
-        my $zref = $pref->{zimlet}->{$zimlet};
-        next if ($zmtype eq "FOSS" && lc($zref->{type}) eq "network");
-        my $zimletname=basename($zref->{target}[0]);
-        progress("$zimletname...",2,1);
+    # deploy the zimlets
+    foreach my $zimlet (keys %{$pref->{zimlet}}) {
+      my $zref = $pref->{zimlet}->{$zimlet};
+      next if ($zmtype eq "FOSS" && lc($zref->{type}) eq "network");
+      my $zimletname=basename($zref->{target}[0]);
+      progress("$zimletname...",2,1);
 
-        my $srcfile="./source/$patch->{version}/$package/$zref->{target}[0]";
-        my $dstfile=$zref->{target}[0];
-        if (-f "$srcfile") {
-          debugLog("cp $srcfile $dstfile");
-          copy($srcfile, $dstfile) unless $options{dryrun};
-        } else {
-          progress("skipped. No such file $srcfile.\n",0,1);
-        }
-        unless ($options{dryrun}) {
-          if (lc($zref->{deploy}) eq "true") {
-            my $rc;
-            progress("undeployed...",0,1)
-              unless (runAsZimbra("zmzimletctl -l undeploy $zimletname"));
-            progress("deployed...",0,1) 
-              unless (runAsZimbra("zmzimletctl -l deploy $dstfile"));
-            runAsZimbra("zmprov flushcache zimlet") 
-             if (lc($zref->{flushcache}) eq "true");
-          }
-        }
-        progress("updated.\n", 0, 1);
+      my $srcfile="./source/$patch->{version}/$package/$zref->{target}[0]";
+      my $dstfile=$zref->{target}[0];
+      if (-f "$srcfile") {
+        debugLog("cp $srcfile $dstfile");
+        copy($srcfile, $dstfile) unless $options{dryrun};
+      } else {
+        progress("skipped. No such file $srcfile.\n",0,1);
       }
+      unless ($options{dryrun}) {
+        if (lc($zref->{deploy}) eq "true") {
+          my $rc;
+          progress("undeployed...",0,1)
+            unless (runAsZimbra("zmzimletctl -l undeploy $zimletname"));
+          progress("deployed...",0,1) 
+            unless (runAsZimbra("zmzimletctl -l deploy $dstfile"));
+          runAsZimbra("zmprov flushcache zimlet") 
+           if (lc($zref->{flushcache}) eq "true");
+        }
+      }
+      progress("updated.\n", 0, 1);
+    }
+    progress("Updating files for package $package\n", 1, 0);
+    # deploy the files
+    foreach my $file (keys %{$pref->{file}}) {
+      my $fref = $pref->{file}->{$file};
+      next if ($zmtype eq "FOSS" && lc($fref->{type}) eq "network");
+      foreach my $dstfile (@{$fref->{target}}) {
+        progress("$dstfile...",2,1); 
+        my $srcfile="./source/$patch->{version}/$package/$dstfile";
+        unless (-f "$srcfile") {
+          progress("No such source file $srcfile\n",0,1);
+          next;
+        }
+        debugLog("cp $srcfile $dstfile");
+        copy($srcfile, $dstfile) unless $options{dryrun};
+        # verify the perms/ownershiA
+        my ($owner,$group,$mode);
+        unless ($options{dryrun}) {
+          chown($owner,$dstfile)
+            if ($owner = $fref->{perms}->{owner});
+          system("chgrp $group $dstfile")
+            if ($group = $fref->{perms}->{group});
+          system("chmod $mode $dstfile")
+            if ($mode = $fref->{perms}->{mode});
+        }
+        progress("copied.\n", 1, 1);
+      }
+    }
     # update the installed version of package
     logSession("UPGRADED $package-${currentRelease}_${patchBuildNumber}")
       unless ($package eq "zimbra-core");
