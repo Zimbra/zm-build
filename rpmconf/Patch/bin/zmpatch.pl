@@ -265,6 +265,7 @@ sub deployPatch($) {
       my $zref = $pref->{zimlet}->{$zimlet};
       next if ($zmtype eq "FOSS" && lc($zref->{type}) eq "network");
       my $zimletname=basename($zref->{target}[0]);
+      $zimletname =~ s/\.zip//;
       progress("$zimletname...",2,1);
 
       my $srcfile="./source/$patch->{version}/$package/$zref->{target}[0]";
