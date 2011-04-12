@@ -1630,10 +1630,22 @@ sub getInstallStatus {
         $installStatus{$stage}{op} = $op;
         $installStatus{$stage}{date} = $d;
         if ($stage eq "zimbra-core") {
-          #$prevVersion = $curVersion;
           $v =~ s/_HEAD.*//;
           $v =~ s/^zimbra-core[-_]//;
-          $v =~ s/^(\d+\.\d+\.[^_]*_[^_]+_[^.]+).*/\1/;
+          if ($v =~ /\.deb$/) {
+            my $orig_v=$v;
+            $v =~ s/^(\d+\.\d+\.\d+\.\w+\.\w+)\..*/\1/;
+            $v = reverse($v);
+            $v =~ s/\./_/;
+            $v =~ s/\./_/;
+            $v = reverse($v);
+            if ($v =~ /\_deb$/) {
+              $v = $orig_v;
+              $v =~ s/^(\d+\.\d+\.[^_]*_[^_]+_[^.]+).*/\1/;
+            }
+          } else {
+            $v =~ s/^(\d+\.\d+\.[^_]*_[^_]+_[^.]+).*/\1/;
+          }
           $curVersion = $v;
         }
       } elsif ($op eq "CONFIGURED") {
