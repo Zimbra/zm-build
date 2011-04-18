@@ -297,12 +297,42 @@
   </package>
   <preinstall></preinstall>
   <postinstall></postinstall>
-  </patch> -->
+  </patch>
   <patch name="6.0.12_GA" version="6.0.12_P1">
   <desc>Patch 6.0.12_P1</desc>
   <bug>57684</bug>
   <bug>57727</bug>
   <bug>58024</bug>
+  <package name="zimbra-store">
+      <file>
+        <source>ZimbraBuild/corebuild/opt/zimbra/lib/jars/zimbrastore.jar</source>
+        <target>/opt/zimbra/jetty/webapps/service/WEB-INF/lib/zimbrastore.jar</target>
+        <target>/opt/zimbra/jetty/webapps/zimbra/WEB-INF/lib/zimbrastore.jar</target>
+        <target>/opt/zimbra/jetty/webapps/zimbraAdmin/WEB-INF/lib/zimbrastore.jar</target>
+        <target>/opt/zimbra/lib/jars/zimbrastore.jar</target>
+        <perms owner="root" mode="444"/>
+      </file>
+      <file>
+        <source>ZimbraBuild/corebuild/opt/zimbra/bin/zmmailboxdctl</source>
+        <target>/opt/zimbra/bin/zmmailboxdctl</target>
+        <perms owner="root" mode="755"/>
+      </file>
+      <file>
+        <source>ZimbraTagLib/build/zimbrataglib.jar</source>
+        <target>/opt/zimbra/jetty/webapps/zimbra/WEB-INF/lib/zimbrataglib.jar</target>
+        <target>/opt/zimbra/jetty/webapps/zimbraAdmin/WEB-INF/lib/zimbrataglib.jar</target>
+        <perms owner="zimbra" mode="664"/>
+      </file>
+  </package>
+  <preinstall></preinstall>
+  <postinstall></postinstall>
+  </patch> -->
+  <patch name="6.0.12_GA" version="6.0.12_P2">
+  <desc>Patch 6.0.12_P2</desc>
+  <bug>57684</bug>
+  <bug>57727</bug>
+  <bug>58024</bug>
+  <bug>58617</bug>
   <package name="zimbra-store">
       <file>
         <source>ZimbraBuild/corebuild/opt/zimbra/lib/jars/zimbrastore.jar</source>
