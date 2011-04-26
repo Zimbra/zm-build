@@ -115,8 +115,6 @@ $(BUILD_ROOT)/zimbra-core.spec:
 		$(BUILD_ROOT)/zimbra-core.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/tcmalloc-$(TCMALLOC_VERSION)" >> \
 		$(BUILD_ROOT)/zimbra-core.spec
-	echo "%attr(-, zimbra, zimbra) /opt/zimbra/rlfe-$(RLFE_VERSION)" >> \
-		$(BUILD_ROOT)/zimbra-core.spec
 	echo "" >>  $(BUILD_ROOT)/zimbra-core.spec
 	echo "%clean" >>  $(BUILD_ROOT)/zimbra-core.spec
 
@@ -167,7 +165,6 @@ $(CORE_DEST_DIR)/docs:
 	echo "Pcre version (OSX only): $(PCRE_VERSION)" >> $@/zimbra-software-versions.txt
 	echo "Popt version (OSX only): $(POPT_VERSION)" >> $@/zimbra-software-versions.txt
 	echo "Postfix version: $(POSTFIX_VERSION)" >> $@/zimbra-software-versions.txt
-	echo "Rlfe version: $(RLFE_VERSION)" >> $@/zimbra-software-versions.txt
 	echo "RRDtool version: $(RRD_VERSION)" >> $@/zimbra-software-versions.txt
 	echo "Tcmalloc version: $(TCMALLOC_VERSION)" >> $@/zimbra-software-versions.txt
 
@@ -418,9 +415,4 @@ $(CORE_DEST_DIR)/$(TCMALLOC_DIR):
 	@echo "*** Creating tcmalloc client libraries"
 	mkdir -p $@
 	(cd $(CORE_DEST_DIR); tar xfz $(TCMALLOC_SOURCE).tgz;)
-
-$(CORE_DEST_DIR)/$(RLFE_DIR):
-	@echo "*** Creating rlfe"
-	mkdir -p $@
-	(cd $(CORE_DEST_DIR); tar xfz $(RLFE_SOURCE).tgz;)
 
