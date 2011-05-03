@@ -932,13 +932,24 @@ verifyLicenseAvailable() {
   fi
 
   # Check for licensed user count and warn if necessary
-  numCurrentUsers=`su - zimbra -c "zmprov -l gaa 2> /dev/null | wc -l"`;
+  oldUserCheck=0
+  userProvCommand="zmprov -l cto userAccounts 2> /dev/null"
+  if [ ${ZM_CUR_MAJOR} -lt 6 ]; then
+    userProvCommand="zmprov -l gaa 2> /dev/null | wc -l"
+    oldUserCheck=1
+  elif [ ${ZM_CUR_MAJOR} -eq 6 -a ${ZM_CUR_MICRO} -lt 8 ]; then
+    userProvCommand="zmprov -l gaa 2> /dev/null | wc -l"
+    oldUserCheck=1
+  fi 
+  numCurrentUsers=`su - zimbra -c "$userProvCommand"`;
   numUsersRC=$?
   if [ $numUsersRC -ne 0 ]; then
-    numCurrentUsers=`su - zimbra -c "zmprov -l gaa 2> /dev/null | wc -l"`;
+    numCurrentUsers=`su - zimbra -c "$userProvCommand"`;
     numUsersRC=$?
   fi
-  numCurrentUsers=`expr $numCurrentUsers - 3`
+  if [ $oldUserCheck -eq 1 ]; then
+    numCurrentUsers=`expr $numCurrentUsers - 3`
+  fi
   if [ $numCurrentUsers -gt 0 ]; then
     echo "Current Users=$numCurrentUsers Licensed Users=$licensedUsers"
   fi
