@@ -53,6 +53,30 @@ isFQDN() {
   fi
 }
 
+verifyIPv6() {
+    IP=$1
+    BAD_IP=`echo $IP | awk --posix -F: '{ RES=0; SHORT=0; LSHORT=0; if (NF > 8) { RES=1 } else { for (BLK = 1; BLK <= NF; BLK++) { if ($BLK !~ /^([0-9a-fA-f]{1,4})$/) { if ($BLK == "") { if (SHORT > 0) { if ((BLK - LSHORT) != 1) { RES = 1 } } SHORT++; LSHORT = BLK } else { RES = 1 } } } } if ((NF == 3) && ($2 != "")) { RES = 1 } if (((SHORT > 2) && (NF != 3)) || ((SHORT == 2) && (!(($2 == "") || ($(NF-1) == ""))))) { RES = 1 } if ((NF - SHORT) > 6 ) { RES = 1 } if ((SHORT == 0) && (NF < 8)) { RES = 1 } print RES }'`
+    return ${BAD_IP}
+}
+
+verifyMixedIPv6() {
+    IP=$1
+    BAD_IP=`echo $IP | awk --posix -F: '{ RES=0; SHORT=0; LSHORT=0; if (NF > 8) { RES=1 } else { for (BLK = 1; BLK <= NF; BLK++) { if ($BLK !~ /^([0-9a-fA-f]{1,4})$/) { if ($BLK == "") { if (SHORT > 0) { if ((BLK - LSHORT) != 1) { RES = 1 } } SHORT++; LSHORT = BLK } else { RES = 1 } } } } if ((NF == 3) && ($2 != "")) { RES = 1 } if (((SHORT > 2) && (NF != 3)) || ((SHORT == 2) && (!(($2 == "") || ($(NF-1) == ""))))) { RES = 1 } if ((NF - SHORT) > 6 ) { RES = 1 } if ((SHORT == 0) && (NF < 6)) { RES = 1 } print RES }'`
+    return ${BAD_IP}
+}
+
+verifyIPv4() {
+    IP=$1
+    BAD_IP=0;
+    if [ "`echo $IP | sed -ne 's/[0-9]//gp'`" != "..." ]
+    then
+        BAD_IP=1
+    else
+        BAD_IP=`echo $IP | awk -F. 'BEGIN {BAD_OCTET=0} { for (OCTET = 1; OCTET <= 4; OCTET++) { if (($OCTET !~ /^(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])$/) || ((OCTET == 1) && ($OCTET == "0"))) { BAD_OCTET=1 } } } END { print BAD_OCTET }'`
+    fi
+    return ${BAD_IP}
+}
+
 saveConfig() {
   FILE=$1
 
@@ -390,25 +414,57 @@ checkRequired() {
   http://bugs.mysql.com/bug.php?id=11822
 
 EOF
-
       exit 1
     fi
 
-    if perl -e "while (<>) { next if /^#|^127.0/; exit 1 if /\s+$HOSTNAME\s+/; }" /etc/hosts; then
-      cat<<EOF
-
-  ERROR: Installation can not proceeed.  Please fix your /etc/hosts file
-  to contain:
-
-  <ip> <FQHN> <HN>
-
-  Where <IP> is the ip address of the host, 
-  <FQHN> is the FULLY QUALIFIED host name, and
-  <HN> is the (optional) hostname-only portion
-
-EOF
-
-      exit 1
+    H_LINE=`grep -v "^#" /etc/hosts | grep ${HOSTNAME} | sed -ne '1p'`
+    IP=`echo ${H_LINE} | awk '{ print $1 }'` 
+    INVALID_IP=0
+    if [ "`echo ${IP} | tr -d '[0-9a-fA-F:]'`" = "" ]
+    then
+        verifyIPv6 ${IP}
+        if [ $? -ne 0 ]
+        then
+            INVALID_IP=1
+        fi
+    elif [ "`echo ${IP} | tr -d '[0-9.]'`" = "" ]
+    then
+        verifyIPv4 ${IP}
+        if [ $? -ne 0 ]
+        then
+            INVALID_IP=1
+        fi
+    elif [ "`echo ${IP} | tr -d '[0-9a-fA-F:.]'`" = "" ]
+    then
+        IPv6=`echo ${IP} | awk -F: '{printf("%s", $1); for (i = 2; i < NF; i++) { printf(":%s", $i) }}'`
+        IPv4=`echo ${IP} | sed -ne 's/.*://p'`
+        verifyMixedIPv6 ${IPv6}
+        if [ $? -eq 0 ]
+        then
+            verifyIPv4 ${IPv4}
+            if [ $? -ne 0 ]
+            then
+                INVALID_IP=1
+            fi
+        else
+            INVALID_IP=1
+        fi
+    else
+        INVALID_IP=1
+    fi
+    if [ `echo ${H_LINE} | awk '{ print NF }'` -ne 3 -o ${INVALID_IP} -eq 1 ]
+    then
+        echo ""
+        echo "  ERROR: Installation can not proceeed.  Please fix your /etc/hosts file"
+        echo "  to contain:"
+        echo ""
+        echo "  <ip> <FQHN> <HN>"
+        echo ""
+        echo "  Where <IP> is the ip address of the host, "
+        echo "  <FQHN> is the FULLY QUALIFIED host name, and"
+        echo "  <HN> is the (optional) hostname-only portion"
+        echo ""
+        exit 1
     fi
   fi
 
