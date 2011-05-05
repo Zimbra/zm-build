@@ -3699,6 +3699,15 @@ sub upgrade711GA {
       runLdapAttributeUpgrade("58514");
     }
   }
+  if (main::isInstalled("zimbra-store")) {
+    # 53272
+    if (-d "/opt/zimbra/jetty/webapps/spnego") {
+      system("rm -rf /opt/zimbra/jetty/webapps/spnego");
+    }
+    if (-d "/opt/zimbra/jetty/work/spnego") {
+      system("rm -rf /opt/zimbra/jetty/work/spnego");
+    }
+  }
   return 0;
 }
 
