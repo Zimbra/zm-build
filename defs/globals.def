@@ -30,14 +30,14 @@ ifeq (UBUNTU,$(findstring UBUNTU,$(BUILD_PLATFORM)))
 	VERSION_TAG := ${XVERSION_TAG}
 endif
 
-PROVIDES	:= smtpdaemon
+MTA_PROVIDES	:= smtpdaemon
 
 ifeq (SLES,$(findstring SLES,$(BUILD_PLATFORM)))
-	PROVIDES	:= smtp_daemon
+	MTA_PROVIDES	:= smtp_daemon
 endif
 
 ifeq ($(BUILD_PLATFORM), SuSEES10)
-	PROVIDES	:= smtp_daemon
+	MTA_PROVIDES	:= smtp_daemon
 endif
 
 ARCH := i386

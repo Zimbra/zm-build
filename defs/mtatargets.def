@@ -61,7 +61,7 @@ $(BUILD_ROOT)/zimbra-mta.spec:
 	cat $(PACKAGE_CONF_DIR)/Spec/zimbra-mta.spec | \
 		sed -e 's/@@VERSION@@/$(VERSION_TAG)/' \
 		-e 's/@@RELEASE@@/$(RELEASE)/' \
-		-e 's/@@PROVIDES@@/$(PROVIDES)' \
+		-e 's/@@MTA_PROVIDES@@/$(MTA_PROVIDES)' \
 		-e 's/^Copyright:/$(RPMCOPYRIGHTSTR):/' \
 		-e '/^%pre$$/ r zimbra-mta.pre' \
 		-e '/^%post$$/ r zimbra-mta.post' > $(BUILD_ROOT)/zimbra-mta.spec
