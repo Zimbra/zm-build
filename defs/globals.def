@@ -30,6 +30,16 @@ ifeq (UBUNTU,$(findstring UBUNTU,$(BUILD_PLATFORM)))
 	VERSION_TAG := ${XVERSION_TAG}
 endif
 
+PROVIDES	:= smtpdaemon
+
+ifeq (SLES,$(findstring SLES,$(BUILD_PLATFORM)))
+	PROVIDES	:= smtp_daemon
+endif
+
+ifeq ($(BUILD_PLATFORM), SuSEES10)
+	PROVIDES	:= smtp_daemon
+endif
+
 ARCH := i386
 
 ifeq ($(BUILD_PLATFORM), RHEL4_64)

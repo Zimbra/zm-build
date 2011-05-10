@@ -12,7 +12,7 @@ Vendor: Zimbra, Inc.
 Packager: Zimbra, Inc.
 BuildRoot: /opt/zimbra
 AutoReqProv: no
-provides: smtpdaemon
+provides: @@PROVIDES@@
 requires: zimbra-core
 
 %description
