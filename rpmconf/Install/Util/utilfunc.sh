@@ -417,7 +417,7 @@ EOF
       exit 1
     fi
 
-    H_LINE=`grep -v "^#" /etc/hosts | grep ${HOSTNAME} | sed -ne '1p'`
+    H_LINE=`grep -v "^#" /etc/hosts | sed -ne 's/#.*//p' | grep ${HOSTNAME} | sed -ne '1p'`
     IP=`echo ${H_LINE} | awk '{ print $1 }'` 
     INVALID_IP=0
     if [ "`echo ${IP} | tr -d '[0-9a-fA-F:]'`" = "" ]
@@ -452,7 +452,7 @@ EOF
     else
         INVALID_IP=1
     fi
-    if [ `echo ${H_LINE} | awk '{ print NF }'` -ne 3 -o ${INVALID_IP} -eq 1 ]
+    if [ `echo ${H_LINE} | awk '{ print NF }'` -lt 3 -o ${INVALID_IP} -eq 1 ]
     then
         echo ""
         echo "  ERROR: Installation can not proceeed.  Please fix your /etc/hosts file"
