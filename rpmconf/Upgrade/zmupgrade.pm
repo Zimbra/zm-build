@@ -3697,6 +3697,7 @@ sub upgrade711GA {
       runLdapAttributeUpgrade("58084");
       runLdapAttributeUpgrade("58481");
       runLdapAttributeUpgrade("58514");
+      runLdapAttributeUpgrade("59720");
     }
   }
   if (main::isInstalled("zimbra-store")) {
