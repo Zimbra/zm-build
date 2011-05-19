@@ -83,8 +83,6 @@ $(BUILD_ROOT)/zimbra-core.spec:
 		$(BUILD_ROOT)/zimbra-core.spec
 	echo "%attr(755, zimbra, zimbra) /opt/zimbra/docs" >> \
 		$(BUILD_ROOT)/zimbra-core.spec
-	echo "%attr(444, zimbra, zimbra) /opt/zimbra/docs/*" >> \
-		$(BUILD_ROOT)/zimbra-core.spec
 	echo "%attr(755, root, root) /opt/zimbra/contrib" >> \
 		$(BUILD_ROOT)/zimbra-core.spec
 	echo "%attr(755, root, root) /opt/zimbra/libexec" >> \
@@ -247,6 +245,7 @@ $(CORE_DEST_DIR)/conf: $(WEBAPP_DIR)/service.war
 	cp $(PACKAGE_CONF_DIR)/Conf/zmssl.cnf.in $@
 	cp $(SERVICE_DIR)/conf/datasource.xml $@
 	cp $(SERVICE_DIR)/conf/amavisd.conf.in $@
+	cp $(SERVICE_DIR)/conf/amavisd/amavisd-custom.conf $@
 	cp $(SERVICE_DIR)/conf/dspam.conf $@
 	cp $(SERVICE_DIR)/conf/zmlogrotate $@
 	cp $(SERVICE_DIR)/conf/clamd.conf.in $@
@@ -284,10 +283,11 @@ $(CORE_DEST_DIR)/conf: $(WEBAPP_DIR)/service.war
 	cp $(SERVICE_DIR)/conf/nginx/nginx.conf.web.template $@/nginx/templates/
 	cp $(SERVICE_DIR)/conf/stats.conf.in $@
 	cp $(SERVICE_DIR)/conf/salocal.cf $@/salocal.cf.in
-	cp $(SERVICE_DIR)/conf/zmmta.cf-$(MAILBOXD_SERVER) $@/zmmta.cf
+	cp $(SERVICE_DIR)/conf/zmconfigd.cf $@/zmconfigd.cf
 	cp $(SERVICE_DIR)/conf/timezones.ics $@
 	cp $(SERVICE_DIR)/conf/zimbra.ld.conf $@
 	cp $(SERVICE_DIR)/conf/postfix_recipient_restrictions.cf $@
+	cp $(SERVICE_DIR)/conf/postfix/smtpd_sender_restrictions.cf $@
 	cp -Rf $(SERVICE_DIR)/conf/externaldirsync $@/externaldirsync
 	cp -Rf $(SERVICE_DIR)/build/dist/conf/rights $@/rights
 	rm -f $@/rights/zimbra-rights-domainadmin.xml-template
@@ -404,7 +404,7 @@ $(CORE_DEST_DIR)/$(SASL_DIR)-$(SASL_VERSION):
 	(cd $(CORE_DEST_DIR); tar xzf $(SASL_SOURCE).tgz;)
 	mkdir -p $(CORE_DEST_DIR)/$(SASL_DIR)-$(SASL_VERSION)/etc
 	cp -f $(SERVICE_DIR)/conf/saslauthd.conf.in $(CORE_DEST_DIR)/$(SASL_DIR)-$(SASL_VERSION)/etc/
-	cp -f $(SERVICE_DIR)/conf/postfix_sasl_smtpd.conf $(CORE_DEST_DIR)/$(SASL_DIR)-$(SASL_VERSION)/lib/sasl2/smtpd.conf
+	cp -f $(SERVICE_DIR)/conf/postfix_sasl_smtpd.conf $(CORE_DEST_DIR)/$(SASL_DIR)-$(SASL_VERSION)/lib/sasl2/smtpd.conf.in
 
 $(CORE_DEST_DIR)/$(LDAP_DIR)-libs-$(LDAP_VERSION):
 	@echo "*** Creating openldap client libraries"

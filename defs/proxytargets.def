@@ -66,8 +66,6 @@ $(BUILD_ROOT)/zimbra-proxy.spec:
 	rm -f zimbra-proxy.post
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/nginx-$(NGINX_VERSION)" >> \
 		$(BUILD_ROOT)/zimbra-proxy.spec
-	echo "%attr(-, zimbra, zimbra) /opt/zimbra/nginx-$(NGINX_OLD_VERSION)" >> \
-		$(BUILD_ROOT)/zimbra-proxy.spec
 	echo "" >> $(BUILD_ROOT)/zimbra-proxy.spec
 	echo "%clean" >> $(BUILD_ROOT)/zimbra-proxy.spec
 
@@ -79,4 +77,3 @@ $(PROXY_DEST_DIR):
 $(PROXY_DEST_DIR)/$(NGINX_DIR): $(PROXY_DEST_DIR)
 	@echo "*** Creating nginx"
 	(cd $(PROXY_DEST_DIR); tar xzf $(NGINX_SOURCE).tgz;)
-	(cd $(PROXY_DEST_DIR); tar xzf $(NGINX_OLD_SOURCE).tgz;)

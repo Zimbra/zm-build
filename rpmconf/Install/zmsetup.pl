@@ -2,7 +2,7 @@
 # 
 # ***** BEGIN LICENSE BLOCK *****
 # Zimbra Collaboration Suite Server
-# Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011 Zimbra, Inc.
+# Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
 # 
 # The contents of this file are subject to the Zimbra Public License
 # Version 1.3 ("License"); you may not use this file except in
@@ -249,6 +249,7 @@ if (-d "/opt/zimbra/log") {
   main::progress("Moving $logfile to /opt/zimbra/log\n");
   my $dstlog = "zmsetup.".getDateStamp().".txt";
   system("cp -f $logfile /opt/zimbra/log/$dstlog");
+  system("chown zimbra:zimbra /opt/zimbra/log/$dstlog");
 }
 
 ################################################################
@@ -380,7 +381,7 @@ sub checkPortConflicts {
   }
 
   if (!$options{c}) {
-    if ($any) { ask("Port conflicts detected! - Any key to continue", ""); }
+    if ($any) { ask("Port conflicts detected! - Press Enter/Return key to continue", ""); }
   }
 
 }
@@ -1630,10 +1631,22 @@ sub getInstallStatus {
         $installStatus{$stage}{op} = $op;
         $installStatus{$stage}{date} = $d;
         if ($stage eq "zimbra-core") {
-          #$prevVersion = $curVersion;
           $v =~ s/_HEAD.*//;
           $v =~ s/^zimbra-core[-_]//;
-          $v =~ s/^(\d+\.\d+\.[^_]*_[^_]+_[^.]+).*/\1/;
+          if ($v =~ /\.deb$/) {
+            my $orig_v=$v;
+            $v =~ s/^(\d+\.\d+\.\d+\.\w+\.\w+)\..*/\1/;
+            $v = reverse($v);
+            $v =~ s/\./_/;
+            $v =~ s/\./_/;
+            $v = reverse($v);
+            if ($v =~ /\_deb$/) {
+              $v = $orig_v;
+              $v =~ s/^(\d+\.\d+\.[^_]*_[^_]+_[^.]+).*/\1/;
+            }
+          } else {
+            $v =~ s/^(\d+\.\d+\.[^_]*_[^_]+_[^.]+).*/\1/;
+          }
           $curVersion = $v;
         }
       } elsif ($op eq "CONFIGURED") {
@@ -6215,8 +6228,11 @@ sub applyConfig {
     }
 
     progress ( "Starting servers..." );
-    #runAsZimbra ("$ZMPROV ms $config{HOSTNAME} zimbraUserServicesEnabled FALSE");
-    runAsZimbra ("/opt/zimbra/bin/zmcontrol start");
+    if ($main::platform =~ /MACOSX/) {
+      runAsRoot("/bin/launchctl load /System/Library/LaunchDaemons/com.zimbra.zcs.plist");
+    } else {
+      runAsZimbra ("/opt/zimbra/bin/zmcontrol start");
+    }
     # runAsZimbra swallows the output, so call status this way
     `$SU "/opt/zimbra/bin/zmcontrol status"`;
     progress ( "done.\n" );
@@ -6227,10 +6243,14 @@ sub applyConfig {
       configInstallZimlets();
 
       progress ( "Restarting mailboxd...");
-      runAsZimbra("/opt/zimbra/bin/zmmailboxdctl restart");
+      if ($main::platform =~ /MACOSX/) {
+        runAsRoot("/bin/launchctl unload /System/Library/LaunchDaemons/com.zimbra.zcs.plist");
+        runAsRoot("/bin/launchctl load /System/Library/LaunchDaemons/com.zimbra.zcs.plist");
+      } else {
+        runAsZimbra("/opt/zimbra/bin/zmmailboxdctl restart");
+      }
       progress ( "done.\n" );
     }
-    #runAsZimbra ("$ZMPROV ms $config{HOSTNAME} zimbraUserServicesEnabled TRUE");
   } else {
     progress ( "WARNING: Document and Zimlet initialization skipped because Application Server was not configured to start.\n")
       if (isEnabled("zimbra-store"));
@@ -6259,6 +6279,7 @@ sub applyConfig {
     main::progress("Moving $logfile to /opt/zimbra/log\n");
     my $dstlog = "zmsetup.".getDateStamp().".txt";
     system("cp -f $logfile /opt/zimbra/log/$dstlog");
+    system("chown zimbra:zimbra /opt/zimbra/log/$dstlog");
   } else {
     progress ( "Operations logged to $logfile\n" );
   }
