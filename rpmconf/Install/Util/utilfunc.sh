@@ -421,11 +421,6 @@ EOF
     IP=`echo ${H_LINE} | awk '{ print $1 }'` 
     INVALID_IP=0
 
-    UBUNTU_DIST=0
-    if [ `uname -v | grep -i ubuntu` ]
-    then
-        UBUNTU_DIST=1
-    fi
     if [ "`echo ${IP} | tr -d '[0-9a-fA-F:]'`" = "" ]
     then
         verifyIPv6 ${IP}
