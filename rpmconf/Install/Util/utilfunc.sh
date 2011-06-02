@@ -2176,12 +2176,14 @@ conflictInstalled() {
   pkg=$1
   CONFLICTINSTALLED=""
   QP=`dpkg-query -W -f='\${Package}: \${Provides}\n' '*' | grep ": .*$pkg" | sed -e 's/:.*//'`
-  if [ "x$QP" != "x" ]; then
-    isInstalled $QP
+  while [ "x$QP" != "x" ]; do
+    QF=`echo $QP | sed -e 's/\s.*//'` 
+    QP=`echo $QP | sed -e 's/\S*\s*//'`
+    isInstalled $QF
     if [ x$PKGINSTALLED != "x" ]; then
-      CONFLICTINSTALLED=$QP
+      CONFLICTINSTALLED=$QF
     fi
-  fi
+  done
 }
 
 suggestedVersion() {
