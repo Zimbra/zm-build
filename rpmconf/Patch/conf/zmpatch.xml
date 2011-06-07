@@ -511,6 +511,11 @@
         <target>/opt/zimbra/jetty/webapps/zimbraAdmin/js/zimbraAdmin/search/model/ZaSearch.js</target>
         <perms owner="zimbra" mode="664"/>
       </file>
+      <file type="network">
+        <source>ZimbraBuild/storebuild/opt/zimbra/lib/ext/zimbrasync/zimbrasync.jar</source>
+        <target>/opt/zimbra/lib/ext/zimbrasync/zimbrasync.jar</target>
+        <perms owner="root" mode="444"/>
+      </file>
   </package>
   <preinstall></preinstall>
   <postinstall></postinstall>
