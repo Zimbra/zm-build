@@ -1885,6 +1885,28 @@ getInstallPackages() {
         if [ $i = "zimbra-core" ]; then
           continue
         fi
+        if [ $i = "zimbra-mta" ]; then
+          CONFLICTS="no"
+          for j in $CONFLICT_PACKAGES; do
+            conflictInstalled $j
+            if [ "x$CONFLICTINSTALLED" != "x" ]; then
+              echo "     Conflicting package: $CONFLICTINSTALLED"
+              CONFLICTS="yes"
+            fi
+          done
+          echo ""
+          if [ $CONFLICTS = "yes" ]; then
+            echo ""
+            echo "###ERROR###"
+            echo ""
+            echo "One or more package conflicts exists."
+            echo "Please remove them before running this installer."
+            echo ""
+            echo "Installation cancelled."
+            echo ""
+            exit 1
+          fi
+        fi
         INSTALL_PACKAGES="$INSTALL_PACKAGES $i"
         if [ $i = "zimbra-apache" ]; then
           APACHE_SELECTED="yes"
@@ -1970,14 +1992,11 @@ getInstallPackages() {
 
       if [ $i = "zimbra-mta" ]; then
         CONFLICTS="no"
-        echo "Checking for package conflicts..."
         for j in $CONFLICT_PACKAGES; do
           conflictInstalled $j
           if [ "x$CONFLICTINSTALLED" != "x" ]; then
             echo "     Conflicting package: $CONFLICTINSTALLED"
             CONFLICTS="yes"
-          else
-            echo "     All clear"
           fi
         done
         echo ""
