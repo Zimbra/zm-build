@@ -453,7 +453,7 @@
   <package name="zimbra-core">
       <file>
         <source>ZimbraBuild/corebuild/opt/zimbra/libexec/zmfixperms</source>
-        <target>/opt/zimbra/libexec/zmpfixperms</target>
+        <target>/opt/zimbra/libexec/zmfixperms</target>
         <perms owner="root" mode="755"/>
       </file>
       <file>
