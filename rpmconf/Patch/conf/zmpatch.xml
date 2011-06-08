@@ -340,7 +340,7 @@
   </package>
   <preinstall></preinstall>
   <postinstall></postinstall>
-  </patch> -->
+  </patch>
   <patch name="6.0.12_GA" version="6.0.12_P2">
   <desc>Patch 6.0.12_P2</desc>
   <bug>57684</bug>
