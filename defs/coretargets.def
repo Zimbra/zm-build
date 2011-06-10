@@ -85,10 +85,6 @@ $(BUILD_ROOT)/zimbra-core.spec:
 		$(BUILD_ROOT)/zimbra-core.spec
 	echo "%attr(444, zimbra, zimbra) /opt/zimbra/docs/*" >> \
 		$(BUILD_ROOT)/zimbra-core.spec
-	echo "%attr(755, zimbra, zimbra) /opt/zimbra/docs/rebranding" >> \
-		$(BUILD_ROOT)/zimbra-core.spec
-	echo "%attr(444, zimbra, zimbra) /opt/zimbra/docs/rebranding/*" >> \
-		$(BUILD_ROOT)/zimbra-core.spec
 	echo "%attr(755, root, root) /opt/zimbra/contrib" >> \
 		$(BUILD_ROOT)/zimbra-core.spec
 	echo "%attr(755, root, root) /opt/zimbra/libexec" >> \
