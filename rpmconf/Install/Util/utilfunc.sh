@@ -1894,7 +1894,6 @@ getInstallPackages() {
               CONFLICTS="yes"
             fi
           done
-          echo ""
           if [ $CONFLICTS = "yes" ]; then
             echo ""
             echo "###ERROR###"
@@ -1999,7 +1998,6 @@ getInstallPackages() {
             CONFLICTS="yes"
           fi
         done
-        echo ""
         if [ $CONFLICTS = "yes" ]; then
           echo ""
           echo "###ERROR###"
