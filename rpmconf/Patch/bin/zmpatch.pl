@@ -316,6 +316,17 @@ sub deployPatch($) {
         progress("copied.\n", 1, 1);
       }
     }
+    # Delete files if necessary
+    foreach my $deleteFile (keys %{$pref->{deletefile}}) {
+      my $dref = $pref->{deletefile}->{$deleteFile};
+      next if ($zmtype eq "FOSS" && lc($dref->{type}) eq "network");
+      foreach my $dstfile (@{$dref->{target}}) {
+        progress("$dstfile...",2,1); 
+        debugLog("rm $dstfile");
+        unlink($dstfile) unless $options{dryrun};
+        progress("deleted.\n", 1, 1);
+      }
+    }
     # update the installed version of package
     logSession("UPGRADED $package-${currentRelease}_${patchBuildNumber}")
       unless ($package eq "zimbra-core");
