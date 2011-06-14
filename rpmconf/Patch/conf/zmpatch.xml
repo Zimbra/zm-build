@@ -356,7 +356,7 @@
   </package>
   <preinstall></preinstall>
   <postinstall></postinstall>
-  </patch> -->
+  </patch>
   <patch name="6.0.12_GA" version="6.0.12_P3">
   <desc>Patch 6.0.12_P3</desc>
   <bug>57684</bug>
@@ -423,6 +423,29 @@
         <source>ZimbraBuild/storebuild/opt/zimbra/jetty-6.1.22.z6/webapps/zimbraAdmin/js/zimbraAdmin/search/model/ZaSearch.js</source>
         <target>/opt/zimbra/jetty/webapps/zimbraAdmin/js/zimbraAdmin/search/model/ZaSearch.js</target>
         <perms owner="zimbra" mode="664"/>
+      </file>
+  </package>
+  <preinstall></preinstall>
+  <postinstall></postinstall>
+  </patch> -->
+  <patch name="6.0.13_GA" version="6.0.13_P1">
+  <desc>Patch 6.0.13_P1</desc>
+  <bug>60748</bug>
+  <package name="zimbra-store">
+      <file>
+        <source>ZimbraBuild/storebuild/opt/zimbra/jetty-6.1.22.z6/webapps/zimbra/js/Startup1_1_all.js.zgz</source>
+        <target>/opt/zimbra/jetty-6.1.22.z6/webapps/zimbra/js/Startup1_1_all.js.zgz</target>
+        <perms owner="zimbra" mode="644"/>
+      </file>
+      <file>
+        <source>ZimbraBuild/storebuild/opt/zimbra/jetty-6.1.22.z6/webapps/zimbra/js/Mail_all.js.zgz</source>
+        <target>/opt/zimbra/jetty-6.1.22.z6/webapps/zimbra/js/Mail_all.js.zgz</target>
+        <perms owner="zimbra" mode="644"/>
+      </file>
+      <file>
+        <source>ZimbraBuild/storebuild/opt/zimbra/jetty-6.1.22.z6/webapps/zimbra/js/NewWindow_2_all.js.zgz</source>
+        <target>/opt/zimbra/jetty-6.1.22.z6/webapps/zimbra/js/NewWindow_2_all.js.zgz</target>
+        <perms owner="zimbra" mode="644"/>
       </file>
   </package>
   <preinstall></preinstall>
