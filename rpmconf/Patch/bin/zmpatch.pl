@@ -102,7 +102,7 @@ unless ($options{config} && -f $options{config}) {
 }
 
 if ($options{config} && -f $options{config}) {
-  $config = XMLin($options{config}, ForceArray => [ 'name', 'patch', 'package', 'file', 'zimlet','target'], KeyAttr => [ 'name', 'patch', 'package', 'source', 'version' ]);
+  $config = XMLin($options{config}, ForceArray => [ 'name', 'patch', 'package', 'file', 'deletefile', 'zimlet','target'], KeyAttr => [ 'name', 'patch', 'package', 'source', 'version' ]);
   my $debug_text = Dumper($config);
   debugLog($debug_text);
   
