@@ -3729,7 +3729,7 @@ sub upgrade800BETA1 {
   main::progress("Updating from 8.0.0_BETA1\n");
   # bug 59607 - migrate old zmmtaconfig variables to zmconfigd
   foreach my $lc_var qw(enable_config_restarts interval log_level listen_port debug watchdog watchdog_services) {
-    $val = main::getLocalConfig("zmmtaconfig_${lc_var}");
+    my $val = main::getLocalConfig("zmmtaconfig_${lc_var}");
     if ($val ne "") {
       main::setLocalConfig("zmconfigd_${lc_var}", "$val");
       main::deleteLocalConfig("zmmtaconfig_${lc_var}");
