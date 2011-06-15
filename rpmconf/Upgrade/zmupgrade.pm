@@ -3735,6 +3735,11 @@ sub upgrade800BETA1 {
       main::deleteLocalConfig("zmmtaconfig_${lc_var}");
     }
   }
+  if (main::isInstalled("zimbra-ldap")) {
+    # 3884
+    main::progress("Adding dynamic group configuration");
+    main::runAsZimbra("perl -I${scriptDir} ${scriptDir}/migrate20110615-AddDynlist.pl");
+  }
   return 0;
 }
 
