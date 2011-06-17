@@ -638,6 +638,11 @@
         <perms owner="zimbra" mode="644"/>
       </file>
       <file>
+        <source>ZimbraBuild/storebuild/opt/zimbra/jetty-6.1.22.z6/webapps/zimbra/js/NewWindow_1_all.js.zgz</source>
+        <target>/opt/zimbra/jetty-6.1.22.z6/webapps/zimbra/js/NewWindow_1_all.js.zgz</target>
+        <perms owner="zimbra" mode="644"/>
+      </file>
+      <file>
         <source>ZimbraBuild/storebuild/opt/zimbra/jetty-6.1.22.z6/webapps/zimbra/js/NewWindow_2_all.js.zgz</source>
         <target>/opt/zimbra/jetty-6.1.22.z6/webapps/zimbra/js/NewWindow_2_all.js.zgz</target>
         <perms owner="zimbra" mode="644"/>
