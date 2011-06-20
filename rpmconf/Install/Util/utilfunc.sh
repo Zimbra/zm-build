@@ -2199,6 +2199,9 @@ conflictInstalled() {
     isInstalled $QF
     if [ x$PKGINSTALLED != "x" ]; then
       CONFLICTINSTALLED=$QF
+      if [ x$CONFLICTINSTALLED = "xzimbra-mta" ];
+        CONFLICTINSTALLED=""
+      fi
     fi
   done
 }
