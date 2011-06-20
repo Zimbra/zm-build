@@ -558,6 +558,7 @@
   <bug>60632</bug>
   <bug>60743</bug>
   <bug>60748</bug>
+  <bug>60952</bug>
   <package name="zimbra-core">
       <file>
         <source>ZimbraBuild/corebuild/opt/zimbra/libexec/zmfixperms</source>
