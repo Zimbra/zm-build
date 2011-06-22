@@ -558,6 +558,7 @@
   <bug>60632</bug>
   <bug>60743</bug>
   <bug>60748</bug>
+  <bug>60951</bug>
   <bug>60952</bug>
   <bug>61209</bug>
   <package name="zimbra-core">
@@ -570,6 +571,11 @@
         <source>ZimbraBuild/corebuild/opt/zimbra/bin/zmconfigdctl</source>
         <target>/opt/zimbra/bin/zmconfigdctl</target>
         <perms owner="root" mode="755"/>
+      </file>
+      <file>
+        <source>ZimbraBuild/corebuild/opt/zimbra/zimbramon/pylibs/state.py</source>
+        <target>/opt/zimbra/zimbramon/pylibs/state.py</target>
+        <perms owner="root" mode="444"/>
       </file>
       <file>
         <source>ZimbraBuild/corebuild/opt/zimbra/lib/jars/jython-2.5.2.jar</source>
