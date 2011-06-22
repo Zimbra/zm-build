@@ -552,6 +552,7 @@
   <desc>Patch 7.1.1_P2</desc>
   <bug>57891</bug>
   <bug>58733</bug>
+  <bug>60364</bug>
   <bug>60379</bug>
   <bug>60403</bug>
   <bug>60600</bug>
@@ -561,6 +562,7 @@
   <bug>60951</bug>
   <bug>60952</bug>
   <bug>61209</bug>
+  <bug>61217</bug>
   <package name="zimbra-core">
       <file>
         <source>ZimbraBuild/corebuild/opt/zimbra/libexec/zmfixperms</source>
@@ -658,6 +660,11 @@
       <file>
         <source>ZimbraBuild/storebuild/opt/zimbra/jetty-6.1.22.z6/webapps/zimbra/js/NewWindow_2_all.js.zgz</source>
         <target>/opt/zimbra/jetty-6.1.22.z6/webapps/zimbra/js/NewWindow_2_all.js.zgz</target>
+        <perms owner="zimbra" mode="644"/>
+      </file>
+      <file>
+        <source>ZimbraBuild/storebuild/opt/zimbra/jetty-6.1.22.z6/webapps/zimbra/js/CalendarAppt_all.js.zgz</source>
+        <target>/opt/zimbra/jetty-6.1.22.z6/webapps/zimbra/js/CalendarAppt_all.js.zgz</target>
         <perms owner="zimbra" mode="644"/>
       </file>
   </package>
