@@ -565,6 +565,11 @@
   <bug>61217</bug>
   <package name="zimbra-core">
       <file>
+        <source>ZimbraBuild/corebuild/opt/zimbra/lib/jars/zimbracommon.jar</source>
+        <target>/opt/zimbra/jetty/common/lib/zimbracommon.jar</target>
+        <perms owner="root" mode="444"/>
+      </file>
+      <file>
         <source>ZimbraBuild/corebuild/opt/zimbra/libexec/zmfixperms</source>
         <target>/opt/zimbra/libexec/zmfixperms</target>
         <perms owner="root" mode="755"/>
@@ -666,6 +671,11 @@
         <source>ZimbraBuild/storebuild/opt/zimbra/jetty-6.1.22.z6/webapps/zimbra/js/CalendarAppt_all.js.zgz</source>
         <target>/opt/zimbra/jetty-6.1.22.z6/webapps/zimbra/js/CalendarAppt_all.js.zgz</target>
         <perms owner="zimbra" mode="644"/>
+      </file>
+      <file type="network">
+        <source>ZimbraBuild/storebuild/opt/zimbra/lib/ext/network/zimbranetwork.jar</source>
+        <target>/opt/zimbra/lib/ext/network/zimbranetwork.jar</target>
+        <perms owner="root" mode="444"/>
       </file>
   </package>
   <preinstall></preinstall>
