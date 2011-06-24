@@ -3,7 +3,7 @@
 # 
 # ***** BEGIN LICENSE BLOCK *****
 # Zimbra Collaboration Suite Server
-# Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011 Zimbra, Inc.
+# Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
 # 
 # The contents of this file are subject to the Zimbra Public License
 # Version 1.3 ("License"); you may not use this file except in
@@ -36,7 +36,7 @@ chomp $rundir;
 my $scriptDir = "/opt/zimbra/libexec/scripts";
 
 my $lowVersion = 18;
-my $hiVersion = 65; # this should be set to the DB version expected by current server code
+my $hiVersion = 69; # this should be set to the DB version expected by current server code
 
 # Variables for the combo schema updater
 my $comboLowVersion = 20;
@@ -101,17 +101,21 @@ my %updateScripts = (
   '46' => "migrate20070921-ImapDataSourceUidValidity.pl", # 5.0.0_RC1
   '47' => "migrate20070928-ScheduledTaskIndex.pl",     # 5.0.0_RC2
   '48' => "migrate20071128-AccountId.pl",              # 5.0.0_RC3
-  '49' => "migrate20071206-WidenSizeColumns.pl",        # 5.0.0_GA
-  '50' => "migrate20080130-ImapFlags.pl",               # 5.0.3_GA
+  '49' => "migrate20071206-WidenSizeColumns.pl",       # 5.0.0_GA
+  '50' => "migrate20080130-ImapFlags.pl",              # 5.0.3_GA
   '51' => "migrate20080213-IndexDeferredColumn.pl",    # 5.0.3_GA
-  '52' => "migrate20080909-DataSourceItemTable.pl",     # 5.0.10_GA
+  '52' => "migrate20080909-DataSourceItemTable.pl",    # 5.0.10_GA
   '53' => "migrate20080930-MucService.pl",             # this upgrades to 60 for 6_0_0 GA
    # 54-59 skipped for possible FRANKLIN use
-	'60' => "migrate20090315-MobileDevices.pl",
-	'61' => "migrate20090406-DataSourceItemTable.pl",    # 6.0.0_BETA1
-	'62' => "migrate20090430-highestindexed.pl",       # 6.0.0_BETA2
-  '63' => "migrate20100106-MobileDevices.pl",        # 6.0.5_GA
-  '64' => "migrate20100926-Dumpster.pl",             # 7.0.0_BETA1
+  '60' => "migrate20090315-MobileDevices.pl",
+  '61' => "migrate20090406-DataSourceItemTable.pl",    # 6.0.0_BETA1
+  '62' => "migrate20090430-highestindexed.pl",         # 6.0.0_BETA2
+  '63' => "migrate20100106-MobileDevices.pl",          # 6.0.5_GA
+  '64' => "migrate20100926-Dumpster.pl",               # 7.0.0_BETA1
+  '65' => "migrate20101123-MobileDevices.pl",          # 8.0.0_BETA1
+  '66' => "migrate20110314-MobileDevices.pl",          # 8.0.0_BETA1
+  '67' => "migrate20110325-MailAddressTable.pl",       # 8.0.0_BETA1
+  '68' => "migrate20110330-RecipientsColumn.pl",       # 8.0.0_BETA1
 );
 
 my %updateFuncs = (
@@ -207,7 +211,6 @@ my %updateFuncs = (
   "6.0.9_GA" => \&upgrade609GA,
   "6.0.10_GA" => \&upgrade6010GA,
   "6.0.11_GA" => \&upgrade6011GA,
-  "6.0.12_GA" => \&upgrade6012GA,
   "6.0.13_GA" => \&upgrade6013GA,
   "7.0.0_BETA1" => \&upgrade700BETA1,
   "7.0.0_BETA2" => \&upgrade700BETA2,
@@ -310,7 +313,6 @@ my @versionOrder = (
   "6.0.9_GA",
   "6.0.10_GA",
   "6.0.11_GA",
-  "6.0.12_GA",
   "6.0.13_GA",
   "7.0.0_BETA1",
   "7.0.0_BETA2",
@@ -556,8 +558,6 @@ sub upgrade {
     main::progress("This appears to be 6.0.10_GA\n");
   } elsif ($startVersion eq "6.0.11_GA") {
     main::progress("This appears to be 6.0.11_GA\n");
-  } elsif ($startVersion eq "6.0.12_GA") {
-    main::progress("This appears to be 6.0.12_GA\n");
   } elsif ($startVersion eq "6.0.13_GA") {
     main::progress("This appears to be 6.0.13_GA\n");
   } elsif ($startVersion eq "7.0.0_BETA1") {
@@ -603,6 +603,9 @@ sub upgrade {
       &updateLdapBdbConfig("6.0.0_GA");
       my $rc=&migrateLdap("6.0.0_GA");
       if ($rc) { return 1; }
+    } elsif($startMajor < 8 && $targetMajor >= 8) {
+      &updateLdapBdbConfig("8.0.0_GA");
+      my $rc=&upgradeLdap("8.0.0_GA");
     }
     if (startLdap()) {return 1;} 
   }
@@ -3440,11 +3443,11 @@ sub upgrade6011GA {
   return 0;
 }
 
-sub upgrade6012GA {
+sub upgrade6012GA {                                                                                                                                                                                                   
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
-  main::progress("Updating from 6.0.12_GA\n");
+  main::progress("Updating from 6.0.12_GA\n");                                                                                                                                                                        
   return 0;
-}
+}                                                                                                                                                                                                                     
 
 sub upgrade6013GA {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
@@ -3724,6 +3727,19 @@ sub upgrade712GA {
 sub upgrade800BETA1 {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
   main::progress("Updating from 8.0.0_BETA1\n");
+  # bug 59607 - migrate old zmmtaconfig variables to zmconfigd
+  foreach my $lc_var qw(enable_config_restarts interval log_level listen_port debug watchdog watchdog_services) {
+    my $val = main::getLocalConfig("zmmtaconfig_${lc_var}");
+    if ($val ne "") {
+      main::setLocalConfig("zmconfigd_${lc_var}", "$val");
+      main::deleteLocalConfig("zmmtaconfig_${lc_var}");
+    }
+  }
+  if (main::isInstalled("zimbra-ldap")) {
+    # 3884
+    main::progress("Adding dynamic group configuration");
+    main::runAsZimbra("perl -I${scriptDir} ${scriptDir}/migrate20110615-AddDynlist.pl");
+  }
   return 0;
 }
 
@@ -4255,6 +4271,51 @@ sub indexLdapAttribute {
   return;
 }
 
+sub upgradeLdap($) {
+  my ($upgradeVersion) = @_;
+  if (main::isInstalled ("zimbra-ldap")) {
+    if($main::configStatus{"LdapUpgraded$upgradeVersion"} ne "CONFIGURED") {
+      my $ldifFile="/opt/zimbra/data/ldap/ldap.bak";
+      if (-f $ldifFile && -s $ldifFile) {
+        chmod 0644, $ldifFile;
+
+        main::progress("Upgrading ldap data...");
+        if (-d "/opt/zimbra/data/ldap/hdb.prev") {
+          `mv /opt/zimbra/data/ldap/hdb.prev /opt/zimbra/data/ldap/hdb.prev.$$`;
+        }
+
+        `mv /opt/zimbra/data/ldap/hdb /opt/zimbra/data/ldap/hdb.prev`;
+        `mkdir -p /opt/zimbra/data/ldap/hdb/db`;
+        `mkdir -p /opt/zimbra/data/ldap/hdb/logs`;
+        if (-f "/opt/zimbra/conf/custom/ldap/DB_CONFIG") {
+          `cp -f /opt/zimbra/conf/custom/ldap/DB_CONFIG /opt/zimbra/data/ldap/hdb/db/DB_CONFIG`;
+        } else {
+          `cp -f /opt/zimbra/openldap/var/openldap-data/DB_CONFIG /opt/zimbra/data/ldap/hdb/db`;
+        }
+        `chown -R zimbra:zimbra /opt/zimbra/data/ldap`;
+        my $rc;
+        $rc=main::runAsZimbra("/opt/zimbra/openldap/sbin/slapadd -q -b '' -F /opt/zimbra/data/ldap/config -l $ldifFile");
+        if ($rc != 0) {
+          main::progress("slapadd import failed.\n");
+          return 1;
+        }
+	chmod 0640, $ldifFile;
+        main::progress("done.\n");
+      } else {
+        if (! -f $ldifFile) {
+          main::progress("Error: Unable to find /opt/zimbra/data/ldap/ldap.bak\n");
+        } else {
+          main::progress("Error: /opt/zimbra/data/ldap/ldap.bak is empty\n");
+        }
+        return 1;
+      }
+      main::configLog("LdapUpgraded$upgradeVersion");
+    }
+    if (startLdap()) {return 1;} 
+  }
+  return 0;
+}
+
 sub migrateLdap($) {
   my ($migrateVersion) = @_;
   if (main::isInstalled ("zimbra-ldap")) {
@@ -4300,7 +4361,7 @@ sub migrateLdap($) {
           main::progress("slapadd import failed.\n");
           return 1;
         }
-        `chmod 640 /opt/zimbra/data/ldap/ldap.bak`;
+        chmod 0640, "/opt/zimbra/data/ldap/ldap.bak";
         main::progress("done.\n");
       } else {
         stopLdap();
@@ -4353,16 +4414,52 @@ sub updateLdapBdbConfig($) {
   my ($migrateVersion) = @_;
   if (main::isInstalled ("zimbra-ldap")) {
     if($main::configStatus{"BdbMigrated$migrateVersion"} ne "CONFIGURED") {
-      if ( -f "/opt/zimbra/conf/custom/ldap/DB_CONFIG" ) {
-        if (!fgrep { /set_lg_dir/ } "/opt/zimbra/conf/custom/ldap/DB_CONFIG") { 
-          `echo "set_lg_dir  /opt/zimbra/data/ldap/hdb/logs" >> /opt/zimbra/conf/custom/ldap/DB_CONFIG`;
-        } else {
-          `/usr/bin/perl -pi -e "s#set_lg_dir(.*)#set_lg_dir  /opt/zimbra/data/ldap/hdb/logs#" /opt/zimbra/conf/custom/ldap/DB_CONFIG`;
+      if($migrateVersion eq "6.0.0_GA") {
+        if ( -f "/opt/zimbra/conf/custom/ldap/DB_CONFIG" ) {
+          if (!fgrep { /set_lg_dir/ } "/opt/zimbra/conf/custom/ldap/DB_CONFIG") {
+            `echo "set_lg_dir  /opt/zimbra/data/ldap/hdb/logs" >> /opt/zimbra/conf/custom/ldap/DB_CONFIG`;
+          } else {
+            `/usr/bin/perl -pi -e "s#set_lg_dir(.*)#set_lg_dir  /opt/zimbra/data/ldap/hdb/logs#" /opt/zimbra/conf/custom/ldap/DB_CONFIG`;
+          }
+          if (!fgrep { /DB_LOG_AUTOREMOVE/ } "/opt/zimbra/conf/custom/ldap/DB_CONFIG" ) {
+            `echo "log_set_config  DB_LOG_AUTO_REMOVE" >> /opt/zimbra/conf/custom/ldap/DB_CONFIG`;
+          } else {
+            `/usr/bin/perl -pi -e "s#set_flags(\s+)DB_LOG_AUTOREMOVE#log_set_config  DB_LOG_AUTO_REMOVE#" /opt/zimbra/conf/custom/ldap/DB_CONFIG`;
+          }
         }
-        if (!fgrep { /DB_LOG_AUTOREMOVE/ } "/opt/zimbra/conf/custom/ldap/DB_CONFIG" ) {
-          `echo "set_log_config  DB_LOG_AUTO_REMOVE" >> /opt/zimbra/conf/custom/ldap/DB_CONFIG`;
-        } else {
-          `/usr/bin/perl -pi -e "s#set_flags(\s+)DB_LOG_AUTOREMOVE#set_log_config  DB_LOG_AUTO_REMOVE#" /opt/zimbra/conf/custom/ldap/DB_CONFIG`;
+        if ( -f "/opt/zimbra/conf/custom/ldap/DB_CONFIG.accesslog") {
+          if (!fgrep { /set_lg_dir/ } "/opt/zimbra/conf/custom/ldap/DB_CONFIG.accesslog") { 
+            `echo "set_lg_dir  /opt/zimbra/data/ldap/accesslog/logs" >> /opt/zimbra/conf/custom/ldap/DB_CONFIG.accesslog`;
+          } else {
+            `/usr/bin/perl -pi -e "s#set_lg_dir(.*)#set_lg_dir  /opt/zimbra/data/ldap/accesslog/logs#" /opt/zimbra/conf/custom/ldap/DB_CONFIG.accesslog`;
+          }
+          if (!fgrep { /DB_LOG_AUTOREMOVE/ } "/opt/zimbra/conf/custom/ldap/DB_CONFIG.accesslog" ) {
+            `echo "log_set_config  DB_LOG_AUTO_REMOVE" >> /opt/zimbra/conf/custom/ldap/DB_CONFIG.accesslog`;
+          } else {
+            `/usr/bin/perl -pi -e "s#set_flags(\s+)DB_LOG_AUTOREMOVE#log_set_config  DB_LOG_AUTO_REMOVE#" /opt/zimbra/conf/custom/ldap/DB_CONFIG.accesslog`;
+          }
+        }
+      }
+      if($migrateVersion eq "8.0.0_GA") {
+        if ( -f "/opt/zimbra/conf/custom/ldap/DB_CONFIG" ) {
+          if (fgrep { /DB_LOG_AUTO_REMOVE/ } "/opt/zimbra/conf/custom/ldap/DB_CONFIG" ) {
+            `/usr/bin/perl -pi -e "s#set_log_config(.*)#log_set_config  DB_LOG_AUTO_REMOVE#" /opt/zimbra/conf/custom/ldap/DB_CONFIG`;
+          }
+        }
+        if ( -f "/opt/zimbra/conf/custom/ldap/DB_CONFIG.accesslog") {
+          if (fgrep { /DB_LOG_AUTO_REMOVE/ } "/opt/zimbra/conf/custom/ldap/DB_CONFIG.accesslog" ) {
+            `/usr/bin/perl -pi -e "s#set_log_config(.*)#log_set_config  DB_LOG_AUTO_REMOVE#" /opt/zimbra/conf/custom/ldap/DB_CONFIG.accesslog`;
+          }
+        }
+        if ( -f "/opt/zimbra/data/ldap/hdb/db/DB_CONFIG" ) {
+          if (fgrep { /DB_LOG_AUTO_REMOVE/ } "/opt/zimbra/data/ldap/hdb/db/DB_CONFIG" ) {
+            `/usr/bin/perl -pi -e "s#set_log_config(.*)#log_set_config  DB_LOG_AUTO_REMOVE#" /opt/zimbra/data/ldap/hdb/db/DB_CONFIG`;
+          }
+        }
+        if ( -f "/opt/zimbra/data/ldap/accesslog/db/DB_CONFIG") {
+          if (fgrep { /DB_LOG_AUTO_REMOVE/ } "/opt/zimbra/data/ldap/accesslog/db/DB_CONFIG" ) {
+            `/usr/bin/perl -pi -e "s#set_log_config(.*)#log_set_config  DB_LOG_AUTO_REMOVE#" /opt/zimbra/data/ldap/accesslog/db/DB_CONFIG`;
+          }
         }
       }
       main::configLog("BdbMigrated$migrateVersion");
