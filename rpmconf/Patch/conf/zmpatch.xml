@@ -468,7 +468,7 @@
   <package name="zimbra-core">
       <file>
         <source>ZimbraBuild/corebuild/opt/zimbra/lib/jars/zimbracommon.jar</source>
-        <target>/opt/zimbra/jetty/common/lib/zimbracommon.jar</target>
+        <target>/opt/zimbra/lib/jars/zimbracommon.jar</target>
         <perms owner="root" mode="444"/>
       </file>
       <file>
@@ -577,6 +577,11 @@
       <file type="network">
         <source>ZimbraBuild/storebuild/opt/zimbra/lib/ext/network/zimbranetwork.jar</source>
         <target>/opt/zimbra/lib/ext/network/zimbranetwork.jar</target>
+        <perms owner="root" mode="444"/>
+      </file>
+      <file>
+        <source>ZimbraBuild/storebuild/opt/zimbra/jetty-6.1.22.z6/common/lib/zimbracommon.jar</source>
+        <target>/opt/zimbra/jetty/common/lib/zimbracommon.jar</target>
         <perms owner="root" mode="444"/>
       </file>
   </package>
