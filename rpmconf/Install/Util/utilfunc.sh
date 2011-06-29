@@ -800,7 +800,13 @@ verifyLicenseActivationServer() {
 
   # if all else fails make sure we can contact the activation server for automated activation
   if [ ${ZM_CUR_MAJOR} -ge "7" ]; then
-    /opt/zimbra/java/bin/java -XX:ErrorFile=/opt/zimbra/log -client -Xmx256m -Dzimbra.home=/opt/zimbra -Djava.library.path=/opt/zimbra/lib -Djava.ext.dirs=/opt/zimbra/java/jre/lib/ext:/opt/zimbra/lib/jars -classpath ./lib/jars/zimbra-license-tools.jar com.zimbra.cs.license.LicenseCLI --ping > /dev/null 2>&1
+    if [ ${ZM_CUR_MAJOR} -eq "7" -a ${ZM_CUR_MINOR} -ge "1" ]; then
+      /opt/zimbra/bin/zmlicense --ping > /dev/null 2>&1
+    elif [ ${ZM_CUR_MAJOR} -gt "7" ]; then
+      /opt/zimbra/bin/zmlicense --ping > /dev/null 2>&1
+    else 
+      /opt/zimbra/java/bin/java -XX:ErrorFile=/opt/zimbra/log -client -Xmx256m -Dzimbra.home=/opt/zimbra -Djava.library.path=/opt/zimbra/lib -Djava.ext.dirs=/opt/zimbra/java/jre/lib/ext:/opt/zimbra/lib/jars -classpath ./lib/jars/zimbra-license-tools.jar com.zimbra.cs.license.LicenseCLI --ping > /dev/null 2>&1
+    fi
     if [ $? != 0 ]; then
       activationWarning
     fi
