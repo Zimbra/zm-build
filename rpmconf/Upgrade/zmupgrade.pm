@@ -374,6 +374,7 @@ sub upgrade {
       $found = 1 if ($v eq $startVersion);
       if ($found) {
         &doMysql51Upgrade if ($v eq "7.0.0_BETA1");
+        &doMysql55Upgrade if ($v eq "8.0.0_BETA1");
       }
       last if ($v eq $targetVersion);
     }
@@ -4171,6 +4172,11 @@ sub doMysql51Upgrade {
     if (fgrep { /^log-bin/ } ${mysql_mycnf}) {
       main::runAsZimbra("${zimbra_home}/libexec/zminiutil --backup=.pre-${targetVersion} --section=mysqld --set --key=binlog-format --value=MIXED ${mysql_mycnf}");
     }
+}
+
+sub doMysql55Upgrade {
+    main::runAsZimbra("${zimbra_home}/libexec/zminiutil --backup=.pre-${targetVersion} --section=mysqld --unset --key=ignore-builtin-innodb ${mysql_mycnf}");
+    main::runAsZimbra("${zimbra_home}/libexec/zminiutil --backup=.pre-${targetVersion} --section=mysqld --unset --key=plugin-load ${mysql_mycnf}");
 }
 
 sub doMysqlUpgrade {
