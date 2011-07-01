@@ -4175,6 +4175,9 @@ sub doMysql51Upgrade {
 }
 
 sub doMysql55Upgrade {
+    my $zimbra_home = main::getLocalConfig("zimbra_home") || "/opt/zimbra";
+    my $mysql_mycnf = main::getLocalConfig("mysql_mycnf"); 
+    my $zimbra_log_directory = main::getLocalConfig("zimbra_log_directory") || "${zimbra_home}/log"; 
     main::runAsZimbra("${zimbra_home}/libexec/zminiutil --backup=.pre-${targetVersion} --section=mysqld --unset --key=ignore-builtin-innodb ${mysql_mycnf}");
     main::runAsZimbra("${zimbra_home}/libexec/zminiutil --backup=.pre-${targetVersion} --section=mysqld --unset --key=plugin-load ${mysql_mycnf}");
 }
