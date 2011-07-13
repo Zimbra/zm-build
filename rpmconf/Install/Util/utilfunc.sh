@@ -1640,8 +1640,6 @@ removeExistingInstall() {
           fi
         fi
       elif [ -f /etc/rsyslog.conf ]; then
-	sed -i -e 's/^$ModLoad imudp/#$ModLoad imudp/' /etc/rsyslog.conf
-	sed -i -e 's/^$UDPServerRun 514/#$UDPServerRun 514/' /etc/rsyslog.conf
 	if [ -d /etc/rsyslog.d ]; then
           if [ -f /etc/rsyslog.d/60-zimbra.conf ]; then
             echo -n "Cleaning up /etc/rsyslog.d..."
