@@ -987,20 +987,51 @@ verifyLicenseAvailable() {
 
   # Check for licensed user count and warn if necessary
   oldUserCheck=0
-  userProvCommand="zmprov -l cto userAccounts 2> /dev/null"
   if [ ${ZM_CUR_MAJOR} -lt 6 ]; then
     userProvCommand="zmprov -l gaa 2> /dev/null | wc -l"
     oldUserCheck=1
   elif [ ${ZM_CUR_MAJOR} -eq 6 -a ${ZM_CUR_MICRO} -lt 8 ]; then
     userProvCommand="zmprov -l gaa 2> /dev/null | wc -l"
     oldUserCheck=1
-  fi 
-  numCurrentUsers=`su - zimbra -c "$userProvCommand"`;
-  numUsersRC=$?
-  if [ $numUsersRC -ne 0 ]; then
+  else
+    userProvCommand="zmprov -l cto userAccounts 2> /dev/null"
+  fi
+
+  # Make sure zmprov is responsive and able to talk to LDAP before we do anything for real
+  zmprovTest="zmprov -l gac 2> /dev/null > /dev/null"
+  su - zimbra -c "$zmprovTest"
+  zmprovTestRC=$?
+  if [ $zmprovTestRC -eq 0 ]; then
+    su - zimbra -c "$zmprovTest"
+    zmprovTestRC=$?
+  fi
+  if [ $zmprovTestRC -ne 0 ]; then
+    echo ""
+    echo "Warning: Unable to determine the number of users on this system via zmprov command."
+    echo "Please make sure LDAP services are running."
+    echo ""
+  fi
+
+  # Passed check to make sure zmprov and LDAP are working.  Now let's get a real count.
+  numCurrentUsers=-1;
+  if [ $zmprovTestRC -eq 0 ]; then
     numCurrentUsers=`su - zimbra -c "$userProvCommand"`;
     numUsersRC=$?
+    if [ $numUsersRC -ne 0 ]; then
+      numCurrentUsers=`su - zimbra -c "$userProvCommand"`;
+      numUsersRC=$?
+    fi
   fi
+
+  # Unable to determine the number of current users
+  if [ "$numCurrentUsers"x = "x" ]; then
+    numCurrentUsers=-1;
+    echo ""
+    echo "Warning: Unable to determine the number of users on this system via zmprov command."
+    echo "Please make sure LDAP services are running."
+    echo ""
+  fi
+
   if [ $oldUserCheck -eq 1 ]; then
     numCurrentUsers=`expr $numCurrentUsers - 3`
   fi
