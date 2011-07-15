@@ -3747,6 +3747,9 @@ sub upgrade800BETA1 {
     }
   }
   if (main::isInstalled("zimbra-ldap")) {
+    if ($isLdapMaster) {
+      runLdapAttributeUpgrade("57866");
+    }
     # 3884
     main::progress("Adding dynamic group configuration");
     main::runAsZimbra("perl -I${scriptDir} ${scriptDir}/migrate20110615-AddDynlist.pl");
