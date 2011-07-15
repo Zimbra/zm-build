@@ -49,6 +49,9 @@ if [ "x$PLAT" = "xMACOSXx86" -o "x$PLAT" = "xMACOSXx86_10.5" ]; then
 elif [ x"$PLAT" = "xMACOSXx86_10.6" ]; then
   OS_ARCH=$(uname -m)
   OS_REL=10
+elif [ x"$PLAT" = "xMACOSXx86_10.7" ]; then
+  OS_ARCH=$(uname -m)
+  OS_REL=11
 fi
 
 if [ -L /opt/zimbra/mta/mysql ]; then
