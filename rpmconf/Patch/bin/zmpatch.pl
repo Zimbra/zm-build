@@ -339,7 +339,7 @@ sub deployPatch($) {
   logSession("CONFIG SESSION START");
   logSession("CONFIGURED BEGIN");
   logSession("CONFIGURED patch$patch->{version}");
-  logSession("CONFIGURED BEGIN");
+  logSession("CONFIGURED END");
   logSession("CONFIG SESSION COMPLETE");
 
 }
