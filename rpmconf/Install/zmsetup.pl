@@ -6256,6 +6256,8 @@ sub applyConfig {
       if (isEnabled("zimbra-store"));
   }
 
+  postinstall::notifyZimbra();
+
   setupCrontab();
 
   if ($newinstall) {
