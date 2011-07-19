@@ -3781,23 +3781,36 @@ sub upgrade800BETA1 {
     );
     my $entry=$result->entry($result->count-1);
     my @attrvals=$entry->get_value("olcDbIndex");
-    my $needModify=1;
+    my $MzimbraMemberOf=1;
+    my $MzimbraSharedItem=1;
 
     foreach my $attr (@attrvals) {
       if ($attr =~ /zimbraMemberOf/) {
-        $needModify=0;
+        $MzimbraMemberOf=0;
+      }
+      if ($attr =~ /zimbraSharedItem/) {
+        $MzimbraSharedItem=0;
       }
     }
 
-    if ($needModify) {
+    if ($MzimbraMemberOf) {
       $result = $ldap->modify(
           $dn,
           add =>{olcDbIndex=>"zimbraMemberOf eq"},
       );
     }
+    if ($MzimbraSharedItem) {
+      $result = $ldap->modify(
+          $dn,
+          add =>{olcDbIndex=>"zimbraSharedItem eq,sub"},
+      );
+    }
     $ldap->unbind;
-    if ($needModify) {
+    if ($MzimbraMemberOf) {
       &indexLdapAttribute("zimbraMemberOf");
+    }
+    if ($MzimbraSharedItem) {
+      &indexLdapAttribute("zimbraSharedItem");
     }
   }
   return 0;
