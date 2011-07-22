@@ -3753,6 +3753,7 @@ sub upgrade800BETA1 {
     # 3884
     main::progress("Adding dynamic group configuration");
     main::runAsZimbra("perl -I${scriptDir} ${scriptDir}/migrate20110615-AddDynlist.pl");
+    main::runAsZimbra("perl -I${scriptDir} ${scriptDir}/migrate20110721-AddUnique.pl");
     my $ldap_pass = `$su "zmlocalconfig -s -m nokey ldap_root_password"`;
     chomp($ldap_pass);
     my $ldap;
