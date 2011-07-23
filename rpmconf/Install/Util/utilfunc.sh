@@ -997,39 +997,16 @@ verifyLicenseAvailable() {
     userProvCommand="zmprov -l cto userAccounts 2> /dev/null"
   fi
 
-  # Make sure zmprov is responsive and able to talk to LDAP before we do anything for real
-  zmprovTest="zmprov -l gac 2> /dev/null > /dev/null"
-  su - zimbra -c "$zmprovTest"
-  zmprovTestRC=$?
-  if [ $zmprovTestRC -eq 0 ]; then
-    su - zimbra -c "$zmprovTest"
-    zmprovTestRC=$?
-  fi
-  if [ $zmprovTestRC -ne 0 ]; then
-    echo ""
-    echo "Warning: Unable to determine the number of users on this system via zmprov command."
-    echo "Please make sure LDAP services are running."
-    echo ""
-  fi
-
-  # Passed check to make sure zmprov and LDAP are working.  Now let's get a real count.
-  numCurrentUsers=-1;
-  if [ $zmprovTestRC -eq 0 ]; then
+  numCurrentUsers=`su - zimbra -c "$userProvCommand"`;
+  numUsersRC=$?
+  if [ $numUsersRC -ne 0 ]; then
     numCurrentUsers=`su - zimbra -c "$userProvCommand"`;
     numUsersRC=$?
-    if [ $numUsersRC -ne 0 ]; then
-      numCurrentUsers=`su - zimbra -c "$userProvCommand"`;
-      numUsersRC=$?
-    fi
   fi
 
-  # Unable to determine the number of current users
+  # Unable to determine the number of current users.   zmprov command must have failed!
   if [ "$numCurrentUsers"x = "x" ]; then
     numCurrentUsers=-1;
-    echo ""
-    echo "Warning: Unable to determine the number of users on this system via zmprov command."
-    echo "Please make sure LDAP services are running."
-    echo ""
   fi
 
   if [ $oldUserCheck -eq 1 ]; then
@@ -1048,7 +1025,7 @@ verifyLicenseAvailable() {
      if [ $response = "no" ]; then
       askYN "Exit?" "N"
       if [ $response = "yes" ]; then
-        echo "Exiting - place a valid license file in /opt/zimbra/conf/ZCSLicense.xml and rerun."
+        echo "Exiting"
         exit 1
       fi
      else
@@ -1058,16 +1035,13 @@ verifyLicenseAvailable() {
   elif [ $numUsersRC -ne 0 ] || [ $numCurrentUsers -gt $licensedUsers ]; then
     echo "Warning: The number of users on this system ($numCurrentUsers) exceeds the licensed number"
     echo "($licensedUsers).  You may continue with the upgrade, but you will not be able to create"
-    echo "new users.  Also, initialization of the Document feature will fail.  If you "
-    echo "later wish to use the Documents feature you'll need to resolve the licensing "
-    echo "issues and then run a separate script available from support to initialize the "
-    echo "Documents feature. "
+    echo "new users." 
     while :; do
      askYN "Do you wish to continue?" "N"
      if [ $response = "no" ]; then
       askYN "Exit?" "N"
       if [ $response = "yes" ]; then
-        echo "Exiting - place a valid license file in /opt/zimbra/conf/ZCSLicense.xml and rerun."
+        echo "Exiting"
         exit 1
       fi
      else
