@@ -4367,6 +4367,9 @@ sub upgradeLdap($) {
   my ($upgradeVersion) = @_;
   if (main::isInstalled ("zimbra-ldap")) {
     if($main::configStatus{"LdapUpgraded$upgradeVersion"} ne "CONFIGURED") {
+      # Fix LDAP schema for bug#62443
+      unlink("/opt/zimbra/data/ldap/config/cn\=config/cn\=schema/cn\=\{3\}zimbra.ldif");
+      unlink("/opt/zimbra/data/ldap/config/cn\=config/cn\=schema/cn\=\{4\}amavisd.ldif");
       my $ldifFile="/opt/zimbra/data/ldap/ldap.bak";
       if (-f $ldifFile && -s $ldifFile) {
         chmod 0644, $ldifFile;
