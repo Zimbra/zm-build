@@ -3758,6 +3758,7 @@ sub upgrade800BETA1 {
   if (main::isInstalled("zimbra-ldap")) {
     if ($isLdapMaster) {
       runLdapAttributeUpgrade("57866");
+      runLdapAttributeUpgrade("57205");
     }
     # 3884
     main::progress("Adding dynamic group configuration");
