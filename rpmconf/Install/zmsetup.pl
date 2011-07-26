@@ -1409,6 +1409,8 @@ sub setDefaults {
     $config{LDAPPOSTPASS} = $config{LDAPADMINPASS};
     $config{LDAPAMAVISPASS} =  $config{LDAPADMINPASS};
     $config{ldap_nginx_password} = $config{LDAPADMINPASS};
+    $config{LDAPREPLICATIONTYPE} = "master"; # Values can be master, mmr, replica
+    $config{LDAPSERVERID} = 2; # Aleady enabled master should be 1, so default to next ID.
     $ldapRepChanged = 1;
     $ldapPostChanged = 1;
     $ldapAmavisChanged = 1;
@@ -1883,6 +1885,17 @@ sub askNum {
     my $i = int($v);
     if ($v eq $i) { return $v; }
     print "A numeric response is required!\n";
+  }
+}
+
+sub askPositiveInt {
+  my $prompt = shift;
+  my $default = shift;
+  while (1) {
+    my $v = ask($prompt, $default);
+    my $i = int($v);
+    if ($v eq $i && $v > 0) { return $v; }
+    print "A positive integer response is required!\n";
   }
 }
 
@@ -2596,13 +2609,24 @@ sub setProxyMode {
 sub changeLdapHost {
   $config{LDAPHOST} = shift;
   $config{LDAPHOST} = lc($config{LDAPHOST});
-  if (isInstalled("zimbra-ldap") && $config{LDAPHOST} ne $config{HOSTNAME}) {
+  if (isInstalled("zimbra-ldap") && $config{LDAPHOST} eq "") {
+      $ldapReplica=0;
+      $config{LDAPREPLICATIONTYPE}="master";
+  } elsif (isInstalled("zimbra-ldap") && $config{LDAPHOST} ne $config{HOSTNAME}) {
       $ldapReplica=1;
+      $config{LDAPREPLICATIONTYPE}="replica";
+  } elsif (isInstalled("zimbra-ldap") && $config{LDAPHOST} eq $config{HOSTNAME}) {
+      $ldapReplica=0;
+      $config{LDAPREPLICATIONTYPE}="master";
   }
 }
 
 sub changeLdapPort {
   $config{LDAPPORT} = shift;
+}
+
+sub changeLdapServerID {
+  $config{LDAPSERVERID} = shift;
 }
 
 sub getDnsRecords {
@@ -2723,6 +2747,23 @@ sub setLdapHost {
 sub setLdapPort {
   changeLdapPort( askNum("Please enter the ldap server port:",
       $config{LDAPPORT}));
+}
+
+sub setLdapServerID {
+  changeLdapServerID(askPositiveInt("Please enter the ldap server port:", $config{LDAPSERVERID}));
+}
+
+sub setLdapReplicationType {
+  while (1) {
+    my $m =
+      askNonBlank("Please enter the LDAP replication type (replica, mmr)",
+        $config{LDAPREPLICATIONTYPE});
+    if ($m eq "replica" || $m eq "mmr") {
+      $config{LDAPREPLICATIONTYPE} = $m;
+      return;
+    }
+    print "Please enter a valid replication type!\n";
+  }
 }
 
 sub setHttpPort {
@@ -3170,6 +3211,22 @@ sub createLdapMenu {
       #"arg" => "ENABLEGALSYNCACCOUNTS",
       #};
     #$i++;
+    if($config{LDAPREPLICATIONTYPE} ne "master") {
+      $$lm{menuitems}{$i} = {
+        "prompt" => "Ldap replication type:",
+        "var" => \$config{LDAPREPLICATIONTYPE},
+        "callback" => \&setLdapReplicationType
+      };
+      $i++;
+    }
+    if ($config{LDAPREPLICATIONTYPE} eq "mmr") {
+      $$lm{menuitems}{$i} = {
+        "prompt" => "Ldap Server ID:",
+        "var" => \$config{LDAPSERVERID},
+        "callback" => \&setLdapServerID
+      };
+      $i++;
+    }
     if ($config{LDAPROOTPASS} ne "") {
       $config{LDAPROOTPASSSET} = "set";
     } else {
@@ -3192,7 +3249,7 @@ sub createLdapMenu {
       "callback" => \&setLdapRepPass
       };
     $i++;
-    if ($config{HOSTNAME} eq $config{LDAPHOST} || isEnabled("zimbra-mta")) {
+    if ($config{HOSTNAME} eq $config{LDAPHOST} || $config{LDAPREPLICATIONTYPE} ne "replica" || isEnabled("zimbra-mta")) {
       if ($config{LDAPPOSTPASS} eq "") {
         $config{LDAPPOSTPASSSET} = "UNSET";
       } else {
@@ -3216,7 +3273,7 @@ sub createLdapMenu {
         };
       $i++;
     }
-    if ($config{HOSTNAME} eq $config{LDAPHOST} || isEnabled("zimbra-proxy")) {
+    if ($config{HOSTNAME} eq $config{LDAPHOST} || $config{LDAPREPLICATIONTYPE} ne "replica" || isEnabled("zimbra-proxy")) {
       if ($config{ldap_nginx_password} eq "") {
         $config{LDAPNGINXPASSSET} = "UNSET";
       } else {
@@ -4267,7 +4324,11 @@ sub checkLdapReplicationEnabled() {
     my $result = $ldap->search(base=>"cn=accesslog", scope=>"base", filter=>"cn=accesslog", attrs=>['cn']);
     if ($result->code()) {
       detail("Unable to find accesslog database on master.\n");
-      detail("Please run zmldapenablereplica on the master.\n");
+      if ($config{LDAPREPLICATIONTYPE} eq "replica") {
+        detail("Please run zmldapenablereplica on the master.\n");
+      } elsif ($config{LDAPREPLICATIONTYPE} eq "mmr") {
+        detail("Please run zmldapenable-mmr on the master.\n");
+      }
       return 1; 
     } else {
       detail("Verified ability to query accesslog on master.\n");
@@ -4640,26 +4701,55 @@ sub configSetupLdap {
       }
     }
   } elsif (isEnabled("zimbra-ldap")) {
-
-
     # enable replica for both new and upgrade installs if we are adding ldap
-    if ($config{LDAPHOST} ne $config{HOSTNAME} ||  -f "/opt/zimbra/.enable_replica") {
+    if ($config{LDAPHOST} ne $config{HOSTNAME} || -f "/opt/zimbra/.enable_replica") {
       progress("Updating ldap_root_password and zimbra_ldap_password...");
       setLocalConfig ("ldap_root_password", $config{LDAPROOTPASS});
       setLocalConfig ("zimbra_ldap_password", $config{LDAPADMINPASS});
       setLocalConfig ("ldap_replication_password", "$config{LDAPREPPASS}");
+      if($newinstall && $config{LDAPREPLICATIONTYPE} eq "mmr") {
+        if ($ldapPostChanged == 1) {
+           progress ( "Setting Postfix password..." );
+           runAsZimbra ("/opt/zimbra/bin/zmldappasswd -p \'$config{LDAPPOSTPASS}\'");
+           progress ( "done.\n" );
+        }
+        if ($ldapAmavisChanged == 1) {
+           progress ( "Setting amavis password..." );
+           runAsZimbra ("/opt/zimbra/bin/zmldappasswd -a \'$config{LDAPAMAVISPASS}\'");
+           progress ( "done.\n" );
+        }
+        if ($ldapNginxChanged == 1) {
+           progress ( "Setting nginx password..." );
+           runAsZimbra ("/opt/zimbra/bin/zmldappasswd -n \'$config{ldap_nginx_password}\'");
+           progress ( "done.\n" );
+        }
+      }
       progress("done.\n");
       progress ( "Enabling ldap replication..." );
       runAsZimbra("/opt/zimbra/bdb/bin/db_recover -h /opt/zimbra/data/ldap/hdb/db");
       my $rc = runAsZimbra ("/opt/zimbra/libexec/zmldapapplyldif");
       if ( ! -f "/opt/zimbra/.enable_replica" ) {
-         $rc = runAsZimbra ("/opt/zimbra/libexec/zmldapenablereplica");
+         if ($newinstall && $config{LDAPREPLICATIONTYPE} eq "mmr") {
+           setLocalConfig ("ldap_is_master", "true");
+           my $ldapMasterUrl = getLocalConfig ("ldap_master_url");
+           my $proto = "ldap";
+           if ($config{LDAPPORT} == "636") {
+             $proto="ldaps";
+           }
+           setLocalConfig("ldap_url", "$proto://$config{HOSTNAME}:$config{LDAPPORT} $ldapMasterUrl");
+           if ($ldapMasterUrl !~ /\/$/) {
+             $ldapMasterUrl=$ldapMasterUrl."/";
+           }
+           runAsZimbra ("/opt/zimbra/bin/ldap start");
+           $rc = runAsZimbra ("/opt/zimbra/libexec/zmldapenable-mmr -s $config{LDAPSERVERID} -m $ldapMasterUrl");
+         } else {
+           $rc = runAsZimbra ("/opt/zimbra/libexec/zmldapenablereplica");
+         }
          my $file="/opt/zimbra/.enable_replica";
          open(ER,">>$file");
          close ER;
       }
       if ($rc == 0) {
-        #unlink "/opt/zimbra/.enable_replica";
         if (!isEnabled("zimbra-store")) {
           $config{DOCREATEADMIN} = "no";
         }
