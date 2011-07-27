@@ -770,5 +770,21 @@
   <preinstall></preinstall>
   <postinstall></postinstall>
   </patch>
+  <patch name="7.1.1_GA" version="7.1.1_P4">
+  <desc>Patch 7.1.1_P4</desc>
+  <bug>61548</bug>
+  <package name="zimbra-store">
+      <file>
+        <source>ZimbraBuild/corebuild/opt/zimbra/lib/jars/zimbrastore.jar</source>
+        <target>/opt/zimbra/jetty/webapps/service/WEB-INF/lib/zimbrastore.jar</target>
+        <target>/opt/zimbra/jetty/webapps/zimbra/WEB-INF/lib/zimbrastore.jar</target>
+        <target>/opt/zimbra/jetty/webapps/zimbraAdmin/WEB-INF/lib/zimbrastore.jar</target>
+        <target>/opt/zimbra/lib/jars/zimbrastore.jar</target>
+        <perms owner="root" mode="444"/>
+      </file>
+  </package>
+  <preinstall></preinstall>
+  <postinstall></postinstall>
+  </patch>
 </patches>
   
