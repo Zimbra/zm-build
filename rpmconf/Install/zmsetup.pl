@@ -5850,6 +5850,7 @@ sub configCreateDomain {
           "amavisBypassSpamChecks TRUE ".
           "zimbraAttachmentsIndexingEnabled FALSE ".
           "zimbraIsSystemResource TRUE ".
+          "zimbraIsSystemAccount TRUE ".
           "zimbraHideInGal TRUE ".
           "zimbraMailQuota 0 ".
           "description \'System account for spam training.\'");
@@ -5868,6 +5869,7 @@ sub configCreateDomain {
           "amavisBypassSpamChecks TRUE ".
           "zimbraAttachmentsIndexingEnabled FALSE ".
           "zimbraIsSystemResource TRUE ".
+          "zimbraIsSystemAccount TRUE ".
           "zimbraHideInGal TRUE ".
           "zimbraMailQuota 0 ".
           "description \'System account for Non-Spam (Ham) training.\'");
@@ -5886,6 +5888,7 @@ sub configCreateDomain {
           "amavisBypassSpamChecks TRUE ".
           "zimbraAttachmentsIndexingEnabled FALSE ".
           "zimbraIsSystemResource TRUE ".
+          "zimbraIsSystemAccount TRUE ".
           "zimbraHideInGal TRUE ".
           "zimbraMailMessageLifetime 7d ".
           "zimbraMailQuota 0 ".
