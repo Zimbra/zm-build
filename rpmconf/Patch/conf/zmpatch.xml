@@ -885,6 +885,7 @@
   <bug>61247</bug>
   <bug>61509</bug>
   <bug>61548</bug>
+  <bug>61634</bug>
   <bug>61647</bug>
   <bug>61763</bug>
   <package name="zimbra-core">
@@ -1045,6 +1046,51 @@
         <source>ZimbraBuild/storebuild/opt/zimbra/jetty-6.1.22.z6/webapps/zimbra/WEB-INF/tags/mobile/moContactField.tag</source>
         <target>/opt/zimbra/jetty/webapps/zimbra/WEB-INF/tags/mobile/moContactField.tag</target>
         <perms owner="root" mode="444"/>
+      </file>
+      <file>
+        <source>ZimbraBuild/storebuild/opt/zimbra/jetty-6.1.22.z6/webapps/zimbra/js/Contacts_all.js.zgz</source>
+        <target>/opt/zimbra/jetty/webapps/zimbra/js/Contacts_all.js.zgz</target>
+        <perms owner="zimbra" mode="444"/>
+      </file>
+      <file>
+        <source>ZimbraBuild/storebuild/opt/zimbra/jetty-6.1.22.z6/webapps/zimbra/js/NewWindow2_all.js.zgz</source>
+        <target>/opt/zimbra/jetty/webapps/zimbra/js/NewWindow2_all.js.zgz</target>
+        <perms owner="zimbra" mode="444"/>
+      </file>
+      <file>
+        <source>ZimbraBuild/storebuild/opt/zimbra/jetty-6.1.22.z6/webapps/zimbra/js/MailCore_all.js.zgz</source>
+        <target>/opt/zimbra/jetty/webapps/zimbra/js/MailCore_all.js.zgz</target>
+        <perms owner="zimbra" mode="444"/>
+      </file>
+      <file>
+        <source>ZimbraBuild/storebuild/opt/zimbra/jetty-6.1.22.z6/webapps/zimbra/js/Preferences_all.js.zgz</source>
+        <target>/opt/zimbra/jetty/webapps/zimbra/js/Preferences_all.js.zgz</target>
+        <perms owner="zimbra" mode="444"/>
+      </file>
+      <file>
+        <source>ZimbraBuild/storebuild/opt/zimbra/jetty-6.1.22.z6/webapps/zimbra/js/Startup1_2_all.js.zgz</source>
+        <target>/opt/zimbra/jetty/webapps/zimbra/js/Startup1_2_all.js.zgz</target>
+        <perms owner="zimbra" mode="444"/>
+      </file>
+      <file>
+        <source>ZimbraBuild/storebuild/opt/zimbra/jetty-6.1.22.z6/webapps/zimbra/js/Share_all.js.zgz</source>
+        <target>/opt/zimbra/jetty/webapps/zimbra/js/Share_all.js.zgz</target>
+        <perms owner="zimbra" mode="444"/>
+      </file>
+      <file>
+        <source>ZimbraBuild/storebuild/opt/zimbra/jetty-6.1.22.z6/webapps/zimbra/js/Startup2_all.js.zgz</source>
+        <target>/opt/zimbra/jetty/webapps/zimbra/js/Startup2_all.js.zgz</target>
+        <perms owner="zimbra" mode="444"/>
+      </file>
+      <file>
+        <source>ZimbraBuild/storebuild/opt/zimbra/jetty-6.1.22.z6/webapps/zimbra/js/Extras_all.js.zgz</source>
+        <target>/opt/zimbra/jetty/webapps/zimbra/js/Extras_all.js.zgz</target
+        <perms owner="zimbra" mode="444"/>
+      </file>
+      <file>
+        <source>ZimbraBuild/storebuild/opt/zimbra/jetty-6.1.22.z6/webapps/zimbra/WEB-INF/tags/ruby.tag</source>
+        <target>/opt/zimbra/jetty/webapps/zimbra/WEB-INF/tags/ruby.tag</target
+        <perms owner="zimbra" mode="444"/>
       </file>
   </package>
   <preinstall></preinstall>
