@@ -17,6 +17,7 @@
 use strict;
 use lib qw(/opt/zimbra/zimbramon/lib lib corebuild/opt/zimbra/zimbramon/lib);
 use Zimbra::Util::Common;
+use XML::SAX;
 use XML::Simple;
 use Data::Dumper;
 use Getopt::Long;
