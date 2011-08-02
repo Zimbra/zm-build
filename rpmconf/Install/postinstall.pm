@@ -36,7 +36,23 @@ sub configure {
     }
   }
 
-  # enable zimbra on startup
+	if (!defined ($main::options{c}) && 1) {
+		if (main::askYN("\nYou have the option of notifying Zimbra of your installation.\nThis helps us to track the uptake of the Zimbra Collaboration Suite.\nThe only information that will be transmitted is:\n\tThe VERSION of zcs installed (${main::curVersion}_${main::platform})\n\tThe ADMIN EMAIL ADDRESS created ($main::config{CREATEADMIN})\n\nNotify Zimbra of your installation?", "Yes") eq "yes") {
+			if (open NOTIFY, "/opt/zimbra/libexec/zmnotifyinstall ${main::curVersion}_${main::platform} $main::config{CREATEADMIN} |") {
+				while (<NOTIFY>) {
+					main::progress ("$_");
+				}
+				close NOTIFY;
+				#main::progress ("Notification complete!\n");
+			} else {
+				#main::progress ("ERROR: Notification failed!\n\n");
+			}
+		} else {
+		main::progress ("Notification skipped\n");
+		}
+	}
+
+    # enable zimbra on startup
   if ($main::platform =~ /RPL1/) {
     system("/sbin/chkconfig --add zimbra");
     system("/sbin/chkconfig zimbra on");
@@ -46,25 +62,6 @@ sub configure {
       #system("launchctl load /System/Library/LaunchDaemons/com.zimbra.zcs.plist 2> /dev/null");
       #system("launchctl stop com.zimbra.zcs")
       #  if ($main::config{STARTSERVERS} eq "no");
-    }
-  }
-}
-
-
-sub notifyZimbra {
-  if (!defined ($main::options{c}) && 1) {
-    if (main::askYN("\nYou have the option of notifying Zimbra of your installation.\nThis helps us to track the uptake of the Zimbra Collaboration Suite.\nThe only information that will be transmitted is:\n\tThe VERSION of zcs installed (${main::curVersion}_${main::platform})\n\tThe ADMIN EMAIL ADDRESS created ($main::config{CREATEADMIN})\n\nNotify Zimbra of your installation?", "Yes") eq "yes") {
-      if (open NOTIFY, "/opt/zimbra/libexec/zmnotifyinstall ${main::curVersion}_${main::platform} $main::config{CREATEADMIN} |") {
-        while (<NOTIFY>) {
-          main::progress ("$_");
-        }
-        close NOTIFY;
-        #main::progress ("Notification complete!\n");
-      } else {
-        #main::progress ("ERROR: Notification failed!\n\n");
-      }
-    } else {
-    main::progress ("Notification skipped\n");
     }
   }
 }

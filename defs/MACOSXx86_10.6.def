@@ -18,7 +18,7 @@ PLATFORM_CORE_COMPONENTS = \
 include $(DEFS_DIR)/plat_common.def
 
 OS_RELEASE := 10
-OS_PLATFORM := $(shell uname -m)
+OS_PLATFORM := $(shell uname -p)
 
 JAVA_BINARY := /opt/zimbra/java/bin/java
 MYSQL_VERSION   := standard-$(MYSQL_VERSION_STRING)-apple-darwin$(OS_RELEASE)-$(OS_PLATFORM)
