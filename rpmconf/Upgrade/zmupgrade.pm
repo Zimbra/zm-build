@@ -3760,6 +3760,7 @@ sub upgrade800BETA1 {
     if ($isLdapMaster) {
       runLdapAttributeUpgrade("57866");
       runLdapAttributeUpgrade("57205");
+      runLdapAttributeUpgrade("57875");
     }
     # 3884
     main::progress("Adding dynamic group configuration");
