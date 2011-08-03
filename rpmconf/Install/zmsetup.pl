@@ -5704,13 +5704,21 @@ sub configInstallZimlets {
   # Install zimlets
   if (opendir DIR, "/opt/zimbra/zimlets") {
     progress ( "Installing common zimlets...\n" );
+    my @core_zimlets = qw(com_zimbra_dnd com_zimbra_url com_zimbra_date com_zimbra_email com_zimbra_attachcontacts com_zimbra_attachmail);
     my @zimlets = grep { !/^\./ } readdir(DIR);
     foreach my $zimletfile (@zimlets) {
       my $zimlet = $zimletfile;
       $zimlet =~ s/\.zip$//;
       progress  ("\t$zimlet...");
       my $rc = runAsZimbra ("/opt/zimbra/bin/zmzimletctl -l deploy zimlets/$zimletfile");
-      progress (($rc == 0) ? "done.\n" : "failed. This may impact system functionality.\n");
+      if ($rc == 0) {
+        setLdapCOSConfig("+zimbraZimletAvailableZimlets", "!$zimlet")
+          if (grep(/$zimlet/, @core_zimlets));
+        progress("done.\n");
+      } else {
+        progress("failed. This may impact system functionality.\n");
+      }
+      
     }
     progress ( "Finished installing common zimlets.\n" );
   }
