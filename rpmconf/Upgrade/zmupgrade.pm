@@ -225,6 +225,7 @@ my %updateFuncs = (
   "7.1.2_GA" => \&upgrade712GA,
   "7.1.3_GA" => \&upgrade713GA,
   "8.0.0_BETA1" => \&upgrade800BETA1,
+  "8.0.0_BETA2" => \&upgrade800BETA2,
 );
 
 my @versionOrder = (
@@ -329,6 +330,7 @@ my @versionOrder = (
   "7.1.2_GA",
   "7.1.3_GA",
   "8.0.0_BETA1",
+  "8.0.0_BETA2",
 );
 
 my ($startVersion,$startMajor,$startMinor,$startMicro);
@@ -590,6 +592,8 @@ sub upgrade {
     main::progress("This appears to be 7.1.3_GA\n");
   } elsif ($startVersion eq "8.0.0_BETA1") {
     main::progress("This appears to be 8.0.0_BETA1\n");
+  } elsif ($startVersion eq "8.0.0_BETA2") {
+    main::progress("This appears to be 8.0.0_BETA2\n");
   } else {
     main::progress("I can't upgrade version $startVersion\n\n");
     return 1;
@@ -3826,6 +3830,12 @@ sub upgrade800BETA1 {
       &indexLdapAttribute("zimbraSharedItem");
     }
   }
+  return 0;
+}
+
+sub upgrade800BETA2 {
+  my ($startBuild, $targetVersion, $targetBuild) = (@_);
+  main::progress("Updating from 8.0.0_BETA2\n");
   return 0;
 }
 
