@@ -1327,8 +1327,10 @@ sub setDefaults {
   } else {
     $config{mailboxd_keystore} = "/opt/zimbra/conf/keystore";
   }
-  if ($platform =~ /MACOSX/) {
+  if ($platform =~ /MACOSX/ && $platform ne "MACOSXx86_10.6" && $platform ne "MACOSXx86_10.7" ) {
       $config{mailboxd_truststore} = "/System/Library/Frameworks/JavaVM.framework/Versions/1.5/Home/lib/security/cacerts";
+  elsif ($platform eq "MACOSXx86_10.6" || $platform eq "MACOSXx86_10.7") {
+      $config{mailboxd_truststore} = "$config{JAVAHOME}/lib/security/cacerts";
   } else {
     if ( -f "/opt/zimbra/java/lib/security/cacerts") {
       $config{mailboxd_truststore} = "/opt/zimbra/java/lib/security/cacerts";
