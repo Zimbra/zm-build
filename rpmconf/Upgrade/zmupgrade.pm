@@ -36,7 +36,7 @@ chomp $rundir;
 my $scriptDir = "/opt/zimbra/libexec/scripts";
 
 my $lowVersion = 18;
-my $hiVersion = 70; # this should be set to the DB version expected by current server code
+my $hiVersion = 69; # this should be set to the DB version expected by current server code
 
 # Variables for the combo schema updater
 my $comboLowVersion = 20;
@@ -114,9 +114,8 @@ my %updateScripts = (
   '64' => "migrate20100926-Dumpster.pl",               # 7.0.0_BETA1
   '65' => "migrate20101123-MobileDevices.pl",          # 8.0.0_BETA1
   '66' => "migrate20110314-MobileDevices.pl",          # 8.0.0_BETA1
-  '67' => "migrate20110325-MailAddressTable.pl",       # 8.0.0_BETA1
-  '68' => "migrate20110330-RecipientsColumn.pl",       # 8.0.0_BETA1
-  '69' => "migrate20110705-PendingAclPush.pl",         # 8.0.0_BETA1
+  '67' => "migrate20110330-RecipientsColumn.pl",       # 8.0.0_BETA1
+  '68' => "migrate20110705-PendingAclPush.pl",         # 8.0.0_BETA1
 );
 
 my %updateFuncs = (
