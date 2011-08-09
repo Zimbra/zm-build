@@ -6333,7 +6333,7 @@ sub applyConfig {
 
     progress ( "Starting servers..." );
     if ($main::platform =~ /MACOSX/) {
-      runAsRoot("/bin/launchctl load /System/Library/LaunchDaemons/com.zimbra.zcs.plist");
+      runAsRoot("/bin/launchctl load -w /System/Library/LaunchDaemons/com.zimbra.zcs.plist");
     } else {
       runAsZimbra ("/opt/zimbra/bin/zmcontrol start");
     }
@@ -6348,8 +6348,8 @@ sub applyConfig {
 
       progress ( "Restarting mailboxd...");
       if ($main::platform =~ /MACOSX/) {
-        runAsRoot("/bin/launchctl unload /System/Library/LaunchDaemons/com.zimbra.zcs.plist");
-        runAsRoot("/bin/launchctl load /System/Library/LaunchDaemons/com.zimbra.zcs.plist");
+        runAsRoot("/bin/launchctl unload -w /System/Library/LaunchDaemons/com.zimbra.zcs.plist");
+        runAsRoot("/bin/launchctl load -w /System/Library/LaunchDaemons/com.zimbra.zcs.plist");
       } else {
         runAsZimbra("/opt/zimbra/bin/zmmailboxdctl restart");
       }
