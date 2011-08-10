@@ -18,7 +18,19 @@ BUILDNUM	:= $(shell cat RE/BUILD)
 VERSION_STRING := $(MAJOR).$(MINOR).$(MICRO)
 SOURCE_TAG := $(MAJOR).$(MINOR).$(MICRO)_$(BUILDNUM)
 VERSION_TAG := $(MAJOR).$(MINOR).$(MICRO)_$(BUILDNUM).$(BUILD_PLATFORM)
+RELEASE_VERSION_TAG := $(MAJOR).$(MINOR).$(MICRO)_$(BUILDNUM).$(BUILD_PLATFORM)
 
+ifeq (DEBIAN,$(findstring DEBIAN,$(BUILD_PLATFORM)))
+	XVERSION_TAG := $(subst _,.,${VERSION_TAG})
+	VERSION_TAG := ${XVERSION_TAG}
+endif
+
+ifeq (UBUNTU,$(findstring UBUNTU,$(BUILD_PLATFORM)))
+	XVERSION_TAG := $(subst _,.,${VERSION_TAG})
+	VERSION_TAG := ${XVERSION_TAG}
+endif
+
+OSX107_SIZE	:=
 MTA_PROVIDES	:= smtpdaemon
 
 ifeq (SLES,$(findstring SLES,$(BUILD_PLATFORM)))
@@ -101,6 +113,11 @@ endif
 
 ifeq ($(BUILD_PLATFORM), MACOSX)
 	ARCH := ppc
+endif
+
+ifeq ($(BUILD_PLATFORM), MACOSXx86_10.7)
+	ARCH := x86_64
+	OSX107_SIZE  := -size 1g
 endif
 
 ifeq ($(TAG), )

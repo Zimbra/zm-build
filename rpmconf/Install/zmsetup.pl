@@ -2,7 +2,7 @@
 # 
 # ***** BEGIN LICENSE BLOCK *****
 # Zimbra Collaboration Suite Server
-# Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011 Zimbra, Inc.
+# Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
 # 
 # The contents of this file are subject to the Zimbra Public License
 # Version 1.3 ("License"); you may not use this file except in
@@ -50,7 +50,7 @@ if ($platform =~ /MACOSXx86_10/) {
   $SU = "su - zimbra -c ";
 }
 
-if ($platform =~ /MACOSX/ && $platform ne "MACOSXx86_10.6") {
+if ($platform =~ /MACOSX/ && $platform ne "MACOSXx86_10.6" && $platform ne "MACOSXx86_10.7") {
   
   progress ("Checking java version...");
   my $rc = 0xffff & system("$SU \"java -version 2>&1 | grep 'java version' | grep -q 1.5\"");
@@ -249,6 +249,7 @@ if (-d "/opt/zimbra/log") {
   main::progress("Moving $logfile to /opt/zimbra/log\n");
   my $dstlog = "zmsetup.".getDateStamp().".txt";
   system("cp -f $logfile /opt/zimbra/log/$dstlog");
+  system("chown zimbra:zimbra /opt/zimbra/log/$dstlog");
 }
 
 ################################################################
@@ -380,7 +381,7 @@ sub checkPortConflicts {
   }
 
   if (!$options{c}) {
-    if ($any) { ask("Port conflicts detected! - Any key to continue", ""); }
+    if ($any) { ask("Port conflicts detected! - Press Enter/Return key to continue", ""); }
   }
 
 }
@@ -590,7 +591,7 @@ sub isInstalled {
   my $good = 0;
   if ($platform =~ /^DEBIAN/ || $platform =~ /^UBUNTU/) {
     $pkgQuery = "dpkg -s $pkg";
-  } elsif ($platform eq "MACOSXx86_10.6") {
+  } elsif ($platform eq "MACOSXx86_10.6" || $platform eq "MACOSXx86_10.7") {
     $pkg =~ s/zimbra-//;
     $pkgQuery = "pkgutil --pkg-info com.zimbra.zcs.${pkg}";
   } elsif ($platform =~ /MACOSX/) {
@@ -1298,11 +1299,11 @@ sub setDefaults {
   $config{HTTPPORT} = 80;
   $config{HTTPSPORT} = 443;
 
-  if ($platform =~ /MACOSX/ && $platform ne "MACOSXx86_10.6") {
+  if ($platform =~ /MACOSX/ && $platform ne "MACOSXx86_10.6" && $platform ne "MACOSXx86_10.7" ) {
     $config{JAVAHOME} = "/System/Library/Frameworks/JavaVM.framework/Versions/1.5/Home";
     setLocalConfig ("zimbra_java_home", "$config{JAVAHOME}");
     $config{HOSTNAME} = lc(`hostname`);
-  } elsif ($platform eq "MACOSXx86_10.6") {
+  } elsif ($platform eq "MACOSXx86_10.6" || $platform eq "MACOSXx86_10.7") {
     $config{JAVAHOME} = "/Library/Java/Home";
     setLocalConfig ("zimbra_java_home", "$config{JAVAHOME}");
     setLocalConfig("ldap_read_timeout", "0"); #41959
@@ -1326,8 +1327,10 @@ sub setDefaults {
   } else {
     $config{mailboxd_keystore} = "/opt/zimbra/conf/keystore";
   }
-  if ($platform =~ /MACOSX/) {
+  if ($platform =~ /MACOSX/ && $platform ne "MACOSXx86_10.6" && $platform ne "MACOSXx86_10.7" ) {
       $config{mailboxd_truststore} = "/System/Library/Frameworks/JavaVM.framework/Versions/1.5/Home/lib/security/cacerts";
+  } elsif ($platform eq "MACOSXx86_10.6" || $platform eq "MACOSXx86_10.7") {
+      $config{mailboxd_truststore} = "$config{JAVAHOME}/lib/security/cacerts";
   } else {
     if ( -f "/opt/zimbra/java/lib/security/cacerts") {
       $config{mailboxd_truststore} = "/opt/zimbra/java/lib/security/cacerts";
@@ -1408,6 +1411,8 @@ sub setDefaults {
     $config{LDAPPOSTPASS} = $config{LDAPADMINPASS};
     $config{LDAPAMAVISPASS} =  $config{LDAPADMINPASS};
     $config{ldap_nginx_password} = $config{LDAPADMINPASS};
+    $config{LDAPREPLICATIONTYPE} = "master"; # Values can be master, mmr, replica
+    $config{LDAPSERVERID} = 2; # Aleady enabled master should be 1, so default to next ID.
     $ldapRepChanged = 1;
     $ldapPostChanged = 1;
     $ldapAmavisChanged = 1;
@@ -1630,10 +1635,22 @@ sub getInstallStatus {
         $installStatus{$stage}{op} = $op;
         $installStatus{$stage}{date} = $d;
         if ($stage eq "zimbra-core") {
-          #$prevVersion = $curVersion;
           $v =~ s/_HEAD.*//;
           $v =~ s/^zimbra-core[-_]//;
-          $v =~ s/^(\d+\.\d+\.[^_]*_[^_]+_[^.]+).*/\1/;
+          if ($v =~ /\.deb$/) {
+            my $orig_v=$v;
+            $v =~ s/^(\d+\.\d+\.\d+\.\w+\.\w+)\..*/\1/;
+            $v = reverse($v);
+            $v =~ s/\./_/;
+            $v =~ s/\./_/;
+            $v = reverse($v);
+            if ($v =~ /\_deb$/) {
+              $v = $orig_v;
+              $v =~ s/^(\d+\.\d+\.[^_]*_[^_]+_[^.]+).*/\1/;
+            }
+          } else {
+            $v =~ s/^(\d+\.\d+\.[^_]*_[^_]+_[^.]+).*/\1/;
+          }
           $curVersion = $v;
         }
       } elsif ($op eq "CONFIGURED") {
@@ -1870,6 +1887,17 @@ sub askNum {
     my $i = int($v);
     if ($v eq $i) { return $v; }
     print "A numeric response is required!\n";
+  }
+}
+
+sub askPositiveInt {
+  my $prompt = shift;
+  my $default = shift;
+  while (1) {
+    my $v = ask($prompt, $default);
+    my $i = int($v);
+    if ($v eq $i && $v > 0) { return $v; }
+    print "A positive integer response is required!\n";
   }
 }
 
@@ -2583,13 +2611,24 @@ sub setProxyMode {
 sub changeLdapHost {
   $config{LDAPHOST} = shift;
   $config{LDAPHOST} = lc($config{LDAPHOST});
-  if (isInstalled("zimbra-ldap") && $config{LDAPHOST} ne $config{HOSTNAME}) {
+  if (isInstalled("zimbra-ldap") && $config{LDAPHOST} eq "") {
+      $ldapReplica=0;
+      $config{LDAPREPLICATIONTYPE}="master";
+  } elsif (isInstalled("zimbra-ldap") && $config{LDAPHOST} ne $config{HOSTNAME}) {
       $ldapReplica=1;
+      $config{LDAPREPLICATIONTYPE}="replica";
+  } elsif (isInstalled("zimbra-ldap") && $config{LDAPHOST} eq $config{HOSTNAME}) {
+      $ldapReplica=0;
+      $config{LDAPREPLICATIONTYPE}="master";
   }
 }
 
 sub changeLdapPort {
   $config{LDAPPORT} = shift;
+}
+
+sub changeLdapServerID {
+  $config{LDAPSERVERID} = shift;
 }
 
 sub getDnsRecords {
@@ -2710,6 +2749,23 @@ sub setLdapHost {
 sub setLdapPort {
   changeLdapPort( askNum("Please enter the ldap server port:",
       $config{LDAPPORT}));
+}
+
+sub setLdapServerID {
+  changeLdapServerID(askPositiveInt("Please enter the ldap server port:", $config{LDAPSERVERID}));
+}
+
+sub setLdapReplicationType {
+  while (1) {
+    my $m =
+      askNonBlank("Please enter the LDAP replication type (replica, mmr)",
+        $config{LDAPREPLICATIONTYPE});
+    if ($m eq "replica" || $m eq "mmr") {
+      $config{LDAPREPLICATIONTYPE} = $m;
+      return;
+    }
+    print "Please enter a valid replication type!\n";
+  }
 }
 
 sub setHttpPort {
@@ -3157,6 +3213,22 @@ sub createLdapMenu {
       #"arg" => "ENABLEGALSYNCACCOUNTS",
       #};
     #$i++;
+    if($config{LDAPREPLICATIONTYPE} ne "master") {
+      $$lm{menuitems}{$i} = {
+        "prompt" => "Ldap replication type:",
+        "var" => \$config{LDAPREPLICATIONTYPE},
+        "callback" => \&setLdapReplicationType
+      };
+      $i++;
+    }
+    if ($config{LDAPREPLICATIONTYPE} eq "mmr") {
+      $$lm{menuitems}{$i} = {
+        "prompt" => "Ldap Server ID:",
+        "var" => \$config{LDAPSERVERID},
+        "callback" => \&setLdapServerID
+      };
+      $i++;
+    }
     if ($config{LDAPROOTPASS} ne "") {
       $config{LDAPROOTPASSSET} = "set";
     } else {
@@ -3179,7 +3251,7 @@ sub createLdapMenu {
       "callback" => \&setLdapRepPass
       };
     $i++;
-    if ($config{HOSTNAME} eq $config{LDAPHOST} || isEnabled("zimbra-mta")) {
+    if ($config{HOSTNAME} eq $config{LDAPHOST} || $config{LDAPREPLICATIONTYPE} ne "replica" || isEnabled("zimbra-mta")) {
       if ($config{LDAPPOSTPASS} eq "") {
         $config{LDAPPOSTPASSSET} = "UNSET";
       } else {
@@ -3203,7 +3275,7 @@ sub createLdapMenu {
         };
       $i++;
     }
-    if ($config{HOSTNAME} eq $config{LDAPHOST} || isEnabled("zimbra-proxy")) {
+    if ($config{HOSTNAME} eq $config{LDAPHOST} || $config{LDAPREPLICATIONTYPE} ne "replica" || isEnabled("zimbra-proxy")) {
       if ($config{ldap_nginx_password} eq "") {
         $config{LDAPNGINXPASSSET} = "UNSET";
       } else {
@@ -4254,7 +4326,11 @@ sub checkLdapReplicationEnabled() {
     my $result = $ldap->search(base=>"cn=accesslog", scope=>"base", filter=>"cn=accesslog", attrs=>['cn']);
     if ($result->code()) {
       detail("Unable to find accesslog database on master.\n");
-      detail("Please run zmldapenablereplica on the master.\n");
+      if ($config{LDAPREPLICATIONTYPE} eq "replica") {
+        detail("Please run zmldapenablereplica on the master.\n");
+      } elsif ($config{LDAPREPLICATIONTYPE} eq "mmr") {
+        detail("Please run zmldapenable-mmr on the master.\n");
+      }
       return 1; 
     } else {
       detail("Verified ability to query accesslog on master.\n");
@@ -4627,26 +4703,55 @@ sub configSetupLdap {
       }
     }
   } elsif (isEnabled("zimbra-ldap")) {
-
-
     # enable replica for both new and upgrade installs if we are adding ldap
-    if ($config{LDAPHOST} ne $config{HOSTNAME} ||  -f "/opt/zimbra/.enable_replica") {
+    if ($config{LDAPHOST} ne $config{HOSTNAME} || -f "/opt/zimbra/.enable_replica") {
       progress("Updating ldap_root_password and zimbra_ldap_password...");
       setLocalConfig ("ldap_root_password", $config{LDAPROOTPASS});
       setLocalConfig ("zimbra_ldap_password", $config{LDAPADMINPASS});
       setLocalConfig ("ldap_replication_password", "$config{LDAPREPPASS}");
+      if($newinstall && $config{LDAPREPLICATIONTYPE} eq "mmr") {
+        if ($ldapPostChanged == 1) {
+           progress ( "Setting Postfix password..." );
+           runAsZimbra ("/opt/zimbra/bin/zmldappasswd -p \'$config{LDAPPOSTPASS}\'");
+           progress ( "done.\n" );
+        }
+        if ($ldapAmavisChanged == 1) {
+           progress ( "Setting amavis password..." );
+           runAsZimbra ("/opt/zimbra/bin/zmldappasswd -a \'$config{LDAPAMAVISPASS}\'");
+           progress ( "done.\n" );
+        }
+        if ($ldapNginxChanged == 1) {
+           progress ( "Setting nginx password..." );
+           runAsZimbra ("/opt/zimbra/bin/zmldappasswd -n \'$config{ldap_nginx_password}\'");
+           progress ( "done.\n" );
+        }
+      }
       progress("done.\n");
       progress ( "Enabling ldap replication..." );
       runAsZimbra("/opt/zimbra/bdb/bin/db_recover -h /opt/zimbra/data/ldap/hdb/db");
       my $rc = runAsZimbra ("/opt/zimbra/libexec/zmldapapplyldif");
       if ( ! -f "/opt/zimbra/.enable_replica" ) {
-         $rc = runAsZimbra ("/opt/zimbra/libexec/zmldapenablereplica");
+         if ($newinstall && $config{LDAPREPLICATIONTYPE} eq "mmr") {
+           setLocalConfig ("ldap_is_master", "true");
+           my $ldapMasterUrl = getLocalConfig ("ldap_master_url");
+           my $proto = "ldap";
+           if ($config{LDAPPORT} == "636") {
+             $proto="ldaps";
+           }
+           setLocalConfig("ldap_url", "$proto://$config{HOSTNAME}:$config{LDAPPORT} $ldapMasterUrl");
+           if ($ldapMasterUrl !~ /\/$/) {
+             $ldapMasterUrl=$ldapMasterUrl."/";
+           }
+           runAsZimbra ("/opt/zimbra/bin/ldap start");
+           $rc = runAsZimbra ("/opt/zimbra/libexec/zmldapenable-mmr -s $config{LDAPSERVERID} -m $ldapMasterUrl");
+         } else {
+           $rc = runAsZimbra ("/opt/zimbra/libexec/zmldapenablereplica");
+         }
          my $file="/opt/zimbra/.enable_replica";
          open(ER,">>$file");
          close ER;
       }
       if ($rc == 0) {
-        #unlink "/opt/zimbra/.enable_replica";
         if (!isEnabled("zimbra-store")) {
           $config{DOCREATEADMIN} = "no";
         }
@@ -5601,13 +5706,21 @@ sub configInstallZimlets {
   # Install zimlets
   if (opendir DIR, "/opt/zimbra/zimlets") {
     progress ( "Installing common zimlets...\n" );
+    my @core_zimlets = qw(com_zimbra_dnd com_zimbra_url com_zimbra_date com_zimbra_email com_zimbra_attachcontacts com_zimbra_attachmail);
     my @zimlets = grep { !/^\./ } readdir(DIR);
     foreach my $zimletfile (@zimlets) {
       my $zimlet = $zimletfile;
       $zimlet =~ s/\.zip$//;
       progress  ("\t$zimlet...");
       my $rc = runAsZimbra ("/opt/zimbra/bin/zmzimletctl -l deploy zimlets/$zimletfile");
-      progress (($rc == 0) ? "done.\n" : "failed. This may impact system functionality.\n");
+      if ($rc == 0) {
+        setLdapCOSConfig("+zimbraZimletAvailableZimlets", "!$zimlet")
+          if (grep(/$zimlet/, @core_zimlets));
+        progress("done.\n");
+      } else {
+        progress("failed. This may impact system functionality.\n");
+      }
+      
     }
     progress ( "Finished installing common zimlets.\n" );
   }
@@ -5747,6 +5860,7 @@ sub configCreateDomain {
           "amavisBypassSpamChecks TRUE ".
           "zimbraAttachmentsIndexingEnabled FALSE ".
           "zimbraIsSystemResource TRUE ".
+          "zimbraIsSystemAccount TRUE ".
           "zimbraHideInGal TRUE ".
           "zimbraMailQuota 0 ".
           "description \'System account for spam training.\'");
@@ -5765,6 +5879,7 @@ sub configCreateDomain {
           "amavisBypassSpamChecks TRUE ".
           "zimbraAttachmentsIndexingEnabled FALSE ".
           "zimbraIsSystemResource TRUE ".
+          "zimbraIsSystemAccount TRUE ".
           "zimbraHideInGal TRUE ".
           "zimbraMailQuota 0 ".
           "description \'System account for Non-Spam (Ham) training.\'");
@@ -5783,6 +5898,7 @@ sub configCreateDomain {
           "amavisBypassSpamChecks TRUE ".
           "zimbraAttachmentsIndexingEnabled FALSE ".
           "zimbraIsSystemResource TRUE ".
+          "zimbraIsSystemAccount TRUE ".
           "zimbraHideInGal TRUE ".
           "zimbraMailMessageLifetime 7d ".
           "zimbraMailQuota 0 ".
@@ -6042,6 +6158,7 @@ sub configSetEnabledServices {
     }
     if ($p eq "zimbra-apache") {next;}
     if ($p eq "zimbra-cluster") {next;}
+    if ($p eq "zimbra-archiving") {next;}
     $p =~ s/zimbra-//;
     if ($p eq "store") {$p = "mailbox";}
     if ($p eq "proxy") { $p = "imapproxy";}
@@ -6215,8 +6332,11 @@ sub applyConfig {
     }
 
     progress ( "Starting servers..." );
-    #runAsZimbra ("$ZMPROV ms $config{HOSTNAME} zimbraUserServicesEnabled FALSE");
-    runAsZimbra ("/opt/zimbra/bin/zmcontrol start");
+    if ($main::platform =~ /MACOSX/) {
+      runAsRoot("/bin/launchctl load -w /System/Library/LaunchDaemons/com.zimbra.zcs.plist");
+    } else {
+      runAsZimbra ("/opt/zimbra/bin/zmcontrol start");
+    }
     # runAsZimbra swallows the output, so call status this way
     `$SU "/opt/zimbra/bin/zmcontrol status"`;
     progress ( "done.\n" );
@@ -6227,14 +6347,20 @@ sub applyConfig {
       configInstallZimlets();
 
       progress ( "Restarting mailboxd...");
-      runAsZimbra("/opt/zimbra/bin/zmmailboxdctl restart");
+      if ($main::platform =~ /MACOSX/) {
+        runAsRoot("/bin/launchctl unload -w /System/Library/LaunchDaemons/com.zimbra.zcs.plist");
+        runAsRoot("/bin/launchctl load -w /System/Library/LaunchDaemons/com.zimbra.zcs.plist");
+      } else {
+        runAsZimbra("/opt/zimbra/bin/zmmailboxdctl restart");
+      }
       progress ( "done.\n" );
     }
-    #runAsZimbra ("$ZMPROV ms $config{HOSTNAME} zimbraUserServicesEnabled TRUE");
   } else {
     progress ( "WARNING: Document and Zimlet initialization skipped because Application Server was not configured to start.\n")
       if (isEnabled("zimbra-store"));
   }
+
+  postinstall::notifyZimbra();
 
   setupCrontab();
 
@@ -6259,6 +6385,7 @@ sub applyConfig {
     main::progress("Moving $logfile to /opt/zimbra/log\n");
     my $dstlog = "zmsetup.".getDateStamp().".txt";
     system("cp -f $logfile /opt/zimbra/log/$dstlog");
+    system("chown zimbra:zimbra /opt/zimbra/log/$dstlog");
   } else {
     progress ( "Operations logged to $logfile\n" );
   }
