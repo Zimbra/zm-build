@@ -3737,6 +3737,11 @@ sub upgrade712GA {
 sub upgrade713GA {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
   main::progress("Updating from 7.1.3_GA\n");
+  if (main::isInstalled("zimbra-ldap")) {
+    if ($isLdapMaster) {
+      runLdapAttributeUpgrade("11562");
+    }
+  }
   return 0;
 }
 
