@@ -28,6 +28,11 @@ $(SERVICE_DIR)/$(WEBAPP_BUILD_DIR)/service.war:
 		-Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) \
 		-Dzimbra.buildinfo.host=$(HOST) dev-dist ; )
 
+$(WEBAPPS_STAGE_DIR)/service/service.war: $(SERVICE_DIR)/$(WEBAPP_BUILD_DIR)/service.war
+	@($(ECHO) "*** Staging service.war")
+	@($(MKDIR) -p $(@D))
+	@($(CP) $(SERVICE_DIR)/$(WEBAPP_BUILD_DIR)/service.war $@)
+
 $(WEBAPP_DIR)/zimbraAdmin.war: $(WEBAPP_DIR) $(CONSOLE_DIR)/$(WEBAPP_BUILD_DIR)/zimbraAdmin.war $(WEBAPP_DIR)/zimbra/downloads
 	mkdir $(WEBAPP_DIR)/zimbraAdmin
 	(cd $(WEBAPP_DIR)/zimbraAdmin; jar xf $(CONSOLE_DIR)/build/dist/$(MAILBOXD_SERVER)/webapps/zimbraAdmin.war)
@@ -82,12 +87,21 @@ $(CONSOLE_DIR)/$(WEBAPP_BUILD_DIR)/zimbraAdmin.war:
 		-Dzimbra.buildinfo.type=$(BUILD_TYPE) \
 		-Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) \
 		-Dzimbra.buildinfo.host=$(HOST) clean admin prod war package-jsapi-zimbra-doc package-jsapi-inventory package-jsapi-changelog ; )
-	rm -rf zimbraAdminConf
-	mkdir zimbraAdminConf
-	cp $(CONSOLE_DIR)/build/web.xml zimbraAdminConf/web.xml
-	cp $(CONSOLE_DIR)/build/docs/jsapi-inventory.zip $(PACKAGE_DIR)/jsapi-inventory.zip
-	cp $(CONSOLE_DIR)/build/docs/jsapi-zimbra-doc.zip $(PACKAGE_DIR)/jsapi-zimbra-doc.zip
-	cp $(CONSOLE_DIR)/build/docs/jsapi-changelog.zip $(PACKAGE_DIR)/jsapi-changelog.zip
+	#rm -rf zimbraAdminConf
+	#mkdir zimbraAdminConf
+	#cp $(CONSOLE_DIR)/build/web.xml zimbraAdminConf/web.xml
+	#cp $(CONSOLE_DIR)/build/docs/jsapi-inventory.zip $(PACKAGE_DIR)/jsapi-inventory.zip
+	#cp $(CONSOLE_DIR)/build/docs/jsapi-zimbra-doc.zip $(PACKAGE_DIR)/jsapi-zimbra-doc.zip
+	#cp $(CONSOLE_DIR)/build/docs/jsapi-changelog.zip $(PACKAGE_DIR)/jsapi-changelog.zip
+
+$(WEBAPPS_STAGE_DIR)/admin/zimbraAdmin.war: $(CONSOLE_DIR)/$(WEBAPP_BUILD_DIR)/zimbraAdmin.war
+	@($(ECHO) "*** Staging zimbraAdmin.war")
+	@($(MKDIR) -p $(@D))
+	@($(CP) $(CONSOLE_DIR)/$(WEBAPP_BUILD_DIR)/zimbraAdmin.war $@)
+	@($(CP) $(CONSOLE_DIR)/build.web.xml $(@D)/web.xml)
+	@($(CP) $(CONSOLE_DIR)/build/docs/jsapi-inventory.zip $(@D)/jsapi-inventory.zip)
+	@($(CP) $(CONSOLE_DIR)/build/docs/jsapi-zimbra-doc.zip $(@D)/jsapi-zimbra-doc.zip)
+	@($(CP) $(CONSOLE_DIR)/build/docs/jsapi-changelog.zip $(@D)/jsapi-changelog.zip)
 
 $(WEBAPP_DIR)/zimbra/robots.txt: $(WEBAPP_DIR)/zimbra.war
 	cp $(SERVICE_DIR)/conf/robots.txt $@
@@ -107,9 +121,15 @@ $(CONSOLE_DIR)/$(WEBAPP_BUILD_DIR)/zimbra.war:  $(TAGLIB_DIR)/build/zimbrataglib
 		-Dzimbra.buildinfo.type=$(BUILD_TYPE) \
 		-Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) \
 		-Dzimbra.buildinfo.host=$(HOST) clean prod-build; )
-	rm -rf zimbraConf
-	mkdir zimbraConf
-	cp $(CONSOLE_DIR)/build/web.xml zimbraConf
+	#rm -rf zimbraConf
+	#mkdir zimbraConf
+	#cp $(CONSOLE_DIR)/build/web.xml zimbraConf
+
+$(WEBAPPS_STAGE_DIR)/zimbra/zimbra.war: $(CONSOLE_DIR)/$(WEBAPP_BUILD_DIR)/zimbra.war
+	@($(ECHO) "*** Staging zimbra.war")
+	@($(MKDIR) -p $(@D))
+	@($(CP) $(CONSOLE_DIR)/$(WEBAPP_BUILD_DIR)/zimbra.war $@)
+	@($(CP) $(CONSOLE_DIR)/build.web.xml $(@D)/web.xml)
 
 $(TAGLIB_DIR)/build/zimbrataglib.jar:
 	(cd $(TAGLIB_DIR); $(ANT) $(ANT_DEBUG) \

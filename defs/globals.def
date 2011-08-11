@@ -30,7 +30,6 @@ ifeq (UBUNTU,$(findstring UBUNTU,$(BUILD_PLATFORM)))
 	VERSION_TAG := ${XVERSION_TAG}
 endif
 
-OSX107_SIZE	:=
 MTA_PROVIDES	:= smtpdaemon
 
 ifeq (SLES,$(findstring SLES,$(BUILD_PLATFORM)))
@@ -117,7 +116,6 @@ endif
 
 ifeq ($(BUILD_PLATFORM), MACOSXx86_10.7)
 	ARCH := x86_64
-	OSX107_SIZE  := -size 1g
 endif
 
 ifeq ($(TAG), )
@@ -136,7 +134,15 @@ ifeq ($(PERL), )
 	$(error perl not found - exiting)
 endif
 
-ANT		:= $(shell which ant)
+ANT		?= $(shell which ant)
+CP    ?= $(shell which cp)
+MKDIR ?= $(shell which mkdir)
+CHMOD ?= $(shell which chmod)
+ECHO	?= $(shell which echo)
+TAR		?= $(shell which tar)
+JAR 	?= $(shell which jar)
+CAT		?= $(shell which cat)
+SED		?= $(shell which sed)
 
 ifeq ($(ANT), )
 	$(error ant not found - exiting)
@@ -144,8 +150,10 @@ endif
 
 ANT_DEBUG ?= -Ddebug=false
 
+
 PACKAGE_CONF_DIR	:= $(BUILD_ROOT)/rpmconf
 
+BUILD_LOG           := $(BUILD_ROOT)/log-$(RELEASE).txt
 PROFILE_SOURCE      := $(PACKAGE_CONF_DIR)/Env/zimbra.bash_profile
 PROFILE_DEST        := .bash_profile
 ENV_FILE_SOURCE     := $(PACKAGE_CONF_DIR)/Env/zimbra.bashrc
