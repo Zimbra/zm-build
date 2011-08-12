@@ -5338,9 +5338,6 @@ sub configInitOctopusAdminGroup {
     "zimbraIsAdminGroup TRUE ".
     "zimbraHideInGal TRUE ".
     "zimbraMailStatus disabled ".
-    "zimbraFeatureAdminMailEnabled TRUE ".
-    "zimbraPrefAdminConsoleWarnOnExit TRUE ".
-    "zimbraAdminAuthTokenLifetime 12h ".
     "zimbraAdminConsoleUIComponents accountListView ".
     "zimbraAdminConsoleUIComponents DLListView ".
     "zimbraAdminConsoleUIComponents COSListView ".
@@ -5865,6 +5862,9 @@ sub configCreateDomain {
           my $rc = runAsZimbra("$ZMPROV ca ".
             "$config{CREATEADMIN} \'$config{CREATEADMINPASS}\' ".
             "zimbraIsDelegatedAdminAccount TRUE ".
+            "zimbraFeatureAdminMailEnabled TRUE ".
+            "zimbraPrefAdminConsoleWarnOnExit TRUE ".
+            "zimbraAdminAuthTokenLifetime 12h ".
             "zimbraAdminConsoleUIComponents accountListView ".
             "zimbraAdminConsoleUIComponents DLListView ".
             "zimbraAdminConsoleUIComponents COSListView ".
