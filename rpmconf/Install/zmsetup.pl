@@ -6401,12 +6401,7 @@ sub applyConfig {
       configInstallZimlets();
 
       progress ( "Restarting mailboxd...");
-      if ($main::platform =~ /MACOSX/) {
-        runAsRoot("/bin/launchctl unload -w /System/Library/LaunchDaemons/com.zimbra.zcs.plist");
-        runAsRoot("/bin/launchctl load -w /System/Library/LaunchDaemons/com.zimbra.zcs.plist");
-      } else {
-        runAsZimbra("/opt/zimbra/bin/zmmailboxdctl restart");
-      }
+      runAsZimbra("/opt/zimbra/bin/zmmailboxdctl restart");
       progress ( "done.\n" );
     }
   } else {
