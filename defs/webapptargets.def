@@ -15,9 +15,9 @@ DMDOWNLOAD = $(shell cd $(WEBAPP_DIR)/zimbra/downloads; ls ZCSDominoMigrationWiz
 #ZDWDOWNLOAD = $(shell cd $(THIRD_PARTY_BUILDS)/zdesktop; ls zdesktop*.exe)
 #GWDOWNLOAD = $(shell cd $(WEBAPP_DIR)/zimbra/downloads; ls ZCSGroupwiseMigrationWizard*)
 
-$(WEBAPP_DIR)/service.war: $(WEBAPP_DIR) $(WEBAPPS_STAGE_DIR)/service/service.war
+$(WEBAPP_DIR)/service.war: $(WEBAPP_DIR) $(WEBAPP_STAGE_DIR)/service/service.war
 	-mkdir $(WEBAPP_DIR)/service
-	(cd $(WEBAPP_DIR)/service; jar xf $(WEBAPPS_STAGE_DIR)/service/service.war)
+	(cd $(WEBAPP_DIR)/service; jar xf $(WEBAPP_STAGE_DIR)/service/service.war)
 
 $(SERVICE_DIR)/$(WEBAPP_BUILD_DIR)/service.war:
 	(cd $(SERVICE_DIR); $(ANT) $(ANT_DEBUG) \
@@ -28,7 +28,7 @@ $(SERVICE_DIR)/$(WEBAPP_BUILD_DIR)/service.war:
 		-Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) \
 		-Dzimbra.buildinfo.host=$(HOST) dev-dist ; )
 
-$(WEBAPPS_STAGE_DIR)/service/service.war: $(SERVICE_DIR)/$(WEBAPP_BUILD_DIR)/service.war
+$(WEBAPP_STAGE_DIR)/service/service.war: $(SERVICE_DIR)/$(WEBAPP_BUILD_DIR)/service.war
 	@($(ECHO) "*** Staging service.war")
 	@($(MKDIR) -p $(@D))
 	@($(CP) $(SERVICE_DIR)/$(WEBAPP_BUILD_DIR)/service.war $@)
@@ -94,7 +94,7 @@ $(CONSOLE_DIR)/$(WEBAPP_BUILD_DIR)/zimbraAdmin.war:
 	#cp $(CONSOLE_DIR)/build/docs/jsapi-zimbra-doc.zip $(PACKAGE_DIR)/jsapi-zimbra-doc.zip
 	#cp $(CONSOLE_DIR)/build/docs/jsapi-changelog.zip $(PACKAGE_DIR)/jsapi-changelog.zip
 
-$(WEBAPPS_STAGE_DIR)/admin/zimbraAdmin.war: $(CONSOLE_DIR)/$(WEBAPP_BUILD_DIR)/zimbraAdmin.war
+$(WEBAPP_STAGE_DIR)/admin/zimbraAdmin.war: $(CONSOLE_DIR)/$(WEBAPP_BUILD_DIR)/zimbraAdmin.war
 	@($(ECHO) "*** Staging zimbraAdmin.war")
 	@($(MKDIR) -p $(@D))
 	@($(CP) $(CONSOLE_DIR)/$(WEBAPP_BUILD_DIR)/zimbraAdmin.war $@)
@@ -106,9 +106,9 @@ $(WEBAPPS_STAGE_DIR)/admin/zimbraAdmin.war: $(CONSOLE_DIR)/$(WEBAPP_BUILD_DIR)/z
 $(WEBAPP_DIR)/zimbra/robots.txt: $(WEBAPP_DIR)/zimbra.war
 	cp $(SERVICE_DIR)/conf/robots.txt $@
 
-$(WEBAPP_DIR)/zimbra.war: $(WEBAPP_DIR) $(WEBAPPS_STAGE_DIR)/zimbra/zimbra.war $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/work
+$(WEBAPP_DIR)/zimbra.war: $(WEBAPP_DIR) $(WEBAPP_STAGE_DIR)/zimbra/zimbra.war $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/work
 	mkdir $(WEBAPP_DIR)/zimbra
-	(cd $(WEBAPP_DIR)/zimbra; jar xf $(WEBAPPS_STAGE_DIR)/zimbra/zimbra.war)
+	(cd $(WEBAPP_DIR)/zimbra; jar xf $(WEBAPP_STAGE_DIR)/zimbra/zimbra.war)
 
 $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/work: $(CONSOLE_DIR)/$(WEBAPP_BUILD_DIR)/zimbra.war
 	mkdir -p $@
@@ -125,7 +125,7 @@ $(CONSOLE_DIR)/$(WEBAPP_BUILD_DIR)/zimbra.war:  $(TAGLIB_DIR)/build/zimbrataglib
 	#mkdir zimbraConf
 	#cp $(CONSOLE_DIR)/build/web.xml zimbraConf
 
-$(WEBAPPS_STAGE_DIR)/zimbra/zimbra.war: $(CONSOLE_DIR)/$(WEBAPP_BUILD_DIR)/zimbra.war
+$(WEBAPP_STAGE_DIR)/zimbra/zimbra.war: $(CONSOLE_DIR)/$(WEBAPP_BUILD_DIR)/zimbra.war
 	@($(ECHO) "*** Staging zimbra.war")
 	@($(MKDIR) -p $(@D))
 	@($(CP) $(CONSOLE_DIR)/$(WEBAPP_BUILD_DIR)/zimbra.war $@)
