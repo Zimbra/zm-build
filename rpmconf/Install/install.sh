@@ -182,8 +182,6 @@ fi
 
 displayLicense
 
-displayThirdPartyLicenses
-
 checkUser root
 
 if [ $AUTOINSTALL = "yes" ]; then

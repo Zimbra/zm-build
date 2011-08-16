@@ -158,7 +158,7 @@ name="postfix"
 addUser
 
 maingroup="zimbra"
-auxgroups="postfix,com.apple.access_ssh"
+auxgroups="postfix"
 homedir="/opt/zimbra"
 name="zimbra"
 addUser
