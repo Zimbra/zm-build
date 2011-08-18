@@ -3748,6 +3748,7 @@ sub upgrade713GA {
   if (main::isInstalled("zimbra-ldap")) {
     if ($isLdapMaster) {
       runLdapAttributeUpgrade("11562");
+      runLdapAttributeUpgrade("63475");
     }
   }
   return 0;
