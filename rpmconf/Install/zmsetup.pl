@@ -1233,7 +1233,7 @@ sub installLdapConfig {
   my $config_dest="/opt/zimbra/data/ldap/config";
   if (-d "/opt/zimbra/data/ldap/config") {
     main::progress("Installing LDAP configuration database...");
-    `mkdir -p $config_dest/cn\=config`;
+    `mkdir -p $config_dest/cn\=config/olcDatabase\=\{2\}hdb`;
     system("cp -f $config_src/cn\=config.ldif $config_dest/cn\=config.ldif");
     system("cp -f $config_src/cn\=config/cn\=module\{0\}.ldif $config_dest/cn\=config/cn\=module\{0\}.ldif");
     system("cp -f $config_src/cn\=config/cn\=schema.ldif $config_dest/cn\=config/cn\=schema.ldif");
@@ -1241,6 +1241,8 @@ sub installLdapConfig {
     system("cp -f $config_src/cn\=config/olcDatabase\=\{0\}config.ldif $config_dest/cn\=config/olcDatabase\=\{0\}config.ldif");
     system("cp -f $config_src/cn\=config/olcDatabase\=\{1\}monitor.ldif $config_dest/cn\=config/olcDatabase\=\{1\}monitor.ldif");
     system("cp -f $config_src/cn\=config/olcDatabase\=\{2\}hdb.ldif $config_dest/cn\=config/olcDatabase\=\{2\}hdb.ldif");
+    system("cp -f $config_src/cn\=config/olcDatabase\=\{2\}hdb/olcOverlay\=\{0\}dynlist.ldif $config_dest/cn\=config/olcDatabase\=\{2\}hdb/olcOverlay\=\{0\}dynlist.ldif");
+    system("cp -f $config_src/cn\=config/olcDatabase\=\{2\}hdb/olcOverlay\=\{1\}unique.ldif $config_dest/cn\=config/olcDatabase\=\{2\}hdb/olcOverlay\=\{1\}unique.ldif");
     `chmod 600 $config_dest/cn\=config.ldif`;
     `chmod 600 $config_dest/cn\=config/*.ldif`;
     `chown -R zimbra:zimbra $config_dest`;
