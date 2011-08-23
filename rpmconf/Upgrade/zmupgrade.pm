@@ -116,7 +116,7 @@ my %updateScripts = (
   '66' => "migrate20110314-MobileDevices.pl",          # 8.0.0_BETA1
   '67' => "migrate20110330-RecipientsColumn.pl",       # 8.0.0_BETA1
   '68' => "migrate20110705-PendingAclPush.pl",         # 8.0.0_BETA1
-  '70' => "migrate20110810-TagTable.pl",               # 8.0.0_BETA1
+  '69' => "migrate20110810-TagTable.pl",               # 8.0.0_BETA1
 );
 
 my %updateFuncs = (
