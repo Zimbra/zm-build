@@ -66,6 +66,9 @@ ln -s /opt/zimbra/openldap-2.4.26.3z /opt/zimbra/openldap
 rm -f /opt/zimbra/tcmalloc
 ln -s /opt/zimbra/tcmalloc-1.7 /opt/zimbra/tcmalloc
 
+rm -f /opt/zimbra/rsync
+ln -s /opt/zimbra/rsync-3.0.8 /opt/zimbra/rsync
+
 if [ -d "/opt/zimbra/zimbramon/rrdtool" ]; then
   rm -rf /opt/zimbra/zimbramon/rrdtool
   ln -s /opt/zimbra/zimbramon/rrdtool-1.2.30 /opt/zimbra/zimbramon/rrdtool
