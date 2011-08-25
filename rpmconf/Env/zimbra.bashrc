@@ -30,7 +30,7 @@ if [[ $ZCS_PLATFORM == MACOSXx86_10.* && x$ZCS_PLATFORM != "xMACOSXx86_10.7" ]];
   export JAVA_JVM_VERSION
 fi
 
-PATH=${ZIMBRA_HOME}/bin:${ZIMBRA_HOME}/postfix/sbin:${ZIMBRA_HOME}/openldap/bin:${ZIMBRA_HOME}/snmp/bin:${ZIMBRA_HOME}/bdb/bin:${ZIMBRA_HOME}/openssl/bin:${JAVA_HOME}/bin:/usr/sbin:${PATH}
+PATH=${ZIMBRA_HOME}/bin:${ZIMBRA_HOME}/postfix/sbin:${ZIMBRA_HOME}/openldap/bin:${ZIMBRA_HOME}/snmp/bin:${ZIMBRA_HOME}/rsync/bin:${ZIMBRA_HOME}/bdb/bin:${ZIMBRA_HOME}/openssl/bin:${JAVA_HOME}/bin:/usr/sbin:${PATH}
 export PATH
 
 if [ `uname -s` == "Darwin" ]; then
