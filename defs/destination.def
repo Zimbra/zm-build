@@ -34,6 +34,7 @@ MEMCACHED_DEST_DIR		:= $(MEMCACHED_DEST_ROOT)/opt/zimbra
 
 WEBAPP_DIR		:= $(STORE_DEST_ROOT)/opt/zimbra/$(MAILBOXD_DIR)/webapps
 WEBAPP_BUILD_DIR := build/dist/$(MAILBOXD_SERVER)/webapps
+WEBAPP_STAGE_DIR := $(BUILD_ROOT)/webappbuild
 
 PACKAGE_DIR			:= $(BUILD_ROOT)/$(ARCH)
 ZIMBRA_BIN_DIR		:= $(BUILD_ROOT)/../ZimbraServer/src/bin
@@ -48,3 +49,4 @@ EVO_DEST_ROOT := $(BUILD_ROOT)/evolutionbuild
 EVO_DEST_DIR := $(EVO_DEST_ROOT)
 
 PATCH_DEST_DIR := $(BUILD_ROOT)/zcs-patch-$(SOURCE_TAG)
+

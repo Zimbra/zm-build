@@ -2,7 +2,7 @@
 # 
 # ***** BEGIN LICENSE BLOCK *****
 # Zimbra Collaboration Suite Server
-# Copyright (C) 2010 Zimbra, Inc.
+# Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
 # 
 # The contents of this file are subject to the Zimbra Public License
 # Version 1.3 ("License"); you may not use this file except in
@@ -510,7 +510,7 @@ sub isInstalled {
   my $good = 0;
   if ($platform =~ /^DEBIAN/ || $platform =~ /^UBUNTU/) {
     $pkgQuery = "dpkg -s $pkg";
-  } elsif ($platform eq "MACOSXx86_10.6") {
+  } elsif ($platform eq "MACOSXx86_10.6" || $platform eq "MACOSXx86_10.7") {
     $pkg =~ s/zimbra-//;
     $pkgQuery = "pkgutil --pkg-info com.zimbra.zcs.${pkg}";
   } elsif ($platform =~ /MACOSX/) {
