@@ -207,6 +207,9 @@ $(STORE_DEST_DIR)/conf:
 $(STORE_DEST_DIR)/conf/zimbra-contact-fields.xml: $(STORE_DEST_DIR)/conf
 	cp $(SERVICE_DIR)/conf/contacts/zimbra-contact-fields.xml $@
 
+$(STORE_DEST_DIR)/conf/templates:
+	mkdir -p $@
+	cp -r $(CONSOLE_DIR)/WebRoot/templates/ $@
 
 $(ZIMLET_DIR)/build/dist/zimlets/nofile:
 	(cd $(ZIMLET_DIR); $(ANT) $(ANT_DEBUG) \

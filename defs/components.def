@@ -78,6 +78,7 @@ STORE_COMPONENTS := \
 	$(STORE_DEST_DIR)/libexec/zmcheckversion \
 	$(STORE_DEST_DIR)/conf/zimbra-contact-fields.xml \
 	$(STORE_DEST_DIR)/conf/zmztozmig.conf \
+	$(STORE_DEST_DIR)/conf/templates \
 	$(STORE_DEST_DIR)/zimlets-extra \
 	$(STORE_DEST_DIR)/zimlets-admin-extra \
 	$(STORE_DEST_DIR)/zimlets-experimental \
