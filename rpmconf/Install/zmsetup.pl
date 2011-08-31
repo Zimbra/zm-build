@@ -1465,7 +1465,7 @@ sub setDefaults {
     chomp($tmpval);
     $tmpval =~ s/mynetworks = //;
     if ($tmpval eq "") {
-      $config{zimbraMtaMyNetworks} = "127.0.0.0/8 @interfaces";
+      $config{zimbraMtaMyNetworks} = "127.0.0.0/8 [::1]/128 @interfaces";
     } else {
       $config{zimbraMtaMyNetworks} = "$tmpval";
     }
