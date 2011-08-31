@@ -3743,6 +3743,14 @@ sub upgrade713GA {
       runLdapAttributeUpgrade("63475");
     }
   }
+  if (main::isInstalled("zimbra-mta")) {
+    my $mtaNetworks=main::getLdapServerValue("zimbraMtaMyNetworks");
+    $mtaNetworks =~ s/,/ /g;
+    if ($mtaNetworks =~ m/127\.0\.0\.0\/8/) {
+      $mtaNetworks=$mtaNetworks . " [::1]/128";
+    }
+    main::runAsZimbra("$ZMPROV ms $hn zimbraMtaMyNetworks \"$mtaNetworks\"");
+  }
   return 0;
 }
 
