@@ -1,10 +1,8 @@
 source: sourcetar ajaxtar
 
-sourcetar: zcs-$(SOURCE_TAG)-src.tgz  sumitomosrc yahoosrc
+sourcetar: zcs-$(SOURCE_TAG)-src.tgz  sumitomosrc
 
 sumitomosrc: zcs-$(SOURCE_TAG)-sumitomo-src.tgz
-
-yahoosrc: zcs-$(SOURCE_TAG)-yahoo-src.tgz
 
 ajaxtar: AjaxTK-$(SOURCE_TAG)-src.tgz
 
@@ -81,25 +79,3 @@ zcs-$(SOURCE_TAG)-sumitomo-src.tgz: $(PACKAGE_DIR)
 		--exclude zcs-$(SOURCE_TAG)-sumitomo-src/zcs-$(SOURCE_TAG)-sumitomo-src zcs-$(SOURCE_TAG)-sumitomo-src; \
 		rm -f zcs-$(SOURCE_TAG)-sumitomo-src; cd $(PACKAGE_DIR); ln -s $@ zcs-sumitomo-src.tgz)
 
-# Contract source for Yahoo through 12/31/2010 but no later then 6/30/2011
-zcs-$(SOURCE_TAG)-yahoo-src.tgz: $(PACKAGE_DIR)
-	(cd $(BUILD_ROOT)/..; ln -s . zcs-$(SOURCE_TAG)-yahoo-src; tar chzf $(PACKAGE_DIR)/$@ \
-			--exclude ZimbraSyncCommon/src/java/com/zimbra/zimbrasync/Device.java \
-			--exclude ZimbraSyncCommon/src/java/com/zimbra/zimbrasync/ProvisionManager.java \
-			--exclude ZimbraSyncCommon/src/java/com/zimbra/zimbrasync/commands/Provision.java \
-			--exclude ZimbraSyncCommon/src/java/com/zimbra/zimbrasync/service/CancelPendingRemoteWipe.java \
-			--exclude ZimbraSyncCommon/src/java/com/zimbra/zimbrasync/service/GetDeviceStatus.java \
-			--exclude ZimbraSyncCommon/src/java/com/zimbra/zimbrasync/service/RemoteWipe.java \
-			--exclude ZimbraSyncCommon/src/java/com/zimbra/zimbrasync/service/RemoveDevice.java \
-			--exclude ZimbraSyncCommon/src/java/com/zimbra/zimbrasync/service/ResumeDevice.java \
-			--exclude ZimbraSyncCommon/src/java/com/zimbra/zimbrasync/service/SuspendDevice.java \
-			--exclude zcs-$(SOURCE_TAG)-yahoo-src/zcs-$(SOURCE_TAG)-yahoo-src \
-			zcs-$(SOURCE_TAG)-yahoo-src/ZimbraMAPI/src/INCLUDE \
-			zcs-$(SOURCE_TAG)-yahoo-src/ZimbraMAPI/src/SP \
-			zcs-$(SOURCE_TAG)-yahoo-src/ZimbraMAPI/src/UTIL \
-			zcs-$(SOURCE_TAG)-yahoo-src/ZimbraMAPI/src/ZCOLogCtl \
-			zcs-$(SOURCE_TAG)-yahoo-src/ZimbraMAPI/src/ZIMBRA \
-			zcs-$(SOURCE_TAG)-yahoo-src/ZimbraMAPI/vcproj/*.vcproj \
-			zcs-$(SOURCE_TAG)-yahoo-src/ZimbraSync \
-			zcs-$(SOURCE_TAG)-yahoo-src/ZimbraSyncCommon; \
-			rm -f zcs-$(SOURCE_TAG)-yahoo-src; cd $(PACKAGE_DIR); ln -s $@ zcs-yahoo-src.tgz)
