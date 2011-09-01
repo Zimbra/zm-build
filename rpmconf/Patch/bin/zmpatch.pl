@@ -37,6 +37,7 @@ sub getInstalledType();
 sub usage;
 sub doPatchBuild();
 sub doPatchDeploy();
+sub doIncrementJSVersion();
 
 GetOptions ("config=s"  => \$options{config},
             "verbose|v+"  => \$options{verbose},
@@ -329,6 +330,9 @@ sub deployPatch($) {
       }
     }
     # update the installed version of package
+    if ($package eq "zimbra-store") {
+      &doIncrementJSVersion();
+    }
     logSession("UPGRADED $package-${currentRelease}_${patchBuildNumber}")
       unless ($package eq "zimbra-core");
   }
@@ -536,3 +540,55 @@ sub isInstalled {
   }
 }
 
+sub doIncrementJSVersion() {
+  my $infile="$zimbra_home/jetty/etc/zimbra.web.xml.in";
+  my $outfile="$zimbra_home/data/tmp/zimbra.web.xml.in.new";
+  unlink("$outfile") if (-e "$outfile");
+  open (IN, "<$infile");
+  open (OUT, ">$outfile");
+  my $next=0;
+  
+  while (<IN>) {
+    if ($next == 0) {
+      if ($_ =~ m/<param-name>jsVersion<\/param-name>/) {
+        $next = 1;
+      }
+      print OUT $_;
+    }
+    else {
+      my ($oldVersion) = $_ =~ /<param-value>(\d+)<\/param-value>/;
+      my $newVersion=$oldVersion+1;
+      $_ =~ s/$oldVersion/$newVersion/;
+      print OUT $_;
+      $next = 0;
+    }
+  }
+  close(IN);
+  close(OUT);
+  copy($outfile, $infile);
+  $infile="$zimbra_home/jetty/etc/zimbraAdmin.web.xml.in";
+  $outfile="$zimbra_home/data/tmp/zimbraAdmin.web.xml.in.new";
+  unlink("$outfile") if (-e "$outfile");
+  open (IN, "<$infile");
+  open (OUT, ">$outfile");
+  my $next=0;
+  
+  while (<IN>) {
+    if ($next == 0) {
+      if ($_ =~ m/<param-name>jsVersion<\/param-name>/) {
+        $next = 1;
+      }
+      print OUT $_;
+    }
+    else {
+      my ($oldVersion) = $_ =~ /<param-value>(\d+)<\/param-value>/;
+      my $newVersion=$oldVersion+1;
+      $_ =~ s/$oldVersion/$newVersion/;
+      print OUT $_;
+      $next = 0;
+    }
+  }
+  close(IN);
+  close(OUT);
+  copy($outfile, $infile);
+}
