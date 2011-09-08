@@ -3747,9 +3747,10 @@ sub upgrade713GA {
     my $mtaNetworks=main::getLdapServerValue("zimbraMtaMyNetworks");
     $mtaNetworks =~ s/,/ /g;
     if ($mtaNetworks =~ m/127\.0\.0\.0\/8/) {
+      $mtaNetworks =~ s/ $//;
       $mtaNetworks=$mtaNetworks . " [::1]/128";
     }
-    main::runAsZimbra("$ZMPROV ms $hn zimbraMtaMyNetworks \"$mtaNetworks\"");
+    main::runAsZimbra("$ZMPROV ms $hn zimbraMtaMyNetworks \'$mtaNetworks\'");
   }
   return 0;
 }
