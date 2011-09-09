@@ -571,7 +571,7 @@ sub doIncrementJSVersion() {
   unlink("$outfile") if (-e "$outfile");
   open (IN, "<$infile");
   open (OUT, ">$outfile");
-  my $next=0;
+  $next=0;
   
   while (<IN>) {
     if ($next == 0) {
