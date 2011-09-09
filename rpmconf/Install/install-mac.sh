@@ -35,7 +35,7 @@ else
   platform=unknown
 fi
 
-if [ x"$platform" = "xMACOSXx86_10.5" -o x"$platform" = "xMACOSXx86_10.6" -o x"$platform" = "xMACOSXx86_10.7" ]; then
+if [ x"$platform" = "xMACOSXx86_10.5" -o x"$platform" = "xMACOSXx86_10.6" ]; then
   PS="/bin/ps -elf"
 else
   PS="/bin/ps -aux"
