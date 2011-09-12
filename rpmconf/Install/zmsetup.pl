@@ -140,6 +140,7 @@ my $ldapRepChanged = 0;
 my $ldapPostChanged = 0;
 my $ldapAmavisChanged = 0;
 my $ldapNginxChanged = 0;
+my $ldapBesSearcherChanged = 0;
 my $ldapReplica = 0;
 my $starttls = 0;
 my $needNewCert = "";
@@ -1413,12 +1414,14 @@ sub setDefaults {
     $config{LDAPPOSTPASS} = $config{LDAPADMINPASS};
     $config{LDAPAMAVISPASS} =  $config{LDAPADMINPASS};
     $config{ldap_nginx_password} = $config{LDAPADMINPASS};
+    $config{ldap_bes_searcher_password} = $config{LDAPADMINPASS};
     $config{LDAPREPLICATIONTYPE} = "master"; # Values can be master, mmr, replica
     $config{LDAPSERVERID} = 2; # Aleady enabled master should be 1, so default to next ID.
     $ldapRepChanged = 1;
     $ldapPostChanged = 1;
     $ldapAmavisChanged = 1;
     $ldapNginxChanged = 1;
+    $ldapBesSearcherChanged = 1;
   }
 
   if(isInstalled("zimbra-proxy") && !isEnabled("zimbra-ldap")) {
@@ -1796,6 +1799,13 @@ sub setDefaultsFromLocalConfig {
     if ($config{LDAPREPPASS} eq "") {
       $config{LDAPREPPASS} = $config{LDAPADMINPASS};
       $ldapRepChanged = 1;
+    }
+  } 
+  if (isEnabled("zimbra-ldap")) {
+    $config{ldap_bes_searcher_password} = getLocalConfig ("ldap_bes_searcher_password");
+    if ($config{ldap_bes_searcher_password} eq "") {
+      $config{ldap_bes_searcher_password} = $config{ldap_bes_searcher_password};
+      $ldapBesSearcherChanged = 1;
     }
   } 
   if (isEnabled("zimbra-ldap") || isEnabled("zimbra-mta")) {
@@ -2272,6 +2282,24 @@ sub setLdapRepPass {
       if ($config{LDAPREPPASS} ne $new) {
         $config{LDAPREPPASS} = $new;
         $ldapRepChanged = 1;
+      }
+      ldapIsAvailable() if ($config{HOSTNAME} ne $config{LDAPHOST});
+      return;
+    } else {
+      print "Minimum length of 6 characters!\n";
+    }
+  } 
+}
+
+sub setLdapBesSearchPass {
+  while (1) {
+    my $new =
+      askPassword("Password for ldap BES user (min 6 characters):",
+        $config{ldap_bes_searcher_password});
+    if (length($new) >= 6) {
+      if ($config{ldap_bes_searcher_password} ne $new) {
+        $config{ldap_bes_searcher_password} = $new;
+        $ldapBesSearcherChanged = 1;
       }
       ldapIsAvailable() if ($config{HOSTNAME} ne $config{LDAPHOST});
       return;
@@ -3290,6 +3318,19 @@ sub createLdapMenu {
         };
       $i++;
     }
+    if ($config{HOSTNAME} eq $config{LDAPHOST} ) {
+      if ($config{ldap_bes_searcher_password} eq "") {
+        $config{ldap_bes_searcher_password} = "UNSET";
+      } else {
+        $config{ldap_bes_searcher_password} = "set" unless ($config{ldap_bes_searcher_password} eq "Not Verified");
+      }
+      $$lm{menuitems}{$i} = {
+        "prompt" => "Ldap Bes Searcher password:",
+        "var" => \$config{ldap_bes_searcher_password},
+        "callback" => \&setLdapBesSearchPass
+        };
+      $i++;
+    }
   }
   return $lm;
 }
@@ -4187,7 +4228,23 @@ sub ldapIsAvailable {
     setLocalConfig ("zimbra_ldap_password", $config{LDAPADMINPASS});
     setLdapDefaults() if ($config{LDAPHOST} ne $config{HOSTNAME});
   }
-  
+ 
+  # check zmbes searcher binding to the master
+  if ($config{LDAPHOST} eq $config{HOSTNAME}) {
+    if ($config{ldap_bes_searcher_password} eq "") {
+      detail ("BES searcher configuration not complete\n");
+      $failedcheck++;
+    }
+    my $binduser = "uid=zmbes-searcher,cn=appaccts,$config{ldap_dit_base_dn_config}";
+    if (checkLdapBind($binduser,$config{ldap_bes_searcher_password})) {
+      detail ("Couldn't bind to $config{LDAPHOST} as $binduser\n");
+      $config{ldap_bes_searcher_password} = "Not Verified";
+      $failedcheck++;
+    } else {
+      detail ("Verified $binduser on $config{LDAPHOST}.\n");
+      $config{ldap_bes_searcher_password} = "set";
+    }
+  }
   # check nginx user binding to the master
   if (isInstalled("zimbra-proxy")) {
     if ($config{ldap_nginx_password} eq "") {
@@ -4703,6 +4760,11 @@ sub configSetupLdap {
          runAsZimbra ("/opt/zimbra/bin/zmldappasswd -n \'$config{ldap_nginx_password}\'");
          progress ( "done.\n" );
       }
+      if ($ldapBesSearcherChanged == 1) {
+         progress ( "Setting BES searcher  password..." );
+         runAsZimbra ("/opt/zimbra/bin/zmldappasswd -b \'$config{ldap_bes_searcher_password}\'");
+         progress ( "done.\n" );
+      }
     }
   } elsif (isEnabled("zimbra-ldap")) {
     # enable replica for both new and upgrade installs if we are adding ldap
@@ -4777,7 +4839,7 @@ sub configSetupLdap {
 
 
     # zmldappasswd starts ldap and re-applies the ldif
-    if ($ldapRootPassChanged || $ldapAdminPassChanged || $ldapRepChanged || $ldapPostChanged || $ldapAmavisChanged || $ldapNginxChanged) {
+    if ($ldapRootPassChanged || $ldapAdminPassChanged || $ldapRepChanged || $ldapPostChanged || $ldapAmavisChanged || $ldapNginxChanged || $ldapBesSearcherChanged) {
       if ($ldapRootPassChanged) {
          progress ( "Setting ldap root password..." );
          runAsZimbra ("/opt/zimbra/bin/zmldappasswd -r $config{LDAPROOTPASS}");
@@ -4828,6 +4890,15 @@ sub configSetupLdap {
         }
          progress ( "done.\n" );
       }
+      if ($ldapBesSearcherChanged == 1) {
+         progress ( "Setting BES Searcher password..." );
+         if ($config{LDAPHOST} eq $config{HOSTNAME} ) {
+           runAsZimbra ("/opt/zimbra/bin/zmldappasswd -b $config{ldap_bes_searcher_password}");
+         } else {
+           setLocalConfig ("ldap_bes_searcher_password", "$config{ldap_bes_searcher_password}");
+        }
+         progress ( "done.\n" );
+      }
     } else {
       progress("Stopping ldap...");
       runAsZimbra ("/opt/zimbra/bin/ldap stop");
@@ -4844,6 +4915,7 @@ sub configSetupLdap {
     setLocalConfig ("ldap_postfix_password", "$config{LDAPPOSTPASS}");
     setLocalConfig ("ldap_amavis_password", "$config{LDAPAMAVISPASS}");
     setLocalConfig ("ldap_nginx_password", "$config{ldap_nginx_password}");
+    setLocalConfig ("ldap_bes_searcher_password", "$config{ldap_bes_searcher_password}");
   }
 
   configLog("configSetupLdap");
