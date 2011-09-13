@@ -1804,7 +1804,7 @@ sub setDefaultsFromLocalConfig {
   if (isEnabled("zimbra-ldap")) {
     $config{ldap_bes_searcher_password} = getLocalConfig ("ldap_bes_searcher_password");
     if ($config{ldap_bes_searcher_password} eq "") {
-      $config{ldap_bes_searcher_password} = $config{ldap_bes_searcher_password};
+      $config{ldap_bes_searcher_password} = $config{LDAPADMINPASS};
       $ldapBesSearcherChanged = 1;
     }
   } 
@@ -3320,13 +3320,13 @@ sub createLdapMenu {
     }
     if ($config{HOSTNAME} eq $config{LDAPHOST} ) {
       if ($config{ldap_bes_searcher_password} eq "") {
-        $config{ldap_bes_searcher_password} = "UNSET";
+        $config{LDAPBESSEARCHSET} = "UNSET";
       } else {
-        $config{ldap_bes_searcher_password} = "set" unless ($config{ldap_bes_searcher_password} eq "Not Verified");
+        $config{LDAPBESSEARCHSET} = "set" unless ($config{LDAPBESSEARCHSET} eq "Not Verified");
       }
       $$lm{menuitems}{$i} = {
         "prompt" => "Ldap Bes Searcher password:",
-        "var" => \$config{ldap_bes_searcher_password},
+        "var" => \$config{LDAPBESSEARCHSET},
         "callback" => \&setLdapBesSearchPass
         };
       $i++;
@@ -4238,11 +4238,11 @@ sub ldapIsAvailable {
     my $binduser = "uid=zmbes-searcher,cn=appaccts,$config{ldap_dit_base_dn_config}";
     if (checkLdapBind($binduser,$config{ldap_bes_searcher_password})) {
       detail ("Couldn't bind to $config{LDAPHOST} as $binduser\n");
-      $config{ldap_bes_searcher_password} = "Not Verified";
+      $config{LDAPBESSEARCHSET} = "Not Verified";
       $failedcheck++;
     } else {
       detail ("Verified $binduser on $config{LDAPHOST}.\n");
-      $config{ldap_bes_searcher_password} = "set";
+      $config{LDAPBESSEARCHSET} = "set";
     }
   }
   # check nginx user binding to the master
