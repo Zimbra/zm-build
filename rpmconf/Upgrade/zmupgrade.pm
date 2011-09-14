@@ -3784,6 +3784,7 @@ sub upgrade713GA {
     my $aclNumber=-1;
     my $attrMod="";
 
+    my $fixup=0;
     foreach my $attr (@attrvals) {
       if ($attr =~ /homePhone,pager,mobile/) {
         if ($attr !~ /userCertificate/) {
@@ -3791,10 +3792,21 @@ sub upgrade713GA {
           $attrMod=$attr;
         }
       }
+      if ($attr =~ /homePhone,mobile,pager/) {
+        if ($attr !~ /userCertificate/) {
+          ($aclNumber) = $attr =~ /^\{(\d+)\}*/;
+          $attrMod=$attr;
+          $fixup=1;
+        }
+      }
     }
 
     if ($aclNumber != -1 && $attrMod ne "") {
-      $attrMod =~ s/homePhone,pager,mobile/homePhone,pager,mobile,userCertificate/;
+      if ($fixup) {
+        $attrMod =~ s/homePhone,mobile,pager/homePhone,pager,mobile,userCertificate/;
+      } else {
+        $attrMod =~ s/homePhone,pager,mobile/homePhone,pager,mobile,userCertificate/;
+      }
       $result = $ldap->modify(
           $dn,
           delete => {olcAccess => "{$aclNumber}"},
