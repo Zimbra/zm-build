@@ -3823,6 +3823,84 @@ sub upgrade713GA {
 sub upgrade800BETA1 {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
   main::progress("Updating from 8.0.0_BETA1\n");
+  # bug 59607 - migrate old zmmtaconfig variables to zmconfigd
+  foreach my $lc_var qw(enable_config_restarts interval log_level listen_port debug watchdog watchdog_services) {
+    my $val = main::getLocalConfig("zmmtaconfig_${lc_var}");
+    if ($val ne "") {
+      main::setLocalConfig("zmconfigd_${lc_var}", "$val");
+      main::deleteLocalConfig("zmmtaconfig_${lc_var}");
+    }
+  }
+  if (main::isInstalled("zimbra-ldap")) {
+    if ($isLdapMaster) {
+      runLdapAttributeUpgrade("57866");
+      runLdapAttributeUpgrade("57205");
+      runLdapAttributeUpgrade("57875");
+    }
+    # 3884
+    main::progress("Adding dynamic group configuration\n");
+    main::runAsZimbra("perl -I${scriptDir} ${scriptDir}/migrate20110615-AddDynlist.pl");
+    main::runAsZimbra("perl -I${scriptDir} ${scriptDir}/migrate20110721-AddUnique.pl");
+    my $ldap_pass = `$su "zmlocalconfig -s -m nokey ldap_root_password"`;
+    chomp($ldap_pass);
+    my $ldap;
+    unless($ldap = Net::LDAP->new('ldapi://%2fopt%2fzimbra%2fopenldap%2fvar%2frun%2fldapi/')) {
+       main::progress("Unable to contact to ldapi: $!\n");
+    }
+    my $result = $ldap->bind("cn=config", password => $ldap_pass);
+    my $dn="olcDatabase={2}hdb,cn=config";
+    if ($isLdapMaster) {
+      $result = $ldap->search(
+                        base=> "cn=accesslog",
+                        filter=>"(objectClass=*)",
+                        scope => "base",
+                        attrs => ['1.1'],
+      );
+      my $size = $result->count;
+      if ($size > 0 ) {
+        $dn="olcDatabase={3}hdb,cn=config";
+      }
+    }
+    $result = $ldap->search(
+      base=> "$dn",
+      filter=>"(objectClass=*)",
+      scope => "base",
+      attrs => ['olcDbIndex'],
+    );
+    my $entry=$result->entry($result->count-1);
+    my @attrvals=$entry->get_value("olcDbIndex");
+    my $MzimbraMemberOf=1;
+    my $MzimbraSharedItem=1;
+
+    foreach my $attr (@attrvals) {
+      if ($attr =~ /zimbraMemberOf/) {
+        $MzimbraMemberOf=0;
+      }
+      if ($attr =~ /zimbraSharedItem/) {
+        $MzimbraSharedItem=0;
+      }
+    }
+
+    if ($MzimbraMemberOf) {
+      $result = $ldap->modify(
+          $dn,
+          add =>{olcDbIndex=>"zimbraMemberOf eq"},
+      );
+    }
+    if ($MzimbraSharedItem) {
+      $result = $ldap->modify(
+          $dn,
+          add =>{olcDbIndex=>"zimbraSharedItem eq,sub"},
+      );
+    }
+    $ldap->unbind;
+    if ($MzimbraMemberOf) {
+      &indexLdapAttribute("zimbraMemberOf");
+    }
+    if ($MzimbraSharedItem) {
+      &indexLdapAttribute("zimbraSharedItem");
+    }
+  }
   return 0;
 }
 
