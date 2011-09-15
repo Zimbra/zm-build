@@ -220,6 +220,7 @@ my %updateFuncs = (
   "7.1.1_GA" => \&upgrade711GA,
   "7.1.2_GA" => \&upgrade712GA,
   "7.1.3_GA" => \&upgrade713GA,
+  "7.1.4_GA" => \&upgrade714GA,
   "8.0.0_BETA1" => \&upgrade800BETA1,
 );
 
@@ -325,6 +326,7 @@ my @versionOrder = (
   "7.1.1_GA",
   "7.1.2_GA",
   "7.1.3_GA",
+  "7.1.4_GA",
   "8.0.0_BETA1",
 );
 
@@ -586,6 +588,8 @@ sub upgrade {
     main::progress("This appears to be 7.1.2_GA\n");
   } elsif ($startVersion eq "7.1.3_GA") {
     main::progress("This appears to be 7.1.3_GA\n");
+  } elsif ($startVersion eq "7.1.4_GA") {
+    main::progress("This appears to be 7.1.4_GA\n");
   } elsif ($startVersion eq "8.0.0_BETA1") {
     main::progress("This appears to be 8.0.0_BETA1\n");
   } else {
@@ -3817,6 +3821,12 @@ sub upgrade713GA {
     }
     main::runAsZimbra("$ZMPROV ms $hn zimbraMtaMyNetworks \'$mtaNetworks\'");
   }
+  return 0;
+}
+
+sub upgrade714GA {
+  my ($startBuild, $targetVersion, $targetBuild) = (@_);
+  main::progress("Updating from 7.1.4_GA\n");
   return 0;
 }
 
