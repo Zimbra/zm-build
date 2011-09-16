@@ -3774,6 +3774,41 @@ sub upgrade713GA {
     my $aclNumber=-1;
     my $attrMod="";
 
+    foreach my $attr (@attrvals) {
+      if ($attr =~ /zimbraDomainName/) {
+        ($aclNumber) = $attr =~ /^\{(\d+)\}*/;
+        if ($attr !~ /uid=zmamavis,cn=appaccts,cn=zimbra/) {
+          $attrMod=$attr;
+          if ($attrMod =~ /by \* read/) {
+            $attrMod =~ s/by \* read/by dn.base="uid=zmamavis,cn=appaccts,cn=zimbra" read  by \* read/;
+          } else {
+            $attrMod =~ s/by \* none/by dn.base="uid=zmamavis,cn=appaccts,cn=zimbra" read  by \* none/;
+          }
+        }
+      }
+    }
+
+    if ($aclNumber != -1 && $attrMod ne "") {
+      $result = $ldap->modify(
+          $dn,
+          delete => {olcAccess => "{$aclNumber}"},
+      );
+      $result = $ldap->modify(
+          $dn,
+          add =>{olcAccess=>"$attrMod"},
+      );
+    }
+    $result = $ldap->search(
+      base=> "$dn",
+      filter=>"(objectClass=*)",
+      scope => "base",
+      attrs => ['olcAccess'],
+    );
+    my $entry=$result->entry($result->count-1);
+    my @attrvals=$entry->get_value("olcAccess");
+    my $aclNumber=-1;
+    my $attrMod="";
+
     my $fixup=0;
     foreach my $attr (@attrvals) {
       if ($attr =~ /homePhone,pager,mobile/) {
