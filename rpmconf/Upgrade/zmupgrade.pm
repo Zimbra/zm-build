@@ -36,7 +36,7 @@ chomp $rundir;
 my $scriptDir = "/opt/zimbra/libexec/scripts";
 
 my $lowVersion = 18;
-my $hiVersion = 85; # this should be set to the DB version expected by current server code
+my $hiVersion = 86; # this should be set to the DB version expected by current server code
 
 # Variables for the combo schema updater
 my $comboLowVersion = 20;
@@ -119,6 +119,7 @@ my %updateScripts = (
   '82' => "migrate20110705-PendingAclPush.pl",         # 8.0.0_BETA1
   '83' => "migrate20110810-TagTable.pl",               # 8.0.0_BETA1
   '84' => "migrate20110928-MobileDevices.pl",          # 8.0.0_BETA2
+  '85' => "migrate20110929-VersionColumn.pl",          # 8.0.0_BETA2
 );
 
 my %updateFuncs = (
@@ -3978,6 +3979,11 @@ sub upgrade800BETA2 {
     if ($isLdapMaster) {
       runLdapAttributeUpgrade("63722");
     }
+  }
+  if (main::isEnabled("zimbra-store")) {
+    if (startSql()) { return 1; }
+      main::runAsZimbra("perl -I${scriptDir} ${scriptDir}/migrate20111005-ItemIdCheckpoint.pl");
+      stopSql();
   }
   return 0;
 }
