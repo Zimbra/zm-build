@@ -224,7 +224,7 @@ if [ x$UNINSTALL == "xyes" ]; then
   if [ ! -e "/etc/syslog.conf.zimbra" ]; then
     cp -f /etc/syslog.conf /etc/syslog.conf.zimbra
   fi
-  sed -i .zimbra -e 's:\(.*zimbra.*\.log.*\):#\1:' /etc/syslog.conf
+  sed -i .zimbra -e '/zimbra.*.log/d' /etc/syslog.conf
   if [ $? != 0 ]; then
     echo "failed."
     mv /etc/syslog.conf.zimbra /etc/syslog.conf
