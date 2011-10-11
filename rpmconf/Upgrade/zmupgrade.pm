@@ -626,11 +626,11 @@ sub upgrade {
   if (main::isInstalled ("zimbra-ldap")) {
     if($startMajor < 6 && $targetMajor >= 6) {
       &updateLdapBdbConfig("6.0.0_GA");
-      my $rc=&migrateLdap("6.0.0_GA");
+      my $rc=&migrateLdap("8.0.0_BETA2");
       if ($rc) { return 1; }
-    } elsif($startMajor < 8 && $targetMajor >= 8) {
+    } elsif($targetMajor >= 8) {
       &updateLdapBdbConfig("8.0.0_GA");
-      my $rc=&upgradeLdap("8.0.0_GA");
+      my $rc=&upgradeLdap("8.0.0_BETA2");
     }
     if (startLdap()) {return 1;} 
   }
@@ -4534,8 +4534,25 @@ sub upgradeLdap($) {
       my $ldifFile="/opt/zimbra/data/ldap/ldap.bak";
       if (-f $ldifFile && -s $ldifFile) {
         chmod 0644, $ldifFile;
-
+        my $infile = "$ldifFile";
+        my $outfile = "/opt/zimbra/data/ldap/ldap.80";
         main::progress("Upgrading ldap data...");
+        open(IN,"<$infile");
+        open(OUT,">$outfile");
+        while(<IN>) {
+          if ($_ =~ /^zimbraPrefStandardClientAccessilbityMode:/) {next;}
+          if ($_ =~ /^objectClass: zimbraHsmGlobalConfig/) {next;}
+          if ($_ =~ /^objectClass: zimbraHsmServer/) {next;}
+          if ($_ =~ /^objectClass: organizationalPerson/) {
+            print OUT $_;
+            print OUT "objectClass: inetOrgPerson\n";
+            next;
+          }
+          if ($_ =~ /^structuralObjectClass: organizationalPerson/) {
+            $_ =~ s/organizationalPerson/inetOrgPerson/;
+          }
+          print OUT $_;
+        }
         if (-d "/opt/zimbra/data/ldap/hdb.prev") {
           `mv /opt/zimbra/data/ldap/hdb.prev /opt/zimbra/data/ldap/hdb.prev.$$`;
         }
@@ -4550,7 +4567,7 @@ sub upgradeLdap($) {
         }
         `chown -R zimbra:zimbra /opt/zimbra/data/ldap`;
         my $rc;
-        $rc=main::runAsZimbra("/opt/zimbra/openldap/sbin/slapadd -q -b '' -F /opt/zimbra/data/ldap/config -l $ldifFile");
+        $rc=main::runAsZimbra("/opt/zimbra/openldap/sbin/slapadd -q -b '' -F /opt/zimbra/data/ldap/config -l $outfile");
         if ($rc != 0) {
           main::progress("slapadd import failed.\n");
           return 1;
@@ -4586,6 +4603,14 @@ sub migrateLdap($) {
             if ($_ =~ /^zimbraPrefStandardClientAccessilbityMode:/) {next;}
             if ($_ =~ /^objectClass: zimbraHsmGlobalConfig/) {next;}
             if ($_ =~ /^objectClass: zimbraHsmServer/) {next;}
+            if ($_ =~ /^objectClass: organizationalPerson/) {
+              print OUT $_;
+              print OUT "objectClass: inetOrgPerson\n";
+              next;
+            }
+            if ($_ =~ /^structuralObjectClass: organizationalPerson/) {
+              $_ =~ s/organizationalPerson/inetOrgPerson/;
+            }
             print OUT $_;
           }
         } else {
