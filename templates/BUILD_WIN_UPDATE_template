@@ -22,12 +22,12 @@ Update:	2006/12/13 18:14:52
 
 Access:	2007/09/21 01:35:06
 
-Owner:	build
+Owner:	zimbra-build
 
 Host:	build.liquidsys.com
 
 Description:
-	Created by build.
+	Created by zimbra-build.
 
 Root:	/home/build/win/@@TAG@@
 

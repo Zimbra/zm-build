@@ -12,10 +12,10 @@
 
 Label:	BUILD_LABEL_@@TAG@@_@@RELEASE@@
 
-Owner:	build
+Owner:	zimbra-build
 
 Description:
-	Created by build.
+	Created by zimbra-build.
 
 Options:	unlocked
 
