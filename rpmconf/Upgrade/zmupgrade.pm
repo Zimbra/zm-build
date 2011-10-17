@@ -3979,6 +3979,7 @@ sub upgrade800BETA2 {
     if ($isLdapMaster) {
       runLdapAttributeUpgrade("63722");
       runLdapAttributeUpgrade("64380");
+      runLdapAttributeUpgrade("65070");
     }
   }
   if (main::isEnabled("zimbra-store")) {
