@@ -114,6 +114,10 @@ ifeq ($(BUILD_PLATFORM), MACOSX)
 	ARCH := ppc
 endif
 
+ifeq ($(BUILD_PLATFORM), MACOSXx86_10.6)
+	ARCH := x86_64
+endif
+
 ifeq ($(BUILD_PLATFORM), MACOSXx86_10.7)
 	ARCH := x86_64
 endif
