@@ -140,7 +140,7 @@ usage() {
 
   echo "$0 [-u] [-c config] [-m zcs.mpkg | -d zcs.dmg] [-l ZCSLicense.xml] [-s] [-h]"
   echo ""
-  echo " -u          Uninstall Zimbra Collaboration Suite"
+  echo " -u          Uninstall Zimbra Collaboration Server"
   echo " -d zcs.dmg  Install ZCS from contents of specified disk image"
   echo " -m zcs.mpkg Install ZCS with specified package"
   echo " -l license  ZCSLicense.xml file"

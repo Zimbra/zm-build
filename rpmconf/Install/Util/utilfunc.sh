@@ -1211,7 +1211,7 @@ setRemove() {
     checkVersionMatches
 
     echo ""
-    echo "The Zimbra Collaboration Suite appears already to be installed."
+    echo "The Zimbra Collaboration Server appears already to be installed."
     if [ $VERSIONMATCH = "yes" ]; then
       echo "It can be upgraded with no effect on existing accounts,"
       echo "or the current installation can be completely removed prior"
@@ -1294,7 +1294,7 @@ EOF
     done
     if [ x$INSTALLED = "xyes" ]; then
       echo ""
-      echo "The Zimbra Collaboration Suite does not appear to be installed,"
+      echo "The Zimbra Collaboration Server does not appear to be installed,"
       echo "yet there appears to be a ZCS directory structure in /opt/zimbra."
       askYN "Would you like to delete /opt/zimbra before installing?" "N"
       REMOVE="$response"
@@ -1788,7 +1788,7 @@ removeExistingInstall() {
       done
   
       echo ""
-      echo "Finished removing Zimbra Collaboration Suite."
+      echo "Finished removing Zimbra Collaboration Server."
       echo ""
     fi
   fi
