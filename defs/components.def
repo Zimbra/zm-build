@@ -4,6 +4,18 @@ WEBAPPS	:= \
 	$(WEBAPP_DIR)/zimbra/downloads \
 	$(WEBAPP_DIR)/zimbraAdmin.war
 
+ifeq ($(ZIMBRA_USE_CBPOLICYD), 1)
+CBPOLICYD_COMPONENTS := \
+	$(MTA_DEST_DIR)/$(CBPOLICYD_DIR) \
+	$(MTA_DEST_DIR)/data/cbpolicyd \
+	$(MTA_DEST_DIR)/data/cbpolicyd/db
+
+CBPOLICYD_CORE_COMPONENTS := \
+	$(CORE_DEST_DIR)/bin/zmcbpolicydctl \
+	$(CORE_DEST_DIR)/conf/cbpolicyd.conf.in \
+	$(CORE_DEST_DIR)/libexec/zmcbpolicydinit
+endif
+
 CORE_COMPONENTS	:= \
 	$(CORE_DEST_DIR) \
 	$(CORE_DEST_DIR)/db \
@@ -22,32 +34,25 @@ CORE_COMPONENTS	:= \
 	$(CORE_DEST_DIR)/$(SASL_DIR)-$(SASL_VERSION) \
 	$(CORE_DEST_DIR)/$(LDAP_DIR)-libs-$(LDAP_VERSION) \
 	$(CORE_DEST_DIR)/$(TCMALLOC_DIR) \
+	$(CORE_DEST_DIR)/$(RSYNC_DIR) \
 	$(CORE_DEST_DIR)/lib/ext/com_zimbra_cert_manager/com_zimbra_cert_manager.jar \
 	$(CORE_DEST_DIR)/lib/ext/com_zimbra_bulkprovision/com_zimbra_bulkprovision.jar \
+	$(CBPOLICYD_CORE_COMPONENTS) \
 	$(PLATFORM_CORE_COMPONENTS)
-
-
-ifeq ($(ZIMBRA_USE_CBPOLICYD), 1)
-CBPOLICYD_COMPONENTS := \
-	$(MTA_DEST_DIR)/$(CBPOLICYD_DIR) \
-	$(MTA_DEST_DIR)/bin/zmcbpolicydctl \
-	$(MTA_DEST_DIR)/conf/cbpolicyd.conf.in \
-	$(MTA_DEST_DIR)/data/cbpolicyd \
-	$(MTA_DEST_DIR)/libexec/zmcbpolicydinit
-endif
 
 MTA_COMPONENTS	:= \
 	$(MTA_DEST_DIR) \
 	$(MTA_DEST_DIR)/$(POSTFIX_DIR) \
 	$(MTA_DEST_DIR)/data/postfix \
 	$(MTA_DEST_DIR)/$(AMAVISD_DIR)-new-$(AMAVISD_VERSION) \
-	$(MTA_DEST_DIR)/data/amavisd \
+	$(MTA_DEST_DIR)/data/amavisd/mysql/antispamdb.sql \
 	$(MTA_DEST_DIR)/$(CLAMAV_DIR)  \
 	$(MTA_DEST_DIR)/data/clamav \
 	$(MTA_DEST_DIR)/$(DSPAM_DIR)-$(DSPAM_VERSION) \
 	$(MTA_DEST_DIR)/data/dspam \
 	$(MTA_DEST_DIR)/$(ALTERMIME_DIR)-$(ALTERMIME_VERSION) \
 	$(MTA_DEST_DIR)/data/altermime \
+	$(MTA_MYSQL_DEST_DIR)/$(MYSQL_DIR) \
 	$(CBPOLICYD_COMPONENTS)
 
 LOGGER_COMPONENTS := \
@@ -58,7 +63,8 @@ LOGGER_COMPONENTS := \
 ifndef $(ZIMBRA_USE_TOMCAT)
 	MAILBOXD_COMPONENTS := \
 		$(STORE_DEST_DIR)/lib/libsetuid \
-		$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/lib/log4j-1.2.15.jar \
+		$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/lib/log4j-1.2.16.jar \
+		$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/lib/apache-log4j-extras-1.0.jar \
 		$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/resources/log4j.properties
 endif
 
@@ -72,9 +78,11 @@ STORE_COMPONENTS := \
 	$(STORE_DEST_DIR)/libexec/zmcheckversion \
 	$(STORE_DEST_DIR)/conf/zimbra-contact-fields.xml \
 	$(STORE_DEST_DIR)/conf/zmztozmig.conf \
+	$(STORE_DEST_DIR)/conf/templates \
 	$(STORE_DEST_DIR)/zimlets-extra \
 	$(STORE_DEST_DIR)/zimlets-admin-extra \
 	$(STORE_DEST_DIR)/zimlets-experimental \
+	$(STORE_DEST_DIR)/extensions-extra \
 	$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/common/lib \
 	$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/common/endorsed \
 	$(MAILBOXD_COMPONENTS) \
@@ -83,7 +91,6 @@ STORE_COMPONENTS := \
 	$(STORE_DEST_DIR)/lib/ext/nginx-lookup/nginx-lookup.jar \
 	$(STORE_DEST_DIR)/lib/ext/zimbraadminversioncheck/zimbraadminversioncheck.jar \
 	$(STORE_DEST_DIR)/lib/jars/zmzimbratozimbramig.jar \
-	$(STORE_DEST_DIR)/wiki \
 	$(STORE_DEST_DIR)/log \
 	$(STORE_DEST_DIR)/$(MYSQL_DIR) 
 
@@ -113,7 +120,6 @@ PROXY_COMPONENTS := \
 
 MEMCACHED_COMPONENTS := \
 	$(MEMCACHED_DEST_DIR)/$(MEMCACHED_DIR)
-
 
 EVO_COMPONENTS := \
 	$(EVO_DEST_DIR)

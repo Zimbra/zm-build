@@ -25,14 +25,12 @@ fi
 JAVA_HOME=${ZIMBRA_HOME}/java
 export JAVA_HOME
 
-if [ x"$ZCS_PLATFORM" = "xMACOSXx86_10.6" ]; then
-  JAVA_JVM_VERSION=1.6
-else
-  JAVA_JVM_VERSION=1.5
+if [[ $ZCS_PLATFORM == MACOSXx86_10.* && x$ZCS_PLATFORM != "xMACOSXx86_10.7" ]]; then
+  JAVA_JVM_VERSION=CurrentJDK
+  export JAVA_JVM_VERSION
 fi
-export JAVA_JVM_VERSION
 
-PATH=${ZIMBRA_HOME}/bin:${ZIMBRA_HOME}/postfix/sbin:${ZIMBRA_HOME}/openldap/bin:${ZIMBRA_HOME}/snmp/bin:${ZIMBRA_HOME}/bdb/bin:${ZIMBRA_HOME}/openssl/bin:${JAVA_HOME}/bin:/usr/sbin:${PATH}
+PATH=${ZIMBRA_HOME}/bin:${ZIMBRA_HOME}/postfix/sbin:${ZIMBRA_HOME}/openldap/bin:${ZIMBRA_HOME}/snmp/bin:${ZIMBRA_HOME}/rsync/bin:${ZIMBRA_HOME}/bdb/bin:${ZIMBRA_HOME}/openssl/bin:${JAVA_HOME}/bin:/usr/sbin:${PATH}
 export PATH
 
 if [ `uname -s` == "Darwin" ]; then
@@ -51,5 +49,11 @@ export PERLLIB
 PERL5LIB=$PERLLIB
 export PERL5LIB
 
+JYTHONPATH=/opt/zimbra/zimbramon/pylibs
+export JYTHONPATH
+
 ulimit -n 524288 > /dev/null 2>&1
 umask 0027
+
+unset DISPLAY
+

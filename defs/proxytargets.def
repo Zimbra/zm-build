@@ -64,8 +64,10 @@ $(BUILD_ROOT)/zimbra-proxy.spec:
 		-e '/^%post$$/ r zimbra-proxy.post' > $(BUILD_ROOT)/zimbra-proxy.spec
 	rm -f zimbra-proxy.pre
 	rm -f zimbra-proxy.post
-	echo "%attr(-, zimbra, zimbra) /opt/zimbra/nginx-$(NGINX_VERSION)" >> \
+	echo "%attr(-, root, root) /opt/zimbra/nginx-$(NGINX_VERSION)" >> \
 		$(BUILD_ROOT)/zimbra-proxy.spec
+	echo "" >> $(BUILD_ROOT)/zimbra-proxy.spec
+	echo "%clean" >> $(BUILD_ROOT)/zimbra-proxy.spec
 
 proxy_stage: $(PROXY_COMPONENTS)
 

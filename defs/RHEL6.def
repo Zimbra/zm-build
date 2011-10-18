@@ -1,4 +1,4 @@
-# Definitions for F10
+# Definitions for RHEL6
 
 PACKAGING_COMMAND := rpmbuild
 

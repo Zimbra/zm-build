@@ -66,6 +66,8 @@ $(BUILD_ROOT)/zimbra-memcached.spec:
 	rm -f zimbra-memcached.post
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/memcached-$(MEMCACHED_VERSION)" >> \
 		$(BUILD_ROOT)/zimbra-memcached.spec
+	echo "" >> $(BUILD_ROOT)/zimbra-memcached.spec
+	echo "%clean" >> $(BUILD_ROOT)/zimbra-memcached.spec
 
 memcached_stage: $(MEMCACHED_COMPONENTS)
 

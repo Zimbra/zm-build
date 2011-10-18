@@ -79,16 +79,18 @@ $(BUILD_ROOT)/zimbra-store.spec:
 		$(BUILD_ROOT)/zimbra-store.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/zimlets-extra" >> \
 		$(BUILD_ROOT)/zimbra-store.spec
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/extensions-extra" >> \
+		$(BUILD_ROOT)/zimbra-store.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/zimlets-admin-extra" >> \
 		$(BUILD_ROOT)/zimbra-store.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/zimlets-experimental" >> \
 		$(BUILD_ROOT)/zimbra-store.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/$(MAILBOXD_DIR)" >> \
 		$(BUILD_ROOT)/zimbra-store.spec
-	echo "%attr(-, zimbra, zimbra) /opt/zimbra/wiki" >> \
-		$(BUILD_ROOT)/zimbra-store.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/mysql-standard-$(MYSQL_VERSION_STRING)-pc-linux-gnu-i686-glibc23" >> \
 		$(BUILD_ROOT)/zimbra-store.spec
+	echo "" >> $(BUILD_ROOT)/zimbra-store.spec
+	echo "%clean" >> $(BUILD_ROOT)/zimbra-store.spec
 
 store_stage: $(STORE_COMPONENTS) $(ZIMLET_COMPONENTS)
 
@@ -152,14 +154,24 @@ $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/etc: force
 			$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/etc/jetty-setuid.xml
 		cp -f $(SERVICE_DIR)/conf/$(MAILBOXD_SERVER)-$(MAILBOXD_MINOR_VERSION)/jetty.properties \
 			$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/etc/jetty.properties.in
+		cp -f $(SERVICE_DIR)/conf/jetty-6.1/spnego/etc/spnego.properties \
+			$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/etc/spnego.properties.in
+		cp -f $(SERVICE_DIR)/conf/jetty-6.1/spnego/etc/spnego.conf \
+			$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/etc/spnego.conf.in
+		cp -f $(SERVICE_DIR)/conf/jetty-6.1/spnego/etc/krb5.ini \
+			$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/etc/krb5.ini.in
 		cp -f $(SERVICE_DIR)/conf/web.xml.production \
 			$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/etc/service.web.xml.in
 		cp -f $(ZIMLET_DIR)/conf/web.xml.production \
 			$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/etc/zimlet.web.xml.in
-		cp -f zimbraConf/web.xml \
-			$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/etc/zimbra.web.xml.in
-		cp -f zimbraAdminConf/web.xml \
-			$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/etc/zimbraAdmin.web.xml.in
+		cat $(WEBAPP_STAGE_DIR)/zimbra/web.xml | \
+			sed -e '/REDIRECTBEGIN/ s/$$/ %%comment VAR:zimbraMailMode,-->,redirect%%/' \
+				-e '/REDIRECTEND/ s/^/%%comment VAR:zimbraMailMode,<!--,redirect%% /' \
+				> $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/etc/zimbra.web.xml.in
+		cat $(WEBAPP_STAGE_DIR)/admin/web.xml | \
+			sed -e '/REDIRECTBEGIN/ s/$$/ %%comment VAR:zimbraMailMode,-->,redirect%%/' \
+				-e '/REDIRECTEND/ s/^/%%comment VAR:zimbraMailMode,<!--,redirect%% /' \
+				> $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/etc/zimbraAdmin.web.xml.in
 
 $(STORE_DEST_DIR)/$(MAILBOXD_DIR): $(STORE_DEST_DIR) $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/bin $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/etc $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/temp $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/common/lib $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/common/endorsed
 
@@ -184,20 +196,20 @@ $(STORE_DEST_DIR)/log:
 	mkdir -p $@
 	cp $(PACKAGE_CONF_DIR)/Conf/hotspot_compiler $@/.hotspot_compiler
 
-$(STORE_DEST_DIR)/wiki:
-	mkdir -p $@
-	cp -R $(SERVICE_DIR)/build/dist/wiki/Template $@
-
 $(STORE_DEST_DIR)/conf:
 	mkdir -p $@
 	cp $(SERVICE_DIR)/conf/globs2 $@
 	cp $(SERVICE_DIR)/conf/magic $@
 	cp $(SERVICE_DIR)/conf/magic.zimbra $@
 	cp $(SERVICE_DIR)/conf/globs2.zimbra $@
+	cp $(SERVICE_DIR)/conf/spnego_java_options.in $@
 
 $(STORE_DEST_DIR)/conf/zimbra-contact-fields.xml: $(STORE_DEST_DIR)/conf
 	cp $(SERVICE_DIR)/conf/contacts/zimbra-contact-fields.xml $@
 
+$(STORE_DEST_DIR)/conf/templates:
+	mkdir -p $@
+	cp -r $(CONSOLE_DIR)/WebRoot/templates/ $@
 
 $(ZIMLET_DIR)/build/dist/zimlets/nofile:
 	(cd $(ZIMLET_DIR); $(ANT) $(ANT_DEBUG) \
@@ -214,6 +226,12 @@ $(ZIMLET_DIR)/build/dist/zimlets/nofile:
 	(cd $(ADMIN_EXT_DIR); $(ANT) $(ANT_DEBUG)\
 		-Dzimbra.buildinfo.platform=$(BUILD_PLATFORM) \
 		-Dext.dir=BulkProvision -Dext.name=com_zimbra_bulkprovision \
+		-Dzimbra.buildinfo.version=$(SOURCE_TAG) \
+		-Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) \
+		-Dzimbra.buildinfo.host=$(HOST) package-zimlet ; )
+	(cd $(ADMIN_EXT_DIR); $(ANT) $(ANT_DEBUG)\
+		-Dzimbra.buildinfo.platform=$(BUILD_PLATFORM) \
+		-Dext.dir=HelpTooltip -Dext.name=com_zimbra_tooltip \
 		-Dzimbra.buildinfo.version=$(SOURCE_TAG) \
 		-Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) \
 		-Dzimbra.buildinfo.host=$(HOST) package-zimlet ; )
@@ -270,14 +288,29 @@ $(SAMBA_EXT_DIR)/build/zimlet/zimbra_samba.zip:
 		-Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) \
 		-Dzimbra.buildinfo.host=$(HOST) package-zimlet ; )
 
+$(STORE_DEST_DIR)/extensions-extra: $(STORE_DEST_DIR)/extensions-extra/oauth
+	mkdir -p $@
+
+$(STORE_DEST_DIR)/extensions-extra/oauth: $(OAUTH_EXT_DIR)/build/jars/sampleoauthprov.jar
+	mkdir -p $@
+	cp $(OAUTH_EXT_DIR)/README.txt $@
+	cp $(OAUTH_EXT_DIR)/authorize.jsp $@
+	cp $(OAUTH_EXT_DIR)/jars/oauth-1.4.jar $@
+	cp $(OAUTH_EXT_DIR)/build/jars/sampleoauthprov.jar $@
+
+$(OAUTH_EXT_DIR)/build/jars/sampleoauthprov.jar:
+	(cd $(OAUTH_EXT_DIR); $(ANT) $(ANT_DEBUG) \
+		-Dzimbra.buildinfo.platform=$(BUILD_PLATFORM) \
+		-Dzimbra.buildinfo.version=$(SOURCE_TAG) \
+		-Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) \
+		-Dzimbra.buildinfo.host=$(HOST) package ; )
+
 $(WEBAPP_DIR)/zimbra/downloads:
 	mkdir -p $@
 	-cp $(SERVICE_DIR)/src/windows/*exe $@
 	-cp $(SERVICE_DIR)/src/windows/*zip $@
 	-cp $(SERVICE_DIR)/src/windows/ZimbraToast*msi $@
-#	-cp $(THIRD_PARTY_BUILDS)/zdesktop/zdesktop*.sh $@
-#	-cp $(THIRD_PARTY_BUILDS)/zdesktop/zdesktop*.dmg $@
-#	-cp $(THIRD_PARTY_BUILDS)/zdesktop/zdesktop*.exe $@
+	-cp $(SERVICE_DIR)/src/download/* $@
 	-(rm -f $@/\%*.dmg)
 
 $(MIG_TOOLS_DIR)/build/zmzimbratozimbramig.jar:

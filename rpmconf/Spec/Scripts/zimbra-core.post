@@ -2,7 +2,7 @@
 # 
 # ***** BEGIN LICENSE BLOCK *****
 # Zimbra Collaboration Suite Server
-# Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011 Zimbra, Inc.
+# Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
 # 
 # The contents of this file are subject to the Zimbra Public License
 # Version 1.3 ("License"); you may not use this file except in
@@ -30,10 +30,10 @@ fi
 
 #Symlinks
 rm -f /opt/zimbra/mysql
-ln -s /opt/zimbra/mysql-standard-5.0.90-pc-linux-gnu-i686-glibc23 /opt/zimbra/mysql
+ln -s /opt/zimbra/mysql-standard-5.5.16-pc-linux-gnu-i686-glibc23 /opt/zimbra/mysql
 
 rm -f /opt/zimbra/bdb
-ln -s /opt/zimbra/bdb-4.7.25.4 /opt/zimbra/bdb
+ln -s /opt/zimbra/bdb-5.2.28 /opt/zimbra/bdb
 
 if [ -L /opt/zimbra/sleepycat ]; then
 	rm -f /opt/zimbra/sleepycat
@@ -43,19 +43,22 @@ rm -f /opt/zimbra/openssl
 ln -s /opt/zimbra/openssl-1.0.0e /opt/zimbra/openssl
 
 rm -f /opt/zimbra/heimdal
-ln -s /opt/zimbra/heimdal-1.3.3 /opt/zimbra/heimdal
+ln -s /opt/zimbra/heimdal-1.5.1 /opt/zimbra/heimdal
 
 rm -f /opt/zimbra/curl
 ln -s /opt/zimbra/curl-7.22.0 /opt/zimbra/curl
 
 rm -f /opt/zimbra/cyrus-sasl
-ln -s /opt/zimbra/cyrus-sasl-2.1.23.3z /opt/zimbra/cyrus-sasl
+ln -s /opt/zimbra/cyrus-sasl-2.1.25.3z /opt/zimbra/cyrus-sasl
 
 rm -f /opt/zimbra/openldap
-ln -s /opt/zimbra/openldap-2.4.26.3z /opt/zimbra/openldap
+ln -s /opt/zimbra/openldap-2.4.26.5z /opt/zimbra/openldap
 
 rm -f /opt/zimbra/tcmalloc
-ln -s /opt/zimbra/tcmalloc-1.6 /opt/zimbra/tcmalloc
+ln -s /opt/zimbra/tcmalloc-1.8.2 /opt/zimbra/tcmalloc
+
+rm -f /opt/zimbra/rsync
+ln -s /opt/zimbra/rsync-3.0.8 /opt/zimbra/rsync
 
 if [ -d "/opt/zimbra/zimbramon/rrdtool" ]; then
   rm -rf /opt/zimbra/zimbramon/rrdtool
@@ -84,7 +87,13 @@ elif [ x"$PLAT" = "xFC6" ]; then
 elif [ x"$PLAT" = "xF7" -o x"$PLAT" = "xF10" -o x"$PLAT" = "xF11" ]; then
   sed -i -e 's:\(^Defaults.*requiretty\):#\1:' /etc/sudoers
   sed -i -e 's:PS2 QTDIR USERNAME:PS2 QTDIR USERNAME PATH:' /etc/sudoers
-elif [ x"$PLAT" = "xF10_64" -o x"$PLAT" = "xF11_64" ]; then
+elif [ x"$PLAT" = "xF10_64" -o x"$PLAT" = "xF11_64" -o x"$PLAT" = "xF13_64" ]; then
+  sed -i -e 's:\(^Defaults.*requiretty\):#\1:' /etc/sudoers
+  sed -i -e 's:PS2 QTDIR USERNAME:PS2 QTDIR USERNAME PATH:' /etc/sudoers
+elif [ x"$PLAT" = "xRHEL6" -o x"$PLAT" = "xCentOS6" ]; then
+  sed -i -e 's:\(^Defaults.*requiretty\):#\1:' /etc/sudoers
+  sed -i -e 's:PS2 QTDIR USERNAME:PS2 QTDIR USERNAME PATH:' /etc/sudoers
+elif [ x"$PLAT" = "xRHEL6_64" -o x"$PLAT" = "xCentOS6_64" ]; then
   sed -i -e 's:\(^Defaults.*requiretty\):#\1:' /etc/sudoers
   sed -i -e 's:PS2 QTDIR USERNAME:PS2 QTDIR USERNAME PATH:' /etc/sudoers
 fi
@@ -95,6 +104,11 @@ if [[ $PLAT == "DEBIAN"* || $PLAT == "UBUNTU"* ]]; then
   echo "session	required	pam_limits.so" >> /tmp/common-session
   mv -f /tmp/common-session /etc/pam.d/common-session
   chmod 640 /etc/pam.d/common-session
+  egrep -v -e '^root.*nofile' /etc/security/limits.conf > /tmp/limits.conf
+  echo "root soft nofile 524288" >> /tmp/limits.conf
+  echo "root hard nofile 524288" >> /tmp/limits.conf
+  mv -f /tmp/limits.conf /etc/security/limits.conf
+  chmod 640 /etc/security/limits.conf
 fi
 
 if [ -f /etc/debian_version ]; then

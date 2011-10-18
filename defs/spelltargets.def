@@ -67,6 +67,8 @@ $(BUILD_ROOT)/zimbra-spell.spec:
 		$(BUILD_ROOT)/zimbra-spell.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/$(SPELL_DIR)" >> \
 		$(BUILD_ROOT)/zimbra-spell.spec
+	echo "" >> $(BUILD_ROOT)/zimbra-spell.spec
+	echo "%clean" >> $(BUILD_ROOT)/zimbra-spell.spec
 
 spell_stage: $(SPELL_COMPONENTS)
 
