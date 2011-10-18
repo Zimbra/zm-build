@@ -3899,6 +3899,20 @@ sub upgrade713GA {
 sub upgrade714GA {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
   main::progress("Updating from 7.1.4_GA\n");
+  if (main::isInstalled("zimbra-ldap")) {
+    # 43040, must be done on all LDAP servers
+    my $ldap_pass = `$su "zmlocalconfig -s -m nokey ldap_root_password"`;
+    my $ldap;
+    chomp($ldap_pass);
+    unless($ldap = Net::LDAP->new('ldapi://%2fopt%2fzimbra%2fopenldap%2fvar%2frun%2fldapi/')) {
+       main::progress("Unable to contact to ldapi: $!\n");
+    }
+    my $result = $ldap->bind("cn=config", password => $ldap_pass);
+    unless($result->code()) {
+      $result = $ldap->modify( "cn=config", add => { 'olcTLSCACertificatePath' => '/opt/zimbra/conf/ca'});
+    }
+    $result = $ldap->unbind;
+  }
   return 0;
 }
 
