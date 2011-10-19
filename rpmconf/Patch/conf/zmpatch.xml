@@ -1121,7 +1121,7 @@
   <bug>65013</bug>
   <bug>65509</bug>
   <bug>65623</bug>
-  <bug>65993</bug>
+  <bug>65933</bug>
   <bug>66018</bug>
   <bug>66019</bug>
   <package name="zimbra-core">
@@ -1156,13 +1156,13 @@
         <perms owner="root" mode="444"/>
       </file>
       <file>
-        <source>ZimbraBuild/storebuild/opt/zimbra/jetty-6.1.22.z6/webapps/zimbra/downloads/ZimbraConnectorOLK_8.0.0.299_x86.msi</source>
-        <target>/opt/zimbra/jetty-6.1.22.z6/webapps/zimbra/downloads/ZimbraConnectorOLK_8.0.0.289_x86.msi</target>
+        <source>ZimbraBuild/storebuild/opt/zimbra/jetty-6.1.22.z6/webapps/zimbra/downloads/ZimbraConnectorOLK_7.1.3.6348_x86.msi</source>
+        <target>/opt/zimbra/jetty-6.1.22.z6/webapps/zimbra/downloads/ZimbraConnectorOLK_7.1.3.6348_x86.msi</target>
         <perms owner="root" mode="444"/>
       </file>
       <file>
-        <source>ZimbraBuild/storebuild/opt/zimbra/jetty-6.1.22.z6/webapps/zimbra/downloads/ZimbraConnectorOLK_8.0.0.299_x64.msi</source>
-        <target>/opt/zimbra/jetty-6.1.22.z6/webapps/zimbra/downloads/ZimbraConnectorOLK_8.0.0.289_x64.msi</target>
+        <source>ZimbraBuild/storebuild/opt/zimbra/jetty-6.1.22.z6/webapps/zimbra/downloads/ZimbraConnectorOLK_7.1.3.6348_x64.msi</source>
+        <target>/opt/zimbra/jetty-6.1.22.z6/webapps/zimbra/downloads/ZimbraConnectorOLK_7.1.3.6348_x64.msi#</target>
         <perms owner="root" mode="444"/>
       </file>
       <file>
