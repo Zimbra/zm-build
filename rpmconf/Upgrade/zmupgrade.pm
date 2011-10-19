@@ -4009,6 +4009,7 @@ sub upgrade800BETA2 {
       runLdapAttributeUpgrade("64380");
       runLdapAttributeUpgrade("65070");
     }
+    main::runAsZimbra("perl -I${scriptDir} ${scriptDir}/migrate20111019-UniqueZimbraId.pl");
   }
   if (main::isEnabled("zimbra-store")) {
     if (startSql()) { return 1; }
