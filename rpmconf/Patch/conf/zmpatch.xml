@@ -1162,7 +1162,7 @@
       </file>
       <file>
         <source>ZimbraBuild/storebuild/opt/zimbra/jetty-6.1.22.z6/webapps/zimbra/downloads/ZimbraConnectorOLK_7.1.3.6348_x64.msi</source>
-        <target>/opt/zimbra/jetty-6.1.22.z6/webapps/zimbra/downloads/ZimbraConnectorOLK_7.1.3.6348_x64.msi#</target>
+        <target>/opt/zimbra/jetty-6.1.22.z6/webapps/zimbra/downloads/ZimbraConnectorOLK_7.1.3.6348_x64.msi</target>
         <perms owner="root" mode="444"/>
       </file>
       <file>
