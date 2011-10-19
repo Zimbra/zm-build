@@ -883,7 +883,7 @@
   </package>
   <preinstall></preinstall>
   <postinstall></postinstall>
-  </patch> -->
+  </patch>
   <patch name="7.1.1_GA" version="7.1.1_P4">
   <desc>Patch 7.1.1_P4</desc>
   <bug>57891</bug>
@@ -1108,6 +1108,72 @@
         <source>ZimbraBuild/storebuild/opt/zimbra/jetty-6.1.22.z6/webapps/zimbra/WEB-INF/tags/ruby.tag</source>
         <target>/opt/zimbra/jetty/webapps/zimbra/WEB-INF/tags/ruby.tag</target
         <perms owner="zimbra" mode="444"/>
+      </file>
+  </package>
+  <preinstall></preinstall>
+  <postinstall></postinstall>
+  </patch> -->
+  <patch name="7.1.3_GA" version="7.1.3_P1">
+  <desc>Patch 7.1.3_P1</desc>
+  <bug>63467</bug>
+  <bug>64112</bug>
+  <bug>64981</bug>
+  <bug>65013</bug>
+  <bug>65509</bug>
+  <bug>65623</bug>
+  <bug>65993</bug>
+  <bug>66018</bug>
+  <bug>66019</bug>
+  <package name="zimbra-core">
+      <file>
+        <source>ZimbraBuild/corebuild/opt/zimbra/lib/jars/jetty-util-6.1.22.z6.jar</source>
+        <target>/opt/zimbra/lib/jars/jetty-util-6.1.22.z6.jar</target>
+        <perms owner="root" mode="444"/>
+      </file>
+      <file>
+        <source>ZimbraBuild/corebuild/opt/zimbra/lib/jars/jetty-6.1.22.z6.jar</source>
+        <target>/opt/zimbra/lib/jars/jetty-util-6.1.22.z6.jar</target>
+        <perms owner="root" mode="444"/>
+      </file>
+  </package>
+  <package name="zimbra-store">
+      <file>
+        <source>ZimbraBuild/corebuild/opt/zimbra/lib/jars/zimbrastore.jar</source>
+        <target>/opt/zimbra/jetty/webapps/service/WEB-INF/lib/zimbrastore.jar</target>
+        <target>/opt/zimbra/jetty/webapps/zimbra/WEB-INF/lib/zimbrastore.jar</target>
+        <target>/opt/zimbra/jetty/webapps/zimbraAdmin/WEB-INF/lib/zimbrastore.jar</target>
+        <target>/opt/zimbra/lib/jars/zimbrastore.jar</target>
+        <perms owner="root" mode="444"/>
+      </file>
+      <file>
+        <source>ZimbraBuild/storebuild/opt/zimbra/jetty-6.1.22.z6/lib/jetty-util-6.1.22.z6.jar</source>
+        <target>/opt/zimbra/jetty-6.1.22.z6/lib/jetty-util-6.1.22.z6.jar</target>
+        <perms owner="root" mode="444"/>
+      </file>
+      <file>
+        <source>ZimbraBuild/storebuild/opt/zimbra/jetty-6.1.22.z6/lib/jetty-6.1.22.z6.jar</source>
+        <target>/opt/zimbra/jetty-6.1.22.z6/lib/jetty-6.1.22.z6.jar</target>
+        <perms owner="root" mode="444"/>
+      </file>
+      <file>
+        <source>ZimbraBuild/storebuild/opt/zimbra/jetty-6.1.22.z6/webapps/zimbra/downloads/ZimbraConnectorOLK_8.0.0.299_x86.msi</source>
+        <target>/opt/zimbra/jetty-6.1.22.z6/webapps/zimbra/downloads/ZimbraConnectorOLK_8.0.0.289_x86.msi</target>
+        <perms owner="root" mode="444"/>
+      </file>
+      <file>
+        <source>ZimbraBuild/storebuild/opt/zimbra/jetty-6.1.22.z6/webapps/zimbra/downloads/ZimbraConnectorOLK_8.0.0.299_x64.msi</source>
+        <target>/opt/zimbra/jetty-6.1.22.z6/webapps/zimbra/downloads/ZimbraConnectorOLK_8.0.0.289_x64.msi</target>
+        <perms owner="root" mode="444"/>
+      </file>
+      <file>
+        <source>ZimbraBuild/storebuild/opt/zimbra/jetty-6.1.22.z6/webapps/zimbra/WEB-INF/classes/messages/AjxMsg_ja.properties</source>
+        <target>/opt/zimbra/jetty-6.1.22.z6/webapps/zimbra/WEB-INF/classes/messages/AjxMsg_ja.properties</target>
+        <perms owner="root" mode="444"/>
+      </file>
+      <file>
+        <source>ZimbraBuild/storebuild/opt/zimbra/jetty-6.1.22.z6/webapps/zimbraAdmin/WEB-INF/classes/messages/AjxMsg_ja.properties</source>
+        <target>/opt/zimbra/jetty-6.1.22.z6/webapps/zimbraAdmin/WEB-INF/classes/messages/AjxMsg_ja.properties</target>
+        <perms owner="root" mode="444"/>
       </file>
   </package>
   <preinstall></preinstall>
