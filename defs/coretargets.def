@@ -263,6 +263,9 @@ $(CORE_DEST_DIR)/conf: $(WEBAPP_DIR)/service.war
 	cp $(SERVICE_DIR)/conf/nginx/* $@/nginx/templates/
 	cp $(SERVICE_DIR)/conf/stats.conf.in $@
 	cp $(SERVICE_DIR)/conf/salocal.cf $@/salocal.cf.in
+	cp $(SERVICE_DIR)/conf/saslauthd.conf.in $@ 
+	mkdir -p $@/sasl2
+	cp $(SERVICE_DIR)/conf/postfix_sasl_smtpd.conf $@/sasl2/smtpd.conf.in
 	cp $(SERVICE_DIR)/conf/zmconfigd.cf $@/zmconfigd.cf
 	cp $(SERVICE_DIR)/conf/timezones.ics $@
 	cp $(SERVICE_DIR)/conf/zimbra.ld.conf $@
@@ -383,9 +386,6 @@ $(CORE_DEST_DIR)/$(SASL_DIR)-$(SASL_VERSION):
 	@echo "*** Creating cyrus-sasl"
 	mkdir -p $@
 	(cd $(CORE_DEST_DIR); tar xzf $(SASL_SOURCE).tgz;)
-	mkdir -p $(CORE_DEST_DIR)/$(SASL_DIR)-$(SASL_VERSION)/etc
-	cp -f $(SERVICE_DIR)/conf/saslauthd.conf.in $(CORE_DEST_DIR)/$(SASL_DIR)-$(SASL_VERSION)/etc/
-	cp -f $(SERVICE_DIR)/conf/postfix_sasl_smtpd.conf $(CORE_DEST_DIR)/$(SASL_DIR)-$(SASL_VERSION)/lib/sasl2/smtpd.conf.in
 
 $(CORE_DEST_DIR)/$(LDAP_DIR)-libs-$(LDAP_VERSION):
 	@echo "*** Creating openldap client libraries"
