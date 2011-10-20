@@ -16,6 +16,7 @@
 
 H=`hostname -s`
 I=`hostname -i`
+JETTY_VERSION=distribution-7.5.2-SNAPSHOT
 
 if [ -f /opt/zimbra/db/db.sql ]; then
   mv /opt/zimbra/db/db.sql /opt/zimbra/db/db.sql.in
@@ -23,7 +24,6 @@ if [ -f /opt/zimbra/db/db.sql ]; then
   chown zimbra:zimbra /opt/zimbra/db/db.sql*
   chmod 440 /opt/zimbra/db/db.sql*
 fi
-
 rm -f /opt/zimbra/perdition
 rm -rf /opt/zimbra/verity
 
@@ -50,8 +50,8 @@ for i in jetty apache-tomcat ; do
 done
 rm -f /opt/zimbra/mailboxd
 rm -f /opt/zimbra/jetty
-ln -s /opt/zimbra/jetty-6.1.22.z6 /opt/zimbra/jetty
-ln -s /opt/zimbra/jetty-6.1.22.z6 /opt/zimbra/mailboxd
+ln -s /opt/zimbra/jetty-${JETTY_VERSION} /opt/zimbra/jetty
+ln -s /opt/zimbra/jetty-${JETTY_VERSION} /opt/zimbra/mailboxd
 
 mkdir -p /opt/zimbra/mailboxd/logs
 chown zimbra:zimbra /opt/zimbra/mailboxd/logs
