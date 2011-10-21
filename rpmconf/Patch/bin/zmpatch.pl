@@ -1,8 +1,8 @@
-#!/usr/bin/perl -w
+#-!/usr/bin/perl -w
 # 
 # ***** BEGIN LICENSE BLOCK *****
 # Zimbra Collaboration Suite Server
-# Copyright (C) 2010, 2011 VMware, Inc.
+# Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
 # 
 # The contents of this file are subject to the Zimbra Public License
 # Version 1.3 ("License"); you may not use this file except in
@@ -104,7 +104,7 @@ unless ($options{config} && -f $options{config}) {
 }
 
 if ($options{config} && -f $options{config}) {
-  $config = XMLin($options{config}, ForceArray => [ 'name', 'patch', 'package', 'file', 'deletefile', 'zimlet','target'], KeyAttr => [ 'name', 'patch', 'package', 'source', 'version' ]);
+  $config = XMLin($options{config}, ForceArray => [ 'name', 'patch', 'package', 'file', 'deletefile', 'zimlet','target', 'preinstall', 'postinstall'], KeyAttr => [ 'name', 'patch', 'package', 'source', 'version', 'postinstall', 'preinstall' ]);
   my $debug_text = Dumper($config);
   debugLog($debug_text);
   
@@ -338,6 +338,16 @@ sub deployPatch($) {
   }
 
   # do postinstall tasks
+  foreach my $task (@{$patch->{postinstall}}) {
+    progress("Running $task...",1,0);
+    if (runAsZimbra($task)) {
+      progress("failed.\n",1,0);
+    } else {
+      progress("done.\n",1,0);
+    }
+  }
+  
+  
 
   # log an install session complete
   logSession("INSTALL SESSION COMPLETE");
@@ -514,7 +524,7 @@ sub isInstalled {
   my $good = 0;
   if ($platform =~ /^DEBIAN/ || $platform =~ /^UBUNTU/) {
     $pkgQuery = "dpkg -s $pkg";
-  } elsif ($platform eq "MACOSXx86_10.6") {
+  } elsif ($platform eq "MACOSXx86_10.6" || $platform eq "MACOSXx86_10.7") {
     $pkg =~ s/zimbra-//;
     $pkgQuery = "pkgutil --pkg-info com.zimbra.zcs.${pkg}";
   } elsif ($platform =~ /MACOSX/) {

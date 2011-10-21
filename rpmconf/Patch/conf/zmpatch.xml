@@ -1132,17 +1132,22 @@
       </file>
       <file>
         <source>ZimbraBuild/corebuild/opt/zimbra/lib/jars/jetty-6.1.22.z6.jar</source>
-        <target>/opt/zimbra/lib/jars/jetty-util-6.1.22.z6.jar</target>
+        <target>/opt/zimbra/lib/jars/jetty-6.1.22.z6.jar</target>
         <perms owner="root" mode="444"/>
       </file>
   </package>
   <package name="zimbra-store">
       <file>
         <source>ZimbraBuild/corebuild/opt/zimbra/lib/jars/zimbrastore.jar</source>
-        <target>/opt/zimbra/jetty/webapps/service/WEB-INF/lib/zimbrastore.jar</target>
-        <target>/opt/zimbra/jetty/webapps/zimbra/WEB-INF/lib/zimbrastore.jar</target>
-        <target>/opt/zimbra/jetty/webapps/zimbraAdmin/WEB-INF/lib/zimbrastore.jar</target>
+        <target>/opt/zimbra/jetty-6.1.22.z6/webapps/service/WEB-INF/lib/zimbrastore.jar</target>
+        <target>/opt/zimbra/jetty-6.1.22.z6/webapps/zimbra/WEB-INF/lib/zimbrastore.jar</target>
+        <target>/opt/zimbra/jetty-6.1.22.z6/webapps/zimbraAdmin/WEB-INF/lib/zimbrastore.jar</target>
         <target>/opt/zimbra/lib/jars/zimbrastore.jar</target>
+        <perms owner="root" mode="444"/>
+      </file>
+      <file>
+        <source>ZimbraBuild/storebuild/opt/zimbra/jetty-6.1.22.z6/webapps/zimbra/public/login.jsp</source>
+        <target>/opt/zimbra/jetty-6.1.22.z6/webapps/zimbra/public/login.jsp</target>
         <perms owner="root" mode="444"/>
       </file>
       <file>
@@ -1183,7 +1188,7 @@
       </file>
   </package>
   <preinstall></preinstall>
-  <postinstall></postinstall>
+  <postinstall>/opt/zimbra/libexec/zmupdatedownload</postinstall>
   </patch>
 </patches>
   
