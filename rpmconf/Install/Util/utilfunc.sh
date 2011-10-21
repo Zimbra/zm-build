@@ -2,7 +2,7 @@
 # 
 # ***** BEGIN LICENSE BLOCK *****
 # Zimbra Collaboration Suite Server
-# Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011 VMware, Inc.
+# Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
 # 
 # The contents of this file are subject to the Zimbra Public License
 # Version 1.3 ("License"); you may not use this file except in
@@ -28,6 +28,36 @@ displayLicense() {
     askYN "Do you agree with the terms of the software license agreement?" "N"
     if [ $response != "yes" ]; then
       exit
+    fi
+  fi
+  echo ""
+}
+
+displayThirdPartyLicenses() {
+  echo ""
+  echo ""
+  if [ -f ${MYDIR}/docs/keyview_eula.txt ]; then
+    cat $MYDIR/docs/keyview_eula.txt
+    echo ""
+    echo ""
+    if [ x$DEFAULTFILE = "x" -o x$CLUSTERUPGRADE = "xyes" ]; then
+      askYN "Do you agree with the terms of the software license agreement?" "N"
+      if [ $response != "yes" ]; then
+        exit
+      fi
+    fi
+    echo ""
+    echo ""
+  fi
+  if [ -f ${MYDIR}/docs/oracle_jdk_eula.txt ]; then
+    cat $MYDIR/docs/oracle_jdk_eula.txt
+    echo ""
+    echo ""
+    if [ x$DEFAULTFILE = "x" -o x$CLUSTERUPGRADE = "xyes" ]; then
+      askYN "Do you agree with the terms of the software license agreement?" "N"
+      if [ $response != "yes" ]; then
+        exit
+      fi
     fi
   fi
   echo ""
@@ -470,6 +500,7 @@ EOF
   fi
 
   GOOD="yes"
+
   echo "Checking for prerequisites..."
   #echo -n "    NPTL..."
   /usr/bin/getconf GNU_LIBPTHREAD_VERSION | grep NPTL > /dev/null 2>&1
@@ -500,6 +531,8 @@ EOF
       GOOD="no"
     fi
   done
+
+  echo ""
 
   SUGGESTED="yes"
   echo "Checking for suggested prerequisites..."
@@ -557,8 +590,8 @@ EOF
   # limitation of ext3
   if [ -d "/opt/zimbra/db/data" ]; then
     echo "Checking current number of databases..."
-    TYPECHECK=`df -t ext3 /opt/zimbra/db/data`
-    if [ x"$TYPECHECK" != "x" ]; then
+    FS_TYPE=`df -T /opt/zimbra/db/data | awk '{ if (NR == 2) { print $2 } }'`
+    if [ "${FS_TYPE}"x = "ext3"x ]; then
       DBCOUNT=`find /opt/zimbra/db/data -type d | wc -l | awk '{if ($NF-1 >= 31998) print $NF-1}'`
       if [ x"$DBCOUNT" != "x" ]; then
         echo "You have $DBCOUNT databases on an ext3 FileSystem, which is at"
@@ -797,7 +830,13 @@ verifyLicenseActivationServer() {
 
   # if all else fails make sure we can contact the activation server for automated activation
   if [ ${ZM_CUR_MAJOR} -ge "7" ]; then
-    /opt/zimbra/java/bin/java -XX:ErrorFile=/opt/zimbra/log -client -Xmx256m -Dzimbra.home=/opt/zimbra -Djava.library.path=/opt/zimbra/lib -Djava.ext.dirs=/opt/zimbra/java/jre/lib/ext:/opt/zimbra/lib/jars -classpath ./lib/jars/zimbra-license-tools.jar com.zimbra.cs.license.LicenseCLI --ping > /dev/null 2>&1
+    if [ ${ZM_CUR_MAJOR} -eq "7" -a ${ZM_CUR_MINOR} -ge "1" ]; then
+      /opt/zimbra/bin/zmlicense --ping > /dev/null 2>&1
+    elif [ ${ZM_CUR_MAJOR} -gt "7" ]; then
+      /opt/zimbra/bin/zmlicense --ping > /dev/null 2>&1
+    else 
+      /opt/zimbra/java/bin/java -XX:ErrorFile=/opt/zimbra/log -client -Xmx256m -Dzimbra.home=/opt/zimbra -Djava.library.path=/opt/zimbra/lib -Djava.ext.dirs=/opt/zimbra/java/jre/lib/ext:/opt/zimbra/lib/jars -classpath ./lib/jars/zimbra-license-tools.jar com.zimbra.cs.license.LicenseCLI --ping > /dev/null 2>&1
+    fi
     if [ $? != 0 ]; then
       activationWarning
     fi
@@ -997,16 +1036,39 @@ verifyLicenseAvailable() {
     userProvCommand="zmprov -l cto userAccounts 2> /dev/null"
   fi
 
-  numCurrentUsers=`su - zimbra -c "$userProvCommand"`;
-  numUsersRC=$?
-  if [ $numUsersRC -ne 0 ]; then
-    numCurrentUsers=`su - zimbra -c "$userProvCommand"`;
-    numUsersRC=$?
+  # Make sure zmprov is responsive and able to talk to LDAP before we do anything for real
+  zmprovTest="zmprov -l gac 2> /dev/null > /dev/null"
+  su - zimbra -c "$zmprovTest"
+  zmprovTestRC=$?
+  if [ $zmprovTestRC -eq 0 ]; then
+    su - zimbra -c "$zmprovTest"
+    zmprovTestRC=$?
+  fi
+  if [ $zmprovTestRC -ne 0 ]; then
+    echo ""
+    echo "Warning: Unable to determine the number of users on this system via zmprov command."
+    echo "Please make sure LDAP services are running."
+    echo ""
   fi
 
-  # Unable to determine the number of current users.   zmprov command must have failed!
+  # Passed check to make sure zmprov and LDAP are working.  Now let's get a real count.
+  numCurrentUsers=-1;
+  if [ $zmprovTestRC -eq 0 ]; then
+    numCurrentUsers=`su - zimbra -c "$userProvCommand"`;
+    numUsersRC=$?
+    if [ $numUsersRC -ne 0 ]; then
+      numCurrentUsers=`su - zimbra -c "$userProvCommand"`;
+      numUsersRC=$?
+    fi
+  fi
+
+  # Unable to determine the number of current users
   if [ "$numCurrentUsers"x = "x" ]; then
     numCurrentUsers=-1;
+    echo ""
+    echo "Warning: Unable to determine the number of users on this system via zmprov command."
+    echo "Please make sure LDAP services are running."
+    echo ""
   fi
 
   if [ $oldUserCheck -eq 1 ]; then
@@ -1025,7 +1087,7 @@ verifyLicenseAvailable() {
      if [ $response = "no" ]; then
       askYN "Exit?" "N"
       if [ $response = "yes" ]; then
-        echo "Exiting"
+        echo "Exiting - place a valid license file in /opt/zimbra/conf/ZCSLicense.xml and rerun."
         exit 1
       fi
      else
@@ -1035,13 +1097,16 @@ verifyLicenseAvailable() {
   elif [ $numUsersRC -ne 0 ] || [ $numCurrentUsers -gt $licensedUsers ]; then
     echo "Warning: The number of users on this system ($numCurrentUsers) exceeds the licensed number"
     echo "($licensedUsers).  You may continue with the upgrade, but you will not be able to create"
-    echo "new users." 
+    echo "new users.  Also, initialization of the Document feature will fail.  If you "
+    echo "later wish to use the Documents feature you'll need to resolve the licensing "
+    echo "issues and then run a separate script available from support to initialize the "
+    echo "Documents feature. "
     while :; do
      askYN "Do you wish to continue?" "N"
      if [ $response = "no" ]; then
       askYN "Exit?" "N"
       if [ $response = "yes" ]; then
-        echo "Exiting"
+        echo "Exiting - place a valid license file in /opt/zimbra/conf/ZCSLicense.xml and rerun."
         exit 1
       fi
      else
@@ -1146,7 +1211,7 @@ setRemove() {
     checkVersionMatches
 
     echo ""
-    echo "The Zimbra Collaboration Suite appears already to be installed."
+    echo "The Zimbra Collaboration Server appears already to be installed."
     if [ $VERSIONMATCH = "yes" ]; then
       echo "It can be upgraded with no effect on existing accounts,"
       echo "or the current installation can be completely removed prior"
@@ -1229,7 +1294,7 @@ EOF
     done
     if [ x$INSTALLED = "xyes" ]; then
       echo ""
-      echo "The Zimbra Collaboration Suite does not appear to be installed,"
+      echo "The Zimbra Collaboration Server does not appear to be installed,"
       echo "yet there appears to be a ZCS directory structure in /opt/zimbra."
       askYN "Would you like to delete /opt/zimbra before installing?" "N"
       REMOVE="$response"
@@ -1576,7 +1641,15 @@ removeExistingInstall() {
         /usr/bin/crontab -u zimbra -r 2> /dev/null
         echo "done."
       fi
-      
+     
+      if [ -e /usr/sbin/sendmail ]; then
+        if [ -x /bin/readlink ]; then
+          SMPATH=$(/bin/readlink /usr/sbin/sendmail)
+          if [ x$SMPATH = x"/opt/zimbra/postfix/sbin/sendmail" ]; then
+            /bin/rm -f /usr/sbin/sendmail
+          fi
+        fi
+      fi 
 
       if [ -f /etc/syslog.conf ]; then
         egrep -q 'zimbra.log' /etc/syslog.conf
@@ -1715,7 +1788,7 @@ removeExistingInstall() {
       done
   
       echo ""
-      echo "Finished removing Zimbra Collaboration Suite."
+      echo "Finished removing Zimbra Collaboration Server."
       echo ""
     fi
   fi
@@ -1877,6 +1950,27 @@ getInstallPackages() {
         if [ $i = "zimbra-core" ]; then
           continue
         fi
+        if [ $i = "zimbra-mta" ]; then
+          CONFLICTS="no"
+          for j in $CONFLICT_PACKAGES; do
+            conflictInstalled $j
+            if [ "x$CONFLICTINSTALLED" != "x" ]; then
+              echo "     Conflicting package: $CONFLICTINSTALLED"
+              CONFLICTS="yes"
+            fi
+          done
+          if [ $CONFLICTS = "yes" ]; then
+            echo ""
+            echo "###ERROR###"
+            echo ""
+            echo "One or more package conflicts exists."
+            echo "Please remove them before running this installer."
+            echo ""
+            echo "Installation cancelled."
+            echo ""
+            exit 1
+          fi
+        fi
         INSTALL_PACKAGES="$INSTALL_PACKAGES $i"
         if [ $i = "zimbra-apache" ]; then
           APACHE_SELECTED="yes"
@@ -1960,6 +2054,27 @@ getInstallPackages() {
         CLUSTER_SELECTED="yes"
       fi
 
+      if [ $i = "zimbra-mta" ]; then
+        CONFLICTS="no"
+        for j in $CONFLICT_PACKAGES; do
+          conflictInstalled $j
+          if [ "x$CONFLICTINSTALLED" != "x" ]; then
+            echo "     Conflicting package: $CONFLICTINSTALLED"
+            CONFLICTS="yes"
+          fi
+        done
+        if [ $CONFLICTS = "yes" ]; then
+          echo ""
+          echo "###ERROR###"
+          echo ""
+          echo "One or more package conflicts exists."
+          echo "Please remove them before running this installer."
+          echo ""
+          echo "Installation cancelled."
+          echo ""
+          exit 1
+        fi
+      fi
       if [ $i = "zimbra-spell" -a $APACHE_SELECTED = "no" ]; then
         APACHE_SELECTED="yes"
         INSTALL_PACKAGES="$INSTALL_PACKAGES zimbra-apache"
@@ -2129,11 +2244,31 @@ isInstalled () {
     if [ "x$Q" != "x" ]; then
       echo $Q | grep 'not-installed' > /dev/null 2>&1
       if [ $? != 0 ]; then
-        PKGVERSION=`$PACKAGEQUERY $pkg | egrep '^Version: ' | sed -e 's/Version: //' 2> /dev/null`
-        PKGINSTALLED="${pkg}-${PKGVERSION}"
+        echo $Q | grep 'deinstall ok' > /dev/null 2>&1
+        if [ $? != 0 ]; then
+          PKGVERSION=`$PACKAGEQUERY $pkg | egrep '^Version: ' | sed -e 's/Version: //' 2> /dev/null`
+          PKGINSTALLED="${pkg}-${PKGVERSION}"
+        fi
       fi
     fi
   fi
+}
+
+conflictInstalled() {
+  pkg=$1
+  CONFLICTINSTALLED=""
+  QP=`dpkg-query -W -f='\${Package}: \${Provides}\n' '*' | grep ": .*$pkg" | sed -e 's/:.*//'`
+  while [ "x$QP" != "x" ]; do
+    QF=`echo $QP | sed -e 's/\s.*//'` 
+    QP=`echo $QP | sed -e 's/\S*\s*//'`
+    isInstalled $QF
+    if [ x$PKGINSTALLED != "x" ]; then
+      CONFLICTINSTALLED=$QF
+      if [ x$CONFLICTINSTALLED = "xzimbra-mta" ]; then
+        CONFLICTINSTALLED=""
+      fi
+    fi
+  done
 }
 
 suggestedVersion() {
@@ -2178,15 +2313,18 @@ suggestedVersion() {
 
 getPlatformVars() {
   PLATFORM=`bin/get_plat_tag.sh`
+  CONFLICT_PACKAGES=""
   echo $PLATFORM | egrep -q "UBUNTU|DEBIAN"
   if [ $? = 0 ]; then
     checkUbuntuRelease
     PACKAGEINST='dpkg -i'
     PACKAGERM='dpkg --purge'
     PACKAGEQUERY='dpkg -s'
+    #CONFLICTQUERY="/usr/bin/dpkg-query -W -f='\${Package}: \${Provides}\n' '*'"
     PACKAGEEXT='deb'
     PACKAGEVERSION="dpkg-query -W -f \${Version}"
     PREREQ_PACKAGES="sudo libidn11 libgmp3c2 libstdc++6"
+    CONFLICT_PACKAGES="mail-transport-agent"
     if [ $PLATFORM = "UBUNTU6" -o $PLATFORM = "UBUNTU7" ]; then
       PREREQ_PACKAGES="netcat sudo libidn11 libpcre3 libgmp3c2 libexpat1 libstdc++6 libstdc++5"
       PRESUG_PACKAGES="perl-5.8.7 sysstat sqlite3"

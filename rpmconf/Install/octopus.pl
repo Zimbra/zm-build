@@ -80,7 +80,7 @@ our %saved = ();
 my @packageList = (
   "zimbra-core",
   "zimbra-ldap",
-  "zimbra-store",
+  "zimbra-octopus",
   "zimbra-mta",
   "zimbra-snmp",
   "zimbra-logger",
@@ -98,7 +98,7 @@ my %packageServiceMap = (
   antispam  => "zimbra-mta",
   mta       => "zimbra-mta",
   logger    => "zimbra-logger",
-  mailbox   => "zimbra-store",
+  mailbox   => "zimbra-octopus",
   snmp      => "zimbra-snmp",
   ldap      => "zimbra-ldap",
   spell     => "zimbra-spell",
@@ -140,7 +140,6 @@ my $ldapRepChanged = 0;
 my $ldapPostChanged = 0;
 my $ldapAmavisChanged = 0;
 my $ldapNginxChanged = 0;
-my $ldapBesSearcherChanged = 0;
 my $ldapReplica = 0;
 my $starttls = 0;
 my $needNewCert = "";
@@ -346,20 +345,20 @@ sub checkPortConflicts {
   progress ( "Checking for port conflicts\n" );
   my %needed = (
     25 => 'zimbra-mta',
-    80 => 'zimbra-store',
-    110 => 'zimbra-store',
-    143 => 'zimbra-store',
+    80 => 'zimbra-octopus',
+    110 => 'zimbra-octopus',
+    143 => 'zimbra-octopus',
     389 => 'zimbra-ldap',
-    443 => 'zimbra-store',
+    443 => 'zimbra-octopus',
     636 => 'zimbra-ldap',
-    993 => 'zimbra-store',
-    995 => 'zimbra-store',
-    7025 => 'zimbra-store',
-    7071 => 'zimbra-store',
-    7072 => 'zimbra-store',
+    993 => 'zimbra-octopus',
+    995 => 'zimbra-octopus',
+    7025 => 'zimbra-octopus',
+    7071 => 'zimbra-octopus',
+    7072 => 'zimbra-octopus',
     7047 => 'zimbra-convertd',
-    7306 => 'zimbra-store',
-    7307 => 'zimbra-store',
+    7306 => 'zimbra-octopus',
+    7307 => 'zimbra-octopus',
     7780 => 'zimbra-spell',
     10024 => 'zimbra-mta',
     10025 => 'zimbra-mta',
@@ -645,7 +644,7 @@ sub getSystemStatus {
     }
   }
 
-  if (isEnabled("zimbra-store")) {
+  if (isEnabled("zimbra-octopus")) {
     if (-d "$zimbraHome/db/data/zimbra") {
       $sqlConfigured = 1;
       $sqlRunning = 0xffff & system("/opt/zimbra/bin/mysqladmin status > /dev/null 2>&1");
@@ -1052,7 +1051,7 @@ sub setLdapDefaults {
     $config{VIRUSQUARANTINE} = "virus-quarantine.".lc(genRandomPass()).'@'.$config{CREATEDOMAIN};
   }
 
-  if (isNetwork() && isEnabled("zimbra-store")) {
+  if (isNetwork() && isEnabled("zimbra-octopus")) {
     $config{zimbraBackupReportEmailRecipients} = getLdapConfigValue("zimbraBackupReportEmailRecipients");
     $config{zimbraBackupReportEmailRecipients} = $config{CREATEADMIN}
       if ($config{zimbraBackupReportEmailRecipients} eq "");
@@ -1234,7 +1233,7 @@ sub installLdapConfig {
   my $config_dest="/opt/zimbra/data/ldap/config";
   if (-d "/opt/zimbra/data/ldap/config") {
     main::progress("Installing LDAP configuration database...");
-    `mkdir -p $config_dest/cn\=config/olcDatabase\=\{2\}hdb`;
+    `mkdir -p $config_dest/cn\=config`;
     system("cp -f $config_src/cn\=config.ldif $config_dest/cn\=config.ldif");
     system("cp -f $config_src/cn\=config/cn\=module\{0\}.ldif $config_dest/cn\=config/cn\=module\{0\}.ldif");
     system("cp -f $config_src/cn\=config/cn\=schema.ldif $config_dest/cn\=config/cn\=schema.ldif");
@@ -1242,8 +1241,6 @@ sub installLdapConfig {
     system("cp -f $config_src/cn\=config/olcDatabase\=\{0\}config.ldif $config_dest/cn\=config/olcDatabase\=\{0\}config.ldif");
     system("cp -f $config_src/cn\=config/olcDatabase\=\{1\}monitor.ldif $config_dest/cn\=config/olcDatabase\=\{1\}monitor.ldif");
     system("cp -f $config_src/cn\=config/olcDatabase\=\{2\}hdb.ldif $config_dest/cn\=config/olcDatabase\=\{2\}hdb.ldif");
-    system("cp -f $config_src/cn\=config/olcDatabase\=\{2\}hdb/olcOverlay\=\{0\}dynlist.ldif $config_dest/cn\=config/olcDatabase\=\{2\}hdb/olcOverlay\=\{0\}dynlist.ldif");
-    system("cp -f $config_src/cn\=config/olcDatabase\=\{2\}hdb/olcOverlay\=\{1\}unique.ldif $config_dest/cn\=config/olcDatabase\=\{2\}hdb/olcOverlay\=\{1\}unique.ldif");
     `chmod 600 $config_dest/cn\=config.ldif`;
     `chmod 600 $config_dest/cn\=config/*.ldif`;
     `chown -R zimbra:zimbra $config_dest`;
@@ -1330,10 +1327,8 @@ sub setDefaults {
   } else {
     $config{mailboxd_keystore} = "/opt/zimbra/conf/keystore";
   }
-  if ($platform =~ /MACOSX/ && $platform ne "MACOSXx86_10.6" && $platform ne "MACOSXx86_10.7" ) {
+  if ($platform =~ /MACOSX/) {
       $config{mailboxd_truststore} = "/System/Library/Frameworks/JavaVM.framework/Versions/1.5/Home/lib/security/cacerts";
-  } elsif ($platform eq "MACOSXx86_10.6" || $platform eq "MACOSXx86_10.7") {
-      $config{mailboxd_truststore} = "$config{JAVAHOME}/lib/security/cacerts";
   } else {
     if ( -f "/opt/zimbra/java/lib/security/cacerts") {
       $config{mailboxd_truststore} = "/opt/zimbra/java/lib/security/cacerts";
@@ -1357,8 +1352,8 @@ sub setDefaults {
     $config{zimbraClusterType} = "none";
   }
 
-  if (isEnabled("zimbra-store")) {
-    progress  "setting defaults for zimbra-store.\n" if $options{d};
+  if (isEnabled("zimbra-octopus")) {
+    progress  "setting defaults for zimbra-octopus.\n" if $options{d};
     $config{MTAAUTHHOST} = $config{HOSTNAME};
     $config{DOCREATEADMIN} = "yes" if $newinstall;
     $config{DOTRAINSA} = "yes";
@@ -1414,14 +1409,12 @@ sub setDefaults {
     $config{LDAPPOSTPASS} = $config{LDAPADMINPASS};
     $config{LDAPAMAVISPASS} =  $config{LDAPADMINPASS};
     $config{ldap_nginx_password} = $config{LDAPADMINPASS};
-    $config{ldap_bes_searcher_password} = $config{LDAPADMINPASS};
     $config{LDAPREPLICATIONTYPE} = "master"; # Values can be master, mmr, replica
     $config{LDAPSERVERID} = 2; # Aleady enabled master should be 1, so default to next ID.
     $ldapRepChanged = 1;
     $ldapPostChanged = 1;
     $ldapAmavisChanged = 1;
     $ldapNginxChanged = 1;
-    $ldapBesSearcherChanged = 1;
   }
 
   if(isInstalled("zimbra-proxy") && !isEnabled("zimbra-ldap")) {
@@ -1431,7 +1424,7 @@ sub setDefaults {
 
   $config{CREATEADMIN} = "admin\@$config{CREATEDOMAIN}";
 
-  if (isEnabled("zimbra-store")) {
+  if (isEnabled("zimbra-octopus")) {
     $config{VERSIONUPDATECHECKS} = "TRUE";
     $config{zimbraVersionCheckSendNotifications} = "TRUE"
       if ($config{zimbraVersionCheckSendNotifications} eq "");
@@ -1464,7 +1457,7 @@ sub setDefaults {
   $config{SMTPNOTIFY} = "yes";
   $config{STARTSERVERS} = "yes";
 
-  if (isEnabled("zimbra-store") && isNetwork()) {
+  if (isEnabled("zimbra-octopus") && isNetwork()) {
     $config{zimbraBackupReportEmailRecipients} = $config{CREATEADMIN};
     $config{zimbraBackupReportEmailSender} = $config{CREATEADMIN};
   }
@@ -1475,7 +1468,7 @@ sub setDefaults {
     chomp($tmpval);
     $tmpval =~ s/mynetworks = //;
     if ($tmpval eq "") {
-      $config{zimbraMtaMyNetworks} = "127.0.0.0/8 [::1]/128 @interfaces";
+      $config{zimbraMtaMyNetworks} = "127.0.0.0/8 @interfaces";
     } else {
       $config{zimbraMtaMyNetworks} = "$tmpval";
     }
@@ -1799,13 +1792,6 @@ sub setDefaultsFromLocalConfig {
     if ($config{LDAPREPPASS} eq "") {
       $config{LDAPREPPASS} = $config{LDAPADMINPASS};
       $ldapRepChanged = 1;
-    }
-  } 
-  if (isEnabled("zimbra-ldap")) {
-    $config{ldap_bes_searcher_password} = getLocalConfig ("ldap_bes_searcher_password");
-    if ($config{ldap_bes_searcher_password} eq "") {
-      $config{ldap_bes_searcher_password} = $config{LDAPADMINPASS};
-      $ldapBesSearcherChanged = 1;
     }
   } 
   if (isEnabled("zimbra-ldap") || isEnabled("zimbra-mta")) {
@@ -2291,24 +2277,6 @@ sub setLdapRepPass {
   } 
 }
 
-sub setLdapBesSearchPass {
-  while (1) {
-    my $new =
-      askPassword("Password for ldap BES user (min 6 characters):",
-        $config{ldap_bes_searcher_password});
-    if (length($new) >= 6) {
-      if ($config{ldap_bes_searcher_password} ne $new) {
-        $config{ldap_bes_searcher_password} = $new;
-        $ldapBesSearcherChanged = 1;
-      }
-      ldapIsAvailable() if ($config{HOSTNAME} ne $config{LDAPHOST});
-      return;
-    } else {
-      print "Minimum length of 6 characters!\n";
-    }
-  } 
-}
-
 sub setLdapPostPass {
   while (1) {
     my $new =
@@ -2536,7 +2504,7 @@ sub setUseProxy {
          }
       }
    } else {
-      if (!isInstalled("zimbra-store")) {
+      if (!isInstalled("zimbra-octopus")) {
          if ($config{IMAPPROXYPORT}+7000 == $config{IMAPPORT}) {
              $config{IMAPPORT} = $config{IMAPPROXYPORT};
              $config{IMAPPROXYPORT} = $config{IMAPPROXYPORT}+7000;
@@ -2806,7 +2774,7 @@ sub setHttpPort {
     if($config{HTTPPORT} == $config{HTTPPROXYPORT}) {
       $config{HTTPPROXYPORT}="UNSET";
     }
-  } elsif (isInstalled("zimbra-store") && !isInstalled("zimbra-proxy")) {
+  } elsif (isInstalled("zimbra-octopus") && !isInstalled("zimbra-proxy")) {
     if($config{HTTPPORT} == $config{HTTPPROXYPORT}) {
       if ($config{HTTPPORT} > 8000) {
         $config{HTTPPROXYPORT} = $config{HTTPPORT} - 8000;
@@ -2825,7 +2793,7 @@ sub setHttpsPort {
     if($config{HTTPSPORT} == $config{HTTPSPROXYPORT}) {
       $config{HTTPSPROXYPORT}="UNSET";
     }
-  } elsif (isInstalled("zimbra-store") && !isInstalled("zimbra-proxy")) {
+  } elsif (isInstalled("zimbra-octopus") && !isInstalled("zimbra-proxy")) {
     if($config{HTTPSPORT} == $config{HTTPSPROXYPORT}) {
       if ($config{HTTPSPORT} > 8000) {
         $config{HTTPSPROXYPORT} = $config{HTTPSPORT} - 8000;
@@ -2844,7 +2812,7 @@ sub setImapPort {
     if($config{IMAPPORT} == $config{IMAPPROXYPORT}) {
       $config{IMAPPROXYPORT}="UNSET";
     }
-  } elsif (isInstalled("zimbra-store") && !isInstalled("zimbra-proxy")) {
+  } elsif (isInstalled("zimbra-octopus") && !isInstalled("zimbra-proxy")) {
     if($config{IMAPPORT} == $config{IMAPPROXYPORT}) {
       if ($config{IMAPPORT} > 7000) {
         $config{IMAPPROXYPORT} = $config{IMAPPORT} - 7000;
@@ -2863,7 +2831,7 @@ sub setImapSSLPort {
     if($config{IMAPSSLPORT} == $config{IMAPSSLPROXYPORT}) {
       $config{IMAPSSLPROXYPORT}="UNSET";
     }
-  } elsif (isInstalled("zimbra-store") && !isInstalled("zimbra-proxy")) {
+  } elsif (isInstalled("zimbra-octopus") && !isInstalled("zimbra-proxy")) {
     if($config{IMAPSSLPORT} == $config{IMAPSSLPROXYPORT}) {
       if ($config{IMAPSSLPORT} > 7000) {
         $config{IMAPSSLPROXYPORT} = $config{IMAPSSLPORT} - 7000;
@@ -2882,7 +2850,7 @@ sub setPopPort {
     if($config{POPPORT} == $config{POPPROXYPORT}) {
       $config{POPPROXYPORT}="UNSET";
     }
-  } elsif (isInstalled("zimbra-store") && !isInstalled("zimbra-proxy")) {
+  } elsif (isInstalled("zimbra-octopus") && !isInstalled("zimbra-proxy")) {
     if($config{POPPORT} == $config{POPPROXYPORT}) {
       if ($config{POPPORT} > 7000) {
         $config{POPPROXYPORT} = $config{POPPORT} - 7000;
@@ -2901,7 +2869,7 @@ sub setPopSSLPort {
     if($config{POPSSLPORT} == $config{POPSSLPROXYPORT}) {
       $config{POPSSLPROXYPORT}="UNSET";
     }
-  } elsif (isInstalled("zimbra-store") && !isInstalled("zimbra-proxy")) {
+  } elsif (isInstalled("zimbra-octopus") && !isInstalled("zimbra-proxy")) {
     if($config{POPSSLPORT} == $config{POPSSLPROXYPORT}) {
       if ($config{POPSSLPORT} > 7000) {
         $config{POPSSLPROXYPORT} = $config{POPSSLPORT} - 7000;
@@ -3043,7 +3011,7 @@ sub setEnabledDependencies {
     }
   }
 
-  if (isEnabled("zimbra-store")) {
+  if (isEnabled("zimbra-octopus")) {
     if (isEnabled("zimbra-mta")) {
       $config{SMTPHOST} = $config{HOSTNAME};
     }
@@ -3130,7 +3098,7 @@ sub createPackageMenu {
     return createMtaMenu($package);
   } elsif ($package eq "zimbra-snmp") {
     return createSnmpMenu($package);
-  } elsif ($package eq "zimbra-store") {
+  } elsif ($package eq "zimbra-octopus") {
     return createStoreMenu($package);
   } elsif ($package eq "zimbra-cluster") {
     return createClusterMenu($package);
@@ -3315,19 +3283,6 @@ sub createLdapMenu {
         "prompt" => "Ldap nginx password:",
         "var" => \$config{LDAPNGINXPASSSET},
         "callback" => \&setLdapNginxPass
-        };
-      $i++;
-    }
-    if ($config{HOSTNAME} eq $config{LDAPHOST} ) {
-      if ($config{ldap_bes_searcher_password} eq "") {
-        $config{LDAPBESSEARCHSET} = "UNSET";
-      } else {
-        $config{LDAPBESSEARCHSET} = "set" unless ($config{LDAPBESSEARCHSET} eq "Not Verified");
-      }
-      $$lm{menuitems}{$i} = {
-        "prompt" => "Ldap Bes Searcher password:",
-        "var" => \$config{LDAPBESSEARCHSET},
-        "callback" => \&setLdapBesSearchPass
         };
       $i++;
     }
@@ -3551,7 +3506,7 @@ sub createProxyMenu {
     };
     $i++;
     if($config{MAILPROXY} eq "TRUE") {
-       if(!isEnabled("zimbra-store")) {
+       if(!isEnabled("zimbra-octopus")) {
           $$lm{menuitems}{$i} = { 
             "prompt" => "IMAP server port:", 
             "var" => \$config{IMAPPORT}, 
@@ -3577,7 +3532,7 @@ sub createProxyMenu {
          "callback" => \&setImapSSLProxyPort,
        };
        $i++;
-       if(!isEnabled("zimbra-store")) {
+       if(!isEnabled("zimbra-octopus")) {
           $$lm{menuitems}{$i} = { 
             "prompt" => "POP server port:", 
             "var" => \$config{POPPORT}, 
@@ -3623,7 +3578,7 @@ sub createProxyMenu {
     };
     $i++;
     if ($config{HTTPPROXY} eq "TRUE") {
-       if(!isEnabled("zimbra-store")) {
+       if(!isEnabled("zimbra-octopus")) {
           $$lm{menuitems}{$i} = { 
             "prompt" => "Web server HTTP port:", 
             "var" => \$config{HTTPPORT}, 
@@ -4119,7 +4074,7 @@ sub createMainMenu {
     }
   }
   
-  if (defined($installedPackages{"zimbra-store"})) {
+  if (defined($installedPackages{"zimbra-octopus"})) {
     my $submenu = createCOSMenu("cos");
     $mm{menuitems}{$i} = {
       "prompt" => "Default Class of Service Configuration:",
@@ -4228,23 +4183,7 @@ sub ldapIsAvailable {
     setLocalConfig ("zimbra_ldap_password", $config{LDAPADMINPASS});
     setLdapDefaults() if ($config{LDAPHOST} ne $config{HOSTNAME});
   }
- 
-  # check zmbes searcher binding to the master
-  if ($config{LDAPHOST} eq $config{HOSTNAME}) {
-    if ($config{ldap_bes_searcher_password} eq "") {
-      detail ("BES searcher configuration not complete\n");
-      $failedcheck++;
-    }
-    my $binduser = "uid=zmbes-searcher,cn=appaccts,$config{ldap_dit_base_dn_config}";
-    if (checkLdapBind($binduser,$config{ldap_bes_searcher_password})) {
-      detail ("Couldn't bind to $config{LDAPHOST} as $binduser\n");
-      $config{LDAPBESSEARCHSET} = "Not Verified";
-      $failedcheck++;
-    } else {
-      detail ("Verified $binduser on $config{LDAPHOST}.\n");
-      $config{LDAPBESSEARCHSET} = "set";
-    }
-  }
+  
   # check nginx user binding to the master
   if (isInstalled("zimbra-proxy")) {
     if ($config{ldap_nginx_password} eq "") {
@@ -4640,7 +4579,7 @@ sub configLCValues {
   }
 
   # set default zmprov bahaviour
-  if (isEnabled("zimbra-store")) {
+  if (isEnabled("zimbra-octopus")) {
     setLocalConfig ("zimbra_zmprov_default_to_ldap", "false");
   } else {
     setLocalConfig ("zimbra_zmprov_default_to_ldap", "true");
@@ -4760,11 +4699,6 @@ sub configSetupLdap {
          runAsZimbra ("/opt/zimbra/bin/zmldappasswd -n \'$config{ldap_nginx_password}\'");
          progress ( "done.\n" );
       }
-      if ($ldapBesSearcherChanged == 1) {
-         progress ( "Setting BES searcher  password..." );
-         runAsZimbra ("/opt/zimbra/bin/zmldappasswd -b \'$config{ldap_bes_searcher_password}\'");
-         progress ( "done.\n" );
-      }
     }
   } elsif (isEnabled("zimbra-ldap")) {
     # enable replica for both new and upgrade installs if we are adding ldap
@@ -4816,7 +4750,7 @@ sub configSetupLdap {
          close ER;
       }
       if ($rc == 0) {
-        if (!isEnabled("zimbra-store")) {
+        if (!isEnabled("zimbra-octopus")) {
           $config{DOCREATEADMIN} = "no";
         }
         $config{DOCREATEDOMAIN} = "no";
@@ -4839,7 +4773,7 @@ sub configSetupLdap {
 
 
     # zmldappasswd starts ldap and re-applies the ldif
-    if ($ldapRootPassChanged || $ldapAdminPassChanged || $ldapRepChanged || $ldapPostChanged || $ldapAmavisChanged || $ldapNginxChanged || $ldapBesSearcherChanged) {
+    if ($ldapRootPassChanged || $ldapAdminPassChanged || $ldapRepChanged || $ldapPostChanged || $ldapAmavisChanged || $ldapNginxChanged) {
       if ($ldapRootPassChanged) {
          progress ( "Setting ldap root password..." );
          runAsZimbra ("/opt/zimbra/bin/zmldappasswd -r $config{LDAPROOTPASS}");
@@ -4890,15 +4824,6 @@ sub configSetupLdap {
         }
          progress ( "done.\n" );
       }
-      if ($ldapBesSearcherChanged == 1) {
-         progress ( "Setting BES Searcher password..." );
-         if ($config{LDAPHOST} eq $config{HOSTNAME} ) {
-           runAsZimbra ("/opt/zimbra/bin/zmldappasswd -b $config{ldap_bes_searcher_password}");
-         } else {
-           setLocalConfig ("ldap_bes_searcher_password", "$config{ldap_bes_searcher_password}");
-        }
-         progress ( "done.\n" );
-      }
     } else {
       progress("Stopping ldap...");
       runAsZimbra ("/opt/zimbra/bin/ldap stop");
@@ -4915,7 +4840,6 @@ sub configSetupLdap {
     setLocalConfig ("ldap_postfix_password", "$config{LDAPPOSTPASS}");
     setLocalConfig ("ldap_amavis_password", "$config{LDAPAMAVISPASS}");
     setLocalConfig ("ldap_nginx_password", "$config{ldap_nginx_password}");
-    setLocalConfig ("ldap_bes_searcher_password", "$config{ldap_bes_searcher_password}");
   }
 
   configLog("configSetupLdap");
@@ -4964,7 +4888,7 @@ sub configCreateCert {
   }
 
   my $rc;
-  if (isInstalled("zimbra-store")) {
+  if (isInstalled("zimbra-octopus")) {
     if ( !-f "$config{mailboxd_keystore}" && !-f "/opt/zimbra/ssl/zimbra/server/server.crt" ) {
       if (!-d "$config{mailboxd_directory}") {
         `mkdir -p $config{mailboxd_directory}/etc`;
@@ -5082,7 +5006,7 @@ sub configInstallCert {
   my $rc;
   if ($configStatus{configInstallCertStore} eq "CONFIGURED" && $needNewCert eq "") {
     configLog("configInstallCertStore");
-  } elsif (isInstalled("zimbra-store")) {
+  } elsif (isInstalled("zimbra-octopus")) {
     if (! (-f "$config{mailboxd_keystore}") || $needNewCert ne "") {
       progress ("Installing mailboxd SSL certificates...");
       detail("$config{mailboxd_keystore} didn't exist.")
@@ -5221,7 +5145,7 @@ sub configSetMtaAuthHost {
     return 0;
   }
 
-  if (isEnabled ("zimbra-ldap") && ! isEnabled ("zimbra-store")) {
+  if (isEnabled ("zimbra-ldap") && ! isEnabled ("zimbra-octopus")) {
     if ($config{MTAAUTHHOST} ne "") {
       my $mtahostservices = getLdapServerValue("zimbraServiceEnabled", $config{MTAAUTHHOST});
       if (index($mtahostservices, "mailbox") == -1) {
@@ -5401,36 +5325,6 @@ sub configSetNEFeatures {
   return unless isNetwork();
 }
 
-sub configInitOctopusAdminGroup {
-  return if ($config{DOCREATEDOMAIN} eq "no");
-  main::progress ("Setting up octopus admin UI components..");
-  
-  $config{zimbraDefaultDomainName} = getLdapConfigValue("zimbraDefaultDomainName") || $config{CREATEDOMAIN};
-  my $adminGroup = "zimbraOctopusAdmins\@". 
-    (($newinstall) ? "$config{CREATEDOMAIN}" : "$config{zimbraDefaultDomainName}");
-  my $rc = main::runAsZimbra("$ZMPROV cdl $adminGroup ".
-    "zimbraIsAdminGroup TRUE ".
-    "zimbraHideInGal TRUE ".
-    "zimbraMailStatus disabled ".
-    "zimbraAdminConsoleUIComponents accountListView ".
-    "zimbraAdminConsoleUIComponents DLListView ".
-    "zimbraAdminConsoleUIComponents COSListView ".
-    "zimbraAdminConsoleUIComponents domainListView ".
-    "zimbraAdminConsoleUIComponents serverListView ".
-    "zimbraAdminConsoleUIComponents zimletListView ".
-    "zimbraAdminConsoleUIComponents globalConfigView ".
-    "description \'Octopus Administrative Account\'");
-  main::progress(($rc == 0) ? "done.\n" : "failed.\n");
-
-  main::progress ("Granting group $adminGroup global right +octopusAdmin...");
-  $rc = main::runAsZimbra("$ZMPROV grr global grp $adminGroup +octopusAdmin");
-  main::progress(($rc == 0) ? "done.\n" : "failed.\n");
-
-  main::progress ("Adding user $config{CREATEADMIN} to DL $adminGroup...");
-  my $rc = main::runAsZimbra("$ZMPROV adlm $adminGroup $config{CREATEADMIN}");
-  main::progress(($rc == 0) ? "done.\n" : "failed.\n");
-}
-
 sub configInitDomainAdminGroups {
   return if ($config{DOCREATEDOMAIN} eq "no");
   main::progress ("Setting up default domain admin UI components..");
@@ -5477,7 +5371,7 @@ sub configInitDomainAdminGroups {
 }
 
 sub configInitBackupPrefs {
-  if (isEnabled("zimbra-store") && isNetwork()) {
+  if (isEnabled("zimbra-octopus") && isNetwork()) {
     foreach my $recip (split(/\n/, $config{zimbraBackupReportEmailRecipients})) {
       setLdapGlobalConfig("+zimbraBackupReportEmailRecipients", $recip);
     }
@@ -5587,7 +5481,7 @@ sub configSetProxyPrefs {
                        "-a $config{HTTPPORT}:$config{HTTPPROXYPORT}:$config{HTTPSPORT}:$config{HTTPSPROXYPORT} -H $config{HOSTNAME}");
         }
      }
-     if (!(isEnabled("zimbra-store"))) {
+     if (!(isEnabled("zimbra-octopus"))) {
        my @storetargets;
        detail("Running $ZMPROV garpu");
        open(ZMPROV, "$ZMPROV garpu 2>/dev/null|");
@@ -5913,7 +5807,7 @@ sub configCreateDomain {
     configInitDomainAdminGroups()
       if (isNetwork() && $config{LDAPHOST} eq $config{HOSTNAME});
   }
-  if (isEnabled("zimbra-store")) {
+  if (isEnabled("zimbra-octopus")) {
     if ($config{DOCREATEADMIN} eq "yes") {
       $config{CREATEADMIN} = lc($config{CREATEADMIN});
       my ($u,$d) = split ('@', $config{CREATEADMIN});
@@ -5932,34 +5826,12 @@ sub configCreateDomain {
       if ($acctId ne "") {
         progress("already exists.\n");
       } else {
-        if (isEnabled("zimbra-octopus")) {
-          my $rc = runAsZimbra("$ZMPROV ca ".
-            "$config{CREATEADMIN} \'$config{CREATEADMINPASS}\' ".
-            "zimbraIsDelegatedAdminAccount TRUE ".
-            "zimbraFeatureAdminMailEnabled TRUE ".
-            "zimbraPrefAdminConsoleWarnOnExit TRUE ".
-            "zimbraAdminAuthTokenLifetime 12h ".
-            "zimbraAdminConsoleUIComponents accountListView ".
-            "zimbraAdminConsoleUIComponents DLListView ".
-            "zimbraAdminConsoleUIComponents COSListView ".
-            "zimbraAdminConsoleUIComponents domainListView ".
-            "zimbraAdminConsoleUIComponents serverListView ".
-            "zimbraAdminConsoleUIComponents zimletListView ".
-            "zimbraAdminConsoleUIComponents globalConfigView ".
-            "description \'Octopus Administrative Account\'");
-          progress(($rc == 0) ? "done.\n" : "failed.\n");
-          # initialize the octopus admin group and add the admin user to the DL
-          # this really needs to be on the ldap master but we need to fix the isEnabled
-          # function first.  
-          configInitOctopusAdminGroup();
-        } else {
-          my $rc = runAsZimbra("$ZMPROV ca ".
-            "$config{CREATEADMIN} \'$config{CREATEADMINPASS}\' ".
-            "zimbraAdminConsoleUIComponents cartBlancheUI ".
-            "description \'Administrative Account\' ".
-            "zimbraIsAdminAccount TRUE");
-          progress(($rc == 0) ? "done.\n" : "failed.\n");
-        }
+        my $rc = runAsZimbra("$ZMPROV ca ".
+          "$config{CREATEADMIN} \'$config{CREATEADMINPASS}\' ".
+          "zimbraAdminConsoleUIComponents cartBlancheUI ".
+          "description \'Administrative Account\' ".
+          "zimbraIsAdminAccount TRUE");
+        progress(($rc == 0) ? "done.\n" : "failed.\n");
       }
 
       progress ( "Creating root alias..." );
@@ -6050,7 +5922,7 @@ sub configInitSql {
     return 0;
   }
 
-  if (!$sqlConfigured && isEnabled("zimbra-store")) {
+  if (!$sqlConfigured && isEnabled("zimbra-octopus")) {
     progress ( "Initializing store sql database..." );
     runAsZimbra ("/opt/zimbra/libexec/zmmyinit --mysql_memory_percent $config{MYSQLMEMORYPERCENT}");
     progress ( "done.\n" );
@@ -6156,7 +6028,7 @@ sub configInitInstantMessaging {
     return 0;
   }
   my $rc;
-  if (isEnabled("zimbra-store")) {
+  if (isEnabled("zimbra-octopus")) {
     progress("Checking for default IM conference room...");
     $rc = runAsZimbra("$ZMPROV gxc conference.$config{CREATEDOMAIN}");
     progress (($rc != 0) ? "not present.\n" : "already initialized.\n");
@@ -6174,7 +6046,7 @@ sub configInitInstantMessaging {
 
 sub configInitNotebooks {
 
-  if (isEnabled("zimbra-store")) {
+  if (isEnabled("zimbra-octopus")) {
     my $globalWikiAcct = getLdapConfigValue("zimbraNotebookAccount");
 
     if (! $newinstall && $globalWikiAcct ne "") {
@@ -6284,10 +6156,8 @@ sub configSetEnabledServices {
     }
     if ($p eq "zimbra-apache") {next;}
     if ($p eq "zimbra-cluster") {next;}
-    if ($p eq "zimbra-archiving") {next;}
     $p =~ s/zimbra-//;
     if ($p eq "store") {$p = "mailbox";}
-    if ($p eq "octopus") {$p = "mailbox";}
     if ($p eq "proxy") { $p = "imapproxy";}
     $installedServiceStr .= "zimbraServiceInstalled $p ";
   }
@@ -6303,7 +6173,6 @@ sub configSetEnabledServices {
     if ($enabledPackages{$p} eq "Enabled") {
       $p =~ s/zimbra-//;
       if ($p eq "store") {$p = "mailbox";}
-      if ($p eq "octopus") {$p = "mailbox";}
       if ($p eq "proxy") { $p = "imapproxy";}
       $enabledServiceStr .= "zimbraServiceEnabled $p ";
     }
@@ -6380,7 +6249,7 @@ sub applyConfig {
 
   configSaveCert();
 
-  if (isEnabled("zimbra-store")) {
+  if (isEnabled("zimbra-octopus")) {
     configSpellServer();
 
     configSetServicePorts();
@@ -6454,14 +6323,14 @@ sub applyConfig {
   if ($config{STARTSERVERS} eq "yes") {
 
     # bug 6270 
-    if (isEnabled("zimbra-store")) {
+    if (isEnabled("zimbra-octopus")) {
       `chown zimbra:zimbra /opt/zimbra/redolog/redo.log`
         if (($platform =~ m/DEBIAN/ || $platform =~ m/UBUNTU/) && ! $newinstall);
     }
 
     progress ( "Starting servers..." );
     if ($main::platform =~ /MACOSX/) {
-      runAsRoot("/bin/launchctl load -w /System/Library/LaunchDaemons/com.zimbra.zcs.plist");
+      runAsRoot("/bin/launchctl load /System/Library/LaunchDaemons/com.zimbra.zcs.plist");
     } else {
       runAsZimbra ("/opt/zimbra/bin/zmcontrol start");
     }
@@ -6471,16 +6340,21 @@ sub applyConfig {
 
     # Initialize application server specific items
     # only after the application server is running.
-    if (isEnabled("zimbra-store")) {
+    if (isEnabled("zimbra-octopus")) {
       configInstallZimlets();
 
       progress ( "Restarting mailboxd...");
-      runAsZimbra("/opt/zimbra/bin/zmmailboxdctl restart");
+      if ($main::platform =~ /MACOSX/) {
+        runAsRoot("/bin/launchctl unload /System/Library/LaunchDaemons/com.zimbra.zcs.plist");
+        runAsRoot("/bin/launchctl load /System/Library/LaunchDaemons/com.zimbra.zcs.plist");
+      } else {
+        runAsZimbra("/opt/zimbra/bin/zmmailboxdctl restart");
+      }
       progress ( "done.\n" );
     }
   } else {
     progress ( "WARNING: Document and Zimlet initialization skipped because Application Server was not configured to start.\n")
-      if (isEnabled("zimbra-store"));
+      if (isEnabled("zimbra-octopus"));
   }
 
   postinstall::notifyZimbra();
@@ -6591,8 +6465,8 @@ sub setupCrontab {
     `cat /opt/zimbra/zimbramon/crontabs/crontab.ldap >> /tmp/crontab.zimbra 2>> $logfile`;
   }
 
-  if (isEnabled("zimbra-store")) {
-    detail("crontab: Adding zimbra-store specific crontab entries");
+  if (isEnabled("zimbra-octopus")) {
+    detail("crontab: Adding zimbra-octopus specific crontab entries");
     `cat /opt/zimbra/zimbramon/crontabs/crontab.store >> /tmp/crontab.zimbra 2>> $logfile`;
   }
 
