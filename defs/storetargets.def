@@ -110,6 +110,7 @@ $(STORE_DEST_DIR)/$(MYSQL_DIR):
 $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/bin: $(STORE_DEST_DIR) force
 	@echo "*** Creating $(MAILBOXD_SERVER)"
 	(cd $(STORE_DEST_DIR); tar xzf $(MAILBOXD_SOURCE).tar.gz;)
+	-(rm $(@D)/start.ini $(@D)/webapps/test.war $(@D)/etc/keystore)
 
 ifeq ($(ZIMBRA_USE_TOMCAT), 1)
 $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/conf: force
@@ -166,6 +167,10 @@ $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/etc: force
 			$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/etc/service.web.xml.in
 		cp -f $(ZIMLET_DIR)/conf/web.xml.production \
 			$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/etc/zimlet.web.xml.in
+		cp -f $(CONSOLE_DIR)/WebRoot/WEB-INF/jetty-env.xml \
+			$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/etc/zimbra-jetty-env.xml.in
+		cp -f $(CONSOLE_DIR)/WebRoot/WEB-INF/jetty-env.xml \
+			$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/etc/zimbraAdmin-jetty-env.xml.in
 		cat $(WEBAPP_STAGE_DIR)/zimbra/web.xml | \
 			sed -e '/REDIRECTBEGIN/ s/$$/ %%comment VAR:zimbraMailMode,-->,redirect%%/' \
 				-e '/REDIRECTEND/ s/^/%%comment VAR:zimbraMailMode,<!--,redirect%% /' \
