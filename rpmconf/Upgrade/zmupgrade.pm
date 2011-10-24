@@ -4587,6 +4587,7 @@ sub upgradeLdap($) {
       unlink("/opt/zimbra/data/ldap/config/cn\=config/cn\=schema/cn\=\{4\}amavisd.ldif");
       my $ldifFile="/opt/zimbra/data/ldap/ldap.bak";
       if (-f $ldifFile && -s $ldifFile) {
+        my $postfix_id_fix=0;
         chmod 0644, $ldifFile;
         my $infile = "$ldifFile";
         my $outfile = "/opt/zimbra/data/ldap/ldap.80";
@@ -4597,6 +4598,14 @@ sub upgradeLdap($) {
           if ($_ =~ /^zimbraPrefStandardClientAccessilbityMode:/) {next;}
           if ($_ =~ /^objectClass: zimbraHsmGlobalConfig/) {next;}
           if ($_ =~ /^objectClass: zimbraHsmServer/) {next;}
+          if ($_ =~ /^uid=zmpostfix,cn=appaccts,cn=zimbra/) {
+            $postfix_id_fix=1;
+          }
+          if ($postfix_id_fix == 1 && $_ =~ /^zimbraId: DA336C18-4F5E-11DC-8514-DCA8E67A905E/) {
+            $postfix_id_fix=0;
+            print OUT "zimbraId: a8255e5f-142b-4aa0-8aab-f8591b6455ba\n";
+            next;
+          }
           if ($_ =~ /^objectClass: organizationalPerson/) {
             print OUT $_;
             print OUT "objectClass: inetOrgPerson\n";
@@ -4647,6 +4656,7 @@ sub migrateLdap($) {
   my ($migrateVersion) = @_;
   if (main::isInstalled ("zimbra-ldap")) {
     if($main::configStatus{"LdapMigrated$migrateVersion"} ne "CONFIGURED") {
+      my $postfix_id_fix=0;
       if (-f "/opt/zimbra/data/ldap/ldap.bak") {
         my $infile = "/opt/zimbra/data/ldap/ldap.bak";
         my $outfile = "/opt/zimbra/data/ldap/ldap.60";
@@ -4657,6 +4667,14 @@ sub migrateLdap($) {
             if ($_ =~ /^zimbraPrefStandardClientAccessilbityMode:/) {next;}
             if ($_ =~ /^objectClass: zimbraHsmGlobalConfig/) {next;}
             if ($_ =~ /^objectClass: zimbraHsmServer/) {next;}
+            if ($_ =~ /^uid=zmpostfix,cn=appaccts,cn=zimbra/) {
+              $postfix_id_fix=1;
+            }
+            if ($postfix_id_fix == 1 && $_ =~ /^zimbraId: DA336C18-4F5E-11DC-8514-DCA8E67A905E/) {
+              $postfix_id_fix=0;
+              print OUT "zimbraId: a8255e5f-142b-4aa0-8aab-f8591b6455ba\n";
+              next;
+            }
             if ($_ =~ /^objectClass: organizationalPerson/) {
               print OUT $_;
               print OUT "objectClass: inetOrgPerson\n";
