@@ -3913,6 +3913,29 @@ sub upgrade714GA {
     }
     $result = $ldap->unbind;
   }
+  if (main::isInstalled("zimbra-mta")) {
+    my @zimbraMtaRestriction = su "$ZMPROV gacf zimbraMtaRestriction"
+    foreach my $restriction (@zimbraMtaRestriction) {
+      $restriction =~ s/zimbraMtaRestriction: //;
+      chomp $restriction;
+      if ($restriction =~ /^reject_invalid_hostname$/) {
+        main::runAsZimbra("$ZMPROV mcf -zimbraMtaRestriction reject_invalid_hostname");
+        main::runAsZimbra("$ZMPROV mcf +zimbraMtaRestriction reject_invalid_helo_hostname");
+      }
+      if ($restriction =~ /^reject_non_fqdn_hostname$/) {
+        main::runAsZimbra("$ZMPROV mcf -zimbraMtaRestriction reject_non_fqdn_hostname");
+        main::runAsZimbra("$ZMPROV mcf +zimbraMtaRestriction reject_non_fqdn_helo_hostname");
+      }
+      if ($restriction =~ /^reject_unknown_client$/) {
+        main::runAsZimbra("$ZMPROV mcf -zimbraMtaRestriction reject_unknown_client");
+        main::runAsZimbra("$ZMPROV mcf +zimbraMtaRestriction reject_unknown_client_hostname");
+      }
+      if ($restriction =~ /^reject_unknown_hostname$/) {
+        main::runAsZimbra("$ZMPROV mcf -zimbraMtaRestriction reject_unknown_hostname");
+        main::runAsZimbra("$ZMPROV mcf +zimbraMtaRestriction reject_unknown_helo_hostname");
+      }
+    }
+  }
   return 0;
 }
 
