@@ -151,8 +151,6 @@ $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/etc: force
 			$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/etc/webdefault.xml
 		cp -f $(SERVICE_DIR)/conf/$(MAILBOXD_SERVER)-$(MAILBOXD_MINOR_VERSION)/start.config \
 			$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/etc/start.config
-		cp -f $(SERVICE_DIR)/conf/$(MAILBOXD_SERVER)-$(MAILBOXD_MINOR_VERSION)/start.ini \
-			$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/start.ini
 		cp -f $(SERVICE_DIR)/conf/$(MAILBOXD_SERVER)-$(MAILBOXD_MINOR_VERSION)/jetty-setuid.xml \
 			$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/etc/jetty-setuid.xml
 		cp -f $(SERVICE_DIR)/conf/$(MAILBOXD_SERVER)-$(MAILBOXD_MINOR_VERSION)/jetty.properties \
