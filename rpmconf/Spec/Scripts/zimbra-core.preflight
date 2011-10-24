@@ -117,8 +117,8 @@ addUser() {
       ${niutil} -createprop / /groups/$maingroup gid $maingid               
     elif [ -x "${dscl}" ]; then
       ${dscl} . -create /groups/$maingroup
-      ${dscl} . -merge /groups/$maingroup RecordName $maingroup
       ${dscl} . -create /groups/$maingroup PrimaryGroupID $maingid
+      ${dscl} . -merge /groups/$maingroup RecordName $maingroup
     fi
   fi
   echo "Creating user $name with uid:$mainuid"
