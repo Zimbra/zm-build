@@ -3914,7 +3914,7 @@ sub upgrade714GA {
     $result = $ldap->unbind;
   }
   if (main::isInstalled("zimbra-mta")) {
-    my @zimbraMtaRestriction = su "$ZMPROV gacf zimbraMtaRestriction"
+    my @zimbraMtaRestriction = `$su "$ZMPROV gacf zimbraMtaRestriction"`;
     foreach my $restriction (@zimbraMtaRestriction) {
       $restriction =~ s/zimbraMtaRestriction: //;
       chomp $restriction;
