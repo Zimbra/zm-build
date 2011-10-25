@@ -4031,6 +4031,7 @@ sub upgrade800BETA2 {
       runLdapAttributeUpgrade("63722");
       runLdapAttributeUpgrade("64380");
       runLdapAttributeUpgrade("65070");
+      runLdapAttributeUpgrade("66001");
     }
     main::runAsZimbra("perl -I${scriptDir} ${scriptDir}/migrate20111019-UniqueZimbraId.pl");
   }
