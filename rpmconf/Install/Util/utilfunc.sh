@@ -261,6 +261,38 @@ checkUser() {
   fi
 }
 
+checkMySQLConfig() {
+  isInstalled zimbra-store
+  if [ x$PKGINSTALLED != "x" ]; then
+    if [ -f "/opt/zimbra/conf/my.cnf" ]; then
+      BIND_ADDR=`awk '{ if ( $1 ~ /^bind-address$/ ) { print $3 } }' /opt/zimbra/conf/my.cnf`
+      while [ "${BIND_ADDR}x" != "127.0.0.1x" -a "${BIND_ADDR}x" != "localhostx" ]; do
+        echo "The MySQL bind address is currently not set to \"localhost\" or \"127.0.0.1\".  Due to a"
+        echo "MySQL bug (#61713), the MySQL bind address must be set to \"127.0.0.1\".  Please correct"
+        echo "the bind-address entry in the \"/opt/zimbra/conf/my.cnf\" file to proceed with the upgrade."
+        askYN "Retry validation? (Y/N)?" "Y"
+        if [ $response = "no" ]; then
+          break
+        fi
+        BIND_ADDR=`awk '{ if ( $1 ~ /^bind-address$/ ) { print $3 } }' /opt/zimbra/conf/my.cnf`
+      done
+      if [ "${BIND_ADDR}x" != "127.0.0.1x" -a "${BIND_ADDR}x" != "localhostx" ]; then
+        echo ""
+        echo "It is recommended that the bind-address setting in the /opt/zimbra/conf/my.cnf file be set"
+        echo "to \"127.0.0.1\".  The current setting of \"${BIND_ADDR}\" is not supported within"
+        echo "ZCS and may cause the installation to fail."
+        askYN "Proceed with installation? (Y/N)?" "N"
+        if [ $response != "yes" ]; then
+          echo ""
+          echo "Aborting installation"
+          echo ""
+          exit 1
+        fi
+      fi
+    fi
+  fi
+}
+
 checkDatabaseIntegrity() {
 
   if [ x"$CLUSTERTYPE" = "xstandby" ]; then
@@ -606,6 +638,8 @@ EOF
   checkRecentBackup
 
   checkDatabaseIntegrity
+
+  checkMySQLConfig
 
 }
 

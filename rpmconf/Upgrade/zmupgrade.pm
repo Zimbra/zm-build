@@ -4040,6 +4040,7 @@ sub upgrade800BETA2 {
       main::runAsZimbra("perl -I${scriptDir} ${scriptDir}/migrate20111005-ItemIdCheckpoint.pl");
       stopSql();
   }
+
   return 0;
 }
 
@@ -4479,6 +4480,16 @@ sub doMysql55Upgrade {
     my $zimbra_log_directory = main::getLocalConfig("zimbra_log_directory") || "${zimbra_home}/log"; 
     main::runAsZimbra("${zimbra_home}/libexec/zminiutil --backup=.pre-${targetVersion} --section=mysqld --unset --key=ignore-builtin-innodb ${mysql_mycnf}");
     main::runAsZimbra("${zimbra_home}/libexec/zminiutil --backup=.pre-${targetVersion} --section=mysqld --unset --key=plugin-load ${mysql_mycnf}");
+
+    # bug: 62020
+    my $mysql_bind_address = `$su "/opt/zimbra/libexec/zminiutil --section=mysqld --key=bind-address --get ${mysql_mycnf}"`;
+    if ($mysql_bind_address =~ /^localhost$/) {
+      main::setLocalConfig("mysql_bind_address", "127.0.0.1");
+      main::progress("Reconfiguring bind-address in ${mysql_mycnf} from \"localhost\" to \"127.0.0.1\" ... ");
+      my $rc = main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-bind-address --section=mysqld --key=bind-address --set --value=127.0.0.1 ${mysql_mycnf}");
+      main::progress(($rc == 0) ? "done.\n" : "failed.\n");
+      return $rc;
+    }
 }
 
 sub doMysqlUpgrade {
