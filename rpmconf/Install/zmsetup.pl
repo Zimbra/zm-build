@@ -103,6 +103,7 @@ my %packageServiceMap = (
   ldap      => "zimbra-ldap",
   spell     => "zimbra-spell",
   stats     => "zimbra-core",
+  'vmware-ha' => "zimbra-core",
   memcached => "zimbra-memcached",
   imapproxy => "zimbra-proxy",
   archiving => "zimbra-archiving",
@@ -163,6 +164,7 @@ if ($0 =~ /testMenu/) {
   getInstalledPackages();
   setDefaults();
   setLdapDefaults();
+  setEnabledDependencies();
   mainMenu();
   exit;
 }
@@ -3064,6 +3066,14 @@ sub setEnabledDependencies {
     }
   }
 
+  if (isEnabled("zimbra-core")) {
+    if ($newinstall) {
+      $config{RUNVMHA} = "no";
+    } else {
+      $config{RUNVMHA} = (isServiceEnabled("vmware-ha") ? "yes" : "no");
+    }
+  }
+
   if (isEnabled("zimbra-spell")) {
     $config{USESPELL} = "yes";
     $config{SPELLURL} = "http://$config{HOSTNAME}:7780/aspell.php";
@@ -3403,6 +3413,7 @@ sub createClusterMenu {
       };
     $i++;
   }
+
   return $lm;
 }
 
@@ -4118,7 +4129,21 @@ sub createMainMenu {
       #push @mm, "$package not installed";
     }
   }
-  
+  if (defined($installedPackages{"zimbra-core"})) {
+    # simple test to see if we are running in a VM.
+    if ( -x "/usr/lib/vmware-tools/sbin64/vmware-checkvm") {
+      my $rc = runAsRoot("/usr/lib/vmware-tools/sbin64/vmware-checkvm");
+      if ($rc == 0) {
+        $mm{menuitems}{$i} = { 
+          "prompt" => "Enable VMware HA:", 
+          "var" => \$config{RUNVMHA}, 
+          "callback" => \&toggleYN,
+          "arg" => "RUNVMHA",
+          };
+        $i++;
+      }
+    }
+  }
   if (defined($installedPackages{"zimbra-store"})) {
     my $submenu = createCOSMenu("cos");
     $mm{menuitems}{$i} = {
@@ -6076,6 +6101,22 @@ sub configInitLogger {
   configLog("configInitLogger");
 }
 
+sub configInitCore {
+
+  if ($configStatus{configInitCore} eq "CONFIGURED") {
+    configLog("configInitCore");
+    return 0;
+  }
+  if (isEnabled("zimbra-core")) {
+    progress ( "Initializing core config..." );
+
+    if ($config{RUNVMHA} eq "yes") {
+      $enabledServiceStr .= "zimbraServiceEnabled vmware-ha ";
+    }
+  }
+  configLog("configInitCore");
+}
+
 sub configInitMta {
 
   if ($configStatus{configInitMta} eq "CONFIGURED") {
@@ -6280,6 +6321,10 @@ sub configSetEnabledServices {
   foreach my $p (keys %installedPackages) {
     if ($p eq "zimbra-core") {
       $installedServiceStr .= "zimbraServiceInstalled stats ";
+      if ( -x "/usr/lib/vmware-tools/sbin64/vmware-checkvm") {
+        my $rc = runAsRoot("/usr/lib/vmware-tools/sbin64/vmware-checkvm");
+        $installedServiceStr .= "zimbraServiceInstalled vmware-ha " if ($rc == 0);
+      }
       next;
     }
     if ($p eq "zimbra-apache") {next;}
@@ -6348,6 +6393,8 @@ sub applyConfig {
 
   configLCValues();
 
+  configInitCore();
+
   # About SSL
   # 
   # On the master ldap server, create a ca and a cert
@@ -6379,6 +6426,7 @@ sub applyConfig {
   configSaveCA();
 
   configSaveCert();
+
 
   if (isEnabled("zimbra-store")) {
     configSpellServer();
