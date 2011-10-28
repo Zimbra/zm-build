@@ -3936,6 +3936,9 @@ sub upgrade714GA {
       }
     }
   }
+  if (main::isInstalled("zimbra-store")) {
+    main::setLocalConfig("calendar_cache_enabled", "TRUE"); #66307
+  }
   return 0;
 }
 
