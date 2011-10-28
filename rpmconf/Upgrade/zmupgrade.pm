@@ -4040,6 +4040,14 @@ sub upgrade800BETA2 {
       main::runAsZimbra("perl -I${scriptDir} ${scriptDir}/migrate20111005-ItemIdCheckpoint.pl");
       stopSql();
   }
+  if (main::isInstalled("zimbra-proxy")) {
+      main::runAsZimbra("$ZMPROV ms $hn -zimbraServiceInstalled imapproxy");
+      main::runAsZimbra("$ZMPROV ms $hn +zimbraServiceInstalled proxy");
+    if (main::isEnabled("zimbra-proxy")) {
+      main::runAsZimbra("$ZMPROV ms $hn -zimbraServiceEnabled imapproxy");
+      main::runAsZimbra("$ZMPROV ms $hn +zimbraServiceEnabled proxy");
+    }
+  }
 
   return 0;
 }

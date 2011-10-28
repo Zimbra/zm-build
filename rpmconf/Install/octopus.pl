@@ -104,7 +104,7 @@ my %packageServiceMap = (
   spell     => "zimbra-spell",
   stats     => "zimbra-core",
   memcached => "zimbra-memcached",
-  imapproxy => "zimbra-proxy",
+  proxy     => "zimbra-proxy",
   archiving => "zimbra-archiving",
   convertd  => "zimbra-convertd",
 );
@@ -6158,7 +6158,6 @@ sub configSetEnabledServices {
     if ($p eq "zimbra-cluster") {next;}
     $p =~ s/zimbra-//;
     if ($p eq "store") {$p = "mailbox";}
-    if ($p eq "proxy") { $p = "imapproxy";}
     $installedServiceStr .= "zimbraServiceInstalled $p ";
   }
 
@@ -6173,7 +6172,6 @@ sub configSetEnabledServices {
     if ($enabledPackages{$p} eq "Enabled") {
       $p =~ s/zimbra-//;
       if ($p eq "store") {$p = "mailbox";}
-      if ($p eq "proxy") { $p = "imapproxy";}
       $enabledServiceStr .= "zimbraServiceEnabled $p ";
     }
   }
