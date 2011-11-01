@@ -3879,7 +3879,7 @@ sub upgrade713GA {
       $mtaNetworks =~ s/ $//;
       $mtaNetworks=$mtaNetworks . " [::1]/128";
     }
-    main::runAsZimbra("$ZMPROV ms $hn zimbraMtaMyNetworks \'$mtaNetworks\'");
+    main::setLdapServerConfig("zimbraMtaMyNetworks", "$mtaNetworks");
   }
   return 0;
 }
