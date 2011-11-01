@@ -56,6 +56,7 @@ if ($platform =~ /MACOSXx86_10/) {
 
 my $hn = `$su "${zmlocalconfig} -m nokey zimbra_server_hostname"`;
 chomp $hn;
+$main::config{HOSTNAME}=$hn;
 
 my $isLdapMaster = `$su "${zmlocalconfig} -m nokey ldap_is_master"`;
 chomp($isLdapMaster);
