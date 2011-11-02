@@ -4043,6 +4043,25 @@ sub upgrade800BETA2 {
   if (main::isEnabled("zimbra-store")) {
     if (startSql()) { return 1; }
       main::runAsZimbra("perl -I${scriptDir} ${scriptDir}/migrate20111005-ItemIdCheckpoint.pl");
+
+      # Bug: 60011
+      my $mysql_root_password=`/opt/zimbra/bin/zmlocalconfig -s -x -m nokey mysql_root_password`;
+      my $mysql_socket=`/opt/zimbra/bin/zmlocalconfig -s -x -m nokey mysql_socket`;
+      my $host=`hostname`;
+      chomp $mysql_root_password;
+      chomp $mysql_socket;
+      chomp $host;
+
+      my $sql = <<FIX_RIGHTS_EOF;
+        SET PASSWORD FOR 'root'\@'localhost' = PASSWORD('${mysql_root_password}');
+        SET PASSWORD FOR 'root'\@'${host}' = PASSWORD('${mysql_root_password}');
+        SET PASSWORD FOR 'root'\@'127.0.0.1' = PASSWORD('${mysql_root_password}');
+        SET PASSWORD FOR 'root'\@'localhost.localdomain' = PASSWORD('${mysql_root_password}');
+FIX_RIGHTS_EOF
+
+      `/opt/zimbra/mysql/bin/mysql -S '$mysql_socket' -u root --password='$mysql_root_password' -e "$sql"`;
+      `/opt/zimbra/mysql/bin/mysql -S '$mysql_socket' -u root --password='$mysql_root_password' -e "DROP USER ''\@'localhost'; DROP USER ''\@'${host}'"`;
+
       stopSql();
   }
   if (main::isInstalled("zimbra-proxy")) {
