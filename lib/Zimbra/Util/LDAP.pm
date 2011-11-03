@@ -2,7 +2,7 @@
 # 
 # ***** BEGIN LICENSE BLOCK *****
 # Zimbra Collaboration Suite Server
-# Copyright (C) 2009, 2010 Zimbra, Inc.
+# Copyright (C) 2009, 2010, 2011 VMware, Inc.
 # 
 # The contents of this file are subject to the Zimbra Public License
 # Version 1.3 ("License"); you may not use this file except in
@@ -143,9 +143,8 @@ sub doLdap() {
     return 0;
   }
 
-  my $entry;
   if ($key =~ /_shmkey/ && $value != 0 && $real_master) {
-    my ($alt_key, $alt_value, $alt_dn);
+    my ($alt_key, $alt_value, $alt_dn, $entry);
 
     if ($key =~ /ldap_db_shmkey/) {
       $alt_key="ldap_accesslog_shmkey";
@@ -170,26 +169,15 @@ sub doLdap() {
       return 1;
     }
   }
-  $mesg=$ldap->search(base=>$dn,
-                  scope=>"base",
-                  filter=>'objectClass=*',
-                  attrs=>[ "$ldap_key" ],
-                 );
-  $entry=$mesg->entry(0);
-  my $orig_value = $entry->get_value("$ldap_key");
-
-  if ($orig_value ne $value) {
-    main::logMsg(3,"LDAP: Changing key: $key");
-    $mesg = $ldap->modify(
-           $dn,
-           replace=>{$ldap_key=>"$value"},
-    );
-    if ($mesg->code) {
-      main::logMsg(2,"LDAP key change failed: ".$mesg->code());
-      $rc=1;
-    }
+  main::logMsg(3,"LDAP: Changing key: $key");
+  $mesg = $ldap->modify(
+         $dn,
+         replace=>{$ldap_key=>"$value"},
+  );
+  if ($mesg->code) {
+    main::logMsg(2,"LDAP key change failed: ".$mesg->code());
+    $rc=1;
   }
-  
   $ldap->unbind;
   return $rc;
 }
