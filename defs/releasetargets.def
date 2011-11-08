@@ -10,7 +10,7 @@ zcs-$(RELEASE).dmg: $(ARCH)/zcs.mpkg packages
 	done)
 
 	cp -R $(ARCH)/zcs.mpkg $(ARCH)/tmp
-	hdiutil create $(OSX107_SIZE) -srcfolder $(ARCH)/tmp -volname zcs-$(RELEASE_VERSION_TAG).$(RELEASE) $(ARCH)/zcs-$(RELEASE_VERSION_TAG).$(RELEASE).dmg
+	hdiutil create -srcfolder $(ARCH)/tmp -volname zcs-$(RELEASE_VERSION_TAG).$(RELEASE) $(ARCH)/zcs-$(RELEASE_VERSION_TAG).$(RELEASE).dmg
 	rm -rf $(ARCH)/tmp
 	(cd $(ARCH); ln -s zcs-$(RELEASE_VERSION_TAG).$(RELEASE).dmg zcs.dmg)
 
