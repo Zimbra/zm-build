@@ -1,4 +1,5 @@
-# Definitions for MACOSXx86_10.7
+# Definitions for MACOSX
+
 
 PACKAGING_COMMAND := /Developer/Applications/Utilities/PackageMaker.app/Contents/MacOS/PackageMaker
 
@@ -16,14 +17,10 @@ PLATFORM_CORE_COMPONENTS = \
 	$(CORE_DEST_DIR)/lib/libpcre.dylib
 
 include $(DEFS_DIR)/plat_common.def
-JAVA_SOURCE	:= $(THIRD_PARTY_BUILDS)/x86_64/$(JAVA_DIR)/$(JAVA_FILE)$(JAVA_VERSION)
-JCE_SOURCE	:= $(THIRD_PARTY_BUILDS)/x86_64/$(JAVA_DIR)/jce/UnlimitedJCEPolicy$(JDK_VERSION)
-
-OS_RELEASE := 11
-OS_PLATFORM := $(shell uname -m)
 
 JAVA_BINARY := /opt/zimbra/java/bin/java
-MYSQL_VERSION   := standard-$(MYSQL_VERSION_STRING)-apple-darwin$(OS_RELEASE)-$(OS_PLATFORM)
+
+MYSQL_VERSION   := standard-$(MYSQL_VERSION_STRING)-apple-darwin8.2.0-i686
 
 BUNDLE_EXT := dmg
 
