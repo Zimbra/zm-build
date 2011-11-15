@@ -4020,6 +4020,12 @@ sub upgrade800BETA1 {
       &indexLdapAttribute("zimbraSharedItem");
     }
   }
+  if (main::isInstalled("zimbra-store")) {
+    # 66663
+    my $cache_dir = main::getLocalConfig("calendar_cache_directory");
+    system("rm -rf ${cache_dir}/* 2> /dev/null")
+      if (-d ${cache_dir});
+  }
   return 0;
 }
 
