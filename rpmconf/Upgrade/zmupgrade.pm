@@ -232,6 +232,7 @@ my %updateFuncs = (
   "7.1.4_GA" => \&upgrade714GA,
   "8.0.0_BETA1" => \&upgrade800BETA1,
   "8.0.0_BETA2" => \&upgrade800BETA2,
+  "8.0.0_BETA3" => \&upgrade800BETA3,
 );
 
 my @versionOrder = (
@@ -339,6 +340,7 @@ my @versionOrder = (
   "7.1.4_GA",
   "8.0.0_BETA1",
   "8.0.0_BETA2",
+  "8.0.0_BETA3",
 );
 
 my ($startVersion,$startMajor,$startMinor,$startMicro);
@@ -606,6 +608,8 @@ sub upgrade {
     main::progress("This appears to be 8.0.0_BETA1\n");
   } elsif ($startVersion eq "8.0.0_BETA2") {
     main::progress("This appears to be 8.0.0_BETA2\n");
+  } elsif ($startVersion eq "8.0.0_BETA3") {
+    main::progress("This appears to be 8.0.0_BETA3\n");
   } else {
     main::progress("I can't upgrade version $startVersion\n\n");
     return 1;
@@ -4085,6 +4089,12 @@ FIX_RIGHTS_EOF
     }
   }
 
+  return 0;
+}
+
+sub upgrade800BETA3 {
+  my ($startBuild, $targetVersion, $targetBuild) = (@_);
+  main::progress("Updating from 8.0.0_BETA3\n");
   return 0;
 }
 
