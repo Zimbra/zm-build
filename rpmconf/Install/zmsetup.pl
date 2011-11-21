@@ -467,6 +467,9 @@ sub getInstalledPackages {
       chomp;
       if (/zimbraServiceInstalled:\s(.*)/) {
         my $service = $1;
+	if ($service eq "imapproxy") {
+		$service = "proxy";
+	}
         if (exists $packageServiceMap{$service}) {
           detail ("Marking $service as previously installed.")
             if ($debug);
@@ -546,6 +549,9 @@ sub isEnabled {
       chomp;
       if (/zimbraServiceEnabled:\s(.*)/) {
         my $service = $1;
+	if ($service eq "imapproxy") {
+		$service = "proxy";
+	}
         if (exists $packageServiceMap{$service}) {
           detail ("Marking $service as an enabled service.")
             if ($debug);
