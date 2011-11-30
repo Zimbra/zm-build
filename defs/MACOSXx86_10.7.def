@@ -18,6 +18,7 @@ PLATFORM_CORE_COMPONENTS = \
 include $(DEFS_DIR)/plat_common.def
 JAVA_SOURCE	:= $(THIRD_PARTY_BUILDS)/x86_64/$(JAVA_DIR)/$(JAVA_FILE)$(JAVA_VERSION)
 JCE_SOURCE	:= $(THIRD_PARTY_BUILDS)/x86_64/$(JAVA_DIR)/jce/UnlimitedJCEPolicy$(JDK_VERSION)
+JUNIXSOCKET_NATIVE	:= $(THIRD_PARTY_BUILDS/OSXx86_64/$(JAVA_DIR)/junixsocket/libjunixsocket-macosx-1.5-x86_64.dylib
 
 OS_RELEASE := 11
 OS_PLATFORM := $(shell uname -m)
