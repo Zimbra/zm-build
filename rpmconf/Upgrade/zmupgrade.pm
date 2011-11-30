@@ -3940,6 +3940,13 @@ sub upgrade714GA {
     main::detail("Modified mailboxd_java_options=$mailboxd_java_options");
     main::setLocalConfig("mailboxd_java_options", "$mailboxd_java_options");
   }
+  if (main::isInstalled("zimbra-proxy")) {
+    # Bug #64466
+    my $zimbra_home = main::getLocalConfig("zimbra_home") || "/opt/zimbra";
+    my $imap_cache_data_directory = $zimbra_home . "/data/mailboxd/imap/cache";
+    system("rm -rf ${imap_cache_data_directory}/* 2> /dev/null")
+      if ( -d "${imap_cache_data_directory}/");
+  }
   return 0;
 }
 
