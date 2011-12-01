@@ -3939,8 +3939,8 @@ sub upgrade714GA {
   if (main::isInstalled("zimbra-proxy")) {
     # Bug #64466
     my $zimbra_home = main::getLocalConfig("zimbra_home") || "/opt/zimbra";
-    my $imap_cache_data_directory = $zimbra_home . "/data/mailboxd/imap/cache";
-    system("rm -rf ${imap_cache_data_directory}/* 2> /dev/null")
+    my $imap_cache_data_directory = $zimbra_home . "/data/mailboxd/imap";
+    unlink("${imap_cache_data_directory}")
       if ( -d "${imap_cache_data_directory}/");
   }
   return 0;
