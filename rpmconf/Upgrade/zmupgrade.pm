@@ -3947,14 +3947,6 @@ sub upgrade714GA {
   }
   if (main::isInstalled("zimbra-store")) {
     main::setLocalConfig("calendar_cache_enabled", "true"); #66307
-    # Bug #67171
-    my $mailboxd_java_options=main::getLocalConfig("mailboxd_java_options");
-    $mailboxd_java_options .= " -Dsun.security.ssl.allowUnsafeRenegotiation=false"
-      unless ($mailboxd_java_options =~ /sun.security.ssl.allowUnsafeRenegotiation/);
-    $mailboxd_java_options .= " -Dsun.security.ssl.allowLegacyHelloMessages=false"
-      unless ($mailboxd_java_options =~ /sun.security.ssl.allowLegacyHelloMessages/);
-    main::detail("Modified mailboxd_java_options=$mailboxd_java_options");
-    main::setLocalConfig("mailboxd_java_options", "$mailboxd_java_options");
   }
   return 0;
 }
