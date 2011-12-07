@@ -25,6 +25,7 @@ use Net::LDAP;
 use IPC::Open3;
 use FileHandle;
 use File::Grep qw (fgrep);
+use File::Path;
 my $zmlocalconfig="/opt/zimbra/bin/zmlocalconfig";
 my $type = `${zmlocalconfig} -m nokey convertd_stub_name 2> /dev/null`;
 chomp $type;
@@ -3936,7 +3937,7 @@ sub upgrade714GA {
     # Bug #64466
     my $zimbra_home = main::getLocalConfig("zimbra_home") || "/opt/zimbra";
     my $imap_cache_data_directory = $zimbra_home . "/data/mailboxd/imap";
-    unlink("${imap_cache_data_directory}")
+    rmtree("${imap_cache_data_directory}")
       if ( -d "${imap_cache_data_directory}/");
   }
   return 0;
