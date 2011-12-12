@@ -1,4 +1,4 @@
-# __ISync
+# __Evolution
 
 evolution: CUR_DEST_ROOT := $(EVO_DEST_ROOT) 
 evolution: CUR_PACKAGE_NAME := zimbra-evolution
