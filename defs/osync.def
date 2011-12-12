@@ -1,0 +1,46 @@
+# __OSync
+
+OSYNC_PACKAGING_OPTIONS ?= -build -v -p $(PACKAGE_DIR)/$(CUR_PACKAGE_NAME).$(PACKAGE_EXT) -proj $(OSYNC_DEST_ROOT)/Zimbra.pmproj
+
+OSYNC_VERSION_TAG := $(MAJOR).$(MINOR).$(BUILDNUM)
+osync: VERSION_TAG := $(MAJOR).$(MINOR).$(MICRO)_$(BUILDNUM).MACOSX_UB
+osync: CUR_DEST_ROOT := $(OSYNC_DEST_ROOT) 
+osync: CUR_PACKAGE_NAME := zimbra-osync
+osync: CUR_PACKAGING_OPTIONS := $(OSYNC_PACKAGING_OPTIONS)
+osync: $(PACKAGE_DIR) $(OSYNC_DIR)/Info.plist osync_stage $(CUR_PACKAGE_NAME)-$(RELEASE).dmg
+
+osync_stage: $(OSYNC_DEST_DIR)/Zimbra.prefPane $(OSYNC_DEST_ROOT)/InstallerResources $(OSYNC_DEST_ROOT)/Zimbra.pmproj
+
+$(OSYNC_DEST_DIR):
+	mkdir -p $@
+
+$(OSYNC_DEST_DIR)/Zimbra.prefPane: $(OSYNC_DEST_DIR) $(OSYNC_DIR)/build/Deployment/Zimbra.prefPane
+	cp -r $(OSYNC_DIR)/build/Deployment/Zimbra.prefPane $@
+
+$(OSYNC_DIR)/build/Deployment/Zimbra.prefPane:
+	(cd $(OSYNC_DIR); xcodebuild -configuration Deployment)
+
+$(OSYNC_DEST_ROOT)/Zimbra.pmproj:
+	plutil -convert xml1 $(OSYNC_DIR)/Zimbra.pmproj -o $(OSYNC_DIR)/Zimbra.plist
+	sed -i -e 's/0.9.19/$(OSYNC_VERSION_TAG)/g' $(OSYNC_DIR)/Zimbra.plist
+	plutil -convert binary1 $(OSYNC_DIR)/Zimbra.plist -o $@
+	cp $(OSYNC_DIR)/License.rtf $(OSYNC_DEST_ROOT)
+
+$(OSYNC_DEST_ROOT)/InstallerResources: $(OSYNC_DIR)/build/Deployment/Zimbra.prefPane
+	mkdir -p $@
+	cp $(OSYNC_DIR)/InstallerResources/* $@
+
+$(OSYNC_DIR)/Info.plist: force
+	touch $@
+	chmod 744 $@
+	sed -e "s/@@OSYNC_VERSION_TAG@@/$(OSYNC_VERSION_TAG)/" -e "s/@@VERSION_TAG@@/$(VERSION_TAG)/" $(OSYNC_DIR)/Info-production.plist > $@ 
+
+$(PACKAGE_DIR)/$(CUR_PACKAGE_NAME).$(PACKAGE_EXT):
+	(cd $(CUR_DEST_ROOT);  $(PACKAGING_COMMAND) $(CUR_PACKAGING_OPTIONS) )
+
+$(CUR_PACKAGE_NAME)-$(RELEASE).dmg: $(PACKAGE_DIR)/$(CUR_PACKAGE_NAME).$(PACKAGE_EXT) 
+	rm -rf $(OSYNC_DEST_ROOT)/tmp
+	mkdir $(OSYNC_DEST_ROOT)/tmp
+	cp -R $(PACKAGE_DIR)/$(CUR_PACKAGE_NAME).$(PACKAGE_EXT) $(OSYNC_DEST_ROOT)/tmp
+	hdiutil create -srcfolder $(OSYNC_DEST_ROOT)/tmp -volname $(CUR_PACKAGE_NAME)-$(VERSION_TAG) $(PACKAGE_DIR)/$(CUR_PACKAGE_NAME)-$(VERSION_TAG).$(BUNDLE_EXT)
+
