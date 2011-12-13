@@ -4649,7 +4649,7 @@ sub indexLdapAttribute {
 sub upgradeLdap($) {
   my ($upgradeVersion) = @_;
   if (main::isInstalled ("zimbra-ldap")) {
-    main::progress("Upgrade version is $upgradeVersion\n";
+    main::progress("Upgrade version is $upgradeVersion\n");
     main::progress("LdapUpgraded is " . $main::configStatus{"LdapUpgraded$upgradeVersion"} . "\n");
     if($main::configStatus{"LdapUpgraded$upgradeVersion"} ne "CONFIGURED" || $main::configStatus{"LdapMigrated$upgradeVersion" ne "CONFIGURED"}) {
       # Fix LDAP schema for bug#62443
@@ -4726,7 +4726,7 @@ sub upgradeLdap($) {
 sub migrateLdap($) {
   my ($migrateVersion) = @_;
   if (main::isInstalled ("zimbra-ldap")) {
-    main::progress("Migrate version is $migrateVersion\n";
+    main::progress("Migrate version is $migrateVersion\n");
     main::progress("LdapMigrated is " . $main::configStatus{"LdapMigrated$migrateVersion"} . "\n");
     if($main::configStatus{"LdapMigrated$migrateVersion"} ne "CONFIGURED" || $main::configStatus{"LdapUpgraded$migrateVersion"} ne "CONFIGURED") {
       my $postfix_id_fix=0;
