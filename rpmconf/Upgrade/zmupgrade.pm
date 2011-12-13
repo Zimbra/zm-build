@@ -4649,9 +4649,7 @@ sub indexLdapAttribute {
 sub upgradeLdap($) {
   my ($upgradeVersion) = @_;
   if (main::isInstalled ("zimbra-ldap")) {
-    main::progress("Upgrade version is $upgradeVersion\n");
-    main::progress("LdapUpgraded is " . $main::configStatus{"LdapUpgraded$upgradeVersion"} . "\n");
-    if($main::configStatus{"LdapUpgraded$upgradeVersion"} ne "CONFIGURED" || $main::configStatus{"LdapMigrated$upgradeVersion" ne "CONFIGURED"}) {
+    if($main::migratedStatus{"LdapUpgraded$upgradeVersion"} ne "CONFIGURED" || $main::migratedStatus{"LdapMigrated$upgradeVersion"} ne "CONFIGURED") {
       # Fix LDAP schema for bug#62443
       unlink("/opt/zimbra/data/ldap/config/cn\=config/cn\=schema/cn\=\{3\}zimbra.ldif");
       unlink("/opt/zimbra/data/ldap/config/cn\=config/cn\=schema/cn\=\{4\}amavisd.ldif");
@@ -4726,9 +4724,7 @@ sub upgradeLdap($) {
 sub migrateLdap($) {
   my ($migrateVersion) = @_;
   if (main::isInstalled ("zimbra-ldap")) {
-    main::progress("Migrate version is $migrateVersion\n");
-    main::progress("LdapMigrated is " . $main::configStatus{"LdapMigrated$migrateVersion"} . "\n");
-    if($main::configStatus{"LdapMigrated$migrateVersion"} ne "CONFIGURED" || $main::configStatus{"LdapUpgraded$migrateVersion"} ne "CONFIGURED") {
+    if($main::migratedStatus{"LdapMigrated$migrateVersion"} ne "CONFIGURED" || $main::migratedStatus{"LdapUpgraded$migrateVersion"} ne "CONFIGURED") {
       my $postfix_id_fix=0;
       if (-f "/opt/zimbra/data/ldap/ldap.bak") {
         my $infile = "/opt/zimbra/data/ldap/ldap.bak";
@@ -4840,7 +4836,7 @@ sub migrateLdapBdbLogs {
 sub updateLdapBdbConfig($) {
   my ($migrateVersion) = @_;
   if (main::isInstalled ("zimbra-ldap")) {
-    if($main::configStatus{"BdbMigrated$migrateVersion"} ne "CONFIGURED") {
+    if($main::migratedStatus{"BdbMigrated$migrateVersion"} ne "CONFIGURED") {
       if($migrateVersion eq "6.0.0_GA") {
         if ( -f "/opt/zimbra/conf/custom/ldap/DB_CONFIG" ) {
           if (!fgrep { /set_lg_dir/ } "/opt/zimbra/conf/custom/ldap/DB_CONFIG") {

@@ -118,7 +118,8 @@ my %enabledServices = ();
 my $zimbraHome = "/opt/zimbra";
 
 my %installStatus = ();
-my %configStatus = ();
+our %configStatus = ();
+our %migratedStatus= ();
 
 my $prevVersion = "";
 our $curVersion = "";
@@ -1668,6 +1669,9 @@ sub getInstallStatus {
         }
       } elsif ($op eq "CONFIGURED") {
         $configStatus{$stage} = $op;
+	if ($stage =~ /Migrated/ || $stage =~ /Upgraded/) {
+		$migratedStatus{$stage} = $op;
+	}
         if ($stage eq "END") {
           $prevVersion = $curVersion;
         }
