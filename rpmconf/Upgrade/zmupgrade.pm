@@ -4713,6 +4713,7 @@ sub upgradeLdap($) {
         }
         return 1;
       }
+      main::configLog("LdapMigrated$upgradeVersion");
       main::configLog("LdapUpgraded$upgradeVersion");
     }
     if (startLdap()) {return 1;} 
@@ -4796,6 +4797,7 @@ sub migrateLdap($) {
         main::progress(($rc == 0) ? "done.\n" : "failed.\n");
       }
       main::configLog("LdapMigrated$migrateVersion");
+      main::configLog("LdapUpgraded$migrateVersion");
     }
     if (startLdap()) {return 1;} 
   }
