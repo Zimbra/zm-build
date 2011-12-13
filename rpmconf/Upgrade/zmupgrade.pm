@@ -4649,7 +4649,7 @@ sub indexLdapAttribute {
 sub upgradeLdap($) {
   my ($upgradeVersion) = @_;
   if (main::isInstalled ("zimbra-ldap")) {
-    if($main::migratedStatus{"LdapUpgraded$upgradeVersion"} ne "CONFIGURED" || $main::migratedStatus{"LdapMigrated$upgradeVersion"} ne "CONFIGURED") {
+    if($main::migratedStatus{"LdapUpgraded$upgradeVersion"} ne "CONFIGURED") {
       # Fix LDAP schema for bug#62443
       unlink("/opt/zimbra/data/ldap/config/cn\=config/cn\=schema/cn\=\{3\}zimbra.ldif");
       unlink("/opt/zimbra/data/ldap/config/cn\=config/cn\=schema/cn\=\{4\}amavisd.ldif");
@@ -4713,7 +4713,6 @@ sub upgradeLdap($) {
         }
         return 1;
       }
-      main::configLog("LdapMigrated$upgradeVersion");
       main::configLog("LdapUpgraded$upgradeVersion");
     }
     if (startLdap()) {return 1;} 
@@ -4724,7 +4723,7 @@ sub upgradeLdap($) {
 sub migrateLdap($) {
   my ($migrateVersion) = @_;
   if (main::isInstalled ("zimbra-ldap")) {
-    if($main::migratedStatus{"LdapMigrated$migrateVersion"} ne "CONFIGURED" || $main::migratedStatus{"LdapUpgraded$migrateVersion"} ne "CONFIGURED") {
+    if($main::migratedStatus{$main::migratedStatus{"LdapUpgraded$migrateVersion"} ne "CONFIGURED") {
       my $postfix_id_fix=0;
       if (-f "/opt/zimbra/data/ldap/ldap.bak") {
         my $infile = "/opt/zimbra/data/ldap/ldap.bak";
@@ -4796,7 +4795,6 @@ sub migrateLdap($) {
         $rc = main::runAsZimbra("/opt/zimbra/openldap/sbin/slapindex -b '' -q -F /opt/zimbra/data/ldap/config");
         main::progress(($rc == 0) ? "done.\n" : "failed.\n");
       }
-      main::configLog("LdapMigrated$migrateVersion");
       main::configLog("LdapUpgraded$migrateVersion");
     }
     if (startLdap()) {return 1;} 
