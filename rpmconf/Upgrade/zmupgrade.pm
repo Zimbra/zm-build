@@ -4723,7 +4723,7 @@ sub upgradeLdap($) {
 sub migrateLdap($) {
   my ($migrateVersion) = @_;
   if (main::isInstalled ("zimbra-ldap")) {
-    if($main::migratedStatus{$main::migratedStatus{"LdapUpgraded$migrateVersion"} ne "CONFIGURED") {
+    if($main::migratedStatus{"LdapUpgraded$migrateVersion"} ne "CONFIGURED") {
       my $postfix_id_fix=0;
       if (-f "/opt/zimbra/data/ldap/ldap.bak") {
         my $infile = "/opt/zimbra/data/ldap/ldap.bak";
