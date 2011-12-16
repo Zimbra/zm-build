@@ -19,3 +19,5 @@
 # Only executes on zimbraVersionCheckInterval. min 2h interval
 #
 18 */2 * * * /opt/zimbra/libexec/zmcheckversion -c >> /dev/null 2>&1
+# Delete old imap cache files
+5 */2 * * * find /opt/zimbra/data/mailboxd/imap/cache -type f -mtime +7 -exec rm -f {} \; > /dev/null 2>&1
