@@ -208,9 +208,7 @@ authorityKeyIdentifier=keyid,issuer:always
 
 [ v3_ca ]
 
-
 # Extensions for a typical CA
-
 
 # PKIX recommendation.
 
@@ -236,6 +234,7 @@ basicConstraints = CA:true
 # subjectAltName=email:copy
 # Copy issuer details
 # issuerAltName=issuer:copy
+@@SUBJECT_ALT_NAMES@@
 
 # DER hex encoding of an extension: beware experts only!
 # obj=DER:02:03

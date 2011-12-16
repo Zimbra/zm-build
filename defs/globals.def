@@ -18,6 +18,17 @@ BUILDNUM	:= $(shell cat RE/BUILD)
 VERSION_STRING := $(MAJOR).$(MINOR).$(MICRO)
 SOURCE_TAG := $(MAJOR).$(MINOR).$(MICRO)_$(BUILDNUM)
 VERSION_TAG := $(MAJOR).$(MINOR).$(MICRO)_$(BUILDNUM).$(BUILD_PLATFORM)
+RELEASE_VERSION_TAG := $(MAJOR).$(MINOR).$(MICRO)_$(BUILDNUM).$(BUILD_PLATFORM)
+
+ifeq (DEBIAN,$(findstring DEBIAN,$(BUILD_PLATFORM)))
+	XVERSION_TAG := $(subst _,.,${VERSION_TAG})
+	VERSION_TAG := ${XVERSION_TAG}
+endif
+
+ifeq (UBUNTU,$(findstring UBUNTU,$(BUILD_PLATFORM)))
+	XVERSION_TAG := $(subst _,.,${VERSION_TAG})
+	VERSION_TAG := ${XVERSION_TAG}
+endif
 
 MTA_PROVIDES	:= smtpdaemon
 
@@ -103,6 +114,14 @@ ifeq ($(BUILD_PLATFORM), MACOSX)
 	ARCH := ppc
 endif
 
+ifeq ($(BUILD_PLATFORM), MACOSXx86_10.6)
+	ARCH := x86_64
+endif
+
+ifeq ($(BUILD_PLATFORM), MACOSXx86_10.7)
+	ARCH := x86_64
+endif
+
 ifeq ($(TAG), )
 	TAG := HEAD
 else
@@ -119,7 +138,15 @@ ifeq ($(PERL), )
 	$(error perl not found - exiting)
 endif
 
-ANT		:= $(shell which ant)
+ANT		?= $(shell which ant)
+CP    ?= $(shell which cp)
+MKDIR ?= $(shell which mkdir)
+CHMOD ?= $(shell which chmod)
+ECHO	?= $(shell which echo)
+TAR		?= $(shell which tar)
+JAR 	?= $(shell which jar)
+CAT		?= $(shell which cat)
+SED		?= $(shell which sed)
 
 ifeq ($(ANT), )
 	$(error ant not found - exiting)
@@ -127,8 +154,10 @@ endif
 
 ANT_DEBUG ?= -Ddebug=false
 
+
 PACKAGE_CONF_DIR	:= $(BUILD_ROOT)/rpmconf
 
+BUILD_LOG           := $(BUILD_ROOT)/log-$(RELEASE).txt
 PROFILE_SOURCE      := $(PACKAGE_CONF_DIR)/Env/zimbra.bash_profile
 PROFILE_DEST        := .bash_profile
 ENV_FILE_SOURCE     := $(PACKAGE_CONF_DIR)/Env/zimbra.bashrc
