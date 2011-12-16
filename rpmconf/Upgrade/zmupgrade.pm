@@ -3955,6 +3955,12 @@ sub upgrade715GA {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
   main::progress("Updating from 7.1.5_GA\n");
   if (main::isInstalled("zimbra-store")) {
+    # Bug #64466
+    my $zimbra_home = main::getLocalConfig("zimbra_home") || "/opt/zimbra";
+    my $imap_cache_data_directory = $zimbra_home . "/data/mailboxd/imap";
+    rmtree("${imap_cache_data_directory}")
+      if ( -d "${imap_cache_data_directory}/");
+  }
   return 0;
 }
 
