@@ -27,7 +27,7 @@ rm -f /opt/zimbra/dspam
 ln -s /opt/zimbra/dspam-3.10.1 /opt/zimbra/dspam
 
 rm -f /opt/zimbra/postfix
-ln -s /opt/zimbra/postfix-2.8.5.2z /opt/zimbra/postfix
+ln -s /opt/zimbra/postfix-2.8.7.2z /opt/zimbra/postfix
 
 rm -f /opt/zimbra/clamav
 ln -s /opt/zimbra/clamav-0.97.3 /opt/zimbra/clamav
@@ -37,7 +37,7 @@ ln -s /opt/zimbra/altermime-0.3.10 /opt/zimbra/altermime
 
 PLAT=$(/opt/zimbra/libexec/get_plat_tag.sh)
 OS_ARCH=powerpc
-MYSQL_VERSION=5.5.16
+MYSQL_VERSION=5.5.19
 
 if [ "x$PLAT" = "xMACOSXx86" -o "x$PLAT" = "xMACOSXx86_10.5" ]; then
   OS_ARCH=i686
