@@ -25,6 +25,7 @@ use Net::LDAP;
 use IPC::Open3;
 use FileHandle;
 use File::Grep qw (fgrep);
+use File::Path;
 my $zmlocalconfig="/opt/zimbra/bin/zmlocalconfig";
 my $type = `${zmlocalconfig} -m nokey convertd_stub_name 2> /dev/null`;
 chomp $type;
