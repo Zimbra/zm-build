@@ -1512,6 +1512,14 @@ removeExistingInstall() {
           echo "done"
         fi
       fi
+      if [ $p = "zimbra-store" ]; then
+        isInstalled "zimbra-archiving"
+        if [ x$PKGINSTALLED != "x" ]; then
+          echo -n "   zimbra-archiving..."
+          $PACKAGERM zimbra-archiving >/dev/null 2>&1
+          echo "done"
+        fi
+      fi
       echo -n "   $p..."
       $PACKAGERM $p > /dev/null 2>&1
       echo "done"
