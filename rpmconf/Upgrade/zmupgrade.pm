@@ -4105,6 +4105,13 @@ FIX_RIGHTS_EOF
 sub upgrade800BETA3 {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
   main::progress("Updating from 8.0.0_BETA3\n");
+  if (main::isInstalled("zimbra-store")) {
+    my $zimbra_home = main::getLocalConfig("zimbra_home") || "/opt/zimbra";
+    if (-e "${zimbra_home}/jetty-6.1.22.z6/etc/jetty.keytab") {
+      `mkdir -p ${zimbra_home}/data/mailboxd/spnego`;
+      `cp -pf ${zimbra_home}/jetty-6.1.22.z6/etc/jetty.keytab ${zimbra_home}/data/mailboxd/spnego/jetty.keytab`;
+    }
+  }
   return 0;
 }
 
