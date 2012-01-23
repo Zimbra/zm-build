@@ -42,8 +42,8 @@ ZIMBRA_BIN_DIR		:= $(BUILD_ROOT)/../ZimbraServer/src/bin
 ISYNC_DEST_ROOT := $(BUILD_ROOT)/isyncbuild
 ISYNC_DEST_DIR := $(ISYNC_DEST_ROOT)/root/Library/PreferencePanes
 
-OSYNC_DEST_ROOT := $(BUILD_ROOT)/osyncbuild
-OSYNC_DEST_DIR := $(ISYNC_DEST_ROOT)/root/Library/PreferencePanes
+OSYNC_DEST_ROOT := $(BUILD_ROOT)/../Octopus/native/desktopclient/osx
+OSYNC_DEST_DIR := $(OSYNC_DEST_ROOT)/Packaging/build
 
 TOASTER_DEST_ROOT := $(BUILD_ROOT)/mactoasterbuild
 TOASTER_DEST_DIR := $(TOASTER_DEST_ROOT)/root/Applications
