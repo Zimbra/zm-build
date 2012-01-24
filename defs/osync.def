@@ -38,4 +38,5 @@ $(OSYNC_DEST_DIR)/extract:
 $(OSYNC_DEST_ROOT)/build:
 	sed -i -e 's/0.10.0.8/$(OSYNC_VERSION_TAG)/g' $(OSYNC_DEST_ROOT)/Msync_osx-Info.plist
 	(cd $(OSYNC_DEST_ROOT); \
-	xcodebuild -project Msync_osx.xcodeproj -configuration Debug -scheme "Build DMG" BOOST_ROOT=$(OSYNC_BOOST_ROOT)/ OPENSSL_ROOT=$(OSYNC_OPENSSL_ROOT) PATH=${PATH}:$(OSYNC_RAGEL_ROOT)/bin VERSIONER_PERL_PREFER_32_BIT=yes build;)
+	xcodebuild -project Msync_osx.xcodeproj -configuration Debug -scheme "Build DMG" BOOST_ROOT=$(OSYNC_BOOST_ROOT)/ OPENSSL_ROOT=$(OSYNC_OPENSSL_ROOT) PATH=${PATH}:$(OSYNC_RAGEL_ROOT)/bin VERSIONER_PERL_PREFER_32_BIT=yes build; \
+	rm -f $(OSYNC_DEST_DIR)/*staging*;)
