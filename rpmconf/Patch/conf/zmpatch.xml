@@ -883,7 +883,7 @@
   </package>
   <preinstall></preinstall>
   <postinstall></postinstall>
-  </patch> -->
+  </patch>
   <patch name="7.1.1_GA" version="7.1.1_P4">
   <desc>Patch 7.1.1_P4</desc>
   <bug>57891</bug>
@@ -1112,6 +1112,48 @@
   </package>
   <preinstall></preinstall>
   <postinstall></postinstall>
+  </patch> -->
+  <patch name="7.1.4_GA" version="7.1.4_P1">
+  <desc>Patch 7.1.4_P1</desc>
+  <bug>66550</bug>
+  <bug>68402</bug>
+  <bug>68556</bug>
+  <bug>68640</bug>
+  <bug>68786</bug>
+  <bug>69132</bug>
+  <bug>69155</bug>
+  <package name="zimbra-store">
+      <file>
+        <source>ZimbraBuild/corebuild/opt/zimbra/lib/jars/zimbrastore.jar</source>
+        <target>/opt/zimbra/jetty/webapps/service/WEB-INF/lib/zimbrastore.jar</target>
+        <target>/opt/zimbra/jetty/webapps/zimbra/WEB-INF/lib/zimbrastore.jar</target>
+        <target>/opt/zimbra/jetty/webapps/zimbraAdmin/WEB-INF/lib/zimbrastore.jar</target>
+        <target>/opt/zimbra/lib/jars/zimbrastore.jar</target>
+        <perms owner="root" mode="444"/>
+      </file>
+      <file>
+        <source>ZimbraBuild/storebuild/opt/zimbra/jetty-6.1.22.z6/webapps/zimbraAdmin/js/Admin_all.js</source>
+        <target>/opt/zimbra/jetty/webapps/zimbraAdmin/js/Admin_all.js</target>
+        <perms owner="zimbra" mode="664"/>
+      </file>
+      <file>
+        <source>ZimbraBuild/storebuild/opt/zimbra/jetty-6.1.22.z6/webapps/zimbraAdmin/js/Admin_all.js.zgz</source>
+        <target>/opt/zimbra/jetty/webapps/zimbraAdmin/js/Admin_all.js.zgz</target>
+        <perms owner="zimbra" mode="664"/>
+      </file>
+      <file>
+        <source>ZimbraBuild/storebuild/opt/zimbra/jetty-6.1.22.z6/webapps/zimbraAdmin/js/zimbraAdmin/accounts/controller/ZaAccountListController.js</source>
+        <target>/opt/zimbra/jetty/webapps/zimbraAdmin/js/zimbraAdmin/accounts/controller/ZaAccountListController.js</target>
+        <perms owner="zimbra" mode="664"/>
+      </file>
+      <file>
+        <source>ZimbraBuild/storebuild/opt/zimbra/jetty-6.1.22.z6/etc/jetty.xml.in</source>
+        <target>/opt/zimbra/jetty/etc/jetty.xml.in</target>
+        <perms owner="zimbra" mode="640"/>
+      </file>
+  </package>
+  <preinstall></preinstall>
+  <postinstall></postinstall>
   </patch>
 </patches>
-  
+
