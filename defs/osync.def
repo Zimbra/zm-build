@@ -5,11 +5,11 @@ OSYNC_RAGEL_VERSION	:= 6.7
 OSYNC_BOOST_VERSION	:= 1.47.0
 BOOST_DIR		:= boost-$(OSYNC_BOOST_VERSION)
 BOOST_SOURCE		:= $(THIRD_PARTY_BUILDS)/$(BUILD_PLATFORM)/boost/$(BOOST_DIR)
-OSYNC_BOOST_ROOT	:= $(OSYNC_DEST_DIR)/client-libraries/$(BOOST_DIR)
+OSYNC_BOOST_ROOT	:= $(OSYNC_DEST_ROOT)/client-libraries/$(BOOST_DIR)
 RAGEL_DIR		:= ragel-$(OSYNC_RAGEL_VERSION)
 RAGEL_SOURCE		:= $(THIRD_PARTY_BUILDS)/$(BUILD_PLATFORM)/ragel/$(RAGEL_DIR)
-OSYNC_RAGEL_ROOT	:= $(OSYNC_DEST_DIR)/client-libraries/$(RAGEL_DIR)
-OSYNC_OPENSSL_ROOT	:= $(OSYNC_DEST_DIR)/client-libraries/$(OPENSSL_DIR)-$(OPENSSL_VERSION)
+OSYNC_RAGEL_ROOT	:= $(OSYNC_DEST_ROOT)/client-libraries/$(RAGEL_DIR)
+OSYNC_OPENSSL_ROOT	:= $(OSYNC_DEST_ROOT)/client-libraries/$(OPENSSL_DIR)-$(OPENSSL_VERSION)
 osync: $(PACKAGE_DIR) osync_stage
 
 osync_stage: $(OSYNC_DEST_DIR)/osync
@@ -20,15 +20,15 @@ $(OSYNC_DEST_DIR):
 $(OSYNC_DEST_DIR)/osync: $(OSYNC_DEST_DIR) $(OSYNC_DEST_DIR)/extract $(OSYNC_DEST_ROOT)/build
 
 $(OSYNC_DEST_DIR)/extract:
-	mkdir -p $(OSYNC_DEST_DIR)/client-libraries
+	mkdir -p $(OSYNC_DEST_ROOT)/client-libraries
 	@echo "*** Extracting boost client libraries"
-	(cd $(OSYNC_DEST_DIR)/client-libraries; \
+	(cd $(OSYNC_DEST_ROOT)/client-libraries; \
 	tar xfz $(BOOST_SOURCE).tgz;)
 	@echo "*** Extracting ragel client libraries"
-	(cd $(OSYNC_DEST_DIR)/client-libraries; \
+	(cd $(OSYNC_DEST_ROOT)/client-libraries; \
 	tar xfz $(RAGEL_SOURCE).tgz;)
 	@echo "*** Extracting openssl client libraries"
-	(cd $(OSYNC_DEST_DIR)/client-libraries; \
+	(cd $(OSYNC_DEST_ROOT)/client-libraries; \
 	tar xfz $(OPENSSL_SOURCE).tgz;)
 	@echo "*** Removing OpenSSL shared client libraries"
 	(cd $(OSYNC_OPENSSL_ROOT)/lib; \
@@ -38,4 +38,4 @@ $(OSYNC_DEST_DIR)/extract:
 $(OSYNC_DEST_ROOT)/build:
 	sed -i -e 's/0.10.0.8/$(OSYNC_VERSION_TAG)/g' $(OSYNC_DEST_ROOT)/Msync_osx-Info.plist
 	(cd $(OSYNC_DEST_ROOT); \
-	xcodebuild -project Msync_osx.xcodeproj -configuration Debug -scheme "Build DMG" BOOST_ROOT=$(OSYNC_BOOST_ROOT)/ OPENSSL_ROOT=$(OSYNC_OPENSSL_ROOT) PATH=${PATH}:$(OSYNC_RAGEL_ROOT)/bin VERSIONER_PERL_PREFER_32_BIT=yes build
+	xcodebuild -project Msync_osx.xcodeproj -configuration Debug -scheme "Build DMG" BOOST_ROOT=$(OSYNC_BOOST_ROOT)/ OPENSSL_ROOT=$(OSYNC_OPENSSL_ROOT) PATH=${PATH}:$(OSYNC_RAGEL_ROOT)/bin VERSIONER_PERL_PREFER_32_BIT=yes build;)
