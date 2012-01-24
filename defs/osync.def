@@ -20,15 +20,15 @@ $(OSYNC_DEST_DIR):
 $(OSYNC_DEST_DIR)/osync: $(OSYNC_DEST_DIR) $(OSYNC_DEST_DIR)/extract $(OSYNC_DEST_ROOT)/build
 
 $(OSYNC_DEST_DIR)/extract:
-        mkdir -p $(OSYNC_DEST_DIR)/client-libraries
-        @echo "*** Extracting boost client libraries"
-        (cd $(OSYNC_DEST_DIR)/client-libraries; \
+	mkdir -p $(OSYNC_DEST_DIR)/client-libraries
+	@echo "*** Extracting boost client libraries"
+	(cd $(OSYNC_DEST_DIR)/client-libraries; \
 	tar xfz $(BOOST_SOURCE).tgz;)
-        @echo "*** Extracting ragel client libraries"
-        (cd $(OSYNC_DEST_DIR)/client-libraries; \
+	@echo "*** Extracting ragel client libraries"
+	(cd $(OSYNC_DEST_DIR)/client-libraries; \
 	tar xfz $(RAGEL_SOURCE).tgz;)
-        @echo "*** Extracting openssl client libraries"
-        (cd $(OSYNC_DEST_DIR)/client-libraries; \
+	@echo "*** Extracting openssl client libraries"
+	(cd $(OSYNC_DEST_DIR)/client-libraries; \
 	tar xfz $(OPENSSL_SOURCE).tgz;)
 	@echo "*** Removing OpenSSL shared client libraries"
 	(cd $(OSYNC_OPENSSL_ROOT)/lib; \
