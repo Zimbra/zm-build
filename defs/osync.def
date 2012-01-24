@@ -12,7 +12,7 @@ OSYNC_RAGEL_ROOT	:= $(OSYNC_DEST_DIR)/client-libraries/$(RAGEL_DIR)
 OSYNC_OPENSSL_ROOT	:= $(OSYNC_DEST_DIR)/client-libraries/$(OPENSSL_DIR)-$(OPENSSL_VERSION)
 osync: $(PACKAGE_DIR) osync_stage
 
-osync_stage: $(OSYNC_DEST_DIR)/build
+osync_stage: $(OSYNC_DEST_DIR)/osync
 
 $(OSYNC_DEST_DIR):
 	mkdir -p $@
