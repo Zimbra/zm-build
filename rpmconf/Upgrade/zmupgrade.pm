@@ -122,6 +122,7 @@ my %updateScripts = (
   '83' => "migrate20110810-TagTable.pl",               # 8.0.0_BETA1
   '84' => "migrate20110928-MobileDevices.pl",          # 8.0.0_BETA2
   '85' => "migrate20110929-VersionColumn.pl",          # 8.0.0_BETA2
+  '86' => "migrate20120125-uuidAndDigest.pl",          # 8.0.0_BETA2
 );
 
 my %updateFuncs = (
