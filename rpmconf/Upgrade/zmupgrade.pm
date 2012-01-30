@@ -232,7 +232,7 @@ my %updateFuncs = (
   "7.1.2_GA" => \&upgrade712GA,
   "7.1.3_GA" => \&upgrade713GA,
   "7.1.4_GA" => \&upgrade714GA,
-  "7.1.5_GA" => \&upgrade715GA,
+  "7.2.0_GA" => \&upgrade720GA,
   "8.0.0_BETA1" => \&upgrade800BETA1,
   "8.0.0_BETA2" => \&upgrade800BETA2,
   "8.0.0_BETA3" => \&upgrade800BETA3,
@@ -341,7 +341,7 @@ my @versionOrder = (
   "7.1.2_GA",
   "7.1.3_GA",
   "7.1.4_GA",
-  "7.1.5_GA",
+  "7.2.0_GA",
   "8.0.0_BETA1",
   "8.0.0_BETA2",
   "8.0.0_BETA3",
@@ -608,8 +608,8 @@ sub upgrade {
     main::progress("This appears to be 7.1.3_GA\n");
   } elsif ($startVersion eq "7.1.4_GA") {
     main::progress("This appears to be 7.1.4_GA\n");
-  } elsif ($startVersion eq "7.1.5_GA") {
-    main::progress("This appears to be 7.1.5_GA\n");
+  } elsif ($startVersion eq "7.2.0_GA") {
+    main::progress("This appears to be 7.2.0_GA\n");
   } elsif ($startVersion eq "8.0.0_BETA1") {
     main::progress("This appears to be 8.0.0_BETA1\n");
   } elsif ($startVersion eq "8.0.0_BETA2") {
@@ -3953,9 +3953,9 @@ sub upgrade714GA {
   return 0;
 }
 
-sub upgrade715GA {
+sub upgrade720GA {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
-  main::progress("Updating from 7.1.5_GA\n");
+  main::progress("Updating from 7.2.0_GA\n");
   if (main::isInstalled("zimbra-store")) {
     # Bug #64466
     my $zimbra_home = main::getLocalConfig("zimbra_home") || "/opt/zimbra";
