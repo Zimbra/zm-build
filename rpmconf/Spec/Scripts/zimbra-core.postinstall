@@ -16,7 +16,7 @@
 
 PLAT=$(/opt/zimbra/libexec/get_plat_tag.sh)
 OS_ARCH=powerpc
-MYSQL_VERSION=5.5.19
+MYSQL_VERSION=5.5.20
 
 if [ "x$PLAT" = "xMACOSXx86" -o "x$PLAT" = "xMACOSXx86_10.5" ]; then
   OS_ARCH=i686
@@ -49,19 +49,19 @@ if [ -L /opt/zimbra/sleepycat ]; then
 fi
 
 rm -f /opt/zimbra/openssl
-ln -s /opt/zimbra/openssl-1.0.0f /opt/zimbra/openssl
+ln -s /opt/zimbra/openssl-1.0.0g /opt/zimbra/openssl
 
 rm -f /opt/zimbra/heimdal
 ln -s /opt/zimbra/heimdal-1.5.2 /opt/zimbra/heimdal
 
 rm -f /opt/zimbra/curl
-ln -s /opt/zimbra/curl-7.23.1 /opt/zimbra/curl
+ln -s /opt/zimbra/curl-7.24.0 /opt/zimbra/curl
 
 rm -f /opt/zimbra/cyrus-sasl
 ln -s /opt/zimbra/cyrus-sasl-2.1.25.4z /opt/zimbra/cyrus-sasl
 
 rm -f /opt/zimbra/openldap
-ln -s /opt/zimbra/openldap-2.4.28.5z /opt/zimbra/openldap
+ln -s /opt/zimbra/openldap-2.4.29.2z /opt/zimbra/openldap
 
 rm -f /opt/zimbra/tcmalloc
 ln -s /opt/zimbra/tcmalloc-1.8.3 /opt/zimbra/tcmalloc

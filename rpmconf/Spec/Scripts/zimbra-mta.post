@@ -32,13 +32,13 @@ rm -f /opt/zimbra/dspam
 ln -s /opt/zimbra/dspam-3.10.1 /opt/zimbra/dspam
 
 rm -f /opt/zimbra/postfix
-ln -s /opt/zimbra/postfix-2.8.7.2z /opt/zimbra/postfix
+ln -s /opt/zimbra/postfix-2.9.0.2z /opt/zimbra/postfix
 
 rm -f /opt/zimbra/clamav
 ln -s /opt/zimbra/clamav-0.97.3 /opt/zimbra/clamav
 
 rm -f /opt/zimbra/mta/mysql
-ln -s /opt/zimbra/mta/mysql-standard-5.5.19-pc-linux-gnu-i686-glibc23 /opt/zimbra/mta/mysql
+ln -s /opt/zimbra/mta/mysql-standard-5.5.20-pc-linux-gnu-i686-glibc23 /opt/zimbra/mta/mysql
 
 rm -f /opt/zimbra/altermime
 ln -s /opt/zimbra/altermime-0.3.10 /opt/zimbra/altermime
