@@ -659,7 +659,7 @@ checkRequiredSpace() {
   isInstalled zimbra-store
   isToBeInstalled zimbra-store
   if [ "x$PKGINSTALLED" != "x" -o "x$PKGTOBEINSTALLED" != "x" ]; then
-    echo "checking space for zimbra-store"
+    echo "Checking space for zimbra-store"
     ZIMBRA=`df -Pk /opt/zimbra | tail -1 | awk '{print $4}'`
     AVAIL=$(($ZIMBRA / 1048576))
     if [ $AVAIL -lt 5 ]; then
