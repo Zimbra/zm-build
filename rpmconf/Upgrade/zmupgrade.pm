@@ -4111,6 +4111,7 @@ sub upgrade800BETA3 {
       runLdapAttributeUpgrade("68831");
       runLdapAttributeUpgrade("68891");
     }
+    main::runAsZimbra("perl -I${scriptDir} ${scriptDir}/migrate20120210-AddSearchNoOp.pl");
   }
   if (main::isInstalled("zimbra-store")) {
     my $zimbra_home = main::getLocalConfig("zimbra_home") || "/opt/zimbra";
