@@ -628,7 +628,6 @@ sub upgrade {
     if ($found) {
       $needMysqlTableCheck=1 if ($v eq "4.5.2_GA");
       $needMysqlUpgrade=1 if ($v eq "7.0.0_BETA1");
-      
     }
     last if ($v eq $targetVersion);
   }
@@ -4106,12 +4105,13 @@ FIX_RIGHTS_EOF
 sub upgrade800BETA3 {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
   main::progress("Updating from 8.0.0_BETA3\n");
+  system("rm -rf /opt/zimbra/ssl/zimbra/{ca,server} > /dev/null 2>&1");
+  main::setLocalConfig("ssl_allow_untrusted_certs", "true");
   if (main::isInstalled("zimbra-ldap")) {
     if ($isLdapMaster) {
       runLdapAttributeUpgrade("68831");
       runLdapAttributeUpgrade("68891");
     }
-    main::runAsZimbra("perl -I${scriptDir} ${scriptDir}/migrate20120210-AddSearchNoOp.pl");
   }
   if (main::isInstalled("zimbra-store")) {
     my $zimbra_home = main::getLocalConfig("zimbra_home") || "/opt/zimbra";

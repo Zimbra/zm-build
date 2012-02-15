@@ -4721,7 +4721,7 @@ sub configLCValues {
 
 sub configCASetup {
 
-  if ($configStatus{configCASetup} eq "CONFIGURED") {
+  if ($configStatus{configCASetup} eq "CONFIGURED" && -d "/opt/zimbra/ssl/zimbra/ca" ) {
     configLog("configCASetup");
     return 0;
   }
@@ -4978,7 +4978,7 @@ sub configSaveCA {
 
 sub configCreateCert {
 
-  if ($configStatus{configCreateCert} eq "CONFIGURED") {
+  if ($configStatus{configCreateCert} eq "CONFIGURED" && -d "/opt/zimbra/ssl/zimbra/server") {
     configLog("configCreateCert");
     return 0;
   }
