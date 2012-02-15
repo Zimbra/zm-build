@@ -116,6 +116,8 @@ $(LDAP_DEST_DIR)/$(LDAP_DIR)-$(LDAP_VERSION): $(LDAP_DEST_DIR)
 		$(LDAP_DEST_DIR)/$(LDAP_DIR)-$(LDAP_VERSION)/etc/openldap/config/cn=config/olcDatabase={2}hdb
 	cp $(SERVICE_DIR)/build/ldap-config/config/olcDatabase={2}hdb/olcOverlay={1}unique.ldif \
 		$(LDAP_DEST_DIR)/$(LDAP_DIR)-$(LDAP_VERSION)/etc/openldap/config/cn=config/olcDatabase={2}hdb
+	cp $(SERVICE_DIR)/build/ldap-config/config/olcDatabase={2}hdb/olcOverlay={2}noopsrch.ldif \
+		$(LDAP_DEST_DIR)/$(LDAP_DIR)-$(LDAP_VERSION)/etc/openldap/config/cn=config/olcDatabase={2}hdb
 
 $(LDAP_DEST_DIR)/lib/conf:
 	mkdir -p $@
