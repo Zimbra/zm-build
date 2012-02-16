@@ -65,41 +65,25 @@ sub doLdap() {
     $dn="cn=config";
   } elsif ($key =~ /^ldap_db_/) {
     if ($real_master) {
-      $dn="olcDatabase={3}hdb,cn=config";
+      $dn="olcDatabase={3}mdb,cn=config";
     } else {
-      $dn="olcDatabase={2}hdb,cn=config";
+      $dn="olcDatabase={2}mdb,cn=config";
     }
-    if ($key eq "ldap_db_cachefree") {
-      $ldap_key="olcDbCacheFree";
-    } elsif ($key eq "ldap_db_cachesize") {
-      $ldap_key="olcDbCacheSize";
-    } elsif ($key eq "ldap_db_checkpoint") {
+    if ($key eq "ldap_db_checkpoint") {
       $ldap_key="olcDbCheckpoint";
-    } elsif ($key eq "ldap_db_dncachesize") {
-      $ldap_key="olcDbDNcacheSize";
-    } elsif ($key eq "ldap_db_idlcachesize") {
-      $ldap_key="olcDbIDLcacheSize";
-    } elsif ($key eq "ldap_db_shmkey") {
-      $ldap_key="olcDbShmKey";
+    } elsif ($key eq "ldap_db_maxsize") {
+      $ldap_key="olcDbMaxsize";
     } else {
       main::logMsg(2,"LDAP db: Unknown key: $key");
       $rc=1;
     }
   } elsif ($key =~ /ldap_access/) {
     if ($real_master) {
-      $dn="olcDatabase={2}hdb,cn=config";
-      if ($key eq "ldap_accesslog_cachefree") {
-        $ldap_key="olcDbCacheFree";
-      } elsif ($key eq "ldap_accesslog_cachesize") {
-        $ldap_key="olcDbCacheSize";
-      } elsif ($key eq "ldap_accesslog_checkpoint") {
+      $dn="olcDatabase={2}mdb,cn=config";
+      if ($key eq "ldap_accesslog_checkpoint") {
         $ldap_key="olcDbCheckpoint";
-      } elsif ($key eq "ldap_accesslog_dncachesize") {
-        $ldap_key="olcDbDNcacheSize";
-      } elsif ($key eq "ldap_accesslog_idlcachesize") {
-        $ldap_key="olcDbIDLcacheSize";
-      } elsif ($key eq "ldap_accesslog_shmkey") {
-        $ldap_key="olcDbShmKey";
+      } elsif ($key eq "ldap_accesslog_maxsize") {
+        $ldap_key="olcDbMaxsize";
       } else {
         main::logMsg(2,"LDAP accesslog: Unknown key: $key");
         $rc=1;
@@ -108,17 +92,15 @@ sub doLdap() {
   } elsif ($key =~ /ldap_overlay/) {
     if ($real_master) {
       if ($key =~ /ldap_overlay_syncprov/) {
-        $dn="olcOverlay={0}syncprov,olcDatabase={3}hdb,cn=config";
+        $dn="olcOverlay={0}syncprov,olcDatabase={3}mdb,cn=config";
         if ($key eq "ldap_overlay_syncprov_checkpoint") {
           $ldap_key="olcSpCheckpoint";
-        } elsif ($key eq "ldap_overlay_syncprov_sessionlog") {
-          $ldap_key="olcSpSessionlog";
         } else {
           main::logMsg(2,"LDAP overlay syncprov: Unknown key: $key");
           $rc=1;
         }
       } elsif ($key =~ /ldap_overlay_accesslog/) {
-        $dn="olcOverlay={1}accesslog,olcDatabase={3}hdb,cn=config";
+        $dn="olcOverlay={1}accesslog,olcDatabase={3}mdb,cn=config";
         if ($key eq "ldap_overlay_accesslog_logpurge") {
           $ldap_key="olcAccessLogPurge";
         } else {
@@ -144,32 +126,6 @@ sub doLdap() {
   }
 
   my $entry;
-  if ($key =~ /_shmkey/ && $value != 0 && $real_master) {
-    my ($alt_key, $alt_value, $alt_dn);
-
-    if ($key =~ /ldap_db_shmkey/) {
-      $alt_key="ldap_accesslog_shmkey";
-      $alt_dn="olcDatabase={2}hdb,cn=config";
-    } else {
-      $alt_key="ldap_db_shmkey";
-      $alt_dn="olcDatabase={3}hdb,cn=config";
-    }
-    $mesg=$ldap->search(base=>$alt_dn,
-                  scope=>"base",
-                  filter=>'objectClass=*',
-                  attrs=>[ "$ldap_key" ],
-                 );
-   
-    $entry=$mesg->entry(0);
-    $alt_value = $entry->get_value("$ldap_key");
-    if ($alt_value == $value) {
-      main::logMsg(2,"LDAP: Trying to set unique key value : $key:$value");
-      main::logMsg(2,"LDAP: When alternate key has value   : $alt_key:$alt_value");
-      main::logMsg(2,"LDAP: Values must differ if non-zero");
-      $ldap->unbind;
-      return 1;
-    }
-  }
   $mesg=$ldap->search(base=>$dn,
                   scope=>"base",
                   filter=>'objectClass=*',

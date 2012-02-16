@@ -629,7 +629,7 @@ sub genRandomPass {
 sub getSystemStatus {
 
   if (isEnabled("zimbra-ldap")) {
-    if (-f "$zimbraHome/data/ldap/hdb/db/mail.bdb") {
+    if (-f "$zimbraHome/data/ldap/mdb/db/data.mdb") {
       $ldapConfigured = 1;
       $ldapRunning = 0xffff & system("/opt/zimbra/bin/ldap status > /dev/null 2>&1");
       if ($ldapRunning) {
@@ -1240,7 +1240,7 @@ sub installLdapConfig {
     system("cp -f $config_src/cn\=config/olcDatabase\=\{-1\}frontend.ldif $config_dest/cn\=config/olcDatabase\=\{-1\}frontend.ldif");
     system("cp -f $config_src/cn\=config/olcDatabase\=\{0\}config.ldif $config_dest/cn\=config/olcDatabase\=\{0\}config.ldif");
     system("cp -f $config_src/cn\=config/olcDatabase\=\{1\}monitor.ldif $config_dest/cn\=config/olcDatabase\=\{1\}monitor.ldif");
-    system("cp -f $config_src/cn\=config/olcDatabase\=\{2\}hdb.ldif $config_dest/cn\=config/olcDatabase\=\{2\}hdb.ldif");
+    system("cp -f $config_src/cn\=config/olcDatabase\=\{2\}mdb.ldif $config_dest/cn\=config/olcDatabase\=\{2\}mdb.ldif");
     `chmod 600 $config_dest/cn\=config.ldif`;
     `chmod 600 $config_dest/cn\=config/*.ldif`;
     `chown -R zimbra:zimbra $config_dest`;
@@ -4726,7 +4726,6 @@ sub configSetupLdap {
       }
       progress("done.\n");
       progress ( "Enabling ldap replication..." );
-      runAsZimbra("/opt/zimbra/bdb/bin/db_recover -h /opt/zimbra/data/ldap/hdb/db");
       my $rc = runAsZimbra ("/opt/zimbra/libexec/zmldapapplyldif");
       if ( ! -f "/opt/zimbra/.enable_replica" ) {
          if ($newinstall && $config{LDAPREPLICATIONTYPE} eq "mmr") {
@@ -6593,10 +6592,6 @@ sub startLdap {
   main::detail(($rc == 0) ? "already running.\n" : "not running.\n");
 
   if ($rc) { 
-    main::progress("Running bdb db_recover...");
-    $rc = runAsZimbra("/opt/zimbra/bdb/bin/db_recover -h /opt/zimbra/data/ldap/hdb/db");
-    main::progress(($rc == 0) ? "done.\n" : "failed.\n");
-  
     main::progress("Running zmldapapplyldif...");
     $rc = runAsZimbra ("/opt/zimbra/libexec/zmldapapplyldif");
     main::progress(($rc == 0) ? "done.\n" : "failed.\n");
