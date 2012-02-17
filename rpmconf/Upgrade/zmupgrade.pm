@@ -4729,6 +4729,19 @@ sub upgradeLdap($) {
             }
            }
         }
+        if (-f '/opt/zimbra/data/ldap/config/cn=config/cn=module{0}.ldif') {
+          $infile="/opt/zimbra/data/ldap/config/cn\=config/cn\=module\{0\}.ldif";
+          $outfile="/tmp/mod0.ldif.$$";
+          open(IN,"<$infile");
+          open(OUT,">$outfile");
+          while(<IN>) {
+            if ($_ =~ /^olcModuleLoad: \{0\}back_hdb.la/) {
+              print OUT 'olcModuleLoad: {0}back_mdb.la\n';
+              next;
+            }
+            print OUT $_;
+          }
+        }
         if (-f '/opt/zimbra/data/ldap/config/cn=config/olcDatabase={3}hdb.ldif') {
           `mv /opt/zimbra/data/ldap/config/cn\=config/olcDatabase\=\{3\}hdb.ldif /opt/zimbra/data/ldap/config/cn\=config/olcDatabase=\{3\}mdb.ldif`;
           $infile="/opt/zimbra/data/ldap/config/cn\=config/olcDatabase\=\{3\}mdb.ldif";
@@ -4736,7 +4749,7 @@ sub upgradeLdap($) {
           open(IN,"<$infile");
           open(OUT,">$outfile");
           while(<IN>) {
-            if ($_ =~ /^dn: olcDatabase={3}hdb/) {
+            if ($_ =~ /^dn: olcDatabase=\{3\}hdb/) {
               print OUT "dn: olcDatabase={3}mdb\n";
               next;
             }
@@ -4744,7 +4757,7 @@ sub upgradeLdap($) {
               print OUT "objectClass: olcMdbConfig\n";
               next;
             }
-            if ($_ =~ /^olcDatabase: {3}hdb/) {
+            if ($_ =~ /^olcDatabase: \{3\}hdb/) {
               print OUT "olcDatabase: {3}mdb\n";
               next;
             }
