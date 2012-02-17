@@ -4719,15 +4719,19 @@ sub upgradeLdap($) {
         }
         if (-d '/opt/zimbra/data/ldap/config/cn=config/olcDatabase={3}hdb') {
           `mv /opt/zimbra/data/ldap/config/cn\=config/olcDatabase\=\{3\}hdb /opt/zimbra/data/ldap/config/cn\=config/olcDatabase\=\{3\}mdb`;
-           $infile=glob("/opt/zimbra/data/ldap/config/cn=config/olcDatabase=\\{3\\}mdb/olcOverlay=\\{*\\}syncprov.ldif");
-           $outfile="/tmp/3syncprov.ldif.$$";
-           open(IN,"<$infile");
-           open(OUT,">$outfile");
-           while(<IN>) {
-            if ($_ =~ /olcSpSessionLog:/) {
+          $infile=glob("/opt/zimbra/data/ldap/config/cn=config/olcDatabase=\\{3\\}mdb/olcOverlay=\\{*\\}syncprov.ldif");
+          $outfile="/tmp/3syncprov.ldif.$$";
+          open(IN,"<$infile");
+          open(OUT,">$outfile");
+          while(<IN>) {
+            if ($_ =~ /olcSpSessionlog:/) {
               next;
             }
-           }
+            print OUT $_;
+          }
+          close(OUT);
+          close(IN);
+          `mv $outfile $infile`;
         }
         if (-f '/opt/zimbra/data/ldap/config/cn=config/cn=module{0}.ldif') {
           $infile="/opt/zimbra/data/ldap/config/cn\=config/cn\=module\{0\}.ldif";
