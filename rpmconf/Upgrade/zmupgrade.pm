@@ -4798,16 +4798,16 @@ sub upgradeLdap($) {
           open(IN,"<$infile");
           open(OUT,">$outfile");
           while(<IN>) {
-            if ($_ =~ /^dn: olcDatabase={2}hdb/) {
-              print OUT "dn: olcDatabase={2}mdb\n";
+            if ($_ =~ /^dn: olcDatabase=\{2\}hdb/) {
+              print OUT 'dn: olcDatabase={2}mdb\n';
               next;
             }
             if ($_ =~ /^objectClass: olcHdbConfig/) {
               print OUT "objectClass: olcMdbConfig\n";
               next;
             }
-            if ($_ =~ /^olcDatabase: {2}hdb/) {
-              print OUT "olcDatabase: {2}mdb\n";
+            if ($_ =~ /^olcDatabase: \{2\}hdb/) {
+              print OUT 'olcDatabase: {2}mdb\n';
               next;
             }
             if ($_ =~ /^olcDbDirectory: \/opt\/zimbra\/data\/ldap\/hdb\/db/) {
