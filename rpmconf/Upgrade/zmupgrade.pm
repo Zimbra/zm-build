@@ -4870,9 +4870,12 @@ sub upgradeLdap($) {
           `mv $outfile $infile`;
         }
           main::progress("done.\n");
+
+mv: cannot move opt/zimbra/data/ldap/accesslog' to opt/zimbra/data/ldap/accesslog.prev/accesslog': Directory not empty
+
         if (-d "/opt/zimbra/data/ldap/accesslog") { 
           main::progress("Creating new accesslog DB"); 
-          if (-d "/opt/zimbra/data/ldap/acesslog.prev") {
+          if (-d "/opt/zimbra/data/ldap/accesslog.prev") {
             `mv /opt/zimbra/data/ldap/accesslog.prev /opt/zimbra/data/ldap/accesslog.prev.$$`;
           }
           `mv /opt/zimbra/data/ldap/accesslog /opt/zimbra/data/ldap/accesslog.prev`;
