@@ -4712,10 +4712,10 @@ sub upgradeLdap($) {
         close(OUT);
         main::progress("done.\n");
         main::progress("Upgrading LDAP configuration database...");
-        if (-d '/opt/zimbra/data/ldap/config/cn\=config/olcDatabase\=\{2\}hdb') {
+        if (-d '/opt/zimbra/data/ldap/config/cn=config/olcDatabase={2}hdb') {
           `mv /opt/zimbra/data/ldap/config/cn\=config/olcDatabase\=\{2\}hdb /opt/zimbra/data/ldap/config/cn\=config/olcDatabase\=\{2\}mdb`;
         }
-        if (-d '/opt/zimbra/data/ldap/config/cn\=config/olcDatabase\=\{3\}hdb') {
+        if (-d '/opt/zimbra/data/ldap/config/cn=config/olcDatabase={3}hdb') {
           `mv /opt/zimbra/data/ldap/config/cn\=config/olcDatabase\=\{3\}hdb /opt/zimbra/data/ldap/config/cn\=config/olcDatabase\=\{3\}mdb`;
            $infile=glob("/opt/zimbra/data/ldap/config/cn=config/olcDatabase=\\{3\\}mdb/olcOverlay=\\{*\\}syncprov.ldif");
            $outfile="/tmp/3syncprov.ldif.$$";
@@ -4727,7 +4727,7 @@ sub upgradeLdap($) {
             }
            }
         }
-        if (-f '/opt/zimbra/data/ldap/config/cn\=config/olcDatabase\={3}hdb.ldif') {
+        if (-f '/opt/zimbra/data/ldap/config/cn=config/olcDatabase={3}hdb.ldif') {
           `mv /opt/zimbra/data/ldap/config/cn\=config/olcDatabase\=\{3\}hdb.ldif /opt/zimbra/data/ldap/config/cn\=config/olcDatabase=\{3\}mdb.ldif`;
           $infile="/opt/zimbra/data/ldap/config/cn\=config/olcDatabase\=\{3\}mdb.ldif";
           $outfile="/tmp/3mdb.ldif.$$";
@@ -4789,7 +4789,7 @@ sub upgradeLdap($) {
           close(IN);
           `mv $outfile $infile`;
         }
-        if (-f '/opt/zimbra/data/ldap/config/cn\=config/olcDatabase\=\{2\}hdb.ldif') {
+        if (-f '/opt/zimbra/data/ldap/config/cn=config/olcDatabase={2}hdb.ldif') {
           `mv /opt/zimbra/data/ldap/config/cn\=config/olcDatabase\=\{2\}hdb.ldif /opt/zimbra/data/ldap/config/cn\=config/olcDatabase\=\{2\}mdb.ldif`;
           $infile="/opt/zimbra/data/ldap/config/cn\=config/olcDatabase\=\{2\}mdb.ldif";
           $outfile="/tmp/2mdb.ldif.$$";
