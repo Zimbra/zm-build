@@ -4736,11 +4736,14 @@ sub upgradeLdap($) {
           open(OUT,">$outfile");
           while(<IN>) {
             if ($_ =~ /^olcModuleLoad: \{0\}back_hdb.la/) {
-              print OUT 'olcModuleLoad: {0}back_mdb.la\n';
+              print OUT 'olcModuleLoad: {0}back_mdb.la'."\n";
               next;
             }
             print OUT $_;
           }
+          close(OUT);
+          close(IN);
+          `mv $outfile $infile`;
         }
         if (-f '/opt/zimbra/data/ldap/config/cn=config/olcDatabase={3}hdb.ldif') {
           `mv /opt/zimbra/data/ldap/config/cn\=config/olcDatabase\=\{3\}hdb.ldif /opt/zimbra/data/ldap/config/cn\=config/olcDatabase=\{3\}mdb.ldif`;
