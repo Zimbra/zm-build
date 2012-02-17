@@ -4736,7 +4736,7 @@ sub upgradeLdap($) {
           open(OUT,">$outfile");
           while(<IN>) {
             if ($_ =~ /^olcModuleLoad: \{0\}back_hdb.la/) {
-              print OUT 'olcModuleLoad: {0}back_mdb.la'."\n";
+              print OUT "olcModuleLoad: {0}back_mdb.la\n";
               next;
             }
             print OUT $_;
@@ -4815,7 +4815,7 @@ sub upgradeLdap($) {
           open(OUT,">$outfile");
           while(<IN>) {
             if ($_ =~ /^dn: olcDatabase=\{2\}hdb/) {
-              print OUT 'dn: olcDatabase={2}mdb\n';
+              print OUT "dn: olcDatabase={2}mdb\n";
               next;
             }
             if ($_ =~ /^objectClass: olcHdbConfig/) {
@@ -4823,7 +4823,7 @@ sub upgradeLdap($) {
               next;
             }
             if ($_ =~ /^olcDatabase: \{2\}hdb/) {
-              print OUT 'olcDatabase: {2}mdb\n';
+              print OUT "olcDatabase: {2}mdb\n";
               next;
             }
             if ($_ =~ /^olcDbDirectory: \/opt\/zimbra\/data\/ldap\/hdb\/db/) {
