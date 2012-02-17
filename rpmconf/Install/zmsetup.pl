@@ -3135,6 +3135,18 @@ sub isNetwork {
   return((-f "/opt/zimbra/bin/zmbackup") ? 1 : 0);
 }
 
+sub isOctopus {
+  return((grep(/\bzimbra-octopus\b/,@packageList)) ? 0 : 1);
+}
+
+sub isLdapMaster {
+  return(($config{LDAPHOST} eq $config{HOSTNAME}) ? 1 : 0);
+}
+
+sub isZCS {
+  return((grep(/\bzimbra-store\b/,@packageList)) ? 0 : 1);
+}
+
 sub isFoss {
   return((-f "/opt/zimbra/bin/zmbackup") ? 0 : 1);
 }
@@ -5417,6 +5429,10 @@ sub configSetTimeZonePref {
   configLog("zimbraPrefTimeZoneId");
 }
 
+sub configSetOctopusCoSFeatures {
+  return;
+}
+
 sub configSetCEFeatures {
   foreach my $feature qw(Tasks Briefcases) {
     my $key = "zimbraFeature${feature}Enabled";
@@ -5452,7 +5468,6 @@ sub configInitOctopusAdminGroup {
     "zimbraAdminConsoleUIComponents COSListView ".
     "zimbraAdminConsoleUIComponents domainListView ".
     "zimbraAdminConsoleUIComponents serverListView ".
-    "zimbraAdminConsoleUIComponents zimletListView ".
     "zimbraAdminConsoleUIComponents globalConfigView ".
     "description \'Octopus Administrative Account\'");
   main::progress(($rc == 0) ? "done.\n" : "failed.\n");
@@ -5946,7 +5961,7 @@ sub configCreateDomain {
     }
 
     configInitDomainAdminGroups()
-      if (isNetwork() && $config{LDAPHOST} eq $config{HOSTNAME});
+      if (isNetwork() && isLdapMaster() && isZCS());
   }
   if (isEnabled("zimbra-store")) {
     if ($config{DOCREATEADMIN} eq "yes") {
@@ -6449,7 +6464,9 @@ sub applyConfig {
 
     configInitBackupPrefs();
 
-    configSetCEFeatures();
+    configSetOctopusCoSFeatures() if isOctopus();
+
+    configSetCEFeatures() if isZCS();
 
     configSetNEFeatures() if isNetwork();
 
@@ -6496,7 +6513,7 @@ sub applyConfig {
 
   configInitSnmp();
 
-  configInitInstantMessaging();
+  #configInitInstantMessaging();
 
   configInitGALSyncAccts();
 
