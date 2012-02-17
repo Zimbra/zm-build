@@ -3144,7 +3144,7 @@ sub isLdapMaster {
 }
 
 sub isZCS {
-  return((grep(/\bzimbra-store\b/,@packageList)) ? 0 : 1);
+  return((grep(/\bzimbra-store\b/,@packageList)) ? 1 : 0);
 }
 
 sub isFoss {
