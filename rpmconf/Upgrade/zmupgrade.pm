@@ -4681,11 +4681,11 @@ sub upgradeLdap($) {
       if (-f $ldifFile && -s $ldifFile) {
         my $postfix_id_fix=0;
         chmod 0644, $ldifFile;
-        my $infile = "$ldifFile";
-        my $outfile = "/opt/zimbra/data/ldap/ldap.80";
+        my $slapinfile = "$ldifFile";
+        my $slapoutfile = "/opt/zimbra/data/ldap/ldap.80";
         main::progress("Upgrading ldap data...");
-        open(IN,"<$infile");
-        open(OUT,">$outfile");
+        open(IN,"<$slapinfile");
+        open(OUT,">$slapoutfile");
         while(<IN>) {
           if ($_ =~ /^zimbraPrefStandardClientAccessilbityMode:/) {next;}
           if ($_ =~ /^objectClass: zimbraHsmGlobalConfig/) {next;}
@@ -4711,6 +4711,8 @@ sub upgradeLdap($) {
         close(IN);
         close(OUT);
         main::progress("done.\n");
+        my $infile;
+        my $outfile;
         main::progress("Upgrading LDAP configuration database...");
         if (-d '/opt/zimbra/data/ldap/config/cn=config/olcDatabase={2}hdb') {
           `mv /opt/zimbra/data/ldap/config/cn\=config/olcDatabase\=\{2\}hdb /opt/zimbra/data/ldap/config/cn\=config/olcDatabase\=\{2\}mdb`;
@@ -4871,7 +4873,7 @@ sub upgradeLdap($) {
         `mkdir -p /opt/zimbra/data/ldap/mdb/db`;
         `chown -R zimbra:zimbra /opt/zimbra/data/ldap`;
         my $rc;
-        $rc=main::runAsZimbra("/opt/zimbra/openldap/sbin/slapadd -q -b '' -F /opt/zimbra/data/ldap/config -l $outfile");
+        $rc=main::runAsZimbra("/opt/zimbra/openldap/sbin/slapadd -q -b '' -F /opt/zimbra/data/ldap/config -l $slapoutfile");
         if ($rc != 0) {
           main::progress("slapadd import failed.\n");
           return 1;
