@@ -4872,7 +4872,7 @@ sub upgradeLdap($) {
         main::progress("done.\n");
 
         if (-d "/opt/zimbra/data/ldap/accesslog") { 
-          main::progress("Creating new accesslog DB"); 
+          main::progress("Creating new accesslog DB..."); 
           if (-d "/opt/zimbra/data/ldap/accesslog.prev") {
             `mv /opt/zimbra/data/ldap/accesslog.prev /opt/zimbra/data/ldap/accesslog.prev.$$`;
           }
