@@ -4710,7 +4710,7 @@ sub upgradeLdap($) {
         }
         close(IN);
         close(OUT);
-
+        main::progress("done.\n");
         main::progress("Upgrading LDAP configuration database...");
         if (-d '/opt/zimbra/data/ldap/config/cn\=config/olcDatabase\=\{2\}hdb') {
           `mv /opt/zimbra/data/ldap/config/cn\=config/olcDatabase\=\{2\}hdb /opt/zimbra/data/ldap/config/cn\=config/olcDatabase\=\{2\}mdb`;
@@ -4851,6 +4851,7 @@ sub upgradeLdap($) {
           close(IN);
           `mv $outfile $infile`;
         }
+          main::progress("done.\n");
         if (-d "/opt/zimbra/data/ldap/accesslog") { 
           main::progress("Creating new accesslog DB"); 
           if (-d "/opt/zimbra/data/ldap/acesslog.prev") {
@@ -4859,6 +4860,7 @@ sub upgradeLdap($) {
           `mv /opt/zimbra/data/ldap/accesslog /opt/zimbra/data/ldap/accesslog.prev`;
           `mkdir -p /opt/zimbra/data/ldap/accesslog/db`;
           `chown -R zimbra:zimbra /opt/zimbra/data/ldap`;
+          main::progress("done.\n");
         }
 
         main::progress("Loading database..."); 
