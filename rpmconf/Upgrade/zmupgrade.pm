@@ -4698,10 +4698,12 @@ sub upgradeLdap($) {
             print OUT "zimbraId: a8255e5f-142b-4aa0-8aab-f8591b6455ba\n";
             next;
           }
-          if ($_ =~ /^objectClass: organizationalPerson/) {
-            print OUT $_;
-            print OUT "objectClass: inetOrgPerson\n";
-            next;
+          if($main::migratedStatus{"LdapUpgraded8.0.0_BETA2"} ne "CONFIGURED") {
+            if ($_ =~ /^objectClass: organizationalPerson/) {
+              print OUT $_;
+              print OUT "objectClass: inetOrgPerson\n";
+              next;
+            }
           }
           if ($_ =~ /^structuralObjectClass: organizationalPerson/) {
             $_ =~ s/organizationalPerson/inetOrgPerson/;
