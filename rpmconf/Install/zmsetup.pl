@@ -927,7 +927,7 @@ sub getLdapDomainValue {
 
 sub getLdapServerValue {
   my ($attrib,$sub) = @_;
-  $sub = $config{HOSTNAME} if ($sub eq "");
+  $sub = $main::config{HOSTNAME} if ($sub eq "");
   my $sec="gs";
   my ($val,$err);
   if (exists $main::loaded{$sec}{$sub}{$attrib}) {
