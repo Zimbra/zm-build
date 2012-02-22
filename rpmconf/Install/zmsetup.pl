@@ -3136,7 +3136,7 @@ sub isNetwork {
 }
 
 sub isOctopus {
-  return((grep(/\bzimbra-octopus\b/,@packageList)) ? 0 : 1);
+  return((grep(/\bzimbra-octopus\b/,@packageList)) ? 1 : 0);
 }
 
 sub isLdapMaster {
@@ -3144,7 +3144,7 @@ sub isLdapMaster {
 }
 
 sub isZCS {
-  return((grep(/\b\w-store\b/,@packageList)) ? 1 : 0);
+  return((grep(/\b\w+-store\b/,@packageList)) ? 1 : 0);
 }
 
 sub isFoss {
