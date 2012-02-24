@@ -4896,7 +4896,7 @@ sub upgradeLdap($) {
         `mkdir -p /opt/zimbra/data/ldap/mdb/db`;
         `chown -R zimbra:zimbra /opt/zimbra/data/ldap`;
         my $rc;
-        $rc=main::runAsZimbra("/opt/zimbra/openldap/sbin/slapadd -b '' -F /opt/zimbra/data/ldap/config -l $slapoutfile");
+        $rc=main::runAsZimbra("/opt/zimbra/openldap/sbin/slapadd -b '' -q -F /opt/zimbra/data/ldap/config -l $slapoutfile");
         if ($rc != 0) {
           main::progress("slapadd import failed.\n");
           return 1;
