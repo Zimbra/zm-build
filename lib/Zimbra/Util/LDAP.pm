@@ -126,6 +126,28 @@ sub doLdap() {
   }
 
   my $entry;
+  if ($real_master && $key =~ /ldap_overlay_syncprov/) {
+    # Obtain real syncprov overlay DN
+    $mesg=$ldap->search(base=>"olcDatabase={3}mdb,cn=config",
+                  scope=>"sub",
+                  filter=>'(objectClass=olcSyncProvConfig)',
+                  attrs=>[ "1.1" ],
+                 );
+    $entry=$mesg->entry(0);
+    $dn=$entry->dn();
+  }
+
+  if ($real_master && $key =~ /ldap_overlay_accesslog/) {
+    # Obtain real syncprov overlay DN
+    $mesg=$ldap->search(base=>"olcDatabase={3}mdb,cn=config",
+                  scope=>"sub",
+                  filter=>'(objectClass=olcAccessLogConfig)',
+                  attrs=>[ "1.1" ],
+                 );
+    $entry=$mesg->entry(0);
+    $dn=$entry->dn();
+  }
+
   $mesg=$ldap->search(base=>$dn,
                   scope=>"base",
                   filter=>'objectClass=*',
