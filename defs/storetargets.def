@@ -110,7 +110,7 @@ $(STORE_DEST_DIR)/$(MYSQL_DIR):
 $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/bin: $(STORE_DEST_DIR) force
 	@echo "*** Creating $(MAILBOXD_SERVER)"
 	(cd $(STORE_DEST_DIR); tar xzf $(MAILBOXD_SOURCE).tar.gz;)
-	-(rm $(@D)/start.ini $(@D)/webapps/test.war $(@D)/etc/keystore)
+	-(rm $(@D)/start.ini $(@D)/etc/keystore)
 
 ifeq ($(ZIMBRA_USE_TOMCAT), 1)
 $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/conf: force
