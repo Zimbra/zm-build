@@ -74,3 +74,7 @@ include $(DEFS_DIR)/isync.def
 include $(DEFS_DIR)/osync.def
 include $(DEFS_DIR)/app-mactoaster.def
 endif
+
+ifeq (UBUNTU8,$(BUILD_PLATFORM))
+include $(DEFS_DIR)/android.def
+endif
