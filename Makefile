@@ -19,7 +19,9 @@ include $(DEFS_DIR)/paths.def
 THIRD_PARTY	:= $(BUILD_ROOT)/../ThirdParty
 THIRD_PARTY_BUILDS	:= $(BUILD_ROOT)/../ThirdPartyBuilds
 
+ifneq   (1,$(NOPLATFORMS)))
 include $(DEFS_DIR)/$(BUILD_PLATFORM).def
+endif
 
 include $(DEFS_DIR)/destination.def
 
