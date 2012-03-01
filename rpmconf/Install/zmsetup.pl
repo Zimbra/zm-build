@@ -5994,7 +5994,6 @@ sub configCreateDomain {
             "zimbraAdminConsoleUIComponents COSListView ".
             "zimbraAdminConsoleUIComponents domainListView ".
             "zimbraAdminConsoleUIComponents serverListView ".
-            "zimbraAdminConsoleUIComponents zimletListView ".
             "zimbraAdminConsoleUIComponents globalConfigView ".
             "description \'Octopus Administrative Account\'");
           progress(($rc == 0) ? "done.\n" : "failed.\n");
