@@ -12,4 +12,5 @@ $(ANDROID_DEST_DIR)/android: $(ANDROID_DEST_DIR) $(ANDROID_DEST_ROOT)/build
 
 $(ANDROID_DEST_ROOT)/build:
 	(cd $(ANDROID_DEST_ROOT); \
-	ant debug;)
+	ant debug; \
+	mv $(ANDROID_DIR)/OctopusAndroidClient-debug.apk $(ANDROID_DIR)/OctopusAndroidClient-$(ANDROID_VERSION_TAG)debug.apk;)
