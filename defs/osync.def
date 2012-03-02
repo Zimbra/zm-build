@@ -1,5 +1,6 @@
 # __OSync
 
+include $(DEFS_DIR)/plat_common.def
 OSYNC_VERSION_TAG := $(MAJOR).$(MINOR).$(BUILDNUM)
 OSYNC_RAGEL_VERSION	:= 6.7
 OSYNC_BOOST_VERSION	:= 1.47.0
