@@ -45,7 +45,11 @@ include $(DEFS_DIR)/proxytargets.def
 
 include $(DEFS_DIR)/ldaptargets.def
 
+ifneq ($(ZIMBRA_OCTOPUS_BUILD), 1)
+include $(DEFS_DIR)/mtatargets-octopus.def
+else
 include $(DEFS_DIR)/mtatargets.def
+endif
 
 include $(DEFS_DIR)/loggertargets.def
 
