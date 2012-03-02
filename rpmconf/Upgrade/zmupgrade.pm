@@ -4124,6 +4124,10 @@ sub upgrade800BETA3 {
       `cp -pf ${zimbra_home}/jetty-6.1.22.z6/etc/jetty.keytab ${zimbra_home}/data/mailboxd/spnego/jetty.keytab`;
     }
   }
+  if (main::isInstalled("zimbra-octopus")) {
+    main::runAsZimbra("perl -I${scriptDir} ${scriptDir}/migrate20120209-octopusEvent.pl");
+  }
+    
   return 0;
 }
 
