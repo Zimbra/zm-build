@@ -17,7 +17,7 @@
 rm -f /opt/zimbra/perdition
 
 PLAT=`/opt/zimbra/libexec/get_plat_tag.sh`
-JETTY_VERSION=distribution-7.6.0-SNAPSHOT
+JETTY_VERSION=distribution-7.6.0.v20120127
 
 if [ -e /opt/zimbra/verity ]; then
   rm -rf /opt/zimbra/verity
