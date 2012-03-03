@@ -4125,7 +4125,9 @@ sub upgrade800BETA3 {
     }
   }
   if (main::isInstalled("zimbra-octopus")) {
+    if (startSql()) { return 1; }
     main::runAsZimbra("perl -I${scriptDir} ${scriptDir}/migrate20120209-octopusEvent.pl");
+    stopSql();
   }
     
   return 0;
