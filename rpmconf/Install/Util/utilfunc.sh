@@ -2044,7 +2044,12 @@ getInstallPackages() {
         if [ $? = 0 ]; then
           echo $INSTALLED_PACKAGES | grep "zimbra-convertd" > /dev/null 2>&1
           if [ $? != 0 ]; then
-            INSTALL_PACKAGES="$INSTALL_PACKAGES $i"
+            echo $INSTALLED_PACKAGES | grep "zimbra-apache" > /dev/null 2>&1
+            if [ $? != 0 ]; then
+              INSTALL_PACKAGES="$INSTALL_PACKAGES zimbra-apache $i"
+            else
+              INSTALL_PACKAGES="$INSTALL_PACKAGES $i"
+            fi
             continue
           fi
         fi
