@@ -41,7 +41,7 @@ mta_pkg_spec_deb: $(MTA_DEST_ROOT)/DEBIAN/control
 $(MTA_DEST_ROOT)/DEBIAN: force
 	mkdir -p $@
 	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-mta.pre $@/preinst
-	cat $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-mta.post >> $@/postinst
+	cat $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-mta-octopus.post >> $@/postinst
 	chmod 555 $@/*
 
 $(MTA_DEST_ROOT)/DEBIAN/control: $(MTA_DEST_ROOT)/DEBIAN force
@@ -51,22 +51,22 @@ $(MTA_DEST_ROOT)/DEBIAN/control: $(MTA_DEST_ROOT)/DEBIAN force
 	-e 's/@@ARCH@@/$(ARCH)/' \
 	-e 's/^Copyright:/$(RPMCOPYRIGHTSTR):/' \
 	-e '/^%pre$$/ r zimbra-mta.pre' \
-	-e '/^%post$$/ r zimbra-mta.post' > $@
+	-e '/^%post$$/ r zimbra-mta-octopus.post' > $@
 
 mta_pkg_spec_rpm: $(BUILD_ROOT)/zimbra-mta.spec
 
 $(BUILD_ROOT)/zimbra-mta.spec:
 	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-mta.pre $(BUILD_ROOT)
-	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-mta.post $(BUILD_ROOT)
+	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-mta-octopus.post $(BUILD_ROOT)
 	cat $(PACKAGE_CONF_DIR)/Spec/zimbra-mta.spec | \
 		sed -e 's/@@VERSION@@/$(VERSION_TAG)/' \
 		-e 's/@@RELEASE@@/$(RELEASE)/' \
 		-e 's/@@MTA_PROVIDES@@/$(MTA_PROVIDES)/' \
 		-e 's/^Copyright:/$(RPMCOPYRIGHTSTR):/' \
 		-e '/^%pre$$/ r zimbra-mta.pre' \
-		-e '/^%post$$/ r zimbra-mta.post' > $(BUILD_ROOT)/zimbra-mta.spec
+		-e '/^%post$$/ r zimbra-mta-octopus.post' > $(BUILD_ROOT)/zimbra-mta.spec
 	rm -f zimbra-mta.pre
-	rm -f zimbra-mta.post
+	rm -f zimbra-mta-octopus.post
 	(cd $(MTA_DEST_ROOT); find opt -type f -o -type l -maxdepth 2 \
 		| sed -e 's|^|%attr(-, zimbra, zimbra) /|' >> \
 		$(BUILD_ROOT)/zimbra-mta.spec )
