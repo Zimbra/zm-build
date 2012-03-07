@@ -1,7 +1,7 @@
 # __iOS
 
 include $(DEFS_DIR)/plat_common.def
-IOS_VERSION_TAG := $(MAJOR).$(MINOR).$(BUILDNUM)
+IOS_VERSION_TAG := $(MAJOR).$(MINOR).$(MICRO)_$(BUILDNUM)
 ios: $(PACKAGE_DIR) ios_stage
 
 ios_stage: $(IOS_DEST_ROOT)/ios
