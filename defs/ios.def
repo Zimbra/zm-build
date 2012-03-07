@@ -4,12 +4,9 @@ include $(DEFS_DIR)/plat_common.def
 IOS_VERSION_TAG := $(MAJOR).$(MINOR).$(BUILDNUM)
 ios: $(PACKAGE_DIR) ios_stage
 
-ios_stage: $(IOS_DEST_DIR)/ios
+ios_stage: $(IOS_DEST_ROOT)/ios
 
-$(IOS_DEST_DIR):
-	mkdir -p $@
-
-$(IOS_DEST_DIR)/ios: $(IOS_DEST_DIR) $(IOS_DEST_ROOT)/build
+$(IOS_DEST_ROOT)/ios: $(IOS_DEST_ROOT)/build
 
 $(IOS_DEST_ROOT)/build:
 	sed -i -e 's/19/$(IOS_VERSION_TAG)/g' $(IOS_DEST_ROOT)/Info.plist

@@ -45,6 +45,8 @@ ISYNC_DEST_DIR := $(ISYNC_DEST_ROOT)/root/Library/PreferencePanes
 OSYNC_DEST_ROOT := $(BUILD_ROOT)/../Octopus/native/desktopclient/osx
 OSYNC_DEST_DIR := $(OSYNC_DEST_ROOT)/Packaging/build
 
+IOS_DEST_ROOT := $(BUILD_ROOT)/../Octopus/Mobile/iOS/Octopus
+
 ANDROID_DEST_ROOT := $(BUILD_ROOT)/../Octopus/Mobile/Android
 ANDROID_DEST_DIR := $(ANDROID_DEST_ROOT)/bin
 
