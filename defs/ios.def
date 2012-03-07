@@ -14,4 +14,4 @@ $(IOS_DEST_DIR)/ios: $(IOS_DEST_DIR) $(IOS_DEST_ROOT)/build
 $(IOS_DEST_ROOT)/build:
 	sed -i -e 's/19/$(IOS_VERSION_TAG)/g' $(IOS_DEST_ROOT)/Info.plist
 	(cd $(IOS_DEST_ROOT); \
-	xcodebuild;)
+	xcodebuild archive -scheme "Octopus";)
