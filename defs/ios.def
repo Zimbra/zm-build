@@ -12,7 +12,6 @@ $(IOS_DEST_DIR):
 $(IOS_DEST_DIR)/ios: $(IOS_DEST_DIR) $(IOS_DEST_ROOT)/build
 
 $(IOS_DEST_ROOT)/build:
-	sed -i -e 's/0.10.0.8/$(IOS_VERSION_TAG)/g' $(IOS_DEST_ROOT)/Msync_osx-Info.plist
+	sed -i -e 's/19/$(IOS_VERSION_TAG)/g' $(IOS_DEST_ROOT)/Info.plist
 	(cd $(IOS_DEST_ROOT); \
-	xcodebuild -project Msync_osx.xcodeproj -configuration Debug -scheme "Octopus" VERSIONER_PERL_PREFER_32_BIT=yes build; \
-	rm -f $(IOS_DEST_DIR)/*staging*;)
+	xcodebuild;)
