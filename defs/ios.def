@@ -13,5 +13,7 @@ $(IOS_DEST_DIR)/ios: $(IOS_DEST_DIR) $(IOS_DEST_ROOT)/build
 
 $(IOS_DEST_ROOT)/build:
 	sed -i -e 's/19/$(IOS_VERSION_TAG)/g' $(IOS_DEST_ROOT)/Info.plist
+	sed -i -e 's/ZCS_VERSION/$(IOS_VERSION_TAG)/g' $(IOS_DEST_ROOT)/build-ipa.sh
 	(cd $(IOS_DEST_ROOT); \
-	xcodebuild archive -scheme "Octopus";)
+	xcodebuild archive -scheme "Octopus"; \
+	./build-ipa.sh;)
