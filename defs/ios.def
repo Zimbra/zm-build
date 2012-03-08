@@ -14,5 +14,5 @@ $(IOS_DEST_ROOT)/build:
 	sed -i -e 's/19/$(IOS_VERSION_TAG)/g' $(IOS_DEST_ROOT)/Info.plist
 	sed -i -e 's/ZCS_VERSION/$(IOS_VERSION_TAG)/g' $(IOS_DEST_ROOT)/build-ipa.sh
 	(cd $(IOS_DEST_ROOT); \
-	xcodebuild DSTROOT=$(pwd)/build OBJROOT=$(pwd)/objects; \
+	xcodebuild DSTROOT=$(IOS_DEST_ROOT)/build OBJROOT=$(IOS_DEST_ROOT)/objects; \
 	./build-ipa.sh;)
