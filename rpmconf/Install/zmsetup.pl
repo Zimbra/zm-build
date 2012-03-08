@@ -6156,17 +6156,19 @@ sub configInitMta {
 
     runAsZimbra ("/opt/zimbra/libexec/zmmtainit $config{LDAPHOST} $config{LDAPPORT}");
     progress ( "done.\n" );
-    $installedServiceStr .= "zimbraServiceInstalled antivirus ";
-    $installedServiceStr .= "zimbraServiceInstalled antispam ";
-    if ($config{RUNAV} eq "yes") {
-      $enabledServiceStr .= "zimbraServiceEnabled antivirus ";
-    }
-    if ($config{RUNARCHIVING} eq "yes") {
-      $installedServiceStr .= "zimbraServiceInstalled archiving ";
-      $enabledServiceStr .= "zimbraServiceEnabled archiving ";
-    }
-    if ($config{RUNSA} eq "yes") {
-      $enabledServiceStr .= "zimbraServiceEnabled antispam ";
+    if (isZCS()) {
+      $installedServiceStr .= "zimbraServiceInstalled antivirus ";
+      $installedServiceStr .= "zimbraServiceInstalled antispam ";
+      if ($config{RUNAV} eq "yes") {
+        $enabledServiceStr .= "zimbraServiceEnabled antivirus ";
+      }
+      if ($config{RUNARCHIVING} eq "yes") {
+        $installedServiceStr .= "zimbraServiceInstalled archiving ";
+        $enabledServiceStr .= "zimbraServiceEnabled archiving ";
+      }
+      if ($config{RUNSA} eq "yes") {
+        $enabledServiceStr .= "zimbraServiceEnabled antispam ";
+      }
     }
     setLdapServerConfig("zimbraMtaMyNetworks", $config{zimbraMtaMyNetworks})
       if ($config{zimbraMtaMyNetworks} ne "");
