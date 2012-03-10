@@ -1,4 +1,4 @@
-#-!/usr/bin/perl -w
+#!/usr/bin/perl -w
 # 
 # ***** BEGIN LICENSE BLOCK *****
 # Zimbra Collaboration Suite Server
@@ -104,7 +104,7 @@ unless ($options{config} && -f $options{config}) {
 }
 
 if ($options{config} && -f $options{config}) {
-  $config = XMLin($options{config}, ForceArray => [ 'name', 'patch', 'package', 'file', 'deletefile', 'zimlet','target', 'preinstall', 'postinstall'], KeyAttr => [ 'name', 'patch', 'package', 'source', 'version', 'postinstall', 'preinstall' ]);
+  $config = XMLin($options{config}, ForceArray => [ 'name', 'patch', 'package', 'file', 'deletefile', 'zimlet','target', 'preinstall', 'postinstall'], KeyAttr => [ 'name', 'patch', 'package', 'source', 'version', 'postinstall', 'preinstall' ], SuppressEmpty => 1);
   my $debug_text = Dumper($config);
   debugLog($debug_text);
   
