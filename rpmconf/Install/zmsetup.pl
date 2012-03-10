@@ -5469,6 +5469,7 @@ sub configInitOctopusAdminGroup {
     "zimbraAdminConsoleUIComponents domainListView ".
     "zimbraAdminConsoleUIComponents serverListView ".
     "zimbraAdminConsoleUIComponents globalConfigView ".
+    "zimbraAdminConsoleUIComponents saveSearch ".
     "description \'Octopus Administrative Account\'");
   main::progress(($rc == 0) ? "done.\n" : "failed.\n");
 
