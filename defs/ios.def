@@ -2,7 +2,7 @@
 
 include $(DEFS_DIR)/plat_common.def
 IOS_VERSION_TAG := $(MAJOR).$(MINOR).$(MICRO)_$(BUILDNUM)
-IOS_PASSWORD	:= $(shell cat /home/bulid/.qpt)
+IOS_PASSWORD	:= $(shell cat /home/build/.qpt)
 ios: $(PACKAGE_DIR) ios_stage
 
 ios_stage: $(IOS_DEST_ROOT)/ios
