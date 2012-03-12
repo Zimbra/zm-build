@@ -44,6 +44,7 @@ GetOptions ("config=s"  => \$options{config},
             "debug|d+"    => \$options{debug},
             "help"      => sub { usage(); },
             "dryrun|n"  => \$options{dryrun},
+            "force"  => \$options{force},
             "build|b"   => \$options{build},
             "source=s"  => \$options{build_source},
             "target=s"  => \$options{build_target},
@@ -212,8 +213,12 @@ sub doPatchDeploy() {
   my $currentBuild = getVersionComponent($versionInfo{current},"build");
   progress("Current Version: $versionInfo{current}\n", 0, 1);
 
-  if ($currentBuild >= $patchBuildNumber) {
-    progress("Current install $currentRelease is the same or newer then patch version.\n", 1, 0);
+  if ($currentBuild > $patchBuildNumber) {
+    progress("Current install $currentRelease is newer then patch version.\n", 1, 0);
+    return undef;
+  }
+  if ($currentBuild == $patchBuildNumber && !$options{force}) {
+    progress("Current install $currentRelease is the same as patch version.\n", 1, 0);
     return undef;
   }
   while () {
