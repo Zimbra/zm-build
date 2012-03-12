@@ -1810,13 +1810,14 @@ sub setDefaultsFromLocalConfig {
       $config{LDAPAMAVISPASS} = $config{LDAPADMINPASS};
       $ldapAmavisChanged = 1;
     }
+  }
+  if (isEnabled("zimbra-ldap") || isEnabled("zimbra-proxy")) {
     $config{ldap_nginx_password} = getLocalConfig ("ldap_nginx_password");
     if ($config{ldap_nginx_password} eq "") {
       $config{ldap_nginx_password} = $config{LDAPADMINPASS};
       $ldapNginxChanged = 1;
     }
   }
-
   if ($options{d}) {
     foreach my $key (sort keys %config) {
       print "\tlc DEBUG: $key=$config{$key}\n";
