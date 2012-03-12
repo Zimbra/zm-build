@@ -2,6 +2,7 @@
 
 include $(DEFS_DIR)/plat_common.def
 IOS_VERSION_TAG := $(MAJOR).$(MINOR).$(MICRO)_$(BUILDNUM)
+IOS_PASSWORD	:= $(shell cat /home/bulid/.qpt)
 ios: $(PACKAGE_DIR) ios_stage
 
 ios_stage: $(IOS_DEST_ROOT)/ios
@@ -16,6 +17,6 @@ $(IOS_DEST_ROOT)/build:
 	sed -i -e 's/19/$(IOS_VERSION_TAG)/g' $(IOS_DEST_ROOT)/Octopus.plist.in
 	sed -i -e 's/ZCS_VERSION/$(IOS_VERSION_TAG)/g' $(IOS_DEST_ROOT)/build-ipa.sh
 	(cd $(IOS_DEST_ROOT); \
-	/usr/bin/security unlock -p `cat /home/build/.qpt`; \
+	/usr/bin/security unlock -p $(IOS_PASSWORD); \
 	xcodebuild DSTROOT=$(IOS_DEST_ROOT)/build OBJROOT=$(IOS_DEST_ROOT)/objects; \
 	./build-ipa.sh;)
