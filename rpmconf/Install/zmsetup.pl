@@ -5881,7 +5881,8 @@ sub configInstallZimlets {
   }
 
   # Install zimlets
-  if (opendir DIR, "/opt/zimbra/zimlets-network") {
+  my $zimbra_home = getLocalConfig("zimbra_home");
+  if (opendir DIR, "${zimbra_home}/zimlets-network") {
     progress ( "Installing network zimlets...\n" );
     my @zimlets = grep { !/^\./ } readdir(DIR);
     foreach my $zimletfile (@zimlets) {
@@ -5889,8 +5890,11 @@ sub configInstallZimlets {
       $zimlet =~ s/\.zip$//;
       next if (! isInstalled("zimbra-cluster") && $zimlet eq "com_zimbra_cluster");
       progress  ("\t$zimlet...");
-      my $rc = runAsZimbra ("/opt/zimbra/bin/zmzimletctl -l deploy zimlets-network/$zimletfile");
+      my $rc = runAsZimbra ("${zimbra_home}/bin/zmzimletctl -l deploy zimlets-network/$zimletfile");
       progress (($rc == 0) ? "done.\n" : "failed. This may impact system functionality.\n");
+      if (($rc == 0) && ($zimlet eq "com_zimbra_smime")) {
+        system("cp ${zimbra_home}/jetty/webapps/zimlet/WEB-INF/lib/com_zimbra_smime.jarx ${zimbra_home}/jetty/webapps/zimbra/public/com_zimbra_smime.jarx");
+      }
     }
     progress ( "Finished installing network zimlets.\n" );
   }
