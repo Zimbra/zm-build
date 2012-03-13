@@ -34,7 +34,7 @@ rm -f /opt/zimbra/dspam
 ln -s /opt/zimbra/dspam-3.9.0 /opt/zimbra/dspam
 
 rm -f /opt/zimbra/postfix
-ln -s /opt/zimbra/postfix-2.7.7.3z /opt/zimbra/postfix
+ln -s /opt/zimbra/postfix-2.7.8.3z /opt/zimbra/postfix
 
 rm -f /opt/zimbra/clamav
 ln -s /opt/zimbra/clamav-0.97.3 /opt/zimbra/clamav
