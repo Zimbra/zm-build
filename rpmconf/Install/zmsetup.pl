@@ -5893,7 +5893,7 @@ sub configInstallZimlets {
       my $rc = runAsZimbra ("${zimbra_home}/bin/zmzimletctl -l deploy zimlets-network/$zimletfile");
       progress (($rc == 0) ? "done.\n" : "failed. This may impact system functionality.\n");
       if (($rc == 0) && ($zimlet eq "com_zimbra_smime")) {
-        system("cp ${zimbra_home}/jetty/webapps/zimlet/WEB-INF/lib/com_zimbra_smime.jarx ${zimbra_home}/jetty/webapps/zimbra/public/com_zimbra_smime.jarx");
+        system("cp ${zimbra_home}/zimlets-deployed/com_zimbra_smime/com_zimbra_smime.jarx ${zimbra_home}/jetty/webapps/zimbra/public/com_zimbra_smime.jarx");
       }
     }
     progress ( "Finished installing network zimlets.\n" );
