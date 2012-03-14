@@ -1414,7 +1414,9 @@ sub setDefaults {
     $ldapPostChanged = 1;
     $ldapAmavisChanged = 1;
     $ldapNginxChanged = 1;
-    $ldapBesSearcherChanged = 1;
+    if (isLdapMaster()) {
+      $ldapBesSearcherChanged = 1;
+    }
   }
 
   if(isInstalled("zimbra-proxy") && !isEnabled("zimbra-ldap")) {
@@ -1783,10 +1785,12 @@ sub setDefaultsFromLocalConfig {
     }
   } 
   if (isEnabled("zimbra-ldap")) {
-    $config{ldap_bes_searcher_password} = getLocalConfig ("ldap_bes_searcher_password");
-    if ($config{ldap_bes_searcher_password} eq "") {
-      $config{ldap_bes_searcher_password} = $config{LDAPADMINPASS};
-      $ldapBesSearcherChanged = 1;
+    if (isLdapMaster()) {
+      $config{ldap_bes_searcher_password} = getLocalConfig ("ldap_bes_searcher_password");
+      if ($config{ldap_bes_searcher_password} eq "") {
+        $config{ldap_bes_searcher_password} = $config{LDAPADMINPASS};
+        $ldapBesSearcherChanged = 1;
+      }
     }
   } 
   if (isEnabled("zimbra-ldap") || isEnabled("zimbra-mta")) {
