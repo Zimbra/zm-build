@@ -1619,15 +1619,21 @@ removeExistingInstall() {
           echo "done"
         fi
       fi
-      echo -n "   $p..."
-      $PACKAGERM $p > /dev/null 2>&1
-      echo "done"
+      isInstalled $p
+      if [ x$PKGINSTALLED != "x" ]; then
+        echo -n "   $p..."
+        $PACKAGERM $p > /dev/null 2>&1
+        echo "done"
+      fi
     done
 
     for p in $MOREPACKAGES; do
-      echo -n "   $p..."
-      $PACKAGERM $p > /dev/null 2>&1
-      echo "done"
+      isInstalled $p
+      if [ x$PKGINSTALLED != "x" ]; then
+        echo -n "   $p..."
+        $PACKAGERM $p > /dev/null 2>&1
+        echo "done"
+      fi
     done
 
     rm -f /etc/ld.so.conf.d/zimbra.ld.conf
