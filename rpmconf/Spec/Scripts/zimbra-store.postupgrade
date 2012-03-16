@@ -18,7 +18,7 @@ SAVEDIR=/opt/zimbra/.saveconfig
 PLAT=`/opt/zimbra/libexec/get_plat_tag.sh`
 H=$(hostname -s)
 zimbra_home=/opt/zimbra
-JETTY_VERSION=distribution-7.6.0.v20120127
+JETTY_VERSION=distribution-7.6.2.z2
 
 if [ -e "${zimbra_home}/perdition" ]; then
   rm -f ${zimbra_home}/perdition
