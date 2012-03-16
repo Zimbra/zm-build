@@ -3065,7 +3065,11 @@ sub isFoss {
 }
 
 sub isLicenseInstalled {
- return(runAsZimbra("/opt/zimbra/bin/zmlicense -c") ? 0 : 1); 
+  return(runAsZimbra("/opt/zimbra/bin/zmlicense -c") ? 0 : 1); 
+}
+
+sub isLdapMaster {
+  return(($config{LDAPHOST} eq $config{HOSTNAME}) ? 1 : 0);
 }
 
 sub createPackageMenu {
