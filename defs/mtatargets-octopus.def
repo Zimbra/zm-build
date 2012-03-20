@@ -1,0 +1,96 @@
+
+# __MTA
+
+mta: CUR_DEST_ROOT := $(MTA_DEST_ROOT)
+mta: CUR_PACKAGE_SPEC := $(BUILD_ROOT)/zimbra-mta.spec
+mta: CUR_PACKAGE_NAME := zimbra-mta
+mta: $(PACKAGE_DIR) mta_stage mta_pkg_spec_$(PACKAGE_EXT)
+	(cd $(CUR_DEST_ROOT); \
+		$(PACKAGING_COMMAND) $(PACKAGING_OPTIONS) )
+
+mta_pkg_spec_ccs:
+
+mta_pkg_spec_pkg: $(BUILD_ROOT)/resources/zimbra-mta $(BUILD_ROOT)/zimbra-mta.Info.plist $(BUILD_ROOT)/zimbra-mta.Description.plist
+
+$(BUILD_ROOT)/zimbra-mta.Description.plist:
+	cat $(PACKAGE_CONF_DIR)/Spec/zimbra-mta.Description.plist | \
+	sed -e 's/@@VERSION@@/$(VERSION_TAG)/' \
+	-e 's/@@RELEASE@@/$(RELEASE)/' \
+	-e 's/@@MAJOR@@/$(MAJOR)/' \
+	-e 's/@@MICRO@@/$(MICRO)/' \
+	-e 's/@@MINOR@@/$(MINOR)/' > $@
+
+$(BUILD_ROOT)/zimbra-mta.Info.plist:
+	cat $(PACKAGE_CONF_DIR)/Spec/zimbra-mta.Info.plist | \
+	sed -e 's/@@VERSION@@/$(VERSION_TAG)/' \
+	-e 's/@@RELEASE@@/$(RELEASE)/' \
+	-e 's/@@MAJOR@@/$(MAJOR)/' \
+	-e 's/@@MICRO@@/$(MICRO)/' \
+	-e 's/@@BUILDNUM@@/$(BUILDNUM)/' \
+	-e 's/@@MINOR@@/$(MINOR)/' > $@
+
+$(BUILD_ROOT)/resources/zimbra-mta:
+	mkdir -p $@
+	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-mta.postinstall $@/postinstall
+	chmod 755 $@/postinstall
+	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-mta.postupgrade $@/postupgrade
+	chmod 755 $@/postupgrade
+
+mta_pkg_spec_deb: $(MTA_DEST_ROOT)/DEBIAN/control
+
+$(MTA_DEST_ROOT)/DEBIAN: force
+	mkdir -p $@
+	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-mta.pre $@/preinst
+	cat $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-mta-octopus.post >> $@/postinst
+	chmod 555 $@/*
+
+$(MTA_DEST_ROOT)/DEBIAN/control: $(MTA_DEST_ROOT)/DEBIAN force
+	cat $(PACKAGE_CONF_DIR)/Spec/zimbra-mta.deb | \
+	sed -e 's/@@VERSION@@/$(VERSION_TAG)/' \
+	-e 's/@@RELEASE@@/$(RELEASE)/' \
+	-e 's/@@ARCH@@/$(ARCH)/' \
+	-e 's/^Copyright:/$(RPMCOPYRIGHTSTR):/' \
+	-e '/^%pre$$/ r zimbra-mta.pre' \
+	-e '/^%post$$/ r zimbra-mta-octopus.post' > $@
+
+mta_pkg_spec_rpm: $(BUILD_ROOT)/zimbra-mta.spec
+
+$(BUILD_ROOT)/zimbra-mta.spec:
+	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-mta.pre $(BUILD_ROOT)
+	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-mta-octopus.post $(BUILD_ROOT)
+	cat $(PACKAGE_CONF_DIR)/Spec/zimbra-mta.spec | \
+		sed -e 's/@@VERSION@@/$(VERSION_TAG)/' \
+		-e 's/@@RELEASE@@/$(RELEASE)/' \
+		-e 's/@@MTA_PROVIDES@@/$(MTA_PROVIDES)/' \
+		-e 's/^Copyright:/$(RPMCOPYRIGHTSTR):/' \
+		-e '/^%pre$$/ r zimbra-mta.pre' \
+		-e '/^%post$$/ r zimbra-mta-octopus.post' > $(BUILD_ROOT)/zimbra-mta.spec
+	rm -f zimbra-mta.pre
+	rm -f zimbra-mta-octopus.post
+	(cd $(MTA_DEST_ROOT); find opt -type f -o -type l -maxdepth 2 \
+		| sed -e 's|^|%attr(-, zimbra, zimbra) /|' >> \
+		$(BUILD_ROOT)/zimbra-mta.spec )
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/postfix-$(POSTFIX_VERSION)" >> \
+		$(BUILD_ROOT)/zimbra-mta.spec
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/data" >> \
+		$(BUILD_ROOT)/zimbra-mta.spec
+
+
+mta_stage: $(MTA_COMPONENTS)
+
+$(MTA_DEST_DIR):
+	mkdir -p $@
+
+$(MTA_MYSQL_DEST_DIR):
+	mkdir -p $@
+
+$(MTA_DEST_DIR)/data/postfix:
+	mkdir -p $@
+
+$(MTA_DEST_DIR)/$(POSTFIX_DIR): $(MTA_DEST_DIR)
+	@echo "*** Creating postfix"
+	(cd $(MTA_DEST_DIR); tar xzf $(POSTFIX_SOURCE).tgz;)
+	rm -f $(MTA_DEST_DIR)/$(POSTFIX_DIR)/conf/main.cf
+	cp $(SERVICE_DIR)/conf/postfix/master.cf.in $(MTA_DEST_DIR)/$(POSTFIX_DIR)/conf/master.cf.in
+	cp $(SERVICE_DIR)/conf/postfix/tag_as_foreign.re $(MTA_DEST_DIR)/$(POSTFIX_DIR)/conf/tag_as_foreign.re
+	cp $(SERVICE_DIR)/conf/postfix/tag_as_originating.re $(MTA_DEST_DIR)/$(POSTFIX_DIR)/conf/tag_as_originating.re

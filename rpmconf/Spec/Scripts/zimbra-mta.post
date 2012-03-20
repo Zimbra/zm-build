@@ -2,7 +2,7 @@
 # 
 # ***** BEGIN LICENSE BLOCK *****
 # Zimbra Collaboration Suite Server
-# Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011 VMware, Inc.
+# Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
 # 
 # The contents of this file are subject to the Zimbra Public License
 # Version 1.3 ("License"); you may not use this file except in
@@ -21,31 +21,34 @@ if [ -d "/opt/zimbra/amavisd/tmp" ]; then
 fi
 
 rm -f /opt/zimbra/amavisd
-ln -s /opt/zimbra/amavisd-new-2.6.6 /opt/zimbra/amavisd
+ln -s /opt/zimbra/amavisd-new-2.7.0 /opt/zimbra/amavisd
 
-if [ -e /opt/zimbra/cbpolicyd ]; then
-  rm -f /opt/zimbra/cbpolicyd
-fi
-if [ -d /opt/zimbra/cbpolicyd-2.0.10 ]; then
-  ln -s /opt/zimbra/cbpolicyd-2.0.10 /opt/zimbra/cbpolicyd
+rm -f /opt/zimbra/cbpolicyd
+if [ -d /opt/zimbra/cbpolicyd-2.0.11 ]; then
+  ln -s /opt/zimbra/cbpolicyd-2.0.11 /opt/zimbra/cbpolicyd
 fi
 
 rm -f /opt/zimbra/dspam
-ln -s /opt/zimbra/dspam-3.9.0 /opt/zimbra/dspam
+ln -s /opt/zimbra/dspam-3.10.1 /opt/zimbra/dspam
 
 rm -f /opt/zimbra/postfix
-ln -s /opt/zimbra/postfix-2.7.8.3z /opt/zimbra/postfix
+ln -s /opt/zimbra/postfix-2.9.1.2z /opt/zimbra/postfix
 
 rm -f /opt/zimbra/clamav
 ln -s /opt/zimbra/clamav-0.97.4 /opt/zimbra/clamav
 
 rm -f /opt/zimbra/mta/mysql
-ln -s /opt/zimbra/mta/mysql-standard-5.1.58-pc-linux-gnu-i686-glibc23 /opt/zimbra/mta/mysql
+ln -s /opt/zimbra/mta/mysql-standard-5.5.20-pc-linux-gnu-i686-glibc23 /opt/zimbra/mta/mysql
 
-if [ -e /opt/zimbra/altermime ]; then
-  rm -f /opt/zimbra/altermime
+rm -f /opt/zimbra/altermime
+ln -s /opt/zimbra/altermime-0.3.10 /opt/zimbra/altermime
+
+PLAT=$(/opt/zimbra/libexec/get_plat_tag.sh)
+if [[ $PLAT == "UBUNTU"* || $PLAT == "DEBIAN"* ]]; then
+  if [ ! -e "/usr/sbin/sendmail" ]; then
+    ln -s /opt/zimbra/postfix/sbin/sendmail /usr/sbin/sendmail
+  fi
 fi
-ln -s /opt/zimbra/altermime-0.3-dev /opt/zimbra/altermime
 
 SUDOMODE=`perl -e 'my $mode=(stat("/etc/sudoers"))[2];printf("%04o\n",$mode & 07777);'`
 egrep -v '^%zimbra.*postfix' /etc/sudoers > /tmp/sudoers

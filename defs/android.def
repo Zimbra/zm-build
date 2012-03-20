@@ -1,0 +1,17 @@
+# __ANDROID
+
+ANDROID_VERSION_TAG := $(MAJOR).$(MINOR).$(MICRO)_$(BUILDNUM)
+android: $(PACKAGE_DIR) android_stage
+
+android_stage: $(ANDROID_DEST_DIR)/android
+
+$(ANDROID_DEST_DIR):
+	mkdir -p $@
+
+$(ANDROID_DEST_DIR)/android: $(ANDROID_DEST_DIR) $(ANDROID_DEST_ROOT)/build
+
+$(ANDROID_DEST_ROOT)/build:
+	mkdir -p $(ANDROID_DEST_ROOT)/zmbuild
+	(cd $(ANDROID_DEST_ROOT); \
+	ant debug; \
+	mv $(ANDROID_DIR)/OctopusAndroidClient-debug.apk $(ANDROID_DIR)/OctopusAndroidClient-$(ANDROID_VERSION_TAG)-debug.apk;)

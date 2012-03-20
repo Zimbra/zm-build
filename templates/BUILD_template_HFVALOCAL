@@ -1,0 +1,46 @@
+# A Perforce Client Specification.
+#
+#  Client:      The client name.
+#  Update:      The date this specification was last modified.
+#  Access:      The date this client was last used in any way.
+#  Owner:       The user who created this client.
+#  Host:        If set, restricts access to the named host.
+#  Description: A short description of the client (optional).
+#  Root:        The base directory of the client workspace.
+#  AltRoots:    Up to two alternate client workspace roots.
+#  Options:     Client options:
+#                      [no]allwrite [no]clobber [no]compress
+#                      [un]locked [no]modtime [no]rmdir
+#  LineEnd:     Text file line endings on client: local/unix/mac/win/share.
+#  View:        Lines to map depot files into the client workspace.
+#
+# Use 'p4 help client' to see more about client views and options.
+
+Client:	BUILD_@@TAG@@_@@RELEASE@@_@@ARCH@@
+
+Update:	2005/04/15 13:34:42
+
+Access:	2005/04/15 14:13:20
+
+Owner:	zimbra-build
+
+Host:	
+
+Description:
+	Created by zimbra-build
+
+Root:	@@BUILD_ROOT@@
+
+Options:	noallwrite noclobber nocompress unlocked nomodtime normdir
+
+LineEnd:	local
+
+View:
+	//depot/@@TAG@@/ant-global.xml //BUILD_@@TAG@@_@@RELEASE@@_@@ARCH@@/ant-global.xml
+	//depot/@@TAG@@/ZimbraBuild/... //BUILD_@@TAG@@_@@RELEASE@@_@@ARCH@@/ZimbraBuild/...
+	//depot/@@TAG@@/ThirdPartyBuilds/@@ARCH@@/... //BUILD_@@TAG@@_@@RELEASE@@_@@ARCH@@/ThirdPartyBuilds/@@ARCH@@/...
+	//depot/@@TAG@@/ThirdPartyBuilds/i386/... //BUILD_@@TAG@@_@@RELEASE@@_@@ARCH@@/ThirdPartyBuilds/i386/...
+	//depot/@@TAG@@/ThirdPartyBuilds/x86_64/... //BUILD_@@TAG@@_@@RELEASE@@_@@ARCH@@/ThirdPartyBuilds/x86_64/...
+	//depot/@@TAG@@/ThirdPartyBuilds/UBUNTU10_64/vmware/... //BUILD_@@TAG@@_@@RELEASE@@_@@ARCH@@/ThirdPartyBuilds/UBUNTU10_64/vmware/...
+	//depot/@@TAG@@/ZimbraLicenses/... //BUILD_@@TAG@@_@@RELEASE@@_@@ARCH@@/ZimbraLicenses/...
+  //depot/@@TAG@@/Octopus/... //BUILD_@@TAG@@_@@RELEASE@@_@@ARCH@@/Octopus/...

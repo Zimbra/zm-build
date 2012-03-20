@@ -110,6 +110,7 @@ $(STORE_DEST_DIR)/$(MYSQL_DIR):
 $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/bin: $(STORE_DEST_DIR) force
 	@echo "*** Creating $(MAILBOXD_SERVER)"
 	(cd $(STORE_DEST_DIR); tar xzf $(MAILBOXD_SOURCE).tar.gz;)
+	-(rm $(@D)/start.ini $(@D)/etc/keystore)
 
 ifeq ($(ZIMBRA_USE_TOMCAT), 1)
 $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/conf: force
@@ -154,21 +155,25 @@ $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/etc: force
 			$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/etc/jetty-setuid.xml
 		cp -f $(SERVICE_DIR)/conf/$(MAILBOXD_SERVER)-$(MAILBOXD_MINOR_VERSION)/jetty.properties \
 			$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/etc/jetty.properties.in
-		cp -f $(SERVICE_DIR)/conf/jetty-6.1/spnego/etc/spnego.properties \
+		cp -f $(SERVICE_DIR)/conf/$(MAILBOXD_SERVER)-$(MAILBOXD_MINOR_VERSION)/spnego/etc/spnego.properties \
 			$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/etc/spnego.properties.in
-		cp -f $(SERVICE_DIR)/conf/jetty-6.1/spnego/etc/spnego.conf \
+		cp -f $(SERVICE_DIR)/conf/$(MAILBOXD_SERVER)-$(MAILBOXD_MINOR_VERSION)/spnego/etc/spnego.conf \
 			$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/etc/spnego.conf.in
-		cp -f $(SERVICE_DIR)/conf/jetty-6.1/spnego/etc/krb5.ini \
+		cp -f $(SERVICE_DIR)/conf/$(MAILBOXD_SERVER)-$(MAILBOXD_MINOR_VERSION)/spnego/etc/krb5.ini \
 			$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/etc/krb5.ini.in
 		cp -f $(SERVICE_DIR)/conf/web.xml.production \
 			$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/etc/service.web.xml.in
 		cp -f $(ZIMLET_DIR)/conf/web.xml.production \
 			$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/etc/zimlet.web.xml.in
-		cat zimbraConf/web.xml | \
+		cp -f $(CONSOLE_DIR)/WebRoot/WEB-INF/jetty-env.xml \
+			$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/etc/zimbra-jetty-env.xml.in
+		cp -f $(CONSOLE_DIR)/WebRoot/WEB-INF/jetty-env.xml \
+			$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/etc/zimbraAdmin-jetty-env.xml.in
+		cat $(WEBAPP_STAGE_DIR)/zimbra/web.xml | \
 			sed -e '/REDIRECTBEGIN/ s/$$/ %%comment VAR:zimbraMailMode,-->,redirect%%/' \
 				-e '/REDIRECTEND/ s/^/%%comment VAR:zimbraMailMode,<!--,redirect%% /' \
 				> $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/etc/zimbra.web.xml.in
-		cat zimbraAdminConf/web.xml | \
+		cat $(WEBAPP_STAGE_DIR)/admin/web.xml | \
 			sed -e '/REDIRECTBEGIN/ s/$$/ %%comment VAR:zimbraMailMode,-->,redirect%%/' \
 				-e '/REDIRECTEND/ s/^/%%comment VAR:zimbraMailMode,<!--,redirect%% /' \
 				> $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/etc/zimbraAdmin.web.xml.in
@@ -226,6 +231,12 @@ $(ZIMLET_DIR)/build/dist/zimlets/nofile:
 	(cd $(ADMIN_EXT_DIR); $(ANT) $(ANT_DEBUG)\
 		-Dzimbra.buildinfo.platform=$(BUILD_PLATFORM) \
 		-Dext.dir=BulkProvision -Dext.name=com_zimbra_bulkprovision \
+		-Dzimbra.buildinfo.version=$(SOURCE_TAG) \
+		-Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) \
+		-Dzimbra.buildinfo.host=$(HOST) package-zimlet ; )
+	(cd $(ADMIN_EXT_DIR); $(ANT) $(ANT_DEBUG)\
+		-Dzimbra.buildinfo.platform=$(BUILD_PLATFORM) \
+		-Dext.dir=HelpTooltip -Dext.name=com_zimbra_tooltip \
 		-Dzimbra.buildinfo.version=$(SOURCE_TAG) \
 		-Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) \
 		-Dzimbra.buildinfo.host=$(HOST) package-zimlet ; )

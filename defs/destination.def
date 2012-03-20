@@ -34,12 +34,21 @@ MEMCACHED_DEST_DIR		:= $(MEMCACHED_DEST_ROOT)/opt/zimbra
 
 WEBAPP_DIR		:= $(STORE_DEST_ROOT)/opt/zimbra/$(MAILBOXD_DIR)/webapps
 WEBAPP_BUILD_DIR := build/dist/$(MAILBOXD_SERVER)/webapps
+WEBAPP_STAGE_DIR := $(BUILD_ROOT)/webappbuild
 
 PACKAGE_DIR			:= $(BUILD_ROOT)/$(ARCH)
 ZIMBRA_BIN_DIR		:= $(BUILD_ROOT)/../ZimbraServer/src/bin
 
 ISYNC_DEST_ROOT := $(BUILD_ROOT)/isyncbuild
 ISYNC_DEST_DIR := $(ISYNC_DEST_ROOT)/root/Library/PreferencePanes
+
+OSYNC_DEST_ROOT := $(BUILD_ROOT)/../Octopus/native/desktopclient/osx
+OSYNC_DEST_DIR := $(OSYNC_DEST_ROOT)/Packaging/build
+
+IOS_DEST_ROOT := $(BUILD_ROOT)/../Octopus/Mobile/iOS/Octopus
+
+ANDROID_DEST_ROOT := $(BUILD_ROOT)/../Octopus/Mobile/Android
+ANDROID_DEST_DIR := $(ANDROID_DEST_ROOT)/bin
 
 TOASTER_DEST_ROOT := $(BUILD_ROOT)/mactoasterbuild
 TOASTER_DEST_DIR := $(TOASTER_DEST_ROOT)/root/Applications
@@ -48,3 +57,4 @@ EVO_DEST_ROOT := $(BUILD_ROOT)/evolutionbuild
 EVO_DEST_DIR := $(EVO_DEST_ROOT)
 
 PATCH_DEST_DIR := $(BUILD_ROOT)/zcs-patch-$(SOURCE_TAG)
+
