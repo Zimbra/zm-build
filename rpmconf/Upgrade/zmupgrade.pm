@@ -3523,6 +3523,7 @@ sub upgrade6015GA {
 sub upgrade6016GA {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
   main::progress("Updating from 6.0.16_GA\n");
+  main::setLocalConfig("ldap_read_timeout", "0"); #70437
   return 0;
 }
 
@@ -3960,6 +3961,7 @@ sub upgrade714GA {
 sub upgrade720GA {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
   main::progress("Updating from 7.2.0_GA\n");
+  main::setLocalConfig("ldap_read_timeout", "0"); #70437
   if (main::isInstalled("zimbra-store")) {
     # Bug #64466
     my $zimbra_home = main::getLocalConfig("zimbra_home") || "/opt/zimbra";
@@ -4110,6 +4112,7 @@ FIX_RIGHTS_EOF
 sub upgrade800BETA3 {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
   main::progress("Updating from 8.0.0_BETA3\n");
+  main::setLocalConfig("ldap_read_timeout", "0"); #70437
   system("rm -rf /opt/zimbra/ssl/zimbra/{ca,server} > /dev/null 2>&1");
   main::setLocalConfig("ssl_allow_untrusted_certs", "true");
   if (main::isInstalled("zimbra-ldap")) {
