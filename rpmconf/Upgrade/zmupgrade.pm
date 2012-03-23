@@ -3453,6 +3453,7 @@ sub upgrade6015GA {
 sub upgrade6016GA {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
   main::progress("Updating from 6.0.16_GA\n");
+  main::setLocalConfig("ldap_read_timeout", "0"); # 70437  
   return 0;
 }
 
