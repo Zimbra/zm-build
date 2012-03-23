@@ -3950,6 +3950,7 @@ sub upgrade714GA {
 sub upgrade720GA {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
   main::progress("Updating from 7.2.0_GA\n");
+  main::setLocalConfig("ldap_read_timeout", "0"); # 70437  
   if (main::isInstalled("zimbra-store")) {
     # Bug #64466
     my $zimbra_home = main::getLocalConfig("zimbra_home") || "/opt/zimbra";
