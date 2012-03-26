@@ -17,7 +17,7 @@ $(IOS_DEST_ROOT)/build:
 	sed -i -e 's/19/$(IOS_VERSION_TAG)/g' $(IOS_DEST_ROOT)/Octopus.plist.in
 	sed -i -e 's/ZCS_VERSION/$(IOS_VERSION_TAG)/g' $(IOS_DEST_ROOT)/build-ipa.sh
 	sed -i -e 's/@@BUILDPLATFORM@@/$(BUILD_PLATFORM)/g' $(IOS_DEST_ROOT)/octopus.html.in
-	sed -i -e 's/@@RELEASE@@/$(RELEASE)/g' $(IOS_DEST_ROOT)/octopus.html.in
+	sed -i -e 's/@@RELEASE@@/$(MYRELEASE)/g' $(IOS_DEST_ROOT)/octopus.html.in
 	sed -i -e 's/@@BRANCH@@/$(MYBRANCH)/g' $(IOS_DEST_ROOT)/octopus.html.in
 	sed -i -e 's/@@BUILD@@/$(IOS_VERSION_TAG)/g' $(IOS_DEST_ROOT)/octopus.html.in
 	(cd $(IOS_DEST_ROOT); \
