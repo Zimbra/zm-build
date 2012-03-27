@@ -233,6 +233,11 @@ if [ -f /etc/lsb-release ]; then
 		if [ $? = 0 ]; then
 			echo "10${i}"
 			exit 0
+		fi
+		grep "DISTRIB_RELEASE=12" /etc/lsb-release > /dev/null 2>&1
+		if [ $? = 0 ]; then
+			echo "12${i}"
+			exit 0
 		else
 			echo "UNKNOWN${i}"
 			exit 0
