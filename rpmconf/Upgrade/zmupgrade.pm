@@ -4154,6 +4154,9 @@ sub upgrade800BETA3 {
 sub upgrade800BETA4 {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
   main::progress("Updating from 8.0.0_BETA4\n");
+  if ($isLdapMaster) {
+      runLdapAttributeUpgrade("72007");
+  }
   return 0;
 }
 
