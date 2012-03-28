@@ -190,12 +190,10 @@ $(CORE_DEST_DIR)/zimbramon/crontabs:
 
 $(CORE_DEST_DIR)/zimbramon/bin:
 	mkdir -p $(CORE_DEST_DIR)/zimbramon/bin
-ifneq ($(ZIMBRA_OCTOPUS_BUILD), 1)
 	(cd $(CORE_DEST_DIR)/zimbramon/bin; \
 	tar xzf $(PERL_LIB_SOURCE)/perlbin.tgz)
 	mkdir -p $(CORE_DEST_DIR)/libexec
 	cp -pr $(CORE_DEST_DIR)/zimbramon/bin/sa-learn $(CORE_DEST_DIR)/libexec/
-endif
 
 $(CORE_DEST_DIR)/zimbramon/pylibs:
 	mkdir -p $(CORE_DEST_DIR)/zimbramon
@@ -203,15 +201,9 @@ $(CORE_DEST_DIR)/zimbramon/pylibs:
 
 $(CORE_DEST_DIR)/zimbramon/lib:
 	mkdir -p $(CORE_DEST_DIR)/zimbramon/lib
-ifneq ($(ZIMBRA_OCTOPUS_BUILD), 1)
 	(cd $(CORE_DEST_DIR)/zimbramon/lib; \
 	tar xzf $(PERL_LIB_SOURCE)/perllib.tgz)
 	cp -R $(BUILD_ROOT)/lib/Zimbra $(CORE_DEST_DIR)/zimbramon/lib
-else
-	(cd $(CORE_DEST_DIR)/zimbramon/lib; \
-	tar xzf $(PERL_LIB_SOURCE)/perllib-octopus.tgz)
-	cp -R $(BUILD_ROOT)/lib/Zimbra $(CORE_DEST_DIR)/zimbramon/lib
-endif
 
 $(CORE_DEST_DIR)/lib: $(WEBAPP_DIR)/service.war $(LDAP_DEST_DIR)/$(LDAP_DIR)-$(LDAP_VERSION) $(NATIVE_DIR)/build/libzimbra-native.$(JNI_EXT)
 	mkdir -p $@
@@ -371,14 +363,10 @@ $(CORE_DEST_DIR)/lib/libexpat.dylib: $(CORE_DEST_DIR)/lib
 	rm -rf $(CORE_DEST_DIR)/include
 
 $(CORE_DEST_DIR)/$(BDB_DIR):
-ifeq ($(ZIMBRA_OCTOPUS_BUILD), 1)
-	@echo "*** Not creating bdb"
-else
 	@echo "*** Creating bdb"
 	mkdir -p $@
 	(cd $(CORE_DEST_DIR); tar xzf $(BDB_SOURCE).tgz; chmod u+w $(BDB_DIR)/bin/*)
 	rm -rf $(CORE_DEST_DIR)/$(BDB_DIR)/docs/java
-endif
 
 $(CORE_DEST_DIR)/$(OPENSSL_DIR)-$(OPENSSL_VERSION):
 	@echo "*** Creating openssl"
