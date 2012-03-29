@@ -4929,7 +4929,7 @@ sub upgradeLdap($) {
         `mkdir -p /opt/zimbra/data/ldap/mdb/db`;
         `chown -R zimbra:zimbra /opt/zimbra/data/ldap`;
         my $rc;
-        $rc=main::runAsZimbra("/opt/zimbra/openldap/sbin/slapadd -b '' -F /opt/zimbra/data/ldap/config -l $slapoutfile");
+        $rc=main::runAsZimbra("/opt/zimbra/openldap/sbin/slapadd -q -b '' -F /opt/zimbra/data/ldap/config -l $slapoutfile");
         if ($rc != 0) {
           main::progress("slapadd import failed.\n");
           return 1;
@@ -5004,7 +5004,7 @@ sub migrateLdap($) {
         `mkdir -p /opt/zimbra/data/ldap/mdb/db`;
         `chown -R zimbra:zimbra /opt/zimbra/data/ldap`;
         my $rc;
-        $rc=main::runAsZimbra("/opt/zimbra/openldap/sbin/slapadd -b '' -F /opt/zimbra/data/ldap/config -l $outfile");
+        $rc=main::runAsZimbra("/opt/zimbra/openldap/sbin/slapadd -q -b '' -F /opt/zimbra/data/ldap/config -l $outfile");
         if ($rc != 0) {
           main::progress("slapadd import failed.\n");
           return 1;
@@ -5014,7 +5014,7 @@ sub migrateLdap($) {
       } else {
         stopLdap();
         main::progress("Running slapindex...");
-        my $rc = main::runAsZimbra("/opt/zimbra/openldap/sbin/slapindex -b '' -F /opt/zimbra/data/ldap/config");
+        my $rc = main::runAsZimbra("/opt/zimbra/openldap/sbin/slapindex -q -b '' -F /opt/zimbra/data/ldap/config");
         main::progress(($rc == 0) ? "done.\n" : "failed.\n");
       }
       main::configLog("LdapUpgraded$migrateVersion");
