@@ -645,7 +645,7 @@ sub upgrade {
 
   # start ldap
   if (main::isInstalled ("zimbra-ldap")) {
-    if($startMajor < 8) {
+    if($startMajor < 6 && $targetMajor >= 6)
       my $rc=&migrateLdap("8.0.0_BETA3");
       if ($rc) { return 1; }
     } elsif($targetMajor >= 8) {
@@ -4958,7 +4958,7 @@ sub migrateLdap($) {
       my $postfix_id_fix=0;
       if (-f "/opt/zimbra/data/ldap/ldap.bak") {
         my $infile = "/opt/zimbra/data/ldap/ldap.bak";
-        my $outfile = "/opt/zimbra/data/ldap/ldap.60";
+        my $outfile = "/opt/zimbra/data/ldap/ldap.80";
         if ( -s $infile ) {
           open(IN,"<$infile");
           open(OUT,">$outfile");
