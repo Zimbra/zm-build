@@ -24,12 +24,12 @@ PLAT=`/opt/zimbra/libexec/get_plat_tag.sh`
 BIT=`echo $PLAT | awk -F_ '{print $2}'`
 if [ "x$BIT" = "x64" ]; then
 	if [ "x$PLAT" = "xRHEL4_64" ]; then
-		ln -s /opt/zimbra/jdk1.6.0_29 /opt/zimbra/java
+		ln -s /opt/zimbra/jdk1.6.0_31 /opt/zimbra/java
 	else
-		ln -s /opt/zimbra/jdk1.7.0_01 /opt/zimbra/java
+		ln -s /opt/zimbra/jdk1.7.0_03 /opt/zimbra/java
 	fi
 else
-	ln -s /opt/zimbra/jdk1.7.0_01 /opt/zimbra/java
+	ln -s /opt/zimbra/jdk1.7.0_03 /opt/zimbra/java
 fi
 
 #Symlinks
