@@ -4154,8 +4154,55 @@ sub upgrade800BETA3 {
 sub upgrade800BETA4 {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
   main::progress("Updating from 8.0.0_BETA4\n");
-  if ($isLdapMaster) {
-      runLdapAttributeUpgrade("72007");
+  if (main::isInstalled("zimbra-ldap")) {
+    if ($isLdapMaster) {
+        runLdapAttributeUpgrade("72007");
+    }
+    my $ldap_pass = `$su "zmlocalconfig -s -m nokey ldap_root_password"`;
+    chomp($ldap_pass);
+    my $ldap;
+    unless($ldap = Net::LDAP->new('ldapi://%2fopt%2fzimbra%2fopenldap%2fvar%2frun%2fldapi/')) {
+       main::progress("Unable to contact to ldapi: $!\n");
+    }
+    my $result = $ldap->bind("cn=config", password => $ldap_pass);
+    my $dn="olcDatabase={2}mdb,cn=config";
+    if ($isLdapMaster) {
+      $result = $ldap->search(
+                        base=> "cn=accesslog",
+                        filter=>"(objectClass=*)",
+                        scope => "base",
+                        attrs => ['1.1'],
+      );
+      my $size = $result->count;
+      if ($size > 0 ) {
+        $dn="olcDatabase={3}mdb,cn=config";
+      }
+    }
+    $result = $ldap->search(
+      base=> "$dn",
+      filter=>"(objectClass=*)",
+      scope => "base",
+      attrs => ['olcDbIndex'],
+    );
+    my $entry=$result->entry($result->count-1);
+    my @attrvals=$entry->get_value("olcDbIndex");
+    my $MzimbraDomainAliasTargetID=1;
+
+    foreach my $attr (@attrvals) {
+      if ($attr =~ /zimbraDomainAliasTargetID/) {
+        $MzimbraDomainAliasTargetID=0;
+      }
+    }
+    if ($MzimbraDomainAliasTargetID) {
+      $result = $ldap->modify(
+          $dn,
+          add =>{olcDbIndex=>"zimbraDomainAliasTargetID eq"},
+      );
+    }
+    $ldap->unbind;
+    if ($MzimbraDomainAliasTargetID) {
+      &indexLdapAttribute("zimbraDomainAliasTargetID");
+    }
   }
   return 0;
 }
