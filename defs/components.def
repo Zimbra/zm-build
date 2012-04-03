@@ -87,7 +87,6 @@ STORE_COMPONENTS := \
 	$(STORE_DEST_DIR)/conf/zmztozmig.conf \
 	$(STORE_DEST_DIR)/conf/templates \
 	$(STORE_DEST_DIR)/zimlets-extra \
-	$(STORE_DEST_DIR)/zimlets-admin-extra \
 	$(STORE_DEST_DIR)/zimlets-experimental \
 	$(STORE_DEST_DIR)/extensions-extra \
 	$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/common/lib \
