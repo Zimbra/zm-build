@@ -39,52 +39,52 @@ $(WEBAPP_DIR)/zimbraAdmin.war: $(WEBAPP_DIR) $(WEBAPP_STAGE_DIR)/admin/zimbraAdm
 	mkdir $(WEBAPP_DIR)/zimbraAdmin
 	(cd $(WEBAPP_DIR)/zimbraAdmin; jar xf $(WEBAPP_STAGE_DIR)/admin/zimbraAdmin.war)
 	for download in $(IWDOWNLOAD); do \
-		echo "IMPORT_WIZ_DOWNLOAD_LINK = /zimbra/downloads/$$download" >> $(WEBAPP_DIR)/zimbraAdmin/WEB-INF/classes/messages/ZaMsg.properties; \
+		echo "IMPORT_WIZ_DOWNLOAD_LINK = /downloads/$$download" >> $(WEBAPP_DIR)/zimbraAdmin/WEB-INF/classes/messages/ZaMsg.properties; \
 	done
 	for download in $(MWDOWNLOAD); do \
-		echo "MIG_WIZ_DOWNLOAD_LINK = /zimbra/downloads/$$download" >> $(WEBAPP_DIR)/zimbraAdmin/WEB-INF/classes/messages/ZaMsg.properties; \
+		echo "MIG_WIZ_DOWNLOAD_LINK = /downloads/$$download" >> $(WEBAPP_DIR)/zimbraAdmin/WEB-INF/classes/messages/ZaMsg.properties; \
 	done
 	for download in $(GMW32DOWNLOAD); do \
-		echo "GENERAL_MIG_WIZ_X86_DOWNLOAD_LINK = /zimbra/downloads/$$download" >> $(WEBAPP_DIR)/zimbraAdmin/WEB-INF/classes/messages/ZaMsg.properties; \
+		echo "GENERAL_MIG_WIZ_X86_DOWNLOAD_LINK = /downloads/$$download" >> $(WEBAPP_DIR)/zimbraAdmin/WEB-INF/classes/messages/ZaMsg.properties; \
 	done
 	for download in $(GMW64DOWNLOAD); do \
-		echo "GENERAL_MIG_WIZ_X64_DOWNLOAD_LINK = /zimbra/downloads/$$download" >> $(WEBAPP_DIR)/zimbraAdmin/WEB-INF/classes/messages/ZaMsg.properties; \
+		echo "GENERAL_MIG_WIZ_X64_DOWNLOAD_LINK = /downloads/$$download" >> $(WEBAPP_DIR)/zimbraAdmin/WEB-INF/classes/messages/ZaMsg.properties; \
 	done
 	for download in $(CN32DOWNLOAD); do \
-		echo "CONNECTOR_32_DOWNLOAD_LINK = /zimbra/downloads/$$download" >> $(WEBAPP_DIR)/zimbraAdmin/WEB-INF/classes/messages/ZaMsg.properties; \
+		echo "CONNECTOR_32_DOWNLOAD_LINK = /downloads/$$download" >> $(WEBAPP_DIR)/zimbraAdmin/WEB-INF/classes/messages/ZaMsg.properties; \
 	done
 	for download in $(CN64DOWNLOAD); do \
-		echo "CONNECTOR_64_DOWNLOAD_LINK = /zimbra/downloads/$$download" >> $(WEBAPP_DIR)/zimbraAdmin/WEB-INF/classes/messages/ZaMsg.properties; \
+		echo "CONNECTOR_64_DOWNLOAD_LINK = /downloads/$$download" >> $(WEBAPP_DIR)/zimbraAdmin/WEB-INF/classes/messages/ZaMsg.properties; \
 	done
 	for download in $(CMDOWNLOAD); do \
-		echo "CONNECTOR_MSI_DOWNLOAD_LINK = /zimbra/downloads/$$download" >> $(WEBAPP_DIR)/zimbraAdmin/WEB-INF/classes/messages/ZaMsg.properties; \
+		echo "CONNECTOR_MSI_DOWNLOAD_LINK = /downloads/$$download" >> $(WEBAPP_DIR)/zimbraAdmin/WEB-INF/classes/messages/ZaMsg.properties; \
 	done
 	for download in $(DMDOWNLOAD); do \
-		echo "DOMINO_MIG_WIZ_DOWNLOAD_LINK = /zimbra/downloads/$$download" >> $(WEBAPP_DIR)/zimbraAdmin/WEB-INF/classes/messages/ZaMsg.properties; \
+		echo "DOMINO_MIG_WIZ_DOWNLOAD_LINK = /downloads/$$download" >> $(WEBAPP_DIR)/zimbraAdmin/WEB-INF/classes/messages/ZaMsg.properties; \
 	done
 #	for download in $(ZTDOWNLOAD); do \
-#		echo "ZIMBRA_TOASTER_DOWNLOAD_LINK = /zimbra/downloads/$$download" >> $(WEBAPP_DIR)/zimbraAdmin/WEB-INF/classes/messages/ZaMsg.properties; \
+#		echo "ZIMBRA_TOASTER_DOWNLOAD_LINK = /downloads/$$download" >> $(WEBAPP_DIR)/zimbraAdmin/WEB-INF/classes/messages/ZaMsg.properties; \
 #	done
 #	for download in $(ZDLDOWNLOAD); do \
-#		echo "ZDESKTOP_LINUX_DOWNLOAD_LINK = /zimbra/downloads/$$download" >> $(WEBAPP_DIR)/zimbraAdmin/WEB-INF/classes/messages/ZaMsg.properties; \
+#		echo "ZDESKTOP_LINUX_DOWNLOAD_LINK = /downloads/$$download" >> $(WEBAPP_DIR)/zimbraAdmin/WEB-INF/classes/messages/ZaMsg.properties; \
 #	done
 #	for download in $(ZDMDOWNLOAD); do \
-#		echo "ZDESKTOP_MAC_DOWNLOAD_LINK = /zimbra/downloads/$$download" >> $(WEBAPP_DIR)/zimbraAdmin/WEB-INF/classes/messages/ZaMsg.properties; \
+#		echo "ZDESKTOP_MAC_DOWNLOAD_LINK = /downloads/$$download" >> $(WEBAPP_DIR)/zimbraAdmin/WEB-INF/classes/messages/ZaMsg.properties; \
 #	done
 #	for download in $(ZDWDOWNLOAD); do \
-#		echo "ZDESKTOP_WINDOWS_DOWNLOAD_LINK = /zimbra/downloads/$$download" >> $(WEBAPP_DIR)/zimbraAdmin/WEB-INF/classes/messages/ZaMsg.properties; \
+#		echo "ZDESKTOP_WINDOWS_DOWNLOAD_LINK = /downloads/$$download" >> $(WEBAPP_DIR)/zimbraAdmin/WEB-INF/classes/messages/ZaMsg.properties; \
 #	done
 #	@(for download in $(ZDMDOWNLOAD); do \
-#		echo "ZDESKTOP_MAC_DOWNLOAD_LINK = /zimbra/downloads/$$download" >> $(WEBAPP_DIR)/zimbraAdmin/WEB-INF/classes/messages/ZaMsg.properties; \
+#		echo "ZDESKTOP_MAC_DOWNLOAD_LINK = /downloads/$$download" >> $(WEBAPP_DIR)/zimbraAdmin/WEB-INF/classes/messages/ZaMsg.properties; \
 #	done)
 #	@(for download in $(ZDLDOWNLOAD); do \
-#		echo "ZDESKTOP_LINUX_DOWNLOAD_LINK = /zimbra/downloads/$$download" >> $(WEBAPP_DIR)/zimbraAdmin/WEB-INF/classes/messages/ZaMsg.properties; \
+#		echo "ZDESKTOP_LINUX_DOWNLOAD_LINK = /downloads/$$download" >> $(WEBAPP_DIR)/zimbraAdmin/WEB-INF/classes/messages/ZaMsg.properties; \
 #	done)
 #	@(for download in $(ZDWDOWNLOAD); do \
-#		echo "ZDESKTOP_WIN_DOWNLOAD_LINK = /zimbra/downloads/$$download" >> $(WEBAPP_DIR)/zimbraAdmin/WEB-INF/classes/messages/ZaMsg.properties; \
+#		echo "ZDESKTOP_WIN_DOWNLOAD_LINK = /downloads/$$download" >> $(WEBAPP_DIR)/zimbraAdmin/WEB-INF/classes/messages/ZaMsg.properties; \
 #	done)
 #	for download in $(GWDOWNLOAD); do \
-#		echo "GROUPWISE_MIG_WIZ_DOWNLOAD_LINK = /zimbra/downloads/$$download" >> $(WEBAPP_DIR)/zimbraAdmin/WEB-INF/classes/messages/ZaMsg.properties; \
+#		echo "GROUPWISE_MIG_WIZ_DOWNLOAD_LINK = /downloads/$$download" >> $(WEBAPP_DIR)/zimbraAdmin/WEB-INF/classes/messages/ZaMsg.properties; \
 #	done
 #
 
