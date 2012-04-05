@@ -6225,29 +6225,6 @@ sub configInitGALSyncAccts {
   #}
 }
 
-sub configInitInstantMessaging {
-
-  if ($configStatus{configInitIM} eq "CONFIGURED") {
-    configLog("configInitIM");
-    return 0;
-  }
-  my $rc;
-  if (isEnabled("zimbra-store")) {
-    progress("Checking for default IM conference room...");
-    $rc = runAsZimbra("$ZMPROV gxc conference.$config{CREATEDOMAIN}");
-    progress (($rc != 0) ? "not present.\n" : "already initialized.\n");
-    if ($rc != 0) {
-      progress("Initializing default IM conference room...");
-      $rc = runAsZimbra("$ZMPROV cxc conference $config{CREATEDOMAIN} $config{HOSTNAME} org.jivesoftware.wildfire.muc.spi.MultiUserChatServerImpl conference text");
-      progress (($rc == 0) ? "done.\n" : "failed.\n");
-      configLog("configInitIM") if ($rc == 0);
-    } else {
-      configLog("configInitIM");
-      return;
-    }
-  }
-}
-
 sub configSetEnabledServices {
 
   if ($configStatus{configSetEnabledServices} eq "CONFIGURED") {
@@ -6424,8 +6401,6 @@ sub applyConfig {
   configInitLogger();
 
   configInitSnmp();
-
-  #configInitInstantMessaging();
 
   configInitGALSyncAccts();
 
