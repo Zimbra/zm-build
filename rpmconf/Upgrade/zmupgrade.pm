@@ -4156,6 +4156,7 @@ sub upgrade800BETA4 {
   main::progress("Updating from 8.0.0_BETA4\n");
   if (main::isInstalled("zimbra-ldap")) {
     if ($isLdapMaster) {
+        runLdapAttributeUpgrade("68190");
         runLdapAttributeUpgrade("72007");
     }
     my $ldap_pass = `$su "zmlocalconfig -s -m nokey ldap_root_password"`;
