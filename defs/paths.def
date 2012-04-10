@@ -25,3 +25,4 @@ ARCHIVE_DIR := $(BUILD_ROOT)/../ZimbraArchive
 ADMIN_VERSIONCHECK_DIR := $(BUILD_ROOT)/../ZimbraAdminVersionCheck
 PATCH_DIR := $(BUILD_ROOT)/../ZimbraBuild/rpmconf/Patch
 OAUTH_EXT_DIR := $(BUILD_ROOT)/../SampleOAuthProviderExtension
+SOAP_DIR := $(BUILD_ROOT)/../ZimbraSoap

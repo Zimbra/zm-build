@@ -51,7 +51,15 @@ $(ARCH)/zcs.mpkg/Contents/distribution.dist:
 
 zcs-$(RELEASE).tgz: zcs_stage packages
 
-zcs_stage:
+$(SOAP_DIR)/package-soap-api-doc:
+	(cd $(SOAP_DIR); $(ANT) $(ANT_DEBUG) \
+		-Dzimbra.buildinfo.platform=$(BUILD_PLATFORM) \
+		-Dzimbra.buildinfo.version=$(SOURCE_TAG) \
+		-Dzimbra.buildinfo.type=$(BUILD_TYPE) \
+		-Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) \
+		-Dzimbra.buildinfo.host=$(HOST) package-soap-api-doc ; )
+
+zcs_stage: $(SOAP_DIR)/package-soap-api-doc
 	mkdir -p zcs-$(RELEASE_VERSION_TAG).$(RELEASE)/packages
 	mkdir -p zcs-$(RELEASE_VERSION_TAG).$(RELEASE)/bin
 	mkdir -p zcs-$(RELEASE_VERSION_TAG).$(RELEASE)/data
@@ -83,6 +91,7 @@ zcs_stage:
 	mv zcs-$(RELEASE_VERSION_TAG).$(RELEASE).tgz $(PACKAGE_DIR)
 	(cd $(PACKAGE_DIR); ln -s zcs-$(RELEASE_VERSION_TAG).$(RELEASE).tgz zcs.tgz)
 	-cp -f $(WEBAPP_DIR)/zimbra/downloads/* $(PACKAGE_DIR)
+	-cp -f $(SOAP_DIR)/build/docs/*.zip $(PACKAGE_DIR)
 	@echo "*** BUILD COMPLETED ***"
 
 packages: core proxy memcached mta apache store ldap snmp logger spell
