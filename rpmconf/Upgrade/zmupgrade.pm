@@ -225,6 +225,7 @@ my %updateFuncs = (
   "7.1.3_GA" => \&upgrade713GA,
   "7.1.4_GA" => \&upgrade714GA,
   "7.2.0_GA" => \&upgrade720GA,
+  "7.2.1_GA" => \&upgrade721GA,
   "8.0.0_BETA1" => \&upgrade800BETA1,
 );
 
@@ -334,6 +335,7 @@ my @versionOrder = (
   "7.1.3_GA",
   "7.1.4_GA",
   "7.2.0_GA",
+  "7.2.1_GA",
   "8.0.0_BETA1",
 );
 
@@ -604,6 +606,8 @@ sub upgrade {
     main::progress("This appears to be 7.1.4_GA\n");
   } elsif ($startVersion eq "7.2.0_GA") {
     main::progress("This appears to be 7.2.0_GA\n");
+  } elsif ($startVersion eq "7.2.1_GA") {
+    main::progress("This appears to be 7.2.1_GA\n");
   } elsif ($startVersion eq "8.0.0_BETA1") {
     main::progress("This appears to be 8.0.0_BETA1\n");
   } else {
@@ -3958,6 +3962,12 @@ sub upgrade720GA {
     rmtree("${imap_cache_data_directory}")
       if ( -d "${imap_cache_data_directory}/");
   }
+  return 0;
+}
+
+sub upgrade721GA {
+  my ($startBuild, $targetVersion, $targetBuild) = (@_);
+  main::progress("Updating from 7.2.1_GA\n");
   return 0;
 }
 
