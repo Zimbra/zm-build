@@ -4214,6 +4214,10 @@ sub upgrade800BETA4 {
     if ($MzimbraDomainAliasTargetID) {
       &indexLdapAttribute("zimbraDomainAliasTargetID");
     }
+    my $toolthreads = main::getLocalConfig("ldap_tool_threads");
+    if ($toolthreads == 1) {
+       main::setLocalConfig("ldap_tool_threads", "2");
+    }
   }
   return 0;
 }
