@@ -46,5 +46,5 @@ D=$(date +%s)
 echo "${D}: INSTALL SESSION COMPLETE" >> /opt/zimbra/.install_history
 
 # Fix dspam.conf dylib/so for mac
-sed -i .bak -e 's/\.so$/.dylib/' /opt/zimbra/conf/dspam.conf
+sed -i .bak -e 's/\.so$/.dylib/' /opt/zimbra/conf/dspam.conf.in
 
