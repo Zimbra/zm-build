@@ -995,6 +995,8 @@ sub setLdapDefaults {
   my $serverid = getLdapServerValue("zimbraId");
   if ($serverid ne "")  {
 
+    $config{zimbraIPMode}     = getLdapServerValue("zimbraIPMode");
+
     $config{IMAPPORT}         = getLdapServerValue("zimbraImapBindPort");
     $config{IMAPSSLPORT}      = getLdapServerValue("zimbraImapSSLBindPort");
     $config{POPPORT}          = getLdapServerValue("zimbraPop3BindPort");
@@ -1019,8 +1021,6 @@ sub setLdapDefaults {
     $config{zimbraReverseProxyLookupTarget} = getLdapServerValue("zimbraReverseProxyLookupTarget")
       if ($config{zimbraReverseProxyLookupTarget} eq "");
 
-
-  
     my $mtaauthhost=getLdapServerValue("zimbraMtaAuthHost");
     $config{MTAAUTHHOST} = $mtaauthhost if ( $mtaauthhost ne "");
 
@@ -1311,6 +1311,8 @@ sub setDefaults {
   $config{POPSSLPORT} = 995;
   $config{HTTPPORT} = 80;
   $config{HTTPSPORT} = 443;
+
+  $config{zimbraIPMode}     = "ipv4";
 
   if ($platform =~ /MACOSX/ && $platform ne "MACOSXx86_10.6" && $platform ne "MACOSXx86_10.7" ) {
     $config{JAVAHOME} = "/System/Library/Frameworks/JavaVM.framework/Versions/1.5/Home";
@@ -3047,6 +3049,22 @@ sub setTimeZone {
   }
 }
 
+sub setIPMode {
+  while (1) {
+    my $new =
+      askPassword("IP Mode for Zimbra (ipv4, both, ipv6):",
+        $config{zimbraIPMode});
+    if ($new eq "ipv4" ||  $new eq "both" || $new eq "ipv6") {
+      if ($config{zimbraIPMode} ne $new) {
+        $config{zimbraIPMode} = $new;
+      }
+      return;
+    } else {
+      print "IP Mode must be one of ipv4, both, or ipv6!\n";
+    }
+  }
+}
+
 sub setEnabledDependencies {
   if (isEnabled("zimbra-ldap")) {
     if ($config{LDAPHOST} eq "") {
@@ -3242,6 +3260,11 @@ sub createCommonMenu {
     "prompt" => "TimeZone:", 
     "var" => \$config{zimbraPrefTimeZoneId},
     "callback" => \&setTimeZone
+  };
+  $$lm{menuitems}{$i} = {
+    "prompt" => "IP Mode:",
+    "var" => \$config{zimbraIPMode},
+    "callback" => \&setIPMode
   };
   $i++;
   return $lm;
@@ -5227,6 +5250,10 @@ sub configCreateServerEntry {
     my $rc = runAsZimbra("$ZMPROV cs $config{HOSTNAME}");
     progress(($rc == 0) ? "done.\n" : "failed.\n");
   }
+  progress ( "Setting Zimbra IP Mode..." );
+  my $rc = setLdapServerConfig("zimbraIPMode", $config{zimbraIPMode});
+  progress(($rc == 0) ? "done.\n" : "failed.\n");
+
   configLog("configCreateServerEntry");
 }
 
