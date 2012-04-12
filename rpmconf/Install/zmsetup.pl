@@ -5385,30 +5385,6 @@ sub configSetServicePorts {
   configLog("configSetServicePorts");
 }
 
-sub configSetInstalledSkins {
-  if ($configStatus{configSetInstalledSkins} eq "CONFIGURED") {
-    configLog("configSetInstalledSkins");
-    return 0;
-  }
-
-  if (opendir DIR, "$config{mailboxd_directory}/webapps/zimbra/skins") {
-    progress ( "Installing webclient skins...\n" );
-    setLdapGlobalConfig("zimbraInstalledSkin", "");
-    my @skins = grep { !/^[\._]/ } readdir(DIR);
-    foreach my $skindir (@skins) {
-      if (-d "$config{mailboxd_directory}/webapps/zimbra/skins/$skindir") {
-        my $skin = $skindir;
-        progress ("\t$skin...");
-        my $rc = setLdapGlobalConfig("+zimbraInstalledSkin", $skin);
-        progress (($rc == 0) ? "done.\n" : "failed.\n");
-      }
-    }
-    progress ( "Finished installing webclient skins.\n" );
-  }
-
-  configLog("configSetInstalledSkins");
-}
-
 sub configSetKeyboardShortcutsPref {
   if ($configStatus{zimbraPrefUseKeyboardShortcuts} eq "CONFIGURED") {
     configLog("zimbraPrefUseKeyboardShortcuts");
@@ -6346,8 +6322,6 @@ sub applyConfig {
     configSetServicePorts();
 
     addServerToHostPool();
-
-    configSetInstalledSkins();
 
     configSetKeyboardShortcutsPref() if (!$newinstall);
 
