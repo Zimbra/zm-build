@@ -155,10 +155,10 @@ postInstallConfig() {
 	fi
 
 	echo -n "Setting services on $HOSTNAME..."
-	runAsZimbra "zmprov ms $HOSTNAME $SERVICES"
+	runAsZimbra "zmprov -r ms $HOSTNAME $SERVICES"
 
 	ENABLEDSERVICES=`echo $SERVICES | sed -e 's/zimbraServiceInstalled/zimbraServiceEnabled/g'`
-	runAsZimbra "zmprov ms $HOSTNAME $ENABLEDSERVICES"
+	runAsZimbra "zmprov -r ms $HOSTNAME $ENABLEDSERVICES"
 
 	LOCALSERVICES=`echo $SERVICES | sed -e 's/zimbraServiceInstalled //g'`
 	runAsZimbra "zmlocalconfig -e zimbra_services=\"$LOCALSERVICES\""

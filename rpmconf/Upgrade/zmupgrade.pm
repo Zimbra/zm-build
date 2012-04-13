@@ -66,7 +66,7 @@ if (lc($isLdapMaster) eq "true" ) {
    $isLdapMaster = 0;
 }
 
-my $ZMPROV = "/opt/zimbra/bin/zmprov -m -l --";
+my $ZMPROV = "/opt/zimbra/bin/zmprov -r -m -l --";
 
 my %updateScripts = (
   'ComboUpdater' => "migrate-ComboUpdater.pl",
