@@ -3261,6 +3261,7 @@ sub createCommonMenu {
     "var" => \$config{zimbraPrefTimeZoneId},
     "callback" => \&setTimeZone
   };
+  $i++;
   $$lm{menuitems}{$i} = {
     "prompt" => "IP Mode:",
     "var" => \$config{zimbraIPMode},
