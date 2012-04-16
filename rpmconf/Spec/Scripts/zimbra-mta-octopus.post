@@ -17,7 +17,7 @@
 #Symlinks
 
 rm -f /opt/zimbra/postfix
-ln -s /opt/zimbra/postfix-2.9.1.2z /opt/zimbra/postfix
+ln -s /opt/zimbra/postfix-2.9.1.3z /opt/zimbra/postfix
 
 PLAT=$(/opt/zimbra/libexec/get_plat_tag.sh)
 if [[ $PLAT == "UBUNTU"* || $PLAT == "DEBIAN"* ]]; then
