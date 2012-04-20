@@ -1141,8 +1141,8 @@ sub setLdapDefaults {
   #
   $config{HTTPPORT} = 80 if ($config{HTTPPORT} eq 0);
   $config{HTTPSPORT} = 443 if ($config{HTTPSPORT} eq 0);
-  $config{MODE} = "http" if ($config{MODE} eq "");
-  $config{PROXYMODE} = "http" if ($config{PROXYMODE} eq "");
+  $config{MODE} = "https" if ($config{MODE} eq "");
+  $config{PROXYMODE} = "https" if ($config{PROXYMODE} eq "");
 
   if (isInstalled("zimbra-proxy") && isEnabled("zimbra-proxy")) {
      if ($config{MAILPROXY} eq "TRUE") {
@@ -1503,8 +1503,8 @@ sub setDefaults {
     }
   }
 
-  $config{MODE} = "http";
-  $config{PROXYMODE} = "http";
+  $config{MODE} = "https";
+  $config{PROXYMODE} = "https";
 
   $config{SYSTEMMEMORY} = getSystemMemory();
   $config{MYSQLMEMORYPERCENT} = mysqlMemoryPercent($config{SYSTEMMEMORY});
