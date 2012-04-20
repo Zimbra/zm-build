@@ -4199,10 +4199,14 @@ sub upgrade800BETA4 {
     my $entry=$result->entry($result->count-1);
     my @attrvals=$entry->get_value("olcDbIndex");
     my $MzimbraDomainAliasTargetID=1;
+    my $MzimbraUCServiceId=1;
 
     foreach my $attr (@attrvals) {
       if ($attr =~ /zimbraDomainAliasTargetID/) {
         $MzimbraDomainAliasTargetID=0;
+      }
+      if ($attr =~ /zimbraUCServiceId/) {
+        $MzimbraUCServiceId=0;
       }
     }
     if ($MzimbraDomainAliasTargetID) {
@@ -4211,9 +4215,18 @@ sub upgrade800BETA4 {
           add =>{olcDbIndex=>"zimbraDomainAliasTargetID eq"},
       );
     }
+    if ($MzimbraUCServiceId) {
+      $result = $ldap->modify(
+          $dn,
+          add =>{olcDbIndex=>"zimbraUCServiceId eq"},
+      );
+    }
     $ldap->unbind;
     if ($MzimbraDomainAliasTargetID) {
       &indexLdapAttribute("zimbraDomainAliasTargetID");
+    }
+    if ($MzimbraUCServiceId) {
+      &indexLdapAttribute("zimbraUCServiceId");
     }
     my $toolthreads = main::getLocalConfig("ldap_tool_threads");
     if ($toolthreads == 1) {
