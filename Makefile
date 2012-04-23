@@ -73,11 +73,5 @@ include $(DEFS_DIR)/devclean.def
 
 ifeq (MACOSXx86,$(findstring MACOSXx86,$(BUILD_PLATFORM)))
 include $(DEFS_DIR)/isync.def
-include $(DEFS_DIR)/osync.def
-include $(DEFS_DIR)/ios.def
 include $(DEFS_DIR)/app-mactoaster.def
-endif
-
-ifeq (UBUNTU8,$(BUILD_PLATFORM))
-include $(DEFS_DIR)/android.def
 endif
