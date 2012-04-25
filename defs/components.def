@@ -37,6 +37,7 @@ CORE_COMPONENTS	:= \
 	$(CORE_DEST_DIR)/$(RSYNC_DIR) \
 	$(CORE_DEST_DIR)/lib/ext/com_zimbra_cert_manager/com_zimbra_cert_manager.jar \
 	$(CORE_DEST_DIR)/lib/ext/com_zimbra_bulkprovision/com_zimbra_bulkprovision.jar \
+	$(CORE_DEST_DIR)/lib/ext/com_zimbra_bulkprovision/com_zimbra_clientuploader.jar \
 	$(CBPOLICYD_CORE_COMPONENTS) \
 	$(PLATFORM_CORE_COMPONENTS)
 
