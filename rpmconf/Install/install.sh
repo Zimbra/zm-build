@@ -125,12 +125,20 @@ done
 
 getPlatformVars
 
+isInstalled zimbra-cluster
+if [ x$PKGINSTALLED != "x" ]; then
+  echo "Cluster is not supported"
+  exit 0
+fi
+
 if [ x"$CLUSTERTYPE" != "x" -a -f "./util/clusterfunc.sh" ]; then
-  . ./util/clusterfunc.sh
-  checkClusterTypeArgs
+  echo "Cluster is not supported"
+  exit 0
 fi
 
 if [ x"$CLUSTERTYPE" != "x" ]; then
+  echo "Cluster is not supported"
+  exit 0
   clusterPreInstall
 fi
 
