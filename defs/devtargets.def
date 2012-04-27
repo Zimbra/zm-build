@@ -206,7 +206,7 @@ $(DEV_INSTALL_ROOT)/conf: $(SERVICE_DIR)/$(WEBAPP_BUILD_DIR)/service.war
 	cp -f $(SERVICE_DIR)/conf/amavisd.conf.in $@
 	cp -f $(SERVICE_DIR)/conf/clamd.conf $@
 	cp -f $(SERVICE_DIR)/conf/freshclam.conf $@
-	cp -f $(SERVICE_DIR)/conf/salocal.cf $@
+	cp -f $(SERVICE_DIR)/conf/salocal.cf.in $@
 	cp $(SERVICE_DIR)/conf/postfix_header_checks.in $@
 	cp $(SERVICE_DIR)/conf/zmconfigd.cf $@
 	cp $(SERVICE_DIR)/conf/postfix_recipient_restrictions.cf $@
