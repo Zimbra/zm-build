@@ -19,3 +19,7 @@
 # Only executes on zimbraVersionCheckInterval. min 2h interval
 #
 18 */2 * * * /opt/zimbra/libexec/zmcheckversion -c >> /dev/null 2>&1
+#
+# Invoke "ComputeAggregateQuotaUsageRequest" periodically
+#
+15 2 * * *	/opt/zimbra/libexec/zmcomputequotausage > /dev/null 2>&1
