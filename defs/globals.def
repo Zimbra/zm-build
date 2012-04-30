@@ -98,6 +98,10 @@ ifeq ($(BUILD_PLATFORM), UBUNTU10_64)
 	ARCH := amd64
 endif
 
+ifeq ($(BUILD_PLATFORM), UBUNTU12_64)
+	ARCH := amd64
+endif
+
 ifeq ($(BUILD_PLATFORM), DEBIAN4.0_64)
 	ARCH := amd64
 endif
