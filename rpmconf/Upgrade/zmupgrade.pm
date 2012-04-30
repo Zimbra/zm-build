@@ -4233,6 +4233,7 @@ sub upgrade800BETA4 {
        main::setLocalConfig("ldap_tool_threads", "2");
     }
   }
+  main::deleteLocalConfig("cbpolicyd_bind_host");
   return 0;
 }
 
