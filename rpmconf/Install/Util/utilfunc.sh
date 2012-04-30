@@ -395,8 +395,8 @@ checkUbuntuRelease() {
     return
   fi
 
-  if [ "x$DISTRIB_ID" = "xUbuntu" -a "x$DISTRIB_RELEASE" != "x6.06" -a "x$DISTRIB_RELEASE" != "x8.04" -a "x$DISTRIB_RELEASE" != "x8.04.1"  -a "x$DISTRIB_RELEASE" != "x10.04" ]; then
-    echo "WARNING: ZCS is currently only supported on Ubuntu Server 6.06, 8.04, and 10.04 LTS."
+  if [ "x$DISTRIB_ID" = "xUbuntu" -a "x$DISTRIB_RELEASE" != "x10.04" -a "x$DISTRIB_RELEASE" != "x12.04" ]; then
+    echo "WARNING: ZCS is currently only supported on Ubuntu Server 10.04 and 12.04 LTS."
     echo "You are attempting to install on $DISTRIB_DESCRIPTION which may not work."
     echo "Support will not be provided if you choose to continue."
     echo ""
