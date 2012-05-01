@@ -120,7 +120,7 @@ $(MTA_DEST_DIR)/data/amavisd/mysql:
 $(MTA_DEST_DIR)/data/opendkim:
 	mkdir -p $@
 
-$(MTA_DEST_DIR)/$(OPENDKIM_DIR): $(MTA_DEST_DIR)
+$(MTA_DEST_DIR)/$(DKIM_DIR): $(MTA_DEST_DIR)
 	@echo "*** Creating OpenDKIM"
 	(cd $(MTA_DEST_DIR); tar xfz $(DKIM_SOURCE).tgz;)
 	(cd $(MTA_DEST_DIR); tar xfz $(LIBMCD_SOURCE).tgz;)
