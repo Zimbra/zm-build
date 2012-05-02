@@ -4178,6 +4178,14 @@ sub upgrade800BETA4 {
     if ($doIndex) {
       &indexLdapAttribute("zimbraUCServiceId");
     }
+    $doIndex = &addLdapIndex("DKIMIdentity", "eq");
+    if ($doIndex) {
+      &indexLdapAttribute("DKIMIdentity");
+    }
+    $doIndex = &addLdapIndex("DKIMSelector", "eq");
+    if ($doIndex) {
+      &indexLdapAttribute("DKIMSelector");
+    }
     my $toolthreads = main::getLocalConfig("ldap_tool_threads");
     if ($toolthreads == 1) {
        main::setLocalConfig("ldap_tool_threads", "2");
