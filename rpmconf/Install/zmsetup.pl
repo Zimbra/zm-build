@@ -4262,7 +4262,7 @@ sub checkMenuConfig {
     if (defined $$items{menuitems}{$i}{var}) {
       $v = ${$$items{menuitems}{$i}{var}};
       if ($v eq "" || $v eq "none" || $v eq "UNSET" || $v eq "Not Verified") { return 0; }
-      foreach my $var qw(LDAPHOST LDAPPORT) {
+      foreach my $var (qw(LDAPHOST LDAPPORT)) {
         if ($$items{menuitems}{$i}{var} == \$config{$var}) {
           $needldapverified = 1;
         }
@@ -5442,7 +5442,7 @@ sub configSetOctopusCoSFeatures {
 }
 
 sub configSetCEFeatures {
-  foreach my $feature qw(Tasks Briefcases) {
+  foreach my $feature (qw(Tasks Briefcases)) {
     my $key = "zimbraFeature${feature}Enabled";
     my $val = ($config{$key} eq "Enabled" ? "TRUE" : "FALSE");; 
     if ($configStatus{$key} eq "CONFIGURED") {
@@ -5713,7 +5713,7 @@ sub removeNetworkComponents {
       my $rc = runAsZimbra ("$ZMPROV mcf $comp_args");
       progress (($rc == 0) ? "done.\n" : "failed. This may impact system functionality.\n");
     }
-    foreach my $zimlet qw(com_zimbra_backuprestore com_zimbra_cluster com_zimbra_convertd com_zimbra_domainadmin com_zimbra_hsm com_zimbra_license com_zimbra_mobilesync zimbra_xmbxsearch com_zimbra_xmbxsearch) {
+    foreach my $zimlet (qw(com_zimbra_backuprestore com_zimbra_cluster com_zimbra_convertd com_zimbra_domainadmin com_zimbra_hsm com_zimbra_license com_zimbra_mobilesync zimbra_xmbxsearch com_zimbra_xmbxsearch)) {
       system("rm -rf $config{mailboxd_directory}/webapps/service/zimlet/$zimlet")
         if (-d "$config{mailboxd_directory}/webapps/service/zimlet/$zimlet" );
       system("rm -rf ${zimbra_home}/zimlets-deployed/$zimlet")
@@ -5869,7 +5869,7 @@ sub configInstallZimlets {
   # Install zimlets
   if (opendir DIR, "/opt/zimbra/zimlets") {
     progress ( "Installing common zimlets...\n" );
-    my @core_zimlets = qw(com_zimbra_dnd com_zimbra_url com_zimbra_date com_zimbra_email com_zimbra_attachcontacts com_zimbra_attachmail);
+    my @core_zimlets = (qw(com_zimbra_dnd com_zimbra_url com_zimbra_date com_zimbra_email com_zimbra_attachcontacts com_zimbra_attachmail));
     my @zimlets = grep { !/^\./ } readdir(DIR);
     foreach my $zimletfile (@zimlets) {
       my $zimlet = $zimletfile;
@@ -5934,7 +5934,7 @@ sub configInstallZimlets {
       progress("Updating non-standard zimlets...\n");
       foreach my $entry ($result->all_entries) {
         my $zimlet = $entry->get_value('cn');
-        foreach my $type qw(zimlets-admin-extra zimlets-experimental zimlets-extra) {
+        foreach my $type (qw(zimlets-admin-extra zimlets-experimental zimlets-extra)) {
           if (-e "${zimbra_home}/${type}/${zimlet}.zip") {
            progress  ("\t$zimlet...");
            my $rc = runAsZimbra ("/opt/zimbra/bin/zmzimletctl -l deploy ${type}/${zimlet}.zip");

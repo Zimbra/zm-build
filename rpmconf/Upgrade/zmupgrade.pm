@@ -3753,7 +3753,7 @@ sub upgrade710GA {
     }
   }
   if (main::isInstalled("zimbra-store")) {
-    foreach my $i qw(ib_logfile0 ib_logfile1) {
+    foreach my $i (qw(ib_logfile0 ib_logfile1)) {
       my $dbfile="${mysql_data_directory}/${i}";
       main::detail("Moving $dbfile to ${zimbra_tmp_directory}/$i");
       system("mv -f ${dbfile} ${zimbra_tmp_directory}/$i")
@@ -3987,7 +3987,7 @@ sub upgrade800BETA1 {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
   main::progress("Updating from 8.0.0_BETA1\n");
   # bug 59607 - migrate old zmmtaconfig variables to zmconfigd
-  foreach my $lc_var qw(enable_config_restarts interval log_level listen_port debug watchdog watchdog_services) {
+  foreach my $lc_var (qw(enable_config_restarts interval log_level listen_port debug watchdog watchdog_services)) {
     my $val = main::getLocalConfig("zmmtaconfig_${lc_var}");
     if ($val ne "") {
       main::setLocalConfig("zmconfigd_${lc_var}", "$val");
@@ -4128,13 +4128,13 @@ sub upgrade800BETA3 {
   main::setLocalConfig("ssl_allow_untrusted_certs", "true");
   if (main::isInstalled("zimbra-ldap")) {
     # Delete unused BDB DB keys
-    foreach my $lc_var qw(ldap_db_cachefree ldap_db_cachesize ldap_db_dncachesize ldap_db_idlcachesize ldap_db_shmkey ldap_overlay_syncprov_sessionlog) {
+    foreach my $lc_var (qw(ldap_db_cachefree ldap_db_cachesize ldap_db_dncachesize ldap_db_idlcachesize ldap_db_shmkey ldap_overlay_syncprov_sessionlog)) {
       my $val = main::getLocalConfig("${lc_var}");
       if ($val ne "") {
         main::deleteLocalConfig("${lc_var}");
       }
     }
-    foreach my $lc_var qw(ldap_accesslog_cachefree ldap_accesslog_cachesize ldap_accesslog_dncachesize ldap_accesslog_idlcachesize ldap_accesslog_shmkey) {
+    foreach my $lc_var (qw(ldap_accesslog_cachefree ldap_accesslog_cachesize ldap_accesslog_dncachesize ldap_accesslog_idlcachesize ldap_accesslog_shmkey)) {
       my $val = main::getLocalConfig("${lc_var}");
       if ($val ne "") {
         main::deleteLocalConfig("${lc_var}");
@@ -4391,7 +4391,7 @@ sub getInstalledPackages {
 sub cleanPostfixLC {
 
   my ($var,$val);
-  foreach $var qw(command_directory daemon_directory mailq_path manpage_directory newaliases_path queue_directory sendmail_path) {
+  foreach $var (qw(command_directory daemon_directory mailq_path manpage_directory newaliases_path queue_directory sendmail_path)) {
 
     $val = main::getLocalConfig("postfix_${var}");
     if ($val =~ /postfix-(\d.*)\//) {
@@ -4407,7 +4407,7 @@ sub updatePostfixLC {
 
   # update localconfig vars
   my ($var,$val);
-  foreach $var qw(version command_directory daemon_directory mailq_path manpage_directory newaliases_path queue_directory sendmail_path) {
+  foreach $var (qw(version command_directory daemon_directory mailq_path manpage_directory newaliases_path queue_directory sendmail_path)) {
     if ($var eq "version") {
       $val = $toVersion;
       main::setLocalConfig("postfix_${var}", "$val");
@@ -4426,7 +4426,7 @@ sub movePostfixQueue {
 
   # update localconfig vars
   my ($var,$val);
-  foreach $var qw(version command_directory daemon_directory mailq_path manpage_directory newaliases_path queue_directory sendmail_path) {
+  foreach $var (qw(version command_directory daemon_directory mailq_path manpage_directory newaliases_path queue_directory sendmail_path)) {
     $val = main::getLocalConfig("postfix_${var}");
     if ($val eq $toVersion) {
       next;
@@ -5126,7 +5126,7 @@ sub migrateAmavisDB($) {
   my $amavisdBase = "/opt/zimbra/amavisd-new";
   my $toDir = "${amavisdBase}-$toVersion";
   main::progress("Migrating amavisd-new to version $toVersion\n");
-  foreach my $fromVersion qw(2.5.2 2.4.3 2.4.1 2.3.3 2.3.1) {
+  foreach my $fromVersion (qw(2.5.2 2.4.3 2.4.1 2.3.3 2.3.1)) {
     next if ($toVersion eq $fromVersion);
     my $fromDir = "${amavisdBase}-$fromVersion";
     main::progress("Checking $fromDir/db\n");
