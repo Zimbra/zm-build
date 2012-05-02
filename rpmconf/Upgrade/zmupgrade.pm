@@ -4170,62 +4170,12 @@ sub upgrade800BETA4 {
         runLdapAttributeUpgrade("68190");
         runLdapAttributeUpgrade("72007");
     }
-    my $ldap_pass = `$su "zmlocalconfig -s -m nokey ldap_root_password"`;
-    chomp($ldap_pass);
-    my $ldap;
-    unless($ldap = Net::LDAP->new('ldapi://%2fopt%2fzimbra%2fopenldap%2fvar%2frun%2fldapi/')) {
-       main::progress("Unable to contact to ldapi: $!\n");
-    }
-    my $result = $ldap->bind("cn=config", password => $ldap_pass);
-    my $dn="olcDatabase={2}mdb,cn=config";
-    if ($isLdapMaster) {
-      $result = $ldap->search(
-                        base=> "cn=accesslog",
-                        filter=>"(objectClass=*)",
-                        scope => "base",
-                        attrs => ['1.1'],
-      );
-      my $size = $result->count;
-      if ($size > 0 ) {
-        $dn="olcDatabase={3}mdb,cn=config";
-      }
-    }
-    $result = $ldap->search(
-      base=> "$dn",
-      filter=>"(objectClass=*)",
-      scope => "base",
-      attrs => ['olcDbIndex'],
-    );
-    my $entry=$result->entry($result->count-1);
-    my @attrvals=$entry->get_value("olcDbIndex");
-    my $MzimbraDomainAliasTargetID=1;
-    my $MzimbraUCServiceId=1;
-
-    foreach my $attr (@attrvals) {
-      if ($attr =~ /zimbraDomainAliasTargetID/) {
-        $MzimbraDomainAliasTargetID=0;
-      }
-      if ($attr =~ /zimbraUCServiceId/) {
-        $MzimbraUCServiceId=0;
-      }
-    }
-    if ($MzimbraDomainAliasTargetID) {
-      $result = $ldap->modify(
-          $dn,
-          add =>{olcDbIndex=>"zimbraDomainAliasTargetID eq"},
-      );
-    }
-    if ($MzimbraUCServiceId) {
-      $result = $ldap->modify(
-          $dn,
-          add =>{olcDbIndex=>"zimbraUCServiceId eq"},
-      );
-    }
-    $ldap->unbind;
-    if ($MzimbraDomainAliasTargetID) {
+    my $doIndex = &addLdapIndex("zimbraDomainAliasTargetID","eq");
+    if ($doIndex) {
       &indexLdapAttribute("zimbraDomainAliasTargetID");
     }
-    if ($MzimbraUCServiceId) {
+    $doIndex = &addLdapIndex("zimbraUCServiceId","eq");
+    if ($doIndex) {
       &indexLdapAttribute("zimbraUCServiceId");
     }
     my $toolthreads = main::getLocalConfig("ldap_tool_threads");
@@ -5231,6 +5181,53 @@ sub upgradeLdapConfigValue($$$) {
   }
   main::runAsZimbra("$ZMPROV mcf $key $new_value")
     if ($current_value eq $cmp_value);
+}
+
+sub addLdapIndex($$$) {
+  my ($index, $type) = @_;
+  my $ldap_pass = `$su "zmlocalconfig -s -m nokey ldap_root_password"`;
+  chomp($ldap_pass);
+  my $ldap;
+  unless($ldap = Net::LDAP->new('ldapi://%2fopt%2fzimbra%2fopenldap%2fvar%2frun%2fldapi/')) {
+    main::progress("Unable to contact to ldapi: $!\n");
+  }
+  my $result = $ldap->bind("cn=config", password => $ldap_pass);
+  my $dn="olcDatabase={2}mdb,cn=config";
+  if ($isLdapMaster) {
+    $result = $ldap->search(
+                      base=> "cn=accesslog",
+                      filter=>"(objectClass=*)",
+                      scope => "base",
+                      attrs => ['1.1'],
+    );
+    my $size = $result->count;
+    if ($size > 0 ) {
+      $dn="olcDatabase={3}mdb,cn=config";
+    }
+  }
+  $result = $ldap->search(
+    base=> "$dn",
+    filter=>"(objectClass=*)",
+    scope => "base",
+    attrs => ['olcDbIndex'],
+  );
+  my $entry=$result->entry($result->count-1);
+  my @attrvals=$entry->get_value("olcDbIndex");
+  my $hasIndex=0;
+
+  foreach my $attr (@attrvals) {
+    if ($attr =~ /$index/) {
+      $hasIndex=1;
+    }
+  }
+  if (!$hasIndex) {
+    $result = $ldap->modify(
+        $dn,
+        add =>{olcDbIndex=>"$index $type"},
+    );
+  }
+  $ldap->unbind;
+  return !$hasIndex;
 }
 
 sub upgradeLocalConfigValue($$$) {
