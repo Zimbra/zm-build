@@ -4186,6 +4186,59 @@ sub upgrade800BETA4 {
     if ($doIndex) {
       &indexLdapAttribute("DKIMSelector");
     }
+    my $ldap_pass = `$su "zmlocalconfig -s -m nokey ldap_root_password"`;
+    chomp($ldap_pass);
+    my $ldap;
+    unless($ldap = Net::LDAP->new('ldapi://%2fopt%2fzimbra%2fopenldap%2fvar%2frun%2fldapi/')) {
+       main::progress("Unable to contact to ldapi: $!\n");
+    }
+    my $result = $ldap->bind("cn=config", password => $ldap_pass);
+    my $dn="olcDatabase={2}mdb,cn=config";
+    if ($isLdapMaster) {
+      $result = $ldap->search(
+                        base=> "cn=accesslog",
+                        filter=>"(objectClass=*)",
+                        scope => "base",
+                        attrs => ['1.1'],
+      );
+      my $size = $result->count;
+      if ($size > 0 ) {
+        $dn="olcDatabase={3}mdb,cn=config";
+      }
+    }
+    $result = $ldap->search(
+      base=> "$dn",
+      filter=>"(objectClass=*)",
+      scope => "base",
+      attrs => ['olcAccess'],
+    );
+    my $entry=$result->entry($result->count-1);
+    my @attrvals=$entry->get_value("olcAccess");
+    my $aclNumber=-1;
+    my $attrMod="";
+
+    foreach my $attr (@attrvals) {
+      if ($attr =~ /zimbraAllowFromAddress/) {
+        if ($attr !~ /DKIMIdentity/) {
+          ($aclNumber) = $attr =~ /^\{(\d+)\}*/;
+          $attrMod=$attr;
+        }
+      }
+    }
+
+    if ($aclNumber != -1 && $attrMod ne "") {
+      $attrMod =~ s/zimbraAllowFromAddress/zimbraAllowFromAddress,DKIMIdentity,DKIMSelector,DKIMDomain,DKIMKey/;
+      $result = $ldap->modify(
+          $dn,
+          delete => {olcAccess => "{$aclNumber}"},
+      );
+      $result = $ldap->modify(
+          $dn,
+          add =>{olcAccess=>"$attrMod"},
+      );
+    }
+    $ldap->unbind;
+
     my $toolthreads = main::getLocalConfig("ldap_tool_threads");
     if ($toolthreads == 1) {
        main::setLocalConfig("ldap_tool_threads", "2");
