@@ -4247,8 +4247,10 @@ sub upgrade800BETA4 {
   if (main::isInstalled("zimbra-mta")) {
     my $mtamilter = main::getLdapServerValue("zimbraMtaSmtpdMilters");
     if ($mtamilter ne "")  {
-      $mtamilter = "inet:localhost:8465 $mtamilter";
-      main::setLdapServerConfig("zimbraMtaSmtpdMilters", "inet:localhost:8465");
+      if ($mtamilter !~ /inet:localhost:8465/) {
+        $mtamilter = "inet:localhost:8465 $mtamilter";
+        main::setLdapServerConfig("zimbraMtaSmtpdMilters", "inet:localhost:8465");
+      }
     } else {
       main::setLdapServerConfig("zimbraMtaSmtpdMilters", "inet:localhost:8465");
     }
