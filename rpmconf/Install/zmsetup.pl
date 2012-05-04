@@ -5291,6 +5291,9 @@ sub configConvertdURL {
 
 sub configSetMtaDefaults {
    &configSetMtaAuthHost();
+   if($newinstall) {
+     setLdapServerConfig("zimbraMtaSmtpdMilters", "inet:localhost:8465");
+   }
 }
 
 sub configSetMtaAuthHost {
