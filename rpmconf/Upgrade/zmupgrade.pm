@@ -4243,6 +4243,7 @@ sub upgrade800BETA4 {
     if ($toolthreads == 1) {
        main::setLocalConfig("ldap_tool_threads", "2");
     }
+    main::runAsZimbra("perl -I${scriptDir} ${scriptDir}/migrate20120507-UniqueDKIMSelector.pl");
   }
   if (main::isInstalled("zimbra-mta")) {
     my $mtamilter = main::getLdapServerValue("zimbraMtaSmtpdMilters");
