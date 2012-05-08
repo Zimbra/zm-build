@@ -34,7 +34,7 @@ fi
 
 #Symlinks
 rm -f /opt/zimbra/mysql
-ln -s /opt/zimbra/mysql-standard-5.5.20-pc-linux-gnu-i686-glibc23 /opt/zimbra/mysql
+ln -s /opt/zimbra/mysql-standard-5.5.24-pc-linux-gnu-i686-glibc23 /opt/zimbra/mysql
 
 rm -f /opt/zimbra/bdb
 ln -s /opt/zimbra/bdb-5.2.36 /opt/zimbra/bdb
@@ -56,7 +56,7 @@ rm -f /opt/zimbra/cyrus-sasl
 ln -s /opt/zimbra/cyrus-sasl-2.1.25.4z /opt/zimbra/cyrus-sasl
 
 rm -f /opt/zimbra/openldap
-ln -s /opt/zimbra/openldap-2.4.31.2z /opt/zimbra/openldap
+ln -s /opt/zimbra/openldap-2.4.31.3z /opt/zimbra/openldap
 
 rm -f /opt/zimbra/tcmalloc
 ln -s /opt/zimbra/tcmalloc-1.8.3 /opt/zimbra/tcmalloc
