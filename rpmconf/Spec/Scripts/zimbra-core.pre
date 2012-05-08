@@ -27,6 +27,10 @@ else
 	usermod -g zimbra -d /opt/zimbra -s /bin/bash zimbra
 fi
 
+if [ -f "/etc/security/limits.d/90-nproc.conf" ]; then
+    echo "zimbra soft nproc 278528" > /etc/security/limits.d/80-zimbra.conf
+    echo "zimbra hard nproc 278528" >> /etc/security/limits.d/80-zimbra.conf
+fi
 if [ -f "/etc/security/limits.conf" ]; then
     egrep -v -e '^zimbra.*nofile' /etc/security/limits.conf > /tmp/limits.conf
     echo "zimbra soft nofile 524288" >> /tmp/limits.conf
