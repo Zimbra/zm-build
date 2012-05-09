@@ -23,3 +23,7 @@
 # Invoke "ComputeAggregateQuotaUsageRequest" periodically
 #
 15 2 * * *	/opt/zimbra/libexec/zmcomputequotausage > /dev/null 2>&1
+#
+# Invoke "client_usage_report.py" periodically to process /opt/zimbra/log/access_log* files
+#
+55 1 * * *	/opt/zimbra/libexec/client_usage_report.py > /dev/null 2>&1
