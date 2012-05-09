@@ -80,6 +80,8 @@ $(BUILD_ROOT)/zimbra-mta.spec:
 		$(BUILD_ROOT)/zimbra-mta.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/postfix-$(POSTFIX_VERSION)" >> \
 		$(BUILD_ROOT)/zimbra-mta.spec
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/opendkim-$(DKIM_VERSION)" >> \
+		$(BUILD_ROOT)/zimbra-mta.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/mta" >> \
 		$(BUILD_ROOT)/zimbra-mta.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/data/amavisd" >> \
@@ -113,6 +115,12 @@ $(MTA_DEST_DIR)/data/altermime:
 	mkdir -p $@
 $(MTA_DEST_DIR)/data/amavisd/mysql:
 	mkdir -p $@
+$(MTA_DEST_DIR)/data/opendkim:
+	mkdir -p $@
+
+$(MTA_DEST_DIR)/$(DKIM_DIR): $(MTA_DEST_DIR)
+	@echo "*** Creating OpenDKIM"
+	(cd $(MTA_DEST_DIR); tar xfz $(DKIM_SOURCE).tgz;)
 
 $(MTA_DEST_DIR)/$(POSTFIX_DIR): $(MTA_DEST_DIR)
 	@echo "*** Creating postfix"
