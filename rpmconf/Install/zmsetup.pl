@@ -364,6 +364,7 @@ sub checkPortConflicts {
     7306 => 'zimbra-store',
     7307 => 'zimbra-store',
     7780 => 'zimbra-spell',
+    8465 => 'zimbra-mta', 
     10024 => 'zimbra-mta',
     10025 => 'zimbra-mta',
   );
