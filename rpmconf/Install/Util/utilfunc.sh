@@ -1723,6 +1723,11 @@ removeExistingInstall() {
         echo "done."
       fi
 
+      if [ -f /etc/security/limits.d/80-zimbra.conf ]; then
+        echo -n "Cleaning up /etc/security/limits.d/80-zimbra.conf..."
+        rm -f /etc/security/limits.d/80-zimbra.conf
+        echo "done."
+      fi
   
       for mp in $MOUNTPOINTS; do
         if [ x$mp != "x/opt/zimbra" ]; then
