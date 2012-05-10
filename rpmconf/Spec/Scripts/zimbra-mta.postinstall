@@ -32,8 +32,8 @@ if [ -d /opt/zimbra/libmemcached-1.0.6 ]; then
 fi
 
 rm -f /opt/zimbra/opendkim
-if [ -d /opt/zimbra/opendkim-2.5.2 ]; then
-  ln -s /opt/zimbra/opendkim-2.5.2 /opt/zimbra/opendkim
+if [ -d /opt/zimbra/opendkim-2.6.0 ]; then
+  ln -s /opt/zimbra/opendkim-2.6.0 /opt/zimbra/opendkim
 fi
 
 rm -f /opt/zimbra/dspam
