@@ -53,7 +53,7 @@ if [ -L /opt/zimbra/sleepycat ]; then
 fi
 
 rm -f /opt/zimbra/openssl
-ln -s /opt/zimbra/openssl-1.0.1a /opt/zimbra/openssl
+ln -s /opt/zimbra/openssl-1.0.1c /opt/zimbra/openssl
 
 rm -f /opt/zimbra/heimdal
 ln -s /opt/zimbra/heimdal-1.5.2 /opt/zimbra/heimdal
