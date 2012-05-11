@@ -1751,9 +1751,7 @@ sub setDefaultsFromLocalConfig {
   $config{LDAPROOTPASS} = getLocalConfig ("ldap_root_password");
   $config{LDAPADMINPASS} = getLocalConfig ("zimbra_ldap_password");
   $config{SQLROOTPASS} = getLocalConfig ("mysql_root_password");
-  $config{LOGSQLROOTPASS} = getLocalConfig ("mysql_logger_root_password");
   $config{ZIMBRASQLPASS} = getLocalConfig ("zimbra_mysql_password");
-  $config{ZIMBRALOGSQLPASS} = getLocalConfig ("zimbra_logger_mysql_password");
   $config{MAILBOXDMEMORY} = getLocalConfig ("mailboxd_java_heap_size");
   $config{mailboxd_directory} = getLocalConfig("mailboxd_directory");
   $config{mailboxd_keystore} = getLocalConfig("mailboxd_keystore");
