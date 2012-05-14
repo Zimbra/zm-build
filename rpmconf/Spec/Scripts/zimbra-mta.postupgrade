@@ -19,8 +19,8 @@ rm -f /opt/zimbra/amavisd
 ln -s /opt/zimbra/amavisd-new-2.7.0 /opt/zimbra/amavisd
 
 rm -f /opt/zimbra/cbpolicyd
-if [ -d /opt/zimbra/cbpolicyd-2.0.11 ]; then
-  ln -s /opt/zimbra/cbpolicyd-2.0.11 /opt/zimbra/cbpolicyd
+if [ -d /opt/zimbra/cbpolicyd-2.1.0-beta ]; then
+  ln -s /opt/zimbra/cbpolicyd-2.1.0-beta /opt/zimbra/cbpolicyd
 fi
 
 rm -f /opt/zimbra/libmemcached
