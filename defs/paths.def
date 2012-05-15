@@ -6,7 +6,6 @@ NATIVE_DIR := $(BUILD_ROOT)/../ZimbraNative
 ZIMLET_DIR := $(BUILD_ROOT)/../Zimlet
 LAUNCHER_DIR := $(BUILD_ROOT)/../ZimbraLauncher
 ISYNC_DIR := $(BUILD_ROOT)/../ZimbraISync
-OSYNC_DIR := $(BUILD_ROOT)/../Octopus/native/desktopclient/osx/Msync_osx.xcodeproj
 ANDROID_DIR := $(BUILD_ROOT)/../Octopus/Mobile/Android/bin
 TOASTER_DIR := $(BUILD_ROOT)/../ZimbraMacToaster
 TAGLIB_DIR := $(BUILD_ROOT)/../ZimbraTagLib
