@@ -42,11 +42,6 @@ ZIMBRA_BIN_DIR		:= $(BUILD_ROOT)/../ZimbraServer/src/bin
 ISYNC_DEST_ROOT := $(BUILD_ROOT)/isyncbuild
 ISYNC_DEST_DIR := $(ISYNC_DEST_ROOT)/root/Library/PreferencePanes
 
-IOS_DEST_ROOT := $(BUILD_ROOT)/../Octopus/Mobile/iOS/Octopus
-
-ANDROID_DEST_ROOT := $(BUILD_ROOT)/../Octopus/Mobile/Android
-ANDROID_DEST_DIR := $(ANDROID_DEST_ROOT)/bin
-
 TOASTER_DEST_ROOT := $(BUILD_ROOT)/mactoasterbuild
 TOASTER_DEST_DIR := $(TOASTER_DEST_ROOT)/root/Applications
 
