@@ -398,8 +398,6 @@ sub upgrade {
 
   if (main::isInstalled("zimbra-store")) {
 
-    &verifyMysqlConfig;
-
     my $found = 0;
     foreach my $v (@versionOrder) {
       $found = 1 if ($v eq $startVersion);
@@ -5182,26 +5180,6 @@ sub verifyDatabaseIntegrity {
   if (-x "/opt/zimbra/libexec/zmdbintegrityreport") {
     main::progress("Verifying integrity of databases.\n");
     main::runAsZimbra("/opt/zimbra/libexec/zmdbintegrityreport -v -r");
-  }
-  return;
-}
-
-sub verifyMysqlConfig {
-  my $mysqlConf = "/opt/zimbra/conf/my.cnf";
-  main::progress("Verifying $mysqlConf\n");
-  return if ($addr_space eq "64");
-  return unless (-e "$mysqlConf");
-
-  open(CONF, "$mysqlConf") or main::progress("Couldn't read $mysqlConf: $!\n");
-  my @lines = <CONF>;
-  close(CONF);
-  foreach (@lines) {
-    if (my ($buffer_size) = m/^innodb_buffer_pool_size\s*=\s*(\d+)/) {
-      if ($buffer_size > 2000000000) {
-        main::progress("innodb_buffer_pool_size must be less then 2GB on a 32bit system\n");
-        Migrate::myquit(1,"Please correct $mysqlConf and rerun zmsetup.pl");
-      }
-    }
   }
   return;
 }
