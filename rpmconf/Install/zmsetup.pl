@@ -5747,7 +5747,9 @@ sub countUsers {
   my $ldap_pass = getLocalConfig("zimbra_ldap_password");
   my $ldap_master_url = getLocalConfig("ldap_master_url");
   my $ldap;
-  unless($ldap = Net::LDAP->new($ldap_master_url)) {
+  my @masters=split(/ /, $ldap_master_url);
+  my $master_ref=\@masters;
+  unless($ldap = Net::LDAP->new($master_ref)) {
     detail("Unable to contact $ldap_master_url: $!");
     return undef;
   }
@@ -5777,7 +5779,9 @@ sub removeNetworkZimlets {
   my $ldap_pass = getLocalConfig("zimbra_ldap_password");
   my $ldap_master_url = getLocalConfig("ldap_master_url");
   my $ldap;
-  unless($ldap = Net::LDAP->new($ldap_master_url)) {
+  my @masters=split(/ /, $ldap_master_url);
+  my $master_ref=\@masters;
+  unless($ldap = Net::LDAP->new($master_ref)) {
     detail("Unable to contact $ldap_master_url: $!");
     return 1;
   }
@@ -5815,7 +5819,9 @@ sub zimletCleanup {
   my $ldap_pass = getLocalConfig("zimbra_ldap_password");
   my $ldap_master_url = getLocalConfig("ldap_master_url");
   my $ldap;
-  unless($ldap = Net::LDAP->new($ldap_master_url)) {
+  my @masters=split(/ /, $ldap_master_url);
+  my $master_ref=\@masters;
+  unless($ldap = Net::LDAP->new($master_ref)) {
     detail("Unable to contact $ldap_master_url: $!");
     return 1;
   }
@@ -5926,7 +5932,9 @@ sub configInstallZimlets {
     my $ldap_master_url = getLocalConfig("ldap_master_url");
     my $zimbra_home = getLocalConfig("zimbra_home");
     my $ldap;
-    unless($ldap = Net::LDAP->new($ldap_master_url)) {
+    my @masters=split(/ /, $ldap_master_url);
+    my $master_ref=\@masters;
+    unless($ldap = Net::LDAP->new($master_ref)) {
       detail("Unable to contact $ldap_master_url: $!");
       return 1;
     }
