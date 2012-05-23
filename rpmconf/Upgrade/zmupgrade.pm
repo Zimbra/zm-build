@@ -4254,6 +4254,10 @@ sub upgrade800BETA4 {
       main::setLdapServerConfig("zimbraMtaSmtpdMilters", "inet:localhost:8465");
     }
   }
+  if (main::isInstalled("zimbra-imapproxy")) {
+    # bug 32683
+    main::setLdapGlobalConfig("zimbraReverseProxySSLToUpstreamEnabled", "FALSE");
+  }
   foreach my $lc_var (qw(cbpolicyd_bind_host logger_mysql_bind_address logger_mysql_directory logger_mysql_data_directory logger_mysql_socket \
                          logger_mysql_pidfile logger_mysql_mycnf logger_mysql_errlogfile logger_mysql_port zimbra_logger_mysql_password)) {
     main::deleteLocalConfig("$lc_var");
