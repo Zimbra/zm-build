@@ -30,6 +30,10 @@ fi
 if [ -f "/etc/security/limits.d/90-nproc.conf" ]; then
     echo "zimbra soft nproc 278528" > /etc/security/limits.d/80-zimbra.conf
     echo "zimbra hard nproc 278528" >> /etc/security/limits.d/80-zimbra.conf
+    echo "postfix soft nproc 278528" > /etc/security/limits.d/80-zimbra.conf
+    echo "postfix hard nproc 278528" >> /etc/security/limits.d/80-zimbra.conf
+    echo "root soft nproc 278528" > /etc/security/limits.d/80-zimbra.conf
+    echo "root hard nproc 278528" >> /etc/security/limits.d/80-zimbra.conf
 fi
 if [ -f "/etc/security/limits.conf" ]; then
     egrep -v -e '^zimbra.*nofile' /etc/security/limits.conf > /tmp/limits.conf
