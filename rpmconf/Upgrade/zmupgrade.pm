@@ -4254,7 +4254,7 @@ sub upgrade800BETA4 {
       main::setLdapServerConfig("zimbraMtaSmtpdMilters", "inet:localhost:8465");
     }
   }
-  if (main::isInstalled("zimbra-imapproxy")) {
+  if (main::isInstalled("zimbra-proxy")) {
     # bug 32683
     main::setLdapGlobalConfig("zimbraReverseProxySSLToUpstreamEnabled", "FALSE");
   }
