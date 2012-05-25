@@ -4166,6 +4166,7 @@ sub upgrade800BETA4 {
   if (main::isInstalled("zimbra-ldap")) {
     if ($isLdapMaster) {
         runLdapAttributeUpgrade("68190");
+        runLdapAttributeUpgrade("68394");
         runLdapAttributeUpgrade("72007");
     }
     my $doIndex = &addLdapIndex("zimbraDomainAliasTargetID","eq");
