@@ -5903,7 +5903,7 @@ sub configInstallZimlets {
         progress("failed. This may impact system functionality.\n");
       }
       # disable click2call zimlets by default.  #73987
-      setLdapCOSConfig("-zimbraZimletAvailableZimlets", "-$zimlet")
+      setLdapCOSConfig("+zimbraZimletAvailableZimlets", "-$zimlet")
         if ($zimlet =~ /click2call/);
       
     }
