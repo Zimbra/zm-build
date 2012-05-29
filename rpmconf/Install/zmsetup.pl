@@ -1517,10 +1517,12 @@ sub setDefaults {
     progress "no config file and newinstall checking dns resolution\n" if $options{d};
 
     if (lookupHostName ($config{HOSTNAME}, 'A')) {
-      progress("\n\nDNS ERROR resolving $config{HOSTNAME}\n");
-      progress("It is suggested that the hostname be resolveable via DNS\n");
-      if (askYN("Change hostname","Yes") eq "yes") {
-        setHostName();
+      if (lookupHostName ($config{HOSTNAME}, 'AAAA')) {
+        progress("\n\nDNS ERROR resolving $config{HOSTNAME}\n");
+        progress("It is suggested that the hostname be resolveable via DNS\n");
+        if (askYN("Change hostname","Yes") eq "yes") {
+          setHostName();
+        }
       }
     }
 
@@ -4853,6 +4855,10 @@ sub configSetupLdap {
       }
     }
   } elsif (isEnabled("zimbra-ldap")) {
+    my $rc = runAsZimbra ("/opt/zimbra/libexec/zmldapapplyldif");
+    if (!$newinstall) {
+      my $rc = runAsZimbra ("/opt/zimbra/libexec/zmldapupdateldif");
+    }
     # enable replica for both new and upgrade installs if we are adding ldap
     if ($config{LDAPHOST} ne $config{HOSTNAME} || -f "/opt/zimbra/.enable_replica") {
       progress("Updating ldap_root_password and zimbra_ldap_password...");
@@ -4878,7 +4884,6 @@ sub configSetupLdap {
       }
       progress("done.\n");
       progress ( "Enabling ldap replication..." );
-      my $rc = runAsZimbra ("/opt/zimbra/libexec/zmldapapplyldif");
       if ( ! -f "/opt/zimbra/.enable_replica" ) {
          if ($newinstall && $config{LDAPREPLICATIONTYPE} eq "mmr") {
            setLocalConfig ("ldap_is_master", "true");
@@ -5264,6 +5269,7 @@ sub configCreateServerEntry {
   progress ( "Setting Zimbra IP Mode..." );
   my $rc = setLdapServerConfig("zimbraIPMode", $config{zimbraIPMode});
   progress(($rc == 0) ? "done.\n" : "failed.\n");
+  my $rc = runAsZimbra("/opt/zimbra/libexec/zmiptool >/dev/null 2>/dev/null");
 
   configLog("configCreateServerEntry");
 }
