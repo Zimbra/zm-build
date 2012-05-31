@@ -5908,9 +5908,6 @@ sub configInstallZimlets {
       } else {
         progress("failed. This may impact system functionality.\n");
       }
-      # disable click2call zimlets by default.  #73987
-      setLdapCOSConfig("+zimbraZimletAvailableZimlets", "-$zimlet")
-        if ($zimlet =~ /click2call/);
       
     }
     progress ( "Finished installing common zimlets.\n" );
@@ -5928,6 +5925,10 @@ sub configInstallZimlets {
       progress  ("\t$zimlet...");
       my $rc = runAsZimbra ("${zimbra_home}/bin/zmzimletctl -l deploy zimlets-network/$zimletfile");
       progress (($rc == 0) ? "done.\n" : "failed. This may impact system functionality.\n");
+      # disable click2call zimlets by default.  #73987
+      setLdapCOSConfig("+zimbraZimletAvailableZimlets", "-$zimlet")
+        if ($zimlet =~ /click2call/);
+
       if (($rc == 0) && ($zimlet eq "com_zimbra_smime")) {
         system("cp ${zimbra_home}/zimlets-deployed/com_zimbra_smime/com_zimbra_smime.jarx ${zimbra_home}/jetty/webapps/zimbra/public/com_zimbra_smime.jarx");
       }
