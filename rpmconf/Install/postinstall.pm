@@ -23,9 +23,8 @@ sub configure {
 		main::runAsZimbra ("zmlocalconfig -u trial_expiration_date");
 	}
 
-  # we temporary set this to true during the install
-  main::setLocalConfig("ssl_allow_untrusted_certs", "false")
-    if ($main::newinstall);
+  # we temporary set this to true during the install/upgrade
+  main::setLocalConfig("ssl_allow_untrusted_certs", "false");
 
   if (main::isEnabled("zimbra-mta") && $main::newinstall) {
     my @mtalist = main::getAllServers("mta");

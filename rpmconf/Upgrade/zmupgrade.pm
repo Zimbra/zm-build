@@ -645,7 +645,7 @@ sub upgrade {
     }
     last if ($v eq $targetVersion);
   }
-
+  main::setLocalConfig("ssl_allow_untrusted_certs", "true") if ($startMajor <= 7 && $targetMajor >= 8);
   # start ldap
   if (main::isInstalled ("zimbra-ldap")) {
     if($startMajor < 6 && $targetMajor >= 6) {
@@ -4122,7 +4122,9 @@ sub upgrade800BETA3 {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
   main::progress("Updating from 8.0.0_BETA3\n");
   main::setLocalConfig("ldap_read_timeout", "0"); #70437
-  system("rm -rf /opt/zimbra/ssl/zimbra/{ca,server} > /dev/null 2>&1");
+  main::detail("Removing /opt/zimbra/ssl/zimbra/{ca,server} to force creation or download of new ca and certificates.");
+  system("rm -rf /opt/zimbra/ssl/zimbra/ca > /dev/null 2>&1");
+  system("rm -rf /opt/zimbra/ssl/zimbra/server > /dev/null 2>&1");
   main::setLocalConfig("ssl_allow_untrusted_certs", "true");
   if (main::isInstalled("zimbra-ldap")) {
     # Delete unused BDB DB keys
@@ -4259,8 +4261,7 @@ sub upgrade800BETA4 {
     # bug 32683
     main::setLdapGlobalConfig("zimbraReverseProxySSLToUpstreamEnabled", "FALSE");
   }
-  foreach my $lc_var (qw(cbpolicyd_bind_host logger_mysql_bind_address logger_mysql_directory logger_mysql_data_directory logger_mysql_socket \
-                         logger_mysql_pidfile logger_mysql_mycnf logger_mysql_errlogfile logger_mysql_port zimbra_logger_mysql_password)) {
+  foreach my $lc_var (qw(cbpolicyd_bind_host logger_mysql_bind_address logger_mysql_directory logger_mysql_data_directory logger_mysql_socket logger_mysql_pidfile logger_mysql_mycnf logger_mysql_errlogfile logger_mysql_port zimbra_logger_mysql_password)) {
     main::deleteLocalConfig("$lc_var");
   }
   return 0;
