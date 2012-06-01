@@ -4248,13 +4248,18 @@ sub upgrade800BETA4 {
   }
   if (main::isInstalled("zimbra-mta")) {
     my $mtamilter = main::getLdapServerValue("zimbraMtaSmtpdMilters");
+    my $ipmode = main::getLdapServerValue("zimbraIPMode");
+    my $miltervalue="inet6:localhost:8465";
+    if ($ipmode eq "ipv4") {
+      $miltervalue="inet:localhost:8465";
+    }
     if ($mtamilter ne "")  {
-      if ($mtamilter !~ /inet:localhost:8465/) {
-        $mtamilter = "inet:localhost:8465 $mtamilter";
-        main::setLdapServerConfig("zimbraMtaSmtpdMilters", "inet:localhost:8465");
+      if ($mtamilter !~ /$miltervalue/) {
+        $mtamilter = "$miltervalue $mtamilter";
+        main::setLdapServerConfig("zimbraMtaSmtpdMilters", "$mtamilter");
       }
     } else {
-      main::setLdapServerConfig("zimbraMtaSmtpdMilters", "inet:localhost:8465");
+      main::setLdapServerConfig("zimbraMtaSmtpdMilters", "$miltervalue");
     }
   }
   if (main::isInstalled("zimbra-proxy")) {

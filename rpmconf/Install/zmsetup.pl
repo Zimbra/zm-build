@@ -5325,7 +5325,11 @@ sub configConvertdURL {
 sub configSetMtaDefaults {
    &configSetMtaAuthHost();
    if($newinstall) {
-     setLdapServerConfig("zimbraMtaSmtpdMilters", "inet:localhost:8465");
+     if ($config{zimbraIPMode} eq "ipv4") {
+       setLdapServerConfig("zimbraMtaSmtpdMilters", "inet:localhost:8465");
+     else {
+       setLdapServerConfig("zimbraMtaSmtpdMilters", "inet6:localhost:8465");
+     }
    }
 }
 
