@@ -4918,6 +4918,9 @@ sub upgradeLdap($) {
               print OUT "olcDbMaxsize: 85899345920\n";
               next;
             }
+            if ($_ =~ /olcDbNoSync:/) {
+              print OUT "olcDbNoSync: TRUE\n";
+            }
             if ($_ =~ /olcDbCacheSize:/) {
               next;
             }
@@ -4979,6 +4982,9 @@ sub upgradeLdap($) {
               print OUT $_;
               print OUT "olcDbMaxsize: 85899345920\n";
               next;
+            }
+            if ($_ =~ /olcDbNoSync:/) {
+              print OUT "olcDbNoSync: TRUE\n";
             }
             if ($_ =~ /olcDbCacheSize:/) {
               next;
