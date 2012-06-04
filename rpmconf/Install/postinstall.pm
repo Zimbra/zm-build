@@ -24,7 +24,8 @@ sub configure {
 	}
 
   # we temporary set this to true during the install/upgrade
-  main::setLocalConfig("ssl_allow_untrusted_certs", "false");
+  main::setLocalConfig("ssl_allow_untrusted_certs", "false")
+    if $main::newinstall;
 
   if (main::isEnabled("zimbra-mta") && $main::newinstall) {
     my @mtalist = main::getAllServers("mta");
