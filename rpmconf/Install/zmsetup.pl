@@ -224,6 +224,10 @@ getSystemStatus();
 
 startLdap() if ($ldapConfigured);
 
+if (!$newinstall) {
+  my $rc = runAsZimbra ("/opt/zimbra/libexec/zmldapupdateldif");
+}
+
 if ($ldapConfigured || 
   (($config{LDAPHOST} ne $config{HOSTNAME}) && ldapIsAvailable())) {
   setLdapDefaults();
