@@ -27,3 +27,7 @@
 # Invoke "client_usage_report.py" periodically to process /opt/zimbra/log/access_log* files
 #
 55 1 * * *	/opt/zimbra/libexec/client_usage_report.py > /dev/null 2>&1
+#
+# Run zmgsaupdate util to trickeSync galsync accounts
+#
+49 0 * * 7	/opt/zimbra/libexec/zmgsaupdate > /dev/null 2>&1
