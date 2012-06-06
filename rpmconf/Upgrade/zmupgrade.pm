@@ -4252,11 +4252,7 @@ sub upgrade800BETA4 {
   }
   if (main::isInstalled("zimbra-mta")) {
     my $mtamilter = main::getLdapServerValue("zimbraMtaSmtpdMilters");
-    my $ipmode = main::getLdapServerValue("zimbraIPMode");
-    my $miltervalue="inet6:localhost:8465";
-    if ($ipmode eq "ipv4") {
-      $miltervalue="inet:localhost:8465";
-    }
+    my $miltervalue="inet:localhost:8465";
     if ($mtamilter ne "")  {
       if ($mtamilter !~ /$miltervalue/) {
         $mtamilter = "$miltervalue $mtamilter";
