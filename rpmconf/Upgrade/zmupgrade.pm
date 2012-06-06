@@ -4927,6 +4927,7 @@ sub upgradeLdap($) {
             }
             if ($_ =~ /olcDbNoSync:/) {
               print OUT "olcDbNoSync: TRUE\n";
+              next;
             }
             if ($_ =~ /olcDbCacheSize:/) {
               next;
@@ -4992,6 +4993,7 @@ sub upgradeLdap($) {
             }
             if ($_ =~ /olcDbNoSync:/) {
               print OUT "olcDbNoSync: TRUE\n";
+              next;
             }
             if ($_ =~ /olcDbCacheSize:/) {
               next;
