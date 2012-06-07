@@ -130,8 +130,8 @@ $(MTA_DEST_DIR)/$(POSTFIX_DIR): $(MTA_DEST_DIR)
 	(cd $(MTA_DEST_DIR); tar xzf $(POSTFIX_SOURCE).tgz;)
 	rm -f $(MTA_DEST_DIR)/$(POSTFIX_DIR)/conf/main.cf
 	cp $(SERVICE_DIR)/conf/postfix/master.cf.in $(MTA_DEST_DIR)/$(POSTFIX_DIR)/conf/master.cf.in
-	cp $(SERVICE_DIR)/conf/postfix/tag_as_foreign.re $(MTA_DEST_DIR)/$(POSTFIX_DIR)/conf/tag_as_foreign.re
-	cp $(SERVICE_DIR)/conf/postfix/tag_as_originating.re $(MTA_DEST_DIR)/$(POSTFIX_DIR)/conf/tag_as_originating.re
+	cp $(SERVICE_DIR)/conf/postfix/tag_as_foreign.re.in $(MTA_DEST_DIR)/$(POSTFIX_DIR)/conf/tag_as_foreign.re.in
+	cp $(SERVICE_DIR)/conf/postfix/tag_as_originating.re.in $(MTA_DEST_DIR)/$(POSTFIX_DIR)/conf/tag_as_originating.re.in
 
 $(MTA_DEST_DIR)/$(CLAMAV_DIR): $(MTA_DEST_DIR)
 	@echo "*** Creating clamav"
