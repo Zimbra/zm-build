@@ -1275,31 +1275,44 @@ sub setDefaults {
 
   # Get the interfaces.
   # Do this in perl, since it's the same on all platforms.
-  open INTS, "/sbin/ifconfig | grep 'inet ' |";
+
+  open INTS, "/sbin/ifconfig | grep ' addr' |";
   foreach (<INTS>) {
     chomp;
-    s/.*inet //;
-    s/\s.*//;
-    s/[a-zA-Z:]//g;
-    s/^\n//g;
-    next if ($_ eq "");
+    if ($_ =~ /inet6/) {
+      s/.*inet6 //;
+      s/.*addr: //;
+      s/\/.*//;
+    } else {
+      s/.*inet //;
+      s/\s.*//;
+      s/[a-zA-Z:]//g;
+      s/^\n//g;
+      next if ($_ eq "");
+    }
     push @interfaces, $_;
   }
   close INTS;
   if (-x "/sbin/ip") {
-    open INTS, "/sbin/ip addr| grep 'inet ' |";
+    open INTS, "/sbin/ip addr| grep ' addr' |";
     foreach (<INTS>) {
       chomp;
-      s/.*inet //;
-      s/\s.*//;
-      s/\/\d+$//;
-      s/[a-zA-Z:]//g;
-      s/^\n//g;
-      next if ($_ eq "");
+      if ($_ =~ /inet6/) {
+        s/.*inet6 //;
+        s/.*addr: //;
+        s/\/.*//;
+      } else {
+        s/\s.*//;
+        s/\/\d+$//;
+        s/[a-zA-Z:]//g;
+        s/^\n//g;
+        next if ($_ eq "");
+      }
       push @interfaces, $_;
     }
-  close INTS;
+    close INTS;
   }
+
   my %seen=();
   @interfaces = grep {!$seen{$_}++} @interfaces;
 
@@ -5325,11 +5338,7 @@ sub configConvertdURL {
 sub configSetMtaDefaults {
    &configSetMtaAuthHost();
    if($newinstall) {
-     if ($config{zimbraIPMode} eq "ipv4") {
-       setLdapServerConfig("zimbraMtaSmtpdMilters", "inet:localhost:8465");
-     } else {
-       setLdapServerConfig("zimbraMtaSmtpdMilters", "inet6:localhost:8465");
-     }
+     setLdapServerConfig("zimbraMtaSmtpdMilters", "inet:localhost:8465");
    }
 }
 
