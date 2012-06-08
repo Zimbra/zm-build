@@ -322,7 +322,7 @@ $(WEBAPP_DIR)/zimbra/downloads:
 	-cp $(SERVICE_DIR)/src/windows/*zip $@
 	-cp $(SERVICE_DIR)/src/windows/ZimbraToast*msi $@
 	-cp $(SERVICE_DIR)/src/download/* $@
-	-(rm -f $@/\%*.dmg)
+	-(rm -f $@/\%*.dmg $@/ZCSDomino*zip)
 
 $(MIG_TOOLS_DIR)/build/zmzimbratozimbramig.jar:
 	(cd $(MIG_TOOLS_DIR); $(ANT) $(ANT_DEBUG) \
