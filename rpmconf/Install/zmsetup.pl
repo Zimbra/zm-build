@@ -71,6 +71,7 @@ use postinstall;
 use zmupgrade;
 use Getopt::Std;
 use Net::DNS::Resolver;
+use NetAddr::IP;
 
 our %options = ();
 our %config = ();
@@ -1590,12 +1591,17 @@ sub setDefaults {
           foreach my $i (@interfaces) {
             if ($a->type eq "MX") {
               my $h = getDnsRecords ($a->exchange,'A');
+              if (!defined $h) {
+                $h = getDnsRecords ($a->exchange, 'AAAA');
+              }
               if (defined $h) {
                 my @ha = $h->answer;
                 foreach $h (@ha) {
-                  if ($h->type eq 'A') {
+                  my $interIp = NetAddr::IP->new("$i");
+                  my $interface= lc($interIp->addr);
+                  if ($h->type eq 'A' || $h->type eq 'AAAA') {
                     print "\t\t".$h->address."\n";
-                    if ($h->address eq $i) {
+                    if ($h->address eq $interface) {
                       $good = 1;
                       last;
                     }
@@ -2010,20 +2016,30 @@ sub setCreateDomain {
       $config{CREATEDOMAIN} = $oldDomain;
       next;
     } elsif (isEnabled("zimbra-mta")) {
-
       my @answer = $ans->answer;
       foreach my $a (@answer) {
         if ($a->type eq "MX") {
           my $h = getDnsRecords ($a->exchange,'A');
-          if (!defined ($h)) {
-            progress "\tWarning: no 'A' record found for ".$a->exchange."\n";
-            next;
+          my $ipv6 = 0;
+          if (!defined $h) {
+            $h = getDnsRecords ($a->exchange, 'AAAA');
+            $ipv6 = 1;
           }
-          my @ha = $h->answer;
-          foreach $h (@ha) {
-            if ($h->type eq 'A') {
-              progress "\tMX: ".$a->exchange." (".$h->address.")\n";
+          if (defined $h) {
+            my @ha = $h->answer;
+            foreach $h (@ha) {
+              if ($ipv6) {
+                if ($h->type eq 'AAAA') {
+                  progress "\tMX: ".$a->exchange." (".$h->address.")\n";
+                }
+              } else {
+                if ($h->type eq 'A') {
+                  progress "\tMX: ".$a->exchange." (".$h->address.")\n";
+                }
+              }
             }
+          } else {
+            progress "\n\nDNS ERROR - No A or AAAA record for $config{CREATEDOMAIN}.\n";
           }
         }
       }
@@ -2035,16 +2051,19 @@ sub setCreateDomain {
         foreach my $i (@interfaces) {
           if ($a->type eq "MX") {
             my $h = getDnsRecords ($a->exchange,'A');
-            if (!defined ($h)) {
-              progress "\tWarning: no 'A' record found for ".$a->exchange."\n";
-              next;
+            if (!defined $h) {
+              $h = getDnsRecords ($a->exchange, 'AAAA');
             }
-            my @ha = $h->answer;
-            foreach $h (@ha) {
-              if ($h->type eq 'A') {
-                if ($h->address eq $i) {
-                  $good = 1;
-                  last;
+            if (defined $h) {
+              my @ha = $h->answer;
+              foreach $h (@ha) {
+                my $interIp = NetAddr::IP->new("$i");
+                my $interface= lc($interIp->addr);
+                if ($h->type eq 'A' || $h->type eq 'AAAA') {
+                  if ($h->address eq $interface) {
+                    $good = 1;
+                    last;
+                  }
                 }
               }
             }
@@ -2064,7 +2083,6 @@ sub setCreateDomain {
         $config{CREATEDOMAIN} = $oldDomain;
         next;
       }
-
     }
     last;
   }
