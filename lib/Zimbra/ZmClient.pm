@@ -119,8 +119,8 @@ sub sendZmprovRequest($) {
 	waitpid (-1, WNOHANG);
     my $cmd = shift @_;
 	my @lines;
-	if ($cmd =~ m/\s*-l/) {
-		$cmd =~ s/\s*-l//;
+	if ($cmd =~ m/^-l\s+/) {
+		$cmd =~ s/^-l\s+//;
 		@lines = sendZmprovRequestLdap($cmd);
 	} else {
 		@lines = sendZmprovRequestSoap($cmd);
