@@ -113,8 +113,10 @@ my %updateScripts = (
   '62' => "migrate20090430-highestindexed.pl",         # 6.0.0_BETA2
   '63' => "migrate20100106-MobileDevices.pl",          # 6.0.5_GA
   '64' => "migrate20100926-Dumpster.pl",               # 7.0.0_BETA1
-  '65' => "migrate20101123-MobileDevices.pl",          # this upgrades to 80 for 8.0.0_BETA1
-   # 66-79 skipped for possible HELIX use
+  #'65' => "migrate20101123-MobileDevices.pl",          # this upgrades to 80 for 8.0.0_BETA1
+  # Consolidating the scripts which updates the db.version to 80..90
+  '65' => "migrate20120611_7to8_bundle.pl",             # this upgrades to 90 for 8_0_0_BETA
+  # 66-79 skipped for possible HELIX use
   '80' => "migrate20110314-MobileDevices.pl",          # 8.0.0_BETA1
   '81' => "migrate20110330-RecipientsColumn.pl",       # 8.0.0_BETA1
   '82' => "migrate20110705-PendingAclPush.pl",         # 8.0.0_BETA1
