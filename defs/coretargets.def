@@ -345,7 +345,6 @@ $(CORE_DEST_DIR)/bin:
 	cp $(ZIMBRA_BIN_DIR)/zmmtactl $@
 	cp $(ZIMBRA_BIN_DIR)/zmspellctl $@
 	cp $(ZIMBRA_BIN_DIR)/zmapachectl $@
-	cp $(ZIMBRA_BIN_DIR)/zmprov.server $@
 	cp $@/zmprov $@/zmprov.java
 ifeq ($(ZIMBRA_USE_CBPOLICYD), 1)
 	cp $(ZMCBPOLICYD_DIR)/src/bin/* $@
