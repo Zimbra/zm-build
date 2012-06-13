@@ -6371,6 +6371,8 @@ sub configSetEnabledServices {
   runAsZimbra ("$ZMPROV ms $config{HOSTNAME} $enabledServiceStr");
   progress ( "done.\n" );
 
+  my $rc = runAsZimbra("/opt/zimbra/libexec/zmiptool >/dev/null 2>/dev/null");
+
   configLog("configSetEnabledServices");
 }
 
