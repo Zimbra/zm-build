@@ -6310,20 +6310,19 @@ sub configInitGALSyncAccts {
 
 sub configCreateDefaultDomainGALSyncAcct {
 
-  if ($configStatus{configInitGALSyncAccts} eq "CONFIGURED") {
-    configLog("configInitGALSyncAccts");
+  if ($configStatus{configCreateDefaultGALSyncAcct} eq "CONFIGURED") {
+    configLog("configCreateDefaultGALSyncAcct");
     return 0;
   }
 
-  return 1 unless 
-    (isEnabled("zimbra-ldap") && $config{LDAPHOST} eq $config{HOSTNAME});
-
-  progress("Creating galsync account for default domain...");
-  my $zimbra_server = getLocalConfig ("zimbra_server_hostname");
-  my $galsyncacct = "galsync." . lc(genRandomPass()) . '@' . $config{zimbraDefaultDomainName};
-  my $rc = runAsZimbra("/opt/zimbra/bin/zmgsautil createAccount -a $galsyncacct -n InternalGAL --domain $main::config{zimbraDefaultDomainName} -s $zimbra_server -t zimbra -f _InternalGAL"); 
-  progress(($rc == 0) ? "done.\n" : "failed.\n");
-  configLog("configCreateDefaultDomainGALSyncAcct") if ($rc == 0);
+  if (isEnabled("zimbra-store")) {
+    progress("Creating galsync account for default domain...");
+    my $zimbra_server = getLocalConfig ("zimbra_server_hostname");
+    my $galsyncacct = "galsync." . lc(genRandomPass()) . '@' . $config{zimbraDefaultDomainName};
+    my $rc = runAsZimbra("/opt/zimbra/bin/zmgsautil createAccount -a $galsyncacct -n InternalGAL --domain $main::config{zimbraDefaultDomainName} -s $zimbra_server -t zimbra -f _InternalGAL"); 
+    progress(($rc == 0) ? "done.\n" : "failed.\n");
+    configLog("configCreateDefaultDomainGALSyncAcct") if ($rc == 0);
+  }
 }
 
 sub configSetEnabledServices {
@@ -6545,6 +6544,8 @@ sub applyConfig {
   if ($config{STARTSERVERS} eq "yes") {
     if ($newinstall) {
       configCreateDefaultDomainGALSyncAcct();
+    } else {
+      progress ( "Skipping creation of default domain GAL sync account - non-new install detected" );
     }
   } else {
     progress ( "WARNING: galsync account creation for default domain skipped because Application Server was not configured to start.\n")
