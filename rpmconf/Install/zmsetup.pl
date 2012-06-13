@@ -5888,7 +5888,7 @@ sub zimletCleanup {
     return 1;
   } else {
     detail("ldap bind done for $ldap_dn");
-    $result = $ldap->search(base => $ldap_base, scope => 'one', filter => "(|(cn=convertd)(cn=cluster)(cn=hsm)(cn=hotbackup)(cn=zimbra_cert_manager)(cn=com_zimbra_search)(cn=zimbra_xmbxsearch)(cn=com_zimbra_domainadmin)(cn=com_zimbra_cluster)(cn=com_zimbra_tinymce)(cn=com_zimbra_tasksreminder)(cn=com_zimbra_linkedin)(cn=com_zimbra_social))", attrs => ['cn']);
+    $result = $ldap->search(base => $ldap_base, scope => 'one', filter => "(|(cn=convertd)(cn=cluster)(cn=hsm)(cn=hotbackup)(cn=zimbra_cert_manager)(cn=com_zimbra_search)(cn=zimbra_xmbxsearch)(cn=com_zimbra_domainadmin)(cn=com_zimbra_cluster)(cn=com_zimbra_tinymce)(cn=com_zimbra_tasksreminder)(cn=com_zimbra_linkedin)(cn=com_zimbra_social)(cn=com_zimbra_smime))", attrs => ['cn']);
     return $result if ($result->code());
     detail("Processing ldap search results");
     foreach my $entry ($result->all_entries) {
