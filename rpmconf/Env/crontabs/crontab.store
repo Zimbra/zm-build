@@ -12,7 +12,7 @@
 #
 # Monitor for multiple mysqld to prevent corruption
 #
-*/5 * * * * /opt/zimbra/libexec/zmcheckduplicatemysqld -e > /dev/null 2>&1
+#*/5 * * * * /opt/zimbra/libexec/zmcheckduplicatemysqld -e > /dev/null 2>&1
 #
 # Check zimbraVersionCheckURL for new update. 
 # Only runs if this server matches zimbraVersionCheckServer 
