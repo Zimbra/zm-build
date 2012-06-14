@@ -1276,6 +1276,8 @@ sub setDefaults {
 
   # Get the interfaces.
   # Do this in perl, since it's the same on all platforms.
+  my $ipv4found=0;
+  my $ipv6found=0;
 
   open INTS, "/sbin/ifconfig | grep ' addr' |";
   foreach (<INTS>) {
@@ -1284,12 +1286,14 @@ sub setDefaults {
       s/.*inet6 //;
       s/.*addr: //;
       s/\/.*//;
+      $ipv6found=1;
     } else {
       s/.*inet //;
       s/\s.*//;
       s/[a-zA-Z:]//g;
       s/^\n//g;
       next if ($_ eq "");
+      $ipv4found=1;
     }
     push @interfaces, $_;
   }
@@ -1302,12 +1306,14 @@ sub setDefaults {
         s/.*inet6 //;
         s/.*addr: //;
         s/\/.*//;
+        $ipv6found=1;
       } else {
         s/\s.*//;
         s/\/\d+$//;
         s/[a-zA-Z:]//g;
         s/^\n//g;
         next if ($_ eq "");
+        $ipv4found=1;
       }
       push @interfaces, $_;
     }
@@ -1331,7 +1337,11 @@ sub setDefaults {
   $config{HTTPPORT} = 80;
   $config{HTTPSPORT} = 443;
 
-  $config{zimbraIPMode}     = "ipv4";
+  if (!$ipv4found && $ipv6found) {
+    $config{zimbraIPMode}     = "ipv6";
+  } else {
+    $config{zimbraIPMode}     = "ipv4";
+  }
 
   if ($platform =~ /MACOSX/ && $platform ne "MACOSXx86_10.6" && $platform ne "MACOSXx86_10.7" ) {
     $config{JAVAHOME} = "/System/Library/Frameworks/JavaVM.framework/Versions/1.5/Home";
