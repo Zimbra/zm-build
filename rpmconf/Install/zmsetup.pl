@@ -3426,7 +3426,7 @@ sub createLdapMenu {
         };
       $i++;
     }
-    if ($config{HOSTNAME} eq $config{LDAPHOST} ) {
+    if ($config{HOSTNAME} eq $config{LDAPHOST} || $config{LDAPREPLICATIONTYPE} ne "replica" ) {
       if ($config{ldap_bes_searcher_password} eq "") {
         $config{LDAPBESSEARCHSET} = "UNSET";
       } else {
@@ -4471,9 +4471,11 @@ sub checkLdapBind() {
   } else {
     $ldap->unbind;
     detail ("Verified ldap running at $ldap_url\n");
-    setLocalConfig("ldap_url", $ldap_url);
-    setLocalConfig("ldap_starttls_supported", $starttls);
-    setLocalConfig("zimbra_require_interprocess_security", $config{zimbra_require_interprocess_security});
+    if ($newinstall) {
+      setLocalConfig("ldap_url", $ldap_url);
+      setLocalConfig("ldap_starttls_supported", $starttls);
+      setLocalConfig("zimbra_require_interprocess_security", $config{zimbra_require_interprocess_security});
+    }
     setLocalConfig("ssl_allow_untrusted_certs", "true") if ($newinstall);
     return 0;
   }
@@ -4739,25 +4741,27 @@ sub configLCValues {
   setLocalConfig ("zimbra_server_hostname", lc($config{HOSTNAME}));
   setLocalConfig ("zimbra_require_interprocess_security", $config{zimbra_require_interprocess_security});
 
-  if ($config{LDAPPORT} == 636) {
-    setLocalConfig ("ldap_master_url", "ldaps://$config{LDAPHOST}:$config{LDAPPORT}");
-    setLocalConfig ("ldap_url", "ldaps://$config{LDAPHOST}:$config{LDAPPORT}");
-    setLocalConfig ("ldap_starttls_supported", 0);
-  } else {
-    setLocalConfig ("ldap_master_url", "ldap://$config{LDAPHOST}:$config{LDAPPORT}");
-    if ($config{ldap_url} eq "") { 
-      setLocalConfig ("ldap_url", "ldap://$config{LDAPHOST}:$config{LDAPPORT}");
-      if ($config{zimbra_require_interprocess_security}) {
-        setLocalConfig ("ldap_starttls_supported", 1);
-      } else {
-        setLocalConfig ("ldap_starttls_supported", 0);
-      }
+  if($newinstall) {
+    if ($config{LDAPPORT} == 636) {
+      setLocalConfig ("ldap_master_url", "ldaps://$config{LDAPHOST}:$config{LDAPPORT}");
+      setLocalConfig ("ldap_url", "ldaps://$config{LDAPHOST}:$config{LDAPPORT}");
+      setLocalConfig ("ldap_starttls_supported", 0);
     } else {
-      setLocalConfig ("ldap_url", "$config{ldap_url}");
-      if ($config{ldap_url} !~ /^ldaps/i && $config{zimbra_require_interprocess_security}) {
-        setLocalConfig ("ldap_starttls_supported", 1);
+      setLocalConfig ("ldap_master_url", "ldap://$config{LDAPHOST}:$config{LDAPPORT}");
+      if ($config{ldap_url} eq "") { 
+        setLocalConfig ("ldap_url", "ldap://$config{LDAPHOST}:$config{LDAPPORT}");
+        if ($config{zimbra_require_interprocess_security}) {
+          setLocalConfig ("ldap_starttls_supported", 1);
+        } else {
+          setLocalConfig ("ldap_starttls_supported", 0);
+        }
       } else {
-        setLocalConfig ("ldap_starttls_supported", 0);
+        setLocalConfig ("ldap_url", "$config{ldap_url}");
+        if ($config{ldap_url} !~ /^ldaps/i && $config{zimbra_require_interprocess_security}) {
+          setLocalConfig ("ldap_starttls_supported", 1);
+        } else {
+          setLocalConfig ("ldap_starttls_supported", 0);
+        }
       }
     }
   }
