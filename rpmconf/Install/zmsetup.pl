@@ -1293,7 +1293,9 @@ sub setDefaults {
       s/[a-zA-Z:]//g;
       s/^\n//g;
       next if ($_ eq "");
-      $ipv4found=1;
+      if ($_ ne "127.0.0.1") {
+        $ipv4found=1;
+      }
     }
     push @interfaces, $_;
   }
@@ -1313,7 +1315,9 @@ sub setDefaults {
         s/[a-zA-Z:]//g;
         s/^\n//g;
         next if ($_ eq "");
-        $ipv4found=1;
+        if ($_ ne "127.0.0.1") {
+          $ipv4found=1;
+        }
       }
       push @interfaces, $_;
     }
