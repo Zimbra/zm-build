@@ -1283,10 +1283,13 @@ sub setDefaults {
   foreach (<INTS>) {
     chomp;
     if ($_ =~ /inet6/) {
+      next if ($_ =~ /Link/);
       s/.*inet6 //;
       s/.*addr: //;
       s/\/.*//;
-      $ipv6found=1;
+      if ($_ ne "::1") {
+        $ipv6found=1;
+      }
     } else {
       s/.*inet //;
       s/\s.*//;
@@ -1301,17 +1304,20 @@ sub setDefaults {
   }
   close INTS;
   if (-x "/sbin/ip") {
-    open INTS, "/sbin/ip addr| grep ' addr' |";
+    open INTS, "/sbin/ip addr| grep ' scope ' |";
     foreach (<INTS>) {
       chomp;
       if ($_ =~ /inet6/) {
+        next if ($_ =~ /link/);
         s/.*inet6 //;
         s/.*addr: //;
         s/\/.*//;
-        $ipv6found=1;
+        if ($_ ne "::1") {
+          $ipv6found=1;
+        }
       } else {
-        s/\s.*//;
-        s/\/\d+$//;
+        s/.*inet //;
+        s/\/.*//;
         s/[a-zA-Z:]//g;
         s/^\n//g;
         next if ($_ eq "");
