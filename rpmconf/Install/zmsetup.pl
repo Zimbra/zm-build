@@ -6342,8 +6342,9 @@ sub configCreateDefaultDomainGALSyncAcct {
   if (isEnabled("zimbra-store")) {
     progress("Creating galsync account for default domain...");
     my $zimbra_server = getLocalConfig ("zimbra_server_hostname");
-    my $galsyncacct = "galsync." . lc(genRandomPass()) . '@' . $config{zimbraDefaultDomainName};
-    my $rc = runAsZimbra("/opt/zimbra/bin/zmgsautil createAccount -a $galsyncacct -n InternalGAL --domain $main::config{zimbraDefaultDomainName} -s $zimbra_server -t zimbra -f _InternalGAL"); 
+    my $default_domain = (($newinstall) ? "$config{CREATEDOMAIN}" : "$config{zimbraDefaultDomainName}");
+    my $galsyncacct = "galsync." . lc(genRandomPass()) . '@' . $default_domain ;
+    my $rc = runAsZimbra("/opt/zimbra/bin/zmgsautil createAccount -a $galsyncacct -n InternalGAL --domain $default_domain -s $zimbra_server -t zimbra -f _InternalGAL"); 
     progress(($rc == 0) ? "done.\n" : "failed.\n");
     configLog("configCreateDefaultDomainGALSyncAcct") if ($rc == 0);
   }
