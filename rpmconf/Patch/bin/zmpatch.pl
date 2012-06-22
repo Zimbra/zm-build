@@ -214,11 +214,11 @@ sub doPatchDeploy() {
   progress("Current Version: $versionInfo{current}\n", 0, 1);
 
   if ($currentBuild > $patchBuildNumber) {
-    progress("Current install $currentRelease is newer then patch version.\n", 1, 0);
+    progress("Current install $currentRelease is newer then patch version.\n", 0, 1);
     return undef;
   }
   if ($currentBuild == $patchBuildNumber && !$options{force}) {
-    progress("Current install $currentRelease is the same as patch version.\n", 1, 0);
+    progress("Current install $currentRelease is the same as patch version.\n", 0, 1);
     return undef;
   }
   while () {
