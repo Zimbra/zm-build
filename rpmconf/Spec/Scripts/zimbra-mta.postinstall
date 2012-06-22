@@ -36,6 +36,11 @@ if [ -d /opt/zimbra/opendkim-2.6.0 ]; then
   ln -s /opt/zimbra/opendkim-2.6.0 /opt/zimbra/opendkim
 fi
 
+rm -f /opt/zimbra/zeromq
+if [ -d /opt/zimbra/zeromq-3.2.0 ]; then
+  ln -s /opt/zimbra/zeromq-3.2.0 /opt/zimbra/zeromq
+fi
+
 rm -f /opt/zimbra/dspam
 ln -s /opt/zimbra/dspam-3.10.1 /opt/zimbra/dspam
 
