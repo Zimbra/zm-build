@@ -82,7 +82,7 @@ $(BUILD_ROOT)/zimbra-mta.spec:
 		$(BUILD_ROOT)/zimbra-mta.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/opendkim-$(DKIM_VERSION)" >> \
 		$(BUILD_ROOT)/zimbra-mta.spec
-        echo "%attr(-, zimbra, zimbra) /opt/zimbra/zeromq-$(ZMQ_VERSION)" >> \
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/zeromq-$(ZMQ_VERSION)" >> \
 		$(BUILD_ROOT)/zimbra-mta.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/mta" >> \
 		$(BUILD_ROOT)/zimbra-mta.spec
