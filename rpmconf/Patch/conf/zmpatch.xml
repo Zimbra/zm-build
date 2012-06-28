@@ -1121,6 +1121,7 @@
   <bug>72151</bug>
   <bug>73128</bug>
   <bug>73440</bug>
+  <bug>73712</bug>
   <bug>73753</bug>
   <bug>74401</bug>
   <bug>74437</bug>
@@ -1192,13 +1193,39 @@
         <target>/opt/zimbra/jetty/webapps/zimbra/downloads/ZimbraConnectorOLK_7.2.1.530_x86.msi</target>
         <perms owner="root" mode="444"/>
       </file>
+      <file>
+        <source>ZimbraBuild/storebuild/opt/zimbra/jetty-6.1.22.z6/webapps/zimbra/js/Calendar_all.js.zgz</source>
+        <target>/opt/zimbra/jetty/webapps/zimbra/js/Calendar_all.js.zgz</target>
+        <perms owner="zimbra" mode="444"/>
+      </file>
+      <file>
+        <source>ZimbraBuild/storebuild/opt/zimbra/jetty-6.1.22.z6/webapps/zimbra/js/IMCore_all.js.zgz</source>
+        <target>/opt/zimbra/jetty-6.1.22.z6/webapps/zimbra/js/IMCore_all.js.zgz</target>
+        <perms owner="zimbra" mode="444"/>
+      </file>
+      <file>
+        <source>ZimbraBuild/storebuild/opt/zimbra/jetty-6.1.22.z6/webapps/zimbra/js/Mail_all.js.zgz</source>
+        <target>/opt/zimbra/jetty/webapps/zimbra/js/Mail_all.js.zgz</target>
+        <perms owner="zimbra" mode="444"/>
+      </file>
+      <file>
+        <source>ZimbraBuild/storebuild/opt/zimbra/jetty-6.1.22.z6/webapps/zimbra/js/NewWindow_1_all.js.zgz</source>
+        <target>/opt/zimbra/jetty-6.1.22.z6/webapps/zimbra/js/NewWindow_1_all.js.zgz</target>
+        <perms owner="zimbra" mode="444"/>
+      </file>
+      <file>
+        <source>ZimbraBuild/storebuild/opt/zimbra/jetty-6.1.22.z6/webapps/zimbra/js/XForms_all.js.zgz</source>
+        <target>/opt/zimbra/jetty-6.1.22.z6/webapps/zimbra/js/XForms_all.js.zgz</target>
+        <target>/opt/zimbra/jetty-6.1.22.z6/webapps/zimbraAdmin/js/XForms_all.js.zgz</target>
+        <perms owner="zimbra" mode="444"/>
+      </file>
       <deletefile>
         <target>/opt/zimbra/jetty/webapps/zimbra/downloads/ZimbraConnectorOLK_7.2.0.517_x64.msi</target>
         <target>/opt/zimbra/jetty/webapps/zimbra/downloads/ZimbraConnectorOLK_7.2.0.517_x86.msi</target>
       </deletefile>
   </package>
   <preinstall></preinstall>
-  <postinstall></postinstall>
+  <postinstall>/opt/zimbra/libexec/zmupdatedownload</postinstall>
   </patch>
 <!--
   <patch name="7.1.1_GA" version="7.1.1_P4">
@@ -1216,6 +1243,11 @@
         <source>ZimbraBuild/storebuild/opt/zimbra/jetty-6.1.22.z6/common/lib/zimbracommon.jar</source>
         <target>/opt/zimbra/jetty/common/lib/zimbracommon.jar</target>
         <perms owner="root" mode="444"/>
+      </file>
+      <file>
+        <source>ZimbraBuild/storebuild/TARGET_FILE_PATH_GOES_HERE</source>
+        <target>TARGET_FILE_PATH_GOES_HERE</target>
+        <perms owner="zimbra" mode="444"/>
       </file>
   </package>
   <preinstall></preinstall>
