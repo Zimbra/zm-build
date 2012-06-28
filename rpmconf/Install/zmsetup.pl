@@ -1445,7 +1445,7 @@ sub setDefaults {
       $config{zimbraFeatureTasksEnabled} = "Disabled"
         if ($config{zimbraFeatureTasksEnabled} eq "");
     } else {
-      $config{zimbraFeatureBriefcasesEnabled} = "Enabled"
+      $config{zimbraFeatureBriefcasesEnabled} = "Disabled"
         if ($config{zimbraFeatureBriefcasesEnabled} eq "");
       $config{zimbraFeatureTasksEnabled} = "Enabled"
         if ($config{zimbraFeatureTasksEnabled} eq "");
@@ -3472,13 +3472,6 @@ sub createCOSMenu {
   $$lm{createarg} = $package;
 
   my $i = 1;
-  $$lm{menuitems}{$i} = { 
-    "prompt" => "Enable Briefcases Feature:", 
-    "var" => \$config{zimbraFeatureBriefcasesEnabled}, 
-    "callback" => \&toggleConfigEnabled,
-    "arg" => "zimbraFeatureBriefcasesEnabled",
-    };
-  $i++;
   $$lm{menuitems}{$i} = { 
     "prompt" => "Enable Tasks Feature:", 
     "var" => \$config{zimbraFeatureTasksEnabled}, 
