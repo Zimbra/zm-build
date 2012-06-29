@@ -1433,8 +1433,12 @@ sub setDefaults {
 
     # license files locations this is associated with the store
     # for now as there is a dependancy on the store jar file. 
-    $config{DEFAULTLICENSEFILE} = "/opt/zimbra/conf/ZCSLicense.xml" 
-      if isNetwork();
+    if (isNetwork()) {
+      $config{DEFAULTLICENSEFILE} = "/opt/zimbra/conf/ZCSLicense.xml";
+      if (!-f $config{DEFAULTLICENSEFILE} && -f "/opt/zimbra/conf/ZCSLicense.xml") {
+        $config{DEFAULTLICENSEFILE} = "/opt/zimbra/conf/ZCSLicense-Trial.xml";
+      }
+    }
 
     $config{LICENSEFILE} = $config{DEFAULTLICENSEFILE}
       if (-f "$config{DEFAULTLICENSEFILE}" && isNetwork());
