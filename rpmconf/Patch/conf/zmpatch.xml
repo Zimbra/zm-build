@@ -1138,6 +1138,11 @@
         <target>/opt/zimbra/lib/jars/zimbracommon.jar</target>
         <perms owner="root" mode="444"/>
       </file>
+      <file>
+        <source>ZimbraBuild/corebuild/opt/zimbra/libexec/zmupdatedownload</source>
+        <target>/opt/zimbra/libexec/zmupdatedownload</target>
+        <perms owner="root" mode="755"/>
+      </file>
   </package>
   <package name="zimbra-store">
       <file>
