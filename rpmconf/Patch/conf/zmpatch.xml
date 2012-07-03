@@ -1161,40 +1161,72 @@
       <file>
         <source>ZimbraBuild/storebuild/opt/zimbra/jetty-6.1.22.z6/webapps/zimbra/js/NewWindow_2_all.js.zgz</source>
         <target>/opt/zimbra/jetty-6.1.22.z6/webapps/zimbra/js/NewWindow_2_all.js.zgz</target>
-        <perms owner="root" mode="444"/>
+        <perms owner="zimbra" mode="444"/>
+      </file>
+      <file>
+        <source>ZimbraBuild/storebuild/opt/zimbra/jetty-6.1.22.z6/webapps/zimbra/js/NewWindow_2_all.js</source>
+        <target>/opt/zimbra/jetty-6.1.22.z6/webapps/zimbra/js/NewWindow_2_all.js</target>
+        <perms owner="zimbra" mode="444"/>
       </file>
       <file>
         <source>ZimbraBuild/storebuild/opt/zimbra/jetty-6.1.22.z6/webapps/zimbra/js/Startup1_1_all.js.zgz</source>
 	<target>/opt/zimbra/jetty-6.1.22.z6/webapps/zimbra/js/Startup1_1_all.js.zgz</target>
-        <perms owner="root" mode="444"/>
+        <perms owner="zimbra" mode="444"/>
+      </file>
+      <file>
+        <source>ZimbraBuild/storebuild/opt/zimbra/jetty-6.1.22.z6/webapps/zimbra/js/Startup1_1_all.js</source>
+	<target>/opt/zimbra/jetty-6.1.22.z6/webapps/zimbra/js/Startup1_1_all.js</target>
+        <perms owner="zimbra" mode="444"/>
       </file>
       <file>
         <source>ZimbraBuild/storebuild/opt/zimbra/jetty-6.1.22.z6/webapps/zimbra/js/Startup1_2_all.js.zgz</source>
 	<target>/opt/zimbra/jetty-6.1.22.z6/webapps/zimbra/js/Startup1_2_all.js.zgz</target>
-        <perms owner="root" mode="444"/>
+        <perms owner="zimbra" mode="444"/>
+      </file>
+      <file>
+        <source>ZimbraBuild/storebuild/opt/zimbra/jetty-6.1.22.z6/webapps/zimbra/js/Startup1_2_all.js</source>
+	<target>/opt/zimbra/jetty-6.1.22.z6/webapps/zimbra/js/Startup1_2_all.js</target>
+        <perms owner="zimbra" mode="444"/>
       </file>
       <file>
         <source>ZimbraBuild/storebuild/opt/zimbra/jetty-6.1.22.z6/webapps/zimbra/js/CalendarCore_all.js.zgz</source>
         <target>/opt/zimbra/jetty-6.1.22.z6/webapps/zimbra/js/CalendarCore_all.js.zgz</target>
-        <perms owner="root" mode="444"/>
+        <perms owner="zimbra" mode="444"/>
+      </file>
+      <file>
+        <source>ZimbraBuild/storebuild/opt/zimbra/jetty-6.1.22.z6/webapps/zimbra/js/CalendarCore_all.js</source>
+        <target>/opt/zimbra/jetty-6.1.22.z6/webapps/zimbra/js/CalendarCore_all.js</target>
+        <perms owner="zimbra" mode="444"/>
       </file>
       <file>
         <source>ZimbraBuild/storebuild/opt/zimbra/jetty-6.1.22.z6/webapps/zimbra/js/Boot_all.js.zgz</source>
         <target>/opt/zimbra/jetty-6.1.22.z6/webapps/zimbra/js/Boot_all.js.zgz</target>
         <target>/opt/zimbra/jetty-6.1.22.z6/webapps/zimbraAdmin/js/Boot_all.js.zgz</target>
-        <perms owner="root" mode="444"/>
+        <perms owner="zimbra" mode="444"/>
+      </file>
+      <file>
+        <source>ZimbraBuild/storebuild/opt/zimbra/jetty-6.1.22.z6/webapps/zimbra/js/Boot_all.js</source>
+        <target>/opt/zimbra/jetty-6.1.22.z6/webapps/zimbra/js/Boot_all.js</target>
+        <target>/opt/zimbra/jetty-6.1.22.z6/webapps/zimbraAdmin/js/Boot_all.js</target>
+        <perms owner="zimbra" mode="444"/>
       </file>
       <file>
         <source>ZimbraBuild/storebuild/opt/zimbra/jetty-6.1.22.z6/webapps/zimbra/js/Ajax_all.js.zgz</source>
         <target>/opt/zimbra/jetty-6.1.22.z6/webapps/zimbra/js/Ajax_all.js.zgz</target>
         <target>/opt/zimbra/jetty-6.1.22.z6/webapps/zimbraAdmin/js/Ajax_all.js.zgz</target>
-        <perms owner="root" mode="444"/>
+        <perms owner="zimbra" mode="444"/>
+      </file>
+      <file>
+        <source>ZimbraBuild/storebuild/opt/zimbra/jetty-6.1.22.z6/webapps/zimbra/js/Ajax_all.js</source>
+        <target>/opt/zimbra/jetty-6.1.22.z6/webapps/zimbra/js/Ajax_all.js</target>
+        <target>/opt/zimbra/jetty-6.1.22.z6/webapps/zimbraAdmin/js/Ajax_all.js</target>
+        <perms owner="zimbra" mode="444"/>
       </file>
       <file>
         <source>ZimbraBuild/storebuild/opt/zimbra/jetty-6.1.22.z6/webapps/zimbra/js/CalendarCore.js</source>
         <target>/opt/zimbra/jetty-6.1.22.z6/webapps/zimbra/js/CalendarCore.js</target>
         <target>/opt/zimbra/jetty-6.1.22.z6/webapps/zimbra/js/zimbraMail/package/CalendarCore.js</target>
-        <perms owner="root" mode="444"/>
+        <perms owner="zimbra" mode="444"/>
       </file>
       <file type="network">
         <source>ZimbraBuild/storebuild/opt/zimbra/lib/ext/backup/zimbrabackup.jar</source>
@@ -1222,8 +1254,18 @@
         <perms owner="zimbra" mode="444"/>
       </file>
       <file>
+        <source>ZimbraBuild/storebuild/opt/zimbra/jetty-6.1.22.z6/webapps/zimbra/js/Calendar_all.js</source>
+        <target>/opt/zimbra/jetty/webapps/zimbra/js/Calendar_all.js</target>
+        <perms owner="zimbra" mode="444"/>
+      </file>
+      <file>
         <source>ZimbraBuild/storebuild/opt/zimbra/jetty-6.1.22.z6/webapps/zimbra/js/IMCore_all.js.zgz</source>
         <target>/opt/zimbra/jetty-6.1.22.z6/webapps/zimbra/js/IMCore_all.js.zgz</target>
+        <perms owner="zimbra" mode="444"/>
+      </file>
+      <file>
+        <source>ZimbraBuild/storebuild/opt/zimbra/jetty-6.1.22.z6/webapps/zimbra/js/IMCore_all.js</source>
+        <target>/opt/zimbra/jetty-6.1.22.z6/webapps/zimbra/js/IMCore_all.js</target>
         <perms owner="zimbra" mode="444"/>
       </file>
       <file>
@@ -1232,14 +1274,30 @@
         <perms owner="zimbra" mode="444"/>
       </file>
       <file>
+        <source>ZimbraBuild/storebuild/opt/zimbra/jetty-6.1.22.z6/webapps/zimbra/js/Mail_all.js</source>
+        <target>/opt/zimbra/jetty/webapps/zimbra/js/Mail_all.js</target>
+        <perms owner="zimbra" mode="444"/>
+      </file>
+      <file>
         <source>ZimbraBuild/storebuild/opt/zimbra/jetty-6.1.22.z6/webapps/zimbra/js/NewWindow_1_all.js.zgz</source>
         <target>/opt/zimbra/jetty-6.1.22.z6/webapps/zimbra/js/NewWindow_1_all.js.zgz</target>
+        <perms owner="zimbra" mode="444"/>
+      </file>
+      <file>
+        <source>ZimbraBuild/storebuild/opt/zimbra/jetty-6.1.22.z6/webapps/zimbra/js/NewWindow_1_all.js</source>
+        <target>/opt/zimbra/jetty-6.1.22.z6/webapps/zimbra/js/NewWindow_1_all.js</target>
         <perms owner="zimbra" mode="444"/>
       </file>
       <file>
         <source>ZimbraBuild/storebuild/opt/zimbra/jetty-6.1.22.z6/webapps/zimbra/js/XForms_all.js.zgz</source>
         <target>/opt/zimbra/jetty-6.1.22.z6/webapps/zimbra/js/XForms_all.js.zgz</target>
         <target>/opt/zimbra/jetty-6.1.22.z6/webapps/zimbraAdmin/js/XForms_all.js.zgz</target>
+        <perms owner="zimbra" mode="444"/>
+      </file>
+      <file>
+        <source>ZimbraBuild/storebuild/opt/zimbra/jetty-6.1.22.z6/webapps/zimbra/js/XForms_all.js</source>
+        <target>/opt/zimbra/jetty-6.1.22.z6/webapps/zimbra/js/XForms_all.js</target>
+        <target>/opt/zimbra/jetty-6.1.22.z6/webapps/zimbraAdmin/js/XForms_all.js</target>
         <perms owner="zimbra" mode="444"/>
       </file>
       <deletefile>
