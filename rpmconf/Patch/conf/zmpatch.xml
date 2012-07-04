@@ -1211,6 +1211,12 @@
         <perms owner="zimbra" mode="444"/>
       </file>
       <file>
+        <source>ZimbraBuild/storebuild/opt/zimbra/jetty-6.1.22.z6/webapps/zimbra/js/Boot_all.js.min</source>
+        <target>/opt/zimbra/jetty-6.1.22.z6/webapps/zimbra/js/Boot_all.js.min</target>
+        <target>/opt/zimbra/jetty-6.1.22.z6/webapps/zimbraAdmin/js/Boot_all.js.min</target>
+        <perms owner="zimbra" mode="444"/>
+      </file>
+      <file>
         <source>ZimbraBuild/storebuild/opt/zimbra/jetty-6.1.22.z6/webapps/zimbra/js/Ajax_all.js.zgz</source>
         <target>/opt/zimbra/jetty-6.1.22.z6/webapps/zimbra/js/Ajax_all.js.zgz</target>
         <target>/opt/zimbra/jetty-6.1.22.z6/webapps/zimbraAdmin/js/Ajax_all.js.zgz</target>
