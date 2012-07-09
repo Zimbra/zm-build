@@ -6569,7 +6569,7 @@ sub applyConfig {
     if ($newinstall) {
       configCreateDefaultDomainGALSyncAcct();
     } else {
-      progress ( "Skipping creation of default domain GAL sync account - non-new install detected" );
+      progress ( "Skipping creation of default domain GAL sync account - existing install detected.\n" );
     }
   } else {
     progress ( "WARNING: galsync account creation for default domain skipped because Application Server was not configured to start.\n")
