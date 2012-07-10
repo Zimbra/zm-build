@@ -1547,7 +1547,7 @@ saveExistingConfig() {
   fi
 
   if [ -f /opt/zimbra/data/ldap/config/cn\=config.ldif ]; then
-    if [ -f /opt/zimbra/data/ldap/config/cn\=config/olcDatabase\=\{2\}mdb/olcOverlay\=\{0\}syncprov.ldif ]; then
+    if [ -f /opt/zimbra/data/ldap/config/cn\=config/olcDatabase\=\{2\}mdb/olcOverlay\=*syncprov.ldif ]; then
       touch /opt/zimbra/.enable_replica
     fi
   fi
