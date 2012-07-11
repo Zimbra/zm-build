@@ -2993,7 +2993,7 @@ sub upgrade600BETA1 {
 
   if (main::isInstalled("zimbra-store") && main::isInstalled("zimbra-convertd")) {
     #28851
-    main::runAsZimbra("$ZMPROV ms $hn zimbraConvertdURL http://localhost:7047/convert\n");
+    main::setLdapServerConfig($hn, 'zimbraConvertdURL', 'http://localhost:7047/convert\n');
   }
 
   if (main::isInstalled("zimbra-logger")) {
@@ -3102,7 +3102,7 @@ sub upgrade600BETA2 {
   if (main::isInstalled("zimbra-convertd")) {
     my $convertd_version=main::getLocalConfig("convertd_version");
     if ($convertd_version eq "1" && !(main::isEnabled("zimbra-convertd"))) {
-      main::runAsZimbra("$ZMPROV ms $hn +zimbraServiceEnabled convertd");
+      main::setLdapServerConfig($hn, '+zimbraServiceEnabled', 'convertd');
     }
   }
   main::deleteLocalConfig("convertd_version");
@@ -4116,8 +4116,8 @@ FIX_RIGHTS_EOF
       main::runAsZimbra("$ZMPROV ms $hn -zimbraServiceInstalled imapproxy");
       main::runAsZimbra("$ZMPROV ms $hn +zimbraServiceInstalled proxy");
     if (main::isEnabled("zimbra-proxy")) {
-      main::runAsZimbra("$ZMPROV ms $hn -zimbraServiceEnabled imapproxy");
-      main::runAsZimbra("$ZMPROV ms $hn +zimbraServiceEnabled proxy");
+      main::setLdapServerConfig($hn, '-zimbraServiceEnabled', 'imapproxy');
+      main::setLdapServerConfig($hn, '+zimbraServiceEnabled', 'proxy');
     }
   }
 
@@ -5256,7 +5256,7 @@ sub upgradeLdapConfigValue($$$) {
   if ($new_value eq "") {
       $new_value="\'\'";
   }
-  main::runAsZimbra("$ZMPROV mcf $key $new_value")
+  main::setLdapGlobalConfig($key, $new_value)
     if ($current_value eq $cmp_value);
 }
 

@@ -4660,91 +4660,157 @@ sub ifKeyValueEquate {
   }
 }
 
+#
+#  setLdapGlobalConfig(key, val [, key, val ...])
+#
 sub setLdapGlobalConfig {
-  my ($key,$val) = @_;
+  my $zmprov_arg_str;
   my $sec="gcf";
-  detail("entering function: $sec $key=$val\n");
-  if (ifKeyValueEquate($sec,$key,$val,$sec)) {
-    detail("Skipping update of unchanged value for $key=$val.");
-    return;
+  while (@_){
+    my $key = shift;
+    my $val = shift;
+    detail("entering function: $sec $key=$val\n");
+    if (ifKeyValueEquate($sec,$key,$val,$sec)) {
+      detail("Skipping update of unchanged value for $key=$val.");
+    } else {
+      detail("Updating cached global config attribute $key=$val");
+      updateKeyValue($sec,$key,$val,$sec);
+      $zmprov_arg_str .= " $key \'$val\'";
+    }
   }
-
-  detail("Updating cached global config attribute $key=$val");
-  updateKeyValue($sec,$key,$val,$sec);
-
-  my $rc = runAsZimbra("$ZMPROV mcf $key \'$val\'");
-  return $rc;
+  if ($zmprov_arg_str) {
+    my $rc = runAsZimbra("$ZMPROV mcf $zmprov_arg_str");
+    return $rc;
+  }
 }
 
+#
+# setLdapServerConfig([server,] key, val [, key, val ...])
+# 
 sub setLdapServerConfig {
-  my ($key,$val,$server) = @_;
-
-  $server = $config{HOSTNAME} if ($server eq "");
-  return undef if ($server eq "");
+  my $zmprov_arg_str;
   my $sec="gs";
+  my $server;
 
-  if (ifKeyValueEquate($sec,$key,$val,$server)) {
-    detail("Skipping update of unchanged value for $key=$val.");
-    return;
+  if (($#_ % 2) == 0) {
+    $server = shift;
+  } else {
+    $server = $config{HOSTNAME};
+  }
+  return undef if ($server eq "");
+  while (@_) {
+    my $key = shift;
+    my $val = shift;
+
+    if (ifKeyValueEquate($sec,$key,$val,$server)) {
+      detail("Skipping update of unchanged value for $key=$val.");
+    } else {
+      detail("Updating cached config attribute for Server $server: $key=$val");
+      updateKeyValue($sec,$key,$val,$server);
+      $zmprov_arg_str .= " $key \'$val\'";
+    }
   }
 
-  detail("Updating cached config attribute for Server $server: $key=$val");
-  updateKeyValue($sec,$key,$val,$server);
-
-  my $rc = runAsZimbra("$ZMPROV ms $server $key \'$val\'");
-  return $rc;
+  if ($zmprov_arg_str) {
+    my $rc = runAsZimbra("$ZMPROV ms $server $zmprov_arg_str");
+    return $rc;
+  }
 }
+
+
+#
+# setLdapDomainConfig([domain,] key, val [, key, val ...])
+# 
 sub setLdapDomainConfig {
-  my ($key,$val,$domain) = @_;
+  my $zmprov_arg_str;
+  my $domain;
 
-  $domain = getLdapConfigValue("zimbraDefaultDomainName")
-    if ($domain eq "");
-
+  if (($#_ % 2) == 0) {
+    $domain = shift;
+  } else {
+    $domain = getLdapConfigValue("zimbraDefaultDomainName");
+  }
   return undef if ($domain eq "");
+
   my $sec="domain";
-
-  if (ifKeyValueEquate($sec,$key,$val,$domain)) {
-    detail("Skipping update of unchanged value for $key=$val.");
-    return;
+  while (@_) {
+    my $key = shift;
+    my $val = shift;
+    if (ifKeyValueEquate($sec,$key,$val,$domain)) {
+      detail("Skipping update of unchanged value for $key=$val.");
+    } else {
+      detail("Updating cached config attribute for Domain $domain: $key=$val");
+      updateKeyValue($sec,$key,$val,$domain);
+      $zmprov_arg_str .= " $key \'$val\'";
+    }   
   }
 
-  detail("Updating cached config attribute for Domain $domain: $key=$val");
-  updateKeyValue($sec,$key,$val,$domain);
-
-  my $rc = runAsZimbra("$ZMPROV md $domain $key \'$val\'");
-  return $rc;
+  if ($zmprov_arg_str) {
+    my $rc = runAsZimbra("$ZMPROV md $domain $zmprov_arg_str");
+    return $rc;
+  }
 }
 
+#
+# setLdapCOSConfig([cos,] key, val [, key, val ...])
+# 
 sub setLdapCOSConfig {
-  my ($key,$val,$cos) = @_;
-  $cos = 'default' if ($cos eq "");
-  my $sec="gc";
-  if (ifKeyValueEquate($sec,$key,$val,$cos)) {
-    detail("Skipping update of unchanged value for $key=$val.");
-    return;
+  my $zmprov_arg_str;
+  my $cos;
+
+  if (($#_ % 2) == 0) {
+    $cos = shift;
+  } else {
+    $cos = 'default';
   }
 
-  detail("Updating cached config attribute for COS $cos: $key=$val");
-  updateKeyValue($sec,$key,$val,$cos);
+  my $sec="gc";
+  while (@_) {
+    my $key = shift;
+    my $val = shift;
+    if (ifKeyValueEquate($sec,$key,$val,$cos)) {
+      detail("Skipping update of unchanged value for $key=$val.");
+	} else {
+      detail("Updating cached config attribute for COS $cos: $key=$val");
+      updateKeyValue($sec,$key,$val,$cos);
+      $zmprov_arg_str .= " $key \'$val\'";
+    }
+  }
 
-  my $rc = runAsZimbra("$ZMPROV mc $cos $key \'$val\'");
-  return $rc;
+  if ($zmprov_arg_str) {
+    my $rc = runAsZimbra("$ZMPROV mc $cos $zmprov_arg_str");
+    return $rc;
+  }
 }
 
+#
+# setLdapAccountConfig(acct, key, val [, key, val ...])
+# 
 sub setLdapAccountConfig { 
-  my ($key,$val,$acct) = @_;
+  my $zmprov_arg_str;
+  my $acct;
+  if (($#_ % 2) == 0) {
+    $acct = shift;
+  }
   return undef if ($acct eq "");
+
   my $sec="acct";
-  if (ifKeyValueEquate($sec,$key,$val,$acct)) {
-    detail("Skipping update of unchanged value for $key=$val.");
-    return;
+  while (@_) {
+    my $key = shift;
+    my $val = shift;
+    if (ifKeyValueEquate($sec,$key,$val,$acct)) {
+      detail("Skipping update of unchanged value for $key=$val.");
+    } else {
+      detail("Updating cached config attribute for Account $acct: $key=$val");
+      updateKeyValue($sec,$key,$val,$acct);
+      $zmprov_arg_str .= " $key \'$val\'";
+    }
   }
 
-  detail("Updating cached config attribute for Account $acct: $key=$val");
-  updateKeyValue($sec,$key,$val,$acct);
-
-  my $rc = runAsZimbra("$ZMPROV ma $acct $key \'$val\'");
-  return $rc;
+  if ($zmprov_arg_str) {
+    my $rc = runAsZimbra("$ZMPROV ma $acct $zmprov_arg_str");
+    return $rc;
+  }
 }
 
 sub configLCValues {
@@ -5446,6 +5512,7 @@ sub configSetStoreDefaults {
     $config{zimbraVersionCheckNotificationEmail});
   setLdapGlobalConfig("zimbraVersionCheckNotificationEmailFrom",
     $config{zimbraVersionCheckNotificationEmailFrom});
+
   setLdapGlobalConfig("zimbraVersionCheckInterval", "0")
     if ($config{VERSIONUPDATECHECKS} eq "FALSE");
 }
@@ -5472,16 +5539,18 @@ sub configSetServicePorts {
       $config{POPSSLPORT} = 995;
     }
   }
-  runAsZimbra("$ZMPROV ms $config{HOSTNAME} ".
-    "zimbraImapBindPort $config{IMAPPORT} ".
-    "zimbraImapSSLBindPort $config{IMAPSSLPORT} ".
-    "zimbraImapProxyBindPort $config{IMAPPROXYPORT} ".
-    "zimbraImapSSLProxyBindPort $config{IMAPSSLPROXYPORT} ");
-  runAsZimbra("$ZMPROV ms $config{HOSTNAME} ".
-    "zimbraPop3BindPort $config{POPPORT} ".
-    "zimbraPop3SSLBindPort $config{POPSSLPORT} ".
-    "zimbraPop3ProxyBindPort $config{POPPROXYPORT} ".
-    "zimbraPop3SSLProxyBindPort $config{POPSSLPROXYPORT} ");
+  setLdapServerConfig($config{HOSTNAME},
+    "zimbraImapBindPort", $config{IMAPPORT},
+    "zimbraImapSSLBindPort", $config{IMAPSSLPORT},
+    "zimbraImapProxyBindPort", $config{IMAPPROXYPORT},
+    "zimbraImapSSLProxyBindPort", $config{IMAPSSLPROXYPORT}
+	);
+  setLdapServerConfig($config{HOSTNAME},
+    "zimbraPop3BindPort", $config{POPPORT},
+    "zimbraPop3SSLBindPort", $config{POPSSLPORT},
+    "zimbraPop3ProxyBindPort", $config{POPPROXYPORT},
+    "zimbraPop3SSLProxyBindPort", $config{POPSSLPROXYPORT}
+    );
   if ($config{HTTPPROXY} eq "FALSE") {
     if ($config{HTTPPORT} == 8080 && $config{HTTPPROXYPORT} == $config{HTTPPORT}) {
       $config{HTTPPROXYPORT} = 80;
@@ -5490,12 +5559,13 @@ sub configSetServicePorts {
       $config{HTTPSPROXYPORT} = 443;
     }
   }
-  runAsZimbra("$ZMPROV ms $config{HOSTNAME} ".
-    "zimbraMailPort $config{HTTPPORT} ".
-    "zimbraMailSSLPort $config{HTTPSPORT} ".
-    "zimbraMailProxyPort $config{HTTPPROXYPORT} ".
-    "zimbraMailSSLProxyPort $config{HTTPSPROXYPORT} ".
-    "zimbraMailMode $config{MODE}");
+  setLdapServerConfig($config{HOSTNAME},
+    "zimbraMailPort", $config{HTTPPORT},
+    "zimbraMailSSLPort", $config{HTTPSPORT},
+    "zimbraMailProxyPort", $config{HTTPPROXYPORT},
+    "zimbraMailSSLProxyPort", $config{HTTPSPROXYPORT},
+    "zimbraMailMode", $config{MODE}
+    );
 
   progress ( "done.\n" );
   configLog("configSetServicePorts");
@@ -5642,72 +5712,73 @@ sub setProxyBits {
         '\(\&\(zimbraVirtualIPAddress=\${IPADDR}\)\(objectClass=zimbraDomain\)\)';
   my $zimbraReverseProxyPortQuery =
         '\(\&\(zimbraServiceHostname=\${MAILHOST}\)\(objectClass=zimbraServer\)\)';
-  open(ZMPROV, "|$SU 'zmprov -r -m -l'");
 
-  print ZMPROV "mcf zimbraReverseProxyMailHostQuery $zimbraReverseProxyMailHostQuery\n"
+  my @zmprov_args = ();
+  push(@zmprov_args, ('zimbraReverseProxyMailHostQuery', $zimbraReverseProxyMailHostQuery))
     if(getLdapConfigValue("zimbraReverseProxyMailHostQuery") eq "");
 
-  print ZMPROV "mcf zimbraReverseProxyPortQuery $zimbraReverseProxyPortQuery\n"
+  push(@zmprov_args, ('zimbraReverseProxyPortQuery', $zimbraReverseProxyPortQuery))
     if(getLdapConfigValue("zimbraReverseProxyPortQuery") eq "");
 
-  print ZMPROV "mcf zimbraReverseProxyDomainNameQuery $zimbraReverseProxyDomainNameQuery\n"
+  push(@zmprov_args, ('zimbraReverseProxyDomainNameQuery', $zimbraReverseProxyDomainNameQuery))
     if(getLdapConfigValue("zimbraReverseProxyDomainNameQuery") eq "");
 
-  print ZMPROV "mcf zimbraMemcachedBindPort 11211\n"
+  push(@zmprov_args, ('zimbraMemcachedBindPort', '11211'))
     if(getLdapConfigValue("zimbraMemcachedBindPort") eq "");
 
-  print ZMPROV "mcf zimbraReverseProxyMailHostAttribute zimbraMailHost\n"
+  push(@zmprov_args, ('zimbraReverseProxyMailHostAttribute', 'zimbraMailHost'))
     if(getLdapConfigValue("zimbraReverseProxyMailHostAttribute") eq "");
 
-  print ZMPROV "mcf zimbraReverseProxyPop3PortAttribute zimbraPop3BindPort\n"
+  push(@zmprov_args, ('zimbraReverseProxyPop3PortAttribute', 'zimbraPop3BindPort'))
     if(getLdapConfigValue("zimbraReverseProxyPop3PortAttribute") eq "");
 
-  print ZMPROV "mcf zimbraReverseProxyPop3SSLPortAttribute zimbraPop3SSLBindPort\n"
+  push(@zmprov_args, ('zimbraReverseProxyPop3SSLPortAttribute', 'zimbraPop3SSLBindPort'))
     if(getLdapConfigValue("zimbraReverseProxyPop3SSLPortAttribute") eq "");
 
-  print ZMPROV "mcf zimbraReverseProxyImapPortAttribute zimbraImapBindPort\n"
+  push(@zmprov_args, ('zimbraReverseProxyImapPortAttribute', 'zimbraImapBindPort'))
     if(getLdapConfigValue("zimbraReverseProxyImapPortAttribute") eq "");
 
-  print ZMPROV "mcf zimbraReverseProxyImapSSLPortAttribute zimbraImapSSLBindPort\n"
+  push(@zmprov_args, ('zimbraReverseProxyImapSSLPortAttribute', 'zimbraImapSSLBindPort'))
     if(getLdapConfigValue("zimbraReverseProxyImapSSLPortAttribute") eq "");
 
-  print ZMPROV "mcf zimbraReverseProxyDomainNameAttribute zimbraDomainName\n"
+  push(@zmprov_args, ('zimbraReverseProxyDomainNameAttribute', 'zimbraDomainName'))
     if(getLdapConfigValue("zimbraReverseProxyDomainNameAttribute") eq "");
 
-  print ZMPROV "mcf zimbraImapCleartextLoginEnabled FALSE\n"
+  push(@zmprov_args, ('zimbraImapCleartextLoginEnabled', 'FALSE'))
     if(getLdapConfigValue("zimbraImapCleartextLoginEnabled") eq "");
 
-  print ZMPROV "mcf zimbraPop3CleartextLoginEnabled FALSE\n"
+  push(@zmprov_args, ('zimbraPop3CleartextLoginEnabled', 'FALSE'))
     if(getLdapConfigValue("zimbraPop3CleartextLoginEnabled") eq "");
  
-  print ZMPROV "mcf zimbraReverseProxyAuthWaitInterval 10s\n"
+  push(@zmprov_args, ('zimbraReverseProxyAuthWaitInterval', '10s'))
     if(getLdapConfigValue("zimbraReverseProxyAuthWaitInterval") eq "");
 
-  print ZMPROV "mcf zimbraReverseProxyIPLoginLimit 0\n"
+  push(@zmprov_args, ('zimbraReverseProxyIPLoginLimit', '0'))
     if(getLdapConfigValue("zimbraReverseProxyIPLoginLimit") eq "");
 
-  print ZMPROV "mcf zimbraReverseProxyIPLoginLimitTime 3600\n"
+  push(@zmprov_args, ('zimbraReverseProxyIPLoginLimitTime', '3600'))
     if(getLdapConfigValue("zimbraReverseProxyIPLoginLimitTime") eq "");
 
-  print ZMPROV "mcf zimbraReverseProxyUserLoginLimit 0\n"
+  push(@zmprov_args, ('zimbraReverseProxyUserLoginLimit', '0'))
     if(getLdapConfigValue("zimbraReverseProxyUserLoginLimit") eq "");
 
-  print ZMPROV "mcf zimbraReverseProxyUserLoginLimitTime 3600\n"
+  push(@zmprov_args, ('zimbraReverseProxyUserLoginLimitTime', '3600'))
     if(getLdapConfigValue("zimbraReverseProxyUserLoginLimitTime") eq "");
 
-  print ZMPROV "mcf zimbraMailProxyPort 0\n"
+  push(@zmprov_args, ('zimbraMailProxyPort', '0'))
     if(getLdapConfigValue("zimbraMailProxyPort") eq "");
 
-  print ZMPROV "mcf zimbraMailSSLProxyPort 0\n"
+  push(@zmprov_args, ('zimbraMailSSLProxyPort', '0'))
     if(getLdapConfigValue("zimbraMailSSLProxyPort") eq "");
 
-  print ZMPROV "mcf zimbraReverseProxyHttpEnabled FALSE\n"
+  push(@zmprov_args, ('zimbraReverseProxyHttpEnabled', 'FALSE'))
     if(getLdapConfigValue("zimbraReverseProxyHttpEnabled") eq "");
 
-  print ZMPROV "mcf zimbraReverseProxyMailEnabled TRUE\n"
+  push(@zmprov_args, ('zimbraReverseProxyMailEnabled', 'TRUE'))
     if(getLdapConfigValue("zimbraReverseProxyMailEnabled") eq "");
 
-  close ZMPROV;
+  setLdapGlobalConfig( @zmprov_args );
+
 }
 
 sub configSetProxyPrefs {
@@ -5785,9 +5856,9 @@ sub configSetCluster {
 sub removeNetworkComponents {
     my $zimbra_home = getLocalConfig("zimbra_home");
     my $components = getLdapConfigValue("zimbraComponentAvailable"); 
-    my $comp_args = "";
+    my @zmprov_args = ();
     foreach my $component (split(/\n/,$components)) {
-      $comp_args .= "-zimbraComponentAvailable $component "
+      push(@zmprov_args, ('-zimbraComponentAvailable', $component))
         if ($component =~ /HSM|cluster|convertd|archiving|hotbackup/);
     
       if ($component =~ /convertd/) {
@@ -5796,9 +5867,9 @@ sub removeNetworkComponents {
         progress (($rc == 0) ? "done.\n" : "failed. This may impact system functionality.\n");
       }
     }
-    if ($comp_args ne "") {
+	if (@zmprov_args) {
       progress ("Removing network components from ldap...");
-      my $rc = runAsZimbra ("$ZMPROV mcf $comp_args");
+      my $rc = setLdapGlobalConfig( @zmprov_args );
       progress (($rc == 0) ? "done.\n" : "failed. This may impact system functionality.\n");
     }
     foreach my $zimlet (qw(com_zimbra_backuprestore com_zimbra_cluster com_zimbra_convertd com_zimbra_domainadmin com_zimbra_hsm com_zimbra_license com_zimbra_mobilesync zimbra_xmbxsearch com_zimbra_xmbxsearch)) {
@@ -5815,6 +5886,7 @@ sub removeNetworkComponents {
       progress (($rc == 0) ? "done.\n" : "failed. This may impact system functionality.\n");
     }
 }
+
 sub countUsers {
   return $main::loaded{stats}{numAccts}
     if (exists $main::loaded{stats}{numAccts});
@@ -6195,10 +6267,11 @@ sub configCreateDomain {
       }
 
       progress ( "Setting spam training and Anti-virus quarantine accounts..." );
-      my $rc = runAsZimbra("$ZMPROV mcf ".
-        "zimbraSpamIsSpamAccount $config{TRAINSASPAM} ".
-        "zimbraSpamIsNotSpamAccount $config{TRAINSAHAM} ".
-        "zimbraAmavisQuarantineAccount $config{VIRUSQUARANTINE}");
+      my $rc = setLdapGlobalConfig(
+        'zimbraSpamIsSpamAccount', "$config{TRAINSASPAM}",
+        'zimbraSpamIsNotSpamAccount', "$config{TRAINSAHAM}",
+        'zimbraAmavisQuarantineAccount', "$config{VIRUSQUARANTINE}"
+        );
       progress(($rc == 0) ? "done.\n" : "failed.\n");
     }
   }
@@ -6231,7 +6304,7 @@ sub configInitLogger {
   }
 
   if (isEnabled("zimbra-logger")) {
-    runAsZimbra ("$ZMPROV mcf zimbraLogHostname $config{HOSTNAME}");
+    setLdapGlobalConfig("zimbraLogHostname", $config{HOSTNAME});
     setLocalConfig ("smtp_source", $config{SMTPSOURCE});
     setLocalConfig ("smtp_destination", $config{SMTPDEST});
   }
@@ -6348,6 +6421,8 @@ sub configCreateDefaultDomainGALSyncAcct {
 }
 
 sub configSetEnabledServices {
+  my @installedServices = ();
+  my @enabledServices = ();
 
   if ($configStatus{configSetEnabledServices} eq "CONFIGURED") {
     configLog("configSetEnabledServices");
@@ -6356,10 +6431,10 @@ sub configSetEnabledServices {
 
   foreach my $p (keys %installedPackages) {
     if ($p eq "zimbra-core") {
-      $installedServiceStr .= "zimbraServiceInstalled stats ";
+      push(@installedServices, ('zimbraServiceInstalled','stats'));
       if ( -x "/usr/lib/vmware-tools/sbin64/vmware-checkvm") {
         my $rc = runAsRoot("/usr/lib/vmware-tools/sbin64/vmware-checkvm");
-        $installedServiceStr .= "zimbraServiceInstalled vmware-ha " if ($rc == 0);
+        push(@installedServices, ('zimbraServiceInstalled','vmware-ha')) if ($rc == 0);
       }
       next;
     }
@@ -6369,12 +6444,12 @@ sub configSetEnabledServices {
     $p =~ s/zimbra-//;
     if ($p eq "store") {$p = "mailbox";}
     if ($p eq "octopus") {$p = "mailbox";}
-    $installedServiceStr .= "zimbraServiceInstalled $p ";
+    push(@installedServices, ('zimbraServiceInstalled', " $p"));
   }
 
   foreach my $p (keys %enabledPackages) {
     if ($p eq "zimbra-core") {
-      $enabledServiceStr .= "zimbraServiceEnabled stats ";
+      push(@enabledServices, ('zimbraServiceEnabled', 'stats'));
       next;
     }
     if ($p eq "zimbra-apache") {next;}
@@ -6384,13 +6459,13 @@ sub configSetEnabledServices {
       $p =~ s/zimbra-//;
       if ($p eq "store") {$p = "mailbox";}
       if ($p eq "octopus") {$p = "mailbox";}
-      $enabledServiceStr .= "zimbraServiceEnabled $p ";
+      push(@enabledServices, 'zimbraServiceEnabled', $p);
     }
   }
 
   progress ( "Setting services on $config{HOSTNAME}..." );
-  runAsZimbra ("$ZMPROV ms $config{HOSTNAME} $installedServiceStr");
-  runAsZimbra ("$ZMPROV ms $config{HOSTNAME} $enabledServiceStr");
+  setLdapServerConfig($config{HOSTNAME}, @installedServices);
+  setLdapServerConfig($config{HOSTNAME}, @enabledServices);
   progress ( "done.\n" );
 
   my $rc = runAsZimbra("/opt/zimbra/libexec/zmiptool >/dev/null 2>/dev/null");
@@ -6786,10 +6861,15 @@ sub addServerToHostPool {
   }
   $hp.=(($hp eq "") ? "$id" : "\n$id");
 
-  my (%k,$n);
-  foreach my $serverid (split(/\n/, $hp)) { $k{$serverid}=1; };
-  $n = join " ", map "zimbraMailHostPool $_", keys %k;
-  my $rc = runAsZimbra("$ZMPROV mc default $n");
+  my %k;
+  my @zmprov_args = ();
+  foreach my $serverid (split(/\n/, $hp)) {
+    $k{$serverid}=1;
+  }
+  foreach my $host (keys %k) {
+    push(@zmprov_args, ('zimbraMailHostPool', $host)); 
+  }
+  my $rc = setLdapCOSConfig('default', @zmprov_args);
   progress(($rc == 0) ? "done.\n" : "failed.\n");
 }
 
