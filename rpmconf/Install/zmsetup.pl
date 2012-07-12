@@ -6432,9 +6432,11 @@ sub configSetEnabledServices {
   foreach my $p (keys %installedPackages) {
     if ($p eq "zimbra-core") {
       push(@installedServices, ('zimbraServiceInstalled','stats'));
-      if ( -x "/usr/lib/vmware-tools/sbin64/vmware-checkvm") {
+      if ( -x "/usr/lib/vmware-tools/sbin64/vmware-checkvm" || $config{INSTVMHA} eq "yes") {
         my $rc = runAsRoot("/usr/lib/vmware-tools/sbin64/vmware-checkvm");
-        push(@installedServices, ('zimbraServiceInstalled','vmware-ha')) if ($rc == 0);
+        if ($rc == 0 || $config{INSTVMHA} eq "yes") {
+          push(@installedServices, ('zimbraServiceInstalled','vmware-ha'));
+        }
       }
       next;
     }
