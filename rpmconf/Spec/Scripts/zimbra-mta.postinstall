@@ -19,7 +19,7 @@ if [ -d /opt/zimbra/data/amavisd/tmp ]; then
 fi
 
 rm -f /opt/zimbra/amavisd
-ln -s /opt/zimbra/amavisd-new-2.7.0 /opt/zimbra/amavisd
+ln -s /opt/zimbra/amavisd-new-2.8.0 /opt/zimbra/amavisd
 
 rm -f /opt/zimbra/cbpolicyd
 if [ -d /opt/zimbra/cbpolicyd-2.1.0-beta ]; then
