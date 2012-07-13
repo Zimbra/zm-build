@@ -134,8 +134,8 @@ my $sqlConfigured = 0;
 my $sqlRunning = 0;
 my $loggerSqlConfigured = 0;
 my $loggerSqlRunning = 0;
-my $installedServiceStr = "";
-my $enabledServiceStr = "";
+my @installedServiceList = ();
+my @enabledServiceList = ();
 
 my $ldapRootPassChanged = 0;
 my $ldapAdminPassChanged = 0;
@@ -6321,7 +6321,7 @@ sub configInitCore {
     progress ( "Initializing core config..." );
 
     if ($config{RUNVMHA} eq "yes") {
-      $enabledServiceStr .= "zimbraServiceEnabled vmware-ha ";
+      push(@enabledServiceList, ('zimbraServiceEnabled', 'vmware-ha'));
     }
   }
   configLog("configInitCore");
@@ -6343,17 +6343,17 @@ sub configInitMta {
     runAsZimbra ("/opt/zimbra/libexec/zmmtainit $config{LDAPHOST} $config{LDAPPORT}");
     progress ( "done.\n" );
     if (isZCS()) {
-      $installedServiceStr .= "zimbraServiceInstalled antivirus ";
-      $installedServiceStr .= "zimbraServiceInstalled antispam ";
+      push(@installedServiceList, ('zimbraServiceInstalled', 'antivirus'));
+      push(@installedServiceList, ('zimbraServiceInstalled', 'antispam'));
       if ($config{RUNAV} eq "yes") {
-        $enabledServiceStr .= "zimbraServiceEnabled antivirus ";
+        push(@enabledServiceList, ('zimbraServiceEnabled', 'antivirus'));
       }
       if ($config{RUNARCHIVING} eq "yes") {
-        $installedServiceStr .= "zimbraServiceInstalled archiving ";
-        $enabledServiceStr .= "zimbraServiceEnabled archiving ";
+        push(@installedServiceList, ('zimbraServiceInstalled', 'archiving'));
+        push(@enabledServiceList, ('zimbraServiceEnabled', 'archiving'));
       }
       if ($config{RUNSA} eq "yes") {
-        $enabledServiceStr .= "zimbraServiceEnabled antispam ";
+        push(@enabledServiceList, ('zimbraServiceEnabled', 'antispam'));
       }
     }
     setLdapServerConfig("zimbraMtaMyNetworks", $config{zimbraMtaMyNetworks})
@@ -6421,8 +6421,6 @@ sub configCreateDefaultDomainGALSyncAcct {
 }
 
 sub configSetEnabledServices {
-  my @installedServices = ();
-  my @enabledServices = ();
 
   if ($configStatus{configSetEnabledServices} eq "CONFIGURED") {
     configLog("configSetEnabledServices");
@@ -6431,11 +6429,11 @@ sub configSetEnabledServices {
 
   foreach my $p (keys %installedPackages) {
     if ($p eq "zimbra-core") {
-      push(@installedServices, ('zimbraServiceInstalled','stats'));
+      push(@installedServiceList, ('zimbraServiceInstalled','stats'));
       if ( -x "/usr/lib/vmware-tools/sbin64/vmware-checkvm" || $config{INSTVMHA} eq "yes") {
         my $rc = runAsRoot("/usr/lib/vmware-tools/sbin64/vmware-checkvm");
         if ($rc == 0 || $config{INSTVMHA} eq "yes") {
-          push(@installedServices, ('zimbraServiceInstalled','vmware-ha'));
+          push(@installedServiceList, ('zimbraServiceInstalled','vmware-ha'));
         }
       }
       next;
@@ -6446,12 +6444,12 @@ sub configSetEnabledServices {
     $p =~ s/zimbra-//;
     if ($p eq "store") {$p = "mailbox";}
     if ($p eq "octopus") {$p = "mailbox";}
-    push(@installedServices, ('zimbraServiceInstalled', " $p"));
+    push(@installedServiceList, ('zimbraServiceInstalled', "$p"));
   }
 
   foreach my $p (keys %enabledPackages) {
     if ($p eq "zimbra-core") {
-      push(@enabledServices, ('zimbraServiceEnabled', 'stats'));
+      push(@enabledServiceList, ('zimbraServiceEnabled', 'stats'));
       next;
     }
     if ($p eq "zimbra-apache") {next;}
@@ -6461,13 +6459,13 @@ sub configSetEnabledServices {
       $p =~ s/zimbra-//;
       if ($p eq "store") {$p = "mailbox";}
       if ($p eq "octopus") {$p = "mailbox";}
-      push(@enabledServices, 'zimbraServiceEnabled', $p);
+      push(@enabledServiceList, 'zimbraServiceEnabled', "$p");
     }
   }
 
   progress ( "Setting services on $config{HOSTNAME}..." );
-  setLdapServerConfig($config{HOSTNAME}, @installedServices);
-  setLdapServerConfig($config{HOSTNAME}, @enabledServices);
+  setLdapServerConfig($config{HOSTNAME}, @installedServiceList);
+  setLdapServerConfig($config{HOSTNAME}, @enabledServiceList);
   progress ( "done.\n" );
 
   my $rc = runAsZimbra("/opt/zimbra/libexec/zmiptool >/dev/null 2>/dev/null");
