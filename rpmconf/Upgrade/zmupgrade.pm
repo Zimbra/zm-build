@@ -4282,6 +4282,11 @@ sub upgrade800BETA5 {
         runLdapAttributeUpgrade("67237");
     }
   }
+  if (main::isInstalled("zimbra-mta")) {
+    if (-f "/opt/zimbra/conf/sauser.cf") {
+      `mv /opt/zimbra/conf/sauser.cf /opt/zimbra/conf/sa/sauser.cf`;
+    }
+  }
   return 0;
 }
 
