@@ -245,6 +245,7 @@ my %updateFuncs = (
   "8.0.0_BETA3" => \&upgrade800BETA3,
   "8.0.0_BETA4" => \&upgrade800BETA4,
   "8.0.0_BETA5" => \&upgrade800BETA5,
+  "8.0.0_GA" => \&upgrade800GA,
 );
 
 my @versionOrder = (
@@ -358,6 +359,7 @@ my @versionOrder = (
   "8.0.0_BETA3",
   "8.0.0_BETA4",
   "8.0.0_BETA5",
+  "8.0.0_GA",
 );
 
 my ($startVersion,$startMajor,$startMinor,$startMicro);
@@ -636,6 +638,8 @@ sub upgrade {
     main::progress("This appears to be 8.0.0_BETA4\n");
   } elsif ($startVersion eq "8.0.0_BETA5") {
     main::progress("This appears to be 8.0.0_BETA5\n");
+  } elsif ($startVersion eq "8.0.0_GA") {
+    main::progress("This appears to be 8.0.0_GA\n");
   } else {
     main::progress("I can't upgrade version $startVersion\n\n");
     return 1;
@@ -4290,6 +4294,12 @@ sub upgrade800BETA5 {
   return 0;
 }
 
+sub upgrade800GA {
+  my ($startBuild, $targetVersion, $targetBuild) = (@_);
+  main::progress("Updating from 8.0.0_GA\n");
+
+  return 0;
+}
 
 sub stopZimbra {
   main::progress("Stopping zimbra services...");
