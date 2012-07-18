@@ -5484,7 +5484,7 @@ sub configSetMtaAuthHost {
         push(@mtaAuthHostConfigList, '+zimbraMtaAuthHost', $mtaAuthHost);
       }
     }
-    my $rc = setLdapServerConfig("zimbraMtaAuthHost", @mtaAuthHostConfigList);
+    my $rc = setLdapServerConfig($config{MTAAUTHHOST}, @mtaAuthHostConfigList);
     progress(($rc == 0) ? "done.\n" : "failed.\n");
   }
 
