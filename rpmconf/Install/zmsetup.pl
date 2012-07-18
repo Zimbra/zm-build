@@ -2872,7 +2872,7 @@ sub setLdapPort {
 }
 
 sub setLdapServerID {
-  changeLdapServerID(askPositiveInt("Please enter the ldap server port:", $config{LDAPSERVERID}));
+  changeLdapServerID(askPositiveInt("Please enter the ldap Server ID:", $config{LDAPSERVERID}));
 }
 
 sub setLdapReplicationType {
