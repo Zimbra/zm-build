@@ -5871,8 +5871,49 @@ sub removeNetworkComponents {
         if ($component =~ /HSM|cluster|convertd|archiving|hotbackup/);
     
       if ($component =~ /convertd/) {
+        my $rc = 0;
         progress ("Removing convertd mime tree from ldap...");
-        my $rc = runAsZimbra("${zimbra_home}/libexec/zmconvertdmod -d");
+        my $ldap_pass = getLocalConfig("zimbra_ldap_password");
+        my $ldap_master_url = getLocalConfig("ldap_master_url");
+        my $ldap;
+        my @masters=split(/ /, $ldap_master_url);
+        my $master_ref=\@masters;
+        unless($ldap = Net::LDAP->new($master_ref)) {
+          detail("Unable to contact $ldap_master_url: $!");
+          $rc = 1;
+        }
+        my $ldap_dn = $config{zimbra_ldap_userdn};
+        my $ldap_base = "";
+
+        my $result = $ldap->bind($ldap_dn, password => $ldap_pass);
+        if ($result->code()) {
+          detail("ldap bind failed for $ldap_dn");
+          $rc = 1;
+        } else {
+          $result = $ldap->modify('cn=text/enriched,cn=mime,cn=config,cn=zimbra',
+            replace => [ 'zimbraMimeHandlerClass' => 'TextEnrichedHandler' ] );
+
+          $result = $ldap->modify('cn=text/plain,cn=mime,cn=config,cn=zimbra',
+            replace => [ 'zimbraMimeHandlerClass' => 'TextPlainHandler' ] );
+
+          $result = $ldap->modify('cn=all,cn=mime,cn=config,cn=zimbra',
+            changes => [
+              replace => [ 'zimbraMimeHandlerClass' => 'UnknownTypeHandler' ],
+              delete => [ 'zimbraMimeHandlerExtension' => []]
+            ] );
+
+          $result = $ldap->delete('cn=application/x-zip-compressed,cn=mime,cn=config,cn=zimbra');
+          $result = $ldap->delete('cn=application/zip,cn=mime,cn=config,cn=zimbra');
+          $result = $ldap->delete('cn=text/rtf,cn=mime,cn=config,cn=zimbra');
+          $result = $ldap->delete('cn=unsupported,cn=mime,cn=config,cn=zimbra');
+
+          $result = $ldap->unbind;
+          $result = $ldap->disconnect;
+        }
+        progress (($rc == 0) ? "done.\n" : "failed. This may impact system functionality.\n");
+
+        progress ("Removing convertd from zimbraServiceEnabled list...");
+        my $rc = setLdapServerConfig($config{HOSTNAME}, '-zimbraServiceEnabled', 'convertd');
         progress (($rc == 0) ? "done.\n" : "failed. This may impact system functionality.\n");
       }
     }
