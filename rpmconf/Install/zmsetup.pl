@@ -6626,7 +6626,7 @@ sub applyConfig {
       if isFoss();
   }
 
-  if (isInstalled("zimbra-proxy")) {
+  if ($newinstall && isInstalled("zimbra-proxy")) {
     configSetProxyPrefs();
   }
 
