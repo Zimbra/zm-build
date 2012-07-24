@@ -41,7 +41,7 @@ ln -s /opt/zimbra/altermime-0.3-dev /opt/zimbra/altermime
 
 PLAT=$(/opt/zimbra/libexec/get_plat_tag.sh)
 OS_ARCH=powerpc
-MYSQL_VERSION=5.1.58
+MYSQL_VERSION=5.1.63
 
 if [ "x$PLAT" = "xMACOSXx86" -o "x$PLAT" = "xMACOSXx86_10.5" ]; then
   OS_ARCH=i686
