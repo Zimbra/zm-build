@@ -1561,7 +1561,7 @@ sub setDefaults {
     if (lookupHostName ($config{HOSTNAME}, 'A')) {
       if (lookupHostName ($config{HOSTNAME}, 'AAAA')) {
         progress("\n\nDNS ERROR resolving $config{HOSTNAME}\n");
-        progress("It is suggested that the hostname be resolveable via DNS\n");
+        progress("It is suggested that the hostname be resolvable via DNS\n");
         if (askYN("Change hostname","Yes") eq "yes") {
           setHostName();
         }
@@ -2791,7 +2791,7 @@ sub setHostName {
         $config{HOSTNAME});
     if (lookupHostName ($config{HOSTNAME}, 'A')) {
       progress("\n\nDNS ERROR resolving $config{HOSTNAME}\n");
-      progress("It is suggested that the hostname be resolveable via DNS\n");
+      progress("It is suggested that the hostname be resolvable via DNS\n");
       if (askYN("Re-Enter hostname","Yes") eq "no") {
         last;
       }
