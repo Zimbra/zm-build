@@ -4297,6 +4297,11 @@ sub upgrade800BETA5 {
 sub upgrade800GA {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
   main::progress("Updating from 8.0.0_GA\n");
+  if (main::isInstalled("zimbra-ldap")) {
+    if ($isLdapMaster) {
+        runLdapAttributeUpgrade("75450");
+    }
+  }
 
   return 0;
 }
