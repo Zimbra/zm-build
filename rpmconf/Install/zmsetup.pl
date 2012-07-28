@@ -5566,20 +5566,15 @@ sub removeNetworkComponents {
       my $rc = runAsZimbra ("$ZMPROV mcf $comp_args");
       progress (($rc == 0) ? "done.\n" : "failed. This may impact system functionality.\n");
     }
+
     foreach my $zimlet qw(com_zimbra_backuprestore com_zimbra_cluster com_zimbra_convertd com_zimbra_domainadmin com_zimbra_hsm com_zimbra_license com_zimbra_mobilesync zimbra_xmbxsearch com_zimbra_xmbxsearch com_zimbra_smime_cert_admin com_zimbra_delegatedadmin) {
       system("rm -rf $config{mailboxd_directory}/webapps/service/zimlet/$zimlet")
         if (-d "$config{mailboxd_directory}/webapps/service/zimlet/$zimlet" );
       system("rm -rf ${zimbra_home}/zimlets-deployed/$zimlet")
         if (-d "${zimbra_home}/zimlets-deployed/$zimlet" );
-
-    }
-
-    if (isEnabled("zimbra-ldap") && -x "${zimbra_home}/libexec/zmconvertdmod") {
-      progress ("Removing convertd mime tree from ldap...");
-      my $rc = runAsZimbra("${zimbra_home}/libexec/zmconvertdmod -d");
-      progress (($rc == 0) ? "done.\n" : "failed. This may impact system functionality.\n");
     }
 }
+
 sub countUsers {
   return $main::loaded{stats}{numAccts}
     if (exists $main::loaded{stats}{numAccts});
@@ -5716,7 +5711,6 @@ sub configInstallZimlets {
   # remove any Network zimlets if we are upgrading to a FOSS version
   if (isFoss() && !$newinstall) {
     removeNetworkZimlets();
-    removeNetworkComponents();
   }
 
   # Install zimlets
@@ -6330,6 +6324,11 @@ sub applyConfig {
 
   `touch /opt/zimbra/.bash_history`;
   `chown zimbra:zimbra /opt/zimbra/.bash_history`;
+
+  if (isFoss() && !$newinstall) {
+    startLdap() if ($ldapConfigured);
+    removeNetworkComponents();
+  }
 
   if ($config{STARTSERVERS} eq "yes") {
 
