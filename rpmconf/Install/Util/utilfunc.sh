@@ -2447,7 +2447,7 @@ getPlatformVars() {
     PRESUG_PACKGES="perl=5.8.7"
   else
     PACKAGEINST='rpm -iv'
-    PACKAGERM='rpm -ev --nodeps --noscripts --allmatches'
+    PACKAGERM='rpm -ev --nodeps --allmatches'
     PACKAGEQUERY='rpm -q'
     PACKAGEVERIFY='rpm -K'
     PACKAGEEXT='rpm'

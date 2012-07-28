@@ -5927,7 +5927,6 @@ sub removeNetworkComponents {
         if (-d "$config{mailboxd_directory}/webapps/service/zimlet/$zimlet" );
       system("rm -rf ${zimbra_home}/zimlets-deployed/$zimlet")
         if (-d "${zimbra_home}/zimlets-deployed/$zimlet" );
-
     }
 
     if (isEnabled("zimbra-ldap") && -x "${zimbra_home}/libexec/zmconvertdmod") {
@@ -6079,7 +6078,6 @@ sub configInstallZimlets {
   # remove any Network zimlets if we are upgrading to a FOSS version
   if (isFoss() && !$newinstall) {
     removeNetworkZimlets();
-    removeNetworkComponents();
   }
 
   # Install zimlets
@@ -6657,6 +6655,11 @@ sub applyConfig {
 
   `touch /opt/zimbra/.bash_history`;
   `chown zimbra:zimbra /opt/zimbra/.bash_history`;
+
+  if (isFoss() && !$newinstall) {
+    startLdap() if ($ldapConfigured);
+    removeNetworkComponents();
+  }
 
   if ($config{STARTSERVERS} eq "yes") {
 

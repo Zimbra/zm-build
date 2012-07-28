@@ -398,6 +398,11 @@ sub upgrade {
 
   getInstalledPackages();
 
+  # Bug #73840 - need to delete /opt/zimbra/keyview before we try stopping services
+  if ((! main::isInstalled("zimbra-convertd")) && (-l "/opt/zimbra/keyview")) {
+    unlink("/opt/zimbra/keyview");
+  }
+
   if (stopZimbra()) { return 1; }
 
   my $curSchemaVersion;
