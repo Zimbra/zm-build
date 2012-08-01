@@ -6308,7 +6308,7 @@ sub configCreateDomain {
           "zimbraIsSystemResource TRUE ".
           "zimbraIsSystemAccount TRUE ".
           "zimbraHideInGal TRUE ".
-          "zimbraMailMessageLifetime 7d ".
+          "zimbraMailMessageLifetime 30d ".
           "zimbraMailQuota 0 ".
           "description \'System account for Anti-virus quarantine.\'");
         progress(($rc == 0) ? "done.\n" : "failed.\n");
