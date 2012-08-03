@@ -6040,7 +6040,7 @@ sub zimletCleanup {
       }
       if ( $zimlet ne "" ) {
         detail("Removing $zimlet");
-        runAsZimbra("/opt/zimbra/bin/zmzimletctl undeploy $zimlet");
+        runAsZimbra("/opt/zimbra/bin/zmzimletctl -l undeploy $zimlet");
         system("rm -rf $config{mailboxd_directory}/webapps/service/zimlet/$zimlet")
           if (-d "$config{mailboxd_directory}/webapps/service/zimlet/$zimlet" );
       }
