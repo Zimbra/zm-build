@@ -5478,11 +5478,7 @@ sub configSetMtaAuthHost {
     my @mtaAuthHostList = split(/\s/,$config{MTAAUTHHOST});
     my @mtaAuthHostConfigList = ();
     foreach my $mtaAuthHost (split(/\s/,$config{MTAAUTHHOST})) {
-      if (! @mtaAuthHostConfigList ) {
-        push(@mtaAuthHostConfigList, 'zimbraMtaAuthHost', $mtaAuthHost);
-      } else {
-        push(@mtaAuthHostConfigList, '+zimbraMtaAuthHost', $mtaAuthHost);
-      }
+      push(@mtaAuthHostConfigList, 'zimbraMtaAuthHost', $mtaAuthHost);
     }
     my $rc = setLdapServerConfig(@mtaAuthHostConfigList);
     progress(($rc == 0) ? "done.\n" : "failed.\n");
