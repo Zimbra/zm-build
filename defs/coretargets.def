@@ -209,6 +209,7 @@ $(CORE_DEST_DIR)/lib: $(WEBAPP_DIR)/service.war $(LDAP_DEST_DIR)/$(LDAP_DIR)-$(L
 	mkdir -p $@
 	cp -pr $(SERVICE_DIR)/build/dist/lib/* $@
 	-rm -rf $@/jars/junit*.jar
+	-rm -rf $@/jars/objenesis*.jar
 	cp -pr $(NATIVE_DIR)/build/libzimbra-native.$(JNI_EXT) $@
 	cp -pr $(JUNIXSOCKET_NATIVE) $@
 	(cd $(CORE_DEST_DIR); tar xzf $(THIRD_PARTY_BUILDS)/$(BUILD_PLATFORM)/mysql/mysql-libs-$(MYSQL_VERSION).tgz)
