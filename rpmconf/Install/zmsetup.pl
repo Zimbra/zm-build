@@ -5203,7 +5203,7 @@ sub configCreateCert {
         progress ( "done.\n" );
       }
     } elsif ( $needNewCert ne "" && $ssl_cert_type eq "self") {
-      progress ( "Creating new zimbra-sore SSL certificate..." );
+      progress ( "Creating new zimbra-store SSL certificate..." );
       $rc = runAsRoot("/opt/zimbra/bin/zmcertmgr createcrt $needNewCert");
       if ($rc != 0) {
         progress ( "failed.\n" );
