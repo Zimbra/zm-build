@@ -2,7 +2,7 @@
 # 
 # ***** BEGIN LICENSE BLOCK *****
 # Zimbra Collaboration Suite Server
-# Copyright (C) 2006, 2007, 2009, 2010, 2011 VMware, Inc.
+# Copyright (C) 2006, 2007, 2009, 2010 Zimbra, Inc.
 # 
 # The contents of this file are subject to the Zimbra Public License
 # Version 1.3 ("License"); you may not use this file except in
@@ -22,8 +22,8 @@ use lib "/opt/zimbra/zimbramon/lib";
 use lib "/opt/zimbra/zimbramon/lib/Zimbra/SOAP";
 use lib "/opt/zimbra/zimbramon/lib/Zimbra/Mon";
 use lib "/opt/zimbra/zimbramon/lib/Zimbra/DB";
-foreach my $arch qw(i386 x86_64 i486 i586 i686 darwin) {
-  foreach my $type qw(linux-thread-multi linux-gnu-thread-multi linux thread-multi thread-multi-2level) {
+foreach my $arch (qw(i386 x86_64 i486 i586 i686 darwin)) {
+  foreach my $type (qw(linux-thread-multi linux-gnu-thread-multi linux thread-multi thread-multi-2level)) {
     my $dir = "/opt/zimbra/zimbramon/lib/${arch}-${type}";
     unshift(@INC, "$dir") 
       if (-d "$dir");

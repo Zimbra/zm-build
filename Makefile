@@ -19,7 +19,9 @@ include $(DEFS_DIR)/paths.def
 THIRD_PARTY	:= $(BUILD_ROOT)/../ThirdParty
 THIRD_PARTY_BUILDS	:= $(BUILD_ROOT)/../ThirdPartyBuilds
 
+ifneq   (1,$(NOPLATFORMS))
 include $(DEFS_DIR)/$(BUILD_PLATFORM).def
+endif
 
 include $(DEFS_DIR)/destination.def
 
@@ -43,7 +45,11 @@ include $(DEFS_DIR)/proxytargets.def
 
 include $(DEFS_DIR)/ldaptargets.def
 
+ifeq ($(BUILD_PLATFORM), RHEL4_64)
+include $(DEFS_DIR)/mtatargets-rhel4.def
+else
 include $(DEFS_DIR)/mtatargets.def
+endif
 
 include $(DEFS_DIR)/loggertargets.def
 

@@ -25,10 +25,10 @@ perlcode 0 sub dosnmp {   my %args = (@_); print "SNMP notification: $args{MESSA
 
 ignore /DEBUG/
 
-watchfor /zmconfigd CRITICAL (\S+) Service status change: (\S+) (.*) changed from stopped to running/ 
-	donotify SERVICE=$3,STATUS=started,HOST=$2
-watchfor /zmconfigd CRITICAL (\S+) Service status change: (\S+) (.*) changed from running to stopped/ 
-	donotify SERVICE=$3,STATUS=stopped,HOST=$2
+watchfor /err: Service status change: (\S+) (.*) changed from stopped to running/
+	donotify SERVICE=$2,STATUS=started,HOST=$1
+watchfor /err: Service status change: (\S+) (.*) changed from running to stopped/
+	donotify SERVICE=$2,STATUS=stopped,HOST=$1
 
 watchfor /err: Disk warning: (\S+) (\S+) on device (\S+) at (\d+)/ 
         donotify DISK=$2,UTIL=$4,HOST=$1

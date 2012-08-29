@@ -8,6 +8,7 @@ $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/common/lib: $(STORE_DEST_DIR)/$(MAILBOXD_DIR) 
 	mkdir -p $@
 	cp $(SERVICE_DIR)/build/dist/$(MAILBOXD_SERVER)/common/lib/*.jar $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/common/lib
 	-rm -rf $@/junit*.jar
+	-rm -rf $@/jars/objenesis*.jar
 
 $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/common/endorsed: $(STORE_DEST_DIR)/$(MAILBOXD_DIR) $(WEBAPP_DIR)/service.war
 	mkdir -p $@

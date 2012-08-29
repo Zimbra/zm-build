@@ -2,7 +2,7 @@
 # 
 # ***** BEGIN LICENSE BLOCK *****
 # Zimbra Collaboration Suite Server
-# Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011 VMware, Inc.
+# Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
 # 
 # The contents of this file are subject to the Zimbra Public License
 # Version 1.3 ("License"); you may not use this file except in
@@ -58,8 +58,6 @@ findLatestPackage() {
 
 	files=`ls $PACKAGE_DIR/$package*.$PACKAGEEXT 2> /dev/null`
 	for q in $files; do
-
-		
 		f=`basename $q`
 		if [ x"$PACKAGEEXT" = "xrpm" ]; then
 			id=`echo $f | awk -F- '{print $3}'`
@@ -68,15 +66,15 @@ findLatestPackage() {
 			minor=`echo $version | awk -F. '{print $2}'`
 			micro=`echo $version | awk -F. '{print $3}'`
 			stamp=`echo $f | awk -F_ '{print $3}' | awk -F. '{print $1}'`
-    elif [ x"$PACKAGEEXT" = "xdeb" ]; then
-      id=`basename $f .deb | awk -F_ '{print $2"_"$3"_"$4"_"$5}'`
-      id=`echo $id | sed -e 's/_i386$//'`
-      id=`echo $id | sed -e 's/_amd64$//'`
-      version=`echo $id | awk -F_ '{print $1}'`
-      major=`echo $version | awk -F. '{print $1}'`
-      minor=`echo $version | awk -F. '{print $2}'`
-      micro=`echo $version | awk -F. '{print $3}'`
-      stamp=`echo $f | awk -F_ '{print $3}' | awk -F. '{print $1}'`
+		elif [ x"$PACKAGEEXT" = "xdeb" ]; then
+			id=`basename $f .deb | awk -F_ '{print $2"_"$3}'`
+			id=`echo $id | sed -e 's/_i386$//'`
+			id=`echo $id | sed -e 's/_amd64$//'`
+			version=`echo $id | awk -F. '{print $1"."$2"."$3"_"$4}'`
+			major=`echo $version | awk -F. '{print $1}'`
+			minor=`echo $version | awk -F. '{print $2}'`
+			micro=`echo $version | awk -F. '{print $3}'`
+			stamp=`echo $id | awk -F. '{print $4}'`
 		else
 			id=`echo $f | awk -F_ '{print $2}'`
 			version=`echo $id | awk -F_ '{print $1}'`
@@ -85,13 +83,17 @@ findLatestPackage() {
 			micro=`echo $version | awk -F. '{print $3}'`
 			stamp=`echo $f | awk -F_ '{print $3}' | awk -F. '{print $1}'`
 		fi
-    installable_platform=`echo $id | awk -F. '{print $4}'`
-    if [ x"$installable_platform" = "xDEBIAN4" ]; then
-        installable_platform=`echo $id | awk -F. '{print $4"."$5}'`
-    fi
-    if [ x"$installable_platform" = "xopenSUSE_10" ]; then
-        installable_platform=`echo $id | awk -F. '{print $4"."$5}'`
-    fi
+		if [ x"$PACKAGEEXT" = "xdeb" ]; then
+			debos=`echo $id | awk -F. '{print $6}'`
+			hwbits=`echo $id | awk -F. '{print $7}'`
+			if [ x"$hwbits" = "x64" ]; then
+				installable_platform=${debos}_${hwbits}
+			else
+				installable_platform=${debos}
+			fi
+		else
+			installable_platform=`echo $id | awk -F. '{print $4}'`
+		fi
 
 		if [ $major -gt $himajor ]; then
 			himajor=$major

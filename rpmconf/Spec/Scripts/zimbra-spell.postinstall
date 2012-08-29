@@ -2,7 +2,7 @@
 # 
 # ***** BEGIN LICENSE BLOCK *****
 # Zimbra Collaboration Suite Server
-# Copyright (C) 2005, 2006, 2007, 2009, 2010, 2011 VMware, Inc.
+# Copyright (C) 2005, 2006, 2007, 2009, 2010 Zimbra, Inc.
 # 
 # The contents of this file are subject to the Zimbra Public License
 # Version 1.3 ("License"); you may not use this file except in
@@ -13,10 +13,8 @@
 # basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 # ***** END LICENSE BLOCK *****
 # 
-if [ -e /opt/zimbra/aspell ]; then
-  rm -f /opt/zimbra/aspell
-fi
-ln -s /opt/zimbra/aspell-0.60.6 /opt/zimbra/aspell
+rm -f /opt/zimbra/aspell
+ln -s /opt/zimbra/aspell-0.60.6.1 /opt/zimbra/aspell
 
 PKG=`echo ${RECEIPT_PATH} | sed -e 's|.*/\(zimbra-spell.[^/]*pkg\)/.*|\1|' | sed -e 's/\./-/'`
 D=`date +%s`

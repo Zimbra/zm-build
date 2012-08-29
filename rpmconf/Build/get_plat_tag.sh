@@ -2,7 +2,7 @@
 # 
 # ***** BEGIN LICENSE BLOCK *****
 # Zimbra Collaboration Suite Server
-# Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011 VMware, Inc.
+# Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
 # 
 # The contents of this file are subject to the Zimbra Public License
 # Version 1.3 ("License"); you may not use this file except in
@@ -232,6 +232,11 @@ if [ -f /etc/lsb-release ]; then
 		grep "DISTRIB_RELEASE=10" /etc/lsb-release > /dev/null 2>&1
 		if [ $? = 0 ]; then
 			echo "10${i}"
+			exit 0
+		fi
+		grep "DISTRIB_RELEASE=12" /etc/lsb-release > /dev/null 2>&1
+		if [ $? = 0 ]; then
+			echo "12${i}"
 			exit 0
 		else
 			echo "UNKNOWN${i}"

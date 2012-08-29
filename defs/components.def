@@ -37,11 +37,15 @@ CORE_COMPONENTS	:= \
 	$(CORE_DEST_DIR)/$(RSYNC_DIR) \
 	$(CORE_DEST_DIR)/lib/ext/com_zimbra_cert_manager/com_zimbra_cert_manager.jar \
 	$(CORE_DEST_DIR)/lib/ext/com_zimbra_bulkprovision/com_zimbra_bulkprovision.jar \
+	$(CORE_DEST_DIR)/lib/ext/com_zimbra_clientuploader/com_zimbra_clientuploader.jar \
 	$(CBPOLICYD_CORE_COMPONENTS) \
 	$(PLATFORM_CORE_COMPONENTS)
 
+ifneq ($(ZIMBRA_OCTOPUS_BUILD), 1)
 MTA_COMPONENTS	:= \
 	$(MTA_DEST_DIR) \
+	$(MTA_DEST_DIR)/$(DKIM_DIR) \
+	$(MTA_DEST_DIR)/data/opendkim \
 	$(MTA_DEST_DIR)/$(POSTFIX_DIR) \
 	$(MTA_DEST_DIR)/data/postfix \
 	$(MTA_DEST_DIR)/$(AMAVISD_DIR)-new-$(AMAVISD_VERSION) \
@@ -53,7 +57,14 @@ MTA_COMPONENTS	:= \
 	$(MTA_DEST_DIR)/$(ALTERMIME_DIR)-$(ALTERMIME_VERSION) \
 	$(MTA_DEST_DIR)/data/altermime \
 	$(MTA_MYSQL_DEST_DIR)/$(MYSQL_DIR) \
+	$(MTA_DEST_DIR)/$(ZMQ_DIR) \
 	$(CBPOLICYD_COMPONENTS)
+else
+MTA_COMPONENTS	:= \
+	$(MTA_DEST_DIR) \
+	$(MTA_DEST_DIR)/$(POSTFIX_DIR) \
+	$(MTA_DEST_DIR)/data/postfix
+endif
 
 LOGGER_COMPONENTS := \
 	$(LOGGER_DEST_DIR) \

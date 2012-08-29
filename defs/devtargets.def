@@ -88,8 +88,6 @@ $(DEV_INSTALL_ROOT)/$(MYSQL_DIR): $(DEV_INSTALL_ROOT)
 $(DEV_INSTALL_ROOT)/$(LDAP_DIR)-$(LDAP_VERSION): $(DEV_INSTALL_ROOT)
 	@echo "*** Installing openldap"
 	(cd $(DEV_INSTALL_ROOT); tar xzf $(LDAP_SOURCE).tgz;)
-	cp -f $(SERVICE_DIR)/conf/ldap/DB_CONFIG $@/var/openldap-data
-	cp -f $(SERVICE_DIR)/conf/ldap/DB_CONFIG.accesslog $@/var/openldap-data
 	cp -f $(SERVICE_DIR)/conf/ldap/slapd.conf.production $@/etc/openldap/slapd.conf
 	cp -f $(SERVICE_DIR)/conf/ldap/master-accesslog.conf $@/etc/openldap
 	cp -f $(SERVICE_DIR)/conf/ldap/master-accesslog-overlay.conf $@/etc/openldap
@@ -208,9 +206,9 @@ $(DEV_INSTALL_ROOT)/conf: $(SERVICE_DIR)/$(WEBAPP_BUILD_DIR)/service.war
 	cp -f $(SERVICE_DIR)/conf/amavisd.conf.in $@
 	cp -f $(SERVICE_DIR)/conf/clamd.conf $@
 	cp -f $(SERVICE_DIR)/conf/freshclam.conf $@
-	cp -f $(SERVICE_DIR)/conf/salocal.cf $@
+	cp -f $(SERVICE_DIR)/conf/salocal.cf.in $@
 	cp $(SERVICE_DIR)/conf/postfix_header_checks.in $@
-	cp $(SERVICE_DIR)/conf/zmmta.cf $@
+	cp $(SERVICE_DIR)/conf/zmconfigd.cf $@
 	cp $(SERVICE_DIR)/conf/postfix_recipient_restrictions.cf $@
 	mkdir -p $@/spamassassin
 	cp -f $(SERVICE_DIR)/conf/spamassassin/* $@/spamassassin

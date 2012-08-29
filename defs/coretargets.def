@@ -141,6 +141,7 @@ $(CORE_DEST_DIR)/docs:
 	cp $(LICENSE_DIR)/zimbra/zpl-full.txt $@/ZPL.txt
 	cp $(LICENSE_DIR)/zimbra/ypl-full.txt $@/YPL.txt
 	cp $(LICENSE_DIR)/zimbra/zimbra_public_eula_2.1.txt $@/zimbra_public_eula_2.1.txt
+	cp $(LICENSE_DIR)/thirdparty/oracle_jdk_eula.txt $@/oracle_jdk_eula.txt
 	cp $(SERVICE_DIR)/docs/*txt $@
 	cp $(SERVICE_DIR)/docs/*html $@
 	cp $(MIG_TOOLS_DIR)/ReadMe.txt $@/zmztozmig.txt
@@ -208,7 +209,9 @@ $(CORE_DEST_DIR)/lib: $(WEBAPP_DIR)/service.war $(LDAP_DEST_DIR)/$(LDAP_DIR)-$(L
 	mkdir -p $@
 	cp -pr $(SERVICE_DIR)/build/dist/lib/* $@
 	-rm -rf $@/jars/junit*.jar
+	-rm -rf $@/jars/objenesis*.jar
 	cp -pr $(NATIVE_DIR)/build/libzimbra-native.$(JNI_EXT) $@
+	cp -pr $(JUNIXSOCKET_NATIVE) $@
 	(cd $(CORE_DEST_DIR); tar xzf $(THIRD_PARTY_BUILDS)/$(BUILD_PLATFORM)/mysql/mysql-libs-$(MYSQL_VERSION).tgz)
 
 $(NATIVE_DIR)/build/libzimbra-native.$(JNI_EXT):
@@ -250,7 +253,10 @@ $(CORE_DEST_DIR)/conf: $(WEBAPP_DIR)/service.war
 	cp $(PACKAGE_CONF_DIR)/Conf/zmssl.cnf.in $@
 	cp $(SERVICE_DIR)/conf/datasource.xml $@
 	cp $(SERVICE_DIR)/conf/amavisd.conf.in $@
-	cp $(SERVICE_DIR)/conf/dspam.conf $@
+	cp $(SERVICE_DIR)/conf/amavisd/amavisd-custom.conf $@
+	cp $(SERVICE_DIR)/conf/opendkim.conf.in $@
+	cp $(SERVICE_DIR)/conf/opendkim-localnets.conf.in $@
+	cp $(SERVICE_DIR)/conf/dspam.conf.in $@
 	cp $(SERVICE_DIR)/conf/zmlogrotate $@
 	cp $(SERVICE_DIR)/conf/clamd.conf.in $@
 	cp $(SERVICE_DIR)/conf/freshclam.conf.in $@
@@ -260,11 +266,18 @@ $(CORE_DEST_DIR)/conf: $(WEBAPP_DIR)/service.war
 	mkdir -p $@/nginx/templates
 	cp $(SERVICE_DIR)/conf/nginx/* $@/nginx/templates/
 	cp $(SERVICE_DIR)/conf/stats.conf.in $@
-	cp $(SERVICE_DIR)/conf/salocal.cf $@/salocal.cf.in
-	cp $(SERVICE_DIR)/conf/zmmta.cf-$(MAILBOXD_SERVER) $@/zmmta.cf
+	cp $(SERVICE_DIR)/conf/salocal.cf.in $@
+	cp $(SERVICE_DIR)/conf/saslauthd.conf.in $@ 
+	mkdir -p $@/sasl2
+	cp $(SERVICE_DIR)/conf/postfix_sasl_smtpd.conf $@/sasl2/smtpd.conf.in
+	cp $(SERVICE_DIR)/conf/zmconfigd.cf $@/zmconfigd.cf
 	cp $(SERVICE_DIR)/conf/timezones.ics $@
 	cp $(SERVICE_DIR)/conf/zimbra.ld.conf $@
-	cp $(SERVICE_DIR)/conf/postfix_recipient_restrictions.cf $@
+	mkdir -p $@/zmconfigd
+	cp $(SERVICE_DIR)/conf/zmconfigd/postfix_content_filter.cf $@/zmconfigd/postfix_content_filter.cf
+	cp $(SERVICE_DIR)/conf/zmconfigd/postfix_recipient_restrictions.cf $@/zmconfigd/postfix_recipient_restrictions.cf
+	cp $(SERVICE_DIR)/conf/zmconfigd/smtpd_end_of_data_restrictions.cf $@/zmconfigd/smtpd_end_of_data_restrictions.cf
+	cp $(SERVICE_DIR)/conf/zmconfigd/smtpd_sender_restrictions.cf $@/zmconfigd/smtpd_sender_restrictions.cf
 	cp -Rf $(SERVICE_DIR)/conf/externaldirsync $@/externaldirsync
 	cp -Rf $(SERVICE_DIR)/build/dist/conf/rights $@/rights
 	rm -f $@/rights/zimbra-rights-domainadmin.xml-template
@@ -299,6 +312,7 @@ $(CORE_DEST_DIR)/libexec: $(LAUNCHER_DIR)/build/zmmailboxdmgr
 	cp -f $(SERVICE_DIR)/src/db/migration/optimize*pl $@/scripts
 	cp -f $(SERVICE_DIR)/src/db/migration/fix*pl $@/scripts
 	cp -f $(SERVICE_DIR)/src/db/migration/clearArchivedFlag.pl $@/scripts
+	cp -f $(SERVICE_DIR)/src/ldap/migration/migrate*pl $@/scripts
 	cp -f $(PACKAGE_CONF_DIR)/Install/postinstall.pm $@/postinstall.pm
 	cp -f $(PACKAGE_CONF_DIR)/Install/preinstall.pm $@/preinstall.pm
 	cp -f $(PACKAGE_CONF_DIR)/Install/Util/addUser.sh $@/addUser.sh
@@ -332,7 +346,6 @@ $(CORE_DEST_DIR)/bin:
 	cp $(ZIMBRA_BIN_DIR)/zmmtactl $@
 	cp $(ZIMBRA_BIN_DIR)/zmspellctl $@
 	cp $(ZIMBRA_BIN_DIR)/zmapachectl $@
-	cp $(ZIMBRA_BIN_DIR)/zmprov.server $@
 	cp $@/zmprov $@/zmprov.java
 ifeq ($(ZIMBRA_USE_CBPOLICYD), 1)
 	cp $(ZMCBPOLICYD_DIR)/src/bin/* $@
@@ -379,9 +392,6 @@ $(CORE_DEST_DIR)/$(SASL_DIR)-$(SASL_VERSION):
 	@echo "*** Creating cyrus-sasl"
 	mkdir -p $@
 	(cd $(CORE_DEST_DIR); tar xzf $(SASL_SOURCE).tgz;)
-	mkdir -p $(CORE_DEST_DIR)/$(SASL_DIR)-$(SASL_VERSION)/etc
-	cp -f $(SERVICE_DIR)/conf/saslauthd.conf.in $(CORE_DEST_DIR)/$(SASL_DIR)-$(SASL_VERSION)/etc/
-	cp -f $(SERVICE_DIR)/conf/postfix_sasl_smtpd.conf $(CORE_DEST_DIR)/$(SASL_DIR)-$(SASL_VERSION)/lib/sasl2/smtpd.conf
 
 $(CORE_DEST_DIR)/$(LDAP_DIR)-libs-$(LDAP_VERSION):
 	@echo "*** Creating openldap client libraries"

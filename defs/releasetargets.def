@@ -10,9 +10,9 @@ zcs-$(RELEASE).dmg: $(ARCH)/zcs.mpkg packages
 	done)
 
 	cp -R $(ARCH)/zcs.mpkg $(ARCH)/tmp
-	hdiutil create -srcfolder $(ARCH)/tmp -volname zcs-$(VERSION_TAG).$(RELEASE) $(ARCH)/zcs-$(VERSION_TAG).$(RELEASE).dmg
+	hdiutil create -srcfolder $(ARCH)/tmp -volname zcs-$(RELEASE_VERSION_TAG).$(RELEASE) $(ARCH)/zcs-$(RELEASE_VERSION_TAG).$(RELEASE).dmg
 	rm -rf $(ARCH)/tmp
-	(cd $(ARCH); ln -s zcs-$(VERSION_TAG).$(RELEASE).dmg zcs.dmg)
+	(cd $(ARCH); ln -s zcs-$(RELEASE_VERSION_TAG).$(RELEASE).dmg zcs.dmg)
 
 $(ARCH)/zcs.mpkg: $(ARCH)/zcs.mpkg/Contents
 	mkdir -p $@/Contents
@@ -21,7 +21,7 @@ $(ARCH)/zcs.mpkg/Contents: $(ARCH)/zcs.mpkg/Contents/.Packages $(ARCH)/zcs.mpkg/
 	mkdir -p $@
 
 zcs-$(RELEASE).iso: packages zcs-$(RELEASE).tgz
-	$(BUILD_ROOT)/rpmconf/Build/genRpathRelease.sh $(PACKAGING_OPTIONS) $(BUILD_ROOT) $(PRODUCT)-$(VERSION_TAG).$(RELEASE)
+	$(BUILD_ROOT)/rpmconf/Build/genRpathRelease.sh $(PACKAGING_OPTIONS) $(BUILD_ROOT) $(PRODUCT)-$(RELEASE_VERSION_TAG).$(RELEASE)
 
 $(ARCH)/zcs.mpkg/Contents/.Packages:
 	mkdir -p $@
@@ -51,37 +51,48 @@ $(ARCH)/zcs.mpkg/Contents/distribution.dist:
 
 zcs-$(RELEASE).tgz: zcs_stage packages
 
-zcs_stage:
-	mkdir -p zcs-$(VERSION_TAG).$(RELEASE)/packages
-	mkdir -p zcs-$(VERSION_TAG).$(RELEASE)/bin
-	mkdir -p zcs-$(VERSION_TAG).$(RELEASE)/data
-	mkdir -p zcs-$(VERSION_TAG).$(RELEASE)/docs
-	mkdir -p zcs-$(VERSION_TAG).$(RELEASE)/util/modules
-	cp -f $(LICENSE_DIR)/zimbra/ypl-full.txt zcs-$(VERSION_TAG).$(RELEASE)/docs/YPL.txt
-	cp -f $(LICENSE_DIR)/zimbra/zcl.txt zcs-$(VERSION_TAG).$(RELEASE)/docs/zcl.txt
-	cp -f $(LICENSE_DIR)/zimbra/zimbra_public_eula_2.1.txt zcs-$(VERSION_TAG).$(RELEASE)/docs/zimbra_public_eula_2.1.txt
+$(SOAP_DIR)/package-soap-api-doc:
+	(cd $(SOAP_DIR); $(ANT) $(ANT_DEBUG) \
+		-Dzimbra.buildinfo.platform=$(BUILD_PLATFORM) \
+		-Dzimbra.buildinfo.version=$(SOURCE_TAG) \
+		-Dzimbra.buildinfo.type=$(BUILD_TYPE) \
+		-Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) \
+		-Dzimbra.buildinfo.host=$(HOST) package-soap-api-doc ; )
+
+zcs_stage: $(SOAP_DIR)/package-soap-api-doc
+	mkdir -p zcs-$(RELEASE_VERSION_TAG).$(RELEASE)/packages
+	mkdir -p zcs-$(RELEASE_VERSION_TAG).$(RELEASE)/bin
+	mkdir -p zcs-$(RELEASE_VERSION_TAG).$(RELEASE)/data
+	mkdir -p zcs-$(RELEASE_VERSION_TAG).$(RELEASE)/docs
+	mkdir -p zcs-$(RELEASE_VERSION_TAG).$(RELEASE)/util/modules
+	cp -f $(LICENSE_DIR)/zimbra/ypl-full.txt zcs-$(RELEASE_VERSION_TAG).$(RELEASE)/docs/YPL.txt
+	cp -f $(LICENSE_DIR)/zimbra/zcl.txt zcs-$(RELEASE_VERSION_TAG).$(RELEASE)/docs/zcl.txt
+	cp -f $(LICENSE_DIR)/zimbra/zimbra_public_eula_2.1.txt zcs-$(RELEASE_VERSION_TAG).$(RELEASE)/docs/zimbra_public_eula_2.1.txt
+	cp $(LICENSE_DIR)/thirdparty/oracle_jdk_eula.txt zcs-$(RELEASE_VERSION_TAG).$(RELEASE)/docs/oracle_jdk_eula.txt
 	-@(for d in `find $(CONSOLE_DIR)/WebRoot/help -mindepth 1 -maxdepth 1 -type d -exec basename "{}" \;`; do \
 		[ ! -e $(CONSOLE_DIR)/WebRoot/help/$$d/admin/pdf ] && continue; \
-		mkdir -p zcs-$(VERSION_TAG).$(RELEASE)/docs/$$d; \
-		cp -f $(CONSOLE_DIR)/WebRoot/help/$$d/admin/pdf/* zcs-$(VERSION_TAG).$(RELEASE)/docs/$$d; \
+		mkdir -p zcs-$(RELEASE_VERSION_TAG).$(RELEASE)/docs/$$d; \
+		cp -f $(CONSOLE_DIR)/WebRoot/help/$$d/admin/pdf/* zcs-$(RELEASE_VERSION_TAG).$(RELEASE)/docs/$$d; \
 	done)
 	-@(for d in `find $(CONSOLE_DIR)/WebRoot/help -mindepth 1 -maxdepth 1 -type d -exec basename "{}" \;`; do \
-		cp -f $(CONSOLE_DIR)/WebRoot/help/$$d/admin/txt/readme_source.txt zcs-$(VERSION_TAG).$(RELEASE)/readme_source_$$d.txt; \
-		cp -f $(CONSOLE_DIR)/WebRoot/help/$$d/admin/txt/readme_binary.txt zcs-$(VERSION_TAG).$(RELEASE)/readme_binary_$$d.txt; \
+		cp -f $(CONSOLE_DIR)/WebRoot/help/$$d/admin/txt/readme_source.txt zcs-$(RELEASE_VERSION_TAG).$(RELEASE)/readme_source_$$d.txt; \
+		cp -f $(CONSOLE_DIR)/WebRoot/help/$$d/admin/txt/readme_binary.txt zcs-$(RELEASE_VERSION_TAG).$(RELEASE)/readme_binary_$$d.txt; \
 	done)
-	cp -f $(SERVICE_DIR)/build/versions-init.sql zcs-$(VERSION_TAG).$(RELEASE)/data
-	cp $(PACKAGE_CONF_DIR)/Install/install.sh zcs-$(VERSION_TAG).$(RELEASE)
-	cp -f $(PACKAGE_CONF_DIR)/Install/Util/*sh zcs-$(VERSION_TAG).$(RELEASE)/util
-	cp -f $(PACKAGE_CONF_DIR)/Install/Util/modules/*sh zcs-$(VERSION_TAG).$(RELEASE)/util/modules
-	cp -f $(BUILD_ROOT)/RE/README.txt zcs-$(VERSION_TAG).$(RELEASE)
-	cp -f $(BUILD_ROOT)/rpmconf/Build/get_plat_tag.sh zcs-$(VERSION_TAG).$(RELEASE)/bin
-	cp -f $(SERVICE_DIR)/build/dist/libexec/zmdbintegrityreport zcs-$(VERSION_TAG).$(RELEASE)/bin
-	chmod 755 zcs-$(VERSION_TAG).$(RELEASE)/install.sh
-	cp $(PACKAGE_DIR)/*$(PACKAGE_EXT) zcs-$(VERSION_TAG).$(RELEASE)/packages
-	tar czf zcs-$(VERSION_TAG).$(RELEASE).tgz zcs-$(VERSION_TAG).$(RELEASE)
-	mv zcs-$(VERSION_TAG).$(RELEASE).tgz $(PACKAGE_DIR)
-	(cd $(PACKAGE_DIR); ln -s zcs-$(VERSION_TAG).$(RELEASE).tgz zcs.tgz)
+	cp -f $(SERVICE_DIR)/build/versions-init.sql zcs-$(RELEASE_VERSION_TAG).$(RELEASE)/data
+	cp $(PACKAGE_CONF_DIR)/Install/install.sh zcs-$(RELEASE_VERSION_TAG).$(RELEASE)
+	cp -f $(PACKAGE_CONF_DIR)/Install/Util/*sh zcs-$(RELEASE_VERSION_TAG).$(RELEASE)/util
+	cp -f $(PACKAGE_CONF_DIR)/Install/Util/modules/*sh zcs-$(RELEASE_VERSION_TAG).$(RELEASE)/util/modules
+	cp -f $(BUILD_ROOT)/RE/README.txt zcs-$(RELEASE_VERSION_TAG).$(RELEASE)
+	cp -f $(BUILD_ROOT)/rpmconf/Build/get_plat_tag.sh zcs-$(RELEASE_VERSION_TAG).$(RELEASE)/bin
+	cp -f $(SERVICE_DIR)/build/dist/libexec/zmdbintegrityreport zcs-$(RELEASE_VERSION_TAG).$(RELEASE)/bin
+	chmod 755 zcs-$(RELEASE_VERSION_TAG).$(RELEASE)/install.sh
+	cp $(PACKAGE_DIR)/*$(PACKAGE_EXT) zcs-$(RELEASE_VERSION_TAG).$(RELEASE)/packages
+	tar czf zcs-$(RELEASE_VERSION_TAG).$(RELEASE).tgz zcs-$(RELEASE_VERSION_TAG).$(RELEASE)
+	mv zcs-$(RELEASE_VERSION_TAG).$(RELEASE).tgz $(PACKAGE_DIR)
+	(cd $(PACKAGE_DIR); ln -s zcs-$(RELEASE_VERSION_TAG).$(RELEASE).tgz zcs.tgz)
 	-cp -f $(WEBAPP_DIR)/zimbra/downloads/* $(PACKAGE_DIR)
+	-cp -f $(SOAP_DIR)/build/docs/*.zip $(PACKAGE_DIR)
+	-cp -f $(WEBAPP_STAGE_DIR)/admin/*.zip $(PACKAGE_DIR)
 	@echo "*** BUILD COMPLETED ***"
 
 packages: core proxy memcached mta apache store ldap snmp logger spell

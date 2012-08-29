@@ -2,7 +2,7 @@
 # 
 # ***** BEGIN LICENSE BLOCK *****
 # Zimbra Collaboration Suite Server
-# Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011 VMware, Inc.
+# Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
 # 
 # The contents of this file are subject to the Zimbra Public License
 # Version 1.3 ("License"); you may not use this file except in
@@ -23,42 +23,46 @@ rm -f /opt/zimbra/java
 PLAT=`/opt/zimbra/libexec/get_plat_tag.sh`
 BIT=`echo $PLAT | awk -F_ '{print $2}'`
 if [ "x$BIT" = "x64" ]; then
-	ln -s /opt/zimbra/jdk1.6.0_33 /opt/zimbra/java
+	if [ "x$PLAT" = "xRHEL4_64" ]; then
+		ln -s /opt/zimbra/jdk1.6.0_33 /opt/zimbra/java
+	else
+		ln -s /opt/zimbra/jdk1.7.0_05 /opt/zimbra/java
+	fi
 else
-	ln -s /opt/zimbra/jdk1.6.0_33 /opt/zimbra/java
+	ln -s /opt/zimbra/jdk1.7.0_05 /opt/zimbra/java
 fi
 
 #Symlinks
 rm -f /opt/zimbra/mysql
-ln -s /opt/zimbra/mysql-standard-5.1.63-pc-linux-gnu-i686-glibc23 /opt/zimbra/mysql
+ln -s /opt/zimbra/mysql-standard-5.5.24-pc-linux-gnu-i686-glibc23 /opt/zimbra/mysql
 
 rm -f /opt/zimbra/bdb
-ln -s /opt/zimbra/bdb-4.7.25.4 /opt/zimbra/bdb
+ln -s /opt/zimbra/bdb-5.2.36 /opt/zimbra/bdb
 
 if [ -L /opt/zimbra/sleepycat ]; then
 	rm -f /opt/zimbra/sleepycat
 fi
 
 rm -f /opt/zimbra/openssl
-ln -s /opt/zimbra/openssl-1.0.0j /opt/zimbra/openssl
+ln -s /opt/zimbra/openssl-1.0.1c /opt/zimbra/openssl
 
 rm -f /opt/zimbra/heimdal
-ln -s /opt/zimbra/heimdal-1.3.3 /opt/zimbra/heimdal
+ln -s /opt/zimbra/heimdal-1.5.2 /opt/zimbra/heimdal
 
 rm -f /opt/zimbra/curl
-ln -s /opt/zimbra/curl-7.24.0 /opt/zimbra/curl
+ln -s /opt/zimbra/curl-7.25.0 /opt/zimbra/curl
 
 rm -f /opt/zimbra/cyrus-sasl
-ln -s /opt/zimbra/cyrus-sasl-2.1.23.3z /opt/zimbra/cyrus-sasl
+ln -s /opt/zimbra/cyrus-sasl-2.1.25.4z /opt/zimbra/cyrus-sasl
 
 rm -f /opt/zimbra/openldap
-ln -s /opt/zimbra/openldap-2.4.30.6z /opt/zimbra/openldap
+ln -s /opt/zimbra/openldap-2.4.31.7z /opt/zimbra/openldap
 
 rm -f /opt/zimbra/tcmalloc
-ln -s /opt/zimbra/tcmalloc-1.8.2 /opt/zimbra/tcmalloc
+ln -s /opt/zimbra/tcmalloc-1.8.3 /opt/zimbra/tcmalloc
 
 rm -f /opt/zimbra/rsync
-ln -s /opt/zimbra/rsync-3.0.8 /opt/zimbra/rsync
+ln -s /opt/zimbra/rsync-3.0.9 /opt/zimbra/rsync
 
 if [ -d "/opt/zimbra/zimbramon/rrdtool" ]; then
   rm -rf /opt/zimbra/zimbramon/rrdtool

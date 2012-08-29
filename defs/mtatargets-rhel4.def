@@ -80,8 +80,6 @@ $(BUILD_ROOT)/zimbra-mta.spec:
 		$(BUILD_ROOT)/zimbra-mta.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/postfix-$(POSTFIX_VERSION)" >> \
 		$(BUILD_ROOT)/zimbra-mta.spec
-	echo "%attr(-, zimbra, zimbra) /opt/zimbra/libmemcached-$(LIBMCD_VERSION)" >> \
-		$(BUILD_ROOT)/zimbra-mta.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/opendkim-$(DKIM_VERSION)" >> \
 		$(BUILD_ROOT)/zimbra-mta.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/zeromq-$(ZMQ_VERSION)" >> \
@@ -125,7 +123,6 @@ $(MTA_DEST_DIR)/data/opendkim:
 $(MTA_DEST_DIR)/$(DKIM_DIR): $(MTA_DEST_DIR)
 	@echo "*** Creating OpenDKIM"
 	(cd $(MTA_DEST_DIR); tar xfz $(DKIM_SOURCE).tgz;)
-	(cd $(MTA_DEST_DIR); tar xfz $(LIBMCD_SOURCE).tgz;)
 
 $(MTA_DEST_DIR)/$(ZMQ_DIR): $(MTA_DEST_DIR)
 	@echo "*** Creating ZeroMQ"
