@@ -1065,8 +1065,14 @@ checkUserInfo() {
   if [ $? -ne 0 ]; then
     return
   fi
-  ZH=`awk -F: '/^zimbra:/ {print $6}' /etc/passwd`
-  ZS=`awk -F: '/^zimbra:/ {print $7}' /etc/passwd | sed -e s'|.*/||'`
+  if [ -x /usr/bin/getent ]
+  then
+    ZH=`getent passwd zimbra | awk -F: '{ print $6 }'`
+    ZS=`getent passwd zimbra | awk -F: '{ print $7 }' | sed -e s'|.*/||'`
+  else
+    ZH=`awk -F: '/^zimbra:/ {print $6}' /etc/passwd`
+    ZS=`awk -F: '/^zimbra:/ {print $7}' /etc/passwd | sed -e s'|.*/||'`
+  fi
   if [ x$ZH != "x/opt/zimbra" ]; then
     echo "Error - zimbra user exists with incorrect home directory: $ZH"
     echo "Exiting"
