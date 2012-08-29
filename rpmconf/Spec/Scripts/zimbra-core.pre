@@ -15,12 +15,35 @@
 # 
 # Create group, user for zimbra and postfix.
 
-egrep -q '^zimbra:' /etc/group
+grp_exists() {
+  if [ -x /usr/bin/getent ]
+  then
+    getent group $1 2>&1 >/dev/null
+    FOUND=$?
+  else
+    egrep -q "^$1:" /etc/group
+    FOUND=$?
+  fi
+  return $FOUND
+}
+
+acct_exists() {
+  if [ -x /usr/bin/getent ]
+  then
+    getent passwd $1 2>&1 >/dev/null
+    return $?
+  else
+    egrep -q "^$1:" /etc/passwd
+    return $?
+  fi
+}
+
+grp_exists zimbra
 if [ $? != 0 ]; then
 	groupadd zimbra
 fi
 
-egrep -q '^zimbra:' /etc/passwd
+acct_exists zimbra
 if [ $? != 0 ]; then
 	useradd -g zimbra -G tty -d /opt/zimbra -s /bin/bash zimbra
 else

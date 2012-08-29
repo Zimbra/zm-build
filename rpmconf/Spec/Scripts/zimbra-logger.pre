@@ -14,25 +14,49 @@
 # ***** END LICENSE BLOCK *****
 # 
 
+grp_exists() {
+  if [ -x /usr/bin/getent ]
+  then
+    getent group $1 2>&1 >/dev/null
+    FOUND=$?
+  else
+    egrep -q "^$1:" /etc/group
+    FOUND=$?
+  fi
+  return $FOUND
+}
+
+acct_exists() {
+  if [ -x /usr/bin/getent ]
+  then
+    getent passwd $1 2>&1 >/dev/null
+    return $?
+  else
+    egrep -q "^$1:" /etc/passwd
+    return $?
+  fi
+}
+
+
 # Create group, user for zimbra and postfix.
-egrep -q '^zimbra:' /etc/group
+grp_exists zimbra
 if [ $? != 0 ]; then
 	groupadd zimbra
 fi
 
-egrep -q '^postfix:' /etc/group
+grp_exists postfix
 if [ $? != 0 ]; then
 	groupadd postfix
 fi
 
-egrep -q '^zimbra:' /etc/passwd
+acct_exists zimbra
 if [ $? != 0 ]; then
 	useradd -g zimbra -G postfix,tty -d /opt/zimbra -s /bin/bash zimbra
 fi
 
 # Fix incase the account existed but the groups were wrong
 # add adm for mandriva so logger can read the log files
-egrep -q '^adm:' /etc/group
+grp_exists adm
 if [ $? = 0 ]; then
   usermod -g zimbra -G postfix,tty,adm zimbra
 else 
