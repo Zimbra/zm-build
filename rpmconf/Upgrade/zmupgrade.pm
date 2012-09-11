@@ -4840,7 +4840,7 @@ sub migrateTomcatLCKey {
 sub indexLdap {
   if (main::isInstalled ("zimbra-ldap")) {
     stopLdap();
-    main::runAsZimbra ("/opt/zimbra/openldap/sbin/slapindex -b '' -q -F /opt/zimbra/data/ldap/config");
+    main::runAsZimbra ("/opt/zimbra/libexec/zmslapindex");
     if (startLdap()) {return 1;}
   }
   return;
@@ -4850,7 +4850,7 @@ sub indexLdapAttribute {
   my ($key) = @_;
   if (main::isInstalled ("zimbra-ldap")) {
     stopLdap();
-    main::runAsZimbra ("/opt/zimbra/openldap/sbin/slapindex -b '' -q -F /opt/zimbra/data/ldap/config $key");
+    main::runAsZimbra ("/opt/zimbra/libexec/zmslapindex $key");
     if (startLdap()) {return 1;}
   }
   return;
@@ -5088,7 +5088,7 @@ sub upgradeLdap($) {
         `mkdir -p /opt/zimbra/data/ldap/mdb/db`;
         `chown -R zimbra:zimbra /opt/zimbra/data/ldap`;
         my $rc;
-        $rc=main::runAsZimbra("/opt/zimbra/openldap/sbin/slapadd -q -b '' -F /opt/zimbra/data/ldap/config -l $slapoutfile");
+        $rc=main::runAsZimbra("/opt/zimbra/libexec/zmslapadd $slapoutfile");
         if ($rc != 0) {
           main::progress("slapadd import failed.\n");
           return 1;
@@ -5163,7 +5163,7 @@ sub migrateLdap($) {
         `mkdir -p /opt/zimbra/data/ldap/mdb/db`;
         `chown -R zimbra:zimbra /opt/zimbra/data/ldap`;
         my $rc;
-        $rc=main::runAsZimbra("/opt/zimbra/openldap/sbin/slapadd -q -b '' -F /opt/zimbra/data/ldap/config -l $outfile");
+        $rc=main::runAsZimbra("/opt/zimbra/libexec/zmslapadd $outfile");
         if ($rc != 0) {
           main::progress("slapadd import failed.\n");
           return 1;
@@ -5173,7 +5173,7 @@ sub migrateLdap($) {
       } else {
         stopLdap();
         main::progress("Running slapindex...");
-        my $rc = main::runAsZimbra("/opt/zimbra/openldap/sbin/slapindex -q -b '' -F /opt/zimbra/data/ldap/config");
+        my $rc = main::runAsZimbra("/opt/zimbra/libexec/zmslapindex");
         main::progress(($rc == 0) ? "done.\n" : "failed.\n");
       }
       main::configLog("LdapUpgraded$migrateVersion");
