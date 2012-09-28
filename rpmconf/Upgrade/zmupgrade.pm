@@ -670,7 +670,7 @@ sub upgrade {
     if($startMajor < 6 && $targetMajor >= 6) {
       my $rc=&migrateLdap("8.0.0_BETA3");
       if ($rc) { return 1; }
-    } elsif($targetMajor >= 8) {
+    } elsif($startMajor < 8) {
       my $rc=&upgradeLdap("8.0.0_BETA3");
       if ($rc) { return 1; }
     }
