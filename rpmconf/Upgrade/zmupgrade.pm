@@ -4318,6 +4318,70 @@ sub upgrade800GA {
 sub upgrade801GA {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
   main::progress("Updating from 8.0.1_GA\n");
+  if (main::isInstalled("zimbra-ldap")) {
+    my $ldap_pass = `$su "zmlocalconfig -s -m nokey ldap_root_password"`;
+    chomp($ldap_pass);
+    my $ldap;
+    unless($ldap = Net::LDAP->new('ldapi://%2fopt%2fzimbra%2fopenldap%2fvar%2frun%2fldapi/')) {
+       main::progress("Unable to contact to ldapi: $!\n");
+    }
+    my $result = $ldap->bind("cn=config", password => $ldap_pass);
+    my $dn="olcDatabase={2}mdb,cn=config";
+    my $alog=0;
+    if ($isLdapMaster) {
+      $result = $ldap->search(
+                        base=> "cn=accesslog",
+                        filter=>"(objectClass=*)",
+                        scope => "base",
+                        attrs => ['1.1'],
+      );
+      my $size = $result->count;
+      if ($size > 0 ) {
+        $dn="olcDatabase={3}mdb,cn=config";
+        $alog=1;
+      }
+    }
+    $result = $ldap->search(
+      base=> "$dn",
+      filter=>"(objectClass=*)",
+      scope => "base",
+      attrs => ['olcDbEnvFlags'],
+    );
+    my $entry=$result->entry($result->count-1);
+    my @attrvals=$entry->get_value("olcDbEnvFlags");
+
+    if (!defined(@attrvals)) {
+      $result = $ldap->modify(
+          $dn,
+          add =>{olcDbEnvFlags=>["writemap","nometasync"]},
+      );
+    }
+    if ($isLdapMaster && $alog == 1) {
+      $result = $ldap->search(
+        base=> "olcDatabase={2}mdb,cn=config",
+        filter=>"(objectClass=*)",
+        scope => "base",
+        attrs => ['olcDbEnvFlags'],
+      );
+      my $entry=$result->entry($result->count-1);
+      my @attrvals=$entry->get_value("olcDbEnvFlags");
+  
+      if (!defined(@attrvals)) {
+        $result = $ldap->modify(
+            "olcDatabase={2}mdb,cn=config",
+            add =>{olcDbEnvFlags=>["writemap","nometasync"]},
+        );
+      }
+    }
+    if ($isLdapMaster) {
+      $result = $ldap->modify(
+        "uid=zmpostfix,cn=appaccts,cn=zimbra",
+        replace => {
+          zimbraId => "a8255e5f-142b-4aa0-8aab-f8591b6455ba",
+        }
+      );
+    }
+  }
   return 0;
 }
 
@@ -4865,7 +4929,6 @@ sub upgradeLdap($) {
       unlink("/opt/zimbra/data/ldap/config/cn\=config/cn\=schema/cn\=\{4\}amavisd.ldif");
       my $ldifFile="/opt/zimbra/data/ldap/ldap.bak";
       if (-f $ldifFile && -s $ldifFile) {
-        my $postfix_id_fix=0;
         chmod 0644, $ldifFile;
         my $slapinfile = "$ldifFile";
         my $slapoutfile = "/opt/zimbra/data/ldap/ldap.80";
@@ -4876,14 +4939,6 @@ sub upgradeLdap($) {
           if ($_ =~ /^zimbraPrefStandardClientAccessilbityMode:/) {next;}
           if ($_ =~ /^objectClass: zimbraHsmGlobalConfig/) {next;}
           if ($_ =~ /^objectClass: zimbraHsmServer/) {next;}
-          if ($_ =~ /^uid=zmpostfix,cn=appaccts,cn=zimbra/) {
-            $postfix_id_fix=1;
-          }
-          if ($postfix_id_fix == 1 && $_ =~ /^zimbraId: DA336C18-4F5E-11DC-8514-DCA8E67A905E/) {
-            $postfix_id_fix=0;
-            print OUT "zimbraId: a8255e5f-142b-4aa0-8aab-f8591b6455ba\n";
-            next;
-          }
           if ($_ =~ /^objectClass: organizationalPerson/) {
             print OUT $_;
             print OUT "objectClass: inetOrgPerson\n";
@@ -4967,6 +5022,12 @@ sub upgradeLdap($) {
               print OUT "olcDbMaxsize: 85899345920\n";
               next;
             }
+            if ($_ =~ /^olcDbCheckpoint:/) {
+              print OUT $_;
+              print OUT "olcDbEnvFlags: writemap\n";
+              print OUT "olcDbEnvFlags: nometasync\n";
+              next;
+            }
             if ($_ =~ /olcDbNoSync:/) {
               print OUT "olcDbNoSync: TRUE\n";
               next;
@@ -5031,6 +5092,12 @@ sub upgradeLdap($) {
             if ($_ =~ /^olcDbMode:/) {
               print OUT $_;
               print OUT "olcDbMaxsize: 85899345920\n";
+              next;
+            }
+            if ($_ =~ /^olcDbCheckpoint:/) {
+              print OUT $_;
+              print OUT "olcDbEnvFlags: writemap\n";
+              print OUT "olcDbEnvFlags: nometasync\n";
               next;
             }
             if ($_ =~ /olcDbNoSync:/) {
@@ -5114,7 +5181,6 @@ sub migrateLdap($) {
   my ($migrateVersion) = @_;
   if (main::isInstalled ("zimbra-ldap")) {
     if($main::migratedStatus{"LdapUpgraded$migrateVersion"} ne "CONFIGURED") {
-      my $postfix_id_fix=0;
       if (-f "/opt/zimbra/data/ldap/ldap.bak") {
         my $infile = "/opt/zimbra/data/ldap/ldap.bak";
         my $outfile = "/opt/zimbra/data/ldap/ldap.80";
@@ -5125,14 +5191,6 @@ sub migrateLdap($) {
             if ($_ =~ /^zimbraPrefStandardClientAccessilbityMode:/) {next;}
             if ($_ =~ /^objectClass: zimbraHsmGlobalConfig/) {next;}
             if ($_ =~ /^objectClass: zimbraHsmServer/) {next;}
-            if ($_ =~ /^uid=zmpostfix,cn=appaccts,cn=zimbra/) {
-              $postfix_id_fix=1;
-            }
-            if ($postfix_id_fix == 1 && $_ =~ /^zimbraId: DA336C18-4F5E-11DC-8514-DCA8E67A905E/) {
-              $postfix_id_fix=0;
-              print OUT "zimbraId: a8255e5f-142b-4aa0-8aab-f8591b6455ba\n";
-              next;
-            }
             if ($_ =~ /^objectClass: organizationalPerson/) {
               print OUT $_;
               print OUT "objectClass: inetOrgPerson\n";
