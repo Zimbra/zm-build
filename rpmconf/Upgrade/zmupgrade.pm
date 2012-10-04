@@ -427,7 +427,7 @@ sub upgrade {
 
     $curSchemaVersion = Migrate::getSchemaVersion();
   }
-
+ 
   if ($startVersion eq "3.0.0_GA") {
     main::progress("This appears to be 3.0.0_GA\n");
   } elsif ($startVersion eq "3.0.1_GA") {
@@ -4387,6 +4387,11 @@ sub upgrade801GA {
       );
     }
   }
+
+  if (main::isInstalled("zimbra-mta")) {
+    doAntiSpamMysql55Upgrade();
+  }
+
   return 0;
 }
 
@@ -4832,6 +4837,16 @@ sub doMysql55Upgrade {
     my $zimbra_log_directory = main::getLocalConfig("zimbra_log_directory") || "${zimbra_home}/log"; 
     main::runAsZimbra("${zimbra_home}/libexec/zminiutil --backup=.pre-${targetVersion} --section=mysqld --unset --key=ignore-builtin-innodb ${mysql_mycnf}");
     main::runAsZimbra("${zimbra_home}/libexec/zminiutil --backup=.pre-${targetVersion} --section=mysqld --unset --key=plugin-load ${mysql_mycnf}");
+}
+
+sub doAntiSpamMysql55Upgrade {
+    my $zimbra_home = main::getLocalConfig("zimbra_home") || "/opt/zimbra";
+    my $antispam_mysql_mycnf = main::getLocalConfig("antispam_mysql_mycnf"); 
+    my $zimbra_log_directory = main::getLocalConfig("zimbra_log_directory") || "${zimbra_home}/log"; 
+    if ( -e ${antispam_mysql_mycnf} ) {
+        main::runAsZimbra("${zimbra_home}/libexec/zminiutil --backup=.pre-${targetVersion} --section=mysqld --unset --key=ignore-builtin-innodb ${antispam_mysql_mycnf}");
+        main::runAsZimbra("${zimbra_home}/libexec/zminiutil --backup=.pre-${targetVersion} --section=mysqld --unset --key=plugin-load ${antispam_mysql_mycnf}");
+    }
 }
 
 sub doMysqlUpgrade {
