@@ -17,7 +17,7 @@
 SAVEDIR=/opt/zimbra/.saveconfig
 PLAT=$(/opt/zimbra/libexec/get_plat_tag.sh)
 OS_ARCH=powerpc
-MYSQL_VERSION=5.5.24
+MYSQL_VERSION=5.5.28
 
 if [ "x$PLAT" = "xMACOSXx86_10.5" -o "x$PLAT" = "xMACOSXx86_10.6" -o "x$PLAT" = "xMACOSXx86_10.7" ]; then
   SU="su - zimbra -c -l"
@@ -68,7 +68,7 @@ rm -f /opt/zimbra/openldap
 ln -s /opt/zimbra/openldap-2.4.33.2z /opt/zimbra/openldap
 
 rm -f /opt/zimbra/tcmalloc
-ln -s /opt/zimbra/tcmalloc-1.8.3 /opt/zimbra/tcmalloc
+ln -s /opt/zimbra/tcmalloc-2.0 /opt/zimbra/tcmalloc
 
 rm -f /opt/zimbra/rsync
 ln -s /opt/zimbra/rsync-3.0.9 /opt/zimbra/rsync
