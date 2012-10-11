@@ -674,6 +674,9 @@ sub upgrade {
     } elsif($startMajor < 8) {
       my $rc=&upgradeLdap("8.0.0_BETA3");
       if ($rc) { return 1; }
+    } elsif ($startVersion eq "8.0.0_GA") {
+      my $rc=&reloadLdap("8.0.0_GA");
+      if ($rc) { return 1; }
     }
     if (startLdap()) {return 1;} 
   }
@@ -4362,13 +4365,21 @@ sub upgrade801GA {
         );
       }
     }
+    $ldap->unbind;
+    stopLdap();
+    startLdap();
     if ($isLdapMaster) {
+      unless($ldap = Net::LDAP->new('ldapi://%2fopt%2fzimbra%2fopenldap%2fvar%2frun%2fldapi/')) {
+         main::progress("Unable to contact to ldapi: $!\n");
+      }
+      my $result = $ldap->bind("cn=config", password => $ldap_pass);
       $result = $ldap->modify(
         "uid=zmpostfix,cn=appaccts,cn=zimbra",
         replace => {
           zimbraId => "a8255e5f-142b-4aa0-8aab-f8591b6455ba",
         }
       );
+      $ldap->unbind;
     }
   }
 
@@ -4929,6 +4940,53 @@ sub indexLdapAttribute {
     if (startLdap()) {return 1;}
   }
   return;
+}
+
+sub reloadLdap($) {
+  my ($upgradeVersion) = @_;
+  if (main::isInstalled ("zimbra-ldap")) {
+    if($main::migratedStatus{"LdapReloaded$upgradeVersion"} ne "CONFIGURED") {
+      my $ldifFile="/opt/zimbra/data/ldap/ldap.bak";
+      if (-f $ldifFile && -s $ldifFile) {
+        if (-d "/opt/zimbra/data/ldap/accesslog") { 
+          main::progress("Creating new accesslog DB..."); 
+          if (-d "/opt/zimbra/data/ldap/accesslog.prev") {
+            `mv /opt/zimbra/data/ldap/accesslog.prev /opt/zimbra/data/ldap/accesslog.prev.$$`;
+          }
+          `mv /opt/zimbra/data/ldap/accesslog /opt/zimbra/data/ldap/accesslog.prev`;
+          `mkdir -p /opt/zimbra/data/ldap/accesslog/db`;
+          `chown -R zimbra:zimbra /opt/zimbra/data/ldap`;
+          main::progress("done.\n");
+        }
+
+        main::progress("Loading database..."); 
+        if (-d "/opt/zimbra/data/ldap/mdb.prev") {
+          `mv /opt/zimbra/data/ldap/mdb.prev /opt/zimbra/data/ldap/mdb.prev.$$`;
+        }
+        `mv /opt/zimbra/data/ldap/mdb /opt/zimbra/data/ldap/mdb.prev`;
+        `mkdir -p /opt/zimbra/data/ldap/mdb/db`;
+        `chown -R zimbra:zimbra /opt/zimbra/data/ldap`;
+        my $rc;
+        $rc=main::runAsZimbra("/opt/zimbra/libexec/zmslapadd $ldifFile");
+        if ($rc != 0) {
+          main::progress("slapadd import failed.\n");
+          return 1;
+        }
+	chmod 0640, $ldifFile;
+        main::progress("done.\n");
+      } else {
+        if (! -f $ldifFile) {
+          main::progress("Error: Unable to find /opt/zimbra/data/ldap/ldap.bak\n");
+        } else {
+          main::progress("Error: /opt/zimbra/data/ldap/ldap.bak is empty\n");
+        }
+        return 1;
+      }
+      main::configLog("LdapUpgraded$upgradeVersion");
+    }
+    if (startLdap()) {return 1;} 
+  }
+  return 0;
 }
 
 sub upgradeLdap($) {
