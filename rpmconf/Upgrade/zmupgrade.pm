@@ -4266,18 +4266,6 @@ sub upgrade800BETA4 {
     }
     main::runAsZimbra("perl -I${scriptDir} ${scriptDir}/migrate20120507-UniqueDKIMSelector.pl");
   }
-  if (main::isInstalled("zimbra-mta")) {
-    my $mtamilter = main::getLdapServerValue("zimbraMtaSmtpdMilters");
-    my $miltervalue="inet:localhost:8465";
-    if ($mtamilter ne "")  {
-      if ($mtamilter !~ /$miltervalue/) {
-        $mtamilter = "$miltervalue $mtamilter";
-        main::setLdapServerConfig("zimbraMtaSmtpdMilters", "$mtamilter");
-      }
-    } else {
-      main::setLdapServerConfig("zimbraMtaSmtpdMilters", "$miltervalue");
-    }
-  }
   if (main::isInstalled("zimbra-proxy")) {
     # bug 32683
     main::setLdapGlobalConfig("zimbraReverseProxySSLToUpstreamEnabled", "FALSE");
@@ -4386,8 +4374,15 @@ sub upgrade801GA {
 
   if (main::isInstalled("zimbra-mta")) {
     doAntiSpamMysql55Upgrade();
+    my $mtamilter = main::getLdapServerValue("zimbraMtaSmtpdMilters");
+    my $miltervalue="inet:localhost:8465";
+    if ($mtamilter ne "")  {
+      if ($mtamilter =~ /$miltervalue/) {
+        $mtamilter =~ s/$miltervalue//;
+        main::setLdapServerConfig("zimbraMtaSmtpdMilters", "$mtamilter");
+      }
+    }
   }
-
   return 0;
 }
 
