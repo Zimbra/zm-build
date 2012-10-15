@@ -4366,8 +4366,6 @@ sub upgrade801GA {
       }
     }
     $ldap->unbind;
-    stopLdap();
-    startLdap();
     if ($isLdapMaster) {
       unless($ldap = Net::LDAP->new('ldapi://%2fopt%2fzimbra%2fopenldap%2fvar%2frun%2fldapi/')) {
          main::progress("Unable to contact to ldapi: $!\n");
