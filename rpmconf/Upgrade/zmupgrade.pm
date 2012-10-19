@@ -248,6 +248,7 @@ my %updateFuncs = (
   "8.0.0_BETA5" => \&upgrade800BETA5,
   "8.0.0_GA" => \&upgrade800GA,
   "8.0.1_GA" => \&upgrade801GA,
+  "8.0.2_GA" => \&upgrade802GA,
   "9.0.0_BETA1" => \&upgrade900BETA1,
 );
 
@@ -364,6 +365,7 @@ my @versionOrder = (
   "8.0.0_BETA5",
   "8.0.0_GA",
   "8.0.1_GA",
+  "8.0.2_GA",
   "9.0.0_BETA1",
 );
 
@@ -652,6 +654,8 @@ sub upgrade {
     main::progress("This appears to be 8.0.0_GA\n");
   } elsif ($startVersion eq "8.0.1_GA") {
     main::progress("This appears to be 8.0.1_GA\n");
+  } elsif ($startVersion eq "8.0.2_GA") {
+    main::progress("This appears to be 8.0.2_GA\n");
   } elsif ($startVersion eq "9.0.0_BETA1") {
     main::progress("This appears to be 9.0.0_BETA1\n");
   } else {
@@ -4371,7 +4375,18 @@ sub upgrade801GA {
       }
     }
     $ldap->unbind;
+  }
+  return 0;
+}
+
+sub upgrade802GA {
+  my ($startBuild, $targetVersion, $targetBuild) = (@_);
+  main::progress("Updating from 8.0.2_GA\n");
+  if (main::isInstalled("zimbra-ldap")) {
     if ($isLdapMaster) {
+      my $ldap_pass = `$su "zmlocalconfig -s -m nokey ldap_root_password"`;
+      chomp($ldap_pass);
+      my $ldap;
       unless($ldap = Net::LDAP->new('ldapi://%2fopt%2fzimbra%2fopenldap%2fvar%2frun%2fldapi/')) {
          main::progress("Unable to contact to ldapi: $!\n");
       }
@@ -4399,7 +4414,6 @@ sub upgrade801GA {
   }
   return 0;
 }
-
 sub upgrade900BETA1 {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
   main::progress("Updating from 9.0.0_BETA1\n");
