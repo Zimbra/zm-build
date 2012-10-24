@@ -3240,6 +3240,10 @@ sub isZCS {
   return((grep(/\b\w+-store\b/,@packageList)) ? 1 : 0);
 }
 
+sub isZCA {
+  return (glob("/opt/vmware-zca-installer/conf/optConfig/*-user") ? 0 : 1);
+}
+
 sub isFoss {
   return((-f "/opt/zimbra/bin/zmbackup") ? 0 : 1);
 }
