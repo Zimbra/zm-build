@@ -234,6 +234,12 @@ $(ZIMLET_DIR)/build/dist/zimlets/nofile:
 		-Dzimbra.buildinfo.version=$(SOURCE_TAG) \
 		-Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) \
 		-Dzimbra.buildinfo.host=$(HOST) package-zimlet ; )
+	(cd $(ADMIN_EXT_DIR); $(ANT) $(ANT_DEBUG) \
+		-Dzimbra.buildinfo.platform=$(BUILD_PLATFORM) \
+		-Dext.dir=com_zimbra_viewmail -Dext.name=com_zimbra_viewmail \
+		-Dzimbra.buildinfo.version=$(SOURCE_TAG) \
+		-Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) \
+		-Dzimbra.buildinfo.host=$(HOST) package-zimlet ; )
 	(cd $(ADMIN_EXT_DIR); $(ANT) $(ANT_DEBUG)\
 		-Dzimbra.buildinfo.platform=$(BUILD_PLATFORM) \
 		-Dext.dir=HelpTooltip -Dext.name=com_zimbra_tooltip \
