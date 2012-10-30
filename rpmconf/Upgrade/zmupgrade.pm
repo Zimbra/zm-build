@@ -4361,7 +4361,7 @@ sub upgrade801GA {
     my $entry=$result->entry($result->count-1);
     my @attrvals=$entry->get_value("olcDbEnvFlags");
 
-    if (!defined(@attrvals)) {
+    if (!(@attrvals)) {
       $result = $ldap->modify(
           $dn,
           add =>{olcDbEnvFlags=>["writemap","nometasync"]},
@@ -4377,7 +4377,7 @@ sub upgrade801GA {
       my $entry=$result->entry($result->count-1);
       my @attrvals=$entry->get_value("olcDbEnvFlags");
   
-      if (!defined(@attrvals)) {
+      if (!(@attrvals)) {
         $result = $ldap->modify(
             "olcDatabase={2}mdb,cn=config",
             add =>{olcDbEnvFlags=>["writemap","nometasync"]},
