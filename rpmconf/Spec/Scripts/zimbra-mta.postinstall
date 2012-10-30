@@ -32,8 +32,8 @@ if [ -d /opt/zimbra/libmemcached-1.0.6 ]; then
 fi
 
 rm -f /opt/zimbra/opendkim
-if [ -d /opt/zimbra/opendkim-2.7.0 ]; then
-  ln -s /opt/zimbra/opendkim-2.7.0 /opt/zimbra/opendkim
+if [ -d /opt/zimbra/opendkim-2.7.1 ]; then
+  ln -s /opt/zimbra/opendkim-2.7.1 /opt/zimbra/opendkim
 fi
 
 rm -f /opt/zimbra/zeromq
