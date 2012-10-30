@@ -275,7 +275,8 @@ $(CORE_DEST_DIR)/conf: $(WEBAPP_DIR)/service.war
 	cp $(SERVICE_DIR)/conf/zimbra.ld.conf $@
 	mkdir -p $@/zmconfigd
 	cp $(SERVICE_DIR)/conf/zmconfigd/postfix_content_filter.cf $@/zmconfigd/postfix_content_filter.cf
-	cp $(SERVICE_DIR)/conf/zmconfigd/postfix_recipient_restrictions.cf $@/zmconfigd/postfix_recipient_restrictions.cf
+	cp $(SERVICE_DIR)/conf/zmconfigd/smtpd_recipient_restrictions.cf $@/zmconfigd/smtpd_recipient_restrictions.cf
+	cp $(SERVICE_DIR)/conf/zmconfigd/smtpd_relay_restrictions.cf $@/zmconfigd/smtpd_relay_restrictions.cf
 	cp $(SERVICE_DIR)/conf/zmconfigd/smtpd_end_of_data_restrictions.cf $@/zmconfigd/smtpd_end_of_data_restrictions.cf
 	cp $(SERVICE_DIR)/conf/zmconfigd/smtpd_sender_restrictions.cf $@/zmconfigd/smtpd_sender_restrictions.cf
 	cp -Rf $(SERVICE_DIR)/conf/externaldirsync $@/externaldirsync
