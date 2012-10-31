@@ -5039,6 +5039,9 @@ sub upgradeLdap($) {
         open(IN,"<$slapinfile");
         open(OUT,">$slapoutfile");
         while(<IN>) {
+          if ($_ =~ /^zimbraChildAccount:/) {next;}
+          if ($_ =~ /^zimbraChildVisibleAccount:/) {next;}
+          if ($_ =~ /^zimbraPrefChildVisibleAccount:/) {next;}
           if ($_ =~ /^zimbraPrefStandardClientAccessilbityMode:/) {next;}
           if ($_ =~ /^objectClass: zimbraHsmGlobalConfig/) {next;}
           if ($_ =~ /^objectClass: zimbraHsmServer/) {next;}
@@ -5291,6 +5294,9 @@ sub migrateLdap($) {
           open(IN,"<$infile");
           open(OUT,">$outfile");
           while(<IN>) {
+            if ($_ =~ /^zimbraChildAccount:/) {next;}
+            if ($_ =~ /^zimbraChildVisibleAccount:/) {next;}
+            if ($_ =~ /^zimbraPrefChildVisibleAccount:/) {next;}
             if ($_ =~ /^zimbraPrefStandardClientAccessilbityMode:/) {next;}
             if ($_ =~ /^objectClass: zimbraHsmGlobalConfig/) {next;}
             if ($_ =~ /^objectClass: zimbraHsmServer/) {next;}
