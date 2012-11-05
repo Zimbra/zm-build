@@ -25,9 +25,9 @@ perlcode 0 sub dosnmp {   my %args = (@_); print "SNMP notification: $args{MESSA
 
 ignore /DEBUG/
 
-watchfor /err: Service status change: (\S+) (.*) changed from stopped to running/
+watchfor /: Service status change: (\S+) (.*) changed from stopped to running/
 	donotify SERVICE=$2,STATUS=started,HOST=$1
-watchfor /err: Service status change: (\S+) (.*) changed from running to stopped/
+watchfor /: Service status change: (\S+) (.*) changed from running to stopped/
 	donotify SERVICE=$2,STATUS=stopped,HOST=$1
 
 watchfor /err: Disk warning: (\S+) (\S+) on device (\S+) at (\d+)/ 
