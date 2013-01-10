@@ -4296,9 +4296,9 @@ sub upgrade800BETA4 {
     }
     $ldap->unbind;
 
-    my $toolthreads = main::getLocalConfig("ldap_tool_threads");
+    my $toolthreads = main::getLocalConfig("ldap_common_toolthreads");
     if ($toolthreads == 1) {
-       main::setLocalConfig("ldap_tool_threads", "2");
+       main::setLocalConfig("ldap_common_toolthreads", "2");
     }
     main::runAsZimbra("perl -I${scriptDir} ${scriptDir}/migrate20120507-UniqueDKIMSelector.pl");
   }
@@ -4442,6 +4442,9 @@ sub upgrade802GA {
 sub upgrade803GA {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
   main::progress("Updating from 8.0.3_GA\n");
+  if (main::isInstalled("zimbra-ldap")) {
+     main::setLocalConfig("ldap_common_toolthreads", "2");
+  }
   return 0;
 }
 
@@ -5108,6 +5111,22 @@ sub upgradeLdap($) {
           while(<IN>) {
             if ($_ =~ /^olcModuleLoad: \{0\}back_hdb.la/) {
               print OUT "olcModuleLoad: {0}back_mdb.la\n";
+              next;
+            }
+            print OUT $_;
+          }
+          close(OUT);
+          close(IN);
+          `mv $outfile $infile`;
+        }
+        if (-f '/opt/zimbra/data/ldap/config/cn=config.ldif') {
+          $infile="/opt/zimbra/data/ldap/config/cn\=config.ldif";
+          $outfile="/tmp/config.ldif.$$";
+          open(IN,"<$infile");
+          open(OUT,">$outfile");
+          while(<IN>) {
+            if ($_ =~ /^olcToolThreads: /) {
+              print OUT "olcToolThreads: 2\n";
               next;
             }
             print OUT $_;
