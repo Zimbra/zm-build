@@ -183,6 +183,12 @@ $(MTA_DEST_DIR)/$(DSPAM_DIR)-$(DSPAM_VERSION): $(MTA_DEST_DIR)
 $(MTA_MYSQL_DEST_DIR)/$(MYSQL_DIR): $(MTA_MYSQL_DEST_DIR)
 	@echo "*** Creating mysql"
 	(cd $(MTA_MYSQL_DEST_DIR); tar xzf $(MYSQL_SOURCE).tar.gz;)
+	rm -f $(MTA_MYSQL_DEST_DIR)/$(MYSQL_DIR)/bin/mysqltest_embedded
+	rm -f $(MTA_MYSQL_DEST_DIR)/$(MYSQL_DIR)/bin/mysql_client_test_embedded
+	rm -rf $(MTA_MYSQL_DEST_DIR)/$(MYSQL_DIR)/mysql-test
+	rm -rf $(MTA_MYSQL_DEST_DIR)/$(MYSQL_DIR)/sql-bench
+	rm -rf $(MTA_MYSQL_DEST_DIR)/$(MYSQL_DIR)/docs/mysql.info
+	rm -rf $(MTA_MYSQL_DEST_DIR)/$(MYSQL_DIR)/docs/manual.txt
 
 $(MTA_DEST_DIR)/data/amavisd/mysql/antispamdb.sql: $(MTA_DEST_DIR)/data/amavisd/mysql
 	cp -f $(SERVICE_DIR)/conf/amavisd/mysql/antispamdb.sql $(MTA_DEST_DIR)/data/amavisd/mysql/antispamdb.sql
