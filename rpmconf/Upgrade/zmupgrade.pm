@@ -4445,6 +4445,14 @@ sub upgrade803GA {
   if (main::isInstalled("zimbra-ldap")) {
      main::setLocalConfig("ldap_common_toolthreads", "2");
   }
+  if (main::isInstalled("zimbra-store")) {
+    my $mailboxd_java_options=main::getLocalConfig("mailboxd_java_options");
+    if ($mailboxd_java_options =~ /-XX:MaxPermSize=128m/) {
+      $mailboxd_java_options =~ s/-XX:MaxPermSize=128m/-XX:MaxPermSize=350m/;
+      main::detail("Modified mailboxd_java_options=$mailboxd_java_options");
+      main::setLocalConfig("mailboxd_java_options", $mailboxd_java_options)
+    }
+  }
   return 0;
 }
 
