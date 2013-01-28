@@ -695,8 +695,8 @@ sub upgrade {
     } elsif($startMajor < 8) {
       my $rc=&upgradeLdap("8.0.0_BETA3");
       if ($rc) { return 1; }
-    } elsif ($startVersion eq "8.0.0_GA") {
-      my $rc=&reloadLdap("8.0.0_GA");
+    } elsif ($startMajor == 8 && $startMinor == 0 && $startMicro < 3) {
+      my $rc=&reloadLdap("8.0.3_GA");
       if ($rc) { return 1; }
     }
     if (startLdap()) {return 1;} 
