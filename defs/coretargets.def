@@ -10,7 +10,7 @@ core: $(PACKAGE_DIR) core_stage core_pkg_spec_$(PACKAGE_EXT)
 core_pkg_spec_ccs:
 
 core_pkg_spec_pkg: $(BUILD_ROOT)/resources/zimbra-core $(BUILD_ROOT)/zimbra-core.Info.plist $(BUILD_ROOT)/zimbra-core.Description.plist
-	rm -rf $(CORE_DEST_DIR)/$(JAVA_FILE)$(JAVA_VERSION)
+	rm -rf $(CORE_DEST_DIR)/$(JAVA_FILE)-$(JAVA_VERSION)
 
 $(BUILD_ROOT)/zimbra-core.Description.plist:
 	cat $(PACKAGE_CONF_DIR)/Spec/zimbra-core.Description.plist | \
@@ -95,7 +95,7 @@ $(BUILD_ROOT)/zimbra-core.spec:
 		$(BUILD_ROOT)/zimbra-core.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/db" >> \
 		$(BUILD_ROOT)/zimbra-core.spec
-	echo "%attr(-, root, root) /opt/zimbra/jdk$(JAVA_VERSION)" >> \
+	echo "%attr(-, root, root) /opt/zimbra/jdk-$(JAVA_VERSION)" >> \
 		$(BUILD_ROOT)/zimbra-core.spec
 	echo "%attr(-, root, root) /opt/zimbra/lib" >> \
 		$(BUILD_ROOT)/zimbra-core.spec
@@ -220,7 +220,7 @@ $(NATIVE_DIR)/build/libzimbra-native.$(JNI_EXT):
 $(LAUNCHER_DIR)/build/zmmailboxdmgr:
 	(cd $(LAUNCHER_DIR); make JAVA_BINARY=$(JAVA_BINARY))
 
-$(CORE_DEST_DIR)/jdk$(JAVA_VERSION):
+$(CORE_DEST_DIR)/jdk-$(JAVA_VERSION):
 	@echo "*** Creating java"
 	(cd $(CORE_DEST_DIR); tar xzf $(JAVA_SOURCE).tgz;)
 	rm -rf $@/jre/lsrc.zip
