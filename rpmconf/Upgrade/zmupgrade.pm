@@ -4453,6 +4453,7 @@ sub upgrade803GA {
       main::setLocalConfig("mailboxd_java_options", $mailboxd_java_options)
     }
   }
+  main::deleteLocalConfig("zimbra_dos_filter_max_requests_per_sec");
   return 0;
 }
 
