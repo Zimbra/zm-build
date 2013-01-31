@@ -727,6 +727,12 @@ sub upgrade {
       if (runSchemaUpgrade ($curSchemaVersion)) { return 1; }
       $curSchemaVersion = Migrate::getSchemaVersion();
     }
+     if ( $startMajor = 7 && $targetMajor >= 8) {
+       # Bug #78297
+       my $zimbra_home = main::getLocalConfig("zimbra_home") || "/opt/zimbra";
+       my $imap_cache_data_files = $zimbra_home . "/data/mailboxd/imap-*";
+       system("/bin/rm -f ${imap_cache_data_files} 2> /dev/null");
+     }
     stopSql();
   }
 
