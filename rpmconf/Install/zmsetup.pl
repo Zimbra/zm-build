@@ -5585,6 +5585,7 @@ sub configSetServicePorts {
     "zimbraMailSSLProxyPort", $config{HTTPSPROXYPORT},
     "zimbraMailMode", $config{MODE}
     );
+  setLocalConfig("zimbra_mail_service_port", $config{HTTPPORT}); 
 
   progress ( "done.\n" );
   configLog("configSetServicePorts");
