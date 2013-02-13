@@ -305,7 +305,7 @@ $(SAMBA_EXT_DIR)/build/zimlet/zimbra_samba.zip:
 		-Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) \
 		-Dzimbra.buildinfo.host=$(HOST) package-zimlet ; )
 
-$(STORE_DEST_DIR)/extensions-extra: $(STORE_DEST_DIR)/extensions-extra/oauth
+$(STORE_DEST_DIR)/extensions-extra: $(STORE_DEST_DIR)/extensions-extra/oauth $(STORE_DEST_DIR)/extensions-extra/openidconsumer
 	mkdir -p $@
 
 $(STORE_DEST_DIR)/extensions-extra/oauth: $(OAUTH_EXT_DIR)/build/jars/sampleoauthprov.jar
@@ -317,6 +317,20 @@ $(STORE_DEST_DIR)/extensions-extra/oauth: $(OAUTH_EXT_DIR)/build/jars/sampleoaut
 
 $(OAUTH_EXT_DIR)/build/jars/sampleoauthprov.jar:
 	(cd $(OAUTH_EXT_DIR); $(ANT) $(ANT_DEBUG) \
+		-Dzimbra.buildinfo.platform=$(BUILD_PLATFORM) \
+		-Dzimbra.buildinfo.version=$(SOURCE_TAG) \
+		-Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) \
+		-Dzimbra.buildinfo.host=$(HOST) package ; )
+
+$(STORE_DEST_DIR)/extensions-extra/openidconsumer: $(OPENID_EXT_DIR)/build/jars/openidconsumer.jar
+	mkdir -p $@
+	cp $(OPENID_EXT_DIR)/build/jars/openidconsumer.jar $@
+	cp $(OPENID_EXT_DIR)/jars/openid4java-0.9.5.jar $@
+	cp $(OPENID_EXT_DIR)/formredirection.jsp $@
+	cp $(OPENID_EXT_DIR)/README.txt $@
+
+$(OPENID_EXT_DIR)/build/jars/openidconsumer.jar:
+	(cd $(OPENID_EXT_DIR); $(ANT) $(ANT_DEBUG) \
 		-Dzimbra.buildinfo.platform=$(BUILD_PLATFORM) \
 		-Dzimbra.buildinfo.version=$(SOURCE_TAG) \
 		-Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) \
