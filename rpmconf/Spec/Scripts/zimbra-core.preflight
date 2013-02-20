@@ -168,7 +168,12 @@ if [ -f "/opt/zimbra/bin/zmcontrol" ]; then
 fi
 
 rm -f /opt/zimbra/.enable_replica
-if [ -f /opt/zimbra/conf/slapd.conf ]; then
+
+if [ -f /opt/zimbra/data/ldap/config/cn\=config.ldif ]; then
+  if [ -f /opt/zimbra/data/ldap/config/cn\=config/olcDatabase\=\{2\}mdb/olcOverlay\=\{0\}syncprov.ldif ]; then
+    touch /opt/zimbra/.enable_replica
+  fi
+elif [ -f /opt/zimbra/conf/slapd.conf ]; then
   egrep -q '^overlay syncprov' /opt/zimbra/conf/slapd.conf > /dev/null
   if [ $? = 0 ]; then
     touch /opt/zimbra/.enable_replica
@@ -177,12 +182,6 @@ if [ -f /opt/zimbra/conf/slapd.conf ]; then
     if [ $? = 0 ]; then
       touch /opt/zimbra/.enable_replica
     fi
-  fi
-fi
-
-if [ -f /opt/zimbra/data/ldap/config/cn\=config.ldif ]; then
-  if [ -f /opt/zimbra/data/ldap/config/cn\=config/olcDatabase\=\{2\}mdb/olcOverlay\=\{0\}syncprov.ldif ]; then
-    touch /opt/zimbra/.enable_replica
   fi
 fi
 

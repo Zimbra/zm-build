@@ -213,47 +213,63 @@ $(STORE_DEST_DIR)/conf/templates:
 $(ZIMLET_DIR)/build/dist/zimlets/nofile:
 	(cd $(ZIMLET_DIR); $(ANT) $(ANT_DEBUG) \
 		-Dzimbra.buildinfo.platform=$(BUILD_PLATFORM) \
+		-Dis-production=1 \
 		-Dzimbra.buildinfo.version=$(SOURCE_TAG) \
+		-Dzimbra.buildinfo.type=$(BUILD_TYPE) \
 		-Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) \
 		-Dzimbra.buildinfo.host=$(HOST) package-zimlets ; )
 	(cd $(ADMIN_EXT_DIR); $(ANT) $(ANT_DEBUG)\
 		-Dzimbra.buildinfo.platform=$(BUILD_PLATFORM) \
 		-Dext.dir=CertificateMgr -Dext.name=com_zimbra_cert_manager \
+		-Dis-production=1 \
 		-Dzimbra.buildinfo.version=$(SOURCE_TAG) \
+		-Dzimbra.buildinfo.type=$(BUILD_TYPE) \
 		-Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) \
 		-Dzimbra.buildinfo.host=$(HOST) package-zimlet ; )
 	(cd $(ADMIN_EXT_DIR); $(ANT) $(ANT_DEBUG)\
 		-Dzimbra.buildinfo.platform=$(BUILD_PLATFORM) \
 		-Dext.dir=BulkProvision -Dext.name=com_zimbra_bulkprovision \
+		-Dis-production=1 \
+		-Dzimbra.buildinfo.type=$(BUILD_TYPE) \
 		-Dzimbra.buildinfo.version=$(SOURCE_TAG) \
 		-Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) \
 		-Dzimbra.buildinfo.host=$(HOST) package-zimlet ; )
 	(cd $(ADMIN_EXT_DIR); $(ANT) $(ANT_DEBUG)\
 		-Dzimbra.buildinfo.platform=$(BUILD_PLATFORM) \
 		-Dext.dir=ClientUploader -Dext.name=com_zimbra_clientuploader \
+		-Dis-production=1 \
+		-Dzimbra.buildinfo.type=$(BUILD_TYPE) \
 		-Dzimbra.buildinfo.version=$(SOURCE_TAG) \
 		-Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) \
 		-Dzimbra.buildinfo.host=$(HOST) package-zimlet ; )
 	(cd $(ADMIN_EXT_DIR); $(ANT) $(ANT_DEBUG) \
 		-Dzimbra.buildinfo.platform=$(BUILD_PLATFORM) \
 		-Dext.dir=com_zimbra_viewmail -Dext.name=com_zimbra_viewmail \
+		-Dis-production=1 \
+		-Dzimbra.buildinfo.type=$(BUILD_TYPE) \
 		-Dzimbra.buildinfo.version=$(SOURCE_TAG) \
 		-Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) \
 		-Dzimbra.buildinfo.host=$(HOST) package-zimlet ; )
 	(cd $(ADMIN_EXT_DIR); $(ANT) $(ANT_DEBUG)\
 		-Dzimbra.buildinfo.platform=$(BUILD_PLATFORM) \
 		-Dext.dir=HelpTooltip -Dext.name=com_zimbra_tooltip \
+		-Dis-production=1 \
+		-Dzimbra.buildinfo.type=$(BUILD_TYPE) \
 		-Dzimbra.buildinfo.version=$(SOURCE_TAG) \
 		-Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) \
 		-Dzimbra.buildinfo.host=$(HOST) package-zimlet ; )
 	(cd $(ADMIN_EXT_DIR); $(ANT) $(ANT_DEBUG)\
 		-Dzimbra.buildinfo.platform=$(BUILD_PLATFORM) \
 		-Dext.dir=ProxyConfig -Dext.name=com_zimbra_proxy_config \
+		-Dis-production=1 \
+		-Dzimbra.buildinfo.type=$(BUILD_TYPE) \
 		-Dzimbra.buildinfo.version=$(SOURCE_TAG) \
 		-Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) \
 		-Dzimbra.buildinfo.host=$(HOST) package-zimlet ; )
 	(cd $(ADMIN_VERSIONCHECK_DIR); $(ANT) $(ANT_DEBUG)\
 		-Dzimbra.buildinfo.platform=$(BUILD_PLATFORM) \
+		-Dis-production=1 \
+		-Dzimbra.buildinfo.type=$(BUILD_TYPE) \
 		-Dzimbra.buildinfo.version=$(SOURCE_TAG) \
 		-Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) \
 		-Dzimbra.buildinfo.host=$(HOST) package-zimlet ; )
@@ -261,6 +277,8 @@ $(ZIMLET_DIR)/build/dist/zimlets/nofile:
 $(ZIMLET_DIR)/build/dist/zimlets-experimental/nofile:
 	(cd $(ZIMLET_DIR); $(ANT) $(ANT_DEBUG)\
 		-Dzimbra.buildinfo.platform=$(BUILD_PLATFORM) \
+		-Dis-production=1 \
+		-Dzimbra.buildinfo.type=$(BUILD_TYPE) \
 		-Dzimbra.buildinfo.version=$(SOURCE_TAG) \
 		-Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) \
 		-Dzimbra.buildinfo.host=$(HOST) package-zimlets-experimental ; )
@@ -272,6 +290,8 @@ $(STORE_DEST_DIR)/zimlets-experimental: $(ZIMLET_DIR)/build/dist/zimlets-experim
 $(ZIMLET_DIR)/build/dist/zimlets-extra/nofile:
 	(cd $(ZIMLET_DIR); $(ANT) $(ANT_DEBUG)\
 		-Dzimbra.buildinfo.platform=$(BUILD_PLATFORM) \
+		-Dis-production=1 \
+		-Dzimbra.buildinfo.type=$(BUILD_TYPE) \
 		-Dzimbra.buildinfo.version=$(SOURCE_TAG) \
 		-Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) \
 		-Dzimbra.buildinfo.host=$(HOST) package-zimlets-extra ; )
@@ -294,6 +314,8 @@ $(STORE_DEST_DIR)/zimlets: $(ZIMLET_DIR)/build/dist/zimlets/nofile
 $(POSIX_EXT_DIR)/build/zimlet/zimbra_posixaccount.zip:
 	(cd $(POSIX_EXT_DIR); $(ANT) $(ANT_DEBUG)\
 		-Dzimbra.buildinfo.platform=$(BUILD_PLATFORM) \
+		-Dis-production=1 \
+		-Dzimbra.buildinfo.type=$(BUILD_TYPE) \
 		-Dzimbra.buildinfo.version=$(SOURCE_TAG) \
 		-Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) \
 		-Dzimbra.buildinfo.host=$(HOST) package-zimlet ; )
@@ -301,11 +323,13 @@ $(POSIX_EXT_DIR)/build/zimlet/zimbra_posixaccount.zip:
 $(SAMBA_EXT_DIR)/build/zimlet/zimbra_samba.zip:
 	(cd $(SAMBA_EXT_DIR); $(ANT) $(ANT_DEBUG)\
 		-Dzimbra.buildinfo.platform=$(BUILD_PLATFORM) \
+		-Dis-production=1 \
+		-Dzimbra.buildinfo.type=$(BUILD_TYPE) \
 		-Dzimbra.buildinfo.version=$(SOURCE_TAG) \
 		-Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) \
 		-Dzimbra.buildinfo.host=$(HOST) package-zimlet ; )
 
-$(STORE_DEST_DIR)/extensions-extra: $(STORE_DEST_DIR)/extensions-extra/oauth
+$(STORE_DEST_DIR)/extensions-extra: $(STORE_DEST_DIR)/extensions-extra/oauth $(STORE_DEST_DIR)/extensions-extra/openidconsumer
 	mkdir -p $@
 
 $(STORE_DEST_DIR)/extensions-extra/oauth: $(OAUTH_EXT_DIR)/build/jars/sampleoauthprov.jar
@@ -318,6 +342,24 @@ $(STORE_DEST_DIR)/extensions-extra/oauth: $(OAUTH_EXT_DIR)/build/jars/sampleoaut
 $(OAUTH_EXT_DIR)/build/jars/sampleoauthprov.jar:
 	(cd $(OAUTH_EXT_DIR); $(ANT) $(ANT_DEBUG) \
 		-Dzimbra.buildinfo.platform=$(BUILD_PLATFORM) \
+		-Dis-production=1 \
+		-Dzimbra.buildinfo.type=$(BUILD_TYPE) \
+		-Dzimbra.buildinfo.version=$(SOURCE_TAG) \
+		-Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) \
+		-Dzimbra.buildinfo.host=$(HOST) package ; )
+
+$(STORE_DEST_DIR)/extensions-extra/openidconsumer: $(OPENID_EXT_DIR)/build/jars/openidconsumer.jar
+	mkdir -p $@
+	cp $(OPENID_EXT_DIR)/build/jars/openidconsumer.jar $@
+	cp $(OPENID_EXT_DIR)/jars/openid4java-0.9.5.jar $@
+	cp $(OPENID_EXT_DIR)/formredirection.jsp $@
+	cp $(OPENID_EXT_DIR)/README.txt $@
+
+$(OPENID_EXT_DIR)/build/jars/openidconsumer.jar:
+	(cd $(OPENID_EXT_DIR); $(ANT) $(ANT_DEBUG) \
+		-Dzimbra.buildinfo.platform=$(BUILD_PLATFORM) \
+		-Dis-production=1 \
+		-Dzimbra.buildinfo.type=$(BUILD_TYPE) \
 		-Dzimbra.buildinfo.version=$(SOURCE_TAG) \
 		-Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) \
 		-Dzimbra.buildinfo.host=$(HOST) package ; )
@@ -334,6 +376,8 @@ $(MIG_TOOLS_DIR)/build/zmzimbratozimbramig.jar:
 	(cd $(MIG_TOOLS_DIR); $(ANT) $(ANT_DEBUG) \
 		-Dzimbra.buildinfo.platform=$(BUILD_PLATFORM) \
 		-Dext.dir=BulkProvision -Dext.name=com_zimbra_bulkprovision \
+		-Dis-production=1 \
+		-Dzimbra.buildinfo.type=$(BUILD_TYPE) \
 		-Dzimbra.buildinfo.version=$(SOURCE_TAG) \
 		-Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) \
 		-Dzimbra.buildinfo.host=$(HOST) zmzimbratozimbramig ; )
@@ -360,6 +404,8 @@ $(ADMIN_EXT_DIR)/build/com_zimbra_bulkprovision.jar:
 	(cd $(ADMIN_EXT_DIR); $(ANT) $(ANT_DEBUG)\
 		-Dzimbra.buildinfo.platform=$(BUILD_PLATFORM) \
 		-Dext.dir=BulkProvision -Dext.name=com_zimbra_bulkprovision \
+		-Dis-production=1 \
+		-Dzimbra.buildinfo.type=$(BUILD_TYPE) \
 		-Dzimbra.buildinfo.version=$(SOURCE_TAG) \
 		-Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) \
 		-Dzimbra.buildinfo.host=$(HOST) jar ; )
@@ -374,6 +420,8 @@ $(ADMIN_EXT_DIR)/build/com_zimbra_clientuploader.jar:
 	(cd $(ADMIN_EXT_DIR); $(ANT) $(ANT_DEBUG)\
 		-Dzimbra.buildinfo.platform=$(BUILD_PLATFORM) \
 		-Dext.dir=ClientUploader -Dext.name=com_zimbra_clientuploader \
+		-Dis-production=1 \
+		-Dzimbra.buildinfo.type=$(BUILD_TYPE) \
 		-Dzimbra.buildinfo.version=$(SOURCE_TAG) \
 		-Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) \
 		-Dzimbra.buildinfo.host=$(HOST) jar ; )
@@ -388,6 +436,8 @@ $(ADMIN_EXT_DIR)/build/com_zimbra_cert_manager.jar:
 	(cd $(ADMIN_EXT_DIR); $(ANT) $(ANT_DEBUG)\
 		-Dzimbra.buildinfo.platform=$(BUILD_PLATFORM) \
 		-Dext.dir=CertificateMgr -Dext.name=com_zimbra_cert_manager \
+		-Dis-production=1 \
+		-Dzimbra.buildinfo.type=$(BUILD_TYPE) \
 		-Dzimbra.buildinfo.version=$(SOURCE_TAG) \
 		-Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) \
 		-Dzimbra.buildinfo.host=$(HOST) jar ; )
@@ -410,13 +460,16 @@ $(CLAMSCANNER_DIR)/build/clamscanner.jar:
 		-Dzimbra.buildinfo.platform=$(BUILD_PLATFORM) \
 		-Dis-production=1 \
 		-Dzimbra.buildinfo.version=$(SOURCE_TAG) \
+		-Dzimbra.buildinfo.type=$(BUILD_TYPE) \
 		-Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) \
 		-Dzimbra.buildinfo.host=$(HOST) jar ; )
 
 $(ADMIN_VERSIONCHECK_DIR)/build/zimbraadminversioncheck.jar:
 	(cd $(ADMIN_VERSIONCHECK_DIR); $(ANT) $(ANT_DEBUG)\
 		-Dzimbra.buildinfo.platform=$(BUILD_PLATFORM) \
+		-Dis-production=1 \
 		-Dzimbra.buildinfo.version=$(SOURCE_TAG) \
+		-Dzimbra.buildinfo.type=$(BUILD_TYPE) \
 		-Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) \
 		-Dzimbra.buildinfo.host=$(HOST) jar ; )
 	
@@ -437,6 +490,7 @@ $(LDAP_EXT_DIR)/build/zimbraldaputils.jar:
 		-Dzimbra.buildinfo.platform=$(BUILD_PLATFORM) \
 		-Dis-production=1 \
 		-Dzimbra.buildinfo.version=$(SOURCE_TAG) \
+		-Dzimbra.buildinfo.type=$(BUILD_TYPE) \
 		-Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) \
 		-Dzimbra.buildinfo.host=$(HOST) jar ; )
 
@@ -465,5 +519,6 @@ $(NGINX_LOOKUP_DIR)/build/nginx-lookup.jar:
 		-Dzimbra.buildinfo.platform=$(BUILD_PLATFORM) \
 		-Dis-production=1 \
 		-Dzimbra.buildinfo.version=$(SOURCE_TAG) \
+		-Dzimbra.buildinfo.type=$(BUILD_TYPE) \
 		-Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) \
 		-Dzimbra.buildinfo.host=$(HOST) jar; )

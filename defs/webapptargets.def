@@ -91,6 +91,7 @@ $(WEBAPP_DIR)/zimbraAdmin.war: $(WEBAPP_DIR) $(WEBAPP_STAGE_DIR)/admin/zimbraAdm
 $(CONSOLE_DIR)/$(WEBAPP_BUILD_DIR)/zimbraAdmin.war:
 	(cd $(CONSOLE_DIR); $(ANT) $(ANT_DEBUG) \
 		-Dzimbra.buildinfo.platform=$(BUILD_PLATFORM) \
+		-Dis-production=1 \
 		-Dzimbra.buildinfo.version=$(SOURCE_TAG) \
 		-Dzimbra.buildinfo.type=$(BUILD_TYPE) \
 		-Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) \
@@ -125,6 +126,7 @@ $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/work: $(CONSOLE_DIR)/$(WEBAPP_BUILD_DIR)/zimbr
 $(CONSOLE_DIR)/$(WEBAPP_BUILD_DIR)/zimbra.war:  $(TAGLIB_DIR)/build/zimbrataglib.jar
 	(cd $(CONSOLE_DIR); $(ANT) $(ANT_DEBUG) \
 		-Dzimbra.buildinfo.platform=$(BUILD_PLATFORM) \
+		-Dis-production=1 \
 		-Dzimbra.buildinfo.version=$(SOURCE_TAG) \
 		-Dzimbra.buildinfo.type=$(BUILD_TYPE) \
 		-Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) \
