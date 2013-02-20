@@ -252,6 +252,7 @@ my %updateFuncs = (
   "8.0.1_GA" => \&upgrade801GA,
   "8.0.2_GA" => \&upgrade802GA,
   "8.0.3_GA" => \&upgrade803GA,
+  "8.0.4_GA" => \&upgrade804GA,
   "9.0.0_BETA1" => \&upgrade900BETA1,
 );
 
@@ -372,6 +373,7 @@ my @versionOrder = (
   "8.0.1_GA",
   "8.0.2_GA",
   "8.0.3_GA",
+  "8.0.4_GA",
   "9.0.0_BETA1",
 );
 
@@ -668,6 +670,8 @@ sub upgrade {
     main::progress("This appears to be 8.0.2_GA\n");
   } elsif ($startVersion eq "8.0.3_GA") {
     main::progress("This appears to be 8.0.3_GA\n");
+  } elsif ($startVersion eq "8.0.4_GA") {
+    main::progress("This appears to be 8.0.4_GA\n");
   } elsif ($startVersion eq "9.0.0_BETA1") {
     main::progress("This appears to be 9.0.0_BETA1\n");
   } else {
@@ -4460,6 +4464,12 @@ sub upgrade803GA {
     }
   }
   main::deleteLocalConfig("zimbra_dos_filter_max_requests_per_sec");
+  return 0;
+}
+
+sub upgrade804GA {
+  my ($startBuild, $targetVersion, $targetBuild) = (@_);
+  main::progress("Updating from 8.0.4_GA\n");
   return 0;
 }
 
