@@ -4341,6 +4341,12 @@ sub upgrade800GA {
         runLdapAttributeUpgrade("76427");
     }
   }
+  if (main::isInstalled("zimbra-mta")) {
+    my $cbpdb="/opt/zimbra/data/cbpolicyd/db/cbpolicyd.sqlitedb";
+    if (-f $cbpdb) {
+      main::runAsZimbra("sqlite3 $cbpdb < ${scriptDir}/migrate20130227-UpgradeCBPolicyDSchema.sql >/dev/null 2>&1");
+    }
+  }
   return 0;
 }
 
