@@ -687,6 +687,7 @@ sub upgrade {
       $needMysqlTableCheck=1 if ($v eq "4.5.2_GA");
       $needMysqlUpgrade=1 if ($v eq "7.0.0_BETA1");
       $needMysqlUpgrade=1 if ($v eq "8.0.0_GA");
+      $needMysqlUpgrade=1 if ($v eq "9.0.0_BETA1");
     }
     last if ($v eq $targetVersion);
   }
