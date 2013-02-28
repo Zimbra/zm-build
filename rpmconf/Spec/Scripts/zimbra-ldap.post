@@ -22,10 +22,9 @@ rm -f /opt/zimbra/openldap-clibs
 rm -f /opt/zimbra/libtool
 ln -s /opt/zimbra/libtool-2.2.6b /opt/zimbra/libtool
 
-mkdir -p /opt/zimbra/openldap/var/openldap-data
+mkdir -p /opt/zimbra/data/ldap/state/run
 mkdir -p /opt/zimbra/data/ldap/config
 mkdir -p /opt/zimbra/data/ldap/mdb/db
-chown -R zimbra:zimbra /opt/zimbra/openldap/var
 chown -R zimbra:zimbra /opt/zimbra/data/ldap
 
 SUDOMODE=`perl -e 'my $mode=(stat("/etc/sudoers"))[2];printf("%04o\n",$mode & 07777);'`
