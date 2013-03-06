@@ -2394,11 +2394,11 @@ getPlatformVars() {
     CONFLICT_PACKAGES="mail-transport-agent"
     if [ $PLATFORM = "UBUNTU10_64" ]; then
       PREREQ_PACKAGES="netcat-openbsd sudo libidn11 libpcre3 libgmp3c2 libexpat1 libstdc++6 libperl5.10"
-      PRESUG_PACKAGES="perl-5.10.1 sysstat sqlite3"
+      PRESUG_PACKAGES="pax perl-5.10.1 sysstat sqlite3"
     fi
     if [ $PLATFORM = "UBUNTU12_64" ]; then
       PREREQ_PACKAGES="netcat-openbsd sudo libidn11 libpcre3 libgmp3c2 libexpat1 libstdc++6 libperl5.14"
-      PRESUG_PACKAGES="perl-5.14.2 sysstat sqlite3"
+      PRESUG_PACKAGES="pax perl-5.14.2 sysstat sqlite3"
     fi
   else
     PACKAGEINST='rpm -iv'
