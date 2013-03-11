@@ -430,6 +430,7 @@ sub upgrade {
       if ($found) {
         &doMysql51Upgrade if ($v eq "7.0.0_BETA1");
         &doMysql55Upgrade if ($v eq "8.0.0_BETA1");
+        &doMysql56Upgrade if ($v eq "9.0.0_BETA1");
       }
       last if ($v eq $targetVersion);
     }
@@ -4483,11 +4484,6 @@ sub upgrade804GA {
 sub upgrade900BETA1 {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
   main::progress("Updating from 9.0.0_BETA1\n");
-  if (main::isInstalled("zimbra-store")) {
-    my $mysql_mycnf = main::getLocalConfig("mysql_mycnf"); 
-    main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-table_cache-fixup --section=mysqld --key=table_cache --unset ${mysql_mycnf}");
-    main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-table_open_cache-fixup --section=mysqld --key=table_open_cache --setmin --value=1200 ${mysql_mycnf}");
-  }
   if (main::isInstalled("zimbra-mta")) {
     my $antispam_mysql_mycnf = main::getLocalConfig("antispam_mysql_mycnf"); 
     if ( -e ${antispam_mysql_mycnf} ) {
@@ -4944,6 +4940,14 @@ sub doAntiSpamMysql55Upgrade {
         main::runAsZimbra("${zimbra_home}/libexec/zminiutil --backup=.pre-${targetVersion} --section=mysqld --unset --key=ignore-builtin-innodb ${antispam_mysql_mycnf}");
         main::runAsZimbra("${zimbra_home}/libexec/zminiutil --backup=.pre-${targetVersion} --section=mysqld --unset --key=plugin-load ${antispam_mysql_mycnf}");
     }
+}
+
+sub doMysql56Upgrade {
+    my $zimbra_home = main::getLocalConfig("zimbra_home") || "/opt/zimbra";
+    my $mysql_mycnf = main::getLocalConfig("mysql_mycnf"); 
+    my $zimbra_log_directory = main::getLocalConfig("zimbra_log_directory") || "${zimbra_home}/log"; 
+    main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-table_cache-fixup --section=mysqld --key=table_cache --unset ${mysql_mycnf}");
+    main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-table_open_cache-fixup --section=mysqld --key=table_open_cache --setmin --value=1200 ${mysql_mycnf}");
 }
 
 sub doMysqlUpgrade {
