@@ -2407,8 +2407,8 @@ getPlatformVars() {
     PACKAGEVERIFY='rpm -K'
     PACKAGEEXT='rpm'
     if [ $PLATFORM = "RHEL6_64" -o $PLATFORM = "CentOS6_64" ]; then
-      PACKAGEINST='yum install -v'
-      PACKAGERM='yum erase -v'
+      PACKAGEINST='yum -y install -v'
+      PACKAGERM='yum -y erase -v'
       PREREQ_PACKAGES="nc sudo libidn gmp"
       PREREQ_LIBS="/usr/lib64/libstdc++.so.6"
       PRESUG_PACKAGES="perl-5.10.1 sysstat sqlite"
