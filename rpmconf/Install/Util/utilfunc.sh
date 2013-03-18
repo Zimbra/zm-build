@@ -1490,6 +1490,20 @@ removeExistingInstall() {
             echo "done."
           fi
           chmod 640 /opt/zimbra/data/ldap/ldap.bak
+          if [ -x /opt/zimbra/libexec/zmslapadd ]; then
+            if [ -f /opt/zimbra/data/ldap/config/cn\=config/olcDatabase\=\{3\}hdb.ldif ]; then
+              echo ""
+              echo -n "Backing up the ldap accesslog database..."
+              runAsZimbra "/opt/zimbra/libexec/zmslapcat -a /opt/zimbra/data/ldap"
+              if [ $? != 0 ]; then
+                echo "failed."
+                exit
+              else
+                echo "done."
+              fi
+              chmod 640 /opt/zimbra/data/ldap/ldap-accesslog.bak
+            fi
+          fi
         fi
       fi
       if [ x"$OLD_LDR_PATH" != "x" ]; then
