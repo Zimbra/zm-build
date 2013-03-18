@@ -5034,19 +5034,29 @@ sub reloadLdap($) {
   my ($upgradeVersion) = @_;
   if (main::isInstalled ("zimbra-ldap")) {
     if($main::migratedStatus{"LdapReloaded$upgradeVersion"} ne "CONFIGURED") {
-      my $ldifFile="/opt/zimbra/data/ldap/ldap.bak";
-      if (-f $ldifFile && -s $ldifFile) {
-        if (-d "/opt/zimbra/data/ldap/accesslog") { 
-          main::progress("Creating new accesslog DB..."); 
-          if (-d "/opt/zimbra/data/ldap/accesslog.prev") {
-            `mv /opt/zimbra/data/ldap/accesslog.prev /opt/zimbra/data/ldap/accesslog.prev.$$`;
+      my $ldifFile="/opt/zimbra/data/ldap/ldap-accesslog.bak";
+      if (-d '/opt/zimbra/data/ldap/config/cn=config/olcDatabase={3}mdb') {
+        if (-f $ldifFile && -s $ldifFile) {
+          if (-d "/opt/zimbra/data/ldap/accesslog") { 
+            main::progress("Loading accesslog DB..."); 
+            if (-d "/opt/zimbra/data/ldap/accesslog.prev") {
+              `mv /opt/zimbra/data/ldap/accesslog.prev /opt/zimbra/data/ldap/accesslog.prev.$$`;
+            }
+            `mv /opt/zimbra/data/ldap/accesslog /opt/zimbra/data/ldap/accesslog.prev`;
+            `mkdir -p /opt/zimbra/data/ldap/accesslog/db`;
+            `chown -R zimbra:zimbra /opt/zimbra/data/ldap`;
+            my $rc;
+            $rc=main::runAsZimbra("/opt/zimbra/libexec/zmslapadd -a $ldifFile");
+            if ($rc != 0) {
+              main::progress("slapadd import of accesslog db failed.\n");
+              return 1;
+            }
+            main::progress("done.\n");
           }
-          `mv /opt/zimbra/data/ldap/accesslog /opt/zimbra/data/ldap/accesslog.prev`;
-          `mkdir -p /opt/zimbra/data/ldap/accesslog/db`;
-          `chown -R zimbra:zimbra /opt/zimbra/data/ldap`;
-          main::progress("done.\n");
         }
-
+      }
+      $ldifFile="/opt/zimbra/data/ldap/ldap.bak";
+      if (-f $ldifFile && -s $ldifFile) {
         main::progress("Loading database..."); 
         if (-d "/opt/zimbra/data/ldap/mdb.prev") {
           `mv /opt/zimbra/data/ldap/mdb.prev /opt/zimbra/data/ldap/mdb.prev.$$`;
