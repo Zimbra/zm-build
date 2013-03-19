@@ -5073,6 +5073,15 @@ sub reloadLdap($) {
             }
             main::progress("done.\n");
           }
+        } else {
+          main::progress("Creating new accesslog DB...");
+          if (-d "/opt/zimbra/data/ldap/accesslog.prev") {
+            `mv /opt/zimbra/data/ldap/accesslog.prev /opt/zimbra/data/ldap/accesslog.prev.$$`;
+          }
+          `mv /opt/zimbra/data/ldap/accesslog /opt/zimbra/data/ldap/accesslog.prev`;
+          `mkdir -p /opt/zimbra/data/ldap/accesslog/db`;
+          `chown -R zimbra:zimbra /opt/zimbra/data/ldap`;
+          main::progress("done.\n");
         }
       }
       $ldifFile="/opt/zimbra/data/ldap/ldap.bak";
