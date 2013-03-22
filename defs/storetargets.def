@@ -139,6 +139,8 @@ $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/etc: force
 		mkdir -p $@
 		cp -f $(SERVICE_DIR)/conf/$(MAILBOXD_SERVER)-$(MAILBOXD_MINOR_VERSION)/jettyrc \
 			$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/etc/jettyrc
+		cp -f $(SERVICE_DIR)/conf/$(MAILBOXD_SERVER)-$(MAILBOXD_MINOR_VERSION)/zimbra.policy.example \
+			$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/etc/zimbra.policy.example
 		cp -f $(SERVICE_DIR)/conf/$(MAILBOXD_SERVER)-$(MAILBOXD_MINOR_VERSION)/jetty.xml.production \
 			$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/etc/jetty.xml.in
 		cp -f $(SERVICE_DIR)/conf/$(MAILBOXD_SERVER)-$(MAILBOXD_MINOR_VERSION)/webdefault.xml.production \
