@@ -6777,6 +6777,7 @@ sub setupSyslog {
 
 sub setupCrontab {
   my @backupSchedule=();
+  my $nohsm=1;
   progress ("Setting up zimbra crontab...");
   if ( -x "/opt/zimbra/bin/zmschedulebackup") {
     detail("Getting current backup schedule in restorable format.");
@@ -6786,6 +6787,10 @@ sub setupCrontab {
     }
     if (scalar @backupSchedule == 0) {
       detail("Backup schedule was not previously defined");
+      $nohsm  = 0xffff & system("grep '/opt/zimbra/bin/zmhsm -t' /tmp/crontab.zimbra.orig > /dev/null 2>&1");
+      if (!$nohsm) {
+        detail("HSM is in use, no backup schedule required");
+      }
     } else {
       detail("Retrieved backup schedule:\n @backupSchedule");
     }
@@ -6858,7 +6863,7 @@ sub setupCrontab {
         #`$SU "/opt/zimbra/bin/zmschedulebackup -A $backupSchedule[$i]" >> $logfile 2>&1`;
       }
     }
-  } elsif ( -f "/opt/zimbra/bin/zmschedulebackup" && scalar @backupSchedule == 0 && !$newinstall) {
+  } elsif ( -f "/opt/zimbra/bin/zmschedulebackup" && scalar @backupSchedule == 0 && !$newinstall && !$nohsm) {
     detail("crontab: No backup schedule found: installing default schedule.");
     `$SU "/opt/zimbra/bin/zmschedulebackup -D" >> $logfile 2>&1`;
   }
