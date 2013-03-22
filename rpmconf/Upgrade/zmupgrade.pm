@@ -430,7 +430,6 @@ sub upgrade {
       if ($found) {
         &doMysql51Upgrade if ($v eq "7.0.0_BETA1");
         &doMysql55Upgrade if ($v eq "8.0.0_BETA1");
-        &doMysql56Upgrade if ($v eq "9.0.0_BETA1");
       }
       last if ($v eq $targetVersion);
     }
@@ -688,7 +687,6 @@ sub upgrade {
       $needMysqlTableCheck=1 if ($v eq "4.5.2_GA");
       $needMysqlUpgrade=1 if ($v eq "7.0.0_BETA1");
       $needMysqlUpgrade=1 if ($v eq "8.0.0_GA");
-      $needMysqlUpgrade=1 if ($v eq "9.0.0_BETA1");
     }
     last if ($v eq $targetVersion);
   }
@@ -700,9 +698,6 @@ sub upgrade {
       if ($rc) { return 1; }
     } elsif($startMajor < 8) {
       my $rc=&upgradeLdap("8.0.0_BETA3");
-      if ($rc) { return 1; }
-    } elsif($startMajor < 9) {
-      my $rc=&upgradeLdap("9.0.0_BETA1");
       if ($rc) { return 1; }
     } elsif ($startMajor == 8 && $startMinor == 0 && $startMicro < 3) {
       my $rc=&reloadLdap("8.0.3_GA");
@@ -3273,7 +3268,7 @@ sub upgrade605GA {
     my $ldap_pass = `$su "zmlocalconfig -s -m nokey ldap_root_password"`;
     my $ldap;
     chomp($ldap_pass);
-    unless($ldap = Net::LDAP->new('ldapi://%2fopt%2fzimbra%2fdata%2fldap%2fstate%2frun%2fldapi/')) {
+    unless($ldap = Net::LDAP->new('ldapi://%2fopt%2fzimbra%2fopenldap%2fvar%2frun%2fldapi/')) {
        main::progress("Unable to contact to ldapi: $!\n");
     }
     my $result = $ldap->bind("cn=config", password => $ldap_pass);
@@ -3314,7 +3309,7 @@ sub upgrade606GA {
     my $ldap_pass = `$su "zmlocalconfig -s -m nokey ldap_root_password"`;
     chomp($ldap_pass);
     my $ldap;
-    unless($ldap = Net::LDAP->new('ldapi://%2fopt%2fzimbra%2fdata%2fldap%2fstate%2frun%2fldapi/')) {
+    unless($ldap = Net::LDAP->new('ldapi://%2fopt%2fzimbra%2fopenldap%2fvar%2frun%2fldapi/')) {
        main::progress("Unable to contact to ldapi: $!\n");
     }
     my $result = $ldap->bind("cn=config", password => $ldap_pass);
@@ -3402,7 +3397,7 @@ sub upgrade607GA {
       my $ldap_pass = `$su "zmlocalconfig -s -m nokey ldap_root_password"`;
       my $ldap;
       chomp($ldap_pass);
-      unless($ldap = Net::LDAP->new('ldapi://%2fopt%2fzimbra%2fdata%2fldap%2fstate%2frun%2fldapi/')) {
+      unless($ldap = Net::LDAP->new('ldapi://%2fopt%2fzimbra%2fopenldap%2fvar%2frun%2fldapi/')) {
          main::progress("Unable to contact to ldapi: $!\n");
       }
       my $result = $ldap->bind("cn=config", password => $ldap_pass);
@@ -3476,7 +3471,7 @@ sub upgrade6011GA {
     my $ldap_pass = `$su "zmlocalconfig -s -m nokey ldap_root_password"`;
     chomp($ldap_pass);
     my $ldap;
-    unless($ldap = Net::LDAP->new('ldapi://%2fopt%2fzimbra%2fdata%2fldap%2fstate%2frun%2fldapi/')) {
+    unless($ldap = Net::LDAP->new('ldapi://%2fopt%2fzimbra%2fopenldap%2fvar%2frun%2fldapi/')) {
        main::progress("Unable to contact to ldapi: $!\n");
     }
     my $result = $ldap->bind("cn=config", password => $ldap_pass);
@@ -3570,7 +3565,7 @@ sub upgrade6015GA {
     my $ldap_pass = `$su "zmlocalconfig -s -m nokey ldap_root_password"`;
     my $ldap;
     chomp($ldap_pass);
-    unless($ldap = Net::LDAP->new('ldapi://%2fopt%2fzimbra%2fdata%2fldap%2fstate%2frun%2fldapi/')) {
+    unless($ldap = Net::LDAP->new('ldapi://%2fopt%2fzimbra%2fopenldap%2fvar%2frun%2fldapi/')) {
        main::progress("Unable to contact to ldapi: $!\n");
     }
     my $result = $ldap->bind("cn=config", password => $ldap_pass);
@@ -3624,7 +3619,7 @@ sub upgrade700BETA2 {
     my $ldap_pass = `$su "zmlocalconfig -s -m nokey ldap_root_password"`;
     chomp($ldap_pass);
     my $ldap;
-    unless($ldap = Net::LDAP->new('ldapi://%2fopt%2fzimbra%2fdata%2fldap%2fstate%2frun%2fldapi/')) {
+    unless($ldap = Net::LDAP->new('ldapi://%2fopt%2fzimbra%2fopenldap%2fvar%2frun%2fldapi/')) {
        main::progress("Unable to contact to ldapi: $!\n");
     }
     my $result = $ldap->bind("cn=config", password => $ldap_pass);
@@ -3706,7 +3701,7 @@ sub upgrade700RC1 {
     my $ldap_pass = `$su "zmlocalconfig -s -m nokey ldap_root_password"`;
     chomp($ldap_pass);
     my $ldap;
-    unless($ldap = Net::LDAP->new('ldapi://%2fopt%2fzimbra%2fdata%2fldap%2fstate%2frun%2fldapi/')) {
+    unless($ldap = Net::LDAP->new('ldapi://%2fopt%2fzimbra%2fopenldap%2fvar%2frun%2fldapi/')) {
        main::progress("Unable to contact to ldapi: $!\n");
     }
     my $result = $ldap->bind("cn=config", password => $ldap_pass);
@@ -3865,7 +3860,7 @@ sub upgrade713GA {
     my $ldap_pass = `$su "zmlocalconfig -s -m nokey ldap_root_password"`;
     chomp($ldap_pass);
     my $ldap;
-    unless($ldap = Net::LDAP->new('ldapi://%2fopt%2fzimbra%2fdata%2fldap%2fstate%2frun%2fldapi/')) {
+    unless($ldap = Net::LDAP->new('ldapi://%2fopt%2fzimbra%2fopenldap%2fvar%2frun%2fldapi/')) {
        main::progress("Unable to contact to ldapi: $!\n");
     }
     my $result = $ldap->bind("cn=config", password => $ldap_pass);
@@ -3982,7 +3977,7 @@ sub upgrade714GA {
     my $ldap_pass = `$su "zmlocalconfig -s -m nokey ldap_root_password"`;
     my $ldap;
     chomp($ldap_pass);
-    unless($ldap = Net::LDAP->new('ldapi://%2fopt%2fzimbra%2fdata%2fldap%2fstate%2frun%2fldapi/')) {
+    unless($ldap = Net::LDAP->new('ldapi://%2fopt%2fzimbra%2fopenldap%2fvar%2frun%2fldapi/')) {
        main::progress("Unable to contact to ldapi: $!\n");
     }
     my $result = $ldap->bind("cn=config", password => $ldap_pass);
@@ -4076,7 +4071,7 @@ sub upgrade800BETA1 {
     my $ldap_pass = `$su "zmlocalconfig -s -m nokey ldap_root_password"`;
     chomp($ldap_pass);
     my $ldap;
-    unless($ldap = Net::LDAP->new('ldapi://%2fopt%2fzimbra%2fdata%2fldap%2fstate%2frun%2fldapi/')) {
+    unless($ldap = Net::LDAP->new('ldapi://%2fopt%2fzimbra%2fopenldap%2fvar%2frun%2fldapi/')) {
        main::progress("Unable to contact to ldapi: $!\n");
     }
     my $result = $ldap->bind("cn=config", password => $ldap_pass);
@@ -4261,7 +4256,7 @@ sub upgrade800BETA4 {
     my $ldap_pass = `$su "zmlocalconfig -s -m nokey ldap_root_password"`;
     chomp($ldap_pass);
     my $ldap;
-    unless($ldap = Net::LDAP->new('ldapi://%2fopt%2fzimbra%2fdata%2fldap%2fstate%2frun%2fldapi/')) {
+    unless($ldap = Net::LDAP->new('ldapi://%2fopt%2fzimbra%2fopenldap%2fvar%2frun%2fldapi/')) {
        main::progress("Unable to contact to ldapi: $!\n");
     }
     my $result = $ldap->bind("cn=config", password => $ldap_pass);
@@ -4368,7 +4363,7 @@ sub upgrade801GA {
     my $ldap_pass = `$su "zmlocalconfig -s -m nokey ldap_root_password"`;
     chomp($ldap_pass);
     my $ldap;
-    unless($ldap = Net::LDAP->new('ldapi://%2fopt%2fzimbra%2fdata%2fldap%2fstate%2frun%2fldapi/')) {
+    unless($ldap = Net::LDAP->new('ldapi://%2fopt%2fzimbra%2fopenldap%2fvar%2frun%2fldapi/')) {
        main::progress("Unable to contact to ldapi: $!\n");
     }
     my $result = $ldap->bind("cn=config", password => $ldap_pass);
@@ -4432,7 +4427,7 @@ sub upgrade802GA {
       my $ldap_pass = `$su "zmlocalconfig -s -m nokey ldap_root_password"`;
       chomp($ldap_pass);
       my $ldap;
-      unless($ldap = Net::LDAP->new('ldapi://%2fopt%2fzimbra%2fdata%2fldap%2fstate%2frun%2fldapi/')) {
+      unless($ldap = Net::LDAP->new('ldapi://%2fopt%2fzimbra%2fopenldap%2fvar%2frun%2fldapi/')) {
          main::progress("Unable to contact to ldapi: $!\n");
       }
       my $result = $ldap->bind("cn=config", password => $ldap_pass);
@@ -4487,13 +4482,6 @@ sub upgrade804GA {
 sub upgrade900BETA1 {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
   main::progress("Updating from 9.0.0_BETA1\n");
-  if (main::isInstalled("zimbra-mta")) {
-    my $antispam_mysql_mycnf = main::getLocalConfig("antispam_mysql_mycnf"); 
-    if ( -e ${antispam_mysql_mycnf} ) {
-      main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-as-table_cache-fixup --section=mysqld --key=table_cache --unset ${antispam_mysql_mycnf}");
-      main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-as-table_open_cache-fixup --section=mysqld --key=table_open_cache --setmin --value=1200 ${antispam_mysql_mycnf}");
-    }
-  }
   return 0;
 }
 
@@ -4945,14 +4933,6 @@ sub doAntiSpamMysql55Upgrade {
     }
 }
 
-sub doMysql56Upgrade {
-    my $zimbra_home = main::getLocalConfig("zimbra_home") || "/opt/zimbra";
-    my $mysql_mycnf = main::getLocalConfig("mysql_mycnf"); 
-    my $zimbra_log_directory = main::getLocalConfig("zimbra_log_directory") || "${zimbra_home}/log"; 
-    main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-table_cache-fixup --section=mysqld --key=table_cache --unset ${mysql_mycnf}");
-    main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-table_open_cache-fixup --section=mysqld --key=table_open_cache --setmin --value=1200 ${mysql_mycnf}");
-}
-
 sub doMysqlUpgrade {
     my $db_pass = main::getLocalConfig("mysql_root_password");
     my $zimbra_tmp = main::getLocalConfig("zimbra_tmp_directory") || "/tmp";
@@ -5119,23 +5099,52 @@ sub reloadLdap($) {
 sub upgradeLdap($) {
   my ($upgradeVersion) = @_;
   if (main::isInstalled ("zimbra-ldap")) {
-    if($upgradeVersion eq "9.0.0_BETA1") {
-      if($main::migratedStatus{"LdapUpgraded$upgradeVersion"} ne "CONFIGURED") {
-        if (-f '/opt/zimbra/data/ldap/config/cn=config.ldif') {
-          my $infile="/opt/zimbra/data/ldap/config/cn\=config.ldif";
-          my $outfile="/tmp/config.ldif.$$";
+    if($main::migratedStatus{"LdapUpgraded$upgradeVersion"} ne "CONFIGURED") {
+      # Fix LDAP schema for bug#62443
+      unlink("/opt/zimbra/data/ldap/config/cn\=config/cn\=schema/cn\=\{3\}zimbra.ldif");
+      unlink("/opt/zimbra/data/ldap/config/cn\=config/cn\=schema/cn\=\{4\}amavisd.ldif");
+      my $ldifFile="/opt/zimbra/data/ldap/ldap.bak";
+      if (-f $ldifFile && -s $ldifFile) {
+        chmod 0644, $ldifFile;
+        my $slapinfile = "$ldifFile";
+        my $slapoutfile = "/opt/zimbra/data/ldap/ldap.80";
+        main::progress("Upgrading ldap data...");
+        open(IN,"<$slapinfile");
+        open(OUT,">$slapoutfile");
+        while(<IN>) {
+          if ($_ =~ /^zimbraChildAccount:/) {next;}
+          if ($_ =~ /^zimbraChildVisibleAccount:/) {next;}
+          if ($_ =~ /^zimbraPrefChildVisibleAccount:/) {next;}
+          if ($_ =~ /^zimbraPrefStandardClientAccessilbityMode:/) {next;}
+          if ($_ =~ /^objectClass: zimbraHsmGlobalConfig/) {next;}
+          if ($_ =~ /^objectClass: zimbraHsmServer/) {next;}
+          if ($_ =~ /^objectClass: organizationalPerson/) {
+            print OUT $_;
+            print OUT "objectClass: inetOrgPerson\n";
+            next;
+          }
+          if ($_ =~ /^structuralObjectClass: organizationalPerson/) {
+            $_ =~ s/organizationalPerson/inetOrgPerson/;
+          }
+          print OUT $_;
+        }
+        close(IN);
+        close(OUT);
+        main::progress("done.\n");
+        my $infile;
+        my $outfile;
+        main::progress("Upgrading LDAP configuration database...");
+        if (-d '/opt/zimbra/data/ldap/config/cn=config/olcDatabase={2}hdb') {
+          `mv /opt/zimbra/data/ldap/config/cn\=config/olcDatabase\=\{2\}hdb /opt/zimbra/data/ldap/config/cn\=config/olcDatabase\=\{2\}mdb`;
+        }
+        if (-d '/opt/zimbra/data/ldap/config/cn=config/olcDatabase={3}hdb') {
+          `mv /opt/zimbra/data/ldap/config/cn\=config/olcDatabase\=\{3\}hdb /opt/zimbra/data/ldap/config/cn\=config/olcDatabase\=\{3\}mdb`;
+          $infile=glob("/opt/zimbra/data/ldap/config/cn=config/olcDatabase=\\{3\\}mdb/olcOverlay=\\{*\\}syncprov.ldif");
+          $outfile="/tmp/3syncprov.ldif.$$";
           open(IN,"<$infile");
           open(OUT,">$outfile");
           while(<IN>) {
-            if ($_ =~ /^olcPidFile: /) {
-              print OUT "olcPidFile: /opt/zimbra/data/ldap/state/run/slapd.pid\n";
-              next;
-            }
-            if ($_ =~ /^olcArgsFile: /) {
-              print OUT "olcArgsFile: /opt/zimbra/data/ldap/state/run/slapd.args\n";
-              next;
-            }
-            if ($_ =~ /^# CRC32/) {
+            if ($_ =~ /olcSpSessionlog:/) {
               next;
             }
             print OUT $_;
@@ -5144,288 +5153,219 @@ sub upgradeLdap($) {
           close(IN);
           `mv $outfile $infile`;
         }
-        main::configLog("LdapUpgraded$upgradeVersion");
-      }
-    } else {
-      if($main::migratedStatus{"LdapUpgraded$upgradeVersion"} ne "CONFIGURED") {
-        # Fix LDAP schema for bug#62443
-        unlink("/opt/zimbra/data/ldap/config/cn\=config/cn\=schema/cn\=\{3\}zimbra.ldif");
-        unlink("/opt/zimbra/data/ldap/config/cn\=config/cn\=schema/cn\=\{4\}amavisd.ldif");
-        my $ldifFile="/opt/zimbra/data/ldap/ldap.bak";
-        if (-f $ldifFile && -s $ldifFile) {
-          chmod 0644, $ldifFile;
-          my $slapinfile = "$ldifFile";
-          my $slapoutfile = "/opt/zimbra/data/ldap/ldap.80";
-          main::progress("Upgrading ldap data...");
-          open(IN,"<$slapinfile");
-          open(OUT,">$slapoutfile");
+        if (-f '/opt/zimbra/data/ldap/config/cn=config/cn=module{0}.ldif') {
+          $infile="/opt/zimbra/data/ldap/config/cn\=config/cn\=module\{0\}.ldif";
+          $outfile="/tmp/mod0.ldif.$$";
+          open(IN,"<$infile");
+          open(OUT,">$outfile");
           while(<IN>) {
-            if ($_ =~ /^zimbraChildAccount:/) {next;}
-            if ($_ =~ /^zimbraChildVisibleAccount:/) {next;}
-            if ($_ =~ /^zimbraPrefChildVisibleAccount:/) {next;}
-            if ($_ =~ /^zimbraPrefStandardClientAccessilbityMode:/) {next;}
-            if ($_ =~ /^objectClass: zimbraHsmGlobalConfig/) {next;}
-            if ($_ =~ /^objectClass: zimbraHsmServer/) {next;}
-            if ($_ =~ /^objectClass: organizationalPerson/) {
-              print OUT $_;
-              print OUT "objectClass: inetOrgPerson\n";
+            if ($_ =~ /^olcModuleLoad: \{0\}back_hdb.la/) {
+              print OUT "olcModuleLoad: {0}back_mdb.la\n";
               next;
-            }
-            if ($_ =~ /^structuralObjectClass: organizationalPerson/) {
-              $_ =~ s/organizationalPerson/inetOrgPerson/;
             }
             print OUT $_;
           }
-          close(IN);
           close(OUT);
-          main::progress("done.\n");
-          my $infile;
-          my $outfile;
-          main::progress("Upgrading LDAP configuration database...");
-          if (-d '/opt/zimbra/data/ldap/config/cn=config/olcDatabase={2}hdb') {
-            `mv /opt/zimbra/data/ldap/config/cn\=config/olcDatabase\=\{2\}hdb /opt/zimbra/data/ldap/config/cn\=config/olcDatabase\=\{2\}mdb`;
+          close(IN);
+          `mv $outfile $infile`;
+        }
+        if (-f '/opt/zimbra/data/ldap/config/cn=config.ldif') {
+          $infile="/opt/zimbra/data/ldap/config/cn\=config.ldif";
+          $outfile="/tmp/config.ldif.$$";
+          open(IN,"<$infile");
+          open(OUT,">$outfile");
+          while(<IN>) {
+            if ($_ =~ /^olcToolThreads: /) {
+              print OUT "olcToolThreads: 2\n";
+              next;
+            }
+            print OUT $_;
           }
-          if (-d '/opt/zimbra/data/ldap/config/cn=config/olcDatabase={3}hdb') {
-            `mv /opt/zimbra/data/ldap/config/cn\=config/olcDatabase\=\{3\}hdb /opt/zimbra/data/ldap/config/cn\=config/olcDatabase\=\{3\}mdb`;
-            $infile=glob("/opt/zimbra/data/ldap/config/cn=config/olcDatabase=\\{3\\}mdb/olcOverlay=\\{*\\}syncprov.ldif");
-            $outfile="/tmp/3syncprov.ldif.$$";
-            open(IN,"<$infile");
-            open(OUT,">$outfile");
-            while(<IN>) {
-              if ($_ =~ /olcSpSessionlog:/) {
-                next;
-              }
+          close(OUT);
+          close(IN);
+          `mv $outfile $infile`;
+        }
+        if (-f '/opt/zimbra/data/ldap/config/cn=config/olcDatabase={3}hdb.ldif') {
+          `mv /opt/zimbra/data/ldap/config/cn\=config/olcDatabase\=\{3\}hdb.ldif /opt/zimbra/data/ldap/config/cn\=config/olcDatabase=\{3\}mdb.ldif`;
+          $infile="/opt/zimbra/data/ldap/config/cn\=config/olcDatabase\=\{3\}mdb.ldif";
+          $outfile="/tmp/3mdb.ldif.$$";
+          open(IN,"<$infile");
+          open(OUT,">$outfile");
+          while(<IN>) {
+            if ($_ =~ /^dn: olcDatabase=\{3\}hdb/) {
+              print OUT "dn: olcDatabase={3}mdb\n";
+              next;
+            }
+            if ($_ =~ /^objectClass: olcHdbConfig/) {
+              print OUT "objectClass: olcMdbConfig\n";
+              next;
+            }
+            if ($_ =~ /^olcDatabase: \{3\}hdb/) {
+              print OUT "olcDatabase: {3}mdb\n";
+              next;
+            }
+            if ($_ =~ /^olcDbDirectory: \/opt\/zimbra\/data\/ldap\/hdb\/db/) {
+              print OUT "olcDbDirectory: /opt/zimbra/data/ldap/mdb/db\n";
+              next;
+            }
+            if ($_ =~ /^structuralObjectClass: olcHdbConfig/) {
+              print OUT "structuralObjectClass: olcMdbConfig\n";
+              next;
+            }
+            if ($_ =~ /^olcDbMode:/) {
               print OUT $_;
+              print OUT "olcDbMaxsize: 85899345920\n";
+              next;
             }
-            close(OUT);
-            close(IN);
-            `mv $outfile $infile`;
-          }
-          if (-f '/opt/zimbra/data/ldap/config/cn=config/cn=module{0}.ldif') {
-            $infile="/opt/zimbra/data/ldap/config/cn\=config/cn\=module\{0\}.ldif";
-            $outfile="/tmp/mod0.ldif.$$";
-            open(IN,"<$infile");
-            open(OUT,">$outfile");
-            while(<IN>) {
-              if ($_ =~ /^olcModuleLoad: \{0\}back_hdb.la/) {
-                print OUT "olcModuleLoad: {0}back_mdb.la\n";
-                next;
-              }
+            if ($_ =~ /^olcDbCheckpoint:/) {
               print OUT $_;
+              print OUT "olcDbEnvFlags: writemap\n";
+              print OUT "olcDbEnvFlags: nometasync\n";
+              next;
             }
-            close(OUT);
-            close(IN);
-            `mv $outfile $infile`;
+            if ($_ =~ /olcDbNoSync:/) {
+              print OUT "olcDbNoSync: TRUE\n";
+              next;
+            }
+            if ($_ =~ /olcDbCacheSize:/) {
+              next;
+            }
+            if ($_ =~ /^olcDbConfig:/) {
+              next;
+            }
+            if ($_ =~ /^olcDbDirtyRead:/) {
+              next;
+            }
+            if ($_ =~ /^olcDbIDLcacheSize:/) {
+              next;
+            }
+            if ($_ =~ /^olcDbLinearIndex:/) {
+              next;
+            }
+            if ($_ =~ /^olcDbShmKey:/) {
+              next;
+            }
+            if ($_ =~ /^olcDbCacheFree:/) {
+              next;
+            }
+            if ($_ =~ /^olcDbDNcacheSize:/) {
+              next;
+            }
+            print OUT $_;
           }
-          if (-f '/opt/zimbra/data/ldap/config/cn=config.ldif') {
-            $infile="/opt/zimbra/data/ldap/config/cn\=config.ldif";
-            $outfile="/tmp/config.ldif.$$";
-            open(IN,"<$infile");
-            open(OUT,">$outfile");
-            while(<IN>) {
-              if ($_ =~ /^olcToolThreads: /) {
-                print OUT "olcToolThreads: 2\n";
-                next;
-              }
-              if ($_ =~ /^olcPidFile: /) {
-                print OUT "olcPidFile: /opt/zimbra/data/ldap/state/run/slapd.pid\n";
-                next;
-              }
-              if ($_ =~ /^olcArgsFile: /) {
-                print OUT "olcArgsFile: /opt/zimbra/data/ldap/state/run/slapd.args\n";
-                next;
-              }
-              if ($_ =~ /^# CRC32/) {
-                next;
-              }
+          close(OUT);
+          close(IN);
+          `mv $outfile $infile`;
+        }
+        if (-f '/opt/zimbra/data/ldap/config/cn=config/olcDatabase={2}hdb.ldif') {
+          `mv /opt/zimbra/data/ldap/config/cn\=config/olcDatabase\=\{2\}hdb.ldif /opt/zimbra/data/ldap/config/cn\=config/olcDatabase\=\{2\}mdb.ldif`;
+          $infile="/opt/zimbra/data/ldap/config/cn\=config/olcDatabase\=\{2\}mdb.ldif";
+          $outfile="/tmp/2mdb.ldif.$$";
+          open(IN,"<$infile");
+          open(OUT,">$outfile");
+          while(<IN>) {
+            if ($_ =~ /^dn: olcDatabase=\{2\}hdb/) {
+              print OUT "dn: olcDatabase={2}mdb\n";
+              next;
+            }
+            if ($_ =~ /^objectClass: olcHdbConfig/) {
+              print OUT "objectClass: olcMdbConfig\n";
+              next;
+            }
+            if ($_ =~ /^olcDatabase: \{2\}hdb/) {
+              print OUT "olcDatabase: {2}mdb\n";
+              next;
+            }
+            if ($_ =~ /^olcDbDirectory: \/opt\/zimbra\/data\/ldap\/hdb\/db/) {
+              print OUT "olcDbDirectory: /opt/zimbra/data/ldap/mdb/db\n";
+              next;
+            }
+            if ($_ =~ /^structuralObjectClass: olcHdbConfig/) {
+              print OUT "structuralObjectClass: olcMdbConfig\n";
+              next;
+            }
+            if ($_ =~ /^olcDbMode:/) {
               print OUT $_;
+              print OUT "olcDbMaxsize: 85899345920\n";
+              next;
             }
-            close(OUT);
-            close(IN);
-            `mv $outfile $infile`;
-          }
-          if (-f '/opt/zimbra/data/ldap/config/cn=config/olcDatabase={3}hdb.ldif') {
-            `mv /opt/zimbra/data/ldap/config/cn\=config/olcDatabase\=\{3\}hdb.ldif /opt/zimbra/data/ldap/config/cn\=config/olcDatabase=\{3\}mdb.ldif`;
-            $infile="/opt/zimbra/data/ldap/config/cn\=config/olcDatabase\=\{3\}mdb.ldif";
-            $outfile="/tmp/3mdb.ldif.$$";
-            open(IN,"<$infile");
-            open(OUT,">$outfile");
-            while(<IN>) {
-              if ($_ =~ /^dn: olcDatabase=\{3\}hdb/) {
-                print OUT "dn: olcDatabase={3}mdb\n";
-                next;
-              }
-              if ($_ =~ /^objectClass: olcHdbConfig/) {
-                print OUT "objectClass: olcMdbConfig\n";
-                next;
-              }
-              if ($_ =~ /^olcDatabase: \{3\}hdb/) {
-                print OUT "olcDatabase: {3}mdb\n";
-                next;
-              }
-              if ($_ =~ /^olcDbDirectory: \/opt\/zimbra\/data\/ldap\/hdb\/db/) {
-                print OUT "olcDbDirectory: /opt/zimbra/data/ldap/mdb/db\n";
-                next;
-              }
-              if ($_ =~ /^structuralObjectClass: olcHdbConfig/) {
-                print OUT "structuralObjectClass: olcMdbConfig\n";
-                next;
-              }
-              if ($_ =~ /^olcDbMode:/) {
-                print OUT $_;
-                print OUT "olcDbMaxsize: 85899345920\n";
-                next;
-              }
-              if ($_ =~ /^olcDbCheckpoint:/) {
-                print OUT $_;
-                print OUT "olcDbEnvFlags: writemap\n";
-                print OUT "olcDbEnvFlags: nometasync\n";
-                next;
-              }
-              if ($_ =~ /olcDbNoSync:/) {
-                print OUT "olcDbNoSync: TRUE\n";
-                next;
-              }
-              if ($_ =~ /olcDbCacheSize:/) {
-                next;
-              }
-              if ($_ =~ /^olcDbConfig:/) {
-                next;
-              }
-              if ($_ =~ /^olcDbDirtyRead:/) {
-                next;
-              }
-              if ($_ =~ /^olcDbIDLcacheSize:/) {
-                next;
-              }
-              if ($_ =~ /^olcDbLinearIndex:/) {
-                next;
-              }
-              if ($_ =~ /^olcDbShmKey:/) {
-                next;
-              }
-              if ($_ =~ /^olcDbCacheFree:/) {
-                next;
-              }
-              if ($_ =~ /^olcDbDNcacheSize:/) {
-                next;
-              }
+            if ($_ =~ /^olcDbCheckpoint:/) {
               print OUT $_;
+              print OUT "olcDbEnvFlags: writemap\n";
+              print OUT "olcDbEnvFlags: nometasync\n";
+              next;
             }
-            close(OUT);
-            close(IN);
-            `mv $outfile $infile`;
-          }
-          if (-f '/opt/zimbra/data/ldap/config/cn=config/olcDatabase={2}hdb.ldif') {
-            `mv /opt/zimbra/data/ldap/config/cn\=config/olcDatabase\=\{2\}hdb.ldif /opt/zimbra/data/ldap/config/cn\=config/olcDatabase\=\{2\}mdb.ldif`;
-            $infile="/opt/zimbra/data/ldap/config/cn\=config/olcDatabase\=\{2\}mdb.ldif";
-            $outfile="/tmp/2mdb.ldif.$$";
-            open(IN,"<$infile");
-            open(OUT,">$outfile");
-            while(<IN>) {
-              if ($_ =~ /^dn: olcDatabase=\{2\}hdb/) {
-                print OUT "dn: olcDatabase={2}mdb\n";
-                next;
-              }
-              if ($_ =~ /^objectClass: olcHdbConfig/) {
-                print OUT "objectClass: olcMdbConfig\n";
-                next;
-              }
-              if ($_ =~ /^olcDatabase: \{2\}hdb/) {
-                print OUT "olcDatabase: {2}mdb\n";
-                next;
-              }
-              if ($_ =~ /^olcDbDirectory: \/opt\/zimbra\/data\/ldap\/hdb\/db/) {
-                print OUT "olcDbDirectory: /opt/zimbra/data/ldap/mdb/db\n";
-                next;
-              }
-              if ($_ =~ /^structuralObjectClass: olcHdbConfig/) {
-                print OUT "structuralObjectClass: olcMdbConfig\n";
-                next;
-              }
-              if ($_ =~ /^olcDbMode:/) {
-                print OUT $_;
-                print OUT "olcDbMaxsize: 85899345920\n";
-                next;
-              }
-              if ($_ =~ /^olcDbCheckpoint:/) {
-                print OUT $_;
-                print OUT "olcDbEnvFlags: writemap\n";
-                print OUT "olcDbEnvFlags: nometasync\n";
-                next;
-              }
-              if ($_ =~ /olcDbNoSync:/) {
-                print OUT "olcDbNoSync: TRUE\n";
-                next;
-              }
-              if ($_ =~ /olcDbCacheSize:/) {
-                next;
-              }
-              if ($_ =~ /^olcDbConfig:/) {
-                next;
-              }
-              if ($_ =~ /^olcDbDirtyRead:/) {
-                next;
-              }
-              if ($_ =~ /^olcDbIDLcacheSize:/) {
-                next;
-              }
-              if ($_ =~ /^olcDbLinearIndex:/) {
-                next;
-              }
-              if ($_ =~ /^olcDbShmKey:/) {
-                next;
-              }
-              if ($_ =~ /^olcDbCacheFree:/) {
-                next;
-              }
-              if ($_ =~ /^olcDbDNcacheSize:/) {
-                next;
-              }
-              print OUT $_;
+            if ($_ =~ /olcDbNoSync:/) {
+              print OUT "olcDbNoSync: TRUE\n";
+              next;
             }
-            close(OUT);
-            close(IN);
-            `mv $outfile $infile`;
-          }
-          main::progress("done.\n");
-  
-          if (-d "/opt/zimbra/data/ldap/accesslog") { 
-            main::progress("Creating new accesslog DB..."); 
-            if (-d "/opt/zimbra/data/ldap/accesslog.prev") {
-              `mv /opt/zimbra/data/ldap/accesslog.prev /opt/zimbra/data/ldap/accesslog.prev.$$`;
+            if ($_ =~ /olcDbCacheSize:/) {
+              next;
             }
-            `mv /opt/zimbra/data/ldap/accesslog /opt/zimbra/data/ldap/accesslog.prev`;
-            `mkdir -p /opt/zimbra/data/ldap/accesslog/db`;
-            `chown -R zimbra:zimbra /opt/zimbra/data/ldap`;
-            main::progress("done.\n");
+            if ($_ =~ /^olcDbConfig:/) {
+              next;
+            }
+            if ($_ =~ /^olcDbDirtyRead:/) {
+              next;
+            }
+            if ($_ =~ /^olcDbIDLcacheSize:/) {
+              next;
+            }
+            if ($_ =~ /^olcDbLinearIndex:/) {
+              next;
+            }
+            if ($_ =~ /^olcDbShmKey:/) {
+              next;
+            }
+            if ($_ =~ /^olcDbCacheFree:/) {
+              next;
+            }
+            if ($_ =~ /^olcDbDNcacheSize:/) {
+              next;
+            }
+            print OUT $_;
           }
-  
-          main::progress("Loading database..."); 
-          if (-d "/opt/zimbra/data/ldap/mdb.prev") {
-            `mv /opt/zimbra/data/ldap/mdb.prev /opt/zimbra/data/ldap/mdb.prev.$$`;
+          close(OUT);
+          close(IN);
+          `mv $outfile $infile`;
+        }
+        main::progress("done.\n");
+
+        if (-d "/opt/zimbra/data/ldap/accesslog") { 
+          main::progress("Creating new accesslog DB..."); 
+          if (-d "/opt/zimbra/data/ldap/accesslog.prev") {
+            `mv /opt/zimbra/data/ldap/accesslog.prev /opt/zimbra/data/ldap/accesslog.prev.$$`;
           }
-          `mv /opt/zimbra/data/ldap/mdb /opt/zimbra/data/ldap/mdb.prev`;
-          `mkdir -p /opt/zimbra/data/ldap/mdb/db`;
+          `mv /opt/zimbra/data/ldap/accesslog /opt/zimbra/data/ldap/accesslog.prev`;
+          `mkdir -p /opt/zimbra/data/ldap/accesslog/db`;
           `chown -R zimbra:zimbra /opt/zimbra/data/ldap`;
-          my $rc;
-          $rc=main::runAsZimbra("/opt/zimbra/libexec/zmslapadd $slapoutfile");
-          if ($rc != 0) {
-            main::progress("slapadd import failed.\n");
-            return 1;
-          }
-  	chmod 0640, $ldifFile;
           main::progress("done.\n");
-        } else {
-          if (! -f $ldifFile) {
-            main::progress("Error: Unable to find /opt/zimbra/data/ldap/ldap.bak\n");
-          } else {
-            main::progress("Error: /opt/zimbra/data/ldap/ldap.bak is empty\n");
-          }
+        }
+
+        main::progress("Loading database..."); 
+        if (-d "/opt/zimbra/data/ldap/mdb.prev") {
+          `mv /opt/zimbra/data/ldap/mdb.prev /opt/zimbra/data/ldap/mdb.prev.$$`;
+        }
+        `mv /opt/zimbra/data/ldap/mdb /opt/zimbra/data/ldap/mdb.prev`;
+        `mkdir -p /opt/zimbra/data/ldap/mdb/db`;
+        `chown -R zimbra:zimbra /opt/zimbra/data/ldap`;
+        my $rc;
+        $rc=main::runAsZimbra("/opt/zimbra/libexec/zmslapadd $slapoutfile");
+        if ($rc != 0) {
+          main::progress("slapadd import failed.\n");
           return 1;
         }
-        main::configLog("LdapUpgraded$upgradeVersion");
+	chmod 0640, $ldifFile;
+        main::progress("done.\n");
+      } else {
+        if (! -f $ldifFile) {
+          main::progress("Error: Unable to find /opt/zimbra/data/ldap/ldap.bak\n");
+        } else {
+          main::progress("Error: /opt/zimbra/data/ldap/ldap.bak is empty\n");
+        }
+        return 1;
       }
+      main::configLog("LdapUpgraded$upgradeVersion");
     }
     if (startLdap()) {return 1;} 
   }
@@ -5616,7 +5556,7 @@ sub addLdapIndex($$$) {
   my $ldap_pass = `$su "zmlocalconfig -s -m nokey ldap_root_password"`;
   chomp($ldap_pass);
   my $ldap;
-  unless($ldap = Net::LDAP->new('ldapi://%2fopt%2fzimbra%2fdata%2fldap%2fstate%2frun%2fldapi/')) {
+  unless($ldap = Net::LDAP->new('ldapi://%2fopt%2fzimbra%2fopenldap%2fvar%2frun%2fldapi/')) {
     main::progress("Unable to contact to ldapi: $!\n");
   }
   my $result = $ldap->bind("cn=config", password => $ldap_pass);

@@ -13,20 +13,22 @@
 # basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 # ***** END LICENSE BLOCK *****
 # 
-# Create group, user for zimbra and postfix.
-
 shopt -s nullglob 
 
-#Symlinks
 rm -f /opt/zimbra/openldap-clibs
+
 rm -f /opt/zimbra/libtool
 ln -s /opt/zimbra/libtool-2.2.6b /opt/zimbra/libtool
 
 mkdir -p /opt/zimbra/openldap/var/openldap-data
 mkdir -p /opt/zimbra/data/ldap/config
 mkdir -p /opt/zimbra/data/ldap/mdb/db
-chown -R zimbra:zimbra /opt/zimbra/openldap/var
 chown -R zimbra:zimbra /opt/zimbra/data/ldap
+chown -R zimbra:zimbra /opt/zimbra/openldap/var
+
+if [ -x "/opt/zimbra/libexec/zmfixperms" ]; then
+  /opt/zimbra/libexec/zmfixperms
+fi
 
 SUDOMODE=`perl -e 'my $mode=(stat("/etc/sudoers"))[2];printf("%04o\n",$mode & 07777);'`
 egrep -v '^%zimbra.*slapd' /etc/sudoers > /tmp/sudoers
@@ -35,13 +37,14 @@ echo "%zimbra   ALL=NOPASSWD:/opt/zimbra/libexec/zmslapd" >> /tmp/sudoers
 mv -f /tmp/sudoers /etc/sudoers
 chmod $SUDOMODE /etc/sudoers
 
-if [ -d "/opt/zimbra/openldap/libexec/slapd" ]; then
-  chown root:root /opt/zimbra/openldap/libexec/slapd
-  chmod 755 /opt/zimbra/openldap/libexec/slapd
-fi
+cp -f /opt/zimbra/openldap/etc/openldap/slapd.conf /opt/zimbra/openldap/etc/openldap/slapd.conf.fcs
+sed -e 's/TLSCACertificateFile/#TLSCACertificateFile/g' \
+	/opt/zimbra/openldap/etc/openldap/slapd.conf.fcs > \
+	/opt/zimbra/openldap/etc/openldap/slapd.conf
+chown zimbra:zimbra /opt/zimbra/openldap/etc/openldap/slapd.conf
 
-if [ -x "/opt/zimbra/libexec/zmfixperms" ]; then
-  /opt/zimbra/libexec/zmfixperms
-fi
+PKG=`echo ${RECEIPT_PATH} | sed -e 's|.*/\(zimbra-ldap.[^/]*pkg\)/.*|\1|' | sed -e 's/\./-/'`
+D=`date +%s`
+echo "${D}: INSTALLED ${PKG}" >> /opt/zimbra/.install_history
 
-ldconfig
+exit 0

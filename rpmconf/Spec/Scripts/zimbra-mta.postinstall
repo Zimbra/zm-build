@@ -14,10 +14,8 @@
 # ***** END LICENSE BLOCK *****
 # 
 
-#Symlinks
-
-if [ -d "/opt/zimbra/amavisd/tmp" ]; then
-  umount -f /opt/zimbra/amavisd/tmp 2> /dev/null
+if [ -d /opt/zimbra/data/amavisd/tmp ]; then
+  umount -f /opt/zimbra/data/amavisd/tmp 2> /dev/null
 fi
 
 rm -f /opt/zimbra/amavisd
@@ -34,8 +32,8 @@ if [ -d /opt/zimbra/libmemcached-1.0.6 ]; then
 fi
 
 rm -f /opt/zimbra/opendkim
-if [ -d /opt/zimbra/opendkim-2.8.0 ]; then
-  ln -s /opt/zimbra/opendkim-2.8.0 /opt/zimbra/opendkim
+if [ -d /opt/zimbra/opendkim-2.7.1 ]; then
+  ln -s /opt/zimbra/opendkim-2.7.1 /opt/zimbra/opendkim
 fi
 
 rm -f /opt/zimbra/zeromq
@@ -44,39 +42,36 @@ if [ -d /opt/zimbra/zeromq-3.2.0 ]; then
 fi
 
 rm -f /opt/zimbra/dspam
-ln -s /opt/zimbra/dspam-3.10.2 /opt/zimbra/dspam
+ln -s /opt/zimbra/dspam-3.10.1 /opt/zimbra/dspam
 
 rm -f /opt/zimbra/postfix
-ln -s /opt/zimbra/postfix-2.10.0.2z /opt/zimbra/postfix
+ln -s /opt/zimbra/postfix-2.10-20121007.2z /opt/zimbra/postfix
 
 rm -f /opt/zimbra/clamav
 ln -s /opt/zimbra/clamav-0.97.6 /opt/zimbra/clamav
 
-rm -f /opt/zimbra/mta/mysql
-ln -s /opt/zimbra/mta/mysql-standard-5.5.30-pc-linux-gnu-i686-glibc23 /opt/zimbra/mta/mysql
-
-rm -f /opt/zimbra/altermime
+rm -rf /opt/zimbra/altermime
 ln -s /opt/zimbra/altermime-0.3.10 /opt/zimbra/altermime
 
 PLAT=$(/opt/zimbra/libexec/get_plat_tag.sh)
-if [[ $PLAT == "UBUNTU"* || $PLAT == "DEBIAN"* ]]; then
-  if [ ! -e "/usr/sbin/sendmail" ]; then
-    ln -s /opt/zimbra/postfix/sbin/sendmail /usr/sbin/sendmail
-  fi
+OS_ARCH=powerpc
+MYSQL_VERSION=5.5.28
+
+if [ "x$PLAT" = "xMACOSXx86" -o "x$PLAT" = "xMACOSXx86_10.5" ]; then
+  OS_ARCH=i686
+  OS_REL=8.2.0
+elif [ x"$PLAT" = "xMACOSXx86_10.6" ]; then
+  OS_ARCH=$(uname -m)
+  OS_REL=10
+elif [ x"$PLAT" = "xMACOSXx86_10.7" ]; then
+  OS_ARCH=$(uname -m)
+  OS_REL=11
 fi
 
-SUDOMODE=`perl -e 'my $mode=(stat("/etc/sudoers"))[2];printf("%04o\n",$mode & 07777);'`
-egrep -v '^%zimbra.*postfix' /etc/sudoers > /tmp/sudoers
-mv -f /tmp/sudoers /etc/sudoers
-echo "%zimbra   ALL=NOPASSWD:/opt/zimbra/postfix/sbin/postfix, /opt/zimbra/postfix/sbin/postalias, /opt/zimbra/postfix/sbin/qshape.pl, /opt/zimbra/postfix/sbin/postconf,/opt/zimbra/postfix/sbin/postsuper" >> /etc/sudoers
-
-egrep -v '^%zimbra.*zmqstat' /etc/sudoers > /tmp/sudoers
-mv -f /tmp/sudoers /etc/sudoers
-echo "%zimbra   ALL=NOPASSWD:/opt/zimbra/libexec/zmqstat,/opt/zimbra/libexec/zmmtastatus" >> /etc/sudoers
-chmod $SUDOMODE /etc/sudoers
-
-chown zimbra:zimbra /opt/zimbra/postfix/conf/master.cf.in
-chmod 440 /opt/zimbra/postfix/conf/master.cf.in
+if [ -L /opt/zimbra/mta/mysql ]; then
+  rm -f /opt/zimbra/mta/mysql
+fi
+ln -s /opt/zimbra/mta/mysql-standard-${MYSQL_VERSION}-apple-darwin${OS_REL}-${OS_ARCH} /opt/zimbra/mta/mysql
 
 mkdir -p /opt/zimbra/data/amavisd/db
 mkdir -p /opt/zimbra/data/amavisd/tmp
@@ -89,11 +84,14 @@ mkdir -p /opt/zimbra/data/clamav/db
 chown -R zimbra:zimbra /opt/zimbra/data/clamav/db
 
 mkdir -p /opt/zimbra/data/postfix/spool/pid
-chown postfix:zimbra /opt/zimbra/data/postfix
-chown root:postfix /opt/zimbra/data/postfix/spool
-chown postfix:root /opt/zimbra/data/postfix/spool/pid
 
-chown zimbra:zimbra /opt/zimbra/data
+if [ -d /opt/zimbra/data ]; then
+  chown zimbra:zimbra /opt/zimbra/data
+fi
+
+if [ -x "/opt/zimbra/libexec/zmfixperms" ]; then
+  /opt/zimbra/libexec/zmfixperms
+fi
 
 if [ ! -f /opt/zimbra/postfix/conf/main.cf ]; then
 	touch /opt/zimbra/postfix/conf/main.cf
@@ -104,16 +102,19 @@ if [ ! -f /etc/aliases ]; then
   ln -s /opt/zimbra/postfix/conf/aliases /etc/aliases
 fi
 
-# bug 8081 remove tmpfs
-#egrep -q '/opt/zimbra/amavisd-new-2.4.1/tmp' /etc/fstab
-#if [ $? != 0 ]; then
-	#uid=`id -u zimbra`
-	#gid=`id -g zimbra`
-	#echo "/dev/shm	/opt/zimbra/amavisd-new-2.4.1/tmp	tmpfs	defaults,users,size=150m,mode=777 0 0" >> /etc/fstab
-#fi
+SUDOMODE=`perl -e 'my $mode=(stat("/etc/sudoers"))[2];printf("%04o\n",$mode & 07777);'`
+egrep -v '^%zimbra.*postfix' /etc/sudoers > /tmp/sudoers
+mv -f /tmp/sudoers /etc/sudoers
+echo "%zimbra   ALL=NOPASSWD:/opt/zimbra/postfix/sbin/postfix, /opt/zimbra/postfix/sbin/postalias, /opt/zimbra/postfix/sbin/qshape.pl, /opt/zimbra/postfix/sbin/postconf,/opt/zimbra/postfix/sbin/postsuper" >> /etc/sudoers
 
-if [ -x "/opt/zimbra/libexec/zmfixperms" ]; then
-  /opt/zimbra/libexec/zmfixperms
-fi
+egrep -v '^%zimbra.*zmqstat' /etc/sudoers > /tmp/sudoers
+mv -f /tmp/sudoers /etc/sudoers
+echo "%zimbra   ALL=NOPASSWD:/opt/zimbra/libexec/zmqstat,/opt/zimbra/libexec/zmmtastatus" >> /etc/sudoers
 
-ldconfig
+chmod $SUDOMODE /etc/sudoers
+
+PKG=`echo ${RECEIPT_PATH} | sed -e 's|.*/\(zimbra-mta.[^/]*pkg\)/.*|\1|' | sed -e 's/\./-/'`
+D=`date +%s`
+echo "${D}: INSTALLED ${PKG}" >> /opt/zimbra/.install_history
+
+exit 0
