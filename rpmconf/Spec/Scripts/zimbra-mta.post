@@ -50,7 +50,7 @@ rm -f /opt/zimbra/postfix
 ln -s /opt/zimbra/postfix-2.10.0.2z /opt/zimbra/postfix
 
 rm -f /opt/zimbra/clamav
-ln -s /opt/zimbra/clamav-0.97.6 /opt/zimbra/clamav
+ln -s /opt/zimbra/clamav-0.97.7 /opt/zimbra/clamav
 
 rm -f /opt/zimbra/mta/mysql
 ln -s /opt/zimbra/mta/mysql-standard-5.6.10-pc-linux-gnu-i686-glibc23 /opt/zimbra/mta/mysql
