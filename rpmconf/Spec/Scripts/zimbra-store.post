@@ -16,7 +16,7 @@
 
 H=`hostname -s`
 I=`hostname -i`
-JETTY_VERSION=distribution-7.6.2.z4
+JETTY_VERSION=distribution-7.6.10.v20130312
 
 if [ -f /opt/zimbra/db/db.sql ]; then
   mv /opt/zimbra/db/db.sql /opt/zimbra/db/db.sql.in
