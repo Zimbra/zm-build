@@ -35,7 +35,7 @@ rm -f /opt/zimbra/postfix
 ln -s /opt/zimbra/postfix-2.7.10.3z /opt/zimbra/postfix
 
 rm -f /opt/zimbra/clamav
-ln -s /opt/zimbra/clamav-0.97.6 /opt/zimbra/clamav
+ln -s /opt/zimbra/clamav-0.97.7 /opt/zimbra/clamav
 
 if [ -e /opt/zimbra/altermime ]; then
   rm -rf /opt/zimbra/altermime
