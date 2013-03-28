@@ -57,3 +57,4 @@ umask 0027
 
 unset DISPLAY
 
+export MANPATH=/opt/zimbra/opendkim/share/man:${MANPATH}
