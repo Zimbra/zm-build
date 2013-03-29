@@ -4476,6 +4476,32 @@ sub upgrade803GA {
 sub upgrade804GA {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
   main::progress("Updating from 8.0.4_GA\n");
+  if (main::isInstalled("zimbra-ldap")) {
+    my $ldap_pass = `$su "zmlocalconfig -s -m nokey ldap_root_password"`;
+    chomp($ldap_pass);
+    my $ldap;
+    unless($ldap = Net::LDAP->new('ldapi://%2fopt%2fzimbra%2fopenldap%2fvar%2frun%2fldapi/')) {
+       main::progress("Unable to contact to ldapi: $!\n");
+    }
+    my $result = $ldap->bind("cn=config", password => $ldap_pass);
+    $result = $ldap->modify(
+      "olcDatabase={2}mdb,cn=config",
+      replace => {
+        olcDbCheckpoint => "0 0",
+      }
+    );
+    if ($isLdapMaster) {
+      $result = $ldap->modify(
+        "olcDatabase={3}mdb,cn=config",
+        replace => {
+          olcDbCheckpoint => "0 0",
+        }
+      );
+    }
+    $ldap->unbind;
+    main::deleteLocalConfig("ldap_db_checkpoint");
+    main::deleteLocalConfig("ldap_accesslog_checkpoint");
+  }
   return 0;
 }
 
@@ -5218,7 +5244,7 @@ sub upgradeLdap($) {
               next;
             }
             if ($_ =~ /^olcDbCheckpoint:/) {
-              print OUT $_;
+              print OUT "olcDbCheckpoint: 0 0\n";
               print OUT "olcDbEnvFlags: writemap\n";
               print OUT "olcDbEnvFlags: nometasync\n";
               next;
@@ -5290,7 +5316,7 @@ sub upgradeLdap($) {
               next;
             }
             if ($_ =~ /^olcDbCheckpoint:/) {
-              print OUT $_;
+              print OUT "olcDbCheckpoint: 0 0\n";
               print OUT "olcDbEnvFlags: writemap\n";
               print OUT "olcDbEnvFlags: nometasync\n";
               next;
