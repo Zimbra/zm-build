@@ -39,8 +39,8 @@ if [ -d /opt/zimbra/opendkim-2.8.0 ]; then
 fi
 
 rm -f /opt/zimbra/zeromq
-if [ -d /opt/zimbra/zeromq-3.2.0 ]; then
-  ln -s /opt/zimbra/zeromq-3.2.0 /opt/zimbra/zeromq
+if [ -d /opt/zimbra/zeromq-3.2.2 ]; then
+  ln -s /opt/zimbra/zeromq-3.2.2 /opt/zimbra/zeromq
 fi
 
 rm -f /opt/zimbra/dspam
