@@ -97,6 +97,7 @@ my @packageList = (
 my %packageServiceMap = (
   antivirus => "zimbra-mta",
   antispam  => "zimbra-mta",
+  opendkim  => "zimbra-mta",
   mta       => "zimbra-mta",
   logger    => "zimbra-logger",
   mailbox   => "zimbra-store",
@@ -3169,10 +3170,12 @@ sub setEnabledDependencies {
     if ($newinstall) {
       $config{RUNAV} = "yes";
       $config{RUNSA} = "yes";
+      $config{RUNDKIM} = "yes";
       $config{RUNARCHIVING} = "no";
     } else {
       $config{RUNSA} = (isServiceEnabled("antispam") ? "yes" : "no");
       $config{RUNAV} = (isServiceEnabled("antivirus") ? "yes" : "no");
+      $config{RUNDKIM} = (isServiceEnabled("opendkim") ? "yes" : "no");
       $config{RUNARCHIVING} = (isServiceEnabled("archiving") ? "yes" : "no");
     }
   }
@@ -3624,6 +3627,13 @@ sub createMtaMenu {
       "var" => \$config{RUNAV}, 
       "callback" => \&toggleYN,
       "arg" => "RUNAV",
+      };
+    $i++;
+    $$lm{menuitems}{$i} = { 
+      "prompt" => "Enable OpenDKIM:", 
+      "var" => \$config{RUNDKIM}, 
+      "callback" => \&toggleYN,
+      "arg" => "RUNDKIM",
       };
     $i++;
     if ($config{RUNAV} eq "yes") {
@@ -6404,6 +6414,7 @@ sub configInitMta {
     if (isZCS()) {
       push(@installedServiceList, ('zimbraServiceInstalled', 'antivirus'));
       push(@installedServiceList, ('zimbraServiceInstalled', 'antispam'));
+      push(@installedServiceList, ('zimbraServiceInstalled', 'opendkim'));
       if ($config{RUNAV} eq "yes") {
         push(@enabledServiceList, ('zimbraServiceEnabled', 'antivirus'));
       }
@@ -6413,6 +6424,9 @@ sub configInitMta {
       }
       if ($config{RUNSA} eq "yes") {
         push(@enabledServiceList, ('zimbraServiceEnabled', 'antispam'));
+      }
+      if ($config{RUNDKIM} eq "yes") {
+        push(@enabledServiceList, ('zimbraServiceEnabled', 'opendkim'));
       }
     }
     setLdapServerConfig("zimbraMtaMyNetworks", $config{zimbraMtaMyNetworks})
