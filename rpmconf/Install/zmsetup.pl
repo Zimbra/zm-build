@@ -1351,9 +1351,11 @@ sub setDefaults {
   if (!$ipv4found && $ipv6found) {
     $config{zimbraIPMode}     = "ipv6";
     setLocalConfig ("antispam_mysql_host", "::1");
+    setLocalConfig ("mysql_bind_address", "::1");
   } else {
     $config{zimbraIPMode}     = "ipv4";
     setLocalConfig ("antispam_mysql_host", "127.0.0.1");
+    setLocalConfig ("mysql_bind_address", "127.0.0.1");
   }
 
   if ($platform =~ /MACOSX/ && $platform ne "MACOSXx86_10.6" && $platform ne "MACOSXx86_10.7" ) {
@@ -3134,8 +3136,10 @@ sub setIPMode {
       }
       if ($new eq "ipv4") {
         setLocalConfig ("antispam_mysql_host", "127.0.0.1");
+        setLocalConfig ("mysql_bind_address", "127.0.0.1");
       } else {
         setLocalConfig ("antispam_mysql_host", "::1");
+        setLocalConfig ("mysql_bind_address", "::1");
       }
       return;
     } else {
