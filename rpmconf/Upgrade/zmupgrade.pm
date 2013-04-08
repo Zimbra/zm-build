@@ -4509,11 +4509,11 @@ sub upgrade804GA {
   if (main::isInstalled("zimbra-store")) {
     my $zimbraIPMode=main::getLdapServerValue("zimbraIPMode");
     if ($zimbraIPMode eq "ipv4") {
-        setLocalConfig("mysql_bind_address", "127.0.0.1");
+        main::setLocalConfig("mysql_bind_address", "127.0.0.1");
     } elsif ($zimbraIPMode eq "both") {
-        setLocalConfig("mysql_bind_address", "::1");
+        main::setLocalConfig("mysql_bind_address", "::1");
     } elsif ($zimbraIPMode eq "ipv6") {
-        setLocalConfig("mysql_bind_address", "::1");
+        main::setLocalConfig("mysql_bind_address", "::1");
     }
   }
   return 0;
