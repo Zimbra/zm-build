@@ -4510,6 +4510,8 @@ sub upgrade804GA {
   if (main::isInstalled("zimbra-mta")) {
     main::setLdapServerConfig($hn, '+zimbraServiceInstalled', 'opendkim');
     main::setLdapServerConfig($hn, '+zimbraServiceEnabled', 'opendkim');
+  }
+  if (main::isInstalled("zimbra-store")) {
     my $zimbraIPMode=main::getLdapServerValue("zimbraIPMode");
     if ($zimbraIPMode eq "ipv4") {
         setLocalConfig("mysql_bind_address", "127.0.0.1");
