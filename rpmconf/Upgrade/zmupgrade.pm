@@ -4508,12 +4508,19 @@ sub upgrade804GA {
   }
   if (main::isInstalled("zimbra-store")) {
     my $zimbraIPMode=main::getLdapServerValue("zimbraIPMode");
+    my $mysql_mycnf = main::getLocalConfig("mysql_mycnf"); 
     if ($zimbraIPMode eq "ipv4") {
         main::setLocalConfig("mysql_bind_address", "127.0.0.1");
+        main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-bind --section=mysqld --key=bind-address --unset ${mysql_mycnf}");
+        main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-bind --section=mysqld --key=bind-address --set --value=127.0.0.1 ${mysql_mycnf}");
     } elsif ($zimbraIPMode eq "both") {
         main::setLocalConfig("mysql_bind_address", "::1");
+        main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-bind --section=mysqld --key=bind-address --unset ${mysql_mycnf}");
+        main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-bind --section=mysqld --key=bind-address --set --value=::1 ${mysql_mycnf}");
     } elsif ($zimbraIPMode eq "ipv6") {
         main::setLocalConfig("mysql_bind_address", "::1");
+        main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-bind --section=mysqld --key=bind-address --unset ${mysql_mycnf}");
+        main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-bind --section=mysqld --key=bind-address --set --value=::1 ${mysql_mycnf}");
     }
   }
   return 0;
