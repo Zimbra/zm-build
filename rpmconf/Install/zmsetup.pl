@@ -3130,9 +3130,6 @@ sub setIPMode {
       if ($config{zimbraIPMode} ne $new) {
         $config{zimbraIPMode} = $new;
       }
-      if ($new eq "ipv4") {
-      } else {
-      }
       return;
     } else {
       print "IP Mode must be one of ipv4, both, or ipv6!\n";
