@@ -65,7 +65,7 @@ if ($options{build}) {
 }
 
 
-my $logfile = "$options{build_source}/log/${progName}.".getDateStamp().".log";
+my $logfile = "$options{build_source}/logs/${progName}.".getDateStamp().".log";
 open LOGFILE, ">$logfile" or die "Can't open $logfile: $!\n";
 unlink("$options{build_source}/log/${progName}.log") if (-e "$options{build_source}/log/${progName}.log");
 symlink($logfile, "$options{build_source}/log/${progName}.log");
