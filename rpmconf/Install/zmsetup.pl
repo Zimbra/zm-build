@@ -373,6 +373,11 @@ sub checkPortConflicts {
     8465 => 'zimbra-mta', 
     10024 => 'zimbra-mta',
     10025 => 'zimbra-mta',
+    10026 => 'zimbra-mta',
+    10027 => 'zimbra-mta',
+    10028 => 'zimbra-mta',
+    10029 => 'zimbra-mta',
+    10030 => 'zimbra-mta',
   );
 
   open PORTS, "netstat -an | egrep '^tcp' | grep LISTEN | awk '{print \$4}' | sed -e 's/.*://' |";
