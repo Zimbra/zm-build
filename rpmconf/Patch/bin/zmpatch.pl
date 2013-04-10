@@ -65,10 +65,10 @@ if ($options{build}) {
 }
 
 
-my $logfile = "/tmp/${progName}.".getDateStamp().".log";
+my $logfile = "$options{build_source}/log/${progName}.".getDateStamp().".log";
 open LOGFILE, ">$logfile" or die "Can't open $logfile: $!\n";
-unlink("/tmp/${progName}.log") if (-e "/tmp/${progName}.log");
-symlink($logfile, "/tmp/${progName}.log");
+unlink("$options{build_source}/log/${progName}.log") if (-e "$options{build_source}/log/${progName}.log");
+symlink($logfile, "$options{build_source}/log/${progName}.log");
 
 if ($options{build}) {
   if (-f "$options{build_source}/ZimbraBuild/RE/BUILD") {
