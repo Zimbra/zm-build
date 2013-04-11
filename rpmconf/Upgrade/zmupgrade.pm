@@ -4522,6 +4522,12 @@ sub upgrade804GA {
         main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-bind --section=mysqld --key=bind-address --unset ${mysql_mycnf}");
         main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-bind --section=mysqld --key=bind-address --set --value=::1 ${mysql_mycnf}");
     }
+    my $mailboxd_java_options=main::getLocalConfig("mailboxd_java_options");
+    if ($mailboxd_java_options !~ /-Dorg.apache.jasper.compiler.disablejsr199/) {
+      $mailboxd_java_options = $mailboxd_java_options." -Dorg.apache.jasper.compiler.disablejsr199=true";
+      main::detail("Modified mailboxd_java_options=$mailboxd_java_options");
+      main::setLocalConfig("mailboxd_java_options", $mailboxd_java_options)
+    }
   }
   return 0;
 }
