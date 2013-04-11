@@ -64,11 +64,21 @@ if ($options{build}) {
   $options{build_target}="$options{build_source}/ZimbraBuild/zcs-patch-$options{build_version}" unless $options{build_target};
 }
 
-
-my $logfile = "$options{build_source}/logs/${progName}.".getDateStamp().".log";
+my $logfile;
+if($options{build_source}) {
+  $logfile = "$options{build_source}/logs/${progName}.".getDateStamp().".log";
+} else {
+  $logfile = "/tmp/${progName}.".getDateStamp().".log";
+}
 open LOGFILE, ">$logfile" or die "Can't open $logfile: $!\n";
-unlink("$options{build_source}/log/${progName}.log") if (-e "$options{build_source}/log/${progName}.log");
-symlink($logfile, "$options{build_source}/log/${progName}.log");
+
+if($options{build_source}) {
+  unlink("$options{build_source}/log/${progName}.log") if (-e "$options{build_source}/log/${progName}.log");
+  symlink($logfile, "$options{build_source}/log/${progName}.log");
+} else {
+  unlink("/tmp/${progName}.log") if (-e "/tmp/${progName}.log");
+  symlink($logfile, "/tmp/${progName}.log");
+}
 
 if ($options{build}) {
   if (-f "$options{build_source}/ZimbraBuild/RE/BUILD") {
