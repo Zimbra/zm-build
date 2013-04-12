@@ -40,10 +40,10 @@ acct_exists() {
 # Create group, user for zimbra and postfix.
 grp_exists zimbra
 if [ $? != 0 ]; then
-	groupadd zimbra
+	groupadd -r zimbra
 fi
 
 acct_exists zimbra
 if [ $? != 0 ]; then
-	useradd -g zimbra -G tty -d /opt/zimbra -s /bin/bash -M -n zimbra
+	useradd -r -g zimbra -G tty -d /opt/zimbra -s /bin/bash -M -n zimbra
 fi
