@@ -1934,6 +1934,7 @@ sub upgrade804GA {
   if (main::isInstalled("zimbra-mta")) {
     main::setLdapServerConfig($hn, '+zimbraServiceInstalled', 'opendkim');
     main::setLdapServerConfig($hn, '+zimbraServiceEnabled', 'opendkim');
+    main::deleteLocalConfig("cbpolicyd_timeout");
   }
   if (main::isInstalled("zimbra-store")) {
     my $zimbraIPMode=main::getLdapServerValue("zimbraIPMode");
