@@ -395,6 +395,7 @@ $(STORE_DEST_DIR)/conf/zmztozmig.conf:
 
 $(STORE_DEST_DIR)/libexec/zmztozmig: $(STORE_DEST_DIR)/libexec
 	cp -f $(MIG_TOOLS_DIR)/src/libexec/zmztozmig $@
+	cp -f $(MIG_TOOLS_DIR)/src/libexec/zmcleaniplanetics $@
 
 $(STORE_DEST_DIR)/libexec/zmcheckversion: $(STORE_DEST_DIR)/libexec
 	cp -f $(ADMIN_VERSIONCHECK_DIR)/src/libexec/zmcheckversion $@
