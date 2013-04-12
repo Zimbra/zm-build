@@ -6799,10 +6799,6 @@ sub setupCrontab {
     }
     if (scalar @backupSchedule == 0) {
       detail("Backup schedule was not previously defined");
-      $nohsm  = 0xffff & system("grep '/opt/zimbra/bin/zmhsm[[:space:]]\+-t' /tmp/crontab.zimbra.orig > /dev/null 2>&1");
-      if (!$nohsm) {
-        detail("HSM is in use, no backup schedule required");
-      }
     } else {
       detail("Retrieved backup schedule:\n @backupSchedule");
     }
@@ -6817,6 +6813,10 @@ sub setupCrontab {
     }
   } else {
     `crontab -u zimbra -l > /tmp/crontab.zimbra.orig 2> /dev/null`;
+  }
+  $nohsm  = 0xffff & system("grep '/opt/zimbra/bin/zmhsm[[:space:]]\+-t' /tmp/crontab.zimbra.orig > /dev/null 2>&1");
+  if (!$nohsm) {
+    detail("HSM is in use, no backup schedule required");
   }
   detail("crontab: Looking for ZIMBRASTART in existing crontab entry.");
   my $rc = 0xffff & system("grep ZIMBRASTART /tmp/crontab.zimbra.orig > /dev/null 2>&1");
