@@ -40,12 +40,12 @@ acct_exists() {
 
 grp_exists zimbra
 if [ $? != 0 ]; then
-	groupadd zimbra
+	groupadd -r zimbra
 fi
 
 acct_exists zimbra
 if [ $? != 0 ]; then
-	useradd -g zimbra -G tty -d /opt/zimbra -s /bin/bash zimbra
+	useradd -r -g zimbra -G tty -d /opt/zimbra -s /bin/bash zimbra
 else
 	usermod -g zimbra -d /opt/zimbra -s /bin/bash zimbra
 fi
