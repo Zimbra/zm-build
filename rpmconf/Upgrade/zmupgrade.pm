@@ -4507,6 +4507,9 @@ sub upgrade804GA {
     $ldap->unbind;
     main::deleteLocalConfig("ldap_db_checkpoint");
     main::deleteLocalConfig("ldap_accesslog_checkpoint");
+    if ($isLdapMaster) {
+        runLdapAttributeUpgrade("75650");
+    }
   }
   if (main::isInstalled("zimbra-mta")) {
     main::setLdapServerConfig($hn, '+zimbraServiceInstalled', 'opendkim');
