@@ -4047,6 +4047,12 @@ sub upgrade723GA {
   return 0;
 }
 
+sub upgrade724GA {
+  my ($startBuild, $targetVersion, $targetBuild) = (@_);
+  main::progress("Updating from 7.2.4_GA\n");
+  return 0;
+}
+
 sub upgrade800BETA1 {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
   main::progress("Updating from 8.0.0_BETA1\n");
