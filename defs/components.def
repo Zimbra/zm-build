@@ -86,6 +86,7 @@ STORE_COMPONENTS := \
 	$(STORE_DEST_DIR)/zimlets \
 	$(STORE_DEST_DIR)/libexec \
 	$(STORE_DEST_DIR)/libexec/zmztozmig \
+	$(STORE_DEST_DIR)/libexec/zmcleaniplanetics \
 	$(STORE_DEST_DIR)/libexec/zmcheckversion \
 	$(STORE_DEST_DIR)/conf/zimbra-contact-fields.xml \
 	$(STORE_DEST_DIR)/conf/zmztozmig.conf \
