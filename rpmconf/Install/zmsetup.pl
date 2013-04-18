@@ -6814,7 +6814,7 @@ sub setupCrontab {
   } else {
     `crontab -u zimbra -l > /tmp/crontab.zimbra.orig 2> /dev/null`;
   }
-  $nohsm  = 0xffff & system("grep '/opt/zimbra/bin/zmhsm[[:space:]]\+-t' /tmp/crontab.zimbra.orig > /dev/null 2>&1");
+  $nohsm  = 0xffff & system("grep '/opt/zimbra/bin/zmhsm[[:space:]]\\+-t' /tmp/crontab.zimbra.orig > /dev/null 2>&1");
   if (!$nohsm) {
     detail("HSM is in use, no backup schedule required");
   }
