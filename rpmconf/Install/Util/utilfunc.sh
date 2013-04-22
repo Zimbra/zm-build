@@ -1719,42 +1719,7 @@ removeExistingInstall() {
         fi
       fi 
 
-      if [ -f /etc/syslog.conf ]; then
-        egrep -q 'zimbra.log' /etc/syslog.conf
-        if [ $? = 0 ]; then
-          echo -n "Cleaning up /etc/syslog.conf..."
-          sed -i -e '/zimbra.log/d' /etc/syslog.conf
-          sed -i -e '/^auth\.\* /d' /etc/syslog.conf
-          sed -i -e '/^local0\.\* /d' /etc/syslog.conf
-          sed -i -e '/^local1\.\* /d' /etc/syslog.conf
-          sed -i -e '/^	local0,local1\.none/d' /etc/syslog.conf
-          sed -i -e 's/^\*\.\*;auth,authpriv\.none;local0\.none;local1\.none;mail\.none/*.*;auth,authpriv.none;local0.none;local1.none/' /etc/syslog.conf
-          sed -i -e 's/^*.info;local0.none;local1.none;auth.none/*.info/' /etc/syslog.conf
-        fi
-        if [ -x /etc/init.d/syslog ]; then
-          /etc/init.d/syslog restart > /dev/null 2>&1
-          echo "done."
-        elif [ -x /etc/init.d/sysklogd ]; then
-          /etc/init.d/sysklogd restart > /dev/null 2>&1
-          echo "done."
-        else 
-          echo "Unable to restart syslog service.  Please do it manually."
-        fi
-      elif [ -f /etc/syslog-ng/syslog-ng.conf.in ]; then
-        egrep -q 'zimbra' /etc/syslog-ng/syslog-ng.conf.in
-        if [ $? = 0 ]; then
-          echo -n "Cleaning up /etc/syslog-ng/syslog-ng.conf.in..."
-          sed -i -e '/zimbra/d' /etc/syslog-ng/syslog-ng.conf.in
-          sed -i -e 's/filter f_messages   { not facility(news, mail) and not filter(f_iptables) and/filter f_messages   { not facility(news, mail) and not filter(f_iptables); };/' /etc/syslog-ng/syslog-ng.conf.in
-          sed -i -e 's/^                               local4, local5, local6, local7) and not/                               local4, local5, local6, local7); };/' /etc/syslog-ng/syslog-ng.conf.in
-          if [ -x /sbin/SuSEconfig ]; then
-            /sbin/SuSEconfig --module syslog-ng
-            echo "done."
-          else
-            echo "Unable to restart syslog-ng service.  Please do it manually."
-          fi
-        fi
-      elif [ -f /etc/syslog-ng/syslog-ng.conf ]; then
+      if [ -f /etc/syslog-ng/syslog-ng.conf ]; then
         egrep -q 'zimbra' /etc/syslog-ng/syslog-ng.conf
         if [ $? = 0 ]; then
           echo -n "Cleaning up /etc/syslog-ng/syslog-ng.conf..."
@@ -1769,7 +1734,7 @@ removeExistingInstall() {
           fi
         fi
       elif [ -f /etc/rsyslog.conf ]; then
-	if [ -d /etc/rsyslog.d ]; then
+        if [ -d /etc/rsyslog.d ]; then
           if [ -f /etc/rsyslog.d/60-zimbra.conf ]; then
             echo -n "Cleaning up /etc/rsyslog.d..."
             rm -f /etc/rsyslog.d/60-zimbra.conf
@@ -1782,20 +1747,20 @@ removeExistingInstall() {
             else
               echo "Unable to restart rsyslog service. Please do it manually."
             fi
-          fi
-        else
-          egrep -q 'zimbra' /etc/rsyslog.conf
-          if [ $? = 0 ]; then
-            echo -n "Cleaning up /etc/rsyslog.conf..."
-            sed -i -e '/zimbra/d' /etc/rsyslog.conf
-            if [ $PLATFORM = "RHEL6_64" -o $PLATFORM = "CentOS6_64" -o $PLATFORM = "F13_64" ]; then
-              sed -i -e 's/^*.info;local0.none;local1.none;auth.none/*.info/' /etc/rsyslog.conf
-            fi
-            if [ -x /etc/init.d/rsyslog ]; then
-              /etc/init.d/rsyslog restart > /dev/null 2>&1
-              echo "done."
-            else
-              echo "Unable to restart rsyslog service. Please do it manually."
+          else
+            egrep -q 'zimbra' /etc/rsyslog.conf
+            if [ $? = 0 ]; then
+              echo -n "Cleaning up /etc/rsyslog.conf..."
+              sed -i -e '/zimbra/d' /etc/rsyslog.conf
+              if [ $PLATFORM = "RHEL6_64" -o $PLATFORM = "CentOS6_64" ]; then
+                sed -i -e 's/^*.info;local0.none;local1.none;mail.none;auth.none/*.info/' /etc/rsyslog.conf
+              fi
+              if [ -x /etc/init.d/rsyslog ]; then
+                /etc/init.d/rsyslog restart > /dev/null 2>&1
+                echo "done."
+              else
+                echo "Unable to restart rsyslog service. Please do it manually."
+              fi
             fi
           fi
         fi
