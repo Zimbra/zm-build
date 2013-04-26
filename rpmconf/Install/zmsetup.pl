@@ -5827,7 +5827,7 @@ sub configSetProxyPrefs {
                      "-i $config{IMAPPORT}:$config{IMAPPROXYPORT}:$config{IMAPSSLPORT}:$config{IMAPSSLPROXYPORT} ".
                      "-p $config{POPPORT}:$config{POPPROXYPORT}:$config{POPSSLPORT}:$config{POPSSLPROXYPORT} -H $config{HOSTNAME}");
        } else {
-         runAsZimbra("/opt/zimbra/libexec/zmproxyconfig $upstream -m -d -o ".
+         runAsZimbra("/opt/zimbra/libexec/zmproxyconfig -m -d -o ".
                      "-i $config{IMAPPORT}:$config{IMAPPROXYPORT}:$config{IMAPSSLPORT}:$config{IMAPSSLPROXYPORT} ".
                      "-p $config{POPPORT}:$config{POPPROXYPORT}:$config{POPSSLPORT}:$config{POPSSLPROXYPORT} -H $config{HOSTNAME}");
        }
@@ -5836,7 +5836,7 @@ sub configSetProxyPrefs {
                      " -x $config{PROXYMODE} ".
                      "-a $config{HTTPPORT}:$config{HTTPPROXYPORT}:$config{HTTPSPORT}:$config{HTTPSPROXYPORT} -H $config{HOSTNAME}");
        } else {
-         runAsZimbra("/opt/zimbra/libexec/zmproxyconfig $upstream -w -d -o ".
+         runAsZimbra("/opt/zimbra/libexec/zmproxyconfig -w -d -o ".
                      "-x $config{MODE} ".
                      "-a $config{HTTPPORT}:$config{HTTPPROXYPORT}:$config{HTTPSPORT}:$config{HTTPSPROXYPORT} -H $config{HOSTNAME}");
        }
@@ -5876,14 +5876,10 @@ sub configSetProxyPrefs {
        }
      }
    } else {
-     my $upstream="-u";
-     if ($config{zimbra_require_interprocess_security}) {
-       $upstream="-U";
-     }
-     runAsZimbra("/opt/zimbra/libexec/zmproxyconfig $upstream -m -d -o ".
+     runAsZimbra("/opt/zimbra/libexec/zmproxyconfig -m -d -o ".
                  "-i $config{IMAPPORT}:$config{IMAPPROXYPORT}:$config{IMAPSSLPORT}:$config{IMAPSSLPROXYPORT} ".
                  "-p $config{POPPORT}:$config{POPPROXYPORT}:$config{POPSSLPORT}:$config{POPSSLPROXYPORT} -H $config{HOSTNAME}");
-     runAsZimbra("/opt/zimbra/libexec/zmproxyconfig $upstream -w -d -o ".
+     runAsZimbra("/opt/zimbra/libexec/zmproxyconfig -w -d -o ".
                  "-x $config{MODE} ".
                  "-a $config{HTTPPORT}:$config{HTTPPROXYPORT}:$config{HTTPSPORT}:$config{HTTPSPROXYPORT} -H $config{HOSTNAME}");
    }
