@@ -2744,19 +2744,12 @@ sub setProxyMode {
     my $m = 
       askNonBlank("Please enter the proxy server mode (http,https,both,mixed,redirect)",
         $config{PROXYMODE});
-    if (isInstalled("zimbra-store")) {
-      if ($config{zimbra_require_interprocess_security}) {
-        if ($m eq "https" || $m eq "redirect") {
-          $config{MODE} = $m;
-          return;
-        } else {
-          print "Only \"https\" and \"redirect\" are valid modes when requiring interprocess security.\n";
-        }
+    if ($config{zimbra_require_interprocess_security}) {
+      if ($m eq "https" || $m eq "redirect") {
+        $config{MODE} = $m;
+        return;
       } else {
-        if ($m eq "http" || $m eq "https" || $m eq "mixed" || $m eq "both" || $m eq "redirect" ) {
-          $config{PROXYMODE} = $m;
-          return;
-        }
+        print "Only \"https\" and \"redirect\" are valid modes when requiring interprocess security.\n";
       }
     } else {
       if ($m eq "http" || $m eq "https" || $m eq "mixed" || $m eq "both" || $m eq "redirect" ) {
