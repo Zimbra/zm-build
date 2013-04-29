@@ -2719,20 +2719,42 @@ sub setStoreMode {
           $config{MODE} = $m;
           return;
         } else {
-          print "Only \"https\" and \"both\" are valid modes when requiring interprocess security.\n";
+          print "Only \"https\" and \"both\" are valid modes when requiring interprocess security with web proxy.\n";
         }
       } else {
         if ($m eq "http" || $m eq "both" ) {
           $config{MODE} = $m;
           return;
         } else {
-          print "Only \"http\" and \"both\" are valid modes when not requiring interprocess security.\n";
+          print "Only \"http\" and \"both\" are valid modes when not requiring interprocess security with web proxy.\n";
         }
       }
     } else {
-      if ($m eq "http" || $m eq "https" || $m eq "mixed" || $m eq "both" || $m eq "redirect" ) {
-        $config{MODE} = $m;
-        return;
+      my @proxytargets;
+      open(ZMPROV, "$ZMPROV gas proxy 2>/dev/null|");
+      chomp(@proxytargets = <ZMPROV>);
+      close(ZMPROV);
+      if (scalar @proxytargets) {
+        if ($config{zimbra_require_interprocess_security}) {
+          if ($m eq "https" || $m eq "both" ) {
+            $config{MODE} = $m;
+            return;
+          } else {
+            print "Only \"https\" and \"both\" are valid modes when requiring interprocess security with web proxy.\n";
+          }
+        } else {
+          if ($m eq "http" || $m eq "both" ) {
+            $config{MODE} = $m;
+            return;
+          } else {
+            print "Only \"http\" and \"both\" are valid modes when not requiring interprocess security with web proxy.\n";
+          }
+        }
+      } else {
+        if ($m eq "http" || $m eq "https" || $m eq "mixed" || $m eq "both" || $m eq "redirect" ) {
+          $config{MODE} = $m;
+          return;
+        }
       }
     }
     print "Please enter a valid mode!\n";
@@ -2749,7 +2771,7 @@ sub setProxyMode {
         $config{MODE} = $m;
         return;
       } else {
-        print "Only \"https\" and \"redirect\" are valid modes when requiring interprocess security.\n";
+        print "Only \"https\" and \"redirect\" are valid modes when requiring interprocess security with web proxy.\n";
       }
     } else {
       if ($m eq "http" || $m eq "https" || $m eq "mixed" || $m eq "both" || $m eq "redirect" ) {
