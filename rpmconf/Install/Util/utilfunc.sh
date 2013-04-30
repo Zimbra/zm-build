@@ -1754,6 +1754,7 @@ removeExistingInstall() {
               sed -i -e '/zimbra/d' /etc/rsyslog.conf
               if [ $PLATFORM = "RHEL6_64" -o $PLATFORM = "CentOS6_64" ]; then
                 sed -i -e 's/^*.info;local0.none;local1.none;mail.none;auth.none/*.info/' /etc/rsyslog.conf
+                sed -i -e 's/^*.info;local0.none;local1.none;auth.none/*.info/' /etc/rsyslog.conf
               fi
               if [ -x /etc/init.d/rsyslog ]; then
                 /etc/init.d/rsyslog restart > /dev/null 2>&1
