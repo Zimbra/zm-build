@@ -6691,6 +6691,7 @@ sub applyConfig {
     if ($main::platform =~ /MACOSX/) {
       runAsRoot("/bin/launchctl load -w /System/Library/LaunchDaemons/com.zimbra.zcs.plist");
     } else {
+      runAsZimbra ("/opt/zimbra/bin/zmcontrol stop");
       runAsZimbra ("/opt/zimbra/bin/zmcontrol start");
     }
     # runAsZimbra swallows the output, so call status this way
