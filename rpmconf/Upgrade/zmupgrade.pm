@@ -2005,6 +2005,10 @@ sub upgrade900BETA1 {
       main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-as-table_open_cache-fixup --section=mysqld --key=table_open_cache --setmin --value=1200 ${antispam_mysql_mycnf}");
     }
   }
+  my $mysql_class = main::getLocalConfig("zimbra_class_database");
+  if ($mysql_class =~ /com.zimbra.cs.db.MySQL/) {
+    main::setLocalConfig("zimbra_class_database", "com.zimbra.cs.db.MariaDB");
+  }
   return 0;
 }
 
