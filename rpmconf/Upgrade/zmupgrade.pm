@@ -1998,6 +1998,11 @@ sub upgrade805GA {
 sub upgrade900BETA1 {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
   main::progress("Updating from 9.0.0_BETA1\n");
+  if (main::isInstalled("zimbra-ldap")) {
+    if ($isLdapMaster) {
+        runLdapAttributeUpgrade("81385");
+    }
+  }
   if (main::isInstalled("zimbra-mta")) {
     my $antispam_mysql_mycnf = main::getLocalConfig("antispam_mysql_mycnf"); 
     if ( -e ${antispam_mysql_mycnf} ) {
