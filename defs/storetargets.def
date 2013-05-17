@@ -104,6 +104,9 @@ $(STORE_DEST_DIR)/$(MYSQL_DIR):
 $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/bin: $(STORE_DEST_DIR) force
 	@echo "*** Creating $(MAILBOXD_SERVER)"
 	(cd $(STORE_DEST_DIR); tar xzf $(MAILBOXD_SOURCE).tar.gz;)
+	mkdir -p $(STORE_DEST_DIR)/lib
+	cp -f $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/lib/setuid/libsetuid-linux.so \
+		$(STORE_DEST_DIR)/lib/libsetuid.so
 	-(rm $(@D)/start.ini $(@D)/etc/keystore)
 
 ifeq ($(ZIMBRA_USE_TOMCAT), 1)
@@ -185,10 +188,6 @@ endif
 $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/temp: force
 	mkdir -p $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/temp
 	touch $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/temp/.emptyfile
-
-$(STORE_DEST_DIR)/lib/libsetuid:
-	mkdir -p $(STORE_DEST_DIR)/lib
-	cp -pr $(NATIVE_DIR)/build/libsetuid.$(JNI_EXT) $(STORE_DEST_DIR)/lib/
 
 $(WEBAPP_DIR): 
 	mkdir -p $@
