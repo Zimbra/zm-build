@@ -4615,6 +4615,20 @@ sub getLocalConfig {
   return $val;
 }
 
+sub getLocalConfigRaw {
+  my ($key,$force) = @_;
+
+  return $main::loaded{lc}{$key}
+    if (exists $main::loaded{lc}{$key} && !$force);
+
+  detail ( "Getting local config $key" );
+  my $val = `/opt/zimbra/bin/zmlocalconfig -s -m nokey ${key} 2> /dev/null`;
+  chomp $val;
+  detail ("DEBUG: LC Loaded $key=$val") if $debug;
+  $main::loaded{lc}{$key} = $val;
+  return $val;
+}
+
 sub deleteLocalConfig {
   my $key = shift;
 

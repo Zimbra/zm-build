@@ -3436,7 +3436,7 @@ sub upgrade607GA {
     }
   }
   if (main::isInstalled("zimbra-store")) {
-    my $mailboxd_java_options = main::getLocalConfig("mailboxd_java_options");
+    my $mailboxd_java_options = main::getLocalConfigRaw("mailboxd_java_options");
     $mailboxd_java_options .= " -Dsun.net.inetaddr.ttl=\${networkaddress_cache_ttl}"
       unless ($mailboxd_java_options =~ /sun.net.inetaddr.ttl/);
     main::detail("Modified mailboxd_java_options=$mailboxd_java_options");
@@ -3528,7 +3528,7 @@ sub upgrade6011GA {
     }
   }
   if (main::isInstalled("zimbra-store")) {
-    my $mailboxd_java_options=main::getLocalConfig("mailboxd_java_options");
+    my $mailboxd_java_options=main::getLocalConfigRaw("mailboxd_java_options");
     if ($mailboxd_java_options =~ /-Dsun.net.inetaddr.ttl=$/) {
       my $new_mailboxd_options;
       foreach my $option (split(/\s+/, $mailboxd_java_options)) {
@@ -3691,7 +3691,7 @@ sub upgrade700BETA3 {
     runLdapAttributeUpgrade("47934") if ($isLdapMaster);
   }
   if (main::isInstalled("zimbra-store")) {
-    my $mailboxd_java_options=main::getLocalConfig("mailboxd_java_options");
+    my $mailboxd_java_options=main::getLocalConfigRaw("mailboxd_java_options");
     if ($mailboxd_java_options =~ /-Dsun.net.inetaddr.ttl=$/) {
       my $new_mailboxd_options;
       foreach my $option (split(/\s+/, $mailboxd_java_options)) {
@@ -3759,7 +3759,7 @@ sub upgrade700RC1 {
   }
   if (main::isInstalled("zimbra-store")) {
     # Bug #53821
-    my $mailboxd_java_options=main::getLocalConfig("mailboxd_java_options");
+    my $mailboxd_java_options=main::getLocalConfigRaw("mailboxd_java_options");
 
     $mailboxd_java_options .= " -XX:-OmitStackTraceInFastThrow"
       unless ($mailboxd_java_options =~ /OmitStackTraceInFastThrow/);
@@ -4486,7 +4486,7 @@ sub upgrade803GA {
      main::setLocalConfig("ldap_common_toolthreads", "2");
   }
   if (main::isInstalled("zimbra-store")) {
-    my $mailboxd_java_options=main::getLocalConfig("mailboxd_java_options");
+    my $mailboxd_java_options=main::getLocalConfigRaw("mailboxd_java_options");
     if ($mailboxd_java_options =~ /-XX:MaxPermSize=128m/) {
       $mailboxd_java_options =~ s/-XX:MaxPermSize=128m/-XX:MaxPermSize=350m/;
       main::detail("Modified mailboxd_java_options=$mailboxd_java_options");
@@ -4550,7 +4550,7 @@ sub upgrade804GA {
         main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-bind --section=mysqld --key=bind-address --unset ${mysql_mycnf}");
         main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-bind --section=mysqld --key=bind-address --set --value=::1 ${mysql_mycnf}");
     }
-    my $mailboxd_java_options=main::getLocalConfig("mailboxd_java_options");
+    my $mailboxd_java_options=main::getLocalConfigRaw("mailboxd_java_options");
     if ($mailboxd_java_options !~ /-Dorg.apache.jasper.compiler.disablejsr199/) {
       $mailboxd_java_options = $mailboxd_java_options." -Dorg.apache.jasper.compiler.disablejsr199=true";
       main::detail("Modified mailboxd_java_options=$mailboxd_java_options");
