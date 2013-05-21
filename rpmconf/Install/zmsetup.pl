@@ -3797,17 +3797,19 @@ sub createProxyMenu {
          "callback" => \&setPopSSLProxyPort,
        };
        $i++;
-       if ($config{ldap_nginx_password} eq "") {
-         $config{LDAPNGINXPASSSET} = "UNSET";
-       } else {
-         $config{LDAPNGINXPASSSET} = "set" unless ($config{LDAPNGINXPASSSET} eq "Not Verified");
-       }
-       $$lm{menuitems}{$i} = {
-         "prompt" => "Bind password for nginx ldap user:",
-         "var" => \$config{LDAPNGINXPASSSET},
-         "callback" => \&setLdapNginxPass
-       };
-       $i++;
+    }
+    if ($config{HTTPPROXY} eq "TRUE" || $config{MAILPROXY} eq "TRUE") {
+      if ($config{ldap_nginx_password} eq "") {
+        $config{LDAPNGINXPASSSET} = "UNSET";
+      } else {
+        $config{LDAPNGINXPASSSET} = "set" unless ($config{LDAPNGINXPASSSET} eq "Not Verified");
+      }
+      $$lm{menuitems}{$i} = {
+        "prompt" => "Bind password for nginx ldap user:",
+        "var" => \$config{LDAPNGINXPASSSET},
+        "callback" => \&setLdapNginxPass
+      };
+      $i++;
     }
     $$lm{menuitems}{$i} = {
       "prompt" => "Enable HTTP[S] Proxy:",
