@@ -2768,7 +2768,7 @@ sub setProxyMode {
         $config{PROXYMODE});
     if ($config{zimbra_require_interprocess_security}) {
       if ($m eq "https" || $m eq "redirect") {
-        $config{MODE} = $m;
+        $config{PROXYMODE} = $m;
         return;
       } else {
         print "Only \"https\" and \"redirect\" are valid modes when requiring interprocess security with web proxy.\n";
