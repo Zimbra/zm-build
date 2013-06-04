@@ -94,7 +94,7 @@ if ($options{build}) {
     print "ZCS Install not found.\n";
     exit 1;
   }
-  $platform = `${zimbra_home}/libexec/get_plat_tag.sh`;
+  $platform = qx(${zimbra_home}/libexec/get_plat_tag.sh);
   chomp($platform);
   if (-f "source/build") {
     open(BUILD, "source/build");
@@ -376,7 +376,7 @@ sub deployPatch($) {
 sub logSession($) {
   my ($msg) = @_;
   return if $options{dryrun};
-  my $date = `date +%s`;
+  my $date = qx(date +%s);
   chomp($date);
   open(SESS, ">>${zimbra_home}/.install_history");
   print SESS "$date: $msg\n";
@@ -436,7 +436,7 @@ sub detail($) {
   open(LOG, ">>$logfile");
   print LOG "$date $msg\n";
   close(LOG);
-  #`echo "$date $msg" >> $logfile`;
+  #qx(echo "$date $msg" >> $logfile);
 }
 
 sub progress($$$) {

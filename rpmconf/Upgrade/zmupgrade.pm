@@ -27,12 +27,12 @@ use FileHandle;
 use File::Grep qw (fgrep);
 use File::Path;
 my $zmlocalconfig="/opt/zimbra/bin/zmlocalconfig";
-my $type = `${zmlocalconfig} -m nokey convertd_stub_name 2> /dev/null`;
+my $type = qx(${zmlocalconfig} -m nokey convertd_stub_name 2> /dev/null);
 chomp $type;
 if ($type eq "") {$type = "FOSS";}
 else {$type = "NETWORK";}
 
-my $rundir = `dirname $0`;
+my $rundir = qx(dirname $0);
 chomp $rundir;
 my $scriptDir = "/opt/zimbra/libexec/scripts";
 
@@ -45,7 +45,7 @@ my $comboHiVersion  = 27;
 my $needSlapIndexing = 0;
 my $mysqlcnfUpdated = 0;
 
-my $platform = `/opt/zimbra/libexec/get_plat_tag.sh`;
+my $platform = qx(/opt/zimbra/libexec/get_plat_tag.sh);
 chomp $platform;
 my $addr_space = (($platform =~ m/\w+_(\d+)/) ? "$1" : "32");
 my $su;
@@ -55,10 +55,10 @@ if ($platform =~ /MACOSXx86_10/) {
   $su = "su - zimbra -c";
 }
 
-my $hn = `$su "${zmlocalconfig} -m nokey zimbra_server_hostname"`;
+my $hn = qx($su "${zmlocalconfig} -m nokey zimbra_server_hostname");
 chomp $hn;
 
-my $isLdapMaster = `$su "${zmlocalconfig} -m nokey ldap_is_master"`;
+my $isLdapMaster = qx($su "${zmlocalconfig} -m nokey ldap_is_master");
 chomp($isLdapMaster);
 if (lc($isLdapMaster) eq "true" ) {
    $isLdapMaster = 1;
@@ -708,7 +708,7 @@ sub upgrade605GA {
       main::runAsZimbra("zmjava com.zimbra.cs.account.ldap.upgrade.LdapUpgrade -b 43147 -v");
     }
     # 43040, must be done on all LDAP servers
-    my $ldap_pass = `$su "zmlocalconfig -s -m nokey ldap_root_password"`;
+    my $ldap_pass = qx($su "zmlocalconfig -s -m nokey ldap_root_password");
     my $ldap;
     chomp($ldap_pass);
     unless($ldap = Net::LDAP->new('ldapi://%2fopt%2fzimbra%2fdata%2fldap%2fstate%2frun%2fldapi/')) {
@@ -749,7 +749,7 @@ sub upgrade606GA {
   
   # 42877 - Fix ACLs for new attrs for local GAL access
   if (main::isInstalled("zimbra-ldap")) {
-    my $ldap_pass = `$su "zmlocalconfig -s -m nokey ldap_root_password"`;
+    my $ldap_pass = qx($su "zmlocalconfig -s -m nokey ldap_root_password");
     chomp($ldap_pass);
     my $ldap;
     unless($ldap = Net::LDAP->new('ldapi://%2fopt%2fzimbra%2fdata%2fldap%2fstate%2frun%2fldapi/')) {
@@ -837,7 +837,7 @@ sub upgrade607GA {
   if (main::isInstalled("zimbra-ldap")) {
     if (!$isLdapMaster) {
       # 46508 upgrade step for keepalive setting
-      my $ldap_pass = `$su "zmlocalconfig -s -m nokey ldap_root_password"`;
+      my $ldap_pass = qx($su "zmlocalconfig -s -m nokey ldap_root_password");
       my $ldap;
       chomp($ldap_pass);
       unless($ldap = Net::LDAP->new('ldapi://%2fopt%2fzimbra%2fdata%2fldap%2fstate%2frun%2fldapi/')) {
@@ -911,7 +911,7 @@ sub upgrade6011GA {
     if($isLdapMaster) {
       runLdapAttributeUpgrade("50458");
     }
-    my $ldap_pass = `$su "zmlocalconfig -s -m nokey ldap_root_password"`;
+    my $ldap_pass = qx($su "zmlocalconfig -s -m nokey ldap_root_password");
     chomp($ldap_pass);
     my $ldap;
     unless($ldap = Net::LDAP->new('ldapi://%2fopt%2fzimbra%2fdata%2fldap%2fstate%2frun%2fldapi/')) {
@@ -1005,7 +1005,7 @@ sub upgrade6015GA {
   main::progress("Updating from 6.0.15_GA\n");
   if (main::isInstalled("zimbra-ldap")) {
     # 43040, must be done on all LDAP servers
-    my $ldap_pass = `$su "zmlocalconfig -s -m nokey ldap_root_password"`;
+    my $ldap_pass = qx($su "zmlocalconfig -s -m nokey ldap_root_password");
     my $ldap;
     chomp($ldap_pass);
     unless($ldap = Net::LDAP->new('ldapi://%2fopt%2fzimbra%2fdata%2fldap%2fstate%2frun%2fldapi/')) {
@@ -1059,7 +1059,7 @@ sub upgrade700BETA2 {
       runLdapAttributeUpgrade("50458");
     }
 
-    my $ldap_pass = `$su "zmlocalconfig -s -m nokey ldap_root_password"`;
+    my $ldap_pass = qx($su "zmlocalconfig -s -m nokey ldap_root_password");
     chomp($ldap_pass);
     my $ldap;
     unless($ldap = Net::LDAP->new('ldapi://%2fopt%2fzimbra%2fdata%2fldap%2fstate%2frun%2fldapi/')) {
@@ -1141,7 +1141,7 @@ sub upgrade700RC1 {
   main::progress("Updating from 7.0.0_RC1\n");
 
   if (main::isInstalled("zimbra-ldap")) {
-    my $ldap_pass = `$su "zmlocalconfig -s -m nokey ldap_root_password"`;
+    my $ldap_pass = qx($su "zmlocalconfig -s -m nokey ldap_root_password");
     chomp($ldap_pass);
     my $ldap;
     unless($ldap = Net::LDAP->new('ldapi://%2fopt%2fzimbra%2fdata%2fldap%2fstate%2frun%2fldapi/')) {
@@ -1300,7 +1300,7 @@ sub upgrade713GA {
       runLdapAttributeUpgrade("63475");
     }
     # 53301 - Fix ACLs for userCertificate for BES user and general usage
-    my $ldap_pass = `$su "zmlocalconfig -s -m nokey ldap_root_password"`;
+    my $ldap_pass = qx($su "zmlocalconfig -s -m nokey ldap_root_password");
     chomp($ldap_pass);
     my $ldap;
     unless($ldap = Net::LDAP->new('ldapi://%2fopt%2fzimbra%2fdata%2fldap%2fstate%2frun%2fldapi/')) {
@@ -1417,7 +1417,7 @@ sub upgrade714GA {
   main::progress("Updating from 7.1.4_GA\n");
   if (main::isInstalled("zimbra-ldap")) {
     # 43040, must be done on all LDAP servers
-    my $ldap_pass = `$su "zmlocalconfig -s -m nokey ldap_root_password"`;
+    my $ldap_pass = qx($su "zmlocalconfig -s -m nokey ldap_root_password");
     my $ldap;
     chomp($ldap_pass);
     unless($ldap = Net::LDAP->new('ldapi://%2fopt%2fzimbra%2fdata%2fldap%2fstate%2frun%2fldapi/')) {
@@ -1430,7 +1430,7 @@ sub upgrade714GA {
     $result = $ldap->unbind;
   }
   if (main::isInstalled("zimbra-mta")) {
-    my @zimbraMtaRestriction = `$su "$ZMPROV gacf zimbraMtaRestriction"`;
+    my @zimbraMtaRestriction = qx($su "$ZMPROV gacf zimbraMtaRestriction");
     foreach my $restriction (@zimbraMtaRestriction) {
       $restriction =~ s/zimbraMtaRestriction: //;
       chomp $restriction;
@@ -1523,7 +1523,7 @@ sub upgrade800BETA1 {
     main::progress("Adding dynamic group configuration\n");
     main::runAsZimbra("perl -I${scriptDir} ${scriptDir}/migrate20110615-AddDynlist.pl");
     main::runAsZimbra("perl -I${scriptDir} ${scriptDir}/migrate20110721-AddUnique.pl");
-    my $ldap_pass = `$su "zmlocalconfig -s -m nokey ldap_root_password"`;
+    my $ldap_pass = qx($su "zmlocalconfig -s -m nokey ldap_root_password");
     chomp($ldap_pass);
     my $ldap;
     unless($ldap = Net::LDAP->new('ldapi://%2fopt%2fzimbra%2fdata%2fldap%2fstate%2frun%2fldapi/')) {
@@ -1604,9 +1604,9 @@ sub upgrade800BETA2 {
       main::runAsZimbra("perl -I${scriptDir} ${scriptDir}/migrate20111005-ItemIdCheckpoint.pl");
 
     # Bug: 60011
-    my $mysql_root_password=`/opt/zimbra/bin/zmlocalconfig -s -x -m nokey mysql_root_password`;
-    my $mysql_socket=`/opt/zimbra/bin/zmlocalconfig -s -x -m nokey mysql_socket`;
-    my $host=`hostname`;
+    my $mysql_root_password=qx(/opt/zimbra/bin/zmlocalconfig -s -x -m nokey mysql_root_password);
+    my $mysql_socket=qx(/opt/zimbra/bin/zmlocalconfig -s -x -m nokey mysql_socket);
+    my $host=qx(hostname);
     chomp $mysql_root_password;
     chomp $mysql_socket;
     chomp $host;
@@ -1618,8 +1618,8 @@ sub upgrade800BETA2 {
       SET PASSWORD FOR 'root'\@'localhost.localdomain' = PASSWORD('${mysql_root_password}');
 FIX_RIGHTS_EOF
 
-    `/opt/zimbra/mysql/bin/mysql -S '$mysql_socket' -u root --password='$mysql_root_password' -e "$sql"`;
-    `/opt/zimbra/mysql/bin/mysql -S '$mysql_socket' -u root --password='$mysql_root_password' -e "DROP USER ''\@'localhost'; DROP USER ''\@'${host}'"`;
+    qx(/opt/zimbra/mysql/bin/mysql -S '$mysql_socket' -u root --password='$mysql_root_password' -e "$sql");
+    qx(/opt/zimbra/mysql/bin/mysql -S '$mysql_socket' -u root --password='$mysql_root_password' -e "DROP USER ''\@'localhost'; DROP USER ''\@'${host}'");
     stopSql();
 
     # 66663
@@ -1670,8 +1670,8 @@ sub upgrade800BETA3 {
   if (main::isInstalled("zimbra-store")) {
     my $zimbra_home = main::getLocalConfig("zimbra_home") || "/opt/zimbra";
     if (-e "${zimbra_home}/jetty-6.1.22.z6/etc/jetty.keytab") {
-      `mkdir -p ${zimbra_home}/data/mailboxd/spnego`;
-      `cp -pf ${zimbra_home}/jetty-6.1.22.z6/etc/jetty.keytab ${zimbra_home}/data/mailboxd/spnego/jetty.keytab`;
+      qx(mkdir -p ${zimbra_home}/data/mailboxd/spnego);
+      qx(cp -pf ${zimbra_home}/jetty-6.1.22.z6/etc/jetty.keytab ${zimbra_home}/data/mailboxd/spnego/jetty.keytab);
     }
   }
   if (main::isInstalled("zimbra-octopus")) {
@@ -1708,7 +1708,7 @@ sub upgrade800BETA4 {
     if ($doIndex) {
       &indexLdapAttribute("DKIMSelector");
     }
-    my $ldap_pass = `$su "zmlocalconfig -s -m nokey ldap_root_password"`;
+    my $ldap_pass = qx($su "zmlocalconfig -s -m nokey ldap_root_password");
     chomp($ldap_pass);
     my $ldap;
     unless($ldap = Net::LDAP->new('ldapi://%2fopt%2fzimbra%2fdata%2fldap%2fstate%2frun%2fldapi/')) {
@@ -1787,7 +1787,7 @@ sub upgrade800BETA5 {
   }
   if (main::isInstalled("zimbra-mta")) {
     if (-f "/opt/zimbra/conf/sauser.cf") {
-      `mv /opt/zimbra/conf/sauser.cf /opt/zimbra/conf/sa/sauser.cf`;
+      qx(mv /opt/zimbra/conf/sauser.cf /opt/zimbra/conf/sa/sauser.cf);
     }
   }
   return 0;
@@ -1815,7 +1815,7 @@ sub upgrade801GA {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
   main::progress("Updating from 8.0.1_GA\n");
   if (main::isInstalled("zimbra-ldap")) {
-    my $ldap_pass = `$su "zmlocalconfig -s -m nokey ldap_root_password"`;
+    my $ldap_pass = qx($su "zmlocalconfig -s -m nokey ldap_root_password");
     chomp($ldap_pass);
     my $ldap;
     unless($ldap = Net::LDAP->new('ldapi://%2fopt%2fzimbra%2fdata%2fldap%2fstate%2frun%2fldapi/')) {
@@ -1879,7 +1879,7 @@ sub upgrade802GA {
   main::progress("Updating from 8.0.2_GA\n");
   if (main::isInstalled("zimbra-ldap")) {
     if ($isLdapMaster) {
-      my $ldap_pass = `$su "zmlocalconfig -s -m nokey ldap_root_password"`;
+      my $ldap_pass = qx($su "zmlocalconfig -s -m nokey ldap_root_password");
       chomp($ldap_pass);
       my $ldap;
       unless($ldap = Net::LDAP->new('ldapi://%2fopt%2fzimbra%2fdata%2fldap%2fstate%2frun%2fldapi/')) {
@@ -1932,7 +1932,7 @@ sub upgrade804GA {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
   main::progress("Updating from 8.0.4_GA\n");
   if (main::isInstalled("zimbra-ldap")) {
-    my $ldap_pass = `$su "zmlocalconfig -s -m nokey ldap_root_password"`;
+    my $ldap_pass = qx($su "zmlocalconfig -s -m nokey ldap_root_password");
     chomp($ldap_pass);
     my $ldap;
     unless($ldap = Net::LDAP->new('ldapi://%2fopt%2fzimbra%2fdata%2fldap%2fstate%2frun%2fldapi/')) {
@@ -2225,13 +2225,13 @@ sub movePostfixQueue {
   if ( -d "/opt/zimbra/postfix-${fromVersion}/spool" ) {
     main::progress("Moving postfix queues from $fromVersion to $toVersion\n");
     my @dirs = qw /active bounce corrupt defer deferred flush hold incoming maildrop/;
-    `mkdir -p /opt/zimbra/postfix-${toVersion}/spool`;
+    qx(mkdir -p /opt/zimbra/postfix-${toVersion}/spool);
     foreach my $d (@dirs) {
       if (-d "/opt/zimbra/postfix-${fromVersion}/spool/${d}/") {
         main::progress("Moving $d\n");
-        `mkdir -p /opt/zimbra/postfix-${toVersion}/spool/${d}`;
-        `cp -Rf /opt/zimbra/postfix-${fromVersion}/spool/${d}/* /opt/zimbra/postfix-${toVersion}/spool/${d}`;
-        `chown -R postfix:postdrop /opt/zimbra/postfix-${toVersion}/spool/${d}`;
+        qx(mkdir -p /opt/zimbra/postfix-${toVersion}/spool/${d});
+        qx(cp -Rf /opt/zimbra/postfix-${fromVersion}/spool/${d}/* /opt/zimbra/postfix-${toVersion}/spool/${d});
+        qx(chown -R postfix:postdrop /opt/zimbra/postfix-${toVersion}/spool/${d});
       }
     }
   }
@@ -2248,7 +2248,7 @@ sub relocatePostfixQueue {
   mkdir -p "$toDir/spool";
   if ( -d "$fromDir/spool" && ! -d "$toDir/spool/active") {
     chdir($fromDir);
-    `tar cf - spool 1>/dev/null 2>&1 | (cd $toDir; tar xfp -) >/dev/null 2>&1`;
+    qx(tar cf - spool 1>/dev/null 2>&1 | (cd $toDir; tar xfp -) >/dev/null 2>&1);
     chdir($curDir);
   }
   main::runAsRoot("/opt/zimbra/libexec/zmfixperms");
@@ -2270,7 +2270,7 @@ sub updateLoggerMySQLcnf {
     my $i=0;
     my $mycnfChanged = 0;
     my $tmpfile = "/tmp/my.cnf.$$";;
-    my $zimbra_user = `${zmlocalconfig} -m nokey zimbra_user 2> /dev/null` || "zmbra";;
+    my $zimbra_user = qx(${zmlocalconfig} -m nokey zimbra_user 2> /dev/null) || "zimbra";;
     open(TMP, ">$tmpfile");
     foreach (@CNF) {
       if (/^port/ && $CNF[$i+1] !~ m/^user/) {
@@ -2301,9 +2301,9 @@ sub updateLoggerMySQLcnf {
     close(TMP);
   
     if ($mycnfChanged) {
-      `mv $mycnf ${mycnf}.${startVersion}`;
-      `cp -f $tmpfile $mycnf`;
-      `chmod 644 $mycnf`;
+      qx(mv $mycnf ${mycnf}.${startVersion});
+      qx(cp -f $tmpfile $mycnf);
+      qx(chmod 644 $mycnf);
     } 
   }
 }
@@ -2322,8 +2322,8 @@ sub updateMySQLcnf {
     my $i=0;
     my $mycnfChanged = 0;
     my $tmpfile = "/tmp/my.cnf.$$";;
-    my $zimbra_user = `${zmlocalconfig} -m nokey zimbra_user 2> /dev/null` || "zimbra";;
-    my $zimbra_tmp_directory = `${zmlocalconfig} -m nokey zimbra_tmp_directory 2> /dev/null` || "zimbra";;
+    my $zimbra_user = qx(${zmlocalconfig} -m nokey zimbra_user 2> /dev/null) || "zimbra";;
+    my $zimbra_tmp_directory = qx(${zmlocalconfig} -m nokey zimbra_tmp_directory 2> /dev/null) || "zimbra";;
     open(TMP, ">$tmpfile");
     foreach (@CNF) {
       if (/^port/ && $CNF[$i+1] !~ m/^user/) {
@@ -2385,9 +2385,9 @@ sub updateMySQLcnf {
     close(TMP);
   
     if ($mycnfChanged) {
-      `mv $mycnf ${mycnf}.${startVersion}`;
-      `cp -f $tmpfile $mycnf`;
-      `chmod 644 $mycnf`;
+      qx(mv $mycnf ${mycnf}.${startVersion});
+      qx(cp -f $tmpfile $mycnf);
+      qx(chmod 644 $mycnf);
     } 
   }
 }
@@ -2403,9 +2403,9 @@ sub clearTomcatWorkDir {
 sub clearRedologDir($$) {
   my ($redologDir, $version) = @_;
   if (-d "$redologDir" && ! -e "${redologDir}/${version}") {
-    `mkdir ${redologDir}/${version}`;
-    `mv ${redologDir}/* ${redologDir}/${version}/ > /dev/null 2>&1`;
-    `chown zimbra:zimbra $redologDir > /dev/null 2>&1`;
+    qx(mkdir ${redologDir}/${version});
+    qx(mv ${redologDir}/* ${redologDir}/${version}/ > /dev/null 2>&1);
+    qx(chown zimbra:zimbra $redologDir > /dev/null 2>&1);
   }
   return;
 }
@@ -2413,9 +2413,9 @@ sub clearRedologDir($$) {
 sub clearBackupDir($$) {
   my ($backupDir, $version) = @_;
   if (-e "$backupDir" && ! -e "${backupDir}/${version}") {
-    `mkdir ${backupDir}/${version}`;
-    `mv ${backupDir}/* ${backupDir}/${version} > /dev/null 2>&1`;
-    `chown zimbra:zimbra $backupDir > /dev/null 2>&1`;
+    qx(mkdir ${backupDir}/${version});
+    qx(mv ${backupDir}/* ${backupDir}/${version} > /dev/null 2>&1);
+    qx(chown zimbra:zimbra $backupDir > /dev/null 2>&1);
   }
   return;
 }
@@ -2493,7 +2493,7 @@ sub doBackupRestoreVersionUpdate($) {
 
   my ($prevRedologVersion,$currentRedologVersion,$prevBackupVersion,$currentBackupVersion);
   $prevRedologVersion = &Migrate::getRedologVersion;
-  $currentRedologVersion = `$su "zmjava com.zimbra.cs.redolog.util.GetVersion"`;
+  $currentRedologVersion = qx($su "zmjava com.zimbra.cs.redolog.util.GetVersion");
   chomp($currentRedologVersion);
 
   return unless ($currentRedologVersion);
@@ -2509,7 +2509,7 @@ sub doBackupRestoreVersionUpdate($) {
 
   if (-f "/opt/zimbra/lib/ext/backup/zimbrabackup.jar") {
     $prevBackupVersion = &Migrate::getBackupVersion; 
-    $currentBackupVersion = `$su "zmjava com.zimbra.cs.backup.util.GetVersion"`;
+    $currentBackupVersion = qx($su "zmjava com.zimbra.cs.backup.util.GetVersion");
     chomp($currentBackupVersion);
 
     return unless ($currentBackupVersion);
@@ -2582,11 +2582,11 @@ sub reloadLdap($) {
           if (-d "/opt/zimbra/data/ldap/accesslog") { 
             main::progress("Loading accesslog DB..."); 
             if (-d "/opt/zimbra/data/ldap/accesslog.prev") {
-              `mv /opt/zimbra/data/ldap/accesslog.prev /opt/zimbra/data/ldap/accesslog.prev.$$`;
+              qx(mv /opt/zimbra/data/ldap/accesslog.prev /opt/zimbra/data/ldap/accesslog.prev.$$);
             }
-            `mv /opt/zimbra/data/ldap/accesslog /opt/zimbra/data/ldap/accesslog.prev`;
-            `mkdir -p /opt/zimbra/data/ldap/accesslog/db`;
-            `chown -R zimbra:zimbra /opt/zimbra/data/ldap`;
+            qx(mv /opt/zimbra/data/ldap/accesslog /opt/zimbra/data/ldap/accesslog.prev);
+            qx(mkdir -p /opt/zimbra/data/ldap/accesslog/db);
+            qx(chown -R zimbra:zimbra /opt/zimbra/data/ldap);
             my $rc;
             $rc=main::runAsZimbra("/opt/zimbra/libexec/zmslapadd -a $ldifFile");
             if ($rc != 0) {
@@ -2598,11 +2598,11 @@ sub reloadLdap($) {
         } else {
           main::progress("Creating new accesslog DB...");
           if (-d "/opt/zimbra/data/ldap/accesslog.prev") {
-            `mv /opt/zimbra/data/ldap/accesslog.prev /opt/zimbra/data/ldap/accesslog.prev.$$`;
+            qx(mv /opt/zimbra/data/ldap/accesslog.prev /opt/zimbra/data/ldap/accesslog.prev.$$);
           }
-          `mv /opt/zimbra/data/ldap/accesslog /opt/zimbra/data/ldap/accesslog.prev`;
-          `mkdir -p /opt/zimbra/data/ldap/accesslog/db`;
-          `chown -R zimbra:zimbra /opt/zimbra/data/ldap`;
+          qx(mv /opt/zimbra/data/ldap/accesslog /opt/zimbra/data/ldap/accesslog.prev);
+          qx(mkdir -p /opt/zimbra/data/ldap/accesslog/db);
+          qx(chown -R zimbra:zimbra /opt/zimbra/data/ldap);
           main::progress("done.\n");
         }
       }
@@ -2610,11 +2610,11 @@ sub reloadLdap($) {
       if (-f $ldifFile && -s $ldifFile) {
         main::progress("Loading database..."); 
         if (-d "/opt/zimbra/data/ldap/mdb.prev") {
-          `mv /opt/zimbra/data/ldap/mdb.prev /opt/zimbra/data/ldap/mdb.prev.$$`;
+          qx(mv /opt/zimbra/data/ldap/mdb.prev /opt/zimbra/data/ldap/mdb.prev.$$);
         }
-        `mv /opt/zimbra/data/ldap/mdb /opt/zimbra/data/ldap/mdb.prev`;
-        `mkdir -p /opt/zimbra/data/ldap/mdb/db`;
-        `chown -R zimbra:zimbra /opt/zimbra/data/ldap`;
+        qx(mv /opt/zimbra/data/ldap/mdb /opt/zimbra/data/ldap/mdb.prev);
+        qx(mkdir -p /opt/zimbra/data/ldap/mdb/db);
+        qx(chown -R zimbra:zimbra /opt/zimbra/data/ldap);
         my $rc;
         $rc=main::runAsZimbra("/opt/zimbra/libexec/zmslapadd $ldifFile");
         if ($rc != 0) {
@@ -2664,7 +2664,7 @@ sub upgradeLdap($) {
           }
           close(OUT);
           close(IN);
-          `mv $outfile $infile`;
+          qx(mv $outfile $infile);
         }
         main::configLog("LdapUpgraded$upgradeVersion");
       }
@@ -2705,10 +2705,10 @@ sub upgradeLdap($) {
           my $outfile;
           main::progress("Upgrading LDAP configuration database...");
           if (-d '/opt/zimbra/data/ldap/config/cn=config/olcDatabase={2}hdb') {
-            `mv /opt/zimbra/data/ldap/config/cn\=config/olcDatabase\=\{2\}hdb /opt/zimbra/data/ldap/config/cn\=config/olcDatabase\=\{2\}mdb`;
+            qx(mv /opt/zimbra/data/ldap/config/cn\=config/olcDatabase\=\{2\}hdb /opt/zimbra/data/ldap/config/cn\=config/olcDatabase\=\{2\}mdb);
           }
           if (-d '/opt/zimbra/data/ldap/config/cn=config/olcDatabase={3}hdb') {
-            `mv /opt/zimbra/data/ldap/config/cn\=config/olcDatabase\=\{3\}hdb /opt/zimbra/data/ldap/config/cn\=config/olcDatabase\=\{3\}mdb`;
+            qx(mv /opt/zimbra/data/ldap/config/cn\=config/olcDatabase\=\{3\}hdb /opt/zimbra/data/ldap/config/cn\=config/olcDatabase\=\{3\}mdb);
             $infile=glob("/opt/zimbra/data/ldap/config/cn=config/olcDatabase=\\{3\\}mdb/olcOverlay=\\{*\\}syncprov.ldif");
             $outfile="/tmp/3syncprov.ldif.$$";
             open(IN,"<$infile");
@@ -2721,7 +2721,7 @@ sub upgradeLdap($) {
             }
             close(OUT);
             close(IN);
-            `mv $outfile $infile`;
+            qx(mv $outfile $infile);
           }
           if (-f '/opt/zimbra/data/ldap/config/cn=config/cn=module{0}.ldif') {
             $infile="/opt/zimbra/data/ldap/config/cn\=config/cn\=module\{0\}.ldif";
@@ -2737,7 +2737,7 @@ sub upgradeLdap($) {
             }
             close(OUT);
             close(IN);
-            `mv $outfile $infile`;
+            qx(mv $outfile $infile);
           }
           if (-f '/opt/zimbra/data/ldap/config/cn=config.ldif') {
             $infile="/opt/zimbra/data/ldap/config/cn\=config.ldif";
@@ -2764,10 +2764,10 @@ sub upgradeLdap($) {
             }
             close(OUT);
             close(IN);
-            `mv $outfile $infile`;
+            qx(mv $outfile $infile);
           }
           if (-f '/opt/zimbra/data/ldap/config/cn=config/olcDatabase={3}hdb.ldif') {
-            `mv /opt/zimbra/data/ldap/config/cn\=config/olcDatabase\=\{3\}hdb.ldif /opt/zimbra/data/ldap/config/cn\=config/olcDatabase=\{3\}mdb.ldif`;
+            qx(mv /opt/zimbra/data/ldap/config/cn\=config/olcDatabase\=\{3\}hdb.ldif /opt/zimbra/data/ldap/config/cn\=config/olcDatabase=\{3\}mdb.ldif);
             $infile="/opt/zimbra/data/ldap/config/cn\=config/olcDatabase\=\{3\}mdb.ldif";
             $outfile="/tmp/3mdb.ldif.$$";
             open(IN,"<$infile");
@@ -2836,10 +2836,10 @@ sub upgradeLdap($) {
             }
             close(OUT);
             close(IN);
-            `mv $outfile $infile`;
+            qx(mv $outfile $infile);
           }
           if (-f '/opt/zimbra/data/ldap/config/cn=config/olcDatabase={2}hdb.ldif') {
-            `mv /opt/zimbra/data/ldap/config/cn\=config/olcDatabase\=\{2\}hdb.ldif /opt/zimbra/data/ldap/config/cn\=config/olcDatabase\=\{2\}mdb.ldif`;
+            qx(mv /opt/zimbra/data/ldap/config/cn\=config/olcDatabase\=\{2\}hdb.ldif /opt/zimbra/data/ldap/config/cn\=config/olcDatabase\=\{2\}mdb.ldif);
             $infile="/opt/zimbra/data/ldap/config/cn\=config/olcDatabase\=\{2\}mdb.ldif";
             $outfile="/tmp/2mdb.ldif.$$";
             open(IN,"<$infile");
@@ -2908,28 +2908,28 @@ sub upgradeLdap($) {
             }
             close(OUT);
             close(IN);
-            `mv $outfile $infile`;
+            qx(mv $outfile $infile);
           }
           main::progress("done.\n");
   
           if (-d "/opt/zimbra/data/ldap/accesslog") { 
             main::progress("Creating new accesslog DB..."); 
             if (-d "/opt/zimbra/data/ldap/accesslog.prev") {
-              `mv /opt/zimbra/data/ldap/accesslog.prev /opt/zimbra/data/ldap/accesslog.prev.$$`;
+              qx(mv /opt/zimbra/data/ldap/accesslog.prev /opt/zimbra/data/ldap/accesslog.prev.$$);
             }
-            `mv /opt/zimbra/data/ldap/accesslog /opt/zimbra/data/ldap/accesslog.prev`;
-            `mkdir -p /opt/zimbra/data/ldap/accesslog/db`;
-            `chown -R zimbra:zimbra /opt/zimbra/data/ldap`;
+            qx(mv /opt/zimbra/data/ldap/accesslog /opt/zimbra/data/ldap/accesslog.prev);
+            qx(mkdir -p /opt/zimbra/data/ldap/accesslog/db);
+            qx(chown -R zimbra:zimbra /opt/zimbra/data/ldap);
             main::progress("done.\n");
           }
   
           main::progress("Loading database..."); 
           if (-d "/opt/zimbra/data/ldap/mdb.prev") {
-            `mv /opt/zimbra/data/ldap/mdb.prev /opt/zimbra/data/ldap/mdb.prev.$$`;
+            qx(mv /opt/zimbra/data/ldap/mdb.prev /opt/zimbra/data/ldap/mdb.prev.$$);
           }
-          `mv /opt/zimbra/data/ldap/mdb /opt/zimbra/data/ldap/mdb.prev`;
-          `mkdir -p /opt/zimbra/data/ldap/mdb/db`;
-          `chown -R zimbra:zimbra /opt/zimbra/data/ldap`;
+          qx(mv /opt/zimbra/data/ldap/mdb /opt/zimbra/data/ldap/mdb.prev);
+          qx(mkdir -p /opt/zimbra/data/ldap/mdb/db);
+          qx(chown -R zimbra:zimbra /opt/zimbra/data/ldap);
           my $rc;
           $rc=main::runAsZimbra("/opt/zimbra/libexec/zmslapadd $slapoutfile");
           if ($rc != 0) {
@@ -2994,12 +2994,12 @@ sub migrateLdap($) {
 
         main::progress("Migrating ldap data...");
         if (-d "/opt/zimbra/data/ldap/mdb.prev") {
-          `mv /opt/zimbra/data/ldap/mdb.prev /opt/zimbra/data/ldap/mdb.prev.$$`;
+          qx(mv /opt/zimbra/data/ldap/mdb.prev /opt/zimbra/data/ldap/mdb.prev.$$);
         }
 
-        `mv /opt/zimbra/data/ldap/mdb /opt/zimbra/data/ldap/mdb.prev`;
-        `mkdir -p /opt/zimbra/data/ldap/mdb/db`;
-        `chown -R zimbra:zimbra /opt/zimbra/data/ldap`;
+        qx(mv /opt/zimbra/data/ldap/mdb /opt/zimbra/data/ldap/mdb.prev);
+        qx(mkdir -p /opt/zimbra/data/ldap/mdb/db);
+        qx(chown -R zimbra:zimbra /opt/zimbra/data/ldap);
         my $rc;
         $rc=main::runAsZimbra("/opt/zimbra/libexec/zmslapadd $outfile");
         if ($rc != 0) {
@@ -3052,16 +3052,16 @@ sub migrateAmavisDB($) {
     main::progress("Checking $fromDir/db\n");
     if ( -d "$fromDir/db" && -d "$toDir" && ! -e "$toDir/db/cache.db") {
       main::progress("Migrating amavis-new db from version $fromVersion to $toVersion\n");
-      `rm -rf $toDir/db > /dev/null 2>&1`;
-      `mv $fromDir/db $toDir/db`;
-      `chown zimbra:zimbra $toDir/db`; 
+      qx(rm -rf $toDir/db > /dev/null 2>&1);
+      qx(mv $fromDir/db $toDir/db);
+      qx(chown zimbra:zimbra $toDir/db); 
     }
     main::progress("Checking $fromDir/.spamassassin\n");
     if (-d "$fromDir/.spamassassin/" && -d "$toDir" && ! -e "$toDir/.spamassassin/bayes_toks" ) {
       main::progress("Migrating amavis-new .spamassassin from version $fromVersion to $toVersion\n");
-      `rm -rf $toDir/.spamassassin > /dev/null 2>&1`;
-      `mv $fromDir/.spamassassin $toDir/.spamassassin`;
-      `chown zimbra:zimbra $toDir/.spamassassin`; 
+      qx(rm -rf $toDir/.spamassassin > /dev/null 2>&1);
+      qx(mv $fromDir/.spamassassin $toDir/.spamassassin);
+      qx(chown zimbra:zimbra $toDir/.spamassassin); 
     }
   }
 }
@@ -3071,14 +3071,14 @@ sub relocateAmavisDB() {
   my $fromDir = "/opt/zimbra/amavisd-new-2.5.2";
   main::progress("Migrating Amavis database directory\n");
   if ( -d "$fromDir/db" && -d "$toDir" && ! -e "$toDir/db/cache.db") {
-    `rm -rf $toDir/db > /dev/null 2>&1`;
-    `mv $fromDir/db $toDir/db`;
-    `chown zimbra:zimbra $toDir/db`; 
+    qx(rm -rf $toDir/db > /dev/null 2>&1);
+    qx(mv $fromDir/db $toDir/db);
+    qx(chown zimbra:zimbra $toDir/db); 
   } 
   if (-d "$fromDir/.spamassassin/" && -d "$toDir" && ! -e "$toDir/.spamassassain/bayes_toks" ) {
-    `rm -rf $toDir/.spamassassin > /dev/null 2>&1`;
-    `mv $fromDir/.spamassassin $toDir/.spamassassin`;
-    `chown zimbra:zimbra $toDir/.spamassassin`; 
+    qx(rm -rf $toDir/.spamassassin > /dev/null 2>&1);
+    qx(mv $fromDir/.spamassassin $toDir/.spamassassin);
+    qx(chown zimbra:zimbra $toDir/.spamassassin); 
   }
 }
 
@@ -3092,7 +3092,7 @@ sub verifyDatabaseIntegrity {
 
 sub upgradeAllGlobalAdminAccounts {
 
-  my @admins = `$su "$ZMPROV gaaa"`;
+  my @admins = qx($su "$ZMPROV gaaa");
   main::detail("Upgrading ACLs for all admin accounts.\n");
   my @adminUpgrades;
   foreach my $admin (@admins) {
@@ -3135,7 +3135,7 @@ sub upgradeLdapConfigValue($$$) {
 
 sub addLdapIndex($$$) {
   my ($index, $type) = @_;
-  my $ldap_pass = `$su "zmlocalconfig -s -m nokey ldap_root_password"`;
+  my $ldap_pass = qx($su "zmlocalconfig -s -m nokey ldap_root_password");
   chomp($ldap_pass);
   my $ldap;
   unless($ldap = Net::LDAP->new('ldapi://%2fopt%2fzimbra%2fdata%2fldap%2fstate%2frun%2fldapi/')) {
