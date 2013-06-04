@@ -14,6 +14,10 @@
 #
 45 23 * * * /opt/zimbra/bin/zmtrainsa --cleanup >> /opt/zimbra/log/spamtrain.log 2>&1
 #
+# Spam rule updates
+#
+45 0 * * * /opt/zimbra/libexec/zmsaupdate
+#
 # Dspam cleanup
 #
 0 1 * * * [ -d /opt/zimbra/data/dspam/data/z/i/zimbra/zimbra.sig ] && find /opt/zimbra/data/dspam/data/z/i/zimbra/zimbra.sig/ -type f -name \*sig -mtime +7 -exec rm {} \; > /dev/null 2>&1
