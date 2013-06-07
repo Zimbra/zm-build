@@ -2068,7 +2068,11 @@ getInstallPackages() {
         askYN "Install $i" "N"
       fi
     else
-      if [ $i = "zimbra-archiving" ]; then
+      if [ $i = "zimbra-memcached" ]; then
+         askYN "Install $i" "N"
+      elif [ $i = "zimbra-proxy" ]; then
+         askYN "Install $i" "N"
+      elif [ $i = "zimbra-archiving" ]; then
         # only prompt to install archiving if zimbra-store is selected
         if [ $STORE_SELECTED = "yes" ]; then
           askYN "Install $i" "N"

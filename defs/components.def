@@ -73,6 +73,7 @@ LOGGER_COMPONENTS := \
 
 ifndef $(ZIMBRA_USE_TOMCAT)
 	MAILBOXD_COMPONENTS := \
+		$(STORE_DEST_DIR)/lib/libsetuid \
 		$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/lib/log4j-1.2.16.jar \
 		$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/lib/apache-log4j-extras-1.0.jar \
 		$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/resources/log4j.properties
@@ -85,7 +86,6 @@ STORE_COMPONENTS := \
 	$(STORE_DEST_DIR)/zimlets \
 	$(STORE_DEST_DIR)/libexec \
 	$(STORE_DEST_DIR)/libexec/zmztozmig \
-	$(STORE_DEST_DIR)/libexec/zmcleaniplanetics \
 	$(STORE_DEST_DIR)/libexec/zmcheckversion \
 	$(STORE_DEST_DIR)/conf/zimbra-contact-fields.xml \
 	$(STORE_DEST_DIR)/conf/zmztozmig.conf \

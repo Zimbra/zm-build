@@ -170,7 +170,6 @@ $(MTA_DEST_DIR)/$(AMAVISD_DIR)-new-$(AMAVISD_VERSION): $(MTA_DEST_DIR)
 	@echo "*** Creating amavisd"
 	mkdir -p $@/sbin
 	cp -f $(AMAVISD_SOURCE)/amavisd $@/sbin
-	cp -f $(AMAVISD_SOURCE)/amavisd-release $@/sbin
 	sed -e 's!/var/amavis/db!/opt/zimbra/data/amavisd/db!' $(AMAVISD_SOURCE)/amavisd-nanny > $@/sbin/amavisd-nanny
 	chmod 555 $@/sbin/amavisd-nanny
 	mkdir -p $@/.spamassassin/init
