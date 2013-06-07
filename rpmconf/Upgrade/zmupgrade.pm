@@ -1994,6 +1994,12 @@ sub upgrade804GA {
 sub upgrade805GA {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
   main::progress("Updating from 8.0.5_GA\n");
+  if (main::isInstalled("zimbra-mta")) {
+    my $cbpdb="/opt/zimbra/data/cbpolicyd/db/cbpolicyd.sqlitedb";
+    if (-f $cbpdb) {
+      main::runAsZimbra("sqlite3 $cbpdb < ${scriptDir}/migrate20130606-UpdateCBPolicydSchema.sql >/dev/null 2>&1");
+    }
+  }
   return 0;
 }
 
