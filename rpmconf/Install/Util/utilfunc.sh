@@ -1697,8 +1697,12 @@ removeExistingInstall() {
           umount -f ${mp}
         fi
       done
-  
-      /bin/rm -rf /opt/zimbra/*
+ 
+      for i in `ls /opt/zimbra`; do
+        if [ x$i != "xlost+found" ]; then
+          /bin/rm -rf /opt/zimbra/$i
+        fi
+      done
 
       if [ -e "/opt/zimbra/.enable_replica" ]; then
         /bin/rm -f /opt/zimbra/.enable_replica
