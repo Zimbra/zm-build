@@ -34,20 +34,20 @@ if [ -d /opt/zimbra/libmemcached-1.0.6 ]; then
 fi
 
 rm -f /opt/zimbra/opendkim
-if [ -d /opt/zimbra/opendkim-2.8.0 ]; then
-  ln -s /opt/zimbra/opendkim-2.8.0 /opt/zimbra/opendkim
+if [ -d /opt/zimbra/opendkim-2.8.3 ]; then
+  ln -s /opt/zimbra/opendkim-2.8.3 /opt/zimbra/opendkim
 fi
 
 rm -f /opt/zimbra/zeromq
-if [ -d /opt/zimbra/zeromq-3.2.2 ]; then
-  ln -s /opt/zimbra/zeromq-3.2.2 /opt/zimbra/zeromq
+if [ -d /opt/zimbra/zeromq-3.2.3 ]; then
+  ln -s /opt/zimbra/zeromq-3.2.3 /opt/zimbra/zeromq
 fi
 
 rm -f /opt/zimbra/dspam
 ln -s /opt/zimbra/dspam-3.10.2 /opt/zimbra/dspam
 
 rm -f /opt/zimbra/postfix
-ln -s /opt/zimbra/postfix-2.10.0.2z /opt/zimbra/postfix
+ln -s /opt/zimbra/postfix-2.11-20130623.2z /opt/zimbra/postfix
 
 rm -f /opt/zimbra/clamav
 ln -s /opt/zimbra/clamav-0.97.8 /opt/zimbra/clamav
