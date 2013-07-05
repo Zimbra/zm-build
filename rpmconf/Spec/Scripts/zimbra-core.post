@@ -121,7 +121,7 @@ if [ -x /sbin/chkconfig ]; then
 	chkconfig zimbra on
 elif [ -x /usr/sbin/update-rc.d ]; then
         update-rc.d -f zimbra remove
-        update-rc.d zimbra start 99 3 5 . stop 01 0 1 6 .
+        update-rc.d zimbra start 99 2 5 . stop 01 0 1 6 .
 else
 	rm -f /etc/rc*.d/S99zimbra
 	rm -f /etc/rc*.d/S89zimbra
