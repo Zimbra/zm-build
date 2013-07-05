@@ -117,7 +117,7 @@ $(MTA_DEST_DIR)/data/cbpolicyd/db:
 	mkdir -p $@
 $(MTA_DEST_DIR)/data/altermime:
 	mkdir -p $@
-$(MTA_DEST_DIR)/data/amavisd/mariadb:
+$(MTA_DEST_DIR)/data/amavisd/mysql:
 	mkdir -p $@
 $(MTA_DEST_DIR)/data/opendkim:
 	mkdir -p $@
@@ -191,6 +191,6 @@ $(MTA_MARIADB_DEST_DIR)/$(MARIADB_DIR): $(MTA_MARIADB_DEST_DIR)
 	rm -rf $(MTA_MARIADB_DEST_DIR)/$(MARIADB_DIR)/docs/mysql.info
 	rm -rf $(MTA_MARIADB_DEST_DIR)/$(MARIADB_DIR)/docs/manual.txt
 
-$(MTA_DEST_DIR)/data/amavisd/mariadb/antispamdb.sql: $(MTA_DEST_DIR)/data/amavisd/mariadb
-	cp -f $(SERVICE_DIR)/conf/amavisd/mysql/antispamdb.sql $(MTA_DEST_DIR)/data/amavisd/mariadb/antispamdb.sql
+$(MTA_DEST_DIR)/data/amavisd/mysql/antispamdb.sql: $(MTA_DEST_DIR)/data/amavisd/mysql
+	cp -f $(SERVICE_DIR)/conf/amavisd/mysql/antispamdb.sql $(MTA_DEST_DIR)/data/amavisd/mysql/antispamdb.sql
 
