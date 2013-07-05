@@ -100,7 +100,7 @@ mta_stage: $(MTA_COMPONENTS)
 $(MTA_DEST_DIR):
 	mkdir -p $@
 
-$(MTA_MYSQL_DEST_DIR):
+$(MTA_MARIADB_DEST_DIR):
 	mkdir -p $@
 
 $(MTA_DEST_DIR)/data/postfix:
@@ -117,7 +117,7 @@ $(MTA_DEST_DIR)/data/cbpolicyd/db:
 	mkdir -p $@
 $(MTA_DEST_DIR)/data/altermime:
 	mkdir -p $@
-$(MTA_DEST_DIR)/data/amavisd/mysql:
+$(MTA_DEST_DIR)/data/amavisd/mariadb:
 	mkdir -p $@
 $(MTA_DEST_DIR)/data/opendkim:
 	mkdir -p $@
@@ -181,16 +181,16 @@ $(MTA_DEST_DIR)/$(DSPAM_DIR)-$(DSPAM_VERSION): $(MTA_DEST_DIR)
 	@echo "*** Creating dspam"
 	(cd $(MTA_DEST_DIR); tar xzf $(DSPAM_SOURCE).tgz;)
 
-$(MTA_MYSQL_DEST_DIR)/$(MYSQL_DIR): $(MTA_MYSQL_DEST_DIR)
-	@echo "*** Creating mysql"
-	(cd $(MTA_MYSQL_DEST_DIR); tar xzf $(MYSQL_SOURCE).tar.gz;)
-	rm -f $(MTA_MYSQL_DEST_DIR)/$(MYSQL_DIR)/bin/mysqltest_embedded
-	rm -f $(MTA_MYSQL_DEST_DIR)/$(MYSQL_DIR)/bin/mysql_client_test_embedded
-	rm -rf $(MTA_MYSQL_DEST_DIR)/$(MYSQL_DIR)/mysql-test
-	rm -rf $(MTA_MYSQL_DEST_DIR)/$(MYSQL_DIR)/sql-bench
-	rm -rf $(MTA_MYSQL_DEST_DIR)/$(MYSQL_DIR)/docs/mysql.info
-	rm -rf $(MTA_MYSQL_DEST_DIR)/$(MYSQL_DIR)/docs/manual.txt
+$(MTA_MARIADB_DEST_DIR)/$(MARIADB_DIR): $(MTA_MARIADB_DEST_DIR)
+	@echo "*** Creating mariadb"
+	(cd $(MTA_MARIADB_DEST_DIR); tar xzf $(MARIADB_SOURCE).tar.gz;)
+	rm -f $(MTA_MARIADB_DEST_DIR)/$(MARIADB_DIR)/bin/mysqltest_embedded
+	rm -f $(MTA_MARIADB_DEST_DIR)/$(MARIADB_DIR)/bin/mysql_client_test_embedded
+	rm -rf $(MTA_MARIADB_DEST_DIR)/$(MARIADB_DIR)/mysql-test
+	rm -rf $(MTA_MARIADB_DEST_DIR)/$(MARIADB_DIR)/sql-bench
+	rm -rf $(MTA_MARIADB_DEST_DIR)/$(MARIADB_DIR)/docs/mysql.info
+	rm -rf $(MTA_MARIADB_DEST_DIR)/$(MARIADB_DIR)/docs/manual.txt
 
-$(MTA_DEST_DIR)/data/amavisd/mysql/antispamdb.sql: $(MTA_DEST_DIR)/data/amavisd/mysql
-	cp -f $(SERVICE_DIR)/conf/amavisd/mysql/antispamdb.sql $(MTA_DEST_DIR)/data/amavisd/mysql/antispamdb.sql
+$(MTA_DEST_DIR)/data/amavisd/mariadb/antispamdb.sql: $(MTA_DEST_DIR)/data/amavisd/mariadb
+	cp -f $(SERVICE_DIR)/conf/amavisd/mysql/antispamdb.sql $(MTA_DEST_DIR)/data/amavisd/mariadb/antispamdb.sql
 

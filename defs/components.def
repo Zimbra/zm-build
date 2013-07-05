@@ -41,7 +41,6 @@ CORE_COMPONENTS	:= \
 	$(CBPOLICYD_CORE_COMPONENTS) \
 	$(PLATFORM_CORE_COMPONENTS)
 
-ifneq ($(ZIMBRA_OCTOPUS_BUILD), 1)
 MTA_COMPONENTS	:= \
 	$(MTA_DEST_DIR) \
 	$(MTA_DEST_DIR)/$(DKIM_DIR) \
@@ -49,22 +48,16 @@ MTA_COMPONENTS	:= \
 	$(MTA_DEST_DIR)/$(POSTFIX_DIR) \
 	$(MTA_DEST_DIR)/data/postfix \
 	$(MTA_DEST_DIR)/$(AMAVISD_DIR)-new-$(AMAVISD_VERSION) \
-	$(MTA_DEST_DIR)/data/amavisd/mysql/antispamdb.sql \
+	$(MTA_DEST_DIR)/data/amavisd/mariadb/antispamdb.sql \
 	$(MTA_DEST_DIR)/$(CLAMAV_DIR)  \
 	$(MTA_DEST_DIR)/data/clamav \
 	$(MTA_DEST_DIR)/$(DSPAM_DIR)-$(DSPAM_VERSION) \
 	$(MTA_DEST_DIR)/data/dspam \
 	$(MTA_DEST_DIR)/$(ALTERMIME_DIR)-$(ALTERMIME_VERSION) \
 	$(MTA_DEST_DIR)/data/altermime \
-	$(MTA_MYSQL_DEST_DIR)/$(MYSQL_DIR) \
+	$(MTA_MARIADB_DEST_DIR)/$(MARIADB_DIR) \
 	$(MTA_DEST_DIR)/$(ZMQ_DIR) \
 	$(CBPOLICYD_COMPONENTS)
-else
-MTA_COMPONENTS	:= \
-	$(MTA_DEST_DIR) \
-	$(MTA_DEST_DIR)/$(POSTFIX_DIR) \
-	$(MTA_DEST_DIR)/data/postfix
-endif
 
 LOGGER_COMPONENTS := \
 	$(LOGGER_DEST_DIR) \
@@ -102,7 +95,7 @@ STORE_COMPONENTS := \
 	$(STORE_DEST_DIR)/lib/ext/zimbraadminversioncheck/zimbraadminversioncheck.jar \
 	$(STORE_DEST_DIR)/lib/jars/zmzimbratozimbramig.jar \
 	$(STORE_DEST_DIR)/log \
-	$(STORE_DEST_DIR)/$(MYSQL_DIR) 
+	$(STORE_DEST_DIR)/$(MARIADB_DIR) 
 
 ZIMLET_COMPONENTS := \
 	$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/webapps/service/WEB-INF/lib/zimbrataglib.jar \
