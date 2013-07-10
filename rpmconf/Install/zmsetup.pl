@@ -150,6 +150,7 @@ my $starttls = 0;
 my $needNewCert = "";
 my $ssl_cert_type = "self";
 
+my @ssl_digests = ("md4","md5","mdc2","ripemd160","sha","sha1","sha224","sha256","sha384","sha512","whirlpool");
 my @interfaces = ();
 
 ($>) and usage();
@@ -1352,6 +1353,7 @@ sub setDefaults {
   $config{POPSSLPORT} = 995;
   $config{HTTPPORT} = 80;
   $config{HTTPSPORT} = 443;
+  $config{ssl_default_digest} = "sha1";
 
   if (!$ipv4found && $ipv6found) {
     $config{zimbraIPMode}     = "ipv6";
@@ -3191,6 +3193,23 @@ sub setIPMode {
   }
 }
 
+sub setSSLDefaultDigest {
+  while (1) {
+    my $new =
+      askPassword("Default OpenSSL digest:",
+        $config{ssl_default_digest});
+    my $ssl_digests= join(' ', @ssl_digests);
+    if ($ssl_digests =~ /\b$new\b/) {
+      if ($config{ssl_default_digest} ne $new) {
+        $config{ssl_default_digest} = $new;
+      }
+      return;
+    } else {
+      print "Valid digest modes are: $ssl_digests!\n";
+    }
+  }
+}
+
 sub setEnabledDependencies {
   if (isEnabled("zimbra-ldap")) {
     if ($config{LDAPHOST} eq "") {
@@ -3398,6 +3417,12 @@ sub createCommonMenu {
     "prompt" => "IP Mode:",
     "var" => \$config{zimbraIPMode},
     "callback" => \&setIPMode
+  };
+  $i++;
+  $$lm{menuitems}{$i} = {
+    "prompt" => "Default SSL digest:",
+    "var" => \$config{ssl_default_digest},
+    "callback" => \&setSSLDefaultDigest
   };
   $i++;
   return $lm;
@@ -4960,6 +4985,7 @@ sub configLCValues {
 
   setLocalConfig ("ssl_allow_untrusted_certs", "true");
   setLocalConfig ("ssl_allow_mismatched_certs", "true");
+  setLocalConfig ("ssl_default_digest", $config{ssl_default_digest});
   setLocalConfig ("mailboxd_java_heap_size", $config{MAILBOXDMEMORY});
   setLocalConfig ("mailboxd_directory", $config{mailboxd_directory});
   setLocalConfig ("mailboxd_keystore", $config{mailboxd_keystore});
