@@ -2000,6 +2000,13 @@ sub upgrade805GA {
       main::runAsZimbra("sqlite3 $cbpdb < ${scriptDir}/migrate20130606-UpdateCBPolicydSchema.sql >/dev/null 2>&1");
     }
   }
+  if (main::isInstalled("zimbra-proxy")) {
+    my $rpeioa=main::getLocalConfig("zimbra_reverseproxy_externalroute_include_original_authusername");
+    if(lc($rpeioa) ne "false") {
+      main::setLdapGlobalConfig("zimbraReverseProxyExternalRouteIncludeOriginalAuthusername","TRUE");
+    }
+  }
+  main::deleteLocalConfig("zimbra_reverseproxy_externalroute_include_original_authusername");
   return 0;
 }
 
