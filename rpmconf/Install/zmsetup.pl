@@ -4734,6 +4734,7 @@ sub setLocalConfig {
   detail ( "Setting local config $key to $val" );
   $main::saved{lc}{$key} = $val;
   $main::loaded{lc}{$key} = $val;
+  $val =~ s/\$/\\\$/g;
   runAsZimbra("/opt/zimbra/bin/zmlocalconfig -f -e ${key}=\'${val}\' 2> /dev/null");
 }
 
