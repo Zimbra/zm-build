@@ -2387,7 +2387,7 @@ getPlatformVars() {
     PACKAGEVERIFY='rpm -K'
     PACKAGEEXT='rpm'
     if [ $PLATFORM = "RHEL6_64" -o $PLATFORM = "CentOS6_64" ]; then
-      PACKAGEINST='yum -y install -v'
+      PACKAGEINST='yum -y --noplugins --disablerepo=epel install -v'
       PACKAGERM='yum -y erase -v'
       PREREQ_PACKAGES="nc sudo libidn gmp"
       PREREQ_LIBS="/usr/lib64/libstdc++.so.6"
