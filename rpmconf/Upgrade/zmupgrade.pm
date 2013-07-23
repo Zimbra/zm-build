@@ -4571,7 +4571,7 @@ sub upgrade805GA {
   }
   if (main::isInstalled("zimbra-proxy")) {
     my $rpeioa=main::getLocalConfig("zimbra_reverseproxy_externalroute_include_original_authusername");
-    if(lc($rpeioa) ne "false") {
+    if(lc($rpeioa) eq "true") {
       main::setLdapGlobalConfig("zimbraReverseProxyExternalRouteIncludeOriginalAuthusername","TRUE");
     }
   }
