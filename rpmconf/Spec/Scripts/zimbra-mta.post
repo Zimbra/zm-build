@@ -54,8 +54,8 @@ ln -s /opt/zimbra/clamav-0.97.8 /opt/zimbra/clamav
 
 rm -f /opt/zimbra/mta/mysql
 rm -f /opt/zimbra/mta/mariadb
-ln -s /opt/zimbra/mta/mariadb-standard-5.5.31-pc-linux-gnu-i686-glibc23 /opt/zimbra/mta/mariadb
-ln -s /opt/zimbra/mta/mariadb-standard-5.5.31-pc-linux-gnu-i686-glibc23 /opt/zimbra/mta/mysql
+ln -s /opt/zimbra/mta/mariadb-standard-5.5.32-pc-linux-gnu-i686-glibc23 /opt/zimbra/mta/mariadb
+ln -s /opt/zimbra/mta/mariadb-standard-5.5.32-pc-linux-gnu-i686-glibc23 /opt/zimbra/mta/mysql
 
 rm -f /opt/zimbra/altermime
 ln -s /opt/zimbra/altermime-0.3.10 /opt/zimbra/altermime
