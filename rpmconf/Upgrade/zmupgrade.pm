@@ -2015,7 +2015,45 @@ sub upgrade900BETA1 {
   main::progress("Updating from 9.0.0_BETA1\n");
   if (main::isInstalled("zimbra-ldap")) {
     if ($isLdapMaster) {
-        runLdapAttributeUpgrade("81385");
+      runLdapAttributeUpgrade("81385");
+      my $ldap_pass = qx($su "zmlocalconfig -s -m nokey ldap_root_password");
+      chomp($ldap_pass);
+      my $ldap;
+      unless($ldap = Net::LDAP->new('ldapi://%2fopt%2fzimbra%2fdata%2fldap%2fstate%2frun%2fldapi/')) {
+         main::progress("Unable to contact to ldapi: $!\n");
+      } else {
+        my $result = $ldap->bind("cn=config", password => $ldap_pass);
+        $result = $ldap->search(
+          base=> "cn=config,cn=zimbra",
+          filter=>"((objectClass=*)(zimbraDomainMandatoryMailSignatureText=*)",
+          scope => "base",
+          attrs => ['zimbraDomainMandatoryMailSignatureText', 'zimbraDomainMandatoryMailSignatureHTML'],
+        );
+        my $totalcount=$result->count;
+        if ($totalcount > 0) {
+          my $entry=$result->entry($totalcount-1);
+          my $text_disclaimer = $entry->get_value("zimbraDomainMandatoryMailSignatureText");
+          my $html_disclaimer = $entry->get_value("zimbraDomainMandatoryMailSignatureHTML");
+          $result = $ldap->search(
+            base=> "",
+            filter=>"(objectClass=zimbraDomain)",
+            scope => "sub",
+          );
+          foreach $entry ($result->entries) {
+            $result = $ldap->modify(
+                $entry->dn,
+                add =>{
+                    zimbraAmavisDomainDisclaimerText=>$text_disclaimer,
+                    zimbraAmavisDomainDisclaimerHTML=>$html_disclaimer,
+                },
+            );
+          }
+          $result = $ldap->modify(
+            "cn=config,cn=zimbra",
+            delete=>['zimbraDomainMandatoryMailSignatureText','zimbraDomainMandatoryMailSignatureHTML']
+          );
+        }
+      }
     }
   }
   if (main::isInstalled("zimbra-mta")) {
@@ -2023,6 +2061,17 @@ sub upgrade900BETA1 {
     if ( -e ${antispam_mysql_mycnf} ) {
       main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-as-table_cache-fixup --section=mysqld --key=table_cache --unset ${antispam_mysql_mycnf}");
       main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-as-table_open_cache-fixup --section=mysqld --key=table_open_cache --setmin --value=1200 ${antispam_mysql_mycnf}");
+    }
+    my $disclaimerEnabled = main::getLdapConfigValue("zimbraDomainMandatoryMailSignatureEnabled");
+    if(lc($disclaimerEnabled) eq "true") {
+      my $zimbra_home = main::getLocalConfig("zimbra_home") || "/opt/zimbra";
+      unlink("$zimbra_home/data/altermime/global-default.txt");
+      unlink("$zimbra_home/data/altermime/global-default.html");
+      my @domains = qx($su "$ZMPROV gad");
+      foreach my $domain (@domains) {
+        chomp $domain;
+        main::runAsZimbra("${zimbra_home}/libexec/zmaltermimeconfig -e $domain");
+      }
     }
   }
   my $mysql_class = main::getLocalConfig("zimbra_class_database");
