@@ -96,6 +96,7 @@ my @packageList = (
 my %packageServiceMap = (
   antivirus => "zimbra-mta",
   antispam  => "zimbra-mta",
+  cbpolicyd => "zimbra-mta",
   mta       => "zimbra-mta",
   logger    => "zimbra-logger",
   mailbox   => "zimbra-store",
