@@ -29,10 +29,8 @@ else
 fi
 
 #Symlinks
-rm -f /opt/zimbra/mariadb
 rm -f /opt/zimbra/mysql
-ln -s /opt/zimbra/mariadb-standard-5.5.32-pc-linux-gnu-i686-glibc23 /opt/zimbra/mariadb
-ln -s /opt/zimbra/mariadb-standard-5.5.32-pc-linux-gnu-i686-glibc23 /opt/zimbra/mysql
+ln -s /opt/zimbra/mysql-standard-5.5.32-pc-linux-gnu-i686-glibc23 /opt/zimbra/mysql
 
 rm -f /opt/zimbra/bdb
 ln -s /opt/zimbra/bdb-5.2.36 /opt/zimbra/bdb
@@ -98,15 +96,33 @@ fi
 
 if [ -f /etc/debian_version ]; then
 	if [ -f /etc/ld.so.conf ]; then
-		egrep -q 'zimbra' /etc/ld.so.conf >/dev/null
-		if [ $? = 0 ]; then
-			mv -f /etc/ld.so.conf /etc/ld.so.conf.$$
-			cat /etc/ld.so.conf.$$ | grep -v zimbra > /etc/ld.so.conf
-			if [ -x /sbin/ldconfig ]; then
-				/sbin/ldconfig
-			fi
-		fi
+		mv -f /etc/ld.so.conf /etc/ld.so.conf.$$
+		cat /etc/ld.so.conf.$$ | grep -v zimbra > /etc/ld.so.conf
 	fi
+#	cat /opt/zimbra/conf/zimbra.ld.conf >> /etc/ld.so.conf
+#else
+#	mkdir -p /etc/ld.so.conf.d
+#	cp -f /opt/zimbra/conf/zimbra.ld.conf /etc/ld.so.conf.d
+fi
+
+# update prelink.conf
+if [ -f /etc/prelink.conf ]; then
+  egrep -q 'zimbra' /etc/prelink.conf
+  if [ $? != 0 ]; then
+    echo "# added for Zimbra" >> /etc/prelink.conf
+    echo "-l /opt/zimbra/lib" >> /etc/prelink.conf
+    echo "-l /opt/zimbra/bdb/lib" >> /etc/prelink.conf
+    echo "-l /opt/zimbra/openldap/lib" >> /etc/prelink.conf
+    echo "-l /opt/zimbra/cyrus-sasl/lib" >> /etc/prelink.conf
+    echo "-l /opt/zimbra/mysql/lib/mysql" >> /etc/prelink.conf
+    if [ -x /usr/sbin/prelink ]; then
+      /usr/sbin/prelink -amR > /dev/null 2>&1
+    fi
+  fi
+fi
+
+if [ -x /sbin/ldconfig ]; then
+  /sbin/ldconfig
 fi
 
 # Setup syslog

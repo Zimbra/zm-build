@@ -111,7 +111,7 @@ $(BUILD_ROOT)/zimbra-core.spec:
 		$(BUILD_ROOT)/zimbra-core.spec
 	echo "%attr(-, root, zimbra) /opt/zimbra/$(SASL_DIR)-$(SASL_VERSION)" >> \
 		$(BUILD_ROOT)/zimbra-core.spec
-	echo "%attr(-, zimbra, zimbra) /opt/zimbra/mariadb-standard-$(MARIADB_VERSION_STRING)-pc-linux-gnu-i686-glibc23" >> \
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/mysql-standard-$(MYSQL_VERSION_STRING)-pc-linux-gnu-i686-glibc23" >> \
 		$(BUILD_ROOT)/zimbra-core.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/openldap-$(LDAP_VERSION)" >> \
 		$(BUILD_ROOT)/zimbra-core.spec
@@ -162,7 +162,7 @@ $(CORE_DEST_DIR)/docs:
 	echo "Jetty version: $(JETTY_VERSION)" >> $@/zimbra-software-versions.txt
 	echo "Libtool version: $(LIBTOOL_VERSION)" >> $@/zimbra-software-versions.txt
 	echo "Memcached version: $(MEMCACHED_VERSION)" >> $@/zimbra-software-versions.txt
-	echo "MySQL version: $(MARIADB_VERSION_STRING)" >> $@/zimbra-software-versions.txt
+	echo "MySQL version: $(MYSQL_VERSION_STRING)" >> $@/zimbra-software-versions.txt
 	echo "NetSNMP version: $(SNMP_VERSION)" >> $@/zimbra-software-versions.txt
 	echo "Nginx version: $(NGINX_VERSION)" >> $@/zimbra-software-versions.txt
 	echo "OpenLDAP version: $(LDAP_VERSION)" >> $@/zimbra-software-versions.txt
@@ -212,7 +212,7 @@ $(CORE_DEST_DIR)/lib: $(WEBAPP_DIR)/service.war $(LDAP_DEST_DIR)/$(LDAP_DIR)-$(L
 	-rm -rf $@/jars/objenesis*.jar
 	cp -pr $(NATIVE_DIR)/build/libzimbra-native.$(JNI_EXT) $@
 	cp -pr $(JUNIXSOCKET_NATIVE) $@
-	(cd $(CORE_DEST_DIR); tar xzf $(THIRD_PARTY_BUILDS)/$(BUILD_PLATFORM)/mariadb/mariadb-libs-$(MARIADB_VERSION).tgz)
+	(cd $(CORE_DEST_DIR); tar xzf $(THIRD_PARTY_BUILDS)/$(BUILD_PLATFORM)/mysql/mysql-libs-$(MYSQL_VERSION).tgz)
 
 $(NATIVE_DIR)/build/libzimbra-native.$(JNI_EXT):
 	(cd $(NATIVE_DIR); make JAVA_BINARY=$(JAVA_BINARY))

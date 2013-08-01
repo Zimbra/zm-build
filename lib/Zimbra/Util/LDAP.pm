@@ -2,7 +2,7 @@
 # 
 # ***** BEGIN LICENSE BLOCK *****
 # Zimbra Collaboration Suite Server
-# Copyright (C) 2009, 2010, 2011, 2012, 2013 VMware, Inc.
+# Copyright (C) 2009, 2010, 2011, 2012 VMware, Inc.
 # 
 # The contents of this file are subject to the Zimbra Public License
 # Version 1.3 ("License"); you may not use this file except in
@@ -25,7 +25,7 @@ sub doLdap() {
   my $rc=0;
   my $real_master=0;
   my ($dn,$ldap_key);
-  my $ldap = Net::LDAP->new('ldapi://%2fopt%2fzimbra%2fdata%2fldap%2fstate%2frun%2fldapi/') or die "$@";
+  my $ldap = Net::LDAP->new('ldapi://%2fopt%2fzimbra%2fopenldap%2fvar%2frun%2fldapi/') or die "$@";
   my $mesg = $ldap->bind("cn=config", password=>"$pw");
   if($mesg->code) {
     main::logMsg(2,"LDAP: Failed to bind");
