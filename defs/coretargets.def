@@ -247,7 +247,7 @@ $(CORE_DEST_DIR)/conf: $(WEBAPP_DIR)/service.war
 	mkdir -p $@
 	cp $(PACKAGE_CONF_DIR)/Conf/swatchrc $@/swatchrc.in
 	cp $(PACKAGE_CONF_DIR)/Conf/logswatchrc $@/logswatchrc
-	cp $(PACKAGE_CONF_DIR)/Conf/auditswatchrc $@/logswatchrc.in
+	cp $(PACKAGE_CONF_DIR)/Conf/auditswatchrc $@/auditswatchrc.in
 	cp $(SERVICE_DIR)/build/dist/conf/localconfig.xml $@
 	cp $(SERVICE_DIR)/build/dist/conf/log4j.properties $@/log4j.properties.in
 	cp $(PACKAGE_CONF_DIR)/Conf/zmssl.cnf.in $@
