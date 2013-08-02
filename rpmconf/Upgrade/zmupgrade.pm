@@ -2073,7 +2073,12 @@ sub upgrade900BETA1 {
         main::runAsZimbra("${zimbra_home}/libexec/zmaltermimeconfig -e $domain");
       }
     }
+    my $lc_attr = main::getLocalConfig("amavis_max_servers");
+    if ($lc_attr ne "" && $lc_attr != 10) {
+       main::setLdapServerConfig($hn, 'zimbraAmavisMaxServers', "$lc_attr");
+    }
   }
+  main::deleteLocalConfig("amavis_max_servers");
   my $mysql_class = main::getLocalConfig("zimbra_class_database");
   if ($mysql_class =~ /com.zimbra.cs.db.MySQL/) {
     main::setLocalConfig("zimbra_class_database", "com.zimbra.cs.db.MariaDB");
