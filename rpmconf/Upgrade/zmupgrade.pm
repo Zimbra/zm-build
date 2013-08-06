@@ -2077,6 +2077,18 @@ sub upgrade900BETA1 {
     if ($lc_attr ne "" && $lc_attr != 10) {
        main::setLdapServerConfig($hn, 'zimbraAmavisMaxServers', "$lc_attr");
     }
+    $lc_attr = main::getLocalConfig("clamav_max_threads");
+    if ($lc_attr ne "" && $lc_attr != 10) {
+       main::setLdapServerConfig($hn, 'zimbraClamAVMaxThreads', "$lc_attr");
+    }
+    $lc_attr = main::getLocalConfig("amavis_enable_dkim_verification");
+    if ($lc_attr ne "" && lc($lc_attr) ne "true") {
+       main::setLdapServerConfig($hn, 'zimbraAmavisEnableDKIMVerification', "$lc_attr");
+    }
+    $lc_attr = main::getLocalConfig("amavis_originating_bypass_sa");
+    if ($lc_attr ne "" && lc($lc_attr) ne "false") {
+       main::setLdapServerConfig($hn, 'zimbraAmavisOriginatingBypassSA', "$lc_attr");
+    }
   }
   main::deleteLocalConfig("amavis_max_servers");
   my $mysql_class = main::getLocalConfig("zimbra_class_database");
