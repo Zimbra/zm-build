@@ -140,7 +140,7 @@ $(CORE_DEST_DIR)/docs:
 	mkdir -p $@
 	cp $(LICENSE_DIR)/zimbra/zpl-full.txt $@/ZPL.txt
 	cp $(LICENSE_DIR)/zimbra/ypl-full.txt $@/YPL.txt
-	cp $(LICENSE_DIR)/zimbra/zimbra_public_eula_2.1.txt $@/zimbra_public_eula_2.1.txt
+	cp $(LICENSE_DIR)/zimbra/zimbra_public_eula_2.4.txt $@/zimbra_public_eula_2.4.txt
 	cp $(SERVICE_DIR)/docs/*txt $@
 	cp $(SERVICE_DIR)/docs/*html $@
 	cp $(MIG_TOOLS_DIR)/ReadMe.txt $@/zmztozmig.txt

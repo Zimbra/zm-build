@@ -59,7 +59,7 @@ zcs_stage:
 	mkdir -p zcs-$(VERSION_TAG).$(RELEASE)/util/modules
 	cp -f $(LICENSE_DIR)/zimbra/ypl-full.txt zcs-$(VERSION_TAG).$(RELEASE)/docs/YPL.txt
 	cp -f $(LICENSE_DIR)/zimbra/zcl.txt zcs-$(VERSION_TAG).$(RELEASE)/docs/zcl.txt
-	cp -f $(LICENSE_DIR)/zimbra/zimbra_public_eula_2.1.txt zcs-$(VERSION_TAG).$(RELEASE)/docs/zimbra_public_eula_2.1.txt
+	cp -f $(LICENSE_DIR)/zimbra/zimbra_public_eula_2.4.txt zcs-$(VERSION_TAG).$(RELEASE)/docs/zimbra_public_eula_2.4.txt
 	-@(for d in `find $(CONSOLE_DIR)/WebRoot/help -mindepth 1 -maxdepth 1 -type d -exec basename "{}" \;`; do \
 		[ ! -e $(CONSOLE_DIR)/WebRoot/help/$$d/admin/pdf ] && continue; \
 		mkdir -p zcs-$(VERSION_TAG).$(RELEASE)/docs/$$d; \
