@@ -2089,11 +2089,21 @@ sub upgrade900BETA1 {
     if ($lc_attr ne "" && lc($lc_attr) ne "false") {
        main::setLdapServerConfig($hn, 'zimbraAmavisOriginatingBypassSA', "$lc_attr");
     }
+    $lc_attr = main::getLocalConfig("amavis_dspam_enabled");
+    if ($lc_attr ne "" && lc($lc_attr) eq "true") {
+       main::setLdapServerConfig($hn, 'zimbraAmavisDSPAMEnabled', "$lc_attr");
+    }
+    $lc_attr = main::getLocalConfig("postfix_enable_smtpd_policyd");
+    if ($lc_attr ne "" && (lc($lc_attr) eq "yes" || lc($lc_attr) eq "true")) {
+       main::setLdapServerConfig($hn, 'zimbraPostfixEnableSmtpdPolicyd', "TRUE");
+    }
   }
   main::deleteLocalConfig("amavis_max_servers");
   main::deleteLocalConfig("clamav_max_threads");
   main::deleteLocalConfig("amavis_enable_dkim_verification");
   main::deleteLocalConfig("amavis_originating_bypass_sa");
+  main::deleteLocalConfig("amavis_dspam_enabled");
+  main::deleteLocalConfig("postfix_enable_smtpd_policyd");
   my $mysql_class = main::getLocalConfig("zimbra_class_database");
   if ($mysql_class =~ /com.zimbra.cs.db.MySQL/) {
     main::setLocalConfig("zimbra_class_database", "com.zimbra.cs.db.MariaDB");
