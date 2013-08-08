@@ -2091,6 +2091,9 @@ sub upgrade900BETA1 {
     }
   }
   main::deleteLocalConfig("amavis_max_servers");
+  main::deleteLocalConfig("clamav_max_threads");
+  main::deleteLocalConfig("amavis_enable_dkim_verification");
+  main::deleteLocalConfig("amavis_originating_bypass_sa");
   my $mysql_class = main::getLocalConfig("zimbra_class_database");
   if ($mysql_class =~ /com.zimbra.cs.db.MySQL/) {
     main::setLocalConfig("zimbra_class_database", "com.zimbra.cs.db.MariaDB");
