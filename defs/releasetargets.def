@@ -77,7 +77,7 @@ zcs_stage: $(SOAP_DIR)/package-soap-api-doc $(SOAP_DIR)/package-soap-api-changel
 	mkdir -p zcs-$(RELEASE_VERSION_TAG).$(RELEASE)/util/modules
 	cp -f $(LICENSE_DIR)/zimbra/ypl-full.txt zcs-$(RELEASE_VERSION_TAG).$(RELEASE)/docs/YPL.txt
 	cp -f $(LICENSE_DIR)/zimbra/zcl.txt zcs-$(RELEASE_VERSION_TAG).$(RELEASE)/docs/zcl.txt
-	cp -f $(LICENSE_DIR)/zimbra/zimbra_public_eula_2.1.txt zcs-$(RELEASE_VERSION_TAG).$(RELEASE)/docs/zimbra_public_eula_2.1.txt
+	cp -f $(LICENSE_DIR)/zimbra/zimbra_public_eula_2.4.txt zcs-$(RELEASE_VERSION_TAG).$(RELEASE)/docs/zimbra_public_eula_2.4.txt
 	cp $(LICENSE_DIR)/thirdparty/oracle_jdk_eula.txt zcs-$(RELEASE_VERSION_TAG).$(RELEASE)/docs/oracle_jdk_eula.txt
 	-@(for d in `find $(CONSOLE_DIR)/WebRoot/help -mindepth 1 -maxdepth 1 -type d -exec basename "{}" \;`; do \
 		[ ! -e $(CONSOLE_DIR)/WebRoot/help/$$d/admin/pdf ] && continue; \
