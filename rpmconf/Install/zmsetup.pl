@@ -3004,10 +3004,12 @@ sub setEnabledDependencies {
       $config{RUNAV} = "yes";
       $config{RUNSA} = "yes";
       $config{RUNARCHIVING} = "no";
+      $config{RUNCBPOLICYD} = "no";
     } else {
       $config{RUNSA} = (isServiceEnabled("antispam") ? "yes" : "no");
       $config{RUNAV} = (isServiceEnabled("antivirus") ? "yes" : "no");
       $config{RUNARCHIVING} = (isServiceEnabled("archiving") ? "yes" : "no");
+      $config{RUNCBPOLICYD} = (isServiceEnabled("cbpolicyd") ? "yes" : "no");
     }
   }
 
@@ -5980,6 +5982,9 @@ sub configInitMta {
     }
     if ($config{RUNSA} eq "yes") {
       $enabledServiceStr .= "zimbraServiceEnabled antispam ";
+    }
+    if ($config{RUNCBPOLICYD} eq "yes") {
+      $enabledServiceStr .= "zimbraServiceEnabled cbpolicyd ";
     }
     setLdapServerConfig("zimbraMtaMyNetworks", $config{zimbraMtaMyNetworks})
       if ($config{zimbraMtaMyNetworks} ne "");
