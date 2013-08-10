@@ -3239,11 +3239,13 @@ sub setEnabledDependencies {
       $config{RUNSA} = "yes";
       $config{RUNDKIM} = "yes";
       $config{RUNARCHIVING} = "no";
+      $config{RUNCBPOLICYD} = "no";
     } else {
       $config{RUNSA} = (isServiceEnabled("antispam") ? "yes" : "no");
       $config{RUNAV} = (isServiceEnabled("antivirus") ? "yes" : "no");
       $config{RUNDKIM} = (isServiceEnabled("opendkim") ? "yes" : "no");
       $config{RUNARCHIVING} = (isServiceEnabled("archiving") ? "yes" : "no");
+      $config{RUNCBPOLICYD} = (isServiceEnabled("cbpolicyd") ? "yes" : "no");
     }
   }
 
@@ -6527,6 +6529,9 @@ sub configInitMta {
       if ($config{RUNDKIM} eq "yes") {
         push(@enabledServiceList, ('zimbraServiceEnabled', 'opendkim'));
       }
+    }
+    if ($config{RUNCBPOLICYD} eq "yes") {
+      $enabledServiceStr .= "zimbraServiceEnabled cbpolicyd ";
     }
     setLdapServerConfig("zimbraMtaMyNetworks", $config{zimbraMtaMyNetworks})
       if ($config{zimbraMtaMyNetworks} ne "");
