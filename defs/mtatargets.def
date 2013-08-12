@@ -148,18 +148,6 @@ $(MTA_DEST_DIR)/$(CBPOLICYD_DIR): $(MTA_DEST_DIR)
 	@echo "*** Creating cbpolicyd"
 	(cd $(MTA_DEST_DIR); tar xzf $(CBPOLICYD_SOURCE);)
 
-$(CORE_DEST_DIR)/bin/zmcbpolicydctl: 
-	mkdir -p $(@D)
-	cp $(SERVICE_DIR)/src/bin/$(@F) $@
-
-$(CORE_DEST_DIR)/libexec/zmcbpolicydinit: 
-	mkdir -p $(@D)
-	cp $(SERVICE_DIR)/src/libexec/$(@F) $@
-
-$(CORE_DEST_DIR)/conf/cbpolicyd.conf.in: 
-	mkdir -p $(@D)
-	cp $(SERVICE_DIR)/conf/$(@F) $@
-
 $(MTA_DEST_DIR)/$(ALTERMIME_DIR)-$(ALTERMIME_VERSION): $(MTA_DEST_DIR)
 	@echo "*** Creating altermime"
 	(cd $(MTA_DEST_DIR); tar xzf $(ALTERMIME_SOURCE).tgz;)

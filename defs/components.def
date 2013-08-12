@@ -9,11 +9,6 @@ CBPOLICYD_COMPONENTS := \
 	$(MTA_DEST_DIR)/data/cbpolicyd \
 	$(MTA_DEST_DIR)/data/cbpolicyd/db
 
-CBPOLICYD_CORE_COMPONENTS := \
-	$(CORE_DEST_DIR)/bin/zmcbpolicydctl \
-	$(CORE_DEST_DIR)/conf/cbpolicyd.conf.in \
-	$(CORE_DEST_DIR)/libexec/zmcbpolicydinit
-
 CORE_COMPONENTS	:= \
 	$(CORE_DEST_DIR) \
 	$(CORE_DEST_DIR)/db \
@@ -36,7 +31,6 @@ CORE_COMPONENTS	:= \
 	$(CORE_DEST_DIR)/lib/ext/com_zimbra_cert_manager/com_zimbra_cert_manager.jar \
 	$(CORE_DEST_DIR)/lib/ext/com_zimbra_bulkprovision/com_zimbra_bulkprovision.jar \
 	$(CORE_DEST_DIR)/lib/ext/com_zimbra_clientuploader/com_zimbra_clientuploader.jar \
-	$(CBPOLICYD_CORE_COMPONENTS) \
 	$(PLATFORM_CORE_COMPONENTS)
 
 MTA_COMPONENTS	:= \

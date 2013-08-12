@@ -275,6 +275,7 @@ $(CORE_DEST_DIR)/conf: $(WEBAPP_DIR)/service.war
 	cp $(SERVICE_DIR)/conf/milter.log4j.properties $@/milter.log4j.properties
 	cp $(SERVICE_DIR)/conf/timezones.ics $@
 	cp $(SERVICE_DIR)/conf/zimbra.ld.conf $@
+	cp $(SERVICE_DIR)/conf/cbpolicyd.conf.in $@
 	mkdir -p $@/zmconfigd
 	cp $(SERVICE_DIR)/conf/zmconfigd/postfix_content_filter.cf $@/zmconfigd/postfix_content_filter.cf
 	cp $(SERVICE_DIR)/conf/zmconfigd/smtpd_recipient_restrictions.cf $@/zmconfigd/smtpd_recipient_restrictions.cf
@@ -289,7 +290,6 @@ $(CORE_DEST_DIR)/conf: $(WEBAPP_DIR)/service.war
 	cp $(SERVICE_DIR)/conf/spamassassin/* $@/spamassassin
 	mkdir -p $@/attrs
 	cp -f $(SERVICE_DIR)/build/dist/conf/attrs/* $@/attrs
-	cp $(ZMCBPOLICYD_DIR)/conf/* $@
 
 $(CORE_DEST_DIR)/conf/com.zimbra.zcs.plist:
 	mkdir -p $(CORE_DEST_DIR)/conf
@@ -324,7 +324,6 @@ $(CORE_DEST_DIR)/libexec: $(LAUNCHER_DIR)/build/zmmailboxdmgr
 	cp $@/swatch $@/logswatch
 	cp $@/swatch $@/auditswatch
 	cp -f $(BUILD_ROOT)/rpmconf/Build/get_plat_tag.sh $@
-	cp $(ZMCBPOLICYD_DIR)/src/libexec/* $@
 
 $(CORE_DEST_DIR)/bin:
 	mkdir -p $@
@@ -346,8 +345,8 @@ $(CORE_DEST_DIR)/bin:
 	cp $(ZIMBRA_BIN_DIR)/zmmtactl $@
 	cp $(ZIMBRA_BIN_DIR)/zmspellctl $@
 	cp $(ZIMBRA_BIN_DIR)/zmapachectl $@
+	cp $(ZIMBRA_BIN_DIR)/zmcbpolicydctl $@
 	cp $@/zmprov $@/zmprov.java
-	cp $(ZMCBPOLICYD_DIR)/src/bin/* $@
 
 $(CORE_DEST_DIR)/contrib:
 	mkdir -p $@
