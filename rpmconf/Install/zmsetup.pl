@@ -6529,9 +6529,9 @@ sub configInitMta {
       if ($config{RUNDKIM} eq "yes") {
         push(@enabledServiceList, ('zimbraServiceEnabled', 'opendkim'));
       }
-    }
-    if ($config{RUNCBPOLICYD} eq "yes") {
-      $enabledServiceStr .= "zimbraServiceEnabled cbpolicyd ";
+      if ($config{RUNCBPOLICYD} eq "yes") {
+        push(@enabledServiceList, ('zimbraServiceEnabled', 'cbpolicyd'));
+      }
     }
     setLdapServerConfig("zimbraMtaMyNetworks", $config{zimbraMtaMyNetworks})
       if ($config{zimbraMtaMyNetworks} ne "");
