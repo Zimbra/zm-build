@@ -90,10 +90,8 @@ $(BUILD_ROOT)/zimbra-mta.spec:
 		$(BUILD_ROOT)/zimbra-mta.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/data/amavisd" >> \
 		$(BUILD_ROOT)/zimbra-mta.spec
-ifeq ($(ZIMBRA_USE_CBPOLICYD), 1)
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/$(CBPOLICYD_DIR)" >> \
 		$(BUILD_ROOT)/zimbra-mta.spec
-endif
 
 mta_stage: $(MTA_COMPONENTS)
 
@@ -152,15 +150,15 @@ $(MTA_DEST_DIR)/$(CBPOLICYD_DIR): $(MTA_DEST_DIR)
 
 $(CORE_DEST_DIR)/bin/zmcbpolicydctl: 
 	mkdir -p $(@D)
-	cp $(ZMCBPOLICYD_DIR)/src/bin/$(@F) $@
+	cp $(SERVICE_DIR)/src/bin/$(@F) $@
 
 $(CORE_DEST_DIR)/libexec/zmcbpolicydinit: 
 	mkdir -p $(@D)
-	cp $(ZMCBPOLICYD_DIR)/src/libexec/$(@F) $@
+	cp $(SERVICE_DIR)/src/libexec/$(@F) $@
 
 $(CORE_DEST_DIR)/conf/cbpolicyd.conf.in: 
 	mkdir -p $(@D)
-	cp $(ZMCBPOLICYD_DIR)/conf/$(@F) $@
+	cp $(SERVICE_DIR)/conf/$(@F) $@
 
 $(MTA_DEST_DIR)/$(ALTERMIME_DIR)-$(ALTERMIME_VERSION): $(MTA_DEST_DIR)
 	@echo "*** Creating altermime"
