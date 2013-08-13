@@ -129,7 +129,7 @@ my %updateScripts = (
   '89' => "migrate20120319-Name255Chars.pl",
   '90' => "migrate20120410-BlobLocator.pl",
   '91' => "migrate20121009-VolumeBlobs.pl",	       # 8.0.1
-  '92' => "migrate20130226_alwayson.pl",	       # 9.0.0
+  '92' => "migrate20130226_alwayson.pl",	       # 8.5.0
   # 93-99 skipped for possible IRONMAIDEN use
 );
 
@@ -178,7 +178,7 @@ my %updateFuncs = (
   "8.0.3_GA" => \&upgrade803GA,
   "8.0.4_GA" => \&upgrade804GA,
   "8.0.5_GA" => \&upgrade805GA,
-  "9.0.0_BETA1" => \&upgrade900BETA1,
+  "8.5.0_BETA1" => \&upgrade850BETA1,
 );
 
 my @versionOrder = (
@@ -226,7 +226,7 @@ my @versionOrder = (
   "8.0.3_GA",
   "8.0.4_GA",
   "8.0.5_GA",
-  "9.0.0_BETA1",
+  "8.5.0_BETA1",
 );
 
 my ($startVersion,$startMajor,$startMinor,$startMicro);
@@ -282,7 +282,7 @@ sub upgrade {
       if ($found) {
         &doMysql51Upgrade if ($v eq "7.0.0_BETA1");
         &doMysql55Upgrade if ($v eq "8.0.0_BETA1");
-        &doMysql56Upgrade if ($v eq "9.0.0_BETA1");
+        &doMysql56Upgrade if ($v eq "8.5.0_BETA1");
       }
       last if ($v eq $targetVersion);
     }
@@ -531,8 +531,8 @@ sub upgrade {
     main::progress("This appears to be 8.0.4_GA\n");
   } elsif ($startVersion eq "8.0.5_GA") {
     main::progress("This appears to be 8.0.5_GA\n");
-  } elsif ($startVersion eq "9.0.0_BETA1") {
-    main::progress("This appears to be 9.0.0_BETA1\n");
+  } elsif ($startVersion eq "8.5.0_BETA1") {
+    main::progress("This appears to be 8.5.0_BETA1\n");
   } else {
     main::progress("I can't upgrade version $startVersion\n\n");
     return 1;
@@ -546,7 +546,7 @@ sub upgrade {
       $needMysqlTableCheck=1 if ($v eq "4.5.2_GA");
       $needMysqlUpgrade=1 if ($v eq "7.0.0_BETA1");
       $needMysqlUpgrade=1 if ($v eq "8.0.0_GA");
-      $needMysqlUpgrade=1 if ($v eq "9.0.0_BETA1");
+      $needMysqlUpgrade=1 if ($v eq "8.5.0_BETA1");
     }
     last if ($v eq $targetVersion);
   }
@@ -560,7 +560,7 @@ sub upgrade {
       my $rc=&upgradeLdap("8.0.0_BETA3");
       if ($rc) { return 1; }
     } elsif($startMajor < 9) {
-      my $rc=&upgradeLdap("9.0.0_BETA1");
+      my $rc=&upgradeLdap("8.5.0_BETA1");
       if ($rc) { return 1; }
     } elsif ($startMajor == 8 && $startMinor == 0 && $startMicro < 3) {
       my $rc=&reloadLdap("8.0.3_GA");
@@ -2010,9 +2010,9 @@ sub upgrade805GA {
   return 0;
 }
 
-sub upgrade900BETA1 {
+sub upgrade850BETA1 {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
-  main::progress("Updating from 9.0.0_BETA1\n");
+  main::progress("Updating from 8.5.0_BETA1\n");
   if (main::isInstalled("zimbra-ldap")) {
     if ($isLdapMaster) {
       runLdapAttributeUpgrade("81385");
@@ -2733,7 +2733,7 @@ sub reloadLdap($) {
 sub upgradeLdap($) {
   my ($upgradeVersion) = @_;
   if (main::isInstalled ("zimbra-ldap")) {
-    if($upgradeVersion eq "9.0.0_BETA1") {
+    if($upgradeVersion eq "8.5.0_BETA1") {
       if($main::migratedStatus{"LdapUpgraded$upgradeVersion"} ne "CONFIGURED") {
         if (-f '/opt/zimbra/data/ldap/config/cn=config.ldif') {
           my $infile="/opt/zimbra/data/ldap/config/cn\=config.ldif";
