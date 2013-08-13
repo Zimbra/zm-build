@@ -151,7 +151,7 @@ my $starttls = 0;
 my $needNewCert = "";
 my $ssl_cert_type = "self";
 
-my @ssl_digests = ("md4","md5","mdc2","ripemd160","sha","sha1","sha224","sha256","sha384","sha512","whirlpool");
+my @ssl_digests = ("md4","md5","mdc2","ripemd160","sha","sha1","sha224","sha256","sha384","sha512");
 my @interfaces = ();
 
 ($>) and usage();
