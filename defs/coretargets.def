@@ -156,7 +156,6 @@ $(CORE_DEST_DIR)/docs:
 	echo "Curl version: $(CURL_VERSION)" >> $@/zimbra-software-versions.txt
 	echo "Cyrus SASL version: $(SASL_VERSION)" >> $@/zimbra-software-versions.txt
 	echo "Dspam version: $(DSPAM_VERSION)" >> $@/zimbra-software-versions.txt
-	echo "Expat version (OSX only): $(EXPAT_VERSION)" >> $@/zimbra-software-versions.txt
 	echo "Heimdal version: $(HEIMDAL_VERSION)" >> $@/zimbra-software-versions.txt
 	echo "JDK version: $(JAVA_VERSION)" >> $@/zimbra-software-versions.txt
 	echo "Jetty version: $(JETTY_VERSION)" >> $@/zimbra-software-versions.txt
@@ -167,8 +166,6 @@ $(CORE_DEST_DIR)/docs:
 	echo "Nginx version: $(NGINX_VERSION)" >> $@/zimbra-software-versions.txt
 	echo "OpenLDAP version: $(LDAP_VERSION)" >> $@/zimbra-software-versions.txt
 	echo "OpenSSL version: $(OPENSSL_VERSION)" >> $@/zimbra-software-versions.txt
-	echo "Pcre version (OSX only): $(PCRE_VERSION)" >> $@/zimbra-software-versions.txt
-	echo "Popt version (OSX only): $(POPT_VERSION)" >> $@/zimbra-software-versions.txt
 	echo "Postfix version: $(POSTFIX_VERSION)" >> $@/zimbra-software-versions.txt
 	echo "RRDtool version: $(RRD_VERSION)" >> $@/zimbra-software-versions.txt
 	echo "Rsync version: $(RSYNC_VERSION)" >> $@/zimbra-software-versions.txt
@@ -351,18 +348,6 @@ $(CORE_DEST_DIR)/bin:
 $(CORE_DEST_DIR)/contrib:
 	mkdir -p $@
 	cp -R $(SERVICE_DIR)/src/contrib/* $@
-
-$(CORE_DEST_DIR)/lib/libpcre.dylib: $(CORE_DEST_DIR)/lib
-	(cd $(CORE_DEST_DIR); tar xzf $(THIRD_PARTY_BUILDS)/$(BUILD_PLATFORM)/pcre/pcre-$(PCRE_VERSION).tgz)
-	rm -rf $(CORE_DEST_DIR)/include
-
-$(CORE_DEST_DIR)/lib/libpopt.0.dylib: $(CORE_DEST_DIR)/lib
-	(cd $(CORE_DEST_DIR); tar xzf $(THIRD_PARTY_BUILDS)/$(BUILD_PLATFORM)/popt/popt-$(POPT_VERSION).tgz)
-	rm -rf $(CORE_DEST_DIR)/include
-
-$(CORE_DEST_DIR)/lib/libexpat.dylib: $(CORE_DEST_DIR)/lib
-	(cd $(CORE_DEST_DIR); tar xzf $(THIRD_PARTY_BUILDS)/$(BUILD_PLATFORM)/expat/expat-$(EXPAT_VERSION).tgz)
-	rm -rf $(CORE_DEST_DIR)/include
 
 $(CORE_DEST_DIR)/$(BDB_DIR):
 	@echo "*** Creating bdb"
