@@ -26,6 +26,7 @@ use IPC::Open3;
 use FileHandle;
 use File::Grep qw (fgrep);
 use File::Path;
+use XML::Simple;
 my $zmlocalconfig="/opt/zimbra/bin/zmlocalconfig";
 my $type = qx(${zmlocalconfig} -m nokey convertd_stub_name 2> /dev/null);
 chomp $type;
@@ -2073,29 +2074,107 @@ sub upgrade850BETA1 {
         main::runAsZimbra("${zimbra_home}/libexec/zmaltermimeconfig -e $domain");
       }
     }
-    my $lc_attr = main::getLocalConfig("amavis_max_servers");
-    if ($lc_attr ne "" && $lc_attr != 10) {
+    my $localxml = XMLin("/opt/zimbra/conf/localconfig.xml");
+
+    my $lc_attr= $localxml->{key}->{amavis_max_servers}->{value};
+    if (defined($lc_attr) && $lc_attr+0 != 0) {
        main::setLdapServerConfig($hn, 'zimbraAmavisMaxServers', "$lc_attr");
     }
-    $lc_attr = main::getLocalConfig("clamav_max_threads");
-    if ($lc_attr ne "" && $lc_attr != 10) {
+    $lc_attr= $localxml->{key}->{clamav_max_threads}->{value};
+    if (defined($lc_attr) && $lc_attr+0 != 0) {
        main::setLdapServerConfig($hn, 'zimbraClamAVMaxThreads', "$lc_attr");
     }
-    $lc_attr = main::getLocalConfig("amavis_enable_dkim_verification");
-    if ($lc_attr ne "" && lc($lc_attr) ne "true") {
-       main::setLdapServerConfig($hn, 'zimbraAmavisEnableDKIMVerification', "$lc_attr");
+    $lc_attr= $localxml->{key}->{amavis_enable_dkim_verification}->{value};
+    if (defined($lc_attr) && lc($lc_attr) eq "false") {
+       main::setLdapServerConfig($hn, 'zimbraAmavisEnableDKIMVerification', "FALSE");
     }
-    $lc_attr = main::getLocalConfig("amavis_originating_bypass_sa");
-    if ($lc_attr ne "" && lc($lc_attr) ne "false") {
-       main::setLdapServerConfig($hn, 'zimbraAmavisOriginatingBypassSA', "$lc_attr");
+    $lc_attr= $localxml->{key}->{amavis_originating_bypass_sa}->{value};
+    if (defined($lc_attr) && lc($lc_attr) eq "true") {
+       main::setLdapServerConfig($hn, 'zimbraAmavisOriginatingBypassSA', "TRUE");
     }
-    $lc_attr = main::getLocalConfig("amavis_dspam_enabled");
-    if ($lc_attr ne "" && lc($lc_attr) eq "true") {
-       main::setLdapServerConfig($hn, 'zimbraAmavisDSPAMEnabled', "$lc_attr");
+    $lc_attr= $localxml->{key}->{amavis_dspam_enabled}->{value};
+    if (defined($lc_attr) && (lc($lc_attr) eq "yes" || lc($lc_attr) eq "true")) {
+       main::setLdapServerConfig($hn, 'zimbraAmavisDSPAMEnabled', "TRUE");
     }
-    $lc_attr = main::getLocalConfig("postfix_enable_smtpd_policyd");
-    if ($lc_attr ne "" && (lc($lc_attr) eq "yes" || lc($lc_attr) eq "true")) {
+    $lc_attr= $localxml->{key}->{postfix_enable_smtpd_policyd}->{value};
+    if (defined($lc_attr) && (lc($lc_attr) eq "yes" || lc($lc_attr) eq "true")) {
        main::setLdapServerConfig($hn, 'zimbraPostfixEnableSmtpdPolicyd', "TRUE");
+    }
+    $lc_attr= $localxml->{key}->{cbpolicyd_min_servers}->{value};
+    if (defined($lc_attr) && $lc_attr != 4) {
+       main::setLdapServerConfig($hn, 'zimbraCBPolicydMinServers', "$lc_attr");
+    }
+    $lc_attr= $localxml->{key}->{cbpolicyd_min_spare_servers}->{value};
+    if (defined($lc_attr) && $lc_attr != 4) {
+       main::setLdapServerConfig($hn, 'zimbraCBPolicydMinSpareServers', "$lc_attr");
+    }
+    $lc_attr= $localxml->{key}->{cbpolicyd_max_servers}->{value};
+    if (defined($lc_attr) && $lc_attr != 25) {
+       main::setLdapServerConfig($hn, 'zimbraCBPolicydMaxServers', "$lc_attr");
+    }
+    $lc_attr= $localxml->{key}->{cbpolicyd_max_spare_servers}->{value};
+    if (defined($lc_attr) ne "" && $lc_attr != 12) {
+       main::setLdapServerConfig($hn, 'zimbraCBPolicydMaxSpareServers', "$lc_attr");
+    }
+    $lc_attr= $localxml->{key}->{cbpolicyd_max_requests}->{value};
+    if (defined($lc_attr) && $lc_attr != 1000) {
+       main::setLdapServerConfig($hn, 'zimbraCBPolicydMaxRequests', "$lc_attr");
+    }
+    $lc_attr= $localxml->{key}->{cbpolicyd_timeout_idle}->{value};
+    if (defined($lc_attr) && $lc_attr != 1020) {
+       main::setLdapServerConfig($hn, 'zimbraCBPolicydTimeoutIdle', "$lc_attr");
+    }
+    $lc_attr= $localxml->{key}->{cbpolicyd_timeout_busy}->{value};
+    if (defined($lc_attr) && $lc_attr != 120) {
+       main::setLdapServerConfig($hn, 'zimbraCBPolicydTimeoutBusy', "$lc_attr");
+    }
+    $lc_attr= $localxml->{key}->{cbpolicyd_bypass_timeout}->{value};
+    if (defined($lc_attr) && $lc_attr != 30) {
+       main::setLdapServerConfig($hn, 'zimbraCBPolicydBypassTimeout', "TRUE");
+    }
+    $lc_attr= $localxml->{key}->{cbpolicyd_bypass_mode}->{value};
+    if (defined($lc_attr) && lc($lc_attr) ne "tempfail" ) {
+       main::setLdapServerConfig($hn, 'zimbraCBPolicydBypassMode', "$lc_attr");
+    }
+    $lc_attr= $localxml->{key}->{cbpolicyd_module_accesscontrol}->{value};
+    if (defined($lc_attr) && (0+$lc_attr > 0  || lc($lc_attr) eq "true")) {
+       main::setLdapServerConfig($hn, 'zimbraCBPolicydAccessControlEnabled', "TRUE");
+    }
+    $lc_attr= $localxml->{key}->{cbpolicyd_module_greylisting}->{value};
+    if (defined($lc_attr) && (0+$lc_attr > 0  || lc($lc_attr) eq "true")) {
+       main::setLdapServerConfig($hn, 'zimbraCBPolicydGreylistingEnabled', "TRUE");
+    }
+    $lc_attr= $localxml->{key}->{cbpolicyd_module_greylisting_training}->{value};
+    if ($lc_attr ne "" && (0+$lc_attr > 0  || lc($lc_attr) eq "true")) {
+       main::setLdapServerConfig($hn, 'zimbraCBPolicydGreylistingTrainingEnabled', "TRUE");
+    }
+    $lc_attr= $localxml->{key}->{cbpolicyd_module_greylisting_defer_msg}->{value};
+    if (defined($lc_attr)) {
+       main::setLdapServerConfig($hn, 'zimbraCBPolicydGreylistingDeferMsg', "$lc_attr");
+    }
+    $lc_attr= $localxml->{key}->{cbpolicyd_module_greylisting_blacklist_msg}->{value};
+    if (defined($lc_attr)) {
+       main::setLdapServerConfig($hn, 'zimbraCBPolicydGreylistingBlacklistMsg', "$lc_attr");
+    }
+    $lc_attr= $localxml->{key}->{cbpolicyd_module_checkhelo}->{value};
+    if (defined($lc_attr) && (0+$lc_attr > 0 || lc($lc_attr) eq "yes" || lc($lc_attr) eq "true")) {
+       main::setLdapServerConfig($hn, 'zimbraCBPolicydCheckHeloEnabled', "TRUE");
+    }
+    $lc_attr= $localxml->{key}->{cbpolicyd_module_checkspf}->{value};
+    if (defined($lc_attr) && (0+$lc_attr > 0 || lc($lc_attr) eq "yes" || lc($lc_attr) eq "true")) {
+       main::setLdapServerConfig($hn, 'zimbraCBPolicydCheckSPFEnabled', "TRUE");
+    }
+    $lc_attr= $localxml->{key}->{cbpolicyd_module_quotas}->{value};
+    if (defined($lc_attr) && (0+$lc_attr == 0 || lc($lc_attr) eq "no" || lc($lc_attr) eq "false")) {
+       main::setLdapServerConfig($hn, 'zimbraCBPolicydQuotasEnabled', "FALSE");
+    }
+    $lc_attr= $localxml->{key}->{cbpolicyd_module_amavis}->{value};
+    if (defined($lc_attr) && (0+$lc_attr > 0 || lc($lc_attr) eq "yes" || lc($lc_attr) eq "true")) {
+       main::setLdapServerConfig($hn, 'zimbraCBPolicydAmavisEnabled', "TRUE");
+    }
+    $lc_attr= $localxml->{key}->{cbpolicyd_module_accounting}->{value};
+    if (defined($lc_attr) && (0+$lc_attr > 0 || lc($lc_attr) eq "yes" || lc($lc_attr) eq "true")) {
+       main::setLdapServerConfig($hn, 'zimbraCBPolicydAccountingEnabled', "TRUE");
     }
   }
   main::deleteLocalConfig("amavis_max_servers");
@@ -2104,6 +2183,25 @@ sub upgrade850BETA1 {
   main::deleteLocalConfig("amavis_originating_bypass_sa");
   main::deleteLocalConfig("amavis_dspam_enabled");
   main::deleteLocalConfig("postfix_enable_smtpd_policyd");
+  main::deleteLocalConfig("cbpolicyd_min_servers");
+  main::deleteLocalConfig("cbpolicyd_min_spare_servers");
+  main::deleteLocalConfig("cbpolicyd_max_servers");
+  main::deleteLocalConfig("cbpolicyd_max_spare_servers");
+  main::deleteLocalConfig("cbpolicyd_max_requests");
+  main::deleteLocalConfig("cbpolicyd_timeout_idle");
+  main::deleteLocalConfig("cbpolicyd_timeout_busy");
+  main::deleteLocalConfig("cbpolicyd_bypass_timeout");
+  main::deleteLocalConfig("cbpolicyd_bypass_mode");
+  main::deleteLocalConfig("cbpolicyd_module_accesscontrol");
+  main::deleteLocalConfig("cbpolicyd_module_greylisting");
+  main::deleteLocalConfig("cbpolicyd_module_greylisting_training");
+  main::deleteLocalConfig("cbpolicyd_module_greylisting_defer_msg");
+  main::deleteLocalConfig("cbpolicyd_module_greylisting_blacklist_msg");
+  main::deleteLocalConfig("cbpolicyd_module_checkhelo");
+  main::deleteLocalConfig("cbpolicyd_module_checkspf");
+  main::deleteLocalConfig("cbpolicyd_module_quotas");
+  main::deleteLocalConfig("cbpolicyd_module_amavis");
+  main::deleteLocalConfig("cbpolicyd_module_accounting");
   my $mysql_class = main::getLocalConfig("zimbra_class_database");
   if ($mysql_class =~ /com.zimbra.cs.db.MySQL/) {
     main::setLocalConfig("zimbra_class_database", "com.zimbra.cs.db.MariaDB");
