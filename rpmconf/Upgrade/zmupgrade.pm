@@ -4375,6 +4375,7 @@ sub upgrade800GA {
     my $cbpdb="/opt/zimbra/data/cbpolicyd/db/cbpolicyd.sqlitedb";
     if (-f $cbpdb) {
       main::runAsZimbra("sqlite3 $cbpdb < ${scriptDir}/migrate20130227-UpgradeCBPolicyDSchema.sql >/dev/null 2>&1");
+      main::runAsZimbra("sqlite3 $cbpdb < ${scriptDir}/migrate20130819-UpgradeQuotasTable.sql >/dev/null 2>&1");
     }
   }
   return 0;
