@@ -257,6 +257,7 @@ my %updateFuncs = (
   "8.0.3_GA" => \&upgrade803GA,
   "8.0.4_GA" => \&upgrade804GA,
   "8.0.5_GA" => \&upgrade805GA,
+  "8.0.6_GA" => \&upgrade806GA,
   "9.0.0_BETA1" => \&upgrade900BETA1,
 );
 
@@ -382,6 +383,7 @@ my @versionOrder = (
   "8.0.3_GA",
   "8.0.4_GA",
   "8.0.5_GA",
+  "8.0.6_GA",
   "9.0.0_BETA1",
 );
 
@@ -688,6 +690,8 @@ sub upgrade {
     main::progress("This appears to be 8.0.4_GA\n");
   } elsif ($startVersion eq "8.0.5_GA") {
     main::progress("This appears to be 8.0.5_GA\n");
+  } elsif ($startVersion eq "8.0.6_GA") {
+    main::progress("This appears to be 8.0.6_GA\n");
   } elsif ($startVersion eq "9.0.0_BETA1") {
     main::progress("This appears to be 9.0.0_BETA1\n");
   } else {
@@ -4587,6 +4591,12 @@ sub upgrade805GA {
     }
   }
   main::deleteLocalConfig("zimbra_reverseproxy_externalroute_include_original_authusername");
+  return 0;
+}
+
+sub upgrade806GA {
+  my ($startBuild, $targetVersion, $targetBuild) = (@_);
+  main::progress("Updating from 8.0.6_GA\n");
   return 0;
 }
 
