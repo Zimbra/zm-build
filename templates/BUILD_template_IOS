@@ -16,32 +16,25 @@
 #
 # Use 'p4 help client' to see more about client views and options.
 
-Client:	BUILD_@@TAG@@_@@RELEASE@@
+Client: BUILD_@@TAG@@_@@RELEASE@@_@@ARCH@@
 
-Update:	2005/04/15 13:34:42
+Update: 2012/01/23 12:32:39
 
-Access:	2005/04/15 14:13:20
+Access: 2012/01/23 12:41:59
 
-Owner:	zimbra-build
-
-Host:	
+Owner:  zimbra-build
 
 Description:
-	Created by zimbra-build
+	Created by quanah.
 
-Root:	@@BUILD_ROOT@@
+Root:   @@BUILD_ROOT@@
 
-Options:	noallwrite noclobber nocompress unlocked nomodtime normdir
+Options:        noallwrite noclobber nocompress unlocked nomodtime normdir
 
-LineEnd:	local
+LineEnd:        local
 
 View:
-	//depot/@@TAG@@/ZimbraServer/... //BUILD_@@TAG@@_@@RELEASE@@/ZimbraServer/...
-	//depot/@@TAG@@/Ajax/... //BUILD_@@TAG@@_@@RELEASE@@/Ajax/...
-	//depot/@@TAG@@/ZimbraBackup/... //BUILD_@@TAG@@_@@RELEASE@@/ZimbraBackup/...
-	//depot/@@TAG@@/ZimbraClient/... //BUILD_@@TAG@@_@@RELEASE@@/ZimbraClient/...
-	//depot/@@TAG@@/ZimbraWebClient/... //BUILD_@@TAG@@_@@RELEASE@@/ZimbraWebClient/...
-	//depot/@@TAG@@/ZimbraConvertd/... //BUILD_@@TAG@@_@@RELEASE@@/ZimbraConvertd/...
-	//depot/@@TAG@@/ZimbraBuild/... //BUILD_@@TAG@@_@@RELEASE@@/ZimbraBuild/...
-	//depot/@@TAG@@/ThirdParty/... //BUILD_@@TAG@@_@@RELEASE@@/ThirdParty/...
-
+        //depot/@@TAG@@/Octopus/Mobile/iOS/... //BUILD_@@TAG@@_@@RELEASE@@_@@ARCH@@/Octopus/Mobile/iOS/...
+        //depot/@@TAG@@/ZimbraBuild/... //BUILD_@@TAG@@_@@RELEASE@@_@@ARCH@@/ZimbraBuild/...
+        //depot/@@TAG@@/ZimbraNetwork/ZimbraBuild/... //BUILD_@@TAG@@_@@RELEASE@@_@@ARCH@@/ZimbraNetwork/ZimbraBuild/...
+        -//depot/@@TAG@@/ZimbraBuild/support/... //BUILD_@@TAG@@_@@RELEASE@@_@@ARCH@@/ZimbraBuild/support/...

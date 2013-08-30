@@ -35,7 +35,7 @@ else
   platform=unknown
 fi
 
-if [ x"$platform" = "xMACOSXx86_10.5" -o x"$platform" = "xMACOSXx86_10.6" ]; then
+if [ x"$platform" = "xMACOSXx86_10.5" -o x"$platform" = "xMACOSXx86_10.6" -o x"$platform" = "xMACOSXx86_10.7" ]; then
   PS="/bin/ps -elf"
 else
   PS="/bin/ps -aux"
@@ -140,7 +140,7 @@ usage() {
 
   echo "$0 [-u] [-c config] [-m zcs.mpkg | -d zcs.dmg] [-l ZCSLicense.xml] [-s] [-h]"
   echo ""
-  echo " -u          Uninstall Zimbra Collaboration Suite"
+  echo " -u          Uninstall Zimbra Collaboration Server"
   echo " -d zcs.dmg  Install ZCS from contents of specified disk image"
   echo " -m zcs.mpkg Install ZCS with specified package"
   echo " -l license  ZCSLicense.xml file"
@@ -224,7 +224,7 @@ if [ x$UNINSTALL == "xyes" ]; then
   if [ ! -e "/etc/syslog.conf.zimbra" ]; then
     cp -f /etc/syslog.conf /etc/syslog.conf.zimbra
   fi
-  sed -i .zimbra -e 's:\(.*zimbra.*\.log.*\):#\1:' /etc/syslog.conf
+  sed -i .zimbra -e '/zimbra.*.log/d' /etc/syslog.conf
   if [ $? != 0 ]; then
     echo "failed."
     mv /etc/syslog.conf.zimbra /etc/syslog.conf

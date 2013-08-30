@@ -33,6 +33,36 @@ displayLicense() {
   echo ""
 }
 
+displayThirdPartyLicenses() {
+  echo ""
+  echo ""
+  if [ -f ${MYDIR}/docs/keyview_eula.txt ]; then
+    cat $MYDIR/docs/keyview_eula.txt
+    echo ""
+    echo ""
+    if [ x$DEFAULTFILE = "x" -o x$CLUSTERUPGRADE = "xyes" ]; then
+      askYN "Do you agree with the terms of the software license agreement?" "N"
+      if [ $response != "yes" ]; then
+        exit
+      fi
+    fi
+    echo ""
+    echo ""
+  fi
+  if [ -f ${MYDIR}/docs/oracle_jdk_eula.txt ]; then
+    cat $MYDIR/docs/oracle_jdk_eula.txt
+    echo ""
+    echo ""
+    if [ x$DEFAULTFILE = "x" -o x$CLUSTERUPGRADE = "xyes" ]; then
+      askYN "Do you agree with the terms of the software license agreement?" "N"
+      if [ $response != "yes" ]; then
+        exit
+      fi
+    fi
+  fi
+  echo ""
+}
+
 isFQDN() {
   #fqdn is > 2 dots.  because I said so.
   if [ x"$1" = "xdogfood" ]; then
@@ -231,6 +261,38 @@ checkUser() {
   fi
 }
 
+checkMySQLConfig() {
+  isInstalled zimbra-store
+  if [ x$PKGINSTALLED != "x" ]; then
+    if [ -f "/opt/zimbra/conf/my.cnf" ]; then
+      BIND_ADDR=`awk '{ if ( $1 ~ /^bind-address$/ ) { print $3 } }' /opt/zimbra/conf/my.cnf`
+      while [ "${BIND_ADDR}x" != "127.0.0.1x" -a "${BIND_ADDR}x" != "localhostx" ]; do
+        echo "The MySQL bind address is currently not set to \"localhost\" or \"127.0.0.1\".  Due to a"
+        echo "MySQL bug (#61713), the MySQL bind address must be set to \"127.0.0.1\".  Please correct"
+        echo "the bind-address entry in the \"/opt/zimbra/conf/my.cnf\" file to proceed with the upgrade."
+        askYN "Retry validation? (Y/N)?" "Y"
+        if [ $response = "no" ]; then
+          break
+        fi
+        BIND_ADDR=`awk '{ if ( $1 ~ /^bind-address$/ ) { print $3 } }' /opt/zimbra/conf/my.cnf`
+      done
+      if [ "${BIND_ADDR}x" != "127.0.0.1x" -a "${BIND_ADDR}x" != "localhostx" ]; then
+        echo ""
+        echo "It is recommended that the bind-address setting in the /opt/zimbra/conf/my.cnf file be set"
+        echo "to \"127.0.0.1\".  The current setting of \"${BIND_ADDR}\" is not supported within"
+        echo "ZCS and may cause the installation to fail."
+        askYN "Proceed with installation? (Y/N)?" "N"
+        if [ $response != "yes" ]; then
+          echo ""
+          echo "Aborting installation"
+          echo ""
+          exit 1
+        fi
+      fi
+    fi
+  fi
+}
+
 checkDatabaseIntegrity() {
 
   if [ x"$CLUSTERTYPE" = "xstandby" ]; then
@@ -333,8 +395,8 @@ checkUbuntuRelease() {
     return
   fi
 
-  if [ "x$DISTRIB_ID" = "xUbuntu" -a "x$DISTRIB_RELEASE" != "x6.06" -a "x$DISTRIB_RELEASE" != "x8.04" -a "x$DISTRIB_RELEASE" != "x8.04.1"  -a "x$DISTRIB_RELEASE" != "x10.04" ]; then
-    echo "WARNING: ZCS is currently only supported on Ubuntu Server 6.06, 8.04, and 10.04 LTS."
+  if [ "x$DISTRIB_ID" = "xUbuntu" -a "x$DISTRIB_RELEASE" != "x10.04" -a "x$DISTRIB_RELEASE" != "x12.04" ]; then
+    echo "WARNING: ZCS is currently only supported on Ubuntu Server 10.04 and 12.04 LTS."
     echo "You are attempting to install on $DISTRIB_DESCRIPTION which may not work."
     echo "Support will not be provided if you choose to continue."
     echo ""
@@ -470,6 +532,7 @@ EOF
   fi
 
   GOOD="yes"
+
   echo "Checking for prerequisites..."
   #echo -n "    NPTL..."
   /usr/bin/getconf GNU_LIBPTHREAD_VERSION | grep NPTL > /dev/null 2>&1
@@ -500,6 +563,8 @@ EOF
       GOOD="no"
     fi
   done
+
+  echo ""
 
   SUGGESTED="yes"
   echo "Checking for suggested prerequisites..."
@@ -557,8 +622,8 @@ EOF
   # limitation of ext3
   if [ -d "/opt/zimbra/db/data" ]; then
     echo "Checking current number of databases..."
-    TYPECHECK=`df -t ext3 /opt/zimbra/db/data`
-    if [ x"$TYPECHECK" != "x" ]; then
+    FS_TYPE=`df -T /opt/zimbra/db/data | awk '{ if (NR == 2) { print $2 } }'`
+    if [ "${FS_TYPE}"x = "ext3"x ]; then
       DBCOUNT=`find /opt/zimbra/db/data -type d | wc -l | awk '{if ($NF-1 >= 31998) print $NF-1}'`
       if [ x"$DBCOUNT" != "x" ]; then
         echo "You have $DBCOUNT databases on an ext3 FileSystem, which is at"
@@ -573,6 +638,8 @@ EOF
   checkRecentBackup
 
   checkDatabaseIntegrity
+
+  checkMySQLConfig
 
 }
 
@@ -592,7 +659,7 @@ checkRequiredSpace() {
   isInstalled zimbra-store
   isToBeInstalled zimbra-store
   if [ "x$PKGINSTALLED" != "x" -o "x$PKGTOBEINSTALLED" != "x" ]; then
-    echo "checking space for zimbra-store"
+    echo "Checking space for zimbra-store"
     ZIMBRA=`df -Pk /opt/zimbra | tail -1 | awk '{print $4}'`
     AVAIL=$(($ZIMBRA / 1048576))
     if [ $AVAIL -lt 5 ]; then
@@ -702,8 +769,8 @@ determineVersionType() {
   ZM_INST_MAJOR=$(perl -e '$v=glob("packages/zimbra-core*"); $v =~ s/^packages\/zimbra-core[-_]//; $v =~ s/^(\d+\.\d+\.[^_]*_[^_]+_[^.]+).*/\1/; ($maj,$min,$mic) = $v =~ m/^(\d+)\.(\d+)\.(\d+)/; print "$maj\n"') 
   ZM_INST_MINOR=$(perl -e '$v=glob("packages/zimbra-core*"); $v =~ s/^packages\/zimbra-core[-_]//; $v =~ s/^(\d+\.\d+\.[^_]*_[^_]+_[^.]+).*/\1/; ($maj,$min,$mic) = $v =~ m/^(\d+)\.(\d+)\.(\d+)/; print "$min\n"') 
   ZM_INST_MICRO=$(perl -e '$v=glob("packages/zimbra-core*"); $v =~ s/^packages\/zimbra-core[-_]//; $v =~ s/^(\d+\.\d+\.[^_]*_[^_]+_[^.]+).*/\1/; ($maj,$min,$mic) = $v =~ m/^(\d+)\.(\d+)\.(\d+)/; print "$mic\n"') 
-  ZM_INST_RTYPE=$(perl -e '$v=glob("packages/zimbra-core*"); $v =~ s/^packages\/zimbra-core[-_]//; $v =~ s/^(\d+\.\d+\.[^_]*_[^_]+_[^.]+).*/\1/; ($maj,$min,$mic,$rtype,$build) = $v =~ m/^(\d+)\.(\d+)\.(\d+)_(\w+[^_])_(\d+)/; print "$rtype\n"') 
-  ZM_INST_BUILD=$(perl -e '$v=glob("packages/zimbra-core*"); $v =~ s/^packages\/zimbra-core[-_]//; $v =~ s/^(\d+\.\d+\.[^_]*_[^_]+_[^.]+).*/\1/; ($maj,$min,$mic,$rtype,$build) = $v =~ m/^(\d+)\.(\d+)\.(\d+)_(\w+[^_])_(\d+)/; print "$build\n"') 
+  ZM_INST_RTYPE=$(perl -e '$v=glob("packages/zimbra-core*"); $v =~ s/^packages\/zimbra-core[-_]//; $v =~ s/^(\d+\.\d+\.[^_]*_[^_]+_[^.]+).*/\1/; ($maj,$min,$mic,$rtype,$build) = $v =~ m/^(\d+)\.(\d+)\.(\d+)\.(\w+)\.(\d+)/; ($maj,$min,$mic,$rtype,$build) = $v =~ m/(\d+)\.(\d+)\.(\d+)_(\w+[^_])_(\d+)/ if ($rtype eq ""); print "$rtype\n";')
+  ZM_INST_BUILD=$(perl -e '$v=glob("packages/zimbra-core*"); $v =~ s/^packages\/zimbra-core[-_]//; $v =~ s/^(\d+\.\d+\.[^_]*_[^_]+_[^.]+).*/\1/; ($maj,$min,$mic,$rtype,$build) = $v =~ m/^(\d+)\.(\d+)\.(\d+)\.(\w+)\.(\d+)/; ($maj,$min,$mic,$rtype,$build) = $v =~ m/(\d+)\.(\d+)\.(\d+)_(\w+[^_])_(\d+)/ if ($rtype eq ""); print "$build\n";')
 
   if [ x"$AUTOINSTALL" = "xyes" ]; then
     return
@@ -797,7 +864,13 @@ verifyLicenseActivationServer() {
 
   # if all else fails make sure we can contact the activation server for automated activation
   if [ ${ZM_CUR_MAJOR} -ge "7" ]; then
-    /opt/zimbra/java/bin/java -XX:ErrorFile=/opt/zimbra/log -client -Xmx256m -Dzimbra.home=/opt/zimbra -Djava.library.path=/opt/zimbra/lib -Djava.ext.dirs=/opt/zimbra/java/jre/lib/ext:/opt/zimbra/lib/jars -classpath ./lib/jars/zimbra-license-tools.jar com.zimbra.cs.license.LicenseCLI --ping > /dev/null 2>&1
+    if [ ${ZM_CUR_MAJOR} -eq "7" -a ${ZM_CUR_MINOR} -ge "1" ]; then
+      /opt/zimbra/bin/zmlicense --ping > /dev/null 2>&1
+    elif [ ${ZM_CUR_MAJOR} -gt "7" ]; then
+      /opt/zimbra/bin/zmlicense --ping > /dev/null 2>&1
+    else 
+      /opt/zimbra/java/bin/java -XX:ErrorFile=/opt/zimbra/log -client -Xmx256m -Dzimbra.home=/opt/zimbra -Djava.library.path=/opt/zimbra/lib -Djava.ext.dirs=/opt/zimbra/java/jre/lib/ext:/opt/zimbra/lib/jars -classpath ./lib/jars/zimbra-license-tools.jar com.zimbra.cs.license.LicenseCLI --ping > /dev/null 2>&1
+    fi
     if [ $? != 0 ]; then
       activationWarning
     fi
@@ -997,16 +1070,39 @@ verifyLicenseAvailable() {
     userProvCommand="zmprov -l cto userAccounts 2> /dev/null"
   fi
 
-  numCurrentUsers=`su - zimbra -c "$userProvCommand"`;
-  numUsersRC=$?
-  if [ $numUsersRC -ne 0 ]; then
-    numCurrentUsers=`su - zimbra -c "$userProvCommand"`;
-    numUsersRC=$?
+  # Make sure zmprov is responsive and able to talk to LDAP before we do anything for real
+  zmprovTest="zmprov -l gac 2> /dev/null > /dev/null"
+  su - zimbra -c "$zmprovTest"
+  zmprovTestRC=$?
+  if [ $zmprovTestRC -eq 0 ]; then
+    su - zimbra -c "$zmprovTest"
+    zmprovTestRC=$?
+  fi
+  if [ $zmprovTestRC -ne 0 ]; then
+    echo ""
+    echo "Warning: Unable to determine the number of users on this system via zmprov command."
+    echo "Please make sure LDAP services are running."
+    echo ""
   fi
 
-  # Unable to determine the number of current users.   zmprov command must have failed!
+  # Passed check to make sure zmprov and LDAP are working.  Now let's get a real count.
+  numCurrentUsers=-1;
+  if [ $zmprovTestRC -eq 0 ]; then
+    numCurrentUsers=`su - zimbra -c "$userProvCommand"`;
+    numUsersRC=$?
+    if [ $numUsersRC -ne 0 ]; then
+      numCurrentUsers=`su - zimbra -c "$userProvCommand"`;
+      numUsersRC=$?
+    fi
+  fi
+
+  # Unable to determine the number of current users
   if [ "$numCurrentUsers"x = "x" ]; then
     numCurrentUsers=-1;
+    echo ""
+    echo "Warning: Unable to determine the number of users on this system via zmprov command."
+    echo "Please make sure LDAP services are running."
+    echo ""
   fi
 
   if [ $oldUserCheck -eq 1 ]; then
@@ -1025,7 +1121,7 @@ verifyLicenseAvailable() {
      if [ $response = "no" ]; then
       askYN "Exit?" "N"
       if [ $response = "yes" ]; then
-        echo "Exiting"
+        echo "Exiting - place a valid license file in /opt/zimbra/conf/ZCSLicense.xml and rerun."
         exit 1
       fi
      else
@@ -1035,13 +1131,16 @@ verifyLicenseAvailable() {
   elif [ $numUsersRC -ne 0 ] || [ $numCurrentUsers -gt $licensedUsers ]; then
     echo "Warning: The number of users on this system ($numCurrentUsers) exceeds the licensed number"
     echo "($licensedUsers).  You may continue with the upgrade, but you will not be able to create"
-    echo "new users." 
+    echo "new users.  Also, initialization of the Document feature will fail.  If you "
+    echo "later wish to use the Documents feature you'll need to resolve the licensing "
+    echo "issues and then run a separate script available from support to initialize the "
+    echo "Documents feature. "
     while :; do
      askYN "Do you wish to continue?" "N"
      if [ $response = "no" ]; then
       askYN "Exit?" "N"
       if [ $response = "yes" ]; then
-        echo "Exiting"
+        echo "Exiting - place a valid license file in /opt/zimbra/conf/ZCSLicense.xml and rerun."
         exit 1
       fi
      else
@@ -1152,7 +1251,7 @@ setRemove() {
     checkVersionMatches
 
     echo ""
-    echo "The Zimbra Collaboration Suite appears already to be installed."
+    echo "The Zimbra Collaboration Server appears already to be installed."
     if [ $VERSIONMATCH = "yes" ]; then
       echo "It can be upgraded with no effect on existing accounts,"
       echo "or the current installation can be completely removed prior"
@@ -1235,7 +1334,7 @@ EOF
     done
     if [ x$INSTALLED = "xyes" ]; then
       echo ""
-      echo "The Zimbra Collaboration Suite does not appear to be installed,"
+      echo "The Zimbra Collaboration Server does not appear to be installed,"
       echo "yet there appears to be a ZCS directory structure in /opt/zimbra."
       askYN "Would you like to delete /opt/zimbra before installing?" "N"
       REMOVE="$response"
@@ -1454,7 +1553,7 @@ saveExistingConfig() {
   fi
 
   if [ -f /opt/zimbra/data/ldap/config/cn\=config.ldif ]; then
-    if [ -f /opt/zimbra/data/ldap/config/cn\=config/olcDatabase\=\{2\}hdb/olcOverlay\=\{0\}syncprov.ldif ]; then
+    if [ -f /opt/zimbra/data/ldap/config/cn\=config/olcDatabase\=\{2\}mdb/olcOverlay\=*syncprov.ldif ]; then
       touch /opt/zimbra/.enable_replica
     fi
   fi
@@ -1491,7 +1590,7 @@ removeExistingInstall() {
           fi
           chmod 640 /opt/zimbra/data/ldap/ldap.bak
           if [ -x /opt/zimbra/libexec/zmslapadd ]; then
-            if [ -f /opt/zimbra/data/ldap/config/cn\=config/olcDatabase\=\{3\}hdb.ldif ]; then
+            if [ -f /opt/zimbra/data/ldap/config/cn\=config/olcDatabase\=\{3\}mdb.ldif -o -f /opt/zimbra/data/ldap/config/cn\=config/olcDatabase\=\{3\}hdb.ldif ]; then
               echo ""
               echo -n "Backing up the ldap accesslog database..."
               runAsZimbra "/opt/zimbra/libexec/zmslapcat -a /opt/zimbra/data/ldap"
@@ -1560,7 +1659,7 @@ removeExistingInstall() {
     rm -f /etc/ld.so.conf.d/zimbra.ld.conf
     if [ -f "/etc/sudoers" ]; then
       SUDOMODE=`perl -e 'my $mode=(stat("/etc/sudoers"))[2];printf("%04o\n",$mode & 07777);'`
-      cat /etc/sudoers | grep -v zimbra > /tmp/sudoers
+      cat /etc/sudoers | grep -v "^\%zimbra[[:space:]]" > /tmp/sudoers
       cat /tmp/sudoers > /etc/sudoers
       chmod $SUDOMODE /etc/sudoers
       rm -f /tmp/sudoers
@@ -1598,8 +1697,12 @@ removeExistingInstall() {
           umount -f ${mp}
         fi
       done
-  
-      /bin/rm -rf /opt/zimbra/*
+ 
+      for i in `ls /opt/zimbra`; do
+        if [ x$i != "xlost+found" ]; then
+          /bin/rm -rf /opt/zimbra/$i
+        fi
+      done
 
       if [ -e "/opt/zimbra/.enable_replica" ]; then
         /bin/rm -f /opt/zimbra/.enable_replica
@@ -1610,44 +1713,17 @@ removeExistingInstall() {
         /usr/bin/crontab -u zimbra -r 2> /dev/null
         echo "done."
       fi
-      
-
-      if [ -f /etc/syslog.conf ]; then
-        egrep -q 'zimbra.log' /etc/syslog.conf
-        if [ $? = 0 ]; then
-          echo -n "Cleaning up /etc/syslog.conf..."
-          sed -i -e '/zimbra.log/d' /etc/syslog.conf
-          sed -i -e '/^auth\.\* /d' /etc/syslog.conf
-          sed -i -e '/^local0\.\* /d' /etc/syslog.conf
-          sed -i -e '/^local1\.\* /d' /etc/syslog.conf
-          sed -i -e '/^	local0,local1\.none/d' /etc/syslog.conf
-          sed -i -e 's/^\*\.\*;auth,authpriv\.none;local0\.none;local1\.none;mail\.none/*.*;auth,authpriv.none;local0.none;local1.none/' /etc/syslog.conf
-          sed -i -e 's/^*.info;local0.none;local1.none;auth.none/*.info/' /etc/syslog.conf
-        fi
-        if [ -x /etc/init.d/syslog ]; then
-          /etc/init.d/syslog restart > /dev/null 2>&1
-          echo "done."
-        elif [ -x /etc/init.d/sysklogd ]; then
-          /etc/init.d/sysklogd restart > /dev/null 2>&1
-          echo "done."
-        else 
-          echo "Unable to restart syslog service.  Please do it manually."
-        fi
-      elif [ -f /etc/syslog-ng/syslog-ng.conf.in ]; then
-        egrep -q 'zimbra' /etc/syslog-ng/syslog-ng.conf.in
-        if [ $? = 0 ]; then
-          echo -n "Cleaning up /etc/syslog-ng/syslog-ng.conf.in..."
-          sed -i -e '/zimbra/d' /etc/syslog-ng/syslog-ng.conf.in
-          sed -i -e 's/filter f_messages   { not facility(news, mail) and not filter(f_iptables) and/filter f_messages   { not facility(news, mail) and not filter(f_iptables); };/' /etc/syslog-ng/syslog-ng.conf.in
-          sed -i -e 's/^                               local4, local5, local6, local7) and not/                               local4, local5, local6, local7); };/' /etc/syslog-ng/syslog-ng.conf.in
-          if [ -x /sbin/SuSEconfig ]; then
-            /sbin/SuSEconfig --module syslog-ng
-            echo "done."
-          else
-            echo "Unable to restart syslog-ng service.  Please do it manually."
+     
+      if [ -e /usr/sbin/sendmail ]; then
+        if [ -x /bin/readlink ]; then
+          SMPATH=$(/bin/readlink /usr/sbin/sendmail)
+          if [ x$SMPATH = x"/opt/zimbra/postfix/sbin/sendmail" ]; then
+            /bin/rm -f /usr/sbin/sendmail
           fi
         fi
-      elif [ -f /etc/syslog-ng/syslog-ng.conf ]; then
+      fi 
+
+      if [ -f /etc/syslog-ng/syslog-ng.conf ]; then
         egrep -q 'zimbra' /etc/syslog-ng/syslog-ng.conf
         if [ $? = 0 ]; then
           echo -n "Cleaning up /etc/syslog-ng/syslog-ng.conf..."
@@ -1662,7 +1738,7 @@ removeExistingInstall() {
           fi
         fi
       elif [ -f /etc/rsyslog.conf ]; then
-	if [ -d /etc/rsyslog.d ]; then
+        if [ -d /etc/rsyslog.d ]; then
           if [ -f /etc/rsyslog.d/60-zimbra.conf ]; then
             echo -n "Cleaning up /etc/rsyslog.d..."
             rm -f /etc/rsyslog.d/60-zimbra.conf
@@ -1675,20 +1751,21 @@ removeExistingInstall() {
             else
               echo "Unable to restart rsyslog service. Please do it manually."
             fi
-          fi
-        else
-          egrep -q 'zimbra' /etc/rsyslog.conf
-          if [ $? = 0 ]; then
-            echo -n "Cleaning up /etc/rsyslog.conf..."
-            sed -i -e '/zimbra/d' /etc/rsyslog.conf
-            if [ $PLATFORM = "RHEL6_64" -o $PLATFORM = "CentOS6_64" -o $PLATFORM = "F13_64" ]; then
-              sed -i -e 's/^*.info;local0.none;local1.none;auth.none/*.info/' /etc/rsyslog.conf
-            fi
-            if [ -x /etc/init.d/rsyslog ]; then
-              /etc/init.d/rsyslog restart > /dev/null 2>&1
-              echo "done."
-            else
-              echo "Unable to restart rsyslog service. Please do it manually."
+          else
+            egrep -q 'zimbra' /etc/rsyslog.conf
+            if [ $? = 0 ]; then
+              echo -n "Cleaning up /etc/rsyslog.conf..."
+              sed -i -e '/zimbra/d' /etc/rsyslog.conf
+              if [ $PLATFORM = "RHEL6_64" -o $PLATFORM = "CentOS6_64" ]; then
+                sed -i -e 's/^*.info;local0.none;local1.none;mail.none;auth.none/*.info/' /etc/rsyslog.conf
+                sed -i -e 's/^*.info;local0.none;local1.none;auth.none/*.info/' /etc/rsyslog.conf
+              fi
+              if [ -x /etc/init.d/rsyslog ]; then
+                /etc/init.d/rsyslog restart > /dev/null 2>&1
+                echo "done."
+              else
+                echo "Unable to restart rsyslog service. Please do it manually."
+              fi
             fi
           fi
         fi
@@ -1757,7 +1834,7 @@ removeExistingInstall() {
       done
   
       echo ""
-      echo "Finished removing Zimbra Collaboration Suite."
+      echo "Finished removing Zimbra Collaboration Server."
       echo ""
     fi
   fi
@@ -1919,6 +1996,27 @@ getInstallPackages() {
         if [ $i = "zimbra-core" ]; then
           continue
         fi
+        if [ $i = "zimbra-mta" ]; then
+          CONFLICTS="no"
+          for j in $CONFLICT_PACKAGES; do
+            conflictInstalled $j
+            if [ "x$CONFLICTINSTALLED" != "x" ]; then
+              echo "     Conflicting package: $CONFLICTINSTALLED"
+              CONFLICTS="yes"
+            fi
+          done
+          if [ $CONFLICTS = "yes" ]; then
+            echo ""
+            echo "###ERROR###"
+            echo ""
+            echo "One or more package conflicts exists."
+            echo "Please remove them before running this installer."
+            echo ""
+            echo "Installation cancelled."
+            echo ""
+            exit 1
+          fi
+        fi
         INSTALL_PACKAGES="$INSTALL_PACKAGES $i"
         if [ $i = "zimbra-apache" ]; then
           APACHE_SELECTED="yes"
@@ -1974,11 +2072,7 @@ getInstallPackages() {
         askYN "Install $i" "N"
       fi
     else
-      if [ $i = "zimbra-memcached" ]; then
-         askYN "Install $i" "N"
-      elif [ $i = "zimbra-proxy" ]; then
-         askYN "Install $i" "N"
-      elif [ $i = "zimbra-archiving" ]; then
+      if [ $i = "zimbra-archiving" ]; then
         # only prompt to install archiving if zimbra-store is selected
         if [ $STORE_SELECTED = "yes" ]; then
           askYN "Install $i" "N"
@@ -2007,6 +2101,27 @@ getInstallPackages() {
         CLUSTER_SELECTED="yes"
       fi
 
+      if [ $i = "zimbra-mta" ]; then
+        CONFLICTS="no"
+        for j in $CONFLICT_PACKAGES; do
+          conflictInstalled $j
+          if [ "x$CONFLICTINSTALLED" != "x" ]; then
+            echo "     Conflicting package: $CONFLICTINSTALLED"
+            CONFLICTS="yes"
+          fi
+        done
+        if [ $CONFLICTS = "yes" ]; then
+          echo ""
+          echo "###ERROR###"
+          echo ""
+          echo "One or more package conflicts exists."
+          echo "Please remove them before running this installer."
+          echo ""
+          echo "Installation cancelled."
+          echo ""
+          exit 1
+        fi
+      fi
       if [ $i = "zimbra-spell" -a $APACHE_SELECTED = "no" ]; then
         APACHE_SELECTED="yes"
         INSTALL_PACKAGES="$INSTALL_PACKAGES zimbra-apache"
@@ -2176,11 +2291,31 @@ isInstalled () {
     if [ "x$Q" != "x" ]; then
       echo $Q | grep 'not-installed' > /dev/null 2>&1
       if [ $? != 0 ]; then
-        PKGVERSION=`$PACKAGEQUERY $pkg | egrep '^Version: ' | sed -e 's/Version: //' 2> /dev/null`
-        PKGINSTALLED="${pkg}-${PKGVERSION}"
+        echo $Q | grep 'deinstall ok' > /dev/null 2>&1
+        if [ $? != 0 ]; then
+          PKGVERSION=`$PACKAGEQUERY $pkg | egrep '^Version: ' | sed -e 's/Version: //' 2> /dev/null`
+          PKGINSTALLED="${pkg}-${PKGVERSION}"
+        fi
       fi
     fi
   fi
+}
+
+conflictInstalled() {
+  pkg=$1
+  CONFLICTINSTALLED=""
+  QP=`dpkg-query -W -f='\${Package}: \${Provides}\n' '*' | grep ": .*$pkg" | sed -e 's/:.*//'`
+  while [ "x$QP" != "x" ]; do
+    QF=`echo $QP | sed -e 's/\s.*//'` 
+    QP=`echo $QP | sed -e 's/\S*\s*//'`
+    isInstalled $QF
+    if [ x$PKGINSTALLED != "x" ]; then
+      CONFLICTINSTALLED=$QF
+      if [ x$CONFLICTINSTALLED = "xzimbra-mta" ]; then
+        CONFLICTINSTALLED=""
+      fi
+    fi
+  done
 }
 
 suggestedVersion() {
@@ -2225,147 +2360,38 @@ suggestedVersion() {
 
 getPlatformVars() {
   PLATFORM=`bin/get_plat_tag.sh`
+  CONFLICT_PACKAGES=""
   echo $PLATFORM | egrep -q "UBUNTU|DEBIAN"
   if [ $? = 0 ]; then
     checkUbuntuRelease
     PACKAGEINST='dpkg -i'
     PACKAGERM='dpkg --purge'
     PACKAGEQUERY='dpkg -s'
+    #CONFLICTQUERY="/usr/bin/dpkg-query -W -f='\${Package}: \${Provides}\n' '*'"
     PACKAGEEXT='deb'
     PACKAGEVERSION="dpkg-query -W -f \${Version}"
     PREREQ_PACKAGES="sudo libidn11 libgmp3c2 libstdc++6"
-    if [ $PLATFORM = "UBUNTU6" -o $PLATFORM = "UBUNTU7" ]; then
-      PREREQ_PACKAGES="netcat sudo libidn11 libpcre3 libgmp3c2 libexpat1 libstdc++6 libstdc++5"
-      PRESUG_PACKAGES="perl-5.8.7 sysstat sqlite3"
-    fi
-    if [ $PLATFORM = "UBUNTU6_64" -o $PLATFORM = "UBUNTU7_64" ]; then
-      PREREQ_PACKAGES="netcat sudo libidn11 libpcre3 libgmp3c2 libexpat1 libstdc++6 libstdc++5 libperl5.8"
-      PRESUG_PACKAGES="perl-5.8.7 sysstat sqlite3"
-    fi
-    if [ $PLATFORM = "UBUNTU8" ]; then
-      PREREQ_PACKAGES="netcat-traditional sudo libidn11 libpcre3 libgmp3c2 libexpat1 libstdc++6"
-      PRESUG_PACKAGES="perl-5.8.8 sysstat sqlite3"
-    fi
-    if [ $PLATFORM = "UBUNTU8_64" ]; then
-      PREREQ_PACKAGES="netcat-traditional sudo libidn11 libpcre3 libgmp3c2 libexpat1 libstdc++6 libperl5.8"
-      PRESUG_PACKAGES="perl-5.8.8 sysstat sqlite3"
-    fi
-    if [ $PLATFORM = "UBUNTU10" ]; then
-      PREREQ_PACKAGES="netcat-openbsd sudo libidn11 libpcre3 libgmp3c2 libexpat1 libstdc++6"
-      PRESUG_PACKAGES="perl-5.10.1 sysstat sqlite3"
-    fi
+    CONFLICT_PACKAGES="mail-transport-agent"
     if [ $PLATFORM = "UBUNTU10_64" ]; then
       PREREQ_PACKAGES="netcat-openbsd sudo libidn11 libpcre3 libgmp3c2 libexpat1 libstdc++6 libperl5.10"
-      PRESUG_PACKAGES="perl-5.10.1 sysstat sqlite3"
+      PRESUG_PACKAGES="pax perl-5.10.1 sysstat sqlite3"
     fi
-    if [ $PLATFORM = "DEBIAN4.0" ]; then
-      PREREQ_PACKAGES="netcat sudo libidn11 libpcre3 libgmp3c2 libexpat1 libstdc++6"
-      PRESUG_PACKAGES="perl-5.8.8 sysstat sqlite3"
+    if [ $PLATFORM = "UBUNTU12_64" ]; then
+      PREREQ_PACKAGES="netcat-openbsd sudo libidn11 libpcre3 libgmp3c2 libexpat1 libstdc++6 libperl5.14"
+      PRESUG_PACKAGES="pax perl-5.14.2 sysstat sqlite3"
     fi
-    if [ $PLATFORM = "DEBIAN4.0_64" ]; then
-      PREREQ_PACKAGES="netcat sudo libidn11 libpcre3 libgmp3c2 libexpat1 libstdc++6 libperl5.8"
-      PRESUG_PACKAGES="perl-5.8.8 sysstat sqlite3"
-    fi
-    if [ $PLATFORM = "DEBIAN5" ]; then
-      PREREQ_PACKAGES="netcat-traditional sudo libidn11 libpcre3 libgmp3c2 libexpat1 libstdc++6"
-      PRESUG_PACKAGES="perl-5.10.0 sysstat sqlite3"
-    fi
-    if [ $PLATFORM = "DEBIAN5_64" ]; then
-      PREREQ_PACKAGES="netcat-traditional sudo libidn11 libpcre3 libgmp3c2 libexpat1 libstdc++6 libperl5.10"
-      PRESUG_PACKAGES="perl-5.10.0 sysstat sqlite3"
-    fi
-    if [ $PLATFORM = "DEBIAN6_64" ]; then
-      PREREQ_PACKAGES="netcat-traditional sudo libidn11 libpcre3 libgmp3c2 libexpat1 libstdc++6 libperl5.10"
-      PRESUG_PACKAGES="perl-5.10.1 sysstat sqlite3"
-    fi
-  elif echo $PLATFORM | grep RPL > /dev/null 2>&1; then
-    PACKAGEINST='conary update'
-    PACKAGERM='conary erase'
-    PACKAGEQUERY='conary q'
-    PACKAGEEXT='ccs'
-    PREREQ_PACKAGES="sudo libidn gmp libstdc++"
-    PRESUG_PACKGES="perl=5.8.7"
   else
     PACKAGEINST='rpm -iv'
     PACKAGERM='rpm -ev --nodeps --allmatches'
     PACKAGEQUERY='rpm -q'
     PACKAGEVERIFY='rpm -K'
     PACKAGEEXT='rpm'
-    if [ $PLATFORM = "RHEL4" -o $PLATFORM = "CentOS4" ]; then
-      PREREQ_PACKAGES="nc sudo libidn gmp compat-libstdc++-33"
-      PREREQ_LIBS="/usr/lib/libstdc++.so.5 /usr/lib/libstdc++.so.6"
-      PRESUG_PACKAGES="perl-5.8.5 sysstat"
-    elif [ $PLATFORM = "RHEL5" -o $PLATFORM = "CentOS5" ]; then
-      PREREQ_PACKAGES="nc sudo libidn gmp"
-      PREREQ_LIBS="/usr/lib/libstdc++.so.6"
-      PRESUG_PACKAGES="perl-5.8.8 sysstat sqlite"
-    elif [ $PLATFORM = "RHEL6" -o $PLATFORM = "CentOS6" ]; then
-      PREREQ_PACKAGES="nc sudo libidn gmp"
-      PREREQ_LIBS="/usr/lib/libstdc++.so.6"
-      PRESUG_PACKAGES="perl-5.10.1 sysstat sqlite"
-    elif [ $PLATFORM = "MANDRIVA2006" ]; then
-      PREREQ_PACKAGES="sudo libidn11 libgmp3 libstdc++6"
-      PRESUG_PACKAGE="sysstat sqlite3"
-    elif [ $PLATFORM = "FC3" -o $PLATFORM = "FC4" ]; then
-      PREREQ_PACKAGES="sudo libidn gmp bind-libs vixie-cron"
-      PREREQ_LIBS="/usr/lib/libstdc++.so.5"
-      PRESUG_PACKAGE="sysstat sqlite"
-    elif [ $PLATFORM = "FC5" -o $PLATFORM = "FC6" ]; then
-      PREREQ_PACKAGES="sudo libidn gmp bind-libs vixie-cron"
-      PREREQ_LIBS="/usr/lib/libstdc++.so.6"
-      PRESUG_PACKAGE="sysstat sqlite"
-    elif [ $PLATFORM = "FC5_64" -o $PLATFORM = "FC6_64" -o $PLATFORM = "F7_64" ]; then
-      PREREQ_PACKAGES="sudo libidn gmp bind-libs vixie-cron"
-      PREREQ_LIBS="/usr/lib64/libstdc++.so.6"
-      PRESUG_PACKAGE="sysstat sqlite"
-    elif [ $PLATFORM = "RHEL6_64" -o $PLATFORM = "CentOS6_64" ]; then
+    if [ $PLATFORM = "RHEL6_64" -o $PLATFORM = "CentOS6_64" ]; then
+      PACKAGEINST='yum -y --disablerepo=* localinstall -v'
+      PACKAGERM='yum -y --disablerepo=* erase -v'
       PREREQ_PACKAGES="nc sudo libidn gmp"
       PREREQ_LIBS="/usr/lib64/libstdc++.so.6"
       PRESUG_PACKAGES="perl-5.10.1 sysstat sqlite"
-    elif [ $PLATFORM = "RHEL5_64" -o $PLATFORM = "CentOS5_64" ]; then
-      PREREQ_PACKAGES="nc sudo libidn gmp"
-      PREREQ_LIBS="/usr/lib64/libstdc++.so.6"
-      PRESUG_PACKAGES="perl-5.8.8 sysstat sqlite"
-    elif [ $PLATFORM = "RHEL4_64" -o $PLATFORM = "CentOS4_64" ]; then
-      PREREQ_PACKAGES="nc sudo libidn gmp compat-libstdc++-33"
-      PREREQ_LIBS="/usr/lib64/libstdc++.so.5 /usr/lib64/libstdc++.so.6"
-      PRESUG_PACKAGES="perl-5.8.5 sysstat"
-    elif [ $PLATFORM = "F7" ]; then
-      PREREQ_PACKAGES="nc sudo libidn gmp bind-libs vixie-cron"
-      PREREQ_LIBS="/usr/lib/libstdc++.so.6"
-      PRESUG_PACKAGES="perl-5.8.8 sysstat sqlite"
-    elif [ $PLATFORM = "F10" ]; then
-      PREREQ_PACKAGES="nc sudo libidn gmp bind-libs cronie"
-      PREREQ_LIBS="/usr/lib/libstdc++.so.6"
-      PRESUG_PACKAGE="perl-5.10.0 sysstat sqlite"
-    elif [ $PLATFORM = "F10_64" ]; then
-      PREREQ_PACKAGES="nc sudo libidn gmp bind-libs cronie"
-      PREREQ_LIBS="/usr/lib64/libstdc++.so.6"
-      PRESUG_PACKAGE="perl-5.10.0 sysstat sqlite"
-    elif [ $PLATFORM = "F11" ]; then
-      PREREQ_PACKAGES="nc sudo libidn gmp bind-libs cronie"
-      PREREQ_LIBS="/usr/lib/libstdc++.so.6"
-      PRESUG_PACKAGE="perl-5.10.0 sysstat sqlite"
-    elif [ $PLATFORM = "F11_64" ]; then
-      PREREQ_PACKAGES="nc sudo libidn gmp bind-libs cronie"
-      PREREQ_LIBS="/usr/lib64/libstdc++.so.6"
-      PRESUG_PACKAGE="perl-5.10.0 sysstat sqlite"
-    elif [ $PLATFORM = "F13_64" ]; then
-      PREREQ_PACKAGES="nc sudo libidn gmp bind-libs cronie"
-      PREREQ_LIBS="/usr/lib64/libstdc++.so.6"
-      PRESUG_PACKAGE="perl-5.10.1 sysstat sqlite"
-    elif [ $PLATFORM = "SuSEES10" ]; then
-      PREREQ_PACKAGES="netcat sudo libidn gmp"
-      PREREQ_LIBS="/usr/lib/libstdc++.so.6"
-      PRESUG_PACKAGES="perl-5.8.8 sysstat sqlite"
-    elif [ $PLATFORM = "SLES10_64" ]; then
-      PREREQ_PACKAGES="netcat sudo libidn gmp"
-      PREREQ_LIBS="/usr/lib64/libstdc++.so.6"
-      PRESUG_PACKAGES="perl-5.8.8 sysstat sqlite"
-    elif [ $PLATFORM = "SLES11" ]; then
-      PREREQ_PACKAGES="netcat sudo libidn gmp"
-      PREREQ_LIBS="/usr/lib/libstdc++.so.6"
-      PRESUG_PACKAGES="perl-5.10.0 sysstat sqlite3"
     elif [ $PLATFORM = "SLES11_64" ]; then
       PREREQ_PACKAGES="netcat sudo libidn gmp"
       PREREQ_LIBS="/usr/lib64/libstdc++.so.6"

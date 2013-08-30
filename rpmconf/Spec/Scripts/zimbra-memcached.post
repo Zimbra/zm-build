@@ -18,7 +18,7 @@
 if [ -L "/opt/zimbra/memcached" ]; then
   rm -rf /opt/zimbra/memcached
 fi
-ln -s /opt/zimbra/memcached-1.4.5 /opt/zimbra/memcached
+ln -s /opt/zimbra/memcached-1.4.10 /opt/zimbra/memcached
 
 if [ -x "/opt/zimbra/libexec/zmfixperms" ]; then
   /opt/zimbra/libexec/zmfixperms

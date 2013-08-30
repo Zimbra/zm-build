@@ -80,21 +80,25 @@ $(BUILD_ROOT)/zimbra-mta.spec:
 		$(BUILD_ROOT)/zimbra-mta.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/postfix-$(POSTFIX_VERSION)" >> \
 		$(BUILD_ROOT)/zimbra-mta.spec
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/libmemcached-$(LIBMCD_VERSION)" >> \
+		$(BUILD_ROOT)/zimbra-mta.spec
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/opendkim-$(DKIM_VERSION)" >> \
+		$(BUILD_ROOT)/zimbra-mta.spec
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/zeromq-$(ZMQ_VERSION)" >> \
+		$(BUILD_ROOT)/zimbra-mta.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/mta" >> \
 		$(BUILD_ROOT)/zimbra-mta.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/data/amavisd" >> \
 		$(BUILD_ROOT)/zimbra-mta.spec
-ifeq ($(ZIMBRA_USE_CBPOLICYD), 1)
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/$(CBPOLICYD_DIR)" >> \
 		$(BUILD_ROOT)/zimbra-mta.spec
-endif
 
 mta_stage: $(MTA_COMPONENTS)
 
 $(MTA_DEST_DIR):
 	mkdir -p $@
 
-$(MTA_MYSQL_DEST_DIR):
+$(MTA_MARIADB_DEST_DIR):
 	mkdir -p $@
 
 $(MTA_DEST_DIR)/data/postfix:
@@ -113,13 +117,25 @@ $(MTA_DEST_DIR)/data/altermime:
 	mkdir -p $@
 $(MTA_DEST_DIR)/data/amavisd/mysql:
 	mkdir -p $@
+$(MTA_DEST_DIR)/data/opendkim:
+	mkdir -p $@
 
+$(MTA_DEST_DIR)/$(DKIM_DIR): $(MTA_DEST_DIR)
+	@echo "*** Creating OpenDKIM"
+	(cd $(MTA_DEST_DIR); tar xfz $(DKIM_SOURCE).tgz;)
+	(cd $(MTA_DEST_DIR); tar xfz $(LIBMCD_SOURCE).tgz;)
+
+$(MTA_DEST_DIR)/$(ZMQ_DIR): $(MTA_DEST_DIR)
+	@echo "*** Creating ZeroMQ"
+	(cd $(MTA_DEST_DIR); tar xfz $(ZMQ_SOURCE).tgz;)
 
 $(MTA_DEST_DIR)/$(POSTFIX_DIR): $(MTA_DEST_DIR)
 	@echo "*** Creating postfix"
 	(cd $(MTA_DEST_DIR); tar xzf $(POSTFIX_SOURCE).tgz;)
 	rm -f $(MTA_DEST_DIR)/$(POSTFIX_DIR)/conf/main.cf
 	cp $(SERVICE_DIR)/conf/postfix/master.cf.in $(MTA_DEST_DIR)/$(POSTFIX_DIR)/conf/master.cf.in
+	cp $(SERVICE_DIR)/conf/postfix/tag_as_foreign.re.in $(MTA_DEST_DIR)/$(POSTFIX_DIR)/conf/tag_as_foreign.re.in
+	cp $(SERVICE_DIR)/conf/postfix/tag_as_originating.re.in $(MTA_DEST_DIR)/$(POSTFIX_DIR)/conf/tag_as_originating.re.in
 
 $(MTA_DEST_DIR)/$(CLAMAV_DIR): $(MTA_DEST_DIR)
 	@echo "*** Creating clamav"
@@ -132,18 +148,6 @@ $(MTA_DEST_DIR)/$(CBPOLICYD_DIR): $(MTA_DEST_DIR)
 	@echo "*** Creating cbpolicyd"
 	(cd $(MTA_DEST_DIR); tar xzf $(CBPOLICYD_SOURCE);)
 
-$(CORE_DEST_DIR)/bin/zmcbpolicydctl: 
-	mkdir -p $(@D)
-	cp $(ZMCBPOLICYD_DIR)/src/bin/$(@F) $@
-
-$(CORE_DEST_DIR)/libexec/zmcbpolicydinit: 
-	mkdir -p $(@D)
-	cp $(ZMCBPOLICYD_DIR)/src/libexec/$(@F) $@
-
-$(CORE_DEST_DIR)/conf/cbpolicyd.conf.in: 
-	mkdir -p $(@D)
-	cp $(ZMCBPOLICYD_DIR)/conf/$(@F) $@
-
 $(MTA_DEST_DIR)/$(ALTERMIME_DIR)-$(ALTERMIME_VERSION): $(MTA_DEST_DIR)
 	@echo "*** Creating altermime"
 	(cd $(MTA_DEST_DIR); tar xzf $(ALTERMIME_SOURCE).tgz;)
@@ -152,6 +156,7 @@ $(MTA_DEST_DIR)/$(AMAVISD_DIR)-new-$(AMAVISD_VERSION): $(MTA_DEST_DIR)
 	@echo "*** Creating amavisd"
 	mkdir -p $@/sbin
 	cp -f $(AMAVISD_SOURCE)/amavisd $@/sbin
+	cp -f $(AMAVISD_SOURCE)/amavisd-release $@/sbin
 	sed -e 's!/var/amavis/db!/opt/zimbra/data/amavisd/db!' $(AMAVISD_SOURCE)/amavisd-nanny > $@/sbin/amavisd-nanny
 	chmod 555 $@/sbin/amavisd-nanny
 	mkdir -p $@/.spamassassin/init
@@ -162,9 +167,15 @@ $(MTA_DEST_DIR)/$(DSPAM_DIR)-$(DSPAM_VERSION): $(MTA_DEST_DIR)
 	@echo "*** Creating dspam"
 	(cd $(MTA_DEST_DIR); tar xzf $(DSPAM_SOURCE).tgz;)
 
-$(MTA_MYSQL_DEST_DIR)/$(MYSQL_DIR): $(MTA_MYSQL_DEST_DIR)
-	@echo "*** Creating mysql"
-	(cd $(MTA_MYSQL_DEST_DIR); tar xzf $(MYSQL_SOURCE).tar.gz;)
+$(MTA_MARIADB_DEST_DIR)/$(MARIADB_DIR): $(MTA_MARIADB_DEST_DIR)
+	@echo "*** Creating mariadb"
+	(cd $(MTA_MARIADB_DEST_DIR); tar xzf $(MARIADB_SOURCE).tar.gz;)
+	rm -f $(MTA_MARIADB_DEST_DIR)/$(MARIADB_DIR)/bin/mysqltest_embedded
+	rm -f $(MTA_MARIADB_DEST_DIR)/$(MARIADB_DIR)/bin/mysql_client_test_embedded
+	rm -rf $(MTA_MARIADB_DEST_DIR)/$(MARIADB_DIR)/mysql-test
+	rm -rf $(MTA_MARIADB_DEST_DIR)/$(MARIADB_DIR)/sql-bench
+	rm -rf $(MTA_MARIADB_DEST_DIR)/$(MARIADB_DIR)/docs/mysql.info
+	rm -rf $(MTA_MARIADB_DEST_DIR)/$(MARIADB_DIR)/docs/manual.txt
 
 $(MTA_DEST_DIR)/data/amavisd/mysql/antispamdb.sql: $(MTA_DEST_DIR)/data/amavisd/mysql
 	cp -f $(SERVICE_DIR)/conf/amavisd/mysql/antispamdb.sql $(MTA_DEST_DIR)/data/amavisd/mysql/antispamdb.sql

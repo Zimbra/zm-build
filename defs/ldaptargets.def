@@ -82,18 +82,14 @@ $(LDAP_DEST_DIR)/$(LIBTOOL_DIR)-$(LIBTOOL_VERSION): $(LDAP_DEST_DIR)
 $(LDAP_DEST_DIR)/$(LDAP_DIR)-$(LDAP_VERSION): $(LDAP_DEST_DIR) 
 	@echo "*** Creating openldap"
 	(cd $(LDAP_DEST_DIR); tar xzf $(LDAP_SOURCE).tgz;)
-	cp $(SERVICE_DIR)/conf/ldap/DB_CONFIG \
-		$(LDAP_DEST_DIR)/$(LDAP_DIR)-$(LDAP_VERSION)/var/openldap-data
-	cp $(SERVICE_DIR)/conf/ldap/DB_CONFIG.accesslog \
-		$(LDAP_DEST_DIR)/$(LDAP_DIR)-$(LDAP_VERSION)/var/openldap-data
-	cp $(SERVICE_DIR)/conf/ldap/syncprov-master.ldif \
-		$(LDAP_DEST_DIR)/$(LDAP_DIR)-$(LDAP_VERSION)/etc/openldap
-	cp $(SERVICE_DIR)/conf/ldap/syncprov-replica.ldif \
-		$(LDAP_DEST_DIR)/$(LDAP_DIR)-$(LDAP_VERSION)/etc/openldap
 	cp $(SERVICE_DIR)/build/ldap-config/amavisd.schema \
 		$(LDAP_DEST_DIR)/$(LDAP_DIR)-$(LDAP_VERSION)/etc/openldap/schema
 	cp -f $(AMAVISD_SOURCE)/LDAP.ldif \
 		$(LDAP_DEST_DIR)/$(LDAP_DIR)-$(LDAP_VERSION)/etc/openldap/schema/amavisd.ldif
+	cp -f $(SERVICE_DIR)/conf/ldap/opendkim.ldif \
+		$(LDAP_DEST_DIR)/$(LDAP_DIR)-$(LDAP_VERSION)/etc/openldap/schema/opendkim.ldif
+	cp -f $(SERVICE_DIR)/conf/ldap/pgp-keyserver.ldif \
+		$(LDAP_DEST_DIR)/$(LDAP_DIR)-$(LDAP_VERSION)/etc/openldap/schema/pgp-keyserver.ldif
 	cp $(SERVICE_DIR)/build/ldap-config/zimbra.schema \
 		$(LDAP_DEST_DIR)/$(LDAP_DIR)-$(LDAP_VERSION)/etc/openldap/schema
 	cp $(SERVICE_DIR)/build/ldap-config/config/zimbra.ldif \
@@ -113,8 +109,15 @@ $(LDAP_DEST_DIR)/$(LDAP_DIR)-$(LDAP_VERSION): $(LDAP_DEST_DIR)
 		$(LDAP_DEST_DIR)/$(LDAP_DIR)-$(LDAP_VERSION)/etc/openldap/config/cn=config
 	cp $(SERVICE_DIR)/build/ldap-config/config/olcDatabase={1}monitor.ldif \
 		$(LDAP_DEST_DIR)/$(LDAP_DIR)-$(LDAP_VERSION)/etc/openldap/config/cn=config
-	cp $(SERVICE_DIR)/build/ldap-config/config/olcDatabase={2}hdb.ldif \
+	cp $(SERVICE_DIR)/build/ldap-config/config/olcDatabase={2}mdb.ldif \
 		$(LDAP_DEST_DIR)/$(LDAP_DIR)-$(LDAP_VERSION)/etc/openldap/config/cn=config
+	mkdir -p $(LDAP_DEST_DIR)/$(LDAP_DIR)-$(LDAP_VERSION)/etc/openldap/config/cn=config/olcDatabase={2}mdb
+	cp $(SERVICE_DIR)/build/ldap-config/config/olcDatabase={2}mdb/olcOverlay={0}dynlist.ldif \
+		$(LDAP_DEST_DIR)/$(LDAP_DIR)-$(LDAP_VERSION)/etc/openldap/config/cn=config/olcDatabase={2}mdb
+	cp $(SERVICE_DIR)/build/ldap-config/config/olcDatabase={2}mdb/olcOverlay={1}unique.ldif \
+		$(LDAP_DEST_DIR)/$(LDAP_DIR)-$(LDAP_VERSION)/etc/openldap/config/cn=config/olcDatabase={2}mdb
+	cp $(SERVICE_DIR)/build/ldap-config/config/olcDatabase={2}mdb/olcOverlay={2}noopsrch.ldif \
+		$(LDAP_DEST_DIR)/$(LDAP_DIR)-$(LDAP_VERSION)/etc/openldap/config/cn=config/olcDatabase={2}mdb
 
 $(LDAP_DEST_DIR)/lib/conf:
 	mkdir -p $@

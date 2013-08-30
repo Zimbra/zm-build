@@ -2,7 +2,7 @@
 # 
 # ***** BEGIN LICENSE BLOCK *****
 # Zimbra Collaboration Suite Server
-# Copyright (C) 2010, 2011, 2013 Zimbra Software, LLC.
+# Copyright (C) 2010, 2012, 2013 Zimbra Software, LLC.
 # 
 # The contents of this file are subject to the Zimbra Public License
 # Version 1.4 ("License"); you may not use this file except in
@@ -133,8 +133,8 @@ sub sendZmprovRequest($) {
 	waitpid (-1, WNOHANG);
     my $cmd = shift @_;
 	my @lines;
-	if ($cmd =~ m/\s*-l/) {
-		$cmd =~ s/\s*-l//;
+	if ($cmd =~ m/^-l\s+/) {
+		$cmd =~ s/^-l\s+//;
 		@lines = sendZmprovRequestLdap($cmd);
 	} else {
 		@lines = sendZmprovRequestSoap($cmd);

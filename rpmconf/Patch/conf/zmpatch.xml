@@ -575,7 +575,6 @@
   <bug>60748</bug>
   <bug>60951</bug>
   <bug>60952</bug>
-  <bug>61209</bug>
   <bug>61217</bug>
   <package name="zimbra-core">
       <file>

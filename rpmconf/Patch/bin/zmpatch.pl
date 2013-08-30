@@ -94,7 +94,7 @@ if ($options{build}) {
     print "ZCS Install not found.\n";
     exit 1;
   }
-  $platform = `${zimbra_home}/libexec/get_plat_tag.sh`;
+  $platform = qx(${zimbra_home}/libexec/get_plat_tag.sh);
   chomp($platform);
   if (-f "source/build") {
     open(BUILD, "source/build");
@@ -224,11 +224,11 @@ sub doPatchDeploy() {
   progress("Current Version: $versionInfo{current}\n", 0, 1);
 
   if ($currentBuild > $patchBuildNumber) {
-    progress("Current install $currentRelease is newer then patch version.\n", 1, 0);
+    progress("Current install $currentRelease is newer then patch version.\n", 0, 1);
     return undef;
   }
   if ($currentBuild == $patchBuildNumber && !$options{force}) {
-    progress("Current install $currentRelease is the same as patch version.\n", 1, 0);
+    progress("Current install $currentRelease is the same as patch version.\n", 0, 1);
     return undef;
   }
   while () {
@@ -376,7 +376,7 @@ sub deployPatch($) {
 sub logSession($) {
   my ($msg) = @_;
   return if $options{dryrun};
-  my $date = `date +%s`;
+  my $date = qx(date +%s);
   chomp($date);
   open(SESS, ">>${zimbra_home}/.install_history");
   print SESS "$date: $msg\n";
@@ -436,7 +436,7 @@ sub detail($) {
   open(LOG, ">>$logfile");
   print LOG "$date $msg\n";
   close(LOG);
-  #`echo "$date $msg" >> $logfile`;
+  #qx(echo "$date $msg" >> $logfile);
 }
 
 sub progress($$$) {
@@ -489,7 +489,20 @@ sub getInstalledVersion() {
         if ($stage eq "zimbra-core") {
           $v =~ s/_HEAD.*//;
           $v =~ s/^zimbra-core[-_]//;
-          $v =~ s/^(\d+\.\d+\.[^_]*_[^_]+_[^.]+).*/$1/;
+          if ($v =~ /\.deb$/) {
+            my $orig_v=$v;
+            $v =~ s/^(\d+\.\d+\.\d+\.\w+\.\w+)\..*/$1/;
+            $v = reverse($v);
+            $v =~ s/\./_/;
+            $v =~ s/\./_/;
+            $v = reverse($v);
+            if ($v =~ /\_deb$/) {
+              $v = $orig_v;
+              $v =~ s/^(\d+\.\d+\.[^_]*_[^_]+_[^.]+).*/$1/;
+            }
+          } else {
+            $v =~ s/^(\d+\.\d+\.[^_]*_[^_]+_[^.]+).*/$1/;
+          }
           $versionInfo{current} = $v;
         }
       } elsif ($op eq "CONFIGURED") {

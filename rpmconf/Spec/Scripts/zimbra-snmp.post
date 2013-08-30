@@ -25,8 +25,8 @@ fi
 if [ -L "/opt/zimbra/net-snmp" ]; then
   rm -f /opt/zimbra/net-snmp
 fi
-ln -s /opt/zimbra/net-snmp-5.6.1.1 /opt/zimbra/snmp
-ln -s /opt/zimbra/net-snmp-5.6.1.1 /opt/zimbra/net-snmp
+ln -s /opt/zimbra/net-snmp-5.7.2 /opt/zimbra/snmp
+ln -s /opt/zimbra/net-snmp-5.7.2 /opt/zimbra/net-snmp
 
 if [ -x "/opt/zimbra/libexec/zmfixperms" ]; then
   /opt/zimbra/libexec/zmfixperms

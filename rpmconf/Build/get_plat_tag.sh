@@ -82,8 +82,9 @@ if [ -f /etc/redhat-release ]; then
 	fi
 
 	grep "CentOS release 6" /etc/redhat-release > /dev/null 2>&1
+	# Treat CentOS as RHEL
 	if [ $? = 0 ]; then
-		echo "CentOS6${i}"
+		echo "RHEL6${i}"
 		exit 0
 	fi
 	grep "CentOS release 5" /etc/redhat-release > /dev/null 2>&1
@@ -232,6 +233,11 @@ if [ -f /etc/lsb-release ]; then
 		grep "DISTRIB_RELEASE=10" /etc/lsb-release > /dev/null 2>&1
 		if [ $? = 0 ]; then
 			echo "10${i}"
+			exit 0
+		fi
+		grep "DISTRIB_RELEASE=12" /etc/lsb-release > /dev/null 2>&1
+		if [ $? = 0 ]; then
+			echo "12${i}"
 			exit 0
 		else
 			echo "UNKNOWN${i}"

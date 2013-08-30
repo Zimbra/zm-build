@@ -2,7 +2,7 @@
 # 
 # ***** BEGIN LICENSE BLOCK *****
 # Zimbra Collaboration Suite Server
-# Copyright (C) 2005, 2007, 2008, 2009, 2010, 2011, 2013 Zimbra Software, LLC.
+# Copyright (C) 2005, 2007, 2008, 2009, 2010, 2012, 2013 Zimbra Software, LLC.
 # 
 # The contents of this file are subject to the Zimbra Public License
 # Version 1.4 ("License"); you may not use this file except in
@@ -155,10 +155,10 @@ postInstallConfig() {
 	fi
 
 	echo -n "Setting services on $HOSTNAME..."
-	runAsZimbra "zmprov ms $HOSTNAME $SERVICES"
+	runAsZimbra "zmprov -r ms $HOSTNAME $SERVICES"
 
 	ENABLEDSERVICES=`echo $SERVICES | sed -e 's/zimbraServiceInstalled/zimbraServiceEnabled/g'`
-	runAsZimbra "zmprov ms $HOSTNAME $ENABLEDSERVICES"
+	runAsZimbra "zmprov -r ms $HOSTNAME $ENABLEDSERVICES"
 
 	LOCALSERVICES=`echo $SERVICES | sed -e 's/zimbraServiceInstalled //g'`
 	runAsZimbra "zmlocalconfig -e zimbra_services=\"$LOCALSERVICES\""

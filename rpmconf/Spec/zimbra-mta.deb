@@ -6,3 +6,6 @@ Section: Mail
 Priority: optional
 Architecture: @@ARCH@@
 Depends: zimbra-core
+Provides: mail-transport-agent
+Conflicts: mail-transport-agent
+Replaces: mail-transport-agent

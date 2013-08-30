@@ -1,4 +1,4 @@
-# Definitions for UBUNTU10_64
+# Definitions for UBUNTU12_64
 
 PACKAGING_COMMAND := dpkg
 
