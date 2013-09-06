@@ -2197,6 +2197,18 @@ sub upgrade850BETA1 {
     if (defined($lc_attr) && (0+$lc_attr > 0 || lc($lc_attr) eq "yes" || lc($lc_attr) eq "true")) {
        main::setLdapServerConfig($hn, 'zimbraCBPolicydAccountingEnabled', "TRUE");
     }
+    $lc_attr= $localxml->{key}->{postfix_always_add_missing_headers}->{value};
+    if (defined($lc_attr) && lc($lc_attr) eq "no" {
+       main::setLdapServerConfig($hn, 'zimbraMtaAlwaysAddMissingHeaders', "no");
+    }
+    $lc_attr= $localxml->{key}->{postfix_broken_sasl_auth_clients}->{value};
+    if (defined($lc_attr) && lc($lc_attr) eq "no" {
+       main::setLdapServerConfig($hn, 'zimbraMtaBrokenSaslAuthClients', "no");
+    }
+    $lc_attr= $localxml->{key}->{postfix_bounce_notice_recipient}->{value};
+    if (defined($lc_attr) && lc($lc_attr) ne "postmaster" {
+       main::setLdapServerConfig($hn, 'zimbraMtaBounceNoticeRecipient', "$lc_attr");
+    }
   }
   main::deleteLocalConfig("amavis_max_servers");
   main::deleteLocalConfig("clamav_max_threads");
@@ -2223,6 +2235,10 @@ sub upgrade850BETA1 {
   main::deleteLocalConfig("cbpolicyd_module_quotas");
   main::deleteLocalConfig("cbpolicyd_module_amavis");
   main::deleteLocalConfig("cbpolicyd_module_accounting");
+  main::deleteLocalConfig("postfix_alias_maps");
+  main::deleteLocalConfig("postfix_always_add_missing_headers");
+  main::deleteLocalConfig("postfix_broken_sasl_auth_clients");
+  main::deleteLocalConfig("postfix_bounce_notice_recipient");
   my $mysql_class = main::getLocalConfig("zimbra_class_database");
   if ($mysql_class =~ /com.zimbra.cs.db.MySQL/) {
     main::setLocalConfig("zimbra_class_database", "com.zimbra.cs.db.MariaDB");
