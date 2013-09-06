@@ -5268,6 +5268,9 @@ sub upgradeLdap($) {
             if ($_ =~ /olcSpSessionlog:/) {
               next;
             }
+            if ($_ =~ /^# CRC32/) {
+              next;
+            }
             print OUT $_;
           }
           close(OUT);
@@ -5284,6 +5287,9 @@ sub upgradeLdap($) {
               print OUT "olcModuleLoad: {0}back_mdb.la\n";
               next;
             }
+            if ($_ =~ /^# CRC32/) {
+              next;
+            }
             print OUT $_;
           }
           close(OUT);
@@ -5298,6 +5304,9 @@ sub upgradeLdap($) {
           while(<IN>) {
             if ($_ =~ /^olcToolThreads: /) {
               print OUT "olcToolThreads: 2\n";
+              next;
+            }
+            if ($_ =~ /^# CRC32/) {
               next;
             }
             print OUT $_;
@@ -5372,6 +5381,9 @@ sub upgradeLdap($) {
             if ($_ =~ /^olcDbDNcacheSize:/) {
               next;
             }
+            if ($_ =~ /^# CRC32/) {
+              next;
+            }
             print OUT $_;
           }
           close(OUT);
@@ -5442,6 +5454,9 @@ sub upgradeLdap($) {
               next;
             }
             if ($_ =~ /^olcDbDNcacheSize:/) {
+              next;
+            }
+            if ($_ =~ /^# CRC32/) {
               next;
             }
             print OUT $_;
