@@ -2209,6 +2209,14 @@ sub upgrade850BETA1 {
     if (defined($lc_attr) && lc($lc_attr) ne "postmaster" {
        main::setLdapServerConfig($hn, 'zimbraMtaBounceNoticeRecipient', "$lc_attr");
     }
+    $lc_attr= $localxml->{key}->{postfix_bounce_queue_lifetime}->{value};
+    if (defined($lc_attr) && lc($lc_attr) ne "5d" {
+       main::setLdapServerConfig($hn, 'zimbraMtaBounceQueueLifetime', "$lc_attr");
+    }
+    $lc_attr= $localxml->{key}->{postfix_delay_warning_time}->{value};
+    if (defined($lc_attr) && lc($lc_attr) ne "0h" {
+       main::setLdapServerConfig($hn, 'zimbraMtaDelayWarningTime', "$lc_attr");
+    }
   }
   main::deleteLocalConfig("amavis_max_servers");
   main::deleteLocalConfig("clamav_max_threads");
@@ -2239,6 +2247,10 @@ sub upgrade850BETA1 {
   main::deleteLocalConfig("postfix_always_add_missing_headers");
   main::deleteLocalConfig("postfix_broken_sasl_auth_clients");
   main::deleteLocalConfig("postfix_bounce_notice_recipient");
+  main::deleteLocalConfig("postfix_bounce_queue_lifetime");
+  main::deleteLocalConfig("postfix_command_directory");
+  main::deleteLocalConfig("postfix_daemon_directory");
+  main::deleteLocalConfig("postfix_delay_warning_time");
   my $mysql_class = main::getLocalConfig("zimbra_class_database");
   if ($mysql_class =~ /com.zimbra.cs.db.MySQL/) {
     main::setLocalConfig("zimbra_class_database", "com.zimbra.cs.db.MariaDB");
