@@ -2198,23 +2198,23 @@ sub upgrade850BETA1 {
        main::setLdapServerConfig($hn, 'zimbraCBPolicydAccountingEnabled', "TRUE");
     }
     $lc_attr= $localxml->{key}->{postfix_always_add_missing_headers}->{value};
-    if (defined($lc_attr) && lc($lc_attr) eq "no" {
+    if (defined($lc_attr) && lc($lc_attr) eq "no") {
        main::setLdapServerConfig($hn, 'zimbraMtaAlwaysAddMissingHeaders', "no");
     }
     $lc_attr= $localxml->{key}->{postfix_broken_sasl_auth_clients}->{value};
-    if (defined($lc_attr) && lc($lc_attr) eq "no" {
+    if (defined($lc_attr) && lc($lc_attr) eq "no") {
        main::setLdapServerConfig($hn, 'zimbraMtaBrokenSaslAuthClients', "no");
     }
     $lc_attr= $localxml->{key}->{postfix_bounce_notice_recipient}->{value};
-    if (defined($lc_attr) && lc($lc_attr) ne "postmaster" {
+    if (defined($lc_attr) && lc($lc_attr) ne "postmaster") {
        main::setLdapServerConfig($hn, 'zimbraMtaBounceNoticeRecipient', "$lc_attr");
     }
     $lc_attr= $localxml->{key}->{postfix_bounce_queue_lifetime}->{value};
-    if (defined($lc_attr) && lc($lc_attr) ne "5d" {
+    if (defined($lc_attr) && lc($lc_attr) ne "5d") {
        main::setLdapServerConfig($hn, 'zimbraMtaBounceQueueLifetime', "$lc_attr");
     }
     $lc_attr= $localxml->{key}->{postfix_delay_warning_time}->{value};
-    if (defined($lc_attr) && lc($lc_attr) ne "0h" {
+    if (defined($lc_attr) && lc($lc_attr) ne "0h") {
        main::setLdapServerConfig($hn, 'zimbraMtaDelayWarningTime', "$lc_attr");
     }
   }
