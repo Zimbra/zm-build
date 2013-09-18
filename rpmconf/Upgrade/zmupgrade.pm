@@ -2217,6 +2217,21 @@ sub upgrade850BETA1 {
     if (defined($lc_attr) && lc($lc_attr) ne "0h") {
        main::setLdapServerConfig($hn, 'zimbraMtaDelayWarningTime', "$lc_attr");
     }
+    $lc_attr= $localxml->{key}->{postfix_header_checks}->{value};
+    if (defined($lc_attr)) {
+       if ($lc_attr =~ /\${zimbra_home}/) {
+         $lc_attr =~ s/\${zimbra_home}/\/opt\/zimbra/;
+       }
+       main::setLdapServerConfig($hn, 'zimbraMtaHeaderChecks', "$lc_attr");
+    }
+    $lc_attr= $localxml->{key}->{postfix_in_flow_delay}->{value};
+    if (defined($lc_attr) && lc($lc_attr) ne "1s") {
+       main::setLdapServerConfig($hn, 'zimbraMtaInFlowDelay', "$lc_attr");
+    }
+    $lc_attr= $localxml->{key}->{postfix_import_environment}->{value};
+    if (defined($lc_attr)) {
+       main::setLdapServerConfig($hn, 'zimbraMtaImportEnvironment', "$lc_attr");
+    }
   }
   main::deleteLocalConfig("amavis_max_servers");
   main::deleteLocalConfig("clamav_max_threads");
