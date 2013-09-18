@@ -2232,6 +2232,18 @@ sub upgrade850BETA1 {
     if (defined($lc_attr)) {
        main::setLdapServerConfig($hn, 'zimbraMtaImportEnvironment', "$lc_attr");
     }
+    $lc_attr= $localxml->{key}->{postfix_lmtp_connection_cache_destinations}->{value};
+    if (defined($lc_attr)) {
+       main::setLdapServerConfig($hn, 'zimbraMtaLmtpConnectionCacheDestinations', "$lc_attr");
+    }
+    $lc_attr= $localxml->{key}->{postfix_lmtp_connection_cache_time_limit}->{value};
+    if (defined($lc_attr) && lc($lc_attr) ne "4s") {
+       main::setLdapServerConfig($hn, 'zimbraMtaLmtpConnectionCacheTimeLimit', "$lc_attr");
+    }
+    $lc_attr= $localxml->{key}->{postfix_lmtp_host_lookup}->{value};
+    if (defined($lc_attr) && lc($lc_attr) ne "dns") {
+       main::setLdapServerConfig($hn, 'zimbraMtaLmtpHostLookup', "$lc_attr");
+    }
   }
   main::deleteLocalConfig("amavis_max_servers");
   main::deleteLocalConfig("clamav_max_threads");
@@ -2266,6 +2278,13 @@ sub upgrade850BETA1 {
   main::deleteLocalConfig("postfix_command_directory");
   main::deleteLocalConfig("postfix_daemon_directory");
   main::deleteLocalConfig("postfix_delay_warning_time");
+  main::deleteLocalConfig("postfix_header_checks");
+  main::deleteLocalConfig("postfix_in_flow_delay");
+  main::deleteLocalConfig("postfix_import_environment");
+  main::deleteLocalConfig("postfix_lmtp_connection_cache_destinations");
+  main::deleteLocalConfig("postfix_lmtp_connection_cache_time_limit");
+  main::deleteLocalConfig("postfix_lmtp_host_lookup");
+  main::deleteLocalConfig("postfix_mailq_path");
   my $mysql_class = main::getLocalConfig("zimbra_class_database");
   if ($mysql_class =~ /com.zimbra.cs.db.MySQL/) {
     main::setLocalConfig("zimbra_class_database", "com.zimbra.cs.db.MariaDB");
