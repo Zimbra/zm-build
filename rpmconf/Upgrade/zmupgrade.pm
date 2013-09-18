@@ -2271,6 +2271,34 @@ sub upgrade850BETA1 {
     if (defined($lc_attr) && lc($lc_attr) ne "300s") {
        main::setLdapServerConfig($hn, 'zimbraMtaMilterContentTimeout', "$lc_attr");
     }
+    $lc_attr= $localxml->{key}->{postfix_milter_default_action}->{value};
+    if (defined($lc_attr) && lc($lc_attr) ne "tempfail") {
+       main::setLdapServerConfig($hn, 'zimbraMtaMilterDefaultAction', "$lc_attr");
+    }
+    $lc_attr= $localxml->{key}->{postfix_smtp_cname_overrides_servername}->{value};
+    if (defined($lc_attr) && lc($lc_attr) ne "no") {
+       main::setLdapServerConfig($hn, 'zimbraMtaSmtpCnameOverridesServername', "$lc_attr");
+    }
+    $lc_attr= $localxml->{key}->{postfix_smtp_helo_name}->{value};
+    if (defined($lc_attr) && lc($lc_attr) ne '$myhostname') {
+       main::setLdapServerConfig($hn, 'zimbraMtaSmtpHeloName', "$lc_attr");
+    }
+    $lc_attr= $localxml->{key}->{postfix_smtp_sasl_auth_enable}->{value};
+    if (defined($lc_attr) && lc($lc_attr) ne "no") {
+       main::setLdapServerConfig($hn, 'zimbraMtaSmtpSaslAuthEnable', "$lc_attr");
+    }
+    $lc_attr= $localxml->{key}->{postfix_smtp_tls_security_level}->{value};
+    if (defined($lc_attr) && lc($lc_attr) ne "may") {
+       main::setLdapServerConfig($hn, 'zimbraMtaSmtpTlsSecurityLevel', "$lc_attr");
+    }
+    $lc_attr= $localxml->{key}->{postfix_smtp_sasl_mechanism_filter}->{value};
+    if (defined($lc_attr)) {
+       main::setLdapServerConfig($hn, 'zimbraMtaSmtpSaslMechanismFilter', "$lc_attr");
+    }
+    $lc_attr= $localxml->{key}->{postfix_smtp_sasl_password_maps}->{value};
+    if (defined($lc_attr)) {
+       main::setLdapServerConfig($hn, 'zimbraMtaSmtpSaslPasswordMaps', "$lc_attr");
+    }
   }
   main::deleteLocalConfig("amavis_max_servers");
   main::deleteLocalConfig("clamav_max_threads");
@@ -2322,6 +2350,13 @@ sub upgrade850BETA1 {
   main::deleteLocalConfig("postfix_milter_connect_timeout");
   main::deleteLocalConfig("postfix_milter_command_timeout");
   main::deleteLocalConfig("postfix_milter_content_timeout");
+  main::deleteLocalConfig("postfix_milter_default_action");
+  main::deleteLocalConfig("postfix_smtp_cname_overrides_servername");
+  main::deleteLocalConfig("postfix_smtp_helo_name");
+  main::deleteLocalConfig("postfix_smtp_sasl_auth_enable");
+  main::deleteLocalConfig("postfix_smtp_tls_security_level");
+  main::deleteLocalConfig("postfix_smtp_sasl_mechanism_filter");
+  main::deleteLocalConfig("postfix_smtp_sasl_password_maps");
   my $mysql_class = main::getLocalConfig("zimbra_class_database");
   if ($mysql_class =~ /com.zimbra.cs.db.MySQL/) {
     main::setLocalConfig("zimbra_class_database", "com.zimbra.cs.db.MariaDB");
