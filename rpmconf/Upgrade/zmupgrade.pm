@@ -2244,6 +2244,13 @@ sub upgrade850BETA1 {
     if (defined($lc_attr) && lc($lc_attr) ne "dns") {
        main::setLdapServerConfig($hn, 'zimbraMtaLmtpHostLookup', "$lc_attr");
     }
+    $lc_attr= $localxml->{key}->{postfix_queue_directory}->{value};
+    if (defined($lc_attr)) {
+       if ($lc_attr =~ /\${zimbra_home}/) {
+         $lc_attr =~ s/\${zimbra_home}/\/opt\/zimbra/;
+       }
+       main::setLdapServerConfig($hn, 'zimbraMtaQueueDirectory', "$lc_attr");
+    }
   }
   main::deleteLocalConfig("amavis_max_servers");
   main::deleteLocalConfig("clamav_max_threads");
@@ -2285,6 +2292,10 @@ sub upgrade850BETA1 {
   main::deleteLocalConfig("postfix_lmtp_connection_cache_time_limit");
   main::deleteLocalConfig("postfix_lmtp_host_lookup");
   main::deleteLocalConfig("postfix_mailq_path");
+  main::deleteLocalConfig("postfix_manpage_directory");
+  main::deleteLocalConfig("postfix_newaliases_path");
+  main::deleteLocalConfig("postfix_queue_directory");
+  main::deleteLocalConfig("postfix_sendmail_path");
   my $mysql_class = main::getLocalConfig("zimbra_class_database");
   if ($mysql_class =~ /com.zimbra.cs.db.MySQL/) {
     main::setLocalConfig("zimbra_class_database", "com.zimbra.cs.db.MariaDB");
