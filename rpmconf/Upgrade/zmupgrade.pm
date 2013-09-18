@@ -2251,6 +2251,26 @@ sub upgrade850BETA1 {
        }
        main::setLdapServerConfig($hn, 'zimbraMtaQueueDirectory', "$lc_attr");
     }
+    $lc_attr= $localxml->{key}->{postfix_maximal_backoff_time}->{value};
+    if (defined($lc_attr) && lc($lc_attr) ne "4000s") {
+       main::setLdapServerConfig($hn, 'zimbraMtaMaximalBackoffTime', "$lc_attr");
+    }
+    $lc_attr= $localxml->{key}->{postfix_minimal_backoff_time}->{value};
+    if (defined($lc_attr) && lc($lc_attr) ne "300s") {
+       main::setLdapServerConfig($hn, 'zimbraMtaMinimalBackoffTime', "$lc_attr");
+    }
+    $lc_attr= $localxml->{key}->{postfix_queue_run_delay}->{value};
+    if (defined($lc_attr) && lc($lc_attr) ne "300s") {
+       main::setLdapServerConfig($hn, 'zimbraMtaQueueRunDelay', "$lc_attr");
+    }
+    $lc_attr= $localxml->{key}->{postfix_milter_connect_timeout}->{value};
+    if (defined($lc_attr) && lc($lc_attr) ne "30s") {
+       main::setLdapServerConfig($hn, 'zimbraMtaMilterConnectTimeout', "$lc_attr");
+    }
+    $lc_attr= $localxml->{key}->{postfix_milter_content_timeout}->{value};
+    if (defined($lc_attr) && lc($lc_attr) ne "300s") {
+       main::setLdapServerConfig($hn, 'zimbraMtaMilterContentTimeout', "$lc_attr");
+    }
   }
   main::deleteLocalConfig("amavis_max_servers");
   main::deleteLocalConfig("clamav_max_threads");
@@ -2296,6 +2316,12 @@ sub upgrade850BETA1 {
   main::deleteLocalConfig("postfix_newaliases_path");
   main::deleteLocalConfig("postfix_queue_directory");
   main::deleteLocalConfig("postfix_sendmail_path");
+  main::deleteLocalConfig("postfix_maximal_backoff_time");
+  main::deleteLocalConfig("postfix_minimal_backoff_time");
+  main::deleteLocalConfig("postfix_queue_run_delay");
+  main::deleteLocalConfig("postfix_milter_connect_timeout");
+  main::deleteLocalConfig("postfix_milter_command_timeout");
+  main::deleteLocalConfig("postfix_milter_content_timeout");
   my $mysql_class = main::getLocalConfig("zimbra_class_database");
   if ($mysql_class =~ /com.zimbra.cs.db.MySQL/) {
     main::setLocalConfig("zimbra_class_database", "com.zimbra.cs.db.MariaDB");
