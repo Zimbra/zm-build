@@ -83,6 +83,10 @@ if [ x"$PLAT" = "xRHEL6_64" -o x"$PLAT" = "xCentOS6_64" ]; then
   sed -i -e '/PS2 QTDIR USERNAME PATH/!s/PS2 QTDIR USERNAME/PS2 QTDIR USERNAME PATH/' /etc/sudoers
 fi
 
+if [ x"$PLAT" = "xUBUNTU12_64" ]; then
+ sed -i -e '/^::1     ip6-localhost ip6-loopback localhost$/!s/::1     ip6-localhost ip6-loopback/::1     ip6-localhost ip6-loopback localhost/' /etc/hosts
+fi
+
 if [[ $PLAT == "DEBIAN"* || $PLAT == "UBUNTU"* ]]; then
   sed -i -e 's/# session    required   pam_limits.so/session    required   pam_limits.so/' /etc/pam.d/su
   egrep -v -e '^session[[:space:]]+required[[:space:]]+pam_limits.so' /etc/pam.d/common-session >/tmp/common-session
