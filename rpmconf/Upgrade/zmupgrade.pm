@@ -2299,6 +2299,10 @@ sub upgrade850BETA1 {
     if (defined($lc_attr)) {
        main::setLdapServerConfig($hn, 'zimbraMtaSmtpSaslPasswordMaps', "$lc_attr");
     }
+    $lc_attr= $localxml->{key}->{postfix_policy_time_limit}->{value};
+    if (defined($lc_attr)) {
+       main::setLdapServerConfig($hn, 'zimbraMtaPolicyTimeLimit', "$lc_attr");
+    }
   }
   main::deleteLocalConfig("amavis_max_servers");
   main::deleteLocalConfig("clamav_max_threads");
@@ -2357,6 +2361,7 @@ sub upgrade850BETA1 {
   main::deleteLocalConfig("postfix_smtp_tls_security_level");
   main::deleteLocalConfig("postfix_smtp_sasl_mechanism_filter");
   main::deleteLocalConfig("postfix_smtp_sasl_password_maps");
+  main::deleteLocalConfig("postfix_policy_time_limit");
   my $mysql_class = main::getLocalConfig("zimbra_class_database");
   if ($mysql_class =~ /com.zimbra.cs.db.MySQL/) {
     main::setLocalConfig("zimbra_class_database", "com.zimbra.cs.db.MariaDB");
