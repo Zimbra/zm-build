@@ -1477,7 +1477,13 @@ sub upgrade720GA {
     my $imap_cache_data_directory = $zimbra_home . "/data/mailboxd/imap";
     rmtree("${imap_cache_data_directory}")
       if ( -d "${imap_cache_data_directory}/");
+    if ( -d "${zimbra_home}/zimlets-deployed/com_zimbra_smime/") {
+      main::runAsZimbra("/opt/zimbra/bin/zmzimletctl -l undeploy com_zimbra_smime");
+      system("rm -rf ${zimbra_home}/mailboxd/webapps/service/zimlet/com_zimbra_smime")
+        if (-d "${zimbra_home}/mailboxd/webapps/service/zimlet/com_zimbra_smime" );
+    }
   }
+  
   return 0;
 }
 
