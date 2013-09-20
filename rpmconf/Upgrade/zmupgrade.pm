@@ -543,7 +543,15 @@ sub upgrade {
   } elsif ($startVersion eq "8.5.0_BETA1") {
     main::progress("This appears to be 8.5.0_BETA1\n");
   } else {
-    main::progress("I can't upgrade version $startVersion\n\n");
+    if ($startVersion eq "") {
+      main::progress("ERROR: Unable to find initial version to upgrade from.\n");
+      main::progress("       This indicates a corrupted /opt/zimbra/.install_history file.\n");
+      main::progress("       DO NOT ATTEMPT UPGRADING AGAIN UNTIL THE FILE IS FIXED.\n");
+    } else {
+      main::progress("ERROR: I can't upgrade unknown version $startVersion\n\n");
+      main::progress("       This indicates an attempt to upgrade to an out of date release.\n");
+      main::progress("       Please download and install the latest release from Zimbra.\n");
+    }
     return 1;
   }
 
