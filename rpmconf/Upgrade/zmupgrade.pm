@@ -2329,6 +2329,26 @@ sub upgrade850BETA1 {
     if (defined($lc_attr) && lc($lc_attr) ne "no") {
        main::setLdapServerConfig($hn, 'zimbraMtaSmtpdSaslAuthenticatedHeader', "$lc_attr");
     }
+    $lc_attr= $localxml->{key}->{postfix_smtpd_hard_error_limit}->{value};
+    if (defined($lc_attr) && $lc_attr != 20) {
+       main::setLdapServerConfig($hn, 'zimbraMtaSmtpdHardErrorLimit', "$lc_attr");
+    }
+    $lc_attr= $localxml->{key}->{postfix_smtpd_soft_error_limit}->{value};
+    if (defined($lc_attr) && $lc_attr != 10) {
+       main::setLdapServerConfig($hn, 'zimbraMtaStpdSoftErrorLimit', "$lc_attr");
+    }
+    $lc_attr= $localxml->{key}->{postfix_smtpd_error_sleep_time}->{value};
+    if (defined($lc_attr) && lc($lc_attr) ne "1s") {
+       main::setLdapServerConfig($hn, 'zimbraMtaSmtpdErrorSleepTime', "$lc_attr");
+    }
+    $lc_attr= $localxml->{key}->{postfix_smtpd_helo_required}->{value};
+    if (defined($lc_attr) && lc($lc_attr) ne "yes") {
+       main::setLdapServerConfig($hn, 'zimbraMtaSmtpdHeloRequired', "$lc_attr");
+    }
+    $lc_attr= $localxml->{key}->{postfix_smtpd_tls_loglevel}->{value};
+    if (defined($lc_attr) && $lc_attr != 1) {
+       main::setLdapServerConfig($hn, 'zimbraMtaSmtpdTlsLoglevel', "$lc_attr");
+    }
   }
   main::deleteLocalConfig("amavis_max_servers");
   main::deleteLocalConfig("clamav_max_threads");
@@ -2393,6 +2413,11 @@ sub upgrade850BETA1 {
   main::deleteLocalConfig("postfix_smtpd_reject_unlisted_recipient");
   main::deleteLocalConfig("postfix_smtpd_reject_unlisted_sender");
   main::deleteLocalConfig("postfix_smtpd_sasl_authenticated_header");
+  main::deleteLocalConfig("postfix_smtpd_hard_error_limit");
+  main::deleteLocalConfig("postfix_smtpd_soft_error_limit");
+  main::deleteLocalConfig("postfix_smtpd_error_sleep_time");
+  main::deleteLocalConfig("postfix_smtpd_helo_required");
+  main::deleteLocalConfig("postfix_smtpd_tls_loglevel");
   my $mysql_class = main::getLocalConfig("zimbra_class_database");
   if ($mysql_class =~ /com.zimbra.cs.db.MySQL/) {
     main::setLocalConfig("zimbra_class_database", "com.zimbra.cs.db.MariaDB");
