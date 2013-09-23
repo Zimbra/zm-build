@@ -2369,6 +2369,18 @@ sub upgrade850BETA1 {
     if (defined($lc_attr) && $lc_attr != 10000) {
        main::setLdapServerConfig($hn, 'zimbraMtaVirtualAliasExpansionLimit', "$lc_attr");
     }
+    $lc_attr= $localxml->{key}->{postfix_virtual_transport}->{value};
+    if (defined($lc_attr) && lc($lc_attr) ne "error") {
+       main::setLdapServerConfig($hn, 'zimbraMtaSmtpdVirtualTransport', "$lc_attr");
+    }
+    $lc_attr= $localxml->{key}->{postfix_notify_classes}->{value};
+    if (defined($lc_attr) && lc($lc_attr) ne "resource,software") {
+      $lc_attr =~ s/, /,/g;
+      $lc_attr =~ s/\s+/ /g;
+      foreach my $option (split(/,|\s/, $lc_attr)) {
+        main::setLdapServerConfig($hn, '+zimbraMtaNotifyClasses', "$option");
+      }
+    }
   }
   main::deleteLocalConfig("amavis_max_servers");
   main::deleteLocalConfig("clamav_max_threads");
@@ -2441,6 +2453,8 @@ sub upgrade850BETA1 {
   main::deleteLocalConfig("postfix_smtpd_tls_cert_file");
   main::deleteLocalConfig("postfix_smtpd_tls_key_file");
   main::deleteLocalConfig("postfix_virtual_alias_expansion_limit");
+  main::deleteLocalConfig("postfix_virtual_transport");
+  main::deleteLocalConfig("postfix_notify_classes");
   my $mysql_class = main::getLocalConfig("zimbra_class_database");
   if ($mysql_class =~ /com.zimbra.cs.db.MySQL/) {
     main::setLocalConfig("zimbra_class_database", "com.zimbra.cs.db.MariaDB");
