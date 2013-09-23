@@ -2584,6 +2584,7 @@ sub getInstalledPackages {
   }
 
 }
+
 sub cleanPostfixLC {
 
   my ($var,$val);
@@ -2596,76 +2597,6 @@ sub cleanPostfixLC {
       main::setLocalConfig("postfix_${var}", "$val");
     }
   }
-}
-
-sub updatePostfixLC {
-  my ($fromVersion, $toVersion) = @_;
-
-  # update localconfig vars
-  my ($var,$val);
-  foreach $var (qw(version command_directory daemon_directory mailq_path manpage_directory newaliases_path queue_directory sendmail_path)) {
-    if ($var eq "version") {
-      $val = $toVersion;
-      main::setLocalConfig("postfix_${var}", "$val");
-      next;
-    }
-
-    $val = main::getLocalConfig("postfix_${var}");
-    $val =~ s/postfix-$fromVersion/postfix/;
-    $val =~ s/postfix-$toVersion/postfix/;
-    main::setLocalConfig("postfix_${var}", "$val");
-  }
-}
-
-sub movePostfixQueue {
-  my ($fromVersion,$toVersion) = @_;
-
-  # update localconfig vars
-  my ($var,$val);
-  foreach $var (qw(version command_directory daemon_directory mailq_path manpage_directory newaliases_path queue_directory sendmail_path)) {
-    $val = main::getLocalConfig("postfix_${var}");
-    if ($val eq $toVersion) {
-      next;
-    }
-    if ($val =~ m/postfix-$toVersion/) {
-      next;
-    }
-    $val =~ s/$fromVersion/$toVersion/;
-    $val = $toVersion if ($var eq "version");
-    main::setLocalConfig("postfix_${var}", "$val"); 
-  }
-
-  # move the spool files
-  if ( -d "/opt/zimbra/postfix-${fromVersion}/spool" ) {
-    main::progress("Moving postfix queues from $fromVersion to $toVersion\n");
-    my @dirs = qw /active bounce corrupt defer deferred flush hold incoming maildrop/;
-    qx(mkdir -p /opt/zimbra/postfix-${toVersion}/spool);
-    foreach my $d (@dirs) {
-      if (-d "/opt/zimbra/postfix-${fromVersion}/spool/${d}/") {
-        main::progress("Moving $d\n");
-        qx(mkdir -p /opt/zimbra/postfix-${toVersion}/spool/${d});
-        qx(cp -Rf /opt/zimbra/postfix-${fromVersion}/spool/${d}/* /opt/zimbra/postfix-${toVersion}/spool/${d});
-        qx(chown -R postfix:postdrop /opt/zimbra/postfix-${toVersion}/spool/${d});
-      }
-    }
-  }
-
-  main::runAsRoot("/opt/zimbra/libexec/zmfixperms");
-}
-
-sub relocatePostfixQueue {
-  my $toDir="/opt/zimbra/data/postfix";
-  my $fromDir="/opt/zimbra/postfix-2.4.3.4z";
-  my $curDir=main::getcwd();
-
-  main::progress("Migrating Postfix spool directory\n");
-  mkdir -p "$toDir/spool";
-  if ( -d "$fromDir/spool" && ! -d "$toDir/spool/active") {
-    chdir($fromDir);
-    qx(tar cf - spool 1>/dev/null 2>&1 | (cd $toDir; tar xfp -) >/dev/null 2>&1);
-    chdir($curDir);
-  }
-  main::runAsRoot("/opt/zimbra/libexec/zmfixperms");
 }
 
 sub updateLoggerMySQLcnf {
