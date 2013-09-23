@@ -2113,265 +2113,289 @@ sub upgrade850BETA1 {
 
     my $lc_attr= $localxml->{key}->{amavis_max_servers}->{value};
     if (defined($lc_attr) && $lc_attr+0 != 0) {
-       main::setLdapServerConfig($hn, 'zimbraAmavisMaxServers', "$lc_attr");
+      main::setLdapServerConfig($hn, 'zimbraAmavisMaxServers', "$lc_attr");
     }
     $lc_attr= $localxml->{key}->{clamav_max_threads}->{value};
     if (defined($lc_attr) && $lc_attr+0 != 0) {
-       main::setLdapServerConfig($hn, 'zimbraClamAVMaxThreads', "$lc_attr");
+      main::setLdapServerConfig($hn, 'zimbraClamAVMaxThreads', "$lc_attr");
     }
     $lc_attr= $localxml->{key}->{amavis_enable_dkim_verification}->{value};
     if (defined($lc_attr) && lc($lc_attr) eq "false") {
-       main::setLdapServerConfig($hn, 'zimbraAmavisEnableDKIMVerification', "FALSE");
+      main::setLdapServerConfig($hn, 'zimbraAmavisEnableDKIMVerification', "FALSE");
     }
     $lc_attr= $localxml->{key}->{amavis_originating_bypass_sa}->{value};
     if (defined($lc_attr) && lc($lc_attr) eq "true") {
-       main::setLdapServerConfig($hn, 'zimbraAmavisOriginatingBypassSA', "TRUE");
+      main::setLdapServerConfig($hn, 'zimbraAmavisOriginatingBypassSA', "TRUE");
     }
     $lc_attr= $localxml->{key}->{amavis_dspam_enabled}->{value};
     if (defined($lc_attr) && (lc($lc_attr) eq "yes" || lc($lc_attr) eq "true")) {
-       main::setLdapServerConfig($hn, 'zimbraAmavisDSPAMEnabled', "TRUE");
+      main::setLdapServerConfig($hn, 'zimbraAmavisDSPAMEnabled', "TRUE");
     }
     $lc_attr= $localxml->{key}->{postfix_enable_smtpd_policyd}->{value};
     if (defined($lc_attr) && (lc($lc_attr) eq "yes" || lc($lc_attr) eq "true")) {
-       main::setLdapServerConfig($hn, 'zimbraPostfixEnableSmtpdPolicyd', "TRUE");
+      main::setLdapServerConfig($hn, 'zimbraPostfixEnableSmtpdPolicyd', "TRUE");
     }
     $lc_attr= $localxml->{key}->{cbpolicyd_min_servers}->{value};
     if (defined($lc_attr) && $lc_attr != 4) {
-       main::setLdapServerConfig($hn, 'zimbraCBPolicydMinServers', "$lc_attr");
+      main::setLdapServerConfig($hn, 'zimbraCBPolicydMinServers', "$lc_attr");
     }
     $lc_attr= $localxml->{key}->{cbpolicyd_min_spare_servers}->{value};
     if (defined($lc_attr) && $lc_attr != 4) {
-       main::setLdapServerConfig($hn, 'zimbraCBPolicydMinSpareServers', "$lc_attr");
+      main::setLdapServerConfig($hn, 'zimbraCBPolicydMinSpareServers', "$lc_attr");
     }
     $lc_attr= $localxml->{key}->{cbpolicyd_max_servers}->{value};
     if (defined($lc_attr) && $lc_attr != 25) {
-       main::setLdapServerConfig($hn, 'zimbraCBPolicydMaxServers', "$lc_attr");
+      main::setLdapServerConfig($hn, 'zimbraCBPolicydMaxServers', "$lc_attr");
     }
     $lc_attr= $localxml->{key}->{cbpolicyd_max_spare_servers}->{value};
     if (defined($lc_attr) ne "" && $lc_attr != 12) {
-       main::setLdapServerConfig($hn, 'zimbraCBPolicydMaxSpareServers', "$lc_attr");
+      main::setLdapServerConfig($hn, 'zimbraCBPolicydMaxSpareServers', "$lc_attr");
     }
     $lc_attr= $localxml->{key}->{cbpolicyd_max_requests}->{value};
     if (defined($lc_attr) && $lc_attr != 1000) {
-       main::setLdapServerConfig($hn, 'zimbraCBPolicydMaxRequests', "$lc_attr");
+      main::setLdapServerConfig($hn, 'zimbraCBPolicydMaxRequests', "$lc_attr");
     }
     $lc_attr= $localxml->{key}->{cbpolicyd_timeout_idle}->{value};
     if (defined($lc_attr) && $lc_attr != 1020) {
-       main::setLdapServerConfig($hn, 'zimbraCBPolicydTimeoutIdle', "$lc_attr");
+      main::setLdapServerConfig($hn, 'zimbraCBPolicydTimeoutIdle', "$lc_attr");
     }
     $lc_attr= $localxml->{key}->{cbpolicyd_timeout_busy}->{value};
     if (defined($lc_attr) && $lc_attr != 120) {
-       main::setLdapServerConfig($hn, 'zimbraCBPolicydTimeoutBusy', "$lc_attr");
+      main::setLdapServerConfig($hn, 'zimbraCBPolicydTimeoutBusy', "$lc_attr");
     }
     $lc_attr= $localxml->{key}->{cbpolicyd_bypass_timeout}->{value};
     if (defined($lc_attr) && $lc_attr != 30) {
-       main::setLdapServerConfig($hn, 'zimbraCBPolicydBypassTimeout', "TRUE");
+      main::setLdapServerConfig($hn, 'zimbraCBPolicydBypassTimeout', "TRUE");
     }
     $lc_attr= $localxml->{key}->{cbpolicyd_bypass_mode}->{value};
     if (defined($lc_attr) && lc($lc_attr) ne "tempfail" ) {
-       main::setLdapServerConfig($hn, 'zimbraCBPolicydBypassMode', "$lc_attr");
+      main::setLdapServerConfig($hn, 'zimbraCBPolicydBypassMode', "$lc_attr");
     }
     $lc_attr= $localxml->{key}->{cbpolicyd_module_accesscontrol}->{value};
     if (defined($lc_attr) && (0+$lc_attr > 0  || lc($lc_attr) eq "true")) {
-       main::setLdapServerConfig($hn, 'zimbraCBPolicydAccessControlEnabled', "TRUE");
+      main::setLdapServerConfig($hn, 'zimbraCBPolicydAccessControlEnabled', "TRUE");
     }
     $lc_attr= $localxml->{key}->{cbpolicyd_module_greylisting}->{value};
     if (defined($lc_attr) && (0+$lc_attr > 0  || lc($lc_attr) eq "true")) {
-       main::setLdapServerConfig($hn, 'zimbraCBPolicydGreylistingEnabled', "TRUE");
+      main::setLdapServerConfig($hn, 'zimbraCBPolicydGreylistingEnabled', "TRUE");
     }
     $lc_attr= $localxml->{key}->{cbpolicyd_module_greylisting_training}->{value};
     if ($lc_attr ne "" && (0+$lc_attr > 0  || lc($lc_attr) eq "true")) {
-       main::setLdapServerConfig($hn, 'zimbraCBPolicydGreylistingTrainingEnabled', "TRUE");
+      main::setLdapServerConfig($hn, 'zimbraCBPolicydGreylistingTrainingEnabled', "TRUE");
     }
     $lc_attr= $localxml->{key}->{cbpolicyd_module_greylisting_defer_msg}->{value};
     if (defined($lc_attr)) {
-       main::setLdapServerConfig($hn, 'zimbraCBPolicydGreylistingDeferMsg', "$lc_attr");
+      main::setLdapServerConfig($hn, 'zimbraCBPolicydGreylistingDeferMsg', "$lc_attr");
     }
     $lc_attr= $localxml->{key}->{cbpolicyd_module_greylisting_blacklist_msg}->{value};
     if (defined($lc_attr)) {
-       main::setLdapServerConfig($hn, 'zimbraCBPolicydGreylistingBlacklistMsg', "$lc_attr");
+      main::setLdapServerConfig($hn, 'zimbraCBPolicydGreylistingBlacklistMsg', "$lc_attr");
     }
     $lc_attr= $localxml->{key}->{cbpolicyd_module_checkhelo}->{value};
     if (defined($lc_attr) && (0+$lc_attr > 0 || lc($lc_attr) eq "yes" || lc($lc_attr) eq "true")) {
-       main::setLdapServerConfig($hn, 'zimbraCBPolicydCheckHeloEnabled', "TRUE");
+      main::setLdapServerConfig($hn, 'zimbraCBPolicydCheckHeloEnabled', "TRUE");
     }
     $lc_attr= $localxml->{key}->{cbpolicyd_module_checkspf}->{value};
     if (defined($lc_attr) && (0+$lc_attr > 0 || lc($lc_attr) eq "yes" || lc($lc_attr) eq "true")) {
-       main::setLdapServerConfig($hn, 'zimbraCBPolicydCheckSPFEnabled', "TRUE");
+      main::setLdapServerConfig($hn, 'zimbraCBPolicydCheckSPFEnabled', "TRUE");
     }
     $lc_attr= $localxml->{key}->{cbpolicyd_module_quotas}->{value};
     if (defined($lc_attr) && (0+$lc_attr == 0 || lc($lc_attr) eq "no" || lc($lc_attr) eq "false")) {
-       main::setLdapServerConfig($hn, 'zimbraCBPolicydQuotasEnabled', "FALSE");
+      main::setLdapServerConfig($hn, 'zimbraCBPolicydQuotasEnabled', "FALSE");
     }
     $lc_attr= $localxml->{key}->{cbpolicyd_module_amavis}->{value};
     if (defined($lc_attr) && (0+$lc_attr > 0 || lc($lc_attr) eq "yes" || lc($lc_attr) eq "true")) {
-       main::setLdapServerConfig($hn, 'zimbraCBPolicydAmavisEnabled', "TRUE");
+      main::setLdapServerConfig($hn, 'zimbraCBPolicydAmavisEnabled', "TRUE");
     }
     $lc_attr= $localxml->{key}->{cbpolicyd_module_accounting}->{value};
     if (defined($lc_attr) && (0+$lc_attr > 0 || lc($lc_attr) eq "yes" || lc($lc_attr) eq "true")) {
-       main::setLdapServerConfig($hn, 'zimbraCBPolicydAccountingEnabled', "TRUE");
+      main::setLdapServerConfig($hn, 'zimbraCBPolicydAccountingEnabled', "TRUE");
     }
     $lc_attr= $localxml->{key}->{postfix_always_add_missing_headers}->{value};
     if (defined($lc_attr) && lc($lc_attr) eq "no") {
-       main::setLdapServerConfig($hn, 'zimbraMtaAlwaysAddMissingHeaders', "no");
+      main::setLdapServerConfig($hn, 'zimbraMtaAlwaysAddMissingHeaders', "no");
     }
     $lc_attr= $localxml->{key}->{postfix_broken_sasl_auth_clients}->{value};
     if (defined($lc_attr) && lc($lc_attr) eq "no") {
-       main::setLdapServerConfig($hn, 'zimbraMtaBrokenSaslAuthClients', "no");
+      main::setLdapServerConfig($hn, 'zimbraMtaBrokenSaslAuthClients', "no");
     }
     $lc_attr= $localxml->{key}->{postfix_bounce_notice_recipient}->{value};
     if (defined($lc_attr) && lc($lc_attr) ne "postmaster") {
-       main::setLdapServerConfig($hn, 'zimbraMtaBounceNoticeRecipient', "$lc_attr");
+      main::setLdapServerConfig($hn, 'zimbraMtaBounceNoticeRecipient', "$lc_attr");
     }
     $lc_attr= $localxml->{key}->{postfix_bounce_queue_lifetime}->{value};
     if (defined($lc_attr) && lc($lc_attr) ne "5d") {
-       main::setLdapServerConfig($hn, 'zimbraMtaBounceQueueLifetime', "$lc_attr");
+      main::setLdapServerConfig($hn, 'zimbraMtaBounceQueueLifetime', "$lc_attr");
     }
     $lc_attr= $localxml->{key}->{postfix_delay_warning_time}->{value};
     if (defined($lc_attr) && lc($lc_attr) ne "0h") {
-       main::setLdapServerConfig($hn, 'zimbraMtaDelayWarningTime', "$lc_attr");
+      main::setLdapServerConfig($hn, 'zimbraMtaDelayWarningTime', "$lc_attr");
     }
     $lc_attr= $localxml->{key}->{postfix_header_checks}->{value};
     if (defined($lc_attr)) {
-       if ($lc_attr =~ /\${zimbra_home}/) {
-         $lc_attr =~ s/\${zimbra_home}/\/opt\/zimbra/;
-       }
-       main::setLdapServerConfig($hn, 'zimbraMtaHeaderChecks', "$lc_attr");
+      if ($lc_attr =~ /\${zimbra_home}/) {
+        $lc_attr =~ s/\${zimbra_home}/\/opt\/zimbra/;
+      }
+      $lc_attr =~ s/, /,/g;
+      $lc_attr =~ s/\s+/ /g;
+      foreach my $option (split(/,|\s/, $lc_attr)) {
+        main::setLdapServerConfig($hn, '+zimbraMtaHeaderChecks', "$lc_attr");
+      }
     }
     $lc_attr= $localxml->{key}->{postfix_in_flow_delay}->{value};
     if (defined($lc_attr) && lc($lc_attr) ne "1s") {
-       main::setLdapServerConfig($hn, 'zimbraMtaInFlowDelay', "$lc_attr");
+      main::setLdapServerConfig($hn, 'zimbraMtaInFlowDelay', "$lc_attr");
     }
     $lc_attr= $localxml->{key}->{postfix_import_environment}->{value};
     if (defined($lc_attr)) {
-       main::setLdapServerConfig($hn, 'zimbraMtaImportEnvironment', "$lc_attr");
+      $lc_attr =~ s/, /,/g;
+      $lc_attr =~ s/\s+/ /g;
+      foreach my $option (split(/,|\s/, $lc_attr)) {
+        main::setLdapServerConfig($hn, '+zimbraMtaImportEnvironment', "$lc_attr");
+      }
     }
     $lc_attr= $localxml->{key}->{postfix_lmtp_connection_cache_destinations}->{value};
     if (defined($lc_attr)) {
-       main::setLdapServerConfig($hn, 'zimbraMtaLmtpConnectionCacheDestinations', "$lc_attr");
+      $lc_attr =~ s/, /,/g;
+      $lc_attr =~ s/\s+/ /g;
+      foreach my $option (split(/,|\s/, $lc_attr)) {
+        main::setLdapServerConfig($hn, '+zimbraMtaLmtpConnectionCacheDestinations', "$lc_attr");
+      }
     }
     $lc_attr= $localxml->{key}->{postfix_lmtp_connection_cache_time_limit}->{value};
     if (defined($lc_attr) && lc($lc_attr) ne "4s") {
-       main::setLdapServerConfig($hn, 'zimbraMtaLmtpConnectionCacheTimeLimit', "$lc_attr");
+      main::setLdapServerConfig($hn, 'zimbraMtaLmtpConnectionCacheTimeLimit', "$lc_attr");
     }
     $lc_attr= $localxml->{key}->{postfix_lmtp_host_lookup}->{value};
     if (defined($lc_attr) && lc($lc_attr) ne "dns") {
-       main::setLdapServerConfig($hn, 'zimbraMtaLmtpHostLookup', "$lc_attr");
+      $lc_attr =~ s/, /,/g;
+      $lc_attr =~ s/\s+/ /g;
+      foreach my $option (split(/,|\s/, $lc_attr)) {
+        main::setLdapServerConfig($hn, '+zimbraMtaLmtpHostLookup', "$lc_attr");
+      }
     }
     $lc_attr= $localxml->{key}->{postfix_queue_directory}->{value};
     if (defined($lc_attr)) {
-       if ($lc_attr =~ /\${zimbra_home}/) {
-         $lc_attr =~ s/\${zimbra_home}/\/opt\/zimbra/;
-       }
-       main::setLdapServerConfig($hn, 'zimbraMtaQueueDirectory', "$lc_attr");
+      if ($lc_attr =~ /\${zimbra_home}/) {
+        $lc_attr =~ s/\${zimbra_home}/\/opt\/zimbra/;
+      }
+      main::setLdapServerConfig($hn, 'zimbraMtaQueueDirectory', "$lc_attr");
     }
     $lc_attr= $localxml->{key}->{postfix_maximal_backoff_time}->{value};
     if (defined($lc_attr) && lc($lc_attr) ne "4000s") {
-       main::setLdapServerConfig($hn, 'zimbraMtaMaximalBackoffTime', "$lc_attr");
+      main::setLdapServerConfig($hn, 'zimbraMtaMaximalBackoffTime', "$lc_attr");
     }
     $lc_attr= $localxml->{key}->{postfix_minimal_backoff_time}->{value};
     if (defined($lc_attr) && lc($lc_attr) ne "300s") {
-       main::setLdapServerConfig($hn, 'zimbraMtaMinimalBackoffTime', "$lc_attr");
+      main::setLdapServerConfig($hn, 'zimbraMtaMinimalBackoffTime', "$lc_attr");
     }
     $lc_attr= $localxml->{key}->{postfix_queue_run_delay}->{value};
     if (defined($lc_attr) && lc($lc_attr) ne "300s") {
-       main::setLdapServerConfig($hn, 'zimbraMtaQueueRunDelay', "$lc_attr");
+      main::setLdapServerConfig($hn, 'zimbraMtaQueueRunDelay', "$lc_attr");
     }
     $lc_attr= $localxml->{key}->{postfix_milter_connect_timeout}->{value};
     if (defined($lc_attr) && lc($lc_attr) ne "30s") {
-       main::setLdapServerConfig($hn, 'zimbraMtaMilterConnectTimeout', "$lc_attr");
+      main::setLdapServerConfig($hn, 'zimbraMtaMilterConnectTimeout', "$lc_attr");
     }
     $lc_attr= $localxml->{key}->{postfix_milter_content_timeout}->{value};
     if (defined($lc_attr) && lc($lc_attr) ne "300s") {
-       main::setLdapServerConfig($hn, 'zimbraMtaMilterContentTimeout', "$lc_attr");
+      main::setLdapServerConfig($hn, 'zimbraMtaMilterContentTimeout', "$lc_attr");
     }
     $lc_attr= $localxml->{key}->{postfix_milter_default_action}->{value};
     if (defined($lc_attr) && lc($lc_attr) ne "tempfail") {
-       main::setLdapServerConfig($hn, 'zimbraMtaMilterDefaultAction', "$lc_attr");
+      main::setLdapServerConfig($hn, 'zimbraMtaMilterDefaultAction', "$lc_attr");
     }
     $lc_attr= $localxml->{key}->{postfix_smtp_cname_overrides_servername}->{value};
     if (defined($lc_attr) && lc($lc_attr) ne "no") {
-       main::setLdapServerConfig($hn, 'zimbraMtaSmtpCnameOverridesServername', "$lc_attr");
+      main::setLdapServerConfig($hn, 'zimbraMtaSmtpCnameOverridesServername', "$lc_attr");
     }
     $lc_attr= $localxml->{key}->{postfix_smtp_helo_name}->{value};
     if (defined($lc_attr) && lc($lc_attr) ne '$myhostname') {
-       main::setLdapServerConfig($hn, 'zimbraMtaSmtpHeloName', "$lc_attr");
+      main::setLdapServerConfig($hn, 'zimbraMtaSmtpHeloName', "$lc_attr");
     }
     $lc_attr= $localxml->{key}->{postfix_smtp_sasl_auth_enable}->{value};
     if (defined($lc_attr) && lc($lc_attr) ne "no") {
-       main::setLdapServerConfig($hn, 'zimbraMtaSmtpSaslAuthEnable', "$lc_attr");
+      main::setLdapServerConfig($hn, 'zimbraMtaSmtpSaslAuthEnable', "$lc_attr");
     }
     $lc_attr= $localxml->{key}->{postfix_smtp_tls_security_level}->{value};
     if (defined($lc_attr) && lc($lc_attr) ne "may") {
-       main::setLdapServerConfig($hn, 'zimbraMtaSmtpTlsSecurityLevel', "$lc_attr");
+      main::setLdapServerConfig($hn, 'zimbraMtaSmtpTlsSecurityLevel', "$lc_attr");
     }
     $lc_attr= $localxml->{key}->{postfix_smtp_sasl_mechanism_filter}->{value};
     if (defined($lc_attr)) {
-       main::setLdapServerConfig($hn, 'zimbraMtaSmtpSaslMechanismFilter', "$lc_attr");
+      $lc_attr =~ s/, /,/g;
+      $lc_attr =~ s/\s+/ /g;
+      foreach my $option (split(/,|\s/, $lc_attr)) {
+        main::setLdapServerConfig($hn, '+zimbraMtaSmtpSaslMechanismFilter', "$lc_attr");
+      }
     }
     $lc_attr= $localxml->{key}->{postfix_smtp_sasl_password_maps}->{value};
     if (defined($lc_attr)) {
-       main::setLdapServerConfig($hn, 'zimbraMtaSmtpSaslPasswordMaps', "$lc_attr");
+      $lc_attr =~ s/, /,/g;
+      $lc_attr =~ s/\s+/ /g;
+      foreach my $option (split(/,|\s/, $lc_attr)) {
+        main::setLdapServerConfig($hn, 'zimbraMtaSmtpSaslPasswordMaps', "$lc_attr");
+      }
     }
     $lc_attr= $localxml->{key}->{postfix_policy_time_limit}->{value};
     if (defined($lc_attr)) {
-       main::setLdapServerConfig($hn, 'zimbraMtaPolicyTimeLimit', "$lc_attr");
+      main::setLdapServerConfig($hn, 'zimbraMtaPolicyTimeLimit', "$lc_attr");
     }
     $lc_attr= $localxml->{key}->{postfix_smtpd_banner}->{value};
     if (defined($lc_attr)) {
-       main::setLdapServerConfig($hn, 'zimbraMtaSmtpdBanner', "$lc_attr");
+      main::setLdapServerConfig($hn, 'zimbraMtaSmtpdBanner', "$lc_attr");
     }
     $lc_attr= $localxml->{key}->{postfix_smtpd_proxy_timeout}->{value};
     if (defined($lc_attr) && lc($lc_attr) ne "100s") {
-       main::setLdapServerConfig($hn, 'zimbraMtaSmtpdProxyTimeout', "$lc_attr");
+      main::setLdapServerConfig($hn, 'zimbraMtaSmtpdProxyTimeout', "$lc_attr");
     }
     $lc_attr= $localxml->{key}->{postfix_smtpd_reject_unlisted_recipient}->{value};
     if (defined($lc_attr) && lc($lc_attr) ne "no") {
-       main::setLdapServerConfig($hn, 'zimbraMtaSmtpdRejectUnlistedRecipient', "$lc_attr");
+      main::setLdapServerConfig($hn, 'zimbraMtaSmtpdRejectUnlistedRecipient', "$lc_attr");
     }
     $lc_attr= $localxml->{key}->{postfix_smtpd_reject_unlisted_sender}->{value};
     if (defined($lc_attr) && lc($lc_attr) ne "no") {
-       main::setLdapServerConfig($hn, 'zimbraMtaSmtpdRejectUnlistedSender', "$lc_attr");
+      main::setLdapServerConfig($hn, 'zimbraMtaSmtpdRejectUnlistedSender', "$lc_attr");
     }
     $lc_attr= $localxml->{key}->{postfix_smtpd_sasl_authenticated_header}->{value};
     if (defined($lc_attr) && lc($lc_attr) ne "no") {
-       main::setLdapServerConfig($hn, 'zimbraMtaSmtpdSaslAuthenticatedHeader', "$lc_attr");
+      main::setLdapServerConfig($hn, 'zimbraMtaSmtpdSaslAuthenticatedHeader', "$lc_attr");
     }
     $lc_attr= $localxml->{key}->{postfix_smtpd_hard_error_limit}->{value};
     if (defined($lc_attr) && $lc_attr != 20) {
-       main::setLdapServerConfig($hn, 'zimbraMtaSmtpdHardErrorLimit', "$lc_attr");
+      main::setLdapServerConfig($hn, 'zimbraMtaSmtpdHardErrorLimit', "$lc_attr");
     }
     $lc_attr= $localxml->{key}->{postfix_smtpd_soft_error_limit}->{value};
     if (defined($lc_attr) && $lc_attr != 10) {
-       main::setLdapServerConfig($hn, 'zimbraMtaStpdSoftErrorLimit', "$lc_attr");
+      main::setLdapServerConfig($hn, 'zimbraMtaStpdSoftErrorLimit', "$lc_attr");
     }
     $lc_attr= $localxml->{key}->{postfix_smtpd_error_sleep_time}->{value};
     if (defined($lc_attr) && lc($lc_attr) ne "1s") {
-       main::setLdapServerConfig($hn, 'zimbraMtaSmtpdErrorSleepTime', "$lc_attr");
+      main::setLdapServerConfig($hn, 'zimbraMtaSmtpdErrorSleepTime', "$lc_attr");
     }
     $lc_attr= $localxml->{key}->{postfix_smtpd_helo_required}->{value};
     if (defined($lc_attr) && lc($lc_attr) ne "yes") {
-       main::setLdapServerConfig($hn, 'zimbraMtaSmtpdHeloRequired', "$lc_attr");
+      main::setLdapServerConfig($hn, 'zimbraMtaSmtpdHeloRequired', "$lc_attr");
     }
     $lc_attr= $localxml->{key}->{postfix_smtpd_tls_loglevel}->{value};
     if (defined($lc_attr) && $lc_attr != 1) {
-       main::setLdapServerConfig($hn, 'zimbraMtaSmtpdTlsLoglevel', "$lc_attr");
+      main::setLdapServerConfig($hn, 'zimbraMtaSmtpdTlsLoglevel', "$lc_attr");
     }
     $lc_attr= $localxml->{key}->{postfix_smtpd_tls_cert_file}->{value};
     if (defined($lc_attr)) {
-       main::setLdapServerConfig($hn, 'zimbraMtaSmtpdTlsCertFile', "$lc_attr");
+      main::setLdapServerConfig($hn, 'zimbraMtaSmtpdTlsCertFile', "$lc_attr");
     }
     $lc_attr= $localxml->{key}->{postfix_smtpd_tls_key_file}->{value};
     if (defined($lc_attr)) {
-       main::setLdapServerConfig($hn, 'zimbraMtaSmtpdTlsKeyFile', "$lc_attr");
+      main::setLdapServerConfig($hn, 'zimbraMtaSmtpdTlsKeyFile', "$lc_attr");
     }
     $lc_attr= $localxml->{key}->{postfix_virtual_alias_expansion_limit}->{value};
     if (defined($lc_attr) && $lc_attr != 10000) {
-       main::setLdapServerConfig($hn, 'zimbraMtaVirtualAliasExpansionLimit', "$lc_attr");
+      main::setLdapServerConfig($hn, 'zimbraMtaVirtualAliasExpansionLimit', "$lc_attr");
     }
     $lc_attr= $localxml->{key}->{postfix_virtual_transport}->{value};
     if (defined($lc_attr) && lc($lc_attr) ne "error") {
-       main::setLdapServerConfig($hn, 'zimbraMtaSmtpdVirtualTransport', "$lc_attr");
+      main::setLdapServerConfig($hn, 'zimbraMtaSmtpdVirtualTransport', "$lc_attr");
     }
     $lc_attr= $localxml->{key}->{postfix_notify_classes}->{value};
     if (defined($lc_attr) && lc($lc_attr) ne "resource,software") {
