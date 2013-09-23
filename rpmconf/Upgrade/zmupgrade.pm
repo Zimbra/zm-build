@@ -2357,6 +2357,18 @@ sub upgrade850BETA1 {
     if (defined($lc_attr) && $lc_attr != 1) {
        main::setLdapServerConfig($hn, 'zimbraMtaSmtpdTlsLoglevel', "$lc_attr");
     }
+    $lc_attr= $localxml->{key}->{postfix_smtpd_tls_cert_file}->{value};
+    if (defined($lc_attr)) {
+       main::setLdapServerConfig($hn, 'zimbraMtaSmtpdTlsCertFile', "$lc_attr");
+    }
+    $lc_attr= $localxml->{key}->{postfix_smtpd_tls_key_file}->{value};
+    if (defined($lc_attr)) {
+       main::setLdapServerConfig($hn, 'zimbraMtaSmtpdTlsKeyFile', "$lc_attr");
+    }
+    $lc_attr= $localxml->{key}->{postfix_virtual_alias_expansion_limit}->{value};
+    if (defined($lc_attr) && $lc_attr != 10000) {
+       main::setLdapServerConfig($hn, 'zimbraMtaVirtualAliasExpansionLimit', "$lc_attr");
+    }
   }
   main::deleteLocalConfig("amavis_max_servers");
   main::deleteLocalConfig("clamav_max_threads");
@@ -2426,6 +2438,9 @@ sub upgrade850BETA1 {
   main::deleteLocalConfig("postfix_smtpd_error_sleep_time");
   main::deleteLocalConfig("postfix_smtpd_helo_required");
   main::deleteLocalConfig("postfix_smtpd_tls_loglevel");
+  main::deleteLocalConfig("postfix_smtpd_tls_cert_file");
+  main::deleteLocalConfig("postfix_smtpd_tls_key_file");
+  main::deleteLocalConfig("postfix_virtual_alias_expansion_limit");
   my $mysql_class = main::getLocalConfig("zimbra_class_database");
   if ($mysql_class =~ /com.zimbra.cs.db.MySQL/) {
     main::setLocalConfig("zimbra_class_database", "com.zimbra.cs.db.MariaDB");
