@@ -2405,6 +2405,41 @@ sub upgrade850BETA1 {
         main::setLdapServerConfig($hn, '+zimbraMtaNotifyClasses', "$option");
       }
     }
+    $lc_attr= $localxml->{key}->{postfix_propagate_unmatched_extensions}->{value};
+    if (defined($lc_attr) && lc($lc_attr) ne "canonical") {
+      $lc_attr =~ s/, /,/g;
+      $lc_attr =~ s/\s+/ /g;
+      foreach my $option (split(/,|\s/, $lc_attr)) {
+        main::setLdapServerConfig($hn, '+zimbraMtaPropagateUnmatchedExtensions', "$option");
+      }
+    }
+    $lc_attr= $localxml->{key}->{postfix_sender_canonical_maps}->{value};
+    if (defined($lc_attr)) {
+      if ($lc_attr =~ /\${zimbra_home}/) {
+        $lc_attr =~ s/\${zimbra_home}/\/opt\/zimbra/;
+      }
+      $lc_attr =~ s/, /,/g;
+      $lc_attr =~ s/\s+/ /g;
+      foreach my $option (split(/,|\s/, $lc_attr)) {
+        main::setLdapServerConfig($hn, '+zimbraMtaSenderCanonicalMaps', "$lc_attr");
+      }
+    }
+    $lc_attr= $localxml->{key}->{postfix_smtp_sasl_security_options}->{value};
+    if (defined($lc_attr) && lc($lc_attr) ne "noplaintext,noanonymous") {
+      $lc_attr =~ s/, /,/g;
+      $lc_attr =~ s/\s+/ /g;
+      foreach my $option (split(/,|\s/, $lc_attr)) {
+        main::setLdapServerConfig($hn, '+zimbraMtaSmtpSaslSecurityOptions', "$option");
+      }
+    }
+    $lc_attr= $localxml->{key}->{postfix_smtpd_sasl_security_options}->{value};
+    if (defined($lc_attr) && lc($lc_attr) ne "noplaintext,noanonymous") {
+      $lc_attr =~ s/, /,/g;
+      $lc_attr =~ s/\s+/ /g;
+      foreach my $option (split(/,|\s/, $lc_attr)) {
+        main::setLdapServerConfig($hn, '+zimbraMtaSmtpdSaslSecurityOptions', "$option");
+      }
+    }
   }
   main::deleteLocalConfig("amavis_max_servers");
   main::deleteLocalConfig("clamav_max_threads");
@@ -2479,6 +2514,10 @@ sub upgrade850BETA1 {
   main::deleteLocalConfig("postfix_virtual_alias_expansion_limit");
   main::deleteLocalConfig("postfix_virtual_transport");
   main::deleteLocalConfig("postfix_notify_classes");
+  main::deleteLocalConfig("postfix_propagate_unmatched_extensions");
+  main::deleteLocalConfig("postfix_sender_canonical_maps");
+  main::deleteLocalConfig("postfix_smtp_sasl_security_options");
+  main::deleteLocalConfig("postfix_smtpd_sasl_security_options");
   my $mysql_class = main::getLocalConfig("zimbra_class_database");
   if ($mysql_class =~ /com.zimbra.cs.db.MySQL/) {
     main::setLocalConfig("zimbra_class_database", "com.zimbra.cs.db.MariaDB");
