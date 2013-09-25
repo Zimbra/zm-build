@@ -2511,6 +2511,14 @@ sub upgrade850BETA1 {
         main::setLdapServerConfig($hn, '+zimbraMtaVirtualMailboxMaps', "$lc_attr");
       }
     }
+    $lc_attr= $localxml->{key}->{sasl_smtpd_mech_list}->{value};
+    if (defined($lc_attr)) {
+      $lc_attr =~ s/, /,/g;
+      $lc_attr =~ s/\s+/ /g;
+      foreach my $option (split(/,|\s/, $lc_attr)) {
+        main::setLdapServerConfig($hn, '+zimbraMtaSaslSmtpdMechList', "$option");
+      }
+    }
   }
   main::deleteLocalConfig("amavis_max_servers");
   main::deleteLocalConfig("clamav_max_threads");
@@ -2597,6 +2605,7 @@ sub upgrade850BETA1 {
   main::deleteLocalConfig("postfix_virtual_alias_maps");
   main::deleteLocalConfig("postfix_virtual_mailbox_domains");
   main::deleteLocalConfig("postfix_virtual_mailbox_maps");
+  main::deleteLocalConfig("sasl_smtpd_mech_list");
   my $mysql_class = main::getLocalConfig("zimbra_class_database");
   if ($mysql_class =~ /com.zimbra.cs.db.MySQL/) {
     main::setLocalConfig("zimbra_class_database", "com.zimbra.cs.db.MariaDB");
