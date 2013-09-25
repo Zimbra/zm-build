@@ -2440,6 +2440,77 @@ sub upgrade850BETA1 {
         main::setLdapServerConfig($hn, '+zimbraMtaSmtpdSaslSecurityOptions', "$option");
       }
     }
+    $lc_attr= $localxml->{key}->{postfix_smtpd_sasl_tls_security_options}->{value};
+    if (defined($lc_attr)) {
+      $lc_attr =~ s/, /,/g;
+      $lc_attr =~ s/\s+/ /g;
+      foreach my $option (split(/,|\s/, $lc_attr)) {
+        main::setLdapServerConfig($hn, '+zimbraMtaSmtpdSaslTlsSecurityOptions', "$option");
+      }
+    }
+    $lc_attr= $localxml->{key}->{postfix_smtpd_client_restrictions}->{value};
+    if (defined($lc_attr)) {
+      main::setLdapServerConfig($hn, 'zimbraMtaSmtpdClientRestrictions', "$option");
+    }
+    $lc_attr= $localxml->{key}->{postfix_smtpd_data_restrictions}->{value};
+    if (defined($lc_attr)) {
+      main::setLdapServerConfig($hn, 'zimbraMtaSmtpdDataRestrictions', "$option");
+    }
+    $lc_attr= $localxml->{key}->{postfix_transport_maps}->{value};
+    if (defined($lc_attr)) {
+      if ($lc_attr =~ /\${zimbra_home}/) {
+        $lc_attr =~ s/\${zimbra_home}/\/opt\/zimbra/;
+      }
+      $lc_attr =~ s/, /,/g;
+      $lc_attr =~ s/\s+/ /g;
+      foreach my $option (split(/,|\s/, $lc_attr)) {
+        main::setLdapServerConfig($hn, '+zimbraMtaTransportMaps', "$lc_attr");
+      }
+    }
+    $lc_attr= $localxml->{key}->{postfix_virtual_alias_domains}->{value};
+    if (defined($lc_attr)) {
+      if ($lc_attr =~ /\${zimbra_home}/) {
+        $lc_attr =~ s/\${zimbra_home}/\/opt\/zimbra/;
+      }
+      $lc_attr =~ s/, /,/g;
+      $lc_attr =~ s/\s+/ /g;
+      foreach my $option (split(/,|\s/, $lc_attr)) {
+        main::setLdapServerConfig($hn, '+zimbraMtaVirtualAliasDomains', "$lc_attr");
+      }
+    }
+    $lc_attr= $localxml->{key}->{postfix_virtual_alias_maps}->{value};
+    if (defined($lc_attr)) {
+      if ($lc_attr =~ /\${zimbra_home}/) {
+        $lc_attr =~ s/\${zimbra_home}/\/opt\/zimbra/;
+      }
+      $lc_attr =~ s/, /,/g;
+      $lc_attr =~ s/\s+/ /g;
+      foreach my $option (split(/,|\s/, $lc_attr)) {
+        main::setLdapServerConfig($hn, '+zimbraMtaVirtualAliasMaps', "$lc_attr");
+      }
+    }
+    $lc_attr= $localxml->{key}->{postfix_virtual_mailbox_domains}->{value};
+    if (defined($lc_attr)) {
+      if ($lc_attr =~ /\${zimbra_home}/) {
+        $lc_attr =~ s/\${zimbra_home}/\/opt\/zimbra/;
+      }
+      $lc_attr =~ s/, /,/g;
+      $lc_attr =~ s/\s+/ /g;
+      foreach my $option (split(/,|\s/, $lc_attr)) {
+        main::setLdapServerConfig($hn, '+zimbraMtaVirtualMailboxDomains', "$lc_attr");
+      }
+    }
+    $lc_attr= $localxml->{key}->{postfix_virtual_mailbox_maps}->{value};
+    if (defined($lc_attr)) {
+      if ($lc_attr =~ /\${zimbra_home}/) {
+        $lc_attr =~ s/\${zimbra_home}/\/opt\/zimbra/;
+      }
+      $lc_attr =~ s/, /,/g;
+      $lc_attr =~ s/\s+/ /g;
+      foreach my $option (split(/,|\s/, $lc_attr)) {
+        main::setLdapServerConfig($hn, '+zimbraMtaVirtualMailboxMaps', "$lc_attr");
+      }
+    }
   }
   main::deleteLocalConfig("amavis_max_servers");
   main::deleteLocalConfig("clamav_max_threads");
@@ -2518,6 +2589,14 @@ sub upgrade850BETA1 {
   main::deleteLocalConfig("postfix_sender_canonical_maps");
   main::deleteLocalConfig("postfix_smtp_sasl_security_options");
   main::deleteLocalConfig("postfix_smtpd_sasl_security_options");
+  main::deleteLocalConfig("postfix_smtpd_sasl_tls_security_options");
+  main::deleteLocalConfig("postfix_smtpd_client_restrictions");
+  main::deleteLocalConfig("postfix_smtpd_data_restrictions");
+  main::deleteLocalConfig("postfix_transport_maps");
+  main::deleteLocalConfig("postfix_virtual_alias_domains");
+  main::deleteLocalConfig("postfix_virtual_alias_maps");
+  main::deleteLocalConfig("postfix_virtual_mailbox_domains");
+  main::deleteLocalConfig("postfix_virtual_mailbox_maps");
   my $mysql_class = main::getLocalConfig("zimbra_class_database");
   if ($mysql_class =~ /com.zimbra.cs.db.MySQL/) {
     main::setLocalConfig("zimbra_class_database", "com.zimbra.cs.db.MariaDB");
