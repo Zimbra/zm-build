@@ -2519,6 +2519,14 @@ sub upgrade850BETA1 {
         main::setLdapServerConfig($hn, '+zimbraMtaSaslSmtpdMechList', "$option");
       }
     }
+    $lc_attr= $localxml->{key}->{cbpolicyd_bind_port}->{value};
+    if (defined($lc_attr) && $lc_attr != 10031) {
+      main::setLdapServerConfig($hn, 'zimbraCBPolicydBindPort', "TRUE");
+    }
+    $lc_attr= $localxml->{key}->{cbpolicyd_log_level}->{value};
+    if (defined($lc_attr) && $lc_attr != 3) {
+      main::setLdapServerConfig($hn, 'zimbraCBPolicydLogLevel', "TRUE");
+    }
   }
   main::deleteLocalConfig("amavis_max_servers");
   main::deleteLocalConfig("clamav_max_threads");
@@ -2606,6 +2614,8 @@ sub upgrade850BETA1 {
   main::deleteLocalConfig("postfix_virtual_mailbox_domains");
   main::deleteLocalConfig("postfix_virtual_mailbox_maps");
   main::deleteLocalConfig("sasl_smtpd_mech_list");
+  main::deleteLocalConfig("cbpolicyd_bind_port");
+  main::deleteLocalConfig("cbpolicyd_log_level");
   my $mysql_class = main::getLocalConfig("zimbra_class_database");
   if ($mysql_class =~ /com.zimbra.cs.db.MySQL/) {
     main::setLocalConfig("zimbra_class_database", "com.zimbra.cs.db.MariaDB");
