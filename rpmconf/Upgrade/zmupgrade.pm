@@ -2239,7 +2239,7 @@ sub upgrade850BETA1 {
       $lc_attr =~ s/, /,/g;
       $lc_attr =~ s/\s+/ /g;
       foreach my $option (split(/,|\s/, $lc_attr)) {
-        main::setLdapServerConfig($hn, '+zimbraMtaHeaderChecks', "$lc_attr");
+        main::setLdapServerConfig($hn, '+zimbraMtaHeaderChecks', "$option");
       }
     }
     $lc_attr= $localxml->{key}->{postfix_in_flow_delay}->{value};
@@ -2251,7 +2251,7 @@ sub upgrade850BETA1 {
       $lc_attr =~ s/, /,/g;
       $lc_attr =~ s/\s+/ /g;
       foreach my $option (split(/,|\s/, $lc_attr)) {
-        main::setLdapServerConfig($hn, '+zimbraMtaImportEnvironment', "$lc_attr");
+        main::setLdapServerConfig($hn, '+zimbraMtaImportEnvironment', "$option");
       }
     }
     $lc_attr= $localxml->{key}->{postfix_lmtp_connection_cache_destinations}->{value};
@@ -2259,7 +2259,7 @@ sub upgrade850BETA1 {
       $lc_attr =~ s/, /,/g;
       $lc_attr =~ s/\s+/ /g;
       foreach my $option (split(/,|\s/, $lc_attr)) {
-        main::setLdapServerConfig($hn, '+zimbraMtaLmtpConnectionCacheDestinations', "$lc_attr");
+        main::setLdapServerConfig($hn, '+zimbraMtaLmtpConnectionCacheDestinations', "$option");
       }
     }
     $lc_attr= $localxml->{key}->{postfix_lmtp_connection_cache_time_limit}->{value};
@@ -2271,7 +2271,7 @@ sub upgrade850BETA1 {
       $lc_attr =~ s/, /,/g;
       $lc_attr =~ s/\s+/ /g;
       foreach my $option (split(/,|\s/, $lc_attr)) {
-        main::setLdapServerConfig($hn, '+zimbraMtaLmtpHostLookup', "$lc_attr");
+        main::setLdapServerConfig($hn, '+zimbraMtaLmtpHostLookup', "$option");
       }
     }
     $lc_attr= $localxml->{key}->{postfix_queue_directory}->{value};
@@ -2326,7 +2326,7 @@ sub upgrade850BETA1 {
       $lc_attr =~ s/, /,/g;
       $lc_attr =~ s/\s+/ /g;
       foreach my $option (split(/,|\s/, $lc_attr)) {
-        main::setLdapServerConfig($hn, '+zimbraMtaSmtpSaslMechanismFilter', "$lc_attr");
+        main::setLdapServerConfig($hn, '+zimbraMtaSmtpSaslMechanismFilter', "$option");
       }
     }
     $lc_attr= $localxml->{key}->{postfix_smtp_sasl_password_maps}->{value};
@@ -2334,7 +2334,7 @@ sub upgrade850BETA1 {
       $lc_attr =~ s/, /,/g;
       $lc_attr =~ s/\s+/ /g;
       foreach my $option (split(/,|\s/, $lc_attr)) {
-        main::setLdapServerConfig($hn, 'zimbraMtaSmtpSaslPasswordMaps', "$lc_attr");
+        main::setLdapServerConfig($hn, 'zimbraMtaSmtpSaslPasswordMaps', "$option");
       }
     }
     $lc_attr= $localxml->{key}->{postfix_policy_time_limit}->{value};
@@ -2421,7 +2421,7 @@ sub upgrade850BETA1 {
       $lc_attr =~ s/, /,/g;
       $lc_attr =~ s/\s+/ /g;
       foreach my $option (split(/,|\s/, $lc_attr)) {
-        main::setLdapServerConfig($hn, '+zimbraMtaSenderCanonicalMaps', "$lc_attr");
+        main::setLdapServerConfig($hn, '+zimbraMtaSenderCanonicalMaps', "$option");
       }
     }
     $lc_attr= $localxml->{key}->{postfix_smtp_sasl_security_options}->{value};
@@ -2450,11 +2450,11 @@ sub upgrade850BETA1 {
     }
     $lc_attr= $localxml->{key}->{postfix_smtpd_client_restrictions}->{value};
     if (defined($lc_attr)) {
-      main::setLdapServerConfig($hn, 'zimbraMtaSmtpdClientRestrictions', "$option");
+      main::setLdapServerConfig($hn, 'zimbraMtaSmtpdClientRestrictions', "$lc_attr");
     }
     $lc_attr= $localxml->{key}->{postfix_smtpd_data_restrictions}->{value};
     if (defined($lc_attr)) {
-      main::setLdapServerConfig($hn, 'zimbraMtaSmtpdDataRestrictions', "$option");
+      main::setLdapServerConfig($hn, 'zimbraMtaSmtpdDataRestrictions', "$lc_attr");
     }
     $lc_attr= $localxml->{key}->{postfix_transport_maps}->{value};
     if (defined($lc_attr)) {
@@ -2464,7 +2464,7 @@ sub upgrade850BETA1 {
       $lc_attr =~ s/, /,/g;
       $lc_attr =~ s/\s+/ /g;
       foreach my $option (split(/,|\s/, $lc_attr)) {
-        main::setLdapServerConfig($hn, '+zimbraMtaTransportMaps', "$lc_attr");
+        main::setLdapServerConfig($hn, '+zimbraMtaTransportMaps', "$option");
       }
     }
     $lc_attr= $localxml->{key}->{postfix_virtual_alias_domains}->{value};
@@ -2475,7 +2475,7 @@ sub upgrade850BETA1 {
       $lc_attr =~ s/, /,/g;
       $lc_attr =~ s/\s+/ /g;
       foreach my $option (split(/,|\s/, $lc_attr)) {
-        main::setLdapServerConfig($hn, '+zimbraMtaVirtualAliasDomains', "$lc_attr");
+        main::setLdapServerConfig($hn, '+zimbraMtaVirtualAliasDomains', "$option");
       }
     }
     $lc_attr= $localxml->{key}->{postfix_virtual_alias_maps}->{value};
@@ -2486,7 +2486,7 @@ sub upgrade850BETA1 {
       $lc_attr =~ s/, /,/g;
       $lc_attr =~ s/\s+/ /g;
       foreach my $option (split(/,|\s/, $lc_attr)) {
-        main::setLdapServerConfig($hn, '+zimbraMtaVirtualAliasMaps', "$lc_attr");
+        main::setLdapServerConfig($hn, '+zimbraMtaVirtualAliasMaps', "$option");
       }
     }
     $lc_attr= $localxml->{key}->{postfix_virtual_mailbox_domains}->{value};
@@ -2497,7 +2497,7 @@ sub upgrade850BETA1 {
       $lc_attr =~ s/, /,/g;
       $lc_attr =~ s/\s+/ /g;
       foreach my $option (split(/,|\s/, $lc_attr)) {
-        main::setLdapServerConfig($hn, '+zimbraMtaVirtualMailboxDomains', "$lc_attr");
+        main::setLdapServerConfig($hn, '+zimbraMtaVirtualMailboxDomains', "$option");
       }
     }
     $lc_attr= $localxml->{key}->{postfix_virtual_mailbox_maps}->{value};
@@ -2508,7 +2508,7 @@ sub upgrade850BETA1 {
       $lc_attr =~ s/, /,/g;
       $lc_attr =~ s/\s+/ /g;
       foreach my $option (split(/,|\s/, $lc_attr)) {
-        main::setLdapServerConfig($hn, '+zimbraMtaVirtualMailboxMaps', "$lc_attr");
+        main::setLdapServerConfig($hn, '+zimbraMtaVirtualMailboxMaps', "$option");
       }
     }
     $lc_attr= $localxml->{key}->{sasl_smtpd_mech_list}->{value};
