@@ -16,7 +16,7 @@
 #
 # Spam rule updates
 #
-45 0 * * * /opt/zimbra/libexec/zmsaupdate
+45 0 * * * . /opt/zimbra/.bashrc; /opt/zimbra/libexec/zmsaupdate
 #
 # Dspam cleanup
 #
