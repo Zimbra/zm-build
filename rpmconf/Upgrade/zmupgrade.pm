@@ -2381,14 +2381,6 @@ sub upgrade850BETA1 {
     if (defined($lc_attr) && $lc_attr != 1) {
       main::setLdapServerConfig($hn, 'zimbraMtaSmtpdTlsLoglevel', "$lc_attr");
     }
-    $lc_attr= $localxml->{key}->{postfix_smtpd_tls_cert_file}->{value};
-    if (defined($lc_attr)) {
-      main::setLdapServerConfig($hn, 'zimbraMtaSmtpdTlsCertFile', "$lc_attr");
-    }
-    $lc_attr= $localxml->{key}->{postfix_smtpd_tls_key_file}->{value};
-    if (defined($lc_attr)) {
-      main::setLdapServerConfig($hn, 'zimbraMtaSmtpdTlsKeyFile', "$lc_attr");
-    }
     $lc_attr= $localxml->{key}->{postfix_virtual_alias_expansion_limit}->{value};
     if (defined($lc_attr) && $lc_attr != 10000) {
       main::setLdapServerConfig($hn, 'zimbraMtaVirtualAliasExpansionLimit', "$lc_attr");
