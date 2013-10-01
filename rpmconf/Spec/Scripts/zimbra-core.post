@@ -31,8 +31,8 @@ fi
 #Symlinks
 rm -f /opt/zimbra/mariadb
 rm -f /opt/zimbra/mysql
-ln -s /opt/zimbra/mariadb-standard-5.5.32-pc-linux-gnu-i686-glibc23 /opt/zimbra/mariadb
-ln -s /opt/zimbra/mariadb-standard-5.5.32-pc-linux-gnu-i686-glibc23 /opt/zimbra/mysql
+ln -s /opt/zimbra/mariadb-standard-5.5.33a-pc-linux-gnu-i686-glibc23 /opt/zimbra/mariadb
+ln -s /opt/zimbra/mariadb-standard-5.5.33a-pc-linux-gnu-i686-glibc23 /opt/zimbra/mysql
 
 rm -f /opt/zimbra/bdb
 ln -s /opt/zimbra/bdb-5.2.36 /opt/zimbra/bdb
@@ -57,7 +57,7 @@ rm -f /opt/zimbra/openldap
 ln -s /opt/zimbra/openldap-2.4.36.2z /opt/zimbra/openldap
 
 rm -f /opt/zimbra/tcmalloc
-ln -s /opt/zimbra/tcmalloc-2.0 /opt/zimbra/tcmalloc
+ln -s /opt/zimbra/tcmalloc-2.1 /opt/zimbra/tcmalloc
 
 rm -f /opt/zimbra/rsync
 ln -s /opt/zimbra/rsync-3.0.9 /opt/zimbra/rsync
