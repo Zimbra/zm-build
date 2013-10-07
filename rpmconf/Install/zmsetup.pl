@@ -1669,7 +1669,7 @@ sub setDefaults {
     $config{POPPORT} = 7110;
     $config{POPSSLPORT} = 7995;
     $config{MAILPROXY} = "TRUE";
-    $config{HTTPPROXY} = "FALSE";
+    $config{HTTPPROXY} = "TRUE";
     $config{HTTPPROXYPORT} = 8080;
     $config{HTTPSPROXYPORT} = 8443;
     $config{HTTPPORT} = 80;
