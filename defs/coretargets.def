@@ -191,6 +191,7 @@ $(CORE_DEST_DIR)/zimbramon/bin:
 	tar xzf $(PERL_LIB_SOURCE)/perlbin.tgz)
 	mkdir -p $(CORE_DEST_DIR)/libexec
 	cp -pr $(CORE_DEST_DIR)/zimbramon/bin/sa-learn $(CORE_DEST_DIR)/libexec/
+	cp -pr $(CORE_DEST_DIR)/zimbramon/bin/innotop $(CORE_DEST_DIR)/libexec/
 
 $(CORE_DEST_DIR)/zimbramon/pylibs:
 	mkdir -p $(CORE_DEST_DIR)/zimbramon
