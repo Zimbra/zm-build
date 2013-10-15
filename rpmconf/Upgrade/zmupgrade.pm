@@ -2043,6 +2043,9 @@ sub upgrade805GA {
 sub upgrade806GA {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
   main::progress("Updating from 8.0.6_GA\n");
+  if main::isZCA() {
+    qx(${scriptDir}/migrate20131014-removezca.pl);
+  }
   return 0;
 }
 

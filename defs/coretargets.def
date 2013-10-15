@@ -313,6 +313,7 @@ $(CORE_DEST_DIR)/libexec: $(LAUNCHER_DIR)/build/zmmailboxdmgr
 	cp -f $(SERVICE_DIR)/src/db/migration/clearArchivedFlag.pl $@/scripts
 	cp -f $(SERVICE_DIR)/src/ldap/migration/migrate*pl $@/scripts
 	cp -f $(SERVICE_DIR)/src/cbpolicyd/migration/*sql $@/scripts
+	cp -f $(SERVICE_DIR)/src/zca/migration/*pl $@/scripts
 	cp -f $(PACKAGE_CONF_DIR)/Install/postinstall.pm $@/postinstall.pm
 	cp -f $(PACKAGE_CONF_DIR)/Install/preinstall.pm $@/preinstall.pm
 	cp -f $(PACKAGE_CONF_DIR)/Install/Util/addUser.sh $@/addUser.sh
