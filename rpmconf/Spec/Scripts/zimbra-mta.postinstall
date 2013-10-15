@@ -1,0 +1,120 @@
+#!/bin/bash
+# 
+# ***** BEGIN LICENSE BLOCK *****
+# Zimbra Collaboration Suite Server
+# Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+# 
+# The contents of this file are subject to the Zimbra Public License
+# Version 1.4 ("License"); you may not use this file except in
+# compliance with the License.  You may obtain a copy of the License at
+# http://www.zimbra.com/license.
+# 
+# Software distributed under the License is distributed on an "AS IS"
+# basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+# ***** END LICENSE BLOCK *****
+# 
+
+if [ -d /opt/zimbra/data/amavisd/tmp ]; then
+  umount -f /opt/zimbra/data/amavisd/tmp 2> /dev/null
+fi
+
+rm -f /opt/zimbra/amavisd
+ln -s /opt/zimbra/amavisd-new-2.8.0 /opt/zimbra/amavisd
+
+rm -f /opt/zimbra/cbpolicyd
+if [ -d /opt/zimbra/cbpolicyd-2.1.0-beta ]; then
+  ln -s /opt/zimbra/cbpolicyd-2.1.0-beta /opt/zimbra/cbpolicyd
+fi
+
+rm -f /opt/zimbra/libmemcached
+if [ -d /opt/zimbra/libmemcached-1.0.6 ]; then
+  ln -s /opt/zimbra/libmemcached-1.0.6 /opt/zimbra/libmemcached
+fi
+
+rm -f /opt/zimbra/opendkim
+if [ -d /opt/zimbra/opendkim-2.7.1 ]; then
+  ln -s /opt/zimbra/opendkim-2.7.1 /opt/zimbra/opendkim
+fi
+
+rm -f /opt/zimbra/zeromq
+if [ -d /opt/zimbra/zeromq-3.2.2 ]; then
+  ln -s /opt/zimbra/zeromq-3.2.2 /opt/zimbra/zeromq
+fi
+
+rm -f /opt/zimbra/dspam
+ln -s /opt/zimbra/dspam-3.10.1 /opt/zimbra/dspam
+
+rm -f /opt/zimbra/postfix
+ln -s /opt/zimbra/postfix-2.10-20121007.2z /opt/zimbra/postfix
+
+rm -f /opt/zimbra/clamav
+ln -s /opt/zimbra/clamav-0.97.7 /opt/zimbra/clamav
+
+rm -rf /opt/zimbra/altermime
+ln -s /opt/zimbra/altermime-0.3.10 /opt/zimbra/altermime
+
+PLAT=$(/opt/zimbra/libexec/get_plat_tag.sh)
+OS_ARCH=powerpc
+MYSQL_VERSION=5.5.28
+
+if [ "x$PLAT" = "xMACOSXx86" -o "x$PLAT" = "xMACOSXx86_10.5" ]; then
+  OS_ARCH=i686
+  OS_REL=8.2.0
+elif [ x"$PLAT" = "xMACOSXx86_10.6" ]; then
+  OS_ARCH=$(uname -m)
+  OS_REL=10
+elif [ x"$PLAT" = "xMACOSXx86_10.7" ]; then
+  OS_ARCH=$(uname -m)
+  OS_REL=11
+fi
+
+if [ -L /opt/zimbra/mta/mysql ]; then
+  rm -f /opt/zimbra/mta/mysql
+fi
+ln -s /opt/zimbra/mta/mysql-standard-${MYSQL_VERSION}-apple-darwin${OS_REL}-${OS_ARCH} /opt/zimbra/mta/mysql
+
+mkdir -p /opt/zimbra/data/amavisd/db
+mkdir -p /opt/zimbra/data/amavisd/tmp
+mkdir -p /opt/zimbra/data/amavisd/var
+mkdir -p /opt/zimbra/data/amavisd/quarantine
+chown -R zimbra:zimbra /opt/zimbra/amavisd/*
+chown -R zimbra:zimbra /opt/zimbra/data/amavisd/*
+
+mkdir -p /opt/zimbra/data/clamav/db
+chown -R zimbra:zimbra /opt/zimbra/data/clamav/db
+
+mkdir -p /opt/zimbra/data/postfix/spool/pid
+
+if [ -d /opt/zimbra/data ]; then
+  chown zimbra:zimbra /opt/zimbra/data
+fi
+
+if [ -x "/opt/zimbra/libexec/zmfixperms" ]; then
+  /opt/zimbra/libexec/zmfixperms
+fi
+
+if [ ! -f /opt/zimbra/postfix/conf/main.cf ]; then
+	touch /opt/zimbra/postfix/conf/main.cf
+	chown zimbra:zimbra /opt/zimbra/postfix/conf/main.cf
+fi
+
+if [ ! -f /etc/aliases ]; then
+  ln -s /opt/zimbra/postfix/conf/aliases /etc/aliases
+fi
+
+SUDOMODE=`perl -e 'my $mode=(stat("/etc/sudoers"))[2];printf("%04o\n",$mode & 07777);'`
+egrep -v '^%zimbra.*postfix' /etc/sudoers > /tmp/sudoers
+mv -f /tmp/sudoers /etc/sudoers
+echo "%zimbra   ALL=NOPASSWD:/opt/zimbra/postfix/sbin/postfix, /opt/zimbra/postfix/sbin/postalias, /opt/zimbra/postfix/sbin/qshape.pl, /opt/zimbra/postfix/sbin/postconf,/opt/zimbra/postfix/sbin/postsuper" >> /etc/sudoers
+
+egrep -v '^%zimbra.*zmqstat' /etc/sudoers > /tmp/sudoers
+mv -f /tmp/sudoers /etc/sudoers
+echo "%zimbra   ALL=NOPASSWD:/opt/zimbra/libexec/zmqstat,/opt/zimbra/libexec/zmmtastatus" >> /etc/sudoers
+
+chmod $SUDOMODE /etc/sudoers
+
+PKG=`echo ${RECEIPT_PATH} | sed -e 's|.*/\(zimbra-mta.[^/]*pkg\)/.*|\1|' | sed -e 's/\./-/'`
+D=`date +%s`
+echo "${D}: INSTALLED ${PKG}" >> /opt/zimbra/.install_history
+
+exit 0
