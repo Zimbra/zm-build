@@ -88,8 +88,6 @@ $(LDAP_DEST_DIR)/$(LDAP_DIR)-$(LDAP_VERSION): $(LDAP_DEST_DIR)
 		$(LDAP_DEST_DIR)/$(LDAP_DIR)-$(LDAP_VERSION)/etc/openldap/schema/amavisd.ldif
 	cp -f $(SERVICE_DIR)/conf/ldap/opendkim.ldif \
 		$(LDAP_DEST_DIR)/$(LDAP_DIR)-$(LDAP_VERSION)/etc/openldap/schema/opendkim.ldif
-	cp -f $(SERVICE_DIR)/conf/ldap/pgp-keyserver.ldif \
-		$(LDAP_DEST_DIR)/$(LDAP_DIR)-$(LDAP_VERSION)/etc/openldap/schema/pgp-keyserver.ldif
 	cp $(SERVICE_DIR)/build/ldap-config/zimbra.schema \
 		$(LDAP_DEST_DIR)/$(LDAP_DIR)-$(LDAP_VERSION)/etc/openldap/schema
 	cp $(SERVICE_DIR)/build/ldap-config/config/zimbra.ldif \
