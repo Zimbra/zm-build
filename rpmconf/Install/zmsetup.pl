@@ -3320,7 +3320,7 @@ sub isZCS {
 }
 
 sub isZCA {
-  return (glob("/opt/vmware-zca-installer/conf/optConfig/*-user") ? 0 : 1);
+  return (glob("/opt/vmware-zca-installer/conf/optConfig/*.cfg") ? 1 : 0);
 }
 
 sub isFoss {
