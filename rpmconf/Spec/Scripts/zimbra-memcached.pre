@@ -44,12 +44,12 @@ if [ $? != 0 ]; then
 	groupadd -r zimbra
 fi
 
-grp_exist postfix
+grp_exists postfix
 if [ $? != 0 ]; then
 	groupadd -r postfix
 fi
 
-acct_exist zimbra
+acct_exists zimbra
 if [ $? != 0 ]; then
 	useradd -r -g zimbra -G postfix,tty -d /opt/zimbra -s /bin/bash zimbra
 fi
