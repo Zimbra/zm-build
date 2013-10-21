@@ -2431,12 +2431,12 @@ getPlatformVars() {
       PREREQ_PACKAGES="nc sudo libidn gmp"
       PREREQ_LIBS="/usr/lib64/libstdc++.so.6"
       PRESUG_PACKAGES="perl-5.10.1 sysstat sqlite"
-      STORE_PACKAGES="libreoffice"
+      STORE_PACKAGES=""
     elif [ $PLATFORM = "SLES11_64" ]; then
       PREREQ_PACKAGES="netcat sudo libidn gmp"
       PREREQ_LIBS="/usr/lib64/libstdc++.so.6"
       PRESUG_PACKAGES="perl-5.10.0 sysstat sqlite3"
-      STORE_PACKAGES="libreoffice"
+      STORE_PACKAGES=""
     else
       PREREQ_PACKAGES="sudo libidn gmp"
       PREREQ_LIBS="/usr/lib/libstdc++.so.6"
