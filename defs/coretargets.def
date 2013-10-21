@@ -285,8 +285,6 @@ $(CORE_DEST_DIR)/conf: $(WEBAPP_DIR)/service.war
 	cp -Rf $(SERVICE_DIR)/build/dist/conf/rights $@/rights
 	rm -f $@/rights/zimbra-rights-domainadmin.xml-template
 	cp -Rf $(SERVICE_DIR)/build/dist/conf/msgs $@/msgs
-	mkdir -p $@/spamassassin
-	cp $(SERVICE_DIR)/conf/spamassassin/* $@/spamassassin
 	mkdir -p $@/attrs
 	cp -f $(SERVICE_DIR)/build/dist/conf/attrs/* $@/attrs
 ifeq ($(ZIMBRA_USE_CBPOLICYD), 1)
