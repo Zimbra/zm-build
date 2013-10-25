@@ -2048,6 +2048,10 @@ sub upgrade806GA {
     my $rc = main::runAsRoot("${scriptDir}/migrate20131014-removezca.pl");
     main::progress(($rc == 0) ? "done.\n" : "failed. exiting.\n"); 
   }
+  my @zimbraStatThreadNamePrefix=qx($su "$ZMPROV gacf zimbraStatThreadNamePrefix");
+  if (! grep ( /qtp/, @zimbraStatThreadNamePrefix)) {
+    main::runAsZimbra("$ZMPROV mcf +zimbraStatThreadNamePrefix qtp");
+  }
   return 0;
 }
 
