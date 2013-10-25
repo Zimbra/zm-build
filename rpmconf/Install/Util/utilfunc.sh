@@ -682,37 +682,6 @@ checkRequiredSpace() {
   fi
 }
 
-checkStoreRequirements() {
-  echo "Checking required packages for zimbra-store"
-  GOOD="yes"
-  for i in $STORE_PACKAGES; do
-    #echo -n "    $i..."
-    isInstalled $i
-    if [ "x$PKGINSTALLED" != "x" ]; then
-      echo "     FOUND: $PKGINSTALLED"
-    else
-      echo "     MISSING: $i"
-      GOOD="no"
-    fi
-  done
-
-  if [ $GOOD = "no" ]; then
-    echo ""
-    echo "###ERROR###"
-    echo ""
-    echo "One or more required packages for zimbra-store are missing."
-    echo "Please install them before running this installer."
-    echo ""
-    echo "Installation cancelled."
-    echo ""
-    exit 1
-  else
-    echo "zimbra-store package check complete."
-  fi
-
-
-}
-
 checkExistingInstall() {
 
   echo $PLATFORM | egrep -q "UBUNTU|DEBIAN"
@@ -2103,7 +2072,11 @@ getInstallPackages() {
         askYN "Install $i" "N"
       fi
     else
-      if [ $i = "zimbra-archiving" ]; then
+      if [ $i = "zimbra-memcached" ]; then
+         askYN "Install $i" "N"
+      elif [ $i = "zimbra-proxy" ]; then
+         askYN "Install $i" "N"
+      elif [ $i = "zimbra-archiving" ]; then
         # only prompt to install archiving if zimbra-store is selected
         if [ $STORE_SELECTED = "yes" ]; then
           askYN "Install $i" "N"
@@ -2179,12 +2152,6 @@ getInstallPackages() {
 
   done
   checkRequiredSpace
-
-  isInstalled zimbra-store
-  isToBeInstalled zimbra-store
-  if [ "x$PKGINSTALLED" != "x" -o "x$PKGTOBEINSTALLED" != "x" ]; then
-    checkStoreRequirements
-  fi
 
   echo ""
   echo "Installing:"
@@ -2412,12 +2379,10 @@ getPlatformVars() {
     if [ $PLATFORM = "UBUNTU10_64" ]; then
       PREREQ_PACKAGES="netcat-openbsd sudo libidn11 libpcre3 libgmp3c2 libexpat1 libstdc++6 libperl5.10"
       PRESUG_PACKAGES="pax perl-5.10.1 sysstat sqlite3"
-      STORE_PACKAGES=""
     fi
     if [ $PLATFORM = "UBUNTU12_64" ]; then
       PREREQ_PACKAGES="netcat-openbsd sudo libidn11 libpcre3 libgmp3c2 libexpat1 libstdc++6 libperl5.14"
       PRESUG_PACKAGES="pax perl-5.14.2 sysstat sqlite3"
-      STORE_PACKAGES="libreoffice"
     fi
   else
     PACKAGEINST='rpm -iv'
@@ -2431,12 +2396,10 @@ getPlatformVars() {
       PREREQ_PACKAGES="nc sudo libidn gmp"
       PREREQ_LIBS="/usr/lib64/libstdc++.so.6"
       PRESUG_PACKAGES="perl-5.10.1 sysstat sqlite"
-      STORE_PACKAGES=""
     elif [ $PLATFORM = "SLES11_64" ]; then
       PREREQ_PACKAGES="netcat sudo libidn gmp"
       PREREQ_LIBS="/usr/lib64/libstdc++.so.6"
       PRESUG_PACKAGES="perl-5.10.0 sysstat sqlite3"
-      STORE_PACKAGES=""
     else
       PREREQ_PACKAGES="sudo libidn gmp"
       PREREQ_LIBS="/usr/lib/libstdc++.so.6"

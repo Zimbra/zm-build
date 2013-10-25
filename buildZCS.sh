@@ -2,7 +2,7 @@
 # 
 # ***** BEGIN LICENSE BLOCK *****
 # Zimbra Collaboration Suite Server
-# Copyright (C) 2009, 2010, 2011, 2013 Zimbra Software, LLC.
+# Copyright (C) 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
 # 
 # The contents of this file are subject to the Zimbra Public License
 # Version 1.4 ("License"); you may not use this file except in
@@ -76,7 +76,7 @@ do
 			MAJOR=`echo $VERSION | awk -F. '{print $1}'`
 			MINOR=`echo $VERSION | awk -F. '{print $2}'`
 			PATCH=`echo $VERSION | awk -F. '{print $3}'`
-			if [ $MAJOR -eq 1 -a $MINOR -lt 9 -a $PATCH -lt 1 ]; then
+			if [ $MAJOR -eq 1 -a $MINOR -lt 6 -a $PATCH -lt 5 ]; then
 				echo "Error: Unsupported version of $req: $VERSION"
 				echo "You can obtain $req from:"
 				echo "http://ant.apache.org/bindownload.cgi"
@@ -87,7 +87,7 @@ do
 			MAJOR=`echo $VERSION | awk -F. '{print $1}'`
 			MINOR=`echo $VERSION | awk -F. '{print $2}'`
 			PATCH=`echo $VERSION | awk -F. '{print $3}'`
-			if [ $MAJOR -eq 1 -a $MINOR -lt 7 ]; then
+			if [ $MAJOR -eq 1 -a $MINOR -lt 6 ]; then
 				echo "Error: Unsupported version of $req: $VERSION"
 				echo "You can obtain $req from:"
 				echo "http://java.sun.com/javase/downloads/index_jdk5.jsp"
@@ -107,8 +107,8 @@ do
 				echo "cd /usr/local"
 				echo "ln -s /System/Library/Frameworks/JavaVM.framework/Home $req"
 			else
-				echo "Please obtain JDK 1.7 from:"
-				echo "http://java.oracle.com"
+				echo "Please obtain JDK 1.5 from:"
+				echo "http://java.sun.com/javase/downloads/index_jdk5.jsp"
 				echo "And install it in /usr/local"
 				echo "Then symlink it to /usr/local/java"
 			fi

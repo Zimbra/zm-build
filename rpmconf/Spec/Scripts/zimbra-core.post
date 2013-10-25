@@ -29,10 +29,8 @@ else
 fi
 
 #Symlinks
-rm -f /opt/zimbra/mariadb
 rm -f /opt/zimbra/mysql
-ln -s /opt/zimbra/mariadb-standard-5.5.33a-pc-linux-gnu-i686-glibc23 /opt/zimbra/mariadb
-ln -s /opt/zimbra/mariadb-standard-5.5.33a-pc-linux-gnu-i686-glibc23 /opt/zimbra/mysql
+ln -s /opt/zimbra/mysql-standard-5.5.32-pc-linux-gnu-i686-glibc23 /opt/zimbra/mysql
 
 rm -f /opt/zimbra/bdb
 ln -s /opt/zimbra/bdb-5.2.36 /opt/zimbra/bdb
@@ -54,10 +52,10 @@ rm -f /opt/zimbra/cyrus-sasl
 ln -s /opt/zimbra/cyrus-sasl-2.1.26.2z /opt/zimbra/cyrus-sasl
 
 rm -f /opt/zimbra/openldap
-ln -s /opt/zimbra/openldap-2.4.37.2z /opt/zimbra/openldap
+ln -s /opt/zimbra/openldap-2.4.35.2z /opt/zimbra/openldap
 
 rm -f /opt/zimbra/tcmalloc
-ln -s /opt/zimbra/tcmalloc-2.1 /opt/zimbra/tcmalloc
+ln -s /opt/zimbra/tcmalloc-2.0 /opt/zimbra/tcmalloc
 
 rm -f /opt/zimbra/rsync
 ln -s /opt/zimbra/rsync-3.0.9 /opt/zimbra/rsync
@@ -102,15 +100,33 @@ fi
 
 if [ -f /etc/debian_version ]; then
 	if [ -f /etc/ld.so.conf ]; then
-		egrep -q 'zimbra' /etc/ld.so.conf >/dev/null
-		if [ $? = 0 ]; then
-			mv -f /etc/ld.so.conf /etc/ld.so.conf.$$
-			cat /etc/ld.so.conf.$$ | grep -v zimbra > /etc/ld.so.conf
-			if [ -x /sbin/ldconfig ]; then
-				/sbin/ldconfig
-			fi
-		fi
+		mv -f /etc/ld.so.conf /etc/ld.so.conf.$$
+		cat /etc/ld.so.conf.$$ | grep -v zimbra > /etc/ld.so.conf
 	fi
+#	cat /opt/zimbra/conf/zimbra.ld.conf >> /etc/ld.so.conf
+#else
+#	mkdir -p /etc/ld.so.conf.d
+#	cp -f /opt/zimbra/conf/zimbra.ld.conf /etc/ld.so.conf.d
+fi
+
+# update prelink.conf
+if [ -f /etc/prelink.conf ]; then
+  egrep -q 'zimbra' /etc/prelink.conf
+  if [ $? != 0 ]; then
+    echo "# added for Zimbra" >> /etc/prelink.conf
+    echo "-l /opt/zimbra/lib" >> /etc/prelink.conf
+    echo "-l /opt/zimbra/bdb/lib" >> /etc/prelink.conf
+    echo "-l /opt/zimbra/openldap/lib" >> /etc/prelink.conf
+    echo "-l /opt/zimbra/cyrus-sasl/lib" >> /etc/prelink.conf
+    echo "-l /opt/zimbra/mysql/lib/mysql" >> /etc/prelink.conf
+    if [ -x /usr/sbin/prelink ]; then
+      /usr/sbin/prelink -amR > /dev/null 2>&1
+    fi
+  fi
+fi
+
+if [ -x /sbin/ldconfig ]; then
+  /sbin/ldconfig
 fi
 
 # Setup syslog

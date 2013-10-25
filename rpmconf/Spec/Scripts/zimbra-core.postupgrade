@@ -1,0 +1,158 @@
+#!/bin/bash
+# 
+# ***** BEGIN LICENSE BLOCK *****
+# Zimbra Collaboration Suite Server
+# Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+# 
+# The contents of this file are subject to the Zimbra Public License
+# Version 1.4 ("License"); you may not use this file except in
+# compliance with the License.  You may obtain a copy of the License at
+# http://www.zimbra.com/license.
+# 
+# Software distributed under the License is distributed on an "AS IS"
+# basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+# ***** END LICENSE BLOCK *****
+# 
+
+SAVEDIR=/opt/zimbra/.saveconfig
+PLAT=$(/opt/zimbra/libexec/get_plat_tag.sh)
+OS_ARCH=powerpc
+MYSQL_VERSION=5.5.28
+
+if [ "x$PLAT" = "xMACOSXx86_10.5" -o "x$PLAT" = "xMACOSXx86_10.6" -o "x$PLAT" = "xMACOSXx86_10.7" ]; then
+  SU="su - zimbra -c -l"
+else
+  SU="su - zimbra -c"
+fi
+
+if [ "x$PLAT" = "xMACOSXx86" -o "x$PLAT" = "xMACOSXx86_10.5" ]; then
+  OS_ARCH=i686
+  OS_REL=8.2.0
+elif [ x"$PLAT" = "xMACOSXx86_10.6" ]; then
+  OS_ARCH=$(uname -m)
+  OS_REL=10
+elif [ x"$PLAT" = "xMACOSXx86_10.7" ]; then
+  OS_ARCH=$(uname -m)
+  OS_REL=11
+fi
+
+mkdir -p /opt/zimbra/zmstat/pid
+chown zimbra:zimbra /opt/zimbra/zmstat
+chown zimbra:zimbra /opt/zimbra/zmstat/pid
+
+if [ -L /opt/zimbra/mysql ]; then
+  rm -f /opt/zimbra/mysql
+fi
+ln -s /opt/zimbra/mysql-standard-${MYSQL_VERSION}-apple-darwin${OS_REL}-${OS_ARCH} /opt/zimbra/mysql
+
+rm -f /opt/zimbra/bdb
+ln -s /opt/zimbra/bdb-5.2.36 /opt/zimbra/bdb
+
+if [ -L /opt/zimbra/sleepycat ]; then
+	rm -f /opt/zimbra/sleepycat
+fi
+
+rm -f /opt/zimbra/openssl
+ln -s /opt/zimbra/openssl-1.0.1d /opt/zimbra/openssl
+
+rm -f /opt/zimbra/heimdal
+ln -s /opt/zimbra/heimdal-1.5.2 /opt/zimbra/heimdal
+
+rm -f /opt/zimbra/curl
+ln -s /opt/zimbra/curl-7.25.0 /opt/zimbra/curl
+
+rm -f /opt/zimbra/cyrus-sasl
+ln -s /opt/zimbra/cyrus-sasl-2.1.25.4z /opt/zimbra/cyrus-sasl
+
+rm -f /opt/zimbra/openldap
+ln -s /opt/zimbra/openldap-2.4.35.2z /opt/zimbra/openldap
+
+rm -f /opt/zimbra/tcmalloc
+ln -s /opt/zimbra/tcmalloc-2.0 /opt/zimbra/tcmalloc
+
+rm -f /opt/zimbra/rsync
+ln -s /opt/zimbra/rsync-3.0.9 /opt/zimbra/rsync
+
+if [ -d "/opt/zimbra/zimbramon/rrdtool" ]; then
+  rm -rf /opt/zimbra/zimbramon/rrdtool
+  ln -s /opt/zimbra/zimbramon/rrdtool-1.2.30 /opt/zimbra/zimbramon/rrdtool
+else
+  rm -f /opt/zimbra/zimbramon/rrdtool
+  ln -s /opt/zimbra/zimbramon/rrdtool-1.2.30 /opt/zimbra/zimbramon/rrdtool
+fi
+
+if [ -f "/opt/zimbra/conf/ca/ca.pem" ]; then
+  ln -f -s ca.pem /opt/zimbra/conf/ca/`openssl x509 -hash -noout -in /opt/zimbra/conf/ca/ca.pem`.0
+fi
+
+if [ -x "/opt/zimbra/libexec/zmfixperms" ]; then
+  /opt/zimbra/libexec/zmfixperms
+fi
+
+RF="$SAVEDIR/localconfig.xml"
+#while read i; do
+	# echo "Setting $i"
+	#$SU "zmlocalconfig -f -e $i"
+#done < $RF
+cp -f $RF /opt/zimbra/conf/localconfig.xml
+
+#if [ -f "$SAVEDIR/backup.save" -a -x "/opt/zimbra/bin/zmschedulebackup" ]; then
+#  first=1
+#  while read line; do
+#    if [ $first = 1 ]; then
+#      $SU "/opt/zimbra/bin/zmschedulebackup -R $line"
+#      first=0
+#    else
+#      $SU "/opt/zimbra/bin/zmschedulebackup -A $line"
+#    fi
+#  done < "$SAVEDIR/backup.save"
+#fi
+
+if [ -f $SAVEDIR/cacerts ]; then
+	cp -f $SAVEDIR/cacerts /opt/zimbra/java/jre/lib/security/cacerts
+	chown zimbra:zimbra /opt/zimbra/java/jre/lib/security/cacerts 
+fi
+if [ -f $SAVEDIR/smtpd.key ]; then
+	cp -f $SAVEDIR/smtpd.key /opt/zimbra/conf/smtpd.key
+	chown zimbra:zimbra /opt/zimbra/conf/smtpd.key 
+fi
+if [ -f $SAVEDIR/smtpd.crt ]; then
+	cp -f $SAVEDIR/smtpd.crt /opt/zimbra/conf/smtpd.crt 
+	chown zimbra:zimbra /opt/zimbra/conf/smtpd.crt
+fi
+#if [ -d $SAVEDIR/zimlet -a -d /opt/zimbra/mailboxd/webapps/service ]; then
+#  cp -rf $SAVEDIR/zimlet /opt/zimbra/mailboxd/webapps/service/
+#fi
+
+SUDOMODE=`perl -e 'my $mode=(stat("/etc/sudoers"))[2];printf("%04o\n",$mode & 07777);'`
+egrep -v -e '^%zimbra.*zmcertmgr' /etc/sudoers > /tmp/sudoers
+echo "%zimbra ALL=NOPASSWD:/opt/zimbra/bin/zmcertmgr" >> /tmp/sudoers
+mv -f /tmp/sudoers /etc/sudoers
+chmod $SUDOMODE /etc/sudoers
+
+egrep -v -e '^%zimbra.*zmstat-fd' /etc/sudoers > /tmp/sudoers
+echo "%zimbra ALL=NOPASSWD:/opt/zimbra/libexec/zmstat-fd *" >> /tmp/sudoers
+mv -f /tmp/sudoers /etc/sudoers
+chmod $SUDOMODE /etc/sudoers
+
+# log rotation
+if [ -d "/etc/periodic/daily" ]; then
+  cp /opt/zimbra/libexec/600.zimbra /etc/periodic/daily/600.zimbra
+  chown root:wheel /etc/periodic/daily/600.zimbra
+  chmod 555 /etc/periodic/daily/600.zimbra
+fi
+
+VER="FOO"
+getPkgVersion() {
+	VER=`grep -C1 CFBundleGetInfoString "${PACKAGE_PATH}/Contents/Info.plist"  | \
+		tail -1 | \
+		sed -e 's/\<[^>]*\>//g' -e 's/^	*//g' | awk -F, '{print $1}'`
+}
+
+getPkgVersion
+PKG="zimbra-core-${VER}.pkg"
+
+D=`date +%s`
+echo "${D}: UPGRADED ${PKG}" >> /opt/zimbra/.install_history
+
+exit 0
