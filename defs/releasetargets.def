@@ -105,5 +105,5 @@ zcs_stage: $(SOAP_DIR)/package-soap-api-doc $(SOAP_DIR)/package-soap-api-changel
 	-cp -f $(WEBAPP_STAGE_DIR)/admin/*.zip $(PACKAGE_DIR)
 	@echo "*** BUILD COMPLETED ***"
 
-packages: core proxy memcached mta apache store ldap snmp logger spell
+packages: core mta dns apache store ldap snmp logger spell memcached proxy
 	@echo "*** Creating PACKAGES in $(PACKAGE_DIR)"

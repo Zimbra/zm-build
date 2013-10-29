@@ -45,11 +45,9 @@ include $(DEFS_DIR)/proxytargets.def
 
 include $(DEFS_DIR)/ldaptargets.def
 
-ifeq ($(BUILD_PLATFORM), RHEL4_64)
-include $(DEFS_DIR)/mtatargets-rhel4.def
-else
 include $(DEFS_DIR)/mtatargets.def
-endif
+
+include $(DEFS_DIR)/dnstargets.def
 
 include $(DEFS_DIR)/loggertargets.def
 

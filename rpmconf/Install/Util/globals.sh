@@ -19,6 +19,7 @@ CORE_PACKAGES="zimbra-core"
 PACKAGES="zimbra-ldap \
 zimbra-logger \
 zimbra-mta \
+zimbra-dns \
 zimbra-snmp \
 zimbra-store \
 zimbra-apache \

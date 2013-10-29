@@ -83,6 +83,7 @@ my @packageList = (
   "zimbra-ldap",
   "zimbra-store",
   "zimbra-mta",
+  "zimbra-dns",
   "zimbra-snmp",
   "zimbra-logger",
   "zimbra-apache",
@@ -357,6 +358,7 @@ sub checkPortConflicts {
   progress ( "Checking for port conflicts\n" );
   my %needed = (
     25 => 'zimbra-mta',
+    53 => 'zimbra-dns',
     80 => 'zimbra-store',
     110 => 'zimbra-store',
     143 => 'zimbra-store',

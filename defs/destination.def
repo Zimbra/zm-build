@@ -11,6 +11,9 @@ LDAP_DEST_DIR		:= $(LDAP_DEST_ROOT)/opt/zimbra
 CORE_DEST_ROOT		:= $(BUILD_ROOT)/corebuild
 CORE_DEST_DIR		:= $(CORE_DEST_ROOT)/opt/zimbra
 
+DNS_DEST_ROOT		:= $(BUILD_ROOT)/dnsbuild
+DNS_DEST_DIR		:= $(DNS_DEST_ROOT)/opt/zimbra
+
 SNMP_DEST_ROOT		:= $(BUILD_ROOT)/snmpbuild
 SNMP_DEST_DIR		:= $(SNMP_DEST_ROOT)/opt/zimbra
 
