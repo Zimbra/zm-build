@@ -37,15 +37,13 @@ $(BUILD_ROOT)/zimbra-dns.spec:
 	cat $(PACKAGE_CONF_DIR)/Spec/zimbra-dns.spec | \
 		sed -e 's/@@VERSION@@/$(VERSION_TAG)/' \
 		-e 's/@@RELEASE@@/$(RELEASE)/' \
-		-e 's/@@DNS_PROVIDES@@/$(DNS_PROVIDES)/' \
 		-e 's/^Copyright:/$(RPMCOPYRIGHTSTR):/' \
 		-e '/^%pre$$/ r zimbra-dns.pre' \
 		-e '/^%post$$/ r zimbra-dns.post' > $(BUILD_ROOT)/zimbra-dns.spec
 	rm -f zimbra-dns.pre
 	rm -f zimbra-dns.post
-	(cd $(DNS_DEST_ROOT); find opt -type f -o -type l -maxdepth 2 \
-		| sed -e 's|^|%attr(-, zimbra, zimbra) /|' >> \
-		$(BUILD_ROOT)/zimbra-dns.spec )
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/data/dns" >> \
+		$(BUILD_ROOT)/zimbra-dns.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/ldns-$(LDNS_VERSION)" >> \
 		$(BUILD_ROOT)/zimbra-dns.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/unbound-$(UNBOUND_VERSION)" >> \
