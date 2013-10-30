@@ -29,14 +29,13 @@ chown -R zimbra:zimbra /opt/zimbra/data/ldap
 
 SUDOMODE=`perl -e 'my $mode=(stat("/etc/sudoers"))[2];printf("%04o\n",$mode & 07777);'`
 egrep -v '^%zimbra.*slapd' /etc/sudoers > /tmp/sudoers
-echo "%zimbra   ALL=NOPASSWD:/opt/zimbra/openldap/libexec/slapd" >> /tmp/sudoers
-echo "%zimbra   ALL=NOPASSWD:/opt/zimbra/libexec/zmslapd" >> /tmp/sudoers
+echo "%zimbra ALL=NOPASSWD:/opt/zimbra/libexec/zmslapd" >> /tmp/sudoers
 mv -f /tmp/sudoers /etc/sudoers
 chmod $SUDOMODE /etc/sudoers
 
-if [ -d "/opt/zimbra/openldap/libexec/slapd" ]; then
-  chown root:root /opt/zimbra/openldap/libexec/slapd
-  chmod 755 /opt/zimbra/openldap/libexec/slapd
+if [ -d "/opt/zimbra/openldap/sbin/slapd" ]; then
+  chown root:root /opt/zimbra/openldap/sbin/slapd
+  chmod 755 /opt/zimbra/openldap/sbin/slapd
 fi
 
 if [ -x "/opt/zimbra/libexec/zmfixperms" ]; then

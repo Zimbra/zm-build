@@ -70,11 +70,11 @@ fi
 SUDOMODE=`perl -e 'my $mode=(stat("/etc/sudoers"))[2];printf("%04o\n",$mode & 07777);'`
 egrep -v '^%zimbra.*postfix' /etc/sudoers > /tmp/sudoers
 mv -f /tmp/sudoers /etc/sudoers
-echo "%zimbra   ALL=NOPASSWD:/opt/zimbra/postfix/sbin/postfix, /opt/zimbra/postfix/sbin/postalias, /opt/zimbra/postfix/sbin/qshape.pl, /opt/zimbra/postfix/sbin/postconf,/opt/zimbra/postfix/sbin/postsuper" >> /etc/sudoers
+echo "%zimbra ALL=NOPASSWD:/opt/zimbra/postfix/sbin/postfix, /opt/zimbra/postfix/sbin/postalias, /opt/zimbra/postfix/sbin/qshape.pl, /opt/zimbra/postfix/sbin/postconf,/opt/zimbra/postfix/sbin/postsuper" >> /etc/sudoers
 
 egrep -v '^%zimbra.*zmqstat' /etc/sudoers > /tmp/sudoers
 mv -f /tmp/sudoers /etc/sudoers
-echo "%zimbra   ALL=NOPASSWD:/opt/zimbra/libexec/zmqstat,/opt/zimbra/libexec/zmmtastatus" >> /etc/sudoers
+echo "%zimbra ALL=NOPASSWD:/opt/zimbra/libexec/zmqstat,/opt/zimbra/libexec/zmmtastatus" >> /etc/sudoers
 chmod $SUDOMODE /etc/sudoers
 
 chown zimbra:zimbra /opt/zimbra/postfix/conf/master.cf.in
