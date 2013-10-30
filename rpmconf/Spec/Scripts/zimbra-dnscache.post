@@ -23,7 +23,7 @@ fi
 
 rm -f /opt/zimbra/unbound
 if [ -d /opt/zimbra/unbound-1.4.21 ]; then
-  ln -s /opt/zimbra/unbound-1.4.21 /opt/zimbra/cbpolicyd
+  ln -s /opt/zimbra/unbound-1.4.21 /opt/zimbra/unbound
 fi
 
 mkdir -p /opt/zimbra/data/dns/ca
