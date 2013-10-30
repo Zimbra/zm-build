@@ -265,6 +265,7 @@ $(CORE_DEST_DIR)/conf: $(WEBAPP_DIR)/service.war
 	cp $(SERVICE_DIR)/conf/nginx/* $@/nginx/templates/
 	cp $(SERVICE_DIR)/conf/stats.conf.in $@
 	cp $(SERVICE_DIR)/conf/salocal.cf.in $@
+	cp $(SERVICE_DIR)/conf/unbound.conf.in $@
 	cp $(SERVICE_DIR)/conf/saslauthd.conf.in $@ 
 	mkdir -p $@/sasl2
 	cp $(SERVICE_DIR)/conf/postfix_sasl_smtpd.conf $@/sasl2/smtpd.conf.in
