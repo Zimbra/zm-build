@@ -4322,6 +4322,7 @@ sub createMainMenu {
     if ($package eq "zimbra-apache") {next;}
     if ($package eq "zimbra-archiving") {next;}
     if ($package eq "zimbra-memcached") {next;}
+    if ($package eq "zimbra-dnscache") {next;}
     if (defined($installedPackages{$package})) {
       if ($package =~ /logger|spell|convertd/) {
         $mm{menuitems}{$i} = { 
@@ -6620,6 +6621,7 @@ sub configSetEnabledServices {
     if ($p eq "zimbra-apache") {next;}
     if ($p eq "zimbra-cluster") {next;}
     if ($p eq "zimbra-archiving") {next;}
+    if ($p eq "zimbra-dnscache") {next;}
     $p =~ s/zimbra-//;
     if ($p eq "store") {$p = "mailbox";}
     if ($p eq "octopus") {$p = "mailbox";}
@@ -6634,6 +6636,7 @@ sub configSetEnabledServices {
     if ($p eq "zimbra-apache") {next;}
     if ($p eq "zimbra-cluster") {next;}
     if ($p eq "zimbra-archiving") {next;}
+    if ($p eq "zimbra-dnscache") {next;}
     if ($enabledPackages{$p} eq "Enabled") {
       $p =~ s/zimbra-//;
       if ($p eq "store") {$p = "mailbox";}
