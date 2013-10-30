@@ -47,7 +47,7 @@ include $(DEFS_DIR)/ldaptargets.def
 
 include $(DEFS_DIR)/mtatargets.def
 
-include $(DEFS_DIR)/dnstargets.def
+include $(DEFS_DIR)/dnscachetargets.def
 
 include $(DEFS_DIR)/loggertargets.def
 

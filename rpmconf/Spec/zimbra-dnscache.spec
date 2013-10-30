@@ -2,7 +2,7 @@
 # spec file for zimbra.rpm
 #
 Summary: Zimbra DNS cache
-Name: zimbra-dns
+Name: zimbra-dnscache
 Version: @@VERSION@@
 Release: @@RELEASE@@
 License: ZPL and other

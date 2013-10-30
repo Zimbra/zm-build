@@ -1,0 +1,8 @@
+Package: zimbra-dnscache
+Version: @@VERSION@@
+Description: Best email money can buy
+Maintainer: build@zimbra.com
+Section: dns
+Priority: optional
+Architecture: @@ARCH@@
+Depends: zimbra-core
