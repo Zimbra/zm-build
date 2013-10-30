@@ -32,6 +32,16 @@ chown -R zimbra:zimbra /opt/zimbra/data/dns
 
 chown zimbra:zimbra /opt/zimbra/data
 
+SUDOMODE=`perl -e 'my $mode=(stat("/etc/sudoers"))[2];printf("%04o\n",$mode & 07777);'`
+echo "%zimbra ALL=NOPASSWD:/opt/zimbra/libexec/zmunbound" >> /tmp/sudoers
+mv -f /tmp/sudoers /etc/sudoers
+chmod $SUDOMODE /etc/sudoers
+
+if [ -d "/opt/zimbra/unbound/sbin/unbound" ]; then
+  chown root:root /opt/zimbra/unbound/sbin/unbound
+  chmod 755 /opt/zimbra/unbound/sbin/unbound
+fi
+
 if [ -x "/opt/zimbra/libexec/zmfixperms" ]; then
   /opt/zimbra/libexec/zmfixperms
 fi
