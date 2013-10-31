@@ -1012,6 +1012,7 @@ sub setLdapDefaults {
   if ($serverid ne "")  {
 
     $config{zimbraIPMode}     = getLdapServerValue("zimbraIPMode");
+    $config{zimbraDNSMasterIP} = getLdapServerValue("zimbraDNSMasterIP");
 
     $config{IMAPPORT}         = getLdapServerValue("zimbraImapBindPort");
     $config{IMAPSSLPORT}      = getLdapServerValue("zimbraImapSSLBindPort");
@@ -1417,6 +1418,10 @@ sub setDefaults {
     $config{zimbraClusterType} = "RedHat"; 
   } else {
     $config{zimbraClusterType} = "none";
+  }
+
+  if (isEnabled("zimbra-dnscache")) {
+    $config{zimbraDNSMasterIP} = "";
   }
 
   if (isEnabled("zimbra-store")) {
@@ -2279,6 +2284,20 @@ sub setVersionCheckNotificationEmailFrom {
   }
 }
 
+sub setMasterDNSIP {
+  while (1) {
+    my $new = 
+      ask("IP Address(es) of Master DNS Server(s), space separated:", $config{zimbraDNSMasterIP});
+    my @IPs = split (' ', $new);
+    unless(!validIPAddress(@IPs)) {
+      progress("Supplied IP address(es) must be valid\n");
+      next;
+    }
+    $config{zimbraDNSMasterIP} = $new;
+    last;
+  }
+}
+
 sub setCreateAdmin {
 
   while (1) {
@@ -2287,7 +2306,7 @@ sub setCreateAdmin {
     my ($u,$d) = split ('@', $new);
 
     unless(validEmailAddress($new)) {
-      progress ( "Admin user must a valid email account [$u\@$config{CREATEDOMAIN}]\n");
+      progress ( "Admin user must be a valid email account [$u\@$config{CREATEDOMAIN}]\n");
       next;
     }
 
@@ -2337,6 +2356,18 @@ sub setCreateAdmin {
 
 sub validEmailAddress {
    return($_[0] =~ m/^[^@]+@([-\w]+\.)+[A-Za-z]{2,4}/ ? 1 : 0);
+}
+
+sub validIPAddress {
+  my $rc = 0;
+  foreach my $ip (@_) {
+    chomp($ip);
+    my $testip = NetAddr::IP->new($ip);
+    if (ref($testip) ne 'NetAddr::IP') {
+      $rc = 1;
+    }
+  }
+  return $rc;
 }
 
 sub setLdapRootPass {
@@ -3347,6 +3378,8 @@ sub createPackageMenu {
     return createClusterMenu($package);
   } elsif ($package eq "zimbra-proxy") {
     return createProxyMenu($package)
+  } elsif ($package eq "zimbra-dnscache") {
+    return createDNSCacheMenu($package)
   }
 }
 
@@ -3886,6 +3919,27 @@ sub createProxyMenu {
   return $lm;
 }
 
+sub createDNSCacheMenu {
+  my $package = shift;
+  my $lm = genPackageMenu($package);
+
+  $$lm{title} = "DNS Cache configuration";
+
+  $$lm{createsub} = \&createDNSCacheMenu;
+  $$lm{createarg} = $package;
+
+  my $i = 2;
+  if (isEnabled($package)) {
+    $$lm{menuitems}{$i} = { 
+      "prompt" => "Master DNS IP address(es):", 
+      "var" => \$config{zimbraDNSMasterIP}, 
+      "callback" => \&setMasterDNSIP,
+      };
+    $i++;
+  }
+  return $lm;
+}
+
 sub createStoreMenu {
   my $package = shift;
   my $lm = genPackageMenu($package);
@@ -4322,7 +4376,6 @@ sub createMainMenu {
     if ($package eq "zimbra-apache") {next;}
     if ($package eq "zimbra-archiving") {next;}
     if ($package eq "zimbra-memcached") {next;}
-    if ($package eq "zimbra-dnscache") {next;}
     if (defined($installedPackages{$package})) {
       if ($package =~ /logger|spell|convertd/) {
         $mm{menuitems}{$i} = { 
@@ -5712,6 +5765,17 @@ sub configSetKeyboardShortcutsPref {
   configLog("zimbraPrefUseKeyboardShortcuts");
 }
 
+sub configSetDNSCacheDefaults {
+  if ($configStatus{zimbraDNSCache} eq "CONFIGURED") {
+    configLog("zimbraDNSCache");
+    return 0;
+  }
+  progress ( "Setting Master DNS IP address(es)...");
+  my $rc = setLdapServerConfig("zimbraDNSMasterIP", $config{zimbraDNSMasterIP});
+  progress(($rc == 0) ? "done.\n" : "failed.\n");
+  configLog("zimbraDNSCache");
+}
+
 sub configSetTimeZonePref {
   if ($configStatus{zimbraPrefTimeZoneId} eq "CONFIGURED") {
     configLog("zimbraPrefTimeZoneId");
@@ -6621,7 +6685,6 @@ sub configSetEnabledServices {
     if ($p eq "zimbra-apache") {next;}
     if ($p eq "zimbra-cluster") {next;}
     if ($p eq "zimbra-archiving") {next;}
-    if ($p eq "zimbra-dnscache") {next;}
     $p =~ s/zimbra-//;
     if ($p eq "store") {$p = "mailbox";}
     if ($p eq "octopus") {$p = "mailbox";}
@@ -6636,7 +6699,6 @@ sub configSetEnabledServices {
     if ($p eq "zimbra-apache") {next;}
     if ($p eq "zimbra-cluster") {next;}
     if ($p eq "zimbra-archiving") {next;}
-    if ($p eq "zimbra-dnscache") {next;}
     if ($enabledPackages{$p} eq "Enabled") {
       $p =~ s/zimbra-//;
       if ($p eq "store") {$p = "mailbox";}
@@ -6744,6 +6806,10 @@ sub applyConfig {
   if (isNetwork() && isEnabled("zimbra-convertd")) {
     configConvertdURL();
     runAsZimbra("/opt/zimbra/libexec/zmconvertdmod -e");
+  }
+
+  if (isEnabled("zimbra-dnscache")) {
+    configSetDNSCacheDefaults();
   }
 
   if (isEnabled("zimbra-mta")) {
