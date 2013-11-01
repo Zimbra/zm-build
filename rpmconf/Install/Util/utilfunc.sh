@@ -2012,6 +2012,7 @@ getInstallPackages() {
   APACHE_SELECTED="no"
   LOGGER_SELECTED="no"
   STORE_SELECTED="no"
+  MTA_SELECTED="no"
   
   CLUSTER_SELECTED="no"
 
@@ -2055,6 +2056,8 @@ getInstallPackages() {
           LOGGER_SELECTED="yes"
         elif [ $i = "zimbra-store" ]; then
           STORE_SELECTED="yes"
+        elif [ $i = "zimbra-mta" ]; then
+          MTA_SELECTED="yes"
         elif [ $i = "zimbra-cluster" ]; then
           CLUSTER_SELECTED="yes"
         fi
@@ -2114,6 +2117,12 @@ getInstallPackages() {
         else
           askYN "Install $i" "N"
         fi
+      elif [ $i = "zimbra-dnscache" ]; then
+        if [ $MTA_SELECTED = "yes" ]; then
+          askYN "Install $i" "Y"
+        else
+          askYN "Install $i" "N"
+        fi
       elif [ $i = "zimbra-cluster" -a "x$CLUSTERTYPE" = "x" ]; then
         askYN "Install $i" "N"
       else
@@ -2130,6 +2139,8 @@ getInstallPackages() {
         APACHE_SELECTED="yes"
       elif [ $i = "zimbra-cluster" ]; then
         CLUSTER_SELECTED="yes"
+      elif [ $i = "zimbra-mta" ]; then
+        MTA_SELECTED="yes"
       fi
 
       if [ $i = "zimbra-mta" ]; then
