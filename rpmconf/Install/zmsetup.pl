@@ -5771,7 +5771,7 @@ sub configSetDNSCacheDefaults {
     return 0;
   }
   progress ( "Setting Master DNS IP address(es)...");
-  my @IPs = split (' ', $config{zimbraDNSCache});
+  my @IPs = split (' ', $config{zimbraDNSMasterIP});
   my $rc;
   foreach my $ip (@IPs) {
     chomp ($ip);
