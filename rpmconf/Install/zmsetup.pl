@@ -5771,7 +5771,12 @@ sub configSetDNSCacheDefaults {
     return 0;
   }
   progress ( "Setting Master DNS IP address(es)...");
-  my $rc = setLdapServerConfig("zimbraDNSMasterIP", $config{zimbraDNSMasterIP});
+  my @IPs = split (' ', $config{zimbraDNSCache});
+  my $rc;
+  foreach my $ip (@IPs) {
+    chomp ($ip);
+    $rc=main::runAsZimbra("$ZMPROV ms $config{HOSTNAME} +zimbraDNSMasterIP $ip");
+  }
   progress(($rc == 0) ? "done.\n" : "failed.\n");
   configLog("zimbraDNSCache");
 }
