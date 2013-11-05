@@ -120,7 +120,7 @@ done
 JVERSION=`grep ^JAVA_VERSION $PATHDIR/defs/plat_common.def | sed -e 's/JAVA_VERSION[\t]*:=[\t]*[ ]*//'`
 echo "Checking for required JDK tarball"
 if [[ $PLAT == *"_64" ]]; then
-	if [ ! -f $PATHDIR/../ThirdPartyBuilds/x86_64/java/jdk${JVERSION}.tgz ]; then
+	if [ ! -f $PATHDIR/../ThirdPartyBuilds/x86_64/java/jdk-${JVERSION}.tgz ]; then
 		echo "Error: jdk file needed for ZCS packaging not available"
 		echo "Necessary version is: $JVERSION"
 		echo "Please create $PATHDIR/../ThirdPartyBuilds/x86_64/java/jdk${JVERSION}.tgz"
