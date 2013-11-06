@@ -12,7 +12,7 @@ dns_pkg_spec_ccs:
 
 dns_pkg_spec_pkg: $(BUILD_ROOT)/resources/zimbra-dnscache
 
-dns_pkg_spec_deb: $(DNS_DEST_ROOT)/DEBIAN/control
+dns_pkg_spec_deb: $(DNS_DEST_ROOT)/DEBIAN/control $(DNS_DEST_ROOT)/etc/resolvconf/update.d
 
 $(DNS_DEST_ROOT)/DEBIAN: force
 	mkdir -p $@
@@ -68,3 +68,6 @@ $(DNS_DEST_DIR)/$(UNBOUND_DIR): $(DNS_DEST_DIR)
 	@echo "*** Creating Unbound"
 	(cd $(DNS_DEST_DIR); tar xfz $(UNBOUND_SOURCE).tgz;)
 
+$(DNS_DEST_ROOT)/etc/resolvconf/update.d:
+	mkdir -p $@
+	cp  $(SERVICE_DIR)/conf/dns/zimbra-unbound $@

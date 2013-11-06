@@ -32,9 +32,14 @@ chown -R zimbra:zimbra /opt/zimbra/data/dns
 
 chown zimbra:zimbra /opt/zimbra/data
 
+PLAT=$(/opt/zimbra/libexec/get_plat_tag.sh)
 SUDOMODE=`perl -e 'my $mode=(stat("/etc/sudoers"))[2];printf("%04o\n",$mode & 07777);'`
 egrep -v '^%zimbra.*unbound' /etc/sudoers > /tmp/sudoers
+egrep -v '^%zimbra.*resolvconf' /etc/sudoers > /tmp/sudoers
 echo "%zimbra ALL=NOPASSWD:/opt/zimbra/libexec/zmunbound" >> /tmp/sudoers
+if [[ $PLAT == "UBUNTU"* || $PLAT == "DEBIAN"* ]]; then
+  echo "%zimbra ALL=NOPASSWD:/sbin/resolvconf *" >> /tmp/sudoers
+fi
 mv -f /tmp/sudoers /etc/sudoers
 chmod $SUDOMODE /etc/sudoers
 
