@@ -29,7 +29,7 @@ $(DNS_DEST_ROOT)/DEBIAN/control: $(DNS_DEST_ROOT)/DEBIAN force
 	-e '/^%pre$$/ r zimbra-dnscache.pre' \
 	-e '/^%post$$/ r zimbra-dnscache.post' > $@
 
-dns_pkg_spec_rpm: $(BUILD_ROOT)/zimbra-dnscache.spec $(DNS_DEST_ROOT)/etc/NetworkManager/dispatcher.d
+dns_pkg_spec_rpm: $(BUILD_ROOT)/zimbra-dnscache.spec
 
 $(BUILD_ROOT)/zimbra-dnscache.spec:
 	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-dnscache.pre $(BUILD_ROOT)
@@ -47,8 +47,6 @@ $(BUILD_ROOT)/zimbra-dnscache.spec:
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/ldns-$(LDNS_VERSION)" >> \
 		$(BUILD_ROOT)/zimbra-dnscache.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/unbound-$(UNBOUND_VERSION)" >> \
-		$(BUILD_ROOT)/zimbra-dnscache.spec
-	echo "%attr(-, zimbra, zimbra) /etc/NetworkManager/dispatcher.d" >> \
 		$(BUILD_ROOT)/zimbra-dnscache.spec
 
 dns_stage: $(DNS_COMPONENTS)
@@ -74,6 +72,3 @@ $(DNS_DEST_ROOT)/etc/resolvconf/update.d:
 	mkdir -p $@
 	cp  $(SERVICE_DIR)/conf/dns/zimbra-unbound $@
 
-$(DNS_DEST_ROOT)/etc/NetworkManager/dispatcher.d:
-	mkdir -p $@
-	cp  $(SERVICE_DIR)/conf/dns/00-zimbra-unbound $@
