@@ -182,6 +182,7 @@ my %updateFuncs = (
   "8.0.4_GA" => \&upgrade804GA,
   "8.0.5_GA" => \&upgrade805GA,
   "8.0.6_GA" => \&upgrade806GA,
+  "8.0.7_GA" => \&upgrade807GA,
   "8.5.0_BETA1" => \&upgrade850BETA1,
 );
 
@@ -233,6 +234,7 @@ my @versionOrder = (
   "8.0.4_GA",
   "8.0.5_GA",
   "8.0.6_GA",
+  "8.0.7_GA",
   "8.5.0_BETA1",
 );
 
@@ -544,6 +546,8 @@ sub upgrade {
     main::progress("This appears to be 8.0.5_GA\n");
   } elsif ($startVersion eq "8.0.6_GA") {
     main::progress("This appears to be 8.0.6_GA\n");
+  } elsif ($startVersion eq "8.0.7_GA") {
+    main::progress("This appears to be 8.0.7_GA\n");
   } elsif ($startVersion eq "8.5.0_BETA1") {
     main::progress("This appears to be 8.5.0_BETA1\n");
   } else {
@@ -2062,6 +2066,12 @@ sub upgrade806GA {
   if (! grep ( /qtp/, @zimbraStatThreadNamePrefix)) {
     main::runAsZimbra("$ZMPROV mcf +zimbraStatThreadNamePrefix qtp");
   }
+  return 0;
+}
+
+sub upgrade807GA {
+  my ($startBuild, $targetVersion, $targetBuild) = (@_);
+  main::progress("Updating from 8.0.7_GA\n");
   return 0;
 }
 
