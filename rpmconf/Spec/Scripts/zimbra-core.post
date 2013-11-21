@@ -55,7 +55,7 @@ rm -f /opt/zimbra/openldap
 ln -s /opt/zimbra/openldap-2.4.38.2z /opt/zimbra/openldap
 
 rm -f /opt/zimbra/tcmalloc
-ln -s /opt/zimbra/tcmalloc-1.8.2 /opt/zimbra/tcmalloc
+ln -s /opt/zimbra/tcmalloc-2.1 /opt/zimbra/tcmalloc
 
 rm -f /opt/zimbra/rsync
 ln -s /opt/zimbra/rsync-3.0.8 /opt/zimbra/rsync
