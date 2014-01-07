@@ -877,7 +877,7 @@ verifyLicenseActivationServer() {
   else
     echo $HOSTNAME | egrep -qe 'vmware.com$|zimbra.com$' > /dev/null 2>&1
     if [ $? = 0 ]; then
-      url='https://zimbra-stage-license-vip.vmware.com/zimbraLicensePortal/public/activation?action=test'
+      url='https://zimbra-stage-license.eng.zimbra.com/zimbraLicensePortal/public/activation?action=test'
     else 
       url='https://license.zimbra.com/zimbraLicensePortal/public/activation?action=test'
     fi
