@@ -39,7 +39,7 @@ usage() {
   echo "-h|--help               Usage"
   echo "-l|--license <file>     License file to install."
   echo "-a|--activation <file>  License activation file to install. [Upgrades only]"
-  echo "-r|--restore <file>     Restore contents of <file> to localconfig" 
+  echo "-r|--restore <dir>     Restore contents of <file> to localconfig" 
   echo "-s|--softwareonly       Software only installation."
   echo "-u|--uninstall          Uninstall ZCS"
   echo "-x|--skipspacecheck     Skip filesystem capacity checks."
@@ -53,7 +53,7 @@ usage() {
 
 while [ $# -ne 0 ]; do
 	case $1 in
-		-r|--config) 
+		-r|--restore|--config) 
       shift
 			RESTORECONFIG=$1
 		;;
