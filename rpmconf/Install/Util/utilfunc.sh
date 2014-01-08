@@ -1485,7 +1485,6 @@ removeExistingInstall() {
           runAsZimbra "/opt/zimbra/libexec/zmslapcat /opt/zimbra/data/ldap"
           if [ $? != 0 ]; then
             echo "failed."
-            exit
           else
             echo "done."
           fi
@@ -1497,7 +1496,6 @@ removeExistingInstall() {
               runAsZimbra "/opt/zimbra/libexec/zmslapcat -a /opt/zimbra/data/ldap"
               if [ $? != 0 ]; then
                 echo "failed."
-                exit
               else
                 echo "done."
               fi
