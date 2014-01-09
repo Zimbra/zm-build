@@ -54,7 +54,6 @@ zcs-$(RELEASE).tgz: zcs_stage packages
 $(SOAP_DIR)/package-soap-api-doc:
 	(cd $(SOAP_DIR); $(ANT) $(ANT_DEBUG) \
 		-Dzimbra.buildinfo.platform=$(BUILD_PLATFORM) \
-		-Dis-production=1 \
 		-Dzimbra.buildinfo.version=$(SOURCE_TAG) \
 		-Dzimbra.buildinfo.type=$(BUILD_TYPE) \
 		-Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) \
@@ -105,5 +104,5 @@ zcs_stage: $(SOAP_DIR)/package-soap-api-doc $(SOAP_DIR)/package-soap-api-changel
 	-cp -f $(WEBAPP_STAGE_DIR)/admin/*.zip $(PACKAGE_DIR)
 	@echo "*** BUILD COMPLETED ***"
 
-packages: core mta dns apache store ldap snmp logger spell memcached proxy
+packages: core proxy memcached mta apache store ldap snmp logger spell
 	@echo "*** Creating PACKAGES in $(PACKAGE_DIR)"
