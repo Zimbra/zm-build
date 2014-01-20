@@ -2419,12 +2419,12 @@ getPlatformVars() {
     PREREQ_PACKAGES="sudo libidn11 libgmp3c2 libstdc++6"
     CONFLICT_PACKAGES="mail-transport-agent"
     if [ $PLATFORM = "UBUNTU10_64" ]; then
-      PREREQ_PACKAGES="netcat-openbsd sudo libidn11 libpcre3 libgmp3c2 libexpat1 libstdc++6 libperl5.10 libaio resolvconf"
+      PREREQ_PACKAGES="netcat-openbsd sudo libidn11 libpcre3 libgmp3c2 libexpat1 libstdc++6 libperl5.10 libaio1 resolvconf"
       PRESUG_PACKAGES="pax perl-5.10.1 sysstat sqlite3"
       STORE_PACKAGES=""
     fi
     if [ $PLATFORM = "UBUNTU12_64" ]; then
-      PREREQ_PACKAGES="netcat-openbsd sudo libidn11 libpcre3 libgmp3c2 libexpat1 libstdc++6 libperl5.14 libaio resolvconf"
+      PREREQ_PACKAGES="netcat-openbsd sudo libidn11 libpcre3 libgmp3c2 libexpat1 libstdc++6 libperl5.14 libaio1 resolvconf"
       PRESUG_PACKAGES="pax perl-5.14.2 sysstat sqlite3"
       STORE_PACKAGES="libreoffice"
     fi
