@@ -31,8 +31,8 @@ fi
 #Symlinks
 rm -f /opt/zimbra/mariadb
 rm -f /opt/zimbra/mysql
-ln -s /opt/zimbra/mariadb-standard-10.0.7-pc-linux-gnu-i686-glibc23 /opt/zimbra/mariadb
-ln -s /opt/zimbra/mariadb-standard-10.0.7-pc-linux-gnu-i686-glibc23 /opt/zimbra/mysql
+ln -s /opt/zimbra/mariadb-10.0.7 /opt/zimbra/mariadb
+ln -s /opt/zimbra/mariadb-10.0.7 /opt/zimbra/mysql
 
 rm -f /opt/zimbra/bdb
 ln -s /opt/zimbra/bdb-5.2.36 /opt/zimbra/bdb
