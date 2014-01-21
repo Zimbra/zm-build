@@ -78,7 +78,7 @@ if [ -f "/opt/zimbra/conf/ca/ca.pem" ]; then
   ln -f -s ca.pem /opt/zimbra/conf/ca/`openssl x509 -hash -noout -in /opt/zimbra/conf/ca/ca.pem`.0
 fi
 
-if [ x"$PLAT" = "xRHEL6_64" -o x"$PLAT" = "xCentOS6_64" ]; then
+if [ x"$PLAT" = "xRHEL6_64" -o x"$PLAT" = "xRHEL7_64" ]; then
   sed -i -e 's:\(^Defaults.*requiretty\):#\1:' /etc/sudoers
   sed -i -e '/PS2 QTDIR USERNAME PATH/!s/PS2 QTDIR USERNAME/PS2 QTDIR USERNAME PATH/' /etc/sudoers
 fi

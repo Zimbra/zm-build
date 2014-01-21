@@ -1785,7 +1785,7 @@ removeExistingInstall() {
             if [ $? = 0 ]; then
               echo -n "Cleaning up /etc/rsyslog.conf..."
               sed -i -e '/zimbra/d' /etc/rsyslog.conf
-              if [ $PLATFORM = "RHEL6_64" -o $PLATFORM = "CentOS6_64" ]; then
+              if [ $PLATFORM = "RHEL6_64" -o $PLATFORM = "RHEL7_64" ]; then
                 sed -i -e 's/^*.info;local0.none;local1.none;mail.none;auth.none/*.info/' /etc/rsyslog.conf
                 sed -i -e 's/^*.info;local0.none;local1.none;auth.none/*.info/' /etc/rsyslog.conf
               fi
@@ -2434,12 +2434,17 @@ getPlatformVars() {
     PACKAGEQUERY='rpm -q'
     PACKAGEVERIFY='rpm -K'
     PACKAGEEXT='rpm'
-    if [ $PLATFORM = "RHEL6_64" -o $PLATFORM = "CentOS6_64" ]; then
+    if [ $PLATFORM = "RHEL6_64" ]; then
       PACKAGEINST='yum -y --disablerepo=* localinstall -v'
       PACKAGERM='yum -y --disablerepo=* erase -v'
-      PREREQ_PACKAGES="nc sudo libidn gmp libaio"
-      PREREQ_LIBS="/usr/lib64/libstdc++.so.6"
+      PREREQ_PACKAGES="nc sudo libidn gmp libaio libstdc++"
       PRESUG_PACKAGES="perl-5.10.1 sysstat sqlite"
+      STORE_PACKAGES=""
+    elif [ $PLATFORM = "RHEL7_64" ]; then
+      PACKAGEINST='yum -y --disablerepo=* localinstall -v'
+      PACKAGERM='yum -y --disablerepo=* erase -v'
+      PREREQ_PACKAGES="nc sudo libidn gmp libaio libstdc++"
+      PRESUG_PACKAGES="perl-5.16.3 sysstat sqlite"
       STORE_PACKAGES=""
     elif [ $PLATFORM = "SLES11_64" ]; then
       PREREQ_PACKAGES="netcat sudo libidn gmp libaio"
