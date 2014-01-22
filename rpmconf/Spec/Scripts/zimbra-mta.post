@@ -50,7 +50,7 @@ rm -f /opt/zimbra/postfix
 ln -s /opt/zimbra/postfix-2.11.0.2z /opt/zimbra/postfix
 
 rm -f /opt/zimbra/clamav
-ln -s /opt/zimbra/clamav-0.98 /opt/zimbra/clamav
+ln -s /opt/zimbra/clamav-0.98.1 /opt/zimbra/clamav
 
 rm -f /opt/zimbra/mta/mysql
 rm -f /opt/zimbra/mta/mariadb
