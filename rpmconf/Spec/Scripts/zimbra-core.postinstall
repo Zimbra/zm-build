@@ -15,24 +15,11 @@
 # 
 
 PLAT=$(/opt/zimbra/libexec/get_plat_tag.sh)
-OS_ARCH=powerpc
-MYSQL_VERSION=5.5.28
-
-if [ "x$PLAT" = "xMACOSXx86" -o "x$PLAT" = "xMACOSXx86_10.5" ]; then
-  OS_ARCH=i686
-  OS_REL=8.2.0
-elif [ x"$PLAT" = "xMACOSXx86_10.6" ]; then
-  OS_ARCH=$(uname -m)
-  OS_REL=10
-elif [ x"$PLAT" = "xMACOSXx86_10.7" ]; then
-  OS_ARCH=$(uname -m)
-  OS_REL=11
-fi
 
 if [ -L /opt/zimbra/mysql ]; then
   rm -f /opt/zimbra/mysql
 fi
-ln -s /opt/zimbra/mysql-standard-${MYSQL_VERSION}-apple-darwin${OS_REL}-${OS_ARCH} /opt/zimbra/mysql
+ln -s /opt/zimbra/mysql-5.5.35 /opt/zimbra/mysql
 
 mkdir -p /opt/zimbra/backup
 chown zimbra:zimbra /opt/zimbra/backup 

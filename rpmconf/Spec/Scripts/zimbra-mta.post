@@ -53,7 +53,7 @@ rm -f /opt/zimbra/clamav
 ln -s /opt/zimbra/clamav-0.98.1 /opt/zimbra/clamav
 
 rm -f /opt/zimbra/mta/mysql
-ln -s /opt/zimbra/mta/mysql-standard-5.5.32-pc-linux-gnu-i686-glibc23 /opt/zimbra/mta/mysql
+ln -s /opt/zimbra/mta/mysql-5.5.35 /opt/zimbra/mta/mysql
 
 rm -f /opt/zimbra/altermime
 ln -s /opt/zimbra/altermime-0.3.10 /opt/zimbra/altermime
