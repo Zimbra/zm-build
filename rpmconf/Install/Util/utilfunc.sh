@@ -2375,11 +2375,11 @@ getPlatformVars() {
     PREREQ_PACKAGES="sudo libidn11 libgmp3c2 libstdc++6"
     CONFLICT_PACKAGES="mail-transport-agent"
     if [ $PLATFORM = "UBUNTU10_64" ]; then
-      PREREQ_PACKAGES="netcat-openbsd sudo libidn11 libpcre3 libgmp3c2 libexpat1 libstdc++6 libperl5.10"
+      PREREQ_PACKAGES="netcat-openbsd sudo libidn11 libpcre3 libgmp3c2 libexpat1 libstdc++6 libperl5.10 libaio1"
       PRESUG_PACKAGES="pax perl-5.10.1 sysstat sqlite3"
     fi
     if [ $PLATFORM = "UBUNTU12_64" ]; then
-      PREREQ_PACKAGES="netcat-openbsd sudo libidn11 libpcre3 libgmp3c2 libexpat1 libstdc++6 libperl5.14"
+      PREREQ_PACKAGES="netcat-openbsd sudo libidn11 libpcre3 libgmp3c2 libexpat1 libstdc++6 libperl5.14 libaio1"
       PRESUG_PACKAGES="pax perl-5.14.2 sysstat sqlite3"
     fi
   else
@@ -2391,11 +2391,11 @@ getPlatformVars() {
     if [ $PLATFORM = "RHEL6_64" -o $PLATFORM = "CentOS6_64" ]; then
       PACKAGEINST='yum -y --disablerepo=* localinstall -v'
       PACKAGERM='yum -y --disablerepo=* erase -v'
-      PREREQ_PACKAGES="nc sudo libidn gmp"
+      PREREQ_PACKAGES="nc sudo libidn gmp libaio"
       PREREQ_LIBS="/usr/lib64/libstdc++.so.6"
       PRESUG_PACKAGES="perl-5.10.1 sysstat sqlite"
     elif [ $PLATFORM = "SLES11_64" ]; then
-      PREREQ_PACKAGES="netcat sudo libidn gmp"
+      PREREQ_PACKAGES="netcat sudo libidn gmp libaio"
       PREREQ_LIBS="/usr/lib64/libstdc++.so.6"
       PRESUG_PACKAGES="perl-5.10.0 sysstat sqlite3"
     else
