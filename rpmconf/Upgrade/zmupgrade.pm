@@ -1221,8 +1221,6 @@ sub upgrade700RC1 {
       unless ($mailboxd_java_options =~ /OmitStackTraceInFastThrow/);
     main::detail("Modified mailboxd_java_options=$mailboxd_java_options");
     main::setLocalConfig("mailboxd_java_options", "$mailboxd_java_options");
-    
-    
   }
 
   return 0;
@@ -2082,6 +2080,20 @@ sub upgrade807GA {
 sub upgrade850BETA1 {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
   main::progress("Updating from 8.5.0_BETA1\n");
+  if (main::isInstalled("zimbra-store")) {
+    my $mailboxd_java_options=main::getLocalConfigRaw("mailboxd_java_options");
+    if ($mailboxd_java_options =~ /-XX:+PrintGCTimeStamps/) {
+      my $new_mailboxd_options;
+      foreach my $option (split(/\s+/, $mailboxd_java_options)) {
+        $new_mailboxd_options.=" $option" if ($option !~ /^-XX:+PrintGCTimeStamps/); 
+      }
+      $new_mailboxd_java_options .= " -XX:+PrintGCDateStamps"
+        unless ($mailboxd_java_options =~ /PrintGCDateStamps/);
+      $new_mailboxd_options =~ s/^\s+//;
+      main::setLocalConfig("mailboxd_java_options", $new_mailboxd_options)
+        if ($new_mailboxd_options ne "");
+    }
+  }
   if (main::isInstalled("zimbra-ldap")) {
     if ($isLdapMaster) {
       runLdapAttributeUpgrade("81385");
