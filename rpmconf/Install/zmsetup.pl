@@ -6894,19 +6894,14 @@ sub applyConfig {
       runAsZimbra("/opt/zimbra/bin/zmmailboxdctl restart");
       progress ( "done.\n" );
     }
-  } else {
-    progress ( "WARNING: Document and Zimlet initialization skipped because Application Server was not configured to start.\n")
-      if (isEnabled("zimbra-store"));
-  }
-
-  if ($config{STARTSERVERS} eq "yes") {
     if ($newinstall) {
       configCreateDefaultDomainGALSyncAcct();
     } else {
       progress ( "Skipping creation of default domain GAL sync account - existing install detected.\n" );
     }
   } else {
-    progress ( "WARNING: galsync account creation for default domain skipped because Application Server was not configured to start.\n")
+    progress ( "WARNING: Document and Zimlet initialization skipped because Application Server was not configured to start.\n".
+               "WARNING: galsync account creation for default domain skipped because Application Server was not configured to start.\n")
       if (isEnabled("zimbra-store"));
   }
 
