@@ -46,7 +46,7 @@ $(BUILD_ROOT)/resources/zimbra-core:
 	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/VolumeCheck $@/VolumeCheck
 	chmod 755 $@/VolumeCheck
 
-core_pkg_spec_deb: $(CORE_DEST_ROOT)/DEBIAN/control
+core_pkg_spec_deb: $(CORE_DEST_ROOT)/DEBIAN/control $(CORE_DEST_ROOT)/DEBIAN/md5sums
 
 $(CORE_DEST_ROOT)/DEBIAN: force
 	mkdir -p $@
@@ -62,6 +62,9 @@ $(CORE_DEST_ROOT)/DEBIAN/control: $(CORE_DEST_ROOT)/DEBIAN force
 		-e 's/^Copyright:/$(RPMCOPYRIGHTSTR):/' \
 		-e '/^%pre$$/ r zimbra-core.pre' \
 		-e '/^%post$$/ r zimbra-core.post' > $@
+
+$(CORE_DEST_ROOT)/DEBIAN/md5sums: force
+	find . -type f ! -regex '.*.hg.*' ! -regex '.*?debian-binary.*' ! -regex '.*?DEBIAN.*' -printf '%P ' | xargs md5sum > $@
 
 core_pkg_spec_rpm: $(BUILD_ROOT)/zimbra-core.spec
 
