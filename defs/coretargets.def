@@ -46,7 +46,7 @@ $(BUILD_ROOT)/resources/zimbra-core:
 	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/VolumeCheck $@/VolumeCheck
 	chmod 755 $@/VolumeCheck
 
-core_pkg_spec_deb: $(CORE_DEST_ROOT)/DEBIAN/control $(CORE_DEST_ROOT)/DEBIAN/md5sums
+core_pkg_spec_deb: $(CORE_DEST_ROOT)/DEBIAN/control
 
 $(CORE_DEST_ROOT)/DEBIAN: force
 	mkdir -p $@
@@ -54,7 +54,7 @@ $(CORE_DEST_ROOT)/DEBIAN: force
 	cat $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-core.post >> $@/postinst
 	chmod 555 $@/*
 
-$(CORE_DEST_ROOT)/DEBIAN/control: $(CORE_DEST_ROOT)/DEBIAN force
+$(CORE_DEST_ROOT)/DEBIAN/control: $(CORE_DEST_ROOT)/DEBIAN $(CORE_DEST_ROOT)/DEBIAN/md5sums force
 	cat $(PACKAGE_CONF_DIR)/Spec/zimbra-core.deb | \
 		sed -e 's/@@VERSION@@/$(VERSION_TAG)/' \
 		-e 's/@@RELEASE@@/$(RELEASE)/' \
