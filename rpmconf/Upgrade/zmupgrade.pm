@@ -2082,6 +2082,7 @@ sub upgrade850BETA1 {
   main::progress("Updating from 8.5.0_BETA1\n");
   if (main::isInstalled("zimbra-store")) {
     my $mailboxd_java_options=main::getLocalConfigRaw("mailboxd_java_options");
+    my $new_mailboxd_options="";
     if ($mailboxd_java_options =~ /-XX:+PrintGCTimeStamps/) {
       my $new_mailboxd_options;
       foreach my $option (split(/\s+/, $mailboxd_java_options)) {
