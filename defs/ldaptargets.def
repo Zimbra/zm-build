@@ -44,11 +44,14 @@ $(LDAP_DEST_ROOT)/DEBIAN: force
 	cat $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-ldap.post >> $@/postinst
 	chmod 555 $@/*
 
-$(LDAP_DEST_ROOT)/DEBIAN/control: $(LDAP_DEST_ROOT)/DEBIAN force
+$(LDAP_DEST_ROOT)/DEBIAN/control: $(LDAP_DEST_ROOT)/DEBIAN $(LDAP_DEST_ROOT)/DEBIAN/md5sums force
 	cat $(PACKAGE_CONF_DIR)/Spec/zimbra-ldap.deb | \
 	sed -e 's/@@VERSION@@/$(VERSION_TAG)/' \
 	-e 's/@@RELEASE@@/$(RELEASE)/' \
 	-e 's/@@ARCH@@/$(ARCH)/' > $@
+
+$(LDAP_DEST_ROOT)/DEBIAN/md5sums: force
+	find . -type f ! -regex '.*.hg.*' ! -regex '.*?debian-binary.*' ! -regex '.*?DEBIAN.*' -printf '%P ' | xargs md5sum > $@
 
 ldap_pkg_spec_rpm: $(BUILD_ROOT)/zimbra-ldap.spec
 

@@ -44,7 +44,7 @@ $(MTA_DEST_ROOT)/DEBIAN: force
 	cat $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-mta.post >> $@/postinst
 	chmod 555 $@/*
 
-$(MTA_DEST_ROOT)/DEBIAN/control: $(MTA_DEST_ROOT)/DEBIAN force
+$(MTA_DEST_ROOT)/DEBIAN/control: $(MTA_DEST_ROOT)/DEBIAN $(MTA_DEST_ROOT)/DEBIAN/md5sums force
 	cat $(PACKAGE_CONF_DIR)/Spec/zimbra-mta.deb | \
 	sed -e 's/@@VERSION@@/$(VERSION_TAG)/' \
 	-e 's/@@RELEASE@@/$(RELEASE)/' \
@@ -52,6 +52,9 @@ $(MTA_DEST_ROOT)/DEBIAN/control: $(MTA_DEST_ROOT)/DEBIAN force
 	-e 's/^Copyright:/$(RPMCOPYRIGHTSTR):/' \
 	-e '/^%pre$$/ r zimbra-mta.pre' \
 	-e '/^%post$$/ r zimbra-mta.post' > $@
+
+$(MTA_DEST_ROOT)/DEBIAN/md5sums: force
+	find . -type f ! -regex '.*.hg.*' ! -regex '.*?debian-binary.*' ! -regex '.*?DEBIAN.*' -printf '%P ' | xargs md5sum > $@
 
 mta_pkg_spec_rpm: $(BUILD_ROOT)/zimbra-mta.spec
 

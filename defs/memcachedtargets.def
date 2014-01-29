@@ -43,11 +43,14 @@ $(MEMCACHED_DEST_ROOT)/DEBIAN: force
 	cat $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-memcached.post >> $@/postinst
 	chmod 555 $@/*
 
-$(MEMCACHED_DEST_ROOT)/DEBIAN/control: $(MEMCACHED_DEST_ROOT)/DEBIAN force
+$(MEMCACHED_DEST_ROOT)/DEBIAN/control: $(MEMCACHED_DEST_ROOT)/DEBIAN $(MEMCACHED_DEST_ROOT)/DEBIAN/md5sums force
 	cat $(PACKAGE_CONF_DIR)/Spec/zimbra-memcached.deb | \
 	sed -e 's/@@VERSION@@/$(VERSION_TAG)/' \
 	-e 's/@@RELEASE@@/$(RELEASE)/' \
 	-e 's/@@ARCH@@/$(ARCH)/' > $@
+
+$(MEMCACHED_DEST_ROOT)/DEBIAN/md5sums: force
+	find . -type f ! -regex '.*.hg.*' ! -regex '.*?debian-binary.*' ! -regex '.*?DEBIAN.*' -printf '%P ' | xargs md5sum > $@
 
 memcached_pkg_spec_ccs:
 

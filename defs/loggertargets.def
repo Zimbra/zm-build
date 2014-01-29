@@ -43,11 +43,14 @@ $(LOGGER_DEST_ROOT)/DEBIAN: force
 	cat $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-logger.post >> $@/postinst
 	chmod 555 $@/*
 
-$(LOGGER_DEST_ROOT)/DEBIAN/control: $(LOGGER_DEST_ROOT)/DEBIAN force
+$(LOGGER_DEST_ROOT)/DEBIAN/control: $(LOGGER_DEST_ROOT)/DEBIAN $(LOGGER_DEST_ROOT)/DEBIAN/md5sums force
 	cat $(PACKAGE_CONF_DIR)/Spec/zimbra-logger.deb | \
 	sed -e 's/@@VERSION@@/$(VERSION_TAG)/' \
 	-e 's/@@RELEASE@@/$(RELEASE)/' \
 	-e 's/@@ARCH@@/$(ARCH)/' > $@
+
+$(LOGGER_DEST_ROOT)/DEBIAN/md5sums: force
+	find . -type f ! -regex '.*.hg.*' ! -regex '.*?debian-binary.*' ! -regex '.*?DEBIAN.*' -printf '%P ' | xargs md5sum > $@
 
 logger_pkg_spec_rpm: $(BUILD_ROOT)/zimbra-logger.spec
 
