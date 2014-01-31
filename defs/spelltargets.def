@@ -51,7 +51,8 @@ $(SPELL_DEST_ROOT)/DEBIAN/control: $(SPELL_DEST_ROOT)/DEBIAN $(SPELL_DEST_ROOT)/
 	-e 's/@@ARCH@@/$(ARCH)/' > $@
 
 $(SPELL_DEST_ROOT)/DEBIAN/md5sums: force
-	find . -type f ! -regex '.*.hg.*' ! -regex '.*?debian-binary.*' ! -regex '.*?DEBIAN.*' -printf '%P ' | xargs md5sum > $@
+	(cd $(SPELL_DEST_ROOT); \
+	find . -type f ! -regex '.*.hg.*' ! -regex '.*?debian-binary.*' ! -regex '.*?DEBIAN.*' -print0 | xargs -0 md5sum | sed -e 's| \./| |' > $@)
 
 spell_pkg_spec_rpm: $(BUILD_ROOT)/zimbra-spell.spec
 

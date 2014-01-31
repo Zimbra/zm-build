@@ -50,7 +50,8 @@ $(MEMCACHED_DEST_ROOT)/DEBIAN/control: $(MEMCACHED_DEST_ROOT)/DEBIAN $(MEMCACHED
 	-e 's/@@ARCH@@/$(ARCH)/' > $@
 
 $(MEMCACHED_DEST_ROOT)/DEBIAN/md5sums: force
-	find . -type f ! -regex '.*.hg.*' ! -regex '.*?debian-binary.*' ! -regex '.*?DEBIAN.*' -printf '%P ' | xargs md5sum > $@
+	(cd $(MEMCACHED_DEST_ROOT); \
+	find . -type f ! -regex '.*.hg.*' ! -regex '.*?debian-binary.*' ! -regex '.*?DEBIAN.*' -print0 | xargs -0 md5sum | sed -e 's| \./| |' > $@)
 
 memcached_pkg_spec_ccs:
 

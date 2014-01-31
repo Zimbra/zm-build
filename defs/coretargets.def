@@ -64,7 +64,8 @@ $(CORE_DEST_ROOT)/DEBIAN/control: $(CORE_DEST_ROOT)/DEBIAN $(CORE_DEST_ROOT)/DEB
 		-e '/^%post$$/ r zimbra-core.post' > $@
 
 $(CORE_DEST_ROOT)/DEBIAN/md5sums: force
-	find . -type f ! -regex '.*.hg.*' ! -regex '.*?debian-binary.*' ! -regex '.*?DEBIAN.*' -printf '%P ' | xargs md5sum > $@
+	(cd $(CORE_DEST_ROOT); \
+	find . -type f ! -regex '.*.hg.*' ! -regex '.*?debian-binary.*' ! -regex '.*?DEBIAN.*' -print0 | xargs -0 md5sum | sed -e 's| \./| |' > $@)
 
 core_pkg_spec_rpm: $(BUILD_ROOT)/zimbra-core.spec
 

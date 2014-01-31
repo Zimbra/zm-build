@@ -54,7 +54,8 @@ $(MTA_DEST_ROOT)/DEBIAN/control: $(MTA_DEST_ROOT)/DEBIAN $(MTA_DEST_ROOT)/DEBIAN
 	-e '/^%post$$/ r zimbra-mta.post' > $@
 
 $(MTA_DEST_ROOT)/DEBIAN/md5sums: force
-	find . -type f ! -regex '.*.hg.*' ! -regex '.*?debian-binary.*' ! -regex '.*?DEBIAN.*' -printf '%P ' | xargs md5sum > $@
+	(cd $(MTA_DEST_ROOT); \
+	find . -type f ! -regex '.*.hg.*' ! -regex '.*?debian-binary.*' ! -regex '.*?DEBIAN.*' -print0 | xargs -0 md5sum | sed -e 's| \./| |' > $@)
 
 mta_pkg_spec_rpm: $(BUILD_ROOT)/zimbra-mta.spec
 

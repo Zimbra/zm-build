@@ -50,7 +50,8 @@ $(PROXY_DEST_ROOT)/DEBIAN/control: $(PROXY_DEST_ROOT)/DEBIAN $(PROXY_DEST_ROOT)/
 	-e 's/@@ARCH@@/$(ARCH)/' > $@
 
 $(PROXY_DEST_ROOT)/DEBIAN/md5sums: force
-	find . -type f ! -regex '.*.hg.*' ! -regex '.*?debian-binary.*' ! -regex '.*?DEBIAN.*' -printf '%P ' | xargs md5sum > $@
+	(cd $(PROXY_DEST_ROOT); \
+	find . -type f ! -regex '.*.hg.*' ! -regex '.*?debian-binary.*' ! -regex '.*?DEBIAN.*' -print0 | xargs -0 md5sum | sed -e 's| \./| |' > $@)
 
 proxy_pkg_spec_ccs:
 
