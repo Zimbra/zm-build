@@ -2087,7 +2087,7 @@ sub upgrade850BETA1 {
       foreach my $option (split(/\s+/, $mailboxd_java_options)) {
         $new_mailboxd_options.=" $option" if ($option !~ /^-XX:+PrintGCTimeStamps/); 
       }
-      $new_mailboxd_java_options .= " -XX:+PrintGCDateStamps"
+      $new_mailboxd_options .= " -XX:+PrintGCDateStamps"
         unless ($mailboxd_java_options =~ /PrintGCDateStamps/);
       $new_mailboxd_options =~ s/^\s+//;
       main::setLocalConfig("mailboxd_java_options", $new_mailboxd_options)
