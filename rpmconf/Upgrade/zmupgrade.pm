@@ -2084,7 +2084,6 @@ sub upgrade850BETA1 {
     my $mailboxd_java_options=main::getLocalConfigRaw("mailboxd_java_options");
     my $new_mailboxd_options="";
     if ($mailboxd_java_options =~ /-XX:+PrintGCTimeStamps/) {
-      my $new_mailboxd_options;
       foreach my $option (split(/\s+/, $mailboxd_java_options)) {
         $new_mailboxd_options.=" $option" if ($option !~ /^-XX:+PrintGCTimeStamps/); 
       }
