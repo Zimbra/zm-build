@@ -164,6 +164,12 @@ $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/etc: force
 			$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/etc/spnego.conf.in
 		cp -f $(SERVICE_DIR)/conf/$(MAILBOXD_SERVER)-$(MAILBOXD_MINOR_VERSION)/spnego/etc/krb5.ini \
 			$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/etc/krb5.ini.in
+		cp -f $(SERVICE_DIR)/conf/$(MAILBOXD_SERVER)-$(MAILBOXD_MINOR_VERSION)/modules/*.mod \
+			$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/modules
+		-cp -f $(SERVICE_DIR)/conf/$(MAILBOXD_SERVER)-$(MAILBOXD_MINOR_VERSION)/modules/*.mod.in \
+			$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/modules
+		cp -f $(SERVICE_DIR)/conf/$(MAILBOXD_SERVER)-$(MAILBOXD_MINOR_VERSION)/modules/npn/*.mod \
+			$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/modules/npn
 		cp -f $(SERVICE_DIR)/conf/web.xml.production \
 			$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/etc/service.web.xml.in
 		cp -f $(ZIMLET_DIR)/conf/web.xml.production \
