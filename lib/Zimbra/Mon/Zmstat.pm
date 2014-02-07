@@ -78,8 +78,7 @@ sub osCheck() {
 sub zmstatInit() {
     osCheck();
     getLocalConfig('zimbra_home', 'zimbra_user', 'zimbra_server_hostname',
-                   'zmstat_log_directory', 'zmstat_interval',
-                   'zmstat_disk_interval');
+                   'zmstat_interval', 'zmstat_disk_interval');
     userCheck();
 }
 
@@ -96,7 +95,7 @@ sub getZimbraServerHostname() {
 }
 
 sub getZmstatRoot() {
-    return $LC{'zmstat_log_directory'};
+        return "/opt/zimbra/zmstat";
 }
 
 sub getZmstatInterval() {
