@@ -2083,9 +2083,9 @@ sub upgrade850BETA1 {
   if (main::isInstalled("zimbra-store")) {
     my $mailboxd_java_options=main::getLocalConfigRaw("mailboxd_java_options");
     my $new_mailboxd_options="";
-    if ($mailboxd_java_options =~ /-XX:+PrintGCTimeStamps/) {
+    if ($mailboxd_java_options =~ /-XX:\+PrintGCTimeStamps/) {
       foreach my $option (split(/\s+/, $mailboxd_java_options)) {
-        $new_mailboxd_options.=" $option" if ($option !~ /^-XX:+PrintGCTimeStamps/); 
+        $new_mailboxd_options.=" $option" if ($option !~ /^-XX:\+PrintGCTimeStamps/); 
       }
       $new_mailboxd_options .= " -XX:+PrintGCDateStamps"
         unless ($mailboxd_java_options =~ /PrintGCDateStamps/);
