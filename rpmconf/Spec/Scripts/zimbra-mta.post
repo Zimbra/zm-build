@@ -77,6 +77,11 @@ mv -f /tmp/sudoers /etc/sudoers
 echo "%zimbra ALL=NOPASSWD:/opt/zimbra/libexec/zmqstat,/opt/zimbra/libexec/zmmtastatus" >> /etc/sudoers
 chmod $SUDOMODE /etc/sudoers
 
+egrep -v '^%zimbra.*amavis-mc' /etc/sudoers > /tmp/sudoers
+mv -f /tmp/sudoers /etc/sudoers
+echo "%zimbra ALL=NOPASSWD:/opt/zimbra/amavisd/sbin/amavis-mc" >> /etc/sudoers
+chmod $SUDOMODE /etc/sudoers
+
 chown zimbra:zimbra /opt/zimbra/postfix/conf/master.cf.in
 chmod 440 /opt/zimbra/postfix/conf/master.cf.in
 
