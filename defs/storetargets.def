@@ -56,7 +56,7 @@ $(STORE_DEST_ROOT)/DEBIAN/control: $(STORE_DEST_ROOT)/DEBIAN $(STORE_DEST_ROOT)/
 
 $(STORE_DEST_ROOT)/DEBIAN/md5sums: force
 	(cd $(STORE_DEST_ROOT); \
-	find . -type f ! -regex '.*.hg.*' ! -regex '.*?debian-binary.*' ! -regex '.*?DEBIAN.*' -print0 | xargs -0 md5sum | sed -e 's| \./| |' > $@)
+	find . -type f ! -regex '.*jetty-distribution-.*/work/.*' ! -regex '.*.hg.*' ! -regex '.*?debian-binary.*' ! -regex '.*?DEBIAN.*' -print0 | xargs -0 md5sum | sed -e 's| \./| |' > $@)
 
 store_pkg_spec_rpm: $(BUILD_ROOT)/zimbra-store.spec
 
