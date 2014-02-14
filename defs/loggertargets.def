@@ -43,7 +43,7 @@ $(LOGGER_DEST_ROOT)/DEBIAN: force
 	cat $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-logger.post >> $@/postinst
 	chmod 555 $@/*
 
-$(LOGGER_DEST_ROOT)/DEBIAN/control: $(LOGGER_DEST_ROOT)/DEBIAN $(LOGGER_DEST_ROOT)/DEBIAN/md5sums force
+$(LOGGER_DEST_ROOT)/DEBIAN/control: $(LOGGER_DEST_ROOT)/DEBIAN force
 	cat $(PACKAGE_CONF_DIR)/Spec/zimbra-logger.deb | \
 	sed -e 's/@@VERSION@@/$(VERSION_TAG)/' \
 	-e 's/@@RELEASE@@/$(RELEASE)/' \
