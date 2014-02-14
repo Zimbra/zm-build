@@ -65,7 +65,7 @@ $(CORE_DEST_ROOT)/DEBIAN/control: $(CORE_DEST_ROOT)/DEBIAN $(CORE_DEST_ROOT)/DEB
 
 $(CORE_DEST_ROOT)/DEBIAN/md5sums: force
 	(cd $(CORE_DEST_ROOT); \
-	find . -type f ! -regex '.*.hg.*' ! -regex '.*?debian-binary.*' ! -regex '.*?DEBIAN.*' -print0 | xargs -0 md5sum | sed -e 's| \./| |' > $@)
+	find . -type f ! -regex '.*opt/zimbra/conf/localconfig.xml' ! -regex '.*opt/zimbra/jdk-.*/jre/lib/security/cacerts' ! -regex '.*.hg.*' ! -regex '.*?debian-binary.*' ! -regex '.*?DEBIAN.*' -print0 | xargs -0 md5sum | sed -e 's| \./| |' > $@)
 
 core_pkg_spec_rpm: $(BUILD_ROOT)/zimbra-core.spec
 
