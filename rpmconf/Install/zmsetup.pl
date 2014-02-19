@@ -1357,7 +1357,7 @@ sub setDefaults {
   $config{POPSSLPORT} = 995;
   $config{HTTPPORT} = 80;
   $config{HTTPSPORT} = 443;
-  $config{ssl_default_digest} = "sha1";
+  $config{ssl_default_digest} = "sha256";
 
   if (!$ipv4found && $ipv6found) {
     $config{zimbraIPMode}     = "ipv6";
