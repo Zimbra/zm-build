@@ -184,6 +184,7 @@ my %updateFuncs = (
   "8.0.5_GA" => \&upgrade805GA,
   "8.0.6_GA" => \&upgrade806GA,
   "8.0.7_GA" => \&upgrade807GA,
+  "8.0.8_GA" => \&upgrade808GA,
   "8.5.0_BETA1" => \&upgrade850BETA1,
 );
 
@@ -237,6 +238,7 @@ my @versionOrder = (
   "8.0.5_GA",
   "8.0.6_GA",
   "8.0.7_GA",
+  "8.0.8_GA",
   "8.5.0_BETA1",
 );
 
@@ -552,6 +554,8 @@ sub upgrade {
     main::progress("This appears to be 8.0.6_GA\n");
   } elsif ($startVersion eq "8.0.7_GA") {
     main::progress("This appears to be 8.0.7_GA\n");
+  } elsif ($startVersion eq "8.0.8_GA") {
+    main::progress("This appears to be 8.0.8_GA\n");
   } elsif ($startVersion eq "8.5.0_BETA1") {
     main::progress("This appears to be 8.5.0_BETA1\n");
   } else {
@@ -2084,6 +2088,12 @@ sub upgrade807GA {
   if ($readTimeout == 0) {
     main::setLocalConfig("ldap_read_timeout", "30000");
   }
+  return 0;
+}
+
+sub upgrade808GA {
+  my ($startBuild, $targetVersion, $targetBuild) = (@_);
+  main::progress("Updating from 8.0.8_GA\n");
   return 0;
 }
 
