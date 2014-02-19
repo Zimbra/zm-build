@@ -2084,10 +2084,6 @@ sub upgrade806GA {
 sub upgrade807GA {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
   main::progress("Updating from 8.0.7_GA\n");
-  my $readTimeout=main::getLocalConfig("ldap_read_timeout");
-  if ($readTimeout == 0) {
-    main::setLocalConfig("ldap_read_timeout", "30000");
-  }
   return 0;
 }
 
