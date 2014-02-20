@@ -5775,6 +5775,8 @@ sub configSetDNSCacheDefaults {
   my $rc;
   foreach my $ip (@IPs) {
     chomp ($ip);
+    $ip =~s/"//g;
+    $ip =~s/'//g;
     $rc=main::runAsZimbra("$ZMPROV ms $config{HOSTNAME} +zimbraDNSMasterIP $ip");
   }
   progress(($rc == 0) ? "done.\n" : "failed.\n");
