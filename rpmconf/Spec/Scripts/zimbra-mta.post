@@ -23,9 +23,6 @@ fi
 rm -f /opt/zimbra/amavisd
 ln -s /opt/zimbra/amavisd-new-2.8.2-rc1 /opt/zimbra/amavisd
 
-rm -f /opt/zimbra/pflogsumm
-ln -s /opt/zimbra/pflogsumm-1.1.3 /opt/zimbra/pflogsumm
-
 rm -f /opt/zimbra/cbpolicyd
 if [ -d /opt/zimbra/cbpolicyd-2.1.0-beta ]; then
   ln -s /opt/zimbra/cbpolicyd-2.1.0-beta /opt/zimbra/cbpolicyd

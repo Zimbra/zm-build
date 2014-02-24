@@ -41,6 +41,9 @@ if [ -L /opt/zimbra/sleepycat ]; then
 	rm -f /opt/zimbra/sleepycat
 fi
 
+rm -f /opt/zimbra/pflogsumm
+ln -s /opt/zimbra/pflogsumm-1.1.3 /opt/zimbra/pflogsumm
+
 rm -f /opt/zimbra/openssl
 ln -s /opt/zimbra/openssl-1.0.1f /opt/zimbra/openssl
 
