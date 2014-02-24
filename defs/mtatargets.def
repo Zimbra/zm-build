@@ -76,6 +76,8 @@ $(BUILD_ROOT)/zimbra-mta.spec:
 		$(BUILD_ROOT)/zimbra-mta.spec )
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/amavisd-new-$(AMAVISD_VERSION)" >> \
 		$(BUILD_ROOT)/zimbra-mta.spec
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/pflogsumm-$(PFLOG_VERSION)" >> \
+		$(BUILD_ROOT)/zimbra-mta.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/altermime-$(ALTERMIME_VERSION)" >> \
 		$(BUILD_ROOT)/zimbra-mta.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/dspam-$(DSPAM_VERSION)" >> \
@@ -173,6 +175,14 @@ $(MTA_DEST_DIR)/$(AMAVISD_DIR)-new-$(AMAVISD_VERSION): $(MTA_DEST_DIR) $(MTA_DES
 	cp -f $(AMAVISD_SOURCE)/amavisd-status $@/sbin
 	mkdir -p $@/.spamassassin/init
 	cp -f $(PACKAGE_CONF_DIR)/SpamAssassin/bayes* $@/.spamassassin/init
+
+$(MTA_DEST_DIR)/$(PFLOG_DIR)-$(PFLOG_VERSION): $(MTA_DEST_DIR)
+	@echo "*** Creating pflogsumm"
+	mkdir -p $@/bin
+	cp -f $(PFLOG_SOURCE)/pflogsumm.pl $@/bin
+	cp -f $(PFLOG_SOURCE)/prepflog.pl $@/bin
+	mkdir -p $@/man/man1
+	cp -f $(PFLOG_SOURCE)/pflogsumm.1 $@/man/man1
 
 $(MTA_DEST_DIR)/$(DSPAM_DIR)-$(DSPAM_VERSION): $(MTA_DEST_DIR)
 	@echo "*** Creating dspam"
