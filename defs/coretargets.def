@@ -91,6 +91,8 @@ $(BUILD_ROOT)/zimbra-core.spec:
 		$(BUILD_ROOT)/zimbra-core.spec
 	echo "%attr(755, root, root) /opt/zimbra/logger" >> \
 		$(BUILD_ROOT)/zimbra-core.spec
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/pflogsumm-$(PFLOG_VERSION)" >> \
+		$(BUILD_ROOT)/zimbra-core.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/conf" >> \
 		$(BUILD_ROOT)/zimbra-core.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/db" >> \
@@ -204,6 +206,14 @@ $(CORE_DEST_DIR)/zimbramon/lib:
 	(cd $(CORE_DEST_DIR)/zimbramon/lib; \
 	tar xzf $(PERL_LIB_SOURCE)/perllib.tgz)
 	cp -R $(BUILD_ROOT)/lib/Zimbra $(CORE_DEST_DIR)/zimbramon/lib
+
+$(CORE_DEST_DIR)/$(PFLOG_DIR)-$(PFLOG_VERSION): $(CORE_DEST_DIR)
+	@echo "*** Creating pflogsumm"
+	mkdir -p $@/bin
+	cp -f $(PFLOG_SOURCE)/pflogsumm.pl $@/bin
+	cp -f $(PFLOG_SOURCE)/prepflog.pl $@/bin
+	mkdir -p $@/man/man1
+	cp -f $(PFLOG_SOURCE)/pflogsumm.1 $@/man/man1
 
 $(CORE_DEST_DIR)/lib: $(WEBAPP_DIR)/service.war $(LDAP_DEST_DIR)/$(LDAP_DIR)-$(LDAP_VERSION) $(NATIVE_DIR)/build/libzimbra-native.$(JNI_EXT)
 	mkdir -p $@
