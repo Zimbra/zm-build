@@ -2512,7 +2512,7 @@ sub upgrade850BETA1 {
     $lc_attr= $localxml->{key}->{postfix_transport_maps}->{value};
     if (defined($lc_attr)) {
       if ($lc_attr =~ /\${zimbra_home}/) {
-        $lc_attr =~ s/\${zimbra_home}/\/opt\/zimbra/;
+        $lc_attr =~ s/\${zimbra_home}/\/opt\/zimbra/g;
       }
       $lc_attr =~ s/, /,/g;
       $lc_attr =~ s/\s+/ /g;
