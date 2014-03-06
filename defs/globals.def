@@ -4,7 +4,7 @@ BUILD_PLATFORM := $(shell sh $(BUILD_ROOT)/rpmconf/Build/get_plat_tag.sh)
 HOST    := $(shell hostname)
 DATE    := $(shell date +%Y%m%d%H%M%S)
 ifeq ($(RELEASE), )
-	RELEASE := $(DATE)$(TAG)
+    RELEASE := $(DATE)$(TAG)
 else
 	RELEASE := $(RELEASE)$(TAG)
 	DATE   := $(RELEASE)
@@ -42,11 +42,27 @@ endif
 
 ARCH := i386
 
+ifeq ($(BUILD_PLATFORM), RHEL4_64)
+	ARCH := x86_64
+endif
+
+ifeq ($(BUILD_PLATFORM), RHEL5_64)
+	ARCH := x86_64
+endif
+
 ifeq ($(BUILD_PLATFORM), RHEL6_64)
 	ARCH := x86_64
 endif
 
-ifeq ($(BUILD_PLATFORM), RHEL7_64)
+ifeq ($(BUILD_PLATFORM), CentOS4_64)
+	ARCH := x86_64
+endif
+
+ifeq ($(BUILD_PLATFORM), CentOS5_64)
+	ARCH := x86_64
+endif
+
+ifeq ($(BUILD_PLATFORM), CentOS6_64)
 	ARCH := x86_64
 endif
 
@@ -54,11 +70,43 @@ ifeq ($(BUILD_PLATFORM), SLES11_64)
 	ARCH := x86_64
 endif
 
+ifeq ($(BUILD_PLATFORM), SLES10_64)
+	ARCH := x86_64
+endif
+
+ifeq ($(BUILD_PLATFORM), F11_64)
+	ARCH := x86_64
+endif
+
+ifeq ($(BUILD_PLATFORM), F13_64)
+	ARCH := x86_64
+endif
+
+ifeq ($(BUILD_PLATFORM), UBUNTU6_64)
+	ARCH := amd64
+endif
+
+ifeq ($(BUILD_PLATFORM), UBUNTU7_64)
+	ARCH := amd64
+endif
+
+ifeq ($(BUILD_PLATFORM), UBUNTU8_64)
+	ARCH := amd64
+endif
+
 ifeq ($(BUILD_PLATFORM), UBUNTU10_64)
 	ARCH := amd64
 endif
 
 ifeq ($(BUILD_PLATFORM), UBUNTU12_64)
+	ARCH := amd64
+endif
+
+ifeq ($(BUILD_PLATFORM), DEBIAN4.0_64)
+	ARCH := amd64
+endif
+
+ifeq ($(BUILD_PLATFORM), DEBIAN5_64)
 	ARCH := amd64
 endif
 
