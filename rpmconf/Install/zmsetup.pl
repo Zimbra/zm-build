@@ -1013,6 +1013,8 @@ sub setLdapDefaults {
 
     $config{zimbraIPMode}     = getLdapServerValue("zimbraIPMode");
     $config{zimbraDNSMasterIP} = getLdapServerValue("zimbraDNSMasterIP");
+    $config{zimbraDNSUseTCP} = getLdapServerValue("zimbraDNSUseTCP");
+    $config{zimbraDNSUseUDP} = getLdapServerValue("zimbraDNSUseUDP");
 
     $config{IMAPPORT}         = getLdapServerValue("zimbraImapBindPort");
     $config{IMAPSSLPORT}      = getLdapServerValue("zimbraImapSSLBindPort");
@@ -1422,6 +1424,8 @@ sub setDefaults {
 
   if (isEnabled("zimbra-dnscache")) {
     $config{zimbraDNSMasterIP} = "";
+    $config{zimbraDNSUseTCP} = "yes";
+    $config{zimbraDNSUseUDP} = "yes";
   }
 
   if (isEnabled("zimbra-store")) {
@@ -3936,6 +3940,20 @@ sub createDNSCacheMenu {
       "callback" => \&setMasterDNSIP,
       };
     $i++;
+    $$lm{menuitems}{$i} = { 
+      "prompt" => "Enable DNS lookups over TCP:", 
+      "var" => \$config{zimbraDNSUseTCP}, 
+      "callback" => \&toggleYN,
+      "arg" => "zimbraDNSUseTCP",
+      };
+    $i++;
+    $$lm{menuitems}{$i} = { 
+      "prompt" => "Enable DNS lookups over UDP:", 
+      "var" => \$config{zimbraDNSUseUDP}, 
+      "callback" => \&toggleYN,
+      "arg" => "zimbraDNSUseUDP",
+      };
+    $i++;
   }
   return $lm;
 }
@@ -5780,6 +5798,10 @@ sub configSetDNSCacheDefaults {
     $rc=main::runAsZimbra("$ZMPROV ms $config{HOSTNAME} +zimbraDNSMasterIP $ip");
   }
   progress(($rc == 0) ? "done.\n" : "failed.\n");
+  progress( "Setting DNS cache tcp lookup preference...");
+  $rc=main::runAsZimbra("$ZMPROV ms $config{HOSTNAME} zimbraDNSUseTCP $config{zimbraDNSUseTCP}");
+  progress( "Setting DNS cache udp lookup preference...");
+  $rc=main::runAsZimbra("$ZMPROV ms $config{HOSTNAME} zimbraDNSUseUDP $config{zimbraDNSUseUDP}");
   configLog("zimbraDNSCache");
 }
 
