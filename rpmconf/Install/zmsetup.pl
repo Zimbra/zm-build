@@ -664,8 +664,8 @@ sub getSystemStatus {
   }
 
   if (isEnabled("zimbra-store")) {
-    my $dbsocket=getLocalConfig("mysql_socket");
-    if (-S "$dbsocket") {
+    my $dbdir=getLocalConfig("mysql_data_directory");
+    if (-d "$dbdir") {
       $sqlConfigured = 1;
       $sqlRunning = 0xffff & system("/opt/zimbra/bin/mysqladmin status > /dev/null 2>&1");
       $sqlRunning = ($sqlRunning)?0:1;
