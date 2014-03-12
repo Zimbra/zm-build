@@ -100,6 +100,7 @@ my %packageServiceMap = (
   antispam  => "zimbra-mta",
   opendkim  => "zimbra-mta",
   cbpolicyd => "zimbra-mta",
+  dnscache  => "zimbra-dnscache",
   mta       => "zimbra-mta",
   logger    => "zimbra-logger",
   mailbox   => "zimbra-store",
