@@ -5801,8 +5801,10 @@ sub configSetDNSCacheDefaults {
   progress(($rc == 0) ? "done.\n" : "failed.\n");
   progress( "Setting DNS cache tcp lookup preference...");
   $rc=main::runAsZimbra("$ZMPROV ms $config{HOSTNAME} zimbraDNSUseTCP $config{zimbraDNSUseTCP}");
+  progress(($rc == 0) ? "done.\n" : "failed.\n");
   progress( "Setting DNS cache udp lookup preference...");
   $rc=main::runAsZimbra("$ZMPROV ms $config{HOSTNAME} zimbraDNSUseUDP $config{zimbraDNSUseUDP}");
+  progress(($rc == 0) ? "done.\n" : "failed.\n");
   configLog("zimbraDNSCache");
 }
 
