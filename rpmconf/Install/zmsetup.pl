@@ -81,18 +81,18 @@ our %saved = ();
 my @packageList = (
   "zimbra-core",
   "zimbra-ldap",
-  "zimbra-store",
+  "zimbra-logger",
   "zimbra-mta",
   "zimbra-dnscache",
   "zimbra-snmp",
-  "zimbra-logger",
+  "zimbra-store",
   "zimbra-apache",
   "zimbra-spell",
-  "zimbra-cluster",
+  "zimbra-convertd",
   "zimbra-memcached",
   "zimbra-proxy",
   "zimbra-archiving",
-  "zimbra-convertd",
+  "zimbra-cluster",
 );
 
 my %packageServiceMap = (
@@ -315,13 +315,16 @@ sub saveConfig {
   if (open CONF, ">$fname") {
     progress ("Saving config in $fname...");
     foreach (sort keys %config) {
-      # Don't write passwords
-      if (/PASS/) {next;} 
+      # Don't write passwords or previous INSTALL_PACKAGES
+      if (/PASS|INSTALL_PACKAGES/) {next;}
       print CONF "$_=$config{$_}\n";
     }
     print CONF "INSTALL_PACKAGES=\"";
-    foreach (sort keys %installedPackages) {
-      print CONF "$_ ";
+    foreach (@packageList) {
+      my $el = $_;
+      if (grep (/$el/, keys %installedPackages)) {
+        print CONF "$_ ";
+      }
     }
     print CONF "\"\n";
     close CONF;
