@@ -1821,6 +1821,7 @@ sub setDefaultsFromLocalConfig {
       $config{LDAPHOST} = $h;
     }
   }
+  $config{ldap_url} = getLocalConfig("ldap_url");
   $config{LDAPROOTPASS} = getLocalConfig ("ldap_root_password");
   $config{LDAPADMINPASS} = getLocalConfig ("zimbra_ldap_password");
   $config{SQLROOTPASS} = getLocalConfig ("mysql_root_password");
