@@ -295,6 +295,7 @@ $(CORE_DEST_DIR)/conf: $(WEBAPP_DIR)/service.war
 	cp $(SERVICE_DIR)/conf/zmconfigd/smtpd_relay_restrictions.cf $@/zmconfigd/smtpd_relay_restrictions.cf
 	cp $(SERVICE_DIR)/conf/zmconfigd/smtpd_end_of_data_restrictions.cf $@/zmconfigd/smtpd_end_of_data_restrictions.cf
 	cp $(SERVICE_DIR)/conf/zmconfigd/smtpd_sender_restrictions.cf $@/zmconfigd/smtpd_sender_restrictions.cf
+	cp $(SERVICE_DIR)/conf/zmconfigd/smtpd_sender_login_maps.cf $@/zmconfigd/smtpd_sender_login_maps.cf
 	cp -Rf $(SERVICE_DIR)/conf/externaldirsync $@/externaldirsync
 	cp -Rf $(SERVICE_DIR)/build/dist/conf/rights $@/rights
 	rm -f $@/rights/zimbra-rights-domainadmin.xml-template
