@@ -132,7 +132,7 @@ my %updateScripts = (
   '91' => "migrate20121009-VolumeBlobs.pl",	       # 8.0.1
   '92' => "migrate20130226_alwayson.pl",	       # 8.5.0
   # 93-99 skipped for possible IRONMAIDEN use
-  '101' => "migrate20140319-MailItemPrevFolders.pl", # 8.5.0
+  '100' => "migrate20140319-MailItemPrevFolders.pl", # 8.5.0
 );
 
 my %updateFuncs = (
