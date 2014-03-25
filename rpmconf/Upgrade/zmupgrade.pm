@@ -2091,6 +2091,16 @@ sub upgrade807GA {
 sub upgrade808GA {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
   main::progress("Updating from 8.0.8_GA\n");
+  my $ldap_read_timeout=main::getLocalConfig("ldap_read_timeout");
+  if ($ldap_read_timeout == 0) {
+    main::deleteLocalConfig("ldap_read_timeout"); #85299
+  }
+  if (main::isInstalled("zimbra-ldap")) {
+    my $ldap_common_writetimeout=main::getLocalConfig("ldap_common_writetimeout");
+    if ($ldap_common_writetimeout == 0) {
+      main::deleteLocalConfig("ldap_common_writetimeout"); #85299
+    }
+  }
   return 0;
 }
 
