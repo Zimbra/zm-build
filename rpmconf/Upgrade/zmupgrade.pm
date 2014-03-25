@@ -2655,10 +2655,6 @@ sub upgrade850BETA1 {
   main::deleteLocalConfig("sasl_smtpd_mech_list");
   main::deleteLocalConfig("cbpolicyd_bind_port");
   main::deleteLocalConfig("cbpolicyd_log_level");
-  my $mysql_class = main::getLocalConfig("zimbra_class_database");
-  if ($mysql_class =~ /com.zimbra.cs.db.MySQL/) {
-    main::setLocalConfig("zimbra_class_database", "com.zimbra.cs.db.MariaDB");
-  }
   return 0;
 }
 
