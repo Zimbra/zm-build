@@ -38,7 +38,7 @@ chomp $rundir;
 my $scriptDir = "/opt/zimbra/libexec/scripts";
 
 my $lowVersion = 18;
-my $hiVersion = 101; # this should be set to the DB version expected by current server code
+my $hiVersion = 102; # this should be set to the DB version expected by current server code
 
 # Variables for the combo schema updater
 my $comboLowVersion = 20;
@@ -133,6 +133,7 @@ my %updateScripts = (
   '92' => "migrate20130226_alwayson.pl",	       # 8.5.0
   # 93-99 skipped for possible IRONMAIDEN use
   '100' => "migrate20140319-MailItemPrevFolders.pl", # 8.5.0
+  '101' => "migrate20140328-EnforceTableCharset.pl"  #8.5.0
 );
 
 my %updateFuncs = (
