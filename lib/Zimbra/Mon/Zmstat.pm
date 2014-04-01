@@ -18,7 +18,7 @@ package Zimbra::Mon::Zmstat;
 use Exporter;
 @ISA = qw(Exporter);
 @EXPORT = qw(
-    zmstatInit getZimbraHome getZimbraUser getZimbraServerHostname
+    zmstatInit getZimbraUser getZimbraServerHostname
     getZmstatRoot getZmstatInterval
     isLinux isMac
     percent getTstamp getDate waitUntilNiceRoundSecond
@@ -77,13 +77,9 @@ sub osCheck() {
 
 sub zmstatInit() {
     osCheck();
-    getLocalConfig('zimbra_home', 'zimbra_user', 'zimbra_server_hostname',
+    getLocalConfig('zimbra_user', 'zimbra_server_hostname',
                    'zmstat_interval', 'zmstat_disk_interval');
     userCheck();
-}
-
-sub getZimbraHome() {
-    return $LC{'zimbra_home'};
 }
 
 sub getZimbraUser() {

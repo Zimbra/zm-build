@@ -54,7 +54,6 @@ GetOptions ("config=s"  => \$options{config},
 
 my $progName = "zmpatch";
 my $patchBuildNumber;
-my $zimbra_home = "/opt/zimbra";
 my %versionInfo;
 my ($platform, $zmtype, $config);
 $options{verbose} = 0 unless $options{verbose};
@@ -90,11 +89,11 @@ if ($options{build}) {
 } else {
   $zmtype=getInstalledType();
   debugLog("Install type: $zmtype\n");
-  unless (-x "${zimbra_home}/libexec/get_plat_tag.sh") {
+  unless (-x "/opt/zimbra/libexec/get_plat_tag.sh") {
     print "ZCS Install not found.\n";
     exit 1;
   }
-  $platform = qx(${zimbra_home}/libexec/get_plat_tag.sh);
+  $platform = qx(/opt/zimbra/libexec/get_plat_tag.sh);
   chomp($platform);
   if (-f "source/build") {
     open(BUILD, "source/build");
@@ -378,7 +377,7 @@ sub logSession($) {
   return if $options{dryrun};
   my $date = qx(date +%s);
   chomp($date);
-  open(SESS, ">>${zimbra_home}/.install_history");
+  open(SESS, ">>/opt/zimbra/.install_history");
   print SESS "$date: $msg\n";
   close(SESS);
 }
@@ -466,7 +465,7 @@ sub getDateStamp() {
 sub getInstalledVersion() {
   my %configStatus;
   my %installStatus;
-  if (open H, "${zimbra_home}/.install_history") {
+  if (open H, "/opt/zimbra/.install_history") {
 
     my @history = <H>;
     close H;
@@ -520,7 +519,7 @@ sub getInstalledVersion() {
 }
 
 sub getInstalledType() {
-  return ((-f "${zimbra_home}/bin/zmbackupquery") ? "NETWORK" : "FOSS");
+  return ((-f "/opt/zimbra/bin/zmbackupquery") ? "NETWORK" : "FOSS");
 }
 
 sub getReleaseString($) {
@@ -579,8 +578,8 @@ sub isInstalled {
 }
 
 sub doIncrementJSVersion() {
-  my $infile="$zimbra_home/jetty/etc/zimbra.web.xml.in";
-  my $outfile="$zimbra_home/data/tmp/zimbra.web.xml.in.new";
+  my $infile="/opt/zimbra/jetty/etc/zimbra.web.xml.in";
+  my $outfile="/opt/zimbra/data/tmp/zimbra.web.xml.in.new";
   unlink("$outfile") if (-e "$outfile");
   open (IN, "<$infile");
   open (OUT, ">$outfile");
@@ -604,8 +603,8 @@ sub doIncrementJSVersion() {
   close(IN);
   close(OUT);
   copy($outfile, $infile);
-  $infile="$zimbra_home/jetty/etc/zimbraAdmin.web.xml.in";
-  $outfile="$zimbra_home/data/tmp/zimbraAdmin.web.xml.in.new";
+  $infile="/opt/zimbra/jetty/etc/zimbraAdmin.web.xml.in";
+  $outfile="/opt/zimbra/data/tmp/zimbraAdmin.web.xml.in.new";
   unlink("$outfile") if (-e "$outfile");
   open (IN, "<$infile");
   open (OUT, ">$outfile");

@@ -120,8 +120,6 @@ my %prevInstalledPackages = ();
 my %enabledPackages = ();
 my %enabledServices = ();
 
-my $zimbraHome = "/opt/zimbra";
-
 my %installStatus = ();
 our %configStatus = ();
 our %migratedStatus= ();
@@ -659,7 +657,7 @@ sub genRandomPass {
 sub getSystemStatus {
 
   if (isEnabled("zimbra-ldap")) {
-    if (-f "$zimbraHome/data/ldap/mdb/db/data.mdb") {
+    if (-f "/opt/zimbra/data/ldap/mdb/db/data.mdb") {
       $ldapConfigured = 1;
       $ldapRunning = 0xffff & system("/opt/zimbra/bin/ldap status > /dev/null 2>&1");
       if ($ldapRunning) {
@@ -675,7 +673,7 @@ sub getSystemStatus {
   }
 
   if (isEnabled("zimbra-store")) {
-    if (-d "$zimbraHome/db/data/zimbra") {
+    if (-d "/opt/zimbra/db/data/zimbra") {
       $sqlConfigured = 1;
       $sqlRunning = 0xffff & system("/opt/zimbra/bin/mysqladmin status > /dev/null 2>&1");
       $sqlRunning = ($sqlRunning)?0:1;
@@ -687,7 +685,7 @@ sub getSystemStatus {
   }
 
   if (isEnabled("zimbra-logger")) {
-    if (-d "$zimbraHome/logger/db/data/zimbra_logger") {
+    if (-d "/opt/zimbra/logger/db/data/zimbra_logger") {
       $loggerSqlConfigured = 1;
       $loggerSqlRunning = 0xffff & 
         system("/opt/zimbra/bin/logmysqladmin status > /dev/null 2>&1");
@@ -6088,7 +6086,6 @@ sub configSetCluster {
 }
 
 sub removeNetworkComponents {
-    my $zimbra_home = getLocalConfig("zimbra_home");
     my $components = getLdapConfigValue("zimbraComponentAvailable"); 
     my @zmprov_args = ();
     foreach my $component (split(/\n/,$components)) {
@@ -6150,13 +6147,13 @@ sub removeNetworkComponents {
     foreach my $zimlet (qw(com_zimbra_backuprestore com_zimbra_cluster com_zimbra_convertd com_zimbra_domainadmin com_zimbra_hsm com_zimbra_license com_zimbra_mobilesync zimbra_xmbxsearch com_zimbra_xmbxsearch com_zimbra_smime_cert_admin com_zimbra_delegatedadmin com_zimbra_smime)) {
       system("rm -rf $config{mailboxd_directory}/webapps/service/zimlet/$zimlet")
         if (-d "$config{mailboxd_directory}/webapps/service/zimlet/$zimlet" );
-      system("rm -rf ${zimbra_home}/zimlets-deployed/$zimlet")
-        if (-d "${zimbra_home}/zimlets-deployed/$zimlet" );
+      system("rm -rf /opt/zimbra/zimlets-deployed/$zimlet")
+        if (-d "/opt/zimbra/zimlets-deployed/$zimlet" );
     }
 
-    if (isEnabled("zimbra-ldap") && -x "${zimbra_home}/libexec/zmconvertdmod") {
+    if (isEnabled("zimbra-ldap") && -x "/opt/zimbra/libexec/zmconvertdmod") {
       progress ("Removing convertd mime tree from ldap...");
-      my $rc = runAsZimbra("${zimbra_home}/libexec/zmconvertdmod -d");
+      my $rc = runAsZimbra("/opt/zimbra/libexec/zmconvertdmod -d");
       progress (($rc == 0) ? "done.\n" : "failed. This may impact system functionality.\n");
     }
 }
@@ -6328,8 +6325,7 @@ sub configInstallZimlets {
   }
 
   # Install zimlets
-  my $zimbra_home = getLocalConfig("zimbra_home");
-  if (opendir DIR, "${zimbra_home}/zimlets-network") {
+  if (opendir DIR, "/opt/zimbra/zimlets-network") {
     progress ( "Installing network zimlets...\n" );
     my @zimlets = grep { !/^\./ } readdir(DIR);
     foreach my $zimletfile (@zimlets) {
@@ -6337,14 +6333,14 @@ sub configInstallZimlets {
       $zimlet =~ s/\.zip$//;
       next if (! isInstalled("zimbra-cluster") && $zimlet eq "com_zimbra_cluster");
       progress  ("\t$zimlet...");
-      my $rc = runAsZimbra ("${zimbra_home}/bin/zmzimletctl -l deploy zimlets-network/$zimletfile");
+      my $rc = runAsZimbra ("/opt/zimbra/bin/zmzimletctl -l deploy zimlets-network/$zimletfile");
       progress (($rc == 0) ? "done.\n" : "failed. This may impact system functionality.\n");
       # disable click2call zimlets by default.  #73987
       setLdapCOSConfig("+zimbraZimletAvailableZimlets", "-$zimlet")
         if ($zimlet =~ /click2call/);
 
       if (($rc == 0) && ($zimlet eq "com_zimbra_smime")) {
-        system("cp ${zimbra_home}/zimlets-deployed/com_zimbra_smime/com_zimbra_smime.jarx ${zimbra_home}/jetty/webapps/zimbra/public/com_zimbra_smime.jarx");
+        system("cp /opt/zimbra/zimlets-deployed/com_zimbra_smime/com_zimbra_smime.jarx /opt/zimbra/jetty/webapps/zimbra/public/com_zimbra_smime.jarx");
       }
     }
     progress ( "Finished installing network zimlets.\n" );
@@ -6354,7 +6350,6 @@ sub configInstallZimlets {
   if (!$newinstall) {
     my $ldap_pass = getLocalConfig("zimbra_ldap_password");
     my $ldap_master_url = getLocalConfig("ldap_master_url");
-    my $zimbra_home = getLocalConfig("zimbra_home");
     my $ldap;
     my @masters=split(/ /, $ldap_master_url);
     my $master_ref=\@masters;
@@ -6380,7 +6375,7 @@ sub configInstallZimlets {
       foreach my $entry ($result->all_entries) {
         my $zimlet = $entry->get_value('cn');
         foreach my $type (qw(zimlets-admin-extra zimlets-experimental zimlets-extra)) {
-          if (-e "${zimbra_home}/${type}/${zimlet}.zip") {
+          if (-e "/opt/zimbra/${type}/${zimlet}.zip") {
            progress  ("\t$zimlet...");
            my $rc = runAsZimbra ("/opt/zimbra/bin/zmzimletctl -l deploy ${type}/${zimlet}.zip");
            progress (($rc == 0) ? "done.\n" : "failed. This may impact system functionality.\n");

@@ -27,6 +27,7 @@ use FileHandle;
 use File::Grep qw (fgrep);
 use File::Path;
 use XML::Simple;
+
 my $zmlocalconfig="/opt/zimbra/bin/zmlocalconfig";
 my $type = qx(${zmlocalconfig} -m nokey convertd_stub_name 2> /dev/null);
 chomp $type;
@@ -631,8 +632,7 @@ sub upgrade {
     }
      if ( $startMajor = 7 && $targetMajor >= 8) {
        # Bug #78297
-       my $zimbra_home = main::getLocalConfig("zimbra_home") || "/opt/zimbra";
-       my $imap_cache_data_files = $zimbra_home . "/data/mailboxd/imap-*";
+       my $imap_cache_data_files = "/opt/zimbra/data/mailboxd/imap-*";
        system("/bin/rm -f ${imap_cache_data_files} 2> /dev/null");
      }
     stopSql();
@@ -703,11 +703,10 @@ sub upgrade602GA {
   }
   if (main::isInstalled("zimbra-store")) {
     # 40536
-    my $zimbra_home=main::getLocalConfig("zimbra_home");
-    system("rm -rf ${zimbra_home}/zimlets-deployed/zimlet")
-      if ( -d "${zimbra_home}/zimlets-deployed/zimlet");
-    system("rm -rf ${zimbra_home}/mailboxd/webapps/service/zimlet")
-      if ( -d "${zimbra_home}/mailboxd/webapps/service/zimlet");
+    system("rm -rf /opt/zimbra/zimlets-deployed/zimlet")
+      if ( -d "/opt/zimbra/zimlets-deployed/zimlet");
+    system("rm -rf /opt/zimbra/mailboxd/webapps/service/zimlet")
+      if ( -d "/opt/zimbra/mailboxd/webapps/service/zimlet");
     # 40839
     main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-pid-file-fixup --section=mysqld_safe --key=pid-file --unset /opt/zimbra/conf/my.cnf");
     main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.post-${targetVersion}-pid-file-fixup --section=mysqld_safe --key=pid-file --set --value=/opt/zimbra/db/mysql.pid /opt/zimbra/conf/my.cnf");
@@ -857,14 +856,12 @@ sub upgrade607GA {
   }
 
   if (main::isInstalled("zimbra-mta")) {
-    my $zimbra_home = main::getLocalConfig("zimbra_home");
-    $zimbra_home = "/opt/zimbra" if ($zimbra_home eq "");
     #bug 27165
-    if ( -f "${zimbra_home}/data/clamav/db/daily.cvd" ) {
-     unlink("${zimbra_home}/data/clamav/db/daily.cvd");
+    if ( -f "/opt/zimbra/data/clamav/db/daily.cvd" ) {
+     unlink("/opt/zimbra/data/clamav/db/daily.cvd");
     }
-    if ( -f "${zimbra_home}/data/clamav/db/main.cvd" ) {
-     unlink("${zimbra_home}/data/clamav/db/main.cvd");
+    if ( -f "/opt/zimbra/data/clamav/db/main.cvd" ) {
+     unlink("/opt/zimbra/data/clamav/db/main.cvd");
     } 
     # bug 47066
     main::setLocalConfig("postfix_always_add_missing_headers", "yes");
@@ -1264,13 +1261,12 @@ sub upgrade701GA {
 sub upgrade710GA {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
   main::progress("Updating from 7.1.0_GA\n");
-  my $zimbra_home = main::getLocalConfig("zimbra_home") || "/opt/zimbra";
   my $mysql_data_directory = 
-    main::getLocalConfig("mysql_data_directory") || "${zimbra_home}/db/data";
+    main::getLocalConfig("mysql_data_directory") || "/opt/zimbra/db/data";
   my $zimbra_tmp_directory = 
-    main::getLocalConfig("zimbra_tmp_directory") || "${zimbra_home}/data/tmp";
+    main::getLocalConfig("zimbra_tmp_directory") || "/opt/zimbra/data/tmp";
   my $mysql_mycnf = 
-    main::getLocalConfig("mysql_mycnf") || "${zimbra_home}/conf/my.cnf";
+    main::getLocalConfig("mysql_mycnf") || "/opt/zimbra/conf/my.cnf";
 
   if (main::isInstalled("zimbra-ldap")) {
     if ($isLdapMaster) {
@@ -1497,14 +1493,13 @@ sub upgrade720GA {
   main::setLocalConfig("ldap_read_timeout", "0"); #70437
   if (main::isInstalled("zimbra-store")) {
     # Bug #64466
-    my $zimbra_home = main::getLocalConfig("zimbra_home") || "/opt/zimbra";
-    my $imap_cache_data_directory = $zimbra_home . "/data/mailboxd/imap";
+    my $imap_cache_data_directory = "/opt/zimbra/data/mailboxd/imap";
     rmtree("${imap_cache_data_directory}")
       if ( -d "${imap_cache_data_directory}/");
-    if ( -d "${zimbra_home}/zimlets-deployed/com_zimbra_smime/") {
+    if ( -d "/opt/zimbra/zimlets-deployed/com_zimbra_smime/") {
       main::runAsZimbra("/opt/zimbra/bin/zmzimletctl -l undeploy com_zimbra_smime");
-      system("rm -rf ${zimbra_home}/mailboxd/webapps/service/zimlet/com_zimbra_smime")
-        if (-d "${zimbra_home}/mailboxd/webapps/service/zimlet/com_zimbra_smime" );
+      system("rm -rf /opt/zimbra/mailboxd/webapps/service/zimlet/com_zimbra_smime")
+        if (-d "/opt/zimbra/mailboxd/webapps/service/zimlet/com_zimbra_smime" );
     }
   }
   
@@ -1725,10 +1720,9 @@ sub upgrade800BETA3 {
     main::runAsZimbra("perl -I${scriptDir} ${scriptDir}/migrate20120210-AddSearchNoOp.pl");
   }
   if (main::isInstalled("zimbra-store")) {
-    my $zimbra_home = main::getLocalConfig("zimbra_home") || "/opt/zimbra";
-    if (-e "${zimbra_home}/jetty-6.1.22.z6/etc/jetty.keytab") {
-      qx(mkdir -p ${zimbra_home}/data/mailboxd/spnego);
-      qx(cp -pf ${zimbra_home}/jetty-6.1.22.z6/etc/jetty.keytab ${zimbra_home}/data/mailboxd/spnego/jetty.keytab);
+    if (-e "/opt/zimbra/jetty-6.1.22.z6/etc/jetty.keytab") {
+      qx(mkdir -p /opt/zimbra/data/mailboxd/spnego);
+      qx(cp -pf /opt/zimbra/jetty-6.1.22.z6/etc/jetty.keytab /opt/zimbra/data/mailboxd/spnego/jetty.keytab);
     }
   }
   if (main::isInstalled("zimbra-octopus")) {
@@ -2173,13 +2167,12 @@ sub upgrade850BETA1 {
     }
     my $disclaimerEnabled = main::getLdapConfigValue("zimbraDomainMandatoryMailSignatureEnabled");
     if(lc($disclaimerEnabled) eq "true") {
-      my $zimbra_home = main::getLocalConfig("zimbra_home") || "/opt/zimbra";
-      unlink("$zimbra_home/data/altermime/global-default.txt");
-      unlink("$zimbra_home/data/altermime/global-default.html");
+      unlink("/opt/zimbra/data/altermime/global-default.txt");
+      unlink("/opt/zimbra/data/altermime/global-default.html");
       my @domains = qx($su "$ZMPROV gad");
       foreach my $domain (@domains) {
         chomp $domain;
-        main::runAsZimbra("${zimbra_home}/libexec/zmaltermimeconfig -e $domain");
+        main::runAsZimbra("/opt/zimbra/libexec/zmaltermimeconfig -e $domain");
       }
     }
     my $localxml = XMLin("/opt/zimbra/conf/localconfig.xml");
@@ -2306,8 +2299,8 @@ sub upgrade850BETA1 {
     }
     $lc_attr= $localxml->{key}->{postfix_header_checks}->{value};
     if (defined($lc_attr)) {
-      if ($lc_attr =~ /\${zimbra_home}/) {
-        $lc_attr =~ s/\${zimbra_home}/\/opt\/zimbra/;
+      if ($lc_attr =~ /\/opt/zimbra/) {
+        $lc_attr =~ s/\/opt/zimbra/\/opt\/zimbra/;
       }
       $lc_attr =~ s/, /,/g;
       $lc_attr =~ s/\s+/ /g;
@@ -2349,8 +2342,8 @@ sub upgrade850BETA1 {
     }
     $lc_attr= $localxml->{key}->{postfix_queue_directory}->{value};
     if (defined($lc_attr)) {
-      if ($lc_attr =~ /\${zimbra_home}/) {
-        $lc_attr =~ s/\${zimbra_home}/\/opt\/zimbra/;
+      if ($lc_attr =~ /\/opt/zimbra/) {
+        $lc_attr =~ s/\/opt/zimbra/\/opt\/zimbra/;
       }
       main::setLdapServerConfig($hn, 'zimbraMtaQueueDirectory', "$lc_attr");
     }
@@ -2478,8 +2471,8 @@ sub upgrade850BETA1 {
     }
     $lc_attr= $localxml->{key}->{postfix_sender_canonical_maps}->{value};
     if (defined($lc_attr)) {
-      if ($lc_attr =~ /\${zimbra_home}/) {
-        $lc_attr =~ s/\${zimbra_home}/\/opt\/zimbra/g;
+      if ($lc_attr =~ /\/opt/zimbra/) {
+        $lc_attr =~ s/\/opt/zimbra/\/opt\/zimbra/g;
       }
       $lc_attr =~ s/, /,/g;
       $lc_attr =~ s/\s+/ /g;
@@ -2519,8 +2512,8 @@ sub upgrade850BETA1 {
     }
     $lc_attr= $localxml->{key}->{postfix_transport_maps}->{value};
     if (defined($lc_attr)) {
-      if ($lc_attr =~ /\${zimbra_home}/) {
-        $lc_attr =~ s/\${zimbra_home}/\/opt\/zimbra/g;
+      if ($lc_attr =~ /\/opt/zimbra/) {
+        $lc_attr =~ s/\/opt/zimbra/\/opt\/zimbra/g;
       }
       $lc_attr =~ s/, /,/g;
       $lc_attr =~ s/\s+/ /g;
@@ -2528,8 +2521,8 @@ sub upgrade850BETA1 {
     }
     $lc_attr= $localxml->{key}->{postfix_virtual_alias_domains}->{value};
     if (defined($lc_attr)) {
-      if ($lc_attr =~ /\${zimbra_home}/) {
-        $lc_attr =~ s/\${zimbra_home}/\/opt\/zimbra/g;
+      if ($lc_attr =~ /\/opt/zimbra/) {
+        $lc_attr =~ s/\/opt/zimbra/\/opt\/zimbra/g;
       }
       $lc_attr =~ s/, /,/g;
       $lc_attr =~ s/\s+/ /g;
@@ -2537,8 +2530,8 @@ sub upgrade850BETA1 {
     }
     $lc_attr= $localxml->{key}->{postfix_virtual_alias_maps}->{value};
     if (defined($lc_attr)) {
-      if ($lc_attr =~ /\${zimbra_home}/) {
-        $lc_attr =~ s/\${zimbra_home}/\/opt\/zimbra/g;
+      if ($lc_attr =~ /\/opt/zimbra/) {
+        $lc_attr =~ s/\/opt/zimbra/\/opt\/zimbra/g;
       }
       $lc_attr =~ s/, /,/g;
       $lc_attr =~ s/\s+/ /g;
@@ -2546,8 +2539,8 @@ sub upgrade850BETA1 {
     }
     $lc_attr= $localxml->{key}->{postfix_virtual_mailbox_domains}->{value};
     if (defined($lc_attr)) {
-      if ($lc_attr =~ /\${zimbra_home}/) {
-        $lc_attr =~ s/\${zimbra_home}/\/opt\/zimbra/g;
+      if ($lc_attr =~ /\/opt/zimbra/) {
+        $lc_attr =~ s/\/opt/zimbra/\/opt\/zimbra/g;
       }
       $lc_attr =~ s/, /,/g;
       $lc_attr =~ s/\s+/ /g;
@@ -2555,8 +2548,8 @@ sub upgrade850BETA1 {
     }
     $lc_attr= $localxml->{key}->{postfix_virtual_mailbox_maps}->{value};
     if (defined($lc_attr)) {
-      if ($lc_attr =~ /\${zimbra_home}/) {
-        $lc_attr =~ s/\${zimbra_home}/\/opt\/zimbra/g;
+      if ($lc_attr =~ /\/opt/zimbra/) {
+        $lc_attr =~ s/\/opt/zimbra/\/opt\/zimbra/g;
       }
       $lc_attr =~ s/, /,/g;
       $lc_attr =~ s/\s+/ /g;
@@ -3016,43 +3009,39 @@ sub doMysqlTableCheck {
 }
 
 sub doMysql51Upgrade {
-    my $zimbra_home = main::getLocalConfig("zimbra_home") || "/opt/zimbra";
     my $mysql_mycnf = main::getLocalConfig("mysql_mycnf"); 
-    my $zimbra_log_directory = main::getLocalConfig("zimbra_log_directory") || "${zimbra_home}/log"; 
+    my $zimbra_log_directory = main::getLocalConfig("zimbra_log_directory") || "/opt/zimbra/log"; 
 
-    main::runAsZimbra("${zimbra_home}/libexec/zminiutil --backup=.pre-${targetVersion} --section=mysqld --key=ignore-builtin-innodb --set ${mysql_mycnf}");
-    main::runAsZimbra("${zimbra_home}/libexec/zminiutil --backup=.pre-${targetVersion} --section=mysqld --set --key=plugin-load --value='innodb=ha_innodb_plugin.so;innodb_trx=ha_innodb_plugin.so;innodb_locks=ha_innodb_plugin.so;innodb_lock_waits=ha_innodb_plugin.so;innodb_cmp=ha_innodb_plugin.so;innodb_cmp_reset=ha_innodb_plugin.so;innodb_cmpmem=ha_innodb_plugin.so;innodb_cmpmem_reset=ha_innodb_plugin.so' ${mysql_mycnf}");
-    main::runAsZimbra("${zimbra_home}/libexec/zminiutil --backup=.pre-${targetVersion} --section=mysqld --unset --key=log-long-format ${mysql_mycnf}");
-    main::runAsZimbra("${zimbra_home}/libexec/zminiutil --backup=.pre-${targetVersion} --section=mysqld --unset --key=log-slow-queries ${mysql_mycnf}");
-    main::runAsZimbra("${zimbra_home}/libexec/zminiutil --backup=.pre-${targetVersion} --section=mysqld --set --key=slow_query_log --value=1 ${mysql_mycnf}");
-    main::runAsZimbra("${zimbra_home}/libexec/zminiutil --backup=.pre-${targetVersion} --section=mysqld --set --key=slow_query_log_file --value=${zimbra_log_directory}/myslow.log ${mysql_mycnf}");
+    main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion} --section=mysqld --key=ignore-builtin-innodb --set ${mysql_mycnf}");
+    main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion} --section=mysqld --set --key=plugin-load --value='innodb=ha_innodb_plugin.so;innodb_trx=ha_innodb_plugin.so;innodb_locks=ha_innodb_plugin.so;innodb_lock_waits=ha_innodb_plugin.so;innodb_cmp=ha_innodb_plugin.so;innodb_cmp_reset=ha_innodb_plugin.so;innodb_cmpmem=ha_innodb_plugin.so;innodb_cmpmem_reset=ha_innodb_plugin.so' ${mysql_mycnf}");
+    main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion} --section=mysqld --unset --key=log-long-format ${mysql_mycnf}");
+    main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion} --section=mysqld --unset --key=log-slow-queries ${mysql_mycnf}");
+    main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion} --section=mysqld --set --key=slow_query_log --value=1 ${mysql_mycnf}");
+    main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion} --section=mysqld --set --key=slow_query_log_file --value=${zimbra_log_directory}/myslow.log ${mysql_mycnf}");
     if (fgrep { /^log-bin/ } ${mysql_mycnf}) {
-      main::runAsZimbra("${zimbra_home}/libexec/zminiutil --backup=.pre-${targetVersion} --section=mysqld --set --key=binlog-format --value=MIXED ${mysql_mycnf}");
+      main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion} --section=mysqld --set --key=binlog-format --value=MIXED ${mysql_mycnf}");
     }
 }
 
 sub doMysql55Upgrade {
-    my $zimbra_home = main::getLocalConfig("zimbra_home") || "/opt/zimbra";
     my $mysql_mycnf = main::getLocalConfig("mysql_mycnf"); 
-    my $zimbra_log_directory = main::getLocalConfig("zimbra_log_directory") || "${zimbra_home}/log"; 
-    main::runAsZimbra("${zimbra_home}/libexec/zminiutil --backup=.pre-${targetVersion} --section=mysqld --unset --key=ignore-builtin-innodb ${mysql_mycnf}");
-    main::runAsZimbra("${zimbra_home}/libexec/zminiutil --backup=.pre-${targetVersion} --section=mysqld --unset --key=plugin-load ${mysql_mycnf}");
+    my $zimbra_log_directory = main::getLocalConfig("zimbra_log_directory") || "/opt/zimbra/log"; 
+    main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion} --section=mysqld --unset --key=ignore-builtin-innodb ${mysql_mycnf}");
+    main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion} --section=mysqld --unset --key=plugin-load ${mysql_mycnf}");
 }
 
 sub doAntiSpamMysql55Upgrade {
-    my $zimbra_home = main::getLocalConfig("zimbra_home") || "/opt/zimbra";
     my $antispam_mysql_mycnf = main::getLocalConfig("antispam_mysql_mycnf"); 
-    my $zimbra_log_directory = main::getLocalConfig("zimbra_log_directory") || "${zimbra_home}/log"; 
+    my $zimbra_log_directory = main::getLocalConfig("zimbra_log_directory") || "/opt/zimbra/log"; 
     if ( -e ${antispam_mysql_mycnf} ) {
-        main::runAsZimbra("${zimbra_home}/libexec/zminiutil --backup=.pre-${targetVersion} --section=mysqld --unset --key=ignore-builtin-innodb ${antispam_mysql_mycnf}");
-        main::runAsZimbra("${zimbra_home}/libexec/zminiutil --backup=.pre-${targetVersion} --section=mysqld --unset --key=plugin-load ${antispam_mysql_mycnf}");
+        main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion} --section=mysqld --unset --key=ignore-builtin-innodb ${antispam_mysql_mycnf}");
+        main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion} --section=mysqld --unset --key=plugin-load ${antispam_mysql_mycnf}");
     }
 }
 
 sub doMysql56Upgrade {
-    my $zimbra_home = main::getLocalConfig("zimbra_home") || "/opt/zimbra";
     my $mysql_mycnf = main::getLocalConfig("mysql_mycnf"); 
-    my $zimbra_log_directory = main::getLocalConfig("zimbra_log_directory") || "${zimbra_home}/log"; 
+    my $zimbra_log_directory = main::getLocalConfig("zimbra_log_directory") || "/opt/zimbra/log"; 
     main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-table_cache-fixup --section=mysqld --key=table_cache --unset ${mysql_mycnf}");
     main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-table_open_cache-fixup --section=mysqld --key=table_open_cache --setmin --value=1200 ${mysql_mycnf}");
 }
@@ -3060,10 +3049,9 @@ sub doMysql56Upgrade {
 sub doMysqlUpgrade {
     my $db_pass = main::getLocalConfig("mysql_root_password");
     my $zimbra_tmp = main::getLocalConfig("zimbra_tmp_directory") || "/tmp";
-    my $zimbra_home = main::getLocalConfig("zimbra_home") || "/opt/zimbra";
     my $mysql_socket = main::getLocalConfig("mysql_socket");
     my $mysql_mycnf = main::getLocalConfig("mysql_mycnf"); 
-    my $mysqlUpgrade = "${zimbra_home}/mysql/bin/mysql_upgrade";
+    my $mysqlUpgrade = "/opt/zimbra/mysql/bin/mysql_upgrade";
     my $cmd = "$mysqlUpgrade --defaults-file=$mysql_mycnf -S $mysql_socket --user=root --password=$db_pass";
     main::progress("Running mysql_upgrade...");
     main::runAsZimbra("$cmd > ${zimbra_tmp}/mysql_upgrade.out 2>&1");
