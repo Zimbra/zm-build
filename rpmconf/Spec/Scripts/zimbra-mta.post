@@ -56,7 +56,7 @@ rm -f /opt/zimbra/mta/mysql
 ln -s /opt/zimbra/mta/mysql-5.5.36 /opt/zimbra/mta/mysql
 
 rm -f /opt/zimbra/altermime
-ln -s /opt/zimbra/altermime-0.3.10 /opt/zimbra/altermime
+ln -s /opt/zimbra/altermime-0.3-20100505 /opt/zimbra/altermime
 
 PLAT=$(/opt/zimbra/libexec/get_plat_tag.sh)
 if [[ $PLAT == "UBUNTU"* || $PLAT == "DEBIAN"* ]]; then
