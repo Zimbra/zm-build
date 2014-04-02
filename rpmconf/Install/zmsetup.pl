@@ -1017,6 +1017,7 @@ sub setLdapDefaults {
     $config{zimbraDNSMasterIP} = getLdapServerValue("zimbraDNSMasterIP");
     $config{zimbraDNSUseTCP} = getLdapServerValue("zimbraDNSUseTCP");
     $config{zimbraDNSUseUDP} = getLdapServerValue("zimbraDNSUseUDP");
+    $config{zimbraDNSTCPUpstream} = getLdapServerValue("zimbraDNSTCPUpstream");
 
     $config{IMAPPORT}         = getLdapServerValue("zimbraImapBindPort");
     $config{IMAPSSLPORT}      = getLdapServerValue("zimbraImapSSLBindPort");
@@ -1428,6 +1429,7 @@ sub setDefaults {
     $config{zimbraDNSMasterIP} = "";
     $config{zimbraDNSUseTCP} = "yes";
     $config{zimbraDNSUseUDP} = "yes";
+    $config{zimbraDNSTCPUpstream} = "no";
   }
 
   if (isEnabled("zimbra-store")) {
@@ -3957,6 +3959,13 @@ sub createDNSCacheMenu {
       "arg" => "zimbraDNSUseUDP",
       };
     $i++;
+    $$lm{menuitems}{$i} = { 
+      "prompt" => "Only allow TCP to communicate with Master DNS:", 
+      "var" => \$config{zimbraDNSTCPUpstream}, 
+      "callback" => \&toggleYN,
+      "arg" => "zimbraDNSTCPUpstream",
+      };
+    $i++;
   }
   return $lm;
 }
@@ -5806,6 +5815,9 @@ sub configSetDNSCacheDefaults {
   progress(($rc == 0) ? "done.\n" : "failed.\n");
   progress( "Setting DNS cache udp lookup preference...");
   $rc=main::runAsZimbra("$ZMPROV ms $config{HOSTNAME} zimbraDNSUseUDP $config{zimbraDNSUseUDP}");
+  progress(($rc == 0) ? "done.\n" : "failed.\n");
+  progress( "Setting DNS tcp upstream preference...");
+  $rc=main::runAsZimbra("$ZMPROV ms $config{HOSTNAME} zimbraDNSTCPUpstream $config{zimbraDNSTCPUpstream}");
   progress(($rc == 0) ? "done.\n" : "failed.\n");
   configLog("zimbraDNSCache");
 }
