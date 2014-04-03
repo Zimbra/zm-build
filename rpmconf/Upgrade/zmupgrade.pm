@@ -2115,6 +2115,10 @@ sub upgrade850BETA1 {
       main::setLocalConfig("mailboxd_java_options", $new_mailboxd_options)
         if ($new_mailboxd_options ne "");
     }
+     my @zimbraReverseProxyUpstreamEwsServers=qx($su "$ZMPROV gacf zimbraReverseProxyUpstreamEwsServers");
+     if (!grep($hn, @zimbraReverseProxyUpstreamEwsServers)) {
+      main::runAsZimbra("$ZMPROV mcf +zimbraReverseProxyUpstreamEwsServers $hn");
+    }
   }
   if (main::isInstalled("zimbra-ldap")) {
     if ($isLdapMaster) {
