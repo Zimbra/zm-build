@@ -2678,7 +2678,7 @@ sub upgrade850BETA2 {
     my $mailboxd_java_options=main::getLocalConfigRaw("mailboxd_java_options");
     my $new_mailboxd_options="";
     if ($mailboxd_java_options !~ /-Xloggc/) {
-      $new_mailboxd_options .= " -Xloggc:/opt/zimbra/log/gc.log -XX:-UseGCLogFileRotation -XX:NumberOfGClogFiles=20 -XX:GCLogFileSize=4096K"
+      $new_mailboxd_options .= " -Xloggc:/opt/zimbra/log/gc.log -XX:-UseGCLogFileRotation -XX:NumberOfGCLogFiles=20 -XX:GCLogFileSize=4096K"
       $new_mailboxd_options =~ s/^\s+//;
       main::setLocalConfig("mailboxd_java_options", $new_mailboxd_options)
         if ($new_mailboxd_options ne "");
