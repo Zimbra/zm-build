@@ -5694,6 +5694,9 @@ sub configSetStoreDefaults {
   if(isEnabled("zimbra-proxy") || $config{zimbraMailProxy} eq "TRUE" || $config{zimbraWebProxy} eq "TRUE") {
     $config{zimbraReverseProxyLookupTarget}="TRUE";
   }
+  if ($newinstall && isNetwork()) {
+    setLdapGlobalConfig("zimbraReverseProxyUpstreamEwsServers", "$config{HOSTNAME}");
+  }
   setLdapServerConfig("zimbraReverseProxyLookupTarget", $config{zimbraReverseProxyLookupTarget});
   setLdapServerConfig("zimbraMtaAuthTarget", "TRUE");
   my $upstream="-u";
@@ -5701,7 +5704,7 @@ sub configSetStoreDefaults {
     $upstream="-U";
   }
   if ($newinstall && ($config{zimbraWebProxy} eq "TRUE" || $config{zimbraMailProxy} eq "TRUE")) {
-    if ($config{zimbraMailProxy} eq "TRUE") {
+      if ($config{zimbraMailProxy} eq "TRUE") {
            runAsZimbra("/opt/zimbra/libexec/zmproxyconfig $upstream -m -e -o ".
                        "-i $config{IMAPPORT}:$config{IMAPPROXYPORT}:$config{IMAPSSLPORT}:$config{IMAPSSLPROXYPORT} ".
                        "-p $config{POPPORT}:$config{POPPROXYPORT}:$config{POPSSLPORT}:$config{POPSSLPROXYPORT} -H $config{HOSTNAME}");
@@ -5727,6 +5730,8 @@ sub configSetStoreDefaults {
 
   setLdapGlobalConfig("zimbraVersionCheckInterval", "0")
     if ($config{VERSIONUPDATECHECKS} eq "FALSE");
+    
+
 }
 
 sub configSetServicePorts {
@@ -6004,7 +6009,7 @@ sub setProxyBits {
 
   push(@zmprov_args, ('zimbraReverseProxyUserLoginLimitTime', '3600'))
     if(getLdapConfigValue("zimbraReverseProxyUserLoginLimitTime") eq "");
-
+    
   push(@zmprov_args, ('zimbraMailProxyPort', '0'))
     if(getLdapConfigValue("zimbraMailProxyPort") eq "");
 
@@ -6168,6 +6173,7 @@ sub removeNetworkComponents {
       my $rc = runAsZimbra("/opt/zimbra/libexec/zmconvertdmod -d");
       progress (($rc == 0) ? "done.\n" : "failed. This may impact system functionality.\n");
     }
+    setLdapGlobalConfig("zimbraReverseProxyUpstreamEwsServers","");
 }
 
 sub countUsers {
