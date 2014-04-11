@@ -2680,9 +2680,9 @@ sub upgrade850BETA2 {
   if (main::isInstalled("zimbra-store")) {
     my $mailboxd_java_options=main::getLocalConfigRaw("mailboxd_java_options");
     if ($mailboxd_java_options !~ /-Xloggc/) {
-      $mailboxd_options .= " -Xloggc:/opt/zimbra/log/gc.log -XX:-UseGCLogFileRotation -XX:NumberOfGCLogFiles=20 -XX:GCLogFileSize=4096K";
-      $mailboxd_options =~ s/^\s+//;
-      main::setLocalConfig("mailboxd_java_options", $mailboxd_options);
+      $mailboxd_java_options .= " -Xloggc:/opt/zimbra/log/gc.log -XX:-UseGCLogFileRotation -XX:NumberOfGCLogFiles=20 -XX:GCLogFileSize=4096K";
+      $mailboxd_java_options =~ s/^\s+//;
+      main::setLocalConfig("mailboxd_java_options", $mailboxd_java_options);
     }
   }
   return 0;
