@@ -48,7 +48,7 @@ fi
 $EGREP 7.36.0 /opt/zimbra/curl-${CURL_VERSION}/bin/curl >/dev/null
 RC=$?
 
-if [ $RC -eq 1 ]; then
+if [ $RC -eq 0 ]; then
   echo "Error: Already patched"
   exit 1
 fi
