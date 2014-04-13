@@ -118,7 +118,7 @@ fi
 
 echo -n "Backing up old curl: "
 cd /opt/zimbra
-mv curl-${CURL_VERSION} curl-${CURL_VERSION}.sslprotocol$$
+mv curl-${CURL_VERSION} curl-${CURL_VERSION}.sslprotocol.$$
 echo "complete"
 
 echo -n "Installing patched curl: "
