@@ -5695,7 +5695,7 @@ sub configSetStoreDefaults {
     $config{zimbraReverseProxyLookupTarget}="TRUE";
   }
   if ($newinstall && isNetwork()) {
-    setLdapGlobalConfig("zimbraReverseProxyUpstreamEwsServers", "$config{HOSTNAME}");
+    setLdapGlobalConfig("+zimbraReverseProxyUpstreamEwsServers", "$config{HOSTNAME}");
   }
   setLdapServerConfig("zimbraReverseProxyLookupTarget", $config{zimbraReverseProxyLookupTarget});
   setLdapServerConfig("zimbraMtaAuthTarget", "TRUE");
