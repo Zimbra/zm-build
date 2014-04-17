@@ -23,7 +23,7 @@ rm -f /opt/zimbra/java
 PLAT=`/opt/zimbra/libexec/get_plat_tag.sh`
 BIT=`echo $PLAT | awk -F_ '{print $2}'`
 if [ "x$BIT" = "x64" ]; then
-	if [ x"$PLAT" = "xUBUNTU12_64" ]; then
+	if [ x"$PLAT" = "xUBUNTU12_64" -o x"$PLAT" = "xUBUNTU14_64" ]; then
 		ln -s /opt/zimbra/j2sdk-image /opt/zimbra/java
 	else
 		ln -s /opt/zimbra/jdk-1.7.0_51 /opt/zimbra/java
@@ -90,7 +90,7 @@ if [ x"$PLAT" = "xRHEL6_64" -o x"$PLAT" = "xRHEL7_64" ]; then
   sed -i -e '/PS2 QTDIR USERNAME PATH/!s/PS2 QTDIR USERNAME/PS2 QTDIR USERNAME PATH/' /etc/sudoers
 fi
 
-if [ x"$PLAT" = "xUBUNTU12_64" ]; then
+if [ x"$PLAT" = "xUBUNTU12_64" -o x"$PLAT" = "xUBUNTU14_64" ]; then
  sed -i -e '/^::1     ip6-localhost ip6-loopback localhost$/!s/::1     ip6-localhost ip6-loopback/::1     ip6-localhost ip6-loopback localhost/' /etc/hosts
 fi
 

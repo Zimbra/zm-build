@@ -62,6 +62,10 @@ ifeq ($(BUILD_PLATFORM), UBUNTU12_64)
 	ARCH := amd64
 endif
 
+ifeq ($(BUILD_PLATFORM), UBUNTU14_64)
+	ARCH := amd64
+endif
+
 ifeq ($(BUILD_PLATFORM), DEBIAN6_64)
 	ARCH := amd64
 endif
