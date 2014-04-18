@@ -242,8 +242,6 @@ sub upgrade {
     return 1; 
   }
 
-  my $needMysqlUpgrade = 0;
-
   getInstalledPackages();
 
   # Bug #73840 - need to delete /opt/zimbra/keyview before we try stopping services
@@ -253,26 +251,6 @@ sub upgrade {
 
   if (stopZimbra()) { return 1; }
 
-  my $curSchemaVersion;
-
-  if (main::isInstalled("zimbra-store")) {
-
-    my $found = 0;
-    foreach my $v (@versionOrder) {
-      $found = 1 if ($v eq $startVersion);
-      if ($found) {
-        &doMysql51Upgrade if ($v eq "7.0.0_BETA1");
-        &doMysql55Upgrade if ($v eq "8.0.0_BETA1");
-        &doMysql56Upgrade if ($v eq "8.5.0_BETA1");
-      }
-      last if ($v eq $targetVersion);
-    }
-
-    if (startSql()) { return 1; };
-
-    $curSchemaVersion = Migrate::getSchemaVersion();
-  }
- 
   if ($startVersion eq "6.0.0_GA") {
     main::progress("This appears to be 6.0.0_GA\n");
   } elsif ($startVersion eq "6.0.1_GA") {
@@ -390,17 +368,37 @@ sub upgrade {
     return 1;
   }
 
-  
-  my $found = 0;
-  foreach my $v (@versionOrder) {
-    $found = 1 if ($v eq $startVersion);
-    if ($found) {
-      $needMysqlUpgrade=1 if ($v eq "7.0.0_BETA1");
-      $needMysqlUpgrade=1 if ($v eq "8.0.0_GA");
-      $needMysqlUpgrade=1 if ($v eq "8.5.0_BETA1");
+  my $curSchemaVersion;
+  my $needMysqlUpgrade = 0;
+
+  if (main::isInstalled("zimbra-store")) {
+    my $version_found = 0;
+    foreach my $v (@versionOrder) {
+      $version_found = 1 if ($v eq $startVersion);
+      if ($version_found) {
+        &doMysql51Upgrade if ($v eq "7.0.0_BETA1");
+        &doMysql55Upgrade if ($v eq "8.0.0_BETA1");
+        &doMysql56Upgrade if ($v eq "8.5.0_BETA1");
+      }
+      last if ($v eq $targetVersion);
     }
-    last if ($v eq $targetVersion);
+
+    if (startSql()) { return 1; };
+
+    $curSchemaVersion = Migrate::getSchemaVersion();
+
+    my $schema_found = 0;
+    foreach my $v (@versionOrder) {
+      $schema_found = 1 if ($v eq $startVersion);
+      if ($schema_found) {
+        $needMysqlUpgrade=1 if ($v eq "7.0.0_BETA1");
+        $needMysqlUpgrade=1 if ($v eq "8.0.0_GA");
+        $needMysqlUpgrade=1 if ($v eq "8.5.0_BETA1");
+      }
+      last if ($v eq $targetVersion);
+    }
   }
+
   main::setLocalConfig("ssl_allow_untrusted_certs", "true") if ($startMajor <= 7 && $targetMajor >= 8);
   # start ldap
   if (main::isInstalled ("zimbra-ldap")) {
@@ -443,12 +441,10 @@ sub upgrade {
     stopSql();
   }
 
-  $found = 0;
+  my $found = 0;
   foreach my $v (@versionOrder) {
-    #main::progress("Checking $v\n");
     if ($v eq $startVersion) {
       $found = 1;
-      # skip startVersion func unless we are on the same version and build increments
       next unless ($startVersion eq $targetVersion && $targetBuild > $startBuild);
     }
     if ($found) {
@@ -465,6 +461,7 @@ sub upgrade {
       last;
     }
   }
+
   if ($isLdapMaster) {
     main::progress("Updating global config and COS's with attributes introduced after $startVersion...");
     main::progress((&runAttributeUpgrade($startVersion)) ? "failed.\n" : "done.\n");
