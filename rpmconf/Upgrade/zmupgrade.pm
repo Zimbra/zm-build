@@ -38,12 +38,9 @@ my $rundir = qx(dirname $0);
 chomp $rundir;
 my $scriptDir = "/opt/zimbra/libexec/scripts";
 
-my $lowVersion = 18;
+my $lowVersion = 52;
 my $hiVersion = 102; # this should be set to the DB version expected by current server code
 
-# Variables for the combo schema updater
-my $comboLowVersion = 20;
-my $comboHiVersion  = 27;
 my $needSlapIndexing = 0;
 my $mysqlcnfUpdated = 0;
 
@@ -71,7 +68,6 @@ if (lc($isLdapMaster) eq "true" ) {
 my $ZMPROV = "/opt/zimbra/bin/zmprov -r -m -l --";
 
 my %updateScripts = (
-  'ComboUpdater' => "migrate-ComboUpdater.pl",
   '53' => "migrate20080930-MucService.pl",             # this upgrades to 60 for 6_0_0 GA
    # 54-59 skipped for possible FRANKLIN use
   '60' => "migrate20090315-MobileDevices.pl",
@@ -432,12 +428,6 @@ sub upgrade {
 
     if ($curSchemaVersion < $hiVersion) {
       main::progress("Schema upgrade required from version $curSchemaVersion to $hiVersion.\n");
-    }
-
-    # fast tracked updater (ie invoke mysql once)
-    if ($curSchemaVersion >= $comboLowVersion && $curSchemaVersion < $comboHiVersion) {
-      if (runSchemaUpgrade("ComboUpdater")) { return 1; }
-      $curSchemaVersion = Migrate::getSchemaVersion();
     }
 
     # the old slow painful way (ie lots of mysql invocations)
