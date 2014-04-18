@@ -2428,7 +2428,7 @@ getPlatformVars() {
       PRESUG_PACKAGES="pax perl-5.14.2 sysstat sqlite3"
       STORE_PACKAGES="libreoffice"
     fi
-    if [ $PLATFORM = "UBUNTU12_64" ]; then
+    if [ $PLATFORM = "UBUNTU14_64" ]; then
       PREREQ_PACKAGES="netcat-openbsd sudo libidn11 libpcre3 libgmp10 libexpat1 libstdc++6 libperl5.18 libaio1 resolvconf"
       PRESUG_PACKAGES="pax perl-5.18.2 sysstat sqlite3"
       STORE_PACKAGES="libreoffice"
