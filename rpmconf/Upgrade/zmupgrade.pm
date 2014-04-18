@@ -426,8 +426,6 @@ sub upgrade {
     $targetVersion =~ /(\d+)\.(\d+)\.(\d+_[^_]*)/;
 
   my $needVolumeHack = 0;
-  my $needMysqlTableCheck = 0;
-  my $needMysqlUpgrade = 0;
 
   getInstalledPackages();
 
@@ -438,25 +436,6 @@ sub upgrade {
 
   if (stopZimbra()) { return 1; }
 
-  my $curSchemaVersion;
-
-  if (main::isInstalled("zimbra-store")) {
-
-    my $found = 0;
-    foreach my $v (@versionOrder) {
-      $found = 1 if ($v eq $startVersion);
-      if ($found) {
-        &doMysql51Upgrade if ($v eq "7.0.0_BETA1");
-        &doMysql55Upgrade if ($v eq "8.0.0_BETA1");
-      }
-      last if ($v eq $targetVersion);
-    }
-
-    if (startSql()) { return 1; };
-
-    $curSchemaVersion = Migrate::getSchemaVersion();
-  }
- 
   if ($startVersion eq "3.0.0_GA") {
     main::progress("This appears to be 3.0.0_GA\n");
   } elsif ($startVersion eq "3.0.1_GA") {
@@ -723,17 +702,37 @@ sub upgrade {
     return 1;
   }
 
-  
-  my $found = 0;
-  foreach my $v (@versionOrder) {
-    $found = 1 if ($v eq $startVersion);
-    if ($found) {
-      $needMysqlTableCheck=1 if ($v eq "4.5.2_GA");
-      $needMysqlUpgrade=1 if ($v eq "7.0.0_BETA1");
-      $needMysqlUpgrade=1 if ($v eq "8.0.0_GA");
+  my $curSchemaVersion;
+  my $needMysqlTableCheck = 0;
+  my $needMysqlUpgrade = 0;
+
+  if (main::isInstalled("zimbra-store")) {
+    my $version_found = 0;
+    foreach my $v (@versionOrder) {
+      $version_found = 1 if ($v eq $startVersion);
+      if ($version_found) {
+        &doMysql51Upgrade if ($v eq "7.0.0_BETA1");
+        &doMysql55Upgrade if ($v eq "8.0.0_BETA1");
+      }
+      last if ($v eq $targetVersion);
     }
-    last if ($v eq $targetVersion);
+
+    if (startSql()) { return 1; };
+
+    $curSchemaVersion = Migrate::getSchemaVersion();
+
+    my $schema_found = 0;
+    foreach my $v (@versionOrder) {
+      $schema_found = 1 if ($v eq $startVersion);
+      if ($schema_found) {
+        $needMysqlTableCheck=1 if ($v eq "4.5.2_GA");
+        $needMysqlUpgrade=1 if ($v eq "7.0.0_BETA1");
+        $needMysqlUpgrade=1 if ($v eq "8.0.0_GA");
+      }
+      last if ($v eq $targetVersion);
+    }
   }
+  
   main::setLocalConfig("ssl_allow_untrusted_certs", "true") if ($startMajor <= 7 && $targetMajor >= 8);
   # start ldap
   if (main::isInstalled ("zimbra-ldap")) {
@@ -784,7 +783,7 @@ sub upgrade {
     stopSql();
   }
 
-  $found = 0;
+  my $found = 0;
   foreach my $v (@versionOrder) {
     #main::progress("Checking $v\n");
     if ($v eq $startVersion) {
