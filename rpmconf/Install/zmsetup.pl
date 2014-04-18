@@ -1,5 +1,5 @@
 #!/usr/bin/perl
-# 
+#
 # ***** BEGIN LICENSE BLOCK *****
 # Zimbra Collaboration Suite Server
 # Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
@@ -115,7 +115,14 @@ my %packageServiceMap = (
   convertd  => "zimbra-convertd",
 );
 
+my @webappList = (
+  "service",
+  "zimbra",
+  "zimbraAdmin",
+);
+
 my %installedPackages = ();
+my %installedWebapps = ();
 my %prevInstalledPackages = ();
 my %enabledPackages = ();
 my %enabledServices = ();
@@ -202,6 +209,13 @@ if (! $newinstall ) {
 }
 
 getInstalledPackages();
+getInstalledWebapps();
+
+foreach (@webappList) {
+    if ($_ eq $config{webapps}) {
+        
+    }
+}
 
 unless (isEnabled("zimbra-core")) {
   progress("zimbra-core must be enabled.");
@@ -330,8 +344,6 @@ sub saveConfig {
         print CONF "$_ ";
       }
     }
-    print CONF "\"\n";
-    close CONF;
     chmod 0600, $fname;
     progress ("done.\n");
   } else {
@@ -508,6 +520,24 @@ sub getInstalledPackages {
     } 
   }
   
+}
+
+sub getInstalledWebapps {
+  detail("Determining installed web applications");
+  my $webappsDir = "/opt/zimbra/jetty/webapps";
+  foreach my $app (@webappList) {
+    if (-d "$webappsDir/$app") {
+      $installedWebapps{$app}="Enabled";
+      detail("Web application $app is enabled.");
+      if (!defined($config{INSTALL_WEBAPPS})) {
+        $config{INSTALL_WEBAPPS}="$app";
+      } else {
+        $config{INSTALL_WEBAPPS}="$config{INSTALL_WEBAPPS} $app";
+      }
+    } else {
+      $installedWebapps{$app}="Disabled";
+    }
+  }
 }
 
 sub isServiceEnabled {
@@ -5702,6 +5732,11 @@ sub configSetStoreDefaults {
   }
   if ($newinstall && isNetwork()) {
     setLdapGlobalConfig("+zimbraReverseProxyUpstreamEwsServers", "$config{HOSTNAME}");
+  }
+  foreach my $app (@webappList) {
+    if ($installedWebapps{$app} eq "Enabled") {
+      setLdapServerConfig("zimbraServiceEnabled", "$app");
+    }
   }
   setLdapServerConfig("zimbraReverseProxyLookupTarget", $config{zimbraReverseProxyLookupTarget});
   setLdapServerConfig("zimbraMtaAuthTarget", "TRUE");

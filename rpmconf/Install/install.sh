@@ -149,8 +149,10 @@ chmod 750 $SAVEDIR
 echo ""
 echo "Operations logged to $LOGFILE"
 
-if [ x$DEFAULTFILE != "x" ]; then
+if [ "x$DEFAULTFILE" != "x" ]; then
 	AUTOINSTALL="yes"
+else
+    AUTOINSTALL="no"
 fi
 
 if [ x"$LICENSE" != "x" ] && [ -e $LICENSE ]; then
@@ -290,6 +292,12 @@ if [ $UPGRADE = "yes" ]; then
   # deprecated by move of zimlets to /opt/zimbra/zimlets-deployed which isn't removed on upgrade
   #restoreZimlets
 
+fi
+
+# Remove webapps from zimbra-store that the user does not want installed.
+isInstalled zimbra-store
+if [ "x$PKGINSTALLED" != "x" ]; then
+    removeUnusedStoreWebapps
 fi
 
 if [ "x$LICENSE" != "x" ] && [ -f "$LICENSE" ]; then
