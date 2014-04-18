@@ -255,6 +255,12 @@ if ($options{c}) {
   mainMenu();
 }
 
+setLdapServerConfig($config{HOSTNAME}, 'zimbraServerVersion', $curVersion);
+setLdapServerConfig($config{HOSTNAME}, 'zimbraServerVersionMajor', $curVersionMajor);
+setLdapServerConfig($config{HOSTNAME}, 'zimbraServerVersionMinor', $curVersionMinor);
+setLdapServerConfig($config{HOSTNAME}, 'zimbraServerVersionMicro', $curVersionMicro);
+setLdapServerConfig($config{HOSTNAME}, 'zimbraServerVersionBuild', $curVersionBuild);
+
 close LOGFILE;
 chmod 0600, $logfile;
 if (-d "/opt/zimbra/log") {
@@ -6980,6 +6986,11 @@ sub applyConfig {
   }
   progress ( "\n\n" );
   if (!defined ($options{c})) {
+    setLdapServerConfig($config{HOSTNAME}, 'zimbraServerVersion', $curVersion);
+    setLdapServerConfig($config{HOSTNAME}, 'zimbraServerVersionMajor', $curVersionMajor);
+    setLdapServerConfig($config{HOSTNAME}, 'zimbraServerVersionMinor', $curVersionMinor);
+    setLdapServerConfig($config{HOSTNAME}, 'zimbraServerVersionMicro', $curVersionMicro);
+    setLdapServerConfig($config{HOSTNAME}, 'zimbraServerVersionBuild', $curVersionBuild);
     ask("Configuration complete - press return to exit", "");
     print "\n\n";
     close LOGFILE;

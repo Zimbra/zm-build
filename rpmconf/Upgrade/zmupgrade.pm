@@ -368,6 +368,71 @@ sub upgrade {
     return 1;
   }
 
+  if (!$isLdapMaster) {
+    my $ldap_master_url=main::getLocalConfig("ldap_master_url");
+    my $ldap_dn=main::getLocalConfig("zimbra_ldap_userdn");
+    my $ldap_pass=main::getLocalConfig("zimbra_ldap_password");
+    my $ldap_starttls_supported=main::getLocalConfig("ldap_starttls_supported");
+    my @ldap_masters=split(/ /, $ldap_master_url);
+    my $master_ref=\@ldap_masters;
+    my ($ldap, $result);
+    unless ($ldap = Net::LDAP->new( $master_ref, timeout =>30 )) {
+      main::progress("Connect: Unable to connect to ldap master.\n");
+      return 1;
+    }
+    if ( $ldap_starttls_supported ) {
+      my $result = $ldap->start_tls(
+           verify => 'require',
+           capath => "/opt/zimbra/conf/ca",
+         );
+      if ($result->code) {
+        main::progress("Unable to start TLS: ". $result->error . " when connecting to ldap master.\n");
+        return 1;
+      }
+    }
+    unless ($result = $ldap->bind($ldap_dn, password => $ldap_pass)) {
+      main::progress("Bind: Unable to bind to ldap master.\n");
+      return 1;
+    }
+    my $ldap_master_host=$ldap->host();
+    $result = $ldap->search(base => "cn=servers,cn=zimbra",
+                            filter => "cn=$ldap_master_host",
+                            attrs => [
+                                      'zimbraServerVersionMajor',
+                                      'zimbraServerVersionMinor',
+                                      'zimbraServerVersionMicro',
+                                      'zimbraServerVersionBuild',
+                                     ]);
+    if ($result->code) {
+      main::progress("Search error: Unable to search master.\n");
+    }
+    my $size = $result->count;
+    if($size != 1) {
+      warn "Size error: Invalid response from ldap master.\n";
+    }
+    my ($lmMajor, $lmMinor, $lmMicro);
+    my $entry = $result->entry(0);
+    $lmMajor = $entry->get_value('zimbraServerVersionMajor');
+    chomp($lmMajor);
+    $lmMinor = $entry->get_value('zimbraServerVersionMinor');
+    chomp($lmMinor);
+    $lmMicro = $entry->get_value('zimbraServerVersionMicro');
+    chomp($lmMicro);
+    if (($lmMajor != $targetMajor) && ($lmMinor != $targetMinor) && ($lmMicro != $targetMicro)) {
+      main::progress("Error: LDAP master MUST be upgraded first.\n");
+      $result = $ldap->unbind;
+      return 1;
+    } else {
+      my $lmBuild = $entry->get_value('zimbraServerVersionBuild');
+      if ($lmBuild < $targetBuild) {
+        main::progress("Error: LDAP Master MUST be upgraded first.\n");
+        $result = $ldap->unbind;
+        return 1;
+      }
+    }
+    $result = $ldap->unbind;
+  }
+
   my $curSchemaVersion;
   my $needMysqlUpgrade = 0;
 
