@@ -72,42 +72,6 @@ my $ZMPROV = "/opt/zimbra/bin/zmprov -r -m -l --";
 
 my %updateScripts = (
   'ComboUpdater' => "migrate-ComboUpdater.pl",
-  'UniqueVolume' => "migrate20051021-UniqueVolume.pl",
-  '18' => "migrate20050916-Volume.pl",
-  '19' => "migrate20050920-CompressionThreshold.pl",
-  '20' => "migrate20050927-DropRedologSequence.pl",    # 3.1.2
-  '21' => "migrate20060412-NotebookFolder.pl",
-  '22' => "migrate20060515-AddImapId.pl",
-  '23' => "migrate20060518-EmailedContactsFolder.pl",
-  '24' => "migrate20060708-FlagCalendarFolder.pl",
-  '25' => "migrate20060803-CreateMailboxMetadata.pl",
-  '26' => "migrate20060810-PersistFolderCounts.pl",    # 4.0.2
-  '27' => "migrate20060911-MailboxGroup.pl",           # 4.5.0_BETA1
-  '28' => "migrate20060929-TypedTombstones.pl",
-  '29' => "migrate20061101-IMFolder.pl",               # 4.5.0_RC1
-  '30' => "migrate20061117-TasksFolder.pl",            # 4.5.0_RC1
-  '31' => "migrate20061120-AddNameColumn.pl",          # 4.5.0_RC1
-  '32' => "migrate20061204-CreatePop3MessageTable.pl", # 4.5.0_RC1
-  '33' => "migrate20061205-UniqueAppointmentIndex.pl", # 4.5.0_RC1
-  '34' => "migrate20061212-RepairMutableIndexIds.pl",  # 4.5.0_RC1
-  '35' => "migrate20061221-RecalculateFolderSizes.pl", # 4.5.0_GA
-  '36' => "migrate20070306-Pop3MessageUid.pl",         # 5.0.0_BETA1
-  '37' => "migrate20070606-WidenMetadata.pl",          # 5.0.0_BETA2
-  '38' => "migrate20070614-BriefcaseFolder.pl",        # 5.0.0_BETA2
-  '39' => "migrate20070627-BackupTime.pl",             # 5.0.0_BETA2
-  '40' => "migrate20070629-IMTables.pl",               # 5.0.0_BETA2
-  '41' => "migrate20070630-LastSoapAccess.pl",         # 5.0.0_BETA2
-  '42' => "migrate20070703-ScheduledTask.pl",          # 5.0.0_BETA2
-  '43' => "migrate20070706-DeletedAccount.pl",         # 5.0.0_BETA2
-  '44' => "migrate20070725-CreateRevisionTable.pl",     # 5.0.0_BETA3
-  '45' => "migrate20070726-ImapDataSource.pl",          # 5.0.0_BETA3
-  '46' => "migrate20070921-ImapDataSourceUidValidity.pl", # 5.0.0_RC1
-  '47' => "migrate20070928-ScheduledTaskIndex.pl",     # 5.0.0_RC2
-  '48' => "migrate20071128-AccountId.pl",              # 5.0.0_RC3
-  '49' => "migrate20071206-WidenSizeColumns.pl",       # 5.0.0_GA
-  '50' => "migrate20080130-ImapFlags.pl",              # 5.0.3_GA
-  '51' => "migrate20080213-IndexDeferredColumn.pl",    # 5.0.3_GA
-  '52' => "migrate20080909-DataSourceItemTable.pl",    # 5.0.10_GA
   '53' => "migrate20080930-MucService.pl",             # this upgrades to 60 for 6_0_0 GA
    # 54-59 skipped for possible FRANKLIN use
   '60' => "migrate20090315-MobileDevices.pl",
@@ -277,8 +241,11 @@ sub upgrade {
   ($targetMajor,$targetMinor,$targetMicro) =
     $targetVersion =~ /(\d+)\.(\d+)\.(\d+_[^_]*)/;
 
-  my $needVolumeHack = 0;
-  my $needMysqlTableCheck = 0;
+  if ($startMajor < 6) {
+    main::progress("ERROR: Upgrading from a ZCS version less than 6.0.0_GA is not supported\n");
+    return 1; 
+  }
+
   my $needMysqlUpgrade = 0;
 
   getInstalledPackages();
@@ -310,158 +277,7 @@ sub upgrade {
     $curSchemaVersion = Migrate::getSchemaVersion();
   }
  
-  if ($startVersion eq "3.0.0_GA") {
-    main::progress("This appears to be 3.0.0_GA\n");
-  } elsif ($startVersion eq "3.0.1_GA") {
-    main::progress("This appears to be 3.0.1_GA\n");
-  } elsif ($startVersion eq "3.1.0_GA") {
-    main::progress("This appears to be 3.1.0_GA\n");
-    #$needVolumeHack = 1;
-  } elsif ($startVersion eq "3.1.1_GA") {
-    main::progress("This appears to be 3.1.1_GA\n");
-  } elsif ($startVersion eq "3.1.2_GA") {
-    main::progress("This appears to be 3.1.2_GA\n");
-  } elsif ($startVersion eq "3.1.3_GA") {
-    main::progress("This appears to be 3.1.3_GA\n");
-  } elsif ($startVersion eq "3.1.4_GA") {
-    main::progress("This appears to be 3.1.4_GA\n");
-  } elsif ($startVersion eq "3.2.0_M1") {
-    main::progress("This appears to be 3.2.0_M1\n");
-  } elsif ($startVersion eq "3.2.0_M2") {
-    main::progress("This appears to be 3.2.0_M2\n");
-  } elsif ($startVersion eq "4.0.0_RC1") {
-    main::progress("This appears to be 4.0.0_RC1\n");
-  } elsif ($startVersion eq "4.0.0_GA") {
-    main::progress("This appears to be 4.0.0_GA\n");
-  } elsif ($startVersion eq "4.0.1_GA") {
-    main::progress("This appears to be 4.0.1_GA\n");
-  } elsif ($startVersion eq "4.0.2_GA") {
-    main::progress("This appears to be 4.0.2_GA\n");
-  } elsif ($startVersion eq "4.0.3_GA") {
-    main::progress("This appears to be 4.0.3_GA\n");
-  } elsif ($startVersion eq "4.0.4_GA") {
-    main::progress("This appears to be 4.0.4_GA\n");
-  } elsif ($startVersion eq "4.0.5_GA") {
-    main::progress("This appears to be 4.0.5_GA\n");
-  } elsif ($startVersion eq "4.1.0_BETA1") {
-    main::progress("This appears to be 4.1.0_BETA1\n");
-  } elsif ($startVersion eq "4.5.0_BETA1") {
-    main::progress("This appears to be 4.5.0_BETA1\n");
-  } elsif ($startVersion eq "4.5.0_BETA2") {
-    main::progress("This appears to be 4.5.0_BETA2\n");
-  } elsif ($startVersion eq "4.5.0_RC1") {
-    main::progress("This appears to be 4.5.0_RC1\n");
-  } elsif ($startVersion eq "4.5.0_RC2") {
-    main::progress("This appears to be 4.5.0_RC2\n");
-  } elsif ($startVersion eq "4.5.0_GA") {
-    main::progress("This appears to be 4.5.0_GA\n");
-  } elsif ($startVersion eq "4.5.1_GA") {
-    main::progress("This appears to be 4.5.1_GA\n");
-  } elsif ($startVersion eq "4.5.2_GA") {
-    main::progress("This appears to be 4.5.2_GA\n");
-  } elsif ($startVersion eq "4.5.3_GA") {
-    main::progress("This appears to be 4.5.3_GA\n");
-  } elsif ($startVersion eq "4.5.4_GA") {
-    main::progress("This appears to be 4.5.4_GA\n");
-  } elsif ($startVersion eq "4.5.5_GA") {
-    main::progress("This appears to be 4.5.5_GA\n");
-  } elsif ($startVersion eq "4.5.6_GA") {
-    main::progress("This appears to be 4.5.6_GA\n");
-  } elsif ($startVersion eq "4.5.7_GA") {
-    main::progress("This appears to be 4.5.7_GA\n");
-  } elsif ($startVersion eq "4.5.8_GA") {
-    main::progress("This appears to be 4.5.8_GA\n");
-  } elsif ($startVersion eq "4.5.9_GA") {
-    main::progress("This appears to be 4.5.9_GA\n");
-  } elsif ($startVersion eq "4.5.10_GA") {
-    main::progress("This appears to be 4.5.10_GA\n");
-  } elsif ($startVersion eq "4.5.11_GA") {
-    main::progress("This appears to be 4.5.11_GA\n");
-  } elsif ($startVersion eq "4.6.0_BETA") {
-    main::progress("This appears to be 4.6.0_BETA\n");
-  } elsif ($startVersion eq "4.6.0_RC1") {
-    main::progress("This appears to be 4.6.0_RC1\n");
-  } elsif ($startVersion eq "4.6.0_GA") {
-    main::progress("This appears to be 4.6.0_GA\n");
-  } elsif ($startVersion eq "5.0.0_BETA1") {
-    main::progress("This appears to be 5.0.0_BETA1\n");
-  } elsif ($startVersion eq "5.0.0_BETA2") {
-    main::progress("This appears to be 5.0.0_BETA2\n");
-  } elsif ($startVersion eq "5.0.0_BETA3") {
-    main::progress("This appears to be 5.0.0_BETA3\n");
-  } elsif ($startVersion eq "5.0.0_BETA4") {
-    main::progress("This appears to be 5.0.0_BETA4\n");
-  } elsif ($startVersion eq "5.0.0_RC1") {
-    main::progress("This appears to be 5.0.0_RC1\n");
-  } elsif ($startVersion eq "5.0.0_RC2") {
-    main::progress("This appears to be 5.0.0_RC2\n");
-  } elsif ($startVersion eq "5.0.0_RC3") {
-    main::progress("This appears to be 5.0.0_RC3\n");
-  } elsif ($startVersion eq "5.0.0_GA") {
-    main::progress("This appears to be 5.0.0_GA\n");
-  } elsif ($startVersion eq "5.0.1_GA") {
-    main::progress("This appears to be 5.0.1_GA\n");
-  } elsif ($startVersion eq "5.0.2_GA") {
-    main::progress("This appears to be 5.0.2_GA\n");
-  } elsif ($startVersion eq "5.0.3_GA") {
-    main::progress("This appears to be 5.0.3_GA\n");
-  } elsif ($startVersion eq "5.0.4_GA") {
-    main::progress("This appears to be 5.0.4_GA\n");
-  } elsif ($startVersion eq "5.0.5_GA") {
-    main::progress("This appears to be 5.0.5_GA\n");
-  } elsif ($startVersion eq "5.0.6_GA") {
-    main::progress("This appears to be 5.0.6_GA\n");
-  } elsif ($startVersion eq "5.0.7_GA") {
-    main::progress("This appears to be 5.0.7_GA\n");
-  } elsif ($startVersion eq "5.0.8_GA") {
-    main::progress("This appears to be 5.0.8_GA\n");
-  } elsif ($startVersion eq "5.0.9_GA") {
-    main::progress("This appears to be 5.0.9_GA\n");
-  } elsif ($startVersion eq "5.0.10_GA") {
-    main::progress("This appears to be 5.0.10_GA\n");
-  } elsif ($startVersion eq "5.0.11_GA") {
-    main::progress("This appears to be 5.0.11_GA\n");
-  } elsif ($startVersion eq "5.0.12_GA") {
-    main::progress("This appears to be 5.0.12_GA\n");
-  } elsif ($startVersion eq "5.0.13_GA") {
-    main::progress("This appears to be 5.0.13_GA\n");
-  } elsif ($startVersion eq "5.0.14_GA") {
-    main::progress("This appears to be 5.0.14_GA\n");
-  } elsif ($startVersion eq "5.0.15_GA") {
-    main::progress("This appears to be 5.0.15_GA\n");
-  } elsif ($startVersion eq "5.0.16_GA") {
-    main::progress("This appears to be 5.0.16_GA\n");
-  } elsif ($startVersion eq "5.0.17_GA") {
-    main::progress("This appears to be 5.0.17_GA\n");
-  } elsif ($startVersion eq "5.0.18_GA") {
-    main::progress("This appears to be 5.0.18_GA\n");
-  } elsif ($startVersion eq "5.0.19_GA") {
-    main::progress("This appears to be 5.0.19_GA\n");
-  } elsif ($startVersion eq "5.0.20_GA") {
-    main::progress("This appears to be 5.0.20_GA\n");
-  } elsif ($startVersion eq "5.0.21_GA") {
-    main::progress("This appears to be 5.0.21_GA\n");
-  } elsif ($startVersion eq "5.0.22_GA") {
-    main::progress("This appears to be 5.0.22_GA\n");
-  } elsif ($startVersion eq "5.0.23_GA") {
-    main::progress("This appears to be 5.0.23_GA\n");
-  } elsif ($startVersion eq "5.0.24_GA") {
-    main::progress("This appears to be 5.0.24_GA\n");
-  } elsif ($startVersion eq "5.0.25_GA") {
-    main::progress("This appears to be 5.0.25_GA\n");
-  } elsif ($startVersion eq "5.0.26_GA") {
-    main::progress("This appears to be 5.0.26_GA\n");
-  } elsif ($startVersion eq "5.0.27_GA") {
-    main::progress("This appears to be 5.0.27_GA\n");
-  } elsif ($startVersion eq "6.0.0_BETA1") {
-    main::progress("This appears to be 6.0.0_BETA1\n");
-  } elsif ($startVersion eq "6.0.0_BETA2") {
-    main::progress("This appears to be 6.0.0_BETA2\n");
-  } elsif ($startVersion eq "6.0.0_RC1") {
-    main::progress("This appears to be 6.0.0_RC1\n");
-  } elsif ($startVersion eq "6.0.0_RC2") {
-    main::progress("This appears to be 6.0.0_RC2\n");
-  } elsif ($startVersion eq "6.0.0_GA") {
+  if ($startVersion eq "6.0.0_GA") {
     main::progress("This appears to be 6.0.0_GA\n");
   } elsif ($startVersion eq "6.0.1_GA") {
     main::progress("This appears to be 6.0.1_GA\n");
@@ -583,7 +399,6 @@ sub upgrade {
   foreach my $v (@versionOrder) {
     $found = 1 if ($v eq $startVersion);
     if ($found) {
-      $needMysqlTableCheck=1 if ($v eq "4.5.2_GA");
       $needMysqlUpgrade=1 if ($v eq "7.0.0_BETA1");
       $needMysqlUpgrade=1 if ($v eq "8.0.0_GA");
       $needMysqlUpgrade=1 if ($v eq "8.5.0_BETA1");
@@ -611,7 +426,6 @@ sub upgrade {
 
   if (main::isInstalled("zimbra-store")) {
 
-    doMysqlTableCheck() if ($needMysqlTableCheck);
     doMysqlUpgrade() if ($needMysqlUpgrade);
   
     doBackupRestoreVersionUpdate($startVersion);
@@ -628,9 +442,6 @@ sub upgrade {
 
     # the old slow painful way (ie lots of mysql invocations)
     while ($curSchemaVersion >= $lowVersion && $curSchemaVersion < $hiVersion) {
-      if (($curSchemaVersion == 21) && $needVolumeHack) {
-        if (runSchemaUpgrade ("UniqueVolume")) { return 1; }
-      } 
       if (runSchemaUpgrade ($curSchemaVersion)) { return 1; }
       $curSchemaVersion = Migrate::getSchemaVersion();
     }
