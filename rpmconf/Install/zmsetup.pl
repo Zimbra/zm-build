@@ -5733,6 +5733,9 @@ sub configSetStoreDefaults {
   if ($newinstall && isNetwork()) {
     setLdapGlobalConfig("+zimbraReverseProxyUpstreamEwsServers", "$config{HOSTNAME}");
   }
+  if ($newinstall) {  
+    setLdapGlobalConfig("+zimbraReverseProxyUpstreamLoginServers", "$config{HOSTNAME}");  
+  }
   foreach my $app (@webappList) {
     if ($installedWebapps{$app} eq "Enabled") {
       setLdapServerConfig("zimbraServiceEnabled", "$app");

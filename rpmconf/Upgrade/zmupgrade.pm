@@ -2547,6 +2547,10 @@ sub upgrade850BETA2 {
       $mailboxd_java_options =~ s/^\s+//;
       main::setLocalConfig("mailboxd_java_options", $mailboxd_java_options);
     }
+    my @zimbraReverseProxyUpstreamLoginServers=qx($su "$ZMPROV gacf zimbraReverseProxyUpstreamLoginServers");
+    if (!grep($hn, @zimbraReverseProxyUpstreamLoginServers)) {  
+      main::runAsZimbra("$ZMPROV mcf +zimbraReverseProxyUpstreamLoginServers $hn");  
+    }
   }
   return 0;
 }
