@@ -344,6 +344,8 @@ sub saveConfig {
         print CONF "$_ ";
       }
     }
+    print CONF "\"\n";
+    close CONF;
     chmod 0600, $fname;
     progress ("done.\n");
   } else {
