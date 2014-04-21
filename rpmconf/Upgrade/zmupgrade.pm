@@ -208,7 +208,7 @@ my @versionOrder = (
 );
 
 my ($startVersion,$startMajor,$startMinor,$startMicro);
-my ($targetVersion,$targetMajor,$targetMinor,$targetMicro);
+my ($targetVersion,$targetMajor,$targetMinor,$targetMicro,$targetMicroMicro,$targetType);
 
 my @packageList = (
   "zimbra-core",
@@ -236,6 +236,7 @@ sub upgrade {
     $startVersion =~ /(\d+)\.(\d+)\.(\d+_[^_]*)/;
   ($targetMajor,$targetMinor,$targetMicro) =
     $targetVersion =~ /(\d+)\.(\d+)\.(\d+_[^_]*)/;
+  ($targetMicroMicro, $targetType) = $targetMicro =~ /(\d+)_(.*)/;
 
   if ($startMajor < 6) {
     main::progress("ERROR: Upgrading from a ZCS version less than 6.0.0_GA is not supported\n");
@@ -401,6 +402,7 @@ sub upgrade {
                                       'zimbraServerVersionMajor',
                                       'zimbraServerVersionMinor',
                                       'zimbraServerVersionMicro',
+                                      'zimbraServerVersionType',
                                       'zimbraServerVersionBuild',
                                      ]);
     if ($result->code) {
@@ -410,7 +412,7 @@ sub upgrade {
     if($size != 1) {
       warn "Size error: Invalid response from ldap master.\n";
     }
-    my ($lmMajor, $lmMinor, $lmMicro);
+    my ($lmMajor, $lmMinor, $lmMicro, $lmType);
     my $entry = $result->entry(0);
     $lmMajor = $entry->get_value('zimbraServerVersionMajor');
     chomp($lmMajor);
@@ -424,10 +426,15 @@ sub upgrade {
       return 1;
     } else {
       my $lmBuild = $entry->get_value('zimbraServerVersionBuild');
-      if ($lmBuild < $targetBuild) {
-        main::progress("Error: LDAP Master MUST be upgraded first.\n");
-        $result = $ldap->unbind;
-        return 1;
+      my $lmType = $entry->get_value('zimbraServerVersionType');
+      chomp($lmBuild);
+      chomp($lmType);
+      if ($lmType eq $targetType) {
+        if ($lmBuild < $targetBuild) {
+          main::progress("Error: LDAP Master MUST be upgraded first.\n");
+          $result = $ldap->unbind;
+          return 1;
+        }
       }
     }
     $result = $ldap->unbind;

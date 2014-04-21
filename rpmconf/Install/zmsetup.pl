@@ -134,7 +134,7 @@ our %migratedStatus= ();
 my $prevVersion = "";
 our $curVersion = "";
 my ($prevVersionMinor,$prevVersionMajor,$prevVersionMicro,$prevVersionBuild);
-my ($curVersionMinor,$curVersionMajor,$curVersionMicro,$curVersionBuild);
+my ($curVersionMinor,$curVersionMajor,$curVersionMicro,$curVersionMicroMicro,$curVersionType,$curVersionBuild);
 our $newinstall = 1;
 
 my $ldapConfigured = 0;
@@ -272,7 +272,8 @@ if ($options{c}) {
 setLdapServerConfig($config{HOSTNAME}, 'zimbraServerVersion', $curVersion);
 setLdapServerConfig($config{HOSTNAME}, 'zimbraServerVersionMajor', $curVersionMajor);
 setLdapServerConfig($config{HOSTNAME}, 'zimbraServerVersionMinor', $curVersionMinor);
-setLdapServerConfig($config{HOSTNAME}, 'zimbraServerVersionMicro', $curVersionMicro);
+setLdapServerConfig($config{HOSTNAME}, 'zimbraServerVersionMicro', $curVersionMicroMicro);
+setLdapServerConfig($config{HOSTNAME}, 'zimbraServerVersionType', $curVersionType);
 setLdapServerConfig($config{HOSTNAME}, 'zimbraServerVersionBuild', $curVersionBuild);
 
 close LOGFILE;
@@ -1823,6 +1824,7 @@ sub getInstallStatus {
     $prevVersion =~ /(\d+)\.(\d+)\.(\d+_[^_]*)_(\d+)/;
   ($curVersionMajor,$curVersionMinor,$curVersionMicro,$curVersionBuild) = 
     $curVersion =~ /(\d+)\.(\d+)\.(\d+_[^_]*)_(\d+)/;
+  ($curVersionMicroMicro, $curVersionType) = $curVersionMicro =~ /(\d+)_(.*)/;
 
   if ($options{d}) {
     progress "done.\n";
@@ -7029,7 +7031,8 @@ sub applyConfig {
     setLdapServerConfig($config{HOSTNAME}, 'zimbraServerVersion', $curVersion);
     setLdapServerConfig($config{HOSTNAME}, 'zimbraServerVersionMajor', $curVersionMajor);
     setLdapServerConfig($config{HOSTNAME}, 'zimbraServerVersionMinor', $curVersionMinor);
-    setLdapServerConfig($config{HOSTNAME}, 'zimbraServerVersionMicro', $curVersionMicro);
+    setLdapServerConfig($config{HOSTNAME}, 'zimbraServerVersionMicro', $curVersionMicroMicro);
+    setLdapServerConfig($config{HOSTNAME}, 'zimbraServerVersionType', $curVersionType);
     setLdapServerConfig($config{HOSTNAME}, 'zimbraServerVersionBuild', $curVersionBuild);
     ask("Configuration complete - press return to exit", "");
     print "\n\n";
