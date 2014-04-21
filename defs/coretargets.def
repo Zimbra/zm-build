@@ -103,6 +103,8 @@ $(BUILD_ROOT)/zimbra-core.spec:
 		$(BUILD_ROOT)/zimbra-core.spec
 	echo "%attr(-, root, root) /opt/zimbra/jdk-$(JAVA_VERSION)" >> \
 		$(BUILD_ROOT)/zimbra-core.spec
+	echo "%attr(-, root, root) /opt/zimbra/j2sdk-$(OPENJDK_VERSION)" >> \
+		$(BUILD_ROOT)/zimbra-core.spec
 	echo "%attr(-, root, root) /opt/zimbra/lib" >> \
 		$(BUILD_ROOT)/zimbra-core.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/zimbramon" >> \
@@ -164,6 +166,7 @@ $(CORE_DEST_DIR)/docs:
 	echo "Dspam version: $(DSPAM_VERSION)" >> $@/zimbra-software-versions.txt
 	echo "Heimdal version: $(HEIMDAL_VERSION)" >> $@/zimbra-software-versions.txt
 	echo "JDK version: $(JAVA_VERSION)" >> $@/zimbra-software-versions.txt
+	echo "OpenJDK version: $(OPENJDK_VERSION)" >> $@/zimbra-software-versions.txt
 	echo "Jetty version: $(JETTY_VERSION)" >> $@/zimbra-software-versions.txt
 	echo "Libtool version: $(LIBTOOL_VERSION)" >> $@/zimbra-software-versions.txt
 	echo "Memcached version: $(MEMCACHED_VERSION)" >> $@/zimbra-software-versions.txt
@@ -248,6 +251,8 @@ $(CORE_DEST_DIR)/jdk-$(JAVA_VERSION):
 	rm -rf $@/jre/lib/javaws.jar
 	rm -rf $@/jre/lib/i386/client/classes.jsa
 	-cp -f $(JCE_SOURCE)/* $@/jre/lib/security/
+	@echo "*** Creating OpenJDK"
+	(cd $(CORE_DEST_DIR);tar xfz $(OPENJDK_SOURCE).tgz;)
 
 $(CORE_DEST_DIR)/db: $(WEBAPP_DIR)/service.war
 	mkdir -p $@

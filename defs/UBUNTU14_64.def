@@ -7,6 +7,3 @@ PACKAGING_OPTIONS = -b $(CUR_DEST_ROOT) $(PACKAGE_DIR)/$(CUR_PKG_NAME)
 PACKAGE_EXT := deb
 
 include $(DEFS_DIR)/plat_common.def
-
-JAVA_SOURCE	:= $(THIRD_PARTY_BUILDS)/x86_64/openjdk/j2sdk-image
-JCE_SOURCE	:=
