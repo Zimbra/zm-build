@@ -60,9 +60,13 @@ chomp $hn;
 my $isLdapMaster = qx($su "${zmlocalconfig} -m nokey ldap_is_master");
 chomp($isLdapMaster);
 if (lc($isLdapMaster) eq "true" ) {
-   $isLdapMaster = 1;
+   if(main::isInstalled("zimbra-ldap")) {
+     $isLdapMaster = 1;
+   } else {
+     $isLdapMaster = 0;
+   }
 } else {
-   $isLdapMaster = 0;
+     $isLdapMaster = 0;
 }
 
 my $ZMPROV = "/opt/zimbra/bin/zmprov -r -m -l --";
@@ -420,7 +424,7 @@ sub upgrade {
     chomp($lmMinor);
     $lmMicro = $entry->get_value('zimbraServerVersionMicro');
     chomp($lmMicro);
-    if (($lmMajor != $targetMajor) && ($lmMinor != $targetMinor) && ($lmMicro != $targetMicro)) {
+    if (($lmMajor != $targetMajor) && ($lmMinor != $targetMinor) && ($lmMicro != $targetMicroMicro)) {
       main::progress("Error: LDAP master MUST be upgraded first.\n");
       $result = $ldap->unbind;
       return 1;
