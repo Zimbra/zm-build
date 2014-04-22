@@ -59,15 +59,6 @@ chomp $hn;
 
 my $isLdapMaster = qx($su "${zmlocalconfig} -m nokey ldap_is_master");
 chomp($isLdapMaster);
-if (lc($isLdapMaster) eq "true" ) {
-   if(main::isInstalled("zimbra-ldap")) {
-     $isLdapMaster = 1;
-   } else {
-     $isLdapMaster = 0;
-   }
-} else {
-     $isLdapMaster = 0;
-}
 
 my $ZMPROV = "/opt/zimbra/bin/zmprov -r -m -l --";
 
@@ -233,6 +224,15 @@ sub upgrade {
   $startVersion = shift;
   $targetVersion = shift;
   $main::config{HOSTNAME}=$hn;
+  if (lc($isLdapMaster) eq "true" ) {
+     if(main::isInstalled("zimbra-ldap")) {
+       $isLdapMaster = 1;
+     } else {
+       $isLdapMaster = 0;
+     }
+  } else {
+       $isLdapMaster = 0;
+  }
   my ($startBuild,$targetBuild);
   ($startVersion,$startBuild) = $startVersion =~ /(\d\.\d\.\d+_[^_]*)_(\d+)/;  
   ($targetVersion,$targetBuild) = $targetVersion =~ m/(\d\.\d\.\d+_[^_]*)_(\d+)/;
