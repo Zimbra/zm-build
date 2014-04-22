@@ -113,6 +113,9 @@ my %packageServiceMap = (
   proxy     => "zimbra-proxy",
   archiving => "zimbra-archiving",
   convertd  => "zimbra-convertd",
+  service   => "zimbra-store",
+  zimbra    => "zimbra-store",
+  zimbraAdmin   => "zimbra-store",
 );
 
 my @webappList = (
@@ -210,12 +213,6 @@ if (! $newinstall ) {
 
 getInstalledPackages();
 getInstalledWebapps();
-
-foreach (@webappList) {
-    if ($_ eq $config{webapps}) {
-        
-    }
-}
 
 unless (isEnabled("zimbra-core")) {
   progress("zimbra-core must be enabled.");
@@ -5742,7 +5739,7 @@ sub configSetStoreDefaults {
   }
   foreach my $app (@webappList) {
     if ($installedWebapps{$app} eq "Enabled") {
-      setLdapServerConfig("zimbraServiceEnabled", "$app");
+      setLdapServerConfig("+zimbraServiceEnabled", "$app");
     }
   }
   setLdapServerConfig("zimbraReverseProxyLookupTarget", $config{zimbraReverseProxyLookupTarget});
