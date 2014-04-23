@@ -2188,7 +2188,6 @@ getInstallPackages() {
   isToBeInstalled zimbra-store
   if [ "x$PKGINSTALLED" != "x" -o "x$PKGTOBEINSTALLED" != "x" ]; then
     checkStoreRequirements
-    selectWebApps
   fi
 
   echo ""
@@ -2196,78 +2195,7 @@ getInstallPackages() {
   for i in $INSTALL_PACKAGES; do
     echo "    $i"
   done
-
-  isToBeInstalled zimbra-store
-  if [ "x$PKGTOBEINSTALLED" != "x" ]; then
-    echo ""
-    echo "Installing zimbra-store web applications:"
-    for i in $INSTALL_WEBAPPS; do
-      echo "    $i"
-    done
-  fi
 }
-
-selectWebApps() {
-  # on upgrade, install the webapps that were there before, unless
-  # overridden by setting INSTALL_WEBAPPS. Ask what to install in a
-  # fresh install.
-  if [ $UPGRADE = "yes" -a "x$INSTALL_WEBAPPS" = "x" ]; then
-    for i in $WEBAPPS; do
-      if [ -d /opt/zimbra/jetty/webapps/$i ]; then
-        if [ "x$INSTALL_WEBAPPS" = "x" ]; then
-          INSTALL_WEBAPPS="$i"
-        else
-          INSTALL_WEBAPPS="$INSTALL_WEBAPPS $i";
-        fi
-      fi
-    done
-  elif [ $AUTOINSTALL = "no" ]; then
-    echo ""
-    echo ""
-    echo "zimbra-store selected."
-    echo ""
-    echo "Select the web applications to install:"
-    echo ""
-
-    response="no"
-    askYN "Install mailstore (service webapp)" "Y"
-    if [ $response = "yes" ]; then
-      INSTALL_WEBAPPS="service";
-    fi
-    response="no"
-    askYN "Install UI (zimbra, zimbraAdmin webapp)" "Y"
-    if [ $response = "yes" ]; then
-      INSTALL_WEBAPPS="$INSTALL_WEBAPPS zimbra zimbraAdmin";
-    fi
-    #response="no"
-    #askYN "Install admin console (zimbraAdmin webapp)?" "Y"
-    #if [ $response = "yes" ]; then
-    #  INSTALL_WEBAPPS="$INSTALL_WEBAPPS zimbraAdmin";
-    #fi
-
-  fi
-  # if defaults file doesn't pass in INSTALL_WEBAPPS, set it to WEBAPPS to
-  # install everything.
-  if [ $AUTOINSTALL = "yes" -a "x$INSTALL_WEBAPPS" = "x" ]; then
-    INSTALL_WEBAPPS="$WEBAPPS"
-  fi
-}
-
-removeUnusedStoreWebapps() {
-  WA_ARRAY=(`echo "$WEBAPPS"`)
-  for j in $INSTALL_WEBAPPS; do
-    for ((i=0; i<${#WA_ARRAY[@]}; i++)) {
-      [ "$j" = "${WA_ARRAY[i]}" ] && {
-        WA_ARRAY[$i]=""
-      }
-    }
-  done
-
-  for i in ${WA_ARRAY[@]}; do
-    deleteWebApp $i jetty
-  done
-}
-
 
 deleteWebApp() {
   WEBAPPNAME=$1

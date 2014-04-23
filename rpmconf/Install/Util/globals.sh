@@ -30,10 +30,6 @@ zimbra-proxy \
 zimbra-archiving \
 zimbra-cluster"
 
-WEBAPPS="service \
-zimbra \
-zimbraAdmin"
-
 SERVICES=""
 
 OPTIONAL_PACKAGES="zimbra-qatest"

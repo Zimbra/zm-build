@@ -294,12 +294,6 @@ if [ $UPGRADE = "yes" ]; then
 
 fi
 
-# Remove webapps from zimbra-store that the user does not want installed.
-isInstalled zimbra-store
-if [ "x$PKGINSTALLED" != "x" ]; then
-    removeUnusedStoreWebapps
-fi
-
 if [ "x$LICENSE" != "x" ] && [ -f "$LICENSE" ]; then
   echo "Installing /opt/zimbra/conf/ZCSLicense.xml"
   if [ ! -d "/opt/zimbra/conf" ]; then

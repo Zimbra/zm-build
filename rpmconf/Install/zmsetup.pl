@@ -194,6 +194,9 @@ if(isInstalled("zimbra-ldap")) {
   installLdapSchema();
 }
 
+# Need to determine the installed web apps before running the upgrader.
+getInstalledWebapps();
+
 if (! $newinstall ) {
   # if we're an upgrade, run the upgrader...
   if (($prevVersion ne $curVersion )) {
@@ -212,7 +215,6 @@ if (! $newinstall ) {
 }
 
 getInstalledPackages();
-getInstalledWebapps();
 
 unless (isEnabled("zimbra-core")) {
   progress("zimbra-core must be enabled.");
@@ -536,6 +538,14 @@ sub getInstalledWebapps {
       }
     } else {
       $installedWebapps{$app}="Disabled";
+    }
+  }
+}
+
+sub setInstalledWebapps {
+  foreach my $app (@webappList) {
+    if ($installedWebapps{$app} eq "Enabled") {
+      setLdapServerConfig("+zimbraServiceEnabled", "$app");
     }
   }
 }
@@ -1473,6 +1483,8 @@ sub setDefaults {
     $config{MTAAUTHHOST} = $config{HOSTNAME};
     $config{DOCREATEADMIN} = "yes" if $newinstall;
     $config{DOTRAINSA} = "yes";
+    $config{SERVICEWEBAPP} = "yes";
+    $config{UIWEBAPPS} = "yes";
     $config{zimbraReverseProxyLookupTarget} = "TRUE" if $newinstall;
     $config{zimbraMailProxy} = "FALSE" if $newinstall;
     $config{zimbraWebProxy} = "FALSE" if $newinstall;
@@ -2398,6 +2410,28 @@ sub setCreateAdmin {
   
   setAdminPass();
 
+}
+
+sub removeUnusedWebapps {
+  my $webAppsDir = "/opt/zimbra/jetty/webapps";
+  if ($config{SERVICEWEBAPP} eq "no") {
+    system("rm -rf $webAppsDir/service")
+      if (-d "$webAppsDir/service");
+  }
+  if ($config{UIWEBAPPS} eq "no") {
+    system("rm -rf $webAppsDir/zimbra")
+      if (-d "$webAppsDir/zimbra");
+    system("rm -rf $webAppsDir/zimbraAdmin")
+      if (-d "$webAppsDir/zimbraAdmin");
+  }
+  if (!defined $config{INSTALL_WEBAPPS}) {
+    if ($config{SERVICEWEBAPP} eq "yes") {
+      $config{INSTALL_WEBAPPS} = "service";
+    }
+    if ($config{UIWEBAPPS} eq "yes") {
+      $config{INSTALL_WEBAPPS} = "$config{INSTALL_WEBAPPS} zimbra zimbraAdmin";
+    }
+  }
 }
 
 sub validEmailAddress {
@@ -4018,6 +4052,18 @@ sub createStoreMenu {
 
   my $i = 2;
   if (isEnabled($package)) {
+    $$lm{menuitems}{$i} = {
+      "prompt" => "Install mailstore (service webapp):",
+      "var" => \$config{SERVICEWEBAPP},
+      "callback" => \&toggleYN,
+    };
+    $i++;
+    $$lm{menuitems}{$i} = {
+      "prompt" => "Install UI (zimbra, zimbraAdmin webapps):",
+      "var" => \$config{UIWEBAPPS},
+      "callback" => \&toggleYN,
+    };
+    $i++;
     $$lm{menuitems}{$i} = { 
       "prompt" => "Create Admin User:", 
       "var" => \$config{DOCREATEADMIN}, 
@@ -5728,6 +5774,7 @@ sub configSetMtaAuthHost {
 }
 
 sub configSetStoreDefaults {
+  removeUnusedWebapps();
   if(isEnabled("zimbra-proxy") || $config{zimbraMailProxy} eq "TRUE" || $config{zimbraWebProxy} eq "TRUE") {
     $config{zimbraReverseProxyLookupTarget}="TRUE";
   }
@@ -5737,11 +5784,7 @@ sub configSetStoreDefaults {
   if ($newinstall) {  
     setLdapGlobalConfig("+zimbraReverseProxyUpstreamLoginServers", "$config{HOSTNAME}");  
   }
-  foreach my $app (@webappList) {
-    if ($installedWebapps{$app} eq "Enabled") {
-      setLdapServerConfig("+zimbraServiceEnabled", "$app");
-    }
-  }
+  setInstalledWebapps();
   setLdapServerConfig("zimbraReverseProxyLookupTarget", $config{zimbraReverseProxyLookupTarget});
   setLdapServerConfig("zimbraMtaAuthTarget", "TRUE");
   my $upstream="-u";
