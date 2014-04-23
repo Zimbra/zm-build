@@ -194,9 +194,6 @@ if(isInstalled("zimbra-ldap")) {
   installLdapSchema();
 }
 
-# Need to determine the installed web apps before running the upgrader.
-getInstalledWebapps();
-
 if (! $newinstall ) {
   # if we're an upgrade, run the upgrader...
   if (($prevVersion ne $curVersion )) {
@@ -215,6 +212,7 @@ if (! $newinstall ) {
 }
 
 getInstalledPackages();
+getInstalledWebapps();
 
 unless (isEnabled("zimbra-core")) {
   progress("zimbra-core must be enabled.");
@@ -538,14 +536,6 @@ sub getInstalledWebapps {
       }
     } else {
       $installedWebapps{$app}="Disabled";
-    }
-  }
-}
-
-sub setInstalledWebapps {
-  foreach my $app (@webappList) {
-    if ($installedWebapps{$app} eq "Enabled") {
-      setLdapServerConfig("+zimbraServiceEnabled", "$app");
     }
   }
 }
@@ -5784,7 +5774,6 @@ sub configSetStoreDefaults {
   if ($newinstall) {  
     setLdapGlobalConfig("+zimbraReverseProxyUpstreamLoginServers", "$config{HOSTNAME}");  
   }
-  setInstalledWebapps();
   setLdapServerConfig("zimbraReverseProxyLookupTarget", $config{zimbraReverseProxyLookupTarget});
   setLdapServerConfig("zimbraMtaAuthTarget", "TRUE");
   my $upstream="-u";
@@ -6838,12 +6827,20 @@ sub configSetEnabledServices {
     if ($p eq "zimbra-archiving") {next;}
     if ($enabledPackages{$p} eq "Enabled") {
       $p =~ s/zimbra-//;
-      if ($p eq "store") {$p = "mailbox";}
+      if ($p eq "store") {
+        $p = "mailbox";
+        # Add zimbra-store webapps to service list
+        foreach my $app (@webappList) {
+          if ($installedWebapps{$app} eq "Enabled") {
+            push(@enabledServiceList, 'zimbraServiceEnabled', "$app");
+          }
+        }
+      }
       if ($p eq "octopus") {$p = "mailbox";}
       push(@enabledServiceList, 'zimbraServiceEnabled', "$p");
     }
   }
-
+    
   progress ( "Setting services on $config{HOSTNAME}..." );
   setLdapServerConfig($config{HOSTNAME}, @installedServiceList);
   setLdapServerConfig($config{HOSTNAME}, @enabledServiceList);

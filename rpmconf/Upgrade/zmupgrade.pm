@@ -2562,7 +2562,6 @@ sub upgrade850BETA2 {
     if (!grep($hn, @zimbraReverseProxyUpstreamLoginServers)) {  
       main::runAsZimbra("$ZMPROV mcf +zimbraReverseProxyUpstreamLoginServers $hn");  
     }
-    main::setInstalledWebapps();
   }
   return 0;
 }
