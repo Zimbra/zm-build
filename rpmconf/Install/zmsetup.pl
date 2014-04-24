@@ -116,12 +116,14 @@ my %packageServiceMap = (
   service   => "zimbra-store",
   zimbra    => "zimbra-store",
   zimbraAdmin   => "zimbra-store",
+  zimlet    => "zimbra-store",
 );
 
 my @webappList = (
   "service",
   "zimbra",
   "zimbraAdmin",
+  "zimlet",
 );
 
 my %installedPackages = ();
