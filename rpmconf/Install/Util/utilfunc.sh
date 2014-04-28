@@ -686,16 +686,18 @@ checkRequiredSpace() {
 checkStoreRequirements() {
   echo "Checking required packages for zimbra-store"
   GOOD="yes"
-  for i in $STORE_PACKAGES; do
-    #echo -n "    $i..."
-    isInstalled $i
-    if [ "x$PKGINSTALLED" != "x" ]; then
-      echo "     FOUND: $PKGINSTALLED"
-    else
-      echo "     MISSING: $i"
-      GOOD="no"
-    fi
-  done
+  if [ x"$ZMTYPE_CURRENT" = "xNETWORK" ]; then
+    for i in $STORE_PACKAGES; do
+      #echo -n "    $i..."
+      isInstalled $i
+      if [ "x$PKGINSTALLED" != "x" ]; then
+        echo "     FOUND: $PKGINSTALLED"
+      else
+        echo "     MISSING: $i"
+        GOOD="no"
+      fi
+    done
+  fi
 
   if [ $GOOD = "no" ]; then
     echo ""
