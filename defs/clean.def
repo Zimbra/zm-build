@@ -10,6 +10,7 @@ CLEAN_TARGETS	=	\
 		$(ISYNC_DEST_ROOT) \
 		$(PROXY_DEST_ROOT) \
 		$(MEMCACHED_DEST_ROOT) \
+		$(DNS_DEST_ROOT) \
 		zcs \
 		zcs-patch* \
 		zcs-*.tgz \
