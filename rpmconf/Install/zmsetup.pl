@@ -4048,12 +4048,14 @@ sub createStoreMenu {
       "prompt" => "Install mailstore (service webapp):",
       "var" => \$config{SERVICEWEBAPP},
       "callback" => \&toggleYN,
+      "arg" => "SERVICEWEBAPP"
     };
     $i++;
     $$lm{menuitems}{$i} = {
       "prompt" => "Install UI (zimbra, zimbraAdmin webapps):",
       "var" => \$config{UIWEBAPPS},
       "callback" => \&toggleYN,
+      "arg" => "UIWEBAPPS"
     };
     $i++;
     $$lm{menuitems}{$i} = { 
