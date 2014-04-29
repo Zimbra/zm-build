@@ -1974,6 +1974,10 @@ sub upgrade808GA {
       main::deleteLocalConfig("ldap_common_writetimeout"); #85299
     }
   }
+  if (main::isInstalled("zimbra-mta")) {
+    main::setLdapServerConfig($hn, '+zimbraServiceInstalled', 'amavis');
+    main::setLdapServerConfig($hn, '+zimbraServiceEnabled', 'amavis');
+  }
   return 0;
 }
 
