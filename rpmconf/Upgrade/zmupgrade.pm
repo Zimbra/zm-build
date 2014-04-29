@@ -2573,6 +2573,8 @@ sub upgrade850BETA2 {
     if ( -e ${antispam_mysql_mycnf} ) {
       main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-antispam-general_log_file-fixup --section=mysqld --set --key=general_log_file --value=${zimbra_log_directory}/mysql-antispam.log ${antispam_mysql_mycnf}");
     }
+    main::setLdapServerConfig($hn, '+zimbraServiceInstalled', 'amavis');
+    main::setLdapServerConfig($hn, '+zimbraServiceEnabled', 'amavis');
   }
   return 0;
 }

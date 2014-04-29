@@ -96,6 +96,7 @@ my @packageList = (
 );
 
 my %packageServiceMap = (
+  amavis    => "zimbra-mta",
   antivirus => "zimbra-mta",
   antispam  => "zimbra-mta",
   opendkim  => "zimbra-mta",
@@ -6710,9 +6711,11 @@ sub configInitMta {
     runAsZimbra ("/opt/zimbra/libexec/zmmtainit $config{LDAPHOST} $config{LDAPPORT}");
     progress ( "done.\n" );
     if (isZCS()) {
+      push(@installedServiceList, ('zimbraServiceInstalled', 'amavis'));
       push(@installedServiceList, ('zimbraServiceInstalled', 'antivirus'));
       push(@installedServiceList, ('zimbraServiceInstalled', 'antispam'));
       push(@installedServiceList, ('zimbraServiceInstalled', 'opendkim'));
+      push(@enabledServiceList, ('zimbraServiceEnabled', 'amavis'));
       if ($config{RUNAV} eq "yes") {
         push(@enabledServiceList, ('zimbraServiceEnabled', 'antivirus'));
       }
