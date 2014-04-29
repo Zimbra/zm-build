@@ -2551,7 +2551,12 @@ sub upgrade850BETA1 {
 sub upgrade850BETA2 {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
   main::progress("Updating from 8.5.0_BETA2\n");
+  my $zimbra_log_directory = main::getLocalConfig("zimbra_log_directory");
   if (main::isInstalled("zimbra-store")) {
+    my $mysql_mycnf = main::getLocalConfig("mysql_mycnf");
+    if ( -e ${mysql_mycnf} ) {
+      main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-general_log_file-fixup --section=mysqld --set --key=general_log_file --value=${zimbra_log_directory}/mysql-mailboxd.log ${mysql_mycnf}");
+    }
     my $mailboxd_java_options=main::getLocalConfigRaw("mailboxd_java_options");
     if ($mailboxd_java_options !~ /-Xloggc/) {
       $mailboxd_java_options .= " -Xloggc:/opt/zimbra/log/gc.log -XX:-UseGCLogFileRotation -XX:NumberOfGCLogFiles=20 -XX:GCLogFileSize=4096K";
@@ -2561,6 +2566,12 @@ sub upgrade850BETA2 {
     my @zimbraReverseProxyUpstreamLoginServers=qx($su "$ZMPROV gacf zimbraReverseProxyUpstreamLoginServers");
     if (!grep($hn, @zimbraReverseProxyUpstreamLoginServers)) {  
       main::runAsZimbra("$ZMPROV mcf +zimbraReverseProxyUpstreamLoginServers $hn");  
+    }
+  }
+  if (main::isInstalled("zimbra-mta")) {
+    my $antispam_mysql_mycnf = main::getLocalConfig("antispam_mysql_mycnf");
+    if ( -e ${antispam_mysql_mycnf} ) {
+      main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-antispam-general_log_file-fixup --section=mysqld --set --key=general_log_file --value=${zimbra_log_directory}/mysql-antispam.log ${antispam_mysql_mycnf}");
     }
   }
   return 0;
