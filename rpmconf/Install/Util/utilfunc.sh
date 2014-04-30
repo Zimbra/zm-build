@@ -2453,7 +2453,7 @@ getPlatformVars() {
     elif [ $PLATFORM = "RHEL7_64" ]; then
       PACKAGEINST='yum -y --disablerepo=* localinstall -v'
       PACKAGERM='yum -y --disablerepo=* erase -v'
-      PREREQ_PACKAGES="nc sudo libidn gmp libaio libstdc++"
+      PREREQ_PACKAGES="nmap-ncat sudo libidn gmp libaio libstdc++"
       PRESUG_PACKAGES="perl-5.16.3 sysstat sqlite"
       STORE_PACKAGES=""
     elif [ $PLATFORM = "SLES11_64" ]; then
