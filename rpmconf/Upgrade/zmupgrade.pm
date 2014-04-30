@@ -4670,8 +4670,14 @@ sub upgrade808GA {
     }
   }
   if (main::isInstalled("zimbra-mta")) {
-    main::setLdapServerConfig($hn, '+zimbraServiceInstalled', 'amavis');
-    main::setLdapServerConfig($hn, '+zimbraServiceEnabled', 'amavis');
+    my @zimbraServiceInstalled=qx($su "$ZMPROV gs $hn zimbraServiceInstalled");
+    my @zimbraServiceEnabled=qx($su "$ZMPROV gs $hn zimbraServiceEnabled");
+    if (grep("antivirus", @zimbraServiceInstalled) || grep("antispam", @zimbraServiceInstalled)) {
+      main::setLdapServerConfig($hn, '+zimbraServiceInstalled', 'amavis');
+    }
+    if (grep("antivirus", @zimbraServiceEnabled) || grep("antispam", @zimbraServiceEnabled)) {
+      main::setLdapServerConfig($hn, '+zimbraServiceEnabled', 'amavis');
+    }
   }
   return 0;
 }
