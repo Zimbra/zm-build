@@ -2561,8 +2561,13 @@ sub upgrade850BETA1 {
 sub upgrade850BETA2 {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
   main::progress("Updating from 8.5.0_BETA2\n");
-  my $zimbra_log_directory = main::getLocalConfig("zimbra_log_directory");
+  if (main::isInstalled("zimbra-ldap")) {
+    if ($isLdapMaster) {
+      main::setLdapGlobalConfig("zimbraVersionCheckURL","https://www.zimbra.com/aus/universal/update.php");
+    }
+  }
   if (main::isInstalled("zimbra-store")) {
+    my $zimbra_log_directory = main::getLocalConfig("zimbra_log_directory");
     my $mysql_mycnf = main::getLocalConfig("mysql_mycnf");
     if ( -e ${mysql_mycnf} ) {
       main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-general_log_file-fixup --section=mysqld --set --key=general_log_file --value=${zimbra_log_directory}/mysql-mailboxd.log ${mysql_mycnf}");
@@ -2580,6 +2585,7 @@ sub upgrade850BETA2 {
   }
   if (main::isInstalled("zimbra-mta")) {
     my $antispam_mysql_mycnf = main::getLocalConfig("antispam_mysql_mycnf");
+    my $zimbra_log_directory = main::getLocalConfig("zimbra_log_directory");
     if ( -e ${antispam_mysql_mycnf} ) {
       main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-antispam-general_log_file-fixup --section=mysqld --set --key=general_log_file --value=${zimbra_log_directory}/mysql-antispam.log ${antispam_mysql_mycnf}");
     }
