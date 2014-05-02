@@ -94,6 +94,8 @@ $(BUILD_ROOT)/zimbra-mta.spec:
 		$(BUILD_ROOT)/zimbra-mta.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/data/amavisd" >> \
 		$(BUILD_ROOT)/zimbra-mta.spec
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/data/spamassassin" >> \
+		$(BUILD_ROOT)/zimbra-mta.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/$(CBPOLICYD_DIR)" >> \
 		$(BUILD_ROOT)/zimbra-mta.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/conf/spamassassin" >> \
@@ -117,6 +119,8 @@ $(MTA_DEST_DIR)/data/postfix:
 $(MTA_DEST_DIR)/data/dspam:
 	mkdir -p $@
 $(MTA_DEST_DIR)/data/amavisd:
+	mkdir -p $@
+$(MTA_DEST_DIR)/data/spamassassin:
 	mkdir -p $@
 $(MTA_DEST_DIR)/data/clamav:
 	mkdir -p $@
@@ -188,6 +192,6 @@ $(MTA_MARIADB_DEST_DIR)/$(MARIADB_DIR): $(MTA_MARIADB_DEST_DIR)
 	rm -rf $(MTA_MARIADB_DEST_DIR)/$(MARIADB_DIR)/docs/mysql.info
 	rm -rf $(MTA_MARIADB_DEST_DIR)/$(MARIADB_DIR)/docs/manual.txt
 
-$(MTA_DEST_DIR)/data/amavisd/mysql/antispamdb.sql: $(MTA_DEST_DIR)/data/amavisd/mysql
+$(MTA_DEST_DIR)/data/amavisd/mysql/antispamdb.sql: $(MTA_DEST_DIR)/data/amavisd/spamassassin $(MTA_DEST_DIR)/data/amavisd/mysql
 	cp -f $(SERVICE_DIR)/conf/amavisd/mysql/antispamdb.sql $(MTA_DEST_DIR)/data/amavisd/mysql/antispamdb.sql
 
