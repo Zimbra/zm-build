@@ -96,6 +96,8 @@ $(BUILD_ROOT)/zimbra-mta.spec:
 		$(BUILD_ROOT)/zimbra-mta.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/data/spamassassin" >> \
 		$(BUILD_ROOT)/zimbra-mta.spec
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/.spamassassin" >> \
+		$(BUILD_ROOT)/zimbra-mta.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/$(CBPOLICYD_DIR)" >> \
 		$(BUILD_ROOT)/zimbra-mta.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/conf/spamassassin" >> \
@@ -122,6 +124,7 @@ $(MTA_DEST_DIR)/data/amavisd:
 	mkdir -p $@
 $(MTA_DEST_DIR)/data/spamassassin:
 	mkdir -p $@
+	mkdir -p $(MTA_DEST_DIR)/.spamassassin
 $(MTA_DEST_DIR)/data/clamav:
 	mkdir -p $@
 $(MTA_DEST_DIR)/data/cbpolicyd:
