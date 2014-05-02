@@ -4045,20 +4045,6 @@ sub createStoreMenu {
 
   my $i = 2;
   if (isEnabled($package)) {
-    $$lm{menuitems}{$i} = {
-      "prompt" => "Install mailstore (service webapp):",
-      "var" => \$config{SERVICEWEBAPP},
-      "callback" => \&toggleYN,
-      "arg" => "SERVICEWEBAPP"
-    };
-    $i++;
-    $$lm{menuitems}{$i} = {
-      "prompt" => "Install UI (zimbra, zimbraAdmin webapps):",
-      "var" => \$config{UIWEBAPPS},
-      "callback" => \&toggleYN,
-      "arg" => "UIWEBAPPS"
-    };
-    $i++;
     $$lm{menuitems}{$i} = { 
       "prompt" => "Create Admin User:", 
       "var" => \$config{DOCREATEADMIN}, 
@@ -4307,6 +4293,20 @@ sub createStoreMenu {
         }
       }
     }
+    $$lm{menuitems}{$i} = {
+      "prompt" => "Install mailstore (service webapp):",
+      "var" => \$config{SERVICEWEBAPP},
+      "callback" => \&toggleYN,
+      "arg" => "SERVICEWEBAPP"
+    };
+    $i++;
+    $$lm{menuitems}{$i} = {
+      "prompt" => "Install UI (zimbra,zimbraAdmin webapps):",
+      "var" => \$config{UIWEBAPPS},
+      "callback" => \&toggleYN,
+      "arg" => "UIWEBAPPS"
+    };
+    $i++;
     # only prompt for license if we are network install and
     # a license doesn't exist in /opt/zimbra/conf or ldap.
     if (isNetwork() && !-f $config{DEFAULTLICENSEFILE} && !isLicenseInstalled() ) {
@@ -6439,7 +6439,7 @@ sub configInstallZimlets {
       setLdapCOSConfig("+zimbraZimletAvailableZimlets", "-$zimlet")
         if ($zimlet =~ /click2call/);
 
-      if (($rc == 0) && ($zimlet eq "com_zimbra_smime")) {
+      if (($rc == 0) && ($zimlet eq "com_zimbra_smime") && ($config{UIWEBAPPS} eq "yes")) {
         system("cp /opt/zimbra/zimlets-deployed/com_zimbra_smime/com_zimbra_smime.jarx /opt/zimbra/jetty/webapps/zimbra/public/com_zimbra_smime.jarx");
       }
     }
