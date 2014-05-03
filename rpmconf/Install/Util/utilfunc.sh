@@ -2451,8 +2451,7 @@ getPlatformVars() {
       PRESUG_PACKAGES="perl-5.10.1 sysstat sqlite"
       STORE_PACKAGES=""
     elif [ $PLATFORM = "RHEL7_64" ]; then
-      PACKAGEINST='yum -y --disablerepo=* localinstall -v'
-      PACKAGERM='yum -y --disablerepo=* erase -v'
+      PACKAGEINST='rpm -iv --replacefiles'
       PREREQ_PACKAGES="nmap-ncat sudo libidn gmp libaio libstdc++"
       PRESUG_PACKAGES="perl-5.16.3 sysstat sqlite"
       STORE_PACKAGES=""
