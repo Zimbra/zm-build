@@ -2597,6 +2597,9 @@ sub upgrade850BETA2 {
     if (grep("antivirus", @zimbraServiceEnabled) || grep("antispam", @zimbraServiceEnabled)) {
       main::setLdapServerConfig($hn, '+zimbraServiceEnabled', 'amavis');
     }
+    if (-f "/opt/zimbra/conf/sauser.cf") {
+      qx(mv /opt/zimbra/conf/sauser.cf /opt/zimbra/data/spamassassin/localrules/sauser.cf);
+    }
   }
   return 0;
 }
