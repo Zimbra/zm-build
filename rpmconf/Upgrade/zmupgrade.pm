@@ -1714,11 +1714,6 @@ sub upgrade800BETA5 {
         runLdapAttributeUpgrade("67237");
     }
   }
-  if (main::isInstalled("zimbra-mta")) {
-    if (-f "/opt/zimbra/conf/sauser.cf") {
-      qx(mv /opt/zimbra/conf/sauser.cf /opt/zimbra/conf/sa/sauser.cf);
-    }
-  }
   return 0;
 }
 
@@ -2599,6 +2594,9 @@ sub upgrade850BETA2 {
     }
     if (-f "/opt/zimbra/conf/sauser.cf") {
       qx(mv /opt/zimbra/conf/sauser.cf /opt/zimbra/data/spamassassin/localrules/sauser.cf);
+    }
+    if (-f "/opt/zimbra/conf/sa/sauser.cf") {
+      qx(mv /opt/zimbra/conf/sa/sauser.cf /opt/zimbra/data/spamassassin/localrules/sauser.cf);
     }
   }
   return 0;
