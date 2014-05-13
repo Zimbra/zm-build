@@ -2425,6 +2425,7 @@ sub removeUnusedWebapps {
       $config{INSTALL_WEBAPPS} = "$config{INSTALL_WEBAPPS} zimbra zimbraAdmin";
     }
   }
+  getInstalledWebapps();
 }
 
 sub validEmailAddress {
