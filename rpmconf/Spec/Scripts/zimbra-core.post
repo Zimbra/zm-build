@@ -35,8 +35,8 @@ BIT=`echo $PLAT | awk -F_ '{print $2}'`
 #Symlinks
 rm -f /opt/zimbra/mariadb
 rm -f /opt/zimbra/mysql
-ln -s /opt/zimbra/mariadb-10.0.10 /opt/zimbra/mariadb
-ln -s /opt/zimbra/mariadb-10.0.10 /opt/zimbra/mysql
+ln -s /opt/zimbra/mariadb-10.0.11 /opt/zimbra/mariadb
+ln -s /opt/zimbra/mariadb-10.0.11 /opt/zimbra/mysql
 
 rm -f /opt/zimbra/bdb
 ln -s /opt/zimbra/bdb-5.2.36 /opt/zimbra/bdb
@@ -49,7 +49,7 @@ rm -f /opt/zimbra/pflogsumm
 ln -s /opt/zimbra/pflogsumm-1.1.3 /opt/zimbra/pflogsumm
 
 rm -f /opt/zimbra/openssl
-ln -s /opt/zimbra/openssl-1.0.1f /opt/zimbra/openssl
+ln -s /opt/zimbra/openssl-1.0.1g /opt/zimbra/openssl
 
 rm -f /opt/zimbra/heimdal
 ln -s /opt/zimbra/heimdal-1.5.2 /opt/zimbra/heimdal
@@ -64,7 +64,7 @@ rm -f /opt/zimbra/openldap
 ln -s /opt/zimbra/openldap-2.4.39.2z /opt/zimbra/openldap
 
 rm -f /opt/zimbra/tcmalloc
-ln -s /opt/zimbra/tcmalloc-2.1 /opt/zimbra/tcmalloc
+ln -s /opt/zimbra/tcmalloc-2.2 /opt/zimbra/tcmalloc
 
 rm -f /opt/zimbra/rsync
 ln -s /opt/zimbra/rsync-3.0.9 /opt/zimbra/rsync
