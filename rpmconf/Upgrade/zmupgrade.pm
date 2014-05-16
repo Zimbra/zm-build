@@ -428,8 +428,17 @@ sub upgrade {
     chomp($lmMinor);
     $lmMicro = $entry->get_value('zimbraServerVersionMicro');
     chomp($lmMicro);
+    if ($lmMajor eq "") {
+      main::progress("Error: LDAP master MUST be upgraded first.\n");
+      main::progress("       Run /opt/zimbra/libexec/zmsetup.pl after upgrading the ldap master\n");
+      main::progress("       to finalize the upgrade.\n");
+      $result = $ldap->unbind;
+      return 1;
+    }
     if (($lmMajor != $targetMajor) && ($lmMinor != $targetMinor) && ($lmMicro != $targetMicroMicro)) {
       main::progress("Error: LDAP master MUST be upgraded first.\n");
+      main::progress("       Run /opt/zimbra/libexec/zmsetup.pl after upgrading the ldap master\n");
+      main::progress("       to finalize the upgrade.\n");
       $result = $ldap->unbind;
       return 1;
     } else {
@@ -439,7 +448,9 @@ sub upgrade {
       chomp($lmType);
       if ($lmType eq $targetType) {
         if ($lmBuild < $targetBuild) {
-          main::progress("Error: LDAP Master MUST be upgraded first.\n");
+          main::progress("Error: LDAP master MUST be upgraded first.\n");
+          main::progress("       Run /opt/zimbra/libexec/zmsetup.pl after upgrading the ldap master\n");
+          main::progress("       to finalize the upgrade.\n");
           $result = $ldap->unbind;
           return 1;
         }
