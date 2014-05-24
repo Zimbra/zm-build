@@ -1481,7 +1481,7 @@ sub setDefaults {
     $ldapPostChanged = 1;
     $ldapAmavisChanged = 1;
     $ldapNginxChanged = 1;
-    if (isLdapMaster()) {
+    if ($newinstall) {
       $ldapBesSearcherChanged = 1;
     }
   }
