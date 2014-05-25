@@ -66,11 +66,11 @@ $(BUILD_ROOT)/zimbra-logger.spec:
 		-e '/^%post$$/ r zimbra-logger.post' > $(BUILD_ROOT)/zimbra-logger.spec
 	rm -f zimbra-logger.pre
 	rm -f zimbra-logger.post
-	echo "%attr(-, zimbra, zimbra) /opt/zimbra/logger" >> \
+	echo "%attr(755, zimbra, zimbra) /opt/zimbra/logger" >> \
 		$(BUILD_ROOT)/zimbra-logger.spec
-	echo "%attr(-, zimbra, zimbra) /opt/zimbra/logger/db" >> \
+	echo "%attr(755, zimbra, zimbra) /opt/zimbra/logger/db" >> \
 		$(BUILD_ROOT)/zimbra-logger.spec
-	echo "%attr(-, zimbra, zimbra) /opt/zimbra/logger/db/data" >> \
+	echo "%attr(755, zimbra, zimbra) /opt/zimbra/logger/db/data" >> \
 		$(BUILD_ROOT)/zimbra-logger.spec
 	echo "" >> $(BUILD_ROOT)/zimbra-logger.spec
 	echo "%clean" >> $(BUILD_ROOT)/zimbra-logger.spec

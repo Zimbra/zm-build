@@ -69,7 +69,7 @@ $(BUILD_ROOT)/zimbra-apache.spec:
 	rm -f zimbra-apache.post
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/conf" >> \
 		$(BUILD_ROOT)/zimbra-apache.spec
-	echo "%attr(-, zimbra, zimbra) /opt/zimbra/httpd-$(APACHE_VERSION)" >> \
+	echo "%attr(-, root, root) /opt/zimbra/httpd-$(APACHE_VERSION)" >> \
 		$(BUILD_ROOT)/zimbra-apache.spec
 	echo "" >> $(BUILD_ROOT)/zimbra-apache.spec
 	echo "%clean" >> $(BUILD_ROOT)/zimbra-apache.spec
