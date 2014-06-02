@@ -701,14 +701,11 @@ checkStoreRequirements() {
 
   if [ $GOOD = "no" ]; then
     echo ""
-    echo "###ERROR###"
+    echo "###WARNING###"
     echo ""
-    echo "One or more required packages for zimbra-store are missing."
-    echo "Please install them before running this installer."
+    echo "One or more suggested packages for zimbra-store are missing."
+    echo "Some features may be disabled due to the missing package(s)."
     echo ""
-    echo "Installation cancelled."
-    echo ""
-    exit 1
   else
     echo "zimbra-store package check complete."
   fi
@@ -2449,18 +2446,18 @@ getPlatformVars() {
       PACKAGERM='yum -y --disablerepo=* erase -v'
       PREREQ_PACKAGES="nc sudo libidn gmp libaio libstdc++ unzip"
       PRESUG_PACKAGES="perl-5.10.1 sysstat sqlite"
-      STORE_PACKAGES=""
+      STORE_PACKAGES="libreoffice"
     elif [ $PLATFORM = "RHEL7_64" ]; then
       PACKAGEINST='yum -y --disablerepo=* localinstall -v'
       PACKAGERM='yum -y --disablerepo=* erase -v'
       PREREQ_PACKAGES="nmap-ncat sudo libidn gmp libaio libstdc++ unzip"
       PRESUG_PACKAGES="perl-5.16.3 sysstat sqlite"
-      STORE_PACKAGES=""
+      STORE_PACKAGES="libreoffice"
     elif [ $PLATFORM = "SLES11_64" ]; then
       PREREQ_PACKAGES="netcat sudo libidn gmp libaio"
       PREREQ_LIBS="/usr/lib64/libstdc++.so.6"
       PRESUG_PACKAGES="perl-5.10.0 sysstat sqlite3"
-      STORE_PACKAGES=""
+      STORE_PACKAGES="libreoffice"
     else
       PREREQ_PACKAGES="sudo libidn gmp"
       PREREQ_LIBS="/usr/lib/libstdc++.so.6"
