@@ -134,6 +134,8 @@ core_stage: $(CORE_COMPONENTS)
 
 $(CORE_DEST_DIR):
 	mkdir -p $@
+	mkdir -p $@/bin
+	mkdir -p $@/conf
 	cp $(ENV_FILE_SOURCE) $(CORE_DEST_DIR)/$(ENV_FILE_DEST)
 	cp $(PROFILE_SOURCE) $(CORE_DEST_DIR)/$(PROFILE_DEST)
 	cp $(EXRC_SOURCE) $(CORE_DEST_DIR)/$(EXRC_DEST)
@@ -143,6 +145,8 @@ $(CORE_DEST_DIR):
 	sed -i.orig -e 's/@@BUILD_PLATFORM@@/$(BUILD_PLATFORM)/' $(CORE_DEST_DIR)/$(PLATFORM_DOT_DEST)
 	rm -f $(CORE_DEST_DIR)/$(PLATFORM_DOT_DEST).orig
 	chmod 644 $(CORE_DEST_DIR)/$(VIMINFO_DEST)
+	(cd $(CORE_DEST_DIR); tar xzf $(POSTFIX_LW_SOURCE).tar.gz)
+	(cd $(CORE_DEST_DIR); tar xzf $(AMAVIS_LW_SOURCE).tar.gz)
 
 $(CORE_DEST_DIR)/docs:
 	mkdir -p $@
