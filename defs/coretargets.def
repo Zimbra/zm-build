@@ -145,8 +145,8 @@ $(CORE_DEST_DIR):
 	sed -i.orig -e 's/@@BUILD_PLATFORM@@/$(BUILD_PLATFORM)/' $(CORE_DEST_DIR)/$(PLATFORM_DOT_DEST)
 	rm -f $(CORE_DEST_DIR)/$(PLATFORM_DOT_DEST).orig
 	chmod 644 $(CORE_DEST_DIR)/$(VIMINFO_DEST)
-	(cd $(CORE_DEST_DIR); tar xzf $(POSTFIX_LW_SOURCE).tar.gz)
-	(cd $(CORE_DEST_DIR); tar xzf $(AMAVIS_LW_SOURCE).tar.gz)
+	(cd $(CORE_DEST_DIR); tar xzf $(POSTFIX_LW_SOURCE).tgz)
+	(cd $(CORE_DEST_DIR); tar xzf $(AMAVIS_LW_SOURCE).tgz)
 
 $(CORE_DEST_DIR)/docs:
 	mkdir -p $@
