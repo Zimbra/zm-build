@@ -686,7 +686,7 @@ checkRequiredSpace() {
 checkStoreRequirements() {
   echo "Checking required packages for zimbra-store"
   GOOD="yes"
-  if [ x"$ZMTYPE_CURRENT" = "xNETWORK" ]; then
+  if [ x"$ZMTYPE_INSTALLABLE" = "xNETWORK" ]; then
     for i in $STORE_PACKAGES; do
       #echo -n "    $i..."
       isInstalled $i
