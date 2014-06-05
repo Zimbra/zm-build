@@ -325,7 +325,22 @@ sub detail {
   #qx(echo "$date $msg" >> $logfile);
 }
 
+sub defineInstallWebapps {
+  if (!defined $config{INSTALL_WEBAPPS}) {
+    $config{INSTALL_WEBAPPS} = "zimlet";
+    if ($config{SERVICEWEBAPP} eq "yes") {
+      $config{INSTALL_WEBAPPS} = "service $config{INSTALL_WEBAPPS}";
+    }
+    if ($config{UIWEBAPPS} eq "yes") {
+      $config{INSTALL_WEBAPPS} = "$config{INSTALL_WEBAPPS} zimbra zimbraAdmin";
+    }
+  }
+}
+
 sub saveConfig {
+  if (defined $config{savedMTAAUTHHOST}) {
+    delete $config{savedMTAAUTHHOST};
+  }
   my $fname = "/opt/zimbra/config.$$";
   if (!(defined ($options{c})) && $newinstall ) {
     $fname = askNonBlank ("Save config in file:", $fname);
@@ -532,13 +547,15 @@ sub getInstalledWebapps {
     if (-d "$webappsDir/$app") {
       $installedWebapps{$app}="Enabled";
       detail("Web application $app is enabled.");
-      if (!defined($config{INSTALL_WEBAPPS})) {
-        $config{INSTALL_WEBAPPS}="$app";
-      } else {
-        $config{INSTALL_WEBAPPS}="$config{INSTALL_WEBAPPS} $app";
-      }
     } else {
       $installedWebapps{$app}="Disabled";
+    }
+  }
+  if (!$newinstall && !defined($config{INSTALL_WEBAPPS})) {
+    foreach my $app (%installedWebapps) {
+      if ($app eq "Enabled") {
+        $config{INSTALL_WEBAPPS}="$app $config{INSTALL_WEBAPPS}";
+      }
     }
   }
 }
@@ -2417,14 +2434,7 @@ sub removeUnusedWebapps {
     system("rm -rf $webAppsDir/zimbraAdmin")
       if (-d "$webAppsDir/zimbraAdmin");
   }
-  if (!defined $config{INSTALL_WEBAPPS}) {
-    if ($config{SERVICEWEBAPP} eq "yes") {
-      $config{INSTALL_WEBAPPS} = "service";
-    }
-    if ($config{UIWEBAPPS} eq "yes") {
-      $config{INSTALL_WEBAPPS} = "$config{INSTALL_WEBAPPS} zimbra zimbraAdmin";
-    }
-  }
+  defineInstallWebapps();
   getInstalledWebapps();
 }
 
@@ -2625,6 +2635,20 @@ sub toggleTF {
     &toggleWebProxy();
   }
 }
+
+sub toggleSERVICEWEBAPP {
+    my $key = shift;
+    $config{SERVICEWEBAPP} = ($config{SERVICEWEBAPP} eq "yes")?"no":"yes";
+    if ($config{SERVICEWEBAPP} eq "no") {
+        $config{savedMTAAUTHHOST} = $config{MTAAUTHHOST};
+        $config{MTAAUTHHOST} = "";
+    }
+    if ($config{SERVICEWEBAPP} eq "yes") {
+        $config{MTAAUTHHOST} = $config{savedMTAAUTHHOST};
+        delete $config{savedMTAAUTHHOST};
+    }
+}
+
 sub toggleConfigEnabled {
   my $key = shift;
   $config{$key} = ($config{$key} eq "Enabled")?"Disabled":"Enabled";
@@ -4297,7 +4321,7 @@ sub createStoreMenu {
     $$lm{menuitems}{$i} = {
       "prompt" => "Install mailstore (service webapp):",
       "var" => \$config{SERVICEWEBAPP},
-      "callback" => \&toggleYN,
+      "callback" => \&toggleSERVICEWEBAPP,
       "arg" => "SERVICEWEBAPP"
     };
     $i++;
@@ -5128,7 +5152,7 @@ sub configLCValues {
   }
 
   # set default zmprov bahaviour
-  if (isEnabled("zimbra-store")) {
+  if (isEnabled("zimbra-store") && $installedWebapps{"service"} eq "Enabled") {
     setLocalConfig ("zimbra_zmprov_default_to_ldap", "false");
   } else {
     setLocalConfig ("zimbra_zmprov_default_to_ldap", "true");
@@ -5770,9 +5794,16 @@ sub configSetMtaAuthHost {
 }
 
 sub configSetStoreDefaults {
-  removeUnusedWebapps();
   if(isEnabled("zimbra-proxy") || $config{zimbraMailProxy} eq "TRUE" || $config{zimbraWebProxy} eq "TRUE") {
     $config{zimbraReverseProxyLookupTarget}="TRUE";
+    $config{zimbraMtaAuthTarget}="TRUE";
+  }
+  # for mailstore split, set zimbraReverseProxyAvailableLookupTargets on service-only nodes
+  if ($newinstall && $installedWebapps{"service"} eq "Enabled") {
+    setLdapServerConfig("+zimbraReverseProxyAvailableLookupTargets", "$config{HOSTNAME}");
+  }
+  if ($installedWebapps{"service"} eq "Disabled") {
+    $config{zimbraMtaAuthTarget}="FALSE";
   }
   if ($newinstall && isNetwork()) {
     setLdapGlobalConfig("+zimbraReverseProxyUpstreamEwsServers", "$config{HOSTNAME}");
@@ -5781,7 +5812,7 @@ sub configSetStoreDefaults {
     setLdapGlobalConfig("+zimbraReverseProxyUpstreamLoginServers", "$config{HOSTNAME}");  
   }
   setLdapServerConfig("zimbraReverseProxyLookupTarget", $config{zimbraReverseProxyLookupTarget});
-  setLdapServerConfig("zimbraMtaAuthTarget", "TRUE");
+  setLdapServerConfig("zimbraMtaAuthTarget", $config{zimbraMtaAuthTarget});
   my $upstream="-u";
   if ($config{zimbra_require_interprocess_security}) {
     $upstream="-U";
@@ -6564,16 +6595,20 @@ sub configCreateDomain {
           progress(($rc == 0) ? "done.\n" : "failed.\n");
         }
       }
-
-      progress ( "Creating root alias..." );
-      my $rc = runAsZimbra("$ZMPROV aaa ".
+    
+      # no root/postmaster accounts on web-only nodes
+      if ($installedWebapps{"service"} eq "Enabled") {
+        progress ( "Creating root alias..." );
+        my $rc = runAsZimbra("$ZMPROV aaa ".
         "$config{CREATEADMIN} root\@$config{CREATEDOMAIN}");
-      progress(($rc == 0) ? "done.\n" : "failed.\n");
-
-      progress ( "Creating postmaster alias..." );
-      $rc = runAsZimbra("$ZMPROV aaa ".
+        progress(($rc == 0) ? "done.\n" : "failed.\n");
+            
+        progress ( "Creating postmaster alias..." );
+        $rc = runAsZimbra("$ZMPROV aaa ".
         "$config{CREATEADMIN} postmaster\@$config{CREATEDOMAIN}");
-      progress(($rc == 0) ? "done.\n" : "failed.\n");
+        progress(($rc == 0) ? "done.\n" : "failed.\n");
+      }
+      
     }
 
     if ($config{DOTRAINSA} eq "yes") {
@@ -6787,7 +6822,7 @@ sub configCreateDefaultDomainGALSyncAcct {
     return 0;
   }
 
-  if (isEnabled("zimbra-store")) {
+    if (isEnabled("zimbra-store")) {
     progress("Creating galsync account for default domain...");
     my $zimbra_server = getLocalConfig ("zimbra_server_hostname");
     my $default_domain = (($newinstall) ? "$config{CREATEDOMAIN}" : "$config{zimbraDefaultDomainName}");
@@ -6869,6 +6904,7 @@ sub failConfig {
 }
 
 sub applyConfig {
+  defineInstallWebapps();
   if (!(defined ($options{c})) && $newinstall ) {
     if (askYN("Save configuration data to a file?", "Yes") eq "yes") {
       saveConfig();
@@ -6886,6 +6922,13 @@ sub applyConfig {
     print H time(),": CONFIG SESSION START\n";
     # This is the postinstall config
     configLog ("BEGIN");
+  }
+
+  # On split store node setups, the unused webapps need to be removed before
+  # applying any other configuration in order to ensure the installedWebapps
+  # variables are properly setup for later steps.
+  if (isEnabled("zimbra-store")) {
+    removeUnusedWebapps();
   }
 
   configLCValues();
@@ -6926,11 +6969,14 @@ sub applyConfig {
 
 
   if (isEnabled("zimbra-store")) {
+      
     configSpellServer();
 
     configSetServicePorts();
 
-    addServerToHostPool();
+    if ($installedWebapps{"service"} eq "Enabled") {
+      addServerToHostPool();
+    }
 
     configSetKeyboardShortcutsPref() if (!$newinstall);
 
@@ -7031,7 +7077,7 @@ sub applyConfig {
       runAsZimbra("/opt/zimbra/bin/zmmailboxdctl restart");
       progress ( "done.\n" );
     }
-    if ($newinstall) {
+    if ($newinstall && $installedWebapps{"service"} eq "Enabled") {
       configCreateDefaultDomainGALSyncAcct();
     } else {
       progress ( "Skipping creation of default domain GAL sync account - existing install detected.\n" );
