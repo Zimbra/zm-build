@@ -1482,7 +1482,28 @@ sub setDefaults {
   }
 
   if (isEnabled("zimbra-dnscache")) {
-    $config{zimbraDNSMasterIP} = "";
+    my @dnsMasters;
+    my @resolv;
+    if ( -r "/etc/resolv.conf" && -f "/etc/resolv.conf" ) {
+      open(RESOLV, '</etc/resolv.conf');
+      @resolv=<RESOLV>;
+      close RESOLV;
+      foreach my $line (@resolv) {
+        chomp($line);
+        if ($line =~ /^nameserver /) {
+          if ($line !~ /127.0.0.1/ && $line !~ /::1/) {
+            my ($junk, $tmpip);
+            ($junk, $tmpip) = split(/ /, $line, 2);
+            push(@dnsMasters, $tmpip);
+          }
+        }
+      }
+    }
+    if ($#dnsMasters > 0) {
+      $config{zimbraDNSMasterIP} = join(' ', @dnsMasters);
+    } else {
+      $config{zimbraDNSMasterIP} = "";
+    }
     $config{zimbraDNSUseTCP} = "yes";
     $config{zimbraDNSUseUDP} = "yes";
     $config{zimbraDNSTCPUpstream} = "no";
