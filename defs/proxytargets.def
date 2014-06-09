@@ -8,33 +8,6 @@ proxy: $(PACKAGE_DIR) proxy_stage proxy_pkg_spec_$(PACKAGE_EXT)
 	(cd $(CUR_DEST_ROOT); \
 	$(PACKAGING_COMMAND) $(PACKAGING_OPTIONS) )
 
-proxy_pkg_spec_pkg: $(BUILD_ROOT)/resources/zimbra-proxy $(BUILD_ROOT)/zimbra-proxy.Info.plist $(BUILD_ROOT)/zimbra-proxy.Description.plist 
-
-$(BUILD_ROOT)/zimbra-proxy.Description.plist:
-	cat $(PACKAGE_CONF_DIR)/Spec/zimbra-proxy.Description.plist | \
-		sed -e 's/@@VERSION@@/$(VERSION_TAG)/' \
-		-e 's/@@RELEASE@@/$(RELEASE)/' \
-		-e 's/@@MAJOR@@/$(MAJOR)/' \
-		-e 's/@@MICRO@@/$(MICRO)/' \
-		-e 's/@@MINOR@@/$(MINOR)/' > $@
-
-$(BUILD_ROOT)/zimbra-proxy.Info.plist:
-	cat $(PACKAGE_CONF_DIR)/Spec/zimbra-proxy.Info.plist | \
-		sed -e 's/@@VERSION@@/$(VERSION_TAG)/' \
-		-e 's/@@RELEASE@@/$(RELEASE)/' \
-		-e 's/@@MAJOR@@/$(MAJOR)/' \
-		-e 's/@@MICRO@@/$(MICRO)/' \
-		-e 's/@@BUILDNUM@@/$(BUILDNUM)/' \
-		-e 's/@@MINOR@@/$(MINOR)/' > $@
-
-$(BUILD_ROOT)/resources/zimbra-proxy:
-	mkdir -p $@
-	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-proxy.postinstall $@/postinstall
-	chmod 755 $@/postinstall
-	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-proxy.postupgrade $@/postupgrade
-	chmod 755 $@/postupgrade
-
-
 proxy_pkg_spec_deb: $(PROXY_DEST_ROOT)/DEBIAN/control
 
 $(PROXY_DEST_ROOT)/DEBIAN: force

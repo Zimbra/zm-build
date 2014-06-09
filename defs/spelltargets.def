@@ -10,32 +10,6 @@ spell: $(PACKAGE_DIR) spell_stage spell_pkg_spec_$(PACKAGE_EXT)
 
 spell_pkg_spec_ccs:
 
-spell_pkg_spec_pkg: $(BUILD_ROOT)/resources/zimbra-spell $(BUILD_ROOT)/zimbra-spell.Info.plist $(BUILD_ROOT)/zimbra-spell.Description.plist
-
-$(BUILD_ROOT)/zimbra-spell.Description.plist:
-	cat $(PACKAGE_CONF_DIR)/Spec/zimbra-spell.Description.plist | \
-	sed -e 's/@@VERSION@@/$(VERSION_TAG)/' \
-	-e 's/@@RELEASE@@/$(RELEASE)/' \
-	-e 's/@@MAJOR@@/$(MAJOR)/' \
-	-e 's/@@MICRO@@/$(MICRO)/' \
-	-e 's/@@MINOR@@/$(MINOR)/' > $@
-
-$(BUILD_ROOT)/zimbra-spell.Info.plist:
-	cat $(PACKAGE_CONF_DIR)/Spec/zimbra-spell.Info.plist | \
-	sed -e 's/@@VERSION@@/$(VERSION_TAG)/' \
-	-e 's/@@RELEASE@@/$(RELEASE)/' \
-	-e 's/@@MAJOR@@/$(MAJOR)/' \
-	-e 's/@@MICRO@@/$(MICRO)/' \
-	-e 's/@@BUILDNUM@@/$(BUILDNUM)/' \
-	-e 's/@@MINOR@@/$(MINOR)/' > $@
-
-$(BUILD_ROOT)/resources/zimbra-spell:
-	mkdir -p $@
-	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-spell.postinstall $@/postinstall
-	chmod 755 $@/postinstall
-	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-spell.postupgrade $@/postupgrade
-	chmod 755 $@/postupgrade
-
 spell_pkg_spec_deb: $(SPELL_DEST_ROOT)/DEBIAN/control
 
 $(SPELL_DEST_ROOT)/DEBIAN: force

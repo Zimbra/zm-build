@@ -10,32 +10,6 @@ mta: $(PACKAGE_DIR) mta_stage mta_pkg_spec_$(PACKAGE_EXT)
 
 mta_pkg_spec_ccs:
 
-mta_pkg_spec_pkg: $(BUILD_ROOT)/resources/zimbra-mta $(BUILD_ROOT)/zimbra-mta.Info.plist $(BUILD_ROOT)/zimbra-mta.Description.plist
-
-$(BUILD_ROOT)/zimbra-mta.Description.plist:
-	cat $(PACKAGE_CONF_DIR)/Spec/zimbra-mta.Description.plist | \
-	sed -e 's/@@VERSION@@/$(VERSION_TAG)/' \
-	-e 's/@@RELEASE@@/$(RELEASE)/' \
-	-e 's/@@MAJOR@@/$(MAJOR)/' \
-	-e 's/@@MICRO@@/$(MICRO)/' \
-	-e 's/@@MINOR@@/$(MINOR)/' > $@
-
-$(BUILD_ROOT)/zimbra-mta.Info.plist:
-	cat $(PACKAGE_CONF_DIR)/Spec/zimbra-mta.Info.plist | \
-	sed -e 's/@@VERSION@@/$(VERSION_TAG)/' \
-	-e 's/@@RELEASE@@/$(RELEASE)/' \
-	-e 's/@@MAJOR@@/$(MAJOR)/' \
-	-e 's/@@MICRO@@/$(MICRO)/' \
-	-e 's/@@BUILDNUM@@/$(BUILDNUM)/' \
-	-e 's/@@MINOR@@/$(MINOR)/' > $@
-
-$(BUILD_ROOT)/resources/zimbra-mta:
-	mkdir -p $@
-	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-mta.postinstall $@/postinstall
-	chmod 755 $@/postinstall
-	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-mta.postupgrade $@/postupgrade
-	chmod 755 $@/postupgrade
-
 mta_pkg_spec_deb: $(MTA_DEST_ROOT)/DEBIAN/control
 
 $(MTA_DEST_ROOT)/DEBIAN: force

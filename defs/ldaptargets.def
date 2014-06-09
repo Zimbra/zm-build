@@ -10,32 +10,6 @@ ldap: $(PACKAGE_DIR) ldap_stage ldap_pkg_spec_$(PACKAGE_EXT)
 
 ldap_pkg_spec_ccs:
 
-ldap_pkg_spec_pkg: $(BUILD_ROOT)/resources/zimbra-ldap $(BUILD_ROOT)/zimbra-ldap.Info.plist $(BUILD_ROOT)/zimbra-ldap.Description.plist
-
-$(BUILD_ROOT)/zimbra-ldap.Description.plist:
-	cat $(PACKAGE_CONF_DIR)/Spec/zimbra-ldap.Description.plist | \
-	sed -e 's/@@VERSION@@/$(VERSION_TAG)/' \
-	-e 's/@@RELEASE@@/$(RELEASE)/' \
-	-e 's/@@MAJOR@@/$(MAJOR)/' \
-	-e 's/@@MICRO@@/$(MICRO)/' \
-	-e 's/@@MINOR@@/$(MINOR)/' > $@
-
-$(BUILD_ROOT)/zimbra-ldap.Info.plist:
-	cat $(PACKAGE_CONF_DIR)/Spec/zimbra-ldap.Info.plist | \
-	sed -e 's/@@VERSION@@/$(VERSION_TAG)/' \
-	-e 's/@@RELEASE@@/$(RELEASE)/' \
-	-e 's/@@MAJOR@@/$(MAJOR)/' \
-	-e 's/@@MICRO@@/$(MICRO)/' \
-	-e 's/@@BUILDNUM@@/$(BUILDNUM)/' \
-	-e 's/@@MINOR@@/$(MINOR)/' > $@
-
-$(BUILD_ROOT)/resources/zimbra-ldap:
-	mkdir -p $@
-	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-ldap.postupgrade $@/postupgrade
-	chmod 755 $@/postupgrade
-	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-ldap.postinstall $@/postinstall
-	chmod 755 $@/postinstall
-
 ldap_pkg_spec_deb: $(LDAP_DEST_ROOT)/DEBIAN/control
 
 $(LDAP_DEST_ROOT)/DEBIAN: force
