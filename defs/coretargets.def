@@ -112,6 +112,7 @@ $(CORE_DEST_DIR):
 	(cd $(CORE_DEST_DIR); tar xzf $(AMAVIS_LW_SOURCE).tgz)
 
 $(CORE_DEST_DIR)/docs:
+	@echo "Installing docs"
 	mkdir -p $@
 	cp $(LICENSE_DIR)/zimbra/zpl-full.txt $@/ZPL.txt
 	cp $(LICENSE_DIR)/zimbra/ypl-full.txt $@/YPL.txt
@@ -190,6 +191,7 @@ $(CORE_DEST_DIR)/$(PFLOG_DIR)-$(PFLOG_VERSION): $(CORE_DEST_DIR)
 	cp -f $(PFLOG_SOURCE)/pflogsumm.1 $@/man/man1
 
 $(CORE_DEST_DIR)/lib: $(WEBAPP_DIR)/service.war $(LDAP_DEST_DIR)/$(LDAP_DIR)-$(LDAP_VERSION) $(NATIVE_DIR)/build/libzimbra-native.$(JNI_EXT)
+	@echo "Installing lib"
 	mkdir -p $@
 	cp -pr $(SERVICE_DIR)/build/dist/lib/* $@
 	-rm -rf $@/jars/junit*.jar
@@ -230,6 +232,7 @@ $(CORE_DEST_DIR)/db: $(WEBAPP_DIR)/service.war
 	cp -R $(SERVICE_DIR)/build/versions-init.sql $@
 
 $(CORE_DEST_DIR)/conf: $(WEBAPP_DIR)/service.war
+	@echo "Installing conf"
 	mkdir -p $@
 	cp $(PACKAGE_CONF_DIR)/Conf/swatchrc $@/swatchrc.in
 	cp $(PACKAGE_CONF_DIR)/Conf/logswatchrc $@/logswatchrc
