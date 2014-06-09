@@ -350,6 +350,7 @@ $(CORE_DEST_DIR)/libexec: $(LAUNCHER_DIR)/build/zmmailboxdmgr
 	cp -f $(BUILD_ROOT)/rpmconf/Build/get_plat_tag.sh $@
 
 $(CORE_DEST_DIR)/bin:
+	@echo "*** Installing bin"
 	mkdir -p $@
 	cp -R $(SERVICE_DIR)/build/dist/bin/[a-z]* $@
 	rm -f $(CORE_DEST_DIR)/bin/zmtransserver.bat
@@ -373,6 +374,7 @@ $(CORE_DEST_DIR)/bin:
 	cp $@/zmprov $@/zmprov.java
 
 $(CORE_DEST_DIR)/contrib:
+	@echo "*** Installing contrib"
 	mkdir -p $@
 	cp -R $(SERVICE_DIR)/src/contrib/* $@
 
