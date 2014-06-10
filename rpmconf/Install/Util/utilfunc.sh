@@ -49,18 +49,18 @@ displayThirdPartyLicenses() {
     echo ""
     echo ""
   fi
-  if [ -f ${MYDIR}/docs/oracle_jdk_eula.txt ]; then
-    cat $MYDIR/docs/oracle_jdk_eula.txt
-    echo ""
-    echo ""
-    if [ x$DEFAULTFILE = "x" -o x$CLUSTERUPGRADE = "xyes" ]; then
-      askYN "Do you agree with the terms of the software license agreement?" "N"
-      if [ $response != "yes" ]; then
-        exit
-      fi
-    fi
-  fi
-  echo ""
+  #if [ -f ${MYDIR}/docs/oracle_jdk_eula.txt ]; then
+  #  cat $MYDIR/docs/oracle_jdk_eula.txt
+  #  echo ""
+  #  echo ""
+  #  if [ x$DEFAULTFILE = "x" -o x$CLUSTERUPGRADE = "xyes" ]; then
+  #    askYN "Do you agree with the terms of the software license agreement?" "N"
+  #    if [ $response != "yes" ]; then
+  #      exit
+  #    fi
+  #  fi
+  #fi
+  #echo ""
 }
 
 isFQDN() {
