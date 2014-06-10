@@ -3459,10 +3459,6 @@ sub isNetwork {
   return((-f "/opt/zimbra/bin/zmbackup") ? 1 : 0);
 }
 
-sub isOctopus {
-  return((grep(/\bzimbra-octopus\b/,@packageList)) ? 1 : 0);
-}
-
 sub isLdapMaster {
   return(($config{LDAPHOST} eq $config{HOSTNAME}) ? 1 : 0);
 }
@@ -5991,10 +5987,6 @@ sub configSetTimeZonePref {
   configLog("zimbraPrefTimeZoneId");
 }
 
-sub configSetOctopusCoSFeatures {
-  return;
-}
-
 sub configSetCEFeatures {
   foreach my $feature (qw(Tasks Briefcases)) {
     my $key = "zimbraFeature${feature}Enabled";
@@ -6012,36 +6004,6 @@ sub configSetCEFeatures {
 
 sub configSetNEFeatures {
   return unless isNetwork();
-}
-
-sub configInitOctopusAdminGroup {
-  return if ($config{DOCREATEDOMAIN} eq "no");
-  main::progress ("Setting up octopus admin UI components..");
-  
-  $config{zimbraDefaultDomainName} = getLdapConfigValue("zimbraDefaultDomainName") || $config{CREATEDOMAIN};
-  my $adminGroup = "zimbraOctopusAdmins\@". 
-    (($newinstall) ? "$config{CREATEDOMAIN}" : "$config{zimbraDefaultDomainName}");
-  my $rc = main::runAsZimbra("$ZMPROV cdl $adminGroup ".
-    "zimbraIsAdminGroup TRUE ".
-    "zimbraHideInGal TRUE ".
-    "zimbraMailStatus disabled ".
-    "zimbraAdminConsoleUIComponents accountListView ".
-    "zimbraAdminConsoleUIComponents DLListView ".
-    "zimbraAdminConsoleUIComponents COSListView ".
-    "zimbraAdminConsoleUIComponents domainListView ".
-    "zimbraAdminConsoleUIComponents serverListView ".
-    "zimbraAdminConsoleUIComponents globalConfigView ".
-    "zimbraAdminConsoleUIComponents saveSearch ".
-    "description \'Octopus Administrative Account\'");
-  main::progress(($rc == 0) ? "done.\n" : "failed.\n");
-
-  main::progress ("Granting group $adminGroup global right +octopusAdmin...");
-  $rc = main::runAsZimbra("$ZMPROV grr global grp $adminGroup +octopusAdmin");
-  main::progress(($rc == 0) ? "done.\n" : "failed.\n");
-
-  main::progress ("Adding user $config{CREATEADMIN} to DL $adminGroup...");
-  my $rc = main::runAsZimbra("$ZMPROV adlm $adminGroup $config{CREATEADMIN}");
-  main::progress(($rc == 0) ? "done.\n" : "failed.\n");
 }
 
 sub configInitDomainAdminGroups {
@@ -6604,33 +6566,12 @@ sub configCreateDomain {
       if ($acctId ne "") {
         progress("already exists.\n");
       } else {
-        if (isEnabled("zimbra-octopus")) {
-          my $rc = runAsZimbra("$ZMPROV ca ".
-            "$config{CREATEADMIN} \'$config{CREATEADMINPASS}\' ".
-            "zimbraIsDelegatedAdminAccount TRUE ".
-            "zimbraFeatureAdminMailEnabled TRUE ".
-            "zimbraPrefAdminConsoleWarnOnExit TRUE ".
-            "zimbraAdminAuthTokenLifetime 12h ".
-            "zimbraAdminConsoleUIComponents accountListView ".
-            "zimbraAdminConsoleUIComponents DLListView ".
-            "zimbraAdminConsoleUIComponents COSListView ".
-            "zimbraAdminConsoleUIComponents domainListView ".
-            "zimbraAdminConsoleUIComponents serverListView ".
-            "zimbraAdminConsoleUIComponents globalConfigView ".
-            "description \'Octopus Administrative Account\'");
-          progress(($rc == 0) ? "done.\n" : "failed.\n");
-          # initialize the octopus admin group and add the admin user to the DL
-          # this really needs to be on the ldap master but we need to fix the isEnabled
-          # function first.  
-          configInitOctopusAdminGroup();
-        } else {
-          my $rc = runAsZimbra("$ZMPROV ca ".
-            "$config{CREATEADMIN} \'$config{CREATEADMINPASS}\' ".
-            "zimbraAdminConsoleUIComponents cartBlancheUI ".
-            "description \'Administrative Account\' ".
-            "zimbraIsAdminAccount TRUE");
-          progress(($rc == 0) ? "done.\n" : "failed.\n");
-        }
+        my $rc = runAsZimbra("$ZMPROV ca ".
+          "$config{CREATEADMIN} \'$config{CREATEADMINPASS}\' ".
+          "zimbraAdminConsoleUIComponents cartBlancheUI ".
+          "description \'Administrative Account\' ".
+          "zimbraIsAdminAccount TRUE");
+        progress(($rc == 0) ? "done.\n" : "failed.\n");
       }
     
       # no root/postmaster accounts on web-only nodes
@@ -6893,7 +6834,6 @@ sub configSetEnabledServices {
     if ($p eq "zimbra-archiving") {next;}
     $p =~ s/zimbra-//;
     if ($p eq "store") {$p = "mailbox";}
-    if ($p eq "octopus") {$p = "mailbox";}
     push(@installedServiceList, ('zimbraServiceInstalled', "$p"));
   }
 
@@ -6916,7 +6856,6 @@ sub configSetEnabledServices {
           }
         }
       }
-      if ($p eq "octopus") {$p = "mailbox";}
       push(@enabledServiceList, 'zimbraServiceEnabled', "$p");
     }
   }
@@ -7018,8 +6957,6 @@ sub applyConfig {
     configSetKeyboardShortcutsPref() if (!$newinstall);
 
     configInitBackupPrefs();
-
-    configSetOctopusCoSFeatures() if isOctopus();
 
     configSetCEFeatures() if isZCS();
 
