@@ -5173,7 +5173,7 @@ sub configLCValues {
   }
 
   # set default zmprov bahaviour
-  if (isEnabled("zimbra-store") && $installedWebapps{"service"} eq "Enabled") {
+  if (isEnabled("zimbra-store") && isStoreServiceNode()) {
     setLocalConfig ("zimbra_zmprov_default_to_ldap", "false");
   } else {
     setLocalConfig ("zimbra_zmprov_default_to_ldap", "true");
@@ -5820,16 +5820,16 @@ sub configSetStoreDefaults {
     $config{zimbraMtaAuthTarget}="TRUE";
   }
   # for mailstore split, set zimbraReverseProxyAvailableLookupTargets on service-only nodes
-  if ($newinstall && $installedWebapps{"service"} eq "Enabled") {
-    setLdapServerConfig("+zimbraReverseProxyAvailableLookupTargets", "$config{HOSTNAME}");
+  if ($newinstall && isStoreServiceNode()) {
+    setLdapGlobalConfig("+zimbraReverseProxyAvailableLookupTargets", "$config{HOSTNAME}");
   }
-  if ($installedWebapps{"service"} eq "Disabled") {
+  if (isStoreWebNode()) {
     $config{zimbraMtaAuthTarget}="FALSE";
   }
-  if ($newinstall && isNetwork()) {
+  if ($newinstall && isNetwork() && isStoreServiceNode()) {
     setLdapGlobalConfig("+zimbraReverseProxyUpstreamEwsServers", "$config{HOSTNAME}");
   }
-  if ($newinstall) {  
+  if ($newinstall && isStoreWebNode()) {
     setLdapGlobalConfig("+zimbraReverseProxyUpstreamLoginServers", "$config{HOSTNAME}");  
   }
   setLdapServerConfig("zimbraReverseProxyLookupTarget", $config{zimbraReverseProxyLookupTarget});
@@ -5867,6 +5867,22 @@ sub configSetStoreDefaults {
     if ($config{VERSIONUPDATECHECKS} eq "FALSE");
     
 
+}
+
+sub isStoreWebNode {
+    if ($installedWebapps{"zimbra"} eq "Enabled" || $installedWebapps{"zimbraAdmin"} eq "Enabled") {
+        return 1;
+    } else {
+        return 0;
+    }
+}
+
+sub isStoreServiceNode {
+    if ($installedWebapps{"service"} eq "Enabled") {
+        return 1;
+    } else {
+        return 0;
+    }
 }
 
 sub configSetServicePorts {
@@ -6618,7 +6634,7 @@ sub configCreateDomain {
       }
     
       # no root/postmaster accounts on web-only nodes
-      if ($installedWebapps{"service"} eq "Enabled") {
+      if (isStoreServiceNode()) {
         progress ( "Creating root alias..." );
         my $rc = runAsZimbra("$ZMPROV aaa ".
         "$config{CREATEADMIN} root\@$config{CREATEDOMAIN}");
@@ -6995,7 +7011,7 @@ sub applyConfig {
 
     configSetServicePorts();
 
-    if ($installedWebapps{"service"} eq "Enabled") {
+    if (isStoreServiceNode()) {
       addServerToHostPool();
     }
 
@@ -7098,7 +7114,7 @@ sub applyConfig {
       runAsZimbra("/opt/zimbra/bin/zmmailboxdctl restart");
       progress ( "done.\n" );
     }
-    if ($newinstall && $installedWebapps{"service"} eq "Enabled") {
+    if ($newinstall && isStoreServiceNode()) {
       configCreateDefaultDomainGALSyncAcct();
     } else {
       progress ( "Skipping creation of default domain GAL sync account - existing install detected.\n" );
