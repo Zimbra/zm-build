@@ -7086,6 +7086,13 @@ sub applyConfig {
     removeNetworkComponents();
   }
 
+  setLdapServerConfig($config{HOSTNAME}, 'zimbraServerVersion', $curVersion);
+  setLdapServerConfig($config{HOSTNAME}, 'zimbraServerVersionMajor', $curVersionMajor);
+  setLdapServerConfig($config{HOSTNAME}, 'zimbraServerVersionMinor', $curVersionMinor);
+  setLdapServerConfig($config{HOSTNAME}, 'zimbraServerVersionMicro', $curVersionMicroMicro);
+  setLdapServerConfig($config{HOSTNAME}, 'zimbraServerVersionType', $curVersionType);
+  setLdapServerConfig($config{HOSTNAME}, 'zimbraServerVersionBuild', $curVersionBuild);
+
   if ($config{STARTSERVERS} eq "yes") {
 
     # bug 6270 
@@ -7095,13 +7102,8 @@ sub applyConfig {
     }
 
     progress ( "Starting servers..." );
-    if ($main::platform =~ /MACOSX/) {
-      runAsRoot("/bin/launchctl load -w /System/Library/LaunchDaemons/com.zimbra.zcs.plist");
-    } else {
-      runAsZimbra ("/opt/zimbra/bin/zmcontrol stop");
-      runAsZimbra ("/opt/zimbra/bin/zmcontrol start");
-    }
-    # runAsZimbra swallows the output, so call status this way
+    runAsZimbra ("/opt/zimbra/bin/zmcontrol stop");
+    runAsZimbra ("/opt/zimbra/bin/zmcontrol start");
     qx($SU "/opt/zimbra/bin/zmcontrol status");
     progress ( "done.\n" );
 
@@ -7156,12 +7158,6 @@ sub applyConfig {
   }
   progress ( "\n\n" );
   if (!defined ($options{c})) {
-    setLdapServerConfig($config{HOSTNAME}, 'zimbraServerVersion', $curVersion);
-    setLdapServerConfig($config{HOSTNAME}, 'zimbraServerVersionMajor', $curVersionMajor);
-    setLdapServerConfig($config{HOSTNAME}, 'zimbraServerVersionMinor', $curVersionMinor);
-    setLdapServerConfig($config{HOSTNAME}, 'zimbraServerVersionMicro', $curVersionMicroMicro);
-    setLdapServerConfig($config{HOSTNAME}, 'zimbraServerVersionType', $curVersionType);
-    setLdapServerConfig($config{HOSTNAME}, 'zimbraServerVersionBuild', $curVersionBuild);
     ask("Configuration complete - press return to exit", "");
     print "\n\n";
     close LOGFILE;
