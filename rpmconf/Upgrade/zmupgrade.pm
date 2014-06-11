@@ -2623,6 +2623,8 @@ sub upgrade850BETA3 {
     if (main::isInstalled("zimbra-ldap")) {
       if ($isLdapMaster) {
         runLdapAttributeUpgrade("85224");
+        runLdapAttributeUpgrade("87674");
+        runLdapAttributeUpgrade("88766");
       }
     }
     if (main::isInstalled("zimbra-store") && main::isStoreServiceNode()) {
