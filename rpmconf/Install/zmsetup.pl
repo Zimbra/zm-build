@@ -6017,6 +6017,7 @@ sub configInitDomainAdminGroups {
     "zimbraIsAdminGroup TRUE ".
     "zimbraHideInGal TRUE ".
     "zimbraMailStatus disabled ".
+    "displayname 'Zimbra Domain Admins' ".
     "zimbraAdminConsoleUIComponents accountListView ".
     "zimbraAdminConsoleUIComponents aliasListView ".
     "zimbraAdminConsoleUIComponents DLListView ".
@@ -6039,6 +6040,7 @@ sub configInitDomainAdminGroups {
     "zimbraIsAdminGroup TRUE ".
     "zimbraHideInGal TRUE ".
     "zimbraMailStatus disabled ".
+    "displayname 'Zimbra DL Admins' ".
     "zimbraAdminConsoleUIComponents DLListView ");
   main::progress(($rc == 0) ? "done.\n" : "failed.\n");
 
