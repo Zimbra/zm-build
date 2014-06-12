@@ -2625,6 +2625,7 @@ sub upgrade850BETA3 {
         runLdapAttributeUpgrade("85224");
         runLdapAttributeUpgrade("87674");
         runLdapAttributeUpgrade("88766");
+        runLdapAttributeUpgrade("88098");
       }
     }
     if (main::isInstalled("zimbra-store") && main::isStoreServiceNode()) {
