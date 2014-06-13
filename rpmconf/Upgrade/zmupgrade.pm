@@ -2628,7 +2628,7 @@ sub upgrade850BETA3 {
         runLdapAttributeUpgrade("88098");
       }
     }
-    if (main::isInstalled("zimbra-store") && main::isStoreServiceNode()) {
+    if (main::isInstalled("zimbra-store")) {
       my @zimbraReverseProxyAvailableLookupTargets=qx($su "$ZMPROV gacf zimbraReverseProxyAvailableLookupTargets");
       if (!grep($hn, @zimbraReverseProxyAvailableLookupTargets)) {
         main::runAsZimbra("$ZMPROV mcf +zimbraReverseProxyAvailableLookupTargets $hn");
