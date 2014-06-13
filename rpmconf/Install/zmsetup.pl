@@ -4572,12 +4572,12 @@ sub createMainMenu {
     $i++;
   }
   $i = &preinstall::mainMenuExtensions(\%mm, $i);
-  $mm{menuitems}{r} = { 
-    "prompt" => "Start servers after configuration", 
-    "callback" => \&toggleYN,
-    "var" => \$config{STARTSERVERS},
-    "arg" => "STARTSERVERS"
-    };
+#  $mm{menuitems}{r} = { 
+#    "prompt" => "Start servers after configuration", 
+#    "callback" => \&toggleYN,
+#    "var" => \$config{STARTSERVERS},
+#    "arg" => "STARTSERVERS"
+#    };
   if ($config{EXPANDMENU} eq "yes") {
     $mm{menuitems}{c} = { 
       "prompt" => "Collapse menu", 
