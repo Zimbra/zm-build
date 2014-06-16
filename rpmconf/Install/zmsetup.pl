@@ -5819,7 +5819,7 @@ sub configSetStoreDefaults {
   if ($newinstall && isStoreServiceNode()) {
     setLdapGlobalConfig("+zimbraReverseProxyAvailableLookupTargets", "$config{HOSTNAME}");
   }
-  if (isStoreWebNode()) {
+  if (!isStoreServiceNode() && isStoreWebNode()) {
     $config{zimbraMtaAuthTarget}="FALSE";
   }
   if ($newinstall && isNetwork() && isStoreServiceNode()) {
