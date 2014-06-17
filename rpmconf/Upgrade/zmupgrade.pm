@@ -146,6 +146,7 @@ my %updateFuncs = (
   "8.5.0_BETA1" => \&upgrade850BETA1,
   "8.5.0_BETA2" => \&upgrade850BETA2,
   "8.5.0_BETA3" => \&upgrade850BETA3,
+  "8.5.0_GA" => \&upgrade850GA,
 );
 
 my @versionOrder = (
@@ -202,6 +203,7 @@ my @versionOrder = (
   "8.5.0_BETA1",
   "8.5.0_BETA2",
   "8.5.0_BETA3",
+  "8.5.0_GA",
 );
 
 my ($startVersion,$startMajor,$startMinor,$startMicro);
@@ -364,6 +366,8 @@ sub upgrade {
       main::progress("This appears to be 8.5.0_BETA2\n");
   } elsif ($startVersion eq "8.5.0_BETA3") {
       main::progress("This appears to be 8.5.0_BETA3\n");
+  } elsif ($startVersion eq "8.5.0_GA") {
+      main::progress("This appears to be 8.5.0_GA\n");
   } else {
     if ($startVersion eq "") {
       main::progress("ERROR: Unable to find initial version to upgrade from.\n");
@@ -2644,6 +2648,12 @@ sub upgrade850BETA3 {
       }
     }
     return 0;
+}
+
+sub upgrade850GA {
+  my ($startBuild, $targetVersion, $targetBuild) = (@_);
+  main::progress("Updating from 8.5.0_GA\n");
+  return 0;
 }
 
 sub stopZimbra {
