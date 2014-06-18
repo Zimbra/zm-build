@@ -1499,7 +1499,7 @@ sub setDefaults {
         }
       }
     }
-    if ($#dnsMasters > 0) {
+    if (scalar(@dnsMasters) > 0) {
       $config{zimbraDNSMasterIP} = join(' ', @dnsMasters);
     } else {
       $config{zimbraDNSMasterIP} = "";
