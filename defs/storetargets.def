@@ -43,7 +43,7 @@ $(BUILD_ROOT)/zimbra-store.spec:
 		-e '/^%post$$/ r zimbra-store.post' > $(BUILD_ROOT)/zimbra-store.spec
 	rm -f zimbra-store.pre
 	rm -f zimbra-store.post
-	echo "%attr(-, zimbra, zimbra) /opt/zimbra/conf" >> \
+	echo "%attr(755, zimbra, zimbra) /opt/zimbra/conf" >> \
 		$(BUILD_ROOT)/zimbra-store.spec
 	echo "%attr(-, root, root) /opt/zimbra/lib" >> \
 		$(BUILD_ROOT)/zimbra-store.spec
