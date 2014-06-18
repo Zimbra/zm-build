@@ -2653,6 +2653,12 @@ sub upgrade850BETA3 {
 sub upgrade850GA {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
   main::progress("Updating from 8.5.0_GA\n");
+
+  if (main::isInstalled("zimbra-ldap")) {
+      if ($isLdapMaster) {
+        main::runAsZimbra("$ZMPROV mcf +zimbraSpamTrashAlias '/Deleted Items'");
+      }
+  }
   return 0;
 }
 
