@@ -6952,10 +6952,6 @@ sub applyConfig {
 
     configSetServicePorts();
 
-    if (isStoreServiceNode()) {
-      addServerToHostPool();
-    }
-
     configSetKeyboardShortcutsPref() if (!$newinstall);
 
     configInitBackupPrefs();
@@ -7002,6 +6998,12 @@ sub applyConfig {
   configInitMta();
 
   configSetEnabledServices();
+ 
+  if (isEnabled("zimbra-store")) {
+    if (isStoreServiceNode()) {
+      addServerToHostPool();
+    }
+  }
 
   configCreateDomain();
 
