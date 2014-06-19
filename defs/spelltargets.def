@@ -63,7 +63,7 @@ $(BUILD_ROOT)/zimbra-spell.spec:
 		-e '/^%post$$/ r zimbra-spell.post' > $(BUILD_ROOT)/zimbra-spell.spec
 	rm -f zimbra-spell.pre
 	rm -f zimbra-spell.post
-	echo "%attr(-, zimbra, zimbra) /opt/zimbra/$(APACHE_DIR)/htdocs" >> \
+	echo "%attr(-, root, root) /opt/zimbra/$(APACHE_DIR)/htdocs/aspell.php" >> \
 		$(BUILD_ROOT)/zimbra-spell.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/$(SPELL_DIR)" >> \
 		$(BUILD_ROOT)/zimbra-spell.spec
