@@ -1754,7 +1754,7 @@ removeExistingInstall() {
             if [ $? = 0 ]; then
               echo -n "Cleaning up /etc/rsyslog.conf..."
               sed -i -e '/zimbra/d' /etc/rsyslog.conf
-              if [ $PLATFORM = "RHEL6_64" -o $PLATFORM = "CentOS6_64" ]; then
+              if [ $PLATFORM = "RHEL6_64" -o $PLATFORM = "RHEL7_64" ]; then
                 sed -i -e 's/^*.info;local0.none;local1.none;mail.none;auth.none/*.info/' /etc/rsyslog.conf
                 sed -i -e 's/^*.info;local0.none;local1.none;auth.none/*.info/' /etc/rsyslog.conf
               fi
@@ -2382,6 +2382,10 @@ getPlatformVars() {
       PREREQ_PACKAGES="netcat-openbsd sudo libidn11 libpcre3 libgmp3c2 libexpat1 libstdc++6 libperl5.14 libaio1"
       PRESUG_PACKAGES="pax perl-5.14.2 sysstat sqlite3"
     fi
+    if [ $PLATFORM = "UBUNTU14_64" ]; then
+      PREREQ_PACKAGES="netcat-openbsd sudo libidn11 libpcre3 libgmp10 libexpat1 libstdc++6 libperl5.18 libaio1 unzip"
+      PRESUG_PACKAGES="pax perl-5.18.2 sysstat sqlite3"
+    fi
   else
     PACKAGEINST='rpm -iv'
     PACKAGERM='rpm -ev --nodeps --allmatches'
@@ -2394,6 +2398,11 @@ getPlatformVars() {
       PREREQ_PACKAGES="nc sudo libidn gmp libaio"
       PREREQ_LIBS="/usr/lib64/libstdc++.so.6"
       PRESUG_PACKAGES="perl-5.10.1 sysstat sqlite"
+    elif [ $PLATFORM = "RHEL7_64" ]; then
+      PACKAGEINST='yum -y --disablerepo=* localinstall -v'
+      PACKAGERM='yum -y --disablerepo=* erase -v'
+      PREREQ_PACKAGES="nmap-ncat sudo libidn gmp libaio libstdc++ unzip perl-core"
+      PRESUG_PACKAGES="perl-5.16.3 sysstat sqlite"
     elif [ $PLATFORM = "SLES11_64" ]; then
       PREREQ_PACKAGES="netcat sudo libidn gmp libaio"
       PREREQ_LIBS="/usr/lib64/libstdc++.so.6"

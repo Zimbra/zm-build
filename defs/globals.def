@@ -54,6 +54,10 @@ ifeq ($(BUILD_PLATFORM), RHEL6_64)
 	ARCH := x86_64
 endif
 
+ifeq ($(BUILD_PLATFORM), RHEL7_64)
+	ARCH := x86_64
+endif
+
 ifeq ($(BUILD_PLATFORM), CentOS4_64)
 	ARCH := x86_64
 endif
@@ -99,6 +103,10 @@ ifeq ($(BUILD_PLATFORM), UBUNTU10_64)
 endif
 
 ifeq ($(BUILD_PLATFORM), UBUNTU12_64)
+	ARCH := amd64
+endif
+
+ifeq ($(BUILD_PLATFORM), UBUNTU14_64)
 	ARCH := amd64
 endif
 

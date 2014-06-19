@@ -24,6 +24,11 @@ if [ -f /etc/redhat-release ]; then
 		i=""
 	fi
 
+	grep "Red Hat Enterprise Linux.*release 7" /etc/redhat-release > /dev/null 2>&1
+	if [ $? = 0 ]; then
+		echo "RHEL7${i}"
+		exit 0
+	fi
 	grep "Red Hat Enterprise Linux.*release 6" /etc/redhat-release > /dev/null 2>&1
 	if [ $? = 0 ]; then
 		echo "RHEL6${i}"
@@ -81,8 +86,12 @@ if [ -f /etc/redhat-release ]; then
 		exit 0
 	fi
 
+	grep "CentOS release 7" /etc/redhat-release > /dev/null 2>&1
+	if [ $? = 0 ]; then
+		echo "RHEL7${i}"
+		exit 0
+	fi
 	grep "CentOS release 6" /etc/redhat-release > /dev/null 2>&1
-	# Treat CentOS as RHEL
 	if [ $? = 0 ]; then
 		echo "RHEL6${i}"
 		exit 0
@@ -238,6 +247,11 @@ if [ -f /etc/lsb-release ]; then
 		grep "DISTRIB_RELEASE=12" /etc/lsb-release > /dev/null 2>&1
 		if [ $? = 0 ]; then
 			echo "12${i}"
+			exit 0
+		fi
+		grep "DISTRIB_RELEASE=14" /etc/lsb-release > /dev/null 2>&1
+		if [ $? = 0 ]; then
+			echo "14${i}"
 			exit 0
 		else
 			echo "UNKNOWN${i}"
