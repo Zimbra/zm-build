@@ -63,8 +63,6 @@ $(BUILD_ROOT)/zimbra-ldap.spec:
 		-e '/^%post$$/ r zimbra-ldap.post' > $(BUILD_ROOT)/zimbra-ldap.spec
 	rm -f zimbra-ldap.pre
 	rm -f zimbra-ldap.post
-	echo "%attr(-, root, root) /opt/zimbra/lib" >> \
-		$(BUILD_ROOT)/zimbra-ldap.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/libtool-$(LIBTOOL_VERSION)" >> \
 		$(BUILD_ROOT)/zimbra-ldap.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/openldap-$(LDAP_VERSION)" >> \
@@ -118,6 +116,3 @@ $(LDAP_DEST_DIR)/$(LDAP_DIR)-$(LDAP_VERSION): $(LDAP_DEST_DIR)
 		$(LDAP_DEST_DIR)/$(LDAP_DIR)-$(LDAP_VERSION)/etc/openldap/config/cn=config/olcDatabase={2}mdb
 	cp $(SERVICE_DIR)/build/ldap-config/config/olcDatabase={2}mdb/olcOverlay={2}noopsrch.ldif \
 		$(LDAP_DEST_DIR)/$(LDAP_DIR)-$(LDAP_VERSION)/etc/openldap/config/cn=config/olcDatabase={2}mdb
-
-$(LDAP_DEST_DIR)/lib/conf:
-	mkdir -p $@
