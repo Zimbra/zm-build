@@ -33,7 +33,8 @@ our $platform = qx(/opt/zimbra/libexec/get_plat_tag.sh);
 chomp $platform;
 our $addr_space = (($platform =~ m/\w+_(\d+)/) ? "$1" : "32");
 $addr_space = 32 unless ($addr_space =~ m/32|64/);
-my $logfile = "/tmp/zmsetup.".getDateStamp().".log";
+my $logFileName = "zmsetup".getDateStamp().".log";
+my $logfile = "/tmp/".$logFileName;
 open LOGFILE, ">$logfile" or die "Can't open $logfile: $!\n";
 unlink("/tmp/zmsetup.log") if (-e "/tmp/zmsetup.log");
 symlink($logfile, "/tmp/zmsetup.log");
@@ -282,9 +283,8 @@ close LOGFILE;
 chmod 0600, $logfile;
 if (-d "/opt/zimbra/log") {
   main::progress("Moving $logfile to /opt/zimbra/log\n");
-  my $dstlog = "zmsetup.".getDateStamp().".txt";
-  system("cp -f $logfile /opt/zimbra/log/$dstlog");
-  system("chown zimbra:zimbra /opt/zimbra/log/$dstlog");
+  system("cp -f $logfile /opt/zimbra/log/");
+  system("chown zimbra:zimbra /opt/zimbra/log/$logFileName");
 }
 
 ################################################################
