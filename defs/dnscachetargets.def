@@ -48,8 +48,6 @@ $(BUILD_ROOT)/zimbra-dnscache.spec:
 	rm -f zimbra-dnscache.post
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/data/dns" >> \
 		$(BUILD_ROOT)/zimbra-dnscache.spec
-	echo "%attr(-, zimbra, zimbra) /opt/zimbra/ldns-$(LDNS_VERSION)" >> \
-		$(BUILD_ROOT)/zimbra-dnscache.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/unbound-$(UNBOUND_VERSION)" >> \
 		$(BUILD_ROOT)/zimbra-dnscache.spec
 
@@ -63,10 +61,6 @@ $(DNS_DEST_DIR)/data/dns/ca:
 
 $(DNS_DEST_DIR)/data/dns/trust:
 	mkdir -p $@
-
-$(DNS_DEST_DIR)/$(LDNS_DIR): $(DNS_DEST_DIR) $(DNS_DEST_DIR)/data/dns/ca $(DNS_DEST_DIR)/data/dns/trust
-	@echo "*** Creating LDNS"
-	(cd $(DNS_DEST_DIR); tar xfz $(LDNS_SOURCE).tgz;)
 
 $(DNS_DEST_DIR)/$(UNBOUND_DIR): $(DNS_DEST_DIR)
 	@echo "*** Creating Unbound"

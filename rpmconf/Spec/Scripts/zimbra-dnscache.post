@@ -18,14 +18,9 @@
 
 #Symlinks
 
-rm -f /opt/zimbra/ldns
-if [ -d /opt/zimbra/ldns-1.6.16 ]; then
-  ln -s /opt/zimbra/ldns-1.6.16 /opt/zimbra/ldns
-fi
-
 rm -f /opt/zimbra/unbound
-if [ -d /opt/zimbra/unbound-1.4.21 ]; then
-  ln -s /opt/zimbra/unbound-1.4.21 /opt/zimbra/unbound
+if [ -d /opt/zimbra/unbound-1.4.22 ]; then
+  ln -s /opt/zimbra/unbound-1.4.22 /opt/zimbra/unbound
 fi
 
 mkdir -p /opt/zimbra/data/dns/ca

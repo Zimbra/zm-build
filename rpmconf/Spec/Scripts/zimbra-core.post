@@ -37,8 +37,8 @@ BIT=`echo $PLAT | awk -F_ '{print $2}'`
 #Symlinks
 rm -f /opt/zimbra/mariadb
 rm -f /opt/zimbra/mysql
-ln -s /opt/zimbra/mariadb-10.0.11 /opt/zimbra/mariadb
-ln -s /opt/zimbra/mariadb-10.0.11 /opt/zimbra/mysql
+ln -s /opt/zimbra/mariadb-10.0.12 /opt/zimbra/mariadb
+ln -s /opt/zimbra/mariadb-10.0.12 /opt/zimbra/mysql
 
 rm -f /opt/zimbra/bdb
 ln -s /opt/zimbra/bdb-5.2.36 /opt/zimbra/bdb
@@ -57,7 +57,7 @@ rm -f /opt/zimbra/heimdal
 ln -s /opt/zimbra/heimdal-1.5.2 /opt/zimbra/heimdal
 
 rm -f /opt/zimbra/curl
-ln -s /opt/zimbra/curl-7.36.0 /opt/zimbra/curl
+ln -s /opt/zimbra/curl-7.37.0 /opt/zimbra/curl
 
 rm -f /opt/zimbra/cyrus-sasl
 ln -s /opt/zimbra/cyrus-sasl-2.1.26.2z /opt/zimbra/cyrus-sasl
@@ -69,7 +69,7 @@ rm -f /opt/zimbra/tcmalloc
 ln -s /opt/zimbra/tcmalloc-2.2 /opt/zimbra/tcmalloc
 
 rm -f /opt/zimbra/rsync
-ln -s /opt/zimbra/rsync-3.0.9 /opt/zimbra/rsync
+ln -s /opt/zimbra/rsync-3.1.1 /opt/zimbra/rsync
 
 if [ -d "/opt/zimbra/zimbramon/rrdtool" ]; then
   rm -rf /opt/zimbra/zimbramon/rrdtool
