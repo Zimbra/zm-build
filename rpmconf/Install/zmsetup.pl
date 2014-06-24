@@ -1125,6 +1125,7 @@ sub setLdapDefaults {
 
   if ($config{SMTPHOST} eq "") {
       my $smtphost = getLdapConfigValue("zimbraSmtpHostname"); 
+      $smtphost =~ s/\n/ /g;
       $config{SMTPHOST} = $smtphost if ($smtphost ne "localhost");
   }
 
@@ -6674,8 +6675,13 @@ sub configInitSql {
     runAsZimbra ("/opt/zimbra/libexec/zmmyinit --mysql_memory_percent $config{MYSQLMEMORYPERCENT}");
     progress ( "done.\n" );
     progress ( "Setting zimbraSmtpHostname for $config{HOSTNAME}..." );
-    my $rc = setLdapServerConfig("zimbraSmtpHostname", $config{SMTPHOST});
-    progress(($rc == 0) ? "done.\n" : "failed.\n");
+
+    #SMTP host can be one or more values seperated by comma or space.
+    my @smtphost = split /[,\s]+/, $config{SMTPHOST};
+    foreach(@smtphost) {
+       my $rc = setLdapServerConfig("+zimbraSmtpHostname", $_);
+       progress(($rc == 0) ? "done.\n" : "failed.\n");
+    }
   }
   configLog("configInitSql");
 }
