@@ -62,7 +62,7 @@ $(DNS_DEST_DIR)/data/dns/ca:
 $(DNS_DEST_DIR)/data/dns/trust:
 	mkdir -p $@
 
-$(DNS_DEST_DIR)/$(UNBOUND_DIR): $(DNS_DEST_DIR)
+$(DNS_DEST_DIR)/$(UNBOUND_DIR): $(DNS_DEST_DIR) $(DNS_DEST_DIR)/data/dns/ca $(DNS_DEST_DIR)/data/dns/trust
 	@echo "*** Creating Unbound"
 	(cd $(DNS_DEST_DIR); tar xfz $(UNBOUND_SOURCE).tgz;)
 
