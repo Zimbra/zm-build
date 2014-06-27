@@ -87,10 +87,10 @@ do
 			MAJOR=`echo $VERSION | awk -F. '{print $1}'`
 			MINOR=`echo $VERSION | awk -F. '{print $2}'`
 			PATCH=`echo $VERSION | awk -F. '{print $3}'`
-			if [ $MAJOR -eq 1 -a $MINOR -lt 6 ]; then
+			if [ $MAJOR -eq 1 -a $MINOR -lt 7 ]; then
 				echo "Error: Unsupported version of $req: $VERSION"
 				echo "You can obtain $req from:"
-				echo "http://java.sun.com/javase/downloads/index_jdk5.jsp"
+				echo "http://www.oracle.com/technetwork/java/index.html"
 				echo "Make sure the downloaded version appears first in your path"
 				exit 1;
 			fi
@@ -107,8 +107,8 @@ do
 				echo "cd /usr/local"
 				echo "ln -s /System/Library/Frameworks/JavaVM.framework/Home $req"
 			else
-				echo "Please obtain JDK 1.5 from:"
-				echo "http://java.sun.com/javase/downloads/index_jdk5.jsp"
+				echo "Please obtain JDK 1.7 from:"
+				echo "http://www.oracle.com/technetwork/java/index.html"
 				echo "And install it in /usr/local"
 				echo "Then symlink it to /usr/local/java"
 			fi
@@ -123,17 +123,17 @@ if [[ $PLAT == *"_64" ]]; then
 	if [ ! -f $PATHDIR/../ThirdPartyBuilds/x86_64/java/jdk-${JVERSION}.tgz ]; then
 		echo "Error: jdk file needed for ZCS packaging not available"
 		echo "Necessary version is: $JVERSION"
-		echo "Please create $PATHDIR/../ThirdPartyBuilds/x86_64/java/jdk${JVERSION}.tgz"
-		echo "Which is an extracted then retarred version of JDK 1.6 downloaded from"
+		echo "Please create $PATHDIR/../ThirdPartyBuilds/x86_64/java/jdk-${JVERSION}.tgz"
+		echo "Which is an extracted then retarred version of JDK 1.7 downloaded from"
 		echo "http://www.oracle.com/technetwork/java/javase/downloads/index.html"
 		exit 1;
 	fi
 elif [[ $PLAT != "MACOSX"* ]]; then
-	if [ ! -f $PATHDIR/../ThirdPartyBuilds/i386/java/jdk${JVERSION}.tgz ]; then
+	if [ ! -f $PATHDIR/../ThirdPartyBuilds/i386/java/jdk-${JVERSION}.tgz ]; then
 		echo "Error: jdk file needed for ZCS packaging not available"
 		echo "Necessary version is: $JVERSION"
-		echo "Please create $PATHDIR/../ThirdPartyBuilds/i386/java/jdk${JVERSION}.tgz"
-		echo "Which is an extracted then retarred version of JDK 1.6 downloaded from"
+		echo "Please create $PATHDIR/../ThirdPartyBuilds/i386/java/jdk-${JVERSION}.tgz"
+		echo "Which is an extracted then retarred version of JDK 1.7 downloaded from"
 		echo "http://www.oracle.com/technetwork/java/javase/downloads/index.html"
 		exit 1;
 	fi
