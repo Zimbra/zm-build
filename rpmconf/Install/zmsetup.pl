@@ -1893,14 +1893,18 @@ sub setDefaultsFromLocalConfig {
       $config{LDAPPORT} = $p;
     }
   }
-  my $h = getLocalConfig("ldap_host");
+  my $h = $ld;
+  chomp($h);
+  $h =~ s/"//g;
+  $h =~ s/ldaps?:\/\///g;
+  $h =~ s/:\d+//g;
   if ($h ne "") {
     $config{LDAPHOST} = $h;
   } else {
-    $h = $ld;
-    $h =~ s/ldaps?:\/\///;
-    $h =~ s/:\d*$//;
-    $config{LDAPHOST} = $h;
+    $h = getLocalConfig ("ldap_host");
+    if ($h ne "") {
+      $config{LDAPHOST} = $h;
+    }
   }
   $config{ldap_url} = getLocalConfig("ldap_url");
   $config{LDAPROOTPASS} = getLocalConfig ("ldap_root_password");
