@@ -41,7 +41,7 @@ chomp $rundir;
 my $scriptDir = "/opt/zimbra/libexec/scripts";
 
 my $lowVersion = 52;
-my $hiVersion = 102; # this should be set to the DB version expected by current server code
+my $hiVersion = 103; # this should be set to the DB version expected by current server code
 
 my $needSlapIndexing = 0;
 my $mysqlcnfUpdated = 0;
@@ -91,7 +91,8 @@ my %updateScripts = (
   '92' => "migrate20130226_alwayson.pl",	       # 8.5.0
   # 93-99 skipped for possible IRONMAIDEN use
   '100' => "migrate20140319-MailItemPrevFolders.pl", # 8.5.0
-  '101' => "migrate20140328-EnforceTableCharset.pl"  #8.5.0
+  '101' => "migrate20140328-EnforceTableCharset.pl", #8.5.0
+  '102' => "migrate20140624-DropMysqlIndexes.pl"  #8.5.0
 );
 
 my %updateFuncs = (
