@@ -5818,12 +5818,12 @@ sub configSetMtaAuthHost {
 sub configSetStoreDefaults {
   if(isEnabled("zimbra-proxy") || $config{zimbraMailProxy} eq "TRUE" || $config{zimbraWebProxy} eq "TRUE") {
     $config{zimbraReverseProxyLookupTarget}="TRUE";
-    $config{zimbraMtaAuthTarget}="TRUE";
   }
   # for mailstore split, set zimbraReverseProxyAvailableLookupTargets on service-only nodes
   if ($newinstall && isStoreServiceNode()) {
     setLdapGlobalConfig("+zimbraReverseProxyAvailableLookupTargets", "$config{HOSTNAME}");
   }
+  $config{zimbraMtaAuthTarget}="TRUE";
   if (!isStoreServiceNode() && isStoreWebNode()) {
     $config{zimbraMtaAuthTarget}="FALSE";
   }
