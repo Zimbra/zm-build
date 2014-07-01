@@ -2659,6 +2659,7 @@ sub upgrade850GA {
 
   if (main::isInstalled("zimbra-ldap")) {
       if ($isLdapMaster) {
+        main::runAsZimbra("$ZMPROV mcf +zimbraSpamTrashAlias '/Deleted Messages'");
         main::runAsZimbra("$ZMPROV mcf +zimbraSpamTrashAlias '/Deleted Items'");
       }
   }
