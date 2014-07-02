@@ -5824,7 +5824,7 @@ sub configSetStoreDefaults {
     setLdapGlobalConfig("+zimbraReverseProxyAvailableLookupTargets", "$config{HOSTNAME}");
   }
   $config{zimbraMtaAuthTarget}="TRUE";
-  if (!isStoreServiceNode() && isStoreWebNode()) {
+  if (!isStoreServiceNode()) {
     $config{zimbraMtaAuthTarget}="FALSE";
   }
   if ($newinstall && isNetwork() && isStoreServiceNode()) {
