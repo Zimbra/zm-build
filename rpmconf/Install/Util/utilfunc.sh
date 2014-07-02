@@ -642,7 +642,7 @@ EOF
 
   checkDatabaseIntegrity
 
-  checkMySQLConfig
+  #checkMySQLConfig
 
 }
 
