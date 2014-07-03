@@ -30,7 +30,7 @@ $(CORE_DEST_ROOT)/DEBIAN/control: $(CORE_DEST_ROOT)/DEBIAN $(CORE_DEST_ROOT)/DEB
 
 $(CORE_DEST_ROOT)/DEBIAN/md5sums: force
 	(cd $(CORE_DEST_ROOT); \
-	find . -type f ! -regex '.*opt/zimbra/conf/localconfig.xml' ! -regex '.*opt/zimbra/jdk-.*/jre/lib/security/cacerts' ! -regex '.*.hg.*' ! -regex '.*?debian-binary.*' ! -regex '.*?DEBIAN.*' -print0 | xargs -0 md5sum | sed -e 's| \./| |' > $@)
+	find . -type f ! -regex '.*opt/zimbra/conf/localconfig.xml' ! -regex '.*opt/zimbra/j2sdk-.*/jre/lib/security/cacerts' ! -regex '.*.hg.*' ! -regex '.*?debian-binary.*' ! -regex '.*?DEBIAN.*' -print0 | xargs -0 md5sum | sed -e 's| \./| |' > $@)
 
 core_pkg_spec_rpm: $(BUILD_ROOT)/zimbra-core.spec
 
@@ -65,8 +65,6 @@ $(BUILD_ROOT)/zimbra-core.spec:
 	echo "%attr(755, zimbra, zimbra) /opt/zimbra/conf" >> \
 		$(BUILD_ROOT)/zimbra-core.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/db" >> \
-		$(BUILD_ROOT)/zimbra-core.spec
-	echo "%attr(-, root, root) /opt/zimbra/jdk-$(JAVA_VERSION)" >> \
 		$(BUILD_ROOT)/zimbra-core.spec
 	echo "%attr(-, root, root) /opt/zimbra/j2sdk-$(OPENJDK_VERSION)" >> \
 		$(BUILD_ROOT)/zimbra-core.spec
@@ -119,7 +117,6 @@ $(CORE_DEST_DIR)/docs:
 	cp $(LICENSE_DIR)/zimbra/zpl-full.txt $@/ZPL.txt
 	cp $(LICENSE_DIR)/zimbra/ypl-full.txt $@/YPL.txt
 	cp $(LICENSE_DIR)/zimbra/zimbra_public_eula_2.5.txt $@/zimbra_public_eula_2.5.txt
-	cp $(LICENSE_DIR)/thirdparty/oracle_jdk_eula.txt $@/oracle_jdk_eula.txt
 	cp $(SERVICE_DIR)/docs/*txt $@
 	cp $(SERVICE_DIR)/docs/*html $@
 	cp $(MIG_TOOLS_DIR)/ReadMe.txt $@/zmztozmig.txt
@@ -136,7 +133,6 @@ $(CORE_DEST_DIR)/docs:
 	echo "Cyrus SASL version: $(SASL_VERSION)" >> $@/zimbra-software-versions.txt
 	echo "Dspam version: $(DSPAM_VERSION)" >> $@/zimbra-software-versions.txt
 	echo "Heimdal version: $(HEIMDAL_VERSION)" >> $@/zimbra-software-versions.txt
-	echo "JDK version: $(JAVA_VERSION)" >> $@/zimbra-software-versions.txt
 	echo "OpenJDK version: $(OPENJDK_VERSION)" >> $@/zimbra-software-versions.txt
 	echo "Jetty version: $(JETTY_VERSION)" >> $@/zimbra-software-versions.txt
 	echo "Libtool version: $(LIBTOOL_VERSION)" >> $@/zimbra-software-versions.txt
@@ -208,22 +204,7 @@ $(NATIVE_DIR)/build/libzimbra-native.$(JNI_EXT):
 $(LAUNCHER_DIR)/build/zmmailboxdmgr:
 	(cd $(LAUNCHER_DIR); make JAVA_BINARY=$(JAVA_BINARY))
 
-$(CORE_DEST_DIR)/jdk-$(JAVA_VERSION):
-	@echo "*** Creating java"
-	(cd $(CORE_DEST_DIR); tar xzf $(JAVA_SOURCE).tgz;)
-	rm -rf $@/jre/lsrc.zip
-	rm -rf $@/demo
-	rm -rf $@/sample
-	rm -rf $@/jre/lib/audio/soundbank.gm
-	rm -rf $@/jre/bin/rmid
-	rm -rf $@/jre/bin/tnameserv
-	rm -rf $@/jre/bin/orbd
-	rm -rf $@/jre/bin/javaws
-	rm -rf $@/jre/javaws
-	rm -rf $@/jre/lib/javaws
-	rm -rf $@/jre/lib/javaws.jar
-	rm -rf $@/jre/lib/i386/client/classes.jsa
-	-cp -f $(JCE_SOURCE)/* $@/jre/lib/security/
+$(CORE_DEST_DIR)/j2sdk-$(OPENJDK_VERSION):
 	@echo "*** Creating OpenJDK"
 	(cd $(CORE_DEST_DIR);tar xfz $(OPENJDK_SOURCE).tgz;)
 
