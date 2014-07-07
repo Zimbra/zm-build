@@ -156,7 +156,7 @@ if [ x$BUILDTHIRDPARTY = x"yes" ]; then
 	fi
 fi
 
-TARGETS="sourcetar all"
+TARGETS="all"
 if [ x$BUILDTYPE = x"network" ]; then
 	if [ -f "$PATHDIR/../ZimbraNetwork/ZimbraBuild/Makefile" ]; then
 		if [ x$RELEASE = x"main" ]; then
@@ -184,6 +184,7 @@ fi
 
 echo "Starting ZCS build"
 mkdir -p $PATHDIR/../logs
+mkdir -p $PATHDIR/../ZimbraCommon/jars-internal/jars
 if [ x$BUILDTYPE = x"network" ]; then
 	make -f $PATHDIR/../ZimbraNetwork/ZimbraBuild/Makefile allclean
 	make -f $PATHDIR/../ZimbraNetwork/ZimbraBuild/Makefile $TARGETS | tee $PATHDIR/../logs/NE-build.log
