@@ -30,7 +30,7 @@ usage() {
 	echo "-d: Perform a Zimbra Desktop build"
 	echo "-p: Use private Perl mirror when building 3rd party (requires -t)"
 	echo "-t: Build third party as well as ZCS"
-	echo "-u: Install build utilities, must be used the first time when building ZCS (requires -t)"
+	echo "-u: Install build utilities, must be used the first time when building ZCS (requires -t, sudo access)"
 }
 
 while [ $# -gt 0 ]; do
