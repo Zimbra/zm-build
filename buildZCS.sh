@@ -42,10 +42,6 @@ while [ $# -gt 0 ]; do
 			usage;
 			exit 0;
 			;;
-		-n|--network)
-			BUILDTYPE=network
-			shift;
-			;;
 		-p|--private)
 			PMIRROR=yes
 			shift;
@@ -157,23 +153,11 @@ if [ x$BUILDTHIRDPARTY = x"yes" ]; then
 fi
 
 TARGETS="all"
-if [ x$BUILDTYPE = x"network" ]; then
-	if [ -f "$PATHDIR/../ZimbraNetwork/ZimbraBuild/Makefile" ]; then
-		if [ x$RELEASE = x"main" ]; then
-			TARGETS="$TARGETS velodrome"
-		elif [[ $RELEASE == "FRANKLIN"* ]]; then
-			TARGETS="$TARGETS velodrome customercare"
-		fi
-	else
-		echo "Error: ZimbraNetwork is not available"
-		exit 1;
-	fi
-fi
 if [ x$BUILDTYPE = x"foss" ]; then
 	TARGETS="ajaxtar $TARGETS"
 fi
 
-if [ x$BUILDTYPE = x"network" -o x$BUILDTYPE = x"foss" ]; then
+if [ x$BUILDTYPE = x"foss" ]; then
 	cd $PATHDIR
 elif [ x$BUILDTYPE = x"desktop" ]; then
 	cd $PATHDIR/../ZimbraOffline
@@ -185,10 +169,7 @@ fi
 echo "Starting ZCS build"
 mkdir -p $PATHDIR/../logs
 mkdir -p $PATHDIR/../ZimbraCommon/jars-internal/jars
-if [ x$BUILDTYPE = x"network" ]; then
-	make -f $PATHDIR/../ZimbraNetwork/ZimbraBuild/Makefile allclean
-	make -f $PATHDIR/../ZimbraNetwork/ZimbraBuild/Makefile $TARGETS | tee $PATHDIR/../logs/NE-build.log
-elif [ x$BUILDTYPE = x"foss" ]; then
+if [ x$BUILDTYPE = x"foss" ]; then
 	make -f Makefile allclean
 	make -f Makefile $TARGETS | tee $PATHDIR/../logs/FOSS-build.log
 else
