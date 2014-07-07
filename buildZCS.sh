@@ -26,7 +26,7 @@ PMIRROR=no
 
 usage() {
 	echo ""
-	echo "Usage: "`basename $0`" [-d] [-t [-p]] [-n]" >&2
+	echo "Usage: "`basename $0`" [-d] [-t [-p] [-u]]" >&2
 	echo "-d: Perform a Zimbra Desktop build"
 	echo "-p: Use private Perl mirror when building 3rd party (requires -t)"
 	echo "-t: Build third party as well as ZCS"
@@ -122,7 +122,7 @@ if [ x$BUILDTHIRDPARTY = x"no" -a x$PMIRROR = x"yes" ]; then
 	exit 1;
 fi
 
-if [ x$BUILDTHIRDPARTY = x"no" -a x$UTILITIES= x"yes" ]; then
+if [ x$BUILDTHIRDPARTY = x"no" -a x$UTILITIES = x"yes" ]; then
 	echo "Error: Cannot use -u without -t"
 	exit 1;
 fi
