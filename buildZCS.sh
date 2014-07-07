@@ -20,6 +20,7 @@ PROGDIR=`dirname $0`
 cd $PROGDIR
 PATHDIR=`pwd`
 BUILDTHIRDPARTY=no
+UTILITIES=no
 BUILDTYPE=foss
 PMIRROR=no
 
@@ -27,9 +28,9 @@ usage() {
 	echo ""
 	echo "Usage: "`basename $0`" [-d] [-t [-p]] [-n]" >&2
 	echo "-d: Perform a Zimbra Desktop build"
-	echo "-n: Perform a Network Edition build"
-	echo "-p: Use private Perl mirror when building 3rd party"
+	echo "-p: Use private Perl mirror when building 3rd party (requires -t)"
 	echo "-t: Build third party as well as ZCS"
+	echo "-u: Install build utilities, must be used the first time when building ZCS (requires -t)"
 }
 
 while [ $# -gt 0 ]; do
@@ -48,6 +49,10 @@ while [ $# -gt 0 ]; do
 			;;
 		-t|--thirdparty)
 			BUILDTHIRDPARTY=yes
+			shift;
+			;;
+		-u|--utilities)
+			UTILITIES=yes
 			shift;
 			;;
 		*)
@@ -94,32 +99,18 @@ do
 			fi
 		fi
 	else
-		echo "Error: $req not found"
+		echo "Error: $req not found in path"
 		if [ x$req = x"ant" ]; then
 			echo "You can obtain $req from:"
 			echo "http://ant.apache.org/bindownload.cgi"
 		elif [ x$req = x"java" ]; then
-			if [[ $PLAT == "MACOSX"* ]]; then
-				echo "Please create a symlink from:"
-				echo "/System/Library/Frameworks/JavaVM.framework/Home to /usr/local/$req"
-				echo "cd /usr/local"
-				echo "ln -s /System/Library/Frameworks/JavaVM.framework/Home $req"
-			else
-				echo "Please obtain JDK 1.7 from:"
-				echo "http://www.oracle.com/technetwork/java/index.html"
-				echo "And install it in /usr/local"
-				echo "Then symlink it to /usr/local/java"
-			fi
+			echo "Please obtain JDK 1.7 from:"
+			echo "http://www.oracle.com/technetwork/java/index.html"
+			echo "and add it to user binary path"
 		fi
 		exit 1;
 	fi
 done
-
-if [ ! -x /usr/bin/rpmbuild -a ! -x /usr/bin/dpkg -a ! -x /Developer/Applications/Utilities/PackageMaker.app/Contents/MacOS/PackageMaker ]; then
-	echo "Error: No package building software found."
-	echo "Make sure one of rpmbuild, dpkg, or PackageMaker is available"
-	exit 1;
-fi
 
 if [ x$BUILDTHIRDPARTY = x"yes" -a x$BUILDTYPE = x"desktop" ]; then
 	echo "Error: ThirdParty builds and Desktop builds are mutually exclusive"
@@ -131,9 +122,18 @@ if [ x$BUILDTHIRDPARTY = x"no" -a x$PMIRROR = x"yes" ]; then
 	exit 1;
 fi
 
+if [ x$BUILDTHIRDPARTY = x"no" -a x$UTILITIES= x"yes" ]; then
+	echo "Error: Cannot use -u without -t"
+	exit 1;
+fi
+
 TPOPTS="-c"
 if [ x$PMIRROR = x"yes" ]; then
 	TPOPTS="$TPOPTS -p"
+fi
+
+if [ x$UTILITIES = x"yes" ]; then
+	TPOPTS="$TPOPTS -t"
 fi
 
 if [ x$BUILDTHIRDPARTY = x"yes" ]; then
