@@ -2448,13 +2448,13 @@ getPlatformVars() {
       PACKAGERM='yum -y --disablerepo=* erase -v'
       PREREQ_PACKAGES="nc sudo libidn gmp libaio libstdc++ unzip"
       PRESUG_PACKAGES="perl-5.10.1 sysstat sqlite"
-      STORE_PACKAGES="libreoffice-headless"
+      STORE_PACKAGES="libreoffice libreoffice-headless"
     elif [ $PLATFORM = "RHEL7_64" ]; then
       PACKAGEINST='yum -y --disablerepo=* localinstall -v'
       PACKAGERM='yum -y --disablerepo=* erase -v'
       PREREQ_PACKAGES="nmap-ncat sudo libidn gmp libaio libstdc++ unzip perl-core"
       PRESUG_PACKAGES="perl-5.16.3 sysstat sqlite"
-      STORE_PACKAGES="libreoffice-headless"
+      STORE_PACKAGES="libreoffice libreoffice-headless"
     elif [ $PLATFORM = "SLES11_64" ]; then
       PREREQ_PACKAGES="netcat sudo libidn gmp libaio"
       PREREQ_LIBS="/usr/lib64/libstdc++.so.6"
