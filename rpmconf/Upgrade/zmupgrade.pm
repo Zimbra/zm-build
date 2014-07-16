@@ -2595,9 +2595,11 @@ sub upgrade850BETA2 {
       $mailboxd_java_options =~ s/^\s+//;
       main::setLocalConfig("mailboxd_java_options", $mailboxd_java_options);
     }
-    my @zimbraReverseProxyUpstreamLoginServers=qx($su "$ZMPROV gacf zimbraReverseProxyUpstreamLoginServers");
-    if (!grep($hn, @zimbraReverseProxyUpstreamLoginServers)) {  
-      main::runAsZimbra("$ZMPROV mcf +zimbraReverseProxyUpstreamLoginServers $hn");  
+    if (main::isStoreWebNode()) {
+      my @zimbraReverseProxyUpstreamLoginServers=qx($su "$ZMPROV gacf zimbraReverseProxyUpstreamLoginServers");
+      if (!grep($hn, @zimbraReverseProxyUpstreamLoginServers)) {  
+        main::runAsZimbra("$ZMPROV mcf +zimbraReverseProxyUpstreamLoginServers $hn");  
+      }
     }
   }
   if (main::isInstalled("zimbra-mta")) {
@@ -2636,9 +2638,11 @@ sub upgrade850BETA3 {
       }
     }
     if (main::isInstalled("zimbra-store")) {
-      my @zimbraReverseProxyAvailableLookupTargets=qx($su "$ZMPROV gacf zimbraReverseProxyAvailableLookupTargets");
-      if (!grep($hn, @zimbraReverseProxyAvailableLookupTargets)) {
-        main::runAsZimbra("$ZMPROV mcf +zimbraReverseProxyAvailableLookupTargets $hn");
+      if (main::isStoreServiceNode()) {
+        my @zimbraReverseProxyAvailableLookupTargets=qx($su "$ZMPROV gacf zimbraReverseProxyAvailableLookupTargets");
+        if (!grep($hn, @zimbraReverseProxyAvailableLookupTargets)) {
+          main::runAsZimbra("$ZMPROV mcf +zimbraReverseProxyAvailableLookupTargets $hn");
+        }
       }
     }
     if (main::isInstalled("zimbra-mta")) {
