@@ -200,6 +200,8 @@ if(isInstalled("zimbra-ldap")) {
   installLdapSchema();
 }
 
+getInstalledWebapps();
+
 if (! $newinstall ) {
   # if we're an upgrade, run the upgrader...
   if (($prevVersion ne $curVersion )) {
@@ -218,7 +220,6 @@ if (! $newinstall ) {
 }
 
 getInstalledPackages();
-getInstalledWebapps();
 
 unless (isEnabled("zimbra-core")) {
   progress("zimbra-core must be enabled.");
