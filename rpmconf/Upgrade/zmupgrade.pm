@@ -2026,6 +2026,10 @@ sub upgrade850BETA1 {
         main::runAsZimbra("$ZMPROV mcf +zimbraReverseProxyUpstreamEwsServers $hn");
       }
     }
+    main::setLdapServerConfig($hn, '+zimbraServiceEnabled', 'service');
+    main::setLdapServerConfig($hn, '+zimbraServiceEnabled', 'zimbra');
+    main::setLdapServerConfig($hn, '+zimbraServiceEnabled', 'zimbraAdmin');
+    main::setLdapServerConfig($hn, '+zimbraServiceEnabled', 'zimlet');
   }
   if (main::isInstalled("zimbra-ldap")) {
     if ($isLdapMaster) {
@@ -2627,34 +2631,34 @@ sub upgrade850BETA2 {
 }
 
 sub upgrade850BETA3 {
-    my ($startBuild, $targetVersion, $targetBuild) = (@_);
-    main::progress("Updating from 8.5.0_BETA3\n");
-    if (main::isInstalled("zimbra-ldap")) {
-      if ($isLdapMaster) {
-        runLdapAttributeUpgrade("85224");
-        runLdapAttributeUpgrade("87674");
-        runLdapAttributeUpgrade("88766");
-        runLdapAttributeUpgrade("88098");
+  my ($startBuild, $targetVersion, $targetBuild) = (@_);
+  main::progress("Updating from 8.5.0_BETA3\n");
+  if (main::isInstalled("zimbra-ldap")) {
+    if ($isLdapMaster) {
+      runLdapAttributeUpgrade("85224");
+      runLdapAttributeUpgrade("87674");
+      runLdapAttributeUpgrade("88766");
+      runLdapAttributeUpgrade("88098");
+    }
+  }
+  if (main::isInstalled("zimbra-store")) {
+    if (main::isStoreServiceNode()) {
+      my @zimbraReverseProxyAvailableLookupTargets=qx($su "$ZMPROV gacf zimbraReverseProxyAvailableLookupTargets");
+      if (!grep($hn, @zimbraReverseProxyAvailableLookupTargets)) {
+        main::runAsZimbra("$ZMPROV mcf +zimbraReverseProxyAvailableLookupTargets $hn");
       }
     }
-    if (main::isInstalled("zimbra-store")) {
-      if (main::isStoreServiceNode()) {
-        my @zimbraReverseProxyAvailableLookupTargets=qx($su "$ZMPROV gacf zimbraReverseProxyAvailableLookupTargets");
-        if (!grep($hn, @zimbraReverseProxyAvailableLookupTargets)) {
-          main::runAsZimbra("$ZMPROV mcf +zimbraReverseProxyAvailableLookupTargets $hn");
-        }
-      }
+  }
+  if (main::isInstalled("zimbra-mta")) {
+    my $antispam_mysql_mycnf = main::getLocalConfig("antispam_mysql_mycnf");
+    if ( -e ${antispam_mysql_mycnf} ) {
+      main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-long-query-time-fixup --section=mysqld --unset --key=long-query-time ${antispam_mysql_mycnf}");
+      main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-long_query_time-fixup --section=mysqld --set --key=long_query_time --value=1 ${antispam_mysql_mycnf}");
+      main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-log-queries-not-using-indexes-fixup --section=mysqld --unset --key=log-queries-not-using-indexes ${antispam_mysql_mycnf}");
+      main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-log_queries_not_using_indexes-fixup --section=mysqld --set --key=log_queries_not_using_indexes ${antispam_mysql_mycnf}");
     }
-    if (main::isInstalled("zimbra-mta")) {
-      my $antispam_mysql_mycnf = main::getLocalConfig("antispam_mysql_mycnf");
-      if ( -e ${antispam_mysql_mycnf} ) {
-        main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-long-query-time-fixup --section=mysqld --unset --key=long-query-time ${antispam_mysql_mycnf}");
-        main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-long_query_time-fixup --section=mysqld --set --key=long_query_time --value=1 ${antispam_mysql_mycnf}");
-        main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-log-queries-not-using-indexes-fixup --section=mysqld --unset --key=log-queries-not-using-indexes ${antispam_mysql_mycnf}");
-        main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-log_queries_not_using_indexes-fixup --section=mysqld --set --key=log_queries_not_using_indexes ${antispam_mysql_mycnf}");
-      }
-    }
-    return 0;
+  }
+  return 0;
 }
 
 sub upgrade850GA {
