@@ -555,7 +555,7 @@ sub getInstalledWebapps {
   }
   if (!$newinstall && !defined($config{INSTALL_WEBAPPS})) {
     foreach my $app (%installedWebapps) {
-      if ($app eq "Enabled") {
+      if ($installedWebapps{$app} eq "Enabled") {
         $config{INSTALL_WEBAPPS}="$app $config{INSTALL_WEBAPPS}";
       }
     }
