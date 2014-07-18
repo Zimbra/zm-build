@@ -354,7 +354,7 @@ sub saveConfig {
     foreach (sort keys %config) {
       # Don't write passwords or previous INSTALL_PACKAGES
       if (/PASS|INSTALL_PACKAGES/) {next;}
-      print CONF "$_=$config{$_}\n";
+      print CONF "$_=\"$config{$_}\"\n";
     }
     print CONF "INSTALL_PACKAGES=\"";
     foreach (@packageList) {
@@ -380,6 +380,7 @@ sub loadConfig {
   foreach (@lines) {
     chomp;
     my ($k, $v) = split ('=', $_, 2);
+    $v=~s/"//;
     $config{$k} = $v;
   }
 
