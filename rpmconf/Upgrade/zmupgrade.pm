@@ -1994,10 +1994,10 @@ sub upgrade808GA {
   if (main::isInstalled("zimbra-mta")) {
     my @zimbraServiceInstalled=qx($su "$ZMPROV gs $hn zimbraServiceInstalled");
     my @zimbraServiceEnabled=qx($su "$ZMPROV gs $hn zimbraServiceEnabled");
-    if (grep("antivirus", @zimbraServiceInstalled) || grep("antispam", @zimbraServiceInstalled)) {
+    if (grep(/antivirus/, @zimbraServiceInstalled) || grep(/antispam/, @zimbraServiceInstalled)) {
       main::setLdapServerConfig($hn, '+zimbraServiceInstalled', 'amavis');
     }
-    if (grep("antivirus", @zimbraServiceEnabled) || grep("antispam", @zimbraServiceEnabled)) {
+    if (grep(/antivirus/, @zimbraServiceEnabled) || grep(/antispam/, @zimbraServiceEnabled)) {
       main::setLdapServerConfig($hn, '+zimbraServiceEnabled', 'amavis');
     }
   }
@@ -2022,7 +2022,7 @@ sub upgrade850BETA1 {
     }
     if (main::isNetwork()) {
       my @zimbraReverseProxyUpstreamEwsServers=qx($su "$ZMPROV gacf zimbraReverseProxyUpstreamEwsServers");
-      if (!grep($hn, @zimbraReverseProxyUpstreamEwsServers)) {
+      if (! grep(/$hn/, @zimbraReverseProxyUpstreamEwsServers)) {
         main::runAsZimbra("$ZMPROV mcf +zimbraReverseProxyUpstreamEwsServers $hn");
       }
     }
@@ -2601,7 +2601,7 @@ sub upgrade850BETA2 {
     }
     if (main::isStoreWebNode()) {
       my @zimbraReverseProxyUpstreamLoginServers=qx($su "$ZMPROV gacf zimbraReverseProxyUpstreamLoginServers");
-      if (!grep($hn, @zimbraReverseProxyUpstreamLoginServers)) {  
+      if (! grep(/$hn/, @zimbraReverseProxyUpstreamLoginServers)) {  
         main::runAsZimbra("$ZMPROV mcf +zimbraReverseProxyUpstreamLoginServers $hn");  
       }
     }
@@ -2614,10 +2614,10 @@ sub upgrade850BETA2 {
     }
     my @zimbraServiceInstalled=qx($su "$ZMPROV gs $hn zimbraServiceInstalled");
     my @zimbraServiceEnabled=qx($su "$ZMPROV gs $hn zimbraServiceEnabled");
-    if (grep("antivirus", @zimbraServiceInstalled) || grep("antispam", @zimbraServiceInstalled)) {
+    if (grep(/antivirus/, @zimbraServiceInstalled) || grep(/antispam/, @zimbraServiceInstalled)) {
       main::setLdapServerConfig($hn, '+zimbraServiceInstalled', 'amavis');
     }
-    if (grep("antivirus", @zimbraServiceEnabled) || grep("antispam", @zimbraServiceEnabled)) {
+    if (grep(/antivirus/, @zimbraServiceEnabled) || grep(/antispam/, @zimbraServiceEnabled)) {
       main::setLdapServerConfig($hn, '+zimbraServiceEnabled', 'amavis');
     }
     if (-f "/opt/zimbra/conf/sauser.cf") {
@@ -2644,7 +2644,7 @@ sub upgrade850BETA3 {
   if (main::isInstalled("zimbra-store")) {
     if (main::isStoreServiceNode()) {
       my @zimbraReverseProxyAvailableLookupTargets=qx($su "$ZMPROV gacf zimbraReverseProxyAvailableLookupTargets");
-      if (!grep($hn, @zimbraReverseProxyAvailableLookupTargets)) {
+      if (! grep(/$hn/, @zimbraReverseProxyAvailableLookupTargets)) {
         main::runAsZimbra("$ZMPROV mcf +zimbraReverseProxyAvailableLookupTargets $hn");
       }
     }
