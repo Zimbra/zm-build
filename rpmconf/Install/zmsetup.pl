@@ -354,16 +354,16 @@ sub saveConfig {
     foreach (sort keys %config) {
       # Don't write passwords or previous INSTALL_PACKAGES
       if (/PASS|INSTALL_PACKAGES/) {next;}
-      print CONF "$_=\"$config{$_}\"\n";
+      print CONF qq($_="$config{$_}"\n);
     }
-    print CONF "INSTALL_PACKAGES=\"";
+    print CONF qq(INSTALL_PACKAGES=");
     foreach (@packageList) {
       my $el = $_;
       if (grep (/$el/, keys %installedPackages)) {
         print CONF "$_ ";
       }
     }
-    print CONF "\"\n";
+    print CONF qq("\n);
     close CONF;
     chmod 0600, $fname;
     progress ("done.\n");
@@ -2881,14 +2881,14 @@ sub setStoreMode {
           $config{MODE} = $m;
           return;
         } else {
-          print "Only \"https\" and \"both\" are valid modes when requiring interprocess security with web proxy.\n";
+          print qq(Only "https" and "both" are valid modes when requiring interprocess security with web proxy.\n);
         }
       } else {
         if ($m eq "http" || $m eq "both" ) {
           $config{MODE} = $m;
           return;
         } else {
-          print "Only \"http\" and \"both\" are valid modes when not requiring interprocess security with web proxy.\n";
+          print qq(Only "http" and "both" are valid modes when not requiring interprocess security with web proxy.\n);
         }
       }
     } else {
@@ -2902,14 +2902,14 @@ sub setStoreMode {
             $config{MODE} = $m;
             return;
           } else {
-            print "Only \"https\" and \"both\" are valid modes when requiring interprocess security with web proxy.\n";
+            print qq(Only "https" and "both" are valid modes when requiring interprocess security with web proxy.\n);
           }
         } else {
           if ($m eq "http" || $m eq "both" ) {
             $config{MODE} = $m;
             return;
           } else {
-            print "Only \"http\" and \"both\" are valid modes when not requiring interprocess security with web proxy.\n";
+            print qq(Only "http" and "both" are valid modes when not requiring interprocess security with web proxy.\n);
           }
         }
       } else {
@@ -2933,7 +2933,7 @@ sub setProxyMode {
         $config{PROXYMODE} = $m;
         return;
       } else {
-        print "Only \"https\" and \"redirect\" are valid modes when requiring interprocess security with web proxy.\n";
+        print qq(Only "https" and "redirect" are valid modes when requiring interprocess security with web proxy.\n);
       }
     } else {
       if ($m eq "http" || $m eq "https" || $m eq "mixed" || $m eq "both" || $m eq "redirect" ) {
