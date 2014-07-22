@@ -380,7 +380,7 @@ sub loadConfig {
   foreach (@lines) {
     chomp;
     my ($k, $v) = split ('=', $_, 2);
-    $v=~s/"//;
+    $v=~s/"//g;
     $config{$k} = $v;
   }
 
