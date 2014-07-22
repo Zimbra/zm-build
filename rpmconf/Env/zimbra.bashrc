@@ -55,3 +55,5 @@ umask 0027
 unset DISPLAY
 
 export MANPATH=/opt/zimbra/pflogsumm/man:/opt/zimbra/opendkim/share/man:/opt/zimbra/unbound/share/man:${MANPATH}
+
+export HISTTIMEFORMAT="%y%m%d %T "
