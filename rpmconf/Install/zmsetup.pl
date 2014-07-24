@@ -4653,6 +4653,11 @@ sub checkMenuConfig {
     return 1 if ($config{LDAPHOST} eq $config{HOSTNAME} && !$ldapConfigured);
     return 0 if (!ldapIsAvailable());
   }
+  if (defined($installedPackages{"zimbra-store"}) && $config{SERVICEWEBAPP} eq "no" && $config{UIWEBAPPS} eq "no" ) {
+    $config{SERVICEWEBAPP}="UNSET";
+    $config{UIWEBAPPS}="UNSET";
+    return 0;
+  }
   return 1;
 }
 
