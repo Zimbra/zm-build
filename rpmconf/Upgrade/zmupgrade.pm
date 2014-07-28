@@ -2666,6 +2666,7 @@ sub upgrade850GA {
   main::progress("Updating from 8.5.0_GA\n");
 
   if (main::isInstalled("zimbra-ldap")) {
+      main::runAsZimbra("perl -I${scriptDir} ${scriptDir}/migrate20140728-AddSSHA512.pl");
       if ($isLdapMaster) {
         main::runAsZimbra("$ZMPROV mcf +zimbraSpamTrashAlias '/Deleted Messages'");
         main::runAsZimbra("$ZMPROV mcf +zimbraSpamTrashAlias '/Deleted Items'");
