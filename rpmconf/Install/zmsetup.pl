@@ -5858,7 +5858,7 @@ sub configSetStoreDefaults {
     }
   }
 
-  if ($config{zimbraVersionCheckServer} eq "") { 
+  if ($config{zimbraVersionCheckServer} eq "" && isStoreServiceNode()) { 
     my $serverId = getLdapServerValue("zimbraId");
     setLdapGlobalConfig("zimbraVersionCheckServer", $serverId);
   }
