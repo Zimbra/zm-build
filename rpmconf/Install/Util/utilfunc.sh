@@ -1767,7 +1767,10 @@ removeExistingInstall() {
           if [ -f /etc/rsyslog.d/60-zimbra.conf ]; then
             echo -n "Cleaning up /etc/rsyslog.d..."
             rm -f /etc/rsyslog.d/60-zimbra.conf
-            if [ -x /usr/bin/service ]; then
+            if [ -x /usr/bin/systemctl ]; then
+              /usr/sbin/systemctl restart rsyslog.service >/dev/null 2>&1
+              echo "done."
+            elif [ -x /usr/bin/service ]; then
               /usr/sbin/service rsyslog restart >/dev/null 2>&1
               echo "done."
             elif [ -x /etc/init.d/rsyslog ]; then
@@ -1785,7 +1788,13 @@ removeExistingInstall() {
                 sed -i -e 's/^*.info;local0.none;local1.none;mail.none;auth.none/*.info/' /etc/rsyslog.conf
                 sed -i -e 's/^*.info;local0.none;local1.none;auth.none/*.info/' /etc/rsyslog.conf
               fi
-              if [ -x /etc/init.d/rsyslog ]; then
+              if [ -x /usr/bin/systemctl ]; then
+                /usr/sbin/systemctl restart rsyslog.service >/dev/null 2>&1
+                echo "done."
+              elif [ -x /usr/bin/service ]; then
+                /usr/sbin/service rsyslog restart >/dev/null 2>&1
+                echo "done."
+              elif [ -x /etc/init.d/rsyslog ]; then
                 /etc/init.d/rsyslog restart > /dev/null 2>&1
                 echo "done."
               else
