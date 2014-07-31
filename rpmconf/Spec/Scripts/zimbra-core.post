@@ -26,7 +26,7 @@ PLAT=`/opt/zimbra/libexec/get_plat_tag.sh`
 BIT=`echo $PLAT | awk -F_ '{print $2}'`
 #if [ "x$BIT" = "x64" ]; then
 #	if [ x"$PLAT" = "xUBUNTU12_64" -o x"$PLAT" = "xUBUNTU14_64" ]; then
-		ln -s /opt/zimbra/j2sdk-20140417 /opt/zimbra/java
+		ln -s /opt/zimbra/j2sdk-20140721 /opt/zimbra/java
 #	else
 #		ln -s /opt/zimbra/jdk-1.7.0_55 /opt/zimbra/java
 #	fi
