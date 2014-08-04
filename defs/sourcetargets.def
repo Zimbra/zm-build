@@ -11,6 +11,7 @@ AjaxTK-$(SOURCE_TAG)-src.tgz: $(PACKAGE_DIR)
 
 zcs-$(SOURCE_TAG)-src.tgz: $(PACKAGE_DIR)
 	(cd $(BUILD_ROOT)/..; ln -s . zcs-$(SOURCE_TAG)-src; tar chzf $(PACKAGE_DIR)/$@ \
+		--exclude .git \
 		--exclude logs \
 		--exclude ThirdParty \
 		--exclude ThirdPartyBuilds \
@@ -48,6 +49,7 @@ zcs-$(SOURCE_TAG)-src.tgz: $(PACKAGE_DIR)
 
 zcs-$(SOURCE_TAG)-sumitomo-src.tgz: $(PACKAGE_DIR)
 	(cd $(BUILD_ROOT)/..; ln -s . zcs-$(SOURCE_TAG)-sumitomo-src; tar chzf $(PACKAGE_DIR)/$@ \
+		--exclude .git \
 		--exclude logs \
 		--exclude ThirdParty \
 		--exclude ThirdPartyBuilds \
