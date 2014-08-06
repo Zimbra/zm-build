@@ -5326,7 +5326,9 @@ sub configSetupLdap {
       close ER;
     }
   } elsif (isEnabled("zimbra-ldap")) {
-    my $rc = runAsZimbra ("/opt/zimbra/libexec/zmldapapplyldif");
+    if ($newinstall) {
+      my $rc = runAsZimbra ("/opt/zimbra/libexec/zmldapapplyldif");
+    }
     if (!$newinstall) {
       my $rc = runAsZimbra ("/opt/zimbra/libexec/zmldapupdateldif");
     }
@@ -7330,10 +7332,6 @@ sub startLdap {
   main::detail(($rc == 0) ? "already running.\n" : "not running.\n");
 
   if ($rc) { 
-    main::progress("Running zmldapapplyldif...");
-    $rc = runAsZimbra ("/opt/zimbra/libexec/zmldapapplyldif");
-    main::progress(($rc == 0) ? "done.\n" : "failed.\n");
-
     main::progress("Checking ldap status....");
     $rc = runAsZimbra ("/opt/zimbra/bin/ldap status");
     main::progress(($rc == 0) ? "already running.\n" : "not running.\n");

@@ -2698,10 +2698,6 @@ sub startLdap {
   main::progress(($rc == 0) ? "already running.\n" : "not running.\n");
 
   if ($rc) {
-    main::progress("Running zmldapapplyldif...");
-    $rc = main::runAsZimbra("/opt/zimbra/libexec/zmldapapplyldif");
-    main::progress(($rc == 0) ? "done.\n" : "failed.\n");
-
     main::progress("Checking ldap status...");
     $rc = main::runAsZimbra("/opt/zimbra/bin/ldap status");
     main::progress(($rc == 0) ? "already running.\n" : "not running.\n");
