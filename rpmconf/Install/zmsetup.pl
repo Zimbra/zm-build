@@ -5326,11 +5326,12 @@ sub configSetupLdap {
       close ER;
     }
   } elsif (isEnabled("zimbra-ldap")) {
+    my $rc;
     if ($newinstall) {
-      my $rc = runAsZimbra ("/opt/zimbra/libexec/zmldapapplyldif");
+      $rc = runAsZimbra ("/opt/zimbra/libexec/zmldapapplyldif");
     }
     if (!$newinstall) {
-      my $rc = runAsZimbra ("/opt/zimbra/libexec/zmldapupdateldif");
+      $rc = runAsZimbra ("/opt/zimbra/libexec/zmldapupdateldif");
     }
     # enable replica for both new and upgrade installs if we are adding ldap
     if ($config{LDAPHOST} ne $config{HOSTNAME} || -f "/opt/zimbra/.enable_replica") {
