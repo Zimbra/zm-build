@@ -2229,6 +2229,10 @@ sub upgrade850GA {
 sub upgrade900BETA1 {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
   main::progress("Updating from 9.0.0_BETA1\n");
+  
+   if (main::isInstalled("zimbra-proxy")) {
+      main::setLdapGlobalConfig("zimbraReverseProxyLogToSyslog", "FALSE");
+  }
   return 0;
 }
 
