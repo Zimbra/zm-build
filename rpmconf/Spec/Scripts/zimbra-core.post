@@ -30,7 +30,7 @@ fi
 
 #Symlinks
 rm -f /opt/zimbra/mysql
-ln -s /opt/zimbra/mysql-5.5.36 /opt/zimbra/mysql
+ln -s /opt/zimbra/mysql-5.5.39 /opt/zimbra/mysql
 
 rm -f /opt/zimbra/bdb
 ln -s /opt/zimbra/bdb-5.2.36 /opt/zimbra/bdb
@@ -43,13 +43,13 @@ rm -f /opt/zimbra/pflogsumm
 ln -s /opt/zimbra/pflogsumm-1.1.3 /opt/zimbra/pflogsumm
 
 rm -f /opt/zimbra/openssl
-ln -s /opt/zimbra/openssl-1.0.1h /opt/zimbra/openssl
+ln -s /opt/zimbra/openssl-1.0.1i /opt/zimbra/openssl
 
 rm -f /opt/zimbra/heimdal
 ln -s /opt/zimbra/heimdal-1.5.2 /opt/zimbra/heimdal
 
 rm -f /opt/zimbra/curl
-ln -s /opt/zimbra/curl-7.36.0 /opt/zimbra/curl
+ln -s /opt/zimbra/curl-7.37.0 /opt/zimbra/curl
 
 rm -f /opt/zimbra/cyrus-sasl
 ln -s /opt/zimbra/cyrus-sasl-2.1.26.2z /opt/zimbra/cyrus-sasl
