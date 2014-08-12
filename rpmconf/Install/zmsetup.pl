@@ -31,8 +31,6 @@ $|=1; # don't buffer stdout
 
 our $platform = qx(/opt/zimbra/libexec/get_plat_tag.sh);
 chomp $platform;
-our $addr_space = (($platform =~ m/\w+_(\d+)/) ? "$1" : "32");
-$addr_space = 32 unless ($addr_space =~ m/32|64/);
 my $logFileName = "zmsetup".getDateStamp().".log";
 my $logfile = "/tmp/".$logFileName;
 open LOGFILE, ">$logfile" or die "Can't open $logfile: $!\n";
@@ -7269,10 +7267,6 @@ sub mysqlMemoryPercent {
   my $os = lc qx(uname -s);
   chomp($os);
   my $percent = 30;
-  if ($system_mem > 2 && $addr_space eq "32") {
-    $percent = int((1.55/$system_mem)*100);
-    return 10 if ($os eq "darwin");
-  }
   return $percent;
 }
 
@@ -7284,8 +7278,6 @@ sub mailboxdMemoryMB {
   } else {
     $memory = 0.25*$system_mem;
   }
-  $memory = 1.5
-    if ($addr_space eq "32" && $memory > 1.5);
   return int($memory*1024);
 }
 
