@@ -444,7 +444,7 @@ sub upgrade {
     } elsif($startMajor < 8) {
       my $rc=&upgradeLdap("8.0.0_BETA3");
       if ($rc) { return 1; }
-    } elsif($startMajor < 9) {
+    } elsif($startMajor < 8 || ($startMajor == 8 && $startMinor < 5)) {
       my $rc=&upgradeLdap("8.5.0_BETA1");
       if ($rc) { return 1; }
     } elsif ($startMajor == 8 && $startMinor == 0 && $startMicro < 3) {
