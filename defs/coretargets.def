@@ -89,7 +89,7 @@ $(BUILD_ROOT)/zimbra-core.spec:
 		$(BUILD_ROOT)/zimbra-core.spec
 	echo "%attr(755, root, root) /opt/zimbra/libexec" >> \
 		$(BUILD_ROOT)/zimbra-core.spec
-	echo "%attr(755, root, root) /opt/zimbra/logger" >> \
+	echo "%attr(755, zimbra, zimbra) /opt/zimbra/logger" >> \
 		$(BUILD_ROOT)/zimbra-core.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/pflogsumm-$(PFLOG_VERSION)" >> \
 		$(BUILD_ROOT)/zimbra-core.spec
