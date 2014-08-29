@@ -886,7 +886,7 @@
   </package>
   <preinstall></preinstall>
   <postinstall></postinstall>
-  </patch> -->
+  </patch>
   <patch name="7.1.1_GA" version="7.1.1_P4">
   <desc>Patch 7.1.1_P4</desc>
   <bug>57891</bug>
@@ -1111,6 +1111,37 @@
         <source>ZimbraBuild/storebuild/opt/zimbra/jetty-6.1.22.z6/webapps/zimbra/WEB-INF/tags/ruby.tag</source>
         <target>/opt/zimbra/jetty/webapps/zimbra/WEB-INF/tags/ruby.tag</target
         <perms owner="zimbra" mode="444"/>
+      </file>
+  </package>
+  <preinstall></preinstall>
+  <postinstall></postinstall>
+  </patch> -->
+  <patch name="8.5.0_GA" version="8.5.0_P1">
+  <desc>Patch 8.5.0_P1</desc>
+  <bug>95230</bug>
+  <bug>95265</bug>
+  <package name="zimbra-mta">
+      <file>
+        <source>ZimbraServer/conf/postfix/master.cf.in</source>
+        <target>/opt/zimbra/postfix/conf/master.cf.in</target>
+        <perms owner="zimbra" mode="644"/>
+      </file>
+  </package>
+  <package name="zimbra-store">
+      <file>
+        <source>ZimbraBuild/storebuild/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbraAdmin/js/Admin_all.js</source>
+        <target>/opt/zimbra/jetty/webapps/zimbraAdmin/js/Admin_all.js</target>
+        <perms owner="zimbra" mode="664"/>
+      </file>
+      <file>
+        <source>ZimbraBuild/storebuild/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbraAdmin/js/Admin_all.js.zgz</source>
+        <target>/opt/zimbra/jetty/webapps/zimbraAdmin/js/Admin_all.js.zgz</target>
+        <perms owner="zimbra" mode="664"/>
+      </file>
+      <file>
+        <source>ZimbraBuild/storebuild/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbraAdmin/js/zimbraAdmin/servers/model/ZaServer.js</source>
+        <target>/opt/zimbra/jetty/webapps/zimbraAdmin/js/zimbraAdmin/servers/model/ZaServer.js</target>
+        <perms owner="zimbra" mode="664"/>
       </file>
   </package>
   <preinstall></preinstall>
