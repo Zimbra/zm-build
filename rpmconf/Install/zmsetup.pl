@@ -339,9 +339,6 @@ sub defineInstallWebapps {
 }
 
 sub saveConfig {
-  if (defined $config{savedMTAAUTHHOST}) {
-    delete $config{savedMTAAUTHHOST};
-  }
   my $fname = "/opt/zimbra/config.$$";
   if (!(defined ($options{c})) && $newinstall ) {
     $fname = askNonBlank ("Save config in file:", $fname);
@@ -1101,9 +1098,6 @@ sub setLdapDefaults {
     $config{zimbraReverseProxyLookupTarget} = getLdapServerValue("zimbraReverseProxyLookupTarget")
       if ($config{zimbraReverseProxyLookupTarget} eq "");
 
-    my $mtaauthhost=getLdapServerValue("zimbraMtaAuthHost");
-    $config{MTAAUTHHOST} = $mtaauthhost if ( $mtaauthhost ne "");
-
     if (isEnabled("zimbra-mta")) {
       my $tmpval = getLdapServerValue("zimbraMtaMyNetworks");
       $config{zimbraMtaMyNetworks} = $tmpval
@@ -1514,7 +1508,6 @@ sub setDefaults {
 
   if (isEnabled("zimbra-store")) {
     progress  "setting defaults for zimbra-store.\n" if $options{d};
-    $config{MTAAUTHHOST} = $config{HOSTNAME};
     $config{DOCREATEADMIN} = "yes" if $newinstall;
     $config{DOTRAINSA} = "yes";
     $config{SERVICEWEBAPP} = "yes";
@@ -2665,14 +2658,6 @@ sub toggleTF {
 sub toggleSERVICEWEBAPP {
     my $key = shift;
     $config{SERVICEWEBAPP} = ($config{SERVICEWEBAPP} eq "yes")?"no":"yes";
-    if ($config{SERVICEWEBAPP} eq "no") {
-        $config{savedMTAAUTHHOST} = $config{MTAAUTHHOST};
-        $config{MTAAUTHHOST} = "";
-    }
-    if ($config{SERVICEWEBAPP} eq "yes") {
-        $config{MTAAUTHHOST} = $config{savedMTAAUTHHOST};
-        delete $config{savedMTAAUTHHOST};
-    }
 }
 
 sub toggleConfigEnabled {
@@ -3023,9 +3008,6 @@ sub setHostName {
   if ($config{LDAPHOST} eq $old) {
     changeLdapHost($config{HOSTNAME});
   }
-  if ($config{MTAAUTHHOST} eq $old) {
-    $config{MTAAUTHHOST} = $config{HOSTNAME};
-  }
   if ($config{CREATEDOMAIN} eq $old) {
     $config{CREATEDOMAIN} = $config{HOSTNAME};
 
@@ -3069,11 +3051,6 @@ sub setSmtpHost {
   $config{SMTPHOST} = 
     askNonBlank("Please enter the SMTP server hostname:",
       $config{SMTPHOST});
-}
-
-sub setMtaAuthHost {
-  $config{MTAAUTHHOST} = askNonBlank("Please enter the mta authentication server hostname:",
-      $config{MTAAUTHHOST});
 }
 
 sub setLdapHost {
@@ -3838,13 +3815,6 @@ sub createMtaMenu {
 
   my $i = 2;
   if (isEnabled($package)) {
-    $$lm{menuitems}{$i} = { 
-      "prompt" => "MTA Auth host:", 
-      "var" => \$config{MTAAUTHHOST}, 
-      "callback" => \&setMtaAuthHost,
-      "arg" => "MTAAUTHHOST",
-      };
-    $i++;
     $$lm{menuitems}{$i} = { 
       "prompt" => "Enable Spamassassin:", 
       "var" => \$config{RUNSA}, 
@@ -5779,50 +5749,6 @@ sub configConvertdURL {
   }
 }
 
-sub configSetMtaDefaults {
-   &configSetMtaAuthHost();
-}
-
-sub configSetMtaAuthHost {
-
-  if ($configStatus{configSetMtaAuthHost} eq "CONFIGURED") {
-    configLog("configSetMtaAuthHost");
-    return 0;
-  }
-
-  if (isEnabled ("zimbra-ldap") && ! isEnabled ("zimbra-store")) {
-    if ($config{MTAAUTHHOST} ne "") {
-      my $mtahostservices = getLdapServerValue("zimbraServiceEnabled", $config{MTAAUTHHOST});
-      if (index($mtahostservices, "mailbox") == -1) {
-        progress ( "WARNING\n\n");
-        progress ( "You are configuring this host as an MTA server, but the specified mailstore\n");
-        progress ( "used for authentication has not been configured to run the mailbox service yet.\n");
-        progress ( "This will cause smtp authentication to fail.\n\n");
-        progress ( "To correct this - after installing a mailstore server,\n"); 
-        progress ( "reset the zimbraMtaAuthHost attribute for this server:\n");
-        progress ( "$ZMPROV ms $config{HOSTNAME} zimbraMtaAuthHost $config{MTAAUTHHOST}\n\n");
-        progress ( "Once done, start the MTA:\n");
-        progress ( "zmmtactl start\n\n");
-        if (!$options{c}) {
-          ask ("Press return to continue\n","");
-        }
-      }
-    }
-  }
-  if ($config{MTAAUTHHOST} ne "") {
-    progress ( "Setting MTA auth host..." );
-    my @mtaAuthHostList = split(/\s/,$config{MTAAUTHHOST});
-    my @mtaAuthHostConfigList = ();
-    foreach my $mtaAuthHost (split(/\s/,$config{MTAAUTHHOST})) {
-      push(@mtaAuthHostConfigList, 'zimbraMtaAuthHost', $mtaAuthHost);
-    }
-    my $rc = setLdapServerConfig(@mtaAuthHostConfigList);
-    progress(($rc == 0) ? "done.\n" : "failed.\n");
-  }
-
-  configLog("configSetMtaAuthHost");
-}
-
 sub configSetStoreDefaults {
   if(isEnabled("zimbra-proxy") || $config{zimbraMailProxy} eq "TRUE" || $config{zimbraWebProxy} eq "TRUE") {
     $config{zimbraReverseProxyLookupTarget}="TRUE";
@@ -6988,10 +6914,6 @@ sub applyConfig {
 
   if (isEnabled("zimbra-dnscache")) {
     configSetDNSCacheDefaults();
-  }
-
-  if (isEnabled("zimbra-mta")) {
-    configSetMtaDefaults();
   }
 
   if (isEnabled("zimbra-ldap")) {
