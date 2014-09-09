@@ -69,6 +69,8 @@ $(BUILD_ROOT)/zimbra-store.spec:
 	rm -f zimbra-store.post
 	echo "%attr(755, zimbra, zimbra) /opt/zimbra/conf" >> \
 		$(BUILD_ROOT)/zimbra-store.spec
+	echo "%attr(644, zimbra, zimbra) /opt/zimbra/conf/*" >> \
+		$(BUILD_ROOT)/zimbra-store.spec
 	echo "%attr(-, root, root) /opt/zimbra/lib" >> \
 		$(BUILD_ROOT)/zimbra-store.spec
 	echo "%attr(755, root, root) /opt/zimbra/libexec" >> \
