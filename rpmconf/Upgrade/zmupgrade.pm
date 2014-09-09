@@ -2686,6 +2686,13 @@ sub upgrade850GA {
 sub upgrade860BETA1 {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
   main::progress("Updating from 8.6.0_BETA1\n");
+  if (main::isInstalled("zimbra-snmp") {
+    my $val = main::getLocalConfig("snmp_trap_host");
+    if ($val =~ /\@/) {
+      $val =~ s/.*\@//;
+      main::setLocalConfig("snmp_trap_host", "$val");
+    }
+  }
   return 0;
 }
 
