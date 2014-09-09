@@ -64,6 +64,8 @@ $(BUILD_ROOT)/zimbra-core.spec:
 		$(BUILD_ROOT)/zimbra-core.spec
 	echo "%attr(755, zimbra, zimbra) /opt/zimbra/conf" >> \
 		$(BUILD_ROOT)/zimbra-core.spec
+	echo "%attr(644, zimbra, zimbra) /opt/zimbra/conf/*" >> \
+		$(BUILD_ROOT)/zimbra-core.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/db" >> \
 		$(BUILD_ROOT)/zimbra-core.spec
 	echo "%attr(-, root, root) /opt/zimbra/j2sdk-$(OPENJDK_VERSION)" >> \
