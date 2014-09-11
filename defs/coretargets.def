@@ -97,6 +97,34 @@ $(BUILD_ROOT)/zimbra-core.spec:
 		$(BUILD_ROOT)/zimbra-core.spec
 	echo "%attr(644, zimbra, zimbra) /opt/zimbra/conf/*" >> \
 		$(BUILD_ROOT)/zimbra-core.spec
+	echo "%attr(755, zimbra, zimbra) /opt/zimbra/conf/attrs" >> \
+		$(BUILD_ROOT)/zimbra-core.spec
+	echo "%attr(644, zimbra, zimbra) /opt/zimbra/conf/attrs/*" >> \
+		$(BUILD_ROOT)/zimbra-core.spec
+	echo "%attr(755, zimbra, zimbra) /opt/zimbra/conf/externaldirsync" >> \
+		$(BUILD_ROOT)/zimbra-core.spec
+	echo "%attr(644, zimbra, zimbra) /opt/zimbra/conf/externaldirsync/*" >> \
+		$(BUILD_ROOT)/zimbra-core.spec
+	echo "%attr(755, zimbra, zimbra) /opt/zimbra/conf/msgs" >> \
+		$(BUILD_ROOT)/zimbra-core.spec
+	echo "%attr(644, zimbra, zimbra) /opt/zimbra/conf/msgs/*" >> \
+		$(BUILD_ROOT)/zimbra-core.spec
+	echo "%attr(755, zimbra, zimbra) /opt/zimbra/conf/nginx" >> \
+		$(BUILD_ROOT)/zimbra-core.spec
+	echo "%attr(644, zimbra, zimbra) /opt/zimbra/conf/nginx/*" >> \
+		$(BUILD_ROOT)/zimbra-core.spec
+	echo "%attr(755, zimbra, zimbra) /opt/zimbra/conf/rights" >> \
+		$(BUILD_ROOT)/zimbra-core.spec
+	echo "%attr(644, zimbra, zimbra) /opt/zimbra/conf/rights/*" >> \
+		$(BUILD_ROOT)/zimbra-core.spec
+	echo "%attr(755, zimbra, zimbra) /opt/zimbra/conf/sasl2" >> \
+		$(BUILD_ROOT)/zimbra-core.spec
+	echo "%attr(644, zimbra, zimbra) /opt/zimbra/conf/sasl2/*" >> \
+		$(BUILD_ROOT)/zimbra-core.spec
+	echo "%attr(755, zimbra, zimbra) /opt/zimbra/conf/zmconfigd" >> \
+		$(BUILD_ROOT)/zimbra-core.spec
+	echo "%attr(644, zimbra, zimbra) /opt/zimbra/conf/zmconfigd/*" >> \
+		$(BUILD_ROOT)/zimbra-core.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/db" >> \
 		$(BUILD_ROOT)/zimbra-core.spec
 	echo "%attr(-, root, root) /opt/zimbra/jdk-$(JAVA_VERSION)" >> \

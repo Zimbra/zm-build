@@ -71,6 +71,62 @@ $(BUILD_ROOT)/zimbra-store.spec:
 		$(BUILD_ROOT)/zimbra-store.spec
 	echo "%attr(644, zimbra, zimbra) /opt/zimbra/conf/*" >> \
 		$(BUILD_ROOT)/zimbra-store.spec
+	echo "%attr(755, zimbra, zimbra) /opt/zimbra/conf/templates" >> \
+		$(BUILD_ROOT)/zimbra-store.spec
+	echo "%attr(755, zimbra, zimbra) /opt/zimbra/conf/templates/templates" >> \
+		$(BUILD_ROOT)/zimbra-store.spec
+	echo "%attr(755, zimbra, zimbra) /opt/zimbra/conf/templates/templates/abook" >> \
+		$(BUILD_ROOT)/zimbra-store.spec
+	echo "%attr(644, zimbra, zimbra) /opt/zimbra/conf/templates/templates/abook/*" >> \
+		$(BUILD_ROOT)/zimbra-store.spec
+	echo "%attr(755, zimbra, zimbra) /opt/zimbra/conf/templates/templates/admin" >> \
+		$(BUILD_ROOT)/zimbra-store.spec
+	echo "%attr(644, zimbra, zimbra) /opt/zimbra/conf/templates/templates/admin/*" >> \
+		$(BUILD_ROOT)/zimbra-store.spec
+	echo "%attr(755, zimbra, zimbra) /opt/zimbra/conf/templates/templates/briefcase" >> \
+		$(BUILD_ROOT)/zimbra-store.spec
+	echo "%attr(644, zimbra, zimbra) /opt/zimbra/conf/templates/templates/briefcase/*" >> \
+		$(BUILD_ROOT)/zimbra-store.spec
+	echo "%attr(755, zimbra, zimbra) /opt/zimbra/conf/templates/templates/calendar" >> \
+		$(BUILD_ROOT)/zimbra-store.spec
+	echo "%attr(644, zimbra, zimbra) /opt/zimbra/conf/templates/templates/calendar/*" >> \
+		$(BUILD_ROOT)/zimbra-store.spec
+	echo "%attr(755, zimbra, zimbra) /opt/zimbra/conf/templates/templates/data" >> \
+		$(BUILD_ROOT)/zimbra-store.spec
+	echo "%attr(644, zimbra, zimbra) /opt/zimbra/conf/templates/templates/data/*" >> \
+		$(BUILD_ROOT)/zimbra-store.spec
+	echo "%attr(755, zimbra, zimbra) /opt/zimbra/conf/templates/templates/dwt" >> \
+		$(BUILD_ROOT)/zimbra-store.spec
+	echo "%attr(644, zimbra, zimbra) /opt/zimbra/conf/templates/templates/dwt/*" >> \
+		$(BUILD_ROOT)/zimbra-store.spec
+	echo "%attr(755, zimbra, zimbra) /opt/zimbra/conf/templates/templates/im" >> \
+		$(BUILD_ROOT)/zimbra-store.spec
+	echo "%attr(644, zimbra, zimbra) /opt/zimbra/conf/templates/templates/im/*" >> \
+		$(BUILD_ROOT)/zimbra-store.spec
+	echo "%attr(755, zimbra, zimbra) /opt/zimbra/conf/templates/templates/mail" >> \
+		$(BUILD_ROOT)/zimbra-store.spec
+	echo "%attr(644, zimbra, zimbra) /opt/zimbra/conf/templates/templates/mail/*" >> \
+		$(BUILD_ROOT)/zimbra-store.spec
+	echo "%attr(755, zimbra, zimbra) /opt/zimbra/conf/templates/templates/prefs" >> \
+		$(BUILD_ROOT)/zimbra-store.spec
+	echo "%attr(644, zimbra, zimbra) /opt/zimbra/conf/templates/templates/prefs/*" >> \
+		$(BUILD_ROOT)/zimbra-store.spec
+	echo "%attr(755, zimbra, zimbra) /opt/zimbra/conf/templates/templates/share" >> \
+		$(BUILD_ROOT)/zimbra-store.spec
+	echo "%attr(644, zimbra, zimbra) /opt/zimbra/conf/templates/templates/share/*" >> \
+		$(BUILD_ROOT)/zimbra-store.spec
+	echo "%attr(755, zimbra, zimbra) /opt/zimbra/conf/templates/templates/tasks" >> \
+		$(BUILD_ROOT)/zimbra-store.spec
+	echo "%attr(644, zimbra, zimbra) /opt/zimbra/conf/templates/templates/tasks/*" >> \
+		$(BUILD_ROOT)/zimbra-store.spec
+	echo "%attr(755, zimbra, zimbra) /opt/zimbra/conf/templates/templates/voicemail" >> \
+		$(BUILD_ROOT)/zimbra-store.spec
+	echo "%attr(644, zimbra, zimbra) /opt/zimbra/conf/templates/templates/voicemail/*" >> \
+		$(BUILD_ROOT)/zimbra-store.spec
+	echo "%attr(755, zimbra, zimbra) /opt/zimbra/conf/templates/templates/zimbra" >> \
+		$(BUILD_ROOT)/zimbra-store.spec
+	echo "%attr(644, zimbra, zimbra) /opt/zimbra/conf/templates/templates/zimbra/*" >> \
+		$(BUILD_ROOT)/zimbra-store.spec
 	echo "%attr(-, root, root) /opt/zimbra/lib" >> \
 		$(BUILD_ROOT)/zimbra-store.spec
 	echo "%attr(755, root, root) /opt/zimbra/libexec" >> \
