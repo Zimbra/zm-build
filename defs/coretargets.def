@@ -82,6 +82,14 @@ $(BUILD_ROOT)/zimbra-core.spec:
 		$(BUILD_ROOT)/zimbra-core.spec
 	echo "%attr(644, zimbra, zimbra) /opt/zimbra/conf/nginx/*" >> \
 		$(BUILD_ROOT)/zimbra-core.spec
+	echo "%attr(755, zimbra, zimbra) /opt/zimbra/conf/nginx/includes" >> \
+		$(BUILD_ROOT)/zimbra-core.spec
+	echo "%attr(644, zimbra, zimbra) /opt/zimbra/conf/nginx/includes/*" >> \
+		$(BUILD_ROOT)/zimbra-core.spec
+	echo "%attr(755, zimbra, zimbra) /opt/zimbra/conf/nginx/templates" >> \
+		$(BUILD_ROOT)/zimbra-core.spec
+	echo "%attr(644, zimbra, zimbra) /opt/zimbra/conf/nginx/templates/*" >> \
+		$(BUILD_ROOT)/zimbra-core.spec
 	echo "%attr(755, zimbra, zimbra) /opt/zimbra/conf/rights" >> \
 		$(BUILD_ROOT)/zimbra-core.spec
 	echo "%attr(644, zimbra, zimbra) /opt/zimbra/conf/rights/*" >> \
