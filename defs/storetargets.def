@@ -143,6 +143,35 @@ $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/bin: $(STORE_DEST_DIR) force
 		$(STORE_DEST_DIR)/lib/libsetuid.so
 	-(rm $(@D)/start.ini $(@D)/etc/keystore)
 
+ifeq ($(ZIMBRA_USE_TOMCAT), 1)
+$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/conf: force
+		mkdir -p $@
+		cp -f $(SERVICE_DIR)/conf/$(MAILBOXD_SERVER)-$(MAILBOXD_MINOR_VERSION)/context.xml \
+			$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/conf/context.xml
+		cp -f $(SERVICE_DIR)/conf/$(MAILBOXD_SERVER)-$(MAILBOXD_MINOR_VERSION)/server.xml.production \
+			$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/conf/server.xml.in
+		cp -f $(SERVICE_DIR)/conf/zimbra.xml \
+			$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/conf/Catalina/localhost/zimbra.xml
+		mkdir -p $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/conf/AdminService/localhost
+		cp -f $(SERVICE_DIR)/conf/zimbraAdmin.xml \
+			$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/conf/AdminService/localhost/zimbraAdmin.xml
+		cp -f $(SERVICE_DIR)/conf/$(MAILBOXD_SERVER)-$(MAILBOXD_MINOR_VERSION)/tomcat-users.xml $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/conf
+		cp -f $(SERVICE_DIR)/build/dist/conf/log4j.properties  \
+			$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/conf/log4j.properties.in
+		cp -f $(SERVICE_DIR)/conf/web.xml.production \
+			$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/conf/service.web.xml.in
+		cp -f $(ZIMLET_DIR)/conf/web.xml.production \
+			$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/conf/zimlet.web.xml.in
+		cp -f zimbraConf/web.xml \
+			$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/conf/zimbra.web.xml.in
+		cp -f zimbraAdminConf/web.xml \
+			$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/conf/zimbraAdmin.web.xml.in
+		cp -f $(SERVICE_DIR)/conf/$(MAILBOXD_SERVER)-$(MAILBOXD_MINOR_VERSION)/web.xml \
+			$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/conf/web.xml
+
+$(STORE_DEST_DIR)/$(MAILBOXD_DIR): $(STORE_DEST_DIR) $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/bin $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/conf $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/temp $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/common/lib $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/common/endorsed
+
+else
 $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/etc: force
 		mkdir -p $@
 		cp -f $(SERVICE_DIR)/conf/$(MAILBOXD_SERVER)-$(MAILBOXD_MINOR_VERSION)/jettyrc \
@@ -196,6 +225,8 @@ $(STORE_DEST_DIR)/$(MAILBOXD_DIR): $(STORE_DEST_DIR) $(STORE_DEST_DIR)/$(MAILBOX
 $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/resources/log4j.properties: $(STORE_DEST_DIR)/$(MAILBOXD_DIR)
 	mkdir -p $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/resources
 	cp $(SERVICE_DIR)/build/dist/$(MAILBOXD_SERVER)/resources/log4j.properties $@ 
+
+endif
 
 $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/temp: force
 	mkdir -p $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/temp
