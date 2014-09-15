@@ -5,17 +5,16 @@ perlcode 0 $notifications{snmp}="@@DOSNMPNOTIFICATIONS@@";
 perlcode 0 my $fr='@@ADMINEMAIL@@';
 perlcode 0 my $pwc='@@PHCEMAIL@@';
 
-perlcode 0 my $hostname="@@HOSTNAME@@";
-perlcode 0 my $traphost="@@TRAPHOST@@";
-
-perlcode 0 my $snmpargs="-v 2c -c zimbra $traphost ''";
+perlcode 0 my $snmpargs="-v 2c -c zimbra localhost ''";
 perlcode 0 my $snmptrap="/opt/zimbra/snmp/bin/snmptrap $snmpargs";
 perlcode 0 my $snmpsvctrap="ZIMBRA-TRAP-MIB::zmServiceStatusTrap";
 perlcode 0 my $snmpsvcname="ZIMBRA-MIB::zmServiceName";
 perlcode 0 my $snmpsvcstatus="ZIMBRA-MIB::zmServiceStatus";
-perlcode 0 my $mailer; if ( -x "/opt/zimbra/postfix/sbin/sendmail") { $mailer="/opt/zimbra/postfix/sbin/sendmail -r $fr"; } elsif (-x "/usr/sbin/sendmail") { $mailer="/usr/sbin/sendmail"; } else { $mailer="/usr/lib/sendmail"; }
+perlcode 0 my $mailer; if ( -x "/opt/zimbra/postfix/sbin/sendmail") { $mailer="/opt/zimbra/postfix/sbin/sendmail"; } elsif (-x "/usr/sbin/sendmail") { $mailer="/usr/sbin/sendmail"; } else { $mailer="/usr/lib/sendmail"; }
 
 perlcode 0 my %statuses=('started'=>1,'stopped'=>0);
+
+perlcode 0 my $hostname="@@HOSTNAME@@";
 
 perlcode 0 sub donotify {   my %args = (@_); if ($args{HOST} eq "localhost") {$args{HOST}=$hostname;}; if ($notifications{smtp}) { dosmtp(%args) if $args{SERVICE}; dodisksmtp(%args) if $args{DISK};}; if ($notifications{snmp}) {dosnmp(%args);};  }
 

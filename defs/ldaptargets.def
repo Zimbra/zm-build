@@ -10,6 +10,32 @@ ldap: $(PACKAGE_DIR) ldap_stage ldap_pkg_spec_$(PACKAGE_EXT)
 
 ldap_pkg_spec_ccs:
 
+ldap_pkg_spec_pkg: $(BUILD_ROOT)/resources/zimbra-ldap $(BUILD_ROOT)/zimbra-ldap.Info.plist $(BUILD_ROOT)/zimbra-ldap.Description.plist
+
+$(BUILD_ROOT)/zimbra-ldap.Description.plist:
+	cat $(PACKAGE_CONF_DIR)/Spec/zimbra-ldap.Description.plist | \
+	sed -e 's/@@VERSION@@/$(VERSION_TAG)/' \
+	-e 's/@@RELEASE@@/$(RELEASE)/' \
+	-e 's/@@MAJOR@@/$(MAJOR)/' \
+	-e 's/@@MICRO@@/$(MICRO)/' \
+	-e 's/@@MINOR@@/$(MINOR)/' > $@
+
+$(BUILD_ROOT)/zimbra-ldap.Info.plist:
+	cat $(PACKAGE_CONF_DIR)/Spec/zimbra-ldap.Info.plist | \
+	sed -e 's/@@VERSION@@/$(VERSION_TAG)/' \
+	-e 's/@@RELEASE@@/$(RELEASE)/' \
+	-e 's/@@MAJOR@@/$(MAJOR)/' \
+	-e 's/@@MICRO@@/$(MICRO)/' \
+	-e 's/@@BUILDNUM@@/$(BUILDNUM)/' \
+	-e 's/@@MINOR@@/$(MINOR)/' > $@
+
+$(BUILD_ROOT)/resources/zimbra-ldap:
+	mkdir -p $@
+	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-ldap.postupgrade $@/postupgrade
+	chmod 755 $@/postupgrade
+	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-ldap.postinstall $@/postinstall
+	chmod 755 $@/postinstall
+
 ldap_pkg_spec_deb: $(LDAP_DEST_ROOT)/DEBIAN/control
 
 $(LDAP_DEST_ROOT)/DEBIAN: force
@@ -18,15 +44,11 @@ $(LDAP_DEST_ROOT)/DEBIAN: force
 	cat $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-ldap.post >> $@/postinst
 	chmod 555 $@/*
 
-$(LDAP_DEST_ROOT)/DEBIAN/control: $(LDAP_DEST_ROOT)/DEBIAN $(LDAP_DEST_ROOT)/DEBIAN/md5sums force
+$(LDAP_DEST_ROOT)/DEBIAN/control: $(LDAP_DEST_ROOT)/DEBIAN force
 	cat $(PACKAGE_CONF_DIR)/Spec/zimbra-ldap.deb | \
 	sed -e 's/@@VERSION@@/$(VERSION_TAG)/' \
 	-e 's/@@RELEASE@@/$(RELEASE)/' \
 	-e 's/@@ARCH@@/$(ARCH)/' > $@
-
-$(LDAP_DEST_ROOT)/DEBIAN/md5sums: force
-	(cd $(LDAP_DEST_ROOT); \
-	find . -type f ! -regex '.*.hg.*' ! -regex '.*?debian-binary.*' ! -regex '.*?DEBIAN.*' -print0 | xargs -0 md5sum | sed -e 's| \./| |' > $@)
 
 ldap_pkg_spec_rpm: $(BUILD_ROOT)/zimbra-ldap.spec
 
@@ -41,8 +63,6 @@ $(BUILD_ROOT)/zimbra-ldap.spec:
 		-e '/^%post$$/ r zimbra-ldap.post' > $(BUILD_ROOT)/zimbra-ldap.spec
 	rm -f zimbra-ldap.pre
 	rm -f zimbra-ldap.post
-	echo "%attr(-, root, root) /opt/zimbra/lib" >> \
-		$(BUILD_ROOT)/zimbra-ldap.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/libtool-$(LIBTOOL_VERSION)" >> \
 		$(BUILD_ROOT)/zimbra-ldap.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/openldap-$(LDAP_VERSION)" >> \
@@ -68,8 +88,6 @@ $(LDAP_DEST_DIR)/$(LDAP_DIR)-$(LDAP_VERSION): $(LDAP_DEST_DIR)
 		$(LDAP_DEST_DIR)/$(LDAP_DIR)-$(LDAP_VERSION)/etc/openldap/schema/amavisd.ldif
 	cp -f $(SERVICE_DIR)/conf/ldap/opendkim.ldif \
 		$(LDAP_DEST_DIR)/$(LDAP_DIR)-$(LDAP_VERSION)/etc/openldap/schema/opendkim.ldif
-	cp -f $(SERVICE_DIR)/conf/ldap/pgp-keyserver.ldif \
-		$(LDAP_DEST_DIR)/$(LDAP_DIR)-$(LDAP_VERSION)/etc/openldap/schema/pgp-keyserver.ldif
 	cp $(SERVICE_DIR)/build/ldap-config/zimbra.schema \
 		$(LDAP_DEST_DIR)/$(LDAP_DIR)-$(LDAP_VERSION)/etc/openldap/schema
 	cp $(SERVICE_DIR)/build/ldap-config/config/zimbra.ldif \
@@ -98,6 +116,3 @@ $(LDAP_DEST_DIR)/$(LDAP_DIR)-$(LDAP_VERSION): $(LDAP_DEST_DIR)
 		$(LDAP_DEST_DIR)/$(LDAP_DIR)-$(LDAP_VERSION)/etc/openldap/config/cn=config/olcDatabase={2}mdb
 	cp $(SERVICE_DIR)/build/ldap-config/config/olcDatabase={2}mdb/olcOverlay={2}noopsrch.ldif \
 		$(LDAP_DEST_DIR)/$(LDAP_DIR)-$(LDAP_VERSION)/etc/openldap/config/cn=config/olcDatabase={2}mdb
-
-$(LDAP_DEST_DIR)/lib/conf:
-	mkdir -p $@

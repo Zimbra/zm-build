@@ -7,9 +7,44 @@ core: $(PACKAGE_DIR) core_stage core_pkg_spec_$(PACKAGE_EXT)
 	(cd $(CUR_DEST_ROOT); \
 		$(PACKAGING_COMMAND) $(PACKAGING_OPTIONS) )
 
-.PHONY: $(CORE_DEST_DIR)/bin
-
 core_pkg_spec_ccs:
+
+core_pkg_spec_pkg: $(BUILD_ROOT)/resources/zimbra-core $(BUILD_ROOT)/zimbra-core.Info.plist $(BUILD_ROOT)/zimbra-core.Description.plist
+	rm -rf $(CORE_DEST_DIR)/$(JAVA_FILE)-$(JAVA_VERSION)
+
+$(BUILD_ROOT)/zimbra-core.Description.plist:
+	cat $(PACKAGE_CONF_DIR)/Spec/zimbra-core.Description.plist | \
+		sed -e 's/@@VERSION@@/$(VERSION_TAG)/' \
+		-e 's/@@RELEASE@@/$(RELEASE)/' \
+		-e 's/@@MAJOR@@/$(MAJOR)/' \
+		-e 's/@@MICRO@@/$(MICRO)/' \
+		-e 's/@@MINOR@@/$(MINOR)/' > $@
+
+$(BUILD_ROOT)/zimbra-core.Info.plist:
+	cat $(PACKAGE_CONF_DIR)/Spec/zimbra-core.Info.plist | \
+		sed -e 's/@@VERSION@@/$(VERSION_TAG)/' \
+		-e 's/@@RELEASE@@/$(RELEASE)/' \
+		-e 's/@@MAJOR@@/$(MAJOR)/' \
+		-e 's/@@MICRO@@/$(MICRO)/' \
+		-e 's/@@BUILDNUM@@/$(BUILDNUM)/' \
+		-e 's/@@MINOR@@/$(MINOR)/' > $@
+
+$(BUILD_ROOT)/resources/zimbra-core:
+	mkdir -p $@
+	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-core.preflight $@/preflight
+	chmod 755 $@/preflight
+	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-core.postflight $@/postflight
+	chmod 755 $@/postflight
+	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-core.postinstall $@/postinstall
+	chmod 755 $@/postinstall
+	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-core.preupgrade $@/preupgrade
+	chmod 755 $@/preupgrade
+	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-core.postupgrade $@/postupgrade
+	chmod 755 $@/postupgrade
+	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/InstallationCheck $@/InstallationCheck
+	chmod 755 $@/InstallationCheck
+	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/VolumeCheck $@/VolumeCheck
+	chmod 755 $@/VolumeCheck
 
 core_pkg_spec_deb: $(CORE_DEST_ROOT)/DEBIAN/control
 
@@ -19,7 +54,7 @@ $(CORE_DEST_ROOT)/DEBIAN: force
 	cat $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-core.post >> $@/postinst
 	chmod 555 $@/*
 
-$(CORE_DEST_ROOT)/DEBIAN/control: $(CORE_DEST_ROOT)/DEBIAN $(CORE_DEST_ROOT)/DEBIAN/md5sums force
+$(CORE_DEST_ROOT)/DEBIAN/control: $(CORE_DEST_ROOT)/DEBIAN force
 	cat $(PACKAGE_CONF_DIR)/Spec/zimbra-core.deb | \
 		sed -e 's/@@VERSION@@/$(VERSION_TAG)/' \
 		-e 's/@@RELEASE@@/$(RELEASE)/' \
@@ -27,10 +62,6 @@ $(CORE_DEST_ROOT)/DEBIAN/control: $(CORE_DEST_ROOT)/DEBIAN $(CORE_DEST_ROOT)/DEB
 		-e 's/^Copyright:/$(RPMCOPYRIGHTSTR):/' \
 		-e '/^%pre$$/ r zimbra-core.pre' \
 		-e '/^%post$$/ r zimbra-core.post' > $@
-
-$(CORE_DEST_ROOT)/DEBIAN/md5sums: force
-	(cd $(CORE_DEST_ROOT); \
-	find . -type f ! -regex '.*opt/zimbra/conf/localconfig.xml' ! -regex '.*opt/zimbra/j2sdk-.*/jre/lib/security/cacerts' ! -regex '.*.hg.*' ! -regex '.*?debian-binary.*' ! -regex '.*?DEBIAN.*' -print0 | xargs -0 md5sum | sed -e 's| \./| |' > $@)
 
 core_pkg_spec_rpm: $(BUILD_ROOT)/zimbra-core.spec
 
@@ -104,7 +135,7 @@ $(BUILD_ROOT)/zimbra-core.spec:
 		$(BUILD_ROOT)/zimbra-core.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/db" >> \
 		$(BUILD_ROOT)/zimbra-core.spec
-	echo "%attr(-, root, root) /opt/zimbra/j2sdk-$(OPENJDK_VERSION)" >> \
+	echo "%attr(-, root, root) /opt/zimbra/jdk-$(JAVA_VERSION)" >> \
 		$(BUILD_ROOT)/zimbra-core.spec
 	echo "%attr(-, root, root) /opt/zimbra/lib" >> \
 		$(BUILD_ROOT)/zimbra-core.spec
@@ -120,7 +151,7 @@ $(BUILD_ROOT)/zimbra-core.spec:
 		$(BUILD_ROOT)/zimbra-core.spec
 	echo "%attr(-, root, zimbra) /opt/zimbra/$(SASL_DIR)-$(SASL_VERSION)" >> \
 		$(BUILD_ROOT)/zimbra-core.spec
-	echo "%attr(-, zimbra, zimbra) /opt/zimbra/mariadb-$(MARIADB_VERSION_STRING)" >> \
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/mysql-$(MYSQL_VERSION_STRING)" >> \
 		$(BUILD_ROOT)/zimbra-core.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/openldap-$(LDAP_VERSION)" >> \
 		$(BUILD_ROOT)/zimbra-core.spec
@@ -135,8 +166,6 @@ core_stage: $(CORE_COMPONENTS)
 
 $(CORE_DEST_DIR):
 	mkdir -p $@
-	mkdir -p $@/bin
-	mkdir -p $@/conf
 	cp $(ENV_FILE_SOURCE) $(CORE_DEST_DIR)/$(ENV_FILE_DEST)
 	cp $(PROFILE_SOURCE) $(CORE_DEST_DIR)/$(PROFILE_DEST)
 	cp $(EXRC_SOURCE) $(CORE_DEST_DIR)/$(EXRC_DEST)
@@ -146,22 +175,19 @@ $(CORE_DEST_DIR):
 	sed -i.orig -e 's/@@BUILD_PLATFORM@@/$(BUILD_PLATFORM)/' $(CORE_DEST_DIR)/$(PLATFORM_DOT_DEST)
 	rm -f $(CORE_DEST_DIR)/$(PLATFORM_DOT_DEST).orig
 	chmod 644 $(CORE_DEST_DIR)/$(VIMINFO_DEST)
-	(cd $(CORE_DEST_DIR); tar xzf $(POSTFIX_LW_SOURCE).tgz)
-	(cd $(CORE_DEST_DIR); tar xzf $(AMAVIS_LW_SOURCE).tgz)
 
 $(CORE_DEST_DIR)/docs:
-	@echo "*** Installing docs"
 	mkdir -p $@
 	cp $(LICENSE_DIR)/zimbra/zpl-full.txt $@/ZPL.txt
 	cp $(LICENSE_DIR)/zimbra/ypl-full.txt $@/YPL.txt
 	cp $(LICENSE_DIR)/zimbra/zimbra_public_eula_2.5.txt $@/zimbra_public_eula_2.5.txt
+	cp $(LICENSE_DIR)/thirdparty/oracle_jdk_eula.txt $@/oracle_jdk_eula.txt
 	cp $(SERVICE_DIR)/docs/*txt $@
 	cp $(SERVICE_DIR)/docs/*html $@
 	cp $(MIG_TOOLS_DIR)/ReadMe.txt $@/zmztozmig.txt
 	echo "Zimbra Third Party Software version information" >$@/zimbra-software-versions.txt
 	echo "Altermime version: $(ALTERMIME_VERSION)" >> $@/zimbra-software-versions.txt
 	echo "Amavisd-new version: $(AMAVISD_VERSION)" >> $@/zimbra-software-versions.txt
-	echo "Amavis Logwatch version: $(AMAVIS_LW_VERSION)" >> $@/zimbra-software-versions.txt
 	echo "Apache HTTPD version: $(APACHE_VERSION)" >> $@/zimbra-software-versions.txt
 	echo "Aspell version: $(SPELL_VERSION)" >> $@/zimbra-software-versions.txt
 	echo "BDB version: $(BDB_VERSION)" >> $@/zimbra-software-versions.txt
@@ -170,18 +196,20 @@ $(CORE_DEST_DIR)/docs:
 	echo "Curl version: $(CURL_VERSION)" >> $@/zimbra-software-versions.txt
 	echo "Cyrus SASL version: $(SASL_VERSION)" >> $@/zimbra-software-versions.txt
 	echo "Dspam version: $(DSPAM_VERSION)" >> $@/zimbra-software-versions.txt
+	echo "Expat version (OSX only): $(EXPAT_VERSION)" >> $@/zimbra-software-versions.txt
 	echo "Heimdal version: $(HEIMDAL_VERSION)" >> $@/zimbra-software-versions.txt
-	echo "OpenJDK version: $(OPENJDK_VERSION)" >> $@/zimbra-software-versions.txt
+	echo "JDK version: $(JAVA_VERSION)" >> $@/zimbra-software-versions.txt
 	echo "Jetty version: $(JETTY_VERSION)" >> $@/zimbra-software-versions.txt
 	echo "Libtool version: $(LIBTOOL_VERSION)" >> $@/zimbra-software-versions.txt
 	echo "Memcached version: $(MEMCACHED_VERSION)" >> $@/zimbra-software-versions.txt
-	echo "MySQL version: $(MARIADB_VERSION_STRING)" >> $@/zimbra-software-versions.txt
+	echo "MySQL version: $(MYSQL_VERSION_STRING)" >> $@/zimbra-software-versions.txt
 	echo "NetSNMP version: $(SNMP_VERSION)" >> $@/zimbra-software-versions.txt
 	echo "Nginx version: $(NGINX_VERSION)" >> $@/zimbra-software-versions.txt
 	echo "OpenLDAP version: $(LDAP_VERSION)" >> $@/zimbra-software-versions.txt
 	echo "OpenSSL version: $(OPENSSL_VERSION)" >> $@/zimbra-software-versions.txt
+	echo "Pcre version (OSX only): $(PCRE_VERSION)" >> $@/zimbra-software-versions.txt
+	echo "Popt version (OSX only): $(POPT_VERSION)" >> $@/zimbra-software-versions.txt
 	echo "Postfix version: $(POSTFIX_VERSION)" >> $@/zimbra-software-versions.txt
-	echo "Postfix Logwatch version: $(POSTFIX_LW_VERSION)" >> $@/zimbra-software-versions.txt
 	echo "RRDtool version: $(RRD_VERSION)" >> $@/zimbra-software-versions.txt
 	echo "Rsync version: $(RSYNC_VERSION)" >> $@/zimbra-software-versions.txt
 	echo "Tcmalloc version: $(TCMALLOC_VERSION)" >> $@/zimbra-software-versions.txt
@@ -206,7 +234,6 @@ $(CORE_DEST_DIR)/zimbramon/bin:
 	tar xzf $(PERL_LIB_SOURCE)/perlbin.tgz)
 	mkdir -p $(CORE_DEST_DIR)/libexec
 	cp -pr $(CORE_DEST_DIR)/zimbramon/bin/sa-learn $(CORE_DEST_DIR)/libexec/
-	cp -pr $(CORE_DEST_DIR)/zimbramon/bin/innotop $(CORE_DEST_DIR)/libexec/
 
 $(CORE_DEST_DIR)/zimbramon/pylibs:
 	mkdir -p $(CORE_DEST_DIR)/zimbramon
@@ -227,14 +254,13 @@ $(CORE_DEST_DIR)/$(PFLOG_DIR)-$(PFLOG_VERSION): $(CORE_DEST_DIR)
 	cp -f $(PFLOG_SOURCE)/pflogsumm.1 $@/man/man1
 
 $(CORE_DEST_DIR)/lib: $(WEBAPP_DIR)/service.war $(LDAP_DEST_DIR)/$(LDAP_DIR)-$(LDAP_VERSION) $(NATIVE_DIR)/build/libzimbra-native.$(JNI_EXT)
-	@echo "*** Installing lib"
 	mkdir -p $@
 	cp -pr $(SERVICE_DIR)/build/dist/lib/* $@
 	-rm -rf $@/jars/junit*.jar
 	-rm -rf $@/jars/objenesis*.jar
 	cp -pr $(NATIVE_DIR)/build/libzimbra-native.$(JNI_EXT) $@
 	cp -pr $(JUNIXSOCKET_NATIVE) $@
-	(cd $(CORE_DEST_DIR); tar xzf $(THIRD_PARTY_BUILDS)/$(BUILD_PLATFORM)/mariadb/mariadb-libs-$(MARIADB_VERSION).tgz)
+	(cd $(CORE_DEST_DIR); tar xzf $(THIRD_PARTY_BUILDS)/$(BUILD_PLATFORM)/mysql/mysql-libs-$(MYSQL_VERSION).tgz)
 
 $(NATIVE_DIR)/build/libzimbra-native.$(JNI_EXT):
 	(cd $(NATIVE_DIR); make JAVA_BINARY=$(JAVA_BINARY))
@@ -242,9 +268,22 @@ $(NATIVE_DIR)/build/libzimbra-native.$(JNI_EXT):
 $(LAUNCHER_DIR)/build/zmmailboxdmgr:
 	(cd $(LAUNCHER_DIR); make JAVA_BINARY=$(JAVA_BINARY))
 
-$(CORE_DEST_DIR)/j2sdk-$(OPENJDK_VERSION):
-	@echo "*** Creating OpenJDK"
-	(cd $(CORE_DEST_DIR);tar xfz $(OPENJDK_SOURCE).tgz;)
+$(CORE_DEST_DIR)/jdk-$(JAVA_VERSION):
+	@echo "*** Creating java"
+	(cd $(CORE_DEST_DIR); tar xzf $(JAVA_SOURCE).tgz;)
+	rm -rf $@/jre/lsrc.zip
+	rm -rf $@/demo
+	rm -rf $@/sample
+	rm -rf $@/jre/lib/audio/soundbank.gm
+	rm -rf $@/jre/bin/rmid
+	rm -rf $@/jre/bin/tnameserv
+	rm -rf $@/jre/bin/orbd
+	rm -rf $@/jre/bin/javaws
+	rm -rf $@/jre/javaws
+	rm -rf $@/jre/lib/javaws
+	rm -rf $@/jre/lib/javaws.jar
+	rm -rf $@/jre/lib/i386/client/classes.jsa
+	cp -f $(JCE_SOURCE)/* $@/jre/lib/security/
 
 $(CORE_DEST_DIR)/db: $(WEBAPP_DIR)/service.war
 	mkdir -p $@
@@ -253,7 +292,6 @@ $(CORE_DEST_DIR)/db: $(WEBAPP_DIR)/service.war
 	cp -R $(SERVICE_DIR)/build/versions-init.sql $@
 
 $(CORE_DEST_DIR)/conf: $(WEBAPP_DIR)/service.war
-	@echo "*** Installing conf"
 	mkdir -p $@
 	cp $(PACKAGE_CONF_DIR)/Conf/swatchrc $@/swatchrc.in
 	cp $(PACKAGE_CONF_DIR)/Conf/logswatchrc $@/logswatchrc
@@ -277,7 +315,6 @@ $(CORE_DEST_DIR)/conf: $(WEBAPP_DIR)/service.war
 	cp $(SERVICE_DIR)/conf/nginx/* $@/nginx/templates/
 	cp $(SERVICE_DIR)/conf/stats.conf.in $@
 	cp $(SERVICE_DIR)/conf/salocal.cf.in $@
-	cp $(SERVICE_DIR)/conf/unbound.conf.in $@
 	cp $(SERVICE_DIR)/conf/saslauthd.conf.in $@ 
 	mkdir -p $@/sasl2
 	cp $(SERVICE_DIR)/conf/postfix_sasl_smtpd.conf $@/sasl2/smtpd.conf.in
@@ -286,20 +323,25 @@ $(CORE_DEST_DIR)/conf: $(WEBAPP_DIR)/service.war
 	cp $(SERVICE_DIR)/conf/milter.log4j.properties $@/milter.log4j.properties
 	cp $(SERVICE_DIR)/conf/timezones.ics $@
 	cp $(SERVICE_DIR)/conf/zimbra.ld.conf $@
-	cp $(SERVICE_DIR)/conf/cbpolicyd.conf.in $@
 	mkdir -p $@/zmconfigd
 	cp $(SERVICE_DIR)/conf/zmconfigd/postfix_content_filter.cf $@/zmconfigd/postfix_content_filter.cf
 	cp $(SERVICE_DIR)/conf/zmconfigd/smtpd_recipient_restrictions.cf $@/zmconfigd/smtpd_recipient_restrictions.cf
 	cp $(SERVICE_DIR)/conf/zmconfigd/smtpd_relay_restrictions.cf $@/zmconfigd/smtpd_relay_restrictions.cf
 	cp $(SERVICE_DIR)/conf/zmconfigd/smtpd_end_of_data_restrictions.cf $@/zmconfigd/smtpd_end_of_data_restrictions.cf
 	cp $(SERVICE_DIR)/conf/zmconfigd/smtpd_sender_restrictions.cf $@/zmconfigd/smtpd_sender_restrictions.cf
-	cp $(SERVICE_DIR)/conf/zmconfigd/smtpd_sender_login_maps.cf $@/zmconfigd/smtpd_sender_login_maps.cf
 	cp -Rf $(SERVICE_DIR)/conf/externaldirsync $@/externaldirsync
 	cp -Rf $(SERVICE_DIR)/build/dist/conf/rights $@/rights
 	rm -f $@/rights/zimbra-rights-domainadmin.xml-template
 	cp -Rf $(SERVICE_DIR)/build/dist/conf/msgs $@/msgs
 	mkdir -p $@/attrs
 	cp -f $(SERVICE_DIR)/build/dist/conf/attrs/* $@/attrs
+ifeq ($(ZIMBRA_USE_CBPOLICYD), 1)
+	cp $(ZMCBPOLICYD_DIR)/conf/* $@
+endif
+
+$(CORE_DEST_DIR)/conf/com.zimbra.zcs.plist:
+	mkdir -p $(CORE_DEST_DIR)/conf
+	cp $(SERVICE_DIR)/conf/com.zimbra.zcs.plist $@
 
 $(CORE_DEST_DIR)/libexec: $(LAUNCHER_DIR)/build/zmmailboxdmgr
 	@echo "*** Installing libexec"
@@ -331,9 +373,11 @@ $(CORE_DEST_DIR)/libexec: $(LAUNCHER_DIR)/build/zmmailboxdmgr
 	cp $@/swatch $@/logswatch
 	cp $@/swatch $@/auditswatch
 	cp -f $(BUILD_ROOT)/rpmconf/Build/get_plat_tag.sh $@
+ifeq ($(ZIMBRA_USE_CBPOLICYD), 1)
+	cp $(ZMCBPOLICYD_DIR)/src/libexec/* $@
+endif
 
 $(CORE_DEST_DIR)/bin:
-	@echo "*** Installing bin"
 	mkdir -p $@
 	cp -R $(SERVICE_DIR)/build/dist/bin/[a-z]* $@
 	rm -f $(CORE_DEST_DIR)/bin/zmtransserver.bat
@@ -353,13 +397,26 @@ $(CORE_DEST_DIR)/bin:
 	cp $(ZIMBRA_BIN_DIR)/zmmtactl $@
 	cp $(ZIMBRA_BIN_DIR)/zmspellctl $@
 	cp $(ZIMBRA_BIN_DIR)/zmapachectl $@
-	cp $(ZIMBRA_BIN_DIR)/zmcbpolicydctl $@
 	cp $@/zmprov $@/zmprov.java
+ifeq ($(ZIMBRA_USE_CBPOLICYD), 1)
+	cp $(ZMCBPOLICYD_DIR)/src/bin/* $@
+endif
 
 $(CORE_DEST_DIR)/contrib:
-	@echo "*** Installing contrib"
 	mkdir -p $@
 	cp -R $(SERVICE_DIR)/src/contrib/* $@
+
+$(CORE_DEST_DIR)/lib/libpcre.dylib: $(CORE_DEST_DIR)/lib
+	(cd $(CORE_DEST_DIR); tar xzf $(THIRD_PARTY_BUILDS)/$(BUILD_PLATFORM)/pcre/pcre-$(PCRE_VERSION).tgz)
+	rm -rf $(CORE_DEST_DIR)/include
+
+$(CORE_DEST_DIR)/lib/libpopt.0.dylib: $(CORE_DEST_DIR)/lib
+	(cd $(CORE_DEST_DIR); tar xzf $(THIRD_PARTY_BUILDS)/$(BUILD_PLATFORM)/popt/popt-$(POPT_VERSION).tgz)
+	rm -rf $(CORE_DEST_DIR)/include
+
+$(CORE_DEST_DIR)/lib/libexpat.dylib: $(CORE_DEST_DIR)/lib
+	(cd $(CORE_DEST_DIR); tar xzf $(THIRD_PARTY_BUILDS)/$(BUILD_PLATFORM)/expat/expat-$(EXPAT_VERSION).tgz)
+	rm -rf $(CORE_DEST_DIR)/include
 
 $(CORE_DEST_DIR)/$(BDB_DIR):
 	@echo "*** Creating bdb"

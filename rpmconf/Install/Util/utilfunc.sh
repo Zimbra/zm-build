@@ -2,17 +2,15 @@
 # 
 # ***** BEGIN LICENSE BLOCK *****
 # Zimbra Collaboration Suite Server
-# Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc.
+# Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
 # 
-# This program is free software: you can redistribute it and/or modify it under
-# the terms of the GNU General Public License as published by the Free Software Foundation,
-# version 2 of the License.
+# The contents of this file are subject to the Zimbra Public License
+# Version 1.4 ("License"); you may not use this file except in
+# compliance with the License.  You may obtain a copy of the License at
+# http://www.zimbra.com/license.
 # 
-# This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
-# without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-# See the GNU General Public License for more details.
-# You should have received a copy of the GNU General Public License along with this program.
-# If not, see <http://www.gnu.org/licenses/>.
+# Software distributed under the License is distributed on an "AS IS"
+# basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 # ***** END LICENSE BLOCK *****
 # 
 
@@ -51,18 +49,18 @@ displayThirdPartyLicenses() {
     echo ""
     echo ""
   fi
-  #if [ -f ${MYDIR}/docs/oracle_jdk_eula.txt ]; then
-  #  cat $MYDIR/docs/oracle_jdk_eula.txt
-  #  echo ""
-  #  echo ""
-  #  if [ x$DEFAULTFILE = "x" -o x$CLUSTERUPGRADE = "xyes" ]; then
-  #    askYN "Do you agree with the terms of the software license agreement?" "N"
-  #    if [ $response != "yes" ]; then
-  #      exit
-  #    fi
-  #  fi
-  #fi
-  #echo ""
+  if [ -f ${MYDIR}/docs/oracle_jdk_eula.txt ]; then
+    cat $MYDIR/docs/oracle_jdk_eula.txt
+    echo ""
+    echo ""
+    if [ x$DEFAULTFILE = "x" -o x$CLUSTERUPGRADE = "xyes" ]; then
+      askYN "Do you agree with the terms of the software license agreement?" "N"
+      if [ $response != "yes" ]; then
+        exit
+      fi
+    fi
+  fi
+  echo ""
 }
 
 isFQDN() {
@@ -125,6 +123,7 @@ SMTPSOURCE=$SMTPSOURCE
 SMTPDEST=$SMTPDEST
 SNMPNOTIFY=$SNMPNOTIFY
 SMTPNOTIFY=$SMTPNOTIFY
+INSTALL_PACKAGES="$INSTALL_PACKAGES"
 STARTSERVERS=$STARTSERVERS
 LDAPROOTPW=$LDAPROOTPW
 LDAPZIMBRAPW=$LDAPZIMBRAPW
@@ -141,8 +140,6 @@ RUNAV=$RUNAV
 RUNSA=$RUNSA
 AVUSER=$AVUSER
 AVDOMAIN=$AVDOMAIN
-INSTALL_PACKAGES="$INSTALL_PACKAGES"
-INSTALL_WEBAPPS="$INSTALL_WEBAPPS"
 EOF
 
 }
@@ -269,8 +266,8 @@ checkMySQLConfig() {
   if [ x$PKGINSTALLED != "x" ]; then
     if [ -f "/opt/zimbra/conf/my.cnf" ]; then
       BIND_ADDR=`awk '{ if ( $1 ~ /^bind-address$/ ) { print $3 } }' /opt/zimbra/conf/my.cnf`
-      while [ "${BIND_ADDR}x" != "127.0.0.1x" -a "${BIND_ADDR}x" != "localhostx" ]; do
-        echo "The MySQL bind address is currently not set to \"localhost\" or \"127.0.0.1\".  Due to a"
+      while [ "${BIND_ADDR}x" != "127.0.0.1x" -a "${BIND_ADDR}x" != "localhostx" -a "${BIND_ADDR}x" != "::1x" ]; do
+        echo "The MySQL bind address is currently not set to \"localhost\", \"127.0.0.1\", or \"::1\".  Due to a"
         echo "MySQL bug (#61713), the MySQL bind address must be set to \"127.0.0.1\".  Please correct"
         echo "the bind-address entry in the \"/opt/zimbra/conf/my.cnf\" file to proceed with the upgrade."
         askYN "Retry validation? (Y/N)?" "Y"
@@ -279,10 +276,10 @@ checkMySQLConfig() {
         fi
         BIND_ADDR=`awk '{ if ( $1 ~ /^bind-address$/ ) { print $3 } }' /opt/zimbra/conf/my.cnf`
       done
-      if [ "${BIND_ADDR}x" != "127.0.0.1x" -a "${BIND_ADDR}x" != "localhostx" ]; then
+      if [ "${BIND_ADDR}x" != "127.0.0.1x" -a "${BIND_ADDR}x" != "localhostx" -a "${BIND_ADDR}x" != "::1x" ]; then
         echo ""
         echo "It is recommended that the bind-address setting in the /opt/zimbra/conf/my.cnf file be set"
-        echo "to \"127.0.0.1\".  The current setting of \"${BIND_ADDR}\" is not supported within"
+        echo "to \"127.0.0.1\" or \"::1\".  The current setting of \"${BIND_ADDR}\" is not supported within"
         echo "ZCS and may cause the installation to fail."
         askYN "Proceed with installation? (Y/N)?" "N"
         if [ $response != "yes" ]; then
@@ -399,7 +396,7 @@ checkUbuntuRelease() {
   fi
 
   if [ "x$DISTRIB_ID" = "xUbuntu" -a "x$DISTRIB_RELEASE" != "x10.04" -a "x$DISTRIB_RELEASE" != "x12.04" -a "x$DISTRIB_RELEASE" != "x14.04" ]; then
-    echo "WARNING: ZCS is currently only supported on Ubuntu Server 12.04 and 14.04 LTS."
+    echo "WARNING: ZCS is currently only supported on Ubuntu Server 10.04, 12.04, and 14.04 LTS."
     echo "You are attempting to install on $DISTRIB_DESCRIPTION which may not work."
     echo "Support will not be provided if you choose to continue."
     echo ""
@@ -642,7 +639,7 @@ EOF
 
   checkDatabaseIntegrity
 
-  #checkMySQLConfig
+  checkMySQLConfig
 
 }
 
@@ -683,36 +680,6 @@ checkRequiredSpace() {
       echo ""
     fi
   fi
-}
-
-checkStoreRequirements() {
-  echo "Checking required packages for zimbra-store"
-  GOOD="yes"
-  if [ x"$ZMTYPE_INSTALLABLE" = "xNETWORK" ]; then
-    for i in $STORE_PACKAGES; do
-      #echo -n "    $i..."
-      isInstalled $i
-      if [ "x$PKGINSTALLED" != "x" ]; then
-        echo "     FOUND: $PKGINSTALLED"
-      else
-        echo "     MISSING: $i"
-        GOOD="no"
-      fi
-    done
-  fi
-
-  if [ $GOOD = "no" ]; then
-    echo ""
-    echo "###WARNING###"
-    echo ""
-    echo "One or more suggested packages for zimbra-store are missing."
-    echo "Some features may be disabled due to the missing package(s)."
-    echo ""
-  else
-    echo "zimbra-store package check complete."
-  fi
-
-
 }
 
 checkExistingInstall() {
@@ -1698,14 +1665,20 @@ removeExistingInstall() {
     echo ""
     echo "Removing deployed webapp directories"
     if [ -d "/opt/zimbra/tomcat/webapps/" ]; then
-      deleteWebApp zimbra tomcat
-      deleteWebApp zimbraAdmin tomcat
-      deleteWebApp service tomcat
+      /bin/rm -rf /opt/zimbra/tomcat/webapps/zimbra
+      /bin/rm -rf /opt/zimbra/tomcat/webapps/zimbra.war
+      /bin/rm -rf /opt/zimbra/tomcat/webapps/zimbraAdmin
+      /bin/rm -rf /opt/zimbra/tomcat/webapps/zimbraAdmin.war
+      /bin/rm -rf /opt/zimbra/tomcat/webapps/service
+      /bin/rm -rf /opt/zimbra/tomcat/webapps/service.war
       /bin/rm -rf /opt/zimbra/tomcat/work
     elif [ -d "/opt/zimbra/jetty/webapps" ]; then
-      deleteWebApp zimbra jetty
-      deleteWebApp zimbraAdmin jetty
-      deleteWebApp service jetty
+      /bin/rm -rf /opt/zimbra/jetty/webapps/zimbra
+      /bin/rm -rf /opt/zimbra/jetty/webapps/zimbra.war
+      /bin/rm -rf /opt/zimbra/jetty/webapps/zimbraAdmin
+      /bin/rm -rf /opt/zimbra/jetty/webapps/zimbraAdmin.war
+      /bin/rm -rf /opt/zimbra/jetty/webapps/service
+      /bin/rm -rf /opt/zimbra/jetty/webapps/service.war
       /bin/rm -rf /opt/zimbra/jetty/work
     fi
   fi
@@ -2015,7 +1988,6 @@ getInstallPackages() {
   APACHE_SELECTED="no"
   LOGGER_SELECTED="no"
   STORE_SELECTED="no"
-  MTA_SELECTED="no"
   
   CLUSTER_SELECTED="no"
 
@@ -2059,8 +2031,6 @@ getInstallPackages() {
           LOGGER_SELECTED="yes"
         elif [ $i = "zimbra-store" ]; then
           STORE_SELECTED="yes"
-        elif [ $i = "zimbra-mta" ]; then
-          MTA_SELECTED="yes"
         elif [ $i = "zimbra-cluster" ]; then
           CLUSTER_SELECTED="yes"
         fi
@@ -2109,19 +2079,17 @@ getInstallPackages() {
         askYN "Install $i" "N"
       fi
     else
-      if [ $i = "zimbra-archiving" ]; then
+      if [ $i = "zimbra-memcached" ]; then
+         askYN "Install $i" "N"
+      elif [ $i = "zimbra-proxy" ]; then
+         askYN "Install $i" "N"
+      elif [ $i = "zimbra-archiving" ]; then
         # only prompt to install archiving if zimbra-store is selected
         if [ $STORE_SELECTED = "yes" ]; then
           askYN "Install $i" "N"
         fi
       elif [ $i = "zimbra-convertd" ]; then
         if [ $STORE_SELECTED = "yes" ]; then
-          askYN "Install $i" "Y"
-        else
-          askYN "Install $i" "N"
-        fi
-      elif [ $i = "zimbra-dnscache" ]; then
-        if [ $MTA_SELECTED = "yes" ]; then
           askYN "Install $i" "Y"
         else
           askYN "Install $i" "N"
@@ -2142,8 +2110,6 @@ getInstallPackages() {
         APACHE_SELECTED="yes"
       elif [ $i = "zimbra-cluster" ]; then
         CLUSTER_SELECTED="yes"
-      elif [ $i = "zimbra-mta" ]; then
-        MTA_SELECTED="yes"
       fi
 
       if [ $i = "zimbra-mta" ]; then
@@ -2194,25 +2160,11 @@ getInstallPackages() {
   done
   checkRequiredSpace
 
-  isInstalled zimbra-store
-  isToBeInstalled zimbra-store
-  if [ "x$PKGINSTALLED" != "x" -o "x$PKGTOBEINSTALLED" != "x" ]; then
-    checkStoreRequirements
-  fi
-
   echo ""
   echo "Installing:"
   for i in $INSTALL_PACKAGES; do
     echo "    $i"
   done
-}
-
-deleteWebApp() {
-  WEBAPPNAME=$1
-  CONTAINERDIR=$2
-
-  /bin/rm -rf /opt/zimbra/$CONTAINERDIR/webapps/$WEBAPPNAME
-  /bin/rm -rf /opt/zimbra/$CONTAINERDIR/webapps/$WEBAPPNAME.war
 }
 
 setInstallPackages() {
@@ -2330,7 +2282,7 @@ isToBeInstalled() {
   done
 }
 
-isInstalled() {
+isInstalled () {
   pkg=$1
   PKGINSTALLED=""
   if [ "x$PACKAGEEXT" = "xrpm" ]; then
@@ -2431,15 +2383,17 @@ getPlatformVars() {
     PACKAGEVERSION="dpkg-query -W -f \${Version}"
     PREREQ_PACKAGES="sudo libidn11 libgmp3c2 libstdc++6"
     CONFLICT_PACKAGES="mail-transport-agent"
+    if [ $PLATFORM = "UBUNTU10_64" ]; then
+      PREREQ_PACKAGES="netcat-openbsd sudo libidn11 libpcre3 libgmp3c2 libexpat1 libstdc++6 libperl5.10 libaio1"
+      PRESUG_PACKAGES="pax perl-5.10.1 sysstat sqlite3"
+    fi
     if [ $PLATFORM = "UBUNTU12_64" ]; then
-      PREREQ_PACKAGES="netcat-openbsd sudo libidn11 libpcre3 libgmp3c2 libexpat1 libstdc++6 libperl5.14 libaio1 resolvconf unzip"
+      PREREQ_PACKAGES="netcat-openbsd sudo libidn11 libpcre3 libgmp3c2 libexpat1 libstdc++6 libperl5.14 libaio1"
       PRESUG_PACKAGES="pax perl-5.14.2 sysstat sqlite3"
-      STORE_PACKAGES="libreoffice"
     fi
     if [ $PLATFORM = "UBUNTU14_64" ]; then
-      PREREQ_PACKAGES="netcat-openbsd sudo libidn11 libpcre3 libgmp10 libexpat1 libstdc++6 libperl5.18 libaio1 resolvconf unzip"
+      PREREQ_PACKAGES="netcat-openbsd sudo libidn11 libpcre3 libgmp10 libexpat1 libstdc++6 libperl5.18 libaio1 unzip"
       PRESUG_PACKAGES="pax perl-5.18.2 sysstat sqlite3"
-      STORE_PACKAGES="libreoffice"
     fi
   else
     PACKAGEINST='rpm -iv'
@@ -2447,18 +2401,21 @@ getPlatformVars() {
     PACKAGEQUERY='rpm -q'
     PACKAGEVERIFY='rpm -K'
     PACKAGEEXT='rpm'
-    if [ $PLATFORM = "RHEL6_64" ]; then
+    if [ $PLATFORM = "RHEL6_64" -o $PLATFORM = "CentOS6_64" ]; then
       PACKAGEINST='yum -y --disablerepo=* localinstall -v'
       PACKAGERM='yum -y --disablerepo=* erase -v'
-      PREREQ_PACKAGES="nc sudo libidn gmp libaio libstdc++ unzip"
+      PREREQ_PACKAGES="nc sudo libidn gmp libaio"
+      PREREQ_LIBS="/usr/lib64/libstdc++.so.6"
       PRESUG_PACKAGES="perl-5.10.1 sysstat sqlite"
-      STORE_PACKAGES="libreoffice libreoffice-headless"
     elif [ $PLATFORM = "RHEL7_64" ]; then
       PACKAGEINST='yum -y --disablerepo=* localinstall -v'
       PACKAGERM='yum -y --disablerepo=* erase -v'
       PREREQ_PACKAGES="nmap-ncat sudo libidn gmp libaio libstdc++ unzip perl-core"
       PRESUG_PACKAGES="perl-5.16.3 sysstat sqlite"
-      STORE_PACKAGES="libreoffice libreoffice-headless"
+    elif [ $PLATFORM = "SLES11_64" ]; then
+      PREREQ_PACKAGES="netcat sudo libidn gmp libaio"
+      PREREQ_LIBS="/usr/lib64/libstdc++.so.6"
+      PRESUG_PACKAGES="perl-5.10.0 sysstat sqlite3"
     else
       PREREQ_PACKAGES="sudo libidn gmp"
       PREREQ_LIBS="/usr/lib/libstdc++.so.6"

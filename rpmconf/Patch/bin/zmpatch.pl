@@ -2,17 +2,15 @@
 # 
 # ***** BEGIN LICENSE BLOCK *****
 # Zimbra Collaboration Suite Server
-# Copyright (C) 2010, 2011, 2012, 2013, 2014 Zimbra, Inc.
+# Copyright (C) 2010, 2011, 2012, 2013 Zimbra Software, LLC.
 # 
-# This program is free software: you can redistribute it and/or modify it under
-# the terms of the GNU General Public License as published by the Free Software Foundation,
-# version 2 of the License.
+# The contents of this file are subject to the Zimbra Public License
+# Version 1.4 ("License"); you may not use this file except in
+# compliance with the License.  You may obtain a copy of the License at
+# http://www.zimbra.com/license.
 # 
-# This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
-# without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-# See the GNU General Public License for more details.
-# You should have received a copy of the GNU General Public License along with this program.
-# If not, see <http://www.gnu.org/licenses/>.
+# Software distributed under the License is distributed on an "AS IS"
+# basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 # ***** END LICENSE BLOCK *****
 #  
 
@@ -56,6 +54,7 @@ GetOptions ("config=s"  => \$options{config},
 
 my $progName = "zmpatch";
 my $patchBuildNumber;
+my $zimbra_home = "/opt/zimbra";
 my %versionInfo;
 my ($platform, $zmtype, $config);
 $options{verbose} = 0 unless $options{verbose};
@@ -91,11 +90,11 @@ if ($options{build}) {
 } else {
   $zmtype=getInstalledType();
   debugLog("Install type: $zmtype\n");
-  unless (-x "/opt/zimbra/libexec/get_plat_tag.sh") {
+  unless (-x "${zimbra_home}/libexec/get_plat_tag.sh") {
     print "ZCS Install not found.\n";
     exit 1;
   }
-  $platform = qx(/opt/zimbra/libexec/get_plat_tag.sh);
+  $platform = `${zimbra_home}/libexec/get_plat_tag.sh`;
   chomp($platform);
   if (-f "source/build") {
     open(BUILD, "source/build");
@@ -377,9 +376,9 @@ sub deployPatch($) {
 sub logSession($) {
   my ($msg) = @_;
   return if $options{dryrun};
-  my $date = qx(date +%s);
+  my $date = `date +%s`;
   chomp($date);
-  open(SESS, ">>/opt/zimbra/.install_history");
+  open(SESS, ">>${zimbra_home}/.install_history");
   print SESS "$date: $msg\n";
   close(SESS);
 }
@@ -437,7 +436,7 @@ sub detail($) {
   open(LOG, ">>$logfile");
   print LOG "$date $msg\n";
   close(LOG);
-  #qx(echo "$date $msg" >> $logfile);
+  #`echo "$date $msg" >> $logfile`;
 }
 
 sub progress($$$) {
@@ -467,7 +466,7 @@ sub getDateStamp() {
 sub getInstalledVersion() {
   my %configStatus;
   my %installStatus;
-  if (open H, "/opt/zimbra/.install_history") {
+  if (open H, "${zimbra_home}/.install_history") {
 
     my @history = <H>;
     close H;
@@ -521,7 +520,7 @@ sub getInstalledVersion() {
 }
 
 sub getInstalledType() {
-  return ((-f "/opt/zimbra/bin/zmbackupquery") ? "NETWORK" : "FOSS");
+  return ((-f "${zimbra_home}/bin/zmbackupquery") ? "NETWORK" : "FOSS");
 }
 
 sub getReleaseString($) {
@@ -580,8 +579,8 @@ sub isInstalled {
 }
 
 sub doIncrementJSVersion() {
-  my $infile="/opt/zimbra/jetty/etc/zimbra.web.xml.in";
-  my $outfile="/opt/zimbra/data/tmp/zimbra.web.xml.in.new";
+  my $infile="$zimbra_home/jetty/etc/zimbra.web.xml.in";
+  my $outfile="$zimbra_home/data/tmp/zimbra.web.xml.in.new";
   unlink("$outfile") if (-e "$outfile");
   open (IN, "<$infile");
   open (OUT, ">$outfile");
@@ -605,8 +604,8 @@ sub doIncrementJSVersion() {
   close(IN);
   close(OUT);
   copy($outfile, $infile);
-  $infile="/opt/zimbra/jetty/etc/zimbraAdmin.web.xml.in";
-  $outfile="/opt/zimbra/data/tmp/zimbraAdmin.web.xml.in.new";
+  $infile="$zimbra_home/jetty/etc/zimbraAdmin.web.xml.in";
+  $outfile="$zimbra_home/data/tmp/zimbraAdmin.web.xml.in.new";
   unlink("$outfile") if (-e "$outfile");
   open (IN, "<$infile");
   open (OUT, ">$outfile");

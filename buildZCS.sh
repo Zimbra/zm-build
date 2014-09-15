@@ -2,17 +2,15 @@
 # 
 # ***** BEGIN LICENSE BLOCK *****
 # Zimbra Collaboration Suite Server
-# Copyright (C) 2009, 2010, 2011, 2013, 2014 Zimbra, Inc.
+# Copyright (C) 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
 # 
-# This program is free software: you can redistribute it and/or modify it under
-# the terms of the GNU General Public License as published by the Free Software Foundation,
-# version 2 of the License.
+# The contents of this file are subject to the Zimbra Public License
+# Version 1.4 ("License"); you may not use this file except in
+# compliance with the License.  You may obtain a copy of the License at
+# http://www.zimbra.com/license.
 # 
-# This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
-# without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-# See the GNU General Public License for more details.
-# You should have received a copy of the GNU General Public License along with this program.
-# If not, see <http://www.gnu.org/licenses/>.
+# Software distributed under the License is distributed on an "AS IS"
+# basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 # ***** END LICENSE BLOCK *****
 # 
 
@@ -20,17 +18,16 @@ PROGDIR=`dirname $0`
 cd $PROGDIR
 PATHDIR=`pwd`
 BUILDTHIRDPARTY=no
-UTILITIES=no
 BUILDTYPE=foss
 PMIRROR=no
 
 usage() {
 	echo ""
-	echo "Usage: "`basename $0`" [-d] [-t [-p] [-u]]" >&2
+	echo "Usage: "`basename $0`" [-d] [-t [-p]] [-n]" >&2
 	echo "-d: Perform a Zimbra Desktop build"
-	echo "-p: Use private Perl mirror when building 3rd party (requires -t)"
+	echo "-n: Perform a Network Edition build"
+	echo "-p: Use private Perl mirror when building 3rd party"
 	echo "-t: Build third party as well as ZCS"
-	echo "-u: Install build utilities, must be used the first time when building ZCS (requires -t, sudo access)"
 }
 
 while [ $# -gt 0 ]; do
@@ -43,16 +40,16 @@ while [ $# -gt 0 ]; do
 			usage;
 			exit 0;
 			;;
+		-n|--network)
+			BUILDTYPE=network
+			shift;
+			;;
 		-p|--private)
 			PMIRROR=yes
 			shift;
 			;;
 		-t|--thirdparty)
 			BUILDTHIRDPARTY=yes
-			shift;
-			;;
-		-u|--utilities)
-			UTILITIES=yes
 			shift;
 			;;
 		*)
@@ -79,33 +76,107 @@ do
 			MAJOR=`echo $VERSION | awk -F. '{print $1}'`
 			MINOR=`echo $VERSION | awk -F. '{print $2}'`
 			PATCH=`echo $VERSION | awk -F. '{print $3}'`
-			if [ $MAJOR -eq 1 -a $MINOR -lt 9 -a $PATCH -lt 1 ]; then
+			if [ $MAJOR -eq 1 -a $MINOR -lt 6 -a $PATCH -lt 5 ]; then
 				echo "Error: Unsupported version of $req: $VERSION"
 				echo "You can obtain $req from:"
 				echo "http://ant.apache.org/bindownload.cgi"
 				exit 1;
 			fi
 		elif [ x$req = x"java" ]; then
-			VERSION=$(${command} -version 2>&1 | grep " version" | sed -e 's/"//g' | awk '{print $NF}' | awk -F_ '{print $1}')
+			VERSION=$(${command} -version 2>&1 | grep "java version" | sed -e 's/"//g' | awk '{print $NF}' | awk -F_ '{print $1}')
 			MAJOR=`echo $VERSION | awk -F. '{print $1}'`
 			MINOR=`echo $VERSION | awk -F. '{print $2}'`
 			PATCH=`echo $VERSION | awk -F. '{print $3}'`
-			if [ $MAJOR -eq 1 -a $MINOR -ne 8 ]; then
+			if [ $MAJOR -eq 1 -a $MINOR -lt 7 ]; then
 				echo "Error: Unsupported version of $req: $VERSION"
+				echo "You can obtain $req from:"
+				echo "http://www.oracle.com/technetwork/java/index.html"
+				echo "Make sure the downloaded version appears first in your path"
 				exit 1;
 			fi
 		fi
 	else
-		echo "Error: $req not found in path"
+		echo "Error: $req not found"
 		if [ x$req = x"ant" ]; then
 			echo "You can obtain $req from:"
 			echo "http://ant.apache.org/bindownload.cgi"
 		elif [ x$req = x"java" ]; then
-			echo "Please obtain OpenJDK 1.8"
+			if [[ $PLAT == "MACOSX"* ]]; then
+				echo "Please create a symlink from:"
+				echo "/System/Library/Frameworks/JavaVM.framework/Home to /usr/local/$req"
+				echo "cd /usr/local"
+				echo "ln -s /System/Library/Frameworks/JavaVM.framework/Home $req"
+			else
+				echo "Please obtain JDK 1.7 from:"
+				echo "http://www.oracle.com/technetwork/java/index.html"
+				echo "And install it in /usr/local"
+				echo "Then symlink it to /usr/local/java"
+			fi
 		fi
 		exit 1;
 	fi
 done
+
+JVERSION=`grep ^JAVA_VERSION $PATHDIR/defs/plat_common.def | sed -e 's/JAVA_VERSION[\t]*:=[\t]*[ ]*//'`
+echo "Checking for required JDK tarball"
+if [[ $PLAT == *"_64" ]]; then
+	if [ ! -f $PATHDIR/../ThirdPartyBuilds/x86_64/java/jdk-${JVERSION}.tgz ]; then
+		echo "Error: jdk file needed for ZCS packaging not available"
+		echo "Necessary version is: $JVERSION"
+		echo "Please create $PATHDIR/../ThirdPartyBuilds/x86_64/java/jdk-${JVERSION}.tgz"
+		echo "Which is an extracted then retarred version of JDK 1.7 downloaded from"
+		echo "http://www.oracle.com/technetwork/java/javase/downloads/index.html"
+		exit 1;
+	fi
+elif [[ $PLAT != "MACOSX"* ]]; then
+	if [ ! -f $PATHDIR/../ThirdPartyBuilds/i386/java/jdk-${JVERSION}.tgz ]; then
+		echo "Error: jdk file needed for ZCS packaging not available"
+		echo "Necessary version is: $JVERSION"
+		echo "Please create $PATHDIR/../ThirdPartyBuilds/i386/java/jdk-${JVERSION}.tgz"
+		echo "Which is an extracted then retarred version of JDK 1.7 downloaded from"
+		echo "http://www.oracle.com/technetwork/java/javase/downloads/index.html"
+		exit 1;
+	fi
+fi
+
+echo "Checking for required JCE jars"
+if [[ $PLAT == *"_64" ]]; then
+	if [ ! -f $PATHDIR/../ThirdPartyBuilds/x86_64/java/jce/US_export_policy.jar ]; then
+		echo "Error: JCE file \"US_export_policy.jar\" needed for ZCS packaging not available"
+		echo "Please create $PATHDIR/../ThirdPartyBuilds/x86_64/java/jce/US_export_policy.jar"
+		echo "Which can be downloaded from"
+		echo "http://www.oracle.com/technetwork/java/javase/downloads/index.html"
+		exit 1;
+	fi
+	if [ ! -f $PATHDIR/../ThirdPartyBuilds/x86_64/java/jce/local_policy.jar ]; then
+		echo "Error: JCE file \"local_policy.jar\" needed for ZCS packaging not available"
+		echo "Please create $PATHDIR/../ThirdPartyBuilds/x86_64/java/jce/local_policy.jar"
+		echo "Which can be downloaded from"
+		echo "http://www.oracle.com/technetwork/java/javase/downloads/index.html"
+		exit 1;
+	fi
+elif [[ $PLAT != "MACOSX"* ]]; then
+	if [ ! -f $PATHDIR/../ThirdPartyBuilds/i386/java/jce/US_export_policy.jar ]; then
+		echo "Error: JCE file \"US_export_policy.jar\" needed for ZCS packaging not available"
+		echo "Please create $PATHDIR/../ThirdPartyBuilds/i386/java/jce/US_export_policy.jar"
+		echo "Which can be downloaded from"
+		echo "http://www.oracle.com/technetwork/java/javase/downloads/index.html"
+		exit 1;
+	fi
+	if [ ! -f $PATHDIR/../ThirdPartyBuilds/i386/java/jce/local_policy.jar ]; then
+		echo "Error: JCE file \"local_policy.jar\" needed for ZCS packaging not available"
+		echo "Please create $PATHDIR/../ThirdPartyBuilds/i386/java/jce/local_policy.jar"
+		echo "Which can be downloaded from"
+		echo "http://www.oracle.com/technetwork/java/javase/downloads/index.html"
+		exit 1;
+	fi
+fi
+
+if [ ! -x /usr/bin/rpmbuild -a ! -x /usr/bin/dpkg -a ! -x /Developer/Applications/Utilities/PackageMaker.app/Contents/MacOS/PackageMaker ]; then
+	echo "Error: No package building software found."
+	echo "Make sure one of rpmbuild, dpkg, or PackageMaker is available"
+	exit 1;
+fi
 
 if [ x$BUILDTHIRDPARTY = x"yes" -a x$BUILDTYPE = x"desktop" ]; then
 	echo "Error: ThirdParty builds and Desktop builds are mutually exclusive"
@@ -117,18 +188,9 @@ if [ x$BUILDTHIRDPARTY = x"no" -a x$PMIRROR = x"yes" ]; then
 	exit 1;
 fi
 
-if [ x$BUILDTHIRDPARTY = x"no" -a x$UTILITIES = x"yes" ]; then
-	echo "Error: Cannot use -u without -t"
-	exit 1;
-fi
-
 TPOPTS="-c"
 if [ x$PMIRROR = x"yes" ]; then
 	TPOPTS="$TPOPTS -p"
-fi
-
-if [ x$UTILITIES = x"yes" ]; then
-	TPOPTS="$TPOPTS -t"
 fi
 
 if [ x$BUILDTHIRDPARTY = x"yes" ]; then
@@ -147,12 +209,24 @@ if [ x$BUILDTHIRDPARTY = x"yes" ]; then
 	fi
 fi
 
-TARGETS="all"
+TARGETS="sourcetar all"
+if [ x$BUILDTYPE = x"network" ]; then
+	if [ -f "$PATHDIR/../ZimbraNetwork/ZimbraBuild/Makefile" ]; then
+		if [ x$RELEASE = x"main" ]; then
+			TARGETS="$TARGETS velodrome"
+		elif [[ $RELEASE == "FRANKLIN"* ]]; then
+			TARGETS="$TARGETS velodrome customercare"
+		fi
+	else
+		echo "Error: ZimbraNetwork is not available"
+		exit 1;
+	fi
+fi
 if [ x$BUILDTYPE = x"foss" ]; then
 	TARGETS="ajaxtar $TARGETS"
 fi
 
-if [ x$BUILDTYPE = x"foss" ]; then
+if [ x$BUILDTYPE = x"network" -o x$BUILDTYPE = x"foss" ]; then
 	cd $PATHDIR
 elif [ x$BUILDTYPE = x"desktop" ]; then
 	cd $PATHDIR/../ZimbraOffline
@@ -163,8 +237,10 @@ fi
 
 echo "Starting ZCS build"
 mkdir -p $PATHDIR/../logs
-mkdir -p $PATHDIR/../ZimbraCommon/jars-internal/jars
-if [ x$BUILDTYPE = x"foss" ]; then
+if [ x$BUILDTYPE = x"network" ]; then
+	make -f $PATHDIR/../ZimbraNetwork/ZimbraBuild/Makefile allclean
+	make -f $PATHDIR/../ZimbraNetwork/ZimbraBuild/Makefile $TARGETS | tee $PATHDIR/../logs/NE-build.log
+elif [ x$BUILDTYPE = x"foss" ]; then
 	make -f Makefile allclean
 	make -f Makefile $TARGETS | tee $PATHDIR/../logs/FOSS-build.log
 else

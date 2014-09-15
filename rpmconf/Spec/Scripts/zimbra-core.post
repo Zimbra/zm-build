@@ -2,17 +2,15 @@
 # 
 # ***** BEGIN LICENSE BLOCK *****
 # Zimbra Collaboration Suite Server
-# Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc.
+# Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
 # 
-# This program is free software: you can redistribute it and/or modify it under
-# the terms of the GNU General Public License as published by the Free Software Foundation,
-# version 2 of the License.
+# The contents of this file are subject to the Zimbra Public License
+# Version 1.4 ("License"); you may not use this file except in
+# compliance with the License.  You may obtain a copy of the License at
+# http://www.zimbra.com/license.
 # 
-# This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
-# without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-# See the GNU General Public License for more details.
-# You should have received a copy of the GNU General Public License along with this program.
-# If not, see <http://www.gnu.org/licenses/>.
+# Software distributed under the License is distributed on an "AS IS"
+# basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 # ***** END LICENSE BLOCK *****
 # 
 # Create group, user for zimbra and postfix.
@@ -24,21 +22,15 @@ I=`hostname -i`
 rm -f /opt/zimbra/java
 PLAT=`/opt/zimbra/libexec/get_plat_tag.sh`
 BIT=`echo $PLAT | awk -F_ '{print $2}'`
-#if [ "x$BIT" = "x64" ]; then
-#	if [ x"$PLAT" = "xUBUNTU12_64" -o x"$PLAT" = "xUBUNTU14_64" ]; then
-		ln -s /opt/zimbra/j2sdk-20140721 /opt/zimbra/java
-#	else
-#		ln -s /opt/zimbra/jdk-1.7.0_55 /opt/zimbra/java
-#	fi
-#else
-#	ln -s /opt/zimbra/jdk-1.7.0_55 /opt/zimbra/java
-#fi
+if [ "x$BIT" = "x64" ]; then
+	ln -s /opt/zimbra/jdk-1.7.0_67 /opt/zimbra/java
+else
+	ln -s /opt/zimbra/jdk-1.7.0_67 /opt/zimbra/java
+fi
 
 #Symlinks
-rm -f /opt/zimbra/mariadb
 rm -f /opt/zimbra/mysql
-ln -s /opt/zimbra/mariadb-10.0.12 /opt/zimbra/mariadb
-ln -s /opt/zimbra/mariadb-10.0.12 /opt/zimbra/mysql
+ln -s /opt/zimbra/mysql-5.5.39 /opt/zimbra/mysql
 
 rm -f /opt/zimbra/bdb
 ln -s /opt/zimbra/bdb-5.2.36 /opt/zimbra/bdb
@@ -48,7 +40,7 @@ if [ -L /opt/zimbra/sleepycat ]; then
 fi
 
 rm -f /opt/zimbra/pflogsumm
-ln -s /opt/zimbra/pflogsumm-1.1.5 /opt/zimbra/pflogsumm
+ln -s /opt/zimbra/pflogsumm-1.1.3 /opt/zimbra/pflogsumm
 
 rm -f /opt/zimbra/openssl
 ln -s /opt/zimbra/openssl-1.0.1i /opt/zimbra/openssl
@@ -66,10 +58,10 @@ rm -f /opt/zimbra/openldap
 ln -s /opt/zimbra/openldap-2.4.39.2z /opt/zimbra/openldap
 
 rm -f /opt/zimbra/tcmalloc
-ln -s /opt/zimbra/tcmalloc-2.2 /opt/zimbra/tcmalloc
+ln -s /opt/zimbra/tcmalloc-2.1 /opt/zimbra/tcmalloc
 
 rm -f /opt/zimbra/rsync
-ln -s /opt/zimbra/rsync-3.1.1 /opt/zimbra/rsync
+ln -s /opt/zimbra/rsync-3.0.9 /opt/zimbra/rsync
 
 if [ -d "/opt/zimbra/zimbramon/rrdtool" ]; then
   rm -rf /opt/zimbra/zimbramon/rrdtool
@@ -111,15 +103,33 @@ fi
 
 if [ -f /etc/debian_version ]; then
 	if [ -f /etc/ld.so.conf ]; then
-		egrep -q 'zimbra' /etc/ld.so.conf >/dev/null
-		if [ $? = 0 ]; then
-			mv -f /etc/ld.so.conf /etc/ld.so.conf.$$
-			cat /etc/ld.so.conf.$$ | grep -v zimbra > /etc/ld.so.conf
-			if [ -x /sbin/ldconfig ]; then
-				/sbin/ldconfig
-			fi
-		fi
+		mv -f /etc/ld.so.conf /etc/ld.so.conf.$$
+		cat /etc/ld.so.conf.$$ | grep -v zimbra > /etc/ld.so.conf
 	fi
+#	cat /opt/zimbra/conf/zimbra.ld.conf >> /etc/ld.so.conf
+#else
+#	mkdir -p /etc/ld.so.conf.d
+#	cp -f /opt/zimbra/conf/zimbra.ld.conf /etc/ld.so.conf.d
+fi
+
+# update prelink.conf
+if [ -f /etc/prelink.conf ]; then
+  egrep -q 'zimbra' /etc/prelink.conf
+  if [ $? != 0 ]; then
+    echo "# added for Zimbra" >> /etc/prelink.conf
+    echo "-l /opt/zimbra/lib" >> /etc/prelink.conf
+    echo "-l /opt/zimbra/bdb/lib" >> /etc/prelink.conf
+    echo "-l /opt/zimbra/openldap/lib" >> /etc/prelink.conf
+    echo "-l /opt/zimbra/cyrus-sasl/lib" >> /etc/prelink.conf
+    echo "-l /opt/zimbra/mysql/lib/mysql" >> /etc/prelink.conf
+    if [ -x /usr/sbin/prelink ]; then
+      /usr/sbin/prelink -amR > /dev/null 2>&1
+    fi
+  fi
+fi
+
+if [ -x /sbin/ldconfig ]; then
+  /sbin/ldconfig
 fi
 
 # Setup syslog

@@ -10,6 +10,32 @@ apache: $(PACKAGE_DIR) apache_stage apache_pkg_spec_$(PACKAGE_EXT)
 
 apache_pkg_spec_ccs:
 
+apache_pkg_spec_pkg: $(BUILD_ROOT)/resources/zimbra-apache $(BUILD_ROOT)/zimbra-apache.Info.plist $(BUILD_ROOT)/zimbra-apache.Description.plist
+
+$(BUILD_ROOT)/zimbra-apache.Description.plist:
+	cat $(PACKAGE_CONF_DIR)/Spec/zimbra-apache.Description.plist | \
+	sed -e 's/@@VERSION@@/$(VERSION_TAG)/' \
+	-e 's/@@RELEASE@@/$(RELEASE)/' \
+	-e 's/@@MAJOR@@/$(MAJOR)/' \
+	-e 's/@@MICRO@@/$(MICRO)/' \
+	-e 's/@@MINOR@@/$(MINOR)/' > $@
+
+$(BUILD_ROOT)/zimbra-apache.Info.plist:
+	cat $(PACKAGE_CONF_DIR)/Spec/zimbra-apache.Info.plist | \
+	sed -e 's/@@VERSION@@/$(VERSION_TAG)/' \
+	-e 's/@@RELEASE@@/$(RELEASE)/' \
+	-e 's/@@MAJOR@@/$(MAJOR)/' \
+	-e 's/@@MICRO@@/$(MICRO)/' \
+	-e 's/@@BUILDNUM@@/$(BUILDNUM)/' \
+	-e 's/@@MINOR@@/$(MINOR)/' > $@
+
+$(BUILD_ROOT)/resources/zimbra-apache:
+	mkdir -p $@
+	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-apache.postinstall $@/postinstall
+	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-apache.postupgrade $@/postupgrade
+	chmod 755 $@/postinstall
+	chmod 755 $@/postupgrade
+
 apache_pkg_spec_deb: $(APACHE_DEST_ROOT)/DEBIAN/control
 
 $(APACHE_DEST_ROOT)/DEBIAN: force
@@ -18,15 +44,11 @@ $(APACHE_DEST_ROOT)/DEBIAN: force
 	cat $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-apache.post >> $@/postinst
 	chmod 555 $@/*
 
-$(APACHE_DEST_ROOT)/DEBIAN/control: $(APACHE_DEST_ROOT)/DEBIAN $(APACHE_DEST_ROOT)/DEBIAN/md5sums force
+$(APACHE_DEST_ROOT)/DEBIAN/control: $(APACHE_DEST_ROOT)/DEBIAN force
 	cat $(PACKAGE_CONF_DIR)/Spec/zimbra-apache.deb | \
 	sed -e 's/@@VERSION@@/$(VERSION_TAG)/' \
 	-e 's/@@RELEASE@@/$(RELEASE)/' \
 	-e 's/@@ARCH@@/$(ARCH)/' > $@
-
-$(APACHE_DEST_ROOT)/DEBIAN/md5sums: force
-	(cd $(APACHE_DEST_ROOT); \
-	find . -type f ! -regex '.*.hg.*' ! -regex '.*?debian-binary.*' ! -regex '.*?DEBIAN.*' -print0 | xargs -0 md5sum | sed -e 's| \./| |' > $@)
 
 apache_pkg_spec_rpm: $(BUILD_ROOT)/zimbra-apache.spec
 
