@@ -5173,8 +5173,8 @@ sub configLCValues {
     setLocalConfig ("av_notify_domain", $config{AVDOMAIN})
   }
 
-  setLocalConfig ("ssl_allow_untrusted_certs", "true");
-  setLocalConfig ("ssl_allow_mismatched_certs", "true");
+  setLocalConfig ("ssl_allow_untrusted_certs", "true") if ($newinstall);
+  setLocalConfig ("ssl_allow_mismatched_certs", "true") if ($newinstall);
   setLocalConfig ("ssl_default_digest", $config{ssl_default_digest});
   setLocalConfig ("mailboxd_java_heap_size", $config{MAILBOXDMEMORY});
   setLocalConfig ("mailboxd_directory", $config{mailboxd_directory});
