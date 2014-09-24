@@ -1115,7 +1115,7 @@
   </package>
   <preinstall></preinstall>
   <postinstall></postinstall>
-  </patch> -->
+  </patch>
   <patch name="8.5.0_GA" version="8.5.0_P1">
   <desc>Patch 8.5.0_P1</desc>
   <bug>95230</bug>
@@ -1142,6 +1142,256 @@
         <source>ZimbraBuild/storebuild/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbraAdmin/js/zimbraAdmin/servers/model/ZaServer.js</source>
         <target>/opt/zimbra/jetty/webapps/zimbraAdmin/js/zimbraAdmin/servers/model/ZaServer.js</target>
         <perms owner="zimbra" mode="664"/>
+      </file>
+      
+  </package>
+  <preinstall></preinstall>
+  <postinstall></postinstall>
+  </patch> -->
+  <patch name="8.5.0_GA" version="8.5.0_P2">
+  <desc>Patch 8.5.0_P2</desc>
+  <bug>82243</bug>
+  <bug>94534</bug>
+  <bug>94818</bug>
+  <bug>94939</bug>
+  <bug>94970</bug>
+  <bug>94984</bug>
+  <bug>95000</bug>
+  <bug>95009</bug>
+  <bug>95062</bug>
+  <bug>95302</bug>
+  <bug>95315</bug>
+  <bug>95319</bug>
+  <bug>95332</bug>
+  <bug>95412</bug>
+  <bug>95630</bug>
+  <bug>95649</bug>
+  <bug>95277</bug>
+  <package name="zimbra-core">
+      <file>
+        <source>ZimbraBuild/corebuild/opt/zimbra/conf/zmlogrotate</source>
+        <target>/etc/logrotate.d/zimbra</target>
+        <perms owner="root" mode="644"/>
+      </file>
+      <file>
+        <source>ZimbraBuild/corebuild/opt/zimbra/conf/zmlogrotate</source>
+        <target>/opt/zimbra/conf/zmlogrotate</target>
+        <perms owner="zimbra" mode="644"/>
+      </file>
+      <file>
+        <source>ZimbraBuild/corebuild/opt/zimbra/libexec/zmstat-fd</source>
+        <target>/opt/zimbra/libexec/zmstat-fd</target>
+        <perms owner="root" mode="755"/>
+      </file>
+      <file>
+        <source>ZimbraBuild/corebuild/opt/zimbra/conf/nginx/templates/nginx.conf.web.https.mode-redirect.template</source>
+        <target>/opt/zimbra/conf/nginx/templates/nginx.conf.web.https.mode-redirect.template</target>
+        <perms owner="zimbra" mode="644"/>
+      </file>
+      <file>
+        <source>ZimbraBuild/corebuild/opt/zimbra/conf/nginx/templates/nginx.conf.web.https.mode-mixed.template</source>
+        <target>/opt/zimbra/conf/nginx/templates/nginx.conf.web.https.mode-mixed.template</target>
+        <perms owner="zimbra" mode="644"/>
+      </file>
+      <file>
+        <source>ZimbraBuild/corebuild/opt/zimbra/conf/nginx/templates/nginx.conf.web.https.mode-https.template</source>
+        <target>/opt/zimbra/conf/nginx/templates/nginx.conf.web.https.mode-https.template</target>
+        <perms owner="zimbra" mode="644"/>
+      </file>
+      <file>
+        <source>ZimbraBuild/corebuild/opt/zimbra/conf/nginx/templates/nginx.conf.web.https.mode-http.template</source>
+        <target>/opt/zimbra/conf/nginx/templates/nginx.conf.web.https.mode-http.template</target>
+        <perms owner="zimbra" mode="644"/>
+      </file>
+      <file>
+        <source>ZimbraBuild/corebuild/opt/zimbra/conf/nginx/templates/nginx.conf.web.https.mode-both.template</source>
+        <target>/opt/zimbra/conf/nginx/templates/nginx.conf.web.https.mode-both.template</target>
+        <perms owner="zimbra" mode="644"/>
+      </file>
+      <file>
+        <source>ZimbraBuild/corebuild/opt/zimbra/conf/nginx/templates/nginx.conf.web.http.mode-redirect.template</source>
+        <target>/opt/zimbra/conf/nginx/templates/nginx.conf.web.http.mode-redirect.template</target>
+        <perms owner="zimbra" mode="644"/>
+      </file>
+      <file>
+        <source>ZimbraBuild/corebuild/opt/zimbra/conf/nginx/templates/nginx.conf.web.http.mode-mixed.template</source>
+        <target>/opt/zimbra/conf/nginx/templates/nginx.conf.web.http.mode-mixed.template</target>
+        <perms owner="zimbra" mode="644"/>
+      </file>
+      <file>
+        <source>ZimbraBuild/corebuild/opt/zimbra/conf/nginx/templates/nginx.conf.web.http.mode-https.template</source>
+        <target>/opt/zimbra/conf/nginx/templates/nginx.conf.web.http.mode-https.template</target>
+        <perms owner="zimbra" mode="644"/>
+      </file>
+      <file>
+        <source>ZimbraBuild/corebuild/opt/zimbra/conf/nginx/templates/nginx.conf.web.http.mode-http.template</source>
+        <target>/opt/zimbra/conf/nginx/templates/nginx.conf.web.http.mode-http.template</target>
+        <perms owner="zimbra" mode="644"/>
+      </file>
+      <file>
+        <source>ZimbraBuild/corebuild/opt/zimbra/conf/nginx/templates/nginx.conf.web.http.mode-both.template</source>
+        <target>/opt/zimbra/conf/nginx/templates/nginx.conf.web.http.mode-both.template</target>
+        <perms owner="zimbra" mode="644"/>
+      </file>
+      <file>
+        <source>ZimbraBuild/corebuild/opt/zimbra/conf/nginx/templates/nginx.conf.web.https.default.template</source>
+        <target>/opt/zimbra/conf/nginx/templates/nginx.conf.web.https.default.template</target>
+        <perms owner="zimbra" mode="644"/>
+      </file>
+      <file>
+        <source>ZimbraBuild/corebuild/opt/zimbra/conf/nginx/templates/nginx.conf.web.http.default.template</source>
+        <target>/opt/zimbra/conf/nginx/templates/nginx.conf.web.http.default.template</target>
+        <perms owner="zimbra" mode="644"/>
+      </file>
+      <file>
+        <source>ZimbraBuild/corebuild/opt/zimbra/conf/nginx/templates/nginx.conf.mail.imap.template</source>
+        <target>/opt/zimbra/conf/nginx/templates/nginx.conf.mail.imap.template</target>
+        <perms owner="zimbra" mode="644"/>
+      </file>
+      <file>
+        <source>ZimbraBuild/corebuild/opt/zimbra/conf/nginx/templates/nginx.conf.mail.imaps.template</source>
+        <target>/opt/zimbra/conf/nginx/templates/nginx.conf.mail.imaps.template</target>
+        <perms owner="zimbra" mode="644"/>
+      </file>
+      <file>
+        <source>ZimbraBuild/corebuild/opt/zimbra/conf/nginx/templates/nginx.conf.mail.pop3.template</source>
+        <target>/opt/zimbra/conf/nginx/templates/nginx.conf.mail.pop3.template</target>
+        <perms owner="zimbra" mode="644"/>
+      </file>
+      <file>
+        <source>ZimbraBuild/corebuild/opt/zimbra/conf/nginx/templates/nginx.conf.mail.pop3s.template</source>
+        <target>/opt/zimbra/conf/nginx/templates/nginx.conf.mail.pop3s.template</target>
+        <perms owner="zimbra" mode="644"/>
+      </file>
+      <file>
+        <source>ZimbraBuild/corebuild/opt/zimbra/conf/nginx/templates/nginx.conf.mail.template</source>
+        <target>/opt/zimbra/conf/nginx/templates/nginx.conf.mail.template</target>
+        <perms owner="zimbra" mode="644"/>
+      </file>
+      <file>
+        <source>ZimbraBuild/corebuild/opt/zimbra/conf/nginx/templates/nginx.conf.web.admin.template</source>
+        <target>/opt/zimbra/conf/nginx/templates/nginx.conf.web.admin.template</target>
+        <perms owner="zimbra" mode="644"/>
+      </file>
+      <file>
+        <source>ZimbraBuild/corebuild/opt/zimbra/conf/nginx/templates/nginx.conf.web.http.template</source>
+        <target>/opt/zimbra/conf/nginx/templates/nginx.conf.web.http.template</target>
+        <perms owner="zimbra" mode="644"/>
+      </file>
+      <file>
+        <source>ZimbraBuild/corebuild/opt/zimbra/conf/nginx/templates/nginx.conf.web.https.template</source>
+        <target>/opt/zimbra/conf/nginx/templates/nginx.conf.web.https.template</target>
+        <perms owner="zimbra" mode="644"/>
+      </file>
+      <file>
+        <source>ZimbraBuild/corebuild/opt/zimbra/conf/nginx/templates/nginx.conf.web.sso.template</source>
+        <target>/opt/zimbra/conf/nginx/templates/nginx.conf.web.sso.template</target>
+        <perms owner="zimbra" mode="644"/>
+      </file>
+      <file>
+        <source>ZimbraBuild/corebuild/opt/zimbra/conf/nginx/templates/nginx.conf.web.template</source>
+        <target>/opt/zimbra/conf/nginx/templates/nginx.conf.web.template</target>
+        <perms owner="zimbra" mode="644"/>
+      </file>
+      <file>
+        <source>ZimbraBuild/corebuild/opt/zimbra/bin/zmtlsctl</source>
+        <target>/opt/zimbra/bin/zmtlsctl</target>
+        <perms owner="root" mode="755"/>
+      </file>
+      <file>
+        <source>ZimbraBuild/corebuild/opt/zimbra/conf/zmconfigd.cf</source>
+        <target>/opt/zimbra/conf/zmconfigd.cf</target>
+        <perms owner="zimbra" mode="644"/>
+      </file>
+      <file>
+        <source>ZimbraBuild/corebuild/opt/zimbra/docs/spnego.txt</source>
+        <target>/opt/zimbra/docs/spnego.txt</target>
+        <perms owner="zimbra" mode="444"/>
+      </file>
+  </package>
+  <package name="zimbra-mta">
+      <file>
+        <source>ZimbraBuild/corebuild/opt/zimbra/conf/amavisd.conf.in</source>
+        <target>/opt/zimbra/conf/amavisd.conf.in</target>
+        <perms owner="zimbra" mode="644"/>
+      </file> 	
+  </package>
+  <package name="zimbra-store">
+      <file>
+        <source>ZimbraBuild/corebuild/opt/zimbra/lib/jars/zimbrastore.jar</source>
+        <target>/opt/zimbra/jetty/webapps/service/WEB-INF/lib/zimbrastore.jar</target>
+        <target>/opt/zimbra/jetty/webapps/zimbra/WEB-INF/lib/zimbrastore.jar</target>
+        <target>/opt/zimbra/jetty/webapps/zimbraAdmin/WEB-INF/lib/zimbrastore.jar</target>
+        <target>/opt/zimbra/lib/jars/zimbrastore.jar</target>
+        <perms owner="root" mode="444"/>
+      </file>
+      <file>
+        <source>ZimbraBuild/corebuild/opt/zimbra/lib/jars/zimbracommon.jar</source>
+        <target>/opt/zimbra/jetty/common/lib/zimbracommon.jar</target>
+        <target>/opt/zimbra/lib/jars/zimbracommon.jar</target>
+        <perms owner="root" mode="444"/>
+      </file>
+      <file>
+        <source>ZimbraBuild/storebuild/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/service/WEB-INF/lib/zimbrataglib.jar</source>
+        <target>/opt/zimbra/jetty/webapps/service/WEB-INF/lib/zimbrataglib.jar</target>
+        <perms owner="zimbra" mode="644"/>
+      </file>
+      <file>
+        <source>ZimbraBuild/storebuild/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbra/WEB-INF/lib/zimbrataglib.jar</source>
+        <target>/opt/zimbra/jetty/webapps/zimbra/WEB-INF/lib/zimbrataglib.jar</target>
+        <target>/opt/zimbra/jetty/webapps/zimbraAdmin/WEB-INF/lib/zimbrataglib.jar</target>
+        <perms owner="root" mode="644"/>
+      </file>
+      <file type="network">
+        <source>ZimbraBuild/storebuild/opt/zimbra/lib/ext/zimbrasync/zimbrasync.jar</source>
+        <target>/opt/zimbra/lib/ext/zimbrasync/zimbrasync.jar</target>
+        <perms owner="root" mode="444"/>
+      </file>
+      <file type="network">
+        <source>ZimbraSyncCommon/build/zsynccommon.jar</source>
+        <target>/opt/zimbra/lib/ext/zimbrasync/zsynccommon.jar</target>
+        <perms owner="root" mode="444"/>
+      </file>
+      <file type="network">
+        <source>ZimbraBuild/storebuild/opt/zimbra/lib/ext/zimbraews/zimbraews.jar</source>
+        <target>/opt/zimbra/lib/ext/zimbraews/zimbraews.jar</target>
+        <perms owner="root" mode="444"/>
+      </file>
+      <file type="network">
+        <source>ZimbraBuild/storebuild/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbra/t/app.js</source>
+        <target>/opt/zimbra/jetty/webapps/zimbra/t/app.js</target>
+        <perms owner="zimbra" mode="644"/>
+      </file>
+      <file type="network">
+        <source>ZimbraBuild/storebuild/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbra/tdebug/app.js</source>
+        <target>/opt/zimbra/jetty/webapps/zimbra/tdebug/app.js</target>
+        <perms owner="zimbra" mode="644"/>
+      </file>
+      <file type="network">
+        <source>ZimbraBuild/storebuild/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbra/t/app.json</source>
+        <target>/opt/zimbra/jetty/webapps/zimbra/t/app.json</target>
+        <perms owner="zimbra" mode="644"/>
+      </file>
+      <file>
+        <source>ZimbraBuild/storebuild/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbra/css/zm.css</source>
+        <target>/opt/zimbra/jetty/webapps/zimbra/css/zm.css</target>
+        <target>/opt/zimbra/jetty/webapps/zimbraAdmin/css/zm.css</target>
+        <perms owner="zimbra" mode="644"/>
+      </file>
+      <file>
+        <source>ZimbraBuild/storebuild/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbra/js/zimbraMail/calendar/view/ZmApptEditView.js</source>
+        <target>/opt/zimbra/jetty/webapps/zimbra/js/zimbraMail/calendar/view/ZmApptEditView.js</target>
+        <perms owner="zimbra" mode="644"/>
+      </file>
+      <file>
+        <source>ZimbraBuild/storebuild/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbra/js/zimbraMail/calendar/view/ZmCalItemEditView.js</source>
+        <target>/opt/zimbra/jetty/webapps/zimbra/js/zimbraMail/calendar/view/ZmCalItemEditView.js</target>
+        <perms owner="zimbra" mode="644"/>
+      </file>
+      <file>
+        <source>ZimbraBuild/storebuild/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbra/js/zimbraMail/calendar/view/ZmFreeBusySchedulerView.js</source>
+        <target>/opt/zimbra/jetty/webapps/zimbra/js/zimbraMail/calendar/view/ZmFreeBusySchedulerView.js</target>
+        <perms owner="zimbra" mode="644"/>
       </file>
   </package>
   <preinstall></preinstall>
