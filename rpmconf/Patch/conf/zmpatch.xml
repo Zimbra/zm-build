@@ -1170,11 +1170,6 @@
   <package name="zimbra-core">
       <file>
         <source>ZimbraBuild/corebuild/opt/zimbra/conf/zmlogrotate</source>
-        <target>/etc/logrotate.d/zimbra</target>
-        <perms owner="root" mode="644"/>
-      </file>
-      <file>
-        <source>ZimbraBuild/corebuild/opt/zimbra/conf/zmlogrotate</source>
         <target>/opt/zimbra/conf/zmlogrotate</target>
         <perms owner="zimbra" mode="644"/>
       </file>
@@ -1395,7 +1390,7 @@
       </file>
   </package>
   <preinstall></preinstall>
-  <postinstall></postinstall>
+  <postinstall>/bin/cp -f /opt/zimbra/conf/zmlogrotate /etc/logrotate.d/zimbra</postinstall>
   </patch>
 </patches>
   

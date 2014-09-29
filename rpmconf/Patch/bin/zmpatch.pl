@@ -356,7 +356,7 @@ sub deployPatch($) {
   # do postinstall tasks
   foreach my $task (@{$patch->{postinstall}}) {
     progress("Running $task...",1,0);
-    if (runAsZimbra($task)) {
+    if (runAsRoot($task)) {
       progress("failed.\n",1,0);
     } else {
       progress("done.\n",1,0);
@@ -395,6 +395,16 @@ sub runAsZimbra {
   detail ( "*** Running as zimbra user: $cmd\n" );
   my $rc;
   $rc = 0xffff & system("$SU \"$cmd\" >> $logfile 2>&1");
+  return $rc;
+}
+
+sub runAsRoot {
+  my $cmd = shift;
+  my @cmd = split / /, $cmd;
+  push (@cmd,">> $logfile 2>&1");
+  detail ( "*** Running as root user: $cmd\n" );
+  my $rc;
+  $rc = 0xffff & system("@cmd");
   return $rc;
 }
 
