@@ -82,6 +82,8 @@ endif
 
 ANT_DEBUG	?= -Ddebug=false
 ANT_TEST	?= -DskipTests=true
+ANT_BUILD_DIR	:= build
+MAVEN_TARGET_DIR	:= target
 
 
 PACKAGE_CONF_DIR	:= $(BUILD_ROOT)/rpmconf

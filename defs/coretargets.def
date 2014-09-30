@@ -224,20 +224,20 @@ $(CORE_DEST_DIR)/$(PFLOG_DIR)-$(PFLOG_VERSION): $(CORE_DEST_DIR)
 	mkdir -p $@/man/man1
 	cp -f $(PFLOG_SOURCE)/pflogsumm.1 $@/man/man1
 
-$(CORE_DEST_DIR)/lib: $(WEBAPP_DIR)/service.war $(LDAP_DEST_DIR)/$(LDAP_DIR)-$(LDAP_VERSION) $(NATIVE_DIR)/build/libzimbra-native.$(JNI_EXT)
+$(CORE_DEST_DIR)/lib: $(WEBAPP_DIR)/service.war $(LDAP_DEST_DIR)/$(LDAP_DIR)-$(LDAP_VERSION) $(NATIVE_DIR)/$(ANT_BUILD_DIR)/libzimbra-native.$(JNI_EXT)
 	@echo "*** Installing lib"
 	mkdir -p $@
-	cp -pr $(SERVICE_DIR)/build/dist/lib/* $@
+	cp -pr $(SERVICE_DIR)/$(ANT_BUILD_DIR)/dist/lib/* $@
 	-rm -rf $@/jars/junit*.jar
 	-rm -rf $@/jars/objenesis*.jar
-	cp -pr $(NATIVE_DIR)/build/libzimbra-native.$(JNI_EXT) $@
+	cp -pr $(NATIVE_DIR)/$(ANT_BUILD_DIR)/libzimbra-native.$(JNI_EXT) $@
 	cp -pr $(JUNIXSOCKET_NATIVE) $@
 	(cd $(CORE_DEST_DIR); tar xzf $(THIRD_PARTY_BUILDS)/$(BUILD_PLATFORM)/mariadb/mariadb-libs-$(MARIADB_VERSION).tgz)
 
-$(NATIVE_DIR)/build/libzimbra-native.$(JNI_EXT):
+$(NATIVE_DIR)/$(ANT_BUILD_DIR)/libzimbra-native.$(JNI_EXT):
 	(cd $(NATIVE_DIR); make JAVA_BINARY=$(JAVA_BINARY))
 
-$(LAUNCHER_DIR)/build/zmmailboxdmgr:
+$(LAUNCHER_DIR)/$(ANT_BUILD_DIR)/zmmailboxdmgr:
 	(cd $(LAUNCHER_DIR); make JAVA_BINARY=$(JAVA_BINARY))
 
 $(CORE_DEST_DIR)/j2sdk-$(OPENJDK_VERSION):
@@ -248,7 +248,7 @@ $(CORE_DEST_DIR)/db: $(WEBAPP_DIR)/service.war
 	mkdir -p $@
 	cp -R $(SERVICE_DIR)/src/db/mysql/db.sql $@
 	cp -R $(SERVICE_DIR)/src/db/mysql/create_database.sql $@
-	cp -R $(SERVICE_DIR)/build/versions-init.sql $@
+	cp -R $(SERVICE_DIR)/$(MAVEN_TARGET_DIR)/versions-init.sql $@
 
 $(CORE_DEST_DIR)/conf: $(WEBAPP_DIR)/service.war
 	@echo "*** Installing conf"
@@ -256,8 +256,8 @@ $(CORE_DEST_DIR)/conf: $(WEBAPP_DIR)/service.war
 	cp $(PACKAGE_CONF_DIR)/Conf/swatchrc $@/swatchrc.in
 	cp $(PACKAGE_CONF_DIR)/Conf/logswatchrc $@/logswatchrc
 	cp $(PACKAGE_CONF_DIR)/Conf/auditswatchrc $@/auditswatchrc.in
-	cp $(SERVICE_DIR)/build/dist/conf/localconfig.xml $@
-	cp $(SERVICE_DIR)/build/dist/conf/log4j.properties $@/log4j.properties.in
+	cp $(SERVICE_DIR)/$(ANT_BUILD_DIR)/dist/conf/localconfig.xml $@
+	cp $(SERVICE_DIR)/$(ANT_BUILD_DIR)/dist/conf/log4j.properties $@/log4j.properties.in
 	cp $(PACKAGE_CONF_DIR)/Conf/zmssl.cnf.in $@
 	cp $(SERVICE_DIR)/conf/datasource.xml $@
 	cp $(SERVICE_DIR)/conf/amavisd.conf.in $@
@@ -293,13 +293,13 @@ $(CORE_DEST_DIR)/conf: $(WEBAPP_DIR)/service.war
 	cp $(SERVICE_DIR)/conf/zmconfigd/smtpd_sender_restrictions.cf $@/zmconfigd/smtpd_sender_restrictions.cf
 	cp $(SERVICE_DIR)/conf/zmconfigd/smtpd_sender_login_maps.cf $@/zmconfigd/smtpd_sender_login_maps.cf
 	cp -Rf $(SERVICE_DIR)/conf/externaldirsync $@/externaldirsync
-	cp -Rf $(SERVICE_DIR)/build/dist/conf/rights $@/rights
+	cp -Rf $(SERVICE_DIR)/$(ANT_BUILD_DIR)/dist/conf/rights $@/rights
 	rm -f $@/rights/zimbra-rights-domainadmin.xml-template
-	cp -Rf $(SERVICE_DIR)/build/dist/conf/msgs $@/msgs
+	cp -Rf $(SERVICE_DIR)/$(ANT_BUILD_DIR)/dist/conf/msgs $@/msgs
 	mkdir -p $@/attrs
-	cp -f $(SERVICE_DIR)/build/dist/conf/attrs/* $@/attrs
+	cp -f $(SERVICE_DIR)/$(ANT_BUILD_DIR)/dist/conf/attrs/* $@/attrs
 
-$(CORE_DEST_DIR)/libexec: $(LAUNCHER_DIR)/build/zmmailboxdmgr
+$(CORE_DEST_DIR)/libexec: $(LAUNCHER_DIR)/$(ANT_BUILD_DIR)/zmmailboxdmgr
 	@echo "*** Installing libexec"
 	mkdir -p $@/installer/util/modules
 	mkdir -p $@/installer/bin
@@ -323,8 +323,8 @@ $(CORE_DEST_DIR)/libexec: $(LAUNCHER_DIR)/build/zmmailboxdmgr
 	cp -f $(PACKAGE_CONF_DIR)/Install/postinstall.pm $@/postinstall.pm
 	cp -f $(PACKAGE_CONF_DIR)/Install/preinstall.pm $@/preinstall.pm
 	cp -f $(PACKAGE_CONF_DIR)/Install/Util/addUser.sh $@/addUser.sh
-	cp -f $(LAUNCHER_DIR)/build/zmmailboxdmgr $@
-	cp -f $(LAUNCHER_DIR)/build/zmmailboxdmgr.unrestricted $@
+	cp -f $(LAUNCHER_DIR)/$(ANT_BUILD_DIR)/zmmailboxdmgr $@
+	cp -f $(LAUNCHER_DIR)/$(ANT_BUILD_DIR)/zmmailboxdmgr.unrestricted $@
 	cp $(SERVICE_DIR)/src/libexec/* $@
 	cp $@/swatch $@/logswatch
 	cp $@/swatch $@/auditswatch
@@ -333,7 +333,7 @@ $(CORE_DEST_DIR)/libexec: $(LAUNCHER_DIR)/build/zmmailboxdmgr
 $(CORE_DEST_DIR)/bin:
 	@echo "*** Installing bin"
 	mkdir -p $@
-	cp -R $(SERVICE_DIR)/build/dist/bin/[a-z]* $@
+	cp -R $(SERVICE_DIR)/$(ANT_BUILD_DIR)/dist/bin/[a-z]* $@
 	rm -f $(CORE_DEST_DIR)/bin/zmtransserver.bat
 	rm -rf $(CORE_DEST_DIR)/bin/zmexternaldirsync
 	cp $(ZIMBRA_BIN_DIR)/zmswatchctl $@
