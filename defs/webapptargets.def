@@ -22,7 +22,7 @@ $(WEBAPP_DIR)/service.war: $(WEBAPP_DIR) $(WEBAPP_STAGE_DIR)/service/service.war
 	(cd $(WEBAPP_DIR)/service; jar xf $(WEBAPP_STAGE_DIR)/service/service.war)
 
 $(SERVICE_DIR)/$(WEBAPP_BUILD_DIR)/service.war:
-	(cd $(SERVICE_DIR); $(ANT) $(ANT_DEBUG) \
+	(cd $(SERVICE_DIR); $(ANT) $(ANT_DEBUG) $(ANT_TEST) \
 		-Dzimbra.buildinfo.platform=$(BUILD_PLATFORM) \
 		-Dis-production=1 \
 		-Dzimbra.buildinfo.version=$(SOURCE_TAG) \
@@ -89,7 +89,7 @@ $(WEBAPP_DIR)/zimbraAdmin.war: $(WEBAPP_DIR) $(WEBAPP_STAGE_DIR)/admin/zimbraAdm
 #
 
 $(CONSOLE_DIR)/$(WEBAPP_BUILD_DIR)/zimbraAdmin.war:
-	(cd $(CONSOLE_DIR); $(ANT) $(ANT_DEBUG) \
+	(cd $(CONSOLE_DIR); $(ANT) $(ANT_DEBUG) $(ANT_TEST) \
 		-Dzimbra.buildinfo.platform=$(BUILD_PLATFORM) \
 		-Dis-production=1 \
 		-Dzimbra.buildinfo.version=$(SOURCE_TAG) \
@@ -124,7 +124,7 @@ $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/work: $(CONSOLE_DIR)/$(WEBAPP_BUILD_DIR)/zimbr
 	cp -rf $(CONSOLE_DIR)/build/dist/$(MAILBOXD_SERVER)/work/* $@
 
 $(CONSOLE_DIR)/$(WEBAPP_BUILD_DIR)/zimbra.war:  $(TAGLIB_DIR)/build/zimbrataglib.jar
-	(cd $(CONSOLE_DIR); $(ANT) $(ANT_DEBUG) \
+	(cd $(CONSOLE_DIR); $(ANT) $(ANT_DEBUG) $(ANT_TEST) \
 		-Dzimbra.buildinfo.platform=$(BUILD_PLATFORM) \
 		-Dis-production=1 \
 		-Dzimbra.buildinfo.version=$(SOURCE_TAG) \
@@ -142,7 +142,7 @@ $(WEBAPP_STAGE_DIR)/zimbra/zimbra.war: $(CONSOLE_DIR)/$(WEBAPP_BUILD_DIR)/zimbra
 	@($(CP) $(CONSOLE_DIR)/build/web.xml $(@D)/web.xml)
 
 $(TAGLIB_DIR)/build/zimbrataglib.jar:
-	(cd $(TAGLIB_DIR); $(ANT) $(ANT_DEBUG) \
+	(cd $(TAGLIB_DIR); $(ANT) $(ANT_DEBUG) $(ANT_TEST) \
 		-Dzimbra.buildinfo.platform=$(BUILD_PLATFORM) \
 		-Dis-production=1 \
 		-Dzimbra.buildinfo.version=$(SOURCE_TAG) \
