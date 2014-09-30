@@ -313,18 +313,18 @@ $(STORE_DEST_DIR)/zimlets-extra: $(ZIMLET_DIR)/$(ANT_BUILD_DIR)/dist/zimlets-ext
 #	mkdir -p $@
 #	cp $(ZIMLET_DIR)/$(ANT_BUILD_DIR)/dist/zimlets-extra/* $@
 
-$(STORE_DEST_DIR)/zimlets-admin-extra: $(POSIX_EXT_DIR)/$(ANT_BUILD_DIR)/zimlet/zimbra_posixaccount.zip $(SAMBA_EXT_DIR)/$(ANT_BUILD_DIR)/zimlet/zimbra_samba.zip
+$(STORE_DEST_DIR)/zimlets-admin-extra: $(POSIX_EXT_DIR)/$(ANT_BUILD_DIR)/zimlets/zimbra_posixaccount.zip $(SAMBA_EXT_DIR)/$(ANT_BUILD_DIR)/zimlets/zimbra_samba.zip
 	mkdir -p $@
-	cp $(POSIX_EXT_DIR)/$(ANT_BUILD_DIR)/zimlet/zimbra_posixaccount.zip $@
-	cp $(SAMBA_EXT_DIR)/$(ANT_BUILD_DIR)/zimlet/zimbra_samba.zip $@
+	cp $(POSIX_EXT_DIR)/$(ANT_BUILD_DIR)/zimlets/zimbra_posixaccount.zip $@
+	cp $(SAMBA_EXT_DIR)/$(ANT_BUILD_DIR)/zimlets/zimbra_samba.zip $@
 
 $(STORE_DEST_DIR)/zimlets: $(ZIMLET_DIR)/$(ANT_BUILD_DIR)/dist/zimlets/nofile
 	mkdir -p $@
 	cp $(ZIMLET_DIR)/$(ANT_BUILD_DIR)/dist/zimlets/* $@
 	cp $(ADMIN_EXT_DIR)/$(ANT_BUILD_DIR)/zimlets/* $@
-	cp $(ADMIN_VERSIONCHECK_DIR)/$(ANT_BUILD_DIR)/zimlet/* $@
+	cp $(ADMIN_VERSIONCHECK_DIR)/$(ANT_BUILD_DIR)/zimlets/* $@
 
-$(POSIX_EXT_DIR)/$(ANT_BUILD_DIR)/zimlet/zimbra_posixaccount.zip:
+$(POSIX_EXT_DIR)/$(ANT_BUILD_DIR)/zimlets/zimbra_posixaccount.zip:
 	(cd $(POSIX_EXT_DIR); $(ANT) $(ANT_DEBUG) $(ANT_TEST)\
 		-Dzimbra.buildinfo.platform=$(BUILD_PLATFORM) \
 		-Dis-production=1 \
@@ -333,7 +333,7 @@ $(POSIX_EXT_DIR)/$(ANT_BUILD_DIR)/zimlet/zimbra_posixaccount.zip:
 		-Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) \
 		-Dzimbra.buildinfo.host=$(HOST) package-zimlet ; )
 	
-$(SAMBA_EXT_DIR)/$(ANT_BUILD_DIR)/zimlet/zimbra_samba.zip:
+$(SAMBA_EXT_DIR)/$(ANT_BUILD_DIR)/zimlets/zimbra_samba.zip:
 	(cd $(SAMBA_EXT_DIR); $(ANT) $(ANT_DEBUG) $(ANT_TEST)\
 		-Dzimbra.buildinfo.platform=$(BUILD_PLATFORM) \
 		-Dis-production=1 \
