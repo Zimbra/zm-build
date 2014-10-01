@@ -66,6 +66,16 @@ if ($platform =~ /MACOSX/ && $platform ne "MACOSXx86_10.6" && $platform ne "MACO
   }
 }
 
+my $filename="/opt/zimbra/conf/localconfig.xml";
+my $uid = (stat $filename)[4];
+my $user = (getpwuid $uid)[0];
+
+if ($user ne "zimbra") {
+    progress ("\n\nERROR\n\n");
+    progress ("/opt/zimbra/conf/localconfig.xml is not owned by zimbra\n");
+    progress ("This will cause installation failure.\n");
+    exit (1);
+}
 
 use preinstall;
 use postinstall;
