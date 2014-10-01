@@ -471,7 +471,7 @@ $(STORE_DEST_DIR)/lib/ext/clamscanner/clamscanner.jar: $(STORE_DEST_DIR)/lib/ext
 $(STORE_DEST_DIR)/lib/ext/clamscanner:
 	mkdir -p $@
 
-$(CLAMSCANNER_DIR)/$(ANT_BUILD_DIR)/clamscanner.jar:
+$(CLAMSCANNER_DIR)/$(MAVEN_TARGET_DIR)/clamscanner.jar:
 	(cd $(CLAMSCANNER_DIR); $(MAVEN) $(SKIP_TESTS)\
 		-Dzimbra.buildinfo.platform=$(BUILD_PLATFORM) \
 		-Dis-production=1 \
