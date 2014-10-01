@@ -67,6 +67,7 @@ ifeq ($(PERL), )
 endif
 
 ANT		?= $(shell which ant)
+MAVEN		?= $(shell which mvn)
 CP    ?= $(shell which cp)
 MKDIR ?= $(shell which mkdir)
 CHMOD ?= $(shell which chmod)
