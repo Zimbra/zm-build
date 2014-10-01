@@ -82,7 +82,7 @@ ifeq ($(ANT), )
 endif
 
 ANT_DEBUG	?= -Ddebug=false
-ANT_TEST	?= -DskipTests=true
+SKIP_TESTS	?= -DskipTests=true
 ANT_BUILD_DIR	:= build
 MAVEN_TARGET_DIR	:= target
 
