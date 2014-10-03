@@ -1169,6 +1169,12 @@
   <bug>95277</bug>
   <package name="zimbra-core">
       <file>
+        <source>ZimbraBuild/corebuild/opt/zimbra/lib/jars/zimbracommon.jar</source>
+        <target>/opt/zimbra/jetty/common/lib/zimbracommon.jar</target>
+        <target>/opt/zimbra/lib/jars/zimbracommon.jar</target>
+        <perms owner="root" mode="444"/>
+      </file>
+      <file>
         <source>ZimbraBuild/corebuild/opt/zimbra/conf/zmlogrotate</source>
         <target>/opt/zimbra/conf/zmlogrotate</target>
         <perms owner="zimbra" mode="644"/>
@@ -1322,12 +1328,6 @@
         <target>/opt/zimbra/jetty/webapps/service/WEB-INF/lib/zimbrastore.jar</target>
         <target>/opt/zimbra/jetty/webapps/zimbra/WEB-INF/lib/zimbrastore.jar</target>
         <target>/opt/zimbra/jetty/webapps/zimbraAdmin/WEB-INF/lib/zimbrastore.jar</target>
-        <perms owner="root" mode="444"/>
-      </file>
-      <file>
-        <source>ZimbraBuild/corebuild/opt/zimbra/lib/jars/zimbracommon.jar</source>
-        <target>/opt/zimbra/jetty/common/lib/zimbracommon.jar</target>
-        <target>/opt/zimbra/lib/jars/zimbracommon.jar</target>
         <perms owner="root" mode="444"/>
       </file>
       <file>
