@@ -1330,6 +1330,11 @@
         <perms owner="root" mode="444"/>
       </file>
       <file>
+        <source>ZimbraBuild/corebuild/opt/zimbra/lib/jars/zimbracommon.jar</source>
+	<target>/opt/zimbra/jetty/common/lib/zimbracommon.jar</target>
+        <perms owner="root" mode="444"/>
+      </file>
+      <file>
         <source>ZimbraBuild/storebuild/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/service/WEB-INF/lib/zimbrataglib.jar</source>
         <target>/opt/zimbra/jetty/webapps/service/WEB-INF/lib/zimbrataglib.jar</target>
         <perms owner="zimbra" mode="644"/>
