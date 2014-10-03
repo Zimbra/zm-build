@@ -19,7 +19,6 @@ zcs-$(SOURCE_TAG)-src.tgz: $(PACKAGE_DIR)
 		--exclude ZimbraAppliance \
 		--exclude ZimbraBackup \
 		--exclude ZimbraBuild/$(ARCH) \
-		--exclude ZimbraCluster \
 		--exclude ZimbraCustomerServices \
 		--exclude ZimbraHSM \
 		--exclude ZimbraIM \

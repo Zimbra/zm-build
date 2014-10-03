@@ -169,12 +169,6 @@ checkPackages() {
 		findLatestPackage $i
 		if [ -f "$file" ]; then
 
-      # only make zimbra-cluster available on supported OS's 
-      echo $PLATFORM | egrep -q "RHEL|CentOS"
-      if [ $? != 0 -a $i = "zimbra-cluster" ]; then
-        continue
-      fi
-
       if [ x"$PACKAGEVERIFY" != "x" ]; then
         `$PACKAGEVERIFY $file > /dev/null 2>&1`
         if [ $? = 0 ]; then

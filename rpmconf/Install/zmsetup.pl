@@ -103,7 +103,6 @@ my @packageList = (
   "zimbra-memcached",
   "zimbra-proxy",
   "zimbra-archiving",
-  "zimbra-cluster",
 );
 
 my %packageServiceMap = (
@@ -1481,13 +1480,6 @@ sub setDefaults {
   $config{CREATEDOMAIN} = $config{HOSTNAME};
   $config{DOCREATEADMIN} = "no";
 
-  if (isEnabled("zimbra-cluster")) {
-    progress  "setting defaults for zimbra-cluster.\n" if $options{d};
-    $config{zimbraClusterType} = "RedHat"; 
-  } else {
-    $config{zimbraClusterType} = "none";
-  }
-
   if (isEnabled("zimbra-dnscache")) {
     my @dnsMasters;
     my @resolv;
@@ -2122,17 +2114,6 @@ sub askFileName {
     if ($v ne "" && -f $v) {return $v;}
     print "A non-blank answer is required\n" if ($v eq "");;
     print "$v must exist and be readable\n" if (!-f $v && $v ne "");
-  }
-}
-
-sub setClusterType {
-  while (1) {
-    my $m = askNonBlank("Cluster Type:", $config{zimbraClusterType});
-    if ($m eq "RedHat" || $m eq "Veritas" || $m eq "none" ) {
-      $config{zimbraClusterType} = $m;
-      return;
-    }
-    print "Supported cluster types are RedHat, Veritas or none\n";
   }
 }
 
@@ -3481,8 +3462,6 @@ sub createPackageMenu {
     return createSnmpMenu($package);
   } elsif ($package eq "zimbra-store") {
     return createStoreMenu($package);
-  } elsif ($package eq "zimbra-cluster") {
-    return createClusterMenu($package);
   } elsif ($package eq "zimbra-proxy") {
     return createProxyMenu($package)
   } elsif ($package eq "zimbra-dnscache") {
@@ -3737,29 +3716,6 @@ sub createArchivingMenu {
   $$lm{createsub} = \&createArchivingMenu;
   $$lm{createarg} = $package;
   my $i = 2;
-  return $lm;
-}
-
-
-sub createClusterMenu {
-  my $package = shift;
-  my $lm = genPackageMenu($package);
-
-  $$lm{title} = "Cluster configuration";
-
-  $$lm{createsub} = \&createClusterMenu;
-  $$lm{createarg} = $package;
-
-  my $i = 2;
-  if (isEnabled($package)) {
-    $$lm{menuitems}{$i} = { 
-      "prompt" => "Cluster type:", 
-      "var" => \$config{zimbraClusterType}, 
-      "callback" => \&setClusterType,
-      };
-    $i++;
-  }
-
   return $lm;
 }
 
@@ -6162,16 +6118,12 @@ sub configSetProxyPrefs {
    }
 }
 
-sub configSetCluster {
-  setLdapGlobalConfig("zimbraClusterType", $config{zimbraClusterType});
-}
-
 sub removeNetworkComponents {
     my $components = getLdapConfigValue("zimbraComponentAvailable"); 
     my @zmprov_args = ();
     foreach my $component (split(/\n/,$components)) {
       push(@zmprov_args, ('-zimbraComponentAvailable', $component))
-        if ($component =~ /HSM|cluster|convertd|archiving|hotbackup/);
+        if ($component =~ /HSM|convertd|archiving|hotbackup/);
     
       if ($component =~ /convertd/) {
         my $rc = 0;
@@ -6225,7 +6177,7 @@ sub removeNetworkComponents {
       my $rc = setLdapGlobalConfig( @zmprov_args );
       progress (($rc == 0) ? "done.\n" : "failed. This may impact system functionality.\n");
     }
-    foreach my $zimlet (qw(com_zimbra_backuprestore com_zimbra_cluster com_zimbra_convertd com_zimbra_domainadmin com_zimbra_hsm com_zimbra_license com_zimbra_mobilesync zimbra_xmbxsearch com_zimbra_xmbxsearch com_zimbra_smime_cert_admin com_zimbra_delegatedadmin com_zimbra_smime)) {
+    foreach my $zimlet (qw(com_zimbra_backuprestore com_zimbra_convertd com_zimbra_domainadmin com_zimbra_hsm com_zimbra_license com_zimbra_mobilesync zimbra_xmbxsearch com_zimbra_xmbxsearch com_zimbra_smime_cert_admin com_zimbra_delegatedadmin com_zimbra_smime)) {
       system("rm -rf $config{mailboxd_directory}/webapps/service/zimlet/$zimlet")
         if (-d "$config{mailboxd_directory}/webapps/service/zimlet/$zimlet" );
       system("rm -rf /opt/zimbra/zimlets-deployed/$zimlet")
@@ -6295,7 +6247,7 @@ sub removeNetworkZimlets {
   } else {
     detail("ldap bind done for $ldap_dn");
     progress("Checking for network zimlets in LDAP...");
-    $result = $ldap->search(base => $ldap_base, scope => 'one', filter => "(|(cn=com_zimbra_backuprestore)(cn=com_zimbra_domainadmin)(cn=com_zimbra_mobilesync)(cn=com_zimbra_cluster)(cn=com_zimbra_hsm)(cn=com_zimbra_convertd)(cn=com_zimbra_license)(cn=zimbra_xmbxsearch)(cn=com_zimbra_xmbxsearch)(cn=com_zimbra_smime)(cn=com_zimbra_smime_cert_admin))", attrs => ['cn']);
+    $result = $ldap->search(base => $ldap_base, scope => 'one', filter => "(|(cn=com_zimbra_backuprestore)(cn=com_zimbra_domainadmin)(cn=com_zimbra_mobilesync)(cn=com_zimbra_hsm)(cn=com_zimbra_convertd)(cn=com_zimbra_license)(cn=zimbra_xmbxsearch)(cn=com_zimbra_xmbxsearch)(cn=com_zimbra_smime)(cn=com_zimbra_smime_cert_admin))", attrs => ['cn']);
     progress (($result->code()) ? "failed.\n" : "done.\n");
     return $result if ($result->code());
 
@@ -6334,14 +6286,11 @@ sub zimletCleanup {
     return 1;
   } else {
     detail("ldap bind done for $ldap_dn");
-    $result = $ldap->search(base => $ldap_base, scope => 'one', filter => "(|(cn=convertd)(cn=cluster)(cn=hsm)(cn=hotbackup)(cn=zimbra_cert_manager)(cn=com_zimbra_search)(cn=zimbra_xmbxsearch)(cn=com_zimbra_domainadmin)(cn=com_zimbra_cluster)(cn=com_zimbra_tinymce)(cn=com_zimbra_tasksreminder)(cn=com_zimbra_linkedin)(cn=com_zimbra_social)(cn=com_zimbra_dnd))", attrs => ['cn']);
+    $result = $ldap->search(base => $ldap_base, scope => 'one', filter => "(|(cn=convertd)(cn=hsm)(cn=hotbackup)(cn=zimbra_cert_manager)(cn=com_zimbra_search)(cn=zimbra_xmbxsearch)(cn=com_zimbra_domainadmin)(cn=com_zimbra_tinymce)(cn=com_zimbra_tasksreminder)(cn=com_zimbra_linkedin)(cn=com_zimbra_social)(cn=com_zimbra_dnd))", attrs => ['cn']);
     return $result if ($result->code());
     detail("Processing ldap search results");
     foreach my $entry ($result->all_entries) {
       my $zimlet = $entry->get_value('cn');
-      if ($zimlet eq "com_zimbra_cluster" && isInstalled("zimbra-cluster")) {
-        next;
-      }
       if ( $zimlet ne "" ) {
         detail("Removing $zimlet");
         runAsZimbra("/opt/zimbra/bin/zmzimletctl -l undeploy $zimlet");
@@ -6413,7 +6362,6 @@ sub configInstallZimlets {
     foreach my $zimletfile (@zimlets) {
       my $zimlet = $zimletfile;
       $zimlet =~ s/\.zip$//;
-      next if (! isInstalled("zimbra-cluster") && $zimlet eq "com_zimbra_cluster");
       progress  ("\t$zimlet...");
       my $rc = runAsZimbra ("/opt/zimbra/bin/zmzimletctl -l deploy zimlets-network/$zimletfile");
       progress (($rc == 0) ? "done.\n" : "failed. This may impact system functionality.\n");
@@ -6786,7 +6734,6 @@ sub configSetEnabledServices {
       next;
     }
     if ($p eq "zimbra-apache") {next;}
-    if ($p eq "zimbra-cluster") {next;}
     if ($p eq "zimbra-archiving") {next;}
     $p =~ s/zimbra-//;
     if ($p eq "store") {$p = "mailbox";}
@@ -6799,7 +6746,6 @@ sub configSetEnabledServices {
       next;
     }
     if ($p eq "zimbra-apache") {next;}
-    if ($p eq "zimbra-cluster") {next;}
     if ($p eq "zimbra-archiving") {next;}
     if ($enabledPackages{$p} eq "Enabled") {
       $p =~ s/zimbra-//;
@@ -6940,9 +6886,6 @@ sub applyConfig {
 
   if( (!$newinstall) && isInstalled("zimbra-ldap") ){
     setProxyBits();
-  }
-  if (isInstalled("zimbra-cluster")) {
-    configSetCluster();
   }
 
   configInitMta();
@@ -7168,11 +7111,6 @@ sub setupCrontab {
     qx($SU "/opt/zimbra/bin/zmschedulebackup -D" >> $logfile 2>&1);
   }
 
-  if (isEnabled("zimbra-cluster")) {
-    mkdir("/opt/zimbra/conf/cron");
-    runAsZimbra("mkdir -p /opt/zimbra/conf/cron");
-    runAsZimbra("crontab -l > /opt/zimbra/conf/cron/crontab");
-  }
   progress ("done.\n");
   configLog("setupCrontab");
 }
