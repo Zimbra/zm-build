@@ -26,7 +26,7 @@ displayLicense() {
   fi
   echo ""
   echo ""
-  if [ x$DEFAULTFILE = "x" -o x$CLUSTERUPGRADE = "xyes" ]; then
+  if [ x$DEFAULTFILE = "x" ]; then
     askYN "Do you agree with the terms of the software license agreement?" "N"
     if [ $response != "yes" ]; then
       exit
@@ -42,7 +42,7 @@ displayThirdPartyLicenses() {
     cat $MYDIR/docs/keyview_eula.txt
     echo ""
     echo ""
-    if [ x$DEFAULTFILE = "x" -o x$CLUSTERUPGRADE = "xyes" ]; then
+    if [ x$DEFAULTFILE = "x" ]; then
       askYN "Do you agree with the terms of the software license agreement?" "N"
       if [ $response != "yes" ]; then
         exit
@@ -55,7 +55,7 @@ displayThirdPartyLicenses() {
   #  cat $MYDIR/docs/oracle_jdk_eula.txt
   #  echo ""
   #  echo ""
-  #  if [ x$DEFAULTFILE = "x" -o x$CLUSTERUPGRADE = "xyes" ]; then
+  #  if [ x$DEFAULTFILE = "x" ]; then
   #    askYN "Do you agree with the terms of the software license agreement?" "N"
   #    if [ $response != "yes" ]; then
   #      exit
@@ -298,10 +298,6 @@ checkMySQLConfig() {
 
 checkDatabaseIntegrity() {
 
-  if [ x"$CLUSTERTYPE" = "xstandby" ]; then
-    return
-  fi
-
 	isInstalled zimbra-store
 	if [ x$PKGINSTALLED != "x" ]; then
 		if [ -x "bin/zmdbintegrityreport" -a -x "/opt/zimbra/bin/mysqladmin" ]; then
@@ -353,10 +349,6 @@ checkDatabaseIntegrity() {
 
 checkRecentBackup() {
 
-  if [ x"$CLUSTERTYPE" = "xstandby" ]; then
-    return
-  fi
-
   isInstalled zimbra-store
   if [ x$PKGINSTALLED != "x" ]; then
     if [ -x "bin/checkValidBackup" ]; then
@@ -367,7 +359,7 @@ checkRecentBackup() {
         echo "24hrs.  It is recommended to perform a full system backup and"
         echo "copy it to a safe location prior to performing an upgrade."
         echo ""
-        if [ x$DEFAULTFILE = "x" -o x$CLUSTERUPGRADE = "xyes" ]; then
+        if [ x$DEFAULTFILE = "x" ]; then
           while :; do
             askYN "Do you wish to continue without a backup?" "N"
             if [ $response = "no" ]; then
@@ -1021,9 +1013,6 @@ verifyLicenseAvailable() {
       licensedUsers=`cat /opt/zimbra/conf/ZCSLicense-Trial.xml | grep AccountsLimit | head -1  | awk '{print $3}' | awk -F= '{print $2}' | awk -F\" '{print $2}'`
       licenseValidUntil=`cat /opt/zimbra/conf/ZCSLicense-Trial.xml | awk -F\" '{ if ($2 ~ /^ValidUntil$/) {print $4 } }'`
       licenseType=`cat /opt/zimbra/conf/ZCSLicense-Trial.xml | awk -F\" '{ if ($2 ~ /^InstallType$/) {print $4 } }'`
-    elif [ x"$CLUSTERTYPE" = "xstandby" ]; then
-      echo "Not checking for license on cluster stand-by node."
-      return
     else
       echo "ERROR: The ZCS Network upgrade requires a license to be located in"
       echo "/opt/zimbra/conf/ZCSLicense.xml or a license previously installed."
@@ -1371,8 +1360,6 @@ EOF
       echo "yet there appears to be a ZCS directory structure in /opt/zimbra."
       askYN "Would you like to delete /opt/zimbra before installing?" "N"
       REMOVE="$response"
-    elif [ x$CLUSTERTYPE != "x" ]; then
-      REMOVE="no"
     else 
       REMOVE="yes"
     fi
@@ -2017,8 +2004,6 @@ getInstallPackages() {
   STORE_SELECTED="no"
   MTA_SELECTED="no"
   
-  CLUSTER_SELECTED="no"
-
   for i in $AVAILABLE_PACKAGES; do
     # Reset the response before processing the next package.
     response="no"
@@ -2061,22 +2046,9 @@ getInstallPackages() {
           STORE_SELECTED="yes"
         elif [ $i = "zimbra-mta" ]; then
           MTA_SELECTED="yes"
-        elif [ $i = "zimbra-cluster" ]; then
-          CLUSTER_SELECTED="yes"
         fi
         continue
       fi
-    fi
-
-    # Only prompt for cluster on supported platforms
-    echo $PLATFORM | egrep -q "RHEL|CentOS"
-    if [ $? != 0 -a $i = "zimbra-cluster" ]; then
-      continue
-    fi
-
-    # Cluster is only available clustertype is defined 
-    if [ x"$CLUSTERTYPE" = "x" -a "$i" = "zimbra-cluster" ]; then
-      continue
     fi
 
     if [ $UPGRADE = "yes" ]; then
@@ -2126,8 +2098,6 @@ getInstallPackages() {
         else
           askYN "Install $i" "N"
         fi
-      elif [ $i = "zimbra-cluster" -a "x$CLUSTERTYPE" = "x" ]; then
-        askYN "Install $i" "N"
       else
         askYN "Install $i" "Y"
       fi
@@ -2140,8 +2110,6 @@ getInstallPackages() {
         STORE_SELECTED="yes"
       elif [ $i = "zimbra-apache" ]; then
         APACHE_SELECTED="yes"
-      elif [ $i = "zimbra-cluster" ]; then
-        CLUSTER_SELECTED="yes"
       elif [ $i = "zimbra-mta" ]; then
         MTA_SELECTED="yes"
       fi
@@ -2176,17 +2144,6 @@ getInstallPackages() {
         APACHE_SELECTED="yes"
         INSTALL_PACKAGES="$INSTALL_PACKAGES zimbra-apache"
       fi
-
-      # don't force logger to be installed especially on N+M clusters
-      #if [ $i = "zimbra-store" -a $LOGGER_SELECTED = "no" -a $CLUSTER_SELECTED = "yes" ]; then
-      #  LOGGER_SELECTED="yes"
-      #  INSTALL_PACKAGES="$INSTALL_PACKAGES zimbra-logger"
-      #fi
-
-      #if [ $i = "zimbra-cluster" -a $STORE_SELECTED = "yes" -a $LOGGER_SELECTED = "no" ]; then
-      #  LOGGER_SELECTED="yes"
-      #  INSTALL_PACKAGES="$INSTALL_PACKAGES zimbra-logger"
-      #fi
 
       INSTALL_PACKAGES="$INSTALL_PACKAGES $i"
     fi

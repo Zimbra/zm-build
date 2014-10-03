@@ -37,7 +37,6 @@ SOFTWAREONLY="no"
 usage() {
   echo "$0 [-r <dir> -l <file> -a <file> -u -s -c type -x -h] [defaultsfile]"
   echo ""
-  echo "-c|--cluster type       Cluster install type active|standby."
   echo "-h|--help               Usage"
   echo "-l|--license <file>     License file to install."
   echo "-a|--activation <file>  License activation file to install. [Upgrades only]"
@@ -93,10 +92,6 @@ while [ $# -ne 0 ]; do
 		-s|--softwareonly) 
       SOFTWAREONLY="yes"
 		  ;;
-		-c|--cluster)
-      shift
-      CLUSTERTYPE=$1
-		  ;;
 		-x|--skipspacecheck) 
       SKIPSPACECHECK="yes"
       ;;
@@ -126,23 +121,6 @@ done
 . ./util/globals.sh
 
 getPlatformVars
-
-isInstalled zimbra-cluster
-if [ x$PKGINSTALLED != "x" ]; then
-  echo "Cluster is not supported"
-  exit 0
-fi
-
-if [ x"$CLUSTERTYPE" != "x" -a -f "./util/clusterfunc.sh" ]; then
-  echo "Cluster is not supported"
-  exit 0
-fi
-
-if [ x"$CLUSTERTYPE" != "x" ]; then
-  echo "Cluster is not supported"
-  exit 0
-  clusterPreInstall
-fi
 
 mkdir -p $SAVEDIR
 chown zimbra:zimbra $SAVEDIR 2> /dev/null
@@ -324,13 +302,6 @@ if [ $SOFTWAREONLY = "yes" ]; then
 	echo "Operations logged to $LOGFILE"
 	echo ""
 
-  if [ x"$CLUSTERTYPE" = "xstandby" ]; then
-    clusterStandbyPostInstall
-  else
-	  echo "Run /opt/zimbra/libexec/zmsetup.pl to configure the system"
-	  echo ""
-  fi
-
 	exit 0
 fi
 
@@ -345,9 +316,4 @@ fi
 RC=$?
 if [ $RC -ne 0 ]; then
 	exit $RC
-fi
-
-# Cluster postinstall for active node. 
-if [ x"$CLUSTERTYPE" = "xactive" ]; then
-  clusterActivePostInstall
 fi
