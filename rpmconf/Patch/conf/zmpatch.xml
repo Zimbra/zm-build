@@ -1179,6 +1179,11 @@
         <perms owner="root" mode="755"/>
       </file>
       <file>
+        <source>ZimbraBuild/corebuild/opt/zimbra/lib/jars/zimbrastore.jar</source>
+        <target>/opt/zimbra/lib/jars/zimbrastore.jar</target>
+        <perms owner="root" mode="444"/>
+      </file>
+      <file>
         <source>ZimbraBuild/corebuild/opt/zimbra/conf/nginx/templates/nginx.conf.web.https.mode-redirect.template</source>
         <target>/opt/zimbra/conf/nginx/templates/nginx.conf.web.https.mode-redirect.template</target>
         <perms owner="zimbra" mode="644"/>
@@ -1317,7 +1322,6 @@
         <target>/opt/zimbra/jetty/webapps/service/WEB-INF/lib/zimbrastore.jar</target>
         <target>/opt/zimbra/jetty/webapps/zimbra/WEB-INF/lib/zimbrastore.jar</target>
         <target>/opt/zimbra/jetty/webapps/zimbraAdmin/WEB-INF/lib/zimbrastore.jar</target>
-        <target>/opt/zimbra/lib/jars/zimbrastore.jar</target>
         <perms owner="root" mode="444"/>
       </file>
       <file>
