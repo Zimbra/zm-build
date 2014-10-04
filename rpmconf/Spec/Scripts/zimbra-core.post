@@ -37,8 +37,8 @@ BIT=`echo $PLAT | awk -F_ '{print $2}'`
 #Symlinks
 rm -f /opt/zimbra/mariadb
 rm -f /opt/zimbra/mysql
-ln -s /opt/zimbra/mariadb-10.0.12 /opt/zimbra/mariadb
-ln -s /opt/zimbra/mariadb-10.0.12 /opt/zimbra/mysql
+ln -s /opt/zimbra/mariadb-10.0.14 /opt/zimbra/mariadb
+ln -s /opt/zimbra/mariadb-10.0.14 /opt/zimbra/mysql
 
 rm -f /opt/zimbra/bdb
 ln -s /opt/zimbra/bdb-5.2.36 /opt/zimbra/bdb
