@@ -5191,7 +5191,7 @@ sub configCASetup {
   # we are going to download a new CA or otherwise create one so we need to regenerate the self signed cert.
   $needNewCert = "-new" if (! -d "/opt/zimbra/ssl/zimbra/ca");
 
-  my $rc = runAsZimbra("/opt/zimbra/bin/zmcertmgr createca $needNewCA");
+  my $rc = runAsRoot("/opt/zimbra/bin/zmcertmgr createca $needNewCA");
   if ($rc != 0) {
     progress ( "failed.\n" );
     exit 1;
@@ -5200,7 +5200,7 @@ sub configCASetup {
   }
 
   progress ( "Deploying CA to /opt/zimbra/conf/ca ..." );
-  my $rc = runAsZimbra("/opt/zimbra/bin/zmcertmgr deployca -localonly");
+  my $rc = runAsRoot("/opt/zimbra/bin/zmcertmgr deployca -localonly");
   if ($rc != 0) {
     progress ( "failed.\n" );
     exit 1;
@@ -5428,7 +5428,7 @@ sub configSaveCA {
     return 0;
   }
   progress ( "Saving CA in ldap ..." );
-  my $rc = runAsZimbra("/opt/zimbra/bin/zmcertmgr deployca");
+  my $rc = runAsRoot("/opt/zimbra/bin/zmcertmgr deployca");
   if ($rc != 0) {
     progress ( "failed.\n" );
     exit 1;
@@ -5446,9 +5446,9 @@ sub configCreateCert {
   }
 
   if (!$newinstall) {
-    my $rc = runAsZimbra("/opt/zimbra/bin/zmcertmgr verifycrt comm > /dev/null 2>&1");
+    my $rc = runAsRoot("/opt/zimbra/bin/zmcertmgr verifycrt comm > /dev/null 2>&1");
     if ($rc != 0) {
-      $rc = runAsZimbra("/opt/zimbra/bin/zmcertmgr verifycrt self > /dev/null 2>&1");
+      $rc = runAsRoot("/opt/zimbra/bin/zmcertmgr verifycrt self > /dev/null 2>&1");
       if ($rc != 0) {
         progress("Warning: No valid SSL certificates were found.\n");
         progress("New self-signed certificates will be generated and installed.\n");
@@ -5470,7 +5470,7 @@ sub configCreateCert {
         qx(chmod 744 $config{mailboxd_directory}/etc);
       }
       progress ( "Creating SSL zimbra-store certificate..." );
-      $rc = runAsZimbra("/opt/zimbra/bin/zmcertmgr createcrt $needNewCert");
+      $rc = runAsRoot("/opt/zimbra/bin/zmcertmgr createcrt $needNewCert");
       if ($rc != 0) {
         progress ( "failed.\n" );
         exit 1;
@@ -5479,7 +5479,7 @@ sub configCreateCert {
       }
     } elsif ( $needNewCert ne "" && $ssl_cert_type eq "self") {
       progress ( "Creating new zimbra-store SSL certificate..." );
-      $rc = runAsZimbra("/opt/zimbra/bin/zmcertmgr createcrt $needNewCert");
+      $rc = runAsRoot("/opt/zimbra/bin/zmcertmgr createcrt $needNewCert");
       if ($rc != 0) {
         progress ( "failed.\n" );
         exit 1;
@@ -5492,7 +5492,7 @@ sub configCreateCert {
   if (isInstalled("zimbra-ldap")) {
     if ( !-f "/opt/zimbra/conf/slapd.crt" && !-f "/opt/zimbra/ssl/zimbra/server/server.crt") {
       progress ( "Creating zimbra-ldap SSL certificate..." );
-      $rc = runAsZimbra("/opt/zimbra/bin/zmcertmgr createcrt $needNewCert");
+      $rc = runAsRoot("/opt/zimbra/bin/zmcertmgr createcrt $needNewCert");
       if ($rc != 0) {
         progress ( "failed.\n" );
         exit 1;
@@ -5501,7 +5501,7 @@ sub configCreateCert {
       }
     } elsif ( $needNewCert ne "" && $ssl_cert_type eq "self") {
       progress ( "Creating new zimbra-ldap SSL certificate..." );
-      $rc = runAsZimbra("/opt/zimbra/bin/zmcertmgr createcrt $needNewCert");
+      $rc = runAsRoot("/opt/zimbra/bin/zmcertmgr createcrt $needNewCert");
       if ($rc != 0) {
         progress ( "failed.\n" );
         exit 1;
@@ -5514,7 +5514,7 @@ sub configCreateCert {
   if (isInstalled("zimbra-mta")) {
     if ( !-f "/opt/zimbra/conf/smtpd.crt" && !-f "/opt/zimbra/ssl/zimbra/server/server.crt") {
       progress ( "Creating zimbra-mta SSL certificate..." );
-      $rc = runAsZimbra("/opt/zimbra/bin/zmcertmgr createcrt $needNewCert");
+      $rc = runAsRoot("/opt/zimbra/bin/zmcertmgr createcrt $needNewCert");
       if ($rc != 0) {
         progress ( "failed.\n" );
         exit 1;
@@ -5523,7 +5523,7 @@ sub configCreateCert {
       }
     } elsif ( $needNewCert ne "" && $ssl_cert_type eq "self") {
       progress ( "Creating new zimbra-mta SSL certificate..." );
-      $rc = runAsZimbra("/opt/zimbra/bin/zmcertmgr createcrt $needNewCert");
+      $rc = runAsRoot("/opt/zimbra/bin/zmcertmgr createcrt $needNewCert");
       if ($rc != 0) {
         progress ( "failed.\n" );
         exit 1;
@@ -5536,7 +5536,7 @@ sub configCreateCert {
   if (isInstalled("zimbra-proxy")) {
     if ( !-f "/opt/zimbra/conf/nginx.crt" && !-f "/opt/zimbra/ssl/zimbra/server/server.crt") {
       progress ( "Creating zimbra-proxy SSL certificate..." );
-      $rc = runAsZimbra("/opt/zimbra/bin/zmcertmgr createcrt $needNewCert");
+      $rc = runAsRoot("/opt/zimbra/bin/zmcertmgr createcrt $needNewCert");
       if ($rc != 0) {
         progress ( "failed.\n" );
         exit 1;
@@ -5545,7 +5545,7 @@ sub configCreateCert {
       }
     } elsif ( $needNewCert ne "" && $ssl_cert_type eq "self") {
       progress ( "Creating new zimbra-proxy SSL certificate..." );
-      $rc = runAsZimbra("/opt/zimbra/bin/zmcertmgr createcrt $needNewCert");
+      $rc = runAsRoot("/opt/zimbra/bin/zmcertmgr createcrt $needNewCert");
       if ($rc != 0) {
         progress ( "failed.\n" );
         exit 1;
@@ -5565,7 +5565,7 @@ sub configSaveCert {
     return 0;
   }
   progress ( "Saving SSL Certificate in ldap ..." );
-  my $rc = runAsZimbra("/opt/zimbra/bin/zmcertmgr savecrt $ssl_cert_type");
+  my $rc = runAsRoot("/opt/zimbra/bin/zmcertmgr savecrt $ssl_cert_type");
   if ($rc != 0) {
     progress ( "failed.\n" );
     exit 1;
@@ -5586,7 +5586,7 @@ sub configInstallCert {
         if (! -f "$config{mailboxd_keystore}");
       detail("$needNewCert was ne \"\".")
         if ($needNewCert ne "");
-      $rc = runAsZimbra("/opt/zimbra/bin/zmcertmgr deploycrt $ssl_cert_type");
+      $rc = runAsRoot("/opt/zimbra/bin/zmcertmgr deploycrt $ssl_cert_type");
       if ($rc != 0) {
         progress ( "failed.\n" );
         exit 1;
@@ -5606,7 +5606,7 @@ sub configInstallCert {
     if (! (-f "/opt/zimbra/conf/smtpd.key" || 
       -f "/opt/zimbra/conf/smtpd.crt" ) || $needNewCert ne "")  {
       progress ("Installing MTA SSL certificates...");
-      $rc = runAsZimbra("/opt/zimbra/bin/zmcertmgr deploycrt $ssl_cert_type");
+      $rc = runAsRoot("/opt/zimbra/bin/zmcertmgr deploycrt $ssl_cert_type");
       if ($rc != 0) {
         progress ( "failed.\n" );
         exit 1;
@@ -5625,7 +5625,7 @@ sub configInstallCert {
     if (! (-f "/opt/zimbra/conf/slapd.key" || 
       -f "/opt/zimbra/conf/slapd.crt" ) || $needNewCert ne "") {
       progress ("Installing LDAP SSL certificate...");
-      $rc = runAsZimbra("/opt/zimbra/bin/zmcertmgr deploycrt $ssl_cert_type");
+      $rc = runAsRoot("/opt/zimbra/bin/zmcertmgr deploycrt $ssl_cert_type");
       if ($rc != 0) {
         progress ( "failed.\n" );
         exit 1;
@@ -5646,7 +5646,7 @@ sub configInstallCert {
     if (! (-f "/opt/zimbra/conf/nginx.key" || 
       -f "/opt/zimbra/conf/nginx.crt")  || $needNewCert ne "") {
       progress ("Installing Proxy SSL certificate...");
-      $rc = runAsZimbra("/opt/zimbra/bin/zmcertmgr deploycrt $ssl_cert_type");
+      $rc = runAsRoot("/opt/zimbra/bin/zmcertmgr deploycrt $ssl_cert_type");
       if ($rc != 0) {
         progress ( "failed.\n" );
         exit 1;
