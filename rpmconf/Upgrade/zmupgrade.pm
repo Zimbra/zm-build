@@ -2233,6 +2233,10 @@ sub upgrade850GA {
 sub upgrade860BETA1 {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
   main::progress("Updating from 8.6.0_BETA1\n");
+  my $ssl_default_digest = main::getLocalConfig("ssl_default_digest");
+  if ($ssl_default_digest eq "sha1") {
+      main::setLocalConfig("ssl_default_digest", "sha256");
+  }
   if (main::isInstalled("zimbra-snmp")) {
     my $val = main::getLocalConfig("snmp_trap_host");
     if ($val =~ /\@/) {
