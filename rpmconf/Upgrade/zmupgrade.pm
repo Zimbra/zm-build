@@ -146,6 +146,7 @@ my %updateFuncs = (
   "8.0.6_GA" => \&upgrade806GA,
   "8.0.7_GA" => \&upgrade807GA,
   "8.0.8_GA" => \&upgrade808GA,
+  "8.0.9_GA" => \&upgrade809GA,
   "8.5.0_BETA1" => \&upgrade850BETA1,
   "8.5.0_BETA2" => \&upgrade850BETA2,
   "8.5.0_BETA3" => \&upgrade850BETA3,
@@ -206,6 +207,7 @@ my @versionOrder = (
   "8.0.6_GA",
   "8.0.7_GA",
   "8.0.8_GA",
+  "8.0.9_GA",
   "8.5.0_BETA1",
   "8.5.0_BETA2",
   "8.5.0_BETA3",
@@ -369,6 +371,8 @@ sub upgrade {
     main::progress("This appears to be 8.0.7_GA\n");
   } elsif ($startVersion eq "8.0.8_GA") {
     main::progress("This appears to be 8.0.8_GA\n");
+  } elsif ($startVersion eq "8.0.9_GA") {
+    main::progress("This appears to be 8.0.9_GA\n");
   } elsif ($startVersion eq "8.5.0_BETA1") {
     main::progress("This appears to be 8.5.0_BETA1\n");
   } elsif ($startVersion eq "8.5.0_BETA2") {
@@ -2013,6 +2017,12 @@ sub upgrade808GA {
       main::setLdapServerConfig($hn, '+zimbraServiceEnabled', 'amavis');
     }
   }
+  return 0;
+}
+
+sub upgrade809GA {
+  my ($startBuild, $targetVersion, $targetBuild) = (@_);
+  main::progress("Updating from 8.0.9_GA\n");
   return 0;
 }
 
