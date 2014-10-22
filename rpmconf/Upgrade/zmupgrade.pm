@@ -131,6 +131,7 @@ my %updateFuncs = (
   "8.5.0_GA" => \&upgrade850GA,
   "8.5.1_GA" => \&upgrade851GA,
   "8.6.0_BETA1" => \&upgrade860BETA1,
+  "8.6.0_BETA2" => \&upgrade860BETA2,
   "9.0.0_BETA1" => \&upgrade900BETA1,
 );
 
@@ -176,6 +177,7 @@ my @versionOrder = (
   "8.5.0_GA",
   "8.5.1_GA",
   "8.6.0_BETA1",
+  "8.6.0_BETA2",
   "9.0.0_BETA1",
 );
 
@@ -315,6 +317,8 @@ sub upgrade {
       main::progress("This appears to be 8.5.1_GA\n");
   } elsif ($startVersion eq "8.6.0_BETA1") {
       main::progress("This appears to be 8.6.0_BETA1\n");
+  } elsif ($startVersion eq "8.6.0_BETA2") {
+      main::progress("This appears to be 8.6.0_BETA2\n");
   } elsif ($startVersion eq "9.0.0_BETA1") {
       main::progress("This appears to be 9.0.0_BETA1\n");
   } else {
@@ -2264,6 +2268,12 @@ sub upgrade860BETA1 {
       main::setLocalConfig("snmp_trap_host", "$val");
     }
   }
+  return 0;
+}
+
+sub upgrade860BETA2 {
+  my ($startBuild, $targetVersion, $targetBuild) = (@_);
+  main::progress("Updating from 8.6.0_BETA2\n");
   return 0;
 }
 
