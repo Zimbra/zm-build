@@ -2274,6 +2274,9 @@ sub upgrade860BETA1 {
 sub upgrade860BETA2 {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
   main::progress("Updating from 8.6.0_BETA2\n");
+  if (main::isInstalled("zimbra-ldap")) {
+      main::runAsZimbra("perl -I${scriptDir} ${scriptDir}/migrate20141022-AddTLSBits.pl");
+  }
   return 0;
 }
 
