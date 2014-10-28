@@ -2277,6 +2277,25 @@ sub upgrade860BETA2 {
   if (main::isInstalled("zimbra-ldap")) {
       main::runAsZimbra("perl -I${scriptDir} ${scriptDir}/migrate20141022-AddTLSBits.pl");
   }
+  if (main::isInstalled("zimbra-store")) {
+      my @zimbraHttpContextPathBasedThreadPoolBalancingFilterRules=qx($su "$ZMPROV gacf zimbraHttpContextPathBasedThreadPoolBalancingFilterRules");
+      foreach my $zimbraHttpContextPathBasedThreadPoolBalancingFilterRule (@zimbraHttpContextPathBasedThreadPoolBalancingFilterRules) {
+        chomp($zimbraHttpContextPathBasedThreadPoolBalancingFilterRule);
+        (my $filterKey, my $filterValue) = split(/:\s/,  $zimbraHttpContextPathBasedThreadPoolBalancingFilterRule);
+        if ($filterValue eq "/service:min=10;max=80%") {
+          main::runAsZimbra("$ZMPROV mcf -zimbraHttpContextPathBasedThreadPoolBalancingFilterRules $filterValue");
+          main::runAsZimbra("$ZMPROV mcf +zimbraHttpContextPathBasedThreadPoolBalancingFilterRules /service:max=80%");
+        }
+        elsif ($filterValue eq "/zimbra:min=10;max=15%") {
+          main::runAsZimbra("$ZMPROV mcf -zimbraHttpContextPathBasedThreadPoolBalancingFilterRules $filterValue");
+          main::runAsZimbra("$ZMPROV mcf +zimbraHttpContextPathBasedThreadPoolBalancingFilterRules /zimbra:max=15%");
+        }
+        elsif ($filterValue eq "/zimbraAdmin:min=10;max=5%") {
+          main::runAsZimbra("$ZMPROV mcf -zimbraHttpContextPathBasedThreadPoolBalancingFilterRules $filterValue");
+          main::runAsZimbra("$ZMPROV mcf +zimbraHttpContextPathBasedThreadPoolBalancingFilterRules /zimbraAdmin:max=5%");
+        }
+      }
+    }
   return 0;
 }
 
