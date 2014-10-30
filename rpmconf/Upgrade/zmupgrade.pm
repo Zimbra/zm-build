@@ -2060,44 +2060,6 @@ sub upgrade850BETA1 {
   if (main::isInstalled("zimbra-ldap")) {
     if ($isLdapMaster) {
       runLdapAttributeUpgrade("81385");
-      my $ldap_pass = qx($su "zmlocalconfig -s -m nokey ldap_root_password");
-      chomp($ldap_pass);
-      my $ldap;
-      unless($ldap = Net::LDAP->new('ldapi://%2fopt%2fzimbra%2fdata%2fldap%2fstate%2frun%2fldapi/')) {
-         main::progress("Unable to contact to ldapi: $!\n");
-      } else {
-        my $result = $ldap->bind("cn=config", password => $ldap_pass);
-        $result = $ldap->search(
-          base=> "cn=config,cn=zimbra",
-          filter=>"((objectClass=*)(zimbraDomainMandatoryMailSignatureText=*)",
-          scope => "base",
-          attrs => ['zimbraDomainMandatoryMailSignatureText', 'zimbraDomainMandatoryMailSignatureHTML'],
-        );
-        my $totalcount=$result->count;
-        if ($totalcount > 0) {
-          my $entry=$result->entry($totalcount-1);
-          my $text_disclaimer = $entry->get_value("zimbraDomainMandatoryMailSignatureText");
-          my $html_disclaimer = $entry->get_value("zimbraDomainMandatoryMailSignatureHTML");
-          $result = $ldap->search(
-            base=> "",
-            filter=>"(objectClass=zimbraDomain)",
-            scope => "sub",
-          );
-          foreach $entry ($result->entries) {
-            $result = $ldap->modify(
-                $entry->dn,
-                add =>{
-                    zimbraAmavisDomainDisclaimerText=>$text_disclaimer,
-                    zimbraAmavisDomainDisclaimerHTML=>$html_disclaimer,
-                },
-            );
-          }
-          $result = $ldap->modify(
-            "cn=config,cn=zimbra",
-            delete=>['zimbraDomainMandatoryMailSignatureText','zimbraDomainMandatoryMailSignatureHTML']
-          );
-        }
-      }
     }
   }
   if (main::isInstalled("zimbra-mta")) {
@@ -2704,6 +2666,48 @@ sub upgrade850GA {
 sub upgrade851GA {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
   main::progress("Updating from 8.5.1_GA\n");
+  if (main::isInstalled("zimbra-ldap")) {
+    if ($isLdapMaster) {
+      my $ldap_pass = qx($su "zmlocalconfig -s -m nokey ldap_root_password");
+      chomp($ldap_pass);
+      my $ldap;
+      unless($ldap = Net::LDAP->new('ldapi://%2fopt%2fzimbra%2fdata%2fldap%2fstate%2frun%2fldapi/')) {
+         main::progress("Unable to contact to ldapi: $!\n");
+      } else {
+        my $result = $ldap->bind("cn=config", password => $ldap_pass);
+        $result = $ldap->search(
+          base=> "cn=config,cn=zimbra",
+          filter=>"(&(objectClass=*)(zimbraDomainMandatoryMailSignatureText=*))",
+          scope => "base",
+          attrs => ['zimbraDomainMandatoryMailSignatureText', 'zimbraDomainMandatoryMailSignatureHTML'],
+        );
+        my $totalcount=$result->count;
+        if ($totalcount > 0) {
+          my $entry=$result->entry($totalcount-1);
+          my $text_disclaimer = $entry->get_value("zimbraDomainMandatoryMailSignatureText");
+          my $html_disclaimer = $entry->get_value("zimbraDomainMandatoryMailSignatureHTML");
+          $result = $ldap->search(
+            base=> "",
+            filter=>"(objectClass=zimbraDomain)",
+            scope => "sub",
+          );
+          foreach $entry ($result->entries) {
+            $result = $ldap->modify(
+                $entry->dn,
+                add =>{
+                    zimbraAmavisDomainDisclaimerText=>$text_disclaimer,
+                    zimbraAmavisDomainDisclaimerHTML=>$html_disclaimer,
+                },
+            );
+          }
+          $result = $ldap->modify(
+            "cn=config,cn=zimbra",
+            delete=>['zimbraDomainMandatoryMailSignatureText','zimbraDomainMandatoryMailSignatureHTML']
+          );
+        }
+      }
+    }
+  }
   return 0;
 }
 
