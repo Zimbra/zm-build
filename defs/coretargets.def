@@ -172,7 +172,6 @@ $(CORE_DEST_DIR)/docs:
 	cp $(LICENSE_DIR)/zimbra/ypl-full.txt $@/YPL.txt
 	cp $(LICENSE_DIR)/zimbra/zimbra_public_eula_2.5.txt $@/zimbra_public_eula_2.5.txt
 	cp $(SERVICE_DIR)/docs/*txt $@
-	cp $(SERVICE_DIR)/docs/*html $@
 	cp $(MIG_TOOLS_DIR)/ReadMe.txt $@/zmztozmig.txt
 	echo "Zimbra Third Party Software version information" >$@/zimbra-software-versions.txt
 	echo "Altermime version: $(ALTERMIME_VERSION)" >> $@/zimbra-software-versions.txt
