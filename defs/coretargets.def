@@ -293,7 +293,7 @@ $(CORE_DEST_DIR)/conf: $(WEBAPP_DIR)/service.war
 	mkdir -p $@/nginx/templates/default
 	mkdir -p $@/nginx/templates/vhost
 	mkdir -p $@/nginx/templates/web.mode
-	cp -Rf $(SERVICE_DIR)/conf/nginx $@/nginx/templates
+	cp -Rf $(SERVICE_DIR)/conf/nginx/* $@/nginx/templates
 	cp $(SERVICE_DIR)/conf/stats.conf.in $@
 	cp $(SERVICE_DIR)/conf/salocal.cf.in $@
 	cp $(SERVICE_DIR)/conf/unbound.conf.in $@
