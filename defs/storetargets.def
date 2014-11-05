@@ -364,11 +364,11 @@ $(STORE_DEST_DIR)/extensions-extra/oauth: $(OAUTH_EXT_DIR)/$(MAVEN_TARGET_DIR)/s
 $(OAUTH_EXT_DIR)/$(MAVEN_TARGET_DIR)/sampleoauthprov.jar: pom.xml
 
 $(STORE_DEST_DIR)/extensions-extra/openidconsumer: $(OPENID_EXT_DIR)/$(MAVEN_TARGET_DIR)/openidconsumer.jar
-    mkdir -p $@
-    cp $(OPENID_EXT_DIR)/$(MAVEN_TARGET_DIR)/openidconsumer-*.jar $@
-    cp $(COMMON_DIR)/jars/openid4java-*.jar $@
-    cp $(OPENID_EXT_DIR)/formredirection.jsp $@
-    cp $(OPENID_EXT_DIR)/README.txt $@
+	mkdir -p $@
+	cp $(OPENID_EXT_DIR)/$(MAVEN_TARGET_DIR)/openidconsumer-*.jar $@
+	cp $(COMMON_DIR)/jars/openid4java-*.jar $@
+	cp $(OPENID_EXT_DIR)/formredirection.jsp $@
+	cp $(OPENID_EXT_DIR)/README.txt $@
 
 $(OPENID_EXT_DIR)/$(MAVEN_TARGET_DIR)/openidconsumer.jar: pom.xml
 
