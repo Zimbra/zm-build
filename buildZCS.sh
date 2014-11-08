@@ -26,9 +26,8 @@ PMIRROR=no
 
 usage() {
 	echo ""
-	echo "Usage: "`basename $0`" [-d] [-t [-p] [-u]]" >&2
+	echo "Usage: "`basename $0`" [-d] [-t [-u]]" >&2
 	echo "-d: Perform a Zimbra Desktop build"
-	echo "-p: Use private Perl mirror when building 3rd party (requires -t)"
 	echo "-t: Build third party as well as ZCS"
 	echo "-u: Install build utilities, must be used the first time when building ZCS (requires -t, sudo access)"
 }
