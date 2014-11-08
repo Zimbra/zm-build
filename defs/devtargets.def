@@ -108,7 +108,7 @@ $(DEV_INSTALL_ROOT)/$(TOMCAT_DIR): $(DEV_INSTALL_ROOT) $(SERVICE_DIR)/$(WEBAPP_B
 	mkdir -p $@/conf/AdminService/localhost
 	cp -f $(SERVICE_DIR)/conf/zimbraAdmin.xml $@/conf/AdminService/localhost/zimbraAdmin.xml
 	cp -f $(SERVICE_DIR)/conf/tomcat-5.5/tomcat-users.xml $@/conf
-	cp -f $(SERVICE_DIR)/$(ANT_BUILD_DIR)/dist/conf/log4j.properties.production  $@/conf/log4j.properties
+	cp -f $(SERVICE_DIR)/build/dist/conf/log4j.properties.production  $@/conf/log4j.properties
 	mkdir -p $@/temp
 	touch $@/temp/.emptyfile
 
@@ -153,7 +153,7 @@ $(DEV_INSTALL_ROOT)/db:
 	mkdir -p $@
 	cp -f -R $(SERVICE_DIR)/src/db/mysql/db.sql $@
 	cp -f -R $(SERVICE_DIR)/src/db/mysql/create_database.sql $@
-	cp -f -R $(SERVICE_DIR)/$(MAVEN_TARGET_DIR)/versions-init.sql $@
+	cp -f -R $(SERVICE_DIR)/build/versions-init.sql $@
 
 $(DEV_INSTALL_ROOT)/$(BDB_DIR): $(DEV_INSTALL_ROOT)
 	@echo "*** Installing bdb"
@@ -162,23 +162,23 @@ $(DEV_INSTALL_ROOT)/$(BDB_DIR): $(DEV_INSTALL_ROOT)
 $(DEV_INSTALL_ROOT)/lib: $(DEV_INSTALL_ROOT)/$(LDAP_DIR)-$(LDAP_VERSION) $(DEV_INSTALL_ROOT)/$(BDB_DIR)
 	@echo "*** Installing lib"
 	mkdir -p $@
-	cp -f -pr $(SERVICE_DIR)/$(ANT_BUILD_DIR)/dist/lib/* $@
+	cp -f -pr $(SERVICE_DIR)/build/dist/lib/* $@
 	cp -f -pr $(DEV_INSTALL_ROOT)/$(LDAP_DIR)-$(LDAP_VERSION)/lib/* $@
 	cp -f -pr $(DEV_INSTALL_ROOT)/$(BDB_DIR)/lib/* $@
-	cp -f -pr $(SERVICE_DIR)/$(ANT_BUILD_DIR)/dist/lib/* $@
+	cp -f -pr $(SERVICE_DIR)/build/dist/lib/* $@
 	(cd $@; tar xzf $(THIRD_PARTY)/mysql/$(BUILD_PLATFORM)/mysql-standard-4.1.10a-clientlibs.tgz)
 
 $(DEV_INSTALL_ROOT)/libexec:
 	@echo "*** Installing libexec"
 	mkdir -p $@/util/modules
-	cp -f -R $(SERVICE_DIR)/$(ANT_BUILD_DIR)/dist/libexec/zm*init $@
+	cp -f -R $(SERVICE_DIR)/build/dist/libexec/zm*init $@
 	cp -f $(PACKAGE_CONF_DIR)/Install/Util/*sh $@/util
 	cp -f $(PACKAGE_CONF_DIR)/Install/Util/modules/* $@/util/modules
 
 $(DEV_INSTALL_ROOT)/bin:
 	@echo "*** Installing bin"
 	mkdir -p $@
-	cp -f -R $(SERVICE_DIR)/$(ANT_BUILD_DIR)/dist/bin/[a-z]* $@
+	cp -f -R $(SERVICE_DIR)/build/dist/bin/[a-z]* $@
 	rm -f $@/zm*init
 	rm -f $(DEV_INSTALL_ROOT)/bin/zmtransserver.bat
 	#rm -f $(DEV_INSTALL_ROOT)/bin/ldap
@@ -201,7 +201,7 @@ $(DEV_INSTALL_ROOT)/conf: $(SERVICE_DIR)/$(WEBAPP_BUILD_DIR)/service.war
 	cp -f $(PACKAGE_CONF_DIR)/Conf/swatchrc $@/swatchrc.in
 	cp -f $(PACKAGE_CONF_DIR)/Conf/logswatchrc $@/logswatchrc
 	cp -f -R $(SERVICE_DIR)/conf/localconfig.xml $@/localconfig.xml
-	grep -vi stats $(SERVICE_DIR)/$(ANT_BUILD_DIR)/dist/conf/log4j.properties.production > $@/log4j.properties
+	grep -vi stats $(SERVICE_DIR)/build/dist/conf/log4j.properties.production > $@/log4j.properties
 	cp -f $(PACKAGE_CONF_DIR)/Conf/zmssl.cnf.in $@
 	cp -f $(SERVICE_DIR)/conf/amavisd.conf.in $@
 	cp -f $(SERVICE_DIR)/conf/clamd.conf $@
