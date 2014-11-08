@@ -861,7 +861,7 @@ verifyLicenseActivationServer() {
   fi
 
   # sometimes we just don't want to check
-  if [ x"$AUTOINSTALL" = "xyes" ] || [ x"$UNINSTALL" = "xyes" ] || [ x"$SOFTWAREONLY" = "yes" ]; then
+  if [ x"$AUTOINSTALL" = "xyes" ] || [ x"$UNINSTALL" = "xyes" ] || [ x"$SOFTWAREONLY" = "xyes" ]; then
     return
   fi
 
@@ -968,7 +968,7 @@ verifyLicenseAvailable() {
     chmod 444 /opt/zimbra/conf/ZCSLicense.xml
   fi
 
-  if [ x"$AUTOINSTALL" = "xyes" ] || [ x"$UNINSTALL" = "xyes" ] || [ x"$SOFTWAREONLY" = "yes" ]; then
+  if [ x"$AUTOINSTALL" = "xyes" ] || [ x"$UNINSTALL" = "xyes" ] || [ x"$SOFTWAREONLY" = "xyes" ]; then
     return
   fi
 
