@@ -47,6 +47,7 @@ usage() {
   echo "--beta-support          Allows installer to upgrade Network Edition Betas."
   echo "--platform-override     Allows installer to continue on an unknown OS."
   echo "--skip-activation-check Allows installer to continue if license activation checks fail."
+  echo "--skip-upgrade-check    Allows installer to skip upgrade validation checks."
   echo "[defaultsfile]          File containing default install values."
   echo ""
   exit
@@ -86,23 +87,26 @@ while [ $# -ne 0 ]; do
         usage
       fi
 		;;
-		-u|--uninstall) 
+		-u|--uninstall)
       UNINSTALL="yes"
 		  ;;
-		-s|--softwareonly) 
+		-s|--softwareonly)
       SOFTWAREONLY="yes"
 		  ;;
-		-x|--skipspacecheck) 
+		-x|--skipspacecheck)
       SKIPSPACECHECK="yes"
       ;;
-		-platform-override|--platform-override) 
+		-platform-override|--platform-override)
       ALLOW_PLATFORM_OVERRIDE="yes"
 		  ;;
-		-beta-support|--beta-support) 
+		-beta-support|--beta-support)
       BETA_SUPPORT="yes"
 		  ;;
-		-skip-activation-check|--skip-activation-check) 
+		-skip-activation-check|--skip-activation-check)
       SKIP_ACTIVATION_CHECK="yes"
+		  ;;
+		-skip-upgrade-check|--skip-upgrade-check)
+      SKIP_UPGRADE_CHECK="yes"
 		  ;;
     -h|-help|--help)
       usage
