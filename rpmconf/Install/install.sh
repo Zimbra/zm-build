@@ -33,6 +33,8 @@ done
 
 UNINSTALL="no"
 SOFTWAREONLY="no"
+SKIP_ACTIVATION_CHECK="no"
+SKIP_UPGRADE_CHECK="no"
 
 usage() {
   echo "$0 [-r <dir> -l <file> -a <file> -u -s -c type -x -h] [defaultsfile]"
