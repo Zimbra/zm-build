@@ -747,6 +747,9 @@ checkExistingInstall() {
   done
 
   determineVersionType
+  if [ $INSTALLED = "yes" ]; then
+    verifyUpgrade
+  fi
   verifyLicenseActivationServer
   verifyLicenseAvailable
 
@@ -854,9 +857,62 @@ determineVersionType() {
   fi
 }
 
+verifyUpgrade() {
+
+  if [ x"$SKIP_UPGRADE_CHECK" = "xyes" ]; then
+    return
+  fi
+
+  # sometimes we just don't want to check
+  if [ x"$AUTOINSTALL" = "xyes" ] || [ x"$UNINSTALL" = "xyes" ] || [ x"$SOFTWAREONLY" = "xyes" ]; then
+    return
+  fi
+
+  isInstalled "zimbra-ldap"
+  if [ x$PKGINSTALLED != "x" ]; then
+    runAsZimbra "ldap start"
+  fi
+
+  # Upgrade tests specific to NE only
+  if [ x"$ZMTYPE_INSTALLABLE" = "xNETWORK" ]; then
+    if [ -x "bin/checkLicense.pl" ]; then
+      echo "Validating existing license is not expired and qualifies for upgrade"
+      echo $HOSTNAME | egrep -qe 'eng.vmware.com$|eng.zimbra.com$' > /dev/null 2>&1
+      if [ $? = 0 ]; then
+        # echo "Running bin/checkLicense.pl -i -v $ZM_INST_VERSION"
+        `bin/checkLicense.pl -i -v $ZM_INST_VERSION >/dev/null`
+      else
+        # echo "Running bin/checkLicense.pl -v $ZM_INST_VERSION"
+        `bin/checkLicense.pl -v $ZM_INST_VERSION >/dev/null`
+      fi
+      licenseRC=$?;
+      if [ $licenseRC != 0 ]; then
+        if [ $licenseRC = 2 ]; then
+          echo "Error: Unable to execute /opt/zimbra/bin/zmlicense"
+          echo "       Confirm that LDAP is running and that /opt/zimbra/bin/zmlicense -f works"
+          echo "       then restart the installation."
+          exit 1
+        elif [ $licenseRC = 1 ]; then
+          echo "Error: License is expired or cannot be upgraded."
+          echo "       Aborting upgrade"
+          exit 1
+        else
+          echo "Unknown Error.  It should be impossible to reach this statement"
+          exit 1
+        fi
+      else
+       echo "License is valid and supports this upgrade.  Continuing."
+      fi
+    fi
+  fi
+
+  # Upgrade tests applicable to everyone
+
+}
+
 verifyLicenseActivationServer() {
 
-  if [ x"$SKIP_ACTIVATION_CHECK" = "xyes" ]; then
+  if [ x"$SKIP_ACTIVATION_CHECK" = "xyes" -o x"$SKIP_UPGRADE_CHECK" = "xyes" ]; then
     return
   fi
 

@@ -17,6 +17,11 @@ if ($options{i}) {
   $host='license.zimbra.com';
 }
 
+if (!($options{v})) {
+  print "ERROR: No upgrade version supplied.\n";
+  exit 1;
+}
+
 if ( -x '/opt/zimbra/bin/zmlicense' ) {
   @license=qx(/opt/zimbra/bin/zmlicense -p);
   my $rc = $? >> 8;

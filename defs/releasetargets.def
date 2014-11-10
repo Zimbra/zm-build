@@ -93,6 +93,7 @@ zcs_stage: $(SOAP_DIR)/package-soap-api-doc $(SOAP_DIR)/package-soap-api-changel
 	cp -f $(PACKAGE_CONF_DIR)/Install/Util/modules/*sh zcs-$(RELEASE_VERSION_TAG).$(RELEASE)/util/modules
 	cp -f $(BUILD_ROOT)/RE/README.txt zcs-$(RELEASE_VERSION_TAG).$(RELEASE)
 	cp -f $(BUILD_ROOT)/rpmconf/Build/get_plat_tag.sh zcs-$(RELEASE_VERSION_TAG).$(RELEASE)/bin
+	cp -f $(BUILD_ROOT)/rpmconf/Build/checkLicense.pl zcs-$(RELEASE_VERSION_TAG).$(RELEASE)/bin
 	cp -f $(SERVICE_DIR)/$(ANT_BUILD_DIR)/dist/libexec/zmdbintegrityreport zcs-$(RELEASE_VERSION_TAG).$(RELEASE)/bin
 	chmod 755 zcs-$(RELEASE_VERSION_TAG).$(RELEASE)/install.sh
 	cp $(PACKAGE_DIR)/*$(PACKAGE_EXT) zcs-$(RELEASE_VERSION_TAG).$(RELEASE)/packages
