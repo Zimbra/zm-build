@@ -898,7 +898,7 @@ verifyUpgrade() {
             echo "       Aborting upgrade"
             exit 1
           else
-            echo "Unknown Error.  It should be impossible to reach this statement"
+            echo "Unknown Error.  It should be impossible to reach this statement."
             exit 1
           fi
         else
@@ -909,7 +909,34 @@ verifyUpgrade() {
   fi
 
   # Upgrade tests applicable to everyone
-
+  echo "Validating ldap configuration"
+  isInstalled "zimbra-ldap"
+  if [ x$PKGINSTALLED != "x" ]; then
+    `bin/zmValidateLdap.pl -l --vmajor ${ZM_CUR_MAJOR} --vminor ${ZM_CUR_MINOR} >/dev/null`
+  else
+    `bin/zmValidateLdap.pl`
+  fi
+  ldapRC=$?;
+  if [ $ldapRC != 0]; then
+    if [ $ldapRC = 1 ]; then
+      echo "Error: Unable to create a successful TLS connection to the ldap masters."
+      echo "       Fix cert configuration prior to upgrading."
+      exit 1
+    elif [ $ldapRC = 2 ]; then
+      echo "Error: Unable to bind to the LDAP server as the root LDAP user."
+      echo "       This is required to upgrade."
+      exit 1
+    elif [ $ldapRC = 3]; then
+      echo "Error: Unable to bind to the LDAP server as the zimbra LDAP user."
+      echo "       This is required to upgrade."
+      exit 1
+    else
+      echo "Unknown Error: It should be impossible to reach this statement."
+      exit 1
+   fi
+   else
+     echo "LDAP validation succeeded.  Continuing."
+   fi
 }
 
 verifyLicenseActivationServer() {
