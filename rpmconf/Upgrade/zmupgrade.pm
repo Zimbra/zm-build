@@ -154,6 +154,7 @@ my %updateFuncs = (
   "8.5.1_GA" => \&upgrade851GA,
   "8.6.0_BETA1" => \&upgrade860BETA1,
   "8.6.0_BETA2" => \&upgrade860BETA2,
+  "8.7.0_BETA1" => \&upgrade870BETA1,
   "9.0.0_BETA1" => \&upgrade900BETA1,
 );
 
@@ -216,6 +217,7 @@ my @versionOrder = (
   "8.5.1_GA",
   "8.6.0_BETA1",
   "8.6.0_BETA2",
+  "8.7.0_BETA1",
   "9.0.0_BETA1",
 );
 
@@ -2753,6 +2755,12 @@ sub upgrade860BETA2 {
         }
       }
     }
+  return 0;
+}
+
+sub upgrade870BETA1 {
+  my ($startBuild, $targetVersion, $targetBuild) = (@_);
+  main::progress("Updating from 8.7.0_BETA1\n");
   return 0;
 }
 
