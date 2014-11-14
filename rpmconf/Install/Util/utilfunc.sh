@@ -2473,6 +2473,11 @@ getPlatformVars() {
     PACKAGEVERSION="dpkg-query -W -f \${Version}"
     PREREQ_PACKAGES="sudo libidn11 libgmp3c2 libstdc++6"
     CONFLICT_PACKAGES="mail-transport-agent"
+    if [ $PLATFORM = "UBUNTU10_64" ]; then
+      PREREQ_PACKAGES="netcat-openbsd sudo libidn11 libpcre3 libgmp3c2 libexpat1 libstdc++6 libperl5.10 libaio1 resolvconf unzip"
+      PRESUG_PACKAGES="pax perl-5.10.1 sysstat sqlite3"
+      STORE_PACKAGES=""
+    fi
     if [ $PLATFORM = "UBUNTU12_64" ]; then
       PREREQ_PACKAGES="netcat-openbsd sudo libidn11 libpcre3 libgmp3c2 libexpat1 libstdc++6 libperl5.14 libaio1 resolvconf unzip"
       PRESUG_PACKAGES="pax perl-5.14.2 sysstat sqlite3"
@@ -2501,6 +2506,11 @@ getPlatformVars() {
       PREREQ_PACKAGES="nmap-ncat sudo libidn gmp libaio libstdc++ unzip perl-core"
       PRESUG_PACKAGES="perl-5.16.3 sysstat sqlite"
       STORE_PACKAGES="libreoffice libreoffice-headless"
+    elif [ $PLATFORM = "SLES11_64" ]; then
+      PREREQ_PACKAGES="netcat sudo libidn gmp libaio"
+      PREREQ_LIBS="/usr/lib64/libstdc++.so.6"
+      PRESUG_PACKAGES="perl-5.10.0 sysstat sqlite3"
+      STORE_PACKAGES="libreoffice"
     else
       PREREQ_PACKAGES="sudo libidn gmp"
       PREREQ_LIBS="/usr/lib/libstdc++.so.6"
