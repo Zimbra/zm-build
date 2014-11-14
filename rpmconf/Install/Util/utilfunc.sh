@@ -917,7 +917,7 @@ verifyUpgrade() {
     `bin/zmValidateLdap.pl`
   fi
   ldapRC=$?;
-  if [ $ldapRC != 0]; then
+  if [ $ldapRC != 0 ]; then
     if [ $ldapRC = 1 ]; then
       echo "Error: Unable to create a successful TLS connection to the ldap masters."
       echo "       Fix cert configuration prior to upgrading."
