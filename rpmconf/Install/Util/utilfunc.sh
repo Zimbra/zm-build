@@ -914,7 +914,7 @@ verifyUpgrade() {
   if [ x$PKGINSTALLED != "x" ]; then
     `bin/zmValidateLdap.pl -l --vmajor ${ZM_CUR_MAJOR} --vminor ${ZM_CUR_MINOR} >/dev/null`
   else
-    `bin/zmValidateLdap.pl`
+    `bin/zmValidateLdap.pl >/dev/null`
   fi
   ldapRC=$?;
   if [ $ldapRC != 0 ]; then
