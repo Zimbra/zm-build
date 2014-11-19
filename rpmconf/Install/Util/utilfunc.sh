@@ -926,7 +926,7 @@ verifyUpgrade() {
       echo "Error: Unable to bind to the LDAP server as the root LDAP user."
       echo "       This is required to upgrade."
       exit 1
-    elif [ $ldapRC = 3]; then
+    elif [ $ldapRC = 3 ]; then
       echo "Error: Unable to bind to the LDAP server as the zimbra LDAP user."
       echo "       This is required to upgrade."
       exit 1
