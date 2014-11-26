@@ -2764,6 +2764,14 @@ sub upgrade860BETA2 {
 sub upgrade860GA {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
   main::progress("Updating from 8.6.0_GA\n");
+  if(main::isInstalled("zimbra-ldap")) {
+    if ($isLdapMaster) {
+      my $mtasmtpdprotocols=getLdapConfigValue("zimbraMtaSmtpdTlsProtocols");
+      if ($mtasmtpdprotocols eq "") {
+        main::runAsZimbra("$ZMPROV mcf zimbraMtaSmtpdTlsProtocols '!SSLv2, !SSLv3'");
+      }
+    }
+  }
   return 0;
 }
 
