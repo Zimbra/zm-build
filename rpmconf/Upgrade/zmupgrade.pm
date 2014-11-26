@@ -132,7 +132,7 @@ my %updateFuncs = (
   "8.5.1_GA" => \&upgrade851GA,
   "8.6.0_BETA1" => \&upgrade860BETA1,
   "8.6.0_BETA2" => \&upgrade860BETA2,
-	"8.6.0_GA" => \&upgrade860GA,
+  "8.6.0_GA" => \&upgrade860GA,
   "8.7.0_BETA1" => \&upgrade870BETA1,
   "9.0.0_BETA1" => \&upgrade900BETA1,
 );
