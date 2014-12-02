@@ -2773,6 +2773,9 @@ sub upgrade860GA {
       }
     }
   }
+  if ( -d "/opt/zimbra/zimlets-deployed/com_zimbra_linkedinimage/") {
+    main::runAsZimbra("/opt/zimbra/bin/zmzimletctl -l undeploy com_zimbra_linkedinimage");
+  }
   return 0;
 }
 
