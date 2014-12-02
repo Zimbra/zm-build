@@ -184,7 +184,6 @@ $(CORE_DEST_DIR)/docs:
 	echo "ClamAV version: $(CLAMAV_VERSION)" >> $@/zimbra-software-versions.txt
 	echo "Curl version: $(CURL_VERSION)" >> $@/zimbra-software-versions.txt
 	echo "Cyrus SASL version: $(SASL_VERSION)" >> $@/zimbra-software-versions.txt
-	echo "Dspam version: $(DSPAM_VERSION)" >> $@/zimbra-software-versions.txt
 	echo "Heimdal version: $(HEIMDAL_VERSION)" >> $@/zimbra-software-versions.txt
 	echo "OpenJDK version: $(OPENJDK_VERSION)" >> $@/zimbra-software-versions.txt
 	echo "Jetty version: $(JETTY_VERSION)" >> $@/zimbra-software-versions.txt
@@ -281,7 +280,6 @@ $(CORE_DEST_DIR)/conf: $(WEBAPP_DIR)/service.war
 	cp $(SERVICE_DIR)/conf/amavisd/amavisd-custom.conf $@
 	cp $(SERVICE_DIR)/conf/opendkim.conf.in $@
 	cp $(SERVICE_DIR)/conf/opendkim-localnets.conf.in $@
-	cp $(SERVICE_DIR)/conf/dspam.conf.in $@
 	cp $(SERVICE_DIR)/conf/zmlogrotate $@
 	cp $(SERVICE_DIR)/conf/clamd.conf.in $@
 	cp $(SERVICE_DIR)/conf/freshclam.conf.in $@
