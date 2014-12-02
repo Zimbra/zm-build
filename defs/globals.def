@@ -67,7 +67,6 @@ ifeq ($(PERL), )
 endif
 
 ANT		?= $(shell which ant)
-MAVEN		?= $(shell which mvn)
 CP    ?= $(shell which cp)
 MKDIR ?= $(shell which mkdir)
 CHMOD ?= $(shell which chmod)
@@ -81,10 +80,7 @@ ifeq ($(ANT), )
 	$(error ant not found - exiting)
 endif
 
-ANT_DEBUG	?= -Ddebug=false
-SKIP_TESTS	?= -DskipTests=true
-ANT_BUILD_DIR	:= build
-MAVEN_TARGET_DIR	:= target
+ANT_DEBUG ?= -Ddebug=false
 
 
 PACKAGE_CONF_DIR	:= $(BUILD_ROOT)/rpmconf
