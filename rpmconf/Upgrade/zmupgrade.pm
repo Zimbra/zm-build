@@ -2314,7 +2314,7 @@ sub upgrade860GA {
   main::progress("Updating from 8.6.0_GA\n");
   if(main::isInstalled("zimbra-ldap")) {
     if ($isLdapMaster) {
-      my $mtasmtpdprotocols=getLdapConfigValue("zimbraMtaSmtpdTlsProtocols");
+      my $mtasmtpdprotocols=main::getLdapConfigValue("zimbraMtaSmtpdTlsProtocols");
       if ($mtasmtpdprotocols eq "") {
         main::runAsZimbra("$ZMPROV mcf zimbraMtaSmtpdTlsProtocols '!SSLv2, !SSLv3'");
       }
