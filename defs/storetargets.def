@@ -532,14 +532,14 @@ $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/webapps/solr/solr.war: $(SERVICE_DIR)/$(ANT_BU
 
 $(STORE_DEST_DIR)/solr:
 	mkdir -p $@
-	mkdir -p $(STORE_DEST_DIR)/solr
+	mkdir -p $(STORE_DEST_DIR)/solr/solr
 	mkdir -p $(STORE_DEST_DIR)/solr/lib/custom
 	mkdir -p $(STORE_DEST_DIR)/solr/configsets
 	cp -rp $(SERVICE_DIR)/conf/solr/configsets $(STORE_DEST_DIR)/solr/configsets
-	cp -f $(SERVICE_DIR)/conf/solr/solr.xml $(STORE_DEST_DIR)/solr
+	cp -f $(SERVICE_DIR)/conf/solr/solr.xml $(STORE_DEST_DIR)/solr/solr
 	cp -rp $(COMMON_DIR)/jars/guava-*.jar $(STORE_DEST_DIR)/solr/lib/custom
 	cp -rp $(COMMON_DIR)/jars/mail-*.jar $(STORE_DEST_DIR)/solr/lib/custom
-	cp -rp $(COMMON_DIR)/jars/zimbracommon.jar $(STORE_DEST_DIR)/solr/lib/custom
+	cp -rp $(COMMON_DIR)/jars/zimbracommon-*.jar $(STORE_DEST_DIR)/solr/lib/custom
 	cp -rp $(COMMON_DIR)/jars/lucene-core-*.jar $(STORE_DEST_DIR)/solr/lib/custom
 	cp -rp $(COMMON_DIR)/jars/lucene-analyzers-common-*.jar $(STORE_DEST_DIR)/solr/lib/custom
 	cp -rp $(COMMON_DIR)/jars/lucene-queryparser-*.jar $(STORE_DEST_DIR)/solr/lib/custom
