@@ -524,3 +524,22 @@ $(NGINX_LOOKUP_DIR)/$(ANT_BUILD_DIR)/nginx-lookup.jar:
 		-Dzimbra.buildinfo.type=$(BUILD_TYPE) \
 		-Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) \
 		-Dzimbra.buildinfo.host=$(HOST) jar; )
+
+$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/webapps/solr/solr.war: $(SERVICE_DIR)/$(ANT_BUILD_DIR)/dist/solr/solr.war
+  mkdir -p $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/webapps/solr
+  cd $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/webapps/solr
+  jar -xvf $(SERVICE_DIR)/$(ANT_BUILD_DIR)/dist/solr/solr.war
+
+$(STORE_DEST_DIR)/solr:
+  mkdir -p $@
+  mkdir -p $(STORE_DEST_DIR)/solr
+  mkdir -p $(STORE_DEST_DIR)/solr/lib/custom
+  mkdir -p $(STORE_DEST_DIR)/solr/configsets
+  cp -rp $(SERVICE_DIR)/conf/solr/configsets $(STORE_DEST_DIR)/solr/configsets
+  cp -f $(SERVICE_DIR)/conf/solr/solr.xml $(STORE_DEST_DIR)/solr
+  cp -rp $(COMMON_DIR)/jars/guava-*.jar $(STORE_DEST_DIR)/solr/lib/custom
+  cp -rp $(COMMON_DIR)/jars/mail-*.jar $(STORE_DEST_DIR)/solr/lib/custom
+  cp -rp $(COMMON_DIR)/jars/zimbracommon.jar $(STORE_DEST_DIR)/solr/lib/custom
+  cp -rp $(COMMON_DIR)/jars/lucene-core-*.jar $(STORE_DEST_DIR)/solr/lib/custom
+  cp -rp $(COMMON_DIR)/jars/lucene-analyzers-common-*.jar $(STORE_DEST_DIR)/solr/lib/custom
+  cp -rp $(COMMON_DIR)/jars/lucene-queryparser-*.jar $(STORE_DEST_DIR)/solr/lib/custom

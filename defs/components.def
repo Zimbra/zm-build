@@ -88,7 +88,9 @@ STORE_COMPONENTS := \
 	$(STORE_DEST_DIR)/lib/ext/zimbraadminversioncheck/zimbraadminversioncheck.jar \
 	$(STORE_DEST_DIR)/lib/jars/zmzimbratozimbramig.jar \
 	$(STORE_DEST_DIR)/log \
-	$(STORE_DEST_DIR)/$(MARIADB_DIR) 
+	$(STORE_DEST_DIR)/$(MARIADB_DIR) \
+	$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/webapps/solr/solr.war \
+	$(STORE_DEST_DIR)/solr
 
 ZIMLET_COMPONENTS := \
 	$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/webapps/service/WEB-INF/lib/zimbrataglib.jar \
