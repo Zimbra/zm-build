@@ -117,6 +117,18 @@ $(BUILD_ROOT)/zimbra-store.spec:
 		$(BUILD_ROOT)/zimbra-store.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/mariadb-$(MARIADB_VERSION_STRING)" >> \
 		$(BUILD_ROOT)/zimbra-store.spec
+	echo "%attr(755, zimbra, zimbra) /opt/zimbra/solr/configsets/zimbra/conf/lang" >> \
+		$(BUILD_ROOT)/zimbra-store.spec
+	echo "%attr(644, zimbra, zimbra) /opt/zimbra/solr/configsets/zimbra/conf/lang/*" >> \
+		$(BUILD_ROOT)/zimbra-store.spec
+	echo "%attr(755, zimbra, zimbra) /opt/zimbra/solr/lib/custom" >> \
+		$(BUILD_ROOT)/zimbra-store.spec
+	echo "%attr(644, zimbra, zimbra) /opt/zimbra/solr/lib/custom/*" >> \
+		$(BUILD_ROOT)/zimbra-store.spec
+	echo "%attr(755, zimbra, zimbra) /opt/zimbra/solr/solr" >> \
+		$(BUILD_ROOT)/zimbra-store.spec
+	echo "%attr(644, zimbra, zimbra) /opt/zimbra/solr/solr/solr.xml" >> \
+		$(BUILD_ROOT)/zimbra-store.spec
 	echo "" >> $(BUILD_ROOT)/zimbra-store.spec
 	echo "%clean" >> $(BUILD_ROOT)/zimbra-store.spec
 
