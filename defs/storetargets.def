@@ -543,8 +543,7 @@ $(NGINX_LOOKUP_DIR)/$(ANT_BUILD_DIR)/nginx-lookup.jar:
 
 $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/webapps/solr/solr.war: $(SERVICE_DIR)/$(ANT_BUILD_DIR)/dist/solr/solr.war
 	mkdir -p $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/webapps/solr
-	cd $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/webapps/solr
-	jar -xvf $(SERVICE_DIR)/$(ANT_BUILD_DIR)/dist/solr/solr.war
+	(cd $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/webapps/solr; jar xf $(SERVICE_DIR)/$(ANT_BUILD_DIR)/dist/solr/solr.war)
 
 $(STORE_DEST_DIR)/solr:
 	mkdir -p $@
