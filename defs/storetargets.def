@@ -559,3 +559,6 @@ $(STORE_DEST_DIR)/solr:
 	cp -r $(COMMON_DIR)/jars/lucene-analyzers-common-*.jar $(STORE_DEST_DIR)/solr/lib/custom
 	cp -r $(COMMON_DIR)/jars/lucene-queryparser-*.jar $(STORE_DEST_DIR)/solr/lib/custom
 	cp -r $(SERVICE_DIR)/$(ANT_BUILD_DIR)/dist/lib/jars/solrplugins-*.jar $(STORE_DEST_DIR)/solr/lib/custom
+	cp -r $(SERVICE_DIR)/$(ANT_BUILD_DIR)/dist/lib/jars/slf4j*.jar $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/webapps/solr/WEB-INF/lib
+	cp -r $(SERVICE_DIR)/$(ANT_BUILD_DIR)/dist/lib/jars/commons-logging*.jar $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/webapps/solr/WEB-INF/lib
+	cp -r $(SERVICE_DIR)/$(ANT_BUILD_DIR)/dist/lib/jars/log4j*.jar $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/webapps/solr/WEB-INF/lib
