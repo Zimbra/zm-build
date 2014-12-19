@@ -2341,6 +2341,208 @@ sub upgrade900BETA1 {
    if (main::isInstalled("zimbra-proxy")) {
       main::setLdapGlobalConfig("zimbraReverseProxyLogToSyslog", "FALSE");
   }
+  
+  my $localxml = XMLin("/opt/zimbra/conf/localconfig.xml");
+  my $lc_attr= $localxml->{key}->{acl_cache_target_maxsize}->{value};
+  if (defined($lc_attr) && $lc_attr+0 != 0) {
+     main::setLdapServerConfig($hn, 'zimbraAclCacheTargetMaxsize', "$lc_attr");
+  }
+
+  $lc_attr= $localxml->{key}->{acl_cache_target_maxage}->{value};
+  if (defined($lc_attr) && $lc_attr+0 != 0) {
+     main::setLdapServerConfig($hn, 'zimbraAclCacheTargetMaxAge', "$lc_attr");
+  }
+  
+  $lc_attr= $localxml->{key}->{acl_cache_credential_maxsize}->{value};
+  if (defined($lc_attr) && $lc_attr+0 != 0) {
+     main::setLdapServerConfig($hn, 'zimbraAclCacheCredentialMaxsize', "$lc_attr");
+  }
+
+  $lc_attr= $localxml->{key}->{acl_cache_enabled}->{value};
+  if (defined($lc_attr) && $lc_attr+0 != 0) {
+     main::setLdapServerConfig($hn, 'zimbraAclCacheEnabled', "$lc_attr");
+  }
+
+  $lc_attr= $localxml->{key}->{antispam_enable_restarts}->{value};
+  if (defined($lc_attr) && $lc_attr+0 != 0) {
+     main::setLdapServerConfig($hn, 'zimbraAntiSpamEnableRestarts', "$lc_attr");
+  }
+  
+  $lc_attr= $localxml->{key}->{antispam_enable_rule_updates}->{value};
+  if (defined($lc_attr) && $lc_attr+0 != 0) {
+     main::setLdapServerConfig($hn, 'zimbraAntiSpamEnableRuleUpdates', "$lc_attr");
+  }
+  
+  $lc_attr= $localxml->{key}->{antispam_enable_rule_compilation}->{value};
+  if (defined($lc_attr) && $lc_attr+0 != 0) {
+     main::setLdapServerConfig($hn, 'zimbraAntiSpamEnableRuleCompilation', "$lc_attr");
+  }
+  
+  $lc_attr= $localxml->{key}->{antispam_backup_retention}->{value};
+  if (defined($lc_attr) && $lc_attr+0 != 0) {
+     main::setLdapServerConfig($hn, 'zimbraAntiSpamBackupRetention', "$lc_attr");
+  }
+  
+  $lc_attr= $localxml->{key}->{calendar_cache_enabled}->{value};
+  if (defined($lc_attr) && $lc_attr+0 != 0) {
+     main::setLdapServerConfig($hn, 'zimbraCalendarCacheEnabled', "$lc_attr");
+  }
+  
+  $lc_attr= $localxml->{key}->{calendar_cache_lru_size}->{value};
+  if (defined($lc_attr) && $lc_attr+0 != 0) {
+     main::setLdapServerConfig($hn, 'zimbraCalendarCacheLRUSize', "$lc_attr");
+  }
+  
+  $lc_attr= $localxml->{key}->{calendar_cache_range_month_from}->{value};
+  if (defined($lc_attr) && $lc_attr+0 != 0) {
+     main::setLdapServerConfig($hn, 'zimbraCalendarCacheRangeMonthFrom', "$lc_attr");
+  }
+
+  $lc_attr= $localxml->{key}->{calendar_cache_max_stale_items}->{value};
+  if (defined($lc_attr) && $lc_attr+0 != 0) {
+     main::setLdapServerConfig($hn, 'zimbraCalendarMaxStaleItems', "$lc_attr");
+  }
+
+  $lc_attr= $localxml->{key}->{calendar_exchange_form_auth_url}->{value};
+  if (defined($lc_attr) && $lc_attr+0 != 0) {
+     main::setLdapServerConfig($hn, 'zimbraCalendarExchangeFormAuthURL', "$lc_attr");
+  }
+
+  $lc_attr= $localxml->{key}->{calendar_item_get_max_retries}->{value};
+  if (defined($lc_attr) && $lc_attr+0 != 0) {
+     main::setLdapServerConfig($hn, 'zimbraCalendarItemGetMaxRetries', "$lc_attr");
+  }
+
+  $lc_attr= $localxml->{key}->{calendar_ics_import_full_parse_max_size}->{value};
+  if (defined($lc_attr) && $lc_attr+0 != 0) {
+     main::setLdapServerConfig($hn, 'zimbraCalendarIcsImportFullParseMaxSize', "$lc_attr");
+  }
+
+  $lc_attr= $localxml->{key}->{calendar_ics_export_buffer_size}->{value};
+  if (defined($lc_attr) && $lc_attr+0 != 0) {
+     main::setLdapServerConfig($hn, 'zimbraCalendarIcsExportBufferSize', "$lc_attr");
+  }
+
+  $lc_attr= $localxml->{key}->{calendar_allow_invite_without_method}->{value};
+  if (defined($lc_attr) && $lc_attr+0 != 0) {
+     main::setLdapServerConfig($hn, 'zimbraCalendarAllowInviteWithoutMethod', "$lc_attr");
+  }
+
+  $lc_attr= $localxml->{key}->{calendar_max_desc_in_metadata}->{value};
+  if (defined($lc_attr) && $lc_attr+0 != 0) {
+     main::setLdapServerConfig($hn, 'zimbraCalendarMaxDescInMetadata', "$lc_attr");
+  }
+  
+  $lc_attr= $localxml->{key}->{calendar_freebusy_max_days}->{value};
+  if (defined($lc_attr) && $lc_attr+0 != 0) {
+     main::setLdapServerConfig($hn, 'zimbraCalendarFreeBusyMaxDays', "$lc_attr");
+  }
+  
+  $lc_attr= $localxml->{key}->{calendar_search_max_days}->{value};
+  if (defined($lc_attr) && $lc_attr+0 != 0) {
+     main::setLdapServerConfig($hn, 'zimbraCalendarSearchMaxDays', "$lc_attr");
+  }
+  
+  $lc_attr= $localxml->{key}->{imap_max_consecutive_error}->{value};
+  if (defined($lc_attr) && $lc_attr+0 != 0) {
+     main::setLdapServerConfig($hn, 'zimbraImapMaxConsecutiveError', "$lc_attr");
+  }
+  
+  $lc_attr= $localxml->{key}->{imap_inactive_session_cache_size}->{value};
+  if (defined($lc_attr) && $lc_attr+0 != 0) {
+     main::setLdapServerConfig($hn, 'zimbraImapInactiveSessionCacheSize', "$lc_attr");
+  }
+  
+  $lc_attr= $localxml->{key}->{imap_use_ehcache}->{value};
+  if (defined($lc_attr) && $lc_attr+0 != 0) {
+     main::setLdapServerConfig($hn, 'zimbraImapUseEhcache', "$lc_attr");
+  }
+  
+  $lc_attr= $localxml->{key}->{imap_write_timeout}->{value};
+  if (defined($lc_attr) && $lc_attr+0 != 0) {
+     main::setLdapServerConfig($hn, 'zimbraImapWriteTimeout', "$lc_attr");
+  } 
+  
+  $lc_attr= $localxml->{key}->{imap_write_chunk_size}->{value};
+  if (defined($lc_attr) && $lc_attr+0 != 0) {
+     main::setLdapServerConfig($hn, 'zimbraImapWriteChunkSize', "$lc_attr");
+  }
+  
+  $lc_attr= $localxml->{key}->{imap_thread_keep_alive_time}->{value};
+  if (defined($lc_attr) && $lc_attr+0 != 0) {
+     main::setLdapServerConfig($hn, 'zimbraImapThreadKeepAliveTime', "$lc_attr");
+  }
+  
+  $lc_attr= $localxml->{key}->{imap_max_idle_time}->{value};
+  if (defined($lc_attr) && $lc_attr+0 != 0) {
+     main::setLdapServerConfig($hn, 'zimbraImapMaxIdleTime', "$lc_attr");
+  }
+  
+  $lc_attr= $localxml->{key}->{imap_authenticated_max_idle_time}->{value};
+  if (defined($lc_attr) && $lc_attr+0 != 0) {
+     main::setLdapServerConfig($hn, 'zimbraImapAuthenticatedMaxIdleTime', "$lc_attr");
+  }
+  
+  $lc_attr= $localxml->{key}->{imap_throttle_ip_limit}->{value};
+  if (defined($lc_attr) && $lc_attr+0 != 0) {
+     main::setLdapServerConfig($hn, 'zimbraImapThrottleIpLimit', "$lc_attr");
+  }
+  
+  $lc_attr= $localxml->{key}->{imap_throttle_acct_limit}->{value};
+  if (defined($lc_attr) && $lc_attr+0 != 0) {
+     main::setLdapServerConfig($hn, 'zimbraImapThrottleAcctLimit', "$lc_attr");
+  }
+  
+  $lc_attr= $localxml->{key}->{imap_throttle_command_limit}->{value};
+  if (defined($lc_attr) && $lc_attr+0 != 0) {
+     main::setLdapServerConfig($hn, 'zimbraImapThrottleCommandLimit', "$lc_attr");
+  }
+  
+  $lc_attr= $localxml->{key}->{imap_throttle_fetch}->{value};
+  if (defined($lc_attr) && $lc_attr+0 != 0) {
+     main::setLdapServerConfig($hn, 'zimbraImapThrottleFetch', "$lc_attr");
+  }
+  
+  $lc_attr= $localxml->{key}->{data_source_imap_reuse_connections}->{value};
+  if (defined($lc_attr) && $lc_attr+0 != 0) {
+     main::setLdapServerConfig($hn, 'zimbraImapReuseDataSourceConnections', "$lc_attr");
+  }
+    
+    
+  main::deleteLocalConfig("acl_cache_target_maxsize");
+  main::deleteLocalConfig("acl_cache_target_maxage");
+  main::deleteLocalConfig("acl_cache_credential_maxsize"); 
+  main::deleteLocalConfig("acl_cache_enabled");
+  main::deleteLocalConfig("antispam_enable_restarts");
+  main::deleteLocalConfig("antispam_enable_rule_updates");
+  main::deleteLocalConfig("antispam_enable_rule_compilation");
+  main::deleteLocalConfig("antispam_backup_retention"); 
+  main::deleteLocalConfig("calendar_cache_enabled");
+  main::deleteLocalConfig("calendar_cache_lru_size");
+  main::deleteLocalConfig("calendar_cache_range_month_from");
+  main::deleteLocalConfig("calendar_cache_range_months");
+  main::deleteLocalConfig("calendar_cache_max_stale_items"); 
+  main::deleteLocalConfig("calendar_exchange_form_auth_url");
+  main::deleteLocalConfig("calendar_item_get_max_retries");
+  main::deleteLocalConfig("calendar_ics_import_full_parse_max_size");
+  main::deleteLocalConfig("calendar_ics_export_buffer_size");
+  main::deleteLocalConfig("calendar_allow_invite_without_method"); 
+  main::deleteLocalConfig("calendar_max_desc_in_metadata");
+  main::deleteLocalConfig("calendar_freebusy_max_days");
+  main::deleteLocalConfig("calendar_search_max_days");
+  main::deleteLocalConfig("imap_max_consecutive_error");
+  main::deleteLocalConfig("imap_inactive_session_cache_size"); 
+  main::deleteLocalConfig("imap_use_ehcache");
+  main::deleteLocalConfig("imap_write_timeout");
+  main::deleteLocalConfig("imap_write_chunk_size");
+  main::deleteLocalConfig("imap_thread_keep_alive_time");
+  main::deleteLocalConfig("imap_max_idle_time"); 
+  main::deleteLocalConfig("imap_authenticated_max_idle_time");
+  main::deleteLocalConfig("imap_throttle_ip_limit"); 
+  main::deleteLocalConfig("imap_throttle_acct_limit");
+  main::deleteLocalConfig("imap_throttle_command_limit");
+  main::deleteLocalConfig("imap_throttle_fetch"); 
+  main::deleteLocalConfig("data_source_imap_reuse_connections");
   return 0;
 }
 
