@@ -2345,22 +2345,22 @@ sub upgrade900BETA1 {
   my $localxml = XMLin("/opt/zimbra/conf/localconfig.xml");
   my $lc_attr= $localxml->{key}->{acl_cache_target_maxsize}->{value};
   if (defined($lc_attr) && $lc_attr+0 != 0) {
-     main::setLdapServerConfig($hn, 'zimbraAclCacheTargetMaxsize', "$lc_attr");
+     main::setLdapServerConfig($hn, 'zimbraAdminAclCacheTargetMaxsize', "$lc_attr");
   }
 
   $lc_attr= $localxml->{key}->{acl_cache_target_maxage}->{value};
   if (defined($lc_attr) && $lc_attr+0 != 0) {
-     main::setLdapServerConfig($hn, 'zimbraAclCacheTargetMaxAge', "$lc_attr");
+     main::setLdapServerConfig($hn, 'zimbraAdminAclCacheTargetMaxAge', "$lc_attr");
   }
   
   $lc_attr= $localxml->{key}->{acl_cache_credential_maxsize}->{value};
   if (defined($lc_attr) && $lc_attr+0 != 0) {
-     main::setLdapServerConfig($hn, 'zimbraAclCacheCredentialMaxsize', "$lc_attr");
+     main::setLdapServerConfig($hn, 'zimbraAdminAclCacheCredentialMaxsize', "$lc_attr");
   }
 
   $lc_attr= $localxml->{key}->{acl_cache_enabled}->{value};
   if (defined($lc_attr) && $lc_attr+0 != 0) {
-     main::setLdapServerConfig($hn, 'zimbraAclCacheEnabled', "$lc_attr");
+     main::setLdapServerConfig($hn, 'zimbraAdminAclCacheEnabled', "$lc_attr");
   }
 
   $lc_attr= $localxml->{key}->{antispam_enable_restarts}->{value};
