@@ -135,6 +135,7 @@ my @webappList = (
   "zimbra",
   "zimbraAdmin",
   "zimlet",
+  "solr",
 );
 
 my %installedPackages = ();
@@ -320,9 +321,6 @@ sub progress {
   detail ($msg);
 }
 
-sub status {
-}
-
 sub detail {
   my $msg = shift;
   my ($sub,$line) = (caller(1))[3,2];
@@ -420,6 +418,7 @@ sub checkPortConflicts {
     7306 => 'zimbra-store',
     7307 => 'zimbra-store',
     7780 => 'zimbra-spell',
+    7983 => 'zimbra-store',
     8465 => 'zimbra-mta', 
     10024 => 'zimbra-mta',
     10025 => 'zimbra-mta',

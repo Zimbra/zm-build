@@ -40,9 +40,6 @@ if [ -d /opt/zimbra/zeromq-3.2.3 ]; then
   ln -s /opt/zimbra/zeromq-3.2.3 /opt/zimbra/zeromq
 fi
 
-rm -f /opt/zimbra/dspam
-ln -s /opt/zimbra/dspam-3.10.2 /opt/zimbra/dspam
-
 rm -f /opt/zimbra/postfix
 ln -s /opt/zimbra/postfix-2.11.1.2z /opt/zimbra/postfix
 
