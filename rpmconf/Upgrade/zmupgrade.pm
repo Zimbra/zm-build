@@ -2380,11 +2380,6 @@ sub upgrade900BETA1 {
      main::setLdapServerConfig($hn, 'zimbraAntiSpamEnableRuleCompilation', "$lc_attr");
   }
   
-  $lc_attr= $localxml->{key}->{antispam_backup_retention}->{value};
-  if (defined($lc_attr) && $lc_attr+0 != 0) {
-     main::setLdapServerConfig($hn, 'zimbraAntiSpamBackupRetention', "$lc_attr");
-  }
-  
   $lc_attr= $localxml->{key}->{calendar_cache_enabled}->{value};
   if (defined($lc_attr) && $lc_attr+0 != 0) {
      main::setLdapServerConfig($hn, 'zimbraCalendarCacheEnabled', "$lc_attr");
@@ -2509,8 +2504,194 @@ sub upgrade900BETA1 {
   if (defined($lc_attr) && $lc_attr+0 != 0) {
      main::setLdapServerConfig($hn, 'zimbraImapReuseDataSourceConnections', "$lc_attr");
   }
+  
     
-    
+  $lc_attr= $localxml->{key}->{autoprov_initial_sleep_ms}->{value};
+  if (defined($lc_attr) && $lc_attr+0 != 0) {
+     main::setLdapServerConfig($hn, 'zimbraAutoProvInitialSleepInMillis', "$lc_attr");
+  }
+  
+  $lc_attr= $localxml->{key}->{zimbra_admin_service_scheme}->{value};
+  if (defined($lc_attr) && $lc_attr+0 != 0) {
+     main::setLdapServerConfig($hn, 'zimbraAdminServiceScheme', "$lc_attr");
+  }
+
+  $lc_attr= $localxml->{key}->{calendar_apple_ical_compatible_canceled_instances}->{value};
+  if (defined($lc_attr) && $lc_attr+0 != 0) {
+     main::setLdapServerConfig($hn, 'zimbraCalendarAppleICalCompatibleCanceledInstances', "$lc_attr");
+  }
+  
+  $lc_attr= $localxml->{key}->{zimbra_admin_waitset_default_request_timeout}->{value};
+  if (defined($lc_attr) && $lc_attr+0 != 0) {
+     main::setLdapServerConfig($hn, 'zimbraAdminWaitsetDefaultRequestTimeout', "$lc_attr");
+  }
+  
+  $lc_attr= $localxml->{key}->{zimbra_admin_waitset_max_request_timeout}->{value};
+  if (defined($lc_attr) && $lc_attr+0 != 0) {
+     main::setLdapServerConfig($hn, 'zimbraAdminWaitsetMaxRequestTimeout', "$lc_attr");
+  }
+
+  $lc_attr= $localxml->{key}->{zimbra_admin_waitset_min_request_timeout}->{value};
+  if (defined($lc_attr) && $lc_attr+0 != 0) {
+     main::setLdapServerConfig($hn, 'zimbraAdminWaitsetMinRequestTimeout', "$lc_attr");
+  }
+  
+   $lc_attr= $localxml->{key}->{zimbra_mailbox_lock_max_waiting_threads}->{value};
+  if (defined($lc_attr) && $lc_attr+0 != 0) {
+     main::setLdapServerConfig($hn, 'zimbraMailboxLockMaxWaitingThreads', "$lc_attr");
+  }
+  
+  $lc_attr= $localxml->{key}->{zimbra_mailbox_lock_readwrite}->{value};
+  if (defined($lc_attr) && $lc_attr+0 != 0) {
+     main::setLdapServerConfig($hn, 'zimbraMailBoxLockReadWrite', "$lc_attr");
+  }
+
+  $lc_attr= $localxml->{key}->{zimbra_mailbox_lock_timeout}->{value};
+  if (defined($lc_attr) && $lc_attr+0 != 0) {
+     main::setLdapServerConfig($hn, 'zimbraMailBoxLockTimeout', "$lc_attr");
+  }
+  
+  $lc_attr= $localxml->{key}->{zimbra_session_limit_admin}->{value};
+  if (defined($lc_attr) && $lc_attr+0 != 0) {
+     main::setLdapServerConfig($hn, 'zimbraAdminSessionLimit', "$lc_attr");
+  }
+  
+  $lc_attr= $localxml->{key}->{zimbra_session_limit_imap}->{value};
+  if (defined($lc_attr) && $lc_attr+0 != 0) {
+     main::setLdapServerConfig($hn, 'zimbraImapSessionLimit', "$lc_attr");
+  }
+
+  $lc_attr= $localxml->{key}->{zimbra_session_limit_soap}->{value};
+  if (defined($lc_attr) && $lc_attr+0 != 0) {
+     main::setLdapServerConfig($hn, 'zimbraSoapSessionLimit', "$lc_attr");
+  }
+  
+  $lc_attr= $localxml->{key}->{zimbra_session_limit_sync}->{value};
+  if (defined($lc_attr) && $lc_attr+0 != 0) {
+     main::setLdapServerConfig($hn, 'zimbraSyncSessionLimit', "$lc_attr");
+  }
+
+  $lc_attr= $localxml->{key}->{zimbra_session_max_pending_notifications}->{value};
+  if (defined($lc_attr) && $lc_attr+0 != 0) {
+     main::setLdapServerConfig($hn, 'zimbraSessionMaxPendingNotifications', "$lc_attr");
+  }
+  
+   $lc_attr= $localxml->{key}->{zimbra_session_timeout_soap}->{value};
+  if (defined($lc_attr) && $lc_attr+0 != 0) {
+     main::setLdapServerConfig($hn, 'zimbraSoapSessionTimeout', "$lc_attr");
+  }
+  
+  $lc_attr= $localxml->{key}->{calendar_resource_ldap_search_maxsize}->{value};
+  if (defined($lc_attr) && $lc_attr+0 != 0) {
+     main::setLdapServerConfig($hn, 'zimbraCalendarResourceLdapSearchMaxSize', "$lc_attr");
+  }
+
+  $lc_attr= $localxml->{key}->{check_dl_membership_enabled}->{value};
+  if (defined($lc_attr) && $lc_attr+0 != 0) {
+     main::setLdapServerConfig($hn, 'zimbraDesktopCalendarCheckDLMembership', "$lc_attr");
+  }
+  
+  $lc_attr= $localxml->{key}->{ews_service_wsdl_location}->{value};
+  if (defined($lc_attr) && $lc_attr+0 != 0) {
+     main::setLdapServerConfig($hn, 'zimbraEwsWsdlLocation', "$lc_attr");
+  }
+  
+  $lc_attr= $localxml->{key}->{ews_service_log_file}->{value};
+  if (defined($lc_attr) && $lc_attr+0 != 0) {
+     main::setLdapServerConfig($hn, 'zimbraEwsServiceLogFile', "$lc_attr");
+  }
+
+  $lc_attr= $localxml->{key}->{compute_aggregate_quota_threads}->{value};
+  if (defined($lc_attr) && $lc_attr+0 != 0) {
+     main::setLdapServerConfig($hn, 'zimbraAdminComputeAggregateQuotaThreadPoolSize', "$lc_attr");
+  }
+  
+  $lc_attr= $localxml->{key}->{gal_group_cache_maxage}->{value};
+  if (defined($lc_attr) && $lc_attr+0 != 0) {
+     main::setLdapServerConfig($hn, 'zimbraGalGroupCacheMaxAge', "$lc_attr");
+  }
+  
+  $lc_attr= $localxml->{key}->{gal_group_cache_maxsize_domains}->{value};
+  if (defined($lc_attr) && $lc_attr+0 != 0) {
+     main::setLdapServerConfig($hn, 'zimbraGalGroupCacheMaxSizeDomains', "$lc_attr");
+  }
+
+  $lc_attr= $localxml->{key}->{gal_group_cache_maxsize_per_domain}->{value};
+  if (defined($lc_attr) && $lc_attr+0 != 0) {
+     main::setLdapServerConfig($hn, 'zimbraGalGroupCacheMaxSizePerDomain', "$lc_attr");
+  }
+  
+  $lc_attr= $localxml->{key}->{external_store_delete_max_ioexceptions}->{value};
+  if (defined($lc_attr) && $lc_attr+0 != 0) {
+     main::setLdapServerConfig($hn, 'zimbraStoreExternalMaxIOExceptionsForDelete', "$lc_attr");
+  }
+  
+  $lc_attr= $localxml->{key}->{external_store_local_cache_max_bytes}->{value};
+  if (defined($lc_attr) && $lc_attr+0 != 0) {
+     main::setLdapServerConfig($hn, 'zimbraStoreExternalLocalCacheMaxBytes', "$lc_attr");
+  }
+
+  $lc_attr= $localxml->{key}->{external_store_local_cache_max_files}->{value};
+  if (defined($lc_attr) && $lc_attr+0 != 0) {
+     main::setLdapServerConfig($hn, 'zimbraStoreExternalLocalCacheMaxFiles', "$lc_attr");
+  }
+  
+   $lc_attr= $localxml->{key}->{external_store_local_cache_min_lifetime}->{value};
+  if (defined($lc_attr) && $lc_attr+0 != 0) {
+     main::setLdapServerConfig($hn, 'zimbraStoreExternalLocalCacheMinLifetime', "$lc_attr");
+  }
+  
+  $lc_attr= $localxml->{key}->{javamail_imap_debug}->{value};
+  if (defined($lc_attr) && $lc_attr+0 != 0) {
+     main::setLdapServerConfig($hn, 'zimbraImapEnableDebug', "$lc_attr");
+  }
+
+  $lc_attr= $localxml->{key}->{javamail_imap_enable_starttls}->{value};
+  if (defined($lc_attr) && $lc_attr+0 != 0) {
+     main::setLdapServerConfig($hn, 'zimbraImapEnableStartTls', "$lc_attr");
+  }
+  
+  $lc_attr= $localxml->{key}->{javamail_imap_timeout}->{value};
+  if (defined($lc_attr) && $lc_attr+0 != 0) {
+     main::setLdapServerConfig($hn, 'zimbraImapTimeout', "$lc_attr");
+  }
+  
+  $lc_attr= $localxml->{key}->{javamail_pop3_debug}->{value};
+  if (defined($lc_attr) && $lc_attr+0 != 0) {
+     main::setLdapServerConfig($hn, 'zimbraPop3EnableDebug', "$lc_attr");
+  }
+
+  $lc_attr= $localxml->{key}->{javamail_pop3_enable_starttls}->{value};
+  if (defined($lc_attr) && $lc_attr+0 != 0) {
+     main::setLdapServerConfig($hn, 'zimbraPop3EnableStartTls', "$lc_attr");
+  }
+  
+  $lc_attr= $localxml->{key}->{javamail_pop3_timeout}->{value};
+  if (defined($lc_attr) && $lc_attr+0 != 0) {
+     main::setLdapServerConfig($hn, 'zimbraPop3Timeout', "$lc_attr");
+  }
+
+  $lc_attr= $localxml->{key}->{javamail_smtp_debug}->{value};
+  if (defined($lc_attr) && $lc_attr+0 != 0) {
+     main::setLdapServerConfig($hn, 'zimbraSmtpEnableDebug', "$lc_attr");
+  }
+  
+   $lc_attr= $localxml->{key}->{javamail_smtp_enable_starttls}->{value};
+  if (defined($lc_attr) && $lc_attr+0 != 0) {
+     main::setLdapServerConfig($hn, 'zimbraSmtpEnableStartTls', "$lc_attr");
+  }
+  
+  $lc_attr= $localxml->{key}->{javamail_smtp_timeout}->{value};
+  if (defined($lc_attr) && $lc_attr+0 != 0) {
+     main::setLdapServerConfig($hn, 'zimbraSmtpTimeout', "$lc_attr");
+  }
+
+  $lc_attr= $localxml->{key}->{javamail_zsmtp}->{value};
+  if (defined($lc_attr) && $lc_attr+0 != 0) {
+     main::setLdapServerConfig($hn, 'zimbraSmtpUseZimbraClient', "$lc_attr");
+  }
+  
+   
   main::deleteLocalConfig("acl_cache_target_maxsize");
   main::deleteLocalConfig("acl_cache_target_maxage");
   main::deleteLocalConfig("acl_cache_credential_maxsize"); 
@@ -2545,6 +2726,43 @@ sub upgrade900BETA1 {
   main::deleteLocalConfig("imap_throttle_command_limit");
   main::deleteLocalConfig("imap_throttle_fetch"); 
   main::deleteLocalConfig("data_source_imap_reuse_connections");
+  main::deleteLocalConfig("autoprov_initial_sleep_ms");
+  main::deleteLocalConfig("zimbra_admin_service_scheme");
+  main::deleteLocalConfig("calendar_apple_ical_compatible_canceled_instances");
+  main::deleteLocalConfig("zimbra_admin_waitset_default_request_timeout");
+  main::deleteLocalConfig("zimbra_admin_waitset_max_request_timeout");
+  main::deleteLocalConfig("zimbra_admin_waitset_min_request_timeout"); 
+  main::deleteLocalConfig("zimbra_mailbox_lock_max_waiting_threads");
+  main::deleteLocalConfig("zimbra_mailbox_lock_readwrite");
+  main::deleteLocalConfig("zimbra_mailbox_lock_timeout");
+  main::deleteLocalConfig("zimbra_session_limit_admin");
+  main::deleteLocalConfig("zimbra_session_limit_imap"); 
+  main::deleteLocalConfig("zimbra_session_limit_soap");
+  main::deleteLocalConfig("zimbra_session_limit_sync");
+  main::deleteLocalConfig("zimbra_session_max_pending_notifications");
+  main::deleteLocalConfig("zimbra_session_timeout_soap");
+  main::deleteLocalConfig("calendar_resource_ldap_search_maxsize"); 
+  main::deleteLocalConfig("check_dl_membership_enabled");
+  main::deleteLocalConfig("ews_service_wsdl_location");
+  main::deleteLocalConfig("ews_service_wsdl_location");
+  main::deleteLocalConfig("compute_aggregate_quota_threads");
+  main::deleteLocalConfig("gal_group_cache_maxage"); 
+  main::deleteLocalConfig("gal_group_cache_maxsize_domains");
+  main::deleteLocalConfig("gal_group_cache_maxsize_per_domain");
+  main::deleteLocalConfig("external_store_delete_max_ioexceptions");
+  main::deleteLocalConfig("external_store_local_cache_max_bytes");
+  main::deleteLocalConfig("external_store_local_cache_max_files"); 
+  main::deleteLocalConfig("external_store_local_cache_min_lifetime");
+  main::deleteLocalConfig("javamail_imap_debug"); 
+  main::deleteLocalConfig("javamail_imap_enable_starttls");
+  main::deleteLocalConfig("javamail_imap_timeout");
+  main::deleteLocalConfig("javamail_pop3_debug"); 
+  main::deleteLocalConfig("javamail_pop3_enable_starttls");
+  main::deleteLocalConfig("javamail_pop3_timeout"); 
+  main::deleteLocalConfig("javamail_smtp_debug");
+  main::deleteLocalConfig("javamail_smtp_enable_starttls");
+  main::deleteLocalConfig("javamail_smtp_timeout"); 
+  main::deleteLocalConfig("javamail_zsmtp"); 
   return 0;
 }
 
