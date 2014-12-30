@@ -527,7 +527,7 @@ $(ZIMLET_DIR)/$(ANT_BUILD_DIR)/dist/conf/zimbra.tld:
         -Dzimbra.buildinfo.host=$(HOST) package)
 
 $(STORE_DEST_DIR)/lib/ext/nginx-lookup/nginx-lookup.jar: $(STORE_DEST_DIR)/lib/ext/nginx-lookup $(NGINX_LOOKUP_DIR)/$(MAVEN_TARGET_DIR)/nginx-lookup.jar
-	cp -f $(NGINX_LOOKUP_DIR)/$(MAVEN_TARGET_DIR)/nginx-lookup-*.jar $@
+	cp -f $(NGINX_LOOKUP_DIR)/$(MAVEN_TARGET_DIR)/zimbra-nginxlookup-*.jar $@
 
 $(STORE_DEST_DIR)/lib/ext/nginx-lookup:
 	mkdir -p $@
