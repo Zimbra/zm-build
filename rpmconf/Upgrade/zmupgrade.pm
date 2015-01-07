@@ -2346,349 +2346,353 @@ sub upgrade900BETA1 {
   
   my $localxml = XMLin("/opt/zimbra/conf/localconfig.xml");
   my $lc_attr= $localxml->{key}->{acl_cache_target_maxsize}->{value};
-  if (defined($lc_attr) && $lc_attr+0 != 0) {
+  if (defined($lc_attr) && $lc_attr != 1024) {
      main::setLdapServerConfig($hn, 'zimbraAdminAclCacheTargetMaxsize', "$lc_attr");
   }
 
   $lc_attr= $localxml->{key}->{acl_cache_target_maxage}->{value};
-  if (defined($lc_attr) && $lc_attr+0 != 0) {
+  if (defined($lc_attr) && $lc_attr != 15) {
      main::setLdapServerConfig($hn, 'zimbraAdminAclCacheTargetMaxAge', "$lc_attr");
   }
   
   $lc_attr= $localxml->{key}->{acl_cache_credential_maxsize}->{value};
-  if (defined($lc_attr) && $lc_attr+0 != 0) {
+  if (defined($lc_attr) && $lc_attr != 512) {
      main::setLdapServerConfig($hn, 'zimbraAdminAclCacheCredentialMaxsize', "$lc_attr");
   }
 
   $lc_attr= $localxml->{key}->{acl_cache_enabled}->{value};
-  if (defined($lc_attr) && $lc_attr+0 != 0) {
-     main::setLdapServerConfig($hn, 'zimbraAdminAclCacheEnabled', "$lc_attr");
+  if (defined($lc_attr) && lc($lc_attr) ne "true") {
+     main::setLdapServerConfig($hn, 'zimbraAdminAclCacheEnabled', "FALSE");
   }
 
   $lc_attr= $localxml->{key}->{antispam_enable_restarts}->{value};
-  if (defined($lc_attr) && $lc_attr+0 != 0) {
-     main::setLdapServerConfig($hn, 'zimbraAntiSpamEnableRestarts', "$lc_attr");
+  if (defined($lc_attr) && lc($lc_attr) eq "true") {
+     main::setLdapServerConfig($hn, 'zimbraAntiSpamEnableRestarts', "TRUE");
   }
   
   $lc_attr= $localxml->{key}->{antispam_enable_rule_updates}->{value};
-  if (defined($lc_attr) && $lc_attr+0 != 0) {
-     main::setLdapServerConfig($hn, 'zimbraAntiSpamEnableRuleUpdates', "$lc_attr");
+  if (defined($lc_attr) && lc($lc_attr) eq "true") {
+     main::setLdapServerConfig($hn, 'zimbraAntiSpamEnableRuleUpdates', "TRUE");
   }
   
   $lc_attr= $localxml->{key}->{antispam_enable_rule_compilation}->{value};
-  if (defined($lc_attr) && $lc_attr+0 != 0) {
-     main::setLdapServerConfig($hn, 'zimbraAntiSpamEnableRuleCompilation', "$lc_attr");
+  if (defined($lc_attr) && lc($lc_attr) eq "true") {
+     main::setLdapServerConfig($hn, 'zimbraAntiSpamEnableRuleCompilation', "TRUE");
   }
   
   $lc_attr= $localxml->{key}->{calendar_cache_enabled}->{value};
-  if (defined($lc_attr) && $lc_attr+0 != 0) {
-     main::setLdapServerConfig($hn, 'zimbraCalendarCacheEnabled', "$lc_attr");
+  if (defined($lc_attr) && lc($lc_attr) ne "true") {
+     main::setLdapServerConfig($hn, 'zimbraCalendarCacheEnabled', "FALSE");
   }
   
   $lc_attr= $localxml->{key}->{calendar_cache_lru_size}->{value};
-  if (defined($lc_attr) && $lc_attr+0 != 0) {
+  if (defined($lc_attr) && $lc_attr != 1000) {
      main::setLdapServerConfig($hn, 'zimbraCalendarCacheLRUSize', "$lc_attr");
   }
   
   $lc_attr= $localxml->{key}->{calendar_cache_range_month_from}->{value};
-  if (defined($lc_attr) && $lc_attr+0 != 0) {
+  if (defined($lc_attr) && $lc_attr != 0) {
      main::setLdapServerConfig($hn, 'zimbraCalendarCacheRangeMonthFrom', "$lc_attr");
+  }
+  
+  $lc_attr= $localxml->{key}->{calendar_cache_range_months}->{value};
+  if (defined($lc_attr) && $lc_attr != 3) {
+     main::setLdapServerConfig($hn, 'zimbraCalendarCacheRangeMonths', "$lc_attr");
   }
 
   $lc_attr= $localxml->{key}->{calendar_cache_max_stale_items}->{value};
-  if (defined($lc_attr) && $lc_attr+0 != 0) {
+  if (defined($lc_attr) && $lc_attr != 10) {
      main::setLdapServerConfig($hn, 'zimbraCalendarMaxStaleItems', "$lc_attr");
   }
 
   $lc_attr= $localxml->{key}->{calendar_exchange_form_auth_url}->{value};
-  if (defined($lc_attr) && $lc_attr+0 != 0) {
+  if (defined($lc_attr) && $lc_attr ne "/exchweb/bin/auth/owaauth.dll" ) {
      main::setLdapServerConfig($hn, 'zimbraCalendarExchangeFormAuthURL', "$lc_attr");
   }
 
   $lc_attr= $localxml->{key}->{calendar_item_get_max_retries}->{value};
-  if (defined($lc_attr) && $lc_attr+0 != 0) {
+  if (defined($lc_attr) && $lc_attr != 100) {
      main::setLdapServerConfig($hn, 'zimbraCalendarItemGetMaxRetries', "$lc_attr");
   }
 
   $lc_attr= $localxml->{key}->{calendar_ics_import_full_parse_max_size}->{value};
-  if (defined($lc_attr) && $lc_attr+0 != 0) {
+  if (defined($lc_attr) && $lc_attr != 131072) {
      main::setLdapServerConfig($hn, 'zimbraCalendarIcsImportFullParseMaxSize', "$lc_attr");
   }
 
   $lc_attr= $localxml->{key}->{calendar_ics_export_buffer_size}->{value};
-  if (defined($lc_attr) && $lc_attr+0 != 0) {
+  if (defined($lc_attr) && $lc_attr != 131072) {
      main::setLdapServerConfig($hn, 'zimbraCalendarIcsExportBufferSize', "$lc_attr");
   }
 
   $lc_attr= $localxml->{key}->{calendar_allow_invite_without_method}->{value};
-  if (defined($lc_attr) && $lc_attr+0 != 0) {
-     main::setLdapServerConfig($hn, 'zimbraCalendarAllowInviteWithoutMethod', "$lc_attr");
+  if (defined($lc_attr) && lc($lc_attr) eq "true") {
+     main::setLdapServerConfig($hn, 'zimbraCalendarAllowInviteWithoutMethod', "TRUE");
   }
 
   $lc_attr= $localxml->{key}->{calendar_max_desc_in_metadata}->{value};
-  if (defined($lc_attr) && $lc_attr+0 != 0) {
+  if (defined($lc_attr) && $lc_attr != 4096) {
      main::setLdapServerConfig($hn, 'zimbraCalendarMaxDescInMetadata', "$lc_attr");
   }
   
   $lc_attr= $localxml->{key}->{calendar_freebusy_max_days}->{value};
-  if (defined($lc_attr) && $lc_attr+0 != 0) {
+  if (defined($lc_attr) && $lc_attr != 366) {
      main::setLdapServerConfig($hn, 'zimbraCalendarFreeBusyMaxDays', "$lc_attr");
   }
   
   $lc_attr= $localxml->{key}->{calendar_search_max_days}->{value};
-  if (defined($lc_attr) && $lc_attr+0 != 0) {
+  if (defined($lc_attr) && $lc_attr != 400) {
      main::setLdapServerConfig($hn, 'zimbraCalendarSearchMaxDays', "$lc_attr");
   }
   
   $lc_attr= $localxml->{key}->{imap_max_consecutive_error}->{value};
-  if (defined($lc_attr) && $lc_attr+0 != 0) {
+  if (defined($lc_attr) && $lc_attr != 5) {
      main::setLdapServerConfig($hn, 'zimbraImapMaxConsecutiveError', "$lc_attr");
   }
   
   $lc_attr= $localxml->{key}->{imap_inactive_session_cache_size}->{value};
-  if (defined($lc_attr) && $lc_attr+0 != 0) {
+  if (defined($lc_attr) && $lc_attr != 10000) {
      main::setLdapServerConfig($hn, 'zimbraImapInactiveSessionCacheSize', "$lc_attr");
   }
   
   $lc_attr= $localxml->{key}->{imap_use_ehcache}->{value};
-  if (defined($lc_attr) && $lc_attr+0 != 0) {
-     main::setLdapServerConfig($hn, 'zimbraImapUseEhcache', "$lc_attr");
+  if (defined($lc_attr) && lc($lc_attr) ne "true") {
+     main::setLdapServerConfig($hn, 'zimbraImapUseEhcache', "FALSE");
   }
   
   $lc_attr= $localxml->{key}->{imap_write_timeout}->{value};
-  if (defined($lc_attr) && $lc_attr+0 != 0) {
+  if (defined($lc_attr) && $lc_attr != 60) {
      main::setLdapServerConfig($hn, 'zimbraImapWriteTimeout', "$lc_attr");
   } 
   
   $lc_attr= $localxml->{key}->{imap_write_chunk_size}->{value};
-  if (defined($lc_attr) && $lc_attr+0 != 0) {
+  if (defined($lc_attr) && $lc_attr != 8192) {
      main::setLdapServerConfig($hn, 'zimbraImapWriteChunkSize', "$lc_attr");
   }
   
   $lc_attr= $localxml->{key}->{imap_thread_keep_alive_time}->{value};
-  if (defined($lc_attr) && $lc_attr+0 != 0) {
+  if (defined($lc_attr) && $lc_attr != 60) {
      main::setLdapServerConfig($hn, 'zimbraImapThreadKeepAliveTime', "$lc_attr");
   }
   
   $lc_attr= $localxml->{key}->{imap_max_idle_time}->{value};
-  if (defined($lc_attr) && $lc_attr+0 != 0) {
+  if (defined($lc_attr) && $lc_attr != 60) {
      main::setLdapServerConfig($hn, 'zimbraImapMaxIdleTime', "$lc_attr");
   }
   
   $lc_attr= $localxml->{key}->{imap_authenticated_max_idle_time}->{value};
-  if (defined($lc_attr) && $lc_attr+0 != 0) {
+  if (defined($lc_attr) && $lc_attr != 1800) {
      main::setLdapServerConfig($hn, 'zimbraImapAuthenticatedMaxIdleTime', "$lc_attr");
   }
   
   $lc_attr= $localxml->{key}->{imap_throttle_ip_limit}->{value};
-  if (defined($lc_attr) && $lc_attr+0 != 0) {
+  if (defined($lc_attr) && $lc_attr != 5000) {
      main::setLdapServerConfig($hn, 'zimbraImapThrottleIpLimit', "$lc_attr");
   }
   
   $lc_attr= $localxml->{key}->{imap_throttle_acct_limit}->{value};
-  if (defined($lc_attr) && $lc_attr+0 != 0) {
+  if (defined($lc_attr) && $lc_attr != 5000) {
      main::setLdapServerConfig($hn, 'zimbraImapThrottleAcctLimit', "$lc_attr");
   }
   
   $lc_attr= $localxml->{key}->{imap_throttle_command_limit}->{value};
-  if (defined($lc_attr) && $lc_attr+0 != 0) {
+  if (defined($lc_attr) && $lc_attr != 25) {
      main::setLdapServerConfig($hn, 'zimbraImapThrottleCommandLimit', "$lc_attr");
   }
   
   $lc_attr= $localxml->{key}->{imap_throttle_fetch}->{value};
-  if (defined($lc_attr) && $lc_attr+0 != 0) {
-     main::setLdapServerConfig($hn, 'zimbraImapThrottleFetch', "$lc_attr");
+  if (defined($lc_attr) && lc($lc_attr) ne "true") {
+     main::setLdapServerConfig($hn, 'zimbraImapThrottleFetch', "FALSE");
   }
   
   $lc_attr= $localxml->{key}->{data_source_imap_reuse_connections}->{value};
-  if (defined($lc_attr) && $lc_attr+0 != 0) {
-     main::setLdapServerConfig($hn, 'zimbraImapReuseDataSourceConnections', "$lc_attr");
+  if (defined($lc_attr) && lc($lc_attr) eq "true") {
+     main::setLdapServerConfig($hn, 'zimbraImapReuseDataSourceConnections', "TRUE");
   }
-  
-    
+
   $lc_attr= $localxml->{key}->{autoprov_initial_sleep_ms}->{value};
-  if (defined($lc_attr) && $lc_attr+0 != 0) {
-     main::setLdapServerConfig($hn, 'zimbraAutoProvInitialSleepInMillis', "$lc_attr");
+  if (defined($lc_attr) && $lc_attr != 300000) {
+     main::setLdapServerConfig($hn, 'zimbraAutoProvInitialSleep', "$lc_attr");
   }
   
   $lc_attr= $localxml->{key}->{zimbra_admin_service_scheme}->{value};
-  if (defined($lc_attr) && $lc_attr+0 != 0) {
-     main::setLdapServerConfig($hn, 'zimbraAdminServiceScheme', "$lc_attr");
+  if (defined($lc_attr) && $lc_attr ne "https://") {
+     main::setLdapServerConfig($hn, 'zimbraAdminServiceScheme', "http://");
   }
 
   $lc_attr= $localxml->{key}->{calendar_apple_ical_compatible_canceled_instances}->{value};
-  if (defined($lc_attr) && $lc_attr+0 != 0) {
-     main::setLdapServerConfig($hn, 'zimbraCalendarAppleICalCompatibleCanceledInstances', "$lc_attr");
+  if (defined($lc_attr) && lc($lc_attr) ne "true") {
+     main::setLdapServerConfig($hn, 'zimbraCalendarAppleICalCompatibleCanceledInstances', "FALSE");
   }
   
   $lc_attr= $localxml->{key}->{zimbra_admin_waitset_default_request_timeout}->{value};
-  if (defined($lc_attr) && $lc_attr+0 != 0) {
+  if (defined($lc_attr) && $lc_attr != 3000) {
      main::setLdapServerConfig($hn, 'zimbraAdminWaitsetDefaultRequestTimeout', "$lc_attr");
   }
   
   $lc_attr= $localxml->{key}->{zimbra_admin_waitset_max_request_timeout}->{value};
-  if (defined($lc_attr) && $lc_attr+0 != 0) {
+  if (defined($lc_attr) && $lc_attr != 3600) {
      main::setLdapServerConfig($hn, 'zimbraAdminWaitsetMaxRequestTimeout', "$lc_attr");
   }
 
   $lc_attr= $localxml->{key}->{zimbra_admin_waitset_min_request_timeout}->{value};
-  if (defined($lc_attr) && $lc_attr+0 != 0) {
+  if (defined($lc_attr) && $lc_attr != 0) {
      main::setLdapServerConfig($hn, 'zimbraAdminWaitsetMinRequestTimeout', "$lc_attr");
   }
   
    $lc_attr= $localxml->{key}->{zimbra_mailbox_lock_max_waiting_threads}->{value};
-  if (defined($lc_attr) && $lc_attr+0 != 0) {
+  if (defined($lc_attr) && $lc_attr != 15) {
      main::setLdapServerConfig($hn, 'zimbraMailboxLockMaxWaitingThreads', "$lc_attr");
   }
   
   $lc_attr= $localxml->{key}->{zimbra_mailbox_lock_readwrite}->{value};
-  if (defined($lc_attr) && $lc_attr+0 != 0) {
-     main::setLdapServerConfig($hn, 'zimbraMailBoxLockReadWrite', "$lc_attr");
+  if (defined($lc_attr) && lc($lc_attr) ne "true") {
+     main::setLdapServerConfig($hn, 'zimbraMailBoxLockReadWrite', "FALSE");
   }
 
   $lc_attr= $localxml->{key}->{zimbra_mailbox_lock_timeout}->{value};
-  if (defined($lc_attr) && $lc_attr+0 != 0) {
+  if (defined($lc_attr) && $lc_attr != 60) {
      main::setLdapServerConfig($hn, 'zimbraMailBoxLockTimeout', "$lc_attr");
   }
   
   $lc_attr= $localxml->{key}->{zimbra_session_limit_admin}->{value};
-  if (defined($lc_attr) && $lc_attr+0 != 0) {
+  if (defined($lc_attr) && $lc_attr != 5) {
      main::setLdapServerConfig($hn, 'zimbraAdminSessionLimit', "$lc_attr");
   }
   
   $lc_attr= $localxml->{key}->{zimbra_session_limit_imap}->{value};
-  if (defined($lc_attr) && $lc_attr+0 != 0) {
+  if (defined($lc_attr) && $lc_attr != 15) {
      main::setLdapServerConfig($hn, 'zimbraImapSessionLimit', "$lc_attr");
   }
 
   $lc_attr= $localxml->{key}->{zimbra_session_limit_soap}->{value};
-  if (defined($lc_attr) && $lc_attr+0 != 0) {
+  if (defined($lc_attr) && $lc_attr != 5) {
      main::setLdapServerConfig($hn, 'zimbraSoapSessionLimit', "$lc_attr");
   }
   
   $lc_attr= $localxml->{key}->{zimbra_session_limit_sync}->{value};
-  if (defined($lc_attr) && $lc_attr+0 != 0) {
+  if (defined($lc_attr) && $lc_attr != 5) {
      main::setLdapServerConfig($hn, 'zimbraSyncSessionLimit', "$lc_attr");
   }
 
   $lc_attr= $localxml->{key}->{zimbra_session_max_pending_notifications}->{value};
-  if (defined($lc_attr) && $lc_attr+0 != 0) {
+  if (defined($lc_attr) && $lc_attr != 400) {
      main::setLdapServerConfig($hn, 'zimbraSessionMaxPendingNotifications', "$lc_attr");
   }
   
    $lc_attr= $localxml->{key}->{zimbra_session_timeout_soap}->{value};
-  if (defined($lc_attr) && $lc_attr+0 != 0) {
+  if (defined($lc_attr) && $lc_attr != 600) {
      main::setLdapServerConfig($hn, 'zimbraSoapSessionTimeout', "$lc_attr");
   }
   
   $lc_attr= $localxml->{key}->{calendar_resource_ldap_search_maxsize}->{value};
-  if (defined($lc_attr) && $lc_attr+0 != 0) {
+  if (defined($lc_attr) && $lc_attr != 1000) {
      main::setLdapServerConfig($hn, 'zimbraCalendarResourceLdapSearchMaxSize', "$lc_attr");
   }
 
   $lc_attr= $localxml->{key}->{check_dl_membership_enabled}->{value};
-  if (defined($lc_attr) && $lc_attr+0 != 0) {
-     main::setLdapServerConfig($hn, 'zimbraDesktopCalendarCheckDLMembership', "$lc_attr");
+  if (defined($lc_attr) && lc($lc_attr) ne "true") {
+     main::setLdapServerConfig($hn, 'zimbraDesktopCalendarCheckDLMembership', "FALSE");
   }
   
   $lc_attr= $localxml->{key}->{ews_service_wsdl_location}->{value};
-  if (defined($lc_attr) && $lc_attr+0 != 0) {
+  if (defined($lc_attr) && $lc_attr ne "/opt/zimbra/lib/ext/zimbraews/") {
      main::setLdapServerConfig($hn, 'zimbraEwsWsdlLocation', "$lc_attr");
   }
   
   $lc_attr= $localxml->{key}->{ews_service_log_file}->{value};
-  if (defined($lc_attr) && $lc_attr+0 != 0) {
+  if (defined($lc_attr) && $lc_attr ne "/opt/zimbra/log/ews.log") {
      main::setLdapServerConfig($hn, 'zimbraEwsServiceLogFile', "$lc_attr");
   }
 
   $lc_attr= $localxml->{key}->{compute_aggregate_quota_threads}->{value};
-  if (defined($lc_attr) && $lc_attr+0 != 0) {
+  if (defined($lc_attr) && $lc_attr != 10) {
      main::setLdapServerConfig($hn, 'zimbraAdminComputeAggregateQuotaThreadPoolSize', "$lc_attr");
   }
   
   $lc_attr= $localxml->{key}->{gal_group_cache_maxage}->{value};
-  if (defined($lc_attr) && $lc_attr+0 != 0) {
+  if (defined($lc_attr) && $lc_attr != 10080) {
      main::setLdapServerConfig($hn, 'zimbraGalGroupCacheMaxAge', "$lc_attr");
   }
   
   $lc_attr= $localxml->{key}->{gal_group_cache_maxsize_domains}->{value};
-  if (defined($lc_attr) && $lc_attr+0 != 0) {
+  if (defined($lc_attr) && $lc_attr != 10) {
      main::setLdapServerConfig($hn, 'zimbraGalGroupCacheMaxSizeDomains', "$lc_attr");
   }
 
   $lc_attr= $localxml->{key}->{gal_group_cache_maxsize_per_domain}->{value};
-  if (defined($lc_attr) && $lc_attr+0 != 0) {
+  if (defined($lc_attr) && $lc_attr != 0) {
      main::setLdapServerConfig($hn, 'zimbraGalGroupCacheMaxSizePerDomain', "$lc_attr");
   }
   
   $lc_attr= $localxml->{key}->{external_store_delete_max_ioexceptions}->{value};
-  if (defined($lc_attr) && $lc_attr+0 != 0) {
+  if (defined($lc_attr) && $lc_attr != 25) {
      main::setLdapServerConfig($hn, 'zimbraStoreExternalMaxIOExceptionsForDelete', "$lc_attr");
   }
   
   $lc_attr= $localxml->{key}->{external_store_local_cache_max_bytes}->{value};
-  if (defined($lc_attr) && $lc_attr+0 != 0) {
-     main::setLdapServerConfig($hn, 'zimbraStoreExternalLocalCacheMaxBytes', "$lc_attr");
+  if (defined($lc_attr) && $lc_attr != 1073741824) {
+     main::setLdapServerConfig($hn, 'zimbraStoreExternalLocalCacheMaxSize', "$lc_attr");
   }
 
   $lc_attr= $localxml->{key}->{external_store_local_cache_max_files}->{value};
-  if (defined($lc_attr) && $lc_attr+0 != 0) {
+  if (defined($lc_attr) && $lc_attr != 10000) {
      main::setLdapServerConfig($hn, 'zimbraStoreExternalLocalCacheMaxFiles', "$lc_attr");
   }
   
    $lc_attr= $localxml->{key}->{external_store_local_cache_min_lifetime}->{value};
-  if (defined($lc_attr) && $lc_attr+0 != 0) {
+  if (defined($lc_attr) && $lc_attr != 60000) {
      main::setLdapServerConfig($hn, 'zimbraStoreExternalLocalCacheMinLifetime', "$lc_attr");
   }
   
   $lc_attr= $localxml->{key}->{javamail_imap_debug}->{value};
-  if (defined($lc_attr) && $lc_attr+0 != 0) {
-     main::setLdapServerConfig($hn, 'zimbraImapEnableDebug', "$lc_attr");
+  if (defined($lc_attr) && lc($lc_attr) eq "true") {
+     main::setLdapServerConfig($hn, 'zimbraImapEnableDebug', "TRUE");
   }
 
   $lc_attr= $localxml->{key}->{javamail_imap_enable_starttls}->{value};
-  if (defined($lc_attr) && $lc_attr+0 != 0) {
-     main::setLdapServerConfig($hn, 'zimbraImapEnableStartTls', "$lc_attr");
+  if (defined($lc_attr) && lc($lc_attr) ne "true") {
+     main::setLdapServerConfig($hn, 'zimbraImapEnableStartTls', "FALSE");
   }
   
   $lc_attr= $localxml->{key}->{javamail_imap_timeout}->{value};
-  if (defined($lc_attr) && $lc_attr+0 != 0) {
+  if (defined($lc_attr) && $lc_attr != 60) {
      main::setLdapServerConfig($hn, 'zimbraImapTimeout', "$lc_attr");
   }
   
   $lc_attr= $localxml->{key}->{javamail_pop3_debug}->{value};
-  if (defined($lc_attr) && $lc_attr+0 != 0) {
-     main::setLdapServerConfig($hn, 'zimbraPop3EnableDebug', "$lc_attr");
+  if (defined($lc_attr) && lc($lc_attr) eq "true") {
+     main::setLdapServerConfig($hn, 'zimbraPop3EnableDebug', "TRUE");
   }
 
   $lc_attr= $localxml->{key}->{javamail_pop3_enable_starttls}->{value};
-  if (defined($lc_attr) && $lc_attr+0 != 0) {
-     main::setLdapServerConfig($hn, 'zimbraPop3EnableStartTls', "$lc_attr");
+  if (defined($lc_attr) && lc($lc_attr) ne "true") {
+     main::setLdapServerConfig($hn, 'zimbraPop3EnableStartTls', "FALSE");
   }
   
   $lc_attr= $localxml->{key}->{javamail_pop3_timeout}->{value};
-  if (defined($lc_attr) && $lc_attr+0 != 0) {
+  if (defined($lc_attr) && $lc_attr != 60) {
      main::setLdapServerConfig($hn, 'zimbraPop3Timeout', "$lc_attr");
   }
 
   $lc_attr= $localxml->{key}->{javamail_smtp_debug}->{value};
-  if (defined($lc_attr) && $lc_attr+0 != 0) {
-     main::setLdapServerConfig($hn, 'zimbraSmtpEnableDebug', "$lc_attr");
+  if (defined($lc_attr) && lc($lc_attr) eq "true") {
+     main::setLdapServerConfig($hn, 'zimbraSmtpEnableDebug', "TRUE");
   }
   
    $lc_attr= $localxml->{key}->{javamail_smtp_enable_starttls}->{value};
-  if (defined($lc_attr) && $lc_attr+0 != 0) {
-     main::setLdapServerConfig($hn, 'zimbraSmtpEnableStartTls', "$lc_attr");
+  if (defined($lc_attr) && lc($lc_attr) ne "true") {
+     main::setLdapServerConfig($hn, 'zimbraSmtpEnableStartTls', "FALSE");
   }
   
   $lc_attr= $localxml->{key}->{javamail_smtp_timeout}->{value};
-  if (defined($lc_attr) && $lc_attr+0 != 0) {
+  if (defined($lc_attr) && $lc_attr != 60) {
      main::setLdapServerConfig($hn, 'zimbraSmtpTimeout', "$lc_attr");
   }
 
   $lc_attr= $localxml->{key}->{javamail_zsmtp}->{value};
-  if (defined($lc_attr) && $lc_attr+0 != 0) {
-     main::setLdapServerConfig($hn, 'zimbraSmtpUseZimbraClient', "$lc_attr");
+  if (defined($lc_attr) && lc($lc_attr) ne "true") {
+     main::setLdapServerConfig($hn, 'zimbraSmtpUseZimbraClient', "FALSE");
   }
   
    
@@ -2744,7 +2748,7 @@ sub upgrade900BETA1 {
   main::deleteLocalConfig("calendar_resource_ldap_search_maxsize"); 
   main::deleteLocalConfig("check_dl_membership_enabled");
   main::deleteLocalConfig("ews_service_wsdl_location");
-  main::deleteLocalConfig("ews_service_wsdl_location");
+  main::deleteLocalConfig("ews_service_log_file");
   main::deleteLocalConfig("compute_aggregate_quota_threads");
   main::deleteLocalConfig("gal_group_cache_maxage"); 
   main::deleteLocalConfig("gal_group_cache_maxsize_domains");
