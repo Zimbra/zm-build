@@ -385,7 +385,7 @@ sub upgrade {
     }
     my $size = $result->count;
     if($size != 1) {
-      warn "Size error: Invalid response from ldap master.\n";
+      warn "Size error: Invalid response from ldap master. Please verify cn=$ldap_master_host,cn=servers,cn=zimbra exists in ldap and is a master ldap server.\n";
     }
     my ($lmMajor, $lmMinor, $lmMicro, $lmType);
     my $entry = $result->entry(0);
