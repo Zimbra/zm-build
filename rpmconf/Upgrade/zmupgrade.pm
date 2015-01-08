@@ -41,7 +41,7 @@ chomp $rundir;
 my $scriptDir = "/opt/zimbra/libexec/scripts";
 
 my $lowVersion = 52;
-my $hiVersion = 120; # this should be set to the DB version expected by current server code
+my $hiVersion = 103; # this should be set to the DB version expected by current server code
 
 my $needSlapIndexing = 0;
 my $mysqlcnfUpdated = 0;
@@ -65,6 +65,12 @@ chomp($isLdapMaster);
 my $ZMPROV = "/opt/zimbra/bin/zmprov -r -m -l --";
 
 my %updateScripts = (
+  '53' => "migrate20080930-MucService.pl",             # this upgrades to 60 for 6_0_0 GA
+   # 54-59 skipped for possible FRANKLIN use
+  '60' => "migrate20090315-MobileDevices.pl",
+  '61' => "migrate20090406-DataSourceItemTable.pl",    # 6.0.0_BETA1
+  '62' => "migrate20090430-highestindexed.pl",         # 6.0.0_BETA2
+  '63' => "migrate20100106-MobileDevices.pl",          # 6.0.5_GA
   '64' => "migrate20100926-Dumpster.pl",               # 7.0.0_BETA1
   #'65' => "migrate20101123-MobileDevices.pl",          # this upgrades to 80 for 8.0.0_BETA1
   # Consolidating the scripts which updates the db.version to 80..90
@@ -86,12 +92,26 @@ my %updateScripts = (
   # 93-99 skipped for possible IRONMAIDEN use
   '100' => "migrate20140319-MailItemPrevFolders.pl", # 8.5.0
   '101' => "migrate20140328-EnforceTableCharset.pl", #8.5.0
-  '102' => "migrate20140624-DropMysqlIndexes.pl",  #8.5.0
-  '103' => "migrate20141218-mailItemTimestampsToMilliseconds.pl"
-  #104-119 skipped for JUDASPRIEST use
+  '102' => "migrate20140624-DropMysqlIndexes.pl"  #8.5.0
 );
 
 my %updateFuncs = (
+  "6.0.0_GA" => \&upgrade600GA,
+  "6.0.1_GA" => \&upgrade601GA,
+  "6.0.2_GA" => \&upgrade602GA,
+  "6.0.3_GA" => \&upgrade603GA,
+  "6.0.4_GA" => \&upgrade604GA,
+  "6.0.5_GA" => \&upgrade605GA,
+  "6.0.6_GA" => \&upgrade606GA,
+  "6.0.7_GA" => \&upgrade607GA,
+  "6.0.8_GA" => \&upgrade608GA,
+  "6.0.9_GA" => \&upgrade609GA,
+  "6.0.10_GA" => \&upgrade6010GA,
+  "6.0.11_GA" => \&upgrade6011GA,
+  "6.0.13_GA" => \&upgrade6013GA,
+  "6.0.14_GA" => \&upgrade6014GA,
+  "6.0.15_GA" => \&upgrade6015GA,
+  "6.0.16_GA" => \&upgrade6016GA,
   "7.0.0_BETA1" => \&upgrade700BETA1,
   "7.0.0_BETA2" => \&upgrade700BETA2,
   "7.0.0_BETA3" => \&upgrade700BETA3,
@@ -140,6 +160,22 @@ my %updateFuncs = (
 );
 
 my @versionOrder = (
+  "6.0.0_GA",
+  "6.0.1_GA",
+  "6.0.2_GA",
+  "6.0.3_GA",
+  "6.0.4_GA",
+  "6.0.5_GA",
+  "6.0.6_GA",
+  "6.0.7_GA",
+  "6.0.8_GA",
+  "6.0.9_GA",
+  "6.0.10_GA",
+  "6.0.11_GA",
+  "6.0.13_GA",
+  "6.0.14_GA",
+  "6.0.15_GA",
+  "6.0.16_GA",
   "7.0.0_BETA1",
   "7.0.0_BETA2",
   "7.0.0_BETA3",
@@ -227,7 +263,7 @@ sub upgrade {
     $targetVersion =~ /(\d+)\.(\d+)\.(\d+_[^_]*)/;
   ($targetMicroMicro, $targetType) = $targetMicro =~ /(\d+)_(.*)/;
 
-  if ($startMajor < 7) {
+  if ($startMajor < 6) {
     main::progress("ERROR: Upgrading from a ZCS version less than 6.0.0_GA is not supported\n");
     return 1; 
   }
@@ -241,7 +277,39 @@ sub upgrade {
 
   if (stopZimbra()) { return 1; }
 
-  if ($startVersion eq "7.0.0_BETA1") {
+  if ($startVersion eq "6.0.0_GA") {
+    main::progress("This appears to be 6.0.0_GA\n");
+  } elsif ($startVersion eq "6.0.1_GA") {
+    main::progress("This appears to be 6.0.1_GA\n");
+  } elsif ($startVersion eq "6.0.2_GA") {
+    main::progress("This appears to be 6.0.2_GA\n");
+  } elsif ($startVersion eq "6.0.3_GA") {
+    main::progress("This appears to be 6.0.3_GA\n");
+  } elsif ($startVersion eq "6.0.4_GA") {
+    main::progress("This appears to be 6.0.4_GA\n");
+  } elsif ($startVersion eq "6.0.5_GA") {
+    main::progress("This appears to be 6.0.5_GA\n");
+  } elsif ($startVersion eq "6.0.6_GA") {
+    main::progress("This appears to be 6.0.6_GA\n");
+  } elsif ($startVersion eq "6.0.7_GA") {
+    main::progress("This appears to be 6.0.7_GA\n");
+  } elsif ($startVersion eq "6.0.8_GA") {
+    main::progress("This appears to be 6.0.8_GA\n");
+  } elsif ($startVersion eq "6.0.9_GA") {
+    main::progress("This appears to be 6.0.9_GA\n");
+  } elsif ($startVersion eq "6.0.10_GA") {
+    main::progress("This appears to be 6.0.10_GA\n");
+  } elsif ($startVersion eq "6.0.11_GA") {
+    main::progress("This appears to be 6.0.11_GA\n");
+  } elsif ($startVersion eq "6.0.13_GA") {
+    main::progress("This appears to be 6.0.13_GA\n");
+  } elsif ($startVersion eq "6.0.14_GA") {
+    main::progress("This appears to be 6.0.14_GA\n");
+  } elsif ($startVersion eq "6.0.15_GA") {
+    main::progress("This appears to be 6.0.15_GA\n");
+  } elsif ($startVersion eq "6.0.16_GA") {
+    main::progress("This appears to be 6.0.16_GA\n");
+  } elsif ($startVersion eq "7.0.0_BETA1") {
     main::progress("This appears to be 7.0.0_BETA1\n");
   } elsif ($startVersion eq "7.0.0_BETA2") {
     main::progress("This appears to be 7.0.0_BETA2\n");
@@ -533,6 +601,389 @@ sub upgrade {
     stopLdap();
   }
 
+  return 0;
+}
+
+sub upgrade600GA {
+  my ($startBuild, $targetVersion, $targetBuild) = (@_);
+  main::progress("Updating from 6.0.0_GA\n");
+  if (main::isInstalled("zimbra-mta")) {
+    my @mtalist = main::getAllServers("mta");
+    my $servername = main::getLocalConfig("zimbra_server_hostname");
+    main::setLocalConfig("zmtrainsa_cleanup_host", "true")
+      if ("$servername" eq "$mtalist[0]");
+  }
+  return 0;
+}
+
+sub upgrade601GA {
+  my ($startBuild, $targetVersion, $targetBuild) = (@_);
+  main::progress("Updating from 6.0.1_GA\n");
+  return 0;
+}
+
+sub upgrade602GA {
+  my ($startBuild, $targetVersion, $targetBuild) = (@_);
+  main::progress("Updating from 6.0.2_GA\n");
+  if (main::isInstalled("zimbra-ldap") && $isLdapMaster) {
+    main::runAsZimbra("zmjava com.zimbra.cs.account.ldap.upgrade.LdapUpgrade -b 41000 -v");
+    main::setLdapGlobalConfig("zimbraHttpDebugHandlerEnabled", "TRUE");
+  }
+  if (main::isInstalled("zimbra-store")) {
+    # 40536
+    system("rm -rf /opt/zimbra/zimlets-deployed/zimlet")
+      if ( -d "/opt/zimbra/zimlets-deployed/zimlet");
+    system("rm -rf /opt/zimbra/mailboxd/webapps/service/zimlet")
+      if ( -d "/opt/zimbra/mailboxd/webapps/service/zimlet");
+    # 40839
+    main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-pid-file-fixup --section=mysqld_safe --key=pid-file --unset /opt/zimbra/conf/my.cnf");
+    main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.post-${targetVersion}-pid-file-fixup --section=mysqld_safe --key=pid-file --set --value=/opt/zimbra/db/mysql.pid /opt/zimbra/conf/my.cnf");
+  }
+  return 0;
+}
+
+sub upgrade603GA {
+  my ($startBuild, $targetVersion, $targetBuild) = (@_);
+  main::progress("Updating from 6.0.3_GA\n");
+  return 0;
+}
+
+sub upgrade604GA {
+  my ($startBuild, $targetVersion, $targetBuild) = (@_);
+  main::progress("Updating from 6.0.4_GA\n");
+  return 0;
+}
+
+sub upgrade605GA {
+  my ($startBuild, $targetVersion, $targetBuild) = (@_);
+  main::progress("Updating from 6.0.5_GA\n");
+  &cleanPostfixLC;
+  if (main::isInstalled("zimbra-store")) {
+    my $servername = main::getLocalConfig("zimbra_server_hostname");
+    my $serverId = main::getLdapServerValue("zimbraId", $servername);
+    upgradeLdapConfigValue("zimbraVersionCheckServer", $serverId, "");
+  }
+
+  if (main::isInstalled("zimbra-ldap")) {
+    if ($isLdapMaster) {
+      main::runAsZimbra("zmjava com.zimbra.cs.account.ldap.upgrade.LdapUpgrade -b 42877 -v");
+      main::runAsZimbra("zmjava com.zimbra.cs.account.ldap.upgrade.LdapUpgrade -b 43147 -v");
+    }
+    # 43040, must be done on all LDAP servers
+    my $ldap_pass = qx($su "zmlocalconfig -s -m nokey ldap_root_password");
+    my $ldap;
+    chomp($ldap_pass);
+    unless($ldap = Net::LDAP->new('ldapi://%2fopt%2fzimbra%2fdata%2fldap%2fstate%2frun%2fldapi/')) {
+       main::progress("Unable to contact to ldapi: $!\n");
+    }
+    my $result = $ldap->bind("cn=config", password => $ldap_pass);
+    unless($result->code()) {
+      $result = $ldap->modify( "cn=config", add => { 'olcWriteTimeout' => '0'});
+    }
+    # 43701, replica's only
+    if (!$isLdapMaster) {
+      $result = $ldap->search(
+        base => "olcDatabase={2}mdb,cn=config",
+        filter => "(olcSyncrepl=*)",
+        attrs => ['olcSyncrepl']
+      );
+      my $entry=$result->entry(0);
+      my $attr = $entry->get_value("olcSyncrepl");
+      if ($attr !~ /tls_cacertdir/) {
+        $attr =  $attr . " tls_cacertdir=/opt/zimbra/conf/ca";
+      }
+
+      $result = $ldap->modify(
+        $entry->dn,
+        replace => {
+          olcSyncrepl => "$attr",
+        }
+      );
+    }
+    $result = $ldap->unbind;
+  }
+  return 0;
+}
+
+sub upgrade606GA {
+  my ($startBuild, $targetVersion, $targetBuild) = (@_);
+  main::progress("Updating from 6.0.6_GA\n");
+  
+  # 42877 - Fix ACLs for new attrs for local GAL access
+  if (main::isInstalled("zimbra-ldap")) {
+    my $ldap_pass = qx($su "zmlocalconfig -s -m nokey ldap_root_password");
+    chomp($ldap_pass);
+    my $ldap;
+    unless($ldap = Net::LDAP->new('ldapi://%2fopt%2fzimbra%2fdata%2fldap%2fstate%2frun%2fldapi/')) {
+       main::progress("Unable to contact to ldapi: $!\n");
+    }
+    my $result = $ldap->bind("cn=config", password => $ldap_pass);
+    my $dn="olcDatabase={2}mdb,cn=config";
+    if ($isLdapMaster) {
+      $result = $ldap->search(
+                        base=> "cn=accesslog",
+                        filter=>"(objectClass=*)",
+                        scope => "base",
+                        attrs => ['1.1'],
+      );
+      my $size = $result->count;
+      if ($size > 0 ) {
+        $dn="olcDatabase={3}mdb,cn=config";
+      }
+    }
+    $result = $ldap->search(
+      base=> "$dn",
+      filter=>"(objectClass=*)",
+      scope => "base",
+      attrs => ['olcAccess'],
+    );
+    my $entry=$result->entry($result->count-1);
+    my @attrvals=$entry->get_value("olcAccess");
+    my $aclNumber=-1;
+    my $attrMod="";
+
+    foreach my $attr (@attrvals) {
+      if ($attr =~ /telephoneNumber/) {
+        if ($attr !~ /homePhone/) {
+          ($aclNumber) = $attr =~ /^\{(\d+)\}*/;
+          $attrMod=$attr;
+        }
+      }
+    }
+
+    if ($aclNumber != -1 && $attrMod ne "") {
+      $attrMod =~ s/uid/uid,homePhone,pager,mobile/;
+      $result = $ldap->modify(
+          $dn,
+          delete => {olcAccess => "{$aclNumber}"},
+      );
+      $result = $ldap->modify(
+          $dn,
+          add =>{olcAccess=>"$attrMod"},
+      );
+    }
+    $ldap->unbind;
+  }
+  return 0;
+}
+
+sub upgrade607GA {
+  my ($startBuild, $targetVersion, $targetBuild) = (@_);
+  main::progress("Updating from 6.0.7_GA\n");
+
+  if (main::isInstalled("zimbra-core")) {
+    #46801
+    my ($micro) = $startMicro =~ /(\d+)_.*/;
+    if ($startMajor < 6 || ($startMajor == 6 && $micro < 5) ) {
+      main::setLocalConfig("migrate_user_zimlet_prefs", "true");
+    } else {
+      main::setLocalConfig("migrate_user_zimlet_prefs", "false");
+    }
+    # 46840
+    upgradeLocalConfigValue("ldap_cache_group_maxsize", "2000", "200");
+  }
+
+  if (main::isInstalled("zimbra-mta")) {
+    #bug 27165
+    if ( -f "/opt/zimbra/data/clamav/db/daily.cvd" ) {
+     unlink("/opt/zimbra/data/clamav/db/daily.cvd");
+    }
+    if ( -f "/opt/zimbra/data/clamav/db/main.cvd" ) {
+     unlink("/opt/zimbra/data/clamav/db/main.cvd");
+    } 
+    # bug 47066
+    main::setLocalConfig("postfix_always_add_missing_headers", "yes");
+  }
+  if (main::isInstalled("zimbra-ldap")) {
+    if (!$isLdapMaster) {
+      # 46508 upgrade step for keepalive setting
+      my $ldap_pass = qx($su "zmlocalconfig -s -m nokey ldap_root_password");
+      my $ldap;
+      chomp($ldap_pass);
+      unless($ldap = Net::LDAP->new('ldapi://%2fopt%2fzimbra%2fdata%2fldap%2fstate%2frun%2fldapi/')) {
+         main::progress("Unable to contact to ldapi: $!\n");
+      }
+      my $result = $ldap->bind("cn=config", password => $ldap_pass);
+      $result = $ldap->search(
+        base => "olcDatabase={2}mdb,cn=config",
+        filter => "(olcSyncrepl=*)",
+        attrs => ['olcSyncrepl']
+      );
+      my $entry=$result->entry(0);
+      my $attr = $entry->get_value("olcSyncrepl");
+      if ($attr !~ /keepalive=/) {
+        $attr =  $attr . " keepalive=240:10:30";
+      }
+
+      $result = $ldap->modify(
+        $entry->dn,
+        replace => {
+          olcSyncrepl => "$attr",
+        }
+      );
+      $result = $ldap->unbind;
+    } else {
+      runLdapAttributeUpgrade("46297");
+    }
+  }
+  if (main::isInstalled("zimbra-store")) {
+    my $mailboxd_java_options = main::getLocalConfigRaw("mailboxd_java_options");
+    $mailboxd_java_options .= " -Dsun.net.inetaddr.ttl=\${networkaddress_cache_ttl}"
+      unless ($mailboxd_java_options =~ /sun.net.inetaddr.ttl/);
+    main::detail("Modified mailboxd_java_options=$mailboxd_java_options");
+    main::setLocalConfig("mailboxd_java_options", "$mailboxd_java_options");
+    #45891
+    my $imap_max_request_size = main::getLocalConfig("imap_max_request_size");
+    if ($imap_max_request_size ne "" and $imap_max_request_size ne "10240") {
+      main::runAsZimbra("$ZMPROV ms $hn zimbraImapMaxRequestSize $imap_max_request_size");
+    }
+  }
+  return 0;
+}
+
+sub upgrade608GA {
+  my ($startBuild, $targetVersion, $targetBuild) = (@_);
+  main::progress("Updating from 6.0.8_GA\n");
+  main::deleteLocalConfig("zimlet_properties_directory"); 
+  if ($isLdapMaster) {
+    runLdapAttributeUpgrade("46883");
+    runLdapAttributeUpgrade("46961");
+  }
+  return 0;
+}
+
+sub upgrade609GA {
+  my ($startBuild, $targetVersion, $targetBuild) = (@_);
+  main::progress("Updating from 6.0.9_GA\n");
+  return 0;
+}
+
+sub upgrade6010GA {
+  my ($startBuild, $targetVersion, $targetBuild) = (@_);
+  main::progress("Updating from 6.0.10_GA\n");
+  return 0;
+}
+
+sub upgrade6011GA {
+  my ($startBuild, $targetVersion, $targetBuild) = (@_);
+  main::progress("Updating from 6.0.11_GA\n");
+  if (main::isInstalled("zimbra-ldap")) {
+    if($isLdapMaster) {
+      runLdapAttributeUpgrade("50458");
+    }
+    my $ldap_pass = qx($su "zmlocalconfig -s -m nokey ldap_root_password");
+    chomp($ldap_pass);
+    my $ldap;
+    unless($ldap = Net::LDAP->new('ldapi://%2fopt%2fzimbra%2fdata%2fldap%2fstate%2frun%2fldapi/')) {
+       main::progress("Unable to contact to ldapi: $!\n");
+    }
+    my $result = $ldap->bind("cn=config", password => $ldap_pass);
+    my $dn="olcDatabase={2}mdb,cn=config";
+    if ($isLdapMaster) {
+      $result = $ldap->search(
+                        base=> "cn=accesslog",
+                        filter=>"(objectClass=*)",
+                        scope => "base",
+                        attrs => ['1.1'],
+      );
+      my $size = $result->count;
+      if ($size > 0 ) {
+        $dn="olcDatabase={3}mdb,cn=config";
+      }
+    }
+    $result = $ldap->search(
+      base=> "$dn",
+      filter=>"(objectClass=*)",
+      scope => "base",
+      attrs => ['olcDbIndex'],
+    );
+    my $entry=$result->entry($result->count-1);
+    my @attrvals=$entry->get_value("olcDbIndex");
+    my $needModify=1;
+
+    foreach my $attr (@attrvals) {
+      if ($attr =~ /zimbraMailHost/) {
+        $needModify=0;
+      }
+    }
+
+    if ($needModify) {
+      $result = $ldap->modify(
+          $dn,
+          add =>{olcDbIndex=>"zimbraMailHost eq"},
+      );
+    }
+    $ldap->unbind;
+    if ($needModify) {
+      &indexLdapAttribute("zimbraMailHost");
+    }
+  }
+  if (main::isInstalled("zimbra-store")) {
+    my $mailboxd_java_options=main::getLocalConfigRaw("mailboxd_java_options");
+    if ($mailboxd_java_options =~ /-Dsun.net.inetaddr.ttl=$/) {
+      my $new_mailboxd_options;
+      foreach my $option (split(/\s+/, $mailboxd_java_options)) {
+        $new_mailboxd_options.=" $option" if ($option !~ /^-Dsun.net.inetaddr.ttl=/); 
+      }
+      $new_mailboxd_options =~ s/^\s+//;
+      main::setLocalConfig("mailboxd_java_options", $new_mailboxd_options)
+        if ($new_mailboxd_options ne "");
+    }
+    main::setLocalConfig("calendar_outlook_compatible_allday_events", "false");
+
+    #56318
+    main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-allowed-packet --section=mysqld --key=max_allowed_packet --set --value=16777216 /opt/zimbra/conf/my.cnf");
+  }
+  return 0;
+}
+
+sub upgrade6012GA {                                                                                                                                                                                                   
+  my ($startBuild, $targetVersion, $targetBuild) = (@_);
+  main::progress("Updating from 6.0.12_GA\n");                                                                                                                                                                        
+  return 0;
+}                                                                                                                                                                                                                     
+
+sub upgrade6013GA {
+  my ($startBuild, $targetVersion, $targetBuild) = (@_);
+  main::progress("Updating from 6.0.13_GA\n");
+  if (main::isInstalled("zimbra-ldap")) {
+    if($isLdapMaster) {
+      runLdapAttributeUpgrade("58084");
+    }
+  }
+  return 0;
+}
+
+sub upgrade6014GA {
+  my ($startBuild, $targetVersion, $targetBuild) = (@_);
+  main::progress("Updating from 6.0.14_GA\n");
+  return 0;
+}
+
+sub upgrade6015GA {
+  my ($startBuild, $targetVersion, $targetBuild) = (@_);
+  main::progress("Updating from 6.0.15_GA\n");
+  if (main::isInstalled("zimbra-ldap")) {
+    # 43040, must be done on all LDAP servers
+    my $ldap_pass = qx($su "zmlocalconfig -s -m nokey ldap_root_password");
+    my $ldap;
+    chomp($ldap_pass);
+    unless($ldap = Net::LDAP->new('ldapi://%2fopt%2fzimbra%2fdata%2fldap%2fstate%2frun%2fldapi/')) {
+       main::progress("Unable to contact to ldapi: $!\n");
+    }
+    my $result = $ldap->bind("cn=config", password => $ldap_pass);
+    unless($result->code()) {
+      $result = $ldap->modify( "cn=config", add => { 'olcTLSCACertificatePath' => '/opt/zimbra/conf/ca'});
+    }
+    $result = $ldap->unbind;
+  }
+  return 0;
+}
+
+sub upgrade6016GA {
+  my ($startBuild, $targetVersion, $targetBuild) = (@_);
+  main::progress("Updating from 6.0.16_GA\n");
+  main::setLocalConfig("ldap_read_timeout", "0"); #70437
   return 0;
 }
 
@@ -2339,434 +2790,6 @@ sub upgrade870BETA1 {
 sub upgrade900BETA1 {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
   main::progress("Updating from 9.0.0_BETA1\n");
-  
-   if (main::isInstalled("zimbra-proxy")) {
-      main::setLdapGlobalConfig("zimbraReverseProxyLogToSyslog", "FALSE");
-  }
-  
-  my $localxml = XMLin("/opt/zimbra/conf/localconfig.xml");
-  my $lc_attr= $localxml->{key}->{acl_cache_target_maxsize}->{value};
-  if (defined($lc_attr) && $lc_attr != 1024) {
-     main::setLdapServerConfig($hn, 'zimbraAdminAclCacheTargetMaxsize', "$lc_attr");
-  }
-
-  $lc_attr= $localxml->{key}->{acl_cache_target_maxage}->{value};
-  if (defined($lc_attr) && $lc_attr != 15) {
-     main::setLdapServerConfig($hn, 'zimbraAdminAclCacheTargetMaxAge', "$lc_attr");
-  }
-  
-  $lc_attr= $localxml->{key}->{acl_cache_credential_maxsize}->{value};
-  if (defined($lc_attr) && $lc_attr != 512) {
-     main::setLdapServerConfig($hn, 'zimbraAdminAclCacheCredentialMaxsize', "$lc_attr");
-  }
-
-  $lc_attr= $localxml->{key}->{acl_cache_enabled}->{value};
-  if (defined($lc_attr) && lc($lc_attr) ne "true") {
-     main::setLdapServerConfig($hn, 'zimbraAdminAclCacheEnabled', "FALSE");
-  }
-
-  $lc_attr= $localxml->{key}->{antispam_enable_restarts}->{value};
-  if (defined($lc_attr) && lc($lc_attr) eq "true") {
-     main::setLdapServerConfig($hn, 'zimbraAntiSpamEnableRestarts', "TRUE");
-  }
-  
-  $lc_attr= $localxml->{key}->{antispam_enable_rule_updates}->{value};
-  if (defined($lc_attr) && lc($lc_attr) eq "true") {
-     main::setLdapServerConfig($hn, 'zimbraAntiSpamEnableRuleUpdates', "TRUE");
-  }
-  
-  $lc_attr= $localxml->{key}->{antispam_enable_rule_compilation}->{value};
-  if (defined($lc_attr) && lc($lc_attr) eq "true") {
-     main::setLdapServerConfig($hn, 'zimbraAntiSpamEnableRuleCompilation', "TRUE");
-  }
-  
-  $lc_attr= $localxml->{key}->{calendar_cache_enabled}->{value};
-  if (defined($lc_attr) && lc($lc_attr) ne "true") {
-     main::setLdapServerConfig($hn, 'zimbraCalendarCacheEnabled', "FALSE");
-  }
-  
-  $lc_attr= $localxml->{key}->{calendar_cache_lru_size}->{value};
-  if (defined($lc_attr) && $lc_attr != 1000) {
-     main::setLdapServerConfig($hn, 'zimbraCalendarCacheLRUSize', "$lc_attr");
-  }
-  
-  $lc_attr= $localxml->{key}->{calendar_cache_range_month_from}->{value};
-  if (defined($lc_attr) && $lc_attr != 0) {
-     main::setLdapServerConfig($hn, 'zimbraCalendarCacheRangeMonthFrom', "$lc_attr");
-  }
-  
-  $lc_attr= $localxml->{key}->{calendar_cache_range_months}->{value};
-  if (defined($lc_attr) && $lc_attr != 3) {
-     main::setLdapServerConfig($hn, 'zimbraCalendarCacheRangeMonths', "$lc_attr");
-  }
-
-  $lc_attr= $localxml->{key}->{calendar_cache_max_stale_items}->{value};
-  if (defined($lc_attr) && $lc_attr != 10) {
-     main::setLdapServerConfig($hn, 'zimbraCalendarMaxStaleItems', "$lc_attr");
-  }
-
-  $lc_attr= $localxml->{key}->{calendar_exchange_form_auth_url}->{value};
-  if (defined($lc_attr) && $lc_attr ne "/exchweb/bin/auth/owaauth.dll" ) {
-     main::setLdapServerConfig($hn, 'zimbraCalendarExchangeFormAuthURL', "$lc_attr");
-  }
-
-  $lc_attr= $localxml->{key}->{calendar_item_get_max_retries}->{value};
-  if (defined($lc_attr) && $lc_attr != 100) {
-     main::setLdapServerConfig($hn, 'zimbraCalendarItemGetMaxRetries', "$lc_attr");
-  }
-
-  $lc_attr= $localxml->{key}->{calendar_ics_import_full_parse_max_size}->{value};
-  if (defined($lc_attr) && $lc_attr != 131072) {
-     main::setLdapServerConfig($hn, 'zimbraCalendarIcsImportFullParseMaxSize', "$lc_attr");
-  }
-
-  $lc_attr= $localxml->{key}->{calendar_ics_export_buffer_size}->{value};
-  if (defined($lc_attr) && $lc_attr != 131072) {
-     main::setLdapServerConfig($hn, 'zimbraCalendarIcsExportBufferSize', "$lc_attr");
-  }
-
-  $lc_attr= $localxml->{key}->{calendar_allow_invite_without_method}->{value};
-  if (defined($lc_attr) && lc($lc_attr) eq "true") {
-     main::setLdapServerConfig($hn, 'zimbraCalendarAllowInviteWithoutMethod', "TRUE");
-  }
-
-  $lc_attr= $localxml->{key}->{calendar_max_desc_in_metadata}->{value};
-  if (defined($lc_attr) && $lc_attr != 4096) {
-     main::setLdapServerConfig($hn, 'zimbraCalendarMaxDescInMetadata', "$lc_attr");
-  }
-  
-  $lc_attr= $localxml->{key}->{calendar_freebusy_max_days}->{value};
-  if (defined($lc_attr) && $lc_attr != 366) {
-     main::setLdapServerConfig($hn, 'zimbraCalendarFreeBusyMaxDays', "$lc_attr");
-  }
-  
-  $lc_attr= $localxml->{key}->{calendar_search_max_days}->{value};
-  if (defined($lc_attr) && $lc_attr != 400) {
-     main::setLdapServerConfig($hn, 'zimbraCalendarSearchMaxDays', "$lc_attr");
-  }
-  
-  $lc_attr= $localxml->{key}->{imap_max_consecutive_error}->{value};
-  if (defined($lc_attr) && $lc_attr != 5) {
-     main::setLdapServerConfig($hn, 'zimbraImapMaxConsecutiveError', "$lc_attr");
-  }
-  
-  $lc_attr= $localxml->{key}->{imap_inactive_session_cache_size}->{value};
-  if (defined($lc_attr) && $lc_attr != 10000) {
-     main::setLdapServerConfig($hn, 'zimbraImapInactiveSessionCacheSize', "$lc_attr");
-  }
-  
-  $lc_attr= $localxml->{key}->{imap_use_ehcache}->{value};
-  if (defined($lc_attr) && lc($lc_attr) ne "true") {
-     main::setLdapServerConfig($hn, 'zimbraImapUseEhcache', "FALSE");
-  }
-  
-  $lc_attr= $localxml->{key}->{imap_write_timeout}->{value};
-  if (defined($lc_attr) && $lc_attr != 60) {
-     main::setLdapServerConfig($hn, 'zimbraImapWriteTimeout', "$lc_attr");
-  } 
-  
-  $lc_attr= $localxml->{key}->{imap_write_chunk_size}->{value};
-  if (defined($lc_attr) && $lc_attr != 8192) {
-     main::setLdapServerConfig($hn, 'zimbraImapWriteChunkSize', "$lc_attr");
-  }
-  
-  $lc_attr= $localxml->{key}->{imap_thread_keep_alive_time}->{value};
-  if (defined($lc_attr) && $lc_attr != 60) {
-     main::setLdapServerConfig($hn, 'zimbraImapThreadKeepAliveTime', "$lc_attr");
-  }
-  
-  $lc_attr= $localxml->{key}->{imap_max_idle_time}->{value};
-  if (defined($lc_attr) && $lc_attr != 60) {
-     main::setLdapServerConfig($hn, 'zimbraImapMaxIdleTime', "$lc_attr");
-  }
-  
-  $lc_attr= $localxml->{key}->{imap_authenticated_max_idle_time}->{value};
-  if (defined($lc_attr) && $lc_attr != 1800) {
-     main::setLdapServerConfig($hn, 'zimbraImapAuthenticatedMaxIdleTime', "$lc_attr");
-  }
-  
-  $lc_attr= $localxml->{key}->{imap_throttle_ip_limit}->{value};
-  if (defined($lc_attr) && $lc_attr != 5000) {
-     main::setLdapServerConfig($hn, 'zimbraImapThrottleIpLimit', "$lc_attr");
-  }
-  
-  $lc_attr= $localxml->{key}->{imap_throttle_acct_limit}->{value};
-  if (defined($lc_attr) && $lc_attr != 5000) {
-     main::setLdapServerConfig($hn, 'zimbraImapThrottleAcctLimit', "$lc_attr");
-  }
-  
-  $lc_attr= $localxml->{key}->{imap_throttle_command_limit}->{value};
-  if (defined($lc_attr) && $lc_attr != 25) {
-     main::setLdapServerConfig($hn, 'zimbraImapThrottleCommandLimit', "$lc_attr");
-  }
-  
-  $lc_attr= $localxml->{key}->{imap_throttle_fetch}->{value};
-  if (defined($lc_attr) && lc($lc_attr) ne "true") {
-     main::setLdapServerConfig($hn, 'zimbraImapThrottleFetch', "FALSE");
-  }
-  
-  $lc_attr= $localxml->{key}->{data_source_imap_reuse_connections}->{value};
-  if (defined($lc_attr) && lc($lc_attr) eq "true") {
-     main::setLdapServerConfig($hn, 'zimbraImapReuseDataSourceConnections', "TRUE");
-  }
-
-  $lc_attr= $localxml->{key}->{autoprov_initial_sleep_ms}->{value};
-  if (defined($lc_attr) && $lc_attr != 300000) {
-     main::setLdapServerConfig($hn, 'zimbraAutoProvInitialSleep', "$lc_attr");
-  }
-  
-  $lc_attr= $localxml->{key}->{zimbra_admin_service_scheme}->{value};
-  if (defined($lc_attr) && $lc_attr ne "https://") {
-     main::setLdapServerConfig($hn, 'zimbraAdminServiceScheme', "http://");
-  }
-
-  $lc_attr= $localxml->{key}->{calendar_apple_ical_compatible_canceled_instances}->{value};
-  if (defined($lc_attr) && lc($lc_attr) ne "true") {
-     main::setLdapServerConfig($hn, 'zimbraCalendarAppleICalCompatibleCanceledInstances', "FALSE");
-  }
-  
-  $lc_attr= $localxml->{key}->{zimbra_admin_waitset_default_request_timeout}->{value};
-  if (defined($lc_attr) && $lc_attr != 3000) {
-     main::setLdapServerConfig($hn, 'zimbraAdminWaitsetDefaultRequestTimeout', "$lc_attr");
-  }
-  
-  $lc_attr= $localxml->{key}->{zimbra_admin_waitset_max_request_timeout}->{value};
-  if (defined($lc_attr) && $lc_attr != 3600) {
-     main::setLdapServerConfig($hn, 'zimbraAdminWaitsetMaxRequestTimeout', "$lc_attr");
-  }
-
-  $lc_attr= $localxml->{key}->{zimbra_admin_waitset_min_request_timeout}->{value};
-  if (defined($lc_attr) && $lc_attr != 0) {
-     main::setLdapServerConfig($hn, 'zimbraAdminWaitsetMinRequestTimeout', "$lc_attr");
-  }
-  
-   $lc_attr= $localxml->{key}->{zimbra_mailbox_lock_max_waiting_threads}->{value};
-  if (defined($lc_attr) && $lc_attr != 15) {
-     main::setLdapServerConfig($hn, 'zimbraMailboxLockMaxWaitingThreads', "$lc_attr");
-  }
-  
-  $lc_attr= $localxml->{key}->{zimbra_mailbox_lock_readwrite}->{value};
-  if (defined($lc_attr) && lc($lc_attr) ne "true") {
-     main::setLdapServerConfig($hn, 'zimbraMailBoxLockReadWrite', "FALSE");
-  }
-
-  $lc_attr= $localxml->{key}->{zimbra_mailbox_lock_timeout}->{value};
-  if (defined($lc_attr) && $lc_attr != 60) {
-     main::setLdapServerConfig($hn, 'zimbraMailBoxLockTimeout', "$lc_attr");
-  }
-  
-  $lc_attr= $localxml->{key}->{zimbra_session_limit_admin}->{value};
-  if (defined($lc_attr) && $lc_attr != 5) {
-     main::setLdapServerConfig($hn, 'zimbraAdminSessionLimit', "$lc_attr");
-  }
-  
-  $lc_attr= $localxml->{key}->{zimbra_session_limit_imap}->{value};
-  if (defined($lc_attr) && $lc_attr != 15) {
-     main::setLdapServerConfig($hn, 'zimbraImapSessionLimit', "$lc_attr");
-  }
-
-  $lc_attr= $localxml->{key}->{zimbra_session_limit_soap}->{value};
-  if (defined($lc_attr) && $lc_attr != 5) {
-     main::setLdapServerConfig($hn, 'zimbraSoapSessionLimit', "$lc_attr");
-  }
-  
-  $lc_attr= $localxml->{key}->{zimbra_session_limit_sync}->{value};
-  if (defined($lc_attr) && $lc_attr != 5) {
-     main::setLdapServerConfig($hn, 'zimbraSyncSessionLimit', "$lc_attr");
-  }
-
-  $lc_attr= $localxml->{key}->{zimbra_session_max_pending_notifications}->{value};
-  if (defined($lc_attr) && $lc_attr != 400) {
-     main::setLdapServerConfig($hn, 'zimbraSessionMaxPendingNotifications', "$lc_attr");
-  }
-  
-   $lc_attr= $localxml->{key}->{zimbra_session_timeout_soap}->{value};
-  if (defined($lc_attr) && $lc_attr != 600) {
-     main::setLdapServerConfig($hn, 'zimbraSoapSessionTimeout', "$lc_attr");
-  }
-  
-  $lc_attr= $localxml->{key}->{calendar_resource_ldap_search_maxsize}->{value};
-  if (defined($lc_attr) && $lc_attr != 1000) {
-     main::setLdapServerConfig($hn, 'zimbraCalendarResourceLdapSearchMaxSize', "$lc_attr");
-  }
-
-  $lc_attr= $localxml->{key}->{check_dl_membership_enabled}->{value};
-  if (defined($lc_attr) && lc($lc_attr) ne "true") {
-     main::setLdapServerConfig($hn, 'zimbraDesktopCalendarCheckDLMembership', "FALSE");
-  }
-  
-  $lc_attr= $localxml->{key}->{ews_service_wsdl_location}->{value};
-  if (defined($lc_attr) && $lc_attr ne "/opt/zimbra/lib/ext/zimbraews/") {
-     main::setLdapServerConfig($hn, 'zimbraEwsWsdlLocation', "$lc_attr");
-  }
-  
-  $lc_attr= $localxml->{key}->{ews_service_log_file}->{value};
-  if (defined($lc_attr) && $lc_attr ne "/opt/zimbra/log/ews.log") {
-     main::setLdapServerConfig($hn, 'zimbraEwsServiceLogFile', "$lc_attr");
-  }
-
-  $lc_attr= $localxml->{key}->{compute_aggregate_quota_threads}->{value};
-  if (defined($lc_attr) && $lc_attr != 10) {
-     main::setLdapServerConfig($hn, 'zimbraAdminComputeAggregateQuotaThreadPoolSize', "$lc_attr");
-  }
-  
-  $lc_attr= $localxml->{key}->{gal_group_cache_maxage}->{value};
-  if (defined($lc_attr) && $lc_attr != 10080) {
-     main::setLdapServerConfig($hn, 'zimbraGalGroupCacheMaxAge', "$lc_attr");
-  }
-  
-  $lc_attr= $localxml->{key}->{gal_group_cache_maxsize_domains}->{value};
-  if (defined($lc_attr) && $lc_attr != 10) {
-     main::setLdapServerConfig($hn, 'zimbraGalGroupCacheMaxSizeDomains', "$lc_attr");
-  }
-
-  $lc_attr= $localxml->{key}->{gal_group_cache_maxsize_per_domain}->{value};
-  if (defined($lc_attr) && $lc_attr != 0) {
-     main::setLdapServerConfig($hn, 'zimbraGalGroupCacheMaxSizePerDomain', "$lc_attr");
-  }
-  
-  $lc_attr= $localxml->{key}->{external_store_delete_max_ioexceptions}->{value};
-  if (defined($lc_attr) && $lc_attr != 25) {
-     main::setLdapServerConfig($hn, 'zimbraStoreExternalMaxIOExceptionsForDelete', "$lc_attr");
-  }
-  
-  $lc_attr= $localxml->{key}->{external_store_local_cache_max_bytes}->{value};
-  if (defined($lc_attr) && $lc_attr != 1073741824) {
-     main::setLdapServerConfig($hn, 'zimbraStoreExternalLocalCacheMaxSize', "$lc_attr");
-  }
-
-  $lc_attr= $localxml->{key}->{external_store_local_cache_max_files}->{value};
-  if (defined($lc_attr) && $lc_attr != 10000) {
-     main::setLdapServerConfig($hn, 'zimbraStoreExternalLocalCacheMaxFiles', "$lc_attr");
-  }
-  
-   $lc_attr= $localxml->{key}->{external_store_local_cache_min_lifetime}->{value};
-  if (defined($lc_attr) && $lc_attr != 60000) {
-     main::setLdapServerConfig($hn, 'zimbraStoreExternalLocalCacheMinLifetime', "$lc_attr");
-  }
-  
-  $lc_attr= $localxml->{key}->{javamail_imap_debug}->{value};
-  if (defined($lc_attr) && lc($lc_attr) eq "true") {
-     main::setLdapServerConfig($hn, 'zimbraImapEnableDebug', "TRUE");
-  }
-
-  $lc_attr= $localxml->{key}->{javamail_imap_enable_starttls}->{value};
-  if (defined($lc_attr) && lc($lc_attr) ne "true") {
-     main::setLdapServerConfig($hn, 'zimbraImapEnableStartTls', "FALSE");
-  }
-  
-  $lc_attr= $localxml->{key}->{javamail_imap_timeout}->{value};
-  if (defined($lc_attr) && $lc_attr != 60) {
-     main::setLdapServerConfig($hn, 'zimbraImapTimeout', "$lc_attr");
-  }
-  
-  $lc_attr= $localxml->{key}->{javamail_pop3_debug}->{value};
-  if (defined($lc_attr) && lc($lc_attr) eq "true") {
-     main::setLdapServerConfig($hn, 'zimbraPop3EnableDebug', "TRUE");
-  }
-
-  $lc_attr= $localxml->{key}->{javamail_pop3_enable_starttls}->{value};
-  if (defined($lc_attr) && lc($lc_attr) ne "true") {
-     main::setLdapServerConfig($hn, 'zimbraPop3EnableStartTls', "FALSE");
-  }
-  
-  $lc_attr= $localxml->{key}->{javamail_pop3_timeout}->{value};
-  if (defined($lc_attr) && $lc_attr != 60) {
-     main::setLdapServerConfig($hn, 'zimbraPop3Timeout', "$lc_attr");
-  }
-
-  $lc_attr= $localxml->{key}->{javamail_smtp_debug}->{value};
-  if (defined($lc_attr) && lc($lc_attr) eq "true") {
-     main::setLdapServerConfig($hn, 'zimbraSmtpEnableDebug', "TRUE");
-  }
-  
-   $lc_attr= $localxml->{key}->{javamail_smtp_enable_starttls}->{value};
-  if (defined($lc_attr) && lc($lc_attr) ne "true") {
-     main::setLdapServerConfig($hn, 'zimbraSmtpEnableStartTls', "FALSE");
-  }
-  
-  $lc_attr= $localxml->{key}->{javamail_smtp_timeout}->{value};
-  if (defined($lc_attr) && $lc_attr != 60) {
-     main::setLdapServerConfig($hn, 'zimbraSmtpTimeout', "$lc_attr");
-  }
-
-  $lc_attr= $localxml->{key}->{javamail_zsmtp}->{value};
-  if (defined($lc_attr) && lc($lc_attr) ne "true") {
-     main::setLdapServerConfig($hn, 'zimbraSmtpUseZimbraClient', "FALSE");
-  }
-  
-   
-  main::deleteLocalConfig("acl_cache_target_maxsize");
-  main::deleteLocalConfig("acl_cache_target_maxage");
-  main::deleteLocalConfig("acl_cache_credential_maxsize"); 
-  main::deleteLocalConfig("acl_cache_enabled");
-  main::deleteLocalConfig("antispam_enable_restarts");
-  main::deleteLocalConfig("antispam_enable_rule_updates");
-  main::deleteLocalConfig("antispam_enable_rule_compilation");
-  main::deleteLocalConfig("antispam_backup_retention"); 
-  main::deleteLocalConfig("calendar_cache_enabled");
-  main::deleteLocalConfig("calendar_cache_lru_size");
-  main::deleteLocalConfig("calendar_cache_range_month_from");
-  main::deleteLocalConfig("calendar_cache_range_months");
-  main::deleteLocalConfig("calendar_cache_max_stale_items"); 
-  main::deleteLocalConfig("calendar_exchange_form_auth_url");
-  main::deleteLocalConfig("calendar_item_get_max_retries");
-  main::deleteLocalConfig("calendar_ics_import_full_parse_max_size");
-  main::deleteLocalConfig("calendar_ics_export_buffer_size");
-  main::deleteLocalConfig("calendar_allow_invite_without_method"); 
-  main::deleteLocalConfig("calendar_max_desc_in_metadata");
-  main::deleteLocalConfig("calendar_freebusy_max_days");
-  main::deleteLocalConfig("calendar_search_max_days");
-  main::deleteLocalConfig("imap_max_consecutive_error");
-  main::deleteLocalConfig("imap_inactive_session_cache_size"); 
-  main::deleteLocalConfig("imap_use_ehcache");
-  main::deleteLocalConfig("imap_write_timeout");
-  main::deleteLocalConfig("imap_write_chunk_size");
-  main::deleteLocalConfig("imap_thread_keep_alive_time");
-  main::deleteLocalConfig("imap_max_idle_time"); 
-  main::deleteLocalConfig("imap_authenticated_max_idle_time");
-  main::deleteLocalConfig("imap_throttle_ip_limit"); 
-  main::deleteLocalConfig("imap_throttle_acct_limit");
-  main::deleteLocalConfig("imap_throttle_command_limit");
-  main::deleteLocalConfig("imap_throttle_fetch"); 
-  main::deleteLocalConfig("data_source_imap_reuse_connections");
-  main::deleteLocalConfig("autoprov_initial_sleep_ms");
-  main::deleteLocalConfig("zimbra_admin_service_scheme");
-  main::deleteLocalConfig("calendar_apple_ical_compatible_canceled_instances");
-  main::deleteLocalConfig("zimbra_admin_waitset_default_request_timeout");
-  main::deleteLocalConfig("zimbra_admin_waitset_max_request_timeout");
-  main::deleteLocalConfig("zimbra_admin_waitset_min_request_timeout"); 
-  main::deleteLocalConfig("zimbra_mailbox_lock_max_waiting_threads");
-  main::deleteLocalConfig("zimbra_mailbox_lock_readwrite");
-  main::deleteLocalConfig("zimbra_mailbox_lock_timeout");
-  main::deleteLocalConfig("zimbra_session_limit_admin");
-  main::deleteLocalConfig("zimbra_session_limit_imap"); 
-  main::deleteLocalConfig("zimbra_session_limit_soap");
-  main::deleteLocalConfig("zimbra_session_limit_sync");
-  main::deleteLocalConfig("zimbra_session_max_pending_notifications");
-  main::deleteLocalConfig("zimbra_session_timeout_soap");
-  main::deleteLocalConfig("calendar_resource_ldap_search_maxsize"); 
-  main::deleteLocalConfig("check_dl_membership_enabled");
-  main::deleteLocalConfig("ews_service_wsdl_location");
-  main::deleteLocalConfig("ews_service_log_file");
-  main::deleteLocalConfig("compute_aggregate_quota_threads");
-  main::deleteLocalConfig("gal_group_cache_maxage"); 
-  main::deleteLocalConfig("gal_group_cache_maxsize_domains");
-  main::deleteLocalConfig("gal_group_cache_maxsize_per_domain");
-  main::deleteLocalConfig("external_store_delete_max_ioexceptions");
-  main::deleteLocalConfig("external_store_local_cache_max_bytes");
-  main::deleteLocalConfig("external_store_local_cache_max_files"); 
-  main::deleteLocalConfig("external_store_local_cache_min_lifetime");
-  main::deleteLocalConfig("javamail_imap_debug"); 
-  main::deleteLocalConfig("javamail_imap_enable_starttls");
-  main::deleteLocalConfig("javamail_imap_timeout");
-  main::deleteLocalConfig("javamail_pop3_debug"); 
-  main::deleteLocalConfig("javamail_pop3_enable_starttls");
-  main::deleteLocalConfig("javamail_pop3_timeout"); 
-  main::deleteLocalConfig("javamail_smtp_debug");
-  main::deleteLocalConfig("javamail_smtp_enable_starttls");
-  main::deleteLocalConfig("javamail_smtp_timeout"); 
-  main::deleteLocalConfig("javamail_zsmtp"); 
   return 0;
 }
 
