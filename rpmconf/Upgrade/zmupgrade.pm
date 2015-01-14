@@ -2695,6 +2695,112 @@ sub upgrade900BETA1 {
      main::setLdapServerConfig($hn, 'zimbraSmtpUseZimbraClient', "FALSE");
   }
   
+  
+  $lc_attr= $localxml->{key}->{mime_encode_missing_blob}->{value};
+  if (defined($lc_attr) && $lc(lc_attr) ne "true") {
+     main::setLdapServerConfig($hn, 'zimbraMimeEncodeMissingBlob', "FALSE");
+  }
+
+  $lc_attr= $localxml->{key}->{mime_exclude_empty_content}->{value};
+  if (defined($lc_attr) && lc($lc_attr) ne "true") {
+     main::setLdapServerConfig($hn, 'zimbraMimeExcludeEmptyContent', "FALSE");
+  }
+  
+   $lc_attr= $localxml->{key}->{milter_max_idle_time}->{value};
+  if (defined($lc_attr) && $lc_attr != 3630) {
+     main::setLdapServerConfig($hn, 'zimbraMilterMaxIdleTIme',"$lc_attr");
+  }
+  
+  $lc_attr= $localxml->{key}->{milter_thread_keep_alive_time}->{value};
+  if (defined($lc_attr) && $lc_attr != 60) {
+     main::setLdapServerConfig($hn, 'zimbraMilterThreadKeepAliveTime', "$lc_attr");
+  }
+
+  $lc_attr= $localxml->{key}->{milter_write_chunk_size}->{value};
+  if (defined($lc_attr) && $lc_attr != 1024) {
+     main::setLdapServerConfig($hn, 'zimbraMilterWriteChunkSize', "$lc_attr");
+  }
+  
+  $lc_attr= $localxml->{key}->{milter_write_timeout}->{value};
+  if (defined($lc_attr) && $ lc_attr != 10) {
+     main::setLdapServerConfig($hn, 'zimbraMilterWriteTimeout', "$lc_attr");
+  }
+
+  $lc_attr= $localxml->{key}->{zimbra_activesync_versions}->{value};
+  if (defined($lc_attr) && $lc_attr ne "2.0,2.1,2.5,12.0,12.1") {
+     main::setLdapServerConfig($hn, 'zimbraActiveSyncVersions', "$lc_attr");
+  }
+  
+   $lc_attr= $localxml->{key}->{zimbra_activesync_contact_image_size}->{value};
+  if (defined($lc_attr) && $lc_attr != 2097152) {
+     main::setLdapServerConfig($hn, 'zimbraActiveSyncContactImageSize', "$lc_attr");
+  }
+  
+  $lc_attr= $localxml->{key}->{zimbra_activesync_autodiscover_url}->{value};
+  if (defined($lc_attr) && lc($lc_attr) ne "") {
+     main::setLdapServerConfig($hn, 'zimbraActiveSyncAutoDiscoveryUrl', "$lc_attr");
+  }
+
+  $lc_attr= $localxml->{key}->{zimbra_activesync_autodiscover_use_service_url}->{value};
+  if (defined($lc_attr) && lc($lc_attr) eq "true") {
+     main::setLdapServerConfig($hn, 'zimbraActiveSyncAutoDiscoverUseServiceUrl', "TRUE");
+  }
+  
+  $lc_attr= $localxml->{key}->{zimbra_activesync_metadata_cache_expiration}->{value};
+  if (defined($lc_attr) && $lc($lc_attr) != 3600) {
+     main::setLdapServerConfig($hn, 'zimbraActiveSyncMetadataCacheExpiration', "$lc_attr");
+  }
+
+  $lc_attr= $localxml->{key}->{zimbra_activesync_metadata_cache_max_size}->{value};
+  if (defined($lc_attr) && $lc_attr != 5000) {
+     main::setLdapServerConfig($hn, 'zimbraActiveSyncMetadataCacheMaxSize', "$lc_attr");
+  }
+  
+  $lc_attr= $localxml->{key}->{zimbra_activesync_contact_image_size}->{value};
+  if (defined($lc_attr) && $lc_attr != 2097152) {
+     main::setLdapServerConfig($hn, 'zimbraActiveSyncContactImageSize', "$lc_attr");
+  }
+  
+  $lc_attr= $localxml->{key}->{zimbra_activesync_heartbeat_interval_min}->{value};
+  if (defined($lc_attr) && $lc_attr != 300) {
+     main::setLdapServerConfig($hn, 'zimbraActiveSyncHeartbeatIntervalMin', "$lc_attr");
+  }
+
+  $lc_attr= $localxml->{key}->{zimbra_activesync_heartbeat_interval_max}->{value};
+  if (defined($lc_attr) && $lc_attr != 3540) {
+     main::setLdapServerConfig($hn, 'zimbraActiveSyncHeartbeatIntervalMax',"$lc_attr");
+  }
+  
+  $lc_attr= $localxml->{key}->{zimbra_activesync_search_max_results}->{value};
+  if (defined($lc_attr) && $lc_attr != 500) {
+     main::setLdapServerConfig($hn, 'zimbraActiveSyncSearchMaxResults', "$lc_attr");
+  }
+
+  $lc_attr= $localxml->{key}->{zimbra_activesync_general_cache_size}->{value};
+  if (defined($lc_attr) && $lc_attr != 500) {
+     main::setLdapServerConfig($hn, 'zimbraActiveSyncGeneralCacheSize', "$lc_attr");
+  }
+  
+  $lc_attr= $localxml->{key}->{zimbra_activesync_parallel_sync_enabled}->{value};
+  if (defined($lc_attr) && lc($lc_attr) eq "true") {
+     main::setLdapServerConfig($hn, 'zimbraActiveSyncParallelSyncEnabled', "TRUE");
+  }
+  
+  $lc_attr= $localxml->{key}->{zimbra_activesync_syncstate_item_cache_heap_size}->{value};
+  if (defined($lc_attr) && $lc_attr ne "10M") {
+     main::setLdapServerConfig($hn, 'zimbraActiveSyncSyncStateItemCacheHeapSize', "$lc_attr");
+  }
+
+  $lc_attr= $localxml->{key}->{zimbra_index_threads}->{value};
+  if (defined($lc_attr) && $lc_attr != 10) {
+     main::setLdapServerConfig($hn, 'zimbraIndexThreads',"$lc_attr");
+  }
+  
+  $lc_attr= $localxml->{key}->{zimbra_index_deferred_items_failure_delay}->{value};
+  if (defined($lc_attr) && $lc_attr != 300) {
+     main::setLdapServerConfig($hn, 'zimbraIndexDeferredItemsFailureDelay',"$lc_attr");
+  }
+  
    
   main::deleteLocalConfig("acl_cache_target_maxsize");
   main::deleteLocalConfig("acl_cache_target_maxage");
@@ -2767,6 +2873,28 @@ sub upgrade900BETA1 {
   main::deleteLocalConfig("javamail_smtp_enable_starttls");
   main::deleteLocalConfig("javamail_smtp_timeout"); 
   main::deleteLocalConfig("javamail_zsmtp"); 
+  main::deleteLocalConfig("mime_encode_missing_blob");
+  main::deleteLocalConfig("mime_exclude_empty_content");
+  main::deleteLocalConfig("milter_max_idle_time"); 
+  main::deleteLocalConfig("milter_thread_keep_alive_time");
+  main::deleteLocalConfig("milter_write_chunk_size"); 
+  main::deleteLocalConfig("milter_write_timeout");
+  main::deleteLocalConfig("zimbra_activesync_versions");
+  main::deleteLocalConfig("zimbra_activesync_contact_image_size"); 
+  main::deleteLocalConfig("zimbra_activesync_autodiscover_url"); 
+  main::deleteLocalConfig("zimbra_activesync_autodiscover_use_service_url");
+  main::deleteLocalConfig("zimbra_activesync_metadata_cache_expiration");
+  main::deleteLocalConfig("zimbra_activesync_metadata_cache_max_size"); 
+  main::deleteLocalConfig("zimbra_activesync_heartbeat_interval_min");
+  main::deleteLocalConfig("zimbra_activesync_heartbeat_interval_max"); 
+  main::deleteLocalConfig("zimbra_activesync_search_max_results");
+  main::deleteLocalConfig("zimbra_activesync_general_cache_size");
+  main::deleteLocalConfig("zimbra_activesync_parallel_sync_enabled"); 
+  main::deleteLocalConfig("zimbra_activesync_syncstate_item_cache_heap_size"); 
+  main::deleteLocalConfig("zimbra_index_threads"); 
+  main::deleteLocalConfig("zimbra_index_deferred_items_failure_delay"); 
+  
+  
   return 0;
 }
 
