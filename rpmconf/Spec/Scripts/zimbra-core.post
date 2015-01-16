@@ -51,13 +51,13 @@ rm -f /opt/zimbra/pflogsumm
 ln -s /opt/zimbra/pflogsumm-1.1.5 /opt/zimbra/pflogsumm
 
 rm -f /opt/zimbra/openssl
-ln -s /opt/zimbra/openssl-1.0.1j /opt/zimbra/openssl
+ln -s /opt/zimbra/openssl-1.0.1l /opt/zimbra/openssl
 
 rm -f /opt/zimbra/heimdal
-ln -s /opt/zimbra/heimdal-1.5.2 /opt/zimbra/heimdal
+ln -s /opt/zimbra/heimdal-1.5.3 /opt/zimbra/heimdal
 
 rm -f /opt/zimbra/curl
-ln -s /opt/zimbra/curl-7.38.0 /opt/zimbra/curl
+ln -s /opt/zimbra/curl-7.40.0 /opt/zimbra/curl
 
 rm -f /opt/zimbra/cyrus-sasl
 ln -s /opt/zimbra/cyrus-sasl-2.1.26.2z /opt/zimbra/cyrus-sasl
