@@ -2697,7 +2697,7 @@ sub upgrade900BETA1 {
   
   
   $lc_attr= $localxml->{key}->{mime_encode_missing_blob}->{value};
-  if (defined($lc_attr) && $lc(lc_attr) ne "true") {
+  if (defined($lc_attr) && lc($lc_attr) ne "true") {
      main::setLdapServerConfig($hn, 'zimbraMimeEncodeMissingBlob', "FALSE");
   }
 
@@ -2722,7 +2722,7 @@ sub upgrade900BETA1 {
   }
   
   $lc_attr= $localxml->{key}->{milter_write_timeout}->{value};
-  if (defined($lc_attr) && $ lc_attr != 10) {
+  if (defined($lc_attr) && $lc_attr != 10) {
      main::setLdapServerConfig($hn, 'zimbraMilterWriteTimeout', "$lc_attr");
   }
 
@@ -2747,7 +2747,7 @@ sub upgrade900BETA1 {
   }
   
   $lc_attr= $localxml->{key}->{zimbra_activesync_metadata_cache_expiration}->{value};
-  if (defined($lc_attr) && $lc($lc_attr) != 3600) {
+  if (defined($lc_attr) && lc($lc_attr) != 3600) {
      main::setLdapServerConfig($hn, 'zimbraActiveSyncMetadataCacheExpiration', "$lc_attr");
   }
 
