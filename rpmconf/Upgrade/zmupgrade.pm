@@ -2333,6 +2333,28 @@ sub upgrade860GA {
 sub upgrade870BETA1 {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
   main::progress("Updating from 8.7.0_BETA1\n");
+  if(main::isInstalled("zimbra-ldap")) {
+    if ($isLdapMaster) {
+      # Bug 96921 - Update Jetty default SSL cipher excludes...
+      my $sslexcludeciph=main::getLdapConfigValue("SSLExcludeCipherSuites") || "";
+      my $cursslexcl=join(" ", sort split("\n", $sslexcludeciph));
+      my $oldsslexcl=join(
+        " ",
+        sort qw(
+          SSL_RSA_WITH_DES_CBC_SHA
+          SSL_DHE_RSA_WITH_DES_CBC_SHA
+          SSL_DHE_DSS_WITH_DES_CBC_SHA
+          SSL_RSA_EXPORT_WITH_RC4_40_MD5
+          SSL_RSA_EXPORT_WITH_DES40_CBC_SHA
+          SSL_DHE_RSA_EXPORT_WITH_DES40_CBC_SHA
+          SSL_DHE_DSS_EXPORT_WITH_DES40_CBC_SHA
+        )
+      );
+      if ($cursslexcl eq $oldsslexcl) {
+        main::runAsZimbra("$ZMPROV mcf SSLExcludeCipherSuites '.*_RC4_.*'");
+      }
+    }
+  }
   return 0;
 }
 
