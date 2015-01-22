@@ -2784,6 +2784,28 @@ sub upgrade860GA {
 sub upgrade870BETA1 {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
   main::progress("Updating from 8.7.0_BETA1\n");
+  if(main::isInstalled("zimbra-ldap")) {
+    if ($isLdapMaster) {
+      # Bug 96921 - Update Jetty default SSL cipher excludes...
+      my $sslexcludeciph=main::getLdapConfigValue("SSLExcludeCipherSuites") || "";
+      my $cursslexcl=join(" ", sort split("\n", $sslexcludeciph));
+      my $oldsslexcl=join(
+        " ",
+        sort qw(
+          SSL_RSA_WITH_DES_CBC_SHA
+          SSL_DHE_RSA_WITH_DES_CBC_SHA
+          SSL_DHE_DSS_WITH_DES_CBC_SHA
+          SSL_RSA_EXPORT_WITH_RC4_40_MD5
+          SSL_RSA_EXPORT_WITH_DES40_CBC_SHA
+          SSL_DHE_RSA_EXPORT_WITH_DES40_CBC_SHA
+          SSL_DHE_DSS_EXPORT_WITH_DES40_CBC_SHA
+        )
+      );
+      if ($cursslexcl eq $oldsslexcl) {
+        main::runAsZimbra("$ZMPROV mcf SSLExcludeCipherSuites '.*_RC4_.*'");
+      }
+    }
+  }
   if (main::isInstalled("zimbra-proxy")) {
     my $proxysslciphers=main::getLdapConfigValue("zimbraReverseProxySSLCiphers");
     if ($proxysslciphers eq "ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-DSS-AES128-GCM-SHA256:kEDH+AESGCM:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA:ECDHE-ECDSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-DSS-AES128-SHA256:DHE-RSA-AES256-SHA256:DHE-DSS-AES256-SHA:DHE-RSA-AES256-SHA:AES128-GCM-SHA256:AES256-GCM-SHA384:ECDHE-RSA-RC4-SHA:ECDHE-ECDSA-RC4-SHA:AES128:AES256:RC4-SHA:HIGH:!aNULL:!eNULL:!EXPORT:!DES:!3DES:!MD5:!PSK") {
