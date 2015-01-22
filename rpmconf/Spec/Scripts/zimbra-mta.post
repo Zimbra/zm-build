@@ -36,8 +36,8 @@ if [ -d /opt/zimbra/opendkim-2.9.3 ]; then
 fi
 
 rm -f /opt/zimbra/zeromq
-if [ -d /opt/zimbra/zeromq-3.2.3 ]; then
-  ln -s /opt/zimbra/zeromq-3.2.3 /opt/zimbra/zeromq
+if [ -d /opt/zimbra/zeromq-4.0.5 ]; then
+  ln -s /opt/zimbra/zeromq-4.0.5 /opt/zimbra/zeromq
 fi
 
 rm -f /opt/zimbra/postfix
