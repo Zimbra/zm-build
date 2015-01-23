@@ -2022,10 +2022,10 @@ sub upgrade808GA {
   if (main::isInstalled("zimbra-mta")) {
     my @zimbraServiceInstalled=qx($su "$ZMPROV gs $hn zimbraServiceInstalled");
     my @zimbraServiceEnabled=qx($su "$ZMPROV gs $hn zimbraServiceEnabled");
-    if (grep(/antivirus/, @zimbraServiceInstalled) || grep(/antispam/, @zimbraServiceInstalled)) {
+    if (grep(/antivirus/, @zimbraServiceInstalled) || grep(/antispam/, @zimbraServiceInstalled) || grep(/archiving/, @zimbraServiceInstalled)) {
       main::setLdapServerConfig($hn, '+zimbraServiceInstalled', 'amavis');
     }
-    if (grep(/antivirus/, @zimbraServiceEnabled) || grep(/antispam/, @zimbraServiceEnabled)) {
+    if (grep(/antivirus/, @zimbraServiceEnabled) || grep(/antispam/, @zimbraServiceEnabled) || grep(/archiving/, @zimbraServiceEnabled)) {
       main::setLdapServerConfig($hn, '+zimbraServiceEnabled', 'amavis');
     }
   }
@@ -2610,10 +2610,10 @@ sub upgrade850BETA2 {
     }
     my @zimbraServiceInstalled=qx($su "$ZMPROV gs $hn zimbraServiceInstalled");
     my @zimbraServiceEnabled=qx($su "$ZMPROV gs $hn zimbraServiceEnabled");
-    if (grep(/antivirus/, @zimbraServiceInstalled) || grep(/antispam/, @zimbraServiceInstalled)) {
+    if (grep(/antivirus/, @zimbraServiceInstalled) || grep(/antispam/, @zimbraServiceInstalled) || grep(/archiving/, @zimbraServiceInstalled)) {
       main::setLdapServerConfig($hn, '+zimbraServiceInstalled', 'amavis');
     }
-    if (grep(/antivirus/, @zimbraServiceEnabled) || grep(/antispam/, @zimbraServiceEnabled)) {
+    if (grep(/antivirus/, @zimbraServiceEnabled) || grep(/antispam/, @zimbraServiceEnabled) || grep(/archiving/, @zimbraServiceEnabled)) {
       main::setLdapServerConfig($hn, '+zimbraServiceEnabled', 'amavis');
     }
     if (-f "/opt/zimbra/conf/sauser.cf") {
