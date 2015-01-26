@@ -56,6 +56,7 @@ if ( -x '/opt/zimbra/bin/zmlicense' ) {
 }
 
 my $browser = LWP::UserAgent->new;
+$browser->env_proxy;
 
 my $response = $browser->get("https://$host/zimbraLicensePortal/public/activation?action=getActivation&licenseId=$licenseId&version=$options{v}&fingerprint=$fingerprint");
 
