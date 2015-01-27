@@ -2787,7 +2787,7 @@ sub upgrade870BETA1 {
   if(main::isInstalled("zimbra-ldap")) {
     if ($isLdapMaster) {
       # Bug 96921 - Update Jetty default SSL cipher excludes...
-      my $sslexcludeciph=main::getLdapConfigValue("SSLExcludeCipherSuites") || "";
+      my $sslexcludeciph=main::getLdapConfigValue("zimbraSSLExcludeCipherSuites") || "";
       my $cursslexcl=join(" ", sort split("\n", $sslexcludeciph));
       my $oldsslexcl=join(
         " ",
@@ -2802,7 +2802,7 @@ sub upgrade870BETA1 {
         )
       );
       if ($cursslexcl eq $oldsslexcl) {
-        main::runAsZimbra("$ZMPROV mcf SSLExcludeCipherSuites '.*_RC4_.*'");
+        main::runAsZimbra("$ZMPROV mcf zimbraSSLExcludeCipherSuites '.*_RC4_.*'");
       }
     }
   }
