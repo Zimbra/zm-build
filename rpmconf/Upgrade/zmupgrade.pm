@@ -2775,7 +2775,7 @@ sub upgrade900BETA1 {
   }
   
   $lc_attr= $localxml->{key}->{zimbra_activesync_metadata_cache_expiration}->{value};
-  if (defined($lc_attr) && lc($lc_attr) != 3600) {
+  if (defined($lc_attr) && $lc_attr != 3600) {
      main::setLdapServerConfig($hn, 'zimbraActiveSyncMetadataCacheExpiration', "$lc_attr");
   }
 
@@ -2827,6 +2827,152 @@ sub upgrade900BETA1 {
   $lc_attr= $localxml->{key}->{zimbra_index_deferred_items_failure_delay}->{value};
   if (defined($lc_attr) && $lc_attr != 300) {
      main::setLdapServerConfig($hn, 'zimbraIndexDeferredItemsFailureDelay',"$lc_attr");
+  }
+  
+ 
+  $lc_attr= $localxml->{key}->{zimbra_index_lucene_io_impl}->{value};
+  if (defined($lc_attr) && $lc_attr ne "nio") {
+     main::setLdapServerConfig($hn, 'zimbraIndexLuceneIoImpl', "$lc_attr");
+  }
+
+  $lc_attr= $localxml->{key}->{zimbra_index_lucene_merge_factor}->{value};
+  if (defined($lc_attr) && $lc_attr != 10) {
+     main::setLdapServerConfig($hn, 'zimbraIndexLuceneMergeFactor', "$lc_attr");
+  }
+  
+  $lc_attr= $localxml->{key}->{zimbra_index_manual_commit}->{value};
+  if (defined($lc_attr) && lc($lc_attr) ne "true") {
+     main::setLdapServerConfig($hn, 'zimbraIndexManualCommit', "FALSE");
+  }
+  
+  $lc_attr= $localxml->{key}->{zimbra_index_max_transaction_bytes}->{value};
+  if (defined($lc_attr) && $lc_attr != 5000000) {
+     main::setLdapServerConfig($hn, 'zimbraIndexMaxTransactionBytes', "$lc_attr");
+  }
+
+  $lc_attr= $localxml->{key}->{zimbra_index_max_transaction_items}->{value};
+  if (defined($lc_attr) && $lc_attr != 100) {
+     main::setLdapServerConfig($hn, 'zimbraIndexMaxTransactionItems',"$lc_attr");
+  }
+  
+  $lc_attr= $localxml->{key}->{zimbra_index_reader_cache_size}->{value};
+  if (defined($lc_attr) && $lc_attr != 20) {
+     main::setLdapServerConfig($hn, 'zimbraIndexReaderCacheSize',"$lc_attr");
+  }
+  
+ $lc_attr= $localxml->{key}->{zimbra_index_reader_cache_ttl}->{value};
+  if (defined($lc_attr) && $lc_attr != 300) {
+     main::setLdapServerConfig($hn, 'zimbraIndexReaderCacheTtl', "$lc_attr");
+  }
+  
+  $lc_attr= $localxml->{key}->{zimbra_index_disable_perf_counters}->{value};
+  if (defined($lc_attr) && lc($lc_attr) eq "true") {
+     main::setLdapServerConfig($hn, 'zimbraIndexDisablePerfCounters', "TRUE");
+  }
+  
+  $lc_attr= $localxml->{key}->{contact_ranking_enabled}->{value};
+  if (defined($lc_attr) && lc($lc_attr) ne "true") {
+     main::setLdapServerConfig($hn, 'zimbraContactRankingEnabled', "FALSE");
+  }
+
+  $lc_attr= $localxml->{key}->{conversation_ignore_maillist_prefix}->{value};
+  if (defined($lc_attr) && lc($lc_attr) ne "true") {
+     main::setLdapServerConfig($hn, 'zimbraConversationIgnoreMaillistPrefix',"FALSE");
+  }
+  
+  $lc_attr= $localxml->{key}->{conversation_max_age_ms}->{value};
+  if (defined($lc_attr) && $lc_attr != 2678400000) {
+     main::setLdapServerConfig($hn, 'zimbraConversationMaxAge',"$lc_attr"."ms");
+  }
+  
+  $lc_attr= $localxml->{key}->{empty_folder_batch_sleep_ms}->{value};
+  if (defined($lc_attr) && $lc_attr != 1) {
+     main::setLdapServerConfig($hn, 'zimbraMailboxDeleteFolderThreadSleep',"$lc_attr"."ms");
+  }
+  
+ $lc_attr= $localxml->{key}->{filter_null_env_sender_for_dsn_redirect}->{value};
+  if (defined($lc_attr) && lc($lc_attr) ne "true") {
+     main::setLdapServerConfig($hn, 'zimbraFilterNullEnvelopeSenderForDSNRedirect', "FALSE");
+  }
+  
+  $lc_attr= $localxml->{key}->{freebusy_disable_nodata_status}->{value};
+  if (defined($lc_attr) && lc($lc_attr) eq "true") {
+     main::setLdapServerConfig($hn, 'zimbraFreeBusyDisableNoDataStatus', "TRUE");
+  }
+  
+  $lc_attr= $localxml->{key}->{jdbc_results_streaming_enabled}->{value};
+  if (defined($lc_attr) && lc($lc_attr) ne "true") {
+     main::setLdapServerConfig($hn, 'zimbraMysqlJdbcResultStreamingEnabled', "FALSE");
+  }
+
+  $lc_attr= $localxml->{key}->{krb5_debug_enabled}->{value};
+  if (defined($lc_attr) && lc($lc_attr) eq "true") {
+     main::setLdapServerConfig($hn, 'zimbraKerberosDebugEnabled',"TRUE");
+  }
+  
+  $lc_attr= $localxml->{key}->{krb5_service_principal_from_interface_address}->{value};
+  if (defined($lc_attr) && lc($lc_attr) eq "true") {
+     main::setLdapServerConfig($hn, 'zimbraKerobosServicePrincipalFromInterfaceAddress',"TRUE");
+  }
+ 
+   $lc_attr= $localxml->{key}->{lmtp_throttle_ip_limit}->{value};
+  if (defined($lc_attr) && $lc_attr != 0) {
+     main::setLdapServerConfig($hn, 'zimbraLmtpThrottleIpLimit',"$lc_attr");
+  }
+  
+  $lc_attr= $localxml->{key}->{max_image_size_to_resize}->{value};
+  if (defined($lc_attr) && $lc_attr != 10485760) {
+     main::setLdapServerConfig($hn, 'zimbraMimeMaxImageSizeToResize',"$lc_attr");
+  }
+  
+ $lc_attr= $localxml->{key}->{nio_imap_enabled}->{value};
+  if (defined($lc_attr) && lc($lc_attr) ne "true") {
+     main::setLdapServerConfig($hn, 'zimbraImapNioEnabled', "FALSE");
+  }
+  
+  $lc_attr= $localxml->{key}->{nio_max_write_queue_size}->{value};
+  if (defined($lc_attr) && $lc_attr != 10000) {
+     main::setLdapServerConfig($hn, 'zimbraNioMaxWriteQueueSize', "$lc_attr");
+  }
+  
+  $lc_attr= $localxml->{key}->{nio_pop3_enabled}->{value};
+  if (defined($lc_attr) && lc($lc_attr) ne "true") {
+     main::setLdapServerConfig($hn, 'zimbraPop3NioEnabled', "FALSE");
+  }
+
+  $lc_attr= $localxml->{key}->{notes_enabled}->{value};
+  if (defined($lc_attr) && lc($lc_attr) eq "true") {
+     main::setLdapServerConfig($hn, 'zimbraMailNotesEnabled',"TRUE");
+  }
+  
+  $lc_attr= $localxml->{key}->{pop3_max_consecutive_error}->{value};
+  if (defined($lc_attr) && $lc_attr != 5) {
+     main::setLdapServerConfig($hn, 'zimbraPop3MaxConsecutiveError',"$lc_attr");
+  }
+ 
+  $lc_attr= $localxml->{key}->{pop3_max_idle_time}->{value};
+  if (defined($lc_attr) && $lc_attr != 60) {
+     main::setLdapServerConfig($hn, 'zimbraPop3MaxIdleTime', "$lc_attr");
+  }
+  
+  $lc_attr= $localxml->{key}->{pop3_write_timeout}->{value};
+  if (defined($lc_attr) && $lc_attr != 10) {
+     main::setLdapServerConfig($hn, 'zimbraPop3WriteTimeout', "$lc_attr");
+  }
+  
+  $lc_attr= $localxml->{key}->{pop3_thread_keep_alive_time}->{value};
+  if (defined($lc_attr) && $lc_attr != 60) {
+     main::setLdapServerConfig($hn, 'zimbraPop3ThreadKeepAliveTime', "$lc_attr");
+  }
+
+  $lc_attr= $localxml->{key}->{pop3_throttle_ip_limit}->{value};
+  if (defined($lc_attr) && $lc_attr != 5000) {
+     main::setLdapServerConfig($hn, 'zimbraPop3ThrottleIpLimit',"$lc_attr");
+  }
+  
+  $lc_attr= $localxml->{key}->{pop3_throttle_acct_limit}->{value};
+  if (defined($lc_attr) && $lc_attr != 5000) {
+     main::setLdapServerConfig($hn, 'zimbraPop3ThrottleAcctLimit',"$lc_attr");
   }
   
    
@@ -2921,6 +3067,35 @@ sub upgrade900BETA1 {
   main::deleteLocalConfig("zimbra_activesync_syncstate_item_cache_heap_size"); 
   main::deleteLocalConfig("zimbra_index_threads"); 
   main::deleteLocalConfig("zimbra_index_deferred_items_failure_delay"); 
+  main::deleteLocalConfig("zimbra_index_lucene_io_impl");
+  main::deleteLocalConfig("zimbra_index_lucene_merge_factor"); 
+  main::deleteLocalConfig("zimbra_index_manual_commit");
+  main::deleteLocalConfig("zimbra_index_max_transaction_bytes");
+  main::deleteLocalConfig("zimbra_index_max_transaction_items"); 
+  main::deleteLocalConfig("zimbra_index_reader_cache_size"); 
+  main::deleteLocalConfig("zimbra_index_reader_cache_ttl");
+  main::deleteLocalConfig("zimbra_index_disable_perf_counters");
+  main::deleteLocalConfig("contact_ranking_enabled"); 
+  main::deleteLocalConfig("conversation_ignore_maillist_prefix");
+  main::deleteLocalConfig("conversation_max_age_ms"); 
+  main::deleteLocalConfig("empty_folder_batch_sleep_ms");
+  main::deleteLocalConfig("filter_null_env_sender_for_dsn_redirect");
+  main::deleteLocalConfig("freebusy_disable_nodata_status"); 
+  main::deleteLocalConfig("jdbc_results_streaming_enabled"); 
+  main::deleteLocalConfig("krb5_debug_enabled");
+  main::deleteLocalConfig("krb5_service_principal_from_interface_address");
+  main::deleteLocalConfig("lmtp_throttle_ip_limit"); 
+  main::deleteLocalConfig("max_image_size_to_resize");
+  main::deleteLocalConfig("nio_imap_enabled"); 
+  main::deleteLocalConfig("nio_max_write_queue_size");
+  main::deleteLocalConfig("nio_pop3_enabled");
+  main::deleteLocalConfig("nio_pop3_enabled"); 
+  main::deleteLocalConfig("pop3_max_consecutive_error"); 
+  main::deleteLocalConfig("pop3_max_idle_time"); 
+  main::deleteLocalConfig("pop3_write_timeout"); 
+  main::deleteLocalConfig("pop3_thread_keep_alive_time"); 
+  main::deleteLocalConfig("pop3_throttle_ip_limit");
+  main::deleteLocalConfig("pop3_throttle_acct_limit");
   
   
   return 0;
