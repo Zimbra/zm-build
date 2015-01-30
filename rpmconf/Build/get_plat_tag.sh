@@ -47,6 +47,18 @@ if [ -f /etc/redhat-release ]; then
 		exit 0
 	fi
 
+	grep "Scientific Linux release 7" /etc/redhat-release > /dev/null 2>&1
+	if [ $? = 0 ]; then
+		echo "RHEL7${i}"
+		exit 0
+	fi
+
+	grep "Scientific Linux release 6" /etc/redhat-release > /dev/null 2>&1
+	if [ $? = 0 ]; then
+		echo "RHEL6${i}"
+		exit 0
+	fi
+
 	grep "Fedora release 13" /etc/redhat-release >/dev/null 2>&1
 	if [ $? = 0 ]; then
 		echo "F13${i}"
