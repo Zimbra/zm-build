@@ -871,13 +871,9 @@ verifyUpgrade() {
   isInstalled "zimbra-ldap"
   if [ x$PKGINSTALLED != "x" ]; then
     runAsZimbra "ldap start"
-  fi
-
-  # Upgrade tests specific to NE only
-  if [ x"$ZMTYPE_INSTALLABLE" = "xNETWORK" ]; then
-    if [ x"$SKIP_ACTIVATION_CHECK" = "xno" ]; then
-      isInstalled "zimbra-store"
-      if [ x$PKGINSTALLED != "x" ]; then
+    # Upgrade tests specific to NE only
+    if [ x"$ZMTYPE_INSTALLABLE" = "xNETWORK" ]; then
+      if [ x"$SKIP_ACTIVATION_CHECK" = "xno" ]; then
         if [ -x "bin/checkLicense.pl" ]; then
           echo "Validating existing license is not expired and qualifies for upgrade"
           echo $HOSTNAME | egrep -qe 'eng.vmware.com$|eng.zimbra.com$' > /dev/null 2>&1
