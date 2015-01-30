@@ -47,6 +47,18 @@ if [ -f /etc/redhat-release ]; then
 		echo "RHEL6${i}"
 		exit 0
 	fi
+
+	grep "Scientific Linux release 7" /etc/redhat-release > /dev/null 2>&1
+	if [ $? = 0 ]; then
+		echo "RHEL7${i}"
+		exit 0
+	fi
+	
+	grep "Scientific Linux release 6" /etc/redhat-release > /dev/null 2>&1
+	if [ $? = 0 ]; then
+		echo "RHEL6${i}"
+		exit 0
+	fi
 	
 	grep "Red Hat Enterprise Linux.*release" /etc/redhat-release > /dev/null 2>&1
 	if [ $? = 0 ]; then
