@@ -2812,6 +2812,16 @@ sub upgrade870BETA1 {
       main::runAsZimbra("$ZMPROV mcf zimbraReverseProxySSLCiphers 'ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-DSS-AES128-GCM-SHA256:kEDH+AESGCM:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA:ECDHE-ECDSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-DSS-AES128-SHA256:DHE-RSA-AES256-SHA256:DHE-DSS-AES256-SHA:DHE-RSA-AES256-SHA:AES128-GCM-SHA256:AES256-GCM-SHA384:AES128:AES256:HIGH:!aNULL:!eNULL:!EXPORT:!DES:!MD5:!PSK:!RC4'");
     }
   }
+  if (main::isInstalled("zimbra-store")) {
+    my $mailboxd_java_options=main::getLocalConfig("mailboxd_java_options");
+    my $new_mailboxd_options = $mailboxd_java_options;
+    $new_mailboxd_options =~ s/-XX:(?:Max|)PermSize=\S*\s?//g;
+    if ($new_mailboxd_options ne $mailboxd_java_options)
+    {
+      main::progress("Updating mailboxd_java_options to remove deprecated PermSize and MaxPermSize java options.\n");
+      main::setLocalConfig("mailboxd_java_options", $new_mailboxd_options);
+    }
+  }
   return 0;
 }
 
