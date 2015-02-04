@@ -2371,6 +2371,12 @@ sub upgrade870BETA1 {
       main::setLocalConfig("mailboxd_java_options", $new_mailboxd_options);
     }
   }
+  my $localxml = XMLin("/opt/zimbra/conf/localconfig.xml");
+  my $lc_attr= $localxml->{key}->{zimbra_class_database}->{value};
+  if (defined($lc_attr) && $lc_attr eq "com.zimbra.cs.db.MySQL") {
+	main::setLocalConfig("zimbra_class_database", "com.zimbra.cs.db.MariaDB");
+  }
+
   return 0;
 }
 
