@@ -88,6 +88,16 @@
     <perms owner="zimbra" mode="0664" />
    </file>
    <file>
+    <source>ZimbraBuild/storebuild/opt/zimbra/zimlets/com_zimbra_attachcontacts.zip</source>
+    <target>/opt/zimbra/zimlets/com_zimbra_attachcontacts.zip</target>
+    <perms owner="zimbra" mode="0664" />
+   </file>
+   <file>
+    <source>ZimbraBuild/storebuild/opt/zimbra/lib/ext/zimbraews/zimbraews.jar</source>
+    <target>/opt/zimbra/lib/ext/zimbraews/zimbraews.jar</target>
+    <perms owner="root" mode="0444" />
+   </file>
+   <file>
     <source>ZimbraBuild/storebuild/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbra/js/ajax/3rdparty/tinymce/classes/ui/Button.js</source>
     <target>/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbra/js/ajax/3rdparty/tinymce/classes/ui/Button.js</target>
     <perms owner="zimbra" mode="0664" />
@@ -188,6 +198,46 @@
     <perms owner="zimbra" mode="0664" />
    </file>
    <file>
+    <source>ZimbraBuild/storebuild/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbra/js/ajax/3rdparty/tinymce/tinymce_dev.js</source>
+    <target>/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbra/js/ajax/3rdparty/tinymce/tinymce_dev.js</target>
+    <perms owner="zimbra" mode="0664" />
+   </file>
+   <file>
+    <source>ZimbraBuild/storebuild/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbraAdmin/js/ajax/3rdparty/tinymce/tinymce_dev.js</source>
+    <target>/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbraAdmin/js/ajax/3rdparty/tinymce/tinymce_dev.js</target>
+    <perms owner="zimbra" mode="0664" />
+   </file>
+   <file>
+    <source>ZimbraBuild/storebuild/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbra/js/ajax/3rdparty/tinymce/tinymce_jquery_dev.js</source>
+    <target>/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbra/js/ajax/3rdparty/tinymce/tinymce_jquery_dev.js</target>
+    <perms owner="zimbra" mode="0664" />
+   </file>
+   <file>
+    <source>ZimbraBuild/storebuild/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbraAdmin/js/ajax/3rdparty/tinymce/tinymce_jquery_dev.js</source>
+    <target>/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbraAdmin/js/ajax/3rdparty/tinymce/tinymce_jquery_dev.js</target>
+    <perms owner="zimbra" mode="0664" />
+   </file>
+   <file>
+    <source>ZimbraBuild/storebuild/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbra/js/ajax/3rdparty/tinymce/tinymce_jquery.js</source>
+    <target>/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbra/js/ajax/3rdparty/tinymce/tinymce_jquery.js</target>
+    <perms owner="zimbra" mode="0664" />
+   </file>
+   <file>
+    <source>ZimbraBuild/storebuild/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbraAdmin/js/ajax/3rdparty/tinymce/tinymce_jquery.js</source>
+    <target>/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbraAdmin/js/ajax/3rdparty/tinymce/tinymce_jquery.js</target>
+    <perms owner="zimbra" mode="0664" />
+   </file>
+   <file>
+    <source>ZimbraBuild/storebuild/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbra/js/ajax/3rdparty/tinymce/tinymce_jquery_min.js</source>
+    <target>/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbra/js/ajax/3rdparty/tinymce/tinymce_jquery_min.js</target>
+    <perms owner="zimbra" mode="0664" />
+   </file>
+   <file>
+    <source>ZimbraBuild/storebuild/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbraAdmin/js/ajax/3rdparty/tinymce/tinymce_jquery_min.js</source>
+    <target>/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbraAdmin/js/ajax/3rdparty/tinymce/tinymce_jquery_min.js</target>
+    <perms owner="zimbra" mode="0664" />
+   </file>
+   <file>
     <source>ZimbraBuild/storebuild/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbra/js/ajax/3rdparty/tinymce/tinymce.js</source>
     <target>/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbra/js/ajax/3rdparty/tinymce/tinymce.js</target>
     <perms owner="zimbra" mode="0664" />
@@ -195,6 +245,16 @@
    <file>
     <source>ZimbraBuild/storebuild/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbraAdmin/js/ajax/3rdparty/tinymce/tinymce.js</source>
     <target>/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbraAdmin/js/ajax/3rdparty/tinymce/tinymce.js</target>
+    <perms owner="zimbra" mode="0664" />
+   </file>
+   <file>
+    <source>ZimbraBuild/storebuild/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbra/js/ajax/3rdparty/tinymce/tinymce_min.js</source>
+    <target>/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbra/js/ajax/3rdparty/tinymce/tinymce_min.js</target>
+    <perms owner="zimbra" mode="0664" />
+   </file>
+   <file>
+    <source>ZimbraBuild/storebuild/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbraAdmin/js/ajax/3rdparty/tinymce/tinymce_min.js</source>
+    <target>/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbraAdmin/js/ajax/3rdparty/tinymce/tinymce_min.js</target>
     <perms owner="zimbra" mode="0664" />
    </file>
    <file>
@@ -1797,87 +1857,27 @@
     <target>/opt/zimbra/conf/templates/templates/zimbra/Widgets.template</target>
     <perms owner="zimbra" mode="644" />
    </file>
+   <file>
+    <source>ZimbraBuild/storebuild/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/service/WEB-INF/lib/zimbrastore.jar</source>
+    <target>/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/service/WEB-INF/lib/zimbrastore.jar</target>
+    <perms owner="root" mode="0444" />
+   </file>
+   <file>
+    <source>ZimbraBuild/storebuild/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbra/WEB-INF/lib/zimbrastore.jar</source>
+    <target>/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbra/WEB-INF/lib/zimbrastore.jar</target>
+    <perms owner="root" mode="0444" />
+   </file>
+   <file>
+    <source>ZimbraBuild/storebuild/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbraAdmin/WEB-INF/lib/zimbrastore.jar</source>
+    <target>/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbraAdmin/WEB-INF/lib/zimbrastore.jar</target>
+    <perms owner="root" mode="0444" />
+   </file>
   </package>
   <package name="zimbra-core">
    <file>
-    <source>ZimbraBuild/corebuild/opt/zimbra/j2sdk-20140721/demo/nbproject/management/FullThreadDump/build.xml</source>
-    <target>/opt/zimbra/j2sdk-20140721/demo/nbproject/management/FullThreadDump/build.xml</target>
-    <perms owner="root" mode="644" />
-   </file>
-   <file>
-    <source>ZimbraBuild/corebuild/opt/zimbra/j2sdk-20140721/demo/nbproject/management/MemoryMonitor/build.xml</source>
-    <target>/opt/zimbra/j2sdk-20140721/demo/nbproject/management/MemoryMonitor/build.xml</target>
-    <perms owner="root" mode="644" />
-   </file>
-   <file>
-    <source>ZimbraBuild/corebuild/opt/zimbra/j2sdk-20140721/demo/nbproject/management/JTop/build.xml</source>
-    <target>/opt/zimbra/j2sdk-20140721/demo/nbproject/management/JTop/build.xml</target>
-    <perms owner="root" mode="644" />
-   </file>
-   <file>
-    <source>ZimbraBuild/corebuild/opt/zimbra/j2sdk-20140721/demo/nbproject/management/VerboseGC/build.xml</source>
-    <target>/opt/zimbra/j2sdk-20140721/demo/nbproject/management/VerboseGC/build.xml</target>
-    <perms owner="root" mode="644" />
-   </file>
-   <file>
-    <source>ZimbraBuild/corebuild/opt/zimbra/j2sdk-20140721/demo/nbproject/scripting/jconsole-plugin/build.xml</source>
-    <target>/opt/zimbra/j2sdk-20140721/demo/nbproject/scripting/jconsole-plugin/build.xml</target>
-    <perms owner="root" mode="644" />
-   </file>
-   <file>
-    <source>ZimbraBuild/corebuild/opt/zimbra/j2sdk-20140721/demo/nbproject/jfc/SampleTree/build.xml</source>
-    <target>/opt/zimbra/j2sdk-20140721/demo/nbproject/jfc/SampleTree/build.xml</target>
-    <perms owner="root" mode="644" />
-   </file>
-   <file>
-    <source>ZimbraBuild/corebuild/opt/zimbra/j2sdk-20140721/demo/nbproject/jfc/Metalworks/build.xml</source>
-    <target>/opt/zimbra/j2sdk-20140721/demo/nbproject/jfc/Metalworks/build.xml</target>
-    <perms owner="root" mode="644" />
-   </file>
-   <file>
-    <source>ZimbraBuild/corebuild/opt/zimbra/j2sdk-20140721/demo/nbproject/jfc/FileChooserDemo/build.xml</source>
-    <target>/opt/zimbra/j2sdk-20140721/demo/nbproject/jfc/FileChooserDemo/build.xml</target>
-    <perms owner="root" mode="644" />
-   </file>
-   <file>
-    <source>ZimbraBuild/corebuild/opt/zimbra/j2sdk-20140721/demo/nbproject/jfc/SwingApplet/build.xml</source>
-    <target>/opt/zimbra/j2sdk-20140721/demo/nbproject/jfc/SwingApplet/build.xml</target>
-    <perms owner="root" mode="644" />
-   </file>
-   <file>
-    <source>ZimbraBuild/corebuild/opt/zimbra/j2sdk-20140721/demo/nbproject/jfc/Font2DTest/build.xml</source>
-    <target>/opt/zimbra/j2sdk-20140721/demo/nbproject/jfc/Font2DTest/build.xml</target>
-    <perms owner="root" mode="644" />
-   </file>
-   <file>
-    <source>ZimbraBuild/corebuild/opt/zimbra/j2sdk-20140721/demo/nbproject/jfc/TransparentRuler/build.xml</source>
-    <target>/opt/zimbra/j2sdk-20140721/demo/nbproject/jfc/TransparentRuler/build.xml</target>
-    <perms owner="root" mode="644" />
-   </file>
-   <file>
-    <source>ZimbraBuild/corebuild/opt/zimbra/j2sdk-20140721/demo/nbproject/jfc/Notepad/build.xml</source>
-    <target>/opt/zimbra/j2sdk-20140721/demo/nbproject/jfc/Notepad/build.xml</target>
-    <perms owner="root" mode="644" />
-   </file>
-   <file>
-    <source>ZimbraBuild/corebuild/opt/zimbra/j2sdk-20140721/demo/nbproject/jfc/TableExample/build.xml</source>
-    <target>/opt/zimbra/j2sdk-20140721/demo/nbproject/jfc/TableExample/build.xml</target>
-    <perms owner="root" mode="644" />
-   </file>
-   <file>
-    <source>ZimbraBuild/corebuild/opt/zimbra/j2sdk-20140721/demo/scripting/jconsole-plugin/build.xml</source>
-    <target>/opt/zimbra/j2sdk-20140721/demo/scripting/jconsole-plugin/build.xml</target>
-    <perms owner="root" mode="644" />
-   </file>
-   <file>
-    <source>ZimbraBuild/corebuild/opt/zimbra/j2sdk-20140721/sample/jmx/jmx-scandir/build.xml</source>
-    <target>/opt/zimbra/j2sdk-20140721/sample/jmx/jmx-scandir/build.xml</target>
-    <perms owner="root" mode="644" />
-   </file>
-   <file>
-    <source>ZimbraBuild/corebuild/opt/zimbra/j2sdk-20140721/sample/scripting/scriptpad/build.xml</source>
-    <target>/opt/zimbra/j2sdk-20140721/sample/scripting/scriptpad/build.xml</target>
-    <perms owner="root" mode="644" />
+    <source>ZimbraBuild/corebuild/opt/zimbra/lib/jars/zimbrastore.jar</source>
+    <target>/opt/zimbra/lib/jars/zimbrastore.jar</target>
+    <perms owner="root" mode="0444" />
    </file>
   </package>
   </patch>
