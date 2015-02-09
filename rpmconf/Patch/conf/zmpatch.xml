@@ -633,6 +633,16 @@
     <perms owner="zimbra" mode="0664" />
    </file>
    <file>
+    <source>ZimbraBuild/storebuild/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbraAdmin/js/zimbraAdmin/common/ZaController.js</source>
+    <target>/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbraAdmin/js/zimbraAdmin/common/ZaController.js</target>
+    <perms owner="zimbra" mode="0664" />
+   </file>
+   <file>
+    <source>ZimbraBuild/storebuild/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbraAdmin/js/zimbraAdmin/domains/model/ZaDomain.js</source>
+    <target>/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbraAdmin/js/zimbraAdmin/domains/model/ZaDomain.js</target>
+    <perms owner="zimbra" mode="0664" />
+   </file>
+   <file>
     <source>ZimbraBuild/storebuild/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbraAdmin/js/zimbraAdmin/home/model/ZaHome.js</source>
     <target>/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbraAdmin/js/zimbraAdmin/home/model/ZaHome.js</target>
     <perms owner="zimbra" mode="0664" />
