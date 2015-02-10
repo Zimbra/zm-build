@@ -2804,6 +2804,14 @@ sub upgrade870BETA1 {
       if ($cursslexcl eq $oldsslexcl) {
         main::runAsZimbra("$ZMPROV mcf zimbraSSLExcludeCipherSuites '.*_RC4_.*'");
       }
+
+      # Bug 97332 - Some clients require SSLv2Hello support...
+      my $sslprot=main::getLdapConfigValue("zimbraMailboxdSSLProtocols") || "";
+      my $cursslprot=join(" ", sort split("\n", $sslprot));
+      my $oldsslprot=join(" ", sort qw(TLSv1 TLSv1.1 TLSv1.2));
+      if ($cursslprot eq $oldsslprot) {
+        main::runAsZimbra("$ZMPROV mcf +zimbraMailboxdSSLProtocols SSLv2Hello");
+      }
     }
   }
   if (main::isInstalled("zimbra-proxy")) {
