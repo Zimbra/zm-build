@@ -2392,10 +2392,31 @@ sub upgrade900BETA1 {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
   main::progress("Updating from 9.0.0_BETA1\n");
   
-   if (main::isInstalled("zimbra-proxy")) {
+  if (main::isInstalled("zimbra-proxy")) {
       main::setLdapGlobalConfig("zimbraReverseProxyLogToSyslog", "FALSE");
   }
-  
+ 
+  if (main::isInstalled("zimbra-ldap")) {
+    if ($isLdapMaster) {
+      my $ldap_pass = qx($su "zmlocalconfig -s -m nokey ldap_root_password");
+      chomp($ldap_pass);
+      my $ldap;
+      unless($ldap = Net::LDAP->new('ldapi://%2fopt%2fzimbra%2fdata%2fldap%2fstate%2frun%2fldapi/')) {
+         main::progress("Unable to contact to ldapi: $!\n");
+      } else {
+        my $result = $ldap->bind("cn=config", password => $ldap_pass);
+        $result = $ldap->search(
+          base=> "cn=appaccts,cn=zimbra",
+          filter=>"(&(objectClass=zimbraAccount)(uid=zmbes-searcher))",
+          scope => "base",
+        );
+        my $totalcount=$result->count;
+        if ($totalcount > 0) {
+          $result = $ldap->delete("uid=zmbes-searcher,cn=appaccts,cn=zimbra");
+        }
+      }
+    }
+  }
   my $localxml = XMLin("/opt/zimbra/conf/localconfig.xml");
   my $lc_attr= $localxml->{key}->{acl_cache_target_maxsize}->{value};
   if (defined($lc_attr) && $lc_attr != 1024) {
