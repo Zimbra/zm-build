@@ -3141,6 +3141,7 @@ sub upgrade900BETA1 {
   main::deleteLocalConfig("pop3_thread_keep_alive_time"); 
   main::deleteLocalConfig("pop3_throttle_ip_limit");
   main::deleteLocalConfig("pop3_throttle_acct_limit");
+  main::deleteLocalConfig("ldap_bes_searcher_password");
   
   
   return 0;
