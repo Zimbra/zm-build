@@ -2392,10 +2392,6 @@ sub upgrade900BETA1 {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
   main::progress("Updating from 9.0.0_BETA1\n");
   
-  if (main::isInstalled("zimbra-proxy")) {
-      main::setLdapGlobalConfig("zimbraReverseProxyLogToSyslog", "FALSE");
-  }
- 
   if (main::isInstalled("zimbra-ldap")) {
     if ($isLdapMaster) {
       my $ldap_pass = qx($su "zmlocalconfig -s -m nokey ldap_root_password");
