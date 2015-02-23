@@ -3119,7 +3119,7 @@ sub upgrade900BETA1 {
      main::setLdapServerConfig($hn, 'zimbraMimeConverterMaxMimepartDepth', "$lc_attr");
   }
 
-  $lc_attr= $localxml->{key}->{zimbra_converter_enabled_t   nef}->{value};
+  $lc_attr= $localxml->{key}->{zimbra_converter_enabled_tnef}->{value};
   if (defined($lc_attr) && lc($lc_attr) ne "true") {
      main::setLdapServerConfig($hn, 'zimbraMimeConverterEnabledTnef',"FALSE");
   }
