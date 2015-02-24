@@ -492,7 +492,7 @@ sub getDateStamp() {
   $hour = sprintf("%02d", $hour);
   $mday = sprintf("%02d", $mday);
   $mon = sprintf("%02d", $mon+1);
-  my $stamp = "$mon$mday$year-$hour$min$sec";
+  my $stamp = "$year$mon$mday-$hour$min$sec";
   return $stamp;
 }
 
