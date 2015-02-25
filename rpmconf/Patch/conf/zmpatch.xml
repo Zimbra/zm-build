@@ -92,7 +92,7 @@
     <target>/opt/zimbra/zimlets/com_zimbra_attachcontacts.zip</target>
     <perms owner="zimbra" mode="0664" />
    </file>
-   <file>
+   <file type="network">
     <source>ZimbraBuild/storebuild/opt/zimbra/lib/ext/zimbraews/zimbraews.jar</source>
     <target>/opt/zimbra/lib/ext/zimbraews/zimbraews.jar</target>
     <perms owner="root" mode="0444" />
