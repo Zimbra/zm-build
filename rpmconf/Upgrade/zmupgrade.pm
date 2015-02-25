@@ -2829,6 +2829,12 @@ sub upgrade870BETA1 {
       main::progress("Updating mailboxd_java_options to remove deprecated PermSize and MaxPermSize java options.\n");
       main::setLocalConfig("mailboxd_java_options", $new_mailboxd_options);
     }
+  
+    # Bug 80135 - Improved proxy timeout defaults...
+    my $proxy_reconnect_timeout = main::getLdapServerValue("zimbraMailProxyReconnectTimeout");
+    if ($proxy_reconnect_timeout eq "60")  {
+      main::setLdapServerConfig($hn, 'zimbraMailProxyReconnectTimeout', '10');
+    }
   }
   my $localxml = XMLin("/opt/zimbra/conf/localconfig.xml");
   my $lc_attr= $localxml->{key}->{zimbra_class_database}->{value};
