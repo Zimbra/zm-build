@@ -2384,6 +2384,10 @@ sub upgrade870BETA1 {
     if ($proxy_reconnect_timeout eq "60")  {
       main::setLdapServerConfig($hn, 'zimbraMailProxyReconnectTimeout', '10');
     }
+    # Bug 96857 -  MySQL meta files (pid file, socket, ..) should not be placed in db directory 
+    my $mysql_mycnf = main::getLocalConfig("mysql_mycnf");
+    main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-mysql_socket --section=mysqld --key=socket --set --value='/opt/zimbra/data/tmp/mysql/mysql.sock' ${mysql_mycnf}");
+    main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-mysql_pidfile --section=mysqld --key=pid-file --set --value='/opt/zimbra/log/mysql.pid' ${mysql_mycnf}");
   }
   my $localxml = XMLin("/opt/zimbra/conf/localconfig.xml");
   my $lc_attr= $localxml->{key}->{zimbra_class_database}->{value};
