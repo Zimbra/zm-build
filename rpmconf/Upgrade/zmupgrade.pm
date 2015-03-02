@@ -2821,7 +2821,7 @@ sub upgrade870BETA1 {
     }
   }
   if (main::isInstalled("zimbra-store")) {
-    my $mailboxd_java_options=main::getLocalConfig("mailboxd_java_options");
+    my $mailboxd_java_options=main::getLocalConfigRaw("mailboxd_java_options");
     my $new_mailboxd_options = $mailboxd_java_options;
     $new_mailboxd_options =~ s/-XX:(?:Max|)PermSize=\S*\s?//g;
     if ($new_mailboxd_options ne $mailboxd_java_options)
