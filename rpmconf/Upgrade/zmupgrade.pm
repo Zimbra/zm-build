@@ -431,6 +431,13 @@ sub upgrade {
 
   if (main::isInstalled("zimbra-store")) {
     my $version_found = 0;
+    if ($startMajor <=8 && $startMinor <=7)
+    {
+	    # Bug 96857 - MySQL meta files (pid file, socket, ..) should not be placed in db directory
+			# temporary symlinks for relocation of key mysql files
+			symlink("/opt/zimbra/db/mysql.pid", "/opt/zimbra/log/mysql.pid");
+			symlink("/opt/zimbra/db/mysql.sock", "/opt/zimbra/data/tmp/mysql/mysql.sock");
+		}
     foreach my $v (@versionOrder) {
       $version_found = 1 if ($v eq $startVersion);
       if ($version_found) {
@@ -2388,6 +2395,10 @@ sub upgrade870BETA1 {
     my $mysql_mycnf = main::getLocalConfig("mysql_mycnf");
     main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-mysql_socket --section=mysqld --key=socket --set --value='/opt/zimbra/data/tmp/mysql/mysql.sock' ${mysql_mycnf}");
     main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-mysql_pidfile --section=mysqld --key=pid-file --set --value='/opt/zimbra/log/mysql.pid' ${mysql_mycnf}");
+    main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-mysql_pidfile --section=mysqld_safe --key=pid-file --set --value='/opt/zimbra/log/mysql.pid' ${mysql_mycnf}");
+   	unlink("/opt/zimbra/db/mysql.pid") if (-e "/opt/zimbra/db/mysql.pid");
+   	unlink("/opt/zimbra/db/mysql.sock") if (-e "/opt/zimbra/db/mysql.sock");
+
   }
   my $localxml = XMLin("/opt/zimbra/conf/localconfig.xml");
   my $lc_attr= $localxml->{key}->{zimbra_class_database}->{value};
