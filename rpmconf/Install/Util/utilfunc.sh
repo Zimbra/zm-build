@@ -1483,12 +1483,12 @@ setDefaultsFromExistingConfig() {
   echo "   SMTPDEST=${smtp_destination}"
   echo "   SNMPNOTIFY=${snmp_notify:-0}"
   echo "   SMTPNOTIFY=${smtp_notify:-0}"
-  echo "   LDAPROOTPW=${ldap_root_password}"
-  echo "   LDAPZIMBRAPW=${zimbra_ldap_password}"
-  echo "   LDAPPOSTPW=${ldap_postfix_password}"
-  echo "   LDAPREPPW=${ldap_replication_password}"
-  echo "   LDAPAMAVISPW=${ldap_amavis_password}"
-  echo "   LDAPNGINXPW=${ldap_nginx_password}"
+  echo "   LDAPROOTPW=*"
+  echo "   LDAPZIMBRAPW=*"
+  echo "   LDAPPOSTPW=*"
+  echo "   LDAPREPPW=*"
+  echo "   LDAPAMAVISPW=*"
+  echo "   LDAPNGINXPW=*"
 
 }
 
