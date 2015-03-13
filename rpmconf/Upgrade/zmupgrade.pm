@@ -431,7 +431,7 @@ sub upgrade {
 
   if (main::isInstalled("zimbra-store")) {
     my $version_found = 0;
-    if ($startVersion <= 7 || ($startVersion <=8 && $startMinor < 7))
+    if ($startMajor <= 7 || ($startMajor <=8 && $startMinor < 7))
     {
         # Bug 96857 - MySQL meta files (pid file, socket, ..) should not be placed in db directory
         # temporary symlinks for relocation of key mysql files
