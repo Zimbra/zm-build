@@ -4489,7 +4489,7 @@ sub createMainMenu {
       #push @mm, "$package not installed";
     }
   }
-  if (defined($installedPackages{"zimbra-core"})) {
+  if (defined($installedPackages{"zimbra-core"}) && isNetwork()) {
     # simple test to see if we are running in a VM.
     if ( -x "/usr/lib/vmware-tools/sbin64/vmware-checkvm") {
       my $rc = runAsRoot("/usr/lib/vmware-tools/sbin64/vmware-checkvm");
