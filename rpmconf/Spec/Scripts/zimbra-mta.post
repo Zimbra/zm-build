@@ -51,8 +51,8 @@ ln -s /opt/zimbra/clamav-0.98.6 /opt/zimbra/clamav
 
 rm -f /opt/zimbra/mta/mysql
 rm -f /opt/zimbra/mta/mariadb
-ln -s /opt/zimbra/mta/mariadb-10.0.16 /opt/zimbra/mta/mariadb
-ln -s /opt/zimbra/mta/mariadb-10.0.16 /opt/zimbra/mta/mysql
+ln -s /opt/zimbra/mta/mariadb-10.0.17 /opt/zimbra/mta/mariadb
+ln -s /opt/zimbra/mta/mariadb-10.0.17 /opt/zimbra/mta/mysql
 
 rm -f /opt/zimbra/altermime
 ln -s /opt/zimbra/altermime-0.3-20100505 /opt/zimbra/altermime
