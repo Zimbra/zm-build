@@ -737,7 +737,14 @@ checkExistingInstall() {
         if [ -f "/opt/zimbra/lib/ext/zimbra_xmbxsearch/zimbra_xmbxsearch.jar" -a -f "/opt/zimbra/zimlets-network/zimbra_xmbxsearch.zip" ]; then
           echo "FOUND zimbra-cms"
           INSTALLED_PACKAGES="$INSTALLED_PACKAGES zimbra-archiving"
-        else 
+        else
+          echo "NOT FOUND"
+        fi
+      elif [ x$i = "xzimbra-syncshare" ]; then
+        if [ -f "/opt/zimbra/lib/ext/zimbramezeo/zimbramezeo.jar" -a -f "/opt/zimbra/zimlets-network/com_zimbra_zss.zip" ]; then
+          echo "FOUND zimbra-syncshare"
+          INSTALLED_PACKAGES="$INSTALLED_PACKAGES zimbra-syncshare"
+        else
           echo "NOT FOUND"
         fi
       else
@@ -1740,6 +1747,12 @@ removeExistingInstall() {
           $PACKAGERM zimbra-archiving >/dev/null 2>&1
           echo "done"
         fi
+        isInstalled "zimbra-syncshare"
+        if [ x$PKGINSTALLED != "x" ]; then
+          echo -n "   zimbra-syncshare..."
+          $PACKAGERM zimbra-syncshare >/dev/null 2>&1
+          echo "done"
+        fi
       fi
       isInstalled $p
       if [ x$PKGINSTALLED != "x" ]; then
@@ -2161,12 +2174,23 @@ getInstallPackages() {
         if [ $STORE_SELECTED = "yes" ]; then
           askYN "Install $i" "N"
         fi
+#      else
+#        askYN "Install $i" "N"
+#      fi
+      elif [ $i = "zimbra-syncshare" ]; then
+        if [ $STORE_SELECTED = "yes" ]; then
+          askYN "Install $i" "N"
+        fi
       else
         askYN "Install $i" "N"
       fi
     else
       if [ $i = "zimbra-archiving" ]; then
         # only prompt to install archiving if zimbra-store is selected
+        if [ $STORE_SELECTED = "yes" ]; then
+          askYN "Install $i" "N"
+        fi
+      elif [ $i = "zimbra-syncshare" ]; then
         if [ $STORE_SELECTED = "yes" ]; then
           askYN "Install $i" "N"
         fi
