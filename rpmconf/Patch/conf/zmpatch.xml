@@ -2001,11 +2001,6 @@
     <source>ZimbraBuild/storebuild/opt/zimbra/zimlets/com_zimbra_attachcontacts.zip</source>
     <target>/opt/zimbra/zimlets/com_zimbra_attachcontacts.zip</target>
    </zimlet>
-   <file type="network">
-    <source>ZimbraBuild/storebuild/opt/zimbra/lib/ext/zimbraews/zimbraews.jar</source>
-    <target>/opt/zimbra/lib/ext/zimbraews/zimbraews.jar</target>
-    <perms owner="root" mode="0444" />
-   </file>
    <file>
     <source>ZimbraBuild/storebuild/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbra/js/ajax/3rdparty/tinymce/classes/ui/Button.js</source>
     <target>/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbra/js/ajax/3rdparty/tinymce/classes/ui/Button.js</target>
@@ -3822,21 +3817,6 @@
 	  <perms owner="zimbra" mode="0664" />
 	 </file>
 	 <file>
-	  <source>ZimbraBuild/storebuild/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbra/public/login.jsp</source>
-	  <target>/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbra/public/login.jsp</target>
-	  <perms owner="zimbra" mode="0664" />
-	 </file>
-	 <file>
-	  <source>ZimbraBuild/storebuild/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbra/js/ajax/3rdparty/tinymce/classes/ui/KeyboardNavigation.js</source>
-	  <target>/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbra/js/ajax/3rdparty/tinymce/classes/ui/KeyboardNavigation.js</target>
-	  <perms owner="zimbra" mode="0664" />
-	 </file>
-	 <file>
-	  <source>ZimbraBuild/storebuild/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbraAdmin/js/ajax/3rdparty/tinymce/classes/ui/KeyboardNavigation.js</source>
-	  <target>/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbraAdmin/js/ajax/3rdparty/tinymce/classes/ui/KeyboardNavigation.js</target>
-	  <perms owner="zimbra" mode="0664" />
-	 </file>
-	 <file>
 	  <source>ZimbraBuild/storebuild/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbra/js/ajax/3rdparty/tinymce/themes/modern/theme.js</source>
 	  <target>/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbra/js/ajax/3rdparty/tinymce/themes/modern/theme.js</target>
 	  <perms owner="zimbra" mode="0664" />
@@ -3844,16 +3824,6 @@
 	 <file>
 	  <source>ZimbraBuild/storebuild/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbraAdmin/js/ajax/3rdparty/tinymce/themes/modern/theme.js</source>
 	  <target>/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbraAdmin/js/ajax/3rdparty/tinymce/themes/modern/theme.js</target>
-	  <perms owner="zimbra" mode="0664" />
-	 </file>
-	 <file>
-	  <source>ZimbraBuild/storebuild/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbra/js/ajax/3rdparty/tinymce/tinymce.js</source>
-	  <target>/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbra/js/ajax/3rdparty/tinymce/tinymce.js</target>
-	  <perms owner="zimbra" mode="0664" />
-	 </file>
-	 <file>
-	  <source>ZimbraBuild/storebuild/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbraAdmin/js/ajax/3rdparty/tinymce/tinymce.js</source>
-	  <target>/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbraAdmin/js/ajax/3rdparty/tinymce/tinymce.js</target>
 	  <perms owner="zimbra" mode="0664" />
 	 </file>
 	 <file>
@@ -3867,26 +3837,6 @@
 	  <perms owner="zimbra" mode="0664" />
 	 </file>
 	 <file>
-	  <source>ZimbraBuild/storebuild/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbra/js/ajax/dwt/keyboard/DwtKeyboardMgr.js</source>
-	  <target>/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbra/js/ajax/dwt/keyboard/DwtKeyboardMgr.js</target>
-	  <perms owner="zimbra" mode="0664" />
-	 </file>
-	 <file>
-	  <source>ZimbraBuild/storebuild/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbraAdmin/js/ajax/dwt/keyboard/DwtKeyboardMgr.js</source>
-	  <target>/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbraAdmin/js/ajax/dwt/keyboard/DwtKeyboardMgr.js</target>
-	  <perms owner="zimbra" mode="0664" />
-	 </file>
-	 <file>
-	  <source>ZimbraBuild/storebuild/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbra/js/ajax/dwt/widgets/DwtButton.js</source>
-	  <target>/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbra/js/ajax/dwt/widgets/DwtButton.js</target>
-	  <perms owner="zimbra" mode="0664" />
-	 </file>
-	 <file>
-	  <source>ZimbraBuild/storebuild/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbraAdmin/js/ajax/dwt/widgets/DwtButton.js</source>
-	  <target>/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbraAdmin/js/ajax/dwt/widgets/DwtButton.js</target>
-	  <perms owner="zimbra" mode="0664" />
-	 </file>
-	 <file>
 	  <source>ZimbraBuild/storebuild/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbra/js/ajax/dwt/widgets/DwtComposite.js</source>
 	  <target>/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbra/js/ajax/dwt/widgets/DwtComposite.js</target>
 	  <perms owner="zimbra" mode="0664" />
@@ -3894,16 +3844,6 @@
 	 <file>
 	  <source>ZimbraBuild/storebuild/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbraAdmin/js/ajax/dwt/widgets/DwtComposite.js</source>
 	  <target>/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbraAdmin/js/ajax/dwt/widgets/DwtComposite.js</target>
-	  <perms owner="zimbra" mode="0664" />
-	 </file>
-	 <file>
-	  <source>ZimbraBuild/storebuild/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbra/js/ajax/dwt/widgets/DwtControl.js</source>
-	  <target>/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbra/js/ajax/dwt/widgets/DwtControl.js</target>
-	  <perms owner="zimbra" mode="0664" />
-	 </file>
-	 <file>
-	  <source>ZimbraBuild/storebuild/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbraAdmin/js/ajax/dwt/widgets/DwtControl.js</source>
-	  <target>/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbraAdmin/js/ajax/dwt/widgets/DwtControl.js</target>
 	  <perms owner="zimbra" mode="0664" />
 	 </file>
 	 <file>
@@ -3917,23 +3857,8 @@
 	  <perms owner="zimbra" mode="0664" />
 	 </file>
 	 <file>
-	  <source>ZimbraBuild/storebuild/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbra/js/ajax/util/AjxStringUtil.js</source>
-	  <target>/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbra/js/ajax/util/AjxStringUtil.js</target>
-	  <perms owner="zimbra" mode="0664" />
-	 </file>
-	 <file>
-	  <source>ZimbraBuild/storebuild/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbraAdmin/js/ajax/util/AjxStringUtil.js</source>
-	  <target>/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbraAdmin/js/ajax/util/AjxStringUtil.js</target>
-	  <perms owner="zimbra" mode="0664" />
-	 </file>
-	 <file>
 	  <source>ZimbraBuild/storebuild/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbraAdmin/js/zimbraAdmin/accounts/controller/ZaAccountListController.js</source>
 	  <target>/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbraAdmin/js/zimbraAdmin/accounts/controller/ZaAccountListController.js</target>
-	  <perms owner="zimbra" mode="0664" />
-	 </file>
-	 <file>
-	  <source>ZimbraBuild/storebuild/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbraAdmin/js/zimbraAdmin/common/ZaController.js</source>
-	  <target>/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbraAdmin/js/zimbraAdmin/common/ZaController.js</target>
 	  <perms owner="zimbra" mode="0664" />
 	 </file>
 	 <file>
@@ -3982,55 +3907,15 @@
 	  <perms owner="zimbra" mode="0664" />
 	 </file>
 	 <file>
-	  <source>ZimbraBuild/storebuild/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbra/js/zimbraMail/mail/controller/ZmComposeController.js</source>
-	  <target>/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbra/js/zimbraMail/mail/controller/ZmComposeController.js</target>
-	  <perms owner="zimbra" mode="0664" />
-	 </file>
-	 <file>
-	  <source>ZimbraBuild/storebuild/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbra/js/zimbraMail/mail/view/ZmConvView2.js</source>
-	  <target>/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbra/js/zimbraMail/mail/view/ZmConvView2.js</target>
-	  <perms owner="zimbra" mode="0664" />
-	 </file>
-	 <file>
-	  <source>ZimbraBuild/storebuild/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbra/js/zimbraMail/mail/view/ZmMailMsgView.js</source>
-	  <target>/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbra/js/zimbraMail/mail/view/ZmMailMsgView.js</target>
-	  <perms owner="zimbra" mode="0664" />
-	 </file>
-	 <file>
-	  <source>ZimbraBuild/storebuild/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbra/js/zimbraMail/share/view/dialog/ZmSharePropsDialog.js</source>
-	  <target>/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbra/js/zimbraMail/share/view/dialog/ZmSharePropsDialog.js</target>
-	  <perms owner="zimbra" mode="0664" />
-	 </file>
-	 <file>
-	  <source>ZimbraBuild/storebuild/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbra/js/zimbraMail/share/view/htmlEditor/ZmHtmlEditor.js</source>
-	  <target>/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbra/js/zimbraMail/share/view/htmlEditor/ZmHtmlEditor.js</target>
-	  <perms owner="zimbra" mode="0664" />
-	 </file>
-	 <file>
-	  <source>ZimbraBuild/storebuild/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbra/js/zimbraMail/share/view/ZmAddressInputField.js</source>
-	  <target>/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbra/js/zimbraMail/share/view/ZmAddressInputField.js</target>
-	  <perms owner="zimbra" mode="0664" />
-	 </file>
-	 <file>
-	  <source>ZimbraBuild/storebuild/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbra/js/zimbraMail/share/view/ZmDLAutocompleteListView.js</source>
-	  <target>/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbra/js/zimbraMail/share/view/ZmDLAutocompleteListView.js</target>
-	  <perms owner="zimbra" mode="0664" />
-	 </file>
-	 <file>
 	  <source>ZimbraBuild/storebuild/opt/zimbra/conf/templates/templates/abook/Contacts.template</source>
 	  <target>/opt/zimbra/conf/templates/templates/abook/Contacts.template</target>
 	  <perms owner="zimbra" mode="644" />
 	 </file>
-	 <file>
-	  <source>ZimbraBuild/storebuild/opt/zimbra/conf/templates/templates/mail/Message.template</source>
-	  <target>/opt/zimbra/conf/templates/templates/mail/Message.template</target>
-	  <perms owner="zimbra" mode="644" />
-	 </file>
-      <file>
-        <source>ZimbraBuild/storebuild/opt/zimbra/jetty-distribution-9.1.5.v20140505/common/lib/zimbracommon.jar</source>
-        <target>/opt/zimbra/jetty/common/lib/zimbracommon.jar</target>
-        <perms owner="root" mode="444"/>
-      </file>
+   <file>
+     <source>ZimbraBuild/storebuild/opt/zimbra/jetty-distribution-9.1.5.v20140505/common/lib/zimbracommon.jar</source>
+     <target>/opt/zimbra/jetty/common/lib/zimbracommon.jar</target>
+     <perms owner="root" mode="444"/>
+   </file>
    <file>
     <source>ZimbraBuild/corebuild/opt/zimbra/lib/jars/zimbrastore.jar</source>
     <target>/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/service/WEB-INF/lib/zimbrastore.jar</target>
