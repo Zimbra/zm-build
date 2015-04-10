@@ -3931,8 +3931,12 @@
     <perms owner="root" mode="0444" />
    </file>
    <file>
-    <source>ZimbraBuild/storebuild/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/service/WEB-INF/lib/zimbrataglib.jar</source>
-    <target>/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/service/WEB-INF/lib/zimbrataglib.jar</target>
+   	<source>ZimbraBuild/storebuild/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/service/WEB-INF/lib/zimbrataglib.jar</source>
+   	<target>/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/service/WEB-INF/lib/zimbrataglib.jar</target>
+   	<perms owner="root" mode="0444" />
+   </file>
+   <file>
+    <source>ZimbraBuild/storebuild/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbra/WEB-INF/lib/zimbrataglib.jar</source>
     <target>/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbra/WEB-INF/lib/zimbrataglib.jar</target>
     <target>/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbraAdmin/WEB-INF/lib/zimbrataglib.jar</target>
     <perms owner="root" mode="0444" />
