@@ -500,11 +500,11 @@ $(STORE_DEST_DIR)/lib/ext/zimbraldaputils:
 
 $(LDAP_EXT_DIR)/$(MAVEN_TARGET_DIR)/zimbraldaputils.jar: pom.xml
 
-$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/webapps/service/WEB-INF/lib/zimbrataglib.jar: $(ZIMLET_DIR)/$(ANT_BUILD_DIR)/dist/lib/zimbrataglib.jar
+$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/webapps/service/WEB-INF/lib/zimlettaglib.jar: $(ZIMLET_DIR)/$(ANT_BUILD_DIR)/dist/lib/zimlettaglib.jar
 	mkdir -p $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/webapps/service/WEB-INF/lib
-	cp $(ZIMLET_DIR)/$(ANT_BUILD_DIR)/dist/lib/zimbrataglib.jar $@
+	cp $(ZIMLET_DIR)/$(ANT_BUILD_DIR)/dist/lib/zimlettaglib.jar $@
 
-$(ZIMLET_DIR)/$(ANT_BUILD_DIR)/dist/lib/zimbrataglib.jar:
+$(ZIMLET_DIR)/$(ANT_BUILD_DIR)/dist/lib/zimlettaglib.jar:
 	(cd $(ZIMLET_DIR); $(ANT) $(ANT_DEBUG) $(SKIP_TESTS)\
         -Dzimbra.buildinfo.platform=$(BUILD_PLATFORM) \
         -Dis-production=1 \
