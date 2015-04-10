@@ -541,11 +541,11 @@ $(LDAP_EXT_DIR)/build/zimbraldaputils.jar:
 		-Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) \
 		-Dzimbra.buildinfo.host=$(HOST) jar ; )
 
-$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/webapps/service/WEB-INF/lib/zimbrataglib.jar: $(ZIMLET_DIR)/build/dist/lib/zimbrataglib.jar
+$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/webapps/service/WEB-INF/lib/zimlettaglib.jar: $(ZIMLET_DIR)/build/dist/lib/zimlettaglib.jar
 	mkdir -p $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/webapps/service/WEB-INF/lib
-	cp $(ZIMLET_DIR)/build/dist/lib/zimbrataglib.jar $@
+	cp $(ZIMLET_DIR)/build/dist/lib/zimlettaglib.jar $@
 
-$(ZIMLET_DIR)/build/dist/lib/zimbrataglib.jar:
+$(ZIMLET_DIR)/build/dist/lib/zimlettaglib.jar:
 	(cd $(ZIMLET_DIR); $(ANT) $(ANT_DEBUG) package)
 
 $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/webapps/service/WEB-INF/zimbra.tld: $(ZIMLET_DIR)/build/dist/conf/zimbra.tld
