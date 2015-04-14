@@ -1960,11 +1960,11 @@
   <bug>98358</bug>
   <bug>98501</bug>
   <package name="zimbra-archiving">
-	 <file type="network">
-	  <source>ZimbraBuild/archivingbuild/opt/zimbra/zimlets-network/com_zimbra_xmbxsearch.zip</source>
-	  <target>/opt/zimbra/zimlets-network/com_zimbra_xmbxsearch.zip</target>
-	  <perms owner="zimbra" mode="0664" />
-	 </file>
+    <zimlet deploy="true" flushcache="true" type="network">
+      <source>ZimbraBuild/archivingbuild/opt/zimbra/zimlets-network/com_zimbra_xmbxsearch.zip</source>
+      <target>/opt/zimbra/zimlets-network/com_zimbra_xmbxsearch.zip</target>
+      <perms owner="zimbra" mode="0664" />
+    </zimlet>
   </package>
   <package name="zimbra-store">
    <file>
