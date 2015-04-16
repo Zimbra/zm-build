@@ -87,8 +87,10 @@ my %updateScripts = (
   '100' => "migrate20140319-MailItemPrevFolders.pl", # 8.5.0
   '101' => "migrate20140328-EnforceTableCharset.pl", #8.5.0
   '102' => "migrate20140624-DropMysqlIndexes.pl",  #8.5.0
-  '103' => "migrate20141218-mailItemTimestampsToMilliseconds.pl"
+  '103' => "migrate20150401-ZmgDevices.pl"
+  '104' => "migrate20141218-mailItemTimestampsToMilliseconds.pl"
   #104-119 skipped for JUDASPRIEST use
+  '120' => "migrate20150416-ZmgDevices.pl"
 );
 
 my %updateFuncs = (
