@@ -1966,11 +1966,6 @@
       <target>/opt/zimbra/zimlets-network/com_zimbra_xmbxsearch.zip</target>
       <perms owner="zimbra" mode="0664" />
     </zimlet>
-    <file type="network">
-      <source>ZimbraBuild/archivingbuild/opt/zimbra/lib/ext/com_zimbra_xmbxsearch/com_zimbra_xmbxsearch.jar</source>
-      <target>/opt/zimbra/lib/ext/com_zimbra_xmbxsearch/com_zimbra_xmbxsearch.jar</target>
-      <perms owner="zimbra" mode="0444" />
-    </file>
   </package>
   <package name="zimbra-store">
    <file>
@@ -3958,16 +3953,6 @@
     <source>ZimbraBuild/storebuild/opt/zimbra/lib/ext/zimbraews/zimbraews.jar</source>
     <target>/opt/zimbra/lib/ext/zimbraews/zimbraews.jar</target>
     <perms owner="root" mode="0444" />
-   </file>
-   <file type="network">
-     <source>ZimbraBuild/storebuild/opt/zimbra/lib/ext-common/zimbracmbsearch.jar</source>
-     <target>/opt/zimbra/lib/ext-common/zimbracmbsearch.jar</target>
-     <perms owner="root" mode="0444" />
-   </file>
-   <file type="network">
-     <source>ZimbraBuild/storebuild/opt/zimbra/lib/ext/network/zimbranetwork.jar</source>
-     <target>/opt/zimbra/lib/ext/network/zimbranetwork.jar</target>
-     <perms owner="root" mode="0444" />
    </file>
   </package>
   <package name="zimbra-core">
