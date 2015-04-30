@@ -75,10 +75,6 @@ $(BUILD_ROOT)/zimbra-store.spec:
 		$(BUILD_ROOT)/zimbra-store.spec
 	echo "%attr(644, zimbra, zimbra) /opt/zimbra/conf/templates/templates/dwt/*" >> \
 		$(BUILD_ROOT)/zimbra-store.spec
-	echo "%attr(755, zimbra, zimbra) /opt/zimbra/conf/templates/templates/im" >> \
-		$(BUILD_ROOT)/zimbra-store.spec
-	echo "%attr(644, zimbra, zimbra) /opt/zimbra/conf/templates/templates/im/*" >> \
-		$(BUILD_ROOT)/zimbra-store.spec
 	echo "%attr(755, zimbra, zimbra) /opt/zimbra/conf/templates/templates/mail" >> \
 		$(BUILD_ROOT)/zimbra-store.spec
 	echo "%attr(644, zimbra, zimbra) /opt/zimbra/conf/templates/templates/mail/*" >> \
