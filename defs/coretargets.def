@@ -54,6 +54,10 @@ $(BUILD_ROOT)/zimbra-core.spec:
 		$(BUILD_ROOT)/zimbra-core.spec
 	echo "%attr(444, zimbra, zimbra) /opt/zimbra/docs/*" >> \
 		$(BUILD_ROOT)/zimbra-core.spec
+	echo "%attr(755, root, root) /opt/zimbra/common" >> \
+		$(BUILD_ROOT)/zimbra-core.spec
+	echo "%attr(755, root, root) /opt/zimbra/common/sbin" >> \
+		$(BUILD_ROOT)/zimbra-core.spec
 	echo "%attr(755, root, root) /opt/zimbra/contrib" >> \
 		$(BUILD_ROOT)/zimbra-core.spec
 	echo "%attr(755, root, root) /opt/zimbra/libexec" >> \
@@ -371,6 +375,11 @@ $(CORE_DEST_DIR)/bin:
 	cp $(ZIMBRA_BIN_DIR)/zmapachectl $@
 	cp $(ZIMBRA_BIN_DIR)/zmcbpolicydctl $@
 	cp $@/zmprov $@/zmprov.java
+
+$(CORE_DEST_DIR)/common:
+	@echo "*** Installing common"
+	mkdir -p $@
+	tar xzfC "$(CONSUL_SOURCE).tgz" "$(CORE_DEST_DIR)"
 
 $(CORE_DEST_DIR)/contrib:
 	@echo "*** Installing contrib"
