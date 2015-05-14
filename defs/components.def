@@ -17,6 +17,7 @@ CORE_COMPONENTS	:= \
 	$(CORE_DEST_DIR)/bin \
 	$(CORE_DEST_DIR)/common \
 	$(CORE_DEST_DIR)/contrib \
+	$(CORE_DEST_DIR)/data/consul \
 	$(CORE_DEST_DIR)/zimbramon \
 	$(CORE_DEST_DIR)/j2sdk-$(OPENJDK_VERSION) \
 	$(CORE_DEST_DIR)/conf \

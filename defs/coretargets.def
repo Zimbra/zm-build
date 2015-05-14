@@ -381,6 +381,10 @@ $(CORE_DEST_DIR)/common:
 	mkdir -p $@
 	tar xzfC "$(CONSUL_SOURCE).tgz" "$(CORE_DEST_DIR)"
 
+$(CORE_DEST_DIR)/data/consul:
+	@echo "*** Creating $@"
+	mkdir -p $@
+
 $(CORE_DEST_DIR)/contrib:
 	@echo "*** Installing contrib"
 	mkdir -p $@
