@@ -16,7 +16,7 @@ zmServiceName OBJECT-TYPE
     ::= { zmStatus 0 }
 
 zmServiceStatus OBJECT-TYPE
-    SYNTAX      INTEGEER
+    SYNTAX      INTEGER
     MAX-ACCESS  not-accessible
     STATUS      current
     DESCRIPTION
