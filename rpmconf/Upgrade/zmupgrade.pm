@@ -2437,6 +2437,14 @@ sub upgrade900BETA1 {
       }
     }
   }
+
+  if (main::isInstalled("zimbra-proxy")) {
+    my $memcache_ttl=main::getLdapConfigValue("zimbraReverseProxyCacheEntryTTL");
+    if ($memcache_ttl eq "1h") {
+      main::runAsZimbra("$ZMPROV mcf zimbraReverseProxyCacheEntryTTL '1m'");
+    }
+  }
+
   my $localxml = XMLin("/opt/zimbra/conf/localconfig.xml");
   my $lc_attr= $localxml->{key}->{acl_cache_target_maxsize}->{value};
   if (defined($lc_attr) && $lc_attr != 1024) {
