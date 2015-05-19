@@ -103,7 +103,6 @@ my @packageList = (
   "zimbra-memcached",
   "zimbra-proxy",
   "zimbra-archiving",
-  "zimbra-syncshare",
 );
 
 my %packageServiceMap = (
@@ -4266,14 +4265,14 @@ sub createStoreMenu {
         } else {
           $config{zimbraVersionCheckNotificationEmail} = $version_dst_addr;
         }
-    if(isInstalled("zimbra-syncshare")) {
-          $$lm{menuitems}{$i} = {
-            "prompt" => "ZSS Host Name:",
-            "var" => \$config{zimbraReverseProxyZSSHostname},
-            "callback" => \&setZSSHostName,
-          };
-          $i++;
-    }
+#    if(isInstalled("zimbra-syncshare")) {
+#          $$lm{menuitems}{$i} = {
+#            "prompt" => "ZSS Host Name:",
+#            "var" => \$config{zimbraReverseProxyZSSHostname},
+#            "callback" => \&setZSSHostName,
+#          };
+#          $i++;
+#    }
         my $version_src_addr =
         getLdapConfigValue("zimbraVersionCheckNotificationEmailFrom")
           if (ldapIsAvailable());
@@ -6901,9 +6900,9 @@ sub applyConfig {
       if isFoss();
   }
 
-  if (isInstalled("zimbra-syncshare")) {
-    configInitZSS();
-  }
+#  if (isInstalled("zimbra-syncshare")) {
+#    configInitZSS();
+#  }
 
   if ($newinstall && isInstalled("zimbra-proxy")) {
     configSetProxyPrefs();
