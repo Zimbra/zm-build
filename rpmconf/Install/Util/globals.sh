@@ -29,8 +29,7 @@ zimbra-spell \
 zimbra-convertd \
 zimbra-memcached \
 zimbra-proxy \
-zimbra-archiving \
-zimbra-syncshare"
+zimbra-archiving"
 
 SERVICES=""
 
