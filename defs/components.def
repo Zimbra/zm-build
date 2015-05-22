@@ -92,7 +92,8 @@ STORE_COMPONENTS := \
 	$(STORE_DEST_DIR)/log \
 	$(STORE_DEST_DIR)/$(MARIADB_DIR) \
 	$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/webapps/solr/solr.war \
-	$(STORE_DEST_DIR)/solr
+	$(STORE_DEST_DIR)/solr \
+	$(STORE_DEST_DIR)/redologservice
 
 ZIMLET_COMPONENTS := \
 	$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/webapps/service/WEB-INF/lib/zimlettaglib.jar \
