@@ -1,21 +1,21 @@
 #!/usr/bin/perl
 # vim: ts=2
-# 
+#
 # ***** BEGIN LICENSE BLOCK *****
 # Zimbra Collaboration Suite Server
 # Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc.
-# 
+#
 # This program is free software: you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free Software Foundation,
 # version 2 of the License.
-# 
+#
 # This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
 # without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 # See the GNU General Public License for more details.
 # You should have received a copy of the GNU General Public License along with this program.
 # If not, see <http://www.gnu.org/licenses/>.
 # ***** END LICENSE BLOCK *****
-# 
+#
 
 package zmupgrade;
 
@@ -81,8 +81,8 @@ my %updateScripts = (
   '88' => "migrate20120229-DropIMTables.pl",           # 8.0.0_BETA2
   '89' => "migrate20120319-Name255Chars.pl",
   '90' => "migrate20120410-BlobLocator.pl",
-  '91' => "migrate20121009-VolumeBlobs.pl",	       # 8.0.1
-  '92' => "migrate20130226_alwayson.pl",	       # 8.5.0
+  '91' => "migrate20121009-VolumeBlobs.pl",            # 8.0.1
+  '92' => "migrate20130226_alwayson.pl",               # 8.5.0
   # 93-99 skipped for possible IRONMAIDEN use
   '100' => "migrate20140319-MailItemPrevFolders.pl", # 8.5.0
   '101' => "migrate20140328-EnforceTableCharset.pl", #8.5.0
@@ -221,7 +221,7 @@ sub upgrade {
        $isLdapMaster = 0;
   }
   my ($startBuild,$targetBuild);
-  ($startVersion,$startBuild) = $startVersion =~ /(\d\.\d\.\d+_[^_]*)_(\d+)/;  
+  ($startVersion,$startBuild) = $startVersion =~ /(\d\.\d\.\d+_[^_]*)_(\d+)/;
   ($targetVersion,$targetBuild) = $targetVersion =~ m/(\d\.\d\.\d+_[^_]*)_(\d+)/;
   ($startMajor,$startMinor,$startMicro) =
     $startVersion =~ /(\d+)\.(\d+)\.(\d+_[^_]*)/;
@@ -231,7 +231,7 @@ sub upgrade {
 
   if ($startMajor < 7) {
     main::progress("ERROR: Upgrading from a ZCS version less than 6.0.0_GA is not supported\n");
-    return 1; 
+    return 1;
   }
 
   getInstalledPackages();
@@ -483,13 +483,13 @@ sub upgrade {
       my $rc=&reloadLdap("8.0.3_GA");
       if ($rc) { return 1; }
     }
-    if (startLdap()) {return 1;} 
+    if (startLdap()) {return 1;}
   }
 
   if (main::isInstalled("zimbra-store")) {
 
     doMysqlUpgrade() if ($needMysqlUpgrade);
-  
+
     doBackupRestoreVersionUpdate($startVersion);
 
     if ($curSchemaVersion < $hiVersion) {
@@ -565,7 +565,7 @@ sub upgrade700BETA1 {
     my $systemMemorySize = main::getSystemMemory();
     main::setLocalConfig("mailboxd_java_heap_size",
       int($systemMemorySize*1024*$mailboxd_java_heap_memory_percent/100));
-    main::deleteLocalConfig("mailboxd_java_heap_memory_percent"); 
+    main::deleteLocalConfig("mailboxd_java_heap_memory_percent");
   }
   return 0;
 }
@@ -645,7 +645,7 @@ sub upgrade700BETA3 {
     if ($mailboxd_java_options =~ /-Dsun.net.inetaddr.ttl=$/) {
       my $new_mailboxd_options;
       foreach my $option (split(/\s+/, $mailboxd_java_options)) {
-        $new_mailboxd_options.=" $option" if ($option !~ /^-Dsun.net.inetaddr.ttl=/); 
+        $new_mailboxd_options.=" $option" if ($option !~ /^-Dsun.net.inetaddr.ttl=/);
       }
       $new_mailboxd_options =~ s/^\s+//;
       main::setLocalConfig("mailboxd_java_options", $new_mailboxd_options)
@@ -734,7 +734,7 @@ sub upgrade701GA {
   main::progress("Updating from 7.0.1_GA\n");
   if (main::isInstalled("zimbra-store")) {
     #56318
-    my $mysql_mycnf = main::getLocalConfig("mysql_mycnf"); 
+    my $mysql_mycnf = main::getLocalConfig("mysql_mycnf");
     if (!fgrep { /^max_allowed_packet/ } ${mysql_mycnf}) {
       main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-allowed-packet --section=mysqld --key=max_allowed_packet --set --value=16777216 ${mysql_mycnf}");
     }
@@ -748,11 +748,11 @@ sub upgrade701GA {
 sub upgrade710GA {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
   main::progress("Updating from 7.1.0_GA\n");
-  my $mysql_data_directory = 
+  my $mysql_data_directory =
     main::getLocalConfig("mysql_data_directory") || "/opt/zimbra/db/data";
-  my $zimbra_tmp_directory = 
+  my $zimbra_tmp_directory =
     main::getLocalConfig("zimbra_tmp_directory") || "/opt/zimbra/data/tmp";
-  my $mysql_mycnf = 
+  my $mysql_mycnf =
     main::getLocalConfig("mysql_mycnf") || "/opt/zimbra/conf/my.cnf";
 
   if (main::isInstalled("zimbra-ldap")) {
@@ -772,7 +772,7 @@ sub upgrade710GA {
     }
     main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-log_file_size --section=mysqld --key=innodb_log_file_size --set --value=524288000 ${mysql_mycnf}");
     main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-dirty-pages --section=mysqld --key=innodb_max_dirty_pages_pct --set --value=30 ${mysql_mycnf}");
-     
+
   }
   return 0;
 }
@@ -989,7 +989,7 @@ sub upgrade720GA {
         if (-d "/opt/zimbra/mailboxd/webapps/service/zimlet/com_zimbra_smime" );
     }
   }
-  
+
   return 0;
 }
 
@@ -1217,7 +1217,7 @@ sub upgrade800BETA3 {
     main::runAsZimbra("perl -I${scriptDir} ${scriptDir}/migrate20120209-octopusEvent.pl");
     stopSql();
   }
-    
+
   return 0;
 }
 
@@ -1395,7 +1395,7 @@ sub upgrade801GA {
       );
       my $entry=$result->entry($result->count-1);
       my @attrvals=$entry->get_value("olcDbEnvFlags");
-  
+
       if (!(@attrvals)) {
         $result = $ldap->modify(
             "olcDatabase={2}mdb,cn=config",
@@ -1501,7 +1501,7 @@ sub upgrade804GA {
   }
   if (main::isInstalled("zimbra-store")) {
     my $zimbraIPMode=main::getLdapServerValue("zimbraIPMode");
-    my $mysql_mycnf = main::getLocalConfig("mysql_mycnf"); 
+    my $mysql_mycnf = main::getLocalConfig("mysql_mycnf");
     if ($zimbraIPMode eq "ipv4") {
         main::setLocalConfig("mysql_bind_address", "127.0.0.1");
         main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-bind --section=mysqld --key=bind-address --unset ${mysql_mycnf}");
@@ -1550,7 +1550,7 @@ sub upgrade806GA {
   if (main::isZCA()) {
     main::progress("ZCA Install detected.  Removing VAMI Components...");
     my $rc = main::runAsRoot("${scriptDir}/migrate20131014-removezca.pl");
-    main::progress(($rc == 0) ? "done.\n" : "failed. exiting.\n"); 
+    main::progress(($rc == 0) ? "done.\n" : "failed. exiting.\n");
   }
   my @zimbraStatThreadNamePrefix=qx($su "$ZMPROV gacf zimbraStatThreadNamePrefix");
   if (! grep ( /qtp/, @zimbraStatThreadNamePrefix)) {
@@ -1605,7 +1605,7 @@ sub upgrade850BETA1 {
     my $new_mailboxd_options="";
     if ($mailboxd_java_options =~ /-XX:\+PrintGCTimeStamps/) {
       foreach my $option (split(/\s+/, $mailboxd_java_options)) {
-        $new_mailboxd_options.=" $option" if ($option !~ /^-XX:\+PrintGCTimeStamps/); 
+        $new_mailboxd_options.=" $option" if ($option !~ /^-XX:\+PrintGCTimeStamps/);
       }
       $new_mailboxd_options .= " -XX:+PrintGCDateStamps"
         unless ($mailboxd_java_options =~ /PrintGCDateStamps/);
@@ -1630,7 +1630,7 @@ sub upgrade850BETA1 {
     }
   }
   if (main::isInstalled("zimbra-mta")) {
-    my $antispam_mysql_mycnf = main::getLocalConfig("antispam_mysql_mycnf"); 
+    my $antispam_mysql_mycnf = main::getLocalConfig("antispam_mysql_mycnf");
     if ( -e ${antispam_mysql_mycnf} ) {
       main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-as-table_cache-fixup --section=mysqld --key=table_cache --unset ${antispam_mysql_mycnf}");
       main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-as-table_open_cache-fixup --section=mysqld --key=table_open_cache --setmin --value=1200 ${antispam_mysql_mycnf}");
@@ -2156,8 +2156,8 @@ sub upgrade850BETA2 {
     }
     if (main::isStoreWebNode()) {
       my @zimbraReverseProxyUpstreamLoginServers=qx($su "$ZMPROV gacf zimbraReverseProxyUpstreamLoginServers");
-      if (! grep(/$hn/, @zimbraReverseProxyUpstreamLoginServers)) {  
-        main::runAsZimbra("$ZMPROV mcf +zimbraReverseProxyUpstreamLoginServers $hn");  
+      if (! grep(/$hn/, @zimbraReverseProxyUpstreamLoginServers)) {
+        main::runAsZimbra("$ZMPROV mcf +zimbraReverseProxyUpstreamLoginServers $hn");
       }
     }
   }
@@ -2388,25 +2388,25 @@ sub upgrade870BETA1 {
       main::progress("Updating mailboxd_java_options to remove deprecated PermSize and MaxPermSize java options.\n");
       main::setLocalConfig("mailboxd_java_options", $new_mailboxd_options);
     }
-  
+
     # Bug 80135 - Improved proxy timeout defaults...
     my $proxy_reconnect_timeout = main::getLdapServerValue("zimbraMailProxyReconnectTimeout");
     if ($proxy_reconnect_timeout eq "60")  {
       main::setLdapServerConfig($hn, 'zimbraMailProxyReconnectTimeout', '10');
     }
-    # Bug 96857 -  MySQL meta files (pid file, socket, ..) should not be placed in db directory 
+    # Bug 96857 -  MySQL meta files (pid file, socket, ..) should not be placed in db directory
     my $mysql_mycnf = main::getLocalConfig("mysql_mycnf");
     main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-mysql_socket --section=mysqld --key=socket --set --value='/opt/zimbra/data/tmp/mysql/mysql.sock' ${mysql_mycnf}");
     main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-mysql_pidfile --section=mysqld --key=pid-file --set --value='/opt/zimbra/log/mysql.pid' ${mysql_mycnf}");
     main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-mysql_pidfile --section=mysqld_safe --key=pid-file --set --value='/opt/zimbra/log/mysql.pid' ${mysql_mycnf}");
-   	unlink("/opt/zimbra/db/mysql.pid") if (-e "/opt/zimbra/db/mysql.pid");
-   	unlink("/opt/zimbra/db/mysql.sock") if (-e "/opt/zimbra/db/mysql.sock");
+    unlink("/opt/zimbra/db/mysql.pid") if (-e "/opt/zimbra/db/mysql.pid");
+    unlink("/opt/zimbra/db/mysql.sock") if (-e "/opt/zimbra/db/mysql.sock");
 
   }
   my $localxml = XMLin("/opt/zimbra/conf/localconfig.xml");
   my $lc_attr= $localxml->{key}->{zimbra_class_database}->{value};
   if (defined($lc_attr) && $lc_attr eq "com.zimbra.cs.db.MySQL") {
-	main::setLocalConfig("zimbra_class_database", "com.zimbra.cs.db.MariaDB");
+    main::setLocalConfig("zimbra_class_database", "com.zimbra.cs.db.MariaDB");
   }
 
   return 0;
@@ -2415,7 +2415,7 @@ sub upgrade870BETA1 {
 sub upgrade900BETA1 {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
   main::progress("Updating from 9.0.0_BETA1\n");
-  
+
   if (main::isInstalled("zimbra-ldap")) {
     if ($isLdapMaster) {
       my $ldap_pass = qx($su "zmlocalconfig -s -m nokey ldap_root_password");
@@ -2455,7 +2455,7 @@ sub upgrade900BETA1 {
   if (defined($lc_attr) && $lc_attr != 15) {
      main::setLdapServerConfig($hn, 'zimbraAdminAclCacheTargetMaxAge', "$lc_attr");
   }
-  
+
   $lc_attr= $localxml->{key}->{acl_cache_credential_maxsize}->{value};
   if (defined($lc_attr) && $lc_attr != 512) {
      main::setLdapServerConfig($hn, 'zimbraAdminAclCacheCredentialMaxsize', "$lc_attr");
@@ -2470,32 +2470,32 @@ sub upgrade900BETA1 {
   if (defined($lc_attr) && lc($lc_attr) eq "true") {
      main::setLdapServerConfig($hn, 'zimbraAntiSpamEnableRestarts', "TRUE");
   }
-  
+
   $lc_attr= $localxml->{key}->{antispam_enable_rule_updates}->{value};
   if (defined($lc_attr) && lc($lc_attr) eq "true") {
      main::setLdapServerConfig($hn, 'zimbraAntiSpamEnableRuleUpdates', "TRUE");
   }
-  
+
   $lc_attr= $localxml->{key}->{antispam_enable_rule_compilation}->{value};
   if (defined($lc_attr) && lc($lc_attr) eq "true") {
      main::setLdapServerConfig($hn, 'zimbraAntiSpamEnableRuleCompilation', "TRUE");
   }
-  
+
   $lc_attr= $localxml->{key}->{calendar_cache_enabled}->{value};
   if (defined($lc_attr) && lc($lc_attr) ne "true") {
      main::setLdapServerConfig($hn, 'zimbraCalendarCacheEnabled', "FALSE");
   }
-  
+
   $lc_attr= $localxml->{key}->{calendar_cache_lru_size}->{value};
   if (defined($lc_attr) && $lc_attr != 1000) {
      main::setLdapServerConfig($hn, 'zimbraCalendarCacheLRUSize', "$lc_attr");
   }
-  
+
   $lc_attr= $localxml->{key}->{calendar_cache_range_month_from}->{value};
   if (defined($lc_attr) && $lc_attr != 0) {
      main::setLdapServerConfig($hn, 'zimbraCalendarCacheRangeMonthFrom', "$lc_attr");
   }
-  
+
   $lc_attr= $localxml->{key}->{calendar_cache_range_months}->{value};
   if (defined($lc_attr) && $lc_attr != 3) {
      main::setLdapServerConfig($hn, 'zimbraCalendarCacheRangeMonths', "$lc_attr");
@@ -3331,9 +3331,154 @@ sub upgrade900BETA1 {
      main::setLdapServerConfig($hn, 'zimbraMailboxWaitsetNoDataSleepTime',"$lc_attr"."ms");
   }
 
-   $lc_attr= $localxml->{key}->{zimlet_deploy_timeout}->{value};
+  $lc_attr= $localxml->{key}->{zimlet_deploy_timeout}->{value};
   if (defined($lc_attr) && $lc_attr != 10) {
      main::setLdapServerConfig($hn, 'zimbraZimletDeployTimeout',"$lc_attr"."s");
+  }
+
+  $lc_attr= $localxml->{key}->{ldap_cache_account_maxsize}->{value};
+  if (defined($lc_attr) && $lc_attr != 20000) {
+     main::setLdapServerConfig($hn, 'zimbraLdapCacheAccountMaxSize',"$lc_attr");
+  }
+
+  $lc_attr= $localxml->{key}->{ldap_cache_account_maxage}->{value};
+  if (defined($lc_attr) && $lc_attr != 15) {
+     main::setLdapServerConfig($hn, 'zimbraLdapCacheAccountMaxAge',"$lc_attr"."m");
+  }
+
+  $lc_attr= $localxml->{key}->{ldap_cache_cos_maxsize}->{value};
+  if (defined($lc_attr) && $lc_attr != 100) {
+     main::setLdapServerConfig($hn, 'zimbraLdapCacheCosMaxSize',"$lc_attr");
+  }
+
+  $lc_attr= $localxml->{key}->{ldap_cache_cos_maxage}->{value};
+  if (defined($lc_attr) && $lc_attr != 15) {
+     main::setLdapServerConfig($hn, 'zimbraLdapCacheCosMaxAge',"$lc_attr"."m");
+  }
+
+  $lc_attr= $localxml->{key}->{ldap_cache_share_locator_maxsize}->{value};
+  if (defined($lc_attr) && $lc_attr != 5000) {
+     main::setLdapServerConfig($hn, 'zimbraLdapCacheShareLocatorMaxSize',"$lc_attr");
+  }
+
+  $lc_attr= $localxml->{key}->{ldap_cache_share_locator_maxage}->{value};
+  if (defined($lc_attr) && $lc_attr != 15) {
+     main::setLdapServerConfig($hn, 'zimbraLdapCacheShareLocatorMaxAge',"$lc_attr"."m");
+  }
+
+  $lc_attr= $localxml->{key}->{ldap_cache_domain_maxsize}->{value};
+  if (defined($lc_attr) && $lc_attr != 500) {
+     main::setLdapServerConfig($hn, 'zimbraLdapCacheDomainMaxSize',"$lc_attr");
+  }
+
+  $lc_attr= $localxml->{key}->{ldap_cache_domain_maxage}->{value};
+  if (defined($lc_attr) && $lc_attr != 15) {
+     main::setLdapServerConfig($hn, 'zimbraLdapCacheDomainMaxAge',"$lc_attr"."m");
+  }
+
+  $lc_attr= $localxml->{key}->{ldap_cache_mime_maxage}->{value};
+  if (defined($lc_attr) && $lc_attr != 15) {
+     main::setLdapServerConfig($hn, 'zimbraLdapCacheMimeTypeInfoMaxAge',"$lc_attr"."m");
+  }
+
+  $lc_attr= $localxml->{key}->{ldap_cache_external_domain_maxsize}->{value};
+  if (defined($lc_attr) && $lc_attr != 10000) {
+     main::setLdapServerConfig($hn, 'zimbraLdapCacheExternalDomainMaxSize',"$lc_attr");
+  }
+
+  $lc_attr= $localxml->{key}->{ldap_cache_external_domain_maxage}->{value};
+  if (defined($lc_attr) && $lc_attr != 15) {
+     main::setLdapServerConfig($hn, 'zimbraLdapCacheExternalDomainMaxAge',"$lc_attr"."m");
+  }
+
+  $lc_attr= $localxml->{key}->{ldap_cache_group_maxsize}->{value};
+  if (defined($lc_attr) && $lc_attr != 2000) {
+     main::setLdapServerConfig($hn, 'zimbraLdapCacheGroupMaxSize',"$lc_attr");
+  }
+
+  $lc_attr= $localxml->{key}->{ldap_cache_group_maxage}->{value};
+  if (defined($lc_attr) && $lc_attr != 15) {
+     main::setLdapServerConfig($hn, 'zimbraLdapCacheGroupMaxAge',"$lc_attr"."m");
+  }
+
+  $lc_attr= $localxml->{key}->{ldap_cache_right_maxsize}->{value};
+  if (defined($lc_attr) && $lc_attr != 100) {
+     main::setLdapServerConfig($hn, 'zimbraLdapCacheRightMaxSize',"$lc_attr");
+  }
+
+  $lc_attr= $localxml->{key}->{ldap_cache_right_maxage}->{value};
+  if (defined($lc_attr) && $lc_attr != 15) {
+     main::setLdapServerConfig($hn, 'zimbraLdapCacheRightMaxAge',"$lc_attr"."m");
+  }
+
+  $lc_attr= $localxml->{key}->{ldap_cache_server_maxsize}->{value};
+  if (defined($lc_attr) && $lc_attr != 100) {
+     main::setLdapServerConfig($hn, 'zimbraLdapCacheServerMaxSize',"$lc_attr");
+  }
+
+  $lc_attr= $localxml->{key}->{ldap_cache_server_maxage}->{value};
+  if (defined($lc_attr) && $lc_attr != 15) {
+     main::setLdapServerConfig($hn, 'zimbraLdapCacheServerMaxAge',"$lc_attr"."m");
+  }
+
+  $lc_attr= $localxml->{key}->{ldap_cache_ucservice_maxsize}->{value};
+  if (defined($lc_attr) && $lc_attr != 100) {
+     main::setLdapServerConfig($hn, 'zimbraLdapCacheUCServiceMaxSize',"$lc_attr");
+  }
+
+  $lc_attr= $localxml->{key}->{ldap_cache_ucservice_maxage}->{value};
+  if (defined($lc_attr) && $lc_attr != 15) {
+     main::setLdapServerConfig($hn, 'zimbraLdapCacheUCServiceMaxAge',"$lc_attr"."m");
+  }
+
+  $lc_attr= $localxml->{key}->{ldap_cache_alwaysoncluster_maxsize}->{value};
+  if (defined($lc_attr) && $lc_attr != 100) {
+     main::setLdapServerConfig($hn, 'zimbraLdapCacheAlwaysOnClusterMaxSize',"$lc_attr");
+  }
+
+  $lc_attr= $localxml->{key}->{ldap_cache_alwaysoncluster_maxage}->{value};
+  if (defined($lc_attr) && $lc_attr != 15) {
+     main::setLdapServerConfig($hn, 'zimbraLdapCacheAlwaysOnClusterMaxAge',"$lc_attr"."m");
+  }
+
+  $lc_attr= $localxml->{key}->{ldap_cache_xmppcomponent_maxsize}->{value};
+  if (defined($lc_attr) && $lc_attr != 100) {
+     main::setLdapServerConfig($hn, 'zimbraLdapCacheXMPPComponentMaxSize',"$lc_attr");
+  }
+
+  $lc_attr= $localxml->{key}->{ldap_cache_xmppcomponent_maxage}->{value};
+  if (defined($lc_attr) && $lc_attr != 15) {
+     main::setLdapServerConfig($hn, 'zimbraLdapCacheXMPPComponentMaxAge',"$lc_attr"."m");
+  }
+
+  $lc_attr= $localxml->{key}->{ldap_cache_zimlet_maxsize}->{value};
+  if (defined($lc_attr) && $lc_attr != 100) {
+     main::setLdapServerConfig($hn, 'zimbraLdapCacheZimletMaxSize',"$lc_attr");
+  }
+
+  $lc_attr= $localxml->{key}->{ldap_cache_zimlet_maxage}->{value};
+  if (defined($lc_attr) && $lc_attr != 15) {
+     main::setLdapServerConfig($hn, 'zimbraLdapCacheZimletMaxAge',"$lc_attr"."m");
+  }
+
+  $lc_attr= $localxml->{key}->{ldap_cache_reverseproxylookup_domain_maxsize}->{value};
+  if (defined($lc_attr) && $lc_attr != 100) {
+     main::setLdapServerConfig($hn, 'zimbraLdapCacheReverseProxyLookupDomainMaxSize',"$lc_attr");
+  }
+
+  $lc_attr= $localxml->{key}->{ldap_cache_reverseproxylookup_domain_maxage}->{value};
+  if (defined($lc_attr) && $lc_attr != 15) {
+     main::setLdapServerConfig($hn, 'zimbraLdapCacheReverseProxyLookupDomainMaxAge',"$lc_attr"."m");
+  }
+
+  $lc_attr= $localxml->{key}->{ldap_cache_reverseproxylookup_server_maxsize}->{value};
+  if (defined($lc_attr) && $lc_attr != 100) {
+     main::setLdapServerConfig($hn, 'zimbraLdapCacheReverseProxyLookupServerMaxSize',"$lc_attr");
+  }
+
+  $lc_attr= $localxml->{key}->{ldap_cache_reverseproxylookup_server_maxage}->{value};
+  if (defined($lc_attr) && $lc_attr != 15) {
+     main::setLdapServerConfig($hn, 'zimbraLdapCacheReverseProxyLookupServerMaxAge',"$lc_attr"."m");
   }
 
   main::deleteLocalConfig("acl_cache_target_maxsize");
@@ -3343,7 +3488,7 @@ sub upgrade900BETA1 {
   main::deleteLocalConfig("antispam_enable_restarts");
   main::deleteLocalConfig("antispam_enable_rule_updates");
   main::deleteLocalConfig("antispam_enable_rule_compilation");
-  main::deleteLocalConfig("antispam_backup_retention"); 
+  main::deleteLocalConfig("antispam_backup_retention");
   main::deleteLocalConfig("calendar_cache_enabled");
   main::deleteLocalConfig("calendar_cache_lru_size");
   main::deleteLocalConfig("calendar_cache_range_month_from");
@@ -3363,9 +3508,9 @@ sub upgrade900BETA1 {
   main::deleteLocalConfig("imap_write_timeout");
   main::deleteLocalConfig("imap_write_chunk_size");
   main::deleteLocalConfig("imap_thread_keep_alive_time");
-  main::deleteLocalConfig("imap_max_idle_time"); 
+  main::deleteLocalConfig("imap_max_idle_time");
   main::deleteLocalConfig("imap_authenticated_max_idle_time");
-  main::deleteLocalConfig("imap_throttle_ip_limit"); 
+  main::deleteLocalConfig("imap_throttle_ip_limit");
   main::deleteLocalConfig("imap_throttle_acct_limit");
   main::deleteLocalConfig("imap_throttle_command_limit");
   main::deleteLocalConfig("imap_throttle_fetch");
@@ -3380,12 +3525,12 @@ sub upgrade900BETA1 {
   main::deleteLocalConfig("zimbra_mailbox_lock_readwrite");
   main::deleteLocalConfig("zimbra_mailbox_lock_timeout");
   main::deleteLocalConfig("zimbra_session_limit_admin");
-  main::deleteLocalConfig("zimbra_session_limit_imap"); 
+  main::deleteLocalConfig("zimbra_session_limit_imap");
   main::deleteLocalConfig("zimbra_session_limit_soap");
   main::deleteLocalConfig("zimbra_session_limit_sync");
   main::deleteLocalConfig("zimbra_session_max_pending_notifications");
   main::deleteLocalConfig("zimbra_session_timeout_soap");
-  main::deleteLocalConfig("calendar_resource_ldap_search_maxsize"); 
+  main::deleteLocalConfig("calendar_resource_ldap_search_maxsize");
   main::deleteLocalConfig("check_dl_membership_enabled");
   main::deleteLocalConfig("ews_service_wsdl_location");
   main::deleteLocalConfig("ews_service_log_file");
@@ -3395,17 +3540,17 @@ sub upgrade900BETA1 {
   main::deleteLocalConfig("gal_group_cache_maxsize_per_domain");
   main::deleteLocalConfig("external_store_delete_max_ioexceptions");
   main::deleteLocalConfig("external_store_local_cache_max_bytes");
-  main::deleteLocalConfig("external_store_local_cache_max_files"); 
+  main::deleteLocalConfig("external_store_local_cache_max_files");
   main::deleteLocalConfig("external_store_local_cache_min_lifetime");
   main::deleteLocalConfig("javamail_imap_debug");
   main::deleteLocalConfig("javamail_imap_enable_starttls");
   main::deleteLocalConfig("javamail_imap_timeout");
   main::deleteLocalConfig("javamail_pop3_debug");
   main::deleteLocalConfig("javamail_pop3_enable_starttls");
-  main::deleteLocalConfig("javamail_pop3_timeout"); 
+  main::deleteLocalConfig("javamail_pop3_timeout");
   main::deleteLocalConfig("javamail_smtp_debug");
   main::deleteLocalConfig("javamail_smtp_enable_starttls");
-  main::deleteLocalConfig("javamail_smtp_timeout"); 
+  main::deleteLocalConfig("javamail_smtp_timeout");
   main::deleteLocalConfig("javamail_zsmtp");
   main::deleteLocalConfig("mime_encode_missing_blob");
   main::deleteLocalConfig("mime_exclude_empty_content");
@@ -3418,21 +3563,21 @@ sub upgrade900BETA1 {
   main::deleteLocalConfig("zimbra_activesync_autodiscover_url");
   main::deleteLocalConfig("zimbra_activesync_autodiscover_use_service_url");
   main::deleteLocalConfig("zimbra_activesync_metadata_cache_expiration");
-  main::deleteLocalConfig("zimbra_activesync_metadata_cache_max_size"); 
+  main::deleteLocalConfig("zimbra_activesync_metadata_cache_max_size");
   main::deleteLocalConfig("zimbra_activesync_heartbeat_interval_min");
-  main::deleteLocalConfig("zimbra_activesync_heartbeat_interval_max"); 
+  main::deleteLocalConfig("zimbra_activesync_heartbeat_interval_max");
   main::deleteLocalConfig("zimbra_activesync_search_max_results");
   main::deleteLocalConfig("zimbra_activesync_general_cache_size");
-  main::deleteLocalConfig("zimbra_activesync_parallel_sync_enabled"); 
-  main::deleteLocalConfig("zimbra_activesync_syncstate_item_cache_heap_size"); 
+  main::deleteLocalConfig("zimbra_activesync_parallel_sync_enabled");
+  main::deleteLocalConfig("zimbra_activesync_syncstate_item_cache_heap_size");
   main::deleteLocalConfig("zimbra_index_threads");
-  main::deleteLocalConfig("zimbra_index_deferred_items_failure_delay"); 
+  main::deleteLocalConfig("zimbra_index_deferred_items_failure_delay");
   main::deleteLocalConfig("zimbra_index_lucene_io_impl");
   main::deleteLocalConfig("zimbra_index_lucene_merge_factor");
   main::deleteLocalConfig("zimbra_index_manual_commit");
   main::deleteLocalConfig("zimbra_index_max_transaction_bytes");
-  main::deleteLocalConfig("zimbra_index_max_transaction_items"); 
-  main::deleteLocalConfig("zimbra_index_reader_cache_size"); 
+  main::deleteLocalConfig("zimbra_index_max_transaction_items");
+  main::deleteLocalConfig("zimbra_index_reader_cache_size");
   main::deleteLocalConfig("zimbra_index_reader_cache_ttl");
   main::deleteLocalConfig("zimbra_index_disable_perf_counters");
   main::deleteLocalConfig("contact_ranking_enabled");
@@ -3450,10 +3595,10 @@ sub upgrade900BETA1 {
   main::deleteLocalConfig("nio_max_write_queue_size");
   main::deleteLocalConfig("nio_pop3_enabled");
   main::deleteLocalConfig("notes_enabled");
-  main::deleteLocalConfig("pop3_max_consecutive_error"); 
+  main::deleteLocalConfig("pop3_max_consecutive_error");
   main::deleteLocalConfig("pop3_max_idle_time");
   main::deleteLocalConfig("pop3_write_timeout");
-  main::deleteLocalConfig("pop3_thread_keep_alive_time"); 
+  main::deleteLocalConfig("pop3_thread_keep_alive_time");
   main::deleteLocalConfig("pop3_throttle_ip_limit");
   main::deleteLocalConfig("pop3_throttle_acct_limit");
   main::deleteLocalConfig("ldap_bes_searcher_password");
@@ -3462,7 +3607,7 @@ sub upgrade900BETA1 {
   main::deleteLocalConfig("search_dbfirst_term_percentage_cutoff");
   main::deleteLocalConfig("search_disable_database_hints");
   main::deleteLocalConfig("search_tagged_item_count_join_query_cutoff");
-  main::deleteLocalConfig("servlet_max_concurrent_http_requests_per_account"); 
+  main::deleteLocalConfig("servlet_max_concurrent_http_requests_per_account");
   main::deleteLocalConfig("servlet_max_concurrent_requests_per_session");
   main::deleteLocalConfig("smtp_host_retry_millis");
   main::deleteLocalConfig("smtp_to_lmtp_enabled");
@@ -3514,8 +3659,37 @@ sub upgrade900BETA1 {
   main::deleteLocalConfig("zimbra_waitset_max_per_account");
   main::deleteLocalConfig("zimbra_waitset_max_request_timeout");
   main::deleteLocalConfig("zimbra_waitset_min_request_timeout");
-  main::deleteLocalConfig("zimbra_waitset_nodata_sleep_time"); 
+  main::deleteLocalConfig("zimbra_waitset_nodata_sleep_time");
   main::deleteLocalConfig("zimlet_deploy_timeout");
+  main::deleteLocalConfig("ldap_cache_account_maxsize");
+  main::deleteLocalConfig("ldap_cache_account_maxage");
+  main::deleteLocalConfig("ldap_cache_cos_maxsize");
+  main::deleteLocalConfig("ldap_cache_cos_maxage");
+  main::deleteLocalConfig("ldap_cache_share_locator_maxsize");
+  main::deleteLocalConfig("ldap_cache_share_locator_maxage");
+  main::deleteLocalConfig("ldap_cache_domain_maxsize");
+  main::deleteLocalConfig("ldap_cache_domain_maxage");
+  main::deleteLocalConfig("ldap_cache_mime_maxage");
+  main::deleteLocalConfig("ldap_cache_external_domain_maxsize");
+  main::deleteLocalConfig("ldap_cache_external_domain_maxage");
+  main::deleteLocalConfig("ldap_cache_group_maxsize");
+  main::deleteLocalConfig("ldap_cache_group_maxage");
+  main::deleteLocalConfig("ldap_cache_right_maxsize");
+  main::deleteLocalConfig("ldap_cache_right_maxage");
+  main::deleteLocalConfig("ldap_cache_server_maxsize");
+  main::deleteLocalConfig("ldap_cache_server_maxage");
+  main::deleteLocalConfig("ldap_cache_ucservice_maxsize");
+  main::deleteLocalConfig("ldap_cache_ucservice_maxage");
+  main::deleteLocalConfig("ldap_cache_alwaysoncluster_maxsize");
+  main::deleteLocalConfig("ldap_cache_alwaysoncluster_maxage");
+  main::deleteLocalConfig("ldap_cache_xmppcomponent_maxsize");
+  main::deleteLocalConfig("ldap_cache_xmppcomponent_maxage");
+  main::deleteLocalConfig("ldap_cache_zimlet_maxsize");
+  main::deleteLocalConfig("ldap_cache_zimlet_maxage");
+  main::deleteLocalConfig("ldap_cache_reverseproxylookup_domain_maxsize");
+  main::deleteLocalConfig("ldap_cache_reverseproxylookup_domain_maxage");
+  main::deleteLocalConfig("ldap_cache_reverseproxylookup_server_maxsize");
+  main::deleteLocalConfig("ldap_cache_reverseproxylookup_server_maxage");
   return 0;
 }
 
@@ -3726,12 +3900,12 @@ sub updateLoggerMySQLcnf {
       $i++;
     }
     close(TMP);
-  
+
     if ($mycnfChanged) {
       qx(mv $mycnf ${mycnf}.${startVersion});
       qx(cp -f $tmpfile $mycnf);
       qx(chmod 644 $mycnf);
-    } 
+    }
   }
 }
 sub updateMySQLcnf {
@@ -3810,12 +3984,12 @@ sub updateMySQLcnf {
       $i++;
     }
     close(TMP);
-  
+
     if ($mycnfChanged) {
       qx(mv $mycnf ${mycnf}.${startVersion});
       qx(cp -f $tmpfile $mycnf);
       qx(chmod 644 $mycnf);
-    } 
+    }
   }
 }
 
@@ -3861,8 +4035,8 @@ sub doMysqlTableCheck {
 }
 
 sub doMysql51Upgrade {
-    my $mysql_mycnf = main::getLocalConfig("mysql_mycnf"); 
-    my $zimbra_log_directory = main::getLocalConfig("zimbra_log_directory") || "/opt/zimbra/log"; 
+    my $mysql_mycnf = main::getLocalConfig("mysql_mycnf");
+    my $zimbra_log_directory = main::getLocalConfig("zimbra_log_directory") || "/opt/zimbra/log";
 
     main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion} --section=mysqld --key=ignore-builtin-innodb --set ${mysql_mycnf}");
     main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion} --section=mysqld --set --key=plugin-load --value='innodb=ha_innodb_plugin.so;innodb_trx=ha_innodb_plugin.so;innodb_locks=ha_innodb_plugin.so;innodb_lock_waits=ha_innodb_plugin.so;innodb_cmp=ha_innodb_plugin.so;innodb_cmp_reset=ha_innodb_plugin.so;innodb_cmpmem=ha_innodb_plugin.so;innodb_cmpmem_reset=ha_innodb_plugin.so' ${mysql_mycnf}");
@@ -3876,15 +4050,15 @@ sub doMysql51Upgrade {
 }
 
 sub doMysql55Upgrade {
-    my $mysql_mycnf = main::getLocalConfig("mysql_mycnf"); 
-    my $zimbra_log_directory = main::getLocalConfig("zimbra_log_directory") || "/opt/zimbra/log"; 
+    my $mysql_mycnf = main::getLocalConfig("mysql_mycnf");
+    my $zimbra_log_directory = main::getLocalConfig("zimbra_log_directory") || "/opt/zimbra/log";
     main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion} --section=mysqld --unset --key=ignore-builtin-innodb ${mysql_mycnf}");
     main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion} --section=mysqld --unset --key=plugin-load ${mysql_mycnf}");
 }
 
 sub doAntiSpamMysql55Upgrade {
-    my $antispam_mysql_mycnf = main::getLocalConfig("antispam_mysql_mycnf"); 
-    my $zimbra_log_directory = main::getLocalConfig("zimbra_log_directory") || "/opt/zimbra/log"; 
+    my $antispam_mysql_mycnf = main::getLocalConfig("antispam_mysql_mycnf");
+    my $zimbra_log_directory = main::getLocalConfig("zimbra_log_directory") || "/opt/zimbra/log";
     if ( -e ${antispam_mysql_mycnf} ) {
         main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion} --section=mysqld --unset --key=ignore-builtin-innodb ${antispam_mysql_mycnf}");
         main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion} --section=mysqld --unset --key=plugin-load ${antispam_mysql_mycnf}");
@@ -3892,8 +4066,8 @@ sub doAntiSpamMysql55Upgrade {
 }
 
 sub doMysql56Upgrade {
-    my $mysql_mycnf = main::getLocalConfig("mysql_mycnf"); 
-    my $zimbra_log_directory = main::getLocalConfig("zimbra_log_directory") || "/opt/zimbra/log"; 
+    my $mysql_mycnf = main::getLocalConfig("mysql_mycnf");
+    my $zimbra_log_directory = main::getLocalConfig("zimbra_log_directory") || "/opt/zimbra/log";
     main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-table_cache-fixup --section=mysqld --key=table_cache --unset ${mysql_mycnf}");
     main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-table_open_cache-fixup --section=mysqld --key=table_open_cache --setmin --value=1200 ${mysql_mycnf}");
     main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-innodb_data_file_path-fixup --section=mysqld --set --key=innodb_data_file_path --value=ibdata1:10M:autoextend ${mysql_mycnf}");
@@ -3907,7 +4081,7 @@ sub doMysqlUpgrade {
     my $db_pass = main::getLocalConfig("mysql_root_password");
     my $zimbra_tmp = main::getLocalConfig("zimbra_tmp_directory") || "/tmp";
     my $mysql_socket = main::getLocalConfig("mysql_socket");
-    my $mysql_mycnf = main::getLocalConfig("mysql_mycnf"); 
+    my $mysql_mycnf = main::getLocalConfig("mysql_mycnf");
     my $mysqlUpgrade = "/opt/zimbra/mysql/bin/mysql_upgrade";
     my $cmd = "$mysqlUpgrade --defaults-file=$mysql_mycnf -S $mysql_socket --user=root --password=$db_pass";
     main::progress("Running mysql_upgrade...");
@@ -3935,7 +4109,7 @@ sub doBackupRestoreVersionUpdate($) {
   }
 
   if (-f "/opt/zimbra/lib/ext/backup/zimbrabackup.jar") {
-    $prevBackupVersion = &Migrate::getBackupVersion; 
+    $prevBackupVersion = &Migrate::getBackupVersion;
     $currentBackupVersion = qx($su "zmjava com.zimbra.cs.backup.util.GetVersion");
     chomp($currentBackupVersion);
 
@@ -3953,7 +4127,7 @@ sub doBackupRestoreVersionUpdate($) {
   my ($currentMajorBackupVersion,$currentMinorBackupVersion) = split(/\./, $currentBackupVersion);
   my ($prevMajorBackupVersion,$prevMinorBackupVersion) = split(/\./, $prevBackupVersion);
 
-  # clear both directories only if the major backup version changed.  
+  # clear both directories only if the major backup version changed.
   # backups are backwards compatible between minor versions
   return if ($prevBackupVersion == $currentBackupVersion);
   return if ($prevMajorBackupVersion >= $currentMajorBackupVersion);
@@ -3968,7 +4142,7 @@ sub doBackupRestoreVersionUpdate($) {
 sub migrateTomcatLCKey {
   my ($key,$defVal) = @_;
   $defVal="" unless $defVal;
-  my ($oldKey,$newKey,$oldVal); 
+  my ($oldKey,$newKey,$oldVal);
   $oldKey="tomcat_${key}";
   $newKey="mailboxd_${key}";
   $oldVal = main::getLocalConfig($oldKey);
@@ -4006,8 +4180,8 @@ sub reloadLdap($) {
       my $ldifFile="/opt/zimbra/data/ldap/ldap-accesslog.bak";
       if (-d '/opt/zimbra/data/ldap/config/cn=config/olcDatabase={3}mdb') {
         if (-f $ldifFile && -s $ldifFile) {
-          if (-d "/opt/zimbra/data/ldap/accesslog") { 
-            main::progress("Loading accesslog DB..."); 
+          if (-d "/opt/zimbra/data/ldap/accesslog") {
+            main::progress("Loading accesslog DB...");
             if (-d "/opt/zimbra/data/ldap/accesslog.prev") {
               qx(mv /opt/zimbra/data/ldap/accesslog.prev /opt/zimbra/data/ldap/accesslog.prev.$$);
             }
@@ -4035,7 +4209,7 @@ sub reloadLdap($) {
       }
       $ldifFile="/opt/zimbra/data/ldap/ldap.bak";
       if (-f $ldifFile && -s $ldifFile) {
-        main::progress("Loading database..."); 
+        main::progress("Loading database...");
         if (-d "/opt/zimbra/data/ldap/mdb.prev") {
           qx(mv /opt/zimbra/data/ldap/mdb.prev /opt/zimbra/data/ldap/mdb.prev.$$);
         }
@@ -4048,7 +4222,7 @@ sub reloadLdap($) {
           main::progress("slapadd import failed.\n");
           return 1;
         }
-	chmod 0640, $ldifFile;
+        chmod 0640, $ldifFile;
         main::progress("done.\n");
       } else {
         if (! -f $ldifFile) {
@@ -4060,7 +4234,7 @@ sub reloadLdap($) {
       }
       main::configLog("LdapUpgraded$upgradeVersion");
     }
-    if (startLdap()) {return 1;} 
+    if (startLdap()) {return 1;}
   }
   return 0;
 }
@@ -4350,9 +4524,9 @@ sub upgradeLdap($) {
             qx(mv $outfile $infile);
           }
           main::progress("done.\n");
-  
-          if (-d "/opt/zimbra/data/ldap/accesslog") { 
-            main::progress("Creating new accesslog DB..."); 
+
+          if (-d "/opt/zimbra/data/ldap/accesslog") {
+            main::progress("Creating new accesslog DB...");
             if (-d "/opt/zimbra/data/ldap/accesslog.prev") {
               qx(mv /opt/zimbra/data/ldap/accesslog.prev /opt/zimbra/data/ldap/accesslog.prev.$$);
             }
@@ -4361,8 +4535,8 @@ sub upgradeLdap($) {
             qx(chown -R zimbra:zimbra /opt/zimbra/data/ldap);
             main::progress("done.\n");
           }
-  
-          main::progress("Loading database..."); 
+
+          main::progress("Loading database...");
           if (-d "/opt/zimbra/data/ldap/mdb.prev") {
             qx(mv /opt/zimbra/data/ldap/mdb.prev /opt/zimbra/data/ldap/mdb.prev.$$);
           }
@@ -4375,7 +4549,7 @@ sub upgradeLdap($) {
             main::progress("slapadd import failed.\n");
             return 1;
           }
-  	chmod 0640, $ldifFile;
+          chmod 0640, $ldifFile;
           main::progress("done.\n");
         } else {
           if (! -f $ldifFile) {
@@ -4388,7 +4562,7 @@ sub upgradeLdap($) {
         main::configLog("LdapUpgraded$upgradeVersion");
       }
     }
-    if (startLdap()) {return 1;} 
+    if (startLdap()) {return 1;}
   }
   return 0;
 }
@@ -4455,7 +4629,7 @@ sub migrateLdap($) {
       }
       main::configLog("LdapUpgraded$migrateVersion");
     }
-    if (startLdap()) {return 1;} 
+    if (startLdap()) {return 1;}
   }
   return 0;
 }
@@ -4465,7 +4639,7 @@ sub migrateLdap($) {
 # Returns Net::LDAP::Search ref
 sub DeleteLdapTree {
   my ($handle, $dn) = @_;
-    
+
   # make sure it exists and get all the entries
   my $result = $handle->search( base => $dn, scope => 'one', filter => "(objectclass=*)");
   return $result if ($result->code());
@@ -4493,14 +4667,14 @@ sub migrateAmavisDB($) {
       main::progress("Migrating amavis-new db from version $fromVersion to $toVersion\n");
       qx(rm -rf $toDir/db > /dev/null 2>&1);
       qx(mv $fromDir/db $toDir/db);
-      qx(chown zimbra:zimbra $toDir/db); 
+      qx(chown zimbra:zimbra $toDir/db);
     }
     main::progress("Checking $fromDir/.spamassassin\n");
     if (-d "$fromDir/.spamassassin/" && -d "$toDir" && ! -e "$toDir/.spamassassin/bayes_toks" ) {
       main::progress("Migrating amavis-new .spamassassin from version $fromVersion to $toVersion\n");
       qx(rm -rf $toDir/.spamassassin > /dev/null 2>&1);
       qx(mv $fromDir/.spamassassin $toDir/.spamassassin);
-      qx(chown zimbra:zimbra $toDir/.spamassassin); 
+      qx(chown zimbra:zimbra $toDir/.spamassassin);
     }
   }
 }
@@ -4512,12 +4686,12 @@ sub relocateAmavisDB() {
   if ( -d "$fromDir/db" && -d "$toDir" && ! -e "$toDir/db/cache.db") {
     qx(rm -rf $toDir/db > /dev/null 2>&1);
     qx(mv $fromDir/db $toDir/db);
-    qx(chown zimbra:zimbra $toDir/db); 
-  } 
+    qx(chown zimbra:zimbra $toDir/db);
+  }
   if (-d "$fromDir/.spamassassin/" && -d "$toDir" && ! -e "$toDir/.spamassassain/bayes_toks" ) {
     qx(rm -rf $toDir/.spamassassin > /dev/null 2>&1);
     qx(mv $fromDir/.spamassassin $toDir/.spamassassin);
-    qx(chown zimbra:zimbra $toDir/.spamassassin); 
+    qx(chown zimbra:zimbra $toDir/.spamassassin);
   }
 }
 
@@ -4638,6 +4812,6 @@ sub runLdapAttributeUpgrade($) {
   my $rc = main::runAsZimbra("zmjava com.zimbra.cs.account.ldap.upgrade.LdapUpgrade -b $bug -v");
   return $rc;
 }
-    
+
 
 1
