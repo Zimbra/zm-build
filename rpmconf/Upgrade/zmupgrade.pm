@@ -94,7 +94,7 @@ my %updateScripts = (
   '101' => "migrate20140328-EnforceTableCharset.pl", #8.5.0
   '102' => "migrate20140624-DropMysqlIndexes.pl",  #8.5.0
   '103' => "migrate20150401-ZmgDevices.pl",  #8.7.0
-  '104' => 'migrate20150515-DataSourcePurgeTables.pl' #8.7.0
+  '104' => "migrate20150515-DataSourcePurgeTables.pl" #8.7.0
 );
 
 my %updateFuncs = (
