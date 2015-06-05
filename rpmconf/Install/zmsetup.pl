@@ -6006,8 +6006,7 @@ sub configSetProxyPrefs {
        if ( $storetargets[0] !~ /nginx-lookup/ ) {
          progress ( "WARNING\n\n");
          progress ( "You are configuring this host as a proxy server, but there is currently no \n");
-         progress ( "mailstore to proxy.  This will cause proxy startup to fail.\n");
-         progress ( "Once you have installed a store server, start the proxy service:\n");
+         progress ( "mailstore to proxy. Once you have installed a store server, start the proxy service:\n");
          progress ( "zmproxyctl start\n\n");
          if (!$options{c}) {
            ask ("Press return to continue\n","");
