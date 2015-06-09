@@ -6168,7 +6168,7 @@
    </file>
    <file type="network">
     <source>ZimbraBuild/storebuild/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbra/tdebug/app.js</source>
-    <target>/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbra/t/app.js</target>
+    <target>/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbra/tdebug/app.js</target>
     <perms owner="zimbra" mode="0664" />
    </file>
    <file type="network">
