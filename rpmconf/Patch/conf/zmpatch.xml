@@ -4072,6 +4072,7 @@
   <bug>98916</bug>
   <bug>99179</bug>
   <bug>99594</bug>
+  <bug>99629</bug>
   <package name="zimbra-archiving">
     <zimlet deploy="true" flushcache="true" type="network">
       <source>ZimbraBuild/archivingbuild/opt/zimbra/zimlets-network/com_zimbra_xmbxsearch.zip</source>
@@ -6179,6 +6180,16 @@
    <file type="network">
     <source>ZimbraBuild/storebuild/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbra/t/app.json</source>
     <target>/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbra/t/app.json</target>
+    <perms owner="zimbra" mode="0664" />
+   </file>
+   <file type="network">
+    <source>ZimbraBuild/storebuild/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbra/t/app/common/overrides/PaintMonitor.js</source>
+    <target>/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbra/t/app/common/overrides/PaintMonitor.js</target>
+    <perms owner="zimbra" mode="0664" />
+   </file>
+   <file type="network">
+    <source>ZimbraBuild/storebuild/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbra/t/app/common/overrides/SizeMonitor.js</source>
+    <target>/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbra/t/app/common/overrides/SizeMonitor.js</target>
     <perms owner="zimbra" mode="0664" />
    </file>
    <file type="network">
