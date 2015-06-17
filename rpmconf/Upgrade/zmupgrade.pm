@@ -2043,6 +2043,10 @@ sub upgrade850BETA1 {
     if (defined($lc_attr) && $lc_attr != 3) {
       main::setLdapServerConfig($hn, 'zimbraCBPolicydLogLevel', "TRUE");
     }
+    $lc_attr= $localxml->{key}->{zimbra_active_waitset_timeout_minutes}->{value};
+    if (defined($lc_attr) && $lc_attr != 20) {
+     main::setLdapServerConfig($hn, 'zimbraMailboxActiveWaitsetTimeOut', "$lc_attr"."m");
+    }
   }
   main::deleteLocalConfig("amavis_max_servers");
   main::deleteLocalConfig("clamav_max_threads");
