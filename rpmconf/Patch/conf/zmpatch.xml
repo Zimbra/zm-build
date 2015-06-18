@@ -6183,16 +6183,6 @@
     <perms owner="zimbra" mode="0664" />
    </file>
    <file type="network">
-    <source>ZimbraNetwork/ZimbraTouch/WebRoot/t/app/common/overrides/PaintMonitor.js</source>
-    <target>/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbra/t/app/common/overrides/PaintMonitor.js</target>
-    <perms owner="zimbra" mode="0664" />
-   </file>
-   <file type="network">
-    <source>ZimbraNetwork/ZimbraTouch/WebRoot/t/app/common/overrides/SizeMonitor.js</source>
-    <target>/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbra/t/app/common/overrides/SizeMonitor.js</target>
-    <perms owner="zimbra" mode="0664" />
-   </file>
-   <file type="network">
     <source>ZimbraBuild/storebuild/opt/zimbra/lib/ext/zimbraews/zimbraews.jar</source>
     <target>/opt/zimbra/lib/ext/zimbraews/zimbraews.jar</target>
     <perms owner="root" mode="0444" />
