@@ -157,33 +157,33 @@ $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/bin: $(STORE_DEST_DIR) force
 
 $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/etc: force
 		mkdir -p $@
-		cp -f $(SERVICE_DIR)/conf/$(MAILBOXD_SERVER)-$(MAILBOXD_MINOR_VERSION)/jettyrc \
+		cp -f $(SERVICE_DIR)/conf/$(MAILBOXD_SERVER)/jettyrc \
 			$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/etc/jettyrc
-		cp -f $(SERVICE_DIR)/conf/$(MAILBOXD_SERVER)-$(MAILBOXD_MINOR_VERSION)/zimbra.policy.example \
+		cp -f $(SERVICE_DIR)/conf/$(MAILBOXD_SERVER)/zimbra.policy.example \
 			$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/etc/zimbra.policy.example
-		cp -f $(SERVICE_DIR)/conf/$(MAILBOXD_SERVER)-$(MAILBOXD_MINOR_VERSION)/jetty.xml.production \
+		cp -f $(SERVICE_DIR)/conf/$(MAILBOXD_SERVER)/jetty.xml.production \
 			$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/etc/jetty.xml.in
-		cp -f $(SERVICE_DIR)/conf/$(MAILBOXD_SERVER)-$(MAILBOXD_MINOR_VERSION)/webdefault.xml.production \
+		cp -f $(SERVICE_DIR)/conf/$(MAILBOXD_SERVER)/webdefault.xml.production \
 			$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/etc/webdefault.xml
-		-cp -f $(SERVICE_DIR)/conf/$(MAILBOXD_SERVER)-$(MAILBOXD_MINOR_VERSION)/start.config \
+		-cp -f $(SERVICE_DIR)/conf/$(MAILBOXD_SERVER)/start.config \
 			$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/etc/start.config
-		cp -f $(SERVICE_DIR)/conf/$(MAILBOXD_SERVER)-$(MAILBOXD_MINOR_VERSION)/jetty-setuid.xml \
+		cp -f $(SERVICE_DIR)/conf/$(MAILBOXD_SERVER)/jetty-setuid.xml \
 			$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/etc/jetty-setuid.xml
-		-cp -f $(SERVICE_DIR)/conf/$(MAILBOXD_SERVER)-$(MAILBOXD_MINOR_VERSION)/jetty.properties \
+		-cp -f $(SERVICE_DIR)/conf/$(MAILBOXD_SERVER)/jetty.properties \
 			$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/etc/jetty.properties.in
-		cp -f $(SERVICE_DIR)/conf/$(MAILBOXD_SERVER)-$(MAILBOXD_MINOR_VERSION)/spnego/etc/spnego.properties \
+		cp -f $(SERVICE_DIR)/conf/$(MAILBOXD_SERVER)/spnego/etc/spnego.properties \
 			$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/etc/spnego.properties.in
-		cp -f $(SERVICE_DIR)/conf/$(MAILBOXD_SERVER)-$(MAILBOXD_MINOR_VERSION)/spnego/etc/spnego.conf \
+		cp -f $(SERVICE_DIR)/conf/$(MAILBOXD_SERVER)/spnego/etc/spnego.conf \
 			$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/etc/spnego.conf.in
-		cp -f $(SERVICE_DIR)/conf/$(MAILBOXD_SERVER)-$(MAILBOXD_MINOR_VERSION)/spnego/etc/krb5.ini \
+		cp -f $(SERVICE_DIR)/conf/$(MAILBOXD_SERVER)/spnego/etc/krb5.ini \
 			$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/etc/krb5.ini.in
-		cp -f $(SERVICE_DIR)/conf/$(MAILBOXD_SERVER)-$(MAILBOXD_MINOR_VERSION)/modules/*.mod \
+		cp -f $(SERVICE_DIR)/conf/$(MAILBOXD_SERVER)/modules/*.mod \
 			$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/modules
-		-cp -f $(SERVICE_DIR)/conf/$(MAILBOXD_SERVER)-$(MAILBOXD_MINOR_VERSION)/modules/*.mod.in \
+		-cp -f $(SERVICE_DIR)/conf/$(MAILBOXD_SERVER)/modules/*.mod.in \
 			$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/modules
-		-cp -f $(SERVICE_DIR)/conf/$(MAILBOXD_SERVER)-$(MAILBOXD_MINOR_VERSION)/start.d/*.ini.in \
+		-cp -f $(SERVICE_DIR)/conf/$(MAILBOXD_SERVER)/start.d/*.ini.in \
 			$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/start.d
-		cp -f $(SERVICE_DIR)/conf/$(MAILBOXD_SERVER)-$(MAILBOXD_MINOR_VERSION)/modules/npn/*.mod \
+		cp -f $(SERVICE_DIR)/conf/$(MAILBOXD_SERVER)/modules/npn/*.mod \
 			$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/modules/npn
 		cp -f $(SERVICE_DIR)/conf/web.xml.production \
 			$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/etc/service.web.xml.in
