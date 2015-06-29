@@ -41,7 +41,7 @@ chomp $rundir;
 my $scriptDir = "/opt/zimbra/libexec/scripts";
 
 my $lowVersion = 52;
-my $hiVersion = 121; # this should be set to the DB version expected by current server code
+my $hiVersion = 122; # this should be set to the DB version expected by current server code
 
 my $needSlapIndexing = 0;
 my $mysqlcnfUpdated = 0;
@@ -89,7 +89,8 @@ my %updateScripts = (
   '102' => "migrate20140624-DropMysqlIndexes.pl",  #8.5.0
   '103' => "migrate20150401-ZmgDevices.pl",
   '104' => "migrate20150515-DataSourcePurgeTables.pl", #8.7.0
-  '105' => "migrate20141218-mailItemTimestampsToMilliseconds.pl",
+  '105' => "migrate20150623-ZmgDevices.pl", #8.7.0
+  '106' => "migrate20141218-mailItemTimestampsToMilliseconds.pl",
   #104-119 skipped for JUDASPRIEST use
   '120' => "migrate20150428-DropCurrentSessions.pl"
 );
