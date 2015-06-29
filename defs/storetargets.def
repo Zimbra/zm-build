@@ -181,7 +181,7 @@ $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/etc: force
 			$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/modules
 		-cp -f $(SERVICE_DIR)/conf/$(MAILBOXD_SERVER)/modules/*.mod.in \
 			$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/modules
-                -mkdir -p $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/start.d/
+		-mkdir -p $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/start.d/
 		-cp -f $(SERVICE_DIR)/conf/$(MAILBOXD_SERVER)/start.d/*.ini.in \
 			$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/start.d
 		cp -f $(SERVICE_DIR)/conf/$(MAILBOXD_SERVER)/modules/npn/*.mod \
