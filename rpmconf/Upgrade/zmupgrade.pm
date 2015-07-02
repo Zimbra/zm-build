@@ -92,7 +92,8 @@ my %updateScripts = (
   '105' => "migrate20150623-ZmgDevices.pl", #8.7.0
   '106' => "migrate20141218-mailItemTimestampsToMilliseconds.pl",
   #104-119 skipped for JUDASPRIEST use
-  '120' => "migrate20150428-DropCurrentSessions.pl"
+  '120' => "migrate20150428-DropCurrentSessions.pl",
+  '121' => "migrate20150702-CreateDavNameTable.pl",
 );
 
 my %updateFuncs = (
