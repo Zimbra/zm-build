@@ -3038,12 +3038,6 @@ sub setHostName {
   }
 }
 
-sub setZSSHostName {
-  $config{zimbraReverseProxyZSSHostname} =
-    askNonBlank("Please enter the ZSS server hostname:",
-      $config{zimbraReverseProxyZSSHostname});
-}
-
 sub setSmtpHost {
   $config{SMTPHOST} =
     askNonBlank("Please enter the SMTP server hostname:",
@@ -4265,14 +4259,7 @@ sub createStoreMenu {
         } else {
           $config{zimbraVersionCheckNotificationEmail} = $version_dst_addr;
         }
-#    if(isInstalled("zimbra-syncshare")) {
-#          $$lm{menuitems}{$i} = {
-#            "prompt" => "ZSS Host Name:",
-#            "var" => \$config{zimbraReverseProxyZSSHostname},
-#            "callback" => \&setZSSHostName,
-#          };
-#          $i++;
-#    }
+
         my $version_src_addr =
         getLdapConfigValue("zimbraVersionCheckNotificationEmailFrom")
           if (ldapIsAvailable());
@@ -4479,7 +4466,6 @@ sub createMainMenu {
     if ($package eq "zimbra-core") {next;}
     if ($package eq "zimbra-apache") {next;}
     if ($package eq "zimbra-archiving") {next;}
-    if ($package eq "zimbra-syncshare") {next;}
     if ($package eq "zimbra-memcached") {next;}
     if (defined($installedPackages{$package})) {
       if ($package =~ /logger|spell|convertd/) {
@@ -5866,12 +5852,6 @@ sub configSetKeyboardShortcutsPref {
   configLog("zimbraPrefUseKeyboardShortcuts");
 }
 
-sub configInitZSS {
-  if (isInstalled("zimbra-syncshare")) {
-    setLdapGlobalConfig("zimbraReverseProxyZSSHostname", $config{zimbraReverseProxyZSSHostname});
-  }
-}
-
 sub configSetDNSCacheDefaults {
   if ($configStatus{zimbraDNSCache} eq "CONFIGURED") {
     configLog("zimbraDNSCache");
@@ -6899,10 +6879,6 @@ sub applyConfig {
     setLdapGlobalConfig("zimbraSkinLogoURL", "http://www.zimbra.com")
       if isFoss();
   }
-
-#  if (isInstalled("zimbra-syncshare")) {
-#    configInitZSS();
-#  }
 
   if ($newinstall && isInstalled("zimbra-proxy")) {
     configSetProxyPrefs();
