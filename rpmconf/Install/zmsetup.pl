@@ -31,7 +31,7 @@ $|=1; # don't buffer stdout
 
 our $platform = qx(/opt/zimbra/libexec/get_plat_tag.sh);
 chomp $platform;
-my $logFileName = "zmsetup".getDateStamp().".log";
+my $logFileName = "zmsetup.".getDateStamp().".log";
 my $logfile = "/tmp/".$logFileName;
 open LOGFILE, ">$logfile" or die "Can't open $logfile: $!\n";
 unlink("/tmp/zmsetup.log") if (-e "/tmp/zmsetup.log");
