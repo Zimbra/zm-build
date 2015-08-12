@@ -20,9 +20,9 @@
 if [ -f /etc/redhat-release ]; then
 
 	i=`uname -i`
-	if [ "x$i" = "xx86_64" ]; then
-		i="_64"
-	else 
+   if [[ "x$i" == "xx86_64" ]] || [[ "x$i" == "xppc64"* ]]; then
+        i="_64"
+	else
 		i=""
 	fi
 
@@ -141,7 +141,7 @@ fi
 if [ -f /etc/SuSE-release ]; then
 
 	i=`uname -i`
-	if [ "x$i" = "xx86_64" ]; then
+   if [[ "x$i" == "xx86_64" ]] || [[ "x$i" == "xppc64"* ]]; then
 		i="_64"
 	else 
 		i=""
