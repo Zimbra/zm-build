@@ -8527,6 +8527,21 @@
     <target>/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbraAdmin/public/admin.jsp</target>
     <perms owner="zimbra" mode="0664" />
    </file>
+   <file>
+    <source>ZimbraBuild/storebuild/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbra/js/zimbraMail/calendar/view/ZmApptViewHelper.js</source>
+    <target>/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbra/js/zimbraMail/calendar/view/ZmApptViewHelper.js</target>
+    <perms owner="zimbra" mode="0664" />
+   </file>
+      <file>
+    <source>ZimbraBuild/storebuild/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbra/js/CalendarCore_all.js</source>
+    <target>/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbra/js/CalendarCore_all.js</target>
+    <perms owner="zimbra" mode="0664" />
+   </file>
+   <file>
+    <source>ZimbraBuild/storebuild/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbra/js/CalendarCore_all.js.zgz</source>
+    <target>/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbra/js/CalendarCore_all.js.zgz</target>
+    <perms owner="zimbra" mode="0664" />
+   </file>
    <zimlet deploy="true" flushcache="true" type="network">
       <source>ZimbraBuild/storebuild/opt/zimbra/zimlets-network/com_zimbra_delegatedadmin.zip</source>
       <target>/opt/zimbra/zimlets-network/com_zimbra_delegatedadmin.zip</target>
