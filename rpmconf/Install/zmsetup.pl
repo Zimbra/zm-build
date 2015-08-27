@@ -6818,6 +6818,10 @@ sub applyConfig {
     if (isStoreServiceNode()) {
       addServerToHostPool();
     }
+    # bug 100730
+    if ($config{UIWEBAPPS} eq "no") {
+      setLdapServerConfig($config{HOSTNAME}, "zimbraReverseProxyHttpEnabled", "FALSE");
+    }
   }
 
   configCreateDomain();
