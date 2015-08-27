@@ -2442,7 +2442,8 @@ sub removeUnusedWebapps {
     system("rm -rf $webAppsDir/zimbra")
       if (-d "$webAppsDir/zimbra");
     system("rm -rf $webAppsDir/zimbraAdmin")
-      if (-d "$webAppsDir/zimbraAdmin");
+	  if (-d "$webAppsDir/zimbraAdmin");
+	
   }
   defineInstallWebapps();
   getInstalledWebapps();
@@ -6896,6 +6897,10 @@ sub applyConfig {
     if (isStoreServiceNode()) {
       addServerToHostPool();
     }
+	# bug 100730
+	if ($config{UIWEBAPPS} eq "no") {
+	  setLdapServerConfig($config{HOSTNAME}, "zimbraReverseProxyHttpEnabled", "FALSE");
+	}
   }
 
   configCreateDomain();
