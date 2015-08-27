@@ -2442,8 +2442,7 @@ sub removeUnusedWebapps {
     system("rm -rf $webAppsDir/zimbra")
       if (-d "$webAppsDir/zimbra");
     system("rm -rf $webAppsDir/zimbraAdmin")
-	  if (-d "$webAppsDir/zimbraAdmin");
-	
+	  if (-d "$webAppsDir/zimbraAdmin");	
   }
   defineInstallWebapps();
   getInstalledWebapps();
