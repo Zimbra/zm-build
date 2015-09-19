@@ -32,4 +32,4 @@ then
   exit 1
 fi
 
-perl bin/zmpatch.pl --config conf/zmpatch.xml --verbose $1
+/usr/bin/perl bin/zmpatch.pl --config conf/zmpatch.xml --verbose $1
