@@ -2862,6 +2862,37 @@ sub upgrade870BETA1 {
 	main::setLocalConfig("zimbra_class_database", "com.zimbra.cs.db.MariaDB");
   }
 
+  $lc_attr= $localxml->{key}->{short_term_all_effective_rights_cache_expiration}->{value};
+  if (defined($lc_attr) && $lc_attr+0 != 50000) {
+    main::setLdapServerConfig($hn, 'zimbraShortTermAllEffectiveRightsCacheExpiration', "$lc_attr"."ms");
+  }
+
+  $lc_attr= $localxml->{key}->{short_term_all_effective_rights_cache_size}->{value};
+  if (defined($lc_attr) && $lc_attr+0 != 128) {
+    main::setLdapServerConfig($hn, 'zimbraShortTermAllEffectiveRightsCacheSize', "$lc_attr");
+  }
+
+  $lc_attr= $localxml->{key}->{short_term_grantee_cache_expiration}->{value};
+  if (defined($lc_attr) && $lc_attr+0 != 50000) {
+    main::setLdapServerConfig($hn, 'zimbraShortTermGranteeCacheExpiration', "$lc_attr"."ms");
+  }
+
+  $lc_attr= $localxml->{key}->{short_term_grantee_cache_size}->{value};
+  if (defined($lc_attr) && $lc_attr+0 != 128) {
+    main::setLdapServerConfig($hn, 'zimbraShortTermGranteeCacheSize', "$lc_attr");
+  }
+
+  $lc_attr= $localxml->{key}->{zimbra_mailbox_throttle_reap_interval}->{value};
+  if (defined($lc_attr) && $lc_attr+0 != 60000) {
+    main::setLdapServerConfig($hn, 'zimbraMailboxThrottleReapInterval', "$lc_attr"."ms");
+  }
+
+  main::deleteLocalConfig("short_term_all_effective_rights_cache_expiration");
+  main::deleteLocalConfig("short_term_all_effective_rights_cache_size");
+  main::deleteLocalConfig("short_term_grantee_cache_expiration");
+  main::deleteLocalConfig("short_term_grantee_cache_size");
+  main::deleteLocalConfig("zimbra_mailbox_throttle_reap_interval");
+
   return 0;
 }
 
