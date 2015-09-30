@@ -281,7 +281,12 @@ sub deployPatch($) {
     # deploy the zimlets
     foreach my $zimlet (keys %{$pref->{zimlet}}) {
       my $zref = $pref->{zimlet}->{$zimlet};
-      next if ($zmtype eq "FOSS" && lc($zref->{type}) eq "network");
+      my $ztype = "";
+      if (defined $zref->{type})
+      {
+      	$ztype = lc($zref->{type});
+      }
+      next if ($zmtype eq "FOSS" && $ztype eq "network");
       my $zimletname=basename($zref->{target}[0]);
       $zimletname =~ s/\.zip//;
       progress("$zimletname...",2,1);
@@ -311,7 +316,12 @@ sub deployPatch($) {
     # deploy the files
     foreach my $file (keys %{$pref->{file}}) {
       my $fref = $pref->{file}->{$file};
-      next if ($zmtype eq "FOSS" && lc($fref->{type}) eq "network");
+      my $ftype = "";
+      if (defined $fref->{type})
+      {
+      	$ftype = lc($fref->{type});
+      }
+      next if ($zmtype eq "FOSS" && $ftype eq "network");
       foreach my $dstfile (@{$fref->{target}}) {
         progress("$dstfile...",2,1); 
         my $srcfile="./source/$patch->{version}/$package/$dstfile";
