@@ -26,7 +26,7 @@ use Digest::MD5;
 my %options;
 my ( $licenseId, $fingerprint, @license, $blah, $host );
 
-GetOptions( %options, "version=s", "internal", "help" ) or usage();
+GetOptions( \%options, "version=s", "internal", "help" ) or usage();
 
 sub usage {
     print(
