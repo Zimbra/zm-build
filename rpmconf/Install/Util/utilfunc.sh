@@ -894,9 +894,7 @@ verifyUpgrade() {
           licenseRC=$?;
           if [ $licenseRC != 0 ]; then
             if [ $licenseRC = 2 ]; then
-              echo "Error: Unable to execute /opt/zimbra/bin/zmlicense"
-              echo "       Confirm that LDAP is running and that /opt/zimbra/bin/zmlicense -f works"
-              echo "       then restart the installation."
+              echo "Error: No license file found"
               exit 1
             elif [ $licenseRC = 1 ]; then
               echo "Error: License is expired or cannot be upgraded."

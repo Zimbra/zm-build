@@ -87,7 +87,8 @@ $mesg = $ldap->search(
 my $size = $mesg->count;
 if ( $size == 0 ) {
     $ldap->unbind();
-    die("Error: License not found\n");
+    print("Error: License not found\n");
+    exit 2;
 }
 
 my $entry           = $mesg->entry(0);
@@ -112,5 +113,6 @@ if ( $response->is_success ) {
     exit 0;
 }
 else {
-    die("ERROR: " . $response->content . "\n");
+    print("ERROR: " . $response->content . "\n");
+    exit 1;
 }
