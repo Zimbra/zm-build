@@ -2359,6 +2359,9 @@ sub upgrade870BETA1 {
   }
   if(main::isInstalled("zimbra-ldap")) {
     if ($isLdapMaster) {
+      # Bug 99616 - Update olcSpSessionLog
+      main::runAsZimbra("perl -I${scriptDir} ${scriptDir}/migrate20150930-AddSyncpovSessionlog.pl");
+
       # Bug 96921 - Update Jetty default SSL cipher excludes...
       my $sslexcludeciph=main::getLdapConfigValue("zimbraSSLExcludeCipherSuites") || "";
       my $cursslexcl=join(" ", sort split("\n", $sslexcludeciph));
