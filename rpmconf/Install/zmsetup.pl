@@ -1196,29 +1196,23 @@ sub setLdapDefaults {
   $config{USEKBSHORTCUTS} = getLdapCOSValue("zimbraPrefUseKeyboardShortcuts");
   $config{zimbraPrefTimeZoneId}=getLdapCOSValue("zimbraPrefTimeZoneId");
 
-  if ($prevVersionMajor ne "" && $prevVersionMajor < 5) {
-    $config{zimbraFeatureBriefcasesEnabled} = "Disabled";
-    $config{zimbraFeatureTasksEnabled} = "Disabled";
-  } else {
-    $config{zimbraFeatureTasksEnabled}=getLdapCOSValue("zimbraFeatureTasksEnabled");
-    $config{zimbraFeatureTasksEnabled}="Enabled"
-      if (lc($config{zimbraFeatureTasksEnabled}) eq "true");
-    $config{zimbraFeatureTasksEnabled}="Disabled"
-      if (lc($config{zimbraFeatureTasksEnabled}) eq "false");
+  $config{zimbraFeatureTasksEnabled}=getLdapCOSValue("zimbraFeatureTasksEnabled");
+  $config{zimbraFeatureTasksEnabled}="Enabled"
+    if (lc($config{zimbraFeatureTasksEnabled}) eq "true");
+  $config{zimbraFeatureTasksEnabled}="Disabled"
+    if (lc($config{zimbraFeatureTasksEnabled}) eq "false");
 
-    $config{zimbraFeatureBriefcasesEnabled}=getLdapCOSValue("zimbraFeatureBriefcasesEnabled");
-    $config{zimbraFeatureBriefcasesEnabled}="Enabled"
-      if (lc($config{zimbraFeatureBriefcasesEnabled}) eq "true");
-    $config{zimbraFeatureBriefcasesEnabled}="Disabled"
-      if (lc($config{zimbraFeatureBriefcasesEnabled}) eq "false");
-  }
+  $config{zimbraFeatureBriefcasesEnabled}=getLdapCOSValue("zimbraFeatureBriefcasesEnabled");
+  $config{zimbraFeatureBriefcasesEnabled}="Enabled"
+    if (lc($config{zimbraFeatureBriefcasesEnabled}) eq "true");
+  $config{zimbraFeatureBriefcasesEnabled}="Disabled"
+    if (lc($config{zimbraFeatureBriefcasesEnabled}) eq "false");
 
   #
   # Load default domain values
   #
   my $galacct = getLdapDomainValue("zimbraGalAccountId");
   $config{ENABLEGALSYNCACCOUNTS}=(($galacct eq "") ? "no" : "yes");
-  $config{ENABLEGALSYNCACCOUNTS}="" if ($prevVersionMajor < 6);
 
   #
   # Set some sane defaults if values were missing in LDAP
