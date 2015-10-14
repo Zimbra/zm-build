@@ -2103,7 +2103,7 @@ sub askFileName {
   while (1) {
     my $v = ask($prompt, $default);
     if ($v ne "" && -f $v) {return $v;}
-    print "A non-blank answer is required\n" if ($v eq "");;
+    print "A non-blank answer is required\n" if ($v eq "");
     print "$v must exist and be readable\n" if (!-f $v && $v ne "");
   }
 }
@@ -2433,7 +2433,7 @@ sub removeUnusedWebapps {
     system("rm -rf $webAppsDir/zimbra")
       if (-d "$webAppsDir/zimbra");
     system("rm -rf $webAppsDir/zimbraAdmin")
-	  if (-d "$webAppsDir/zimbraAdmin");	
+      if (-d "$webAppsDir/zimbraAdmin");
   }
   defineInstallWebapps();
   getInstalledWebapps();
@@ -3491,7 +3491,7 @@ sub createCommonMenu {
   if ($config{LDAPADMINPASS} eq "") {
     $config{LDAPADMINPASSSET} = "UNSET";
   } else {
-    $config{LDAPADMINPASSSET} = "set" unless ($config{LDAPADMINPASSSET} eq "Not Verified");;
+    $config{LDAPADMINPASSSET} = "set" unless ($config{LDAPADMINPASSSET} eq "Not Verified");
   }
   $$lm{menuitems}{$i} = {
     "prompt" => "Ldap Admin password:",
@@ -3813,7 +3813,7 @@ sub createMtaMenu {
     if ($config{LDAPPOSTPASS} eq "") {
       $config{LDAPPOSTPASSSET} = "UNSET";
     } else {
-      $config{LDAPPOSTPASSSET} = "set" unless ($config{LDAPPOSTPASSSET} eq "Not Verified");;
+      $config{LDAPPOSTPASSSET} = "set" unless ($config{LDAPPOSTPASSSET} eq "Not Verified");
     }
     $$lm{menuitems}{$i} = {
       "prompt" => "Bind password for postfix ldap user:",
@@ -3824,7 +3824,7 @@ sub createMtaMenu {
     if ($config{LDAPAMAVISPASS} eq "") {
       $config{LDAPAMAVISPASSSET} = "UNSET";
     } else {
-      $config{LDAPAMAVISPASSSET} = "set" unless ($config{LDAPAMAVISPASSSET} eq "Not Verified");;
+      $config{LDAPAMAVISPASSSET} = "set" unless ($config{LDAPAMAVISPASSSET} eq "Not Verified");
     }
     $$lm{menuitems}{$i} = {
       "prompt" => "Bind password for amavis ldap user:",
@@ -5886,7 +5886,7 @@ sub configSetTimeZonePref {
 sub configSetCEFeatures {
   foreach my $feature (qw(Tasks Briefcases)) {
     my $key = "zimbraFeature${feature}Enabled";
-    my $val = ($config{$key} eq "Enabled" ? "TRUE" : "FALSE");;
+    my $val = ($config{$key} eq "Enabled" ? "TRUE" : "FALSE");
     if ($configStatus{$key} eq "CONFIGURED") {
       configLog($key);
       next;
