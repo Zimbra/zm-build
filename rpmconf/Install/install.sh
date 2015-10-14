@@ -14,13 +14,13 @@
 # You should have received a copy of the GNU General Public License along with this program.
 # If not, see <http://www.gnu.org/licenses/>.
 # ***** END LICENSE BLOCK *****
-# 
+#
 
 ID=`id -u`
 
 if [ "x$ID" != "x0" ]; then
-	echo "Run as root!"
-	exit 1
+  echo "Run as root!"
+  exit 1
 fi
 
 MYDIR=`dirname $0`
@@ -56,14 +56,14 @@ usage() {
 }
 
 while [ $# -ne 0 ]; do
-	case $1 in
-		-r|--restore|--config) 
+  case $1 in
+    -r|--restore|--config)
       shift
-			RESTORECONFIG=$1
-		;;
-		-l|--license) 
+      RESTORECONFIG=$1
+      ;;
+    -l|--license)
       shift
-			LICENSE=$1
+      LICENSE=$1
       if [ x"$LICENSE" = "x" ]; then
         echo "Valid license file required for -l."
         usage
@@ -74,10 +74,10 @@ while [ $# -ne 0 ]; do
         echo "${LICENSE}: file not found."
         usage
       fi
-		;;
-		-a|--activation) 
+      ;;
+    -a|--activation)
       shift
-			ACTIVATION=$1
+      ACTIVATION=$1
       if [ x"$ACTIVATION" = "x" ]; then
         echo "Valid license activation file required for -a."
         usage
@@ -88,40 +88,40 @@ while [ $# -ne 0 ]; do
         echo "${ACTIVATION}: file not found."
         usage
       fi
-		;;
-		-u|--uninstall)
+      ;;
+    -u|--uninstall)
       UNINSTALL="yes"
-		  ;;
-		-s|--softwareonly)
+      ;;
+    -s|--softwareonly)
       SOFTWAREONLY="yes"
-		  ;;
-		-x|--skipspacecheck)
+      ;;
+    -x|--skipspacecheck)
       SKIPSPACECHECK="yes"
       ;;
-		-platform-override|--platform-override)
+    -platform-override|--platform-override)
       ALLOW_PLATFORM_OVERRIDE="yes"
-		  ;;
-		-beta-support|--beta-support)
+      ;;
+    -beta-support|--beta-support)
       BETA_SUPPORT="yes"
-		  ;;
-		-skip-activation-check|--skip-activation-check)
+      ;;
+    -skip-activation-check|--skip-activation-check)
       SKIP_ACTIVATION_CHECK="yes"
-		  ;;
-		-skip-upgrade-check|--skip-upgrade-check)
+      ;;
+    -skip-upgrade-check|--skip-upgrade-check)
       SKIP_UPGRADE_CHECK="yes"
-		  ;;
+      ;;
     -h|-help|--help)
       usage
       ;;
-		*) 
+    *)
       DEFAULTFILE=$1
       if [ ! -f "$DEFAULTFILE" ]; then
         echo "ERROR: Unknown option $DEFAULTFILE"
         usage
       fi
-		  ;;
-	esac
-	shift
+      ;;
+  esac
+  shift
 done
 
 . ./util/globals.sh
