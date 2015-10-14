@@ -1171,10 +1171,7 @@ verifyLicenseAvailable() {
 
   # Check for licensed user count and warn if necessary
   oldUserCheck=0
-  if [ ${ZM_CUR_MAJOR} -lt 6 ]; then
-    userProvCommand="zmprov -l gaa 2> /dev/null | wc -l"
-    oldUserCheck=1
-  elif [ ${ZM_CUR_MAJOR} -eq 6 -a ${ZM_CUR_MICRO} -lt 8 ]; then
+  if [ ${ZM_CUR_MAJOR} -eq 6 -a ${ZM_CUR_MICRO} -lt 8 ]; then
     userProvCommand="zmprov -l gaa 2> /dev/null | wc -l"
     oldUserCheck=1
   else
@@ -1730,14 +1727,6 @@ removeExistingInstall() {
         MOREPACKAGES="zimbra-apache $MOREPACKAGES"
         continue
       fi
-      if [ $p = "zimbra-store" -a ${ZM_CUR_MAJOR} -lt 6 ]; then
-        isInstalled "zimbra-convertd"
-        if [ x$PKGINSTALLED != "x" ]; then
-          echo -n "   zimbra-convertd..."
-          $PACKAGERM zimbra-convertd >/dev/null 2>&1
-          echo "done"
-        fi
-      fi
       if [ $p = "zimbra-store" ]; then
         isInstalled "zimbra-archiving"
         if [ x$PKGINSTALLED != "x" ]; then
@@ -2147,28 +2136,7 @@ getInstallPackages() {
     fi
 
     if [ $UPGRADE = "yes" ]; then
-      if [ ${ZM_CUR_MAJOR} -eq 5 -a $i = "zimbra-convertd" ]; then
-        echo $INSTALLED_PACKAGES | grep "zimbra-store" > /dev/null 2>&1
-        if [ $? = 0 ]; then
-          echo $INSTALLED_PACKAGES | grep "zimbra-convertd" > /dev/null 2>&1
-          if [ $? != 0 ]; then
-            echo $INSTALLED_PACKAGES | grep "zimbra-apache" > /dev/null 2>&1
-            if [ $? != 0 ]; then
-              INSTALL_PACKAGES="$INSTALL_PACKAGES zimbra-apache $i"
-            else
-              INSTALL_PACKAGES="$INSTALL_PACKAGES $i"
-            fi
-            continue
-          fi
-        fi
-      elif [ ${ZM_CUR_MAJOR} -eq 5 -a $i = "zimbra-memcached" ]; then
-        echo $INSTALLED_PACKAGES | grep "zimbra-proxy" > /dev/null 2>&1
-        if [ $? = 0 ]; then
-          askYN "Install $i" "Y"
-        else
-          askYN "Install $i" "N"
-        fi
-      elif [ $i = "zimbra-archiving" ]; then
+      if [ $i = "zimbra-archiving" ]; then
         if [ $STORE_SELECTED = "yes" ]; then
           askYN "Install $i" "N"
         fi
