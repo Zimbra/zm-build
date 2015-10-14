@@ -320,9 +320,6 @@ sub progress {
   detail ($msg);
 }
 
-sub status {
-}
-
 sub detail {
   my $msg = shift;
   my ($sub,$line) = (caller(1))[3,2];
