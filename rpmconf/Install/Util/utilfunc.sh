@@ -67,11 +67,6 @@ displayThirdPartyLicenses() {
 
 isFQDN() {
   #fqdn is > 2 dots.  because I said so.
-  if [ x"$1" = "xdogfood" ]; then
-    echo 1
-    return
-  fi
-
   if [ x"$1" = "x" ]; then
     echo 0
     return
