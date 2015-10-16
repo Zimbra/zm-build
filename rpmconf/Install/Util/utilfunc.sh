@@ -2075,11 +2075,12 @@ verifyLdapServer() {
 configurePackageServer() {
   echo ""
   response="no"
+  TMP_PACKAGE_SERVER="repo.zimbra.com"
   if [ x"$USE_ZIMBRA_PACKAGE_SERVER" = "x" ]; then
     askYN "Use Zimbra's package repository" "Y"
     if [ $response = "yes" ]; then
-      PACKAGE_SERVER="repo.zimbra.com"
       USE_ZIMBRA_PACKAGE_SERVER="yes"
+      PACKAGE_SERVER="repo.zimbra.com"
       response="no"
       echo $HOSTNAME | egrep -qe 'eng.vmware.com$|eng.zimbra.com$|lab.zimbra.com$' > /dev/null 2>&1
       if [ $? = 0 ]; then
@@ -2088,35 +2089,41 @@ configurePackageServer() {
           PACKAGE_SERVER="repo-dev.eng.zimbra.com"
         fi
       fi
-      echo $PLATFORM | egrep -q "UBUNTU|DEBIAN"
-      if [ $? = 0 ]; then
-        if [ $PLATFORM = "UBUNTU14_64" ]; then
-          repo="trusty"
-        elif [ $PLATFORM = "UBUNTU12_64" ]; then
-          repo="precise"
-        else
-          print "Aborting, unknown platform: $PLATFORM"
-          exit 1
-        fi
-        echo "Importing Zimbra GPG key and configuring package server"
-        apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 9BE6ED79 >/dev/null 2>&1
-	apt-get install -y apt-transport-https >/dev/null 2>&1
+    fi
+  fi
+  if [ x"$USE_ZIMBRA_PACKAGE_SERVER" = "xyes" ]; then # Handle automated installations correctly
+    if [ x"$PACKAGE_SERVER" = "x" ]; then # Allow config files w/ no PACKAGE_SERVER variable set
+      PACKAGE_SERVER=$TMP_PACKAGE_SERVER
+    fi
+    echo $PLATFORM | egrep -q "UBUNTU|DEBIAN"
+    if [ $? = 0 ]; then
+      if [ $PLATFORM = "UBUNTU14_64" ]; then
+        repo="trusty"
+      elif [ $PLATFORM = "UBUNTU12_64" ]; then
+        repo="precise"
+      else
+        print "Aborting, unknown platform: $PLATFORM"
+        exit 1
+      fi
+      echo "Importing Zimbra GPG key and configuring package server"
+      apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 9BE6ED79 >/dev/null 2>&1
+      apt-get install -y apt-transport-https >/dev/null 2>&1
 cat > /etc/apt/sources.list.d/zimbra.list << EOF
 deb     https://$PACKAGE_SERVER/apt/87 $repo zimbra
 deb-src https://$PACKAGE_SERVER/apt/87 $repo zimbra
 EOF
-        apt-get update >/dev/null 2>&1
+      apt-get update >/dev/null 2>&1
+    else
+      if [ $PLATFORM = "RHEL6_64" ]; then
+        repo="rhel6"
+      elif [ $PLATFORM = "RHEL7_64" ]; then
+        repo="rhel7"
       else
-        if [ $PLATFORM = "RHEL6_64" ]; then
-          repo="rhel6"
-        elif [ $PLATFORM = "RHEL7_64" ]; then
-          repo="rhel7"
-        else
-          print "Aborting, unknown platform: $PLATFORM"
-          exit 1
-        fi
-        echo "Importing Zimbra GPG key and configuring package server"
-        rpm --import https://files.zimbra.com/downloads/security/public.key >/dev/null 2>&1
+        print "Aborting, unknown platform: $PLATFORM"
+        exit 1
+      fi
+      echo "Importing Zimbra GPG key and configuring package server"
+      rpm --import https://files.zimbra.com/downloads/security/public.key >/dev/null 2>&1
 cat > /etc/yum.repos.d/zimbra.repo <<EOF
 [zimbra]
 name=Zimbra RPM Repository
@@ -2124,7 +2131,6 @@ baseurl=https://$PACKAGE_SERVER/rpm/90/repo
 gpgcheck=1
 enabled=1
 EOF
-      fi
     fi
   fi
 }
