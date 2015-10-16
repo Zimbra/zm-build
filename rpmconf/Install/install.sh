@@ -188,6 +188,8 @@ fi
 
 checkRequired
 
+configurePackageServer
+
 checkPackages
 
 if [ $AUTOINSTALL = "no" ]; then
