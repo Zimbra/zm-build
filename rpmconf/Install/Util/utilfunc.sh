@@ -2102,8 +2102,8 @@ configurePackageServer() {
         apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 9BE6ED79 >/dev/null 2>&1
 	apt-get install -y apt-transport-https >/dev/null 2>&1
 cat > /etc/apt/sources.list.d/zimbra.list << EOF
-deb     https://$PACKAGE_SERVER/apt/90 $repo zimbra
-deb-src https://$PACKAGE_SERVER/apt/90 $repo zimbra
+deb     https://$PACKAGE_SERVER/apt/87 $repo zimbra
+deb-src https://$PACKAGE_SERVER/apt/87 $repo zimbra
 EOF
         apt-get update >/dev/null 2>&1
       else
