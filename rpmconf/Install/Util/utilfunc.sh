@@ -880,7 +880,7 @@ verifyUpgrade() {
       if [ x"$SKIP_ACTIVATION_CHECK" = "xno" ]; then
         if [ -x "bin/checkLicense.pl" ]; then
           echo "Validating existing license is not expired and qualifies for upgrade"
-          echo $HOSTNAME | egrep -qe 'eng.vmware.com$|eng.zimbra.com$' > /dev/null 2>&1
+          echo $HOSTNAME | egrep -qe 'eng.vmware.com$|eng.zimbra.com$|lab.zimbra.com$' > /dev/null 2>&1
           if [ $? = 0 ]; then
             # echo "Running bin/checkLicense.pl -i -v $ZM_INST_VERSION"
             `bin/checkLicense.pl -i -v $ZM_INST_VERSION >/dev/null`
@@ -2078,10 +2078,10 @@ configurePackageServer() {
   if [ x"$USE_ZIMBRA_PACKAGE_SERVER" = "x" ]; then
     askYN "Use Zimbra's package repository" "Y"
     if [ $response = "yes" ]; then
-      PACKAGE_SEVER="repo.zimbra.com"
+      PACKAGE_SERVER="repo.zimbra.com"
       USE_ZIMBRA_PACKAGE_SERVER="yes"
       response="no"
-      echo $HOSTNAME | egrep -qe 'eng.vmware.com$|eng.zimbra.com$' > /dev/null 2>&1
+      echo $HOSTNAME | egrep -qe 'eng.vmware.com$|eng.zimbra.com$|lab.zimbra.com$' > /dev/null 2>&1
       if [ $? = 0 ]; then
         askYN "Use internal testing repo" "N"
         if [ $response = "yes" ]; then
