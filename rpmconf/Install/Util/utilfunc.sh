@@ -1681,7 +1681,7 @@ removeExistingInstall() {
         if [ -f "/opt/zimbra/conf/slapd.conf" -o -d "/opt/zimbra/data/ldap/config" ]; then
           echo ""
           echo -n "Backing up the ldap database..."
-          tmpfile=`mktemp -t slapcat.XXXXXX 2> /dev/null` || (echo "Failed to create tmpfile" && exit 1)
+          tmpfile=`mktemp -t slapcat.XXXXXX 2> /dev/null` || { echo "Failed to create tmpfile"; exit 1; }
           mkdir -p /opt/zimbra/data/ldap
           chown -R zimbra:zimbra /opt/zimbra/data/ldap
           runAsZimbra "/opt/zimbra/libexec/zmslapcat /opt/zimbra/data/ldap"
