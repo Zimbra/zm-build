@@ -1763,9 +1763,6 @@ removeExistingInstall() {
       mv -f $sudotmp /etc/sudoers
       chmod $SUDOMODE /etc/sudoers
     fi
-    if [ -f /etc/sudoers.d/zimbra-dnscache ]; then
-      rm -f /etc/sudoers.d/zimbra-dnscache
-    fi
     echo ""
     if [ -d "/opt/zimbra/jetty/webapps" ]; then
       echo "Removing deployed webapp directories"

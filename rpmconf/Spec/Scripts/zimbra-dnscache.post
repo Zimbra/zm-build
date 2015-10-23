@@ -33,10 +33,3 @@ if [ $? = 0 ]; then
   mv -f $sudotmp /etc/sudoers
   chmod $SUDOMODE /etc/sudoers
 fi
-echo "%zimbra ALL=NOPASSWD:/opt/zimbra/libexec/zmunbound" > /etc/sudoers.d/zimbra-dnscache
-if [[ $PLAT == "UBUNTU"* || $PLAT == "DEBIAN"* ]]; then
-  echo "%zimbra ALL=NOPASSWD:/sbin/resolvconf *" >> /etc/sudoers.d/zimbra-dnscache
-else
-  echo "%zimbra ALL=NOPASSWD:/opt/zimbra/libexec/zmdnscachealign *" >> /etc/sudoers.d/zimbra-dnscache
-fi
-chmod 0440 /etc/sudoers.d/zimbra-dnscache
