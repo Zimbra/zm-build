@@ -24,7 +24,6 @@ chown -R zimbra:zimbra /opt/zimbra/data/dns
 
 chown zimbra:zimbra /opt/zimbra/data
 
-PLAT=$(/opt/zimbra/libexec/get_plat_tag.sh)
 egrep -q '^%zimbra.*unbound' /etc/sudoers
 if [ $? = 0 ]; then
   local sudotmp=`mktemp -t zsudoers.XXXXX 2> /dev/null` || (echo "Failed to create tmpfile" && exit 1)
@@ -33,3 +32,5 @@ if [ $? = 0 ]; then
   mv -f $sudotmp /etc/sudoers
   chmod $SUDOMODE /etc/sudoers
 fi
+chmod 440 /etc/sudoers.d/zimbra-dnscache
+chown root:root /etc/sudoers.d/zimbra-dnscache
