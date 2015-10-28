@@ -57,10 +57,15 @@ $(DNS_DEST_DIR):
 $(DNS_DEST_DIR)/data/dns/ca:
 	mkdir -p $@
 
-$(DNS_DEST_DIR)/data/dns/trust: $(DNS_DEST_DIR) $(DNS_DEST_DIR)/data/dns/ca
+$(DNS_DEST_DIR)/data/dns/trust: $(DNS_DEST_DIR) $(DNS_DEST_DIR)/data/dns/ca $(DNS_DEST_ROOT)/etc/sudoers.d
 	mkdir -p $@
 
 $(DNS_DEST_ROOT)/etc/resolvconf/update.d:
 	mkdir -p $@
 	cp  $(SERVICE_DIR)/conf/dns/zimbra-unbound $@
 
+$(DNS_DEST_ROOT)/etc/sudoers.d:
+	mkdir -p $@
+	cp $(PACKAGE_CONF_DIR)/Env/sudoers.d/zimbra-dnscache.$(PACKAGE_EXT) $(DNS_DEST_ROOT)/etc/sudoers.d/zimbra-dnscache
+	chmod 0440 $(DNS_DEST_ROOT)/etc/sudoers.d/zimbra-dnscache
+	chown root:root $(DNS_DEST_ROOT)/etc/sudoers.d/zimbra-dnscache
