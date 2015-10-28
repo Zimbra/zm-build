@@ -5,4 +5,4 @@ Maintainer: build@zimbra.com
 Section: Mail
 Priority: optional
 Architecture: @@ARCH@@
-Depends: libidn11
+Depends: libidn11, file, procps, coreutils, zimbra-openssl

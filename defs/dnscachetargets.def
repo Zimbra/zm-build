@@ -48,8 +48,6 @@ $(BUILD_ROOT)/zimbra-dnscache.spec:
 	rm -f zimbra-dnscache.post
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/data/dns" >> \
 		$(BUILD_ROOT)/zimbra-dnscache.spec
-	echo "%attr(-, zimbra, zimbra) /opt/zimbra/unbound-$(UNBOUND_VERSION)" >> \
-		$(BUILD_ROOT)/zimbra-dnscache.spec
 
 dns_stage: $(DNS_COMPONENTS)
 
@@ -59,12 +57,8 @@ $(DNS_DEST_DIR):
 $(DNS_DEST_DIR)/data/dns/ca:
 	mkdir -p $@
 
-$(DNS_DEST_DIR)/data/dns/trust:
+$(DNS_DEST_DIR)/data/dns/trust: $(DNS_DEST_DIR) $(DNS_DEST_DIR)/data/dns/ca
 	mkdir -p $@
-
-$(DNS_DEST_DIR)/$(UNBOUND_DIR): $(DNS_DEST_DIR) $(DNS_DEST_DIR)/data/dns/ca $(DNS_DEST_DIR)/data/dns/trust
-	@echo "*** Creating Unbound"
-	(cd $(DNS_DEST_DIR); tar xfz $(UNBOUND_SOURCE).tgz;)
 
 $(DNS_DEST_ROOT)/etc/resolvconf/update.d:
 	mkdir -p $@

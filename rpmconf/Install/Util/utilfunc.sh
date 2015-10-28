@@ -1756,21 +1756,19 @@ removeExistingInstall() {
     done
 
     rm -f /etc/ld.so.conf.d/zimbra.ld.conf
-    if [ -f "/etc/sudoers" ]; then
+    if egrep -q '^%zimbra[[:space:]]' /etc/sudoers 2>/dev/null; then
+      local sudotmp=`mktemp -t zsudoers.XXXXX 2> /dev/null` || (echo "Failed to create tmpfile" && exit 1)
       SUDOMODE=`perl -e 'my $mode=(stat("/etc/sudoers"))[2];printf("%04o\n",$mode & 07777);'`
-      cat /etc/sudoers | grep -v "^\%zimbra[[:space:]]" > /tmp/sudoers
-      cat /tmp/sudoers > /etc/sudoers
+      egrep -v "^\%zimbra[[:space:]]" /etc/sudoers > $sudotmp
+      mv -f $sudotmp /etc/sudoers
       chmod $SUDOMODE /etc/sudoers
-      rm -f /tmp/sudoers
+    fi
+    if [ -f /etc/sudoers.d/zimbra-dnscache ]; then
+      rm -f /etc/sudoers.d/zimbra-dnscache
     fi
     echo ""
-    echo "Removing deployed webapp directories"
-    if [ -d "/opt/zimbra/tomcat/webapps/" ]; then
-      deleteWebApp zimbra tomcat
-      deleteWebApp zimbraAdmin tomcat
-      deleteWebApp service tomcat
-      /bin/rm -rf /opt/zimbra/tomcat/work
-    elif [ -d "/opt/zimbra/jetty/webapps" ]; then
+    if [ -d "/opt/zimbra/jetty/webapps" ]; then
+      echo "Removing deployed webapp directories"
       deleteWebApp zimbra jetty
       deleteWebApp zimbraAdmin jetty
       deleteWebApp service jetty

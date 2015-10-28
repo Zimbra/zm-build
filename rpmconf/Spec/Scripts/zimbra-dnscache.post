@@ -18,11 +18,6 @@
 
 #Symlinks
 
-rm -f /opt/zimbra/unbound
-if [ -d /opt/zimbra/unbound-1.5.3 ]; then
-  ln -s /opt/zimbra/unbound-1.5.3 /opt/zimbra/unbound
-fi
-
 mkdir -p /opt/zimbra/data/dns/ca
 mkdir -p /opt/zimbra/data/dns/trust
 chown -R zimbra:zimbra /opt/zimbra/data/dns
@@ -30,24 +25,18 @@ chown -R zimbra:zimbra /opt/zimbra/data/dns
 chown zimbra:zimbra /opt/zimbra/data
 
 PLAT=$(/opt/zimbra/libexec/get_plat_tag.sh)
-SUDOMODE=`perl -e 'my $mode=(stat("/etc/sudoers"))[2];printf("%04o\n",$mode & 07777);'`
-egrep -v '^%zimbra.*unbound' /etc/sudoers > /tmp/sudoers
-egrep -v '^%zimbra.*resolvconf' /etc/sudoers > /tmp/sudoers
-egrep -v '^%zimbra.*zmdnscachealign' /etc/sudoers > /tmp/sudoers
-echo "%zimbra ALL=NOPASSWD:/opt/zimbra/libexec/zmunbound" >> /tmp/sudoers
+egrep -q '^%zimbra.*unbound' /etc/sudoers
+if [ $? = 0 ]; then
+  local sudotmp=`mktemp -t zsudoers.XXXXX 2> /dev/null` || (echo "Failed to create tmpfile" && exit 1)
+  SUDOMODE=`perl -e 'my $mode=(stat("/etc/sudoers"))[2];printf("%04o\n",$mode & 07777);'`
+  egrep -v '^%zimbra.*unbound|^%zimbra.*resolvconf|^%zimbra.*zmdnscachealign' /etc/sudoers > $sudotmp
+  mv -f $sudotmp /etc/sudoers
+  chmod $SUDOMODE /etc/sudoers
+fi
+echo "%zimbra ALL=NOPASSWD:/opt/zimbra/libexec/zmunbound" > /etc/sudoers.d/zimbra-dnscache
 if [[ $PLAT == "UBUNTU"* || $PLAT == "DEBIAN"* ]]; then
-  echo "%zimbra ALL=NOPASSWD:/sbin/resolvconf *" >> /tmp/sudoers
+  echo "%zimbra ALL=NOPASSWD:/sbin/resolvconf *" >> /etc/sudoers.d/zimbra-dnscache
 else
-  echo "%zimbra ALL=NOPASSWD:/opt/zimbra/libexec/zmdnscachealign *" >> /tmp/sudoers
+  echo "%zimbra ALL=NOPASSWD:/opt/zimbra/libexec/zmdnscachealign *" >> /etc/sudoers.d/zimbra-dnscache
 fi
-mv -f /tmp/sudoers /etc/sudoers
-chmod $SUDOMODE /etc/sudoers
-
-if [ -d "/opt/zimbra/unbound/sbin/unbound" ]; then
-  chown root:root /opt/zimbra/unbound/sbin/unbound
-  chmod 755 /opt/zimbra/unbound/sbin/unbound
-fi
-
-if [ -x "/opt/zimbra/libexec/zmfixperms" ]; then
-  /opt/zimbra/libexec/zmfixperms
-fi
+chmod 0440 /etc/sudoers.d/zimbra-dnscache
