@@ -20,12 +20,18 @@ installPackage() {
 	PKG=$1
 	echo -n "    $PKG..."
 	findLatestPackage $PKG
-  if [ ! -f "$file" ]; then
-    echo "file not found."
-    return
-  fi
+	if [ ! -f "$file" ]; then
+		echo "file not found."
+		return
+	fi
 	f=`basename $file`
 	echo -n "...$f..."
+	if [ x$PKG = "xzimbra-core" ]; then
+		$REPOINST zimbra-openssl >/dev/null 2>&1
+	fi
+	if [ x$PKG = "xzimbra-dnscache" ]; then
+		$REPOINST zimbra-unbound >/dev/null 2>&1
+	fi
 	$PACKAGEINST $file >> $LOGFILE 2>&1
 	INSTRESULT=$?
 	if [ $UPGRADE = "yes" ]; then

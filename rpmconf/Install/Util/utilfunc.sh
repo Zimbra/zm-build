@@ -1742,6 +1742,9 @@ removeExistingInstall() {
       if [ x$PKGINSTALLED != "x" ]; then
         echo -n "   $p..."
         $PACKAGERM $p > /dev/null 2>&1
+        if [ x$p = "xzimbra-dnscache" ]; then
+          $REPORM zimbra-unbound-$LIBEXT >/dev/null 2>&1
+        fi
         echo "done"
       fi
     done
@@ -1751,6 +1754,9 @@ removeExistingInstall() {
       if [ x$PKGINSTALLED != "x" ]; then
         echo -n "   $p..."
         $PACKAGERM $p > /dev/null 2>&1
+        if [ x$p = "xzimbra-core" ]; then
+          $REPORM zimbra-openssl-$LIBEXT >/dev/null 2>&1
+        fi
         echo "done"
       fi
     done
@@ -2509,6 +2515,9 @@ getPlatformVars() {
   echo $PLATFORM | egrep -q "UBUNTU|DEBIAN"
   if [ $? = 0 ]; then
     checkUbuntuRelease
+    REPOINST='apt-get install -y'
+    REPORM='apt-get -y --purge purge'
+    LIBEXT="lib"
     PACKAGEINST='dpkg -i'
     PACKAGERM='dpkg --purge'
     PACKAGEQUERY='dpkg -s'
@@ -2533,20 +2542,19 @@ getPlatformVars() {
       STORE_PACKAGES="libreoffice"
     fi
   else
-    PACKAGEINST='rpm -iv'
-    PACKAGERM='rpm -ev --nodeps --allmatches'
-    PACKAGEQUERY='rpm -q'
-    PACKAGEVERIFY='rpm -K'
-    PACKAGEEXT='rpm'
-    if [ $PLATFORM = "RHEL6_64" ]; then
+      REPOINST='yum -y install'
+      REPORM='yum erase -y'
+      LIBEXT='libs'
       PACKAGEINST='yum -y --disablerepo=* localinstall -v'
       PACKAGERM='yum -y --disablerepo=* erase -v'
+      PACKAGEEXT='rpm'
+      PACKAGEQUERY='rpm -q'
+      PACKAGEVERIFY='rpm -K'
+    if [ $PLATFORM = "RHEL6_64" ]; then
       PREREQ_PACKAGES="nc sudo libidn gmp libaio libstdc++ unzip perl-core"
       PRESUG_PACKAGES="perl-5.10.1 sysstat sqlite"
       STORE_PACKAGES="libreoffice libreoffice-headless"
     elif [ $PLATFORM = "RHEL7_64" ]; then
-      PACKAGEINST='yum -y --disablerepo=* localinstall -v'
-      PACKAGERM='yum -y --disablerepo=* erase -v'
       PREREQ_PACKAGES="nmap-ncat sudo libidn gmp libaio libstdc++ unzip perl-core"
       PRESUG_PACKAGES="perl-5.16.3 sysstat sqlite"
       STORE_PACKAGES="libreoffice libreoffice-headless"
@@ -2556,6 +2564,8 @@ getPlatformVars() {
       PRESUG_PACKAGES="perl-5.10.0 sysstat sqlite3"
       STORE_PACKAGES="libreoffice"
     else
+      PACKAGEINST='rpm -iv'
+      PACKAGERM='rpm -ev --nodeps --allmatches'
       PREREQ_PACKAGES="sudo libidn gmp"
       PREREQ_LIBS="/usr/lib/libstdc++.so.6"
       PRESUG_PACKAGES="sysstat sqlite"
