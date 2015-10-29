@@ -88,6 +88,7 @@ STORE_COMPONENTS := \
 	$(STORE_DEST_DIR)/lib/ext/zimbraldaputils/zimbraldaputils.jar \
 	$(STORE_DEST_DIR)/lib/ext/nginx-lookup/nginx-lookup.jar \
 	$(STORE_DEST_DIR)/lib/ext/zimbraadminversioncheck/zimbraadminversioncheck.jar \
+	$(STORE_DEST_DIR)/lib/ext/zimbraim \
 	$(STORE_DEST_DIR)/lib/jars/zmzimbratozimbramig.jar \
 	$(STORE_DEST_DIR)/log \
 	$(STORE_DEST_DIR)/$(MARIADB_DIR) \
