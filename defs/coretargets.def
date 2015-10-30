@@ -146,8 +146,6 @@ $(BUILD_ROOT)/zimbra-core.spec:
 		$(BUILD_ROOT)/zimbra-core.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/tcmalloc-$(TCMALLOC_VERSION)" >> \
 		$(BUILD_ROOT)/zimbra-core.spec
-	echo "%attr(-, zimbra, zimbra) /opt/zimbra/rsync-$(RSYNC_VERSION)" >> \
-		$(BUILD_ROOT)/zimbra-core.spec
 	echo "" >>  $(BUILD_ROOT)/zimbra-core.spec
 	echo "%clean" >>  $(BUILD_ROOT)/zimbra-core.spec
 
@@ -201,7 +199,6 @@ $(CORE_DEST_DIR)/docs:
 	echo "Postfix version: $(POSTFIX_VERSION)" >> $@/zimbra-software-versions.txt
 	echo "Postfix Logwatch version: $(POSTFIX_LW_VERSION)" >> $@/zimbra-software-versions.txt
 	echo "RRDtool version: $(RRD_VERSION)" >> $@/zimbra-software-versions.txt
-	echo "Rsync version: $(RSYNC_VERSION)" >> $@/zimbra-software-versions.txt
 	echo "Tcmalloc version: $(TCMALLOC_VERSION)" >> $@/zimbra-software-versions.txt
 
 $(CORE_DEST_DIR)/zimbramon: $(CORE_DEST_DIR)/zimbramon/bin $(CORE_DEST_DIR)/zimbramon/lib $(CORE_DEST_DIR)/zimbramon/pylibs $(CORE_DEST_DIR)/zimbramon/crontabs $(CORE_DEST_DIR) 
@@ -425,9 +422,3 @@ $(CORE_DEST_DIR)/$(TCMALLOC_DIR):
 	@echo "*** Creating tcmalloc client libraries"
 	mkdir -p $@
 	(cd $(CORE_DEST_DIR); tar xfz $(TCMALLOC_SOURCE).tgz;)
-
-$(CORE_DEST_DIR)/$(RSYNC_DIR):
-	@echo "*** Creating rsync client libraries"
-	mkdir -p $@
-	(cd $(CORE_DEST_DIR); tar xfz $(RSYNC_SOURCE).tgz;)
-

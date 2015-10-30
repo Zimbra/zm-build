@@ -16,7 +16,18 @@
 # ***** END LICENSE BLOCK *****
 # 
 
+LOGFILE=`mktemp -t install.log.XXXX 2> /dev/null` || { echo "Failed to create tmpfile"; exit 1; }
+PLATFORM=`bin/get_plat_tag.sh`
+echo $PLATFORM | egrep -q "UBUNTU|DEBIAN"
+if [ $? = 0 ]; then
+  LIBEXT="lib"
+else
+  LIBEXT="libs"
+fi
+
 CORE_PACKAGES="zimbra-core"
+CORE_DEPS="zimbra-openssl zimbra-rsync"
+CORE_REMOVE="zimbra-openssl-$LIBEXT zimbra-rsync"
 
 PACKAGES="zimbra-ldap \
 zimbra-logger \
@@ -37,11 +48,6 @@ OPTIONAL_PACKAGES="zimbra-qatest"
 
 PACKAGE_DIR=`dirname $0`/packages
 
-
-LOGFILE="/tmp/install.log.$$"
-touch $LOGFILE
-chmod 600 $LOGFILE
-
 SAVEDIR="/opt/zimbra/.saveconfig"
 
 if [ x$RESTORECONFIG = "x" ]; then
@@ -58,6 +64,12 @@ INSTALLED_PACKAGES=""
 REMOVE="no"
 UPGRADE="no"
 HOSTNAME=`hostname --fqdn`
+ZIMBRAINTERNAL=no
+echo $HOSTNAME | egrep -qe 'eng.vmware.com$|eng.zimbra.com$|lab.zimbra.com$' > /dev/null 2>&1
+if [ $? = 0 ]; then
+  ZIMBRAINTERNAL=yes
+fi
+
 LDAPHOST=""
 LDAPPORT=389
 fq=`isFQDN $HOSTNAME`
@@ -82,7 +94,13 @@ LDAPPOSTPW=""
 LDAPREPPW=""
 LDAPAMAVISPW=""
 LDAPNGINXPW=""
-CREATEDOMAIN=$HOSTNAME
+if [ x"$ZIMBRAINTERNAL" = "xno" ]; then
+  CREATEDOMAIN=$(hostname -d) # May be empty
+  CREATEDOMAIN=${CREATEDOMAIN:-$HOSTNAME} # only go with fqdn if domain is empty
+else
+  CREATEDOMAIN=$HOSTNAME
+fi
+
 CREATEADMIN="admin@${CREATEDOMAIN}"
 CREATEADMINPASS=""
 MODE="http"

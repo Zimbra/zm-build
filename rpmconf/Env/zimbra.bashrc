@@ -27,7 +27,7 @@ if [[ $ZCS_PLATFORM == MACOSXx86_10.* && x$ZCS_PLATFORM != "xMACOSXx86_10.7" ]];
   export JAVA_JVM_VERSION
 fi
 
-PATH=/opt/zimbra/bin:/opt/zimbra/postfix/sbin:/opt/zimbra/openldap/bin:/opt/zimbra/snmp/bin:/opt/zimbra/rsync/bin:/opt/zimbra/bdb/bin:/opt/zimbra/openssl/bin:${JAVA_HOME}/bin:/usr/sbin:${PATH}
+PATH=/opt/zimbra/bin:/opt/zimbra/postfix/sbin:/opt/zimbra/openldap/bin:/opt/zimbra/snmp/bin:/opt/zimbra/bdb/bin:/opt/zimbra/openssl/bin:${JAVA_HOME}/bin:/opt/zimbra/common/bin:/usr/sbin:${PATH}
 export PATH
 
 if [ `uname -s` == "Darwin" ]; then

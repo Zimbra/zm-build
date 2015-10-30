@@ -1755,7 +1755,9 @@ removeExistingInstall() {
         echo -n "   $p..."
         $PACKAGERM $p > /dev/null 2>&1
         if [ x$p = "xzimbra-core" ]; then
-          $REPORM zimbra-openssl-$LIBEXT >/dev/null 2>&1
+          for q in $CORE_REMOVE; do
+            $REPORM $q >/dev/null 2>&1
+          done
         fi
         echo "done"
       fi
@@ -2510,18 +2512,15 @@ suggestedVersion() {
 }
 
 getPlatformVars() {
-  PLATFORM=`bin/get_plat_tag.sh`
   CONFLICT_PACKAGES=""
   echo $PLATFORM | egrep -q "UBUNTU|DEBIAN"
   if [ $? = 0 ]; then
     checkUbuntuRelease
     REPOINST='apt-get install -y'
     REPORM='apt-get -y --purge purge'
-    LIBEXT="lib"
     PACKAGEINST='dpkg -i'
     PACKAGERM='dpkg --purge'
     PACKAGEQUERY='dpkg -s'
-    #CONFLICTQUERY="/usr/bin/dpkg-query -W -f='\${Package}: \${Provides}\n' '*'"
     PACKAGEEXT='deb'
     PACKAGEVERSION="dpkg-query -W -f \${Version}"
     PREREQ_PACKAGES="sudo libidn11 libgmp3c2 libstdc++6"
@@ -2539,7 +2538,6 @@ getPlatformVars() {
   else
       REPOINST='yum -y install'
       REPORM='yum erase -y'
-      LIBEXT='libs'
       PACKAGEINST='yum -y --disablerepo=* localinstall -v'
       PACKAGERM='yum -y --disablerepo=* erase -v'
       PACKAGEEXT='rpm'

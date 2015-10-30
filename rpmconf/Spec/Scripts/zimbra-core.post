@@ -69,7 +69,6 @@ rm -f /opt/zimbra/tcmalloc
 ln -s /opt/zimbra/tcmalloc-2.2 /opt/zimbra/tcmalloc
 
 rm -f /opt/zimbra/rsync
-ln -s /opt/zimbra/rsync-3.1.1 /opt/zimbra/rsync
 
 if [ -d "/opt/zimbra/zimbramon/rrdtool" ]; then
   rm -rf /opt/zimbra/zimbramon/rrdtool

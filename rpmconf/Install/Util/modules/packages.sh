@@ -27,7 +27,9 @@ installPackage() {
 	f=`basename $file`
 	echo -n "...$f..."
 	if [ x$PKG = "xzimbra-core" ]; then
-		$REPOINST zimbra-openssl >/dev/null 2>&1
+		for i in $CORE_DEPS; do
+			$REPOINST $i >/dev/null 2>&1
+		done
 	fi
 	if [ x$PKG = "xzimbra-dnscache" ]; then
 		$REPOINST zimbra-unbound >/dev/null 2>&1

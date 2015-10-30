@@ -12,7 +12,7 @@ Vendor: Zimbra, Inc.
 Packager: Zimbra, Inc.
 BuildRoot: /opt/zimbra
 AutoReqProv: no
-Requires: file, coreutils, zimbra-openssl
+Requires: file, coreutils, zimbra-openssl, zimbra-rsync
 
 %description
 Best email money can buy

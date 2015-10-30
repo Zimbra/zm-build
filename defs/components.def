@@ -30,7 +30,6 @@ CORE_COMPONENTS	:= \
 	$(CORE_DEST_DIR)/$(LDAP_DIR)-libs-$(LDAP_VERSION) \
 	$(CORE_DEST_DIR)/$(PFLOG_DIR)-$(PFLOG_VERSION) \
 	$(CORE_DEST_DIR)/$(TCMALLOC_DIR) \
-	$(CORE_DEST_DIR)/$(RSYNC_DIR) \
 	$(CORE_DEST_DIR)/lib/ext/com_zimbra_cert_manager/com_zimbra_cert_manager.jar \
 	$(CORE_DEST_DIR)/lib/ext/com_zimbra_bulkprovision/com_zimbra_bulkprovision.jar \
 	$(CORE_DEST_DIR)/lib/ext/com_zimbra_clientuploader/com_zimbra_clientuploader.jar \
