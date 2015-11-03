@@ -2109,13 +2109,13 @@ configurePackageServer() {
         exit 1
       fi
       echo "Importing Zimbra GPG key and configuring package server"
-      apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 9BE6ED79 >/dev/null 2>&1
-      apt-get install -y apt-transport-https >/dev/null 2>&1
+      apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 9BE6ED79 >>$LOGFILE 2>&1
+      apt-get install -y apt-transport-https >>$LOGFILE 2>&1
 cat > /etc/apt/sources.list.d/zimbra.list << EOF
 deb     https://$PACKAGE_SERVER/apt/90 $repo zimbra
 deb-src https://$PACKAGE_SERVER/apt/90 $repo zimbra
 EOF
-      apt-get update >/dev/null 2>&1
+      apt-get update >>$LOGFILE 2>&1
     else
       if [ $PLATFORM = "RHEL6_64" ]; then
         repo="rhel6"
@@ -2126,7 +2126,7 @@ EOF
         exit 1
       fi
       echo "Importing Zimbra GPG key and configuring package server"
-      rpm --import https://files.zimbra.com/downloads/security/public.key >/dev/null 2>&1
+      rpm --import https://files.zimbra.com/downloads/security/public.key >>$LOGFILE 2>&1
 cat > /etc/yum.repos.d/zimbra.repo <<EOF
 [zimbra]
 name=Zimbra RPM Repository
