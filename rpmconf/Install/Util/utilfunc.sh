@@ -2111,6 +2111,11 @@ configurePackageServer() {
       echo "Importing Zimbra GPG key and configuring package server"
       apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 9BE6ED79 >>$LOGFILE 2>&1
       apt-get install -y apt-transport-https >>$LOGFILE 2>&1
+      if [ $? -ne 0 ]; then
+        echo "ERROR: Unable to install packages via apt-get"
+        echo "Please fix system to allow normal package installation before proceeding"
+        exit 1
+      fi
 cat > /etc/apt/sources.list.d/zimbra.list << EOF
 deb     https://$PACKAGE_SERVER/apt/90 $repo zimbra
 deb-src https://$PACKAGE_SERVER/apt/90 $repo zimbra
