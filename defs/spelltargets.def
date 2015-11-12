@@ -15,7 +15,6 @@ spell_pkg_spec_deb: $(SPELL_DEST_ROOT)/DEBIAN/control
 $(SPELL_DEST_ROOT)/DEBIAN: force
 	mkdir -p $@
 	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-spell.pre $@/preinst
-	cat $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-spell.post >> $@/postinst
 	chmod 555 $@/*
 
 $(SPELL_DEST_ROOT)/DEBIAN/control: $(SPELL_DEST_ROOT)/DEBIAN $(SPELL_DEST_ROOT)/DEBIAN/md5sums force
@@ -26,22 +25,20 @@ $(SPELL_DEST_ROOT)/DEBIAN/control: $(SPELL_DEST_ROOT)/DEBIAN $(SPELL_DEST_ROOT)/
 
 $(SPELL_DEST_ROOT)/DEBIAN/md5sums: force
 	(cd $(SPELL_DEST_ROOT); \
-	find . -type f ! -regex '.*.hg.*' ! -regex '.*?debian-binary.*' ! -regex '.*?DEBIAN.*' -print0 | xargs -0 md5sum | sed -e 's| \./| |' > $@)
+	find . -type f ! -regex '.*?debian-binary.*' ! -regex '.*?DEBIAN.*' -print0 | xargs -0 md5sum | sed -e 's| \./| |' > $@)
 
 spell_pkg_spec_rpm: $(BUILD_ROOT)/zimbra-spell.spec
 
 $(BUILD_ROOT)/zimbra-spell.spec:
 	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-spell.pre $(BUILD_ROOT)
-	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-spell.post $(BUILD_ROOT)
 	cat $(PACKAGE_CONF_DIR)/Spec/zimbra-spell.spec | \
 		sed -e 's/@@VERSION@@/$(VERSION_TAG)/' \
 		-e 's/@@RELEASE@@/$(RELEASE)/' \
 		-e 's/^Copyright:/$(RPMCOPYRIGHTSTR):/' \
 		-e '/^%pre$$/ r zimbra-spell.pre' \
-		-e '/^%post$$/ r zimbra-spell.post' > $(BUILD_ROOT)/zimbra-spell.spec
+		> $(BUILD_ROOT)/zimbra-spell.spec
 	rm -f zimbra-spell.pre
-	rm -f zimbra-spell.post
-	echo "%attr(-, root, root) /opt/zimbra/$(APACHE_DIR)/htdocs/aspell.php" >> \
+	echo "%attr(-, root, root) /opt/zimbra/data/htdocs/aspell.php" >> \
 		$(BUILD_ROOT)/zimbra-spell.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/$(SPELL_DIR)" >> \
 		$(BUILD_ROOT)/zimbra-spell.spec
@@ -50,19 +47,11 @@ $(BUILD_ROOT)/zimbra-spell.spec:
 
 spell_stage: $(SPELL_COMPONENTS)
 
-$(SPELL_DEST_DIR)/spell_zimbra_dictionary:
-	rm -f $(SPELL_DEST_DIR)/$(SPELL_DIR)/lib/aspell-0.60/zimbra.rws
-	echo -e "Zimbra\nzimlet\nzimlets\nComcast\nVMware" | DYLD_LIBRARY_PATH=$(SPELL_DEST_DIR)/$(SPELL_DIR)/lib LD_LIBRARY_PATH=$(SPELL_DEST_DIR)/$(SPELL_DIR)/lib $(SPELL_DEST_DIR)/$(SPELL_DIR)/bin/aspell create master --lang=en $(SPELL_DEST_DIR)/$(SPELL_DIR)/lib/aspell-0.60/zimbra.rws
-
 $(SPELL_DEST_DIR):
 	mkdir -p $@
 
-$(SPELL_DEST_DIR)/$(SPELL_DIR): $(SPELL_DEST_DIR)
-	@echo "*** Creating SPELL"
-	(cd $(SPELL_DEST_DIR); tar xzf $(SPELL_SOURCE).tgz;)
-
-$(SPELL_DEST_DIR)/$(APACHE_DIR)/htdocs/aspell.php: $(SPELL_DEST_DIR)/$(APACHE_DIR)/htdocs
+$(SPELL_DEST_DIR)/data/htdocs/aspell.php: $(SPELL_DEST_DIR)/data/htdocs
 	cp $(SERVICE_DIR)/src/php/aspell.php $@
-	
-$(SPELL_DEST_DIR)/$(APACHE_DIR)/htdocs:
+
+$(SPELL_DEST_DIR)/data/htdocs:
 	mkdir -p $@

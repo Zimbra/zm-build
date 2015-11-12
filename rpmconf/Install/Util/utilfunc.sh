@@ -1745,6 +1745,12 @@ removeExistingInstall() {
         if [ x$p = "xzimbra-dnscache" ]; then
           $REPORM zimbra-dnscache-base  >/dev/null 2>&1
         fi
+        if [ x$p = "xzimbra-apache" ]; then
+          $REPORM zimbra-apache-base  >/dev/null 2>&1
+        fi
+        if [ x$p = "xzimbra-spell" ]; then
+          $REPORM zimbra-spell-base  >/dev/null 2>&1
+        fi
         echo "done"
       fi
     done

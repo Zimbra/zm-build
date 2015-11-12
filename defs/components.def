@@ -104,17 +104,15 @@ LDAP_COMPONENTS := \
     $(LDAP_DEST_DIR)/lib/conf
 
 APACHE_COMPONENTS := \
-	$(APACHE_DEST_DIR)/$(APACHE_DIR) \
 	$(APACHE_DEST_DIR)/conf/httpd.conf \
 	$(APACHE_DEST_DIR)/conf/php.ini
 
 SPELL_COMPONENTS := \
 	$(SPELL_DEST_DIR)/$(SPELL_DIR) \
-	$(SPELL_DEST_DIR)/spell_zimbra_dictionary \
-	$(SPELL_DEST_DIR)/$(APACHE_DIR)/htdocs/aspell.php
+	$(SPELL_DEST_DIR)/data/htdocs/aspell.php
 
 SNMP_COMPONENTS := \
-	$(SNMP_DEST_DIR)/$(SNMP_DIR) 
+	$(SNMP_DEST_DIR)/$(SNMP_DIR)
 
 PROXY_COMPONENTS := \
 	$(PROXY_DEST_DIR)/$(NGINX_DIR)
@@ -124,4 +122,3 @@ MEMCACHED_COMPONENTS := \
 
 EVO_COMPONENTS := \
 	$(EVO_DEST_DIR)
-	

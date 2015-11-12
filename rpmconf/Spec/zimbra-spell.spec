@@ -12,7 +12,7 @@ Vendor: Zimbra, Inc.
 Packager: Zimbra, Inc.
 BuildRoot: /opt/zimbra
 AutoReqProv: no
-requires: zimbra-apache
+requires: zimbra-core, zimbra-spell-components
 
 %description
 Best email money can buy
