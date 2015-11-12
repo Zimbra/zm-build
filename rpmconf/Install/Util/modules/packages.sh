@@ -32,7 +32,7 @@ installPackage() {
 		done
 	fi
 	if [ x$PKG = "xzimbra-dnscache" ]; then
-		$REPOINST zimbra-unbound >/dev/null 2>&1
+		$REPOINST zimbra-dnscache-components >/dev/null 2>&1
 	fi
 	$PACKAGEINST $file >> $LOGFILE 2>&1
 	INSTRESULT=$?
