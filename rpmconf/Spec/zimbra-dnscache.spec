@@ -12,7 +12,7 @@ Vendor: Zimbra, Inc.
 Packager: Zimbra, Inc.
 BuildRoot: /opt/zimbra
 AutoReqProv: no
-Requires: zimbra-core, zimbra-unbound
+Requires: zimbra-core, zimbra-dnscache-components
 
 %description
 Best email money can buy

@@ -1743,7 +1743,7 @@ removeExistingInstall() {
         echo -n "   $p..."
         $PACKAGERM $p > /dev/null 2>&1
         if [ x$p = "xzimbra-dnscache" ]; then
-          $REPORM zimbra-unbound-$LIBEXT >/dev/null 2>&1
+          $REPORM zimbra-dnscache-base  >/dev/null 2>&1
         fi
         echo "done"
       fi
