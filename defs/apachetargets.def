@@ -15,7 +15,6 @@ apache_pkg_spec_deb: $(APACHE_DEST_ROOT)/DEBIAN/control
 $(APACHE_DEST_ROOT)/DEBIAN: force
 	mkdir -p $@
 	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-apache.pre $@/preinst
-	cat $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-apache.post >> $@/postinst
 	chmod 555 $@/*
 
 $(APACHE_DEST_ROOT)/DEBIAN/control: $(APACHE_DEST_ROOT)/DEBIAN $(APACHE_DEST_ROOT)/DEBIAN/md5sums force
@@ -26,38 +25,27 @@ $(APACHE_DEST_ROOT)/DEBIAN/control: $(APACHE_DEST_ROOT)/DEBIAN $(APACHE_DEST_ROO
 
 $(APACHE_DEST_ROOT)/DEBIAN/md5sums: force
 	(cd $(APACHE_DEST_ROOT); \
-	find . -type f ! -regex '.*.hg.*' ! -regex '.*?debian-binary.*' ! -regex '.*?DEBIAN.*' -print0 | xargs -0 md5sum | sed -e 's| \./| |' > $@)
+	find . -type f ! -regex '.*?debian-binary.*' ! -regex '.*?DEBIAN.*' -print0 | xargs -0 md5sum | sed -e 's| \./| |' > $@)
 
 apache_pkg_spec_rpm: $(BUILD_ROOT)/zimbra-apache.spec
 
 $(BUILD_ROOT)/zimbra-apache.spec:
 	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-apache.pre $(BUILD_ROOT)
-	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-apache.post $(BUILD_ROOT)
 	cat $(PACKAGE_CONF_DIR)/Spec/zimbra-apache.spec | \
 		sed -e 's/@@VERSION@@/$(VERSION_TAG)/' \
 		-e 's/@@RELEASE@@/$(RELEASE)/' \
 		-e 's/^Copyright:/$(RPMCOPYRIGHTSTR):/' \
 		-e '/^%pre$$/ r zimbra-apache.pre' \
-		-e '/^%post$$/ r zimbra-apache.post' > $(BUILD_ROOT)/zimbra-apache.spec
+		> $(BUILD_ROOT)/zimbra-apache.spec
 	rm -f zimbra-apache.pre
-	rm -f zimbra-apache.post
 	echo "%attr(755, zimbra, zimbra) /opt/zimbra/conf" >> \
 		$(BUILD_ROOT)/zimbra-apache.spec
 	echo "%attr(644, zimbra, zimbra) /opt/zimbra/conf/*" >> \
-		$(BUILD_ROOT)/zimbra-apache.spec
-	echo "%attr(-, root, root) /opt/zimbra/httpd-$(APACHE_VERSION)" >> \
 		$(BUILD_ROOT)/zimbra-apache.spec
 	echo "" >> $(BUILD_ROOT)/zimbra-apache.spec
 	echo "%clean" >> $(BUILD_ROOT)/zimbra-apache.spec
 
 apache_stage: $(APACHE_COMPONENTS)
-
-$(APACHE_DEST_DIR):
-	mkdir -p $@
-
-$(APACHE_DEST_DIR)/$(APACHE_DIR): $(APACHE_DEST_DIR)
-	@echo "*** Creating APACHE"
-	(cd $(APACHE_DEST_DIR); tar xzf $(APACHE_SOURCE).tgz;)
 
 $(APACHE_DEST_DIR)/conf/php.ini: $(APACHE_DEST_DIR)/conf
 	cp $(SERVICE_DIR)/conf/php.ini $@

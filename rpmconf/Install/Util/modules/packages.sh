@@ -34,6 +34,12 @@ installPackage() {
 	if [ x$PKG = "xzimbra-dnscache" ]; then
 		$REPOINST zimbra-dnscache-components >/dev/null 2>&1
 	fi
+	if [ x$PKG = "xzimbra-apache" ]; then
+		$REPOINST zimbra-apache-components >/dev/null 2>&1
+	fi
+	if [ x$PKG = "xzimbra-spell" ]; then
+		$REPOINST zimbra-spell-components >/dev/null 2>&1
+	fi
 	$PACKAGEINST $file >> $LOGFILE 2>&1
 	INSTRESULT=$?
 	if [ $UPGRADE = "yes" ]; then
