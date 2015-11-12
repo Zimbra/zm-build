@@ -108,7 +108,6 @@ APACHE_COMPONENTS := \
 	$(APACHE_DEST_DIR)/conf/php.ini
 
 SPELL_COMPONENTS := \
-	$(SPELL_DEST_DIR)/$(SPELL_DIR) \
 	$(SPELL_DEST_DIR)/data/htdocs/aspell.php
 
 SNMP_COMPONENTS := \
