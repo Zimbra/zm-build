@@ -40,15 +40,10 @@ $(BUILD_ROOT)/zimbra-spell.spec:
 	rm -f zimbra-spell.pre
 	echo "%attr(-, root, root) /opt/zimbra/data/htdocs/aspell.php" >> \
 		$(BUILD_ROOT)/zimbra-spell.spec
-	echo "%attr(-, zimbra, zimbra) /opt/zimbra/$(SPELL_DIR)" >> \
-		$(BUILD_ROOT)/zimbra-spell.spec
 	echo "" >> $(BUILD_ROOT)/zimbra-spell.spec
 	echo "%clean" >> $(BUILD_ROOT)/zimbra-spell.spec
 
 spell_stage: $(SPELL_COMPONENTS)
-
-$(SPELL_DEST_DIR):
-	mkdir -p $@
 
 $(SPELL_DEST_DIR)/data/htdocs/aspell.php: $(SPELL_DEST_DIR)/data/htdocs
 	cp $(SERVICE_DIR)/src/php/aspell.php $@
