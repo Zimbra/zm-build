@@ -18,16 +18,9 @@
 
 LOGFILE=`mktemp -t install.log.XXXX 2> /dev/null` || { echo "Failed to create tmpfile"; exit 1; }
 PLATFORM=`bin/get_plat_tag.sh`
-echo $PLATFORM | egrep -q "UBUNTU|DEBIAN"
-if [ $? = 0 ]; then
-  LIBEXT="lib"
-else
-  LIBEXT="libs"
-fi
 
 CORE_PACKAGES="zimbra-core"
 CORE_DEPS="zimbra-openssl zimbra-rsync"
-CORE_REMOVE="zimbra-openssl-$LIBEXT zimbra-rsync"
 
 PACKAGES="zimbra-ldap \
 zimbra-logger \
