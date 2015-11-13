@@ -86,7 +86,7 @@ $(PROXY_DEST_ROOT)/etc/sudoers.d:
 $(PROXY_DEST_DIR)/conf:
 	mkdir -p $@
 
-$(PROXY_DEST_DIR)/conf/nginx: $(PROXY_DEST_DIR)/conf $(PROXY_DEST_DIR)/etc/sudoers.d
+$(PROXY_DEST_DIR)/conf/nginx: $(PROXY_DEST_DIR)/conf $(PROXY_DEST_ROOT)/etc/sudoers.d
 	mkdir -p $@/includes/default
 	mkdir -p $@/includes/vhost
 	mkdir -p $@/includes/web.mode
