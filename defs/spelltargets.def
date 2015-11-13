@@ -38,15 +38,15 @@ $(BUILD_ROOT)/zimbra-spell.spec:
 		-e '/^%pre$$/ r zimbra-spell.pre' \
 		> $(BUILD_ROOT)/zimbra-spell.spec
 	rm -f zimbra-spell.pre
-	echo "%attr(-, root, root) /opt/zimbra/data/htdocs/aspell.php" >> \
+	echo "%attr(-, root, root) /opt/zimbra/data/httpd/htdocs/aspell.php" >> \
 		$(BUILD_ROOT)/zimbra-spell.spec
 	echo "" >> $(BUILD_ROOT)/zimbra-spell.spec
 	echo "%clean" >> $(BUILD_ROOT)/zimbra-spell.spec
 
 spell_stage: $(SPELL_COMPONENTS)
 
-$(SPELL_DEST_DIR)/data/htdocs/aspell.php: $(SPELL_DEST_DIR)/data/htdocs
+$(SPELL_DEST_DIR)/data/httpd/htdocs/aspell.php: $(SPELL_DEST_DIR)/data/httpd/htdocs
 	cp $(SERVICE_DIR)/src/php/aspell.php $@
 
-$(SPELL_DEST_DIR)/data/htdocs:
+$(SPELL_DEST_DIR)/data/httpd/htdocs:
 	mkdir -p $@
