@@ -24,7 +24,7 @@ $(PROXY_DEST_ROOT)/DEBIAN/control: $(PROXY_DEST_ROOT)/DEBIAN $(PROXY_DEST_ROOT)/
 
 $(PROXY_DEST_ROOT)/DEBIAN/md5sums: force
 	(cd $(PROXY_DEST_ROOT); \
-	find . -type f ! -regex '.*.hg.*' ! -regex '.*?debian-binary.*' ! -regex '.*?DEBIAN.*' -print0 | xargs -0 md5sum | sed -e 's| \./| |' > $@)
+	find . -type f ! -regex '.*?debian-binary.*' ! -regex '.*?DEBIAN.*' -print0 | xargs -0 md5sum | sed -e 's| \./| |' > $@)
 
 proxy_pkg_spec_ccs:
 
@@ -41,8 +41,36 @@ $(BUILD_ROOT)/zimbra-proxy.spec:
 		-e '/^%post$$/ r zimbra-proxy.post' > $(BUILD_ROOT)/zimbra-proxy.spec
 	rm -f zimbra-proxy.pre
 	rm -f zimbra-proxy.post
-	echo "%attr(-, root, root) /opt/zimbra/nginx-$(NGINX_VERSION)" >> \
+	echo "%attr(440, root, root) /etc/sudoers.d/zimbra-proxy" >> \
 		$(BUILD_ROOT)/zimbra-proxy.spec
+	echo "%attr(755, zimbra, zimbra) /opt/zimbra/conf/nginx" >> \
+		$(BUILD_ROOT)/zimbra-core.spec
+	echo "%attr(644, zimbra, zimbra) /opt/zimbra/conf/nginx/*" >> \
+		$(BUILD_ROOT)/zimbra-core.spec
+	echo "%attr(755, zimbra, zimbra) /opt/zimbra/conf/nginx/includes" >> \
+		$(BUILD_ROOT)/zimbra-core.spec
+	echo "%attr(755, zimbra, zimbra) /opt/zimbra/conf/nginx/includes/default" >> \
+		$(BUILD_ROOT)/zimbra-core.spec
+	echo "%attr(755, zimbra, zimbra) /opt/zimbra/conf/nginx/includes/vhost" >> \
+		$(BUILD_ROOT)/zimbra-core.spec
+	echo "%attr(755, zimbra, zimbra) /opt/zimbra/conf/nginx/includes/web.mode" >> \
+		$(BUILD_ROOT)/zimbra-core.spec
+	echo "%attr(755, zimbra, zimbra) /opt/zimbra/conf/nginx/templates" >> \
+		$(BUILD_ROOT)/zimbra-core.spec
+	echo "%attr(644, zimbra, zimbra) /opt/zimbra/conf/nginx/templates/*" >> \
+		$(BUILD_ROOT)/zimbra-core.spec
+	echo "%attr(755, zimbra, zimbra) /opt/zimbra/conf/nginx/templates/default" >> \
+		$(BUILD_ROOT)/zimbra-core.spec
+	echo "%attr(644, zimbra, zimbra) /opt/zimbra/conf/nginx/templates/default/*" >> \
+		$(BUILD_ROOT)/zimbra-core.spec
+	echo "%attr(755, zimbra, zimbra) /opt/zimbra/conf/nginx/templates/vhost" >> \
+		$(BUILD_ROOT)/zimbra-core.spec
+	echo "%attr(644, zimbra, zimbra) /opt/zimbra/conf/nginx/templates/vhost/*" >> \
+		$(BUILD_ROOT)/zimbra-core.spec
+	echo "%attr(755, zimbra, zimbra) /opt/zimbra/conf/nginx/templates/web.mode" >> \
+		$(BUILD_ROOT)/zimbra-core.spec
+	echo "%attr(644, zimbra, zimbra) /opt/zimbra/conf/nginx/templates/web.mode/*" >> \
+		$(BUILD_ROOT)/zimbra-core.spec
 	echo "" >> $(BUILD_ROOT)/zimbra-proxy.spec
 	echo "%clean" >> $(BUILD_ROOT)/zimbra-proxy.spec
 
@@ -51,6 +79,18 @@ proxy_stage: $(PROXY_COMPONENTS)
 $(PROXY_DEST_DIR):
 	mkdir -p $@
 
-$(PROXY_DEST_DIR)/$(NGINX_DIR): $(PROXY_DEST_DIR)
-	@echo "*** Creating nginx"
-	(cd $(PROXY_DEST_DIR); tar xzf $(NGINX_SOURCE).tgz;)
+$(PROXY_DEST_ROOT)/etc/sudoers.d:
+	mkdir -p $@
+	cp $(PACKAGE_CONF_DIR)/Env/sudoers.d/zimbra-proxy $(PROXY_DEST_ROOT)/etc/sudoers.d/zimbra-proxy
+
+$(PROXY_DEST_DIR)/conf:
+	mkdir -p $@
+
+$(PROXY_DEST_DIR)/conf/nginx: $(PROXY_DEST_DIR)/conf $(PROXY_DEST_DIR)/etc/sudoers.d
+	mkdir -p $@/includes/default
+	mkdir -p $@/includes/vhost
+	mkdir -p $@/includes/web.mode
+	mkdir -p $@/templates/default
+	mkdir -p $@/templates/vhost
+	mkdir -p $@/templates/web.mode
+	cp -Rf $(SERVICE_DIR)/conf/nginx/* $@/templates
