@@ -27,21 +27,19 @@ installPackage() {
 	f=`basename $file`
 	echo -n "...$f..."
 	if [ x$PKG = "xzimbra-core" ]; then
-		for i in $CORE_DEPS; do
-			$REPOINST $i >/dev/null 2>&1
-		done
+		$REPOINST zimbra-core-components >>$LOGFILE 2>&1
 	fi
 	if [ x$PKG = "xzimbra-apache" ]; then
-		$REPOINST zimbra-apache-components >/dev/null 2>&1
+		$REPOINST zimbra-apache-components >>$LOGFILE 2>&1
 	fi
 	if [ x$PKG = "xzimbra-dnscache" ]; then
-		$REPOINST zimbra-dnscache-components >/dev/null 2>&1
+		$REPOINST zimbra-dnscache-components >>$LOGFILE 2>&1
 	fi
 	if [ x$PKG = "xzimbra-proxy" ]; then
-		$REPOINST zimbra-proxy-components >/dev/null 2>&1
+		$REPOINST zimbra-proxy-components >>$LOGFILE 2>&1
 	fi
 	if [ x$PKG = "xzimbra-spell" ]; then
-		$REPOINST zimbra-spell-components >/dev/null 2>&1
+		$REPOINST zimbra-spell-components >>$LOGFILE 2>&1
 	fi
 	$PACKAGEINST $file >> $LOGFILE 2>&1
 	INSTRESULT=$?

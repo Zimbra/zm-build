@@ -1743,13 +1743,13 @@ removeExistingInstall() {
         echo -n "   $p..."
         $PACKAGERM $p > /dev/null 2>&1
         if [ x$p = "xzimbra-dnscache" ]; then
-          $REPORM zimbra-dnscache-base  >/dev/null 2>&1
+          $REPORM zimbra-dnscache-base >>$LOGFILE 2>&1
         fi
         if [ x$p = "xzimbra-proxy" ]; then
-          $REPORM zimbra-proxy-base  >/dev/null 2>&1
+          $REPORM zimbra-proxy-base >>$LOGFILE 2>&1
         fi
         if [ x$p = "xzimbra-spell" ]; then
-          $REPORM zimbra-spell-base  >/dev/null 2>&1
+          $REPORM zimbra-spell-base >>$LOGFILE 2>&1
         fi
         echo "done"
       fi
@@ -1761,10 +1761,10 @@ removeExistingInstall() {
         echo -n "   $p..."
         $PACKAGERM $p > /dev/null 2>&1
         if [ x$p = "xzimbra-core" ]; then
-            $REPORM zimbra-base >/dev/null 2>&1
+            $REPORM zimbra-base >>$LOGFILE 2>&1
         fi
         if [ x$p = "xzimbra-apache" ]; then
-          $REPORM zimbra-apache-base  >/dev/null 2>&1
+          $REPORM zimbra-apache-base >>$LOGFILE 2>&1
         fi
         echo "done"
       fi
