@@ -31,11 +31,14 @@ installPackage() {
 			$REPOINST $i >/dev/null 2>&1
 		done
 	fi
+	if [ x$PKG = "xzimbra-apache" ]; then
+		$REPOINST zimbra-apache-components >/dev/null 2>&1
+	fi
 	if [ x$PKG = "xzimbra-dnscache" ]; then
 		$REPOINST zimbra-dnscache-components >/dev/null 2>&1
 	fi
-	if [ x$PKG = "xzimbra-apache" ]; then
-		$REPOINST zimbra-apache-components >/dev/null 2>&1
+	if [ x$PKG = "xzimbra-proxy" ]; then
+		$REPOINST zimbra-proxy-components >/dev/null 2>&1
 	fi
 	if [ x$PKG = "xzimbra-spell" ]; then
 		$REPOINST zimbra-spell-components >/dev/null 2>&1
