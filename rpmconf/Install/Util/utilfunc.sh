@@ -1745,9 +1745,6 @@ removeExistingInstall() {
         if [ x$p = "xzimbra-dnscache" ]; then
           $REPORM zimbra-dnscache-base  >/dev/null 2>&1
         fi
-        if [ x$p = "xzimbra-apache" ]; then
-          $REPORM zimbra-apache-base  >/dev/null 2>&1
-        fi
         if [ x$p = "xzimbra-spell" ]; then
           $REPORM zimbra-spell-base  >/dev/null 2>&1
         fi
@@ -1761,9 +1758,10 @@ removeExistingInstall() {
         echo -n "   $p..."
         $PACKAGERM $p > /dev/null 2>&1
         if [ x$p = "xzimbra-core" ]; then
-          for q in $CORE_REMOVE; do
-            $REPORM $q >/dev/null 2>&1
-          done
+            $REPORM zimbra-base >/dev/null 2>&1
+        fi
+        if [ x$p = "xzimbra-apache" ]; then
+          $REPORM zimbra-apache-base  >/dev/null 2>&1
         fi
         echo "done"
       fi
