@@ -2,7 +2,7 @@ Package: zimbra-core
 Version: @@VERSION@@
 Description: Best email money can buy
 Maintainer: build@zimbra.com
-Section: Mail
+Section: mail
 Priority: optional
 Architecture: @@ARCH@@
-Depends: libidn11, file, procps, coreutils, zimbra-openssl, zimbra-rsync
+Depends: zimbra-core-components
