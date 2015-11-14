@@ -1,1 +1,1 @@
-%zimbra ALL=NOPASSWD:/opt/zimbra/nginx/sbin/nginx
+%zimbra ALL=NOPASSWD:/opt/zimbra/common/sbin/nginx
