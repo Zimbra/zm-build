@@ -535,27 +535,6 @@ EOF
     echo "     FOUND: NPTL"
   fi
 
-  for i in $PREREQ_PACKAGES; do
-    #echo -n "    $i..."
-    isInstalled $i
-    if [ "x$PKGINSTALLED" != "x" ]; then
-      echo "     FOUND: $PKGINSTALLED"
-    else
-      echo "     MISSING: $i"
-      GOOD="no"
-    fi
-  done
-
-  for i in $PREREQ_LIBS; do
-    #echo -n "    $i..."
-    if [ -L $i -o -f $i ]; then
-      echo "     FOUND: $i"
-    else
-      echo "     MISSING: $i"
-      GOOD="no"
-    fi
-  done
-
   echo ""
 
   SUGGESTED="yes"
@@ -2535,7 +2514,6 @@ getPlatformVars() {
     PACKAGEQUERY='dpkg -s'
     PACKAGEEXT='deb'
     PACKAGEVERSION="dpkg-query -W -f \${Version}"
-    PREREQ_PACKAGES="sudo libidn11 libgmp3c2 libstdc++6"
     CONFLICT_PACKAGES="mail-transport-agent"
     if [ $PLATFORM = "UBUNTU10_64" ]; then
       PREREQ_PACKAGES="netcat-openbsd sudo libidn11 libpcre3 libgmp3c2 libexpat1 libstdc++6 libperl5.10 libaio1 resolvconf unzip"
@@ -2543,13 +2521,9 @@ getPlatformVars() {
       STORE_PACKAGES=""
     fi
     if [ $PLATFORM = "UBUNTU12_64" ]; then
-      PREREQ_PACKAGES="netcat-openbsd sudo libidn11 libpcre3 libgmp3c2 libexpat1 libstdc++6 libperl5.14 libaio1 resolvconf unzip"
-      PRESUG_PACKAGES="pax perl-5.14.2 sysstat sqlite3"
       STORE_PACKAGES="libreoffice"
     fi
     if [ $PLATFORM = "UBUNTU14_64" ]; then
-      PREREQ_PACKAGES="netcat-openbsd sudo libidn11 libpcre3 libgmp10 libexpat1 libstdc++6 libperl5.18 libaio1 resolvconf unzip"
-      PRESUG_PACKAGES="pax perl-5.18.2 sysstat sqlite3"
       STORE_PACKAGES="libreoffice"
     fi
   else
@@ -2561,12 +2535,8 @@ getPlatformVars() {
       PACKAGEQUERY='rpm -q'
       PACKAGEVERIFY='rpm -K'
     if [ $PLATFORM = "RHEL6_64" ]; then
-      PREREQ_PACKAGES="nc sudo libidn gmp libaio libstdc++ unzip perl-core"
-      PRESUG_PACKAGES="perl-5.10.1 sysstat sqlite"
       STORE_PACKAGES="libreoffice libreoffice-headless"
     elif [ $PLATFORM = "RHEL7_64" ]; then
-      PREREQ_PACKAGES="nmap-ncat sudo libidn gmp libaio libstdc++ unzip perl-core"
-      PRESUG_PACKAGES="perl-5.16.3 sysstat sqlite"
       STORE_PACKAGES="libreoffice libreoffice-headless"
     elif [ $PLATFORM = "SLES11_64" ]; then
       PREREQ_PACKAGES="netcat sudo libidn gmp libaio"
@@ -2576,8 +2546,6 @@ getPlatformVars() {
     else
       PACKAGEINST='rpm -iv'
       PACKAGERM='rpm -ev --nodeps --allmatches'
-      PREREQ_PACKAGES="sudo libidn gmp"
-      PREREQ_LIBS="/usr/lib/libstdc++.so.6"
       PRESUG_PACKAGES="sysstat sqlite"
     fi
   fi
