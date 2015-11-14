@@ -29,46 +29,31 @@ installPackage() {
 	if [ x$PKG = "xzimbra-core" ]; then
 		$REPOINST zimbra-core-components >>$LOGFILE 2>&1
                 if [ $? != 0 ]; then
-                  echo ""
-                  echo "ERRROR: Unable to install required package"
-                  echo "Validate ability to connect to upstream package servers"
-                  exit 1
+                  pkgError
                 fi
 	fi
 	if [ x$PKG = "xzimbra-apache" ]; then
 		$REPOINST zimbra-apache-components >>$LOGFILE 2>&1
                 if [ $? != 0 ]; then
-                  echo ""
-                  echo "ERRROR: Unable to install required package"
-                  echo "Validate ability to connect to upstream package servers"
-                  exit 1
+                  pkgError
                 fi
 	fi
 	if [ x$PKG = "xzimbra-dnscache" ]; then
 		$REPOINST zimbra-dnscache-components >>$LOGFILE 2>&1
                 if [ $? != 0 ]; then
-                  echo ""
-                  echo "ERRROR: Unable to install required package"
-                  echo "Validate ability to connect to upstream package servers"
-                  exit 1
+                  pkgError
                 fi
 	fi
 	if [ x$PKG = "xzimbra-proxy" ]; then
 		$REPOINST zimbra-proxy-components >>$LOGFILE 2>&1
                 if [ $? != 0 ]; then
-                  echo ""
-                  echo "ERRROR: Unable to install required package"
-                  echo "Validate ability to connect to upstream package servers"
-                  exit 1
+                  pkgError
                 fi
 	fi
 	if [ x$PKG = "xzimbra-spell" ]; then
 		$REPOINST zimbra-spell-components >>$LOGFILE 2>&1
                 if [ $? != 0 ]; then
-                  echo ""
-                  echo "ERRROR: Unable to install required package"
-                  echo "Validate ability to connect to upstream package servers"
-                  exit 1
+                  pkgError
                 fi
 	fi
 	$PACKAGEINST $file >> $LOGFILE 2>&1
@@ -93,6 +78,13 @@ installPackage() {
 		echo ""
 		exit 1
 	fi
+}
+
+pkgError() {
+  echo ""
+  echo "ERRROR: Unable to install required package"
+  echo "Validate ability to connect to upstream package servers"
+  exit 1
 }
 
 findLatestPackage() {
