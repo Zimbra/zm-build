@@ -16,18 +16,13 @@
 # ***** END LICENSE BLOCK *****
 # 
 
-# Symlinks
-if [ -L "/opt/zimbra/nginx" ]; then
-  rm -rf /opt/zimbra/nginx
+egrep -q '^%zimbra.*nginx' /etc/sudoers
+if [ $? = 0 ]; then
+  local sudotmp=`mktemp -t zsudoers.XXXXX 2> /dev/null` || (echo "Failed to create tmpfile" && exit 1)
+  SUDOMODE=`perl -e 'my $mode=(stat("/etc/sudoers"))[2];printf("%04o\n",$mode & 07777);'`
+  egrep -v '^%zimbra.*nginx' /etc/sudoers > $sudotmp
+  mv -f $sudotmp /etc/sudoers
+  chmod $SUDOMODE /etc/sudoers
 fi
-ln -s /opt/zimbra/nginx-1.7.1-zimbra /opt/zimbra/nginx
-
-SUDOMODE=`perl -e 'my $mode=(stat("/etc/sudoers"))[2];printf("%04o\n",$mode & 07777);'`
-egrep -v '^%zimbra.*nginx' /etc/sudoers > /tmp/sudoers
-echo "%zimbra ALL=NOPASSWD:/opt/zimbra/nginx/sbin/nginx" >> /tmp/sudoers
-mv -f /tmp/sudoers /etc/sudoers
-chmod $SUDOMODE /etc/sudoers
-
-if [ -x "/opt/zimbra/libexec/zmfixperms" ]; then
-  /opt/zimbra/libexec/zmfixperms
-fi
+chmod 440 /etc/sudoers.d/zimbra-proxy
+chown root:root /etc/sudoers.d/zimbra-proxy
