@@ -26,3 +26,4 @@ if [ $? = 0 ]; then
 fi
 chmod 440 /etc/sudoers.d/zimbra-proxy
 chown root:root /etc/sudoers.d/zimbra-proxy
+chown -R zimbra:zimbra /opt/zimbra/conf/nginx
