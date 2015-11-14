@@ -525,18 +525,6 @@ EOF
 
   GOOD="yes"
 
-  echo "Checking for prerequisites..."
-  #echo -n "    NPTL..."
-  /usr/bin/getconf GNU_LIBPTHREAD_VERSION | grep NPTL > /dev/null 2>&1
-  if [ $? != 0 ]; then
-    echo "     MISSING:  NPTL"
-    GOOD="no"
-  else
-    echo "     FOUND: NPTL"
-  fi
-
-  echo ""
-
   SUGGESTED="yes"
   echo "Checking for suggested prerequisites..."
   for i in $PRESUG_PACKAGES; do
@@ -575,21 +563,6 @@ EOF
     done
   fi
 
-  if [ $GOOD = "no" ]; then
-    echo ""
-    echo "###ERROR###"
-    echo ""
-    echo "One or more prerequisite packages are missing."
-    echo "Please install them before running this installer."
-    echo ""
-    echo "Installation cancelled."
-    echo ""
-    exit 1
-  else
-    echo "Prerequisite check complete."
-  fi
-
-
   # limitation of ext3
   if [ -d "/opt/zimbra/db/data" ]; then
     echo "Checking current number of databases..."
@@ -607,11 +580,7 @@ EOF
   fi
 
   checkRecentBackup
-
   checkDatabaseIntegrity
-
-  #checkMySQLConfig
-
 }
 
 
