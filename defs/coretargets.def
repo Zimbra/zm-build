@@ -267,7 +267,6 @@ $(CORE_DEST_DIR)/libexec: $(LAUNCHER_DIR)/$(ANT_BUILD_DIR)/zmmailboxdmgr
 	cp -f $(PACKAGE_CONF_DIR)/Upgrade/zmupgrade.pm $@/zmupgrade.pm
 	cp -f $(PACKAGE_CONF_DIR)/Install/install.sh $@/installer/install.sh
 	cp -f $(BUILD_ROOT)/rpmconf/Build/get_plat_tag.sh $@/installer/bin/get_plat_tag.sh
-	cp -f $(PACKAGE_CONF_DIR)/Install/install-mac.sh $@/installer/install-mac.sh
 	cp -f $(PACKAGE_CONF_DIR)/Install/Util/*sh $@/installer/util
 	cp -f $(PACKAGE_CONF_DIR)/Install/Util/modules/*sh $@/installer/util/modules
 	mkdir -p $@/scripts
