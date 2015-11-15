@@ -20,7 +20,6 @@ LOGFILE=`mktemp -t install.log.XXXX 2> /dev/null` || { echo "Failed to create tm
 PLATFORM=`bin/get_plat_tag.sh`
 
 CORE_PACKAGES="zimbra-core"
-CORE_DEPS="zimbra-openssl zimbra-rsync"
 
 PACKAGES="zimbra-ldap \
 zimbra-logger \
