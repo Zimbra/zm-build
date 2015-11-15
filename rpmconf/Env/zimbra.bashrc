@@ -27,14 +27,10 @@ if [[ $ZCS_PLATFORM == MACOSXx86_10.* && x$ZCS_PLATFORM != "xMACOSXx86_10.7" ]];
   export JAVA_JVM_VERSION
 fi
 
-PATH=/opt/zimbra/bin:/opt/zimbra/postfix/sbin:/opt/zimbra/openldap/bin:/opt/zimbra/snmp/bin:/opt/zimbra/bdb/bin:/opt/zimbra/openssl/bin:${JAVA_HOME}/bin:/opt/zimbra/common/bin:/usr/sbin:${PATH}
+PATH=/opt/zimbra/bin:/opt/zimbra/postfix/sbin:/opt/zimbra/openldap/bin:/opt/zimbra/openssl/bin:${JAVA_HOME}/bin:/opt/zimbra/common/bin:/usr/sbin:${PATH}
 export PATH
 
-if [ `uname -s` == "Darwin" ]; then
-  unset DYLD_LIBRARY_PATH
-else 
-  unset LD_LIBRARY_PATH
-fi
+unset LD_LIBRARY_PATH
 
 SNMPCONFPATH=/opt/zimbra/conf
 export SNMPCONFPATH
@@ -54,6 +50,6 @@ umask 0027
 
 unset DISPLAY
 
-export MANPATH=/opt/zimbra/pflogsumm/man:/opt/zimbra/opendkim/share/man:/opt/zimbra/unbound/share/man:${MANPATH}
+export MANPATH=/opt/zimbra/pflogsumm/man:/opt/zimbra/opendkim/share/man:/opt/zimbra/common/share/man:${MANPATH}
 
 export HISTTIMEFORMAT="%y%m%d %T "
