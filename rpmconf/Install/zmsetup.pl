@@ -44,27 +44,7 @@ $| = 1;
 progress("Operations logged to $logfile\n");
 
 our $ZMPROV = "/opt/zimbra/bin/zmprov -r -m -l";
-our $SU;
-if ($platform =~ /MACOSXx86_10/) {
-  $SU = "su - zimbra -c -l ";
-} else {
-  $SU = "su - zimbra -c ";
-}
-
-if ($platform =~ /MACOSX/ && $platform ne "MACOSXx86_10.6" && $platform ne "MACOSXx86_10.7") {
-
-  progress ("Checking java version...");
-  my $rc = 0xffff & system("$SU \"java -version 2>&1 | grep 'java version' | grep -q 1.5\"");
-  if ($rc) {
-    progress ("\n\nERROR\n\n");
-    progress ("Java version 1.5 required - please update your java version\n");
-    progress ("and set the default version to be 1.5 before proceeding\n\n");
-    ask ("Press any key to exit","");
-    exit (1);
-  } else {
-    progress ("1.5 found\n");
-  }
-}
+our $SU = "su - zimbra -c ";
 
 my $filename="/opt/zimbra/conf/localconfig.xml";
 my $uid = (stat $filename)[4];
@@ -389,15 +369,6 @@ sub loadConfig {
 }
 
 sub checkPortConflicts {
-
-  if ($platform =~ /MACOSX/) {
-    # Shutdown postfix in launchd
-    if (-f "/System/Library/LaunchDaemons/org.postfix.master.plist") {
-      progress ( "Disabling postfix in launchd...");
-      system ("/bin/launchctl unload -w /System/Library/LaunchDaemons/org.postfix.master.plist > /dev/null 2>&1");
-      progress ("done.\n");
-    }
-  }
   progress ( "Checking for port conflicts\n" );
   my %needed = (
     25 => 'zimbra-mta',
@@ -680,15 +651,6 @@ sub isInstalled {
   my $good = 0;
   if ($platform =~ /^DEBIAN/ || $platform =~ /^UBUNTU/) {
     $pkgQuery = "dpkg -s $pkg";
-  } elsif ($platform eq "MACOSXx86_10.6" || $platform eq "MACOSXx86_10.7") {
-    $pkg =~ s/zimbra-//;
-    $pkgQuery = "pkgutil --pkg-info com.zimbra.zcs.${pkg}";
-  } elsif ($platform =~ /MACOSX/) {
-    my @l = sort glob ("/Library/Receipts/${pkg}*");
-    if ( $#l < 0 ) { return 0; }
-    $pkgQuery = "test -d $l[$#l]";
-  } elsif ($platform =~ /RPL/) {
-    $pkgQuery = "conary q $pkg";
   } else {
     $pkgQuery = "rpm -q $pkg";
   }
@@ -1423,20 +1385,9 @@ sub setDefaults {
     $config{zimbraIPMode}     = "ipv4";
   }
 
-  if ($platform =~ /MACOSX/ && $platform ne "MACOSXx86_10.6" && $platform ne "MACOSXx86_10.7" ) {
-    $config{JAVAHOME} = "/System/Library/Frameworks/JavaVM.framework/Versions/1.5/Home";
-    setLocalConfig ("zimbra_java_home", "$config{JAVAHOME}");
-    $config{HOSTNAME} = lc(qx(hostname));
-  } elsif ($platform eq "MACOSXx86_10.6" || $platform eq "MACOSXx86_10.7") {
-    $config{JAVAHOME} = "/Library/Java/Home";
-    setLocalConfig ("zimbra_java_home", "$config{JAVAHOME}");
-    setLocalConfig("ldap_read_timeout", "0"); #41959
-    $config{HOSTNAME} = lc(qx(hostname));
-  } else {
-    $config{JAVAHOME} = "/opt/zimbra/java";
-    setLocalConfig ("zimbra_java_home", "$config{JAVAHOME}");
-    $config{HOSTNAME} = lc(qx(hostname --fqdn));
-  }
+  $config{JAVAHOME} = "/opt/zimbra/java";
+  setLocalConfig ("zimbra_java_home", "$config{JAVAHOME}");
+  $config{HOSTNAME} = lc(qx(hostname --fqdn));
   chomp $config{HOSTNAME};
 
   $config{ldap_dit_base_dn_config} = "cn=zimbra"
@@ -1451,16 +1402,10 @@ sub setDefaults {
   } else {
     $config{mailboxd_keystore} = "/opt/zimbra/conf/keystore";
   }
-  if ($platform =~ /MACOSX/ && $platform ne "MACOSXx86_10.6" && $platform ne "MACOSXx86_10.7" ) {
-      $config{mailboxd_truststore} = "/System/Library/Frameworks/JavaVM.framework/Versions/1.5/Home/lib/security/cacerts";
-  } elsif ($platform eq "MACOSXx86_10.6" || $platform eq "MACOSXx86_10.7") {
-      $config{mailboxd_truststore} = "$config{JAVAHOME}/lib/security/cacerts";
+  if ( -f "/opt/zimbra/java/lib/security/cacerts") {
+    $config{mailboxd_truststore} = "/opt/zimbra/java/lib/security/cacerts";
   } else {
-    if ( -f "/opt/zimbra/java/lib/security/cacerts") {
-      $config{mailboxd_truststore} = "/opt/zimbra/java/lib/security/cacerts";
-    } else {
-      $config{mailboxd_truststore} = "/opt/zimbra/java/jre/lib/security/cacerts";
-    }
+    $config{mailboxd_truststore} = "/opt/zimbra/java/jre/lib/security/cacerts";
   }
   $config{mailboxd_keystore_password} = genRandomPass();
   $config{mailboxd_truststore_password} = "changeit";
@@ -1628,14 +1573,8 @@ sub setDefaults {
     } else {
       $config{zimbraMtaMyNetworks} = "$tmpval";
     }
-
-    if ($platform =~ /MACOSXx86_10/) {
-      $config{postfix_mail_owner} = "_postfix";
-      $config{postfix_setgid_group} = "_postdrop";
-    } else {
-      $config{postfix_mail_owner} = "postfix";
-      $config{postfix_setgid_group} = "postdrop";
-    }
+    $config{postfix_mail_owner} = "postfix";
+    $config{postfix_setgid_group} = "postdrop";
   }
 
   $config{MODE} = "https";
@@ -1949,19 +1888,11 @@ sub setDefaultsFromLocalConfig {
   if (isEnabled("zimbra-mta")) {
     $config{postfix_mail_owner} = getLocalConfig ("postfix_mail_owner");
     if ($config{postfix_mail_owner} eq "") {
-      if ($platform =~ /MACOSXx86_10/) {
-        $config{postfix_mail_owner} = "_postfix";
-      } else {
-        $config{postfix_mail_owner} = "postfix";
-      }
+      $config{postfix_mail_owner} = "postfix";
     }
     $config{postfix_setgid_group} = getLocalConfig ("postfix_setgid_group");
     if ($config{postfix_setgid_group} eq "") {
-      if ($platform =~ /MACOSXx86_10/) {
-        $config{postfix_setgid_group} = "_postdrop";
-      } else {
-        $config{postfix_setgid_group} = "postdrop";
-      }
+      $config{postfix_setgid_group} = "postdrop";
     }
 
   }

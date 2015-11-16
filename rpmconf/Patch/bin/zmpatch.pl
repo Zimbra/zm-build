@@ -396,12 +396,7 @@ sub logSession($) {
 
 sub runAsZimbra {
   my $cmd = shift;
-  my $SU;
-  if ($platform =~ /MACOSXx86_10/) {
-    $SU = "su - zimbra -c -l ";
-  } else {
-    $SU = "su - zimbra -c ";
-  }
+  my $SU = "su - zimbra -c ";
   detail ( "*** Running as zimbra user: $cmd\n" );
   my $rc;
   $rc = 0xffff & system("$SU \"$cmd\" >> $logfile 2>&1");
@@ -563,15 +558,6 @@ sub isInstalled {
   my $good = 0;
   if ($platform =~ /^DEBIAN/ || $platform =~ /^UBUNTU/) {
     $pkgQuery = "dpkg -s $pkg";
-  } elsif ($platform eq "MACOSXx86_10.6" || $platform eq "MACOSXx86_10.7") {
-    $pkg =~ s/zimbra-//;
-    $pkgQuery = "pkgutil --pkg-info com.zimbra.zcs.${pkg}";
-  } elsif ($platform =~ /MACOSX/) {
-    my @l = sort glob ("/Library/Receipts/${pkg}*");
-    if ( $#l < 0 ) { return 0; }
-    $pkgQuery = "test -d $l[$#l]";
-  } elsif ($platform =~ /RPL/) {
-    $pkgQuery = "conary q $pkg";
   } else {
     $pkgQuery = "rpm -q $pkg";
   }

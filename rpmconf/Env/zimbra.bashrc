@@ -22,11 +22,6 @@ fi
 JAVA_HOME=/opt/zimbra/java
 export JAVA_HOME
 
-if [[ $ZCS_PLATFORM == MACOSXx86_10.* && x$ZCS_PLATFORM != "xMACOSXx86_10.7" ]]; then
-  JAVA_JVM_VERSION=CurrentJDK
-  export JAVA_JVM_VERSION
-fi
-
 PATH=/opt/zimbra/bin:/opt/zimbra/postfix/sbin:/opt/zimbra/openldap/bin:/opt/zimbra/openssl/bin:${JAVA_HOME}/bin:/opt/zimbra/common/bin:/usr/sbin:${PATH}
 export PATH
 

@@ -49,12 +49,7 @@ my $mysqlcnfUpdated = 0;
 my $platform = qx(/opt/zimbra/libexec/get_plat_tag.sh);
 chomp $platform;
 my $addr_space = (($platform =~ m/\w+_(\d+)/) ? "$1" : "32");
-my $su;
-if ($platform =~ /MACOSXx86_10/) {
-  $su = "su - zimbra -c -l";
-} else {
-  $su = "su - zimbra -c";
-}
+my $su = "su - zimbra -c";
 
 my $hn = qx($su "${zmlocalconfig} -m nokey zimbra_server_hostname");
 chomp $hn;
