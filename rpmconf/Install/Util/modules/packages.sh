@@ -20,11 +20,15 @@ installPackage() {
 	PKG=$1
 	echo -n "    $PKG..."
 	findLatestPackage $PKG
-	if [ ! -f "$file" ]; then
-		echo "file not found."
-		return
+	if [ x$PKG != "xzimbra-memcached" ]; then
+		if [ ! -f "$file" ]; then
+			echo "file not found."
+			return
+		fi
+		f=`basename $file`
+	else
+		f=$PKG
 	fi
-	f=`basename $file`
 	echo -n "...$f..."
 	if [ x$PKG = "xzimbra-core" ]; then
 		$REPOINST zimbra-core-components >>$LOGFILE 2>&1
