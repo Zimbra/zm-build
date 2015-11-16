@@ -27,7 +27,16 @@ installPackage() {
 		fi
 		f=`basename $file`
 	else
-		f=$PKG
+		if [[ $PLATFORM == "DEBIAN"* || $PLATFORM == "UBUNTU"* ]]; then
+			f=`apt-cache show zimbra-memcached | grep ^Version:`
+			f=${f#*: }
+		elif [[ $PLATFORM == "RHEL"* ]]; then
+			ver=`yum info zimbra-memcached | grep ^Version`;
+			rel=`yum info zimbra-memcached | grep ^Release`;
+			ver=${ver#*: }
+			rel=${rel#*: }
+			f="${ver}-${rel}"
+		fi
 	fi
 	echo -n "...$f..."
 	if [ x$PKG = "xzimbra-core" ]; then
