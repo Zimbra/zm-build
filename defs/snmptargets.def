@@ -56,7 +56,8 @@ $(SNMP_DEST_DIR)/data/snmp/state:
 
 $(SNMP_DEST_DIR)/common: $(SNMP_DEST_DIR) $(SNMP_DEST_DIR)/data/snmp/persist $(SNMP_DEST_DIR)/data/snmp/state
 	@echo "*** Creating SNMP"
-	cp $(PACKAGE_CONF_DIR)/Conf/snmpd.conf.in $(SNMP_DEST_DIR)/common/share/snmp/snmpd.conf.in
+	mkdir -p $(SNMP_DEST_DIR)/conf
+	cp $(PACKAGE_CONF_DIR)/Conf/snmpd.conf.in $(SNMP_DEST_DIR)/conf/snmpd.conf.in
 	mkdir -p $(SNMP_DEST_DIR)/common/conf
 	cp $(PACKAGE_CONF_DIR)/Conf/snmp.conf $(SNMP_DEST_DIR)/common/conf/snmp.conf
 	cp $(PACKAGE_CONF_DIR)/Conf/snmp.conf $(SNMP_DEST_DIR)/common/share/snmp/snmp.conf
