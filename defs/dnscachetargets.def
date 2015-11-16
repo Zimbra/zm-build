@@ -48,7 +48,7 @@ $(BUILD_ROOT)/zimbra-dnscache.spec:
 	rm -f zimbra-dnscache.post
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/data/dns" >> \
 		$(BUILD_ROOT)/zimbra-dnscache.spec
-	echo "%attr(440, root, root) /etc/sudoers.d/zimbra-dnscache" >> \
+	echo "%attr(440, root, root) /etc/sudoers.d/02_zimbra-dnscache" >> \
 		$(BUILD_ROOT)/zimbra-dnscache.spec
 
 dns_stage: $(DNS_COMPONENTS)
@@ -68,4 +68,4 @@ $(DNS_DEST_ROOT)/etc/resolvconf/update.d:
 
 $(DNS_DEST_ROOT)/etc/sudoers.d:
 	mkdir -p $@
-	cp $(PACKAGE_CONF_DIR)/Env/sudoers.d/zimbra-dnscache.$(PACKAGE_EXT) $(DNS_DEST_ROOT)/etc/sudoers.d/zimbra-dnscache
+	cp $(PACKAGE_CONF_DIR)/Env/sudoers.d/02_zimbra-dnscache.$(PACKAGE_EXT) $(DNS_DEST_ROOT)/etc/sudoers.d/02_zimbra-dnscache
