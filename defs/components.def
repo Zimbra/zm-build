@@ -111,7 +111,7 @@ SPELL_COMPONENTS := \
 	$(SPELL_DEST_DIR)/data/httpd/htdocs/aspell.php
 
 SNMP_COMPONENTS := \
-	$(SNMP_DEST_DIR)/$(SNMP_DIR)
+	$(SNMP_DEST_DIR)/common
 
 PROXY_COMPONENTS := \
 	$(PROXY_DEST_DIR)/conf/nginx

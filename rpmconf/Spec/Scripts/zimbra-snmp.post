@@ -16,20 +16,7 @@
 # ***** END LICENSE BLOCK *****
 # 
 
-H=`hostname -s`
-I=`hostname -i`
-
-#Symlinks
-
-if [ -L "/opt/zimbra/snmp" ]; then
-  rm -f /opt/zimbra/snmp
-fi
-if [ -L "/opt/zimbra/net-snmp" ]; then
-  rm -f /opt/zimbra/net-snmp
-fi
-ln -s /opt/zimbra/net-snmp-5.7.2.1 /opt/zimbra/snmp
-ln -s /opt/zimbra/net-snmp-5.7.2.1 /opt/zimbra/net-snmp
-
-if [ -x "/opt/zimbra/libexec/zmfixperms" ]; then
-  /opt/zimbra/libexec/zmfixperms
-fi
+mkdir -p /opt/zimbra/data/snmp/persist
+mkdir -p /opt/zimbra/data/snmp/state
+chown -R zimbra:zimbra /opt/zimbra/data/snmp
+chown zimbra:zimbra /opt/zimbra/data

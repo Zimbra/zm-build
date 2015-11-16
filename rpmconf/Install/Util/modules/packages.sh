@@ -50,6 +50,12 @@ installPackage() {
                   pkgError
                 fi
 	fi
+	if [ x$PKG = "xzimbra-snmp" ]; then
+		$REPOINST zimbra-snmp-components >>$LOGFILE 2>&1
+                if [ $? != 0 ]; then
+                  pkgError
+                fi
+	fi
 	if [ x$PKG = "xzimbra-spell" ]; then
 		$REPOINST zimbra-spell-components >>$LOGFILE 2>&1
                 if [ $? != 0 ]; then

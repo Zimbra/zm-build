@@ -1696,6 +1696,9 @@ removeExistingInstall() {
         if [ x$p = "xzimbra-proxy" ]; then
           $REPORM zimbra-proxy-base >>$LOGFILE 2>&1
         fi
+        if [ x$p = "xzimbra-snmp" ]; then
+          $REPORM zimbra-snmp-base >>$LOGFILE 2>&1
+        fi
         if [ x$p = "xzimbra-spell" ]; then
           $REPORM zimbra-spell-base >>$LOGFILE 2>&1
         fi
