@@ -15,10 +15,6 @@
 # If not, see <http://www.gnu.org/licenses/>.
 # ***** END LICENSE BLOCK *****
 # 
-if [ -L /opt/zimbra/logger/mysql ]; then
-  rm -f /opt/zimbra/logger/mysql
-fi
-
 if [ -x "/opt/zimbra/libexec/zmfixperms" ]; then
   /opt/zimbra/libexec/zmfixperms
 fi
