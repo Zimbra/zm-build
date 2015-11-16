@@ -443,7 +443,6 @@ sub upgrade {
     foreach my $v (@versionOrder) {
       $version_found = 1 if ($v eq $startVersion);
       if ($version_found) {
-        &doMysql51Upgrade if ($v eq "7.0.0_BETA1");
         &doMysql55Upgrade if ($v eq "8.0.0_BETA1");
         &doMysql56Upgrade if ($v eq "8.5.0_BETA3");
       }
@@ -458,7 +457,6 @@ sub upgrade {
     foreach my $v (@versionOrder) {
       $schema_found = 1 if ($v eq $startVersion);
       if ($schema_found) {
-        $needMysqlUpgrade=1 if ($v eq "7.0.0_BETA1");
         $needMysqlUpgrade=1 if ($v eq "8.0.0_GA");
         $needMysqlUpgrade=1 if ($v eq "8.5.0_BETA1");
       }
@@ -1156,8 +1154,8 @@ sub upgrade800BETA2 {
       SET PASSWORD FOR 'root'\@'localhost.localdomain' = PASSWORD('${mysql_root_password}');
 FIX_RIGHTS_EOF
 
-    qx(/opt/zimbra/mysql/bin/mysql -S '$mysql_socket' -u root --password='$mysql_root_password' -e "$sql");
-    qx(/opt/zimbra/mysql/bin/mysql -S '$mysql_socket' -u root --password='$mysql_root_password' -e "DROP USER ''\@'localhost'; DROP USER ''\@'${host}'");
+    qx(/opt/zimbra/common/bin/mysql -S '$mysql_socket' -u root --password='$mysql_root_password' -e "$sql");
+    qx(/opt/zimbra/common/bin/mysql -S '$mysql_socket' -u root --password='$mysql_root_password' -e "DROP USER ''\@'localhost'; DROP USER ''\@'${host}'");
     stopSql();
 
     # 66663
@@ -4027,34 +4025,6 @@ sub clearBackupDir($$) {
   return;
 }
 
-sub doMysqlTableCheck {
-
-  my $updateSQL = "/opt/zimbra/mysql/share/mysql/mysql_fix_privilege_tables.sql";
-  if (-e "$updateSQL") {
-    main::progress("Verifying mysql tables\n");
-    my $db_pass = main::getLocalConfig("mysql_root_password");
-    my $mysql = "/opt/zimbra/bin/mysql";
-    my $cmd = "$mysql --force --user=root --password=$db_pass --database=mysql --batch < $updateSQL";
-    main::progress("Executing $cmd\n");
-    main::runAsZimbra("$cmd > /tmp/mysql_fix_perms.out 2>&1");
-  }
-}
-
-sub doMysql51Upgrade {
-    my $mysql_mycnf = main::getLocalConfig("mysql_mycnf");
-    my $zimbra_log_directory = main::getLocalConfig("zimbra_log_directory") || "/opt/zimbra/log";
-
-    main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion} --section=mysqld --key=ignore-builtin-innodb --set ${mysql_mycnf}");
-    main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion} --section=mysqld --set --key=plugin-load --value='innodb=ha_innodb_plugin.so;innodb_trx=ha_innodb_plugin.so;innodb_locks=ha_innodb_plugin.so;innodb_lock_waits=ha_innodb_plugin.so;innodb_cmp=ha_innodb_plugin.so;innodb_cmp_reset=ha_innodb_plugin.so;innodb_cmpmem=ha_innodb_plugin.so;innodb_cmpmem_reset=ha_innodb_plugin.so' ${mysql_mycnf}");
-    main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion} --section=mysqld --unset --key=log-long-format ${mysql_mycnf}");
-    main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion} --section=mysqld --unset --key=log-slow-queries ${mysql_mycnf}");
-    main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion} --section=mysqld --set --key=slow_query_log --value=1 ${mysql_mycnf}");
-    main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion} --section=mysqld --set --key=slow_query_log_file --value=${zimbra_log_directory}/myslow.log ${mysql_mycnf}");
-    if (fgrep { /^log-bin/ } ${mysql_mycnf}) {
-      main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion} --section=mysqld --set --key=binlog-format --value=MIXED ${mysql_mycnf}");
-    }
-}
-
 sub doMysql55Upgrade {
     my $mysql_mycnf = main::getLocalConfig("mysql_mycnf");
     my $zimbra_log_directory = main::getLocalConfig("zimbra_log_directory") || "/opt/zimbra/log";
@@ -4088,7 +4058,7 @@ sub doMysqlUpgrade {
     my $zimbra_tmp = main::getLocalConfig("zimbra_tmp_directory") || "/tmp";
     my $mysql_socket = main::getLocalConfig("mysql_socket");
     my $mysql_mycnf = main::getLocalConfig("mysql_mycnf");
-    my $mysqlUpgrade = "/opt/zimbra/mysql/bin/mysql_upgrade";
+    my $mysqlUpgrade = "/opt/zimbra/common/bin/mysql_upgrade";
     my $cmd = "$mysqlUpgrade --defaults-file=$mysql_mycnf -S $mysql_socket --user=root --password=$db_pass";
     main::progress("Running mysql_upgrade...");
     main::runAsZimbra("$cmd > ${zimbra_tmp}/mysql_upgrade.out 2>&1");
