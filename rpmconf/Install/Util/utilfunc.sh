@@ -2083,6 +2083,11 @@ deb     https://$PACKAGE_SERVER/apt/90 $repo zimbra
 deb-src https://$PACKAGE_SERVER/apt/90 $repo zimbra
 EOF
       apt-get update >>$LOGFILE 2>&1
+      if [ $? -ne 0 ]; then
+        echo "ERROR: Unable to install packages via apt-get"
+        echo "Please fix system to allow normal package installation before proceeding"
+        exit 1
+      fi
     else
       if [ $PLATFORM = "RHEL6_64" ]; then
         repo="rhel6"
@@ -2101,6 +2106,12 @@ baseurl=https://$PACKAGE_SERVER/rpm/90/$repo
 gpgcheck=1
 enabled=1
 EOF
+      yum check-update --disablerepo=* --enablerepo=zimbra >>$LOGFILE 2>&1
+      if [ $? -ne 0 ]; then
+        echo "ERROR: yum check-update failed"
+        echo "Please validate ability to install packages"
+        exit 1
+      fi
     fi
   fi
 }
