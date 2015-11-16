@@ -50,6 +50,9 @@ if [ $? = 0 ]; then
 	chmod $SUDOMODE /etc/sudoers
 fi
 
+chmod 440 /etc/sudoers.d/02_zimbra-store
+chown root:root /etc/sudoers.d/02_zimbra-store
+
 if [ -d "/opt/zimbra/mailboxd/work/zimbra" ]; then
   find /opt/zimbra/mailboxd/work/zimbra -exec touch {} \; 2> /dev/null
 fi
