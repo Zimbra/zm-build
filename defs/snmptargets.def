@@ -15,6 +15,7 @@ snmp_pkg_spec_deb: $(SNMP_DEST_ROOT)/DEBIAN/control
 $(SNMP_DEST_ROOT)/DEBIAN: force
 	mkdir -p $@
 	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-snmp.pre $@/preinst
+	 cat $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-snmp.post >> $@/postinst
 	chmod 555 $@/*
 
 $(SNMP_DEST_ROOT)/DEBIAN/control: $(SNMP_DEST_ROOT)/DEBIAN $(SNMP_DEST_ROOT)/DEBIAN/md5sums force
@@ -39,6 +40,24 @@ $(BUILD_ROOT)/zimbra-snmp.spec:
 		> $(BUILD_ROOT)/zimbra-snmp.spec
 	rm -f zimbra-snmp.pre
 	echo "%attr(755, zimbra, zimbra) /opt/zimbra/data/snmp" >> \
+		$(BUILD_ROOT)/zimbra-snmp.spec
+	echo "%attr(755, zimbra, zimbra) /opt/zimbra/conf" >> \
+		$(BUILD_ROOT)/zimbra-snmp.spec
+        echo "%attr(644, zimbra, zimbra) /opt/zimbra/conf/*" >> \
+                $(BUILD_ROOT)/zimbra-core.spec
+	echo "%attr(755, root, root) /opt/zimbra/common/conf" >> \
+		$(BUILD_ROOT)/zimbra-snmp.spec
+	echo "%attr(644, root, root) /opt/zimbra/common/conf/snmp.conf" >> \
+		$(BUILD_ROOT)/zimbra-snmp.spec
+	echo "%attr(755, root, root) /opt/zimbra/common/share/snmp" >> \
+		$(BUILD_ROOT)/zimbra-snmp.spec
+	echo "%attr(644, root, root) /opt/zimbra/common/share/snmp/snmp.conf >> \
+		$(BUILD_ROOT)/zimbra-snmp.spec
+	echo "%attr(755, root, root) /opt/zimbra/common/share/snmp/mibs" >> \
+		$(BUILD_ROOT)/zimbra-snmp.spec
+	echo "%attr(644, root, root) /opt/zimbra/common/share/snmp/mibs/zimbra.mib" >> \
+		$(BUILD_ROOT)/zimbra-snmp.spec
+	echo "%attr(644, root, root) /opt/zimbra/common/share/snmp/mibs/zimbra_traps.mib" >> \
 		$(BUILD_ROOT)/zimbra-snmp.spec
 	echo "" >> $(BUILD_ROOT)/zimbra-snmp.spec
 	echo "%clean" >> $(BUILD_ROOT)/zimbra-snmp.spec
