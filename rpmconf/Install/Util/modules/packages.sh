@@ -44,6 +44,12 @@ installPackage() {
                   pkgError
                 fi
 	fi
+	if [ x$PKG = "xzimbra-memcached" ]; then
+		$REPOINST zimbra-memcached >>$LOGFILE 2>&1
+                if [ $? != 0 ]; then
+                  pkgError
+                fi
+	fi
 	if [ x$PKG = "xzimbra-proxy" ]; then
 		$REPOINST zimbra-proxy-components >>$LOGFILE 2>&1
                 if [ $? != 0 ]; then
@@ -62,8 +68,11 @@ installPackage() {
                   pkgError
                 fi
 	fi
-	$PACKAGEINST $file >> $LOGFILE 2>&1
-	INSTRESULT=$?
+	INSTRESULT=0
+	if [ x$PKG != "xzimbra-memcached" ]; then
+		$PACKAGEINST $file >> $LOGFILE 2>&1
+		INSTRESULT=$?
+	fi
 	if [ $UPGRADE = "yes" ]; then
 		ST="UPGRADED"
 	else
@@ -193,8 +202,6 @@ checkPackages() {
 		if [ x"$LOCALPROC" == "xamd64" ]; then
 			LOCALPROC="x86_64"
 		fi
-	elif [  $PLATFORM = "MANDRIVA2006" ]; then
-		LOCALPROC=$PROC
 	else
 		LOCALPROC=`uname -i`
 	fi
@@ -206,28 +213,26 @@ checkPackages() {
 		exit 1
 	fi
 
-	AVAILABLE_PACKAGES=""
+	AVAILABLE_PACKAGES="zimbra-memcached"
 
 	for i in $PACKAGES $OPTIONAL_PACKAGES; do
 		findLatestPackage $i
 		if [ -f "$file" ]; then
-
-      if [ x"$PACKAGEVERIFY" != "x" ]; then
-        `$PACKAGEVERIFY $file > /dev/null 2>&1`
-        if [ $? = 0 ]; then
-          echo "Found $i"
-			    AVAILABLE_PACKAGES="$AVAILABLE_PACKAGES $i"
-        else 
-          echo "Found $i but package is not installable. (possibly corrupt)"
-          echo "Unable to continue. Please correct package corruption and rerun the installation."
-          exit 1
-        fi
-      else 
-			  echo "Found $i"
-			  AVAILABLE_PACKAGES="$AVAILABLE_PACKAGES $i"
-      fi
-    fi
+			if [ x"$PACKAGEVERIFY" != "x" ]; then
+				`$PACKAGEVERIFY $file > /dev/null 2>&1`
+				if [ $? = 0 ]; then
+					echo "Found $i"
+					AVAILABLE_PACKAGES="$AVAILABLE_PACKAGES $i"
+				else 
+					echo "Found $i but package is not installable. (possibly corrupt)"
+					echo "Unable to continue. Please correct package corruption and rerun the installation."
+					exit 1
+				fi
+			else 
+				echo "Found $i"
+				AVAILABLE_PACKAGES="$AVAILABLE_PACKAGES $i"
+			fi
+		fi
 	done
-
 	echo ""
 }
