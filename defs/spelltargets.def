@@ -15,6 +15,7 @@ spell_pkg_spec_deb: $(SPELL_DEST_ROOT)/DEBIAN/control
 $(SPELL_DEST_ROOT)/DEBIAN: force
 	mkdir -p $@
 	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-spell.pre $@/preinst
+	cat $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-spell.post >> $@/postinst
 	chmod 555 $@/*
 
 $(SPELL_DEST_ROOT)/DEBIAN/control: $(SPELL_DEST_ROOT)/DEBIAN $(SPELL_DEST_ROOT)/DEBIAN/md5sums force
