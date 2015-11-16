@@ -1,6 +1,6 @@
 # Makefile for entire install tree, for RPM packages.
 
-.PHONY: core proxy memcached mta store ldap snmp
+.PHONY: core proxy mta store ldap snmp
 
 # BASE VARIABLES
 SHELL	:= /bin/bash
@@ -39,8 +39,6 @@ include $(DEFS_DIR)/releasetargets.def
 
 include $(DEFS_DIR)/coretargets.def
 
-include $(DEFS_DIR)/memcachedtargets.def
-
 include $(DEFS_DIR)/proxytargets.def
 
 include $(DEFS_DIR)/ldaptargets.def
@@ -72,8 +70,3 @@ include $(DEFS_DIR)/devtargets.def
 include $(DEFS_DIR)/clean.def
 
 include $(DEFS_DIR)/devclean.def
-
-ifeq (MACOSXx86,$(findstring MACOSXx86,$(BUILD_PLATFORM)))
-include $(DEFS_DIR)/isync.def
-include $(DEFS_DIR)/app-mactoaster.def
-endif
