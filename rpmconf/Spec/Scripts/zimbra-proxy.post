@@ -24,6 +24,6 @@ if [ $? = 0 ]; then
   mv -f $sudotmp /etc/sudoers
   chmod $SUDOMODE /etc/sudoers
 fi
-chmod 440 /etc/sudoers.d/zimbra-proxy
-chown root:root /etc/sudoers.d/zimbra-proxy
+chmod 440 /etc/sudoers.d/02_zimbra-proxy
+chown root:root /etc/sudoers.d/02_zimbra-proxy
 chown -R zimbra:zimbra /opt/zimbra/conf/nginx

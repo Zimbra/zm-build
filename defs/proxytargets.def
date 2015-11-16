@@ -41,7 +41,7 @@ $(BUILD_ROOT)/zimbra-proxy.spec:
 		-e '/^%post$$/ r zimbra-proxy.post' > $(BUILD_ROOT)/zimbra-proxy.spec
 	rm -f zimbra-proxy.pre
 	rm -f zimbra-proxy.post
-	echo "%attr(440, root, root) /etc/sudoers.d/zimbra-proxy" >> \
+	echo "%attr(440, root, root) /etc/sudoers.d/02_zimbra-proxy" >> \
 		$(BUILD_ROOT)/zimbra-proxy.spec
 	echo "%attr(755, zimbra, zimbra) /opt/zimbra/conf/nginx" >> \
 		$(BUILD_ROOT)/zimbra-proxy.spec
@@ -63,7 +63,7 @@ $(PROXY_DEST_DIR):
 
 $(PROXY_DEST_ROOT)/etc/sudoers.d:
 	mkdir -p $@
-	cp $(PACKAGE_CONF_DIR)/Env/sudoers.d/zimbra-proxy $(PROXY_DEST_ROOT)/etc/sudoers.d/zimbra-proxy
+	cp $(PACKAGE_CONF_DIR)/Env/sudoers.d/02_zimbra-proxy $(PROXY_DEST_ROOT)/etc/sudoers.d/02_zimbra-proxy
 
 $(PROXY_DEST_DIR)/conf:
 	mkdir -p $@
