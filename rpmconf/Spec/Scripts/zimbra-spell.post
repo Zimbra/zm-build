@@ -16,4 +16,4 @@
 # ***** END LICENSE BLOCK *****
 # 
 
-chmod root:root /opt/zimbra/data/httpd/htdocs/aspell.php
+chown root:root /opt/zimbra/data/httpd/htdocs/aspell.php
