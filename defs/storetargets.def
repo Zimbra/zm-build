@@ -554,6 +554,5 @@ $(STORE_DEST_DIR)/solr:
 	cp -r $(SERVICE_DIR)/$(ANT_BUILD_DIR)/dist/lib/jars/log4j*.jar $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/webapps/solr/WEB-INF/lib
 
 $(STORE_DEST_DIR)/redologservice:
-	mkdir -p $@
 	mkdir -p $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/webapps/zimbraredologservice
 	(cd $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/webapps/zimbraredologservice; jar xf $(FOSS_DIR)/ZimbraRedologService/target/zimbraredologservice-$(MAVEN_VERSION_STRING).war)
