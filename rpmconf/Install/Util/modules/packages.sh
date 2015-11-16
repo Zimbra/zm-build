@@ -226,7 +226,7 @@ checkPackages() {
 		exit 1
 	fi
 
-	AVAILABLE_PACKAGES="zimbra-memcached"
+	AVAILABLE_PACKAGES=""
 
 	for i in $PACKAGES $OPTIONAL_PACKAGES; do
 		findLatestPackage $i
@@ -234,16 +234,28 @@ checkPackages() {
 			if [ x"$PACKAGEVERIFY" != "x" ]; then
 				`$PACKAGEVERIFY $file > /dev/null 2>&1`
 				if [ $? = 0 ]; then
+					if [ x"$i" = "xzimbra-proxy" ]; then
+						AVAILABLE_PACKAGES="$AVAILABLE_PACKAGES zimbra-memcached"
+						AVAILABLE_PACKAGES="$AVAILABLE_PACKAGES $i"
+						echo "Found zimbra-memcached"
+					else
+						AVAILABLE_PACKAGES="$AVAILABLE_PACKAGES $i"
+					fi
 					echo "Found $i"
-					AVAILABLE_PACKAGES="$AVAILABLE_PACKAGES $i"
 				else 
 					echo "Found $i but package is not installable. (possibly corrupt)"
 					echo "Unable to continue. Please correct package corruption and rerun the installation."
 					exit 1
 				fi
 			else 
-				echo "Found $i"
-				AVAILABLE_PACKAGES="$AVAILABLE_PACKAGES $i"
+				if [ x"$i" = "xzimbra-proxy" ]; then
+					AVAILABLE_PACKAGES="$AVAILABLE_PACKAGES zimbra-memcached"
+					AVAILABLE_PACKAGES="$AVAILABLE_PACKAGES $i"
+					echo "Found zimbra-memcached"
+				else
+					AVAILABLE_PACKAGES="$AVAILABLE_PACKAGES $i"
+				fi
+                                echo "Found $i"
 			fi
 		fi
 	done
