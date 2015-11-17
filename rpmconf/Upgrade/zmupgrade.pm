@@ -76,13 +76,13 @@ my %updateScripts = (
   '91' => "migrate20121009-VolumeBlobs.pl",            # 8.0.1
   '92' => "migrate20130226_alwayson.pl",               # 8.5.0
   # 93-99 skipped for possible IRONMAIDEN use
-  '100' => "migrate20140319-MailItemPrevFolders.pl", # 8.5.0
-  '101' => "migrate20140328-EnforceTableCharset.pl", #8.5.0
-  '102' => "migrate20140624-DropMysqlIndexes.pl",  #8.5.0
-  '103' => "migrate20150401-ZmgDevices.pl",
+  '100' => "migrate20140319-MailItemPrevFolders.pl",   # 8.5.0
+  '101' => "migrate20140328-EnforceTableCharset.pl",   #8.5.0
+  '102' => "migrate20140624-DropMysqlIndexes.pl",      #8.5.0
+  '103' => "migrate20150401-ZmgDevices.pl",            #8.7.0
   '104' => "migrate20150515-DataSourcePurgeTables.pl", #8.7.0
-  '105' => "migrate20150623-ZmgDevices.pl", #8.7.0
-  '106' => "migrate20150702-ZmgDevices.pl", #8.7.0
+  '105' => "migrate20150623-ZmgDevices.pl",            #8.7.0
+  '106' => "migrate20150702-ZmgDevices.pl",            #8.7.0
   '107' => "migrate20141218-mailItemTimestampsToMilliseconds.pl",
   #104-119 skipped for JUDASPRIEST use
   '120' => "migrate20150428-DropCurrentSessions.pl",
@@ -218,7 +218,7 @@ sub upgrade {
   ($targetMicroMicro, $targetType) = $targetMicro =~ /(\d+)_(.*)/;
 
   if ($startMajor < 7) {
-    main::progress("ERROR: Upgrading from a ZCS version less than 6.0.0_GA is not supported\n");
+    main::progress("ERROR: Upgrading from a ZCS version less than 7.0.0_GA is not supported\n");
     return 1;
   }
 
@@ -1846,10 +1846,6 @@ sub upgrade850BETA1 {
     if (defined($lc_attr) && $lc_attr != 3) {
       main::setLdapServerConfig($hn, 'zimbraCBPolicydLogLevel', "TRUE");
     }
-    $lc_attr= $localxml->{key}->{zimbra_active_waitset_timeout_minutes}->{value};
-    if (defined($lc_attr) && $lc_attr != 20) {
-     main::setLdapServerConfig($hn, 'zimbraMailboxActiveWaitsetTimeOut', "$lc_attr"."m");
-    }
   }
   main::deleteLocalConfig("amavis_max_servers");
   main::deleteLocalConfig("clamav_max_threads");
@@ -2151,12 +2147,6 @@ sub upgrade860GA {
 sub upgrade870BETA1 {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
   main::progress("Updating from 8.7.0_BETA1\n");
-  if (main::isInstalled("zimbra-proxy")) {
-    my $proxysslciphers=main::getLdapConfigValue("zimbraReverseProxySSLCiphers");
-    if ($proxysslciphers eq "ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-DSS-AES128-GCM-SHA256:kEDH+AESGCM:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA:ECDHE-ECDSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-DSS-AES128-SHA256:DHE-RSA-AES256-SHA256:DHE-DSS-AES256-SHA:DHE-RSA-AES256-SHA:AES128-GCM-SHA256:AES256-GCM-SHA384:ECDHE-RSA-RC4-SHA:ECDHE-ECDSA-RC4-SHA:AES128:AES256:RC4-SHA:HIGH:!aNULL:!eNULL:!EXPORT:!DES:!3DES:!MD5:!PSK") {
-      main::runAsZimbra("$ZMPROV mcf zimbraReverseProxySSLCiphers 'ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-DSS-AES128-GCM-SHA256:kEDH+AESGCM:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA:ECDHE-ECDSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-DSS-AES128-SHA256:DHE-RSA-AES256-SHA256:DHE-DSS-AES256-SHA:DHE-RSA-AES256-SHA:AES128-GCM-SHA256:AES256-GCM-SHA384:AES128:AES256:HIGH:!aNULL:!eNULL:!EXPORT:!DES:!MD5:!PSK:!RC4'");
-    }
-  }
   if(main::isInstalled("zimbra-ldap")) {
     if ($isLdapMaster) {
       # Bug 99616 - Update olcSpSessionLog
@@ -2190,6 +2180,12 @@ sub upgrade870BETA1 {
       }
     }
   }
+  if (main::isInstalled("zimbra-proxy")) {
+    my $proxysslciphers=main::getLdapConfigValue("zimbraReverseProxySSLCiphers");
+    if ($proxysslciphers eq "ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-DSS-AES128-GCM-SHA256:kEDH+AESGCM:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA:ECDHE-ECDSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-DSS-AES128-SHA256:DHE-RSA-AES256-SHA256:DHE-DSS-AES256-SHA:DHE-RSA-AES256-SHA:AES128-GCM-SHA256:AES256-GCM-SHA384:ECDHE-RSA-RC4-SHA:ECDHE-ECDSA-RC4-SHA:AES128:AES256:RC4-SHA:HIGH:!aNULL:!eNULL:!EXPORT:!DES:!3DES:!MD5:!PSK") {
+      main::runAsZimbra("$ZMPROV mcf zimbraReverseProxySSLCiphers 'ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-DSS-AES128-GCM-SHA256:kEDH+AESGCM:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA:ECDHE-ECDSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-DSS-AES128-SHA256:DHE-RSA-AES256-SHA256:DHE-DSS-AES256-SHA:DHE-RSA-AES256-SHA:AES128-GCM-SHA256:AES256-GCM-SHA384:AES128:AES256:HIGH:!aNULL:!eNULL:!EXPORT:!DES:!MD5:!PSK:!RC4'");
+    }
+  }
   if (main::isInstalled("zimbra-store")) {
     my $mailboxd_java_options=main::getLocalConfigRaw("mailboxd_java_options");
     my $new_mailboxd_options = $mailboxd_java_options;
@@ -2215,13 +2211,43 @@ sub upgrade870BETA1 {
     main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-error-log --section=mysqld_safe --key=log-error --set --value=/opt/zimbra/log/mysqld.log ${mysql_mycnf}");
     unlink("/opt/zimbra/db/mysql.pid") if (-e "/opt/zimbra/db/mysql.pid");
     unlink("/opt/zimbra/db/mysql.sock") if (-e "/opt/zimbra/db/mysql.sock");
-
   }
   my $localxml = XMLin("/opt/zimbra/conf/localconfig.xml");
   my $lc_attr= $localxml->{key}->{zimbra_class_database}->{value};
   if (defined($lc_attr) && $lc_attr eq "com.zimbra.cs.db.MySQL") {
     main::setLocalConfig("zimbra_class_database", "com.zimbra.cs.db.MariaDB");
   }
+
+  $lc_attr= $localxml->{key}->{short_term_all_effective_rights_cache_expiration}->{value};
+  if (defined($lc_attr) && $lc_attr+0 != 50000) {
+    main::setLdapServerConfig($hn, 'zimbraShortTermAllEffectiveRightsCacheExpiration', "$lc_attr"."ms");
+  }
+
+  $lc_attr= $localxml->{key}->{short_term_all_effective_rights_cache_size}->{value};
+  if (defined($lc_attr) && $lc_attr+0 != 128) {
+    main::setLdapServerConfig($hn, 'zimbraShortTermAllEffectiveRightsCacheSize', "$lc_attr");
+  }
+
+  $lc_attr= $localxml->{key}->{short_term_grantee_cache_expiration}->{value};
+  if (defined($lc_attr) && $lc_attr+0 != 50000) {
+    main::setLdapServerConfig($hn, 'zimbraShortTermGranteeCacheExpiration', "$lc_attr"."ms");
+  }
+
+  $lc_attr= $localxml->{key}->{short_term_grantee_cache_size}->{value};
+  if (defined($lc_attr) && $lc_attr+0 != 128) {
+    main::setLdapServerConfig($hn, 'zimbraShortTermGranteeCacheSize', "$lc_attr");
+  }
+
+  $lc_attr= $localxml->{key}->{zimbra_mailbox_throttle_reap_interval}->{value};
+  if (defined($lc_attr) && $lc_attr+0 != 60000) {
+    main::setLdapServerConfig($hn, 'zimbraMailboxThrottleReapInterval', "$lc_attr"."ms");
+  }
+
+  main::deleteLocalConfig("short_term_all_effective_rights_cache_expiration");
+  main::deleteLocalConfig("short_term_all_effective_rights_cache_size");
+  main::deleteLocalConfig("short_term_grantee_cache_expiration");
+  main::deleteLocalConfig("short_term_grantee_cache_size");
+  main::deleteLocalConfig("zimbra_mailbox_throttle_reap_interval");
 
   return 0;
 }
