@@ -188,6 +188,9 @@ echo "%zimbra ALL=NOPASSWD:/opt/zimbra/libexec/zmstat-fd *" >> /tmp/sudoers
 mv -f /tmp/sudoers /etc/sudoers
 chmod $SUDOMODE /etc/sudoers
 
+chmod 440 /etc/sudoers.d/01_zimbra
+chown root:root /etc/sudoers.d/01_zimbra
+
 if [ -x "/opt/zimbra/libexec/zmfixperms" ]; then
   /opt/zimbra/libexec/zmfixperms
 fi
@@ -198,3 +201,4 @@ if [ "x$BIT" = "x64" ]; then
 fi
 
 /opt/zimbra/java/bin/java -client -Xshare:dump
+
