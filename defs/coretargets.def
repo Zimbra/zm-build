@@ -48,6 +48,8 @@ $(BUILD_ROOT)/zimbra-core.spec:
 	(cd $(CORE_DEST_ROOT); find opt -maxdepth 2 -type f -o -type l \
 		| sed -e 's|^|%attr(-, zimbra, zimbra) /|' >> \
 		$(BUILD_ROOT)/zimbra-core.spec )
+	echo "%attr(440, root, root) /etc/sudoers.d/01_zimbra" >> \
+		$(BUILD_ROOT)/zimbra-core.spec
 	echo "%attr(755, root, root) /opt/zimbra/bin" >> \
 		$(BUILD_ROOT)/zimbra-core.spec
 	echo "%attr(755, zimbra, zimbra) /opt/zimbra/docs" >> \
@@ -123,7 +125,11 @@ $(BUILD_ROOT)/zimbra-core.spec:
 
 core_stage: $(CORE_COMPONENTS)
 
-$(CORE_DEST_DIR):
+$(CORE_DEST_ROOT)/etc/sudoers.d:
+	mkdir -p $@
+	cp $(PACKAGE_CONF_DIR)/Env/sudoers.d/01_zimbra $(CORE_DEST_ROOT)/etc/sudoers.d/01_zimbra
+
+$(CORE_DEST_DIR): $(CORE_DEST_ROOT)/etc/sudoers.d
 	mkdir -p $@
 	mkdir -p $@/bin
 	mkdir -p $@/conf
