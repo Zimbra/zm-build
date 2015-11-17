@@ -1,1 +1,1 @@
-echo "%zimbra ALL=NOPASSWD:/opt/zimbra/libexec/zmmailboxdmgr"
+%zimbra ALL=NOPASSWD:/opt/zimbra/libexec/zmmailboxdmgr
