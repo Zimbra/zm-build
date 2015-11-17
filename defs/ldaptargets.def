@@ -64,7 +64,7 @@ $(LDAP_DEST_DIR)/$(LDAP_DIR)-$(LDAP_VERSION): $(LDAP_DEST_DIR)
 	(cd $(LDAP_DEST_DIR); tar xzf $(LDAP_SOURCE).tgz;)
 	cp $(SERVICE_DIR)/build/ldap-config/amavisd.schema \
 		$(LDAP_DEST_DIR)/$(LDAP_DIR)-$(LDAP_VERSION)/etc/openldap/schema
-	cp -f $(AMAVISD_SOURCE)/LDAP.ldif \
+	cp $(SERVICE_DIR)/build/ldap-config/config/amavisd.ldif \
 		$(LDAP_DEST_DIR)/$(LDAP_DIR)-$(LDAP_VERSION)/etc/openldap/schema/amavisd.ldif
 	cp -f $(SERVICE_DIR)/conf/ldap/opendkim.ldif \
 		$(LDAP_DEST_DIR)/$(LDAP_DIR)-$(LDAP_VERSION)/etc/openldap/schema/opendkim.ldif
