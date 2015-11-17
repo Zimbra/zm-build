@@ -2403,6 +2403,7 @@ sub upgrade870BETA1 {
     main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-mysql_socket --section=mysqld --key=socket --set --value='/opt/zimbra/data/tmp/mysql/mysql.sock' ${mysql_mycnf}");
     main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-mysql_pidfile --section=mysqld --key=pid-file --set --value='/opt/zimbra/log/mysql.pid' ${mysql_mycnf}");
     main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-mysql_pidfile --section=mysqld_safe --key=pid-file --set --value='/opt/zimbra/log/mysql.pid' ${mysql_mycnf}");
+    main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-mysql_basedir --section=mysqld --key=basedir --set --value='/opt/zimbra/common' ${mysql_mycnf}");
     main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-error-log --section=mysqld_safe --key=err-log --unset ${mysql_mycnf}");
     main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-error-log --section=mysqld_safe --key=log-error --set --value=/opt/zimbra/log/mysqld.log ${mysql_mycnf}");
     unlink("/opt/zimbra/db/mysql.pid") if (-e "/opt/zimbra/db/mysql.pid");
