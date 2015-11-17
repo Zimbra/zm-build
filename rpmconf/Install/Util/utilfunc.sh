@@ -417,6 +417,9 @@ checkVersionDowngrade() {
     return
   fi
 
+  if [ ${ZM_CUR_MAJOR} -lt 7 ]; then
+  fi
+
   ZM_CUR_VERSION="${ZM_CUR_MAJOR}.${ZM_CUR_MINOR}.${ZM_CUR_MICRO}"
   ZM_INST_VERSION="${ZM_INST_MAJOR}.${ZM_INST_MINOR}.${ZM_INST_MICRO}"
 
@@ -1591,18 +1594,6 @@ saveExistingConfig() {
     rm -f /opt/zimbra/.enable_replica
   fi 
 
-  if [ -f /opt/zimbra/conf/slapd.conf ]; then
-    egrep -q '^overlay syncprov' /opt/zimbra/conf/slapd.conf > /dev/null
-    if [ $? = 0 ]; then
-      touch /opt/zimbra/.enable_replica
-    else
-      egrep -q 'type=refreshAndPersist' /opt/zimbra/conf/slapd.conf > /dev/null
-      if [ $? = 0 ]; then
-        touch /opt/zimbra/.enable_replica
-      fi
-    fi
-  fi
-
   if [ -f /opt/zimbra/data/ldap/config/cn\=config.ldif ]; then
     if [ -f /opt/zimbra/data/ldap/config/cn\=config/olcDatabase\=\{2\}mdb/olcOverlay\=*syncprov.ldif ]; then
       touch /opt/zimbra/.enable_replica
@@ -1621,12 +1612,8 @@ removeExistingInstall() {
 
     isInstalled "zimbra-ldap"
     if [ x$PKGINSTALLED != "x" ]; then
-      if [ x"$LD_LIBRARY_PATH" != "x" ]; then
-        OLD_LDR_PATH=$LD_LIBRARY_PATH
-        LD_LIBRARY_PATH=/opt/zimbra/bdb/lib:/opt/zimbra/openssl/lib:/opt/zimbra/cyrus-sasl/lib:/opt/zimbra/libtool/lib:/opt/zimbra/openldap/lib:$LD_LIBRARY_PATH
-      fi
-      if [ -f "/opt/zimbra/openldap/sbin/slapcat" -a x"$UNINSTALL" != "xyes" -a x"$REMOVE" != "xyes" ]; then
-        if [ -f "/opt/zimbra/conf/slapd.conf" -o -d "/opt/zimbra/data/ldap/config" ]; then
+      if [ -f "/opt/zimbra/common/sbin/slapcat" -a x"$UNINSTALL" != "xyes" -a x"$REMOVE" != "xyes" ]; then
+        if [ -d "/opt/zimbra/data/ldap/config" ]; then
           echo ""
           echo -n "Backing up the ldap database..."
           tmpfile=`mktemp -t slapcat.XXXXXX 2> /dev/null` || { echo "Failed to create tmpfile"; exit 1; }
@@ -1690,12 +1677,15 @@ removeExistingInstall() {
       if [ x$PKGINSTALLED != "x" ]; then
         echo -n "   $p..."
 	if [ x$p = "xzimbra-memcached" ]; then
-		$REPORM zimbra-memcached-base >>$LOGFILE 2>&1
+          $REPORM zimbra-memcached-base >>$LOGFILE 2>&1
 	else
-		$PACKAGERM $p > /dev/null 2>&1
+          $PACKAGERM $p > /dev/null 2>&1
 	fi
         if [ x$p = "xzimbra-dnscache" ]; then
           $REPORM zimbra-dnscache-base >>$LOGFILE 2>&1
+        fi
+        if [ x$p = "xzimbra-ldap" ]; then
+          $REPORM zimbra-ldap-base >>$LOGFILE 2>&1
         fi
         if [ x$p = "xzimbra-proxy" ]; then
           $REPORM zimbra-proxy-base >>$LOGFILE 2>&1
@@ -1728,7 +1718,6 @@ removeExistingInstall() {
       fi
     done
 
-    rm -f /etc/ld.so.conf.d/zimbra.ld.conf
     if egrep -q '^%zimbra[[:space:]]' /etc/sudoers 2>/dev/null; then
       local sudotmp=`mktemp -t zsudoers.XXXXX 2> /dev/null` || { echo "Failed to create tmpfile"; exit 1; }
       SUDOMODE=`perl -e 'my $mode=(stat("/etc/sudoers"))[2];printf("%04o\n",$mode & 07777);'`

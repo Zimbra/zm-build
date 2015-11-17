@@ -19,29 +19,19 @@
 
 shopt -s nullglob 
 
-#Symlinks
-rm -f /opt/zimbra/openldap-clibs
-rm -f /opt/zimbra/libtool
-ln -s /opt/zimbra/libtool-2.2.6b /opt/zimbra/libtool
-
 mkdir -p /opt/zimbra/data/ldap/state/run
 mkdir -p /opt/zimbra/data/ldap/config
 mkdir -p /opt/zimbra/data/ldap/mdb/db
 chown -R zimbra:zimbra /opt/zimbra/data/ldap
 
-SUDOMODE=`perl -e 'my $mode=(stat("/etc/sudoers"))[2];printf("%04o\n",$mode & 07777);'`
-egrep -v '^%zimbra.*slapd' /etc/sudoers > /tmp/sudoers
-echo "%zimbra ALL=NOPASSWD:/opt/zimbra/libexec/zmslapd" >> /tmp/sudoers
-mv -f /tmp/sudoers /etc/sudoers
-chmod $SUDOMODE /etc/sudoers
-
-if [ -d "/opt/zimbra/openldap/sbin/slapd" ]; then
-  chown root:root /opt/zimbra/openldap/sbin/slapd
-  chmod 755 /opt/zimbra/openldap/sbin/slapd
+egrep -q '^%zimbra.*zmslapd' /etc/sudoers
+if [ $? = 0 ]; then
+	local sudotmp=`mktemp -t zsudoers.XXXXX 2> /dev/null` || { echo "Failed to create tmpfile"; exit 1; }
+	SUDOMODE=`perl -e 'my $mode=(stat("/etc/sudoers"))[2];printf("%04o\n",$mode & 07777);'`
+	egrep -v '^%zimbra.*slapd' /etc/sudoers > $sudotmp
+	mv -f $sudotmp /etc/sudoers
+	chmod $SUDOMODE /etc/sudoers
 fi
-
-if [ -x "/opt/zimbra/libexec/zmfixperms" ]; then
-  /opt/zimbra/libexec/zmfixperms
-fi
-
-ldconfig
+chmod 440 /etc/sudoers.d/02_zimbra-ldap
+chown root:root /etc/sudoers.d/02_zimbra-ldap
+chown -R root:root /opt/zimbra/common/etc/openldap

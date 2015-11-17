@@ -98,9 +98,7 @@ ZIMLET_COMPONENTS := \
 	$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/webapps/service/WEB-INF/zimbra.tld
 
 LDAP_COMPONENTS := \
-	$(LDAP_DEST_DIR)/$(LIBTOOL_DIR)-$(LIBTOOL_VERSION) \
-	$(LDAP_DEST_DIR)/$(LDAP_DIR)-$(LDAP_VERSION) \
-    $(LDAP_DEST_DIR)/lib/conf
+	$(LDAP_DEST_DIR)/common
 
 APACHE_COMPONENTS := \
 	$(APACHE_DEST_DIR)/conf/httpd.conf \

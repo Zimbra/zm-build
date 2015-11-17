@@ -22,7 +22,7 @@ fi
 JAVA_HOME=/opt/zimbra/java
 export JAVA_HOME
 
-PATH=/opt/zimbra/bin:/opt/zimbra/postfix/sbin:/opt/zimbra/openldap/bin:/opt/zimbra/openssl/bin:${JAVA_HOME}/bin:/opt/zimbra/common/bin:/usr/sbin:${PATH}
+PATH=/opt/zimbra/bin:/opt/zimbra/postfix/sbin:/opt/zimbra/openssl/bin:${JAVA_HOME}/bin:/opt/zimbra/common/bin:/usr/sbin:${PATH}
 export PATH
 
 unset LD_LIBRARY_PATH

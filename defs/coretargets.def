@@ -249,7 +249,6 @@ $(CORE_DEST_DIR)/conf: $(WEBAPP_DIR)/service.war
 	cp $(SERVICE_DIR)/conf/zmconfigd.log4j.properties $@/zmconfigd.log4j.properties
 	cp $(SERVICE_DIR)/conf/milter.log4j.properties $@/milter.log4j.properties
 	cp $(SERVICE_DIR)/conf/timezones.ics $@
-	cp $(SERVICE_DIR)/conf/zimbra.ld.conf $@
 	cp $(SERVICE_DIR)/conf/cbpolicyd.conf.in $@
 	mkdir -p $@/zmconfigd
 	cp $(SERVICE_DIR)/conf/zmconfigd/postfix_content_filter.cf $@/zmconfigd/postfix_content_filter.cf
@@ -305,7 +304,6 @@ $(CORE_DEST_DIR)/bin:
 	cp $(ZIMBRA_BIN_DIR)/zmauditswatchctl $@
 	cp $(ZIMBRA_BIN_DIR)/zmcertmgr $@
 	cp $(ZIMBRA_BIN_DIR)/zmtlsctl $@
-	cp $(LDAP_DEST_ROOT)/opt/zimbra/$(LDAP_DIR)-$(LDAP_VERSION)/bin/ldapsearch $@
 	cp $(ZIMBRA_BIN_DIR)/zmantispamctl $@
 	cp $(ZIMBRA_BIN_DIR)/zmantivirusctl $@
 	cp $(ZIMBRA_BIN_DIR)/zmcontrol $@
