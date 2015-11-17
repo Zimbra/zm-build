@@ -43,7 +43,7 @@ $(BUILD_ROOT)/zimbra-store.spec:
 		-e '/^%post$$/ r zimbra-store.post' > $(BUILD_ROOT)/zimbra-store.spec
 	rm -f zimbra-store.pre
 	rm -f zimbra-store.post
-	echo "%attr(440, root, root) /etc/sudoers.d/zimbra-store" >> \
+	echo "%attr(440, root, root) /etc/sudoers.d/02_zimbra-store" >> \
 		$(BUILD_ROOT)/zimbra-store.spec
 	echo "%attr(755, zimbra, zimbra) /opt/zimbra/conf" >> \
 		$(BUILD_ROOT)/zimbra-store.spec
@@ -228,7 +228,7 @@ $(STORE_DEST_DIR)/log:
 
 $(STORE_DEST_ROOT)/etc/sudoers.d:
 	mkdir -p $@
-	cp $(PACKAGE_CONF_DIR)/Env/sudoers.d/zimbra-store $(STORE_DEST_ROOT)/etc/sudoers.d/zimbra-store
+	cp $(PACKAGE_CONF_DIR)/Env/sudoers.d/02_zimbra-store $(STORE_DEST_ROOT)/etc/sudoers.d/02_zimbra-store
 
 $(STORE_DEST_DIR)/conf: $(STORE_DEST_ROOT)/etc/sudoers.d
 	mkdir -p $@
