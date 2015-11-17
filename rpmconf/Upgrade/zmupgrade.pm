@@ -60,9 +60,6 @@ chomp($isLdapMaster);
 my $ZMPROV = "/opt/zimbra/bin/zmprov -r -m -l --";
 
 my %updateScripts = (
-  '64' => "migrate20100926-Dumpster.pl",               # 7.0.0_BETA1
-  #'65' => "migrate20101123-MobileDevices.pl",          # this upgrades to 80 for 8.0.0_BETA1
-  # Consolidating the scripts which updates the db.version to 80..90
   '65' => "migrate20120611_7to8_bundle.pl",             # this upgrades to 90 for 8_0_0_BETA
   # 66-79 skipped for possible HELIX use
   '80' => "migrate20110314-MobileDevices.pl",          # 8.0.0_BETA1
@@ -93,10 +90,6 @@ my %updateScripts = (
 );
 
 my %updateFuncs = (
-  "7.0.0_BETA1" => \&upgrade700BETA1,
-  "7.0.0_BETA2" => \&upgrade700BETA2,
-  "7.0.0_BETA3" => \&upgrade700BETA3,
-  "7.0.0_RC1" => \&upgrade700RC1,
   "7.0.0_GA" => \&upgrade700GA,
   "7.0.1_GA" => \&upgrade701GA,
   "7.1.0_GA" => \&upgrade710GA,
@@ -141,10 +134,6 @@ my %updateFuncs = (
 );
 
 my @versionOrder = (
-  "7.0.0_BETA1",
-  "7.0.0_BETA2",
-  "7.0.0_BETA3",
-  "7.0.0_RC1",
   "7.0.0_GA",
   "7.0.1_GA",
   "7.1.0_GA",
@@ -242,15 +231,7 @@ sub upgrade {
 
   if (stopZimbra()) { return 1; }
 
-  if ($startVersion eq "7.0.0_BETA1") {
-    main::progress("This appears to be 7.0.0_BETA1\n");
-  } elsif ($startVersion eq "7.0.0_BETA2") {
-    main::progress("This appears to be 7.0.0_BETA2\n");
-  } elsif ($startVersion eq "7.0.0_BETA3") {
-    main::progress("This appears to be 7.0.0_BETA3\n");
-  } elsif ($startVersion eq "7.0.0_RC1") {
-    main::progress("This appears to be 7.0.0_RC1\n");
-  } elsif ($startVersion eq "7.0.0_GA") {
+  if ($startVersion eq "7.0.0_GA") {
     main::progress("This appears to be 7.0.0_GA\n");
   } elsif ($startVersion eq "7.0.1_GA") {
     main::progress("This appears to be 7.0.1_GA\n");
@@ -538,180 +519,6 @@ sub upgrade {
         }
   if (main::isInstalled ("zimbra-ldap")) {
     stopLdap();
-  }
-
-  return 0;
-}
-
-sub upgrade700BETA1 {
-  my ($startBuild, $targetVersion, $targetBuild) = (@_);
-  main::progress("Updating from 7.0.0_BETA1\n");
-  if($isLdapMaster) {
-    #runLdapAttributeUpgrade("10287");
-    runLdapAttributeUpgrade("42828");
-    runLdapAttributeUpgrade("43779");
-    runLdapAttributeUpgrade("50258");
-    runLdapAttributeUpgrade("50465");
-  }
-  if (main::isInstalled("zimbra-store")) {
-    # 43140
-    my $mailboxd_java_heap_memory_percent =
-      main::getLocalConfig("mailboxd_java_heap_memory_percent");
-    $mailboxd_java_heap_memory_percent = 30
-      if ($mailboxd_java_heap_memory_percent eq "");
-    my $systemMemorySize = main::getSystemMemory();
-    main::setLocalConfig("mailboxd_java_heap_size",
-      int($systemMemorySize*1024*$mailboxd_java_heap_memory_percent/100));
-    main::deleteLocalConfig("mailboxd_java_heap_memory_percent");
-  }
-  return 0;
-}
-
-sub upgrade700BETA2 {
-  my ($startBuild, $targetVersion, $targetBuild) = (@_);
-  main::progress("Updating from 7.0.0_BETA2\n");
-  if (main::isInstalled("zimbra-ldap")) {
-    if($isLdapMaster) {
-      runLdapAttributeUpgrade("50458");
-    }
-
-    my $ldap_pass = qx($su "zmlocalconfig -s -m nokey ldap_root_password");
-    chomp($ldap_pass);
-    my $ldap;
-    unless($ldap = Net::LDAP->new('ldapi://%2fopt%2fzimbra%2fdata%2fldap%2fstate%2frun%2fldapi/')) {
-       main::progress("Unable to contact to ldapi: $!\n");
-    }
-    my $result = $ldap->bind("cn=config", password => $ldap_pass);
-    my $dn="olcDatabase={2}mdb,cn=config";
-    if ($isLdapMaster) {
-      $result = $ldap->search(
-                        base=> "cn=accesslog",
-                        filter=>"(objectClass=*)",
-                        scope => "base",
-                        attrs => ['1.1'],
-      );
-      my $size = $result->count;
-      if ($size > 0 ) {
-        $dn="olcDatabase={3}mdb,cn=config";
-      }
-    }
-    $result = $ldap->search(
-      base=> "$dn",
-      filter=>"(objectClass=*)",
-      scope => "base",
-      attrs => ['olcAccess'],
-    );
-    my $entry=$result->entry($result->count-1);
-    my @attrvals=$entry->get_value("olcAccess");
-    my $aclNumber=-1;
-    my $attrMod="";
-
-    foreach my $attr (@attrvals) {
-      if ($attr =~ /zimbraDomainName/) {
-        ($aclNumber) = $attr =~ /^\{(\d+)\}*/;
-        if ($attr !~ /uid=zmamavis,cn=appaccts,cn=zimbra/) {
-          $attrMod=$attr;
-          $attrMod =~ s/by \* none/by dn.base="uid=zmamavis,cn=appaccts,cn=zimbra" read  by \* none/;
-        }
-      }
-    }
-
-    if ($aclNumber != -1 && $attrMod ne "") {
-      $result = $ldap->modify(
-          $dn,
-          delete => {olcAccess => "{$aclNumber}"},
-      );
-      $result = $ldap->modify(
-          $dn,
-          add =>{olcAccess=>"$attrMod"},
-      );
-    }
-    $ldap->unbind;
-  }
-  return 0;
-}
-
-sub upgrade700BETA3 {
-  my ($startBuild, $targetVersion, $targetBuild) = (@_);
-  main::progress("Updating from 7.0.0_BETA3\n");
-  if (main::isInstalled("zimbra-ldap")) {
-    runLdapAttributeUpgrade("47934") if ($isLdapMaster);
-  }
-  if (main::isInstalled("zimbra-store")) {
-    my $mailboxd_java_options=main::getLocalConfigRaw("mailboxd_java_options");
-    if ($mailboxd_java_options =~ /-Dsun.net.inetaddr.ttl=$/) {
-      my $new_mailboxd_options;
-      foreach my $option (split(/\s+/, $mailboxd_java_options)) {
-        $new_mailboxd_options.=" $option" if ($option !~ /^-Dsun.net.inetaddr.ttl=/);
-      }
-      $new_mailboxd_options =~ s/^\s+//;
-      main::setLocalConfig("mailboxd_java_options", $new_mailboxd_options)
-        if ($new_mailboxd_options ne "");
-    }
-  }
-  return 0;
-}
-
-sub upgrade700RC1 {
-  my ($startBuild, $targetVersion, $targetBuild) = (@_);
-  main::progress("Updating from 7.0.0_RC1\n");
-
-  if (main::isInstalled("zimbra-ldap")) {
-    my $ldap_pass = qx($su "zmlocalconfig -s -m nokey ldap_root_password");
-    chomp($ldap_pass);
-    my $ldap;
-    unless($ldap = Net::LDAP->new('ldapi://%2fopt%2fzimbra%2fdata%2fldap%2fstate%2frun%2fldapi/')) {
-       main::progress("Unable to contact to ldapi: $!\n");
-    }
-    my $result = $ldap->bind("cn=config", password => $ldap_pass);
-    my $dn="olcDatabase={2}mdb,cn=config";
-    if ($isLdapMaster) {
-      $result = $ldap->search(
-                        base=> "cn=accesslog",
-                        filter=>"(objectClass=*)",
-                        scope => "base",
-                        attrs => ['1.1'],
-      );
-      my $size = $result->count;
-      if ($size > 0 ) {
-        $dn="olcDatabase={3}mdb,cn=config";
-      }
-    }
-    $result = $ldap->search(
-      base=> "$dn",
-      filter=>"(objectClass=*)",
-      scope => "base",
-      attrs => ['olcDbIndex'],
-    );
-    my $entry=$result->entry($result->count-1);
-    my @attrvals=$entry->get_value("olcDbIndex");
-    my $needModify=1;
-
-    foreach my $attr (@attrvals) {
-      if ($attr =~ /zimbraMailHost/) {
-        $needModify=0;
-      }
-    }
-
-    if ($needModify) {
-      $result = $ldap->modify(
-          $dn,
-          add =>{olcDbIndex=>"zimbraMailHost eq"},
-      );
-    }
-    $ldap->unbind;
-    if ($needModify) {
-      &indexLdapAttribute("zimbraMailHost");
-    }
-  }
-  if (main::isInstalled("zimbra-store")) {
-    # Bug #53821
-    my $mailboxd_java_options=main::getLocalConfigRaw("mailboxd_java_options");
-
-    $mailboxd_java_options .= " -XX:-OmitStackTraceInFastThrow"
-      unless ($mailboxd_java_options =~ /OmitStackTraceInFastThrow/);
-    main::detail("Modified mailboxd_java_options=$mailboxd_java_options");
-    main::setLocalConfig("mailboxd_java_options", "$mailboxd_java_options");
   }
 
   return 0;
