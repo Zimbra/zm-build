@@ -194,7 +194,7 @@ $(CORE_DEST_DIR)/$(PFLOG_DIR)-$(PFLOG_VERSION): $(CORE_DEST_DIR)
 	mkdir -p $@/man/man1
 	cp -f $(PFLOG_SOURCE)/pflogsumm.1 $@/man/man1
 
-$(CORE_DEST_DIR)/lib: $(WEBAPP_DIR)/service.war $(LDAP_DEST_DIR)/$(LDAP_DIR)-$(LDAP_VERSION) $(NATIVE_DIR)/$(ANT_BUILD_DIR)/libzimbra-native.$(JNI_EXT)
+$(CORE_DEST_DIR)/lib: $(WEBAPP_DIR)/service.war $(NATIVE_DIR)/$(ANT_BUILD_DIR)/libzimbra-native.$(JNI_EXT)
 	@echo "*** Installing lib"
 	mkdir -p $@
 	cp -pr $(SERVICE_DIR)/$(ANT_BUILD_DIR)/dist/lib/* $@
