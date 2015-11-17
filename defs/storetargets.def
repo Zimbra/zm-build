@@ -43,6 +43,8 @@ $(BUILD_ROOT)/zimbra-store.spec:
 		-e '/^%post$$/ r zimbra-store.post' > $(BUILD_ROOT)/zimbra-store.spec
 	rm -f zimbra-store.pre
 	rm -f zimbra-store.post
+	echo "%attr(440, root, root) /etc/sudoers.d/zimbra-store" >> \
+		$(BUILD_ROOT)/zimbra-store.spec
 	echo "%attr(755, zimbra, zimbra) /opt/zimbra/conf" >> \
 		$(BUILD_ROOT)/zimbra-store.spec
 	echo "%attr(644, zimbra, zimbra) /opt/zimbra/conf/*" >> \
@@ -111,8 +113,6 @@ $(BUILD_ROOT)/zimbra-store.spec:
 		$(BUILD_ROOT)/zimbra-store.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/$(MAILBOXD_DIR)" >> \
 		$(BUILD_ROOT)/zimbra-store.spec
-	echo "%attr(-, zimbra, zimbra) /opt/zimbra/mariadb-$(MARIADB_VERSION_STRING)" >> \
-		$(BUILD_ROOT)/zimbra-store.spec
 	echo "" >> $(BUILD_ROOT)/zimbra-store.spec
 	echo "%clean" >> $(BUILD_ROOT)/zimbra-store.spec
 
@@ -120,16 +120,6 @@ store_stage: $(STORE_COMPONENTS) $(ZIMLET_COMPONENTS)
 
 $(STORE_DEST_DIR):
 	mkdir -p $@
-
-$(STORE_DEST_DIR)/$(MARIADB_DIR):
-	@echo "*** Creating mariadb"
-	(cd $(STORE_DEST_DIR); tar xzf $(MARIADB_SOURCE).tar.gz;)
-	rm -f $(STORE_DEST_DIR)/$(MARIADB_DIR)/bin/mysqltest_embedded
-	rm -f $(STORE_DEST_DIR)/$(MARIADB_DIR)/bin/mysql_client_test_embedded
-	rm -rf $(STORE_DEST_DIR)/$(MARIADB_DIR)/mysql-test
-	rm -rf $(STORE_DEST_DIR)/$(MARIADB_DIR)/sql-bench
-	rm -rf $(STORE_DEST_DIR)/$(MARIADB_DIR)/docs/mysql.info
-	rm -rf $(STORE_DEST_DIR)/$(MARIADB_DIR)/docs/manual.txt
 
 $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/bin: $(STORE_DEST_DIR) force
 	@echo "*** Creating $(MAILBOXD_SERVER)"
@@ -236,7 +226,11 @@ $(STORE_DEST_DIR)/log:
 	mkdir -p $@
 	cp $(PACKAGE_CONF_DIR)/Conf/hotspot_compiler $@/.hotspot_compiler
 
-$(STORE_DEST_DIR)/conf:
+$(STORE_DEST_ROOT)/etc/sudoers.d:
+	mkdir -p $@
+	cp $(PACKAGE_CONF_DIR)/Env/sudoers.d/zimbra-store $(STORE_DEST_ROOT)/etc/sudoers.d/zimbra-store
+
+$(STORE_DEST_DIR)/conf: $(STORE_DEST_ROOT)/etc/sudoers.d
 	mkdir -p $@
 	cp $(SERVICE_DIR)/conf/globs2 $@
 	cp $(SERVICE_DIR)/conf/magic $@

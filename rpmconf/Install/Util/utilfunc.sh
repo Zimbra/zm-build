@@ -1623,7 +1623,7 @@ removeExistingInstall() {
     if [ x$PKGINSTALLED != "x" ]; then
       if [ x"$LD_LIBRARY_PATH" != "x" ]; then
         OLD_LDR_PATH=$LD_LIBRARY_PATH
-        LD_LIBRARY_PATH=/opt/zimbra/bdb/lib:/opt/zimbra/openssl/lib:/opt/zimbra/cyrus-sasl/lib:/opt/zimbra/libtool/lib:/opt/zimbra/openldap/lib:/opt/zimbra/mysql/lib:$LD_LIBRARY_PATH
+        LD_LIBRARY_PATH=/opt/zimbra/bdb/lib:/opt/zimbra/openssl/lib:/opt/zimbra/cyrus-sasl/lib:/opt/zimbra/libtool/lib:/opt/zimbra/openldap/lib:$LD_LIBRARY_PATH
       fi
       if [ -f "/opt/zimbra/openldap/sbin/slapcat" -a x"$UNINSTALL" != "xyes" -a x"$REMOVE" != "xyes" ]; then
         if [ -f "/opt/zimbra/conf/slapd.conf" -o -d "/opt/zimbra/data/ldap/config" ]; then
@@ -1705,6 +1705,9 @@ removeExistingInstall() {
         fi
         if [ x$p = "xzimbra-spell" ]; then
           $REPORM zimbra-spell-base >>$LOGFILE 2>&1
+        fi
+        if [ x$p = "xzimbra-store" ]; then
+          $REPORM zimbra-store-base >>$LOGFILE 2>&1
         fi
         echo "done"
       fi

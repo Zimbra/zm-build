@@ -81,6 +81,12 @@ installPackage() {
                   pkgError
                 fi
 	fi
+	if [ x$PKG = "xzimbra-store" ]; then
+		$REPOINST zimbra-store-components >>$LOGFILE 2>&1
+                if [ $? != 0 ]; then
+                  pkgError
+                fi
+	fi
 	INSTRESULT=0
 	if [ x$PKG != "xzimbra-memcached" ]; then
 		$PACKAGEINST $file >> $LOGFILE 2>&1
