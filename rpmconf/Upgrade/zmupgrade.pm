@@ -2202,9 +2202,10 @@ sub upgrade870BETA1 {
     main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-mysql_socket --section=mysqld --key=socket --set --value='/opt/zimbra/data/tmp/mysql/mysql.sock' ${mysql_mycnf}");
     main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-mysql_pidfile --section=mysqld --key=pid-file --set --value='/opt/zimbra/log/mysql.pid' ${mysql_mycnf}");
     main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-mysql_pidfile --section=mysqld_safe --key=pid-file --set --value='/opt/zimbra/log/mysql.pid' ${mysql_mycnf}");
-   	unlink("/opt/zimbra/db/mysql.pid") if (-e "/opt/zimbra/db/mysql.pid");
-   	unlink("/opt/zimbra/db/mysql.sock") if (-e "/opt/zimbra/db/mysql.sock");
-
+    main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-error-log --section=mysqld_safe --key=err-log --unset ${mysql_mycnf}");
+    main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-error-log --section=mysqld_safe --key=log-error --set --value=/opt/zimbra/log/mysqld.log ${mysql_mycnf}");
+    unlink("/opt/zimbra/db/mysql.pid") if (-e "/opt/zimbra/db/mysql.pid");
+    unlink("/opt/zimbra/db/mysql.sock") if (-e "/opt/zimbra/db/mysql.sock");
   }
   my $localxml = XMLin("/opt/zimbra/conf/localconfig.xml");
   my $lc_attr= $localxml->{key}->{zimbra_class_database}->{value};
@@ -2414,59 +2415,6 @@ sub cleanPostfixLC {
   }
 }
 
-sub updateLoggerMySQLcnf {
-
-  my $mycnf = "/opt/zimbra/conf/my.logger.cnf";
-
-  return unless (-f $mycnf);
-  my $mysql_pidfile = main::getLocalConfig("logger_mysql_pidfile");
-  $mysql_pidfile = "/opt/zimbra/logger/db/mysql.pid" if ($mysql_pidfile eq "");
-  if (-e "$mycnf") {
-    unless (open(MYCNF, "$mycnf")) {
-      Migrate::myquit(1, "${mycnf}: $!\n");
-    }
-    my @CNF = <MYCNF>;
-    close(MYCNF);
-    my $i=0;
-    my $mycnfChanged = 0;
-    my $tmpfile = "/tmp/my.cnf.$$";;
-    my $zimbra_user = qx(${zmlocalconfig} -m nokey zimbra_user 2> /dev/null) || "zimbra";;
-    open(TMP, ">$tmpfile");
-    foreach (@CNF) {
-      if (/^port/ && $CNF[$i+1] !~ m/^user/) {
-        print TMP;
-        print TMP "user         = $zimbra_user\n";
-        $mycnfChanged=1;
-        next;
-      } elsif (/^err-log/ && $CNF[$i+1] !~ m/^pid-file/) {
-        print TMP;
-        print TMP "pid-file = ${mysql_pidfile}\n";
-        $mycnfChanged=1;
-        next;
-      } elsif (/^thread_cache\s/) {
-        # 29475 fix thread_cache_size
-        s/^thread_cache/thread_cache_size/g;
-        print TMP;
-        $mycnfChanged=1;
-        next;
-      } elsif (/^skip-external-locking/) {
-        # 19749 remove skip-external-locking
-        print TMP "external-locking\n";
-        $mycnfChanged=1;
-        next;
-      }
-      print TMP;
-      $i++;
-    }
-    close(TMP);
-  
-    if ($mycnfChanged) {
-      qx(mv $mycnf ${mycnf}.${startVersion});
-      qx(cp -f $tmpfile $mycnf);
-      qx(chmod 644 $mycnf);
-    } 
-  }
-}
 sub updateMySQLcnf {
 
   return if ($mysqlcnfUpdated == 1);
