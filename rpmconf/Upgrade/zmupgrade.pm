@@ -1,21 +1,21 @@
 #!/usr/bin/perl
 # vim: ts=2
-# 
+#
 # ***** BEGIN LICENSE BLOCK *****
 # Zimbra Collaboration Suite Server
 # Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc.
-# 
+#
 # This program is free software: you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free Software Foundation,
 # version 2 of the License.
-# 
+#
 # This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
 # without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 # See the GNU General Public License for more details.
 # You should have received a copy of the GNU General Public License along with this program.
 # If not, see <http://www.gnu.org/licenses/>.
 # ***** END LICENSE BLOCK *****
-# 
+#
 
 package zmupgrade;
 
@@ -73,16 +73,16 @@ my %updateScripts = (
   '88' => "migrate20120229-DropIMTables.pl",           # 8.0.0_BETA2
   '89' => "migrate20120319-Name255Chars.pl",
   '90' => "migrate20120410-BlobLocator.pl",
-  '91' => "migrate20121009-VolumeBlobs.pl",	       # 8.0.1
-  '92' => "migrate20130226_alwayson.pl",	       # 8.5.0
+  '91' => "migrate20121009-VolumeBlobs.pl",            # 8.0.1
+  '92' => "migrate20130226_alwayson.pl",               # 8.5.0
   # 93-99 skipped for possible IRONMAIDEN use
-  '100' => "migrate20140319-MailItemPrevFolders.pl", # 8.5.0
-  '101' => "migrate20140328-EnforceTableCharset.pl", #8.5.0
-  '102' => "migrate20140624-DropMysqlIndexes.pl",  #8.5.0
-  '103' => "migrate20150401-ZmgDevices.pl",  #8.7.0
+  '100' => "migrate20140319-MailItemPrevFolders.pl",   # 8.5.0
+  '101' => "migrate20140328-EnforceTableCharset.pl",   #8.5.0
+  '102' => "migrate20140624-DropMysqlIndexes.pl",      #8.5.0
+  '103' => "migrate20150401-ZmgDevices.pl",            #8.7.0
   '104' => "migrate20150515-DataSourcePurgeTables.pl", #8.7.0
-  '105' => "migrate20150623-ZmgDevices.pl", #8.7.0
-  '106' => "migrate20150702-ZmgDevices.pl" #8.7.0
+  '105' => "migrate20150623-ZmgDevices.pl",            #8.7.0
+  '106' => "migrate20150702-ZmgDevices.pl",            #8.7.0
 );
 
 my %updateFuncs = (
@@ -205,7 +205,7 @@ sub upgrade {
        $isLdapMaster = 0;
   }
   my ($startBuild,$targetBuild);
-  ($startVersion,$startBuild) = $startVersion =~ /(\d\.\d\.\d+_[^_]*)_(\d+)/;  
+  ($startVersion,$startBuild) = $startVersion =~ /(\d\.\d\.\d+_[^_]*)_(\d+)/;
   ($targetVersion,$targetBuild) = $targetVersion =~ m/(\d\.\d\.\d+_[^_]*)_(\d+)/;
   ($startMajor,$startMinor,$startMicro) =
     $startVersion =~ /(\d+)\.(\d+)\.(\d+_[^_]*)/;
@@ -215,7 +215,7 @@ sub upgrade {
 
   if ($startMajor < 7) {
     main::progress("ERROR: Upgrading from a ZCS version less than 7.0.0_GA is not supported\n");
-    return 1; 
+    return 1;
   }
 
   getInstalledPackages();
@@ -457,13 +457,13 @@ sub upgrade {
       my $rc=&reloadLdap("8.0.3_GA");
       if ($rc) { return 1; }
     }
-    if (startLdap()) {return 1;} 
+    if (startLdap()) {return 1;}
   }
 
   if (main::isInstalled("zimbra-store")) {
 
     doMysqlUpgrade() if ($needMysqlUpgrade);
-  
+
     doBackupRestoreVersionUpdate($startVersion);
 
     if ($curSchemaVersion < $hiVersion) {
@@ -534,7 +534,7 @@ sub upgrade701GA {
   main::progress("Updating from 7.0.1_GA\n");
   if (main::isInstalled("zimbra-store")) {
     #56318
-    my $mysql_mycnf = main::getLocalConfig("mysql_mycnf"); 
+    my $mysql_mycnf = main::getLocalConfig("mysql_mycnf");
     if (!fgrep { /^max_allowed_packet/ } ${mysql_mycnf}) {
       main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-allowed-packet --section=mysqld --key=max_allowed_packet --set --value=16777216 ${mysql_mycnf}");
     }
@@ -548,11 +548,11 @@ sub upgrade701GA {
 sub upgrade710GA {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
   main::progress("Updating from 7.1.0_GA\n");
-  my $mysql_data_directory = 
+  my $mysql_data_directory =
     main::getLocalConfig("mysql_data_directory") || "/opt/zimbra/db/data";
-  my $zimbra_tmp_directory = 
+  my $zimbra_tmp_directory =
     main::getLocalConfig("zimbra_tmp_directory") || "/opt/zimbra/data/tmp";
-  my $mysql_mycnf = 
+  my $mysql_mycnf =
     main::getLocalConfig("mysql_mycnf") || "/opt/zimbra/conf/my.cnf";
 
   if (main::isInstalled("zimbra-ldap")) {
@@ -572,7 +572,7 @@ sub upgrade710GA {
     }
     main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-log_file_size --section=mysqld --key=innodb_log_file_size --set --value=524288000 ${mysql_mycnf}");
     main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-dirty-pages --section=mysqld --key=innodb_max_dirty_pages_pct --set --value=30 ${mysql_mycnf}");
-     
+
   }
   return 0;
 }
@@ -789,7 +789,7 @@ sub upgrade720GA {
         if (-d "/opt/zimbra/mailboxd/webapps/service/zimlet/com_zimbra_smime" );
     }
   }
-  
+
   return 0;
 }
 
@@ -1017,7 +1017,7 @@ sub upgrade800BETA3 {
     main::runAsZimbra("perl -I${scriptDir} ${scriptDir}/migrate20120209-octopusEvent.pl");
     stopSql();
   }
-    
+
   return 0;
 }
 
@@ -1195,7 +1195,7 @@ sub upgrade801GA {
       );
       my $entry=$result->entry($result->count-1);
       my @attrvals=$entry->get_value("olcDbEnvFlags");
-  
+
       if (!(@attrvals)) {
         $result = $ldap->modify(
             "olcDatabase={2}mdb,cn=config",
@@ -1301,7 +1301,7 @@ sub upgrade804GA {
   }
   if (main::isInstalled("zimbra-store")) {
     my $zimbraIPMode=main::getLdapServerValue("zimbraIPMode");
-    my $mysql_mycnf = main::getLocalConfig("mysql_mycnf"); 
+    my $mysql_mycnf = main::getLocalConfig("mysql_mycnf");
     if ($zimbraIPMode eq "ipv4") {
         main::setLocalConfig("mysql_bind_address", "127.0.0.1");
         main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-bind --section=mysqld --key=bind-address --unset ${mysql_mycnf}");
@@ -1350,7 +1350,7 @@ sub upgrade806GA {
   if (main::isZCA()) {
     main::progress("ZCA Install detected.  Removing VAMI Components...");
     my $rc = main::runAsRoot("${scriptDir}/migrate20131014-removezca.pl");
-    main::progress(($rc == 0) ? "done.\n" : "failed. exiting.\n"); 
+    main::progress(($rc == 0) ? "done.\n" : "failed. exiting.\n");
   }
   my @zimbraStatThreadNamePrefix=qx($su "$ZMPROV gacf zimbraStatThreadNamePrefix");
   if (! grep ( /qtp/, @zimbraStatThreadNamePrefix)) {
@@ -1405,7 +1405,7 @@ sub upgrade850BETA1 {
     my $new_mailboxd_options="";
     if ($mailboxd_java_options =~ /-XX:\+PrintGCTimeStamps/) {
       foreach my $option (split(/\s+/, $mailboxd_java_options)) {
-        $new_mailboxd_options.=" $option" if ($option !~ /^-XX:\+PrintGCTimeStamps/); 
+        $new_mailboxd_options.=" $option" if ($option !~ /^-XX:\+PrintGCTimeStamps/);
       }
       $new_mailboxd_options .= " -XX:+PrintGCDateStamps"
         unless ($mailboxd_java_options =~ /PrintGCDateStamps/);
@@ -1430,7 +1430,7 @@ sub upgrade850BETA1 {
     }
   }
   if (main::isInstalled("zimbra-mta")) {
-    my $antispam_mysql_mycnf = main::getLocalConfig("antispam_mysql_mycnf"); 
+    my $antispam_mysql_mycnf = main::getLocalConfig("antispam_mysql_mycnf");
     if ( -e ${antispam_mysql_mycnf} ) {
       main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-as-table_cache-fixup --section=mysqld --key=table_cache --unset ${antispam_mysql_mycnf}");
       main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-as-table_open_cache-fixup --section=mysqld --key=table_open_cache --setmin --value=1200 ${antispam_mysql_mycnf}");
@@ -1956,8 +1956,8 @@ sub upgrade850BETA2 {
     }
     if (main::isStoreWebNode()) {
       my @zimbraReverseProxyUpstreamLoginServers=qx($su "$ZMPROV gacf zimbraReverseProxyUpstreamLoginServers");
-      if (! grep(/$hn/, @zimbraReverseProxyUpstreamLoginServers)) {  
-        main::runAsZimbra("$ZMPROV mcf +zimbraReverseProxyUpstreamLoginServers $hn");  
+      if (! grep(/$hn/, @zimbraReverseProxyUpstreamLoginServers)) {
+        main::runAsZimbra("$ZMPROV mcf +zimbraReverseProxyUpstreamLoginServers $hn");
       }
     }
   }
@@ -2191,13 +2191,13 @@ sub upgrade870BETA1 {
       main::progress("Updating mailboxd_java_options to remove deprecated PermSize and MaxPermSize java options.\n");
       main::setLocalConfig("mailboxd_java_options", $new_mailboxd_options);
     }
-  
+
     # Bug 80135 - Improved proxy timeout defaults...
     my $proxy_reconnect_timeout = main::getLdapServerValue("zimbraMailProxyReconnectTimeout");
     if ($proxy_reconnect_timeout eq "60")  {
       main::setLdapServerConfig($hn, 'zimbraMailProxyReconnectTimeout', '10');
     }
-    # Bug 96857 -  MySQL meta files (pid file, socket, ..) should not be placed in db directory 
+    # Bug 96857 -  MySQL meta files (pid file, socket, ..) should not be placed in db directory
     my $mysql_mycnf = main::getLocalConfig("mysql_mycnf");
     main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-mysql_socket --section=mysqld --key=socket --set --value='/opt/zimbra/data/tmp/mysql/mysql.sock' ${mysql_mycnf}");
     main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-mysql_pidfile --section=mysqld --key=pid-file --set --value='/opt/zimbra/log/mysql.pid' ${mysql_mycnf}");
@@ -2211,7 +2211,7 @@ sub upgrade870BETA1 {
   my $localxml = XMLin("/opt/zimbra/conf/localconfig.xml");
   my $lc_attr= $localxml->{key}->{zimbra_class_database}->{value};
   if (defined($lc_attr) && $lc_attr eq "com.zimbra.cs.db.MySQL") {
-	main::setLocalConfig("zimbra_class_database", "com.zimbra.cs.db.MariaDB");
+    main::setLocalConfig("zimbra_class_database", "com.zimbra.cs.db.MariaDB");
   }
 
   $lc_attr= $localxml->{key}->{short_term_all_effective_rights_cache_expiration}->{value};
@@ -2492,12 +2492,12 @@ sub updateMySQLcnf {
       $i++;
     }
     close(TMP);
-  
+
     if ($mycnfChanged) {
       qx(mv $mycnf ${mycnf}.${startVersion});
       qx(cp -f $tmpfile $mycnf);
       qx(chmod 644 $mycnf);
-    } 
+    }
   }
 }
 
@@ -2530,15 +2530,15 @@ sub clearBackupDir($$) {
 }
 
 sub doMysql55Upgrade {
-    my $mysql_mycnf = main::getLocalConfig("mysql_mycnf"); 
-    my $zimbra_log_directory = main::getLocalConfig("zimbra_log_directory") || "/opt/zimbra/log"; 
+    my $mysql_mycnf = main::getLocalConfig("mysql_mycnf");
+    my $zimbra_log_directory = main::getLocalConfig("zimbra_log_directory") || "/opt/zimbra/log";
     main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion} --section=mysqld --unset --key=ignore-builtin-innodb ${mysql_mycnf}");
     main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion} --section=mysqld --unset --key=plugin-load ${mysql_mycnf}");
 }
 
 sub doAntiSpamMysql55Upgrade {
-    my $antispam_mysql_mycnf = main::getLocalConfig("antispam_mysql_mycnf"); 
-    my $zimbra_log_directory = main::getLocalConfig("zimbra_log_directory") || "/opt/zimbra/log"; 
+    my $antispam_mysql_mycnf = main::getLocalConfig("antispam_mysql_mycnf");
+    my $zimbra_log_directory = main::getLocalConfig("zimbra_log_directory") || "/opt/zimbra/log";
     if ( -e ${antispam_mysql_mycnf} ) {
         main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion} --section=mysqld --unset --key=ignore-builtin-innodb ${antispam_mysql_mycnf}");
         main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion} --section=mysqld --unset --key=plugin-load ${antispam_mysql_mycnf}");
@@ -2546,8 +2546,8 @@ sub doAntiSpamMysql55Upgrade {
 }
 
 sub doMysql56Upgrade {
-    my $mysql_mycnf = main::getLocalConfig("mysql_mycnf"); 
-    my $zimbra_log_directory = main::getLocalConfig("zimbra_log_directory") || "/opt/zimbra/log"; 
+    my $mysql_mycnf = main::getLocalConfig("mysql_mycnf");
+    my $zimbra_log_directory = main::getLocalConfig("zimbra_log_directory") || "/opt/zimbra/log";
     main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-table_cache-fixup --section=mysqld --key=table_cache --unset ${mysql_mycnf}");
     main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-table_open_cache-fixup --section=mysqld --key=table_open_cache --setmin --value=1200 ${mysql_mycnf}");
     main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-innodb_data_file_path-fixup --section=mysqld --set --key=innodb_data_file_path --value=ibdata1:10M:autoextend ${mysql_mycnf}");
@@ -2561,7 +2561,7 @@ sub doMysqlUpgrade {
     my $db_pass = main::getLocalConfig("mysql_root_password");
     my $zimbra_tmp = main::getLocalConfig("zimbra_tmp_directory") || "/tmp";
     my $mysql_socket = main::getLocalConfig("mysql_socket");
-    my $mysql_mycnf = main::getLocalConfig("mysql_mycnf"); 
+    my $mysql_mycnf = main::getLocalConfig("mysql_mycnf");
     my $mysqlUpgrade = "/opt/zimbra/common/bin/mysql_upgrade";
     my $cmd = "$mysqlUpgrade --defaults-file=$mysql_mycnf -S $mysql_socket --user=root --password=$db_pass";
     main::progress("Running mysql_upgrade...");
@@ -2589,7 +2589,7 @@ sub doBackupRestoreVersionUpdate($) {
   }
 
   if (-f "/opt/zimbra/lib/ext/backup/zimbrabackup.jar") {
-    $prevBackupVersion = &Migrate::getBackupVersion; 
+    $prevBackupVersion = &Migrate::getBackupVersion;
     $currentBackupVersion = qx($su "zmjava com.zimbra.cs.backup.util.GetVersion");
     chomp($currentBackupVersion);
 
@@ -2607,7 +2607,7 @@ sub doBackupRestoreVersionUpdate($) {
   my ($currentMajorBackupVersion,$currentMinorBackupVersion) = split(/\./, $currentBackupVersion);
   my ($prevMajorBackupVersion,$prevMinorBackupVersion) = split(/\./, $prevBackupVersion);
 
-  # clear both directories only if the major backup version changed.  
+  # clear both directories only if the major backup version changed.
   # backups are backwards compatible between minor versions
   return if ($prevBackupVersion == $currentBackupVersion);
   return if ($prevMajorBackupVersion >= $currentMajorBackupVersion);
@@ -2622,7 +2622,7 @@ sub doBackupRestoreVersionUpdate($) {
 sub migrateTomcatLCKey {
   my ($key,$defVal) = @_;
   $defVal="" unless $defVal;
-  my ($oldKey,$newKey,$oldVal); 
+  my ($oldKey,$newKey,$oldVal);
   $oldKey="tomcat_${key}";
   $newKey="mailboxd_${key}";
   $oldVal = main::getLocalConfig($oldKey);
@@ -2660,8 +2660,8 @@ sub reloadLdap($) {
       my $ldifFile="/opt/zimbra/data/ldap/ldap-accesslog.bak";
       if (-d '/opt/zimbra/data/ldap/config/cn=config/olcDatabase={3}mdb') {
         if (-f $ldifFile && -s $ldifFile) {
-          if (-d "/opt/zimbra/data/ldap/accesslog") { 
-            main::progress("Loading accesslog DB..."); 
+          if (-d "/opt/zimbra/data/ldap/accesslog") {
+            main::progress("Loading accesslog DB...");
             if (-d "/opt/zimbra/data/ldap/accesslog.prev") {
               qx(mv /opt/zimbra/data/ldap/accesslog.prev /opt/zimbra/data/ldap/accesslog.prev.$$);
             }
@@ -2689,7 +2689,7 @@ sub reloadLdap($) {
       }
       $ldifFile="/opt/zimbra/data/ldap/ldap.bak";
       if (-f $ldifFile && -s $ldifFile) {
-        main::progress("Loading database..."); 
+        main::progress("Loading database...");
         if (-d "/opt/zimbra/data/ldap/mdb.prev") {
           qx(mv /opt/zimbra/data/ldap/mdb.prev /opt/zimbra/data/ldap/mdb.prev.$$);
         }
@@ -2702,7 +2702,7 @@ sub reloadLdap($) {
           main::progress("slapadd import failed.\n");
           return 1;
         }
-	chmod 0640, $ldifFile;
+        chmod 0640, $ldifFile;
         main::progress("done.\n");
       } else {
         if (! -f $ldifFile) {
@@ -2714,7 +2714,7 @@ sub reloadLdap($) {
       }
       main::configLog("LdapUpgraded$upgradeVersion");
     }
-    if (startLdap()) {return 1;} 
+    if (startLdap()) {return 1;}
   }
   return 0;
 }
@@ -3004,9 +3004,9 @@ sub upgradeLdap($) {
             qx(mv $outfile $infile);
           }
           main::progress("done.\n");
-  
-          if (-d "/opt/zimbra/data/ldap/accesslog") { 
-            main::progress("Creating new accesslog DB..."); 
+
+          if (-d "/opt/zimbra/data/ldap/accesslog") {
+            main::progress("Creating new accesslog DB...");
             if (-d "/opt/zimbra/data/ldap/accesslog.prev") {
               qx(mv /opt/zimbra/data/ldap/accesslog.prev /opt/zimbra/data/ldap/accesslog.prev.$$);
             }
@@ -3015,8 +3015,8 @@ sub upgradeLdap($) {
             qx(chown -R zimbra:zimbra /opt/zimbra/data/ldap);
             main::progress("done.\n");
           }
-  
-          main::progress("Loading database..."); 
+
+          main::progress("Loading database...");
           if (-d "/opt/zimbra/data/ldap/mdb.prev") {
             qx(mv /opt/zimbra/data/ldap/mdb.prev /opt/zimbra/data/ldap/mdb.prev.$$);
           }
@@ -3029,7 +3029,7 @@ sub upgradeLdap($) {
             main::progress("slapadd import failed.\n");
             return 1;
           }
-  	chmod 0640, $ldifFile;
+          chmod 0640, $ldifFile;
           main::progress("done.\n");
         } else {
           if (! -f $ldifFile) {
@@ -3042,7 +3042,7 @@ sub upgradeLdap($) {
         main::configLog("LdapUpgraded$upgradeVersion");
       }
     }
-    if (startLdap()) {return 1;} 
+    if (startLdap()) {return 1;}
   }
   return 0;
 }
@@ -3109,7 +3109,7 @@ sub migrateLdap($) {
       }
       main::configLog("LdapUpgraded$migrateVersion");
     }
-    if (startLdap()) {return 1;} 
+    if (startLdap()) {return 1;}
   }
   return 0;
 }
@@ -3119,7 +3119,7 @@ sub migrateLdap($) {
 # Returns Net::LDAP::Search ref
 sub DeleteLdapTree {
   my ($handle, $dn) = @_;
-    
+
   # make sure it exists and get all the entries
   my $result = $handle->search( base => $dn, scope => 'one', filter => "(objectclass=*)");
   return $result if ($result->code());
@@ -3147,14 +3147,14 @@ sub migrateAmavisDB($) {
       main::progress("Migrating amavis-new db from version $fromVersion to $toVersion\n");
       qx(rm -rf $toDir/db > /dev/null 2>&1);
       qx(mv $fromDir/db $toDir/db);
-      qx(chown zimbra:zimbra $toDir/db); 
+      qx(chown zimbra:zimbra $toDir/db);
     }
     main::progress("Checking $fromDir/.spamassassin\n");
     if (-d "$fromDir/.spamassassin/" && -d "$toDir" && ! -e "$toDir/.spamassassin/bayes_toks" ) {
       main::progress("Migrating amavis-new .spamassassin from version $fromVersion to $toVersion\n");
       qx(rm -rf $toDir/.spamassassin > /dev/null 2>&1);
       qx(mv $fromDir/.spamassassin $toDir/.spamassassin);
-      qx(chown zimbra:zimbra $toDir/.spamassassin); 
+      qx(chown zimbra:zimbra $toDir/.spamassassin);
     }
   }
 }
@@ -3166,12 +3166,12 @@ sub relocateAmavisDB() {
   if ( -d "$fromDir/db" && -d "$toDir" && ! -e "$toDir/db/cache.db") {
     qx(rm -rf $toDir/db > /dev/null 2>&1);
     qx(mv $fromDir/db $toDir/db);
-    qx(chown zimbra:zimbra $toDir/db); 
-  } 
+    qx(chown zimbra:zimbra $toDir/db);
+  }
   if (-d "$fromDir/.spamassassin/" && -d "$toDir" && ! -e "$toDir/.spamassassain/bayes_toks" ) {
     qx(rm -rf $toDir/.spamassassin > /dev/null 2>&1);
     qx(mv $fromDir/.spamassassin $toDir/.spamassassin);
-    qx(chown zimbra:zimbra $toDir/.spamassassin); 
+    qx(chown zimbra:zimbra $toDir/.spamassassin);
   }
 }
 
@@ -3292,6 +3292,6 @@ sub runLdapAttributeUpgrade($) {
   my $rc = main::runAsZimbra("zmjava com.zimbra.cs.account.ldap.upgrade.LdapUpgrade -b $bug -v");
   return $rc;
 }
-    
+
 
 1
