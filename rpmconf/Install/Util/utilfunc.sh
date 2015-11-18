@@ -1685,7 +1685,7 @@ removeExistingInstall() {
           else
             $PACKAGERM $p > /dev/null 2>&1
           fi
-	else
+        else
           $PACKAGERM $p > /dev/null 2>&1
 	fi
         if [ x$p = "xzimbra-dnscache" ]; then
