@@ -2073,8 +2073,8 @@ configurePackageServer() {
         exit 1
       fi
 cat > /etc/apt/sources.list.d/zimbra.list << EOF
-deb     https://$PACKAGE_SERVER/apt/90 $repo zimbra
-deb-src https://$PACKAGE_SERVER/apt/90 $repo zimbra
+deb     [arch=amd64] https://$PACKAGE_SERVER/apt/90 $repo zimbra
+deb-src [arch=amd64] https://$PACKAGE_SERVER/apt/90 $repo zimbra
 EOF
       apt-get update >>$LOGFILE 2>&1
       if [ $? -ne 0 ]; then
