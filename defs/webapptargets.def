@@ -22,7 +22,7 @@ $(WEBAPP_DIR)/service.war: $(WEBAPP_DIR) $(WEBAPP_STAGE_DIR)/service/service.war
 	(cd $(WEBAPP_DIR)/service; jar xf $(WEBAPP_STAGE_DIR)/service/service.war)
 
 $(SERVICE_DIR)/$(WEBAPP_BUILD_DIR)/service.war:
-	(cd $(SERVICE_DIR); $(ANT) $(ANT_DEBUG) \
+	(cd $(SERVICE_DIR); $(ANT) $(ANT_DEBUG) $(SKIP_TESTS) \
 		-Dzimbra.buildinfo.platform=$(BUILD_PLATFORM) \
 		-Dis-production=1 \
 		-Dzimbra.buildinfo.version=$(SOURCE_TAG) \
@@ -89,7 +89,7 @@ $(WEBAPP_DIR)/zimbraAdmin.war: $(WEBAPP_DIR) $(WEBAPP_STAGE_DIR)/admin/zimbraAdm
 #
 
 $(CONSOLE_DIR)/$(WEBAPP_BUILD_DIR)/zimbraAdmin.war:
-	(cd $(CONSOLE_DIR); $(ANT) $(ANT_DEBUG) \
+	(cd $(CONSOLE_DIR); $(ANT) $(ANT_DEBUG) $(SKIP_TESTS) \
 		-Dzimbra.buildinfo.platform=$(BUILD_PLATFORM) \
 		-Dis-production=1 \
 		-Dzimbra.buildinfo.version=$(SOURCE_TAG) \
@@ -98,19 +98,19 @@ $(CONSOLE_DIR)/$(WEBAPP_BUILD_DIR)/zimbraAdmin.war:
 		-Dzimbra.buildinfo.host=$(HOST) clean admin prod war package-jsapi-zimbra-doc package-jsapi-inventory package-jsapi-changelog ; )
 	#rm -rf zimbraAdminConf
 	#mkdir zimbraAdminConf
-	#cp $(CONSOLE_DIR)/build/web.xml zimbraAdminConf/web.xml
-	#cp $(CONSOLE_DIR)/build/docs/jsapi-inventory.zip $(PACKAGE_DIR)/jsapi-inventory.zip
-	#cp $(CONSOLE_DIR)/build/docs/jsapi-zimbra-doc.zip $(PACKAGE_DIR)/jsapi-zimbra-doc.zip
-	#cp $(CONSOLE_DIR)/build/docs/jsapi-changelog.zip $(PACKAGE_DIR)/jsapi-changelog.zip
+	#cp $(CONSOLE_DIR)/$(ANT_BUILD_DIR)/web.xml zimbraAdminConf/web.xml
+	#cp $(CONSOLE_DIR)/$(ANT_BUILD_DIR)/docs/jsapi-inventory.zip $(PACKAGE_DIR)/jsapi-inventory.zip
+	#cp $(CONSOLE_DIR)/$(ANT_BUILD_DIR)/docs/jsapi-zimbra-doc.zip $(PACKAGE_DIR)/jsapi-zimbra-doc.zip
+	#cp $(CONSOLE_DIR)/$(ANT_BUILD_DIR)/docs/jsapi-changelog.zip $(PACKAGE_DIR)/jsapi-changelog.zip
 
 $(WEBAPP_STAGE_DIR)/admin/zimbraAdmin.war: $(CONSOLE_DIR)/$(WEBAPP_BUILD_DIR)/zimbraAdmin.war
 	@($(ECHO) "*** Staging zimbraAdmin.war")
 	@($(MKDIR) -p $(@D))
 	@($(CP) $(CONSOLE_DIR)/$(WEBAPP_BUILD_DIR)/zimbraAdmin.war $@)
-	@($(CP) $(CONSOLE_DIR)/build/web.xml $(@D)/web.xml)
-	@($(CP) $(CONSOLE_DIR)/build/docs/jsapi-inventory.zip $(@D)/jsapi-inventory.zip)
-	@($(CP) $(CONSOLE_DIR)/build/docs/jsapi-zimbra-doc.zip $(@D)/jsapi-zimbra-doc.zip)
-	@($(CP) $(CONSOLE_DIR)/build/docs/jsapi-changelog.zip $(@D)/jsapi-changelog.zip)
+	@($(CP) $(CONSOLE_DIR)/$(ANT_BUILD_DIR)/web.xml $(@D)/web.xml)
+	@($(CP) $(CONSOLE_DIR)/$(ANT_BUILD_DIR)/docs/jsapi-inventory.zip $(@D)/jsapi-inventory.zip)
+	@($(CP) $(CONSOLE_DIR)/$(ANT_BUILD_DIR)/docs/jsapi-zimbra-doc.zip $(@D)/jsapi-zimbra-doc.zip)
+	@($(CP) $(CONSOLE_DIR)/$(ANT_BUILD_DIR)/docs/jsapi-changelog.zip $(@D)/jsapi-changelog.zip)
 
 $(WEBAPP_DIR)/zimbra/robots.txt: $(WEBAPP_DIR)/zimbra.war
 	cp $(SERVICE_DIR)/conf/robots.txt $@
@@ -121,10 +121,10 @@ $(WEBAPP_DIR)/zimbra.war: $(WEBAPP_DIR) $(WEBAPP_STAGE_DIR)/zimbra/zimbra.war $(
 
 $(STORE_DEST_DIR)/$(MAILBOXD_DIR)/work: $(CONSOLE_DIR)/$(WEBAPP_BUILD_DIR)/zimbra.war
 	mkdir -p $@
-	cp -rf $(CONSOLE_DIR)/build/dist/$(MAILBOXD_SERVER)/work/* $@
+	cp -rf $(CONSOLE_DIR)/$(ANT_BUILD_DIR)/dist/$(MAILBOXD_SERVER)/work/* $@
 
-$(CONSOLE_DIR)/$(WEBAPP_BUILD_DIR)/zimbra.war:  $(TAGLIB_DIR)/build/zimbrataglib.jar
-	(cd $(CONSOLE_DIR); $(ANT) $(ANT_DEBUG) \
+$(CONSOLE_DIR)/$(WEBAPP_BUILD_DIR)/zimbra.war:  $(TAGLIB_DIR)/$(ANT_BUILD_DIR)/zimbrataglib.jar
+	(cd $(CONSOLE_DIR); $(ANT) $(ANT_DEBUG) $(SKIP_TESTS) \
 		-Dzimbra.buildinfo.platform=$(BUILD_PLATFORM) \
 		-Dis-production=1 \
 		-Dzimbra.buildinfo.version=$(SOURCE_TAG) \
@@ -133,16 +133,16 @@ $(CONSOLE_DIR)/$(WEBAPP_BUILD_DIR)/zimbra.war:  $(TAGLIB_DIR)/build/zimbrataglib
 		-Dzimbra.buildinfo.host=$(HOST) clean prod-build; )
 	#rm -rf zimbraConf
 	#mkdir zimbraConf
-	#cp $(CONSOLE_DIR)/build/web.xml zimbraConf
+	#cp $(CONSOLE_DIR)/$(ANT_BUILD_DIR)/web.xml zimbraConf
 
 $(WEBAPP_STAGE_DIR)/zimbra/zimbra.war: $(CONSOLE_DIR)/$(WEBAPP_BUILD_DIR)/zimbra.war
 	@($(ECHO) "*** Staging zimbra.war")
 	@($(MKDIR) -p $(@D))
 	@($(CP) $(CONSOLE_DIR)/$(WEBAPP_BUILD_DIR)/zimbra.war $@)
-	@($(CP) $(CONSOLE_DIR)/build/web.xml $(@D)/web.xml)
+	@($(CP) $(CONSOLE_DIR)/$(ANT_BUILD_DIR)/web.xml $(@D)/web.xml)
 
-$(TAGLIB_DIR)/build/zimbrataglib.jar:
-	(cd $(TAGLIB_DIR); $(ANT) $(ANT_DEBUG) \
+$(TAGLIB_DIR)/$(ANT_BUILD_DIR)/zimbrataglib.jar:
+	(cd $(TAGLIB_DIR); $(ANT) $(ANT_DEBUG) $(SKIP_TESTS) \
 		-Dzimbra.buildinfo.platform=$(BUILD_PLATFORM) \
 		-Dis-production=1 \
 		-Dzimbra.buildinfo.version=$(SOURCE_TAG) \
