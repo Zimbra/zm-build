@@ -4,9 +4,6 @@
 $(PACKAGE_DIR):
 	mkdir -p $(PACKAGE_DIR)
 
-perllibsbuild: 
-	make -C $(PERL_LIB_BUILD)
-
 # MISC
 
 showtag:
