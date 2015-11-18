@@ -449,16 +449,17 @@ sub upgrade {
   main::setLocalConfig("ssl_allow_untrusted_certs", "true") if ($startMajor <= 7 && $targetMajor >= 8);
   # start ldap
   if (main::isInstalled ("zimbra-ldap")) {
-    if($startMajor < 6 && $targetMajor >= 6) {
-      my $rc=&migrateLdap("8.0.0_BETA3");
-      if ($rc) { return 1; }
-    } elsif($startMajor < 8) {
+    if($startMajor < 8) {
       my $rc=&upgradeLdap("8.0.0_BETA3");
       if ($rc) { return 1; }
-    } elsif($startMajor < 8 || ($startMajor == 8 && $startMinor < 5)) {
+    } elsif(($startMajor == 8 && $startMinor < 5)) {
       my $rc=&upgradeLdap("8.5.0_BETA1");
       if ($rc) { return 1; }
-    } elsif ($startMajor == 8 && $startMinor == 0 && $startMicro < 3) {
+    } elsif (($startMajor == 8 && $startMinor < 7)) {
+      my $rc=&upgradeLdap("8.7.0_BETA1");
+      if ($rc) { return 1; }
+    }
+    if ($startMajor == 8 && $startMinor == 0 && $startMicro < 3) {
       my $rc=&reloadLdap("8.0.3_GA");
       if ($rc) { return 1; }
     }
@@ -2738,8 +2739,32 @@ sub reloadLdap($) {
 sub upgradeLdap($) {
   my ($upgradeVersion) = @_;
   if (main::isInstalled ("zimbra-ldap")) {
-    if($upgradeVersion eq "8.5.0_BETA1") {
+    if($upgradeVersion eq "8.7.0_BETA1") {
       if($main::migratedStatus{"LdapUpgraded$upgradeVersion"} ne "CONFIGURED") {
+        if (-f '/opt/zimbra/data/ldap/config/cn=config/cn=module{0}.ldif') {
+          $infile="/opt/zimbra/data/ldap/config/cn\=config/cn\=module\{0\}.ldif";
+          $outfile="/tmp/mod0.ldif.$$";
+          open(IN,"<$infile");
+          open(OUT,">$outfile");
+          while(<IN>) {
+            if ($_ =~ /^olcModulePath: \/opt\/zimbra\/openldap\/sbin\/openldap/) {
+              print OUT "olcModulePath: \/opt\/zimbra\/common\/libexec\/openldap\n";
+              next;
+            }
+            if ($_ =~ /^# CRC32/) {
+              next;
+            }
+            print OUT $_;
+          }
+          close(OUT);
+          close(IN);
+          qx(mv $outfile $infile);
+        }
+        main::configLog("LdapUpgraded$upgradeVersion");
+      }
+    } elsif($upgradeVersion eq "8.5.0_BETA1") {
+      if($main::migratedStatus{"LdapUpgraded$upgradeVersion"} ne "CONFIGURED") {
+        unlink("/opt/zimbra/data/ldap/config/cn\=config/cn\=schema/cn\=\{7\}pgp-keyserver.ldif");
         if (-f '/opt/zimbra/data/ldap/config/cn=config.ldif') {
           my $infile="/opt/zimbra/data/ldap/config/cn\=config.ldif";
           my $outfile="/tmp/config.ldif.$$";
@@ -2763,6 +2788,25 @@ sub upgradeLdap($) {
           close(IN);
           qx(mv $outfile $infile);
         }
+        if (-f '/opt/zimbra/data/ldap/config/cn=config/cn=module{0}.ldif') {
+          $infile="/opt/zimbra/data/ldap/config/cn\=config/cn\=module\{0\}.ldif";
+          $outfile="/tmp/mod0.ldif.$$";
+          open(IN,"<$infile");
+          open(OUT,">$outfile");
+          while(<IN>) {
+            if ($_ =~ /^olcModulePath: \/opt\/zimbra\/openldap\/sbin\/openldap/) {
+              print OUT "olcModulePath: \/opt\/zimbra\/common\/libexec\/openldap\n";
+              next;
+            }
+            if ($_ =~ /^# CRC32/) {
+              next;
+            }
+            print OUT $_;
+          }
+          close(OUT);
+          close(IN);
+          qx(mv $outfile $infile);
+        }
         main::configLog("LdapUpgraded$upgradeVersion");
       }
     } else {
@@ -2770,6 +2814,7 @@ sub upgradeLdap($) {
         # Fix LDAP schema for bug#62443
         unlink("/opt/zimbra/data/ldap/config/cn\=config/cn\=schema/cn\=\{3\}zimbra.ldif");
         unlink("/opt/zimbra/data/ldap/config/cn\=config/cn\=schema/cn\=\{4\}amavisd.ldif");
+        unlink("/opt/zimbra/data/ldap/config/cn\=config/cn\=schema/cn\=\{7\}pgp-keyserver.ldif");
         my $ldifFile="/opt/zimbra/data/ldap/ldap.bak";
         if (-f $ldifFile && -s $ldifFile) {
           chmod 0644, $ldifFile;
@@ -2831,6 +2876,10 @@ sub upgradeLdap($) {
             while(<IN>) {
               if ($_ =~ /^olcModuleLoad: \{0\}back_hdb.la/) {
                 print OUT "olcModuleLoad: {0}back_mdb.la\n";
+                next;
+              }
+              if ($_ =~ /^olcModulePath: \/opt\/zimbra\/openldap\/sbin\/openldap/) {
+                print OUT "olcModulePath: \/opt\/zimbra\/common\/libexec\/openldap\n";
                 next;
               }
               if ($_ =~ /^# CRC32/) {

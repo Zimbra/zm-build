@@ -39,7 +39,7 @@ acct_exists() {
   fi
 }
 
-# Create group, user for zimbra and postfix.
+# Create group, user for zimbra
 grp_exists zimbra
 if [ $? != 0 ]; then
 	groupadd -r zimbra
