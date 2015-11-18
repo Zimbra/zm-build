@@ -455,8 +455,8 @@ sub upgrade {
     } elsif(($startMajor == 8 && $startMinor < 5)) {
       my $rc=&upgradeLdap("8.5.0_BETA1");
       if ($rc) { return 1; }
-    } elsif (($startMajor == 8 && $startMinor < 7)) {
-      my $rc=&upgradeLdap("8.7.0_BETA1");
+    } elsif (($startMajor == 8 && $startMinor <= 7)) {
+      my $rc=&upgradeLdap("8.7.0_BETA2");
       if ($rc) { return 1; }
     }
     if ($startMajor == 8 && $startMinor == 0 && $startMicro < 3) {
@@ -2739,7 +2739,7 @@ sub reloadLdap($) {
 sub upgradeLdap($) {
   my ($upgradeVersion) = @_;
   if (main::isInstalled ("zimbra-ldap")) {
-    if($upgradeVersion eq "8.7.0_BETA1") {
+    if($upgradeVersion eq "8.7.0_BETA2") {
       if($main::migratedStatus{"LdapUpgraded$upgradeVersion"} ne "CONFIGURED") {
         if (-f '/opt/zimbra/data/ldap/config/cn=config/cn=module{0}.ldif') {
           my $infile="/opt/zimbra/data/ldap/config/cn\=config/cn\=module\{0\}.ldif";
