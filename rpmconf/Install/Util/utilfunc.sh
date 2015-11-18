@@ -2100,6 +2100,7 @@ baseurl=https://$PACKAGE_SERVER/rpm/90/$repo
 gpgcheck=1
 enabled=1
 EOF
+      yum --disablerepo=* --enablerepo=zimbra clean metadata >>$LOGFILE 2>&1
       yum check-update --disablerepo=* --enablerepo=zimbra >>$LOGFILE 2>&1
       if [ $? -ne 0 ]; then
         echo "ERROR: yum check-update failed"
