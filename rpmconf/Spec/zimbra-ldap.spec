@@ -12,7 +12,7 @@ Vendor: Zimbra, Inc.
 Packager: Zimbra, Inc.
 BuildRoot: /opt/zimbra
 AutoReqProv: no
-Requires: zimbra-core, zimbra-ldap-components
+requires: zimbra-core
 
 %description
 Best email money can buy

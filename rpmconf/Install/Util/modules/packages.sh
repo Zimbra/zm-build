@@ -57,12 +57,6 @@ installPackage() {
                   pkgError
                 fi
 	fi
-	if [ x$PKG = "xzimbra-ldap" ]; then
-		$REPOINST zimbra-ldap-components >>$LOGFILE 2>&1
-                if [ $? != 0 ]; then
-                  pkgError
-                fi
-	fi
 	if [ x$PKG = "xzimbra-memcached" ]; then
 		$REPOINST zimbra-memcached >>$LOGFILE 2>&1
                 if [ $? != 0 ]; then

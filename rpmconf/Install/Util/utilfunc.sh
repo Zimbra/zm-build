@@ -417,11 +417,6 @@ checkVersionDowngrade() {
     return
   fi
 
-  if [ ${ZM_CUR_MAJOR} -lt 7 ]; then
-	echo "ERROR: You can only upgrade from ZCS 7.0 or later"
-	exit 1
-  fi
-
   ZM_CUR_VERSION="${ZM_CUR_MAJOR}.${ZM_CUR_MINOR}.${ZM_CUR_MICRO}"
   ZM_INST_VERSION="${ZM_INST_MAJOR}.${ZM_INST_MINOR}.${ZM_INST_MICRO}"
 
@@ -1596,6 +1591,18 @@ saveExistingConfig() {
     rm -f /opt/zimbra/.enable_replica
   fi 
 
+  if [ -f /opt/zimbra/conf/slapd.conf ]; then
+    egrep -q '^overlay syncprov' /opt/zimbra/conf/slapd.conf > /dev/null
+    if [ $? = 0 ]; then
+      touch /opt/zimbra/.enable_replica
+    else
+      egrep -q 'type=refreshAndPersist' /opt/zimbra/conf/slapd.conf > /dev/null
+      if [ $? = 0 ]; then
+        touch /opt/zimbra/.enable_replica
+      fi
+    fi
+  fi
+
   if [ -f /opt/zimbra/data/ldap/config/cn\=config.ldif ]; then
     if [ -f /opt/zimbra/data/ldap/config/cn\=config/olcDatabase\=\{2\}mdb/olcOverlay\=*syncprov.ldif ]; then
       touch /opt/zimbra/.enable_replica
@@ -1614,8 +1621,12 @@ removeExistingInstall() {
 
     isInstalled "zimbra-ldap"
     if [ x$PKGINSTALLED != "x" ]; then
-      if [ -f "/opt/zimbra/common/sbin/slapcat" -a x"$UNINSTALL" != "xyes" -a x"$REMOVE" != "xyes" ]; then
-        if [ -d "/opt/zimbra/data/ldap/config" ]; then
+      if [ x"$LD_LIBRARY_PATH" != "x" ]; then
+        OLD_LDR_PATH=$LD_LIBRARY_PATH
+        LD_LIBRARY_PATH=/opt/zimbra/bdb/lib:/opt/zimbra/openssl/lib:/opt/zimbra/cyrus-sasl/lib:/opt/zimbra/libtool/lib:/opt/zimbra/openldap/lib:$LD_LIBRARY_PATH
+      fi
+      if [ -f "/opt/zimbra/openldap/sbin/slapcat" -a x"$UNINSTALL" != "xyes" -a x"$REMOVE" != "xyes" ]; then
+        if [ -f "/opt/zimbra/conf/slapd.conf" -o -d "/opt/zimbra/data/ldap/config" ]; then
           echo ""
           echo -n "Backing up the ldap database..."
           tmpfile=`mktemp -t slapcat.XXXXXX 2> /dev/null` || { echo "Failed to create tmpfile"; exit 1; }
@@ -1679,15 +1690,12 @@ removeExistingInstall() {
       if [ x$PKGINSTALLED != "x" ]; then
         echo -n "   $p..."
 	if [ x$p = "xzimbra-memcached" ]; then
-          $REPORM zimbra-memcached-base >>$LOGFILE 2>&1
+		$REPORM zimbra-memcached-base >>$LOGFILE 2>&1
 	else
-          $PACKAGERM $p > /dev/null 2>&1
+		$PACKAGERM $p > /dev/null 2>&1
 	fi
         if [ x$p = "xzimbra-dnscache" ]; then
           $REPORM zimbra-dnscache-base >>$LOGFILE 2>&1
-        fi
-        if [ x$p = "xzimbra-ldap" ]; then
-          $REPORM zimbra-ldap-base >>$LOGFILE 2>&1
         fi
         if [ x$p = "xzimbra-proxy" ]; then
           $REPORM zimbra-proxy-base >>$LOGFILE 2>&1
@@ -1720,6 +1728,7 @@ removeExistingInstall() {
       fi
     done
 
+    rm -f /etc/ld.so.conf.d/zimbra.ld.conf
     if egrep -q '^%zimbra[[:space:]]' /etc/sudoers 2>/dev/null; then
       local sudotmp=`mktemp -t zsudoers.XXXXX 2> /dev/null` || { echo "Failed to create tmpfile"; exit 1; }
       SUDOMODE=`perl -e 'my $mode=(stat("/etc/sudoers"))[2];printf("%04o\n",$mode & 07777);'`
@@ -2073,8 +2082,8 @@ configurePackageServer() {
         exit 1
       fi
 cat > /etc/apt/sources.list.d/zimbra.list << EOF
-deb     [arch=amd64] https://$PACKAGE_SERVER/apt/90 $repo zimbra
-deb-src [arch=amd64] https://$PACKAGE_SERVER/apt/90 $repo zimbra
+deb     [arch=amd64] https://$PACKAGE_SERVER/apt/87 $repo zimbra
+deb-src [arch=amd64] https://$PACKAGE_SERVER/apt/87 $repo zimbra
 EOF
       apt-get update >>$LOGFILE 2>&1
       if [ $? -ne 0 ]; then
@@ -2096,7 +2105,7 @@ EOF
 cat > /etc/yum.repos.d/zimbra.repo <<EOF
 [zimbra]
 name=Zimbra RPM Repository
-baseurl=https://$PACKAGE_SERVER/rpm/90/$repo
+baseurl=https://$PACKAGE_SERVER/rpm/87/$repo
 gpgcheck=1
 enabled=1
 EOF
@@ -2496,6 +2505,11 @@ getPlatformVars() {
     PACKAGEEXT='deb'
     PACKAGEVERSION="dpkg-query -W -f \${Version}"
     CONFLICT_PACKAGES="mail-transport-agent"
+    if [ $PLATFORM = "UBUNTU10_64" ]; then
+      PREREQ_PACKAGES="netcat-openbsd sudo libidn11 libpcre3 libgmp3c2 libexpat1 libstdc++6 libperl5.10 libaio1 resolvconf unzip"
+      PRESUG_PACKAGES="pax perl-5.10.1 sysstat sqlite3"
+      STORE_PACKAGES=""
+    fi
     if [ $PLATFORM = "UBUNTU12_64" ]; then
       STORE_PACKAGES="libreoffice"
     fi
@@ -2514,6 +2528,11 @@ getPlatformVars() {
       STORE_PACKAGES="libreoffice libreoffice-headless"
     elif [ $PLATFORM = "RHEL7_64" ]; then
       STORE_PACKAGES="libreoffice libreoffice-headless"
+    elif [ $PLATFORM = "SLES11_64" ]; then
+      PREREQ_PACKAGES="netcat sudo libidn gmp libaio"
+      PREREQ_LIBS="/usr/lib64/libstdc++.so.6"
+      PRESUG_PACKAGES="perl-5.10.0 sysstat sqlite3"
+      STORE_PACKAGES="libreoffice"
     else
       PACKAGEINST='rpm -iv'
       PACKAGERM='rpm -ev --nodeps --allmatches'
