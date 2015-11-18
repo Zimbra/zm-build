@@ -5643,7 +5643,24 @@ sub configSetStoreDefaults {
   }
   # for mailstore split, set zimbraReverseProxyAvailableLookupTargets on service-only nodes
   if ($newinstall && isStoreServiceNode()) {
-    setLdapGlobalConfig("+zimbraReverseProxyAvailableLookupTargets", "$config{HOSTNAME}");
+	my $adding=0;
+	progress("Checking current setting of zimbraReverseProxyAvailableLookupTargets\n");
+	my $zrpALT = getLdapConfigValue("zimbraReverseProxyAvailableLookupTargets");
+	if ($zrpALT ne "") {
+	  $adding=1;
+	} else {
+	  progress("Querying LDAP for other mailstores\n");
+	  # query LDAP to see if there are other mailstores.  If there are none, add this
+	  # new service node to zimbraReverseProxyAvailableLookupTargets.  Otherwise do not
+	  my $count = countReverseProxyLookupTargets() if (ldapIsAvailable());
+	  if (!defined($count) || $count == 0) {
+		$adding=1;
+	  }
+	}
+	if ($adding) {
+	  progress("Adding $config{HOSTNAME} to zimbraReverseProxyAvailableLookupTargets\n");
+	  setLdapGlobalConfig("+zimbraReverseProxyAvailableLookupTargets", $config{HOSTNAME});
+	}
   }
   $config{zimbraMtaAuthTarget}="TRUE";
   if (!isStoreServiceNode()) {
@@ -6112,6 +6129,37 @@ sub removeNetworkComponents {
       progress (($rc == 0) ? "done.\n" : "failed. This may impact system functionality.\n");
     }
     setLdapGlobalConfig("zimbraReverseProxyUpstreamEwsServers","");
+}
+
+sub countReverseProxyLookupTargets {
+  my $count = 0;
+  my $ldap_pass = getLocalConfig("zimbra_ldap_password");
+  my $ldap_master_url = getLocalConfig("ldap_master_url");
+  my $ldap;
+  my @masters=split(/ /, $ldap_master_url);
+  my $master_ref=\@masters;
+
+  unless($ldap = Net::LDAP->new($master_ref)) {
+    detail("Unable to contact $ldap_master_url: $!");
+    return;
+  }
+  my $ldap_dn = $config{zimbra_ldap_userdn};
+  my $ldap_base = "";
+
+  my $result = $ldap->bind($ldap_dn, password => $ldap_pass);
+  if ($result->code()) {
+    detail("ldap bind failed for $ldap_dn");
+    return;
+  } else {
+    detail("ldap bind done for $ldap_dn");
+    progress("Searching LDAP for reverseProxyLookupTargets...");
+    $result = $ldap->search(base => 'cn=zimbra', filter => '(zimbraReverseProxyLookupTarget=TRUE)', attrs => ['1.1']);
+
+    progress (($result->code()) ? "failed.\n" : "done.\n");
+    return if ($result->code());
+    $count = $result->count;
+  }
+  return "$count";
 }
 
 sub countUsers {
