@@ -2511,11 +2511,6 @@ getPlatformVars() {
     PACKAGEEXT='deb'
     PACKAGEVERSION="dpkg-query -W -f \${Version}"
     CONFLICT_PACKAGES="mail-transport-agent"
-    if [ $PLATFORM = "UBUNTU10_64" ]; then
-      PREREQ_PACKAGES="netcat-openbsd sudo libidn11 libpcre3 libgmp3c2 libexpat1 libstdc++6 libperl5.10 libaio1 resolvconf unzip"
-      PRESUG_PACKAGES="pax perl-5.10.1 sysstat sqlite3"
-      STORE_PACKAGES=""
-    fi
     if [ $PLATFORM = "UBUNTU12_64" ]; then
       STORE_PACKAGES="libreoffice"
     fi
@@ -2534,11 +2529,6 @@ getPlatformVars() {
       STORE_PACKAGES="libreoffice libreoffice-headless"
     elif [ $PLATFORM = "RHEL7_64" ]; then
       STORE_PACKAGES="libreoffice libreoffice-headless"
-    elif [ $PLATFORM = "SLES11_64" ]; then
-      PREREQ_PACKAGES="netcat sudo libidn gmp libaio"
-      PREREQ_LIBS="/usr/lib64/libstdc++.so.6"
-      PRESUG_PACKAGES="perl-5.10.0 sysstat sqlite3"
-      STORE_PACKAGES="libreoffice"
     else
       PACKAGEINST='rpm -iv'
       PACKAGERM='rpm -ev --nodeps --allmatches'
