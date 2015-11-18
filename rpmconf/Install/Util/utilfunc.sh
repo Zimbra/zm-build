@@ -2088,11 +2088,7 @@ EOF
         exit 1
       fi
     else
-      if [ $PLATFORM = "RHEL6_64" ]; then
-        repo="rhel6"
-      elif [ $PLATFORM = "RHEL7_64" ]; then
-        repo="rhel7"
-      else
+      if [ x$PLATFORM != "xRHEL6_64" -a x$PLATFORM != "xRHEL7_64" ]; then
         print "Aborting, unknown platform: $PLATFORM"
         exit 1
       fi
@@ -2101,7 +2097,7 @@ EOF
 cat > /etc/yum.repos.d/zimbra.repo <<EOF
 [zimbra]
 name=Zimbra RPM Repository
-baseurl=https://$PACKAGE_SERVER/rpm/90/$repo
+baseurl=https://$PACKAGE_SERVER/rpm/90/rhel$releasever
 gpgcheck=1
 enabled=1
 EOF
