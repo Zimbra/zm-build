@@ -1690,9 +1690,14 @@ removeExistingInstall() {
       if [ x$PKGINSTALLED != "x" ]; then
         echo -n "   $p..."
 	if [ x$p = "xzimbra-memcached" ]; then
-		$REPORM zimbra-memcached-base >>$LOGFILE 2>&1
+          isInstalled "zimbra-memcached-base"
+          if [ x$PKGINSTALLED != "x" ]; then
+            $REPORM zimbra-memcached-base >>$LOGFILE 2>&1
+          else
+            $PACKAGERM $p > /dev/null 2>&1
+          fi
 	else
-		$PACKAGERM $p > /dev/null 2>&1
+            $PACKAGERM $p > /dev/null 2>&1
 	fi
         if [ x$p = "xzimbra-dnscache" ]; then
           $REPORM zimbra-dnscache-base >>$LOGFILE 2>&1
