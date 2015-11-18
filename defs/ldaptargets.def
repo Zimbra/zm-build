@@ -76,7 +76,7 @@ $(LDAP_DEST_ROOT)/etc/sudoers.d:
 	cp $(PACKAGE_CONF_DIR)/Env/sudoers.d/02_zimbra-ldap $(LDAP_DEST_ROOT)/etc/sudoers.d/02_zimbra-ldap
 
 $(LDAP_DEST_DIR)/common: $(LDAP_DEST_DIR) $(LDAP_DEST_ROOT)/etc/sudoers.d
-	mkdir -p $(LDAP_DEST_DIR/common/etc/openldap/schema
+	mkdir -p $(LDAP_DEST_DIR)/common/etc/openldap/schema
 	cp $(SERVICE_DIR)/$(MAVEN_TARGET_DIR)/ldap-config/amavisd.schema \
 		$(LDAP_DEST_DIR)/common/etc/openldap/schema
 	cp $(SERVICE_DIR)/$(MAVEN_TARGET_DIR)/ldap-config/config/amavisd.ldif \
