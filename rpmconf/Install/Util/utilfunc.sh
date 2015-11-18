@@ -418,6 +418,8 @@ checkVersionDowngrade() {
   fi
 
   if [ ${ZM_CUR_MAJOR} -lt 7 ]; then
+	echo "ERROR: You can only upgrade from ZCS 7.0 or later"
+	exit 1
   fi
 
   ZM_CUR_VERSION="${ZM_CUR_MAJOR}.${ZM_CUR_MINOR}.${ZM_CUR_MICRO}"
