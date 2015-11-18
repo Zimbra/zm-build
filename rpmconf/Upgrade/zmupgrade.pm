@@ -130,6 +130,7 @@ my %updateFuncs = (
   "8.6.0_BETA2" => \&upgrade860BETA2,
   "8.6.0_GA" => \&upgrade860GA,
   "8.7.0_BETA1" => \&upgrade870BETA1,
+  "8.7.0_BETA2" => \&upgrade870BETA2,
   "9.0.0_BETA1" => \&upgrade900BETA1,
 );
 
@@ -174,6 +175,7 @@ my @versionOrder = (
   "8.6.0_BETA2",
   "8.6.0_GA",
   "8.7.0_BETA1",
+  "8.7.0_BETA2",
   "9.0.0_BETA1",
 );
 
@@ -311,6 +313,8 @@ sub upgrade {
       main::progress("This appears to be 8.6.0_GA\n");
   } elsif ($startVersion eq "8.7.0_BETA1") {
       main::progress("This appears to be 8.7.0_BETA1\n");
+  } elsif ($startVersion eq "8.7.0_BETA2") {
+      main::progress("This appears to be 8.7.0_BETA2\n");
   } elsif ($startVersion eq "9.0.0_BETA1") {
       main::progress("This appears to be 9.0.0_BETA1\n");
   } else {
@@ -426,6 +430,7 @@ sub upgrade {
       if ($version_found) {
         &doMysql55Upgrade if ($v eq "8.0.0_BETA1");
         &doMysql56Upgrade if ($v eq "8.5.0_BETA3");
+        &doMariaDB101Upgrade if ($v eq "8.7.0_BETA1");
       }
       last if ($v eq $targetVersion);
     }
@@ -2207,9 +2212,6 @@ sub upgrade870BETA1 {
     main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-mysql_socket --section=mysqld --key=socket --set --value='/opt/zimbra/data/tmp/mysql/mysql.sock' ${mysql_mycnf}");
     main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-mysql_pidfile --section=mysqld --key=pid-file --set --value='/opt/zimbra/log/mysql.pid' ${mysql_mycnf}");
     main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-mysql_pidfile --section=mysqld_safe --key=pid-file --set --value='/opt/zimbra/log/mysql.pid' ${mysql_mycnf}");
-    main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-mysql_basedir --section=mysqld --key=basedir --set --value='/opt/zimbra/common' ${mysql_mycnf}");
-    main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-error-log --section=mysqld_safe --key=err-log --unset ${mysql_mycnf}");
-    main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-error-log --section=mysqld_safe --key=log-error --set --value=/opt/zimbra/log/mysqld.log ${mysql_mycnf}");
     unlink("/opt/zimbra/db/mysql.pid") if (-e "/opt/zimbra/db/mysql.pid");
     unlink("/opt/zimbra/db/mysql.sock") if (-e "/opt/zimbra/db/mysql.sock");
   }
@@ -2249,6 +2251,13 @@ sub upgrade870BETA1 {
   main::deleteLocalConfig("short_term_grantee_cache_expiration");
   main::deleteLocalConfig("short_term_grantee_cache_size");
   main::deleteLocalConfig("zimbra_mailbox_throttle_reap_interval");
+
+  return 0;
+}
+
+sub upgrade870BETA2 {
+  my ($startBuild, $targetVersion, $targetBuild) = (@_);
+  main::progress("Updating from 8.7.0_BETA2\n");
 
   return 0;
 }
@@ -3835,6 +3844,13 @@ sub doMysql56Upgrade {
     main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-long_query_time-fixup --section=mysqld --set --key=long_query_time --value=1 ${mysql_mycnf}");
     main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-log-queries-not-using-indexes-fixup --section=mysqld --unset --key=log-queries-not-using-indexes ${mysql_mycnf}");
     main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-log_queries_not_using_indexes-fixup --section=mysqld --set --key=log_queries_not_using_indexes ${mysql_mycnf}");
+}
+
+sub doMariaDB101Upgrade {
+    my $mysql_mycnf = main::getLocalConfig("mysql_mycnf");
+    main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-mysql_basedir --section=mysqld --key=basedir --set --value='/opt/zimbra/common' ${mysql_mycnf}");
+    main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-error-log --section=mysqld_safe --key=err-log --unset ${mysql_mycnf}");
+    main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-error-log --section=mysqld_safe --key=log-error --set --value=/opt/zimbra/log/mysqld.log ${mysql_mycnf}");
 }
 
 sub doMysqlUpgrade {
