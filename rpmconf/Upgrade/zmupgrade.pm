@@ -4005,8 +4005,8 @@ sub upgradeLdap($) {
     if($upgradeVersion eq "8.7.0_BETA1") {
       if($main::migratedStatus{"LdapUpgraded$upgradeVersion"} ne "CONFIGURED") {
         if (-f '/opt/zimbra/data/ldap/config/cn=config/cn=module{0}.ldif') {
-          $infile="/opt/zimbra/data/ldap/config/cn\=config/cn\=module\{0\}.ldif";
-          $outfile="/tmp/mod0.ldif.$$";
+          my $infile="/opt/zimbra/data/ldap/config/cn\=config/cn\=module\{0\}.ldif";
+          my $outfile="/tmp/mod0.ldif.$$";
           open(IN,"<$infile");
           open(OUT,">$outfile");
           while(<IN>) {
@@ -4052,8 +4052,8 @@ sub upgradeLdap($) {
           qx(mv $outfile $infile);
         }
         if (-f '/opt/zimbra/data/ldap/config/cn=config/cn=module{0}.ldif') {
-          $infile="/opt/zimbra/data/ldap/config/cn\=config/cn\=module\{0\}.ldif";
-          $outfile="/tmp/mod0.ldif.$$";
+          my $infile="/opt/zimbra/data/ldap/config/cn\=config/cn\=module\{0\}.ldif";
+          my $outfile="/tmp/mod0.ldif.$$";
           open(IN,"<$infile");
           open(OUT,">$outfile");
           while(<IN>) {
