@@ -13,7 +13,7 @@ Packager: Zimbra, Inc.
 BuildRoot: /opt/zimbra
 AutoReqProv: no
 provides: @@MTA_PROVIDES@@
-requires: zimbra-core
+requires: zimbra-core, zimbra-mta-components
 
 %description
 Best email money can buy

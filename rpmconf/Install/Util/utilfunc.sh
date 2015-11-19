@@ -1694,6 +1694,9 @@ removeExistingInstall() {
         if [ x$p = "xzimbra-ldap" ]; then
           $REPORM zimbra-ldap-base >>$LOGFILE 2>&1
         fi
+        if [ x$p = "xzimbra-mta" ]; then
+          $REPORM zimbra-mta-base >>$LOGFILE 2>&1
+        fi
         if [ x$p = "xzimbra-proxy" ]; then
           $REPORM zimbra-proxy-base >>$LOGFILE 2>&1
         fi

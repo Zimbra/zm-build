@@ -17,7 +17,7 @@
 #  
 
 use strict;
-use lib qw(/opt/zimbra/zimbramon/lib lib corebuild/opt/zimbra/zimbramon/lib);
+use lib qw(/opt/zimbra/common/lib/perl5 lib corebuild/opt/zimbra/zimbramon/lib);
 use Zimbra::Util::Common;
 use XML::SAX;
 use XML::Simple;

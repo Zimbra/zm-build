@@ -60,15 +60,6 @@ if [ $? != 0 ]; then
 	useradd -r -g zimbra -G postfix,tty -d /opt/zimbra -s /bin/bash zimbra
 fi
 
-# Fix incase the account existed but the groups were wrong
-# add adm for mandriva so logger can read the log files
-grp_exists adm
-if [ $? = 0 ]; then
-  usermod -g zimbra -G postfix,tty,adm zimbra
-else 
-  usermod -g zimbra -G postfix,tty zimbra
-fi
-
 acct_exists postfix
 if [ $? != 0 ]; then
 	useradd -r -g postfix -d /opt/zimbra/postfix postfix
