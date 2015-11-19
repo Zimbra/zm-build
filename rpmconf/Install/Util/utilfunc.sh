@@ -2100,7 +2100,7 @@ EOF
 cat > /etc/yum.repos.d/zimbra.repo <<EOF
 [zimbra]
 name=Zimbra RPM Repository
-baseurl=https://$PACKAGE_SERVER/rpm/90/rhel$releasever
+baseurl=https://$PACKAGE_SERVER/rpm/90/rhel\$releasever
 gpgcheck=1
 enabled=1
 EOF
