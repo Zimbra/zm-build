@@ -8818,7 +8818,7 @@
    </zimlet>
    <zimlet deploy="true" flushcache="true">
     <source>ZimbraBuild/storebuild/opt/zimbra/zimlets/com_zimbra_url.zip</source>
-    <target>/opt/zimbra/zimlets/zimbra_url.zip</target>
+    <target>/opt/zimbra/zimlets/com_zimbra_url.zip</target>
    </zimlet>
    <file>
     <source>ZimbraBuild/storebuild/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbraAdmin/js/ajax/dwt/xforms/XFormItem.js</source>
