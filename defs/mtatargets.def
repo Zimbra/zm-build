@@ -49,7 +49,7 @@ $(BUILD_ROOT)/zimbra-mta.spec:
 		| sed -e 's|^|%attr(-, zimbra, zimbra) /|' >> \
 		$(BUILD_ROOT)/zimbra-mta.spec )
 	echo "%attr(440, root, root) /etc/sudoers.d/02_zimbra-mta" >> \
-		$(BUILD_ROOT)/zimbra-dnscache.spec
+		$(BUILD_ROOT)/zimbra-mta.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/common/conf" >> \
 		$(BUILD_ROOT)/zimbra-mta.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/data/amavisd" >> \
