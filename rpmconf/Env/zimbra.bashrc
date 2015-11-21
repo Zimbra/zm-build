@@ -31,7 +31,7 @@ export PERLLIB
 PERL5LIB=$PERLLIB
 export PERL5LIB
 
-JYTHONPATH=/opt/zimbra/zimbramon/pylibs
+JYTHONPATH=/opt/zimbra/common/lib/jylibs
 export JYTHONPATH
 
 ulimit -n 524288 > /dev/null 2>&1

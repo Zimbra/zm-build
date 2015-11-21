@@ -320,7 +320,7 @@ checkDatabaseIntegrity() {
 						sleep 2
 					done
 				fi
-				perl -I/opt/zimbra/zimbramon/lib bin/zmdbintegrityreport -v -r
+				perl bin/zmdbintegrityreport -v -r
 				MAILBOXDBINTEGRITYSTATUS=$?
 				if [ x"$SQLSTARTED" != "x" ]; then
 					su - zimbra -c "/opt/zimbra/bin/mysqladmin -s ping" 2>/dev/null

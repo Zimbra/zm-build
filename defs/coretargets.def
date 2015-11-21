@@ -104,6 +104,8 @@ $(BUILD_ROOT)/zimbra-core.spec:
 		$(BUILD_ROOT)/zimbra-core.spec
 	echo "%attr(-, root, root) /opt/zimbra/common/lib/perl5/Zimbra" >> \
 		$(BUILD_ROOT)/zimbra-core.spec
+	echo "%attr(-, root, root) /opt/zimbra/common/lib/jylibs" >> \
+		$(BUILD_ROOT)/zimbra-core.spec
 	echo "" >>  $(BUILD_ROOT)/zimbra-core.spec
 	echo "%clean" >>  $(BUILD_ROOT)/zimbra-core.spec
 
@@ -137,10 +139,9 @@ $(CORE_DEST_DIR)/docs:
 	cp $(SERVICE_DIR)/docs/*txt $@
 	cp $(MIG_TOOLS_DIR)/ReadMe.txt $@/zmztozmig.txt
 
-$(CORE_DEST_DIR)/zimbramon: $(CORE_DEST_DIR)/zimbramon/bin $(CORE_DEST_DIR)/zimbramon/lib $(CORE_DEST_DIR)/zimbramon/pylibs $(CORE_DEST_DIR)/zimbramon/crontabs $(CORE_DEST_DIR) 
+$(CORE_DEST_DIR)/zimbramon: $(CORE_DEST_DIR)/common/lib/jylibs $(CORE_DEST_DIR)/common/lib $(CORE_DEST_DIR)/zimbramon/crontabs $(CORE_DEST_DIR) 
 	@echo "*** Creating zimbramon"
 	mkdir -p $@
-	(cd $(CORE_DEST_DIR)/zimbramon; tar xzf $(RRD_SOURCE).tar.gz)
 	mkdir -p $(CORE_DEST_DIR)/logger/db/work
 	cp -f $(PACKAGE_CONF_DIR)/Img/connection_failed.gif \
 		$(CORE_DEST_DIR)/logger/db/work
@@ -151,16 +152,11 @@ $(CORE_DEST_DIR)/zimbramon/crontabs:
 	mkdir -p $@
 	cp -f $(PACKAGE_CONF_DIR)/Env/crontabs/* $(CORE_DEST_DIR)/zimbramon/crontabs/
 
-$(CORE_DEST_DIR)/zimbramon/bin:
-	mkdir -p $(CORE_DEST_DIR)/zimbramon/bin
-	mkdir -p $(CORE_DEST_DIR)/libexec
+$(CORE_DEST_DIR)/common/lib/jylibs:
+	mkdir -p $@
+	cp -R $(SERVICE_DIR)/src/jython/jylibs $(CORE_DEST_DIR)/common/lib
 
-$(CORE_DEST_DIR)/zimbramon/pylibs:
-	mkdir -p $(CORE_DEST_DIR)/zimbramon
-	cp -R $(SERVICE_DIR)/src/python/pylibs $(CORE_DEST_DIR)/zimbramon
-
-$(CORE_DEST_DIR)/zimbramon/lib:
-	mkdir -p $(CORE_DEST_DIR)/zimbramon/lib
+$(CORE_DEST_DIR)/common/lib:
 	mkdir -p $(CORE_DEST_DIR)/common/lib/perl5
 	cp -R $(BUILD_ROOT)/lib/Zimbra $(CORE_DEST_DIR)/common/lib/perl5
 
