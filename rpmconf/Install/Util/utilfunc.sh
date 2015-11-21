@@ -1853,27 +1853,6 @@ removeExistingInstall() {
       fi
       echo "done."
 
-      if [ -f /etc/ld.so.conf ]; then
-        echo -n "Cleaning up /etc/ld.so.conf..."
-        egrep -q '/opt/zimbra' /etc/ld.so.conf
-        if [ $? = 0 ]; then
-          sed -i -e '/\/opt\/zimbra/d' /etc/ld.so.conf
-          if [ -x /sbin/ldconfig ]; then
-           /sbin/ldconfig
-          fi
-        fi
-        echo "done."
-      fi
-
-      if [ -f /etc/prelink.conf ]; then
-        echo -n "Cleaning up /etc/prelink.conf..."
-        egrep -q 'zimbra' /etc/prelink.conf
-        if [ $? = 0 ]; then
-          sed -i -e '/zimbra/d' -e '/Zimbra/d' /etc/prelink.conf
-        fi
-        echo "done."
-      fi
-
       if [ -f /etc/logrotate.d/zimbra ]; then
         echo -n "Cleaning up /etc/logrotate.d/zimbra..."
         /bin/rm -f /etc/logrotate.d/zimbra 2> /dev/null
