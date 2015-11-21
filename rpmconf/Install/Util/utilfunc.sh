@@ -1774,14 +1774,23 @@ removeExistingInstall() {
         echo "done."
       fi
      
-      if [ -e /usr/sbin/sendmail ]; then
+      if [ -L /usr/sbin/sendmail ]; then
         if [ -x /bin/readlink ]; then
           SMPATH=$(/bin/readlink /usr/sbin/sendmail)
-          if [ x$SMPATH = x"/opt/zimbra/postfix/sbin/sendmail" ]; then
+          if [ x$SMPATH = x"/opt/zimbra/postfix/sbin/sendmail" -o x$SMPATH = x"/opt/zimbra/common/sbin/sendmail" ]; then
             /bin/rm -f /usr/sbin/sendmail
           fi
         fi
-      fi 
+      fi
+
+      if [ -L /etc/aliases ]; then
+        if [ -x /bin/readlink ]; then
+          SMPATH=$(/bin/readlink /etc/aliases)
+          if [ x$SMPATH = x"/opt/zimbra/postfix/conf/aliases" -o x$SMPATH = x"/opt/zimbra/common/conf/aliases" ]; then
+            rm -f /etc/aliases
+          fi
+        fi
+      fi
 
       if [ -f /etc/syslog-ng/syslog-ng.conf ]; then
         egrep -q 'zimbra' /etc/syslog-ng/syslog-ng.conf

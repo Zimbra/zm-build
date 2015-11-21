@@ -6848,7 +6848,19 @@ sub applyConfig {
     if ($newinstall && isStoreServiceNode()) {
       configCreateDefaultDomainGALSyncAcct();
     } else {
-      progress ( "Skipping creation of default domain GAL sync account - existing install detected.\n" );
+      if ($newinstall) {
+        progress ("Skipping creation of default domain GAL sync account - not a service node.\n");
+      } else {
+        progress ( "Skipping creation of default domain GAL sync account - existing install detected.\n" );
+      }
+    }
+    if ($newinstall && isEnabled("zimbra-mta") && $config{RUNAV} eq "yes") {
+      progress ( "Installing initial ClamAV Database.  This may take several minutes..." );
+      runAsZimbra ( "/opt/zimbra/common/bin/freshclam --config-file=/opt/zimbra/conf/freshclam.conf --quiet" );
+      progress ( "done.\n" );
+      progress ( "Restarting clamav..." );
+      runAsZimbra ( "/opt/zimbra/bin/zmclamdctl restart" );
+      progress ( "done.\n" );
     }
   } else {
     progress ( "WARNING: Document and Zimlet initialization skipped because Application Server was not configured to start.\n".
