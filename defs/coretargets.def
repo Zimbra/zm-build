@@ -58,9 +58,7 @@ $(BUILD_ROOT)/zimbra-core.spec:
 		$(BUILD_ROOT)/zimbra-core.spec
 	echo "%attr(444, zimbra, zimbra) /opt/zimbra/docs/*" >> \
 		$(BUILD_ROOT)/zimbra-core.spec
-	echo "%attr(755, root, root) /opt/zimbra/common" >> \
-		$(BUILD_ROOT)/zimbra-core.spec
-	echo "%attr(755, root, root) /opt/zimbra/common/sbin" >> \
+	echo "%attr(755, root, root) /opt/zimbra/common/sbin/consul" >> \
 		$(BUILD_ROOT)/zimbra-core.spec
 	echo "%attr(755, root, root) /opt/zimbra/contrib" >> \
 		$(BUILD_ROOT)/zimbra-core.spec
@@ -139,7 +137,7 @@ $(CORE_DEST_DIR)/docs:
 	cp $(SERVICE_DIR)/docs/*txt $@
 	cp $(MIG_TOOLS_DIR)/ReadMe.txt $@/zmztozmig.txt
 
-$(CORE_DEST_DIR)/zimbramon: $(CORE_DEST_DIR)/common/lib/jylibs $(CORE_DEST_DIR)/common/lib $(CORE_DEST_DIR)/zimbramon/crontabs $(CORE_DEST_DIR) 
+$(CORE_DEST_DIR)/zimbramon: $(CORE_DEST_DIR)/common/lib/perl5 $(CORE_DEST_DIR)/common/lib/jylibs $(CORE_DEST_DIR)/zimbramon/crontabs $(CORE_DEST_DIR) 
 	@echo "*** Creating zimbramon"
 	mkdir -p $@
 	mkdir -p $(CORE_DEST_DIR)/logger/db/work
@@ -152,13 +150,13 @@ $(CORE_DEST_DIR)/zimbramon/crontabs:
 	mkdir -p $@
 	cp -f $(PACKAGE_CONF_DIR)/Env/crontabs/* $(CORE_DEST_DIR)/zimbramon/crontabs/
 
+$(CORE_DEST_DIR)/common/lib/perl5:
+	mkdir -p $(CORE_DEST_DIR)/common/lib/perl5
+	cp -R $(BUILD_ROOT)/lib/Zimbra $(CORE_DEST_DIR)/common/lib/perl5/
+
 $(CORE_DEST_DIR)/common/lib/jylibs:
 	mkdir -p $@
 	cp -R $(SERVICE_DIR)/src/jython/jylibs $(CORE_DEST_DIR)/common/lib
-
-$(CORE_DEST_DIR)/common/lib:
-	mkdir -p $(CORE_DEST_DIR)/common/lib/perl5
-	cp -R $(BUILD_ROOT)/lib/Zimbra $(CORE_DEST_DIR)/common/lib/perl5
 
 $(CORE_DEST_DIR)/lib: $(WEBAPP_DIR)/service.war $(NATIVE_DIR)/$(ANT_BUILD_DIR)/libzimbra-native.$(JNI_EXT)
 	@echo "*** Installing lib"
