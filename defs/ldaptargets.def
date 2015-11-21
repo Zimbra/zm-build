@@ -43,25 +43,25 @@ $(BUILD_ROOT)/zimbra-ldap.spec:
 	rm -f zimbra-ldap.post
 	echo "%attr(440, root, root) /etc/sudoers.d/02_zimbra-ldap" >> \
 		$(BUILD_ROOT)/zimbra-ldap.spec
-	echo "%attr(-, root, root) /opt/zimbra/common/etc/openldap" >> \
+	echo "%attr(-, root, root) /opt/zimbra/common/etc/openldap/zimbra" >> \
 		$(BUILD_ROOT)/zimbra-ldap.spec
-	echo "%attr(-, root, root) /opt/zimbra/common/etc/openldap/*" >> \
+	echo "%attr(-, root, root) /opt/zimbra/common/etc/openldap/zimbra/*" >> \
 		$(BUILD_ROOT)/zimbra-ldap.spec
-	echo "%attr(-, root, root) /opt/zimbra/common/etc/openldap/config" >> \
+	echo "%attr(-, root, root) /opt/zimbra/common/etc/openldap/zimbra/config" >> \
 		$(BUILD_ROOT)/zimbra-ldap.spec
-	echo "%attr(-, root, root) /opt/zimbra/common/etc/openldap/config/*" >> \
+	echo "%attr(-, root, root) /opt/zimbra/common/etc/openldap/zimbra/config/*" >> \
 		$(BUILD_ROOT)/zimbra-ldap.spec
-	echo "%attr(-, root, root) /opt/zimbra/common/etc/openldap/config/cn=config" >> \
+	echo "%attr(-, root, root) /opt/zimbra/common/etc/openldap/zimbra/config/cn=config" >> \
 		$(BUILD_ROOT)/zimbra-ldap.spec
-	echo "%attr(-, root, root) /opt/zimbra/common/etc/openldap/config/cn=config/*" >> \
+	echo "%attr(-, root, root) /opt/zimbra/common/etc/openldap/zimbra/config/cn=config/*" >> \
 		$(BUILD_ROOT)/zimbra-ldap.spec
-	echo "%attr(-, root, root) /opt/zimbra/common/etc/openldap/config/cn=config/olcDatabase={2}mdb" >> \
+	echo "%attr(-, root, root) /opt/zimbra/common/etc/openldap/zimbra/config/cn=config/olcDatabase={2}mdb" >> \
 		$(BUILD_ROOT)/zimbra-ldap.spec
-	echo "%attr(-, root, root) /opt/zimbra/common/etc/openldap/config/cn=config/olcDatabase={2}mdb/*" >> \
+	echo "%attr(-, root, root) /opt/zimbra/common/etc/openldap/zimbra/config/cn=config/olcDatabase={2}mdb/*" >> \
 		$(BUILD_ROOT)/zimbra-ldap.spec
-	echo "%attr(-, root, root) /opt/zimbra/common/etc/openldap/schema" >> \
+	echo "%attr(-, root, root) /opt/zimbra/common/etc/openldap/zimbra/schema" >> \
 		$(BUILD_ROOT)/zimbra-ldap.spec
-	echo "%attr(-, root, root) /opt/zimbra/common/etc/openldap/schema/*" >> \
+	echo "%attr(-, root, root) /opt/zimbra/common/etc/openldap/zimbra/schema/*" >> \
 		$(BUILD_ROOT)/zimbra-ldap.spec
 	echo "" >> $(BUILD_ROOT)/zimbra-ldap.spec
 	echo "%clean" >> $(BUILD_ROOT)/zimbra-ldap.spec
@@ -76,38 +76,38 @@ $(LDAP_DEST_ROOT)/etc/sudoers.d:
 	cp $(PACKAGE_CONF_DIR)/Env/sudoers.d/02_zimbra-ldap $(LDAP_DEST_ROOT)/etc/sudoers.d/02_zimbra-ldap
 
 $(LDAP_DEST_DIR)/common: $(LDAP_DEST_DIR) $(LDAP_DEST_ROOT)/etc/sudoers.d
-	mkdir -p $(LDAP_DEST_DIR)/common/etc/openldap/schema
+	mkdir -p $(LDAP_DEST_DIR)/common/etc/openldap/zimbra/schema
 	cp $(SERVICE_DIR)/$(MAVEN_TARGET_DIR)/ldap-config/amavisd.schema \
-		$(LDAP_DEST_DIR)/common/etc/openldap/schema
+		$(LDAP_DEST_DIR)/common/etc/openldap/zimbra/schema
 	cp $(SERVICE_DIR)/$(MAVEN_TARGET_DIR)/ldap-config/config/amavisd.ldif \
-		$(LDAP_DEST_DIR)/common/etc/openldap/schema
+		$(LDAP_DEST_DIR)/common/etc/openldap/zimbra/schema
 	cp -f $(SERVICE_DIR)/conf/ldap/opendkim.ldif \
-		$(LDAP_DEST_DIR)/common/etc/openldap/schema/opendkim.ldif
+		$(LDAP_DEST_DIR)/common/etc/openldap/zimbra/schema
 	cp $(SERVICE_DIR)/$(MAVEN_TARGET_DIR)/ldap-config/zimbra.schema \
-		$(LDAP_DEST_DIR)/common/etc/openldap/schema
+		$(LDAP_DEST_DIR)/common/etc/openldap/zimbra/schema
 	cp $(SERVICE_DIR)/$(MAVEN_TARGET_DIR)/ldap-config/config/zimbra.ldif \
-		$(LDAP_DEST_DIR)/common/etc/openldap/schema/zimbra.ldif
+		$(LDAP_DEST_DIR)/common/etc/openldap/zimbra/schema
 	cp $(SERVICE_DIR)/$(MAVEN_TARGET_DIR)/ldap-config/*.ldif \
-		$(LDAP_DEST_DIR)/common/etc/openldap
-	mkdir -p $(LDAP_DEST_DIR)/common/etc/openldap/config/cn=config
+		$(LDAP_DEST_DIR)/common/etc/openldap/zimbra
+	mkdir -p $(LDAP_DEST_DIR)/common/etc/openldap/zimbra/config/cn=config
 	cp $(SERVICE_DIR)/$(MAVEN_TARGET_DIR)/ldap-config/config/cn=config.ldif \
-		$(LDAP_DEST_DIR)/common/etc/openldap/config
+		$(LDAP_DEST_DIR)/common/etc/openldap/zimbra/config
 	cp $(SERVICE_DIR)/$(MAVEN_TARGET_DIR)/ldap-config/config/cn=module{0}.ldif \
-		$(LDAP_DEST_DIR)/common/etc/openldap/config/cn=config
+		$(LDAP_DEST_DIR)/common/etc/openldap/zimbra/config/cn=config
 	cp $(SERVICE_DIR)/$(MAVEN_TARGET_DIR)/ldap-config/config/cn=schema.ldif \
-		$(LDAP_DEST_DIR)/common/etc/openldap/config/cn=config
+		$(LDAP_DEST_DIR)/common/etc/openldap/zimbra/config/cn=config
 	cp $(SERVICE_DIR)/$(MAVEN_TARGET_DIR)/ldap-config/config/olcDatabase={0}config.ldif \
-		$(LDAP_DEST_DIR)/common/etc/openldap/config/cn=config
+		$(LDAP_DEST_DIR)/common/etc/openldap/zimbra/config/cn=config
 	cp $(SERVICE_DIR)/$(MAVEN_TARGET_DIR)/ldap-config/config/olcDatabase={-1}frontend.ldif \
-		$(LDAP_DEST_DIR)/common/etc/openldap/config/cn=config
+		$(LDAP_DEST_DIR)/common/etc/openldap/zimbra/config/cn=config
 	cp $(SERVICE_DIR)/$(MAVEN_TARGET_DIR)/ldap-config/config/olcDatabase={1}monitor.ldif \
-		$(LDAP_DEST_DIR)/common/etc/openldap/config/cn=config
+		$(LDAP_DEST_DIR)/common/etc/openldap/zimbra/config/cn=config
 	cp $(SERVICE_DIR)/$(MAVEN_TARGET_DIR)/ldap-config/config/olcDatabase={2}mdb.ldif \
-		$(LDAP_DEST_DIR)/common/etc/openldap/config/cn=config
-	mkdir -p $(LDAP_DEST_DIR)/common/etc/openldap/config/cn=config/olcDatabase={2}mdb
+		$(LDAP_DEST_DIR)/common/etc/openldap/zimbra/config/cn=config
+	mkdir -p $(LDAP_DEST_DIR)/common/etc/openldap/zimbra/config/cn=config/olcDatabase={2}mdb
 	cp $(SERVICE_DIR)/$(MAVEN_TARGET_DIR)/ldap-config/config/olcDatabase={2}mdb/olcOverlay={0}dynlist.ldif \
-		$(LDAP_DEST_DIR)/common/etc/openldap/config/cn=config/olcDatabase={2}mdb
+		$(LDAP_DEST_DIR)/common/etc/openldap/zimbra/config/cn=config/olcDatabase={2}mdb
 	cp $(SERVICE_DIR)/$(MAVEN_TARGET_DIR)/ldap-config/config/olcDatabase={2}mdb/olcOverlay={1}unique.ldif \
-		$(LDAP_DEST_DIR)/common/etc/openldap/config/cn=config/olcDatabase={2}mdb
+		$(LDAP_DEST_DIR)/common/etc/openldap/zimbra/config/cn=config/olcDatabase={2}mdb
 	cp $(SERVICE_DIR)/$(MAVEN_TARGET_DIR)/ldap-config/config/olcDatabase={2}mdb/olcOverlay={2}noopsrch.ldif \
-		$(LDAP_DEST_DIR)/common/etc/openldap/config/cn=config/olcDatabase={2}mdb
+		$(LDAP_DEST_DIR)/common/etc/openldap/zimbra/config/cn=config/olcDatabase={2}mdb
