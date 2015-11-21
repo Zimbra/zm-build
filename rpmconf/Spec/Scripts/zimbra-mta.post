@@ -34,6 +34,8 @@ if [ $? = 0 ]; then
   mv -f $sudotmp /etc/sudoers
   chmod $SUDOMODE /etc/sudoers
 fi
+chmod 440 /etc/sudoers.d/02_zimbra-mta
+chown root:root /etc/sudoers.d/02_zimbra-mta
 
 chown zimbra:zimbra /opt/zimbra/common/conf/master.cf.in
 chmod 440 /opt/zimbra/common/conf/master.cf.in
