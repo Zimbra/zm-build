@@ -6854,14 +6854,6 @@ sub applyConfig {
         progress ( "Skipping creation of default domain GAL sync account - existing install detected.\n" );
       }
     }
-    if ($newinstall && isEnabled("zimbra-mta") && $config{RUNAV} eq "yes") {
-      progress ( "Installing initial ClamAV Database.  This may take several minutes..." );
-      runAsZimbra ( "/opt/zimbra/common/bin/freshclam --config-file=/opt/zimbra/conf/freshclam.conf --quiet" );
-      progress ( "done.\n" );
-      progress ( "Restarting clamav..." );
-      runAsZimbra ( "/opt/zimbra/bin/zmclamdctl restart" );
-      progress ( "done.\n" );
-    }
   } else {
     progress ( "WARNING: Document and Zimlet initialization skipped because Application Server was not configured to start.\n".
                "WARNING: galsync account creation for default domain skipped because Application Server was not configured to start.\n")

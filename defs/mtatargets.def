@@ -102,3 +102,9 @@ $(MTA_DEST_DIR)/postfix: $(MTA_DEST_DIR) $(MTA_DEST_DIR)/data/opendkim $(MTA_DES
 
 $(MTA_DEST_DIR)/data/amavisd/mysql/antispamdb.sql: $(MTA_DEST_DIR)/data/amavisd/mysql $(MTA_DEST_DIR)/data/clamav
 	cp -f $(SERVICE_DIR)/conf/amavisd/mysql/antispamdb.sql $(MTA_DEST_DIR)/data/amavisd/mysql/antispamdb.sql
+
+$(MTA_DEST_DIR)/data/clamav/init:
+	mkdir -p $@
+	cp $(PACKAGE_CONF_DIR)/ClamAv/main.cvd $(MTA_DEST_DIR)/data/clamav/init/main.cvd.init
+	cp $(PACKAGE_CONF_DIR)/ClamAv/daily.cvd $(MTA_DEST_DIR)/data/clamav/daily.cvd.init
+	cp $(PACKAGE_CONF_DIR)/ClamAv/bytecode.cvd $(MTA_DEST_DIR)/data/clamav/bytecode.cvd.init
