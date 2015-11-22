@@ -1276,7 +1276,7 @@ sub setLdapDefaults {
 }
 
 sub installLdapConfig {
-  my $config_src="/opt/zimbra/common/etc/openldap/config";
+  my $config_src="/opt/zimbra/common/etc/openldap/zimbra/config";
   my $config_dest="/opt/zimbra/data/ldap/config";
   if (-d "/opt/zimbra/data/ldap/config") {
     main::progress("Installing LDAP configuration database...");
