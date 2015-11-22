@@ -65,3 +65,5 @@ if [ $? != 0 ]; then
 	useradd -r -g postfix -d /opt/zimbra/postfix postfix
 	/bin/rm -rf /opt/zimbra/postfix
 fi
+
+usermod -g zimbra -G postfix,tty zimbra
