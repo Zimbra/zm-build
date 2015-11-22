@@ -24,17 +24,6 @@ I=`hostname -i`
 rm -f /opt/zimbra/java
 PLAT=`/opt/zimbra/libexec/get_plat_tag.sh`
 BIT=`echo $PLAT | awk -F_ '{print $2}'`
-#if [ "x$BIT" = "x64" ]; then
-#	if [ x"$PLAT" = "xUBUNTU12_64" -o x"$PLAT" = "xUBUNTU14_64" ]; then
-		ln -s /opt/zimbra/j2sdk-18u40b25 /opt/zimbra/java
-#	else
-#		ln -s /opt/zimbra/jdk-1.7.0_55 /opt/zimbra/java
-#	fi
-#else
-#	ln -s /opt/zimbra/jdk-1.7.0_55 /opt/zimbra/java
-#fi
-
-#Symlinks
 
 if [ -d "/opt/zimbra/logger/db" ]; then
   chown zimbra:zimbra /opt/zimbra/logger/db
@@ -138,10 +127,3 @@ chown root:root /etc/sudoers.d/02_zimbra-core
 if [ -x "/opt/zimbra/libexec/zmfixperms" ]; then
   /opt/zimbra/libexec/zmfixperms
 fi
-
-# 64 bit jvm doesn't support the dump
-if [ "x$BIT" = "x64" ]; then
-	exit 0
-fi
-
-/opt/zimbra/java/bin/java -client -Xshare:dump
