@@ -23,6 +23,11 @@ if [ "x$ID" != "x0" ]; then
   exit 1
 fi
 
+if [ ! -x "/usr/bin/perl" ]; then
+  echo "ERROR: System perl at /usr/bin/perl must be present before installation."
+  exit 1
+fi
+
 MYDIR=`dirname $0`
 
 . ./util/utilfunc.sh
