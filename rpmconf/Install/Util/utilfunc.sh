@@ -2360,16 +2360,16 @@ setupCrontab() {
   fi
   cat /tmp/crontab.zimbra.orig | sed -e '/# ZIMBRASTART/,/# ZIMBRAEND/d' > \
     /tmp/crontab.zimbra.proc
-  cp -f /opt/zimbra/zimbramon/crontabs/crontab /tmp/crontab.zimbra
+  cp -f /opt/zimbra/conf/crontabs/crontab /tmp/crontab.zimbra
 
   isInstalled zimbra-store
   if [ x$PKGINSTALLED != "x" ]; then
-    cat /opt/zimbra/zimbramon/crontabs/crontab.store >> /tmp/crontab.zimbra
+    cat /opt/zimbra/conf/crontabs/crontab.store >> /tmp/crontab.zimbra
   fi
 
   isInstalled zimbra-logger
   if [ x$PKGINSTALLED != "x" ]; then
-    cat /opt/zimbra/zimbramon/crontabs/crontab.logger >> /tmp/crontab.zimbra
+    cat /opt/zimbra/conf/crontabs/crontab.logger >> /tmp/crontab.zimbra
   fi
 
   echo "# ZIMBRAEND -- DO NOT EDIT ANYTHING BETWEEN THIS LINE AND ZIMBRASTART" >> /tmp/crontab.zimbra

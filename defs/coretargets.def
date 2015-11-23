@@ -98,11 +98,13 @@ $(BUILD_ROOT)/zimbra-core.spec:
 		$(BUILD_ROOT)/zimbra-core.spec
 	echo "%attr(-, root, root) /opt/zimbra/lib" >> \
 		$(BUILD_ROOT)/zimbra-core.spec
-	echo "%attr(-, zimbra, zimbra) /opt/zimbra/zimbramon" >> \
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/conf/crontabs" >> \
 		$(BUILD_ROOT)/zimbra-core.spec
 	echo "%attr(-, root, root) /opt/zimbra/common/lib/perl5/Zimbra" >> \
 		$(BUILD_ROOT)/zimbra-core.spec
 	echo "%attr(-, root, root) /opt/zimbra/common/lib/jylibs" >> \
+		$(BUILD_ROOT)/zimbra-core.spec
+	echo "%attr(755, zimbra, zimbra) /opt/zimbra/logger/db/work" >> \
 		$(BUILD_ROOT)/zimbra-core.spec
 	echo "" >>  $(BUILD_ROOT)/zimbra-core.spec
 	echo "%clean" >>  $(BUILD_ROOT)/zimbra-core.spec
@@ -137,18 +139,16 @@ $(CORE_DEST_DIR)/docs:
 	cp $(SERVICE_DIR)/docs/*txt $@
 	cp $(MIG_TOOLS_DIR)/ReadMe.txt $@/zmztozmig.txt
 
-$(CORE_DEST_DIR)/zimbramon: $(CORE_DEST_DIR)/common/lib/perl5 $(CORE_DEST_DIR)/common/lib/jylibs $(CORE_DEST_DIR)/zimbramon/crontabs $(CORE_DEST_DIR) 
-	@echo "*** Creating zimbramon"
+$(CORE_DEST_DIR)/logger/db/work: $(CORE_DEST_DIR)/common/lib/perl5 $(CORE_DEST_DIR)/common/lib/jylibs $(CORE_DEST_DIR)/conf/crontabs $(CORE_DEST_DIR) 
 	mkdir -p $@
-	mkdir -p $(CORE_DEST_DIR)/logger/db/work
 	cp -f $(PACKAGE_CONF_DIR)/Img/connection_failed.gif \
 		$(CORE_DEST_DIR)/logger/db/work
 	cp -f $(PACKAGE_CONF_DIR)/Img/data_not_available.gif \
 		$(CORE_DEST_DIR)/logger/db/work
 
-$(CORE_DEST_DIR)/zimbramon/crontabs:
+$(CORE_DEST_DIR)/conf/crontabs:
 	mkdir -p $@
-	cp -f $(PACKAGE_CONF_DIR)/Env/crontabs/* $(CORE_DEST_DIR)/zimbramon/crontabs/
+	cp -f $(PACKAGE_CONF_DIR)/Env/crontabs/* $(CORE_DEST_DIR)/conf/crontabs/
 
 $(CORE_DEST_DIR)/common/lib/perl5:
 	mkdir -p $(CORE_DEST_DIR)/common/lib/perl5
