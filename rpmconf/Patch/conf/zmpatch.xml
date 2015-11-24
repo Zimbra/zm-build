@@ -9881,8 +9881,8 @@
     <perms owner="zimbra" mode="0664" />
    </file>
    <file>
-    <source>ZimbraBuild/storebuild/opt/zimbra/jetty-distribution-9.1.5.v20140505/zimbraAdmin/WEB-INF/classes/com/zimbra/webClient/filters/SetHeaderFilter.class</source>
-    <target>/opt/zimbra/jetty-distribution-9.1.5.v20140505/zimbraAdmin/WEB-INF/classes/com/zimbra/webClient/filters/SetHeaderFilter.class</target>
+    <source>ZimbraBuild/storebuild/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbraAdmin/WEB-INF/classes/com/zimbra/webClient/filters/SetHeaderFilter.class</source>
+    <target>/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbraAdmin/WEB-INF/classes/com/zimbra/webClient/filters/SetHeaderFilter.class</target>
     <perms owner="zimbra" mode="0664" />
    </file>
    <file>
