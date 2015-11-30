@@ -20,16 +20,25 @@
 
 PLAT=$(/opt/zimbra/libexec/get_plat_tag.sh)
 if [[ $PLAT == "UBUNTU"* || $PLAT == "DEBIAN"* ]]; then
-  if [ ! -e "/usr/sbin/sendmail" ]; then
-    ln -s /opt/zimbra/common/sbin/sendmail /usr/sbin/sendmail
+  if [ ! -e "/usr/sbin/sendmail" -o -L "/usr/bin/sendmail" ]; then
+     if [ -L "/usr/bin/sendmail" ]; then
+       if [ -x /bin/readlink ]; then
+         SMPATH=$(/bin/readlink /usr/sbin/sendmail)
+         if [ x$SMPATH = x"/opt/zimbra/postfix/sbin/sendmail" -o x$SMPATH = x"/opt/zimbra/common/sbin/sendmail" ]; then
+            /bin/rm -f /usr/sbin/sendmail
+            ln -s /opt/zimbra/common/sbin/sendmail /usr/sbin/sendmail
+          fi
+       fi
+     else
+       ln -s /opt/zimbra/common/sbin/sendmail /usr/sbin/sendmail
+     fi
   fi
 fi
 
-
-local sudotmp=`mktemp -t zsudoers.XXXXX 2> /dev/null` || { echo "Failed to create tmpfile"; exit 1; }
-SUDOMODE=`perl -e 'my $mode=(stat("/etc/sudoers"))[2];printf("%04o\n",$mode & 07777);'`
 egrep -q '^%zimbra[[:space:]]' /etc/sudoers
 if [ $? = 0 ]; then
+  sudotmp=`mktemp -t zsudoers.XXXXX 2> /dev/null` || { echo "Failed to create tmpfile"; exit 1; }
+  SUDOMODE=`perl -e 'my $mode=(stat("/etc/sudoers"))[2];printf("%04o\n",$mode & 07777);'`
   egrep -v '^%zimbra[[:space:]]' /etc/sudoers > $sudotmp
   mv -f $sudotmp /etc/sudoers
   chmod $SUDOMODE /etc/sudoers
@@ -44,7 +53,6 @@ mkdir -p /opt/zimbra/data/amavisd/db
 mkdir -p /opt/zimbra/data/amavisd/tmp
 mkdir -p /opt/zimbra/data/amavisd/var
 mkdir -p /opt/zimbra/data/amavisd/quarantine
-chown -R zimbra:zimbra /opt/zimbra/amavisd/*
 chown -R zimbra:zimbra /opt/zimbra/data/amavisd/*
 
 mkdir -p /opt/zimbra/data/clamav/db
@@ -62,8 +70,18 @@ if [ ! -f /opt/zimbra/common/conf/main.cf ]; then
 	chown zimbra:zimbra /opt/zimbra/common/conf/main.cf
 fi
 
-if [ ! -f /etc/aliases ]; then
-  ln -s /opt/zimbra/common/conf/aliases /etc/aliases
+if [ ! -e /etc/aliases -o -L /etc/aliases ]; then
+  if [ -L /etc/aliases ]; then
+    if [ -x /bin/readlink ]; then
+      SMPATH=$(/bin/readlink /etc/aliases)
+      if [ x$SMPATH = x"/opt/zimbra/postfix/conf/aliases" -o x$SMPATH = x"/opt/zimbra/common/conf/aliases" ]; then
+        rm -f /etc/aliases
+        ln -s /opt/zimbra/common/conf/aliases /etc/aliases
+      fi
+    fi
+  else
+    ln -s /opt/zimbra/common/conf/aliases /etc/aliases
+  fi
 fi
 
 if [ -x "/opt/zimbra/libexec/zmfixperms" ]; then
