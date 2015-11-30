@@ -1025,6 +1025,64 @@ sub getLdapServerValue {
 }
 
 
+sub getRealLdapServerValue {
+  my ($attrib,$sub) = @_;
+  $sub = $main::config{HOSTNAME} if ($sub eq "");
+  my $sec="gsreal";
+  my ($val,$err);
+  if (exists $main::loaded{$sec}{$sub}{$attrib}) {
+    $val = $main::loaded{$sec}{$sub}{$attrib};
+    detail("Returning cached server config attribute for $sub: $attrib=$val");
+    return $val;
+  }
+  my ($rfh,$wfh,$efh,$cmd,$rc);
+  $rfh = new FileHandle;
+  $wfh = new FileHandle;
+  $efh = new FileHandle;
+  $cmd = "$ZMPROV gs -e $sub";
+  my $pid = open3($wfh,$rfh,$efh, $cmd);
+  unless(defined($pid)) {
+    return undef;
+  }
+  close $wfh;
+  my @d = <$rfh>;
+  while (scalar(@d) > 0)  {
+    chomp(my $line = shift(@d));
+    my ($k, $v) = $line =~ m/^(\w+):\s(.*)/;
+    while ($d[0] !~ m/^\w+:\s.*/ && scalar(@d) > 0) {
+      chomp($v .= shift(@d));
+    }
+    if (!$main::loaded{$sec}{$sub}{zmsetuploaded} || ($main::loaded{$sec}{$sub}{zmsetuploaded} && $k eq $attrib)) {
+      if (exists $main::loaded{$sec}{$sub}{$k}) {
+        $main::loaded{$sec}{$sub}{$k}="$main::loaded{$sec}{$sub}{$k}\n$v";
+      } else {
+        $main::loaded{$sec}{$sub}{$k}="$v";
+      }
+    }
+  }
+  chomp($err = join "", <$efh>);
+  detail("$err") if (length($err) > 0);
+  waitpid($pid,0);
+  if ($? == -1) {
+    # failed to execute
+    close $rfh; close $efh;
+    return undef;
+  } elsif ($? & 127) {
+    # died with signal
+    close $rfh; close $efh;
+    return undef;
+  } else {
+    $rc = $? >> 8;
+    close $rfh; close $efh;
+    return undef if ($rc != 0);
+  }
+  close $rfh; close $efh;
+  $main::loaded{$sec}{$sub}{zmsetuploaded}=1;
+  $val = $main::loaded{$sec}{$sub}{$attrib};
+  detail("Returning retrieved server config attribute for $sub: $attrib=$val");
+  return $val;
+}
+
 sub setLdapDefaults {
 
   return if exists $config{LDAPDEFAULTSLOADED};
