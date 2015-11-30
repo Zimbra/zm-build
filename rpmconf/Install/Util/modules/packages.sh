@@ -128,7 +128,7 @@ installPackage() {
 
 pkgError() {
   echo ""
-  echo "ERRROR: Unable to install required package"
+  echo "ERROR: Unable to install required package"
   echo "Validate ability to connect to upstream package servers"
   exit 1
 }
