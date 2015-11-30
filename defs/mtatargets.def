@@ -106,5 +106,5 @@ $(MTA_DEST_DIR)/data/amavisd/mysql/antispamdb.sql: $(MTA_DEST_DIR)/data/amavisd/
 $(MTA_DEST_DIR)/data/clamav/init: $(MTA_DEST_DIR)/data/clamav
 	mkdir -p $@
 	cp $(PACKAGE_CONF_DIR)/ClamAv/main.cvd $(MTA_DEST_DIR)/data/clamav/init/main.cvd.init
-	cp $(PACKAGE_CONF_DIR)/ClamAv/daily.cvd $(MTA_DEST_DIR)/data/clamav/daily.cvd.init
-	cp $(PACKAGE_CONF_DIR)/ClamAv/bytecode.cvd $(MTA_DEST_DIR)/data/clamav/bytecode.cvd.init
+	cp $(PACKAGE_CONF_DIR)/ClamAv/daily.cvd $(MTA_DEST_DIR)/data/clamav/init/daily.cvd.init
+	cp $(PACKAGE_CONF_DIR)/ClamAv/bytecode.cvd $(MTA_DEST_DIR)/data/clamav/init/bytecode.cvd.init
