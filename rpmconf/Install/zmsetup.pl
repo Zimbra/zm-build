@@ -1385,7 +1385,7 @@ sub setDefaults {
     $config{zimbraIPMode}     = "ipv4";
   }
 
-  $config{JAVAHOME} = "/opt/zimbra/java";
+  $config{JAVAHOME} = "/opt/zimbra/common/lib/jvm/java";
   setLocalConfig ("zimbra_java_home", "$config{JAVAHOME}");
   $config{HOSTNAME} = lc(qx(hostname --fqdn));
   chomp $config{HOSTNAME};
@@ -1402,11 +1402,7 @@ sub setDefaults {
   } else {
     $config{mailboxd_keystore} = "/opt/zimbra/conf/keystore";
   }
-  if ( -f "/opt/zimbra/java/lib/security/cacerts") {
-    $config{mailboxd_truststore} = "/opt/zimbra/java/lib/security/cacerts";
-  } else {
-    $config{mailboxd_truststore} = "/opt/zimbra/java/jre/lib/security/cacerts";
-  }
+  $config{mailboxd_truststore} = "/opt/zimbra/common/lib/jvm/java/jre/lib/security/cacerts";
   $config{mailboxd_keystore_password} = genRandomPass();
   $config{mailboxd_truststore_password} = "changeit";
 

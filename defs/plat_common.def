@@ -44,13 +44,9 @@ RRD_SOURCE	:= $(THIRD_PARTY_BUILDS)/$(BUILD_PLATFORM)/rrdtool/$(RRD_DIR)
 
 JUNIXSOCKET_NATIVE	:= $(THIRD_PARTY_BUILDS)/x86_64/java/junixsocket/libjunixsocket-linux-1.5-amd64.so
 
-OPENJDK_VERSION	:= 18u40b25
-OPENJDK_FILE	:= j2sdk
-OPENJDK_SOURCE	:= $(THIRD_PARTY_BUILDS)/x86_64/openjdk/$(OPENJDK_FILE)-$(OPENJDK_VERSION)
-
 LOG4J_VERSION := 1.2.16
 
-JAVA_BINARY := /opt/zimbra/java/bin/java
+JAVA_BINARY := /opt/zimbra/common/bin/java
 
 JNI_EXT := so
 

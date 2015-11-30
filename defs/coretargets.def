@@ -30,7 +30,7 @@ $(CORE_DEST_ROOT)/DEBIAN/control: $(CORE_DEST_ROOT)/DEBIAN $(CORE_DEST_ROOT)/DEB
 
 $(CORE_DEST_ROOT)/DEBIAN/md5sums: force
 	(cd $(CORE_DEST_ROOT); \
-	find . -type f ! -regex '.*opt/zimbra/conf/localconfig.xml' ! -regex '.*opt/zimbra/j2sdk-.*/jre/lib/security/cacerts' ! -regex '.*.hg.*' ! -regex '.*?debian-binary.*' ! -regex '.*?DEBIAN.*' -print0 | xargs -0 md5sum | sed -e 's| \./| |' > $@)
+	find . -type f ! -regex '.*opt/zimbra/conf/localconfig.xml' ! -regex '.*?debian-binary.*' ! -regex '.*?DEBIAN.*' -print0 | xargs -0 md5sum | sed -e 's| \./| |' > $@)
 
 core_pkg_spec_rpm: $(BUILD_ROOT)/zimbra-core.spec
 
@@ -93,8 +93,6 @@ $(BUILD_ROOT)/zimbra-core.spec:
 	echo "%attr(644, zimbra, zimbra) /opt/zimbra/conf/zmconfigd/*" >> \
 		$(BUILD_ROOT)/zimbra-core.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/db" >> \
-		$(BUILD_ROOT)/zimbra-core.spec
-	echo "%attr(-, root, root) /opt/zimbra/j2sdk-$(OPENJDK_VERSION)" >> \
 		$(BUILD_ROOT)/zimbra-core.spec
 	echo "%attr(-, root, root) /opt/zimbra/lib" >> \
 		$(BUILD_ROOT)/zimbra-core.spec
@@ -177,10 +175,6 @@ $(NATIVE_DIR)/build/libzimbra-native.$(JNI_EXT):
 
 $(LAUNCHER_DIR)/build/zmmailboxdmgr:
 	(cd $(LAUNCHER_DIR); make JAVA_BINARY=$(JAVA_BINARY))
-
-$(CORE_DEST_DIR)/j2sdk-$(OPENJDK_VERSION):
-	@echo "*** Creating OpenJDK"
-	(cd $(CORE_DEST_DIR);tar xfz $(OPENJDK_SOURCE).tgz;)
 
 $(CORE_DEST_DIR)/db: $(WEBAPP_DIR)/service.war
 	mkdir -p $@
