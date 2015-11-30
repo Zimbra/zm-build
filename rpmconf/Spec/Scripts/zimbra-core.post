@@ -36,14 +36,6 @@ BIT=`echo $PLAT | awk -F_ '{print $2}'`
 
 #Symlinks
 
-if [ -d "/opt/zimbra/zimbramon/rrdtool" ]; then
-  rm -rf /opt/zimbra/zimbramon/rrdtool
-  ln -s /opt/zimbra/zimbramon/rrdtool-1.2.30 /opt/zimbra/zimbramon/rrdtool
-else
-  rm -f /opt/zimbra/zimbramon/rrdtool
-  ln -s /opt/zimbra/zimbramon/rrdtool-1.2.30 /opt/zimbra/zimbramon/rrdtool
-fi
-
 if [ -d "/opt/zimbra/logger/db" ]; then
   chown zimbra:zimbra /opt/zimbra/logger/db
 fi
@@ -153,4 +145,3 @@ if [ "x$BIT" = "x64" ]; then
 fi
 
 /opt/zimbra/java/bin/java -client -Xshare:dump
-
