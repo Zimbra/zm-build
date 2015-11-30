@@ -1561,7 +1561,7 @@ sub setDefaults {
 
   if (isEnabled("zimbra-mta")) {
     progress  "setting defaults for zimbra-mta.\n" if $options{d};
-    my $tmpval = (qx($SU "/opt/zimbra/postfix/sbin/postconf mynetworks"));
+    my $tmpval = (qx($SU "/opt/zimbra/common/sbin/postconf mynetworks"));
     chomp($tmpval);
     $tmpval =~ s/mynetworks = //;
     if ($tmpval eq "") {
