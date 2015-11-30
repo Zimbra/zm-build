@@ -160,6 +160,7 @@ $(CORE_DEST_DIR)/zimbramon/pylibs:
 
 $(CORE_DEST_DIR)/zimbramon/lib:
 	mkdir -p $(CORE_DEST_DIR)/zimbramon/lib
+	mkdir -p $(CORE_DEST_DIR)/common/lib/perl5
 	cp -R $(BUILD_ROOT)/lib/Zimbra $(CORE_DEST_DIR)/common/lib/perl5
 
 $(CORE_DEST_DIR)/lib: $(WEBAPP_DIR)/service.war $(NATIVE_DIR)/build/libzimbra-native.$(JNI_EXT)
