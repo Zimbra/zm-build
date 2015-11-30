@@ -11,7 +11,7 @@ CORE_COMPONENTS	:= \
 	$(CORE_DEST_DIR)/libexec \
 	$(CORE_DEST_DIR)/bin \
 	$(CORE_DEST_DIR)/contrib \
-	$(CORE_DEST_DIR)/zimbramon \
+	$(CORE_DEST_DIR)/logger/db/work \
 	$(CORE_DEST_DIR)/conf \
 	$(CORE_DEST_DIR)/docs \
 	$(CORE_DEST_DIR)/lib/ext/com_zimbra_cert_manager/com_zimbra_cert_manager.jar \

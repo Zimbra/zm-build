@@ -7098,26 +7098,26 @@ sub setupCrontab {
   detail("crontab: Getting existing backup and custom entries from crontab file.");
   qx(cat /tmp/crontab.zimbra.orig | sed -e '/# ZIMBRASTART/,/# ZIMBRAEND/d' > /tmp/crontab.zimbra.proc);
   detail("crontab: Adding zimbra-core specific crontab entries");
-  qx(cp -f /opt/zimbra/zimbramon/crontabs/crontab /tmp/crontab.zimbra);
+  qx(cp -f /opt/zimbra/conf/crontabs/crontab /tmp/crontab.zimbra);
 
   if (isEnabled("zimbra-ldap")) {
     detail("crontab: Adding zimbra-ldap specific crontab entries");
-    qx(cat /opt/zimbra/zimbramon/crontabs/crontab.ldap >> /tmp/crontab.zimbra 2>> $logfile);
+    qx(cat /opt/zimbra/conf/crontabs/crontab.ldap >> /tmp/crontab.zimbra 2>> $logfile);
   }
 
   if (isEnabled("zimbra-store")) {
     detail("crontab: Adding zimbra-store specific crontab entries");
-    qx(cat /opt/zimbra/zimbramon/crontabs/crontab.store >> /tmp/crontab.zimbra 2>> $logfile);
+    qx(cat /opt/zimbra/conf/crontabs/crontab.store >> /tmp/crontab.zimbra 2>> $logfile);
   }
 
   if (isEnabled("zimbra-logger")) {
     detail("crontab: Adding zimbra-logger specific crontab entries");
-    qx(cat /opt/zimbra/zimbramon/crontabs/crontab.logger >> /tmp/crontab.zimbra 2>> $logfile);
+    qx(cat /opt/zimbra/conf/crontabs/crontab.logger >> /tmp/crontab.zimbra 2>> $logfile);
   }
 
   if (isEnabled("zimbra-mta")) {
     detail("crontab: Adding zimbra-mta specific crontab entries");
-    qx(cat /opt/zimbra/zimbramon/crontabs/crontab.mta >> /tmp/crontab.zimbra 2>> $logfile);
+    qx(cat /opt/zimbra/conf/crontabs/crontab.mta >> /tmp/crontab.zimbra 2>> $logfile);
   }
 
   detail("crontab: adding backup block");
