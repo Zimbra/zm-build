@@ -22,7 +22,7 @@ CORE_COMPONENTS	:= \
 
 MTA_COMPONENTS	:= \
 	$(MTA_DEST_DIR) \
-	$(MTA_DEST_DIR)/postfix
+	$(MTA_DEST_DIR)/postfix \
 	$(MTA_DEST_DIR)/data/postfix \
 	$(MTA_DEST_DIR)/data/amavisd/mysql/antispamdb.sql
 
