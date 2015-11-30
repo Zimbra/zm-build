@@ -5171,6 +5171,9 @@ sub configSetupLdap {
       open(ER,">>$file");
       close ER;
     }
+    if (isNetwork()) {
+      setLdapGlobalConfig("zimbraRedoLogDeleteOnRollover", "FALSE");
+    }
   } elsif (isEnabled("zimbra-ldap")) {
     my $rc;
     if ($newinstall) {
