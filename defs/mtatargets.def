@@ -50,7 +50,11 @@ $(BUILD_ROOT)/zimbra-mta.spec:
 		$(BUILD_ROOT)/zimbra-mta.spec )
 	echo "%attr(440, root, root) /etc/sudoers.d/02_zimbra-mta" >> \
 		$(BUILD_ROOT)/zimbra-mta.spec
-	echo "%attr(-, zimbra, zimbra) /opt/zimbra/common/conf" >> \
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/common/conf/master.cf.in" >> \
+		$(BUILD_ROOT)/zimbra-mta.spec
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/common/conf/tag_as_foreign.re.in" >> \
+		$(BUILD_ROOT)/zimbra-mta.spec
+	echo "%attr(-, zimbra, zimbra) /opt/zimbra/common/conf/tag_as_originating.re.in" >> \
 		$(BUILD_ROOT)/zimbra-mta.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/data/amavisd" >> \
 		$(BUILD_ROOT)/zimbra-mta.spec
@@ -60,8 +64,6 @@ $(BUILD_ROOT)/zimbra-mta.spec:
 		$(BUILD_ROOT)/zimbra-mta.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/data/opendkim" >> \
 		$(BUILD_ROOT)/zimbra-mta.spec
-	echo "%attr(-, zimbra, zimbra) /opt/zimbra/data/spamassassin" >> \
-		$(BUILD_ROOT)/zimbra-mta.spec
 
 mta_stage: $(MTA_COMPONENTS)
 
@@ -70,16 +72,19 @@ $(MTA_DEST_DIR): $(MTA_DEST_ROOT)/etc/sudoers.d
 
 $(MTA_DEST_DIR)/data/postfix:
 	mkdir -p $@
-$(MTA_DEST_DIR)/data/spamassassin:
-	mkdir -p $@
+
 $(MTA_DEST_DIR)/data/clamav:
 	mkdir -p $@
+
 $(MTA_DEST_DIR)/data/cbpolicyd/db:
 	mkdir -p $@
+
 $(MTA_DEST_DIR)/data/altermime:
 	mkdir -p $@
+
 $(MTA_DEST_DIR)/data/amavisd/mysql:
 	mkdir -p $@
+
 $(MTA_DEST_DIR)/data/opendkim:
 	mkdir -p $@
 
@@ -95,5 +100,5 @@ $(MTA_DEST_DIR)/postfix: $(MTA_DEST_DIR) $(MTA_DEST_DIR)/data/opendkim $(MTA_DES
 	cp $(SERVICE_DIR)/conf/postfix/tag_as_foreign.re.in $(MTA_DEST_DIR)/common/conf/tag_as_foreign.re.in
 	cp $(SERVICE_DIR)/conf/postfix/tag_as_originating.re.in $(MTA_DEST_DIR)/common/conf/tag_as_originating.re.in
 
-$(MTA_DEST_DIR)/data/amavisd/mysql/antispamdb.sql: $(MTA_DEST_DIR)/data/amavisd/mysql $(MTA_DEST_DIR)/data/clamav $(MTA_DEST_DIR)/data/spamassassin
+$(MTA_DEST_DIR)/data/amavisd/mysql/antispamdb.sql: $(MTA_DEST_DIR)/data/amavisd/mysql $(MTA_DEST_DIR)/data/clamav
 	cp -f $(SERVICE_DIR)/conf/amavisd/mysql/antispamdb.sql $(MTA_DEST_DIR)/data/amavisd/mysql/antispamdb.sql
