@@ -13,16 +13,10 @@ if [ -f /etc/bashrc ]; then
 	. /etc/bashrc
 fi
 
-if [ -x "/opt/zimbra/libexec/get_plat_tag.sh" ]; then
-  ZCS_PLATFORM=$(/opt/zimbra/libexec/get_plat_tag.sh)
-else 
-  ZCS_PLATFORM=unknown
-fi
-
 JAVA_HOME=/opt/zimbra/java
 export JAVA_HOME
 
-PATH=/opt/zimbra/bin:/opt/zimbra/postfix/sbin:/opt/zimbra/openssl/bin:${JAVA_HOME}/bin:/opt/zimbra/common/bin:/usr/sbin:${PATH}
+PATH=/opt/zimbra/bin:${JAVA_HOME}/bin:/opt/zimbra/common/bin:/usr/sbin:${PATH}
 export PATH
 
 unset LD_LIBRARY_PATH
@@ -31,7 +25,7 @@ SNMPCONFPATH=/opt/zimbra/conf
 export SNMPCONFPATH
 
 eval `/usr/bin/perl -V:archname`
-PERLLIB=/opt/zimbra/zimbramon/lib/$archname:/opt/zimbra/zimbramon/lib
+PERLLIB=/opt/zimbra/common/lib/perl5/$archname:/opt/zimbra/common/lib/perl5
 export PERLLIB
 
 PERL5LIB=$PERLLIB
@@ -45,6 +39,6 @@ umask 0027
 
 unset DISPLAY
 
-export MANPATH=/opt/zimbra/opendkim/share/man:/opt/zimbra/common/share/man:${MANPATH}
+export MANPATH=/opt/zimbra/common/share/man:${MANPATH}
 
 export HISTTIMEFORMAT="%y%m%d %T "

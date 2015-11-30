@@ -1303,7 +1303,7 @@ sub installLdapSchema {
 }
 
 sub setDefaults {
-  progress ( "Setting defaults..." ) unless $options{d};
+  progress ( "Setting defaults...\n" ) unless $options{d};
 
   # Get the interfaces.
   # Do this in perl, since it's the same on all platforms.
@@ -5349,7 +5349,7 @@ sub configSaveCA {
     configLog("configSaveCA");
     return 0;
   }
-  progress ( "Saving CA in ldap ..." );
+  progress ( "Saving CA in ldap..." );
   my $rc = runAsRoot("/opt/zimbra/bin/zmcertmgr deployca");
   if ($rc != 0) {
     progress ( "failed.\n" );
@@ -5486,7 +5486,7 @@ sub configSaveCert {
     configLog("configSaveCert");
     return 0;
   }
-  progress ( "Saving SSL Certificate in ldap ..." );
+  progress ( "Saving SSL Certificate in ldap..." );
   my $rc = runAsRoot("/opt/zimbra/bin/zmcertmgr savecrt $ssl_cert_type");
   if ($rc != 0) {
     progress ( "failed.\n" );
@@ -5852,7 +5852,7 @@ sub configSetNEFeatures {
 
 sub configInitDomainAdminGroups {
   return if ($config{DOCREATEDOMAIN} eq "no");
-  main::progress ("Setting up default domain admin UI components..");
+  main::progress ("Setting up default domain admin UI components...");
 
   $config{zimbraDefaultDomainName} = getLdapConfigValue("zimbraDefaultDomainName") || $config{CREATEDOMAIN};
   my $domainGroup = "zimbraDomainAdmins\@".
