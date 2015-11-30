@@ -24,11 +24,11 @@ chown -R zimbra:zimbra /opt/zimbra/data/dns
 
 chown zimbra:zimbra /opt/zimbra/data
 
-egrep -q '^%zimbra.*unbound' /etc/sudoers
+egrep -q '^%zimbra[[:space:]]' /etc/sudoers
 if [ $? = 0 ]; then
   sudotmp=`mktemp -t zsudoers.XXXXX 2> /dev/null` || { echo "Failed to create tmpfile"; exit 1; }
   SUDOMODE=`perl -e 'my $mode=(stat("/etc/sudoers"))[2];printf("%04o\n",$mode & 07777);'`
-  egrep -v '^%zimbra.*unbound|^%zimbra.*resolvconf|^%zimbra.*zmdnscachealign' /etc/sudoers > $sudotmp
+  egrep -v '^%zimbra[[:space:]]' /etc/sudoers > $sudotmp
   mv -f $sudotmp /etc/sudoers
   chmod $SUDOMODE /etc/sudoers
 fi

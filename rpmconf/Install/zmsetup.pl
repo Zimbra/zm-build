@@ -19,7 +19,7 @@
 use strict;
 
 use lib "/opt/zimbra/libexec";
-use lib "/opt/zimbra/zimbramon/lib";
+use lib "/opt/zimbra/common/lib/perl5";
 use Zimbra::Util::Common;
 use Zimbra::Util::Timezone;
 use Net::LDAP;

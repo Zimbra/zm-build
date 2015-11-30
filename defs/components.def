@@ -4,11 +4,6 @@ WEBAPPS	:= \
 	$(WEBAPP_DIR)/zimbra/downloads \
 	$(WEBAPP_DIR)/zimbraAdmin.war
 
-CBPOLICYD_COMPONENTS := \
-	$(MTA_DEST_DIR)/$(CBPOLICYD_DIR) \
-	$(MTA_DEST_DIR)/data/cbpolicyd \
-	$(MTA_DEST_DIR)/data/cbpolicyd/db
-
 CORE_COMPONENTS	:= \
 	$(CORE_DEST_DIR) \
 	$(CORE_DEST_DIR)/db \
@@ -20,14 +15,6 @@ CORE_COMPONENTS	:= \
 	$(CORE_DEST_DIR)/j2sdk-$(OPENJDK_VERSION) \
 	$(CORE_DEST_DIR)/conf \
 	$(CORE_DEST_DIR)/docs \
-	$(CORE_DEST_DIR)/$(BDB_DIR) \
-	$(CORE_DEST_DIR)/$(OPENSSL_DIR)-$(OPENSSL_VERSION) \
-	$(CORE_DEST_DIR)/$(HEIMDAL_DIR)-$(HEIMDAL_VERSION) \
-	$(CORE_DEST_DIR)/$(CURL_DIR)-$(CURL_VERSION) \
-	$(CORE_DEST_DIR)/$(SASL_DIR)-$(SASL_VERSION) \
-	$(CORE_DEST_DIR)/$(LDAP_DIR)-libs-$(LDAP_VERSION) \
-	$(CORE_DEST_DIR)/$(PFLOG_DIR)-$(PFLOG_VERSION) \
-	$(CORE_DEST_DIR)/$(TCMALLOC_DIR) \
 	$(CORE_DEST_DIR)/lib/ext/com_zimbra_cert_manager/com_zimbra_cert_manager.jar \
 	$(CORE_DEST_DIR)/lib/ext/com_zimbra_bulkprovision/com_zimbra_bulkprovision.jar \
 	$(CORE_DEST_DIR)/lib/ext/com_zimbra_clientuploader/com_zimbra_clientuploader.jar \
@@ -35,21 +22,9 @@ CORE_COMPONENTS	:= \
 
 MTA_COMPONENTS	:= \
 	$(MTA_DEST_DIR) \
-	$(MTA_DEST_DIR)/$(DKIM_DIR) \
-	$(MTA_DEST_DIR)/data/opendkim \
-	$(MTA_DEST_DIR)/$(POSTFIX_DIR) \
+	$(MTA_DEST_DIR)/postfix
 	$(MTA_DEST_DIR)/data/postfix \
-	$(MTA_DEST_DIR)/$(AMAVISD_DIR)-new-$(AMAVISD_VERSION) \
-	$(MTA_DEST_DIR)/data/amavisd/mysql/antispamdb.sql \
-	$(MTA_DEST_DIR)/$(CLAMAV_DIR)  \
-	$(MTA_DEST_DIR)/data/clamav \
-	$(MTA_DEST_DIR)/$(DSPAM_DIR)-$(DSPAM_VERSION) \
-	$(MTA_DEST_DIR)/data/dspam \
-	$(MTA_DEST_DIR)/$(ALTERMIME_DIR)-$(ALTERMIME_VERSION) \
-	$(MTA_DEST_DIR)/data/altermime \
-	$(MTA_MARIADB_DEST_DIR)/$(MARIADB_DIR) \
-	$(MTA_DEST_DIR)/$(ZMQ_DIR) \
-	$(CBPOLICYD_COMPONENTS)
+	$(MTA_DEST_DIR)/data/amavisd/mysql/antispamdb.sql
 
 DNS_COMPONENTS	:= \
 	$(DNS_DEST_DIR) \
@@ -112,6 +87,3 @@ SNMP_COMPONENTS := \
 
 PROXY_COMPONENTS := \
 	$(PROXY_DEST_DIR)/conf/nginx
-
-EVO_COMPONENTS := \
-	$(EVO_DEST_DIR)

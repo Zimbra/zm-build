@@ -5,7 +5,7 @@ Maintainer: build@zimbra.com
 Section: Mail
 Priority: optional
 Architecture: @@ARCH@@
-Depends: zimbra-core
+Depends: zimbra-core, zimbra-mta-components
 Provides: mail-transport-agent
 Conflicts: mail-transport-agent
 Replaces: mail-transport-agent

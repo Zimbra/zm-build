@@ -21,7 +21,7 @@ package zmupgrade;
 
 use strict;
 use lib "/opt/zimbra/libexec/scripts";
-use lib "/opt/zimbra/zimbramon/lib";
+use lib "/opt/zimbra/common/lib/perl5";
 use Migrate;
 use Net::LDAP;
 use IPC::Open3;
@@ -2254,6 +2254,14 @@ sub upgrade870BETA1 {
 sub upgrade870BETA2 {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
   main::progress("Updating from 8.7.0_BETA2\n");
+  if (main::isInstalled("zimbra-mta")) {
+    my $antispam_mysql_mycnf = main::getLocalConfig("antispam_mysql_mycnf");
+    if ( -e ${antispam_mysql_mycnf} ) {
+      main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-mysql_basedir --section=mysqld --key=basedir --set --value='/opt/zimbra/common' ${antispam_mysql_mycnf}");
+      main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-error-log --section=mysqld_safe --key=err-log --unset ${antispam_mysql_mycnf}");
+      main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-error-log --section=mysqld_safe --key=log-error --set --value=/opt/zimbra/log/mysqld.log ${antispam_mysql_mycnf}");
+    }
+  }
 
   return 0;
 }

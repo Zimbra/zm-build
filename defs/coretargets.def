@@ -50,6 +50,8 @@ $(BUILD_ROOT)/zimbra-core.spec:
 		$(BUILD_ROOT)/zimbra-core.spec )
 	echo "%attr(440, root, root) /etc/sudoers.d/01_zimbra" >> \
 		$(BUILD_ROOT)/zimbra-core.spec
+	echo "%attr(440, root, root) /etc/sudoers.d/02_zimbra-core" >> \
+		$(BUILD_ROOT)/zimbra-core.spec
 	echo "%attr(755, root, root) /opt/zimbra/bin" >> \
 		$(BUILD_ROOT)/zimbra-core.spec
 	echo "%attr(755, zimbra, zimbra) /opt/zimbra/docs" >> \
@@ -61,8 +63,6 @@ $(BUILD_ROOT)/zimbra-core.spec:
 	echo "%attr(755, root, root) /opt/zimbra/libexec" >> \
 		$(BUILD_ROOT)/zimbra-core.spec
 	echo "%attr(755, zimbra, zimbra) /opt/zimbra/logger" >> \
-		$(BUILD_ROOT)/zimbra-core.spec
-	echo "%attr(-, zimbra, zimbra) /opt/zimbra/pflogsumm-$(PFLOG_VERSION)" >> \
 		$(BUILD_ROOT)/zimbra-core.spec
 	echo "%attr(755, zimbra, zimbra) /opt/zimbra/conf" >> \
 		$(BUILD_ROOT)/zimbra-core.spec
@@ -100,21 +100,7 @@ $(BUILD_ROOT)/zimbra-core.spec:
 		$(BUILD_ROOT)/zimbra-core.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/zimbramon" >> \
 		$(BUILD_ROOT)/zimbra-core.spec
-	echo "%attr(-, zimbra, zimbra) /opt/zimbra/bdb-$(BDB_VERSION)" >> \
-		$(BUILD_ROOT)/zimbra-core.spec
-	echo "%attr(-, zimbra, zimbra) /opt/zimbra/openssl-$(OPENSSL_VERSION)" >> \
-		$(BUILD_ROOT)/zimbra-core.spec
-	echo "%attr(-, zimbra, zimbra) /opt/zimbra/heimdal-$(HEIMDAL_VERSION)" >> \
-		$(BUILD_ROOT)/zimbra-core.spec
-	echo "%attr(-, zimbra, zimbra) /opt/zimbra/curl-$(CURL_VERSION)" >> \
-		$(BUILD_ROOT)/zimbra-core.spec
-	echo "%attr(-, root, zimbra) /opt/zimbra/$(SASL_DIR)-$(SASL_VERSION)" >> \
-		$(BUILD_ROOT)/zimbra-core.spec
-	echo "%attr(-, zimbra, zimbra) /opt/zimbra/mariadb-$(MARIADB_VERSION_STRING)" >> \
-		$(BUILD_ROOT)/zimbra-core.spec
-	echo "%attr(-, zimbra, zimbra) /opt/zimbra/openldap-$(LDAP_VERSION)" >> \
-		$(BUILD_ROOT)/zimbra-core.spec
-	echo "%attr(-, zimbra, zimbra) /opt/zimbra/tcmalloc-$(TCMALLOC_VERSION)" >> \
+	echo "%attr(-, root, root) /opt/zimbra/common/lib/perl5" >> \
 		$(BUILD_ROOT)/zimbra-core.spec
 	echo "" >>  $(BUILD_ROOT)/zimbra-core.spec
 	echo "%clean" >>  $(BUILD_ROOT)/zimbra-core.spec
@@ -124,6 +110,7 @@ core_stage: $(CORE_COMPONENTS)
 $(CORE_DEST_ROOT)/etc/sudoers.d:
 	mkdir -p $@
 	cp $(PACKAGE_CONF_DIR)/Env/sudoers.d/01_zimbra $(CORE_DEST_ROOT)/etc/sudoers.d/01_zimbra
+	cp $(PACKAGE_CONF_DIR)/Env/sudoers.d/02_zimbra-core $(CORE_DEST_ROOT)/etc/sudoers.d/02_zimbra-core
 
 $(CORE_DEST_DIR): $(CORE_DEST_ROOT)/etc/sudoers.d
 	mkdir -p $@
@@ -138,8 +125,6 @@ $(CORE_DEST_DIR): $(CORE_DEST_ROOT)/etc/sudoers.d
 	sed -i.orig -e 's/@@BUILD_PLATFORM@@/$(BUILD_PLATFORM)/' $(CORE_DEST_DIR)/$(PLATFORM_DOT_DEST)
 	rm -f $(CORE_DEST_DIR)/$(PLATFORM_DOT_DEST).orig
 	chmod 644 $(CORE_DEST_DIR)/$(VIMINFO_DEST)
-	(cd $(CORE_DEST_DIR); tar xzf $(POSTFIX_LW_SOURCE).tgz)
-	(cd $(CORE_DEST_DIR); tar xzf $(AMAVIS_LW_SOURCE).tgz)
 
 $(CORE_DEST_DIR)/docs:
 	@echo "*** Installing docs"
@@ -167,11 +152,7 @@ $(CORE_DEST_DIR)/zimbramon/crontabs:
 
 $(CORE_DEST_DIR)/zimbramon/bin:
 	mkdir -p $(CORE_DEST_DIR)/zimbramon/bin
-	(cd $(CORE_DEST_DIR)/zimbramon/bin; \
-	tar xzf $(PERL_LIB_SOURCE)/perlbin.tgz)
 	mkdir -p $(CORE_DEST_DIR)/libexec
-	cp -pr $(CORE_DEST_DIR)/zimbramon/bin/sa-learn $(CORE_DEST_DIR)/libexec/
-	cp -pr $(CORE_DEST_DIR)/zimbramon/bin/innotop $(CORE_DEST_DIR)/libexec/
 
 $(CORE_DEST_DIR)/zimbramon/pylibs:
 	mkdir -p $(CORE_DEST_DIR)/zimbramon
@@ -179,17 +160,7 @@ $(CORE_DEST_DIR)/zimbramon/pylibs:
 
 $(CORE_DEST_DIR)/zimbramon/lib:
 	mkdir -p $(CORE_DEST_DIR)/zimbramon/lib
-	(cd $(CORE_DEST_DIR)/zimbramon/lib; \
-	tar xzf $(PERL_LIB_SOURCE)/perllib.tgz)
-	cp -R $(BUILD_ROOT)/lib/Zimbra $(CORE_DEST_DIR)/zimbramon/lib
-
-$(CORE_DEST_DIR)/$(PFLOG_DIR)-$(PFLOG_VERSION): $(CORE_DEST_DIR)
-	@echo "*** Creating pflogsumm"
-	mkdir -p $@/bin
-	cp -f $(PFLOG_SOURCE)/pflogsumm.pl $@/bin
-	cp -f $(PFLOG_SOURCE)/prepflog.pl $@/bin
-	mkdir -p $@/man/man1
-	cp -f $(PFLOG_SOURCE)/pflogsumm.1 $@/man/man1
+	cp -R $(BUILD_ROOT)/lib/Zimbra $(CORE_DEST_DIR)/common/lib/perl5
 
 $(CORE_DEST_DIR)/lib: $(WEBAPP_DIR)/service.war $(NATIVE_DIR)/build/libzimbra-native.$(JNI_EXT)
 	@echo "*** Installing lib"
@@ -199,7 +170,6 @@ $(CORE_DEST_DIR)/lib: $(WEBAPP_DIR)/service.war $(NATIVE_DIR)/build/libzimbra-na
 	-rm -rf $@/jars/objenesis*.jar
 	cp -pr $(NATIVE_DIR)/build/libzimbra-native.$(JNI_EXT) $@
 	cp -pr $(JUNIXSOCKET_NATIVE) $@
-	(cd $(CORE_DEST_DIR); tar xzf $(THIRD_PARTY_BUILDS)/$(BUILD_PLATFORM)/mariadb/mariadb-libs-$(MARIADB_VERSION).tgz)
 
 $(NATIVE_DIR)/build/libzimbra-native.$(JNI_EXT):
 	(cd $(NATIVE_DIR); make JAVA_BINARY=$(JAVA_BINARY))
@@ -318,39 +288,3 @@ $(CORE_DEST_DIR)/contrib:
 	@echo "*** Installing contrib"
 	mkdir -p $@
 	cp -R $(SERVICE_DIR)/src/contrib/* $@
-
-$(CORE_DEST_DIR)/$(BDB_DIR):
-	@echo "*** Creating bdb"
-	mkdir -p $@
-	(cd $(CORE_DEST_DIR); tar xzf $(BDB_SOURCE).tgz; chmod u+w $(BDB_DIR)/bin/*)
-	rm -rf $(CORE_DEST_DIR)/$(BDB_DIR)/docs/java
-
-$(CORE_DEST_DIR)/$(OPENSSL_DIR)-$(OPENSSL_VERSION):
-	@echo "*** Creating openssl"
-	mkdir -p $@
-	(cd $(CORE_DEST_DIR); tar xzf $(OPENSSL_SOURCE).tgz;)
-
-$(CORE_DEST_DIR)/$(HEIMDAL_DIR)-$(HEIMDAL_VERSION):
-	@echo "*** Creating heimdal"
-	mkdir -p $@
-	(cd $(CORE_DEST_DIR); tar xzf $(HEIMDAL_SOURCE).tgz;)
-
-$(CORE_DEST_DIR)/$(CURL_DIR)-$(CURL_VERSION):
-	@echo "*** Creating curl"
-	mkdir -p $@
-	(cd $(CORE_DEST_DIR); tar xzf $(CURL_SOURCE).tgz;)
-
-$(CORE_DEST_DIR)/$(SASL_DIR)-$(SASL_VERSION):
-	@echo "*** Creating cyrus-sasl"
-	mkdir -p $@
-	(cd $(CORE_DEST_DIR); tar xzf $(SASL_SOURCE).tgz;)
-
-$(CORE_DEST_DIR)/$(LDAP_DIR)-libs-$(LDAP_VERSION):
-	@echo "*** Creating openldap client libraries"
-	mkdir -p $(CORE_DEST_DIR)/$(LDAP_DIR)-$(LDAP_VERSION)
-	(cd $(CORE_DEST_DIR); tar xzf $(LDAP_LIBS).tgz;)
-
-$(CORE_DEST_DIR)/$(TCMALLOC_DIR):
-	@echo "*** Creating tcmalloc client libraries"
-	mkdir -p $@
-	(cd $(CORE_DEST_DIR); tar xfz $(TCMALLOC_SOURCE).tgz;)
