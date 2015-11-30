@@ -52,8 +52,6 @@ $(BUILD_ROOT)/zimbra-mta.spec:
 		$(BUILD_ROOT)/zimbra-dnscache.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/common/conf" >> \
 		$(BUILD_ROOT)/zimbra-mta.spec
-	echo "%attr(-, zimbra, zimbra) /opt/zimbra/common/conf" >> \
-		$(BUILD_ROOT)/zimbra-mta.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/data/amavisd" >> \
 		$(BUILD_ROOT)/zimbra-mta.spec
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/data/clamav" >> \
@@ -67,14 +65,13 @@ $(BUILD_ROOT)/zimbra-mta.spec:
 
 mta_stage: $(MTA_COMPONENTS)
 
-$(MTA_DEST_DIR):
+$(MTA_DEST_DIR): $(MTA_DEST_ROOT)/etc/sudoers.d
 	mkdir -p $@
 
 $(MTA_DEST_DIR)/data/postfix:
 	mkdir -p $@
 $(MTA_DEST_DIR)/data/spamassassin:
 	mkdir -p $@
-
 $(MTA_DEST_DIR)/data/clamav:
 	mkdir -p $@
 $(MTA_DEST_DIR)/data/cbpolicyd/db:
@@ -85,6 +82,10 @@ $(MTA_DEST_DIR)/data/amavisd/mysql:
 	mkdir -p $@
 $(MTA_DEST_DIR)/data/opendkim:
 	mkdir -p $@
+
+$(MTA_DEST_ROOT)/etc/sudoers.d:
+	mkdir -p $@
+	cp $(PACKAGE_CONF_DIR)/Env/sudoers.d/02_zimbra-mta $(MTA_DEST_ROOT)/etc/sudoers.d/02_zimbra-mta
 
 $(MTA_DEST_DIR)/postfix: $(MTA_DEST_DIR) $(MTA_DEST_DIR)/data/opendkim $(MTA_DEST_DIR)/data/altermime $(MTA_DEST_DIR)/data/cbpolicyd/db $(MTA_DEST_DIR)/data/postfix
 	@echo "*** Creating postfix configurations"
