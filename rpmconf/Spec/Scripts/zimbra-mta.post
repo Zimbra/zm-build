@@ -87,3 +87,6 @@ fi
 if [ -x "/opt/zimbra/libexec/zmfixperms" ]; then
   /opt/zimbra/libexec/zmfixperms
 fi
+
+chgrp zimbra /opt/zimbra/common/conf
+chmod g+w /opt/zimbra/common/conf
