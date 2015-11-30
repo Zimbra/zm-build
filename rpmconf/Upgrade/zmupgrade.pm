@@ -2265,37 +2265,12 @@ sub upgrade870BETA2 {
       main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-error-log --section=mysqld_safe --key=err-log --unset ${antispam_mysql_mycnf}");
       main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-error-log --section=mysqld_safe --key=log-error --set --value=/opt/zimbra/log/mysqld.log ${antispam_mysql_mycnf}");
     }
-    main::setLdapGlobalConfig("zimbraMtaCommandDirectory","/opt/zimbra/common/sbin");
-    main::setLdapGlobalConfig("zimbraMtaDaemonDirectory","/opt/zimbra/common/libexec");
-    main::setLdapGlobalConfig("zimbraMtaMailqPath","/opt/zimbra/common/sbin/mailq");
-    main::setLdapGlobalConfig("zimbraMtaManpageDirectory","/opt/zimbra/common/share/man");
-    main::setLdapGlobalConfig("zimbraMtaNewaliasesPath","/opt/zimbra/common/sbin/newaliases");
-    main::setLdapGlobalConfig("zimbraMtaSendmailPath","/opt/zimbra/common/sbin/sendmail");
-
-    my $attr=main::getRealLdapServerValue("zimbraMtaCommandDirectory");
-    if ($attr ne "") {
-      main::setLdapServerConfig($hn, 'zimbraMtaCommandDirectory', "/opt/zimbra/common/sbin");
-    }
-    $attr=main::getRealLdapServerValue("zimbraMtaDaemonDirectory");
-    if ($attr ne "") {
-      main::setLdapServerConfig($hn, 'zimbraMtaDaemonDirectory', "/opt/zimbra/common/libexec");
-    }
-    $attr=main::getRealLdapServerValue("zimbraMtaMailqPath");
-    if ($attr ne "") {
-      main::setLdapServerConfig($hn, 'zimbraMtaMailqPath', "/opt/zimbra/common/sbin/mailq");
-    }
-    $attr=main::getRealLdapServerValue("zimbraMtaManpageDirectory");
-    if ($attr ne "") {
-      main::setLdapServerConfig($hn, 'zimbraMtaManpageDirectory', "/opt/zimbra/common/share/man");
-    }
-    $attr=main::getRealLdapServerValue("zimbraMtaNewaliasesPath");
-    if ($attr ne "") {
-      main::setLdapServerConfig($hn, 'zimbraMtaNewaliasesPath', "/opt/zimbra/common/sbin/newaliases");
-    }
-    $attr=main::getRealLdapServerValue("zimbraMtaSendmailPath");
-    if ($attr ne "") {
-      main::setLdapServerConfig($hn, 'zimbraMtaSendmailPath', "/opt/zimbra/common/sbin/sendmail");
-    }
+    main::setLdapServerConfig($hn, 'zimbraMtaCommandDirectory', "/opt/zimbra/common/sbin");
+    main::setLdapServerConfig($hn, 'zimbraMtaDaemonDirectory', "/opt/zimbra/common/libexec");
+    main::setLdapServerConfig($hn, 'zimbraMtaMailqPath', "/opt/zimbra/common/sbin/mailq");
+    main::setLdapServerConfig($hn, 'zimbraMtaManpageDirectory', "/opt/zimbra/common/share/man");
+    main::setLdapServerConfig($hn, 'zimbraMtaNewaliasesPath', "/opt/zimbra/common/sbin/newaliases");
+    main::setLdapServerConfig($hn, 'zimbraMtaSendmailPath', "/opt/zimbra/common/sbin/sendmail");
   }
 
   return 0;
