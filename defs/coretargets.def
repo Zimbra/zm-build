@@ -258,8 +258,6 @@ $(CORE_DEST_DIR)/libexec: $(LAUNCHER_DIR)/build/zmmailboxdmgr
 	cp -f $(LAUNCHER_DIR)/build/zmmailboxdmgr $@
 	cp -f $(LAUNCHER_DIR)/build/zmmailboxdmgr.unrestricted $@
 	cp $(SERVICE_DIR)/src/libexec/* $@
-	cp $@/swatch $@/logswatch
-	cp $@/swatch $@/auditswatch
 	cp -f $(BUILD_ROOT)/rpmconf/Build/get_plat_tag.sh $@
 
 $(CORE_DEST_DIR)/bin:
