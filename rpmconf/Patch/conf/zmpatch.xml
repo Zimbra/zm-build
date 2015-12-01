@@ -8774,6 +8774,8 @@
   <bug>101436</bug>
   <bug>101559</bug>
   <bug>101736</bug>
+  <bug>100572</bug>
+  <bug>102019</bug>
   <package name="zimbra-archiving">
     <zimlet deploy="true" flushcache="true" type="network">
       <source>ZimbraBuild/archivingbuild/opt/zimbra/zimlets-network/com_zimbra_xmbxsearch.zip</source>
