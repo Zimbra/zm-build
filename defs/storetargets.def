@@ -349,26 +349,8 @@ $(SAMBA_EXT_DIR)/$(ANT_BUILD_DIR)/zimlets/zimbra_samba.zip:
 		-Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) \
 		-Dzimbra.buildinfo.host=$(HOST) package-zimlet ; )
 
-pom.xml:
-	(cd $(BUILD_ROOT)/../; $(MAVEN) $(SKIP_TESTS) \
-		-Dzimbra.buildinfo.platform=$(BUILD_PLATFORM) \
-		-Dis-production=1 \
-		-Dzimbra.buildinfo.version=$(SOURCE_TAG) \
-		-Dzimbra.buildinfo.type=$(BUILD_TYPE) \
-		-Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) \
-		-Dzimbra.buildinfo.host=$(HOST) install ; )
-
-$(STORE_DEST_DIR)/extensions-extra: $(STORE_DEST_DIR)/extensions-extra/oauth $(STORE_DEST_DIR)/extensions-extra/openidconsumer
+$(STORE_DEST_DIR)/extensions-extra: $(STORE_DEST_DIR)/extensions-extra/openidconsumer
 	mkdir -p $@
-
-$(STORE_DEST_DIR)/extensions-extra/oauth: $(OAUTH_EXT_DIR)/$(MAVEN_TARGET_DIR)/sampleoauthprov.jar
-	mkdir -p $@
-	cp $(OAUTH_EXT_DIR)/README.txt $@
-	cp $(OAUTH_EXT_DIR)/authorize.jsp $@
-	cp $(OAUTH_EXT_DIR)/jars/oauth-1.4.jar $@
-	cp $(OAUTH_EXT_DIR)/$(MAVEN_TARGET_DIR)/sampleoauthprov-*.jar $@
-
-$(OAUTH_EXT_DIR)/$(MAVEN_TARGET_DIR)/sampleoauthprov.jar: pom.xml
 
 $(STORE_DEST_DIR)/extensions-extra/openidconsumer: $(OPENID_EXT_DIR)/$(MAVEN_TARGET_DIR)/openidconsumer.jar
 	mkdir -p $@
