@@ -19,7 +19,7 @@
 # replicas, as that is how the script determines what replicas exist.
 
 use strict;
-use lib qw(/opt/zimbra/common/lib/perl5/ /opt/zimbra/common/lib/perl5);
+use lib qw(/opt/zimbra/common/lib/perl5/ /opt/zimbra/zimbramon/lib);
 use Net::LDAP;
 use Getopt::Long;
 
