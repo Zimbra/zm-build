@@ -16,7 +16,7 @@
 # ***** END LICENSE BLOCK *****
 #
 use strict;
-use lib qw(/opt/zimbra/common/lib/perl5 /opt/zimbra/common/lib/perl5);
+use lib qw(/opt/zimbra/common/lib/perl5 /opt/zimbra/zimbramon/lib);
 use LWP::UserAgent;
 use Getopt::Long;
 use Net::LDAP;
