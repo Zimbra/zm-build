@@ -16,7 +16,7 @@ fi
 JAVA_HOME=/opt/zimbra/common/lib/jvm/java
 export JAVA_HOME
 
-PATH=/opt/zimbra/bin:${JAVA_HOME}/bin:/opt/zimbra/common/bin:/usr/sbin:${PATH}
+PATH=/opt/zimbra/bin:${JAVA_HOME}/bin:/opt/zimbra/common/bin:/opt/zimbra/common/sbin:/usr/sbin:${PATH}
 export PATH
 
 unset LD_LIBRARY_PATH
