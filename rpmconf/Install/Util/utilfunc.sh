@@ -1,20 +1,20 @@
 #!/bin/bash
-# 
+#
 # ***** BEGIN LICENSE BLOCK *****
 # Zimbra Collaboration Suite Server
 # Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc.
-# 
+#
 # This program is free software: you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free Software Foundation,
 # version 2 of the License.
-# 
+#
 # This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
 # without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 # See the GNU General Public License for more details.
 # You should have received a copy of the GNU General Public License along with this program.
 # If not, see <http://www.gnu.org/licenses/>.
 # ***** END LICENSE BLOCK *****
-# 
+#
 
 displayLicense() {
   echo ""
@@ -73,9 +73,9 @@ isFQDN() {
   fi
 
   NF=`echo $1 | awk -F. '{print NF}'`
-  if [ $NF -ge 2 ]; then 
+  if [ $NF -ge 2 ]; then
     echo 1
-  else 
+  else
     echo 0
   fi
 }
@@ -214,7 +214,7 @@ askYN() {
   else
     DEFAULT="N"
   fi
-  
+
   while [ 1 ]; do
     ask "$PROMPT" "$DEFAULT"
     response=$(perl -e "print lc(\"$response\");")
@@ -224,7 +224,7 @@ askYN() {
       if [ $response = "yes" -o $response = "y" ]; then
         response="yes"
         break
-      else 
+      else
         if [ $response = "no" -o $response = "n" ]; then
           response="no"
           break
@@ -352,7 +352,7 @@ checkRecentBackup() {
       echo "Checking for a recent backup"
       `bin/checkValidBackup > /dev/null 2>&1`
       if [ $? != 0 ]; then
-        echo "WARNING: Unable to find a full system backup started within the last" 
+        echo "WARNING: Unable to find a full system backup started within the last"
         echo "24hrs.  It is recommended to perform a full system backup and"
         echo "copy it to a safe location prior to performing an upgrade."
         echo ""
@@ -369,7 +369,7 @@ checkRecentBackup() {
               break
             fi
           done
-        else 
+        else
           echo "Automated install detected...continuing."
         fi
       fi
@@ -446,7 +446,7 @@ checkVersionDowngrade() {
     exit 1
   else
     echo "ZCS upgrade from $ZM_CUR_VERSION to $ZM_INST_VERSION will be performed."
-  fi   
+  fi
 
 }
 
@@ -477,7 +477,7 @@ EOF
     fi
 
     H_LINE=`sed -e 's/#.*//' /etc/hosts | awk '{ for (i = 2; i <=NF; i++) { if ($i ~ /^'$HOSTNAME'$/) { print $0; } } }'`
-    IP=`echo ${H_LINE} | awk '{ print $1 }'` 
+    IP=`echo ${H_LINE} | awk '{ print $1 }'`
     INVALID_IP=0
 
     if [ "`echo ${IP} | tr -d '[0-9a-fA-F:]'`" = "" ]
@@ -600,7 +600,7 @@ checkRequiredSpace() {
     echo "${AVAIL}MB is not enough space to install ZCS."
     GOOD=no
   fi
- 
+
   isInstalled zimbra-store
   isToBeInstalled zimbra-store
   if [ "x$PKGINSTALLED" != "x" -o "x$PKGTOBEINSTALLED" != "x" ]; then
@@ -619,9 +619,9 @@ checkRequiredSpace() {
       echo "Installation cancelled."
       echo ""
       exit 1
-    else 
+    else
       echo ""
-      echo "Installation will contine by request." 
+      echo "Installation will contine by request."
       echo ""
     fi
   fi
@@ -724,12 +724,12 @@ determineVersionType() {
     export ZMVERSION_CURRENT=`echo $PKGVERSION | sed s/^zimbra-core-//`
     if [ -f "/opt/zimbra/bin/zmbackupquery" ]; then
       ZMTYPE_CURRENT="NETWORK"
-    else 
+    else
       ZMTYPE_CURRENT="FOSS"
     fi
-    ZM_CUR_MAJOR=$(perl -e '$v=$ENV{ZMVERSION_CURRENT}; $v =~ s/^(\d+\.\d+\.[^_]*_[^_]+_[^.]+).*/\1/; ($maj,$min,$mic) = $v =~ m/^(\d+)\.(\d+)\.(\d+)/; print "$maj\n"') 
-    ZM_CUR_MINOR=$(perl -e '$v=$ENV{ZMVERSION_CURRENT}; $v =~ s/^(\d+\.\d+\.[^_]*_[^_]+_[^.]+).*/\1/; ($maj,$min,$mic) = $v =~ m/^(\d+)\.(\d+)\.(\d+)/; print "$min\n"') 
-    ZM_CUR_MICRO=$(perl -e '$v=$ENV{ZMVERSION_CURRENT}; $v =~ s/^(\d+\.\d+\.[^_]*_[^_]+_[^.]+).*/\1/; ($maj,$min,$mic) = $v =~ m/^(\d+)\.(\d+)\.(\d+)/; print "$mic\n"') 
+    ZM_CUR_MAJOR=$(perl -e '$v=$ENV{ZMVERSION_CURRENT}; $v =~ s/^(\d+\.\d+\.[^_]*_[^_]+_[^.]+).*/\1/; ($maj,$min,$mic) = $v =~ m/^(\d+)\.(\d+)\.(\d+)/; print "$maj\n"')
+    ZM_CUR_MINOR=$(perl -e '$v=$ENV{ZMVERSION_CURRENT}; $v =~ s/^(\d+\.\d+\.[^_]*_[^_]+_[^.]+).*/\1/; ($maj,$min,$mic) = $v =~ m/^(\d+)\.(\d+)\.(\d+)/; print "$min\n"')
+    ZM_CUR_MICRO=$(perl -e '$v=$ENV{ZMVERSION_CURRENT}; $v =~ s/^(\d+\.\d+\.[^_]*_[^_]+_[^.]+).*/\1/; ($maj,$min,$mic) = $v =~ m/^(\d+)\.(\d+)\.(\d+)/; print "$mic\n"')
   fi
 
   # if we are removing the install we don't need the rest of the info
@@ -741,19 +741,19 @@ determineVersionType() {
   if [ "x$PACKAGEEXT" = "xrpm" ]; then
     if [ x"`rpm --qf '%{description}' -qp ./packages/zimbra-core* | grep Network`" = "x" ]; then
       ZMTYPE_INSTALLABLE="FOSS"
-    else 
+    else
       ZMTYPE_INSTALLABLE="NETWORK"
     fi
   elif [ "x$PACKAGEEXT" = "xdeb" ]; then
     if [ x"`dpkg -f ./packages/zimbra-core* Description | grep Network`" = "x" ]; then
       ZMTYPE_INSTALLABLE="FOSS"
-    else 
+    else
       ZMTYPE_INSTALLABLE="NETWORK"
     fi
   fi
-  ZM_INST_MAJOR=$(perl -e '$v=glob("packages/zimbra-core*"); $v =~ s/^packages\/zimbra-core[-_]//; $v =~ s/^(\d+\.\d+\.[^_]*_[^_]+_[^.]+).*/\1/; ($maj,$min,$mic) = $v =~ m/^(\d+)\.(\d+)\.(\d+)/; print "$maj\n"') 
-  ZM_INST_MINOR=$(perl -e '$v=glob("packages/zimbra-core*"); $v =~ s/^packages\/zimbra-core[-_]//; $v =~ s/^(\d+\.\d+\.[^_]*_[^_]+_[^.]+).*/\1/; ($maj,$min,$mic) = $v =~ m/^(\d+)\.(\d+)\.(\d+)/; print "$min\n"') 
-  ZM_INST_MICRO=$(perl -e '$v=glob("packages/zimbra-core*"); $v =~ s/^packages\/zimbra-core[-_]//; $v =~ s/^(\d+\.\d+\.[^_]*_[^_]+_[^.]+).*/\1/; ($maj,$min,$mic) = $v =~ m/^(\d+)\.(\d+)\.(\d+)/; print "$mic\n"') 
+  ZM_INST_MAJOR=$(perl -e '$v=glob("packages/zimbra-core*"); $v =~ s/^packages\/zimbra-core[-_]//; $v =~ s/^(\d+\.\d+\.[^_]*_[^_]+_[^.]+).*/\1/; ($maj,$min,$mic) = $v =~ m/^(\d+)\.(\d+)\.(\d+)/; print "$maj\n"')
+  ZM_INST_MINOR=$(perl -e '$v=glob("packages/zimbra-core*"); $v =~ s/^packages\/zimbra-core[-_]//; $v =~ s/^(\d+\.\d+\.[^_]*_[^_]+_[^.]+).*/\1/; ($maj,$min,$mic) = $v =~ m/^(\d+)\.(\d+)\.(\d+)/; print "$min\n"')
+  ZM_INST_MICRO=$(perl -e '$v=glob("packages/zimbra-core*"); $v =~ s/^packages\/zimbra-core[-_]//; $v =~ s/^(\d+\.\d+\.[^_]*_[^_]+_[^.]+).*/\1/; ($maj,$min,$mic) = $v =~ m/^(\d+)\.(\d+)\.(\d+)/; print "$mic\n"')
   ZM_INST_RTYPE=$(perl -e '$v=glob("packages/zimbra-core*"); $v =~ s/^packages\/zimbra-core[-_]//; $v =~ s/^(\d+\.\d+\.[^_]*_[^_]+_[^.]+).*/\1/; ($maj,$min,$mic,$rtype,$build) = $v =~ m/^(\d+)\.(\d+)\.(\d+)\.(\w+)\.(\d+)/; ($maj,$min,$mic,$rtype,$build) = $v =~ m/(\d+)\.(\d+)\.(\d+)_(\w+[^_])_(\d+)/ if ($rtype eq ""); print "$rtype\n";')
   ZM_INST_BUILD=$(perl -e '$v=glob("packages/zimbra-core*"); $v =~ s/^packages\/zimbra-core[-_]//; $v =~ s/^(\d+\.\d+\.[^_]*_[^_]+_[^.]+).*/\1/; ($maj,$min,$mic,$rtype,$build) = $v =~ m/^(\d+)\.(\d+)\.(\d+)\.(\w+)\.(\d+)/; ($maj,$min,$mic,$rtype,$build) = $v =~ m/(\d+)\.(\d+)\.(\d+)_(\w+[^_])_(\d+)/ if ($rtype eq ""); print "$build\n";')
 
@@ -762,13 +762,13 @@ determineVersionType() {
   fi
 
   #echo "TYPE: CURRENT: $ZMTYPE_CURRENT INSTALLABLE: $ZMTYPE_INSTALLABLE"
-  #echo "VERSION: CURRENT: $ZM_CUR_MAJOR INSTALLABLE: $ZM_INST_MAJOR" 
+  #echo "VERSION: CURRENT: $ZM_CUR_MAJOR INSTALLABLE: $ZM_INST_MAJOR"
 
   checkVersionDowngrade
 
   if [ x"$ZMTYPE_CURRENT" = "xNETWORK" ] && [ x"$ZMTYPE_INSTALLABLE" = "xFOSS" ]; then
     echo "Warning: You are about to upgrade from the Network Edition to the"
-    echo "Open Source Edition.  This will remove all Network features, including" 
+    echo "Open Source Edition.  This will remove all Network features, including"
     echo "Attachment Searching, Zimbra Mobile, Backup/Restore, and support for the "
     echo "Zimbra Connector for Outlook."
     while :; do
@@ -932,7 +932,7 @@ verifyLicenseActivationServer() {
       /opt/zimbra/bin/zmlicense --ping > /dev/null 2>&1
     elif [ ${ZM_CUR_MAJOR} -gt "7" ]; then
       /opt/zimbra/bin/zmlicense --ping > /dev/null 2>&1
-    else 
+    else
       /opt/zimbra/java/bin/java -XX:ErrorFile=/opt/zimbra/log -client -Xmx256m -Dzimbra.home=/opt/zimbra -Djava.library.path=/opt/zimbra/lib -Djava.ext.dirs=/opt/zimbra/java/jre/lib/ext:/opt/zimbra/lib/jars -classpath ./lib/jars/zimbra-license-tools.jar com.zimbra.cs.license.LicenseCLI --ping > /dev/null 2>&1
     fi
     if [ $? != 0 ]; then
@@ -942,10 +942,10 @@ verifyLicenseActivationServer() {
     echo $HOSTNAME | egrep -qe 'vmware.com$|zimbra.com$' > /dev/null 2>&1
     if [ $? = 0 ]; then
       url='https://zimbra-stage-license.eng.zimbra.com/zimbraLicensePortal/public/activation?action=test'
-    else 
+    else
       url='https://license.zimbra.com/zimbraLicensePortal/public/activation?action=test'
     fi
-      
+
     cmd=$(which curl 2>/dev/null)
     if [ -x "$cmd" ]; then
       output=$($cmd --connect-timeout 5 -s -f $url)
@@ -953,10 +953,10 @@ verifyLicenseActivationServer() {
         output=$($cmd -k --connect-timeout 5 -s -f $url)
         if [ $? != 0 ]; then
           activationWarning
-        else 
+        else
           return
         fi
-      else 
+      else
         return
       fi
     fi
@@ -1025,7 +1025,7 @@ verifyLicenseAvailable() {
     if [ x"`dpkg -f ./packages/zimbra-core* Description | grep Network`" = "x" ]; then
       return
     fi
-  else 
+  else
     return
   fi
 
@@ -1305,7 +1305,7 @@ checkVersionMatches() {
 setRemove() {
 
   if [ $INSTALLED = "yes" ]; then
-    
+
     checkVersionMatches
 
     echo ""
@@ -1382,7 +1382,7 @@ EOF
         break
       fi
     done
-  else 
+  else
     # REMOVE = yes for non installed systems, to clean up /opt/zimbra
     DETECTDIRS="db bin/zmcontrol redolog index store conf/localconfig.xml data"
     for i in $DETECTDIRS; do
@@ -1396,7 +1396,7 @@ EOF
       echo "yet there appears to be a ZCS directory structure in /opt/zimbra."
       askYN "Would you like to delete /opt/zimbra before installing?" "N"
       REMOVE="$response"
-    else 
+    else
       REMOVE="yes"
     fi
   fi
@@ -1473,30 +1473,23 @@ restoreZimlets() {
 }
 
 restoreCerts() {
-  if [ -f "$SAVEDIR/cacerts" ]; then
-    cp $SAVEDIR/cacerts /opt/zimbra/java/jre/lib/security/cacerts
-    chown zimbra:zimbra /opt/zimbra/java/jre/lib/security/cacerts
-  fi
   if [ -f "$SAVEDIR/keystore" -a -d "/opt/zimbra/jetty/etc" ]; then
     cp $SAVEDIR/keystore /opt/zimbra/jetty/etc/keystore
     chown zimbra:zimbra /opt/zimbra/jetty/etc/keystore
-  elif [ -f "$SAVEDIR/keystore" -a -d "/opt/zimbra/tomcat/conf" ]; then
-    cp $SAVEDIR/keystore /opt/zimbra/tomcat/conf/keystore
-    chown zimbra:zimbra /opt/zimbra/tomcat/conf/keystore
   elif [ -f "$SAVEDIR/keystore" -a -d "/opt/zimbra/conf" ]; then
     cp $SAVEDIR/keystore /opt/zimbra/conf/keystore
     chown zimbra:zimbra /opt/zimbra/conf/keystore
   fi
   if [ -f "$SAVEDIR/smtpd.key" ]; then
-    cp $SAVEDIR/smtpd.key /opt/zimbra/conf/smtpd.key 
+    cp $SAVEDIR/smtpd.key /opt/zimbra/conf/smtpd.key
     chown zimbra:zimbra /opt/zimbra/conf/smtpd.key
   fi
   if [ -f "$SAVEDIR/smtpd.crt" ]; then
-    cp $SAVEDIR/smtpd.crt /opt/zimbra/conf/smtpd.crt 
+    cp $SAVEDIR/smtpd.crt /opt/zimbra/conf/smtpd.crt
     chown zimbra:zimbra /opt/zimbra/conf/smtpd.crt
   fi
   if [ -f "$SAVEDIR/slapd.crt" ]; then
-    cp $SAVEDIR/slapd.crt /opt/zimbra/conf/slapd.crt 
+    cp $SAVEDIR/slapd.crt /opt/zimbra/conf/slapd.crt
     chown zimbra:zimbra /opt/zimbra/conf/slapd.crt
   fi
   if [ -f "$SAVEDIR/nginx.key" ]; then
@@ -1509,28 +1502,34 @@ restoreCerts() {
   fi
   mkdir -p /opt/zimbra/conf/ca
   if [ -f "$SAVEDIR/ca.key" ]; then
-    cp $SAVEDIR/ca.key /opt/zimbra/conf/ca/ca.key 
+    cp $SAVEDIR/ca.key /opt/zimbra/conf/ca/ca.key
     chown zimbra:zimbra /opt/zimbra/conf/ca/ca.key
   fi
   if [ -f "$SAVEDIR/ca.pem" ]; then
-    cp $SAVEDIR/ca.pem /opt/zimbra/conf/ca/ca.pem 
+    cp $SAVEDIR/ca.pem /opt/zimbra/conf/ca/ca.pem
     chown zimbra:zimbra /opt/zimbra/conf/ca/ca.pem
   fi
   if [ -f "/opt/zimbra/jetty/etc/keystore" ]; then
     chown zimbra:zimbra /opt/zimbra/jetty/etc/keystore
-  elif [ -f "/opt/zimbra/tomcat/conf/keystore" ]; then
-    chown zimbra:zimbra /opt/zimbra/tomcat/conf/keystore
   fi
 }
 
 saveExistingConfig() {
   echo ""
   echo "Saving existing configuration file to $SAVEDIR"
+
+  # Since the location to java has changed, we need to fix localconfig.xml before we save the configuration
+  # and start the upgrade process
+
+  if [ -x "/opt/zimbra/bin/zmlocalconfig" ]; then
+    runAsZimbra "zmlocalconfig -e zimbra_java_home=/opt/zimbra/common/lib/jvm/java"
+    runAsZimbra "zmlocalconfig -e mailboxd_truststore=/opt/zimbra/common/lib/jvm/java/jre/lib/security/cacerts"
+  fi
   if [ ! -d "$SAVEDIR" ]; then
     mkdir -p $SAVEDIR
   fi
   # make copies of existing save files
-  for f in localconfig.xml config.save keystore cacerts perdition.pem smtpd.key smtpd.crt slapd.key slapd.crt ca.key backup.save; do
+  for f in localconfig.xml config.save keystore cacerts smtpd.key smtpd.crt slapd.key slapd.crt ca.key backup.save; do
     if [ -f "${SAVEDIR}/${f}" ]; then
       for (( i=0 ;; i++ )); do
         if [ ! -f "${SAVEDIR}/${ZMVERSION_CURRENT}/${i}/${f}" ]; then
@@ -1548,13 +1547,13 @@ saveExistingConfig() {
   if [ -f "/opt/zimbra/conf/localconfig.xml" ]; then
     cp -f /opt/zimbra/conf/localconfig.xml $SAVEDIR/localconfig.xml
   fi
-  if [ -f "/opt/zimbra/java/jre/lib/security/cacerts" ]; then
+  if [ -f "/opt/zimbra/common/lib/jvm/java/jre/lib/security/cacerts" ]; then
+    cp -f /opt/zimbra/common/lib/jvm/java/jre/lib/security/cacerts $SAVEDIR
+  elif [ -f "/opt/zimbra/java/jre/lib/security/cacerts" ]; then
     cp -f /opt/zimbra/java/jre/lib/security/cacerts $SAVEDIR
   fi
   if [ -f "/opt/zimbra/jetty/etc/keystore" ]; then
     cp -f /opt/zimbra/jetty/etc/keystore $SAVEDIR
-  elif [ -f "/opt/zimbra/tomcat/conf/keystore" ]; then
-    cp -f /opt/zimbra/tomcat/conf/keystore $SAVEDIR
   fi
   if [ -f "/opt/zimbra/conf/smtpd.key" ]; then
     cp -f /opt/zimbra/conf/smtpd.key $SAVEDIR
@@ -1580,9 +1579,7 @@ saveExistingConfig() {
   if [ -f "/opt/zimbra/conf/ca/ca.pem" ]; then
     cp -f /opt/zimbra/conf/ca/ca.pem $SAVEDIR
   fi
-  if [ -d "/opt/zimbra/tomcat/webapps/service/zimlet" ]; then
-    cp -rf /opt/zimbra/tomcat/webapps/service/zimlet $SAVEDIR
-  elif [ -d "/opt/zimbra/mailboxd/webapps/service/zimlet" ]; then
+  if [ -d "/opt/zimbra/mailboxd/webapps/service/zimlet" ]; then
     cp -rf /opt/zimbra/mailboxd/webapps/service/zimlet $SAVEDIR
   fi
   if [ -x /opt/zimbra/bin/zmschedulebackup ]; then
@@ -1594,7 +1591,7 @@ saveExistingConfig() {
 
   if [ -f "/opt/zimbra/.enable_replica" ]; then
     rm -f /opt/zimbra/.enable_replica
-  fi 
+  fi
 
   if [ -f /opt/zimbra/data/ldap/config/cn\=config.ldif ]; then
     if [ -f /opt/zimbra/data/ldap/config/cn\=config/olcDatabase\=\{2\}mdb/olcOverlay\=*syncprov.ldif ]; then
@@ -1757,7 +1754,7 @@ removeExistingInstall() {
           umount -f ${mp}
         fi
       done
- 
+
       for i in `ls /opt/zimbra`; do
         if [ x$i != "xlost+found" ]; then
           /bin/rm -rf /opt/zimbra/$i
@@ -1773,7 +1770,7 @@ removeExistingInstall() {
         /usr/bin/crontab -u zimbra -r 2> /dev/null
         echo "done."
       fi
-     
+
       if [ -L /usr/sbin/sendmail ]; then
         if [ -x /bin/readlink ]; then
           SMPATH=$(/bin/readlink /usr/sbin/sendmail)
@@ -1853,7 +1850,7 @@ removeExistingInstall() {
       if [ -x /sbin/chkconfig ]; then
         /sbin/chkconfig zimbra off 2> /dev/null
         /sbin/chkconfig --del zimbra 2> /dev/null
-      else 
+      else
         /bin/rm -f /etc/rc*.d/S99zimbra 2> /dev/null
         /bin/rm -f /etc/rc*.d/K01zimbra 2> /dev/null
       fi
@@ -1882,14 +1879,14 @@ removeExistingInstall() {
         rm -f /etc/security/limits.d/80-zimbra.conf
         echo "done."
       fi
-  
+
       for mp in $MOUNTPOINTS; do
         if [ x$mp != "x/opt/zimbra" ]; then
           mkdir -p ${mp}
           mount ${mp}
         fi
       done
-  
+
       echo ""
       echo "Finished removing Zimbra Collaboration Server."
       echo ""
@@ -2115,7 +2112,7 @@ getInstallPackages() {
   LOGGER_SELECTED="no"
   STORE_SELECTED="no"
   MTA_SELECTED="no"
-  
+
   for i in $AVAILABLE_PACKAGES; do
     # Reset the response before processing the next package.
     response="no"
@@ -2241,7 +2238,7 @@ getInstallPackages() {
         APACHE_SELECTED="yes"
         INSTALL_PACKAGES="$INSTALL_PACKAGES zimbra-apache"
       fi
-      
+
       if [ $i = "zimbra-convertd" -a $APACHE_SELECTED = "no" ]; then
         APACHE_SELECTED="yes"
         INSTALL_PACKAGES="$INSTALL_PACKAGES zimbra-apache"
@@ -2424,7 +2421,7 @@ conflictInstalled() {
   CONFLICTINSTALLED=""
   QP=`dpkg-query -W -f='\${Package}: \${Provides}\n' '*' | grep ": .*$pkg" | sed -e 's/:.*//'`
   while [ "x$QP" != "x" ]; do
-    QF=`echo $QP | sed -e 's/\s.*//'` 
+    QF=`echo $QP | sed -e 's/\s.*//'`
     QP=`echo $QP | sed -e 's/\S*\s*//'`
     isInstalled $QF
     if [ x$PKGINSTALLED != "x" ]; then
@@ -2452,7 +2449,7 @@ suggestedVersion() {
     $PACKAGEQUERY $pkg >/dev/null 2>&1
     if [ $? = 0 ]; then
       PKGINSTALLED=`$PACKAGEQUERY $pkg | sed -e 's/\.[a-zA-Z].*$//' 2> /dev/null`
-    else 
+    else
       sugpkg=${pkg%=*}
       PKGVERSION=`$PACKAGEQUERY $sugpkg 2> /dev/null | sort -u`
     fi
