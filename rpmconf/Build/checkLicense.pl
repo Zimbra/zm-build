@@ -101,7 +101,9 @@ $ctx->add($createTimestamp);
 $fingerprint = $ctx->hexdigest;
 $ldap->unbind();
 
-my $browser = LWP::UserAgent->new;
+my $caf = '/opt/zimbra/zimbramon/lib/Mozilla/CA/cacert.pem';
+my @lwpargs = -f $caf ? ( ssl_opts => { SSL_ca_file => $caf, SSL_ca_path => undef } ) : ();
+my $browser = LWP::UserAgent->new(@lwpargs);
 $browser->env_proxy;
 
 my $response = $browser->get(
