@@ -1611,7 +1611,7 @@ removeExistingInstall() {
 
     isInstalled "zimbra-ldap"
     if [ x$PKGINSTALLED != "x" ]; then
-      if [ -f "/opt/zimbra/common/sbin/slapcat" -a x"$UNINSTALL" != "xyes" -a x"$REMOVE" != "xyes" ]; then
+      if ( test -x "/opt/zimbra/common/sbin/slapcat" || test -x "/opt/zimbra/openldap/sbin/slapcat" ) && test x"$UNINSTALL" != "xyes" && test x"$REMOVE" != "xyes"; then
         if [ -d "/opt/zimbra/data/ldap/config" ]; then
           echo ""
           echo -n "Backing up the ldap database..."
