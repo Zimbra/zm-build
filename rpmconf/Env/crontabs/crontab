@@ -3,7 +3,7 @@ SHELL=/bin/bash
 #
 # Log pruning
 #
-30 2 * * * find /opt/zimbra/log/ -type f -name \*.log?\* -mtime +8 -exec rm {} \; > /dev/null 2>&1
+30 2 * * * find /opt/zimbra/log/ -type f -name \*.log\* -mtime +8 -exec rm {} \; > /dev/null 2>&1
 35 2 * * * find /opt/zimbra/log/ -type f -name \*.out.???????????? -mtime +8 -exec rm {} \; > /dev/null 2>&1
 #
 # compress logs manually to avoid application pauses when 
