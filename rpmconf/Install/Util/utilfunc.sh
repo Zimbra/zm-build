@@ -2104,9 +2104,12 @@ getInstallPackages() {
 
   echo ""
   if [ $UPGRADE = "yes" ]; then
+    echo "Scanning for any new or additional packages available for installation"
+    echo "Existing packages will be upgraded"
     echo "    Upgrading zimbra-core"
+  else
+    echo "Select the packages to install"
   fi
-  echo "Select the packages to install"
 
   APACHE_SELECTED="no"
   LOGGER_SELECTED="no"
