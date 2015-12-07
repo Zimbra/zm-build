@@ -2066,8 +2066,8 @@ configurePackageServer() {
         exit 1
       fi
 cat > /etc/apt/sources.list.d/zimbra.list << EOF
-deb     [arch=amd64] https://$PACKAGE_SERVER/apt/90 $repo zimbra
-deb-src [arch=amd64] https://$PACKAGE_SERVER/apt/90 $repo zimbra
+deb     [arch=amd64] https://$PACKAGE_SERVER/apt/87 $repo zimbra
+deb-src [arch=amd64] https://$PACKAGE_SERVER/apt/87 $repo zimbra
 EOF
       apt-get update >>$LOGFILE 2>&1
       if [ $? -ne 0 ]; then
@@ -2085,7 +2085,7 @@ EOF
 cat > /etc/yum.repos.d/zimbra.repo <<EOF
 [zimbra]
 name=Zimbra RPM Repository
-baseurl=https://$PACKAGE_SERVER/rpm/90/rhel\$releasever
+baseurl=https://$PACKAGE_SERVER/rpm/87/rhel\$releasever
 gpgcheck=1
 enabled=1
 EOF
