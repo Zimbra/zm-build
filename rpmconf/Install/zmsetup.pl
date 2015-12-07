@@ -187,7 +187,6 @@ if(isInstalled("zimbra-ldap")) {
   installLdapSchema();
 }
 
-getInstalledWebapps();
 
 if (! $newinstall ) {
   # if we're an upgrade, run the upgrader...
@@ -208,10 +207,18 @@ if (! $newinstall ) {
 
 getInstalledPackages();
 
+# This is somewhat of a catch-22.
+# We can't check ldap to see if it is enabled or not
+# prior to upgrade, because ldap may not be functional.
+# Long term, we need to split out zmupgrade.pm into
+# per-package upgrade scripts, rather than the monolithic
+# monstrosity it is now.
 unless (isEnabled("zimbra-core")) {
   progress("zimbra-core must be enabled.");
   exit 1;
 }
+
+getInstalledWebapps();
 
 if ($options{d}) {
   foreach my $pkg (keys %installedPackages) {
@@ -521,7 +528,8 @@ sub getInstalledWebapps {
   detail("Determining installed web applications");
   my $webappsDir = "/opt/zimbra/jetty/webapps";
   foreach my $app (@webappList) {
-    if (-d "$webappsDir/$app") {
+    if (($newinstall && -d "$webappsDir/$app") ||
+        (!$newinstall && isServiceEnabled($app))) {
       $installedWebapps{$app}="Enabled";
       detail("Web application $app is enabled.");
     } else {
