@@ -5232,7 +5232,7 @@ sub configSetupLdap {
          progress ( "done.\n" );
       }
       if ($ldapBesSearcherChanged == 1) {
-         progress ( "Setting BES searcher  password..." );
+         progress ( "Setting BES searcher password..." );
          runAsZimbra ("/opt/zimbra/bin/zmldappasswd -b \'$config{ldap_bes_searcher_password}\'");
          progress ( "done.\n" );
       }
