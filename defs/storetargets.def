@@ -370,7 +370,7 @@ $(STORE_DEST_DIR)/extensions-extra: $(STORE_DEST_DIR)/extensions-extra/openidcon
 $(STORE_DEST_DIR)/extensions-extra/openidconsumer: $(OPENID_EXT_DIR)/build/jars/openidconsumer.jar
 	mkdir -p $@
 	cp $(OPENID_EXT_DIR)/build/jars/openidconsumer.jar $@
-	cp $(OPENID_EXT_DIR)/jars/openid4java-0.9.5.jar $@
+	cp $(OPENID_EXT_DIR)/jars/openid4java-*.jar $@
 	cp $(OPENID_EXT_DIR)/formredirection.jsp $@
 	cp $(OPENID_EXT_DIR)/README.txt $@
 
