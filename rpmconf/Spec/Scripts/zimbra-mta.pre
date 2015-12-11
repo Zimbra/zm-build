@@ -45,25 +45,9 @@ if [ $? != 0 ]; then
 	groupadd -r zimbra
 fi
 
-grp_exists postfix
-if [ $? != 0 ]; then
-	groupadd -r postfix
-fi
-
-grp_exists postdrop
-if [ $? != 0 ]; then
-	groupadd -r postdrop
-fi
-
 acct_exists zimbra
 if [ $? != 0 ]; then
 	useradd -r -g zimbra -G postfix,tty -d /opt/zimbra -s /bin/bash zimbra
-fi
-
-acct_exists postfix
-if [ $? != 0 ]; then
-	useradd -r -g postfix -d /opt/zimbra/postfix postfix
-	/bin/rm -rf /opt/zimbra/postfix
 fi
 
 usermod -g zimbra -G postfix,tty zimbra
