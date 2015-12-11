@@ -85,12 +85,15 @@ do
 				exit 1;
 			fi
 		elif [ x$req = x"java" ]; then
-			VERSION=$(${command} -version 2>&1 | grep " version" | sed -e 's/"//g' | awk '{print $NF}' | awk -F_ '{print $1}')
+			VERSION=$(${command} -version 2>&1 | grep "java version" | sed -e 's/"//g' | awk '{print $NF}' | awk -F_ '{print $1}')
 			MAJOR=`echo $VERSION | awk -F. '{print $1}'`
 			MINOR=`echo $VERSION | awk -F. '{print $2}'`
 			PATCH=`echo $VERSION | awk -F. '{print $3}'`
-			if [ $MAJOR -eq 1 -a $MINOR -ne 8 ]; then
+			if [ $MAJOR -eq 1 -a $MINOR -ne 7 ]; then
 				echo "Error: Unsupported version of $req: $VERSION"
+				echo "You can obtain $req from:"
+				echo "http://www.oracle.com/technetwork/java/index.html"
+				echo "Make sure the downloaded version appears first in your path"
 				exit 1;
 			fi
 		fi
@@ -100,7 +103,9 @@ do
 			echo "You can obtain $req from:"
 			echo "http://ant.apache.org/bindownload.cgi"
 		elif [ x$req = x"java" ]; then
-			echo "Please obtain OpenJDK 1.8"
+			echo "Please obtain JDK 1.7 from:"
+			echo "http://www.oracle.com/technetwork/java/index.html"
+			echo "and add it to user binary path"
 		fi
 		exit 1;
 	fi
