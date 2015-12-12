@@ -10,7 +10,9 @@ CORE_COMPONENTS	:= \
 	$(CORE_DEST_DIR)/lib \
 	$(CORE_DEST_DIR)/libexec \
 	$(CORE_DEST_DIR)/bin \
+	$(CORE_DEST_DIR)/common \
 	$(CORE_DEST_DIR)/contrib \
+	$(CORE_DEST_DIR)/data/consul \
 	$(CORE_DEST_DIR)/logger/db/work \
 	$(CORE_DEST_DIR)/conf \
 	$(CORE_DEST_DIR)/docs \
@@ -35,12 +37,10 @@ LOGGER_COMPONENTS := \
 	$(LOGGER_DEST_DIR)/db \
 	$(LOGGER_DEST_DIR)/db/data
 
-ifndef $(ZIMBRA_USE_TOMCAT)
-	MAILBOXD_COMPONENTS := \
-		$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/lib/log4j-1.2.16.jar \
-		$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/lib/apache-log4j-extras-1.0.jar \
-		$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/resources/log4j.properties
-endif
+MAILBOXD_COMPONENTS := \
+	$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/lib/log4j.jar \
+	$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/lib/apache-log4j-extras.jar \
+	$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/resources/log4j.properties
 
 STORE_COMPONENTS := \
 	$(WEBAPPS) \
@@ -64,9 +64,11 @@ STORE_COMPONENTS := \
 	$(STORE_DEST_DIR)/lib/ext/zimbraldaputils/zimbraldaputils.jar \
 	$(STORE_DEST_DIR)/lib/ext/nginx-lookup/nginx-lookup.jar \
 	$(STORE_DEST_DIR)/lib/ext/zimbraadminversioncheck/zimbraadminversioncheck.jar \
-	$(STORE_DEST_DIR)/lib/ext/zimbraim \
 	$(STORE_DEST_DIR)/lib/jars/zmzimbratozimbramig.jar \
-	$(STORE_DEST_DIR)/log
+	$(STORE_DEST_DIR)/log \
+	$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/webapps/solr/solr.war \
+	$(STORE_DEST_DIR)/solr \
+	$(STORE_DEST_DIR)/redologservice
 
 ZIMLET_COMPONENTS := \
 	$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/webapps/service/WEB-INF/lib/zimlettaglib.jar \

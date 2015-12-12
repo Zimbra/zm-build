@@ -58,6 +58,8 @@ $(BUILD_ROOT)/zimbra-core.spec:
 		$(BUILD_ROOT)/zimbra-core.spec
 	echo "%attr(444, zimbra, zimbra) /opt/zimbra/docs/*" >> \
 		$(BUILD_ROOT)/zimbra-core.spec
+	echo "%attr(755, root, root) /opt/zimbra/common/sbin/consul" >> \
+		$(BUILD_ROOT)/zimbra-core.spec
 	echo "%attr(755, root, root) /opt/zimbra/contrib" >> \
 		$(BUILD_ROOT)/zimbra-core.spec
 	echo "%attr(755, root, root) /opt/zimbra/libexec" >> \
@@ -135,7 +137,6 @@ $(CORE_DEST_DIR)/docs:
 	cp $(LICENSE_DIR)/zimbra/ypl-full.txt $@/YPL.txt
 	cp $(LICENSE_DIR)/zimbra/zimbra_public_eula_2.5.txt $@/zimbra_public_eula_2.5.txt
 	cp $(SERVICE_DIR)/docs/*txt $@
-	cp $(SERVICE_DIR)/docs/*md $@
 	cp $(MIG_TOOLS_DIR)/ReadMe.txt $@/zmztozmig.txt
 
 $(CORE_DEST_DIR)/logger/db/work: $(CORE_DEST_DIR)/common/lib/perl5 $(CORE_DEST_DIR)/common/lib/jylibs $(CORE_DEST_DIR)/conf/crontabs $(CORE_DEST_DIR) 
@@ -157,26 +158,26 @@ $(CORE_DEST_DIR)/common/lib/jylibs:
 	mkdir -p $@
 	cp -R $(SERVICE_DIR)/src/jython/jylibs $(CORE_DEST_DIR)/common/lib
 
-$(CORE_DEST_DIR)/lib: $(WEBAPP_DIR)/service.war $(NATIVE_DIR)/build/libzimbra-native.$(JNI_EXT)
+$(CORE_DEST_DIR)/lib: $(WEBAPP_DIR)/service.war $(NATIVE_DIR)/$(ANT_BUILD_DIR)/libzimbra-native.$(JNI_EXT)
 	@echo "*** Installing lib"
 	mkdir -p $@
-	cp -pr $(SERVICE_DIR)/build/dist/lib/* $@
+	cp -pr $(SERVICE_DIR)/$(ANT_BUILD_DIR)/dist/lib/* $@
 	-rm -rf $@/jars/junit*.jar
 	-rm -rf $@/jars/objenesis*.jar
-	cp -pr $(NATIVE_DIR)/build/libzimbra-native.$(JNI_EXT) $@
+	cp -pr $(NATIVE_DIR)/$(ANT_BUILD_DIR)/libzimbra-native.$(JNI_EXT) $@
 	cp -pr $(JUNIXSOCKET_NATIVE) $@
 
-$(NATIVE_DIR)/build/libzimbra-native.$(JNI_EXT):
+$(NATIVE_DIR)/$(ANT_BUILD_DIR)/libzimbra-native.$(JNI_EXT):
 	(cd $(NATIVE_DIR); make JAVA_BINARY=$(JAVA_BINARY))
 
-$(LAUNCHER_DIR)/build/zmmailboxdmgr:
+$(LAUNCHER_DIR)/$(ANT_BUILD_DIR)/zmmailboxdmgr:
 	(cd $(LAUNCHER_DIR); make JAVA_BINARY=$(JAVA_BINARY))
 
 $(CORE_DEST_DIR)/db: $(WEBAPP_DIR)/service.war
 	mkdir -p $@
 	cp -R $(SERVICE_DIR)/src/db/mysql/db.sql $@
 	cp -R $(SERVICE_DIR)/src/db/mysql/create_database.sql $@
-	cp -R $(SERVICE_DIR)/build/versions-init.sql $@
+	cp -R $(SERVICE_DIR)/$(MAVEN_TARGET_DIR)/versions-init.sql $@
 
 $(CORE_DEST_DIR)/conf: $(WEBAPP_DIR)/service.war
 	@echo "*** Installing conf"
@@ -184,15 +185,14 @@ $(CORE_DEST_DIR)/conf: $(WEBAPP_DIR)/service.war
 	cp $(PACKAGE_CONF_DIR)/Conf/swatchrc $@/swatchrc.in
 	cp $(PACKAGE_CONF_DIR)/Conf/logswatchrc $@/logswatchrc
 	cp $(PACKAGE_CONF_DIR)/Conf/auditswatchrc $@/auditswatchrc.in
-	cp $(SERVICE_DIR)/build/dist/conf/localconfig.xml $@
-	cp $(SERVICE_DIR)/build/dist/conf/log4j.properties $@/log4j.properties.in
+	cp $(SERVICE_DIR)/$(ANT_BUILD_DIR)/dist/conf/localconfig.xml $@
+	cp $(SERVICE_DIR)/$(ANT_BUILD_DIR)/dist/conf/log4j.properties $@/log4j.properties.in
 	cp $(PACKAGE_CONF_DIR)/Conf/zmssl.cnf.in $@
 	cp $(SERVICE_DIR)/conf/datasource.xml $@
 	cp $(SERVICE_DIR)/conf/amavisd.conf.in $@
 	cp $(SERVICE_DIR)/conf/amavisd/amavisd-custom.conf $@
 	cp $(SERVICE_DIR)/conf/opendkim.conf.in $@
 	cp $(SERVICE_DIR)/conf/opendkim-localnets.conf.in $@
-	cp $(SERVICE_DIR)/conf/dspam.conf.in $@
 	cp $(SERVICE_DIR)/conf/zmlogrotate $@
 	cp $(SERVICE_DIR)/conf/clamd.conf.in $@
 	cp $(SERVICE_DIR)/conf/freshclam.conf.in $@
@@ -217,13 +217,13 @@ $(CORE_DEST_DIR)/conf: $(WEBAPP_DIR)/service.war
 	cp $(SERVICE_DIR)/conf/zmconfigd/smtpd_sender_restrictions.cf $@/zmconfigd/smtpd_sender_restrictions.cf
 	cp $(SERVICE_DIR)/conf/zmconfigd/smtpd_sender_login_maps.cf $@/zmconfigd/smtpd_sender_login_maps.cf
 	cp -Rf $(SERVICE_DIR)/conf/externaldirsync $@/externaldirsync
-	cp -Rf $(SERVICE_DIR)/build/dist/conf/rights $@/rights
+	cp -Rf $(SERVICE_DIR)/$(ANT_BUILD_DIR)/dist/conf/rights $@/rights
 	rm -f $@/rights/zimbra-rights-domainadmin.xml-template
-	cp -Rf $(SERVICE_DIR)/build/dist/conf/msgs $@/msgs
+	cp -Rf $(SERVICE_DIR)/$(ANT_BUILD_DIR)/dist/conf/msgs $@/msgs
 	mkdir -p $@/attrs
-	cp -f $(SERVICE_DIR)/build/dist/conf/attrs/* $@/attrs
+	cp -f $(SERVICE_DIR)/$(ANT_BUILD_DIR)/dist/conf/attrs/* $@/attrs
 
-$(CORE_DEST_DIR)/libexec: $(LAUNCHER_DIR)/build/zmmailboxdmgr
+$(CORE_DEST_DIR)/libexec: $(LAUNCHER_DIR)/$(ANT_BUILD_DIR)/zmmailboxdmgr
 	@echo "*** Installing libexec"
 	mkdir -p $@/installer/util/modules
 	mkdir -p $@/installer/bin
@@ -246,15 +246,15 @@ $(CORE_DEST_DIR)/libexec: $(LAUNCHER_DIR)/build/zmmailboxdmgr
 	cp -f $(PACKAGE_CONF_DIR)/Install/postinstall.pm $@/postinstall.pm
 	cp -f $(PACKAGE_CONF_DIR)/Install/preinstall.pm $@/preinstall.pm
 	cp -f $(PACKAGE_CONF_DIR)/Install/Util/addUser.sh $@/addUser.sh
-	cp -f $(LAUNCHER_DIR)/build/zmmailboxdmgr $@
-	cp -f $(LAUNCHER_DIR)/build/zmmailboxdmgr.unrestricted $@
+	cp -f $(LAUNCHER_DIR)/$(ANT_BUILD_DIR)/zmmailboxdmgr $@
+	cp -f $(LAUNCHER_DIR)/$(ANT_BUILD_DIR)/zmmailboxdmgr.unrestricted $@
 	cp $(SERVICE_DIR)/src/libexec/* $@
 	cp -f $(BUILD_ROOT)/rpmconf/Build/get_plat_tag.sh $@
 
 $(CORE_DEST_DIR)/bin:
 	@echo "*** Installing bin"
 	mkdir -p $@
-	cp -R $(SERVICE_DIR)/build/dist/bin/[a-z]* $@
+	cp -R $(SERVICE_DIR)/$(ANT_BUILD_DIR)/dist/bin/[a-z]* $@
 	rm -f $(CORE_DEST_DIR)/bin/zmtransserver.bat
 	cp $(ZIMBRA_BIN_DIR)/zmswatchctl $@
 	cp $(ZIMBRA_BIN_DIR)/zmlogswatchctl $@
@@ -272,6 +272,15 @@ $(CORE_DEST_DIR)/bin:
 	cp $(ZIMBRA_BIN_DIR)/zmapachectl $@
 	cp $(ZIMBRA_BIN_DIR)/zmcbpolicydctl $@
 	cp $@/zmprov $@/zmprov.java
+
+$(CORE_DEST_DIR)/common:
+	@echo "*** Installing common"
+	mkdir -p $@
+	tar xzfC "$(CONSUL_SOURCE).tgz" "$(CORE_DEST_DIR)"
+
+$(CORE_DEST_DIR)/data/consul:
+	@echo "*** Creating $@"
+	mkdir -p $@
 
 $(CORE_DEST_DIR)/contrib:
 	@echo "*** Installing contrib"
