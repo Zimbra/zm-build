@@ -2059,6 +2059,11 @@ configurePackageServer() {
       fi
       echo "Importing Zimbra GPG key and configuring package server"
       apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 9BE6ED79 >>$LOGFILE 2>&1
+      if [ $? -ne 0 ]; then
+        echo "ERROR: Unable to retrive Zimbra GPG key for package validation"
+        echo "Please fix system to allow normal package installation before proceeding"
+        exit 1
+      fi
       apt-get install -y apt-transport-https >>$LOGFILE 2>&1
       if [ $? -ne 0 ]; then
         echo "ERROR: Unable to install packages via apt-get"
