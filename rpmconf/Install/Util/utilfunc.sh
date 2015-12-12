@@ -530,44 +530,6 @@ EOF
 
   GOOD="yes"
 
-  SUGGESTED="yes"
-  echo "Checking for suggested prerequisites..."
-  for i in $PRESUG_PACKAGES; do
-    #echo -n "     $i..."
-    PKGVERSION="notfound"
-    suggestedVersion $i
-    if [ "x$PKGINSTALLED" != "x" ]; then
-       echo "     FOUND: $i"
-    else
-       if [ "x$PKGVERSION" = "xnotfound" ]; then
-         echo "     MISSING: $i does not appear to be installed."
-       else
-         echo "     Unable to find expected $i.  Found version $PKGVERSION instead."
-       fi
-       SUGGESTED="no"
-    fi
-  done
-
-  if [ $SUGGESTED = "no" -a x$DEFAULTFILE = "x" ]; then
-    echo ""
-    echo "###WARNING###"
-    echo ""
-    echo "The suggested version of one or more packages is not installed."
-    echo "This could cause problems with the operation of Zimbra."
-    while :; do
-     askYN "Do you wish to continue?" "N"
-     if [ $response = "no" ]; then
-      askYN "Exit?" "N"
-      if [ $response = "yes" ]; then
-        echo "Exiting."
-        exit 1
-      fi
-     else
-      break
-     fi
-    done
-  fi
-
   # limitation of ext3
   if [ -d "/opt/zimbra/db/data" ]; then
     echo "Checking current number of databases..."
@@ -2499,10 +2461,7 @@ getPlatformVars() {
     PACKAGEEXT='deb'
     PACKAGEVERSION="dpkg-query -W -f \${Version}"
     CONFLICT_PACKAGES="mail-transport-agent"
-    if [ $PLATFORM = "UBUNTU12_64" ]; then
-      STORE_PACKAGES="libreoffice"
-    fi
-    if [ $PLATFORM = "UBUNTU14_64" ]; then
+    if [ $PLATFORM = "UBUNTU12_64" -o $PLATFORM = "UBUNTU14_64" ]; then
       STORE_PACKAGES="libreoffice"
     fi
   else
@@ -2513,14 +2472,8 @@ getPlatformVars() {
       PACKAGEEXT='rpm'
       PACKAGEQUERY='rpm -q'
       PACKAGEVERIFY='rpm -K'
-    if [ $PLATFORM = "RHEL6_64" ]; then
+    if [ $PLATFORM = "RHEL6_64" -o $PLATFORM = "RHEL7_64" ]; then
       STORE_PACKAGES="libreoffice libreoffice-headless"
-    elif [ $PLATFORM = "RHEL7_64" ]; then
-      STORE_PACKAGES="libreoffice libreoffice-headless"
-    else
-      PACKAGEINST='rpm -iv'
-      PACKAGERM='rpm -ev --nodeps --allmatches'
-      PRESUG_PACKAGES="sysstat sqlite"
     fi
   fi
 }
