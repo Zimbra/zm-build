@@ -2087,6 +2087,11 @@ EOF
       fi
       echo "Importing Zimbra GPG key and configuring package server"
       rpm --import https://files.zimbra.com/downloads/security/public.key >>$LOGFILE 2>&1
+      if [ $? -ne 0 ]; then
+        echo "ERROR: Unable to retrive Zimbra GPG key for package validation"
+        echo "Please fix system to allow normal package installation before proceeding"
+        exit 1
+      fi
 cat > /etc/yum.repos.d/zimbra.repo <<EOF
 [zimbra]
 name=Zimbra RPM Repository
