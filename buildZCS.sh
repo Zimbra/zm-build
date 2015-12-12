@@ -19,43 +19,21 @@
 PROGDIR=`dirname $0`
 cd $PROGDIR
 PATHDIR=`pwd`
-BUILDTHIRDPARTY=no
-UTILITIES=no
 BUILDTYPE=foss
-PMIRROR=no
 
 usage() {
 	echo ""
-	echo "Usage: "`basename $0`" [-d] [-t [-u]]" >&2
-	echo "-d: Perform a Zimbra Desktop build"
-	echo "-t: Build third party as well as ZCS"
-	echo "-u: Install build utilities, must be used the first time when building ZCS (requires -t, sudo access)"
+	echo "Usage: \"`basename $0`\"" >&2
 }
 
 while [ $# -gt 0 ]; do
 	case $1 in
-		-d|--desktop)
-			BUILDTYPE=desktop
-			shift;
-			;;
 		-h|--help)
 			usage;
 			exit 0;
 			;;
-		-p|--private)
-			PMIRROR=yes
-			shift;
-			;;
-		-t|--thirdparty)
-			BUILDTHIRDPARTY=yes
-			shift;
-			;;
-		-u|--utilities)
-			UTILITIES=yes
-			shift;
-			;;
 		*)
-			echo "Usage: $0 [-t]"
+			echo "Usage: $0"
 			exit 1;
 			;;
 	esac
@@ -106,72 +84,18 @@ do
 			echo "Please obtain JDK 1.7 from:"
 			echo "http://www.oracle.com/technetwork/java/index.html"
 			echo "and add it to user binary path"
+                        echo "Alternatively, install openjdk 1.7 via your distribution"
 		fi
 		exit 1;
 	fi
 done
 
-if [ x$BUILDTHIRDPARTY = x"yes" -a x$BUILDTYPE = x"desktop" ]; then
-	echo "Error: ThirdParty builds and Desktop builds are mutually exclusive"
-	exit 1;
-fi
-
-if [ x$BUILDTHIRDPARTY = x"no" -a x$PMIRROR = x"yes" ]; then
-	echo "Error: Cannot use -p without -t"
-	exit 1;
-fi
-
-if [ x$BUILDTHIRDPARTY = x"no" -a x$UTILITIES = x"yes" ]; then
-	echo "Error: Cannot use -u without -t"
-	exit 1;
-fi
-
-TPOPTS="-c"
-if [ x$PMIRROR = x"yes" ]; then
-	TPOPTS="$TPOPTS -p"
-fi
-
-if [ x$UTILITIES = x"yes" ]; then
-	TPOPTS="$TPOPTS -t"
-fi
-
-if [ x$BUILDTHIRDPARTY = x"yes" ]; then
-	echo "Starting 3rd Party build"
-	if [ -x "../ThirdParty/buildThirdParty.sh" ]; then
-		${PATHDIR}/../ThirdParty/buildThirdParty.sh $TPOPTS
-		RC=$?
-		if [ $RC -ne 0 ]; then
-			echo "Error: Building third party failed"
-			echo "Please fix and retry"
-			exit 1;
-		fi
-	else
-		echo "Error: ${PATHDIR}/../ThirdParty/BuildThirdParty.sh does not exit"
-		exit 1;
-	fi
-fi
-
-TARGETS="all"
-if [ x$BUILDTYPE = x"foss" ]; then
-	TARGETS="ajaxtar $TARGETS"
-fi
-
-if [ x$BUILDTYPE = x"foss" ]; then
-	cd $PATHDIR
-elif [ x$BUILDTYPE = x"desktop" ]; then
-	cd $PATHDIR/../ZimbraOffline
-else
-	echo "Error: Unknown build type $BUILDTYPE"
-	exit 1;
-fi
+TARGETS="ajaxtar all"
+cd $PATHDIR
 
 echo "Starting ZCS build"
 mkdir -p $PATHDIR/../logs
 mkdir -p $PATHDIR/../ZimbraCommon/jars-internal/jars
-if [ x$BUILDTYPE = x"foss" ]; then
-	make -f Makefile allclean
-	make -f Makefile $TARGETS | tee $PATHDIR/../logs/FOSS-build.log
-else
-	ant -f installer-ant.xml | tee $PATHDIR/../logs/Desktop-build.log
-fi
+make -f Makefile allclean
+make -f Makefile $TARGETS | tee $PATHDIR/../logs/FOSS-build.log
 exit 0;
