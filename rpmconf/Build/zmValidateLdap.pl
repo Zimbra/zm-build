@@ -23,35 +23,35 @@ use lib qw(/opt/zimbra/common/lib/perl5/ /opt/zimbra/zimbramon/lib);
 use Net::LDAP;
 use Getopt::Long;
 
-my (%c,%loaded,%options,$opts_good);
+my (%c,%loaded,%options);
 
 $c{zmlocalconfig}="/opt/zimbra/bin/zmlocalconfig";
-
-my $opts_good = GetOptions ("vmajor=i"    => \$options{vmajor},
-                            "vminor=i"    => \$options{vminor},
-                            "ldap"         => \$options{l},
-           );
+my @verargs = qw (vmajor vminor vmicro umajor uminor umicro);
+my $opts_good = GetOptions ( %options, map { "$_=i" } @verargs, "l|ldap" );
 
 if (!$opts_good) {
   print "Error: Invalid options.\n";
   exit 1;
 }
 
-if ($options{l} && !($options{vmajor}) && !($options{vminor})) {
-  print "ERROR: Missing start version major and minor\n";
-  exit 1;
+my $ldap_is_master=getLocalConfig("ldap_is_master");
+if (lc($ldap_is_master) ne "true") {
+  foreach my $arg (@verargs) {
+    unless ( defined $options{$arg} ) {
+      print "Error: All of current major.minor.micro and upgrade major.minor.micro must be provided.\n";                                                                      
+      exit 1;
+    }
+  }
 }
 
 my $ldap_master=getLocalConfig("ldap_master_url");
-
-# No cert verification is done using ldaps, exit if it is in use
-
+my $admin_user=getLocalConfig("zimbra_ldap_userdn");
+my $admin_password=getLocalConfig("zimbra_ldap_password");
 my $ldap_starttls_supported=getLocalConfig("ldap_starttls_supported");
+my $upgradeOK=1;
 
 my ($mesgp, $entry);
-  
 my @masters = split / /, $ldap_master;
-  
 foreach my $master (@masters) {
   my $ldapp;
   chomp($master);
@@ -75,13 +75,56 @@ foreach my $master (@masters) {
       }
     }
   }
+  if (lc($ldap_is_master) ne "true") {
+    $mesgp = $ldapp->bind($admin_user, password=>$admin_password);
+    if ($mesgp->code) {
+      print "ERROR: Unable to bind as the Zimbra Admin LDAP user.\n";
+      $ldapp->unbind();
+      exit 3;
+    }
+    my $ldap_master_host=$ldapp->host();
+    $mesgp = $ldapp->search(base => "cn=servers,cn=zimbra",
+                            filter => "cn=$ldap_master_host",
+                            attrs => [
+                                      'zimbraServerVersionMajor',
+                                      'zimbraServerVersionMinor',
+                                      'zimbraServerVersionMicro',
+                                      'zimbraServerVersionType',
+                                      'zimbraServerVersionBuild',
+                                     ]);
+    if ($mesgp->code) {
+      print "Search error: Unable to search master.\n";
+      exit 4;
+    }
+    my $size=$mesgp->count;
+    if ($size != 1) {
+      print "Size error: Invalid response from ldap master. Please verify cn=$ldap_master_host,cn=servers,cn=zimbra exists in ldap and is a master ldap server.\n";
+      exit 4;
+    }
+    my ($lmMajor, $lmMinor, $lmMicro, $lmType);
+    my $entry = $mesgp->entry(0);
+    chomp($lmMajor = $entry->get_value('zimbraServerVersionMajor'));
+    chomp($lmMinor = $entry->get_value('zimbraServerVersionMinor'));
+    chomp($lmMicro = $entry->get_value('zimbraServerVersionMicro'));
+    if ($lmMajor eq "") {
+      $upgradeOK=0;
+      $ldapp->unbind;
+    }
+    if (($lmMajor != $options{umajor}) || ($lmMinor != $options{uminor}) || ($lmMicro != $options{umicro})) {
+      $upgradeOK=0;
+      $ldapp->unbind;
+    }
+  }
+}
+
+if (!$upgradeOK) {
+  print "ERROR: One or more masters have not yet been upgraded.  Aborting.\n";
+  exit 5;
 }
 
 if ($options{l}) {
   if (-f '/opt/zimbra/data/ldap/mdb/db/data.mdb' || -f '/opt/zimbra/data/ldap/hdb/db/id2entry.bdb') {
     my $ldap_root_password=getLocalConfig("ldap_root_password");
-    my $admin_user=getLocalConfig("zimbra_ldap_userdn");
-    my $admin_password=getLocalConfig("zimbra_ldap_password");
     my $ldap;
     if ($options{vmajor} < 8 || ($options{vmajor} == 8 && $options{vminor} == 0)) {
       $ldap = Net::LDAP->new('ldapi://%2fopt%2fzimbra%2fopenldap%2fvar%2frun%2fldapi/') or die "$@";
