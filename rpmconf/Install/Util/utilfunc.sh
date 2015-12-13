@@ -827,11 +827,12 @@ verifyUpgrade() {
   # Upgrade tests applicable to everyone
   echo "Validating ldap configuration"
   isInstalled "zimbra-ldap"
+  LDAP_OPT=""
   if [ x$PKGINSTALLED != "x" ]; then
-    `bin/zmValidateLdap.pl -l --vmajor ${ZM_CUR_MAJOR} --vminor ${ZM_CUR_MINOR} >/dev/null`
-  else
-    `bin/zmValidateLdap.pl >/dev/null`
+    LDAP_OPT="-l"
   fi
+  `bin/zmValidateLdap.pl --vmajor ${ZM_CUR_MAJOR} --vminor ${ZM_CUR_MINOR} --vmicro ${ZM_CUR_MICRO} \
+     --umajor ${ZM_INST_MAJOR} --uminor ${ZM_INST_MINOR} --umicro ${ZM_INST_MICRO} ${LDAP_OPT} >/dev/null`
   ldapRC=$?;
   if [ $ldapRC != 0 ]; then
     if [ $ldapRC = 1 ]; then
@@ -845,6 +846,14 @@ verifyUpgrade() {
     elif [ $ldapRC = 3 ]; then
       echo "Error: Unable to bind to the LDAP server as the zimbra LDAP user."
       echo "       This is required to upgrade."
+      exit 1
+    elif [ $ldapRC = 4 ]; then
+      echo "Error: Unable to search LDAP server as the zimbra LDAP user."
+      echo "       This is required to upgrade."
+      exit 1
+    elif [ $ldapRC = 5 ]; then
+      echo "Error: One or more LDAP master servers has not yet been upgraded."
+      echo "       It is required for all LDAP master node(s) to be upgraded first."
       exit 1
     else
       echo "Unknown Error: It should be impossible to reach this statement."
@@ -1412,14 +1421,6 @@ restoreExistingConfig() {
   fi
   if [ -f $RF ]; then
     echo -n "Restoring existing configuration file from $RF..."
-    #while read i; do
-      # echo "Setting $i"
-      #runAsZimbra "zmlocalconfig -f -e $i"
-    #done < $RF
-    #if [ -f $RESTORECONFIG/backup.save ]; then
-    #  echo -n "Restoring backup schedule..."
-    #  runAsZimbra "cat $RESTORECONFIG/backup.save | xargs zmschedulebackup -R"
-    #fi
     cp -f $RF /opt/zimbra/conf/localconfig.xml
     echo "done"
   fi
