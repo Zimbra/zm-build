@@ -143,7 +143,7 @@ echo "Operations logged to $LOGFILE"
 if [ "x$DEFAULTFILE" != "x" ]; then
 	AUTOINSTALL="yes"
 else
-    AUTOINSTALL="no"
+	AUTOINSTALL="no"
 fi
 
 if [ x"$LICENSE" != "x" ] && [ -e $LICENSE ]; then
@@ -170,12 +170,12 @@ if [ x"$INSTALLED" != "xyes" ] && [ x"$ACTIVATION" != "x" ]; then
   echo "License activation file option is only available on upgrade."
   usage
 fi
-  
 
 if [ x$UNINSTALL = "xyes" ]; then
 	askYN "Completely remove existing installation?" "N"
 	if [ $response = "yes" ]; then
 		REMOVE="yes"
+		saveExistingConfig
 		removeExistingInstall
 	fi
 	exit 1
@@ -205,7 +205,7 @@ if [ $AUTOINSTALL = "no" ]; then
   findLatestPackage zimbra-core
 	p=`bin/get_plat_tag.sh`
 	if [ x"$p" != x"$installable_platform" ]; then
-    echo ""
+		echo ""
 		echo "You appear to be installing packages on a platform different"
 		echo "than the platform for which they were built."
 		echo ""
@@ -214,26 +214,26 @@ if [ $AUTOINSTALL = "no" ]; then
 		echo "This may or may not work."
 		echo ""
 
-    if [ x"${ALLOW_PLATFORM_OVERRIDE}" = "xyes" ]; then
+		if [ x"${ALLOW_PLATFORM_OVERRIDE}" = "xyes" ]; then
 
-      echo "Using packages for a platform in which they were not designed for"
-      echo "may result in an installation that is NOT usable. Your support"
-      echo "options may be limited if you choose to continue."
-      echo ""
-		  askYN "Install anyway?" "N"
-		  if [ $response = "no" ]; then
-			  echo "Exiting..."
-			  exit 1
-		  fi
-    else 
-      echo "Installation can not continue without manual override."
-      echo "You can override this safety check with $0 --platform-override"
-      echo ""
-      echo "WARNING: Bypassing this check may result in an install or"
-      echo "upgrade that is NOT usable."
-      echo ""
-      exit 1
-    fi
+			echo "Using packages for a platform in which they were not designed for"
+			echo "may result in an installation that is NOT usable. Your support"
+			echo "options may be limited if you choose to continue."
+			echo ""
+			askYN "Install anyway?" "N"
+			if [ $response = "no" ]; then
+				echo "Exiting..."
+				exit 1
+			fi
+		else
+			echo "Installation can not continue without manual override."
+			echo "You can override this safety check with $0 --platform-override"
+			echo ""
+			echo "WARNING: Bypassing this check may result in an install or"
+			echo "upgrade that is NOT usable."
+			echo ""
+			exit 1
+		fi
 	fi
 
 	verifyExecute
@@ -255,7 +255,9 @@ else
 		fi
 	fi
 fi
-
+if [ $UPGRADE = "yes" ]; then
+	saveExistingConfig
+fi
 removeExistingInstall
 
 echo "Installing packages"
