@@ -27,7 +27,7 @@ my (%c,%loaded,%options);
 
 $c{zmlocalconfig}="/opt/zimbra/bin/zmlocalconfig";
 my @verargs = qw (vmajor vminor vmicro umajor uminor umicro);
-my $opts_good = GetOptions ( %options, map { "$_=i" } @verargs, "l|ldap" );
+my $opts_good = GetOptions ( %options, "l|ldap", map { "$_=i" } @verargs);
 
 if (!$opts_good) {
   print "Error: Invalid options.\n";
