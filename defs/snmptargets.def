@@ -45,7 +45,7 @@ $(BUILD_ROOT)/zimbra-snmp.spec:
 		$(BUILD_ROOT)/zimbra-snmp.spec
 	echo "%attr(644, zimbra, zimbra) /opt/zimbra/conf/*" >> \
 		$(BUILD_ROOT)/zimbra-snmp.spec
-	echo "%attr(755, root, root) /opt/zimbra/common/conf" >> \
+	echo "%attr(775, root, zimbra) /opt/zimbra/common/conf" >> \
 		$(BUILD_ROOT)/zimbra-snmp.spec
 	echo "%attr(644, root, root) /opt/zimbra/common/conf/snmp.conf" >> \
 		$(BUILD_ROOT)/zimbra-snmp.spec
