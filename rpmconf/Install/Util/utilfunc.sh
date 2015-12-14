@@ -672,9 +672,7 @@ checkExistingInstall() {
   verifyLicenseActivationServer
   verifyLicenseAvailable
 
-  if [ $INSTALLED = "yes" ]; then
-    saveExistingConfig
-  else
+  if [ $INSTALLED != "yes" ]; then
     checkUserInfo
   fi
 }
