@@ -2064,7 +2064,7 @@ enabled=1
 EOF
       yum --disablerepo=* --enablerepo=zimbra clean metadata >>$LOGFILE 2>&1
       yum check-update --disablerepo=* --enablerepo=zimbra >>$LOGFILE 2>&1
-      if [ $? -ne 0  -a $? ne 100 ]; then
+      if [ $? -ne 0 -a $? -ne 100 ]; then
         echo "ERROR: yum check-update failed"
         echo "Please validate ability to install packages"
         exit 1
