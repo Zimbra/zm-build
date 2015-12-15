@@ -383,9 +383,9 @@ sub upgrade {
     if (startLdap()) {return 1;}
   }
 
-  # Populate Java cacert keystore with our CA cert(s) prior to doing anything requiring Java/zmprov
-  main::runAsRoot("/opt/zimbra/bin/zmcertmgr createca");
-  main::runAsRoot("/opt/zimbra/bin/zmcertmgr deployca -localonly");
+  # Update our CA cert(s) for java/zmprov before we go further
+  main::runAsZimbra("/opt/zimbra/bin/zmcertmgr createca");
+  main::runAsZimbra("/opt/zimbra/bin/zmcertmgr deployca -localonly");
 
   if (main::isInstalled("zimbra-store")) {
 
@@ -4561,5 +4561,4 @@ sub runLdapAttributeUpgrade($) {
   return $rc;
 }
 
-
-1
+1;
