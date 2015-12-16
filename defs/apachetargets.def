@@ -14,7 +14,6 @@ apache_pkg_spec_deb: $(APACHE_DEST_ROOT)/DEBIAN/control
 
 $(APACHE_DEST_ROOT)/DEBIAN: force
 	mkdir -p $@
-	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-apache.pre $@/preinst
 	chmod 555 $@/*
 
 $(APACHE_DEST_ROOT)/DEBIAN/control: $(APACHE_DEST_ROOT)/DEBIAN $(APACHE_DEST_ROOT)/DEBIAN/md5sums force
@@ -30,14 +29,11 @@ $(APACHE_DEST_ROOT)/DEBIAN/md5sums: force
 apache_pkg_spec_rpm: $(BUILD_ROOT)/zimbra-apache.spec
 
 $(BUILD_ROOT)/zimbra-apache.spec:
-	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-apache.pre $(BUILD_ROOT)
 	cat $(PACKAGE_CONF_DIR)/Spec/zimbra-apache.spec | \
 		sed -e 's/@@VERSION@@/$(VERSION_TAG)/' \
 		-e 's/@@RELEASE@@/$(RELEASE)/' \
 		-e 's/^Copyright:/$(RPMCOPYRIGHTSTR):/' \
-		-e '/^%pre$$/ r zimbra-apache.pre' \
 		> $(BUILD_ROOT)/zimbra-apache.spec
-	rm -f zimbra-apache.pre
 	echo "%attr(755, zimbra, zimbra) /opt/zimbra/conf" >> \
 		$(BUILD_ROOT)/zimbra-apache.spec
 	echo "%attr(644, zimbra, zimbra) /opt/zimbra/conf/*" >> \
