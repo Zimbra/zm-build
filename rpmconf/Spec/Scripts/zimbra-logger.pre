@@ -15,7 +15,6 @@
 # If not, see <http://www.gnu.org/licenses/>.
 # ***** END LICENSE BLOCK *****
 # 
-# Create group, user for zimbra and postfix.
 
 grp_exists() {
   if [ -x /usr/bin/getent ]
@@ -40,34 +39,19 @@ acct_exists() {
   fi
 }
 
+
+# Create group, user for zimbra and postfix.
 grp_exists zimbra
 if [ $? != 0 ]; then
 	groupadd -r zimbra
 fi
 
-acct_exists zimbra
+grp_exists postfix
 if [ $? != 0 ]; then
-	useradd -r -g zimbra -G tty -d /opt/zimbra -s /bin/bash zimbra
-else
-	usermod -g zimbra -d /opt/zimbra -s /bin/bash zimbra
+	groupadd -r postfix
 fi
 
-if [ -f "/etc/security/limits.d/90-nproc.conf" ]; then
-    echo "zimbra soft nproc 278528" > /etc/security/limits.d/80-zimbra.conf
-    echo "zimbra hard nproc 278528" >> /etc/security/limits.d/80-zimbra.conf
-    echo "postfix soft nproc 278528" >> /etc/security/limits.d/80-zimbra.conf
-    echo "postfix hard nproc 278528" >> /etc/security/limits.d/80-zimbra.conf
-    echo "root soft nproc 278528" >> /etc/security/limits.d/80-zimbra.conf
-    echo "root hard nproc 278528" >> /etc/security/limits.d/80-zimbra.conf
-fi
-if [ -f "/etc/security/limits.conf" ]; then
-    egrep -v -e '^zimbra.*nofile' /etc/security/limits.conf > /tmp/limits.conf
-    echo "zimbra soft nofile 524288" >> /tmp/limits.conf
-    echo "zimbra hard nofile 524288" >> /tmp/limits.conf
-    mv -f /tmp/limits.conf /etc/security/limits.conf
-    chmod 640 /etc/security/limits.conf
-else
-    echo "zimbra soft nofile 524288" > /etc/security/limits.conf
-    echo "zimbra hard nofile 524288" >> /etc/security/limits.conf
-    chmod 640 /etc/security/limits.conf
+acct_exists zimbra
+if [ $? != 0 ]; then
+	useradd -r -g zimbra -G postfix,tty -d /opt/zimbra -s /bin/bash zimbra
 fi

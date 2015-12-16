@@ -115,7 +115,6 @@ my @webappList = (
   "zimbra",
   "zimbraAdmin",
   "zimlet",
-  "solr",
 );
 
 my %installedPackages = ();
@@ -149,6 +148,7 @@ my $ldapRepChanged = 0;
 my $ldapPostChanged = 0;
 my $ldapAmavisChanged = 0;
 my $ldapNginxChanged = 0;
+my $ldapBesSearcherChanged = 0;
 my $ldapReplica = 0;
 my $starttls = 0;
 my $needNewCert = "";
@@ -395,7 +395,6 @@ sub checkPortConflicts {
     7306 => 'zimbra-store',
     7307 => 'zimbra-store',
     7780 => 'zimbra-spell',
-    7983 => 'zimbra-store',
     8465 => 'zimbra-mta',
     10024 => 'zimbra-mta',
     10025 => 'zimbra-mta',
@@ -1569,12 +1568,16 @@ sub setDefaults {
     $config{LDAPPOSTPASS} = $config{LDAPADMINPASS};
     $config{LDAPAMAVISPASS} =  $config{LDAPADMINPASS};
     $config{ldap_nginx_password} = $config{LDAPADMINPASS};
+    $config{ldap_bes_searcher_password} = $config{LDAPADMINPASS};
     $config{LDAPREPLICATIONTYPE} = "master"; # Values can be master, mmr, replica
     $config{LDAPSERVERID} = 2; # Aleady enabled master should be 1, so default to next ID.
     $ldapRepChanged = 1;
     $ldapPostChanged = 1;
     $ldapAmavisChanged = 1;
     $ldapNginxChanged = 1;
+    if ($newinstall) {
+      $ldapBesSearcherChanged = 1;
+    }
   }
 
   if(isInstalled("zimbra-proxy") && !isEnabled("zimbra-ldap")) {
@@ -1961,6 +1964,15 @@ sub setDefaultsFromLocalConfig {
     if ($config{LDAPREPPASS} eq "") {
       $config{LDAPREPPASS} = $config{LDAPADMINPASS};
       $ldapRepChanged = 1;
+    }
+  }
+  if (isEnabled("zimbra-ldap")) {
+    if (isLdapMaster()) {
+      $config{ldap_bes_searcher_password} = getLocalConfig ("ldap_bes_searcher_password");
+      if ($config{ldap_bes_searcher_password} eq "") {
+        $config{ldap_bes_searcher_password} = $config{LDAPADMINPASS};
+        $ldapBesSearcherChanged = 1;
+      }
     }
   }
   if (isEnabled("zimbra-ldap") || isEnabled("zimbra-mta")) {
@@ -2480,6 +2492,24 @@ sub setLdapRepPass {
       if ($config{LDAPREPPASS} ne $new) {
         $config{LDAPREPPASS} = $new;
         $ldapRepChanged = 1;
+      }
+      ldapIsAvailable() if ($config{HOSTNAME} ne $config{LDAPHOST});
+      return;
+    } else {
+      print "Minimum length of 6 characters!\n";
+    }
+  }
+}
+
+sub setLdapBesSearchPass {
+  while (1) {
+    my $new =
+      askPassword("Password for ldap BES user (min 6 characters):",
+        $config{ldap_bes_searcher_password});
+    if (length($new) >= 6) {
+      if ($config{ldap_bes_searcher_password} ne $new) {
+        $config{ldap_bes_searcher_password} = $new;
+        $ldapBesSearcherChanged = 1;
       }
       ldapIsAvailable() if ($config{HOSTNAME} ne $config{LDAPHOST});
       return;
@@ -3614,6 +3644,19 @@ sub createLdapMenu {
         };
       $i++;
     }
+    if ($config{HOSTNAME} eq $config{LDAPHOST} || $config{LDAPREPLICATIONTYPE} ne "replica" ) {
+      if ($config{ldap_bes_searcher_password} eq "") {
+        $config{LDAPBESSEARCHSET} = "UNSET";
+      } else {
+        $config{LDAPBESSEARCHSET} = "set" unless ($config{LDAPBESSEARCHSET} eq "Not Verified");
+      }
+      $$lm{menuitems}{$i} = {
+        "prompt" => "Ldap Bes Searcher password:",
+        "var" => \$config{LDAPBESSEARCHSET},
+        "callback" => \&setLdapBesSearchPass
+        };
+      $i++;
+    }
   }
   return $lm;
 }
@@ -4560,6 +4603,22 @@ sub ldapIsAvailable {
     setLdapDefaults() if ($config{LDAPHOST} ne $config{HOSTNAME});
   }
 
+  # check zmbes searcher binding to the master
+  if ($config{LDAPHOST} eq $config{HOSTNAME}) {
+    if ($config{ldap_bes_searcher_password} eq "") {
+      detail ("BES searcher configuration not complete\n");
+      $failedcheck++;
+    }
+    my $binduser = "uid=zmbes-searcher,cn=appaccts,$config{ldap_dit_base_dn_config}";
+    if (checkLdapBind($binduser,$config{ldap_bes_searcher_password})) {
+      detail ("Couldn't bind to $config{LDAPHOST} as $binduser\n");
+      $config{LDAPBESSEARCHSET} = "Not Verified";
+      $failedcheck++;
+    } else {
+      detail ("Verified $binduser on $config{LDAPHOST}.\n");
+      $config{LDAPBESSEARCHSET} = "set";
+    }
+  }
   # check nginx user binding to the master
   if (isInstalled("zimbra-proxy")) {
     if ($config{ldap_nginx_password} eq "") {
@@ -5116,7 +5175,7 @@ sub configCASetup {
   # we are going to download a new CA or otherwise create one so we need to regenerate the self signed cert.
   $needNewCert = "-new" if (! -d "/opt/zimbra/ssl/zimbra/ca");
 
-  my $rc = runAsZimbra("/opt/zimbra/bin/zmcertmgr createca $needNewCA");
+  my $rc = runAsRoot("/opt/zimbra/bin/zmcertmgr createca $needNewCA");
   if ($rc != 0) {
     progress ( "failed.\n" );
     exit 1;
@@ -5125,7 +5184,7 @@ sub configCASetup {
   }
 
   progress ( "Deploying CA to /opt/zimbra/conf/ca ..." );
-  my $rc = runAsZimbra("/opt/zimbra/bin/zmcertmgr deployca -localonly");
+  my $rc = runAsRoot("/opt/zimbra/bin/zmcertmgr deployca -localonly");
   if ($rc != 0) {
     progress ( "failed.\n" );
     exit 1;
@@ -5170,6 +5229,11 @@ sub configSetupLdap {
       if ($ldapNginxChanged == 1) {
          progress ( "Setting nginx password..." );
          runAsZimbra ("/opt/zimbra/bin/zmldappasswd -n \'$config{ldap_nginx_password}\'");
+         progress ( "done.\n" );
+      }
+      if ($ldapBesSearcherChanged == 1) {
+         progress ( "Setting BES searcher password..." );
+         runAsZimbra ("/opt/zimbra/bin/zmldappasswd -b \'$config{ldap_bes_searcher_password}\'");
          progress ( "done.\n" );
       }
     }
@@ -5260,7 +5324,7 @@ sub configSetupLdap {
 
 
     # zmldappasswd starts ldap and re-applies the ldif
-    if ($ldapRootPassChanged || $ldapAdminPassChanged || $ldapRepChanged || $ldapPostChanged || $ldapAmavisChanged || $ldapNginxChanged ) {
+    if ($ldapRootPassChanged || $ldapAdminPassChanged || $ldapRepChanged || $ldapPostChanged || $ldapAmavisChanged || $ldapNginxChanged || $ldapBesSearcherChanged) {
       if ($ldapRootPassChanged) {
          progress ( "Setting ldap root password..." );
          runAsZimbra ("/opt/zimbra/bin/zmldappasswd -r $config{LDAPROOTPASS}");
@@ -5311,6 +5375,15 @@ sub configSetupLdap {
         }
          progress ( "done.\n" );
       }
+      if ($ldapBesSearcherChanged == 1) {
+         progress ( "Setting BES Searcher password..." );
+         if ($config{LDAPHOST} eq $config{HOSTNAME} ) {
+           runAsZimbra ("/opt/zimbra/bin/zmldappasswd -b $config{ldap_bes_searcher_password}");
+         } else {
+           setLocalConfig ("ldap_bes_searcher_password", "$config{ldap_bes_searcher_password}");
+        }
+         progress ( "done.\n" );
+      }
     } else {
       progress("Stopping ldap...");
       runAsZimbra ("/opt/zimbra/bin/ldap stop");
@@ -5327,6 +5400,7 @@ sub configSetupLdap {
     setLocalConfig ("ldap_postfix_password", "$config{LDAPPOSTPASS}");
     setLocalConfig ("ldap_amavis_password", "$config{LDAPAMAVISPASS}");
     setLocalConfig ("ldap_nginx_password", "$config{ldap_nginx_password}");
+    setLocalConfig ("ldap_bes_searcher_password", "$config{ldap_bes_searcher_password}");
   }
 
   configLog("configSetupLdap");
@@ -5341,7 +5415,7 @@ sub configSaveCA {
     return 0;
   }
   progress ( "Saving CA in ldap..." );
-  my $rc = runAsZimbra("/opt/zimbra/bin/zmcertmgr deployca");
+  my $rc = runAsRoot("/opt/zimbra/bin/zmcertmgr deployca");
   if ($rc != 0) {
     progress ( "failed.\n" );
     exit 1;
@@ -5359,9 +5433,9 @@ sub configCreateCert {
   }
 
   if (!$newinstall) {
-    my $rc = runAsZimbra("/opt/zimbra/bin/zmcertmgr verifycrt comm > /dev/null 2>&1");
+    my $rc = runAsRoot("/opt/zimbra/bin/zmcertmgr verifycrt comm > /dev/null 2>&1");
     if ($rc != 0) {
-      $rc = runAsZimbra("/opt/zimbra/bin/zmcertmgr verifycrt self > /dev/null 2>&1");
+      $rc = runAsRoot("/opt/zimbra/bin/zmcertmgr verifycrt self > /dev/null 2>&1");
       if ($rc != 0) {
         progress("Warning: No valid SSL certificates were found.\n");
         progress("New self-signed certificates will be generated and installed.\n");
@@ -5383,7 +5457,7 @@ sub configCreateCert {
         qx(chmod 744 $config{mailboxd_directory}/etc);
       }
       progress ( "Creating SSL zimbra-store certificate..." );
-      $rc = runAsZimbra("/opt/zimbra/bin/zmcertmgr createcrt $needNewCert");
+      $rc = runAsRoot("/opt/zimbra/bin/zmcertmgr createcrt $needNewCert");
       if ($rc != 0) {
         progress ( "failed.\n" );
         exit 1;
@@ -5392,7 +5466,7 @@ sub configCreateCert {
       }
     } elsif ( $needNewCert ne "" && $ssl_cert_type eq "self") {
       progress ( "Creating new zimbra-store SSL certificate..." );
-      $rc = runAsZimbra("/opt/zimbra/bin/zmcertmgr createcrt $needNewCert");
+      $rc = runAsRoot("/opt/zimbra/bin/zmcertmgr createcrt $needNewCert");
       if ($rc != 0) {
         progress ( "failed.\n" );
         exit 1;
@@ -5405,7 +5479,7 @@ sub configCreateCert {
   if (isInstalled("zimbra-ldap")) {
     if ( !-f "/opt/zimbra/conf/slapd.crt" && !-f "/opt/zimbra/ssl/zimbra/server/server.crt") {
       progress ( "Creating zimbra-ldap SSL certificate..." );
-      $rc = runAsZimbra("/opt/zimbra/bin/zmcertmgr createcrt $needNewCert");
+      $rc = runAsRoot("/opt/zimbra/bin/zmcertmgr createcrt $needNewCert");
       if ($rc != 0) {
         progress ( "failed.\n" );
         exit 1;
@@ -5414,7 +5488,7 @@ sub configCreateCert {
       }
     } elsif ( $needNewCert ne "" && $ssl_cert_type eq "self") {
       progress ( "Creating new zimbra-ldap SSL certificate..." );
-      $rc = runAsZimbra("/opt/zimbra/bin/zmcertmgr createcrt $needNewCert");
+      $rc = runAsRoot("/opt/zimbra/bin/zmcertmgr createcrt $needNewCert");
       if ($rc != 0) {
         progress ( "failed.\n" );
         exit 1;
@@ -5427,7 +5501,7 @@ sub configCreateCert {
   if (isInstalled("zimbra-mta")) {
     if ( !-f "/opt/zimbra/conf/smtpd.crt" && !-f "/opt/zimbra/ssl/zimbra/server/server.crt") {
       progress ( "Creating zimbra-mta SSL certificate..." );
-      $rc = runAsZimbra("/opt/zimbra/bin/zmcertmgr createcrt $needNewCert");
+      $rc = runAsRoot("/opt/zimbra/bin/zmcertmgr createcrt $needNewCert");
       if ($rc != 0) {
         progress ( "failed.\n" );
         exit 1;
@@ -5436,7 +5510,7 @@ sub configCreateCert {
       }
     } elsif ( $needNewCert ne "" && $ssl_cert_type eq "self") {
       progress ( "Creating new zimbra-mta SSL certificate..." );
-      $rc = runAsZimbra("/opt/zimbra/bin/zmcertmgr createcrt $needNewCert");
+      $rc = runAsRoot("/opt/zimbra/bin/zmcertmgr createcrt $needNewCert");
       if ($rc != 0) {
         progress ( "failed.\n" );
         exit 1;
@@ -5449,7 +5523,7 @@ sub configCreateCert {
   if (isInstalled("zimbra-proxy")) {
     if ( !-f "/opt/zimbra/conf/nginx.crt" && !-f "/opt/zimbra/ssl/zimbra/server/server.crt") {
       progress ( "Creating zimbra-proxy SSL certificate..." );
-      $rc = runAsZimbra("/opt/zimbra/bin/zmcertmgr createcrt $needNewCert");
+      $rc = runAsRoot("/opt/zimbra/bin/zmcertmgr createcrt $needNewCert");
       if ($rc != 0) {
         progress ( "failed.\n" );
         exit 1;
@@ -5458,7 +5532,7 @@ sub configCreateCert {
       }
     } elsif ( $needNewCert ne "" && $ssl_cert_type eq "self") {
       progress ( "Creating new zimbra-proxy SSL certificate..." );
-      $rc = runAsZimbra("/opt/zimbra/bin/zmcertmgr createcrt $needNewCert");
+      $rc = runAsRoot("/opt/zimbra/bin/zmcertmgr createcrt $needNewCert");
       if ($rc != 0) {
         progress ( "failed.\n" );
         exit 1;
@@ -5478,7 +5552,7 @@ sub configSaveCert {
     return 0;
   }
   progress ( "Saving SSL Certificate in ldap..." );
-  my $rc = runAsZimbra("/opt/zimbra/bin/zmcertmgr savecrt $ssl_cert_type");
+  my $rc = runAsRoot("/opt/zimbra/bin/zmcertmgr savecrt $ssl_cert_type");
   if ($rc != 0) {
     progress ( "failed.\n" );
     exit 1;
@@ -5499,7 +5573,7 @@ sub configInstallCert {
         if (! -f "$config{mailboxd_keystore}");
       detail("$needNewCert was ne \"\".")
         if ($needNewCert ne "");
-      $rc = runAsZimbra("/opt/zimbra/bin/zmcertmgr deploycrt $ssl_cert_type");
+      $rc = runAsRoot("/opt/zimbra/bin/zmcertmgr deploycrt $ssl_cert_type");
       if ($rc != 0) {
         progress ( "failed.\n" );
         exit 1;
@@ -5519,7 +5593,7 @@ sub configInstallCert {
     if (! (-f "/opt/zimbra/conf/smtpd.key" ||
       -f "/opt/zimbra/conf/smtpd.crt" ) || $needNewCert ne "")  {
       progress ("Installing MTA SSL certificates...");
-      $rc = runAsZimbra("/opt/zimbra/bin/zmcertmgr deploycrt $ssl_cert_type");
+      $rc = runAsRoot("/opt/zimbra/bin/zmcertmgr deploycrt $ssl_cert_type");
       if ($rc != 0) {
         progress ( "failed.\n" );
         exit 1;
@@ -5538,7 +5612,7 @@ sub configInstallCert {
     if (! (-f "/opt/zimbra/conf/slapd.key" ||
       -f "/opt/zimbra/conf/slapd.crt" ) || $needNewCert ne "") {
       progress ("Installing LDAP SSL certificate...");
-      $rc = runAsZimbra("/opt/zimbra/bin/zmcertmgr deploycrt $ssl_cert_type");
+      $rc = runAsRoot("/opt/zimbra/bin/zmcertmgr deploycrt $ssl_cert_type");
       if ($rc != 0) {
         progress ( "failed.\n" );
         exit 1;
@@ -5559,7 +5633,7 @@ sub configInstallCert {
     if (! (-f "/opt/zimbra/conf/nginx.key" ||
       -f "/opt/zimbra/conf/nginx.crt")  || $needNewCert ne "") {
       progress ("Installing Proxy SSL certificate...");
-      $rc = runAsZimbra("/opt/zimbra/bin/zmcertmgr deploycrt $ssl_cert_type");
+      $rc = runAsRoot("/opt/zimbra/bin/zmcertmgr deploycrt $ssl_cert_type");
       if ($rc != 0) {
         progress ( "failed.\n" );
         exit 1;
@@ -6013,8 +6087,9 @@ sub configSetProxyPrefs {
        if ( $storetargets[0] !~ /nginx-lookup/ ) {
          progress ( "WARNING\n\n");
          progress ( "You are configuring this host as a proxy server, but there is currently no \n");
-         progress ( "mailstore to proxy. Once you have installed a store server, restart the proxy service:\n");
-         progress ( "zmproxyctl restart\n\n");
+         progress ( "mailstore to proxy.  This will cause proxy startup to fail.\n");
+         progress ( "Once you have installed a store server, start the proxy service:\n");
+         progress ( "zmproxyctl start\n\n");
          if (!$options{c}) {
            ask ("Press return to continue\n","");
          }
@@ -6106,7 +6181,7 @@ sub removeNetworkComponents {
       my $rc = setLdapGlobalConfig( @zmprov_args );
       progress (($rc == 0) ? "done.\n" : "failed. This may impact system functionality.\n");
     }
-    foreach my $zimlet (qw(com_zimbra_backuprestore com_zimbra_convertd com_zimbra_domainadmin com_zimbra_hsm com_zimbra_license com_zimbra_mobilesync zimbra_xmbxsearch com_zimbra_xmbxsearch com_zimbra_smime_cert_admin com_zimbra_delegatedadmin com_zimbra_smime)) {
+    foreach my $zimlet (qw(com_zimbra_backuprestore com_zimbra_convertd com_zimbra_domainadmin com_zimbra_hsm com_zimbra_license com_zimbra_mobilesync zimbra_xmbxsearch com_zimbra_xmbxsearch com_zimbra_smime_cert_admin com_zimbra_delegatedadmin com_zimbra_smime com_zimbra_zss)) {
       system("rm -rf $config{mailboxd_directory}/webapps/service/zimlet/$zimlet")
         if (-d "$config{mailboxd_directory}/webapps/service/zimlet/$zimlet" );
       system("rm -rf /opt/zimbra/zimlets-deployed/$zimlet")

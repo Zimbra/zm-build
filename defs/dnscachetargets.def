@@ -16,6 +16,7 @@ dns_pkg_spec_deb: $(DNS_DEST_ROOT)/DEBIAN/control $(DNS_DEST_ROOT)/etc/resolvcon
 
 $(DNS_DEST_ROOT)/DEBIAN: force
 	mkdir -p $@
+	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-dnscache.pre $@/preinst
 	cat $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-dnscache.post >> $@/postinst
 	chmod 555 $@/*
 
@@ -25,6 +26,7 @@ $(DNS_DEST_ROOT)/DEBIAN/control: $(DNS_DEST_ROOT)/DEBIAN $(DNS_DEST_ROOT)/DEBIAN
 	-e 's/@@RELEASE@@/$(RELEASE)/' \
 	-e 's/@@ARCH@@/$(ARCH)/' \
 	-e 's/^Copyright:/$(RPMCOPYRIGHTSTR):/' \
+	-e '/^%pre$$/ r zimbra-dnscache.pre' \
 	-e '/^%post$$/ r zimbra-dnscache.post' > $@
 
 $(DNS_DEST_ROOT)/DEBIAN/md5sums: force
@@ -34,12 +36,15 @@ $(DNS_DEST_ROOT)/DEBIAN/md5sums: force
 dns_pkg_spec_rpm: $(BUILD_ROOT)/zimbra-dnscache.spec
 
 $(BUILD_ROOT)/zimbra-dnscache.spec:
+	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-dnscache.pre $(BUILD_ROOT)
 	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-dnscache.post $(BUILD_ROOT)
 	cat $(PACKAGE_CONF_DIR)/Spec/zimbra-dnscache.spec | \
 		sed -e 's/@@VERSION@@/$(VERSION_TAG)/' \
 		-e 's/@@RELEASE@@/$(RELEASE)/' \
 		-e 's/^Copyright:/$(RPMCOPYRIGHTSTR):/' \
+		-e '/^%pre$$/ r zimbra-dnscache.pre' \
 		-e '/^%post$$/ r zimbra-dnscache.post' > $(BUILD_ROOT)/zimbra-dnscache.spec
+	rm -f zimbra-dnscache.pre
 	rm -f zimbra-dnscache.post
 	echo "%attr(-, zimbra, zimbra) /opt/zimbra/data/dns" >> \
 		$(BUILD_ROOT)/zimbra-dnscache.spec

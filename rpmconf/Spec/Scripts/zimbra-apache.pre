@@ -20,12 +20,11 @@ grp_exists() {
   if [ -x /usr/bin/getent ]
   then
     getent group $1 2>&1 >/dev/null
-    FOUND=$?
+    return $?
   else
     egrep -q "^$1:" /etc/group
-    FOUND=$?
+    return $?
   fi
-  return $FOUND
 }
 
 acct_exists() {
@@ -38,6 +37,7 @@ acct_exists() {
     return $?
   fi
 }
+
 
 # Create group, user for zimbra and postfix.
 grp_exists zimbra
@@ -53,12 +53,4 @@ fi
 acct_exists zimbra
 if [ $? != 0 ]; then
 	useradd -r -g zimbra -G postfix,tty -d /opt/zimbra -s /bin/bash zimbra
-fi
-
-if [ -d "/opt/zimbra/mailboxd/work/zimbra" ]; then
-  rm -rf /opt/zimbra/mailboxd/work/zimbra > /dev/null 2>&1 
-fi
-
-if [ -d "/opt/zimbra/mailboxd/work/zimbraAdmin" ]; then
-  rm -rf /opt/zimbra/mailboxd/work/zimbraAdmin > /dev/null 2>&1 
 fi
