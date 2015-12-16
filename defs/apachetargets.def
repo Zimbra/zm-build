@@ -14,7 +14,6 @@ apache_pkg_spec_deb: $(APACHE_DEST_ROOT)/DEBIAN/control
 
 $(APACHE_DEST_ROOT)/DEBIAN: force
 	mkdir -p $@
-	chmod 555 $@/*
 
 $(APACHE_DEST_ROOT)/DEBIAN/control: $(APACHE_DEST_ROOT)/DEBIAN $(APACHE_DEST_ROOT)/DEBIAN/md5sums force
 	cat $(PACKAGE_CONF_DIR)/Spec/zimbra-apache.deb | \
