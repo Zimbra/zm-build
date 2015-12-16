@@ -8776,6 +8776,7 @@
   <bug>101736</bug>
   <bug>100572</bug>
   <bug>102019</bug>
+  <bug>102892</bug>
   <package name="zimbra-archiving">
     <zimlet deploy="true" flushcache="true" type="network">
       <source>ZimbraBuild/archivingbuild/opt/zimbra/zimlets-network/com_zimbra_xmbxsearch.zip</source>
@@ -10203,6 +10204,16 @@
     <perms owner="zimbra" mode="0664" />
    </file>
    <file>
+    <source>ZimbraBuild/storebuild/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbra/WEB-INF/classes/messages/AjxMsg.properties</source>
+    <target>/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbra/WEB-INF/classes/messages/AjxMsg.properties</target>
+    <perms owner="zimbra" mode="0664" />
+   </file>
+   <file>
+    <source>ZimbraBuild/storebuild/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbraAdmin/WEB-INF/classes/messages/AjxMsg.properties</source>
+    <target>/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbraAdmin/WEB-INF/classes/messages/AjxMsg.properties</target>
+    <perms owner="zimbra" mode="0664" />
+   </file>
+   <file>
     <source>ZimbraBuild/storebuild/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbra/WEB-INF/classes/messages/ZmMsg_ar.properties</source>
     <target>/opt/zimbra/jetty-distribution-9.1.5.v20140505/webapps/zimbra/WEB-INF/classes/messages/ZmMsg_ar.properties</target>
     <perms owner="zimbra" mode="0664" />
@@ -11200,6 +11211,11 @@
     <source>ZimbraBuild/corebuild/opt/zimbra/conf/timezones.ics</source>
 	<target>/opt/zimbra/conf/timezones.ics</target>
 	<perms owner="root" mode="0644" />
+   </file>
+   <file>
+    <source>ZimbraBuild/corebuild/opt/zimbra/zimbramon/pylibs/state.py</source>
+	<target>/opt/zimbra/zimbramon/pylibs/state.py</target>
+	<perms owner="root" mode="444"/>
    </file>
   </package>
   </patch>
