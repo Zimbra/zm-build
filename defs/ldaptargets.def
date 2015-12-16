@@ -14,7 +14,6 @@ ldap_pkg_spec_deb: $(LDAP_DEST_ROOT)/DEBIAN/control
 
 $(LDAP_DEST_ROOT)/DEBIAN: force
 	mkdir -p $@
-	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-ldap.pre $@/preinst
 	cat $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-ldap.post >> $@/postinst
 	chmod 555 $@/*
 
@@ -31,15 +30,12 @@ $(LDAP_DEST_ROOT)/DEBIAN/md5sums: force
 ldap_pkg_spec_rpm: $(BUILD_ROOT)/zimbra-ldap.spec
 
 $(BUILD_ROOT)/zimbra-ldap.spec:
-	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-ldap.pre $(BUILD_ROOT)
 	cp $(PACKAGE_CONF_DIR)/Spec/Scripts/zimbra-ldap.post $(BUILD_ROOT)
 	cat $(PACKAGE_CONF_DIR)/Spec/zimbra-ldap.spec | \
 		sed -e 's/@@VERSION@@/$(VERSION_TAG)/' \
 		-e 's/@@RELEASE@@/$(RELEASE)/' \
 		-e 's/^Copyright:/$(RPMCOPYRIGHTSTR):/' \
-		-e '/^%pre$$/ r zimbra-ldap.pre' \
 		-e '/^%post$$/ r zimbra-ldap.post' > $(BUILD_ROOT)/zimbra-ldap.spec
-	rm -f zimbra-ldap.pre
 	rm -f zimbra-ldap.post
 	echo "%attr(440, root, root) /etc/sudoers.d/02_zimbra-ldap" >> \
 		$(BUILD_ROOT)/zimbra-ldap.spec
