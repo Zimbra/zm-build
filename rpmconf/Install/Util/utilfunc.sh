@@ -553,7 +553,8 @@ EOF
 
 checkRequiredSpace() {
   # /tmp must have 100MB
-  # /opt/zimbra must have 5GB
+  # /opt/zimbra must have 5GB for fresh installs with zimbra-store
+  # /opt/zimbra must have 500MB for upgrades
   echo "Checking required space for zimbra-core"
   TMPKB=`df -Pk /tmp | tail -1 | awk '{print $4}'`
   AVAIL=$(($TMPKB / 1024))
@@ -562,17 +563,27 @@ checkRequiredSpace() {
     echo "${AVAIL}MB is not enough space to install ZCS."
     GOOD=no
   fi
+  ZIMBRA=`df -Pk /opt/zimbra | tail -1 | awk '{print $4}'`
+  if [ $UPGRADE = "yes" ]; then
+    AVAIL=$(($ZIMBRA / 1024))
+    if [ $AVAIL -lt 500 ]; then
+      echo "/opt/zimbra requires at least 500MB of space to upgrade."
+      echo "${AVAIL}MB is not enough space to upgrade."
+      GOOD=no
+    fi
+  fi
 
   isInstalled zimbra-store
   isToBeInstalled zimbra-store
   if [ "x$PKGINSTALLED" != "x" -o "x$PKGTOBEINSTALLED" != "x" ]; then
     echo "Checking space for zimbra-store"
-    ZIMBRA=`df -Pk /opt/zimbra | tail -1 | awk '{print $4}'`
-    AVAIL=$(($ZIMBRA / 1048576))
-    if [ $AVAIL -lt 5 ]; then
-      echo "/opt/zimbra requires at least 5GB of space to install."
-      echo "${AVAIL}GB is not enough space to install."
-      GOOD=no
+    if [ $UPGRADE = "no" ]; then
+      AVAIL=$(($ZIMBRA / 1048576))
+      if [ $AVAIL -lt 5 ]; then
+        echo "/opt/zimbra requires at least 5GB of space to install."
+        echo "${AVAIL}GB is not enough space to install."
+        GOOD=no
+      fi
     fi
   fi
   if [ $GOOD = "no" ]; then
