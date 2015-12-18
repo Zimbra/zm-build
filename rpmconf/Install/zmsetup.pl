@@ -3362,7 +3362,11 @@ sub setEnabledDependencies {
     if ($newinstall) {
       $config{RUNVMHA} = "no";
     } else {
-      $config{RUNVMHA} = (isServiceEnabled("vmware-ha") ? "yes" : "no");
+      if(isNetwork()) {
+        $config{RUNVMHA} = (isServiceEnabled("vmware-ha") ? "yes" : "no");
+      } else {
+        $config{RUNVMHA} = "no";
+      }
     }
   }
 
@@ -6640,9 +6644,10 @@ sub configInitCore {
   }
   if (isEnabled("zimbra-core")) {
     progress ( "Initializing core config..." );
-
-    if ($config{RUNVMHA} eq "yes") {
-      push(@enabledServiceList, ('zimbraServiceEnabled', 'vmware-ha'));
+    if(isNetwork()) {
+      if ($config{RUNVMHA} eq "yes") {
+        push(@enabledServiceList, ('zimbraServiceEnabled', 'vmware-ha'));
+      }
     }
   }
   configLog("configInitCore");
@@ -6760,10 +6765,12 @@ sub configSetEnabledServices {
   foreach my $p (keys %installedPackages) {
     if ($p eq "zimbra-core") {
       push(@installedServiceList, ('zimbraServiceInstalled','stats'));
-      if ( -x "/usr/lib/vmware-tools/sbin64/vmware-checkvm" || $config{INSTVMHA} eq "yes") {
-        my $rc = runAsRoot("/usr/lib/vmware-tools/sbin64/vmware-checkvm");
-        if ($rc == 0 || $config{INSTVMHA} eq "yes") {
-          push(@installedServiceList, ('zimbraServiceInstalled','vmware-ha'));
+      if(isNetwork()) {
+        if ( -x "/usr/lib/vmware-tools/sbin64/vmware-checkvm" || $config{INSTVMHA} eq "yes") {
+          my $rc = runAsRoot("/usr/lib/vmware-tools/sbin64/vmware-checkvm");
+          if ($rc == 0 || $config{INSTVMHA} eq "yes") {
+            push(@installedServiceList, ('zimbraServiceInstalled','vmware-ha'));
+          }
         }
       }
       next;
