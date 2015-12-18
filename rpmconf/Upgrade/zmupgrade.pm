@@ -2179,6 +2179,9 @@ sub upgrade870BETA2 {
     main::setLdapServerConfig($hn, 'zimbraMtaNewaliasesPath', "/opt/zimbra/common/sbin/newaliases");
     main::setLdapServerConfig($hn, 'zimbraMtaSendmailPath', "/opt/zimbra/common/sbin/sendmail");
   }
+  if (main::isFoss()) {
+    main::setLdapServerConfig($hn, '-zimbraServiceEnabled', 'vmware-ha');
+  }
 
   return 0;
 }
