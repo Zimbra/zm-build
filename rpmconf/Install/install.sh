@@ -1,13 +1,13 @@
 #!/bin/bash
-# 
+#
 # ***** BEGIN LICENSE BLOCK *****
 # Zimbra Collaboration Suite Server
 # Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc.
-# 
+#
 # This program is free software: you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free Software Foundation,
 # version 2 of the License.
-# 
+#
 # This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
 # without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 # See the GNU General Public License for more details.
@@ -47,7 +47,7 @@ usage() {
   echo "-h|--help               Usage"
   echo "-l|--license <file>     License file to install."
   echo "-a|--activation <file>  License activation file to install. [Upgrades only]"
-  echo "-r|--restore <dir>      Restore contents of <dir> to localconfig" 
+  echo "-r|--restore <dir>      Restore contents of <dir> to localconfig"
   echo "-s|--softwareonly       Software only installation."
   echo "-u|--uninstall          Uninstall ZCS"
   echo "-x|--skipspacecheck     Skip filesystem capacity checks."
@@ -102,9 +102,6 @@ while [ $# -ne 0 ]; do
       ;;
     -x|--skipspacecheck)
       SKIPSPACECHECK="yes"
-      ;;
-    -platform-override|--platform-override)
-      ALLOW_PLATFORM_OVERRIDE="yes"
       ;;
     -beta-support|--beta-support)
       BETA_SUPPORT="yes"
@@ -208,32 +205,11 @@ if [ $AUTOINSTALL = "no" ]; then
 		echo ""
 		echo "You appear to be installing packages on a platform different"
 		echo "than the platform for which they were built."
-		echo ""
 		echo "This platform is $p"
 		echo "Packages found: $installable_platform"
-		echo "This may or may not work."
 		echo ""
-
-		if [ x"${ALLOW_PLATFORM_OVERRIDE}" = "xyes" ]; then
-
-			echo "Using packages for a platform in which they were not designed for"
-			echo "may result in an installation that is NOT usable. Your support"
-			echo "options may be limited if you choose to continue."
-			echo ""
-			askYN "Install anyway?" "N"
-			if [ $response = "no" ]; then
-				echo "Exiting..."
-				exit 1
-			fi
-		else
-			echo "Installation can not continue without manual override."
-			echo "You can override this safety check with $0 --platform-override"
-			echo ""
-			echo "WARNING: Bypassing this check may result in an install or"
-			echo "upgrade that is NOT usable."
-			echo ""
-			exit 1
-		fi
+		echo "This installation cannot continue."
+		exit 1
 	fi
 
 	verifyExecute
@@ -310,7 +286,7 @@ fi
 
 
 if [ $SOFTWAREONLY = "yes" ]; then
-	
+
 	echo ""
 	echo "Software Installation complete!"
 	echo ""
