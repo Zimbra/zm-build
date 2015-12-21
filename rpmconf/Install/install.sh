@@ -52,7 +52,6 @@ usage() {
   echo "-u|--uninstall          Uninstall ZCS"
   echo "-x|--skipspacecheck     Skip filesystem capacity checks."
   echo "--beta-support          Allows installer to upgrade Network Edition Betas."
-  echo "--platform-override     Allows installer to continue on an unknown OS."
   echo "--skip-activation-check Allows installer to continue if license activation checks fail."
   echo "--skip-upgrade-check    Allows installer to skip upgrade validation checks."
   echo "[defaultsfile]          File containing default install values."
