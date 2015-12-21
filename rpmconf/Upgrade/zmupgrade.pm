@@ -2174,6 +2174,11 @@ sub upgrade870BETA2 {
     main::setLdapServerConfig($hn, 'zimbraMtaManpageDirectory', "/opt/zimbra/common/share/man");
     main::setLdapServerConfig($hn, 'zimbraMtaNewaliasesPath', "/opt/zimbra/common/sbin/newaliases");
     main::setLdapServerConfig($hn, 'zimbraMtaSendmailPath', "/opt/zimbra/common/sbin/sendmail");
+    # Bug 98771 - Add support for DANE
+    my $dns_setting = main::getLdapServerValue("zimbraMtaDnsLookupsEnabled");
+    if (lc($dns_setting) eq "false")  {
+      main::setLdapServerConfig($hn, 'zimbraMtaSmtpDnsSupportLevel', 'disabled');
+    }
   }
   if (main::isFoss()) {
     main::setLdapServerConfig($hn, '-zimbraServiceEnabled', 'vmware-ha');
