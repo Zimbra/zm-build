@@ -1623,7 +1623,7 @@ sub upgrade850BETA1 {
     }
     $lc_attr= $localxml->{key}->{postfix_smtpd_soft_error_limit}->{value};
     if (defined($lc_attr) && $lc_attr != 10) {
-      main::setLdapServerConfig($hn, 'zimbraMtaStpdSoftErrorLimit', "$lc_attr");
+      main::setLdapServerConfig($hn, 'zimbraMtaSmtpdSoftErrorLimit', "$lc_attr");
     }
     $lc_attr= $localxml->{key}->{postfix_smtpd_error_sleep_time}->{value};
     if (defined($lc_attr) && lc($lc_attr) ne "1s") {
