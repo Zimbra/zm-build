@@ -48,12 +48,16 @@ chown root:root /etc/sudoers.d/02_zimbra-mta
 
 chown zimbra:zimbra /opt/zimbra/common/conf/master.cf.in
 chmod 440 /opt/zimbra/common/conf/master.cf.in
+chown zimbra:zimbra /opt/zimbra/common/conf/tag_as_*.re.in
 
 mkdir -p /opt/zimbra/data/amavisd/db
 mkdir -p /opt/zimbra/data/amavisd/tmp
 mkdir -p /opt/zimbra/data/amavisd/var
 mkdir -p /opt/zimbra/data/amavisd/quarantine
 chown -R zimbra:zimbra /opt/zimbra/data/amavisd/*
+
+mkdir -p /opt/zimbra/data/opendkim
+chown -R zimbra:zimbra /opt/zimbra/data/opendkim
 
 mkdir -p /opt/zimbra/data/clamav/db
 chown -R zimbra:zimbra /opt/zimbra/data/clamav/db

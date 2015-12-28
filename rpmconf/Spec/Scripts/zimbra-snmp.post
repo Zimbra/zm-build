@@ -20,3 +20,6 @@ mkdir -p /opt/zimbra/data/snmp/persist
 mkdir -p /opt/zimbra/data/snmp/state
 chown -R zimbra:zimbra /opt/zimbra/data/snmp
 chown zimbra:zimbra /opt/zimbra/data
+chown root:root /opt/zimbra/common/share/snmp/mibs/zimbra*.mib
+chown root:root /opt/zimbra/common/share/snmp/snmp.conf
+chown root:root /opt/zimbra/common/conf/snmp.conf
