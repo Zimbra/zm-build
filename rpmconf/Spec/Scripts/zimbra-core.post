@@ -33,21 +33,21 @@ if [ -f "/opt/zimbra/conf/ca/ca.pem" ]; then
   ln -f -s ca.pem /opt/zimbra/conf/ca/`openssl x509 -hash -noout -in /opt/zimbra/conf/ca/ca.pem`.0
 fi
 
-if [ x"$PLAT" = "xUBUNTU12_64" -o x"$PLAT" = "xUBUNTU14_64" ]; then
- sed -i -e '/^::1     ip6-localhost ip6-loopback localhost$/!s/::1     ip6-localhost ip6-loopback/::1     ip6-localhost ip6-loopback localhost/' /etc/hosts
-fi
-
 if [[ $PLAT == "DEBIAN"* || $PLAT == "UBUNTU"* ]]; then
+  sed -i -e '/^::1     ip6-localhost ip6-loopback localhost$/!s/::1     ip6-localhost ip6-loopback/::1     ip6-localhost ip6-loopback localhost/' /etc/hosts
   sed -i -e 's/# session    required   pam_limits.so/session    required   pam_limits.so/' /etc/pam.d/su
-  egrep -v -e '^session[[:space:]]+required[[:space:]]+pam_limits.so' /etc/pam.d/common-session >/tmp/common-session
-  echo "session	required	pam_limits.so" >> /tmp/common-session
-  mv -f /tmp/common-session /etc/pam.d/common-session
+  pamtmp=`mktemp -t zpamtmp 2> /dev/null` || { echo "Failed to create tmpfile"; exit 1; }
+  egrep -v -e '^session[[:space:]]+required[[:space:]]+pam_limits.so' /etc/pam.d/common-session >$pamtmp
+  echo "session	required	pam_limits.so" >> $pamtmp
+  mv -f $pamtmp /etc/pam.d/common-session
   chmod 640 /etc/pam.d/common-session
-  egrep -v -e '^root.*nofile' /etc/security/limits.conf > /tmp/limits.conf
-  echo "root soft nofile 524288" >> /tmp/limits.conf
-  echo "root hard nofile 524288" >> /tmp/limits.conf
-  mv -f /tmp/limits.conf /etc/security/limits.conf
+  limitstmp=`mktemp -t zlimtmp 2> /dev/null` || { echo "Failed to create tmpfile"; exit 1; }
+  egrep -v -e '^root.*nofile' /etc/security/limits.conf > $limitstmp
+  echo "root soft nofile 524288" >> $limitstmp
+  echo "root hard nofile 524288" >> $limitstmp
+  mv -f $limitstmp /etc/security/limits.conf
   chmod 640 /etc/security/limits.conf
+  chown -R root:root /opt/zimbra/common/lib/perl5/Zimbra
 fi
 
 if [ -d /etc/logrotate.d ]; then
