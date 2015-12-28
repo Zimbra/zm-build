@@ -40,6 +40,7 @@ UNINSTALL="no"
 SOFTWAREONLY="no"
 SKIP_ACTIVATION_CHECK="no"
 SKIP_UPGRADE_CHECK="no"
+ALLOW_PLATFORM_OVERRIDE="no"
 
 usage() {
   echo "$0 [-r <dir> -l <file> -a <file> -u -s -c type -x -h] [defaultsfile]"
@@ -197,7 +198,7 @@ checkPackages
 
 findLatestPackage zimbra-core
 if [ x"$PLATFORM" = x"$installable_platform" -a x"${ALLOW_PLATFORM_OVERRIDE}" = "xyes" ]; then
-  ALLOW_PLATFORM_OVERRIDE=no
+  ALLOW_PLATFORM_OVERRIDE="no"
 fi
 
 if [ x"${ALLOW_PLATFORM_OVERRIDE}" = "xno" ]; then
