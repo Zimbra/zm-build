@@ -387,7 +387,7 @@ checkUbuntuRelease() {
     return
   fi
 
-  if [ "x$DISTRIB_ID" = "xUbuntu" -a "x$DISTRIB_RELEASE" != "x10.04" -a "x$DISTRIB_RELEASE" != "x12.04" -a "x$DISTRIB_RELEASE" != "x14.04" ]; then
+  if [ "x$DISTRIB_ID" = "xUbuntu" -a "x$DISTRIB_RELEASE" != "x12.04" -a "x$DISTRIB_RELEASE" != "x14.04" ]; then
     echo "WARNING: ZCS is currently only supported on Ubuntu Server 12.04 and 14.04 LTS."
     echo "You are attempting to install on $DISTRIB_DESCRIPTION which may not work."
     echo "Support will not be provided if you choose to continue."
@@ -800,7 +800,7 @@ verifyUpgrade() {
   if [ x$PKGINSTALLED != "x" ]; then
     runAsZimbra "ldap start"
     # Upgrade tests specific to NE only
-    if [ x"$ZMTYPE_INSTALLABLE" = "xNETWORK" ]; then
+    if [ x"$ZMTYPE_CURRENT" = "xNETWORK" ] && [ x"$ZMTYPE_INSTALLABLE" = "xNETWORK" ]; then
       if [ x"$SKIP_ACTIVATION_CHECK" = "xno" ]; then
         if [ -x "bin/checkLicense.pl" ]; then
           echo "Validating existing license is not expired and qualifies for upgrade"
