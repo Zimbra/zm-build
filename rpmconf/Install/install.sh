@@ -52,6 +52,7 @@ usage() {
   echo "-u|--uninstall          Uninstall ZCS"
   echo "-x|--skipspacecheck     Skip filesystem capacity checks."
   echo "--beta-support          Allows installer to upgrade Network Edition Betas."
+  echo "--platform-override     Allows installer to continue on an unknown OS."
   echo "--skip-activation-check Allows installer to continue if license activation checks fail."
   echo "--skip-upgrade-check    Allows installer to skip upgrade validation checks."
   echo "[defaultsfile]          File containing default install values."
@@ -101,6 +102,9 @@ while [ $# -ne 0 ]; do
       ;;
     -x|--skipspacecheck)
       SKIPSPACECHECK="yes"
+      ;;
+    -platform-override|--platform-override)
+      ALLOW_PLATFORM_OVERRIDE="yes"
       ;;
     -beta-support|--beta-support)
       BETA_SUPPORT="yes"
@@ -189,9 +193,16 @@ fi
 
 checkRequired
 
-configurePackageServer
-
 checkPackages
+
+findLatestPackage zimbra-core
+if [ x"$PLATFORM" = x"$installable_platform" -a x"${ALLOW_PLATFORM_OVERRIDE}" = "xyes" ]; then
+  ALLOW_PLATFORM_OVERRIDE=no
+fi
+
+if [ x"${ALLOW_PLATFORM_OVERRIDE}" = "xno" ]; then
+  configurePackageServer
+fi
 
 if [ $AUTOINSTALL = "no" ]; then
   setRemove
@@ -199,39 +210,60 @@ if [ $AUTOINSTALL = "no" ]; then
   getInstallPackages
 
   findLatestPackage zimbra-core
-	p=`bin/get_plat_tag.sh`
-	if [ x"$p" != x"$installable_platform" ]; then
-		echo ""
-		echo "You appear to be installing packages on a platform different"
-		echo "than the platform for which they were built."
-		echo "This platform is $p"
-		echo "Packages found: $installable_platform"
-		echo ""
-		echo "This installation cannot continue."
-		exit 1
-	fi
+  if [ x"$PLATFORM" != x"$installable_platform" ]; then
+    echo ""
+    echo "You appear to be installing packages on a platform different"
+    echo "than the platform for which they were built."
+    echo ""
+    echo "This platform is $PLATFORM"
+    echo "Packages found: $installable_platform"
+    echo "This may or may not work."
+    echo ""
 
-	verifyExecute
+    if [ x"${ALLOW_PLATFORM_OVERRIDE}" = "xyes" ]; then
+
+    	echo "Using packages for a platform in which they were not designed for"
+    	echo "may result in an installation that is NOT usable. Your support"
+    	echo "options may be limited if you choose to continue."
+        echo "You will also be responsible for configuring the system to point"
+        echo "at an appropriate package repository for third party."
+    	echo ""
+    	askYN "Install anyway?" "N"
+    	if [ $response = "no" ]; then
+    		echo "Exiting..."
+    		exit 1
+    	fi
+    else
+    	echo "Installation can not continue without manual override."
+    	echo "You can override this safety check with $0 --platform-override"
+    	echo ""
+    	echo "WARNING: Bypassing this check may result in an install or"
+    	echo "upgrade that is NOT usable."
+    	echo ""
+    	exit 1
+    fi
+  fi
+
+  verifyExecute
 
 else
-	checkVersionMatches
-
-	if [ $VERSIONMATCH = "no" ]; then
-		if [ $UPGRADE = "yes" ]; then
-			echo ""
-			echo "###ERROR###"
-			echo ""
-			echo "There is a mismatch in the versions of the installed schema"
-			echo "or index and the version included in this package"
-			echo ""
-			echo "Automatic upgrade cancelled"
-			echo ""
-			exit 1
-		fi
-	fi
+  checkVersionMatches
+  if [ $VERSIONMATCH = "no" ]; then
+    if [ $UPGRADE = "yes" ]; then
+      echo ""
+      echo "###ERROR###"
+      echo ""
+      echo "There is a mismatch in the versions of the installed schema"
+      echo "or index and the version included in this package"
+      echo ""
+      echo "Automatic upgrade cancelled"
+      echo ""
+      exit 1
+    fi
+  fi
 fi
 if [ $UPGRADE = "yes" ]; then
-	saveExistingConfig
+  saveExistingConfig
 fi
 removeExistingInstall
 
