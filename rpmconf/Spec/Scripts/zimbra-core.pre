@@ -25,7 +25,7 @@ if [ -f "/etc/security/limits.d/90-nproc.conf" ]; then
     echo "root hard nproc 278528" >> /etc/security/limits.d/80-zimbra.conf
 fi
 if [ -f "/etc/security/limits.conf" ]; then
-    limitstmp=`mktemp -t limitstmp 2> /dev/null` || { echo "Failed to create tmpfile"; exit 1; }
+    limitstmp=`mktemp -t limitstmp.XXXXXX 2> /dev/null` || { echo "Failed to create tmpfile"; exit 1; }
     egrep -v -e '^zimbra.*nofile' /etc/security/limits.conf > $limitstmp
     echo "zimbra soft nofile 524288" >> $limitstmp
     echo "zimbra hard nofile 524288" >> $limitstmp

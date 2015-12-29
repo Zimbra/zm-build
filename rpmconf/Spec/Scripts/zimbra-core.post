@@ -36,12 +36,12 @@ fi
 if [[ $PLAT == "DEBIAN"* || $PLAT == "UBUNTU"* ]]; then
   sed -i -e '/^::1     ip6-localhost ip6-loopback localhost$/!s/::1     ip6-localhost ip6-loopback/::1     ip6-localhost ip6-loopback localhost/' /etc/hosts
   sed -i -e 's/# session    required   pam_limits.so/session    required   pam_limits.so/' /etc/pam.d/su
-  pamtmp=`mktemp -t zpamtmp 2> /dev/null` || { echo "Failed to create tmpfile"; exit 1; }
+  pamtmp=`mktemp -t zpamtmp.XXXXXX 2> /dev/null` || { echo "Failed to create tmpfile"; exit 1; }
   egrep -v -e '^session[[:space:]]+required[[:space:]]+pam_limits.so' /etc/pam.d/common-session >$pamtmp
   echo "session	required	pam_limits.so" >> $pamtmp
   mv -f $pamtmp /etc/pam.d/common-session
   chmod 640 /etc/pam.d/common-session
-  limitstmp=`mktemp -t zlimtmp 2> /dev/null` || { echo "Failed to create tmpfile"; exit 1; }
+  limitstmp=`mktemp -t zlimtmp.XXXXXX 2> /dev/null` || { echo "Failed to create tmpfile"; exit 1; }
   egrep -v -e '^root.*nofile' /etc/security/limits.conf > $limitstmp
   echo "root soft nofile 524288" >> $limitstmp
   echo "root hard nofile 524288" >> $limitstmp
@@ -111,7 +111,7 @@ chown zimbra:zimbra /opt/zimbra/zmstat
 
 egrep -q '^%zimbra[[:space:]]' /etc/sudoers
 if [ $? = 0 ]; then
-  sudotmp=`mktemp -t zsudoers.XXXXX 2> /dev/null` || { echo "Failed to create tmpfile"; exit 1; }
+  sudotmp=`mktemp -t zsudoers.XXXXXX 2> /dev/null` || { echo "Failed to create tmpfile"; exit 1; }
   SUDOMODE=`perl -e 'my $mode=(stat("/etc/sudoers"))[2];if ($mode == "0000"){ $mode=33056 };printf("%04o\n",$mode & 07777);'`;
   egrep -v -e '^%zimbra[[:space:]]' /etc/sudoers > $sudotmp
   mv -f $sudotmp /etc/sudoers
