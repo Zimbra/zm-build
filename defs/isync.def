@@ -1,0 +1,47 @@
+# __ISync
+
+ISYNC_PACKAGING_OPTIONS ?= -build -v -p $(PACKAGE_DIR)/$(CUR_PACKAGE_NAME).$(PACKAGE_EXT) -proj $(ISYNC_DEST_ROOT)/Zimbra.pmproj
+
+ISYNC_VERSION_TAG := $(MAJOR).$(MINOR).$(BUILDNUM)
+#isync: MICRO       := $(shell cat RE/MICRO_ISYNC)
+isync: VERSION_TAG := $(MAJOR).$(MINOR).$(MICRO)_$(BUILDNUM).MACOSX_UB
+isync: CUR_DEST_ROOT := $(ISYNC_DEST_ROOT) 
+isync: CUR_PACKAGE_NAME := zimbra-isync
+isync: CUR_PACKAGING_OPTIONS := $(ISYNC_PACKAGING_OPTIONS)
+isync: $(PACKAGE_DIR) $(ISYNC_DIR)/Info.plist isync_stage $(CUR_PACKAGE_NAME)-$(RELEASE).dmg
+
+isync_stage: $(ISYNC_DEST_DIR)/Zimbra.prefPane $(ISYNC_DEST_ROOT)/InstallerResources $(ISYNC_DEST_ROOT)/Zimbra.pmproj
+
+$(ISYNC_DEST_DIR):
+	mkdir -p $@
+
+$(ISYNC_DEST_DIR)/Zimbra.prefPane: $(ISYNC_DEST_DIR) $(ISYNC_DIR)/build/Deployment/Zimbra.prefPane
+	cp -r $(ISYNC_DIR)/build/Deployment/Zimbra.prefPane $@
+
+$(ISYNC_DIR)/build/Deployment/Zimbra.prefPane:
+	(cd $(ISYNC_DIR); xcodebuild -configuration Deployment)
+
+$(ISYNC_DEST_ROOT)/Zimbra.pmproj:
+	plutil -convert xml1 $(ISYNC_DIR)/Zimbra.pmproj -o $(ISYNC_DIR)/Zimbra.plist
+	sed -i -e 's/0.9.19/$(ISYNC_VERSION_TAG)/g' $(ISYNC_DIR)/Zimbra.plist
+	plutil -convert binary1 $(ISYNC_DIR)/Zimbra.plist -o $@
+	cp $(ISYNC_DIR)/License.rtf $(ISYNC_DEST_ROOT)
+
+$(ISYNC_DEST_ROOT)/InstallerResources: $(ISYNC_DIR)/build/Deployment/Zimbra.prefPane
+	mkdir -p $@
+	cp $(ISYNC_DIR)/InstallerResources/* $@
+
+$(ISYNC_DIR)/Info.plist: force
+	touch $@
+	chmod 744 $@
+	sed -e "s/@@ISYNC_VERSION_TAG@@/$(ISYNC_VERSION_TAG)/" -e "s/@@VERSION_TAG@@/$(VERSION_TAG)/" $(ISYNC_DIR)/Info-production.plist > $@ 
+
+$(PACKAGE_DIR)/$(CUR_PACKAGE_NAME).$(PACKAGE_EXT):
+	(cd $(CUR_DEST_ROOT);  $(PACKAGING_COMMAND) $(CUR_PACKAGING_OPTIONS) )
+
+$(CUR_PACKAGE_NAME)-$(RELEASE).dmg: $(PACKAGE_DIR)/$(CUR_PACKAGE_NAME).$(PACKAGE_EXT) 
+	rm -rf $(ISYNC_DEST_ROOT)/tmp
+	mkdir $(ISYNC_DEST_ROOT)/tmp
+	cp -R $(PACKAGE_DIR)/$(CUR_PACKAGE_NAME).$(PACKAGE_EXT) $(ISYNC_DEST_ROOT)/tmp
+	hdiutil create -srcfolder $(ISYNC_DEST_ROOT)/tmp -volname $(CUR_PACKAGE_NAME)-$(VERSION_TAG) $(PACKAGE_DIR)/$(CUR_PACKAGE_NAME)-$(VERSION_TAG).$(BUNDLE_EXT)
+
