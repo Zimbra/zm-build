@@ -163,6 +163,7 @@ getopts("c:hd", \%options) or usage();
 
 my $debug = $options{d};
 
+usage() if ($options{h});
 
 getInstallStatus();
 
