@@ -188,8 +188,14 @@ if(isInstalled("zimbra-ldap")) {
   installLdapSchema();
 }
 
-
 if (! $newinstall ) {
+  # zimbra-openjdk-cacerts replaces OZC/lib/jvm/java/jre/lib/security/cacerts
+  # (re)import our CA cert to reestablish our CA trust
+  if ( -f "/opt/zimbra/conf/ca/ca.pem" ) {
+    progress("Adding /opt/zimbra/conf/ca/ca.pem to cacerts\n");
+    main::runAsZimbra("/opt/zimbra/bin/zmcertmgr addcacert /opt/zimbra/conf/ca/ca.pem");
+  }
+
   # if we're an upgrade, run the upgrader...
   if (($prevVersion ne $curVersion )) {
     progress ("Upgrading from $prevVersion to $curVersion\n");
