@@ -302,8 +302,6 @@ sub deployPatch($) {
       unless ($options{dryrun}) {
         if (lc($zref->{deploy}) eq "true") {
           my $rc;
-          progress("undeployed...",0,1)
-            unless (runAsZimbra("zmzimletctl -l undeploy $zimletname"));
           progress("deployed...",0,1) 
             unless (runAsZimbra("zmzimletctl -l deploy $dstfile"));
           runAsZimbra("zmprov flushcache zimlet") 
