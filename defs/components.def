@@ -16,6 +16,7 @@ CORE_COMPONENTS	:= \
 	$(CORE_DEST_DIR)/docs \
 	$(CORE_DEST_DIR)/lib/ext/com_zimbra_cert_manager/com_zimbra_cert_manager.jar \
 	$(CORE_DEST_DIR)/lib/ext/com_zimbra_bulkprovision/com_zimbra_bulkprovision.jar \
+	$(CORE_DEST_DIR)/lib/ext/com_zimbra_bulkprovision/commons-csv-1.2.jar \
 	$(CORE_DEST_DIR)/lib/ext/com_zimbra_clientuploader/com_zimbra_clientuploader.jar \
 	$(PLATFORM_CORE_COMPONENTS)
 
@@ -65,6 +66,7 @@ STORE_COMPONENTS := \
 	$(STORE_DEST_DIR)/lib/ext/nginx-lookup/nginx-lookup.jar \
 	$(STORE_DEST_DIR)/lib/ext/zimbraadminversioncheck/zimbraadminversioncheck.jar \
 	$(STORE_DEST_DIR)/lib/ext/zimbraim \
+	$(STORE_DEST_DIR)/lib/ext/openidconsumer \
 	$(STORE_DEST_DIR)/lib/jars/zmzimbratozimbramig.jar \
 	$(STORE_DEST_DIR)/log
 

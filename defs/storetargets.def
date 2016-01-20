@@ -383,6 +383,10 @@ $(OPENID_EXT_DIR)/build/jars/openidconsumer.jar:
 		-Dzimbra.buildinfo.release=$(RELEASE) -Dzimbra.buildinfo.date=$(DATE) \
 		-Dzimbra.buildinfo.host=$(HOST) package ; )
 
+$(STORE_DEST_DIR)/lib/ext/openidconsumer:
+	mkdir -p $@
+	cp -f $(OPENID_EXT_DIR)/jars/guice-2.0.jar $@
+
 $(WEBAPP_DIR)/zimbra/downloads:
 	mkdir -p $@
 	-cp $(SERVICE_DIR)/src/windows/*exe $@
@@ -437,6 +441,10 @@ $(CORE_DEST_DIR)/lib/ext/com_zimbra_bulkprovision/com_zimbra_bulkprovision.jar: 
 
 $(CORE_DEST_DIR)/lib/ext/com_zimbra_bulkprovision:
 	mkdir -p $@
+
+$(CORE_DEST_DIR)/lib/ext/com_zimbra_bulkprovision:
+	mkdir -p $@
+	cp -f $(ADMIN_EXT_DIR)/BulkProvision/jars/commons-csv-1.2.jar $@
 
 $(ADMIN_EXT_DIR)/build/com_zimbra_clientuploader.jar:
 	(cd $(ADMIN_EXT_DIR); $(ANT) $(ANT_DEBUG)\
