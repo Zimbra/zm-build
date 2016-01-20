@@ -2008,9 +2008,15 @@ configurePackageServer() {
       response="no"
       echo $HOSTNAME | egrep -qe 'eng.vmware.com$|eng.zimbra.com$|lab.zimbra.com$' > /dev/null 2>&1
       if [ $? = 0 ]; then
-        askYN "Use internal testing repo" "N"
+        askYN "Use internal development repo" "N"
         if [ $response = "yes" ]; then
           PACKAGE_SERVER="repo-dev.eng.zimbra.com"
+        else
+          response="no"
+          askYN "Use internal production mirror" "N"
+          if [ $response = "yes" ]; then
+            PACKAGE_SERVER="repo.eng.zimbra.com"
+          fi
         fi
       fi
     fi
