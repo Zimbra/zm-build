@@ -1214,6 +1214,7 @@ sub upgrade804GA {
   if (main::isInstalled("zimbra-mta")) {
     main::setLdapServerConfig($hn, '+zimbraServiceInstalled', 'opendkim');
     main::setLdapServerConfig($hn, '+zimbraServiceEnabled', 'opendkim');
+    $main::config{RUNDKIM}="yes";
     main::deleteLocalConfig("cbpolicyd_timeout");
   }
   if (main::isInstalled("zimbra-store")) {
@@ -1340,6 +1341,9 @@ sub upgrade850BETA1 {
     main::setLdapServerConfig($hn, '+zimbraServiceEnabled', 'zimbra');
     main::setLdapServerConfig($hn, '+zimbraServiceEnabled', 'zimbraAdmin');
     main::setLdapServerConfig($hn, '+zimbraServiceEnabled', 'zimlet');
+    $main::config{INSTALL_WEBAPPS} = "zimlet";
+    $main::config{SERVICEWEBAPP} = "yes";
+    $main::config{UIWEBAPPS} = "yes";
   }
   if (main::isInstalled("zimbra-ldap")) {
     if ($isLdapMaster) {
