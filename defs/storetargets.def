@@ -428,9 +428,6 @@ $(CORE_DEST_DIR)/lib/ext/com_zimbra_bulkprovision/com_zimbra_bulkprovision.jar: 
 
 $(CORE_DEST_DIR)/lib/ext/com_zimbra_bulkprovision:
 	mkdir -p $@
-
-$(CORE_DEST_DIR)/lib/ext/com_zimbra_bulkprovision:
-	mkdir -p $@
 	cp -f $(ADMIN_EXT_DIR)/BulkProvision/jars/commons-csv-1.2.jar $@
 
 $(ADMIN_EXT_DIR)/$(ANT_BUILD_DIR)/com_zimbra_clientuploader.jar:
