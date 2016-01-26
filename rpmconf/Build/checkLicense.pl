@@ -49,7 +49,7 @@ else {
 }
 
 unless ( $options{version} ) {
-    die("ERROR: No upgrade version supplied.\n");
+    myDie(3,"ERROR: No upgrade version supplied.\n");
 }
 
 my $localxml              = XMLin("/opt/zimbra/conf/localconfig.xml");
@@ -64,19 +64,19 @@ my $zimbra_require_interprocess_security =
   $localxml->{key}->{zimbra_require_interprocess_security}->{value};
 
 my $ldap = Net::LDAP->new($master_ref)
-  or die "Error connecting to LDAP server: $ldap_master_url";
+  or myDie(4,"Error connecting to LDAP server: $ldap_master_url\n");
 my $mesg;
 if ( $ldap_master_url !~ /^ldaps/i ) {
     if ($ldap_starttls_supported) {
         $mesg = $ldap->start_tls(
             verify => 'none',
             capath => "/opt/zimbra/conf/ca",
-        ) or die "start_tls: $@";
-        $mesg->code && die "TLS: " . $mesg->error . "\n";
+        ) or myDie(5,"start_tls: $@\n");
+        $mesg->code && myDie(5,"TLS: ", $mesg->error, "\n");
     }
 }
 $mesg = $ldap->bind( "$zimbra_admin_dn", password => "$zimbra_admin_password" );
-$mesg->code && die "Bind: " . $mesg->error . "\n";
+$mesg->code && myDie(6,"Bind: ", $mesg->error, "\n");
 $mesg = $ldap->search(
     base   => "cn=config,cn=zimbra",
     filter => "(zimbraNetworkLicense=*)",
@@ -87,8 +87,7 @@ $mesg = $ldap->search(
 my $size = $mesg->count;
 if ( $size == 0 ) {
     $ldap->unbind();
-    print("Error: License not found\n");
-    exit 2;
+    myDie(2,"Error: License not found\n");
 }
 
 my $entry           = $mesg->entry(0);
@@ -111,10 +110,14 @@ my $response = $browser->get(
 );
 
 if ( $response->is_success ) {
-    print "SUCCESS: " . $response->content . "\n";
-    exit 0;
+    myDie(0,"SUCCESS: ", $response->content, "\n");
 }
 else {
-    print("ERROR: " . $response->content . "\n");
-    exit 1;
+    myDie(1,"ERROR: ", $response->content, "\n");
+}
+
+sub myDie() {
+  my ($rc, @msg) = @_;
+  warn (@msg) if @msg;
+  exit ($rc);
 }
