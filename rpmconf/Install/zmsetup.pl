@@ -5728,7 +5728,7 @@ sub configSetStoreDefaults {
 	  progress("Querying LDAP for other mailstores\n");
 	  # query LDAP to see if there are other mailstores.  If there are none, add this
 	  # new service node to zimbraReverseProxyAvailableLookupTargets.  Otherwise do not
-	  my $count = countReverseProxyLookupTargets() if (ldapIsAvailable());
+	  my $count = countReverseProxyLookupTargets();
 	  if (!defined($count) || $count == 0) {
 		$adding=1;
 	  }
