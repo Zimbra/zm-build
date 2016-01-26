@@ -814,7 +814,19 @@ verifyUpgrade() {
           fi
           licenseRC=$?;
           if [ $licenseRC != 0 ]; then
-            if [ $licenseRC = 2 ]; then
+            if [ $licenseRC = 6 ]; then
+              echo "Error: Unable to bind to LDAP"
+              exit 1
+            elif [ $licenseRC = 5 ]; then
+              echo "Error: Unable to execute startTLS with LDAP"
+              exit 1
+            elif [ $licenseRC = 4 ]; then
+              echo "Error: Unable to connect to LDAP"
+              exit 1
+            elif [ $licenseRC = 3 ]; then
+              echo "Error: No upgrade version supplied"
+              exit 1
+            elif [ $licenseRC = 2 ]; then
               echo "Error: No license file found"
               exit 1
             elif [ $licenseRC = 1 ]; then
