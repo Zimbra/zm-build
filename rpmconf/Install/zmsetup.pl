@@ -3329,7 +3329,9 @@ sub setEnabledDependencies {
     } else {
       $config{RUNSA} = (isServiceEnabled("antispam") ? "yes" : "no");
       $config{RUNAV} = (isServiceEnabled("antivirus") ? "yes" : "no");
-      $config{RUNDKIM} = (isServiceEnabled("opendkim") ? "yes" : "no");
+      if ($config{RUNDKIM} ne "yes") {
+        $config{RUNDKIM} = (isServiceEnabled("opendkim") ? "yes" : "no");
+      }
       $config{RUNARCHIVING} = (isServiceEnabled("archiving") ? "yes" : "no");
       $config{RUNCBPOLICYD} = (isServiceEnabled("cbpolicyd") ? "yes" : "no");
     }
