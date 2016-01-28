@@ -118,6 +118,12 @@ else {
 
 sub myDie() {
   my ($rc, @msg) = @_;
-  warn (@msg) if @msg;
+  if (@msg) {
+    if ($rc != 0) {
+      warn (@msg);
+    } else {
+      print STDOUT @msg;
+    }
+  }
   exit ($rc);
 }
