@@ -1709,6 +1709,13 @@ removeExistingInstall() {
       fi
     done
 
+    isInstalled zimbra-base
+    if [ x$PKGINSTALLED != "x" ]; then
+        echo -n "   zimbra-base..."
+        $REPORM zimbra-base >>$LOGFILE 2>&1
+        echo "done"
+    fi
+
     if egrep -q '^%zimbra[[:space:]]' /etc/sudoers 2>/dev/null; then
       local sudotmp=`mktemp -t zsudoers.XXXXX 2> /dev/null` || { echo "Failed to create tmpfile"; exit 1; }
       SUDOMODE=`perl -e 'my $mode=(stat("/etc/sudoers"))[2];printf("%04o\n",$mode & 07777);'`
