@@ -45,6 +45,7 @@ zcs_stage: $(SOAP_DIR)/package-soap-api-doc $(SOAP_DIR)/package-soap-api-changel
 	cp -f $(BUILD_ROOT)/rpmconf/Build/zmValidateLdap.pl zcs-$(RELEASE_VERSION_TAG).$(RELEASE)/bin
 	chmod 755 zcs-$(RELEASE_VERSION_TAG).$(RELEASE)/bin/zmValidateLdap.pl
 	cp -f $(BUILD_ROOT)/rpmconf/Build/checkLicense.pl zcs-$(RELEASE_VERSION_TAG).$(RELEASE)/bin
+	cp -f $(BUILD_ROOT)/rpmconf/Build/checkService.pl zcs-$(RELEASE_VERSION_TAG).$(RELEASE)/bin
 	cp -f $(SERVICE_DIR)/build/dist/libexec/zmdbintegrityreport zcs-$(RELEASE_VERSION_TAG).$(RELEASE)/bin
 	chmod 755 zcs-$(RELEASE_VERSION_TAG).$(RELEASE)/install.sh
 	cp $(PACKAGE_DIR)/*$(PACKAGE_EXT) zcs-$(RELEASE_VERSION_TAG).$(RELEASE)/packages
