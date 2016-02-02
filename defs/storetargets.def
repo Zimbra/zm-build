@@ -372,7 +372,7 @@ $(OPENID_EXT_DIR)/$(MAVEN_TARGET_DIR)/openidconsumer.jar: pom.xml
 
 $(STORE_DEST_DIR)/lib/ext/openidconsumer:
 	mkdir -p $@
-	cp -f $(OPENID_EXT_DIR)/jars/guice-2.0.jar $@
+	cp -f $(OPENID_EXT_DIR)/jars/guice-*.jar $@
 
 $(WEBAPP_DIR)/zimbra/downloads:
 	mkdir -p $@
@@ -428,7 +428,7 @@ $(CORE_DEST_DIR)/lib/ext/com_zimbra_bulkprovision/com_zimbra_bulkprovision.jar: 
 
 $(CORE_DEST_DIR)/lib/ext/com_zimbra_bulkprovision:
 	mkdir -p $@
-	cp -f $(ADMIN_EXT_DIR)/BulkProvision/jars/commons-csv-1.2.jar $@
+	cp -f $(COMMON_DIR)/jars/commons-csv-*.jar $@
 
 $(ADMIN_EXT_DIR)/$(ANT_BUILD_DIR)/com_zimbra_clientuploader.jar:
 	(cd $(ADMIN_EXT_DIR); $(ANT) $(ANT_DEBUG) $(SKIP_TESTS)\
