@@ -372,7 +372,7 @@ $(OPENID_EXT_DIR)/$(MAVEN_TARGET_DIR)/openidconsumer.jar: pom.xml
 
 $(STORE_DEST_DIR)/lib/ext/openidconsumer:
 	mkdir -p $@
-	cp -f $(OPENID_EXT_DIR)/jars/guice-*.jar $@
+	cp -f $(COMMON_DIR)/jars/guice-*.jar $@
 
 $(WEBAPP_DIR)/zimbra/downloads:
 	mkdir -p $@
