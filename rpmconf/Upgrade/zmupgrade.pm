@@ -1345,9 +1345,12 @@ sub upgrade850BETA1 {
     main::setLdapServerConfig($hn, '+zimbraServiceEnabled', 'zimbra');
     main::setLdapServerConfig($hn, '+zimbraServiceEnabled', 'zimbraAdmin');
     main::setLdapServerConfig($hn, '+zimbraServiceEnabled', 'zimlet');
-    $main::config{INSTALL_WEBAPPS} = "zimlet";
     $main::config{SERVICEWEBAPP} = "yes";
     $main::config{UIWEBAPPS} = "yes";
+    $main::installedWebapps{service} = "Enabled";
+    $main::installedWebapps{zimlet} = "Enabled";
+    $main::installedWebapps{zimbra} = "Enabled";
+    $main::installedWebapps{zimbraAdmin} = "Enabled";
   }
   if (main::isInstalled("zimbra-ldap")) {
     if ($isLdapMaster) {

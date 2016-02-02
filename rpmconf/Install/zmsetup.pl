@@ -119,7 +119,7 @@ my @webappList = (
 );
 
 my %installedPackages = ();
-my %installedWebapps = ();
+our %installedWebapps = ();
 my %prevInstalledPackages = ();
 my %enabledPackages = ();
 my %enabledServices = ();
@@ -540,7 +540,9 @@ sub getInstalledWebapps {
       $installedWebapps{$app}="Enabled";
       detail("Web application $app is enabled.");
     } else {
-      $installedWebapps{$app}="Disabled";
+      if ($newinstall || (!$newinstall && $installedWebapps{$app} ne "Enabled")) {
+        $installedWebapps{$app}="Disabled";
+      }
     }
   }
   if (!$newinstall && !defined($config{INSTALL_WEBAPPS})) {
