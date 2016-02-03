@@ -793,8 +793,8 @@ verifyUpgrade() {
       # echo "Running bin/checkService.pl -s proxy"
       `bin/checkService.pl -s proxy`
       serviceProxyRC=$?;
-      if [ $serviceProxyRC != 0 ]; then
-          if [ $serviceProxyRC = 2 ]; then
+      if [ "$serviceProxyRC" != 0 ]; then
+          if [ "$serviceProxyRC" = 2 ]; then
               echo "Error: No proxy detected in your environment. Proxy is required for ZCS 8.7+."
               echo "See https://wiki.zimbra.com/wiki/Enabling_Zimbra_Proxy for details on installing proxy."
           else
@@ -807,8 +807,8 @@ verifyUpgrade() {
       # echo "Running bin/checkService.pl -s memcached"
       `bin/checkService.pl -s memcached`
       serviceMemcachedRC=$?;
-      if [ $serviceMemcachedRC != 0 ]; then
-          if [ $serviceMemcachedRC = 2 ]; then
+      if [ "$serviceMemcachedRC" != 0 ]; then
+          if [ "$serviceMemcachedRC" = 2 ]; then
               echo "Error: No memcached detected in your environment. Memcached is required for ZCS 8.7+."
               echo "See https://wiki.zimbra.com/wiki/Enabling_Zimbra_Memcached for details on installing memcached."
           else
@@ -819,7 +819,7 @@ verifyUpgrade() {
     fi
   fi
 
-  if [ $serviceProxyRC != 0 ] || [ $serviceMemcachedRC != 0 ]; then
+  if [ "$serviceProxyRC" != 0 ] || [ "$serviceMemcachedRC" != 0 ]; then
     echo "Proxy and Memcached services must exist. Exiting..."
     exit 1
   fi
