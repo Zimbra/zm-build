@@ -2186,6 +2186,10 @@ sub upgrade870BETA2 {
     if (lc($dns_setting) eq "false")  {
       main::setLdapServerConfig($hn, 'zimbraMtaSmtpDnsSupportLevel', 'disabled');
     }
+    # Bug 98072 - We must clear zimbraMtaSenderCanonicalMaps on upgrade
+    main::setLdapServerConfig($hn, 'zimbraMtaSenderCanonicalMaps', "");
+    main::setLdapGlobalConfig('zimbraMtaSenderCanonicalMaps',"");
+    main::runAsZimbra("/opt/zimbra/bin/postconf -e sender_canonical_maps=''");
   }
   if (main::isFoss()) {
     main::setLdapServerConfig($hn, '-zimbraServiceEnabled', 'vmware-ha');
