@@ -191,6 +191,7 @@ $(CORE_DEST_DIR)/conf: $(WEBAPP_DIR)/service.war
 	cp $(SERVICE_DIR)/conf/datasource.xml $@
 	cp $(SERVICE_DIR)/conf/amavisd.conf.in $@
 	cp $(SERVICE_DIR)/conf/amavisd/amavisd-custom.conf $@
+	cp $(SERVICE_DIR)/conf/dhparam.pem.zcs $@
 	cp $(SERVICE_DIR)/conf/opendkim.conf.in $@
 	cp $(SERVICE_DIR)/conf/opendkim-localnets.conf.in $@
 	cp $(SERVICE_DIR)/conf/zmlogrotate $@
@@ -201,7 +202,7 @@ $(CORE_DEST_DIR)/conf: $(WEBAPP_DIR)/service.war
 	cp $(SERVICE_DIR)/conf/stats.conf.in $@
 	cp $(SERVICE_DIR)/conf/salocal.cf.in $@
 	cp $(SERVICE_DIR)/conf/unbound.conf.in $@
-	cp $(SERVICE_DIR)/conf/saslauthd.conf.in $@ 
+	cp $(SERVICE_DIR)/conf/saslauthd.conf.in $@
 	mkdir -p $@/sasl2
 	cp $(SERVICE_DIR)/conf/postfix_sasl_smtpd.conf $@/sasl2/smtpd.conf.in
 	cp $(SERVICE_DIR)/conf/zmconfigd.cf $@/zmconfigd.cf
