@@ -787,6 +787,10 @@ determineVersionType() {
 
 verifyUpgrade() {
 
+  if [ x"$UNINSTALL" = "xyes" ]; then
+    return
+  fi
+
   if [ ${ZM_CUR_MAJOR} -lt 8 ] || [ ${ZM_CUR_MAJOR} -eq 8 -a ${ZM_CUR_MINOR} -lt 7 ]; then
     if [ -x "bin/checkService.pl" ]; then
       echo "Checking for existing proxy service in your environment"
@@ -829,7 +833,7 @@ verifyUpgrade() {
   fi
 
   # sometimes we just don't want to check
-  if [ x"$AUTOINSTALL" = "xyes" ] || [ x"$UNINSTALL" = "xyes" ] || [ x"$SOFTWAREONLY" = "xyes" ]; then
+  if [ x"$AUTOINSTALL" = "xyes" ] || [ x"$SOFTWAREONLY" = "xyes" ]; then
     return
   fi
 
