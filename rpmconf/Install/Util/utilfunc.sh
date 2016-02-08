@@ -821,11 +821,11 @@ verifyUpgrade() {
           fi
       fi
     fi
-  fi
 
-  if [ "$serviceProxyRC" != 0 ] || [ "$serviceMemcachedRC" != 0 ]; then
-    echo "Proxy and Memcached services must exist. Exiting..."
-    exit 1
+    if [ "$serviceProxyRC" != 0 ] || [ "$serviceMemcachedRC" != 0 ]; then
+      echo "Proxy and Memcached services must exist. Exiting..."
+      exit 1
+    fi
   fi
 
   if [ x"$SKIP_UPGRADE_CHECK" = "xyes" ]; then
