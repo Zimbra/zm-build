@@ -6,7 +6,7 @@
 # This definition stops the following lines choking if HOME isn't
 # defined.
 HOME			= /opt/zimbra/ssl
-RANDFILE	= /opt/zimbra/ssl/.rnd
+RANDFILE		= /opt/zimbra/ssl/.rnd
 
 # Extra OBJECT IDENTIFIER info:
 #oid_file		= $ENV::HOME/.oid
@@ -38,6 +38,8 @@ dir		= /opt/zimbra/ssl/zimbra/ca		# Where everything is kept
 certs		= $dir/certs		# Where the issued certs are kept
 crl_dir		= $dir/crl		# Where the issued crl are kept
 database	= $dir/index.txt	# database index file.
+#unique_subject	= no			# Set to 'no' to allow creation of
+					# several ctificates with same subject.
 new_certs_dir	= $dir/newcerts		# default place for new certs.
 
 certificate	= $dir/cacert.pem 	# The CA certificate
@@ -72,10 +74,9 @@ policy		= policy_match
 
 # For the CA policy
 [ policy_match ]
-countryName		= supplied
-stateOrProvinceName	= supplied
-#localityName		= optional
-organizationName	= supplied
+countryName		= match
+stateOrProvinceName	= match
+organizationName	= match
 organizationalUnitName	= optional
 commonName		= supplied
 emailAddress		= optional
@@ -106,13 +107,12 @@ x509_extensions	= v3_ca	# The extentions to add to the self signed cert
 
 # This sets a mask for permitted string types. There are several options. 
 # default: PrintableString, T61String, BMPString.
-# pkix	 : PrintableString, BMPString.
-# utf8only: only UTF8Strings.
+# pkix	 : PrintableString, BMPString (PKIX recommendation before 2004)
+# utf8only: only UTF8Strings (PKIX recommendation after 2004).
 # nombstr : PrintableString, T61String (no BMPStrings or UTF8Strings).
 # MASK:XXXX a literal mask value.
-# WARNING: current versions of Netscape crash on BMPStrings or UTF8Strings
-# so use this option with caution!
-string_mask = nombstr
+# WARNING: ancient versions of Netscape crash on BMPStrings or UTF8Strings.
+string_mask = utf8only
 
 req_extensions = v3_req # The extensions to add to a certificate request
 
@@ -126,7 +126,6 @@ stateOrProvinceName		= State or Province Name (full name)
 stateOrProvinceName_default	= N/A
 
 localityName			= Locality Name (eg, city)
-localityName_default		= N/A
 
 0.organizationName		= Organization Name (eg, company)
 0.organizationName_default	= N/A
@@ -138,7 +137,7 @@ localityName_default		= N/A
 organizationalUnitName		= Organizational Unit Name (eg, section)
 organizationalUnitName_default	= Zimbra Collaboration Suite
 
-commonName			= Common Name (eg, your name or your server\'s hostname)
+commonName			= Common Name (e.g. server FQDN or YOUR name)
 commonName_max			= 64
 commonName_default		= @@HOSTNAME@@
 
@@ -206,6 +205,14 @@ authorityKeyIdentifier=keyid,issuer:always
 #nsSslServerName
 @@SUBJECT_ALT_NAMES@@
 
+[ v3_req ]
+
+# Extensions to add to a certificate request
+
+basicConstraints = CA:FALSE
+keyUsage = nonRepudiation, digitalSignature, keyEncipherment
+@@SUBJECT_ALT_NAMES@@
+
 [ v3_ca ]
 
 # Extensions for a typical CA
@@ -249,13 +256,4 @@ basicConstraints = CA:true
 
 # issuerAltName=issuer:copy
 authorityKeyIdentifier=keyid:always,issuer:always
-
-
-[ v3_req ]
-
-# Extensions to add to a certificate request
-
-basicConstraints = CA:FALSE
-keyUsage = nonRepudiation, digitalSignature, keyEncipherment
-@@SUBJECT_ALT_NAMES@@
 
