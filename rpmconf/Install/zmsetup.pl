@@ -1633,13 +1633,12 @@ sub setDefaults {
 
   if (isEnabled("zimbra-mta")) {
     progress  "setting defaults for zimbra-mta.\n" if $options{d};
-    my $tmpval = (qx($SU "/opt/zimbra/common/sbin/postconf mynetworks"));
-    chomp($tmpval);
-    $tmpval =~ s/mynetworks = //;
-    if ($tmpval eq "") {
-      $config{zimbraMtaMyNetworks} = "127.0.0.0/8 [::1]/128 @interfaces";
+    my @tmpval = (qx(/opt/zimbra/libexec/zmserverips -n));
+    chomp(@tmpval);
+    if (@tmpval) {
+      $config{zimbraMtaMyNetworks} = "@tmpval";
     } else {
-      $config{zimbraMtaMyNetworks} = "$tmpval";
+      $config{zimbraMtaMyNetworks} = "127.0.0.0/8 [::1]/128 @interfaces";
     }
     $config{postfix_mail_owner} = "postfix";
     $config{postfix_setgid_group} = "postdrop";
