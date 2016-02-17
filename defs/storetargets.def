@@ -226,6 +226,9 @@ $(STORE_DEST_DIR)/log:
 	mkdir -p $@
 	cp $(PACKAGE_CONF_DIR)/Conf/hotspot_compiler $@/.hotspot_compiler
 
+$(STORE_DEST_DIR)/cleanup:
+	find $(STORE_DEST_DIR)/$(MAILBOXD_DIR) -type f -name "*.err" -print0 | xargs -0 rm -f
+
 $(STORE_DEST_ROOT)/etc/sudoers.d:
 	mkdir -p $@
 	cp $(PACKAGE_CONF_DIR)/Env/sudoers.d/02_zimbra-store $(STORE_DEST_ROOT)/etc/sudoers.d/02_zimbra-store

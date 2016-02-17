@@ -68,7 +68,8 @@ STORE_COMPONENTS := \
 	$(STORE_DEST_DIR)/lib/ext/zimbraim \
 	$(STORE_DEST_DIR)/lib/ext/openidconsumer \
 	$(STORE_DEST_DIR)/lib/jars/zmzimbratozimbramig.jar \
-	$(STORE_DEST_DIR)/log
+	$(STORE_DEST_DIR)/log \
+	$(STORE_DEST_DIR)/cleanup
 
 ZIMLET_COMPONENTS := \
 	$(STORE_DEST_DIR)/$(MAILBOXD_DIR)/webapps/service/WEB-INF/lib/zimlettaglib.jar \
