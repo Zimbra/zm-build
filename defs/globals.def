@@ -19,6 +19,7 @@ VERSION_STRING := $(MAJOR).$(MINOR).$(MICRO)
 SOURCE_TAG := $(MAJOR).$(MINOR).$(MICRO)_$(BUILDNUM)
 VERSION_TAG := $(MAJOR).$(MINOR).$(MICRO)_$(BUILDNUM).$(BUILD_PLATFORM)
 RELEASE_VERSION_TAG := $(MAJOR).$(MINOR).$(MICRO)_$(BUILDNUM).$(BUILD_PLATFORM)
+MAVEN_VERSION_STRING := $(MAJOR).$(MINOR).0-SNAPSHOT
 
 ifeq (DEBIAN,$(findstring DEBIAN,$(BUILD_PLATFORM)))
 	XVERSION_TAG := $(subst _,.,${VERSION_TAG})
@@ -67,6 +68,7 @@ ifeq ($(PERL), )
 endif
 
 ANT		?= $(shell which ant)
+MAVEN		?= $(shell which mvn)
 CP    ?= $(shell which cp)
 MKDIR ?= $(shell which mkdir)
 CHMOD ?= $(shell which chmod)
@@ -80,7 +82,10 @@ ifeq ($(ANT), )
 	$(error ant not found - exiting)
 endif
 
-ANT_DEBUG ?= -Ddebug=false
+ANT_DEBUG	?= -Ddebug=false
+SKIP_TESTS	?= -DskipTests=true
+ANT_BUILD_DIR	:= build
+MAVEN_TARGET_DIR	:= target
 
 
 PACKAGE_CONF_DIR	:= $(BUILD_ROOT)/rpmconf
