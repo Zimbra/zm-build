@@ -1334,8 +1334,6 @@ sub setLdapDefaults {
         if ($config{HTTPSPORT} == $config{HTTPSPROXYPORT} && $config{HTTPSPORT} == 8443) {
             $config{HTTPSPORT} = 443;
         }
-        $config{MAILPROXY} = "FALSE";
-        $config{HTTPPROXY} = "FALSE";
   }
 
   #
@@ -1771,8 +1769,6 @@ sub setDefaults {
     $config{IMAPSSLPROXYPORT} = 7993;
     $config{POPPROXYPORT} = 7110;
     $config{POPSSLPROXYPORT} = 7995;
-    $config{MAILPROXY} = "FALSE";
-    $config{HTTPPROXY} = "FALSE";
     $config{HTTPPROXYPORT} = 8080;
     $config{HTTPSPROXYPORT} = 8443;
   }
@@ -6069,14 +6065,7 @@ sub configSetProxyPrefs {
        chomp(@storetargets = <ZMPROV>);
        close(ZMPROV);
        if ( $storetargets[0] !~ /nginx-lookup/ ) {
-         progress ( "WARNING\n\n");
-         progress ( "You are configuring this host as a proxy server, but there is currently no \n");
-         progress ( "mailstore to proxy.  This will cause proxy startup to fail.\n");
-         progress ( "Once you have installed a store server, start the proxy service:\n");
-         progress ( "zmproxyctl start\n\n");
-         if (!$options{c}) {
-           ask ("Press return to continue\n","");
-         }
+         progress("WARNING: There is currently no mailstore to proxy. Proxy will restart once one becomes available.\n");
        }
      }
      if (!(isEnabled("zimbra-memcached"))) {
