@@ -13,7 +13,7 @@ perlcode 0 my $snmptrap="/opt/zimbra/common/bin/snmptrap $snmpargs";
 perlcode 0 my $snmpsvctrap="ZIMBRA-TRAP-MIB::zmServiceStatusTrap";
 perlcode 0 my $snmpsvcname="ZIMBRA-MIB::zmServiceName";
 perlcode 0 my $snmpsvcstatus="ZIMBRA-MIB::zmServiceStatus";
-perlcode 0 my $mailer; if ( -x "/opt/zimbra/common/sbin/sendmail") { $mailer="/opt/zimbra/common/sbin/sendmail -r $fr"; } elsif (-x "/usr/sbin/sendmail") { $mailer="/usr/sbin/sendmail"; } else { $mailer="/usr/lib/sendmail"; }
+perlcode 0 my $mailer; if ( -x "/opt/zimbra/common/sbin/sendmail") { $mailer="/opt/zimbra/common/sbin/sendmail -f $fr"; } elsif (-x "/usr/sbin/sendmail") { $mailer="/usr/sbin/sendmail -f $fr"; } else { $mailer="/usr/lib/sendmail -f $fr"; }
 
 perlcode 0 my %statuses=('started'=>1,'stopped'=>0);
 
