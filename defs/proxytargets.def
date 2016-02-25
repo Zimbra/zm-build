@@ -45,9 +45,27 @@ $(BUILD_ROOT)/zimbra-proxy.spec:
 		$(BUILD_ROOT)/zimbra-proxy.spec
 	echo "%attr(755, zimbra, zimbra) /opt/zimbra/conf/nginx/includes" >> \
 		$(BUILD_ROOT)/zimbra-proxy.spec
+	echo "%attr(755, zimbra, zimbra) /opt/zimbra/conf/nginx/includes/default" >> \
+		$(BUILD_ROOT)/zimbra-proxy.spec
+	echo "%attr(755, zimbra, zimbra) /opt/zimbra/conf/nginx/includes/vhost" >> \
+		$(BUILD_ROOT)/zimbra-proxy.spec
+	echo "%attr(755, zimbra, zimbra) /opt/zimbra/conf/nginx/includes/web.mode" >> \
+		$(BUILD_ROOT)/zimbra-proxy.spec
 	echo "%attr(755, zimbra, zimbra) /opt/zimbra/conf/nginx/templates" >> \
 		$(BUILD_ROOT)/zimbra-proxy.spec
 	echo "%attr(644, zimbra, zimbra) /opt/zimbra/conf/nginx/templates/*" >> \
+		$(BUILD_ROOT)/zimbra-proxy.spec
+	echo "%attr(755, zimbra, zimbra) /opt/zimbra/conf/nginx/templates/default" >> \
+		$(BUILD_ROOT)/zimbra-proxy.spec
+	echo "%attr(644, zimbra, zimbra) /opt/zimbra/conf/nginx/templates/default/*" >> \
+		$(BUILD_ROOT)/zimbra-proxy.spec
+	echo "%attr(755, zimbra, zimbra) /opt/zimbra/conf/nginx/templates/vhost" >> \
+		$(BUILD_ROOT)/zimbra-proxy.spec
+	echo "%attr(644, zimbra, zimbra) /opt/zimbra/conf/nginx/templates/vhost/*" >> \
+		$(BUILD_ROOT)/zimbra-proxy.spec
+	echo "%attr(755, zimbra, zimbra) /opt/zimbra/conf/nginx/templates/web.mode" >> \
+		$(BUILD_ROOT)/zimbra-proxy.spec
+	echo "%attr(644, zimbra, zimbra) /opt/zimbra/conf/nginx/templates/web.mode/*" >> \
 		$(BUILD_ROOT)/zimbra-proxy.spec
 	echo "" >> $(BUILD_ROOT)/zimbra-proxy.spec
 	echo "%clean" >> $(BUILD_ROOT)/zimbra-proxy.spec
@@ -65,6 +83,10 @@ $(PROXY_DEST_DIR)/conf:
 	mkdir -p $@
 
 $(PROXY_DEST_DIR)/conf/nginx: $(PROXY_DEST_DIR)/conf $(PROXY_DEST_ROOT)/etc/sudoers.d
-	mkdir -p $@/includes
-	mkdir -p $@/templates
-	cp $(SERVICE_DIR)/conf/nginx/* $@/templates/
+	mkdir -p $@/includes/default
+	mkdir -p $@/includes/vhost
+	mkdir -p $@/includes/web.mode
+	mkdir -p $@/templates/default
+	mkdir -p $@/templates/vhost
+	mkdir -p $@/templates/web.mode
+	cp -Rf $(SERVICE_DIR)/conf/nginx/* $@/templates
