@@ -69,7 +69,10 @@ $mesg->code && die "Bind: " . $mesg->error . "\n";
 $mesg = $ldap->search(
     base   => "cn=servers,cn=zimbra",
     filter => "(zimbraServiceEnabled=$options{service})",
-    attrs  => [ 'zimbraServiceEnabled' ],
+    attrs  => [
+        'zimbraServiceEnabled', 'zimbraReverseProxyMailEnabled',
+        'zimbraReverseProxyHttpEnabled'
+    ],
 );
 
 my $size = $mesg->count;
@@ -77,4 +80,17 @@ if ( $size == 0 ) {
     $ldap->unbind();
     print STDERR "Error: $options{service} not enabled\n";
     exit 2;
+}
+else {
+    if ( $options{service} eq "proxy" ) {
+        foreach my $entry ( $mesg->entries ) {
+            if (   $entry->get_value("zimbraReverseProxyMailEnabled") ne "TRUE"
+                || $entry->get_value("zimbraReverseProxyHttpEnabled") ne
+                "TRUE" ) {
+                print STDERR
+"Error: One or more proxies do not have zimbraReverseProxyMailEnabled and zimbraReverseProxyHttpEnabled set to TRUE. This is required for ZCS 8.7+\n";
+                exit 3;
+            }
+        }
+    }
 }
