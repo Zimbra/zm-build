@@ -130,6 +130,7 @@ my %updateFuncs = (
   "8.6.0_GA" => \&upgrade860GA,
   "8.7.0_BETA1" => \&upgrade870BETA1,
   "8.7.0_BETA2" => \&upgrade870BETA2,
+  "8.7.0_RC1" => \&upgrade870RC1,
   "9.0.0_BETA1" => \&upgrade900BETA1,
 );
 
@@ -174,6 +175,7 @@ my @versionOrder = (
   "8.6.0_GA",
   "8.7.0_BETA1",
   "8.7.0_BETA2",
+  "8.7.0_RC1",
   "9.0.0_BETA1",
 );
 
@@ -311,6 +313,8 @@ sub upgrade {
       main::progress("This appears to be 8.7.0_BETA1\n");
   } elsif ($startVersion eq "8.7.0_BETA2") {
       main::progress("This appears to be 8.7.0_BETA2\n");
+  } elsif ($startVersion eq "8.7.0_RC1") {
+      main::progress("This appears to be 8.7.0_RC1\n");
   } elsif ($startVersion eq "9.0.0_BETA1") {
       main::progress("This appears to be 9.0.0_BETA1\n");
   } else {
@@ -2199,6 +2203,12 @@ sub upgrade870BETA2 {
     main::setLdapServerConfig($hn, '-zimbraServiceEnabled', 'vmware-ha');
   }
 
+  return 0;
+}
+
+sub upgrade870RC1 {
+  my ($startBuild, $targetVersion, $targetBuild) = (@_);
+  main::progress("Updating from 8.7.0_RC1\n");
   return 0;
 }
 
