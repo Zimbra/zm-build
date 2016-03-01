@@ -1501,9 +1501,11 @@ restoreCerts() {
   if [ -f "$SAVEDIR/keystore" -a -d "/opt/zimbra/jetty/etc" ]; then
     cp $SAVEDIR/keystore /opt/zimbra/jetty/etc/keystore
     chown zimbra:zimbra /opt/zimbra/jetty/etc/keystore
+    chmod u+w /opt/zimbra/jetty/etc/keystore
   elif [ -f "$SAVEDIR/keystore" -a -d "/opt/zimbra/conf" ]; then
     cp $SAVEDIR/keystore /opt/zimbra/conf/keystore
     chown zimbra:zimbra /opt/zimbra/conf/keystore
+    chmod u+w /opt/zimbra/conf/keystore
   fi
   if [ -f "$SAVEDIR/smtpd.key" ]; then
     cp $SAVEDIR/smtpd.key /opt/zimbra/conf/smtpd.key
@@ -1536,6 +1538,7 @@ restoreCerts() {
   fi
   if [ -f "/opt/zimbra/jetty/etc/keystore" ]; then
     chown zimbra:zimbra /opt/zimbra/jetty/etc/keystore
+    chmod u+w /opt/zimbra/jetty/etc/keystore
   fi
 }
 
