@@ -33,7 +33,7 @@ PROXY_DEST_ROOT		:= $(BUILD_ROOT)/proxybuild
 PROXY_DEST_DIR		:= $(PROXY_DEST_ROOT)/opt/zimbra
 
 WEBAPP_DIR		:= $(STORE_DEST_ROOT)/opt/zimbra/$(MAILBOXD_DIR)/webapps
-WEBAPP_BUILD_DIR := build/dist/$(MAILBOXD_SERVER)/webapps
+WEBAPP_BUILD_DIR := $(ANT_BUILD_DIR)/dist/$(MAILBOXD_SERVER)/webapps
 WEBAPP_STAGE_DIR := $(BUILD_ROOT)/webappbuild
 
 PACKAGE_DIR			:= $(BUILD_ROOT)/$(ARCH)
