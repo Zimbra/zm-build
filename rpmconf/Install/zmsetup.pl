@@ -6782,6 +6782,8 @@ sub applyConfig {
 
   configSaveCert();
 
+  # Added the following for bug 103803. Could not just add the cert as a globalConfigValue
+  # for zimbraSSldHParam.  See bug 104244.
   setLdapGlobalConfig("zimbraSSLDHParam", "/opt/zimbra/conf/dhparam.pem.zcs") if $newinstall;
 
   if (isEnabled("zimbra-store")) {
