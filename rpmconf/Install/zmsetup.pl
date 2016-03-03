@@ -6856,6 +6856,7 @@ sub applyConfig {
 
   configSaveCert();
 
+  setLdapGlobalConfig("zimbraSSLDHParam", "/opt/zimbra/conf/dhparam.pem.zcs") if $newinstall;
 
   if (isEnabled("zimbra-store")) {
 

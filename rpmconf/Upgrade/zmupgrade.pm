@@ -2205,6 +2205,7 @@ sub upgrade870BETA2 {
 sub upgrade870RC1 {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
   main::progress("Updating from 8.7.0_RC1\n");
+  main::setLdapGlobalConfig("zimbraSSLDHParam", "/opt/zimbra/conf/dhparam.pem.zcs");
   return 0;
 }
 
