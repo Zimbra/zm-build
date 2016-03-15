@@ -547,7 +547,7 @@ sub upgrade713GA {
     chomp($ldap_pass);
     my $ldap;
     unless($ldap = Net::LDAP->new('ldapi://%2fopt%2fzimbra%2fdata%2fldap%2fstate%2frun%2fldapi/')) {
-       main::progress("Unable to contact to ldapi: $!\n");
+       main::progress("Unable to connect to ldapi: $!\n");
     }
     my $result = $ldap->bind("cn=config", password => $ldap_pass);
     my $dn="olcDatabase={2}mdb,cn=config";
@@ -664,7 +664,7 @@ sub upgrade714GA {
     my $ldap;
     chomp($ldap_pass);
     unless($ldap = Net::LDAP->new('ldapi://%2fopt%2fzimbra%2fdata%2fldap%2fstate%2frun%2fldapi/')) {
-       main::progress("Unable to contact to ldapi: $!\n");
+       main::progress("Unable to connect to ldapi: $!\n");
     }
     my $result = $ldap->bind("cn=config", password => $ldap_pass);
     unless($result->code()) {
@@ -787,7 +787,7 @@ sub upgrade800BETA1 {
     chomp($ldap_pass);
     my $ldap;
     unless($ldap = Net::LDAP->new('ldapi://%2fopt%2fzimbra%2fdata%2fldap%2fstate%2frun%2fldapi/')) {
-       main::progress("Unable to contact to ldapi: $!\n");
+       main::progress("Unable to connect to ldapi: $!\n");
     }
     my $result = $ldap->bind("cn=config", password => $ldap_pass);
     my $dn="olcDatabase={2}mdb,cn=config";
@@ -971,7 +971,7 @@ sub upgrade800BETA4 {
     chomp($ldap_pass);
     my $ldap;
     unless($ldap = Net::LDAP->new('ldapi://%2fopt%2fzimbra%2fdata%2fldap%2fstate%2frun%2fldapi/')) {
-       main::progress("Unable to contact to ldapi: $!\n");
+       main::progress("Unable to connect to ldapi: $!\n");
     }
     my $result = $ldap->bind("cn=config", password => $ldap_pass);
     my $dn="olcDatabase={2}mdb,cn=config";
@@ -1074,7 +1074,7 @@ sub upgrade801GA {
     chomp($ldap_pass);
     my $ldap;
     unless($ldap = Net::LDAP->new('ldapi://%2fopt%2fzimbra%2fdata%2fldap%2fstate%2frun%2fldapi/')) {
-       main::progress("Unable to contact to ldapi: $!\n");
+       main::progress("Unable to connect to ldapi: $!\n");
     }
     my $result = $ldap->bind("cn=config", password => $ldap_pass);
     my $dn="olcDatabase={2}mdb,cn=config";
@@ -1138,7 +1138,7 @@ sub upgrade802GA {
       chomp($ldap_pass);
       my $ldap;
       unless($ldap = Net::LDAP->new('ldapi://%2fopt%2fzimbra%2fdata%2fldap%2fstate%2frun%2fldapi/')) {
-         main::progress("Unable to contact to ldapi: $!\n");
+         main::progress("Unable to connect to ldapi: $!\n");
       }
       my $result = $ldap->bind("cn=config", password => $ldap_pass);
       $result = $ldap->modify(
@@ -1191,7 +1191,7 @@ sub upgrade804GA {
     chomp($ldap_pass);
     my $ldap;
     unless($ldap = Net::LDAP->new('ldapi://%2fopt%2fzimbra%2fdata%2fldap%2fstate%2frun%2fldapi/')) {
-       main::progress("Unable to contact to ldapi: $!\n");
+       main::progress("Unable to connect to ldapi: $!\n");
     }
     my $result = $ldap->bind("cn=config", password => $ldap_pass);
     $result = $ldap->modify(
@@ -1967,7 +1967,7 @@ sub upgrade851GA {
       chomp($ldap_pass);
       my $ldap;
       unless($ldap = Net::LDAP->new('ldapi://%2fopt%2fzimbra%2fdata%2fldap%2fstate%2frun%2fldapi/')) {
-         main::progress("Unable to contact to ldapi: $!\n");
+         main::progress("Unable to connect to ldapi: $!\n");
       } else {
         my $result = $ldap->bind("cn=config", password => $ldap_pass);
         $result = $ldap->search(
@@ -2209,6 +2209,42 @@ sub upgrade870RC1 {
     if ($isLdapMaster) {
       main::setLdapGlobalConfig("zimbraSSLDHParam", "/opt/zimbra/conf/dhparam.pem.zcs");
     }
+    my $ldap_pass = qx($su "zmlocalconfig -s -m nokey ldap_root_password");
+    chomp($ldap_pass);
+    my $ldap;
+    unless($ldap = Net::LDAP->new('ldapi://%2fopt%2fzimbra%2fdata%2fldap%2fstate%2frun%2fldapi/')) {
+       main::progress("Unable to connect to ldapi: $@\n");
+    }
+    my $result = $ldap->bind("cn=config", password => $ldap_pass);
+    my $dn="olcDatabase={2}mdb,cn=config";
+    if ($isLdapMaster) {
+      $result = $ldap->search(
+                        base => "cn=accesslog",
+                        filter => "(objectClass=*)",
+                        scope => "base",
+                        attrs => ['1.1'],
+      );
+      my $size = $result->count;
+      if ($size > 0 ) {
+        $dn="olcDatabase={3}mdb,cn=config";
+      }
+    }
+    $result = $ldap->search(
+      base=> "$dn",
+      filter=>"(objectClass=*)",
+      scope => "base",
+      attrs => ['olcDbRtxnSize'],
+    );
+    my $entry = $result->entry($result->count-1);
+    my @attrvals = $entry->get_value("olcDbRtxnSize");
+
+    if (!@attrvals) {
+      $result = $ldap->modify(
+          $dn,
+          add => {olcDbRtxnSize=>0},
+      );
+    }
+    $ldap->unbind;
   }
   return 0;
 }
@@ -3255,7 +3291,7 @@ sub addLdapIndex($$$) {
   chomp($ldap_pass);
   my $ldap;
   unless($ldap = Net::LDAP->new('ldapi://%2fopt%2fzimbra%2fdata%2fldap%2fstate%2frun%2fldapi/')) {
-    main::progress("Unable to contact to ldapi: $!\n");
+    main::progress("Unable to connect to ldapi: $!\n");
   }
   my $result = $ldap->bind("cn=config", password => $ldap_pass);
   my $dn="olcDatabase={2}mdb,cn=config";
