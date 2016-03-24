@@ -795,7 +795,11 @@ verifyUpgrade() {
     if [ -x "bin/checkService.pl" ]; then
       echo "Checking for existing proxy service in your environment"
       # echo "Running bin/checkService.pl -s proxy"
-      `bin/checkService.pl -s proxy`
+      if [ ${ZM_CUR_MAJOR} -lt 8 ]; then
+          `bin/checkService.pl -s imapproxy`
+      else
+          `bin/checkService.pl -s proxy`
+      fi
       serviceProxyRC=$?;
       if [ "$serviceProxyRC" != 0 ]; then
           if [ "$serviceProxyRC" = 2 ]; then
