@@ -6075,14 +6075,7 @@ sub configSetProxyPrefs {
        chomp(@memcachetargets = <ZMPROV>);
        close(ZMPROV);
        if ( $memcachetargets[0] !~ /:11211/ ) {
-         progress ( "WARNING\n\n");
-         progress ( "You are configuring this host as a proxy server, but there is currently no \n");
-         progress ( "memcached service for proxy.  The proxy service will not work correctly.\n");
-         progress ( "Once you have installed a memcached server, restart the proxy service:\n");
-         progress ( "zmproxyctl restart\n\n");
-         if (!$options{c}) {
-           ask ("Press return to continue\n","");
-         }
+         progress("WARNING: There are currently no memcached servers for the proxy.  Proxy will start once one becomes available.\n");
        }
      }
    } else {
