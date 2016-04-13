@@ -16,94 +16,67 @@
 # ***** END LICENSE BLOCK *****
 # 
 
-installPackage() {
-	PKG=$1
-	echo -n "    $PKG..."
-	findLatestPackage $PKG
-	if [ x$PKG != "xzimbra-memcached" ]; then
-		if [ ! -f "$file" ]; then
-			echo "file not found."
-			return
+installPackages() {
+	repocomp=""
+	pkgcomp=""
+	pkglocal=""
+	for PKG in $INSTALL_PACKAGES; do
+		findLatestPackage $PKG
+		if [ x$PKG != "xzimbra-memcached" ]; then
+			if [ ! -f "$file" ]; then
+				echo "file $file not found."
+				exit 1
+			fi
+			pkgcomp="$pkgcomp $file"
+			pkglocal="$pkglocal $PKG"
 		fi
-		f=`basename $file`
-	else
-		if [[ $PLATFORM == "DEBIAN"* || $PLATFORM == "UBUNTU"* ]]; then
-			f=`apt-cache show zimbra-memcached | grep ^Version:`
-			f=${f#*: }
-		elif [[ $PLATFORM == "RHEL"* ]]; then
-			ver=`yum info zimbra-memcached | grep ^Version`;
-			rel=`yum info zimbra-memcached | grep ^Release`;
-			ver=${ver#*: }
-			rel=${rel#*: }
-			f="${ver}-${rel}"
+		if [ x$PKG = "xzimbra-core" ]; then
+			repocomp="zimbra-core-components $repocomp"
 		fi
+		if [ x$PKG = "xzimbra-apache" ]; then
+			repocomp="$repocomp zimbra-apache-components"
+		fi
+		if [ x$PKG = "xzimbra-dnscache" ]; then
+			repocomp="$repocomp zimbra-dnscache-components"
+		fi
+		if [ x$PKG = "xzimbra-ldap" ]; then
+			repocomp="$repocomp zimbra-ldap-components"
+		fi
+		if [ x$PKG = "xzimbra-mta" ]; then
+			repocomp="$repocomp zimbra-mta-components"
+		fi
+		if [ x$PKG = "xzimbra-memcached" ]; then
+			repocomp="$repocomp zimbra-memcached"
+		fi
+		if [ x$PKG = "xzimbra-proxy" ]; then
+			repocomp="$repocomp zimbra-proxy-components"
+		fi
+		if [ x$PKG = "xzimbra-snmp" ]; then
+			repocomp="$repocomp zimbra-snmp-components"
+		fi
+		if [ x$PKG = "xzimbra-spell" ]; then
+			repocomp="$repocomp zimbra-spell-components"
+		fi
+		if [ x$PKG = "xzimbra-store" ]; then
+			repocomp="$repocomp zimbra-store-components"
+		fi
+	done
+	echo "Local packages $pkglocal selected for installation"
+	echo "Monitor $LOGFILE for package installation progress"
+	echo "Remote package installation started"
+	echo "REMOTE PACKAGES: $repocomp" >> $LOGFILE 2>&1
+	echo "LOCAL PACKAGES: $pkglocal" >> $LOGFILE 2>&1
+	echo -n "Installing $repocomp...."
+	$REPOINST $repocomp >>$LOGFILE 2>&1
+	if [ $? != 0 ]; then
+		pkgError
 	fi
-	echo -n "...$f..."
-	if [ x$PKG = "xzimbra-core" ]; then
-		$REPOINST zimbra-core-components >>$LOGFILE 2>&1
-                if [ $? != 0 ]; then
-                  pkgError
-                fi
-	fi
-	if [ x$PKG = "xzimbra-apache" ]; then
-		$REPOINST zimbra-apache-components >>$LOGFILE 2>&1
-                if [ $? != 0 ]; then
-                  pkgError
-                fi
-	fi
-	if [ x$PKG = "xzimbra-dnscache" ]; then
-		$REPOINST zimbra-dnscache-components >>$LOGFILE 2>&1
-                if [ $? != 0 ]; then
-                  pkgError
-                fi
-	fi
-	if [ x$PKG = "xzimbra-ldap" ]; then
-		$REPOINST zimbra-ldap-components >>$LOGFILE 2>&1
-                if [ $? != 0 ]; then
-                  pkgError
-                fi
-	fi
-	if [ x$PKG = "xzimbra-mta" ]; then
-		$REPOINST zimbra-mta-components >>$LOGFILE 2>&1
-                if [ $? != 0 ]; then
-                  pkgError
-                fi
-	fi
-	if [ x$PKG = "xzimbra-memcached" ]; then
-		$REPOINST zimbra-memcached >>$LOGFILE 2>&1
-                if [ $? != 0 ]; then
-                  pkgError
-                fi
-	fi
-	if [ x$PKG = "xzimbra-proxy" ]; then
-		$REPOINST zimbra-proxy-components >>$LOGFILE 2>&1
-                if [ $? != 0 ]; then
-                  pkgError
-                fi
-	fi
-	if [ x$PKG = "xzimbra-snmp" ]; then
-		$REPOINST zimbra-snmp-components >>$LOGFILE 2>&1
-                if [ $? != 0 ]; then
-                  pkgError
-                fi
-	fi
-	if [ x$PKG = "xzimbra-spell" ]; then
-		$REPOINST zimbra-spell-components >>$LOGFILE 2>&1
-                if [ $? != 0 ]; then
-                  pkgError
-                fi
-	fi
-	if [ x$PKG = "xzimbra-store" ]; then
-		$REPOINST zimbra-store-components >>$LOGFILE 2>&1
-                if [ $? != 0 ]; then
-                  pkgError
-                fi
-	fi
+	echo "done"
 	INSTRESULT=0
-	if [ x$PKG != "xzimbra-memcached" ]; then
-		$PACKAGEINST $file >> $LOGFILE 2>&1
-		INSTRESULT=$?
-	fi
+	echo "Local package installation started"
+	echo -n "Installing $pkglocal..."
+	$PACKAGEINST $pkgcomp >> $LOGFILE 2>&1
+	INSTRESULT=$?
 	if [ $UPGRADE = "yes" ]; then
 		ST="UPGRADED"
 	else
@@ -112,13 +85,17 @@ installPackage() {
 	D=`date +%s`
 	if [ $INSTRESULT = 0 ]; then
 		echo "done"
-		echo "${D}: $ST $f" >> /opt/zimbra/.install_history
+		for PKG in $INSTALL_PACKAGES; do
+			if [ x$PKG != "xzimbra-memcached" ]; then
+				findLatestPackage $PKG
+				f=`basename $file`
+				echo "${D}: $ST $f" >> /opt/zimbra/.install_history
+			fi
+		done
 	else
 		echo -n "FAILED"
 		echo ""
 		echo "###ERROR###"
-		echo ""
-		echo "$f installation failed"
 		echo ""
 		echo "Installation cancelled"
 		echo ""
@@ -128,8 +105,8 @@ installPackage() {
 
 pkgError() {
   echo ""
-  echo "ERROR: Unable to install required package"
-  echo "Validate ability to connect to upstream package servers"
+  echo "ERROR: Unable to install required packages"
+  echo "Contact Zimbra support for help with how to continue"
   exit 1
 }
 
