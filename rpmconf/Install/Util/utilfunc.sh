@@ -1337,37 +1337,39 @@ checkVersionMatches() {
 
 setRemove() {
 
-  if [ $INSTALLED = "yes" ]; then
+  if [ $INSTALLED = "yes" -o $FORCE_UPGRADE = "yes" ]; then
 
-    checkVersionMatches
+      checkVersionMatches
+      if [ $INSTALLED = "yes" ]; then
 
-    echo ""
-    echo "The Zimbra Collaboration Server appears already to be installed."
-    if [ $VERSIONMATCH = "yes" ]; then
-      echo "It can be upgraded with no effect on existing accounts,"
-      echo "or the current installation can be completely removed prior"
-      echo "to installation for a clean install."
-    else
       echo ""
-      echo "###WARNING###"
-      if [ $RUNNINGSCHEMAVERSION -eq 0 -o $RUNNINGINDEXVERSION -eq 0 ]; then
+      echo "The Zimbra Collaboration Server appears to already be installed."
+      if [ $VERSIONMATCH = "yes" ]; then
+        echo "It can be upgraded with no effect on existing accounts,"
+        echo "or the current installation can be completely removed prior"
+        echo "to installation for a clean install."
+      else
         echo ""
-        echo "It appears that the mysql server is not running"
-        echo "This may be the cause of the problem"
-        echo ""
-      fi
-      echo "There is a mismatch in the versions of the installed schema"
-      echo "or index and the version included in this package"
-      echo "If you wish to upgrade, please correct this problem first."
-      askYN "Exit now?" "Y"
-      if [ $response = "yes" ]; then
-        exit 1;
+        echo "###WARNING###"
+        if [ $RUNNINGSCHEMAVERSION -eq 0 -o $RUNNINGINDEXVERSION -eq 0 ]; then
+          echo ""
+          echo "It appears that the mysql server is not running"
+          echo "This may be the cause of the problem"
+          echo ""
+        fi
+        echo "There is a mismatch in the versions of the installed schema"
+        echo "or index and the version included in this package"
+        echo "If you wish to upgrade, please correct this problem first."
+        askYN "Exit now?" "Y"
+        if [ $response = "yes" ]; then
+          exit 1;
+        fi
       fi
     fi
 
     while :; do
       UPGRADE="yes"
-      if [ $VERSIONMATCH = "yes" ]; then
+      if [ $FORCE_UPGRADE = "yes" -o $VERSIONMATCH = "yes" ]; then
         askYN "Do you wish to upgrade?" "Y"
       else
         UPGRADE="no"
@@ -1399,10 +1401,11 @@ setRemove() {
           break
         fi
       else
-        # Check for a history file - create it if it's not there
-        isInstalled "zimbra-core"
-        if [ ! -f "/opt/zimbra/.install_history" ]; then
-          cat > /opt/zimbra/.install_history << EOF
+        if [ $FORCE_UPGRADE = "no" ]; then
+          # Check for a history file - create it if it's not there
+          isInstalled "zimbra-core"
+          if [ ! -f "/opt/zimbra/.install_history" ]; then
+            cat > /opt/zimbra/.install_history << EOF
 0000000000: INSTALL SESSION START
 0000000000: INSTALLED $PKGVERSION
 0000000000: INSTALL SESSION COMPLETE
@@ -1411,6 +1414,7 @@ setRemove() {
 0000000000: CONFIGURED END
 0000000000: CONFIG SESSION COMPLETE
 EOF
+          fi
         fi
         break
       fi
@@ -1543,6 +1547,10 @@ restoreCerts() {
 }
 
 saveExistingConfig() {
+  if [ $UPGRADE != "yes" -o $FORCE_UPGRADE = "yes" ]; then
+    return
+  fi
+
   echo ""
   echo "Saving existing configuration file to $SAVEDIR"
 

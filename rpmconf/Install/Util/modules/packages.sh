@@ -106,7 +106,11 @@ installPackages() {
 pkgError() {
   echo ""
   echo "ERROR: Unable to install required packages"
-  echo "Contact Zimbra support for help with how to continue"
+  if [ $UPGRADE = "yes" ]; then
+    echo "Contact Zimbra support for help with how to continue"
+  else
+    echo "Fix the issues with remote package installation and rerun the installer"
+  fi
   exit 1
 }
 

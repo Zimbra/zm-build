@@ -41,6 +41,7 @@ SOFTWAREONLY="no"
 SKIP_ACTIVATION_CHECK="no"
 SKIP_UPGRADE_CHECK="no"
 ALLOW_PLATFORM_OVERRIDE="no"
+FORCE_UPGRADE="no"
 
 usage() {
   echo "$0 [-r <dir> -l <file> -a <file> -u -s -c type -x -h] [defaultsfile]"
@@ -56,6 +57,7 @@ usage() {
   echo "--platform-override     Allows installer to continue on an unknown OS."
   echo "--skip-activation-check Allows installer to continue if license activation checks fail."
   echo "--skip-upgrade-check    Allows installer to skip upgrade validation checks."
+  echo "--force-upgrade         Force upgrade to be set to YES. Used if there is package installation failure for remote packages."
   echo "[defaultsfile]          File containing default install values."
   echo ""
   exit
@@ -115,6 +117,10 @@ while [ $# -ne 0 ]; do
       ;;
     -skip-upgrade-check|--skip-upgrade-check)
       SKIP_UPGRADE_CHECK="yes"
+      ;;
+    -force-upgrade|--force-upgrade)
+      FORCE_UPGRADE="yes"
+      UPGRADE="yes"
       ;;
     -h|-help|--help)
       usage
@@ -285,14 +291,10 @@ if [ x$SAVEDIR != "x" -a x$REMOVE = "xno" ]; then
 fi
 
 if [ $UPGRADE = "yes" ]; then
-
 	restoreExistingConfig
-
 	restoreCerts
-
   # deprecated by move of zimlets to /opt/zimbra/zimlets-deployed which isn't removed on upgrade
   #restoreZimlets
-
 fi
 
 if [ "x$LICENSE" != "x" ] && [ -f "$LICENSE" ]; then
