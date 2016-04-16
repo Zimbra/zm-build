@@ -107,7 +107,10 @@ pkgError() {
   echo ""
   echo "ERROR: Unable to install required packages"
   if [ $UPGRADE = "yes" ]; then
-    echo "Contact Zimbra support for help with how to continue"
+    echo "WARNING: REMOTE PACKAGE INSTALLATION FAILED."
+    echo "To proceed, review the instructions at:"
+    echo "https://wiki.zimbra.com/wiki/Recovering_from_upgrade_failure"
+    echo "Failure to follow the instructions on the wiki will result in complete data loss."
   else
     echo "Fix the issues with remote package installation and rerun the installer"
   fi
