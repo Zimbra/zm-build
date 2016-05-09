@@ -2110,13 +2110,17 @@ configurePackageServer() {
         print "Aborting, unknown platform: $PLATFORM"
         exit 1
       fi
-      echo "Importing Zimbra GPG key and configuring package server"
-      apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 9BE6ED79 >>$LOGFILE 2>&1
+      apt-key list | grep -w 9BE6ED79 >/dev/null
       if [ $? -ne 0 ]; then
-        echo "ERROR: Unable to retrive Zimbra GPG key for package validation"
-        echo "Please fix system to allow normal package installation before proceeding"
-        exit 1
+        echo "Importing Zimbra GPG key"
+        apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 9BE6ED79 >>$LOGFILE 2>&1
+        if [ $? -ne 0 ]; then
+          echo "ERROR: Unable to retrive Zimbra GPG key for package validation"
+          echo "Please fix system to allow normal package installation before proceeding"
+          exit 1
+        fi
       fi
+      echo "Configuring package repository"
       apt-get install -y apt-transport-https >>$LOGFILE 2>&1
       if [ $? -ne 0 ]; then
         echo "ERROR: Unable to install packages via apt-get"
@@ -2142,13 +2146,17 @@ EOF
         print "Aborting, unknown platform: $PLATFORM"
         exit 1
       fi
-      echo "Importing Zimbra GPG key and configuring package server"
-      rpm --import https://files.zimbra.com/downloads/security/public.key >>$LOGFILE 2>&1
+      rpm -q gpg-pubkey-0f30c305-5564be70 > /dev/null
       if [ $? -ne 0 ]; then
-        echo "ERROR: Unable to retrive Zimbra GPG key for package validation"
-        echo "Please fix system to allow normal package installation before proceeding"
-        exit 1
+        echo "Importing Zimbra GPG key"
+        rpm --import https://files.zimbra.com/downloads/security/public.key >>$LOGFILE 2>&1
+        if [ $? -ne 0 ]; then
+          echo "ERROR: Unable to retrive Zimbra GPG key for package validation"
+          echo "Please fix system to allow normal package installation before proceeding"
+          exit 1
+        fi
       fi
+      echo "Configuring package repository"
 cat > /etc/yum.repos.d/zimbra.repo <<EOF
 [zimbra]
 name=Zimbra RPM Repository
