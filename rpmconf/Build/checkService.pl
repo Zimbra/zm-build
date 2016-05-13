@@ -55,6 +55,7 @@ my $zimbra_require_interprocess_security =
 my $ldap = Net::LDAP->new($master_ref)
   or die "Error connecting to LDAP server: $ldap_master_url";
 my $mesg;
+my $global_mesg;
 if ( $ldap_master_url !~ /^ldaps/i ) {
     if ($ldap_starttls_supported) {
         $mesg = $ldap->start_tls(
@@ -76,6 +77,12 @@ $mesg = $ldap->search(
 );
 
 my $size = $mesg->count;
+my $found_http_proxy_true=0;
+my $found_mail_proxy_true=0;
+my $found_http_proxy_false=0;
+my $found_mail_proxy_false=0;
+my $total_servers;
+
 if ( $size == 0 ) {
     $ldap->unbind();
     print STDERR "Error: $options{service} not enabled\n";
@@ -83,14 +90,38 @@ if ( $size == 0 ) {
 }
 else {
     if ( $options{service} eq "proxy" ) {
+				$global_mesg = $ldap->bind( "$zimbra_admin_dn", password => "$zimbra_admin_password" );
+				$global_mesg->code && die "Bind: " . $global_mesg->error . "\n";
+				$global_mesg = $ldap->search(
+				    base   => "cn=config,cn=zimbra",
+				    filter => "(|(zimbraReverseProxyMailEnabled=TRUE)(zimbraReverseProxyHttpEnabled=TRUE))",
+				    attrs  => [
+				        'zimbraReverseProxyMailEnabled', 'zimbraReverseProxyHttpEnabled'
+				    ],
+				);
+
+				# get globalconfig values of zimbraReverseProxyMailEnabled and zimbraReverseProxyHttpEnabled
+				my $global_size = $global_mesg->count;
+				my $global_zimbraReverseProxyMailEnabled;
+				my $global_zimbraReverseProxyHttpEnabled;
+				if ($global_size != 0) {
+				        foreach my $global_entry ( $global_mesg->entries ) {
+                    $global_zimbraReverseProxyMailEnabled=$global_entry->get_value("zimbraReverseProxyMailEnabled");
+                    $global_zimbraReverseProxyHttpEnabled=$global_entry->get_value("zimbraReverseProxyHttpEnabled");
+                  }
+				}
         foreach my $entry ( $mesg->entries ) {
-            if (   $entry->get_value("zimbraReverseProxyMailEnabled") ne "TRUE"
-                || $entry->get_value("zimbraReverseProxyHttpEnabled") ne
-                "TRUE" ) {
-                print STDERR
-"Error: One or more proxies do not have zimbraReverseProxyMailEnabled and zimbraReverseProxyHttpEnabled set to TRUE. This is required for ZCS 8.7+\n";
-                exit 3;
-            }
+            $total_servers++;
+            if ( $entry->get_value("zimbraReverseProxyMailEnabled") eq "TRUE" ) { $found_mail_proxy_true++; }
+            if ( $entry->get_value("zimbraReverseProxyMailEnabled") eq "FALSE" ) { $found_mail_proxy_false++; }
+            if ( $entry->get_value("zimbraReverseProxyHttpEnabled") eq "TRUE" ) { $found_http_proxy_true++; }
+            if ( $entry->get_value("zimbraReverseProxyHttpEnabled") eq "FALSE" ) { $found_http_proxy_false++; }
         }
     }
+    if ((($found_mail_proxy_true < 1 && $global_zimbraReverseProxyMailEnabled eq "FALSE") && ($found_http_proxy_true < 1 && $global_zimbraReverseProxyHttpEnabled eq "FALSE")) || (($found_http_proxy_false eq $total_servers) || ($found_mail_proxy_false eq $total_servers))){
+                print STDERR
+"Error: One or more proxies do not have zimbraReverseProxyMailEnabled and zimbraReverseProxyHttpEnabled set to TRUE. \nIt is required to have at least one proxy with zimbraReverseProxyMailEnabled and at least one proxy with zimbraReverseProxyHttpEnabled for ZCS 8.7+\n";
+                exit 3;
+		}
 }
+
