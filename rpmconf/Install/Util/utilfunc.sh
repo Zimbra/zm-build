@@ -795,11 +795,7 @@ verifyUpgrade() {
     if [ -x "bin/checkService.pl" ]; then
       echo "Checking for existing proxy service in your environment"
       # echo "Running bin/checkService.pl -s proxy"
-      if [ ${ZM_CUR_MAJOR} -lt 8 ]; then
-          `bin/checkService.pl -s imapproxy`
-      else
-          `bin/checkService.pl -s proxy`
-      fi
+      `bin/checkService.pl -s proxy`
       serviceProxyRC=$?;
       if [ "$serviceProxyRC" != 0 ]; then
           if [ "$serviceProxyRC" = 2 ]; then
@@ -2128,8 +2124,8 @@ configurePackageServer() {
         exit 1
       fi
 cat > /etc/apt/sources.list.d/zimbra.list << EOF
-deb     [arch=amd64] https://$PACKAGE_SERVER/apt/87 $repo zimbra
-deb-src [arch=amd64] https://$PACKAGE_SERVER/apt/87 $repo zimbra
+deb     [arch=amd64] https://$PACKAGE_SERVER/apt/90 $repo zimbra
+deb-src [arch=amd64] https://$PACKAGE_SERVER/apt/90 $repo zimbra
 EOF
       apt-get update >>$LOGFILE 2>&1
       if [ $? -ne 0 ]; then
@@ -2160,7 +2156,7 @@ EOF
 cat > /etc/yum.repos.d/zimbra.repo <<EOF
 [zimbra]
 name=Zimbra RPM Repository
-baseurl=https://$PACKAGE_SERVER/rpm/87/$repo
+baseurl=https://$PACKAGE_SERVER/rpm/90/$repo
 gpgcheck=1
 enabled=1
 EOF
