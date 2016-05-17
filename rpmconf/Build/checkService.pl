@@ -117,11 +117,11 @@ else {
             if ( $entry->get_value("zimbraReverseProxyHttpEnabled") eq "TRUE" ) { $found_http_proxy_true++; }
             if ( $entry->get_value("zimbraReverseProxyHttpEnabled") eq "FALSE" ) { $found_http_proxy_false++; }
         }
+        if ((($found_mail_proxy_true < 1 && $global_zimbraReverseProxyMailEnabled eq "FALSE") && ($found_http_proxy_true < 1 && $global_zimbraReverseProxyHttpEnabled eq "FALSE")) || (($found_http_proxy_false eq $total_servers) || ($found_mail_proxy_false eq $total_servers))){
+                    print STDERR
+    "Error: One or more proxies do not have zimbraReverseProxyMailEnabled and zimbraReverseProxyHttpEnabled set to TRUE. \nIt is required to have at least one proxy with zimbraReverseProxyMailEnabled and at least one proxy with zimbraReverseProxyHttpEnabled for ZCS 8.7+\n";
+                    exit 3;
+    		}
     }
-    if ((($found_mail_proxy_true < 1 && $global_zimbraReverseProxyMailEnabled eq "FALSE") && ($found_http_proxy_true < 1 && $global_zimbraReverseProxyHttpEnabled eq "FALSE")) || (($found_http_proxy_false eq $total_servers) || ($found_mail_proxy_false eq $total_servers))){
-                print STDERR
-"Error: One or more proxies do not have zimbraReverseProxyMailEnabled and zimbraReverseProxyHttpEnabled set to TRUE. \nIt is required to have at least one proxy with zimbraReverseProxyMailEnabled and at least one proxy with zimbraReverseProxyHttpEnabled for ZCS 8.7+\n";
-                exit 3;
-		}
 }
 
