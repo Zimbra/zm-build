@@ -2104,7 +2104,9 @@ configurePackageServer() {
     fi
     echo $PLATFORM | egrep -q "UBUNTU|DEBIAN"
     if [ $? = 0 ]; then
-      if [ $PLATFORM = "UBUNTU14_64" ]; then
+      if [ $PLATFORM = "UBUNTU16_64" ]; then
+        repo="xenial"
+      elif [ $PLATFORM = "UBUNTU14_64" ]; then
         repo="trusty"
       elif [ $PLATFORM = "UBUNTU12_64" ]; then
         repo="precise"
