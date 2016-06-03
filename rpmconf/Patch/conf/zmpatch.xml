@@ -198,6 +198,13 @@
   <bug>102892</bug>
   <bug>102850</bug>
   <bug>103122</bug>
+  <bug>102029</bug>
+  <bug>102804</bug>
+  <bug>103775</bug>
+  <bug>104012</bug>
+  <bug>104107</bug>
+  <bug>104325</bug>
+  <bug>104798</bug>
   <package name="zimbra-archiving">
     <zimlet deploy="true" flushcache="true" type="network">
       <source>ZimbraBuild/archivingbuild/opt/zimbra/zimlets-network/com_zimbra_xmbxsearch.zip</source>
