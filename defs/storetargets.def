@@ -354,6 +354,7 @@ $(SAMBA_EXT_DIR)/$(ANT_BUILD_DIR)/zimlets/zimbra_samba.zip:
 
 pom.xml:
 	(cd $(BUILD_ROOT)/../; $(MAVEN) $(SKIP_TESTS) \
+		-Dmaven.repo.local=$(BUILD_ROOT)/../.m2/repository \
 		-Dzimbra.buildinfo.platform=$(BUILD_PLATFORM) \
 		-Dis-production=1 \
 		-Dzimbra.buildinfo.version=$(SOURCE_TAG) \
