@@ -155,6 +155,7 @@ my %updateFuncs = (
   "8.6.0_BETA1" => \&upgrade860BETA1,
   "8.6.0_BETA2" => \&upgrade860BETA2,
   "8.6.0_GA" => \&upgrade860GA,
+  "8.6.1_GA" => \&upgrade861GA,
   "8.7.0_BETA1" => \&upgrade870BETA1,
   "9.0.0_BETA1" => \&upgrade900BETA1,
 );
@@ -219,6 +220,7 @@ my @versionOrder = (
   "8.6.0_BETA1",
   "8.6.0_BETA2",
   "8.6.0_GA",
+  "8.6.1_GA",
   "8.7.0_BETA1",
   "9.0.0_BETA1",
 );
@@ -395,6 +397,8 @@ sub upgrade {
       main::progress("This appears to be 8.6.0_BETA2\n");
   } elsif ($startVersion eq "8.6.0_GA") {
       main::progress("This appears to be 8.6.0_GA\n");
+  } elsif ($startVersion eq "8.6.1_GA") {
+      main::progress("This appears to be 8.6.1_GA\n");
   } elsif ($startVersion eq "8.7.0_BETA1") {
       main::progress("This appears to be 8.7.0_BETA1\n");
   } elsif ($startVersion eq "9.0.0_BETA1") {
@@ -2778,6 +2782,12 @@ sub upgrade860GA {
   if ( -d "/opt/zimbra/zimlets-deployed/com_zimbra_linkedinimage/") {
     main::runAsZimbra("/opt/zimbra/bin/zmzimletctl -l undeploy com_zimbra_linkedinimage");
   }
+  return 0;
+}
+
+sub upgrade861GA {
+  my ($startBuild, $targetVersion, $targetBuild) = (@_);
+  main::progress("Updating from 8.6.1_GA\n");
   return 0;
 }
 
