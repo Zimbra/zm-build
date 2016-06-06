@@ -20,8 +20,8 @@
  * ***** END LICENSE BLOCK *****
 -->
 <patches>
-  <patch name="8.6.0_GA" version="8.6.0_P6">
-  <desc>Patch 8.6.0_P6</desc>
+  <patch name="8.6.0_GA" version="8.6.0_P7">
+  <desc>Patch 8.6.0_P7</desc>
   <bug>85158</bug>
   <bug>96123</bug>
   <bug>96134</bug>
