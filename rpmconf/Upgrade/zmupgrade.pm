@@ -132,6 +132,7 @@ my %updateFuncs = (
   "8.7.0_BETA1" => \&upgrade870BETA1,
   "8.7.0_BETA2" => \&upgrade870BETA2,
   "8.7.0_RC1" => \&upgrade870RC1,
+  "8.7.0_RC2" => \&upgrade870RC2,
   "8.8.0_BETA1" => \&upgrade880RC1,
   "9.0.0_BETA1" => \&upgrade900BETA1,
 );
@@ -179,6 +180,7 @@ my @versionOrder = (
   "8.7.0_BETA1",
   "8.7.0_BETA2",
   "8.7.0_RC1",
+  "8.7.0_RC2",
   "8.8.0_BETA1",
   "9.0.0_BETA1",
 );
@@ -321,6 +323,8 @@ sub upgrade {
       main::progress("This appears to be 8.7.0_BETA2\n");
   } elsif ($startVersion eq "8.7.0_RC1") {
       main::progress("This appears to be 8.7.0_RC1\n");
+  } elsif ($startVersion eq "8.7.0_RC2") {
+      main::progress("This appears to be 8.7.0_RC2\n");
   } elsif ($startVersion eq "8.8.0_RC1") {
       main::progress("This appears to be 8.8.0_RC1\n");
   } elsif ($startVersion eq "9.0.0_BETA1") {
@@ -2264,6 +2268,12 @@ sub upgrade870RC1 {
     }
     $ldap->unbind;
   }
+  return 0;
+}
+
+sub upgrade870RC2{
+  my ($startBuild, $targetVersion, $targetBuild) = (@_);
+  main::progress("Updating from 8.7.0_RC2\n");
   return 0;
 }
 
