@@ -72,7 +72,6 @@ do
 				echo "You can obtain $req from:"
 				echo "http://www.oracle.com/technetwork/java/index.html"
 				echo "Make sure the downloaded version appears first in your path"
-				echo "Or use OpenJDK"
 				exit 1;
 			fi
 		fi
