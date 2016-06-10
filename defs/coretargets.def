@@ -272,6 +272,7 @@ $(CORE_DEST_DIR)/bin:
 	cp $(ZIMBRA_BIN_DIR)/zmspellctl $@
 	cp $(ZIMBRA_BIN_DIR)/zmapachectl $@
 	cp $(ZIMBRA_BIN_DIR)/zmcbpolicydctl $@
+	cp $(ZIMBRA_BIN_DIR)/zmcbpadmin $@
 	cp $@/zmprov $@/zmprov.java
 
 $(CORE_DEST_DIR)/common:
