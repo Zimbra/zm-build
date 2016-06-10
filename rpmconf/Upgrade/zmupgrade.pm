@@ -1510,7 +1510,7 @@ sub upgrade850BETA1 {
     }
     $lc_attr= $localxml->{key}->{postfix_header_checks}->{value};
     if (defined($lc_attr)) {
-      if ($lc_attr =~ /\${zimbra_home}/) {
+      if ($lc_attr =~ /\$\{zimbra_home\}/) {
         $lc_attr =~ s/\${zimbra_home}/\/opt\/zimbra/;
       }
       $lc_attr =~ s/, /,/g;
@@ -1553,7 +1553,7 @@ sub upgrade850BETA1 {
     }
     $lc_attr= $localxml->{key}->{postfix_queue_directory}->{value};
     if (defined($lc_attr)) {
-      if ($lc_attr =~ /\${zimbra_home}/) {
+      if ($lc_attr =~ /\$\{zimbra_home\}/) {
         $lc_attr =~ s/\${zimbra_home}/\/opt\/zimbra/;
       }
       main::setLdapServerConfig($hn, 'zimbraMtaQueueDirectory', "$lc_attr");
@@ -1682,7 +1682,7 @@ sub upgrade850BETA1 {
     }
     $lc_attr= $localxml->{key}->{postfix_sender_canonical_maps}->{value};
     if (defined($lc_attr)) {
-      if ($lc_attr =~ /\${zimbra_home}/) {
+      if ($lc_attr =~ /\$\{zimbra_home\}/) {
         $lc_attr =~ s/\${zimbra_home}/\/opt\/zimbra/g;
       }
       $lc_attr =~ s/, /,/g;
@@ -1723,7 +1723,7 @@ sub upgrade850BETA1 {
     }
     $lc_attr= $localxml->{key}->{postfix_transport_maps}->{value};
     if (defined($lc_attr)) {
-      if ($lc_attr =~ /\${zimbra_home}/) {
+      if ($lc_attr =~ /\$\{zimbra_home\}/) {
         $lc_attr =~ s/\${zimbra_home}/\/opt\/zimbra/g;
       }
       $lc_attr =~ s/, /,/g;
@@ -1732,7 +1732,7 @@ sub upgrade850BETA1 {
     }
     $lc_attr= $localxml->{key}->{postfix_virtual_alias_domains}->{value};
     if (defined($lc_attr)) {
-      if ($lc_attr =~ /\${zimbra_home}/) {
+      if ($lc_attr =~ /\$\{zimbra_home\}/) {
         $lc_attr =~ s/\${zimbra_home}/\/opt\/zimbra/g;
       }
       $lc_attr =~ s/, /,/g;
@@ -1741,7 +1741,7 @@ sub upgrade850BETA1 {
     }
     $lc_attr= $localxml->{key}->{postfix_virtual_alias_maps}->{value};
     if (defined($lc_attr)) {
-      if ($lc_attr =~ /\${zimbra_home}/) {
+      if ($lc_attr =~ /\$\{zimbra_home\}/) {
         $lc_attr =~ s/\${zimbra_home}/\/opt\/zimbra/g;
       }
       $lc_attr =~ s/, /,/g;
@@ -1750,7 +1750,7 @@ sub upgrade850BETA1 {
     }
     $lc_attr= $localxml->{key}->{postfix_virtual_mailbox_domains}->{value};
     if (defined($lc_attr)) {
-      if ($lc_attr =~ /\${zimbra_home}/) {
+      if ($lc_attr =~ /\$\{zimbra_home\}/) {
         $lc_attr =~ s/\${zimbra_home}/\/opt\/zimbra/g;
       }
       $lc_attr =~ s/, /,/g;
@@ -1759,7 +1759,7 @@ sub upgrade850BETA1 {
     }
     $lc_attr= $localxml->{key}->{postfix_virtual_mailbox_maps}->{value};
     if (defined($lc_attr)) {
-      if ($lc_attr =~ /\${zimbra_home}/) {
+      if ($lc_attr =~ /\$\{zimbra_home\}/) {
         $lc_attr =~ s/\${zimbra_home}/\/opt\/zimbra/g;
       }
       $lc_attr =~ s/, /,/g;
