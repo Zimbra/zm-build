@@ -1126,7 +1126,7 @@ sub setLdapDefaults {
     $config{IMAPSSLPROXYPORT} = getLdapServerValue("zimbraImapSSLProxyBindPort");
     $config{POPPROXYPORT}     = getLdapServerValue("zimbraPop3ProxyBindPort");
     $config{POPSSLPROXYPORT}  = getLdapServerValue("zimbraPop3SSLProxyBindPort");
-    $config{MAILPROXY}        = "TRUE";
+    $config{MAILPROXY}        = getLdapServerValue("zimbraReverseProxyMailEnabled");
 
     $config{MODE}             = getLdapServerValue("zimbraMailMode");
     $config{PROXYMODE}        = getLdapServerValue("zimbraReverseProxyMailMode");
@@ -1135,7 +1135,7 @@ sub setLdapDefaults {
 
     $config{HTTPPROXYPORT}    = getLdapServerValue("zimbraMailProxyPort");
     $config{HTTPSPROXYPORT}   = getLdapServerValue("zimbraMailSSLProxyPort");
-    $config{HTTPPROXY}        = "TRUE";
+    $config{HTTPPROXY}        = getLdapServerValue("zimbraReverseProxyHttpEnabled");
     $config{SMTPHOST}         = getLdapServerValue("zimbraSmtpHostname");
 
     $config{zimbraReverseProxyLookupTarget} = getLdapServerValue("zimbraReverseProxyLookupTarget")
@@ -3848,8 +3848,15 @@ sub createProxyMenu {
   $$lm{createsub} = \&createProxyMenu;
   $$lm{createarg} = $package;
 
-  my $i = 1;
+  my $i = 2;
   if (isInstalled($package)) {
+    $$lm{menuitems}{$i} = {
+      "prompt" => "Enable POP/IMAP Proxy:",
+      "var" => \$config{MAILPROXY},
+      "callback" => \&toggleTF,
+      "arg" => "MAILPROXY",
+    };
+    $i++;
     if($config{MAILPROXY} eq "TRUE") {
        if(!isEnabled("zimbra-store")) {
           $$lm{menuitems}{$i} = {
@@ -3917,6 +3924,13 @@ sub createProxyMenu {
       };
       $i++;
     }
+    $$lm{menuitems}{$i} = {
+      "prompt" => "Enable HTTP[S] Proxy:",
+      "var" => \$config{HTTPPROXY},
+      "callback" => \&toggleTF,
+      "arg" => "HTTPPROXY",
+    };
+    $i++;
     if ($config{HTTPPROXY} eq "TRUE") {
        if(!isEnabled("zimbra-store")) {
           $$lm{menuitems}{$i} = {
@@ -4190,6 +4204,22 @@ sub createStoreMenu {
         "var" => \$config{SPELLURL},
         "callback" => \&setSpellUrl,
         };
+      $i++;
+    }
+    if (!isInstalled("zimbra-proxy") && $newinstall) {
+      $$lm{menuitems}{$i} = {
+        "prompt" => "Configure for use with mail proxy:",
+        "var" => \$config{zimbraMailProxy},
+        "callback" => \&toggleTF,
+        "arg" => "zimbraMailProxy",
+      };
+      $i++;
+      $$lm{menuitems}{$i} = {
+        "prompt" => "Configure for use with web proxy:",
+        "var" => \$config{zimbraWebProxy},
+        "callback" => \&toggleTF,
+        "arg" => "zimbraWebProxy",
+      };
       $i++;
     }
     $$lm{menuitems}{$i} = {
