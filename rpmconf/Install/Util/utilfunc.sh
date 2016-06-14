@@ -555,6 +555,7 @@ checkRequiredSpace() {
   # /tmp must have 100MB
   # /opt/zimbra must have 5GB for fresh installs with zimbra-store
   # /opt/zimbra must have 500MB for upgrades
+  GOOD=yes
   echo "Checking required space for zimbra-core"
   TMPKB=`df -Pk /tmp | tail -1 | awk '{print $4}'`
   AVAIL=$(($TMPKB / 1024))
@@ -594,7 +595,7 @@ checkRequiredSpace() {
       exit 1
     else
       echo ""
-      echo "Installation will contine by request."
+      echo "Installation will continue by request."
       echo ""
     fi
   fi
