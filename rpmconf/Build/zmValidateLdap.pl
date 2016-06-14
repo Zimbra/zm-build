@@ -70,8 +70,13 @@ foreach my $master (@masters) {
       exit 1;
     }
   } else {
-    if ($ldap_starttls_supported) {
-      if ($ldapp = Net::LDAP->new($master) ) { 
+    if ($ldapp = Net::LDAP->new($master) ) { 
+      if (!defined($ldapp))
+      {
+        print "Error: No LDAP Connection\n";
+        exit 2;
+      }
+      if ($ldap_starttls_supported) {
         $mesgp = $ldapp->start_tls(
             verify => 'require',
             capath => "/opt/zimbra/conf/ca",
