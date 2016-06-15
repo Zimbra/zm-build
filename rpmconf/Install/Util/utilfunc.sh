@@ -153,7 +153,7 @@ loadConfig() {
     echo ""
     exit 1
   fi
-  perl -pi -e 's/\r//' $FILE
+  perl -pi -e 's/\r//' "$FILE"
   echo ""
   echo -n "Loading configuration data from $FILE..."
   source "$FILE"
