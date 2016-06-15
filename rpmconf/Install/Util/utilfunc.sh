@@ -145,7 +145,7 @@ EOF
 }
 
 loadConfig() {
-  FILE=$1
+  FILE="$1"
 
   if [ ! -f "$FILE" ]; then
     echo ""
@@ -153,6 +153,7 @@ loadConfig() {
     echo ""
     exit 1
   fi
+  perl -pi -e 's/\r//' $FILE
   echo ""
   echo -n "Loading configuration data from $FILE..."
   source "$FILE"
