@@ -13,15 +13,15 @@ perlcode 0 my $snmptrap="/opt/zimbra/common/bin/snmptrap $snmpargs";
 perlcode 0 my $snmpsvctrap="ZIMBRA-TRAP-MIB::zmServiceStatusTrap";
 perlcode 0 my $snmpsvcname="ZIMBRA-MIB::zmServiceName";
 perlcode 0 my $snmpsvcstatus="ZIMBRA-MIB::zmServiceStatus";
-perlcode 0 my $mailer; if ( -x "/opt/zimbra/common/sbin/sendmail") { $mailer="/opt/zimbra/common/sbin/sendmail -f $fr"; } elsif (-x "/usr/sbin/sendmail") { $mailer="/usr/sbin/sendmail -f $fr"; } else { $mailer="/usr/lib/sendmail -f $fr"; }
+perlcode 0 use Zimbra::SMTP;
 
 perlcode 0 my %statuses=('started'=>1,'stopped'=>0);
 
 perlcode 0 sub donotify {   my %args = (@_); if ($args{HOST} eq "localhost") {$args{HOST}=$hostname;}; if ($notifications{smtp}) { dosmtp(%args) if $args{SERVICE}; dodisksmtp(%args) if $args{DISK};}; if ($notifications{snmp}) {dosnmp(%args);};  }
 
-perlcode 0 sub dosmtp {   my %args = (@_);  print "SMTP notification: $args{MESSAGE}\n"; open (FOO, "|$mailer -Am -t"); print FOO "To: $pwc\nFrom: $fr\nSubject: Service $args{SERVICE} $args{STATUS} on $args{HOST}\n\n$args{MESSAGE}\n"; close FOO; }
+perlcode 0 sub dosmtp {   my %args = @_; if (my $smtp=Zimbra::SMTP->new) {unless($smtp->send(from=>$fr,to=>$pwc,subject=>"Service $args{SERVICE} args{STATUS} on $args{HOST}",message=>$args{MESSAGE})){warn "message send failed: ",$smtp->error}} else {warn "failed new Zimbra::SMTP: ",Zimbra::SMTP->error} }
 
-perlcode 0 sub dodisksmtp {   my %args = (@_);  print "SMTP notification: $args{MESSAGE}\n"; open (FOO, "|$mailer -Am -t"); print FOO "To: $pwc\nFrom: $fr\nSubject: Disk $args{DISK} at $args{UTIL}\% on $args{HOST}\n\n$args{MESSAGE}\n"; close FOO; } 
+perlcode 0 sub dodisksmtp {   my %args = (@_);  print "SMTP notification: $args{MESSAGE}\n"; if (my $smtp=Zimbra::SMTP->new) {unless($smtp->send(from=>$fr,to=>$pwc,subject=>"Disk $args{DISK} at $args{UTIL}\% on $args{HOST}",message=>$args{MESSAGE})){warn "message send failed: ",$smtp->error}}else{warn "failed new Zimbra::SMTP: ",Zimbra::SMTP->error}}
 
 perlcode 0 sub dosnmp {   my %args = (@_); print "SNMP notification: $args{MESSAGE}\n"; `$snmptrap $snmpsvctrap $snmpsvcname s $args{SERVICE} $snmpsvcstatus i $statuses{$args{STATUS}}`; }
 
