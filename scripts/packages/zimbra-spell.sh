@@ -35,12 +35,12 @@
 
 #-------------------- Build Package ---------------------------
 
-	echo -e "\tCreate build directories" >> ${buildLogFile}
+	echo -e "\tCreate package directories" >> ${buildLogFile}
 	mkdir -p ${repoDir}/packages/${currentScript}_${release}.${buildNo}.${os/_/.}_${arch}/data/opt/zimbra/data/httpd/htdocs
 	mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/data/httpd/htdocs
 	mkdir -p ${repoDir}/zm-build/${currentPackage}/DEBIAN
 
-	echo -e "\tCopy build files" >> ${buildLogFile}
+	echo -e "\tCopy package files" >> ${buildLogFile}
 	cp ${repoDir}/zm-aspell/src/php/aspell.php ${repoDir}/zm-build/${currentPackage}/opt/zimbra/data/httpd/htdocs/aspell.php
 	cat ${repoDir}/zm-build/rpmconf/Spec/Scripts/${currentScript}.post >> ${repoDir}/zm-build/${currentPackage}/DEBIAN/postinst
 	chmod 555 ${repoDir}/zm-build/${currentPackage}/DEBIAN/*
