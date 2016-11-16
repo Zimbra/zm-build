@@ -24,8 +24,6 @@
 	gitRepoURL=stash.corp.synacor.com:7999
 
 	buildsDir=/home/build/builds
-	packagesDir=`pwd`/packages
-
 	releaseArray=(JUDASPRIEST-880)
 	osArray=(UBUNTU16_64 UBUNTU14_64 UBUNTU12_64 RHEL7_64 RHEL6_64)
 	buildTypeArray=(NETWORK FOSS)
@@ -35,6 +33,3 @@
 	currentDate=`date +%d`
 	currentTime=`date +%T`
 	buildTimeStamp=`echo ${currentYear}${currentMonth}${currentDate}${currentTime} | sed "s/\://g"`
-
-
-# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #

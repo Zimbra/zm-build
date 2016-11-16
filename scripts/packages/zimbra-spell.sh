@@ -56,6 +56,3 @@
 	else
 		echo -e "\t*** ${currentPackage} package successfully created ***" >> ${buildLogFile}
 	fi
-
-
-# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #

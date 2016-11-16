@@ -22,7 +22,7 @@
 #-------------------- Configuration ---------------------------
 
 
-	. `pwd`/config.sh
+	. "$(cd "$(dirname "${BASH_SOURCE[0]}" )" && pwd)/config.sh"
 
 	if ( [ -z ${1} ] && [ -z ${2} ] && [ -z ${3} ] && [ -z ${4} ] && [ -z ${5} ] ) || ( [ -z ${1} ] || [ -z ${2} ] || [ -z ${3} ] || [ -z ${4} ] || [ -z ${5} ] ); then
 
@@ -72,8 +72,5 @@
 	for i in "${packagesArray[@]}"
 	do
 		echo -e "\n\t-> Building ${i} package..." >> ${buildLogFile}
-		bash ${packagesDir}/${i}.sh ${release} ${branch} ${buildNo} ${os} ${buildType} ${repoDir} ${arch}
+		bash "$(cd "$(dirname "${BASH_SOURCE[0]}" )" && pwd)/packages"/${i}.sh ${release} ${branch} ${buildNo} ${os} ${buildType} ${repoDir} ${arch}
 	done
-
-
-# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
