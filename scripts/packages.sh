@@ -27,8 +27,9 @@
 	if ( [ -z ${1} ] && [ -z ${2} ] && [ -z ${3} ] && [ -z ${4} ] && [ -z ${5} ] ) || ( [ -z ${1} ] || [ -z ${2} ] || [ -z ${3} ] || [ -z ${4} ] || [ -z ${5} ] ); then
 
 		echo -e "\tInvalid or insufficient arguments passed in script, it should in form of: bash <full-script-path> <release> <branch> <buildno> <os> <build-type>\n"
+
 		exit
-	
+
 	else
 
 		while getopts r:b:n:o:t: option
@@ -66,10 +67,20 @@
 
 	echo -e "Build script arguments: ${1} ${2} ${3} ${4} ${5}\n" >> ${buildLogFile}
 
-
 	echo -e "Copying git repository manually (temporarily)" >> ${buildLogFile}
 	cp -R ${gitRepoDir}/zm-build ${repoDir}
 	cp -R ${gitRepoDir}/zm-aspell ${repoDir}
+
+	echo -e "Exporting script argument values" >> ${buildLogFile}
+	export release
+	export branch
+	export buildNo
+	export os
+	export buildType
+	export repoDir
+	export arch
+	export buildTimeStamp
+	export buildLogFile
 
 
 #-------------------- Build Packages ---------------------------
@@ -78,5 +89,5 @@
 	for i in "${packagesArray[@]}"
 	do
 		echo -e "\n\t-> Building ${i} package..." >> ${buildLogFile}
-		bash "$(cd "$(dirname "${BASH_SOURCE[0]}" )" && pwd)/packages"/${i}.sh ${release} ${branch} ${buildNo} ${os} ${buildType} ${repoDir} ${arch}
+		bash "$(cd "$(dirname "${BASH_SOURCE[0]}" )" && pwd)/packages"/${i}.sh
 	done

@@ -21,32 +21,21 @@
 	currentScript=`basename $0 | cut -d "." -f 1`
 	currentPackage=`echo ${currentScript}build | cut -d "-" -f 2`
 
-	release=`echo ${1} | sed -e 's/^[ \t]*//'`
-	branch=`echo ${2} | sed -e 's/^[ \t]*//'`
-	buildNo=`echo ${3} | sed -e 's/^[ \t]*//'`
-	os=`echo ${4} | sed -e 's/^[ \t]*//'`
-	buildType=`echo ${5} | sed -e 's/^[ \t]*//'`
-	repoDir=`echo ${6} | sed -e 's/^[ \t]*//'`
-	arch=`echo ${7} | sed -e 's/^[ \t]*//'`
-
-	buildTimeStamp=`echo ${repoDir} | cut -d "/" -f 7`
-	buildLogFile=${repoDir}/logs/build.log
-
-
 #-------------------- Build Package ---------------------------
 
-	echo -e "\tCreate package directories" >> ${buildLogFile}
+	echo -e "\tCreate build directories" >> ${buildLogFile}
 	mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/data/httpd/htdocs
 	mkdir -p ${repoDir}/zm-build/${currentPackage}/DEBIAN
 
-	echo -e "\tCopy package files" >> ${buildLogFile}
+	echo -e "\tCopy build files" >> ${buildLogFile}
 	cp ${repoDir}/zm-aspell/src/php/aspell.php ${repoDir}/zm-build/${currentPackage}/opt/zimbra/data/httpd/htdocs/aspell.php
 	cat ${repoDir}/zm-build/rpmconf/Spec/Scripts/${currentScript}.post >> ${repoDir}/zm-build/${currentPackage}/DEBIAN/postinst
 	chmod 555 ${repoDir}/zm-build/${currentPackage}/DEBIAN/*
 
-	echo -e "\tCreate debian package" >> ${buildLogFile}
 	(cd ${repoDir}/zm-build/${currentPackage}; find . -type f ! -regex '.*?debian-binary.*' ! -regex '.*?DEBIAN.*' -print0 | xargs -0 md5sum | sed -e 's| \./| |' > ${repoDir}/zm-build/${currentPackage}/DEBIAN/md5sums)
 	cat ${repoDir}/zm-build/rpmconf/Spec/${currentScript}.deb | sed -e "s/@@VERSION@@/${release}.${buildNo}.${os/_/.}/" -e "s/@@branch@@/${buildTimeStamp}/" -e "s/@@ARCH@@/${arch}/" > ${repoDir}/zm-build/${currentPackage}/DEBIAN/control
+
+	echo -e "\tCreate debian package" >> ${buildLogFile}
 	(cd ${repoDir}/zm-build/${currentPackage}; dpkg -b ${repoDir}/zm-build/${currentPackage} ${repoDir}/zm-build/${arch})
 
 	if [ $? -ne 0 ]; then
