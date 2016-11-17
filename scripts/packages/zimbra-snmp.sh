@@ -25,12 +25,10 @@
 #-------------------- Build Package ---------------------------
 
 	echo -e "\tCreate package directories" >> ${buildLogFile}
-	mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra
 	mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/data/snmp/persist
 	mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/data/snmp/state
 	mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf
 	mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/common/conf
-	mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/common/share/snmp
 	mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/common/share/snmp/mibs
 	mkdir -p ${repoDir}/zm-build/${currentPackage}/DEBIAN
 
