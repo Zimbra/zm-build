@@ -16,7 +16,7 @@
 # ***** END LICENSE BLOCK *****
 
 # Script builds all required zimbra packages for the build.
-# Usage: bash .../packages.sh 8.7.1.GA JUDASPRIEST-871 1670 UBUNTU16_64 NETWORK
+# Usage: bash -x /home/zimbra/git/zm-build/scripts/packages.sh -r 8.7.1.GA -b JUDASPRIEST-871 -n 1670 -o UBUNTU16_64 -t NETWORK
 
 
 #-------------------- Configuration ---------------------------
@@ -27,15 +27,21 @@
 	if ( [ -z ${1} ] && [ -z ${2} ] && [ -z ${3} ] && [ -z ${4} ] && [ -z ${5} ] ) || ( [ -z ${1} ] || [ -z ${2} ] || [ -z ${3} ] || [ -z ${4} ] || [ -z ${5} ] ); then
 
 		echo -e "\tInvalid or insufficient arguments passed in script, it should in form of: bash <full-script-path> <release> <branch> <buildno> <os> <build-type>\n"
-
 		exit
-
+	
 	else
-		release=`echo ${1} | sed -e 's/^[ \t]*//'`
-		branch=`echo ${2} | sed -e 's/^[ \t]*//'`
-		buildNo=`echo ${3} | sed -e 's/^[ \t]*//'`
-		os=`echo ${4} | sed -e 's/^[ \t]*//'`
-		buildType=`echo ${5} | sed -e 's/^[ \t]*//'`
+
+		while getopts r:b:n:o:t: option
+		do
+			case "${option}"
+			in
+				r) release=${OPTARG};;
+				b) branch=${OPTARG};;
+				n) buildNo=${OPTARG};;
+				o) os=$OPTARG;;
+				t) buildType=$OPTARG;;
+			esac
+		done
 	fi
 
 	repoDir=${buildsDir}/${os}/${branch}/${buildTimeStamp}_${buildType}
