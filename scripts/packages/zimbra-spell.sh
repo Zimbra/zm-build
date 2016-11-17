@@ -36,7 +36,6 @@
 #-------------------- Build Package ---------------------------
 
 	echo -e "\tCreate package directories" >> ${buildLogFile}
-	mkdir -p ${repoDir}/packages/${currentScript}_${release}.${buildNo}.${os/_/.}_${arch}/data/opt/zimbra/data/httpd/htdocs
 	mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/data/httpd/htdocs
 	mkdir -p ${repoDir}/zm-build/${currentPackage}/DEBIAN
 
