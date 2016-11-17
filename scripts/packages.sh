@@ -39,8 +39,8 @@
 				r) release=${OPTARG};;
 				b) branch=${OPTARG};;
 				n) buildNo=${OPTARG};;
-				o) os=$OPTARG;;
-				t) buildType=$OPTARG;;
+				o) os=${OPTARG};;
+				t) buildType=${OPTARG};;
 			esac
 		done
 	fi
@@ -59,7 +59,7 @@
 	elif ( [[ ${os} = *"RHEL"* ]] || [[ ${os} = *"CENTOS"* ]] ); then
 		arch=x86_64
 	else
-		echo -e "\tOS doesn't match with build argument OS: ${os}\n\n\tEXIT\n" >> ${buildLogFile}
+		echo -e "\tOS doesn't match with build argument OS: ${os} OR wrong arguments passed in build script\n\n\tEXIT\n" >> ${buildLogFile}
 		exit
 	fi
 	zmBuildDir=${repoDir}/zm-build
@@ -85,7 +85,7 @@
 
 #-------------------- Build Packages ---------------------------
 
-	declare -a packagesArray=(zimbra-spell)
+	declare -a packagesArray=(zimbra-snmp zimbra-spell)
 	for i in "${packagesArray[@]}"
 	do
 		echo -e "\n\t-> Building ${i} package..." >> ${buildLogFile}
