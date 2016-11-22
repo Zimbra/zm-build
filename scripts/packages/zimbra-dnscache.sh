@@ -37,7 +37,7 @@
 	echo -e "\tCreate debian package" >> ${buildLogFile}
 	(cd ${repoDir}/zm-build/${currentPackage}; find . -type f ! -regex '.*.hg.*' ! -regex '.*?debian-binary.*' ! -regex '.*?DEBIAN.*' -print0 | xargs -0 md5sum | sed -e 's| \./| |' > ${repoDir}/zm-build/${currentPackage}/DEBIAN/md5sums)
 
-	cat ${repoDir}/zm-build/rpmconf/Spec/zimbra-dnscache.deb | sed -e "s/@@VERSION@@/${release}.${buildno}.${os/_/.}/" -e "s/@@branch@@/${buildTimeStamp}/" -e "s/@@ARCH@@/${arch}/" -e 's/^Copyright:/Copyright:/' -e '/^%post$/ r zimbra-dnscache.post' > ${repoDir}/zm-build/${currentPackage}/DEBIAN/control
+	cat ${repoDir}/zm-build/rpmconf/Spec/zimbra-dnscache.deb | sed -e "s/@@VERSION@@/${release}.${buildno}.${os/_/.}/" -e "s/@@branch@@/${buildTimeStamp}/" -e "s/@@ARCH@@/${arch}/" -e "s/^Copyright:/Copyright:/" -e "/^%post$/ r zimbra-dnscache.post" > ${repoDir}/zm-build/${currentPackage}/DEBIAN/control
 
 	cp  ${repoDir}/zm-dnscache/conf/dns/zimbra-unbound ${repoDir}/zm-build/${currentPackage}/etc/resolvconf/update.d
 	(cd ${repoDir}/zm-build/${currentPackage}; dpkg -b ${repoDir}/zm-build/${currentPackage} ${repoDir}/zm-build/amd64 )
