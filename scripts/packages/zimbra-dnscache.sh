@@ -20,6 +20,7 @@
 	currentScript=`basename $0 | cut -d "." -f 1`
 	currentPackage=`echo ${currentScript}build | cut -d "-" -f 2`
 
+
 #-------------------- Package Script ---------------------------
 
 	echo -e "\tCreate package directories" >> ${buildLogFile}
