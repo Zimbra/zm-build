@@ -72,6 +72,7 @@
 	cp -R ${gitRepoDir}/zm-aspell ${repoDir}
         cp -R ${gitRepoDir}/zm-dnscache ${repoDir}
         cp -R ${gitRepoDir}/zm-convertd-store ${repoDir}
+
 	echo -e "Exporting script argument values" >> ${buildLogFile}
 	export release
 	export branch
