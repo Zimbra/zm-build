@@ -70,7 +70,9 @@
 	echo -e "Copying git repository manually (temporarily)" >> ${buildLogFile}
 	cp -R ${gitRepoDir}/zm-build ${repoDir}
 	cp -R ${gitRepoDir}/zm-aspell ${repoDir}
-        cp -R ${gitRepoDir}/zm-dnscache ${repoDir}
+	cp -R ${gitRepoDir}/zm-dnscache ${repoDir}
+	cp -R ${gitRepoDir}/zm-postfix ${repoDir}
+	cp -R ${gitRepoDir}/zm-amavis ${repoDir}
 
 	echo -e "Exporting script argument values" >> ${buildLogFile}
 	export release
@@ -86,7 +88,7 @@
 
 #-------------------- Build Packages ---------------------------
 
-	declare -a packagesArray=(zimbra-snmp zimbra-spell zimbra-logger zimbra-dnscache)
+	declare -a packagesArray=(zimbra-snmp zimbra-spell zimbra-logger zimbra-dnscache zimbra-mta)
 	for i in "${packagesArray[@]}"
 	do
 		echo -e "\n\t-> Building ${i} package..." >> ${buildLogFile}
