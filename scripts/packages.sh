@@ -73,6 +73,8 @@
 	cp -R ${gitRepoDir}/zm-dnscache ${repoDir}
 	cp -R ${gitRepoDir}/zm-postfix ${repoDir}
 	cp -R ${gitRepoDir}/zm-amavis ${repoDir}
+        cp -R ${gitRepoDir}/zm-dnscache ${repoDir}
+        cp -R ${gitRepoDir}/zm-convertd-store ${repoDir}
 
 	echo -e "Exporting script argument values" >> ${buildLogFile}
 	export release
@@ -88,7 +90,7 @@
 
 #-------------------- Build Packages ---------------------------
 
-	declare -a packagesArray=(zimbra-snmp zimbra-spell zimbra-logger zimbra-dnscache zimbra-mta)
+	declare -a packagesArray=(zimbra-snmp zimbra-spell zimbra-logger zimbra-dnscache zimbra-apache zimbra-mta)
 	for i in "${packagesArray[@]}"
 	do
 		echo -e "\n\t-> Building ${i} package..." >> ${buildLogFile}
