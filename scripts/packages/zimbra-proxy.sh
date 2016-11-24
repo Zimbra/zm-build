@@ -24,7 +24,6 @@
 
 #-------------------- Package Script ---------------------------
 
-
 	echo -e "\tCreate package directories" >> ${buildLogFile}
 	mkdir -p ${repoDir}/zm-build/${currentPackage}/etc/sudoers.d
 	mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/nginx/includes
@@ -40,7 +39,7 @@
 	echo -e "\tCreate debian package" >> ${buildLogFile}
 	(cd ${repoDir}/zm-build/${currentPackage}; find . -type f ! -regex ".*?debian-binary.*" ! -regex ".*?DEBIAN.*" -print0 | xargs -0 md5sum | sed -e "s| \./| |" > ${repoDir}/zm-build/${currentPackage}/DEBIAN/md5sums)
 
-	cat ${repoDir}/zm-build/rpmconf/Spec/zimbra-proxy.deb | sed -e "s/@@VERSION@@/${release}.${buildno}.${os/_/.}/" -e  "s/@@branch@@/${buildTimeStamp}/" -e "s/@@ARCH@@/${arch}/" > ${repoDir}/zm-build/${currentPackage}/DEBIAN/control
+	cat ${repoDir}/zm-build/rpmconf/Spec/zimbra-proxy.deb | sed -e "s/@@VERSION@@/${release}.${buildno}.${os/_/.}/" -e "s/@@branch@@/${buildTimeStamp}/" -e "s/@@ARCH@@/${arch}/" > ${repoDir}/zm-build/${currentPackage}/DEBIAN/control
 
 	(cd ${repoDir}/zm-build/${currentPackage}; dpkg -b ${repoDir}/zm-build/${currentPackage} ${repoDir}/zm-build/${arch} )	
 
