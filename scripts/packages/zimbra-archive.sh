@@ -21,8 +21,8 @@
 currentScript=`basename $0 | cut -d "." -f 1`
 currentPackage=`echo ${currentScript}build | cut -d "-" -f 2`
 jarDir=${repoDir}/zm-archive-store/build/dist/
-zimletDir=${repoDir}/zm-archive-admin-zimlet/build/dist/
-zimletDir1=${repoDir}/zm-xmbxsearch-zimlet/build/dist/
+archiveZimletDir=${repoDir}/zm-archive-admin-zimlet/build/dist/
+xmbxZimletDir=${repoDir}/zm-xmbxsearch-zimlet/build/dist/
 
 #-------------------- Build Package ---------------------------
 echo -e "\tCreate build directories" >> ${buildLogFile}
@@ -32,8 +32,8 @@ mkdir -p ${repoDir}/zm-build/${currentPackage}/DEBIAN
 
 echo -e "\tCopy build files" >> ${buildLogFile}
 cp ${jarDir}/com_zimbra_xmbxsearch.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/com_zimbra_xmbxsearch/com_zimbra_xmbxsearch.jar
-cp ${zimletDir}/com_zimbra_archive.zip ${repoDir}/zm-build/${currentPackage}/opt/zimbra/zimlet-network/com_zimbra_archive.zip
-cp ${zimletDir1}/com_zimbra_xmbxsearch.zip ${repoDir}/zm-build/${currentPackage}/opt/zimbra/zimlet-network/com_zimbra_xmbxsearch.zip
+cp ${archiveZimletDir}/com_zimbra_archive.zip ${repoDir}/zm-build/${currentPackage}/opt/zimbra/zimlet-network/com_zimbra_archive.zip
+cp ${xmbxZimletDir}/com_zimbra_xmbxsearch.zip ${repoDir}/zm-build/${currentPackage}/opt/zimbra/zimlet-network/com_zimbra_xmbxsearch.zip
 
 cat ${repoDir}/zm-build/rpmconf/Spec/Scripts/${currentScript}.post >> ${repoDir}/zm-build/${currentPackage}/DEBIAN/postinst
 chmod 555 ${repoDir}/zm-build/${currentPackage}/DEBIAN/*
