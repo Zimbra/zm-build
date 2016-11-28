@@ -26,9 +26,10 @@ mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/common/etc/openldap/
 mkdir -p ${repoDir}/zm-build/${currentPackage}/etc/sudoers.d
 mkdir -p ${repoDir}/zm-build/${currentPackage}/DEBIAN
 
+
 echo -e "\tCopy build files" >> ${buildLogFile}
 cp -rf ${ldapSchemaDir}/*  ${repoDir}/zm-build/${currentPackage}/opt/zimbra/common/etc/openldap/
-cp ${repoDir}/rpmconf/Env/sudoers.d/02_zimbra-ldap ${repoDir}/zm-build/${currentPackage}/etc/sudoers.d/
+cp ${repoDir}/zm-build/rpmconf/Env/sudoers.d/02_zimbra-ldap ${repoDir}/zm-build/${currentPackage}/etc/sudoers.d/
 
 cat ${repoDir}/zm-build/rpmconf/Spec/Scripts/${currentScript}.post >> ${repoDir}/zm-build/${currentPackage}/DEBIAN/postinst
 chmod 555 ${repoDir}/zm-build/${currentPackage}/DEBIAN/*
@@ -41,7 +42,7 @@ echo -e "\tCreate debian package" >> ${buildLogFile}
 (cd ${repoDir}/zm-build/${currentPackage}; dpkg -b ${repoDir}/zm-build/${currentPackage} ${repoDir}/zm-build/${arch})
 
 if [ $? -ne 0 ]; then
-	echo -e "\t### ${currentPackage} package building failed ###" >> ${buildLogFile}
+        echo -e "\t### ${currentPackage} package building failed ###" >> ${buildLogFile}
 else
-	echo -e "\t*** ${currentPackage} package successfully created ***" >> ${buildLogFile}
+        echo -e "\t*** ${currentPackage} package successfully created ***" >> ${buildLogFile}
 fi
