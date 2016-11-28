@@ -20,7 +20,7 @@
 
 currentScript=`basename $0 | cut -d "." -f 1`
 currentPackage=`echo ${currentScript}build | cut -d "-" -f 2`
-jarDir=${repoDir}/zm-archive-store/build/dist/
+jarDir=${repoDir}/zm-xmbxsearch-store/build/dist/
 archiveZimletDir=${repoDir}/zm-archive-admin-zimlet/build/dist/
 xmbxZimletDir=${repoDir}/zm-xmbxsearch-zimlet/build/dist/
 
@@ -31,22 +31,23 @@ mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/zimlets-network
 mkdir -p ${repoDir}/zm-build/${currentPackage}/DEBIAN
 
 echo -e "\tCopy build files" >> ${buildLogFile}
-cp ${jarDir}/com_zimbra_xmbxsearch.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/com_zimbra_xmbxsearch/com_zimbra_xmbxsearch.jar
-cp ${archiveZimletDir}/com_zimbra_archive.zip ${repoDir}/zm-build/${currentPackage}/opt/zimbra/zimlet-network/com_zimbra_archive.zip
-cp ${xmbxZimletDir}/com_zimbra_xmbxsearch.zip ${repoDir}/zm-build/${currentPackage}/opt/zimbra/zimlet-network/com_zimbra_xmbxsearch.zip
+cp ${jarDir}/zm-xmbxsearch-store.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/com_zimbra_xmbxsearch/com_zimbra_xmbxsearch.jar
+cp ${archiveZimletDir}/com_zimbra_archive.zip ${repoDir}/zm-build/${currentPackage}/opt/zimbra/zimlets-network/com_zimbra_archive.zip
+cp ${xmbxZimletDir}/com_zimbra_xmbxsearch.zip ${repoDir}/zm-build/${currentPackage}/opt/zimbra/zimlets-network/com_zimbra_xmbxsearch.zip
 
-cat ${repoDir}/zm-build/rpmconf/Spec/Scripts/${currentScript}.post >> ${repoDir}/zm-build/${currentPackage}/DEBIAN/postinst
+cat ${repoDir}/zm-network-build/rpmconf/Spec/Scripts/${currentScript}.post >> ${repoDir}/zm-build/${currentPackage}/DEBIAN/postinst
 chmod 555 ${repoDir}/zm-build/${currentPackage}/DEBIAN/*
 
 (cd ${repoDir}/zm-build/${currentPackage}; find . -type f ! -regex '.*?debian-binary.*' ! -regex '.*?DEBIAN.*' -print0 | xargs -0 md5sum | sed -e 's| \./| |' > ${repoDir}/zm-build/${currentPackage}/DEBIAN/md5sums)
 
-cat ${repoDir}/zm-build/rpmconf/Spec/${currentScript}.deb | sed -e "s/@@VERSION@@/${release}.${buildNo}.${os/_/.}/" -e "s/@@branch@@/${buildTimeStamp}/" -e "s/@@ARCH@@/${arch}/" > ${repoDir}/zm-build/${currentPackage}/DEBIAN/control
+cat ${repoDir}/zm-network-build/rpmconf/Spec/${currentScript}.deb | sed -e "s/@@VERSION@@/${release}.${buildNo}.${os/_/.}/" -e "s/@@branch@@/${buildTimeStamp}/" -e "s/@@ARCH@@/${arch}/" > ${repoDir}/zm-build/${currentPackage}/DEBIAN/control
 
 echo -e "\tCreate debian package" >> ${buildLogFile}
 (cd ${repoDir}/zm-build/${currentPackage}; dpkg -b ${repoDir}/zm-build/${currentPackage} ${repoDir}/zm-build/${arch})
 
 if [ $? -ne 0 ]; then
-	echo -e "\t### ${currentPackage} package building failed ###" >> ${buildLogFile}
+        echo -e "\t### ${currentPackage} package building failed ###" >> ${buildLogFile}
 else
-	echo -e "\t*** ${currentPackage} package successfully created ***" >> ${buildLogFile}
+        echo -e "\t*** ${currentPackage} package successfully created ***" >> ${buildLogFile}
 fi
+
