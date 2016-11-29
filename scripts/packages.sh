@@ -32,7 +32,7 @@
 
 	else
 
-		while getopts r:b:n:o:t:ts: option
+		while getopts r:b:n:o:t:s: option
 		do
 			case "${option}"
 			in
@@ -41,7 +41,7 @@
 				n) buildNo=${OPTARG};;
 				o) os=${OPTARG};;
 				t) buildType=${OPTARG};;
-				ts) buildTimeStamp=${OPTARG};;
+				s) buildTimeStamp=${OPTARG};;
 			esac
 		done
 	fi
