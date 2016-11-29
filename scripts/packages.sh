@@ -16,7 +16,7 @@
 # ***** END LICENSE BLOCK *****
 
 # Script builds all required zimbra packages for the build.
-# Usage: bash -x /home/zimbra/git/zm-build/scripts/packages.sh -r 8.7.1.GA -b JUDASPRIEST-871 -n 1670 -o UBUNTU16_64 -t NETWORK -ts 20161129140015
+# Usage: bash -x /home/zimbra/git/zm-build/scripts/packages.sh -r 8.7.1.GA -b JUDASPRIEST-871 -n 1670 -o UBUNTU16_64 -t NETWORK -s 20161129140015
 
 
 #-------------------- Configuration ---------------------------
