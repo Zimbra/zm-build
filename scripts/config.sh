@@ -27,9 +27,3 @@
 	releaseArray=(JUDASPRIEST-880)
 	osArray=(UBUNTU16_64 UBUNTU14_64 UBUNTU12_64 RHEL7_64 RHEL6_64)
 	buildTypeArray=(NETWORK FOSS)
-
-	currentYear=`date +%Y`
-	currentMonth=`date +%m`
-	currentDate=`date +%d`
-	currentTime=`date +%T`
-	buildTimeStamp=`echo ${currentYear}${currentMonth}${currentDate}${currentTime} | sed "s/\://g"`
