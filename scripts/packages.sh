@@ -66,7 +66,7 @@
 	zmBuildDir=${repoDir}/zm-build
 	mkdir -p ${zmBuildDir}/${arch}
 
-	echo -e "Build script arguments: ${1} ${2} ${3} ${4} ${5}\n" >> ${buildLogFile}
+	echo -e "Build script arguments: ${1} ${2} ${3} ${4} ${5} ${6}\n" >> ${buildLogFile}
 
 	echo -e "Copying git repository manually (temporarily)" >> ${buildLogFile}
 	cp -R ${gitRepoDir}/zm-build ${repoDir}
@@ -91,7 +91,7 @@
 
 #-------------------- Build Packages ---------------------------
 
-	declare -a packagesArray=(zimbra-snmp zimbra-spell zimbra-logger zimbra-dnscache zimbra-apache zimbra-mta zimbra-proxy)
+	declare -a packagesArray=(zimbra-snmp zimbra-spell zimbra-logger zimbra-dnscache zimbra-apache zimbra-mta zimbra-proxy zimbra-archiving)
 	for i in "${packagesArray[@]}"
 	do
 		echo -e "\n\t-> Building ${i} package..." >> ${buildLogFile}
