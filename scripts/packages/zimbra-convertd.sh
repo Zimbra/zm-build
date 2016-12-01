@@ -42,6 +42,9 @@
 	wget http://${zimbraThirdPartyServer}/ZimbraThirdParty/build-essentials/keyview/libkeyview.so
 	wget http://${zimbraThirdPartyServer}/ZimbraThirdParty/build-essentials/keyview/libmod_convert.so
 
+	cd ${repoDir}/zm-build/${currentPackage}/opt/zimbra/convertd/bin
+	wget http://${zimbraThirdPartyServer}/ZimbraThirdParty/build-essentials/keyview/converter
+
 	echo -e "\tCopy package files" >> ${buildLogFile}
 	chmod -R 755 ${repoDir}/zm-build/${currentPackage}/opt/zimbra/keyview-${keyviewVersion}/FilterSDK/bin/
 	chmod -R 755 ${repoDir}/zm-build/${currentPackage}/opt/zimbra/keyview-${keyviewVersion}/ExportSDK/bin/
@@ -50,7 +53,6 @@
 	chmod -R u+w ${repoDir}/zm-build/${currentPackage}/opt/zimbra/keyview-${keyviewVersion}
 	rm -rf ${repoDir}/zm-build/${currentPackage}/opt/zimbra/keyview-${keyviewVersion}/docs
 	rm -rf ${repoDir}/zm-build/${currentPackage}/opt/zimbra/keyview-${keyviewVersion}/include
-	cp -f ${repoDir}/zm-convertd-native/src/c/converter ${repoDir}/zm-build/${currentPackage}/opt/zimbra/convertd/bin/
 	cp -f ${zimbraMimehandlersLdif} ${repoDir}/zm-build/${currentPackage}/opt/zimbra/convertd/conf/ldap/
 	cp -f ${repoDir}/zm-convertd-native/conf/ldap/zimbra_mimehandlers.ldif ${repoDir}/zm-build/${currentPackage}/opt/zimbra/convertd/conf/ldap/convertd_mimehandlers.ldif
 	cp -f ${repoDir}/zm-convertd-native/conf/httpd.conf.production ${repoDir}/zm-build/${currentPackage}/opt/zimbra/convertd/conf/httpd.conf
