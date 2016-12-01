@@ -74,8 +74,12 @@
 	cp -R ${gitRepoDir}/zm-postfix ${repoDir}
 	cp -R ${gitRepoDir}/zm-amavis ${repoDir}
 	cp -R ${gitRepoDir}/zm-dnscache ${repoDir}
+	cp -R ${gitRepoDir}/zm-network-build ${repoDir}
+	cp -R ${gitRepoDir}/zm-convertd-native ${repoDir}
 	cp -R ${gitRepoDir}/zm-convertd-store ${repoDir}
 	cp -R ${gitRepoDir}/zm-nginx-conf ${repoDir}
+	cp -R ${gitRepoDir}/zm-ldap-utilities ${repoDir}
+	cp -R ${gitRepoDir}/zm-convertd-conf ${repoDir}
 
 	echo -e "Exporting script argument values" >> ${buildLogFile}
 	export release
@@ -87,11 +91,12 @@
 	export arch
 	export buildTimeStamp
 	export buildLogFile
+	export zimbraThirdPartyServer
 
 
 #-------------------- Build Packages ---------------------------
 
-	declare -a packagesArray=(zimbra-snmp zimbra-spell zimbra-logger zimbra-dnscache zimbra-apache zimbra-mta zimbra-proxy zimbra-archiving)
+	declare -a packagesArray=(zimbra-snmp zimbra-spell zimbra-logger zimbra-dnscache zimbra-apache zimbra-mta zimbra-proxy zimbra-archiving zimbra-convertd)
 	for i in "${packagesArray[@]}"
 	do
 		echo -e "\n\t-> Building ${i} package..." >> ${buildLogFile}

@@ -22,6 +22,7 @@
 
 	gitRepoDir=/home/zimbra/git
 	gitRepoURL=stash.corp.synacor.com:7999
+	zimbraThirdPartyServer=zdev-vm008.eng.zimbra.com
 
 	buildsDir=/home/build/builds
 	releaseArray=(JUDASPRIEST-880)
