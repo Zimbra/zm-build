@@ -52,7 +52,7 @@
 	rm -rf ${repoDir}/zm-build/${currentPackage}/opt/zimbra/keyview-${keyviewVersion}/include
 	cp -f ${repoDir}/zm-convertd-native/src/c/converter ${repoDir}/zm-build/${currentPackage}/opt/zimbra/convertd/bin/
 	cp -f ${zimbraMimehandlersLdif} ${repoDir}/zm-build/${currentPackage}/opt/zimbra/convertd/conf/ldap/
-	cp -f ${repoDir}/zm-convertd-conf/conf/ldap/zimbra_mimehandlers.ldif ${repoDir}/zm-build/${currentPackage}/opt/zimbra/convertd/conf/ldap/convertd_mimehandlers.ldif
+	cp -f ${repoDir}/zm-convertd-native/conf/ldap/zimbra_mimehandlers.ldif ${repoDir}/zm-build/${currentPackage}/opt/zimbra/convertd/conf/ldap/convertd_mimehandlers.ldif
 	cp -f ${repoDir}/zm-convertd-native/conf/httpd.conf.production ${repoDir}/zm-build/${currentPackage}/opt/zimbra/convertd/conf/httpd.conf
 	cp ${repoDir}/zm-network-build/rpmconf/Spec/Scripts/zimbra-convertd.pre ${repoDir}/zm-build/${currentPackage}/DEBIAN/preinst
 	cat ${repoDir}/zm-network-build/rpmconf/Spec/Scripts/zimbra-convertd.post >> ${repoDir}/zm-build/${currentPackage}/DEBIAN/postinst
