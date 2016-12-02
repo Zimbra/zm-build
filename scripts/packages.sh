@@ -70,6 +70,8 @@
 
 	echo -e "Copying git repository manually (temporarily)" >> ${buildLogFile}
 	cp -R ${gitRepoDir}/zm-build ${repoDir}
+	cp -R ${gitRepoDir}/zm-core-utils ${repoDir}
+	cp -R ${gitRepoDir}/zm-licenses ${repoDir}
 	cp -R ${gitRepoDir}/zm-aspell ${repoDir}
 	cp -R ${gitRepoDir}/zm-postfix ${repoDir}
 	cp -R ${gitRepoDir}/zm-amavis ${repoDir}
@@ -96,9 +98,19 @@
 
 #-------------------- Build Packages ---------------------------
 
-	declare -a packagesArray=(zimbra-snmp zimbra-spell zimbra-logger zimbra-dnscache zimbra-apache zimbra-mta zimbra-proxy zimbra-archiving zimbra-convertd)
+	declare -a packagesArray=(zimbra-snmp zimbra-spell zimbra-logger zimbra-dnscache zimbra-apache zimbra-mta zimbra-proxy zimbra-archiving zimbra-convertd zimbra-store)
 	for i in "${packagesArray[@]}"
 	do
 		echo -e "\n\t-> Building ${i} package..." >> ${buildLogFile}
 		bash "$(cd "$(dirname "${BASH_SOURCE[0]}" )" && pwd)/packages"/${i}.sh
 	done
+
+
+#-------------------- Create Build ---------------------------
+
+	echo -e "Create bin folder\n" >> ${buildLogFile}
+	mkdir -p ${zmBuildDir}/bin
+	cp ${repoDir}/zm-build/rpmconf/Build/*.pl ${zmBuildDir}/bin
+	cp ${repoDir}/zm-build/rpmconf/Build/get_plat_tag.sh ${zmBuildDir}/bin
+	cp ${repoDir}/zm-network-build/rpmconf/Util/checkValidBackup ${zmBuildDir}/bin
+	cp ${repoDir}/zm-core-utils/src/libexec/zmdbintegrityreport ${zmBuildDir}/bin
