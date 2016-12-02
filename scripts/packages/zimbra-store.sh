@@ -27,18 +27,24 @@
 	echo -e "\tCreate package directories" >> ${buildLogFile}
 	mkdir -p ${repoDir}/zm-build/${currentPackage}/etc/sudoers.d
 	mkdir -p ${repoDir}/zm-build/${currentPackage}/DEBIAN
+        mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin
 
 	echo -e "\tCopy package files" >> ${buildLogFile}
 
-	echo -e "\t\tCopy etc files" >> ${buildLogFile}
+	echo -e "\tCopy etc files" >> ${buildLogFile}
 	cp ${repoDir}/zm-build/rpmconf/Env/sudoers.d/02_${currentScript} ${repoDir}/zm-build/${currentPackage}/etc/sudoers.d/02_${currentScript}
 	cat ${repoDir}/zm-build/rpmconf/Spec/Scripts/${currentScript}.post >> ${repoDir}/zm-build/${currentPackage}/DEBIAN/postinst
 	chmod 555 ${repoDir}/zm-build/${currentPackage}/DEBIAN/*
 
-	echo -e "\tCopy bin files of /op/zimbra/" >> ${buildLogFile}
+	echo -e "\tCopy bin files of /opt/zimbra/" >> ${buildLogFile}
+	cp -f ${repoDir}/zm-hsm/src/bin/zmhsm ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmhsm
+	cp -f ${repoDir}/zm-archive-utils/src/bin/zmarchiveconfig ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmarchiveconfig
+	cp -f ${repoDir}/zm-archive-utils/src/bin/zmarchivesearch ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmarchivesearch
+	cp -f ${repoDir}/zm-sync-tools/src/bin/zmsyncreverseproxy ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmsyncreverseproxy
+	cp -f ${repoDir}/zm-sync-store/src/bin/zmdevicesstats ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmdevicesstats
+	cp -f ${repoDir}/zm-sync-store/src/bin/zmgdcutil ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmgdcutil
 
-
-	echo -e "\tCopy conf files of /op/zimbra/" >> ${buildLogFile}
+	echo -e "\tCopy conf files of /opt/zimbra/" >> ${buildLogFile}
 
 
 	echo -e "\tCopy extensions-extra files of /op/zimbra/" >> ${buildLogFile}
