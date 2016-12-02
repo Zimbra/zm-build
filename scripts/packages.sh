@@ -82,6 +82,10 @@
 	cp -R ${gitRepoDir}/zm-nginx-conf ${repoDir}
 	cp -R ${gitRepoDir}/zm-ldap-utilities ${repoDir}
 	cp -R ${gitRepoDir}/zm-convertd-conf ${repoDir}
+        cp -R ${gitRepoDir}/zm-hsm ${repoDir}
+        cp -R ${gitRepoDir}/zm-archive-utils ${repoDir}
+        cp -R ${gitRepoDir}/zm-sync-store ${repoDir}
+        cp -R ${gitRepoDir}/zm-sync-tools ${repoDir}
 
 	echo -e "Exporting script argument values" >> ${buildLogFile}
 	export release
