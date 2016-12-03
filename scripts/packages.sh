@@ -63,8 +63,7 @@
 		echo -e "\tOS doesn't match with build argument OS: ${os} OR wrong arguments passed in build script\n\n\tEXIT\n" >> ${buildLogFile}
 		exit
 	fi
-	zmBuildDir=${repoDir}/zm-build
-	mkdir -p ${zmBuildDir}/${arch}
+	mkdir -p ${repoDir}/zm-build/${arch}
 
 	echo -e "Build script arguments: ${1} ${2} ${3} ${4} ${5} ${6}\n" >> ${buildLogFile}
 
@@ -108,13 +107,3 @@
 		echo -e "\n\t-> Building ${i} package..." >> ${buildLogFile}
 		bash "$(cd "$(dirname "${BASH_SOURCE[0]}" )" && pwd)/packages"/${i}.sh
 	done
-
-
-#-------------------- Create Build ---------------------------
-
-	echo -e "Create bin folder\n" >> ${buildLogFile}
-	mkdir -p ${zmBuildDir}/bin
-	cp ${repoDir}/zm-build/rpmconf/Build/*.pl ${zmBuildDir}/bin
-	cp ${repoDir}/zm-build/rpmconf/Build/get_plat_tag.sh ${zmBuildDir}/bin
-	cp ${repoDir}/zm-network-build/rpmconf/Util/checkValidBackup ${zmBuildDir}/bin
-	cp ${repoDir}/zm-core-utils/src/libexec/zmdbintegrityreport ${zmBuildDir}/bin
