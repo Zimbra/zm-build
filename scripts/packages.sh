@@ -107,6 +107,3 @@
 		echo -e "\n\t-> Building ${i} package..." >> ${buildLogFile}
 		bash "$(cd "$(dirname "${BASH_SOURCE[0]}" )" && pwd)/packages"/${i}.sh
 	done
-
-	# Change owner to jenkins
-	chown -R jenkins:jenkins ${repoDir}
