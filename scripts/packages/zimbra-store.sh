@@ -51,7 +51,8 @@
 
 
 	echo -e "\tCopy extensions-network-extra files of /op/zimbra/" >> ${buildLogFile}
-
+	mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/extensions-network-extra
+        cp -rf ${repoDir}/zm-saml-consumer-store/build/dist/saml ${repoDir}/zm-build/${currentPackage}/opt/zimbra/extensions-network-extra/
 
 	echo -e "\tCopy jetty-distribution-9.3.5.v20151012 files of /op/zimbra/" >> ${buildLogFile}
 
