@@ -27,7 +27,7 @@
 	echo -e "\tCreate package directories" >> ${buildLogFile}
 	mkdir -p ${repoDir}/zm-build/${currentPackage}/etc/sudoers.d
 	mkdir -p ${repoDir}/zm-build/${currentPackage}/DEBIAN
-        mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin
+    mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin
 
 	echo -e "\tCopy package files" >> ${buildLogFile}
 
@@ -48,6 +48,8 @@
 
 
 	echo -e "\tCopy extensions-extra files of /op/zimbra/" >> ${buildLogFile}
+	mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/extensions-extra/openidconsumer
+	cp -f ${repoDir}/zm-openid-consumer-store/build/dist ${repoDir}/zm-build/${currentPackage}/opt/zimbra/extensions-extra/openidconsumer
 
 
 	echo -e "\tCopy extensions-network-extra files of /op/zimbra/" >> ${buildLogFile}
@@ -57,25 +59,29 @@
 	echo -e "\tCopy jetty-distribution-9.3.5.v20151012 files of /op/zimbra/" >> ${buildLogFile}
 
 
-	echo -e "\tCopy lib files of /op/zimbra/" >> ${buildLogFile}
+	echo -e "\tCopy lib files of /opt/zimbra/" >> ${buildLogFile}
 
-	echo -e "\t\tCopy ext files of /op/zimbra/lib/" >> ${buildLogFile}
+	echo -e "\t\tCopy ext files of /opt/zimbra/lib/" >> ${buildLogFile}
+	mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/backup
+	mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/zimbra-archive
+    cp -rf ${repoDir}/zm-backup-store/build/dist ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/backup
+    cp -rf ${repoDir}/zm-archive-store/build/dist ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/zimbra-archive
 
-	echo -e "\t\tCopy ext-common files of /op/zimbra/lib/" >> ${buildLogFile}
+	echo -e "\t\tCopy ext-common files of /opt/zimbra/lib/" >> ${buildLogFile}
 
-	echo -e "\t\tCopy jars files of /op/zimbra/lib/" >> ${buildLogFile}
-
-
-	echo -e "\tCopy libexec files of /op/zimbra/" >> ${buildLogFile}
-
-
-	echo -e "\tCopy log files of /op/zimbra/" >> ${buildLogFile}
+	echo -e "\t\tCopy jars files of /opt/zimbra/lib/" >> ${buildLogFile}
 
 
-	echo -e "\tCopy zimlets files of /op/zimbra/" >> ${buildLogFile}
+	echo -e "\tCopy libexec files of /opt/zimbra/" >> ${buildLogFile}
 
 
-	echo -e "\tCopy zimlets-network files of /op/zimbra/" >> ${buildLogFile}
+	echo -e "\tCopy log files of /opt/zimbra/" >> ${buildLogFile}
+
+
+	echo -e "\tCopy zimlets files of /opt/zimbra/" >> ${buildLogFile}
+
+
+	echo -e "\tCopy zimlets-network files of /opt/zimbra/" >> ${buildLogFile}
 
 
 	echo -e "\tCreate debian package" >> ${buildLogFile}
