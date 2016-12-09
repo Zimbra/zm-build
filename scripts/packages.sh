@@ -88,6 +88,7 @@
         cp -R ${gitRepoDir}/zm-store-conf ${repoDir}
         cp -R ${gitRepoDir}/zm-web-client ${repoDir}
         cp -R ${gitRepoDir}/zm-windows-comp ${repoDir}
+        cp -R ${gitRepoDir}/zm-ews-store ${repoDir}
 
 	echo -e "Exporting script argument values" >> ${buildLogFile}
 	export release
