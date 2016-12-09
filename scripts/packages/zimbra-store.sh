@@ -27,7 +27,8 @@
 	echo -e "\tCreate package directories" >> ${buildLogFile}
 	mkdir -p ${repoDir}/zm-build/${currentPackage}/etc/sudoers.d
 	mkdir -p ${repoDir}/zm-build/${currentPackage}/DEBIAN
-    mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin
+	mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin
+	mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/templates
 
 	echo -e "\tCopy package files" >> ${buildLogFile}
 
@@ -45,7 +46,15 @@
 	cp -f ${repoDir}/zm-sync-store/src/bin/zmgdcutil ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmgdcutil
 
 	echo -e "\tCopy conf files of /opt/zimbra/" >> ${buildLogFile}
-
+	cp -f ${repoDir}/zm-store-conf/conf/globs2 ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf
+	cp -f ${repoDir}/zm-store-conf/conf/magic ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf
+	cp -f ${repoDir}/zm-store-conf/conf/magic.zimbra ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf
+	cp -f ${repoDir}/zm-store-conf/conf/globs2.zimbra ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf
+	cp -f ${repoDir}/zm-store-conf/conf/spnego_java_options.in ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf
+	cp -f ${repoDir}/zm-store-conf/conf/contacts/zimbra-contact-fields.xml ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/zimbra-contact-fields.xml
+## On hold as location/repo not present/decided
+	#cp -f ${repoDir}/zm-build/../ZimbraMigrationTools/zmztozmig.conf ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/zmztozmig.conf
+	cp -fr ${repoDir}/zm-web-client/WebRoot/templates/* ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/templates
 
 	echo -e "\tCopy extensions-extra files of /op/zimbra/" >> ${buildLogFile}
 	mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/extensions-extra/openidconsumer
