@@ -85,6 +85,9 @@
         cp -R ${gitRepoDir}/zm-archive-utils ${repoDir}
         cp -R ${gitRepoDir}/zm-sync-store ${repoDir}
         cp -R ${gitRepoDir}/zm-sync-tools ${repoDir}
+        cp -R ${gitRepoDir}/zm-store-conf ${repoDir}
+        cp -R ${gitRepoDir}/zm-web-client ${repoDir}
+        cp -R ${gitRepoDir}/zm-windows-comp ${repoDir}
 
 	echo -e "Exporting script argument values" >> ${buildLogFile}
 	export release
