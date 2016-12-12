@@ -15,29 +15,32 @@
 # If not, see <https://www.gnu.org/licenses/>.
 # ***** END LICENSE BLOCK *****
 
+# Shell script to create zimbra logger package
+
 
 #-------------------- Configuration ---------------------------
 
-        currentScript=`basename $0 | cut -d "." -f 1`
-        currentPackage=`echo ${currentScript}build | cut -d "-" -f 2`
+    currentScript=`basename $0 | cut -d "." -f 1`                          # zimbra-logger
+    currentPackage=`echo ${currentScript}build | cut -d "-" -f 2` # loggerbuild
 
 
 #-------------------- Build Package ---------------------------
 
-	echo -e "\tCreate build directories..." >> ${buildLogFile}
-	mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/logger/db/data
-	mkdir -p ${repoDir}/zm-build/${currentPackage}/DEBIAN
+    echo -e "\tCreate package directories..." >> ${buildLogFile}
+    mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/logger/db/data
+    mkdir -p ${repoDir}/zm-build/${currentPackage}/DEBIAN
 
-	echo -e "\tCopy build files..." >> ${buildLogFile}
-	cat ${repoDir}/zm-build/rpmconf/Spec/Scripts/zimbra-logger.post >> ${repoDir}/zm-build/${currentPackage}/DEBIAN/postinst
-	chmod 555 ${repoDir}/zm-build/${currentPackage}/DEBIAN/*
-	cat ${repoDir}/zm-build/rpmconf/Spec/zimbra-logger.deb | sed -e "s/@@VERSION@@/${release}.${buildNo}.${os/_/.}/" -e "s/@@branch@@/${buildTimeStamp}/" -e "s/@@ARCH@@/${arch}/" > ${repoDir}/zm-build/${currentPackage}/DEBIAN/control
+    echo -e "\tCopy package files..." >> ${buildLogFile}
+    cat ${repoDir}/zm-build/rpmconf/Spec/Scripts/${currentScript}.post >> ${repoDir}/zm-build/${currentPackage}/DEBIAN/postinst
+    chmod 555 ${repoDir}/zm-build/${currentPackage}/DEBIAN/*
 
-	echo -e "\tCreate debian package..." >> ${buildLogFile}
-	(cd ${repoDir}/zm-build/${currentPackage}; dpkg -b ${repoDir}/zm-build/${currentPackage} ${repoDir}/zm-build/${arch})
+    echo -e "\tCreate debian package..." >> ${buildLogFile}
+    cat ${repoDir}/zm-build/rpmconf/Spec/${currentScript}.deb | sed -e "s/@@VERSION@@/${release}.${buildNo}.${os/_/.}/" -e "s/@@branch@@/${buildTimeStamp}/" -e "s/@@ARCH@@/${arch}/" \
+        > ${repoDir}/zm-build/${currentPackage}/DEBIAN/control
+    (cd ${repoDir}/zm-build/${currentPackage}; dpkg -b ${repoDir}/zm-build/${currentPackage} ${repoDir}/zm-build/${arch})
 
-	if [ $? -ne 0 ]; then
-		echo -e "\t### ${currentPackage} package building failed ###" >> ${buildLogFile}
-	else
-		echo -e "\t*** ${currentPackage} package successfully created ***" >> ${buildLogFile}
-	fi
+    if [ $? -ne 0 ]; then
+        echo -e "\t### ${currentPackage} package building failed ###" >> ${buildLogFile}
+    else
+        echo -e "\t*** ${currentPackage} package successfully created ***" >> ${buildLogFile}
+    fi
