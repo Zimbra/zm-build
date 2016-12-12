@@ -20,11 +20,11 @@
 
 #-------------------- Global Configuration ---------------------------
 
-	gitRepoDir=/home/zimbra/git
-	gitRepoURL=stash.corp.synacor.com:7999
-	zimbraThirdPartyServer=zdev-vm008.eng.zimbra.com
+    gitRepoDir=/home/zimbra/git
+    gitRepoURL=stash.corp.synacor.com:7999
+    zimbraThirdPartyServer=zdev-vm008.eng.zimbra.com
 
-	buildsDir=/home/build/builds
-	releaseArray=(JUDASPRIEST-880)
-	osArray=(UBUNTU16_64 UBUNTU14_64 UBUNTU12_64 RHEL7_64 RHEL6_64)
-	buildTypeArray=(NETWORK FOSS)
+    buildsDir=/home/build/builds
+    releaseArray=(JUDASPRIEST-880)
+    osArray=(UBUNTU16_64 UBUNTU14_64 UBUNTU12_64 RHEL7_64 RHEL6_64)
+    buildTypeArray=(NETWORK FOSS)
