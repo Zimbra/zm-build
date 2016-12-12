@@ -119,13 +119,16 @@
     cp -rf ${repoDir}/zm-sync-store/build/dist ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/zimbrasync
     cp -rf ${repoDir}/zm-sync-tools/build/dist ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/zimbrasync
 
-    mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/webapps/service
-    mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/webapps/zimbra
-    mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/webapps/zimbraAdmin
-    cd /opt/zimbra/${jettyVersion}/webapps/service; jar -xf ${repoDir}/zm-store/build/dist/service.war
-    cp ${repoDir}/zm-zimlets/build/dist/zimlet.tld WEB_INF
 
+    echo "\t\t++++++++++ service.war content ++++++++++" >> ${buildLogFile}
+    mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/webapps/service
+    cd /opt/zimbra/${jettyVersion}/webapps/service; jar -xf ${repoDir}/zm-store/build/dist/service.war
+
+
+    echo "\t\t++++++++++ zimbra.war content ++++++++++" >> ${buildLogFile}
+    mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/webapps/zimbra
     cd /opt/zimbra/${jettyVersion}/webapps/zimbra; jar -xf ${repoDir}/zm-store/build/dist/zimbra.war
+    cp ${repoDir}/zm-zimlets/build/dist/zimlet.tld WEB_INF
     cp ${repoDir}/zm-touch-client/build/dist/ztouch.css css
     cp ${repoDir}/zm-touch-client/build/dist/loginTouch.jsp public
     cp -rf ${repoDir}/zm-touch-client/build/dist/t .
@@ -147,15 +150,51 @@
     #robots.txt
     cp  -rf ${repoDir}/zm-aspell/build/dist/conf/robots.txt  .
 
-    echo -e "\t\tStaging on zimbra-Admin" >> ${buildLogFile}
-    cd /opt/zimbra/${jettyVersion}/webapps/zimbraAdmin; jar -xf ${repoDir}/zm-store/build/dist/zimbraAdmin.war
 
-    #help
-    cp  -rf ${repoDir}/zm-help/build/dist/help .
+    echo "\t\t++++++++++ zimbraAdmin.war content ++++++++++" >> ${buildLogFile}
+    mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/webapps/zimbraAdmin
+    cp /stash/zm-admin-console/build/dist/jetty/webapps/zimbraAdmin.war ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/webapps/zimbraAdmin
+    cd ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/webapps/zimbraAdmin; jar -xf ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/webapps/zimbraAdmin/zimbraAdmin.war
+    rm -rf ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/webapps/zimbraAdmin/zimbraAdmin.war
 
-    #img
-    cp  -rf ${repoDir}/zm-web-client/build/dist/img/dwt  img/
-    cp  -rf ${repoDir}/zm-web-client/build/dist/img/animated  img/
+    echo "\thelp content" >> ${buildLogFile}
+    cp -r /stash/zm-help ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/webapps/zimbraAdmin
+    mv ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/webapps/zimbraAdmin/zm-help ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/webapps/zimbraAdmin/help
+
+    echo "\timg content" >> ${buildLogFile}
+    cp -rf ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/webapps/zimbra/img/animated ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/webapps/zimbraAdmin/img
+    cp -rf ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/webapps/zimbra/img/dwt ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/webapps/zimbraAdmin/img
+    declare -a imgArray=("arrows.png" "deprecated.gif" "deprecated2.gif" "deprecated3.gif" "docelements.gif" "docquicktables.gif" \
+                            "dwt.gif" "dwt.png" "flags.png" "large.png" "mail.png" "oauth.png" "offline.gif" "offline.png" "offline2.gif" "partners.png" "startup.png" "table.png" "voicemail.gif" "voicemail.png")
+    for i in "${imgArray[@]}"
+    do
+        cp ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/webapps/zimbra/img/${i} ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/webapps/zimbraAdmin/img
+    done
+
+    echo "\tpublic content" >> ${buildLogFile}
+    cp -rf ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/webapps/zimbra/public/flash ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/webapps/zimbraAdmin/public
+    cp ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/webapps/zimbra/public/jsp/TinyMCE.jsp ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/webapps/zimbraAdmin/public/jsp
+    cp ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/webapps/zimbra/public/jsp/XForms.jsp ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/webapps/zimbraAdmin/public/jsp
+    cp -rf ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/webapps/zimbra/public/proto ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/webapps/zimbraAdmin/public
+    cp -rf ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/webapps/zimbra/public/sounds ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/webapps/zimbraAdmin/public
+    cp -rf ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/webapps/zimbra/public/tmp ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/webapps/zimbraAdmin/public
+    declare -a jspArray=("access.jsp" "authorize.jsp" "launchSidebar.jsp" "setResourceBundle.jsp" "TwoFactorSetup.jsp")
+    for i in "${jspArray[@]}"
+    do
+        cp ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/webapps/zimbra/public/${i} ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/webapps/zimbraAdmin/public
+    done
+
+    echo "\ttemplates content" >> ${buildLogFile}
+    cp -rf ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/webapps/zimbra/templates/abook ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/webapps/zimbraAdmin/templates
+    cp -rf ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/webapps/zimbra/templates/calendar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/webapps/zimbraAdmin/templates
+
+    echo "\tWEB-INF content" >> ${buildLogFile}
+    declare -a messagesArray=("ZbMsg*.properties" "ZhMsg*.properties" "ZmMsg*.properties" "ZMsg*.properties" "ZmSMS*.properties" "ZtMsg*.properties" "AjxTemplateMsg*.properties")
+    for i in "${messagesArray[@]}"
+    do
+        cp -rf ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/webapps/zimbra/WEB-INF/classes/messages/${i} ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/webapps/zimbraAdmin/WEB-INF/classes/messages
+    done
+
 
     echo -e "\t\tCopy ext-common files of /opt/zimbra/lib/" >> ${buildLogFile}
 
