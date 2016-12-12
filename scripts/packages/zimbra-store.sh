@@ -177,7 +177,7 @@
     for i in "${adminZimlets[@]}"
     do
         if  [ "${i}" = "zm-smime-applet" ]; then
-            cp ${repoDir}/${i}/build/*.zip ${repoDir}/zm-build/${currentPackage}/opt/zimbra/zimlets-network
+            cp ${repoDir}/${i}/*.zip ${repoDir}/zm-build/${currentPackage}/opt/zimbra/zimlets-network
         else
             cp ${repoDir}/${i}/build/zimlet/*.zip ${repoDir}/zm-build/${currentPackage}/opt/zimbra/zimlets-network
         fi
