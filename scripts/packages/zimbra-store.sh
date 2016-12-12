@@ -20,6 +20,8 @@
 
 	currentScript=`basename $0 | cut -d "." -f 1`
 	currentPackage=`echo ${currentScript}build | cut -d "-" -f 2`
+	
+	jettyVersion=jetty-distribution-9.3.5.v20151012
 
 
 #-------------------- Build Package ---------------------------
@@ -65,7 +67,7 @@
 	mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/extensions-network-extra
 	cp -rf ${repoDir}/zm-saml-consumer-store/build/dist/saml ${repoDir}/zm-build/${currentPackage}/opt/zimbra/extensions-network-extra/
 
-	echo -e "\tCopy jetty-distribution-9.3.5.v20151012 files of /op/zimbra/" >> ${buildLogFile}
+	echo -e "\tCopy ${jettyVersion} files of /op/zimbra/" >> ${buildLogFile}
 
 
 	echo -e "\tCopy lib files of /opt/zimbra/" >> ${buildLogFile}
@@ -76,6 +78,9 @@
 	mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/voice
 	mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/cisco
 	mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/mitel
+	mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/webapps/service
+	mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/webapps/zimbra
+	mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/webapps/zimbraAdmin
     cp -rf ${repoDir}/zm-backup-store/build/dist ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/backup
     cp -rf ${repoDir}/zm-archive-store/build/dist ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/zimbra-archive
     cp -rf ${repoDir}/zm-voice-store/build/dist ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/zimbra-voice-store
@@ -87,7 +92,31 @@
     cp -rf ${repoDir}/zm-sync-common/build/dist ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/zimbrasync
     cp -rf ${repoDir}/zm-sync-store/build/dist ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/zimbrasync
     cp -rf ${repoDir}/zm-sync-tools/build/dist ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/zimbrasync
-	
+    cd /opt/zimbra/${jettyVersion}/webapps/service; jar -xf ${repoDir}/zm-store/build/dist/service.war
+    cp ${repoDir}/zm-zimlets/build/dist/zimlet.tld WEB_INF
+    
+    cd /opt/zimbra/${jettyVersion}/webapps/zimbra; jar -xf ${repoDir}/zm-store/build/dist/zimbra.war
+    cp ${repoDir}/zm-touch-client/build/dist/ztouch.css css
+    cp ${repoDir}/zm-touch-client/build/dist/loginTouch.jsp public
+    cp -rf ${repoDir}/zm-touch-client/build/dist/t .
+    
+    #help
+    cp  -rf ${repoDir}/zm-help/build/dist/help  .
+    
+    #portals
+    mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/webapps/zimbra/portals
+    cp  -rf ${repoDir}/zm-webclient-portal-example/build/dist/example portals
+    
+    #downloads
+    mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/webapps/zimbra/downloads
+    cp  -rf ${repoDir}/zm-downloads/build/dist/. downloads
+    
+    #Messages from admin console 
+    cp  -rf ${repoDir}/zm-admin-console/build/dist/messages/. WEB-INFclasses/messages/
+    
+    #robots.txt
+    cp  -rf ${repoDir}/zm-aspell/build/dist/conf/robots.txt  .
+    	
 	echo -e "\t\tCopy ext-common files of /opt/zimbra/lib/" >> ${buildLogFile}
 
 	echo -e "\t\tCopy jars files of /opt/zimbra/lib/" >> ${buildLogFile}
