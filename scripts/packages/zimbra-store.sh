@@ -173,15 +173,15 @@
 
     echo -e "\tCopy zimlets-network files of /opt/zimbra/" >> ${buildLogFile}
     adminZimlets=( "zm-license-admin-zimlet" \
-                             "zm-backup-restore-admin-zimlet" \
-                             "zm-convertd-admin-zimlet" \
-                             "zm-delegated-admin-zimlet" \
-                             "zm-hsm-admin-zimlet" \
-                             "zm-smime-applet" \
-                             "zm-smime-cert-admin-zimlet" \
-                             "zm-2fa-admin-zimlet" \
-                             "zm-ucconfig-admin-zimlet" \
-                             "zm-mobile-sync-admin-zimlet" )
+                   "zm-backup-restore-admin-zimlet" \
+                   "zm-convertd-admin-zimlet" \
+                   "zm-delegated-admin-zimlet" \
+                   "zm-hsm-admin-zimlet" \
+                   "zm-smime-applet" \
+                   "zm-smime-cert-admin-zimlet" \
+                   "zm-2fa-admin-zimlet" \
+                   "zm-ucconfig-admin-zimlet" \
+                   "zm-mobile-sync-admin-zimlet" )
     for i in "${adminZimlets[@]}"
     do
         cp ${repoDir}/${i}/build/zimlet/*.zip ${repoDir}/zm-build/${currentPackage}/opt/zimbra/zimlets-network
