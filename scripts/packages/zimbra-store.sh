@@ -165,7 +165,7 @@
     cp -rf ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/webapps/zimbra/img/animated ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/webapps/zimbraAdmin/img
     cp -rf ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/webapps/zimbra/img/dwt ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/webapps/zimbraAdmin/img
     declare -a imgArray=("arrows.png" "deprecated.gif" "deprecated2.gif" "deprecated3.gif" "docelements.gif" "docquicktables.gif" \
-                            "dwt.gif" "dwt.png" "flags.png" "large.png" "mail.png" "oauth.png" "offline.gif" "offline.png" "offline2.gif" "partners.png" "startup.png" "table.png" "voicemail.gif" "voicemail.png")
+                         "dwt.gif" "dwt.png" "flags.png" "large.png" "mail.png" "oauth.png" "offline.gif" "offline.png" "offline2.gif" "partners.png" "startup.png" "table.png" "voicemail.gif" "voicemail.png")
     for i in "${imgArray[@]}"
     do
         cp ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/webapps/zimbra/img/${i} ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/webapps/zimbraAdmin/img
