@@ -76,17 +76,23 @@
 	mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/voice
 	mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/cisco
 	mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/mitel
-    cp -rf ${repoDir}/zm-backup-store/build/dist ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/backup
-    cp -rf ${repoDir}/zm-archive-store/build/dist ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/zimbra-archive
-    cp -rf ${repoDir}/zm-voice-store/build/dist ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/zimbra-voice-store
-    cp -rf ${repoDir}/zm-voice-cisco-store/build/dist ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/zimbra-voice-cisco-store
-    cp -rf ${repoDir}/zm-voice-mitel-store/build/dist ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/zimbra-voice-mitel-store
-    cp -rf ${repoDir}/zm-ews-stub/build/dist ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/zimbraews
-    cp -rf ${repoDir}/zm-ews-common/build/dist ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/zimbraews
-    cp -rf ${repoDir}/zm-ews-store/build/dist ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/zimbraews
-    cp -rf ${repoDir}/zm-sync-common/build/dist ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/zimbrasync
-    cp -rf ${repoDir}/zm-sync-store/build/dist ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/zimbrasync
-    cp -rf ${repoDir}/zm-sync-tools/build/dist ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/zimbrasync
+	mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/network
+	mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/com_zimbra_oo
+	mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/convertd
+	cp -rf ${repoDir}/zm-backup-store/build/dist ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/backup
+	cp -rf ${repoDir}/zm-archive-store/build/dist ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/zimbra-archive
+	cp -rf ${repoDir}/zm-voice-store/build/dist ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/zimbra-voice-store
+	cp -rf ${repoDir}/zm-voice-cisco-store/build/dist ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/zimbra-voice-cisco-store
+	cp -rf ${repoDir}/zm-voice-mitel-store/build/dist ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/zimbra-voice-mitel-store
+	cp -rf ${repoDir}/zm-ews-stub/build/dist ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/zimbraews
+	cp -rf ${repoDir}/zm-ews-common/build/dist ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/zimbraews
+	cp -rf ${repoDir}/zm-ews-store/build/dist ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/zimbraews
+	cp -rf ${repoDir}/zm-sync-common/build/dist ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/zimbrasync
+	cp -rf ${repoDir}/zm-sync-store/build/dist ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/zimbrasync
+	cp -rf ${repoDir}/zm-sync-tools/build/dist ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/zimbrasync
+	cp -rf ${repoDir}/zm-openoffice-store/build/dist ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/com_zimbra_oo
+	cp -rf ${repoDir}/zm-network-store/build/dist ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/network
+	cp -rf ${repoDir}/zm-convertd-store/build/dist ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/convertd
 	
 	echo -e "\t\tCopy ext-common files of /opt/zimbra/lib/" >> ${buildLogFile}
 
