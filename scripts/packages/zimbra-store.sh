@@ -116,6 +116,16 @@
     
     #robots.txt
     cp  -rf ${repoDir}/zm-aspell/build/dist/conf/robots.txt  .
+    
+    echo -e "\t\tStaging on zimbra-Admin" >> ${buildLogFile}
+    cd /opt/zimbra/${jettyVersion}/webapps/zimbraAdmin; jar -xf ${repoDir}/zm-store/build/dist/zimbraAdmin.war
+    
+    #help
+    cp  -rf ${repoDir}/zm-help/build/dist/help .
+    
+    #img
+    cp  -rf ${repoDir}/zm-web-client/build/dist/img/dwt  img/
+    cp  -rf ${repoDir}/zm-web-client/build/dist/img/animated  img/
     	
 	echo -e "\t\tCopy ext-common files of /opt/zimbra/lib/" >> ${buildLogFile}
 
