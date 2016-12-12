@@ -21,7 +21,7 @@
 currentScript=`basename $0 | cut -d "." -f 1`
 currentPackage=`echo ${currentScript}build | cut -d "-" -f 2`
 jarDir=${repoDir}/zm-xmbxsearch-store/build/dist/
-archiveZimletDir=${repoDir}/zm-archive-admin-zimlet/build/dist/
+archiveZimletDir=${repoDir}/zm-archive-admin-zimlet/build/zimlet/
 xmbxZimletDir=${repoDir}/zm-xmbxsearch-zimlet/build/dist/
 
 #-------------------- Build Package ---------------------------
