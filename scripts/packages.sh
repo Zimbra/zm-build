@@ -107,7 +107,7 @@
 
 #-------------------- Build Packages ---------------------------
 
-	declare -a packagesArray=(zimbra-snmp zimbra-spell zimbra-logger zimbra-dnscache zimbra-apache zimbra-mta zimbra-proxy zimbra-archiving zimbra-convertd zimbra-store)
+	declare -a packagesArray=(zimbra-snmp zimbra-spell zimbra-logger zimbra-dnscache zimbra-apache zimbra-mta zimbra-proxy zimbra-archiving zimbra-convertd zimbra-store zimbra-core)
 	for i in "${packagesArray[@]}"
 	do
 		echo -e "\n\t-> Building ${i} package..." >> ${buildLogFile}
