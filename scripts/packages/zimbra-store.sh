@@ -200,9 +200,9 @@
 
     echo -e "\tCopy libexec files of /opt/zimbra/" >> ${buildLogFile}
     mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec
-    cp -f ${repoDir}/zm-windows-comp/ZimbraMigrationTools/src/libexec/zmztozmig ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmztozmig
-    cp -f ${repoDir}/zm-windows-comp/ZimbraMigrationTools/src/libexec/zmcleaniplanetics ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmcleaniplanetics
-    cp -f ${repoDir}/zm-versioncheck-utilities/src/libexec/zmcheckversion ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmcheckversion
+    cp -f ${repoDir}/zm-windows-comp/ZimbraMigrationTools/src/libexec/zmztozmig ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec
+    cp -f ${repoDir}/zm-windows-comp/ZimbraMigrationTools/src/libexec/zmcleaniplanetics ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec
+    cp -f ${repoDir}/zm-versioncheck-utilities/src/libexec/zmcheckversion ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec
 
     echo -e "\tCopy log files of /opt/zimbra/" >> ${buildLogFile}
 
