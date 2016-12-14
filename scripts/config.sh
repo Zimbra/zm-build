@@ -20,7 +20,7 @@
 
 #-------------------- Global Configuration ---------------------------
 
-    gitRepoDir=/home/zimbra/git
+    gitRepoDir=/stash
     gitRepoURL=stash.corp.synacor.com:7999
     zimbraThirdPartyServer=zdev-vm008.eng.zimbra.com
 
