@@ -213,6 +213,7 @@
 
 
     echo -e "\tCopy zimlets-network files of /opt/zimbra/" >> ${buildLogFile}
+    mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/zimlets-network
     adminZimlets=( "zm-license-admin-zimlet" \
                    "zm-backup-restore-admin-zimlet" \
                    "zm-convertd-admin-zimlet" \
