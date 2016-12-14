@@ -16,7 +16,7 @@
 # ***** END LICENSE BLOCK *****
 
 # Script builds all required zimbra packages for the build.
-# Usage: bash -x /home/zimbra/git/zm-build/scripts/packages.sh -r 8.7.1.GA -b JUDASPRIEST-871 -n 1670 -o UBUNTU16_64 -t NETWORK -s 20161129140015
+# Usage: bash -x /stash/zm-build/scripts/packages.sh -r 8.8.0.GA -b JUDASPRIEST-880 -n 1672 -o UBUNTU14_64 -t NETWORK -s 20161129140015
 
 
 #-------------------- Configuration ---------------------------
@@ -81,17 +81,24 @@
 	cp -R ${gitRepoDir}/zm-nginx-conf ${repoDir}
 	cp -R ${gitRepoDir}/zm-ldap-utilities ${repoDir}
 	cp -R ${gitRepoDir}/zm-convertd-conf ${repoDir}
-        cp -R ${gitRepoDir}/zm-hsm ${repoDir}
-        cp -R ${gitRepoDir}/zm-archive-utils ${repoDir}
-        cp -R ${gitRepoDir}/zm-sync-store ${repoDir}
-        cp -R ${gitRepoDir}/zm-sync-tools ${repoDir}
-        cp -R ${gitRepoDir}/zm-store-conf ${repoDir}
-        cp -R ${gitRepoDir}/zm-web-client ${repoDir}
-        cp -R ${gitRepoDir}/zm-windows-comp ${repoDir}
-        cp -R ${gitRepoDir}/zm-ews-store ${repoDir}
+	cp -R ${gitRepoDir}/zm-hsm ${repoDir}
+	cp -R ${gitRepoDir}/zm-archive-utils ${repoDir}
+	cp -R ${gitRepoDir}/zm-sync-store ${repoDir}
+	cp -R ${gitRepoDir}/zm-sync-tools ${repoDir}
+	cp -R ${gitRepoDir}/zm-store-conf ${repoDir}
+	cp -R ${gitRepoDir}/zm-web-client ${repoDir}
+	cp -R ${gitRepoDir}/zm-windows-comp ${repoDir}
+	cp -R ${gitRepoDir}/zm-ews-store ${repoDir}
 	cp -R ${gitRepoDir}/zm-openoffice-store ${repoDir}
-        cp -R ${gitRepoDir}/zm-network-store ${repoDir}
+	cp -R ${gitRepoDir}/zm-network-store ${repoDir}
 	cp -R ${gitRepoDir}/zm-versioncheck-utilities ${repoDir}
+	cp -R ${gitRepoDir}/zm-admin-console ${repoDir}
+	cp -R ${gitRepoDir}/zm-touch-client ${repoDir}
+	cp -R ${gitRepoDir}/zm-store ${repoDir}
+	cp -R ${gitRepoDir}/zm-help ${repoDir}
+	cp -R ${gitRepoDir}/zm-webclient-portal-example ${repoDir}
+	cp -R ${gitRepoDir}/zm-downloads ${repoDir}
+	cp -R ${gitRepoDir}/zm-zimlets ${repoDir}
 
 	echo -e "Exporting script argument values" >> ${buildLogFile}
 	export release
