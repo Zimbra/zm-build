@@ -91,6 +91,7 @@
         cp -R ${gitRepoDir}/zm-ews-store ${repoDir}
 	cp -R ${gitRepoDir}/zm-openoffice-store ${repoDir}
         cp -R ${gitRepoDir}/zm-network-store ${repoDir}
+	cp -R ${gitRepoDir}/zm-versioncheck-utilities ${repoDir}
 
 	echo -e "Exporting script argument values" >> ${buildLogFile}
 	export release
