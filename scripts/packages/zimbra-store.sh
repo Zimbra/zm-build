@@ -195,6 +195,9 @@
         cp -rf ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/webapps/zimbra/WEB-INF/classes/messages/${i} ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/webapps/zimbraAdmin/WEB-INF/classes/messages
     done
 
+    echo -e "\t\tCopy work folder of zm-web-client build to /opt/zimbra/jetty/" >> ${buildLogFile}
+    cp -rf ${repoDir}/zm-web-client/build/dist/jetty/work ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/
+
     echo -e "\t\tCopy ext-common files of /opt/zimbra/lib/" >> ${buildLogFile}
 
     echo -e "\t\tCopy jars files of /opt/zimbra/lib/" >> ${buildLogFile}
