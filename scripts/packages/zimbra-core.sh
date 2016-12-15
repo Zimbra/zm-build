@@ -43,15 +43,58 @@ PrepareDeployDir()
    mkdir -p "${repoDir}/zm-build/${currentPackage}/opt/zimbra/$dirset"
 }
 
-CreateFinalDebianPackage()
+CreateDebianPackage()
 {
    echo -e "\tCreate debian package" >> ${buildLogFile}
+
+   mkdir -p "${repoDir}/zm-build/${currentPackage}/DEBIAN";
+
+   cat ${repoDir}/zm-build/rpmconf/Spec/Scripts/${currentScript}.post > ${repoDir}/zm-build/${currentPackage}/DEBIAN/postinst
+   cat ${repoDir}/zm-build/rpmconf/Spec/Scripts/${currentScript}.pre  > ${repoDir}/zm-build/${currentPackage}/DEBIAN/preinst
+
+   chmod 555 ${repoDir}/zm-build/${currentPackage}/DEBIAN/preinst
+   chmod 555 ${repoDir}/zm-build/${currentPackage}/DEBIAN/postinst
+
+   (
+      set -e;
+      cd ${repoDir}/zm-build/${currentPackage}
+      find . -type f -print0 \
+         | xargs -0 md5sum \
+         | grep -v -w "DEBIAN/.*" \
+         | sed -e "s@ [.][/]@ @" \
+         | sort \
+   ) > ${repoDir}/zm-build/${currentPackage}/DEBIAN/md5sums
+
+   (
+      set -e;
+      cat ${repoDir}/zm-build/rpmconf/Spec/${currentScript}.deb \
+         | sed -e "s/@@VERSION@@/${release}.${buildNo}.${os/_/.}/" \
+               -e "s/@@branch@@/${buildTimeStamp}/" \
+               -e "s/@@ARCH@@/${arch}/" \
+               -e "s/@@ARCH@@/amd64/" \
+               -e "s/^Copyright:/Copyright:/" \
+               -e "/^%post$/ r ${currentScript}.post"
+   ) > ${repoDir}/zm-build/${currentPackage}/DEBIAN/control
+
+   (
+      set -e;
+      cd ${repoDir}/zm-build/${currentPackage}
+      dpkg -b ${repoDir}/zm-build/${currentPackage} ${repoDir}/zm-build/${arch}
+   )
 
    if [ $? -ne 0 ]; then
        echo -e "\t### ${currentPackage} package building failed ###" >> ${buildLogFile}
    else
        echo -e "\t*** ${currentPackage} package successfully created ***" >> ${buildLogFile}
    fi
+}
+
+Copy()
+{
+   local src="$1"; shift;
+   local dest="$1"; shift;
+
+   cp -f "$src" "$dest"
 }
 
 #-------------------- main packaging ---------------------------
@@ -862,7 +905,7 @@ main()
 
 # opt/zimbra/lib/jars-ant/ant-1.6.5.jar
 
-   CreateFinalDebianPackage
+   CreateDebianPackage
 }
 
 ############################################################################
