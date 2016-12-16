@@ -22,7 +22,9 @@
 #-------------------- Configuration ---------------------------
 
 
-	. "$(cd "$(dirname "${BASH_SOURCE[0]}" )" && pwd)/config.sh"
+        SCRIPT_DIR="$(CDPATH= cd "$(dirname "$0")" && pwd)"
+
+	. "$SCRIPT_DIR/config.sh"
 
 	if ( [ -z ${1} ] && [ -z ${2} ] && [ -z ${3} ] && [ -z ${4} ] && [ -z ${5} ] && [ -z ${6} ] ) || ( [ -z ${1} ] || [ -z ${2} ] || [ -z ${3} ] || [ -z ${4} ] || [ -z ${5} ] || [ -z ${6} ] ); then
 
@@ -52,7 +54,6 @@
 
 	# Create logs directory
 	mkdir -p ${repoDir}/logs
-	cd ${repoDir}
 
 	# Check architecture
 	if [[ ${os} = *"UBUNTU"* ]]; then
@@ -67,38 +68,41 @@
 
 	echo -e "Build script arguments: ${1} ${2} ${3} ${4} ${5} ${6}\n" >> ${buildLogFile}
 
-	echo -e "Copying git repository manually (temporarily)" >> ${buildLogFile}
-	cp -R ${gitRepoDir}/zm-build ${repoDir}
-	cp -R ${gitRepoDir}/zm-core-utils ${repoDir}
-	cp -R ${gitRepoDir}/zm-licenses ${repoDir}
-	cp -R ${gitRepoDir}/zm-aspell ${repoDir}
-	cp -R ${gitRepoDir}/zm-postfix ${repoDir}
-	cp -R ${gitRepoDir}/zm-amavis ${repoDir}
-	cp -R ${gitRepoDir}/zm-dnscache ${repoDir}
-	cp -R ${gitRepoDir}/zm-network-build ${repoDir}
-	cp -R ${gitRepoDir}/zm-convertd-native ${repoDir}
-	cp -R ${gitRepoDir}/zm-convertd-store ${repoDir}
-	cp -R ${gitRepoDir}/zm-nginx-conf ${repoDir}
-	cp -R ${gitRepoDir}/zm-ldap-utilities ${repoDir}
-	cp -R ${gitRepoDir}/zm-convertd-conf ${repoDir}
-	cp -R ${gitRepoDir}/zm-hsm ${repoDir}
-	cp -R ${gitRepoDir}/zm-archive-utils ${repoDir}
-	cp -R ${gitRepoDir}/zm-sync-store ${repoDir}
-	cp -R ${gitRepoDir}/zm-sync-tools ${repoDir}
-	cp -R ${gitRepoDir}/zm-store-conf ${repoDir}
-	cp -R ${gitRepoDir}/zm-web-client ${repoDir}
-	cp -R ${gitRepoDir}/zm-windows-comp ${repoDir}
-	cp -R ${gitRepoDir}/zm-ews-store ${repoDir}
-	cp -R ${gitRepoDir}/zm-openoffice-store ${repoDir}
-	cp -R ${gitRepoDir}/zm-network-store ${repoDir}
-	cp -R ${gitRepoDir}/zm-versioncheck-utilities ${repoDir}
-	cp -R ${gitRepoDir}/zm-admin-console ${repoDir}
-	cp -R ${gitRepoDir}/zm-touch-client ${repoDir}
-	cp -R ${gitRepoDir}/zm-store ${repoDir}
-	cp -R ${gitRepoDir}/zm-help ${repoDir}
-	cp -R ${gitRepoDir}/zm-webclient-portal-example ${repoDir}
-	cp -R ${gitRepoDir}/zm-downloads ${repoDir}
-	cp -R ${gitRepoDir}/zm-zimlets ${repoDir}
+        if [ "$ENV_LOCAL_CP" == "1" ]
+        then
+            echo -e "Copying git repository manually (temporarily)" >> ${buildLogFile}
+            cp -R ${gitRepoDir}/zm-build ${repoDir}
+            cp -R ${gitRepoDir}/zm-core-utils ${repoDir}
+            cp -R ${gitRepoDir}/zm-licenses ${repoDir}
+            cp -R ${gitRepoDir}/zm-aspell ${repoDir}
+            cp -R ${gitRepoDir}/zm-postfix ${repoDir}
+            cp -R ${gitRepoDir}/zm-amavis ${repoDir}
+            cp -R ${gitRepoDir}/zm-dnscache ${repoDir}
+            cp -R ${gitRepoDir}/zm-network-build ${repoDir}
+            cp -R ${gitRepoDir}/zm-convertd-native ${repoDir}
+            cp -R ${gitRepoDir}/zm-convertd-store ${repoDir}
+            cp -R ${gitRepoDir}/zm-nginx-conf ${repoDir}
+            cp -R ${gitRepoDir}/zm-ldap-utilities ${repoDir}
+            cp -R ${gitRepoDir}/zm-convertd-conf ${repoDir}
+            cp -R ${gitRepoDir}/zm-hsm ${repoDir}
+            cp -R ${gitRepoDir}/zm-archive-utils ${repoDir}
+            cp -R ${gitRepoDir}/zm-sync-store ${repoDir}
+            cp -R ${gitRepoDir}/zm-sync-tools ${repoDir}
+            cp -R ${gitRepoDir}/zm-store-conf ${repoDir}
+            cp -R ${gitRepoDir}/zm-web-client ${repoDir}
+            cp -R ${gitRepoDir}/zm-windows-comp ${repoDir}
+            cp -R ${gitRepoDir}/zm-ews-store ${repoDir}
+            cp -R ${gitRepoDir}/zm-openoffice-store ${repoDir}
+            cp -R ${gitRepoDir}/zm-network-store ${repoDir}
+            cp -R ${gitRepoDir}/zm-versioncheck-utilities ${repoDir}
+            cp -R ${gitRepoDir}/zm-admin-console ${repoDir}
+            cp -R ${gitRepoDir}/zm-touch-client ${repoDir}
+            cp -R ${gitRepoDir}/zm-store ${repoDir}
+            cp -R ${gitRepoDir}/zm-help ${repoDir}
+            cp -R ${gitRepoDir}/zm-webclient-portal-example ${repoDir}
+            cp -R ${gitRepoDir}/zm-downloads ${repoDir}
+            cp -R ${gitRepoDir}/zm-zimlets ${repoDir}
+        fi
 
 	echo -e "Exporting script argument values" >> ${buildLogFile}
 	export release
@@ -112,12 +116,28 @@
 	export buildLogFile
 	export zimbraThirdPartyServer
 
-
 #-------------------- Build Packages ---------------------------
 
-	declare -a packagesArray=(zimbra-snmp zimbra-spell zimbra-logger zimbra-dnscache zimbra-apache zimbra-mta zimbra-proxy zimbra-archiving zimbra-convertd zimbra-store zimbra-core)
+	packagesArray=(
+              zimbra-snmp
+              zimbra-spell
+              zimbra-logger
+              zimbra-dnscache
+              zimbra-apache
+              zimbra-mta
+              zimbra-proxy
+              zimbra-archiving
+              zimbra-convertd
+              zimbra-store
+              zimbra-core
+         )
+
 	for i in "${packagesArray[@]}"
 	do
+            if [ -z "$ENV_ONLY_PACK" ] || [ "$i" == "$ENV_ONLY_PACK" ]
+            then
 		echo -e "\n\t-> Building ${i} package..." >> ${buildLogFile}
-		bash "$(cd "$(dirname "${BASH_SOURCE[0]}" )" && pwd)/packages"/${i}.sh
+		chmod +x "$SCRIPT_DIR/packages"/${i}.sh
+		"$SCRIPT_DIR/packages"/${i}.sh
+            fi
 	done
