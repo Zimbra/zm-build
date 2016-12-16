@@ -561,10 +561,20 @@ main()
 # opt/zimbra/logger/db/work/data_not_available.gif
 
    PrepareDeployDir "bin"
+   Copy ${repoDir}/zm-backup-utilities/src/bin/zmbackup                                             ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmbackup
+   Copy ${repoDir}/zm-backup-utilities/src/bin/zmbackupabort                                        ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmbackupabort
+   Copy ${repoDir}/zm-backup-utilities/src/bin/zmbackupquery                                        ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmbackupquery
+   Copy ${repoDir}/zm-backup-utilities/src/bin/zmmboxmove                                           ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmmboxmove
+   Copy ${repoDir}/zm-backup-utilities/src/bin/zmmboxmovequery                                      ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmmboxmovequery
+   Copy ${repoDir}/zm-backup-utilities/src/bin/zmpurgeoldmbox                                       ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmpurgeoldmbox
+   Copy ${repoDir}/zm-backup-utilities/src/bin/zmrestore                                            ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmrestore
+   Copy ${repoDir}/zm-backup-utilities/src/bin/zmrestoreldap                                        ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmrestoreldap
+   Copy ${repoDir}/zm-backup-utilities/src/bin/zmrestoreoffline                                     ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmrestoreoffline
+   Copy ${repoDir}/zm-backup-utilities/src/bin/zmschedulebackup                                     ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmschedulebackup
+
    Copy ${repoDir}/zm-core-utils/src/bin/antispam-mysql                                             ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/antispam-mysql
    Copy ${repoDir}/zm-core-utils/src/bin/antispam-mysql.server                                      ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/antispam-mysql.server
    Copy ${repoDir}/zm-core-utils/src/bin/antispam-mysqladmin                                        ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/antispam-mysqladmin
-# opt/zimbra/bin/ldap                                                         :: IN_REPO :: [FOUND_HERE][DIFF] /home/shriram/Stash/zm-core-utils/src/bin/ldap
    Copy ${repoDir}/zm-core-utils/src/bin/mysql                                                      ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/mysql
    Copy ${repoDir}/zm-core-utils/src/bin/mysql.server                                               ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/mysql.server
    Copy ${repoDir}/zm-core-utils/src/bin/mysqladmin                                                 ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/mysqladmin
@@ -579,9 +589,6 @@ main()
    Copy ${repoDir}/zm-core-utils/src/bin/zmapachectl                                                ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmapachectl
    Copy ${repoDir}/zm-core-utils/src/bin/zmarchivectl                                               ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmarchivectl
    Copy ${repoDir}/zm-core-utils/src/bin/zmauditswatchctl                                           ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmauditswatchctl
-   Copy ${repoDir}/zm-backup-utilities/src/bin/zmbackup                                             ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmbackup
-   Copy ${repoDir}/zm-backup-utilities/src/bin/zmbackupabort                                        ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmbackupabort
-   Copy ${repoDir}/zm-backup-utilities/src/bin/zmbackupquery                                        ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmbackupquery
    Copy ${repoDir}/zm-core-utils/src/bin/zmblobchk                                                  ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmblobchk
    Copy ${repoDir}/zm-core-utils/src/bin/zmcaldebug                                                 ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmcaldebug
    Copy ${repoDir}/zm-core-utils/src/bin/zmcbpadmin                                                 ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmcbpadmin
@@ -590,7 +597,6 @@ main()
    Copy ${repoDir}/zm-core-utils/src/bin/zmclamdctl                                                 ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmclamdctl
    Copy ${repoDir}/zm-core-utils/src/bin/zmconfigdctl                                               ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmconfigdctl
    Copy ${repoDir}/zm-core-utils/src/bin/zmcontrol                                                  ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmcontrol
-# opt/zimbra/bin/zmconvertctl                                                 :: IN_REPO :: [FOUND_HERE][DIFF] /home/shriram/Stash/zm-convertd-native/src/bin/zmconvertctl
    Copy ${repoDir}/zm-core-utils/src/bin/zmdedupe                                                   ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmdedupe
    Copy ${repoDir}/zm-core-utils/src/bin/zmdhparam                                                  ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmdhparam
    Copy ${repoDir}/zm-core-utils/src/bin/zmdnscachectl                                              ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmdnscachectl
@@ -599,7 +605,6 @@ main()
    Copy ${repoDir}/zm-core-utils/src/bin/zmfixcalprio                                               ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmfixcalprio
    Copy ${repoDir}/zm-core-utils/src/bin/zmfreshclamctl                                             ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmfreshclamctl
    Copy ${repoDir}/zm-core-utils/src/bin/zmgsautil                                                  ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmgsautil
-   Copy ${repoDir}/zm-network-store/src/bin/zmhactl                                                 ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmhactl
    Copy ${repoDir}/zm-core-utils/src/bin/zmhostname                                                 ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmhostname
    Copy ${repoDir}/zm-core-utils/src/bin/zminnotop                                                  ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zminnotop
    Copy ${repoDir}/zm-core-utils/src/bin/zmitemdatafile                                             ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmitemdatafile
@@ -607,17 +612,12 @@ main()
    Copy ${repoDir}/zm-core-utils/src/bin/zmjavaext                                                  ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmjavaext
    Copy ${repoDir}/zm-core-utils/src/bin/zmldappasswd                                               ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmldappasswd
    Copy ${repoDir}/zm-core-utils/src/bin/zmldapupgrade                                              ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmldapupgrade
-# opt/zimbra/bin/zmlicense                                                    :: NOT_IN_REPO :: [FOUND_HERE] /home/shriram/Stash/zcs-full/ZimbraLicenseTools/src/bin/zmlicense
    Copy ${repoDir}/zm-core-utils/src/bin/zmlmtpinject                                               ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmlmtpinject
    Copy ${repoDir}/zm-core-utils/src/bin/zmlocalconfig                                              ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmlocalconfig
    Copy ${repoDir}/zm-core-utils/src/bin/zmloggerctl                                                ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmloggerctl
    Copy ${repoDir}/zm-core-utils/src/bin/zmloggerhostmap                                            ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmloggerhostmap
    Copy ${repoDir}/zm-core-utils/src/bin/zmlogswatchctl                                             ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmlogswatchctl
-# opt/zimbra/bin/zmmailbox                                                    :: IN_REPO :: [FOUND_HERE][DIFF] /home/shriram/Stash/zm-core-utils/src/bin/zmmailbox
    Copy ${repoDir}/zm-core-utils/src/bin/zmmailboxdctl                                              ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmmailboxdctl
-   Copy ${repoDir}/zm-backup-utilities/src/bin/zmmboxmove                                           ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmmboxmove
-   Copy ${repoDir}/zm-backup-utilities/src/bin/zmmboxmovequery                                      ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmmboxmovequery
-   Copy ${repoDir}/zm-network-store/src/bin/zmmboxsearch                                            ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmmboxsearch
    Copy ${repoDir}/zm-core-utils/src/bin/zmmemcachedctl                                             ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmmemcachedctl
    Copy ${repoDir}/zm-core-utils/src/bin/zmmetadump                                                 ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmmetadump
    Copy ${repoDir}/zm-core-utils/src/bin/zmmilterctl                                                ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmmilterctl
@@ -630,15 +630,9 @@ main()
    Copy ${repoDir}/zm-core-utils/src/bin/zmprov                                                     ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmprov
    Copy ${repoDir}/zm-core-utils/src/bin/zmproxyconf                                                ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmproxyconf
    Copy ${repoDir}/zm-core-utils/src/bin/zmproxyctl                                                 ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmproxyctl
-   Copy ${repoDir}/zm-backup-utilities/src/bin/zmpurgeoldmbox                                       ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmpurgeoldmbox
    Copy ${repoDir}/zm-core-utils/src/bin/zmpython                                                   ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmpython
    Copy ${repoDir}/zm-core-utils/src/bin/zmredodump                                                 ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmredodump
-# opt/zimbra/bin/zmresolverctl                                                :: IN_REPO :: [FOUND_HERE][DIFF] /home/shriram/Stash/zm-core-utils/src/bin/zmresolverctl
-   Copy ${repoDir}/zm-backup-utilities/src/bin/zmrestore                                            ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmrestore
-   Copy ${repoDir}/zm-backup-utilities/src/bin/zmrestoreldap                                        ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmrestoreldap
-   Copy ${repoDir}/zm-backup-utilities/src/bin/zmrestoreoffline                                     ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmrestoreoffline
    Copy ${repoDir}/zm-core-utils/src/bin/zmsaslauthdctl                                             ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmsaslauthdctl
-   Copy ${repoDir}/zm-backup-utilities/src/bin/zmschedulebackup                                     ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmschedulebackup
    Copy ${repoDir}/zm-core-utils/src/bin/zmshutil                                                   ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmshutil
    Copy ${repoDir}/zm-core-utils/src/bin/zmskindeploy                                               ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmskindeploy
    Copy ${repoDir}/zm-core-utils/src/bin/zmsoap                                                     ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmsoap
@@ -658,6 +652,14 @@ main()
    Copy ${repoDir}/zm-core-utils/src/bin/zmvolume                                                   ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmvolume
    Copy ${repoDir}/zm-core-utils/src/bin/zmzimletctl                                                ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmzimletctl
 
+   Copy ${repoDir}/zm-network-store/src/bin/zmhactl                                                 ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmhactl
+   Copy ${repoDir}/zm-network-store/src/bin/zmmboxsearch                                            ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmmboxsearch
+
+# opt/zimbra/bin/ldap                                                         :: IN_REPO :: [FOUND_HERE][DIFF] /home/shriram/Stash/zm-core-utils/src/bin/ldap
+# opt/zimbra/bin/zmconvertctl                                                 :: IN_REPO :: [FOUND_HERE][DIFF] /home/shriram/Stash/zm-convertd-native/src/bin/zmconvertctl
+# opt/zimbra/bin/zmlicense                                                    :: NOT_IN_REPO :: [FOUND_HERE] /home/shriram/Stash/zcs-full/ZimbraLicenseTools/src/bin/zmlicense
+# opt/zimbra/bin/zmmailbox                                                    :: IN_REPO :: [FOUND_HERE][DIFF] /home/shriram/Stash/zm-core-utils/src/bin/zmmailbox
+# opt/zimbra/bin/zmresolverctl                                                :: IN_REPO :: [FOUND_HERE][DIFF] /home/shriram/Stash/zm-core-utils/src/bin/zmresolverctl
 
    PrepareDeployDir "docs"
    PrepareDeployDir "docs/rebranding"
