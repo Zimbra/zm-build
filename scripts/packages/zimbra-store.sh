@@ -62,7 +62,7 @@
 
     echo -e "\tCopy extensions-extra files of /op/zimbra/" >> ${buildLogFile}
     mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/extensions-extra/openidconsumer
-    cp -f ${repoDir}/zm-openid-consumer-store/build/dist ${repoDir}/zm-build/${currentPackage}/opt/zimbra/extensions-extra/openidconsumer
+    cp -rf ${repoDir}/zm-openid-consumer-store/build/dist ${repoDir}/zm-build/${currentPackage}/opt/zimbra/extensions-extra/openidconsumer
 
 
     echo -e "\tCopy extensions-network-extra files of /op/zimbra/" >> ${buildLogFile}
@@ -201,7 +201,8 @@
     echo -e "\t\tCopy ext-common files of /opt/zimbra/lib/" >> ${buildLogFile}
 
     echo -e "\t\tCopy jars files of /opt/zimbra/lib/" >> ${buildLogFile}
-
+    mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/jars
+    cp -f ${repoDir}/zm-milter/build/dist/zm-milter*.jar  ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/jars/
 
     echo -e "\tCopy libexec files of /opt/zimbra/" >> ${buildLogFile}
     mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec
