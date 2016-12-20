@@ -182,109 +182,109 @@ main()
 # opt/zimbra/conf/zmlogrotate
 # opt/zimbra/conf/zmssl.cnf.in
 
-# opt/zimbra/conf/crontabs/crontab
-# opt/zimbra/conf/crontabs/crontab.ldap
-# opt/zimbra/conf/crontabs/crontab.logger
-# opt/zimbra/conf/crontabs/crontab.mta
-# opt/zimbra/conf/crontabs/crontab.store
+   Copy ${repoDir}/zm-build/rpmconf/Env/crontabs/crontab                                            ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/crontabs/crontab
+   Copy ${repoDir}/zm-build/rpmconf/Env/crontabs/crontab.ldap                                       ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/crontabs/crontab.ldap
+   Copy ${repoDir}/zm-build/rpmconf/Env/crontabs/crontab.logger                                     ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/crontabs/crontab.logger
+   Copy ${repoDir}/zm-build/rpmconf/Env/crontabs/crontab.mta                                        ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/crontabs/crontab.mta
+   Copy ${repoDir}/zm-build/rpmconf/Env/crontabs/crontab.store                                      ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/crontabs/crontab.store
 
-# opt/zimbra/conf/attrs/amavisd-new-attrs.xml
-# opt/zimbra/conf/attrs/zimbra-attrs.xml
-# opt/zimbra/conf/attrs/zimbra-ocs.xml
+# opt/zimbra/conf/attrs/amavisd-new-attrs.xml                                 :: IN_REPO :: [FOUND_HERE] /home/shriram/Stash/zm-ldap-utilities/conf/attrs/amavisd-new-attrs.xml -- [DEST] ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/attrs/amavisd-new-attrs.xml, [FOUND_HERE] /home/shriram/Stash/zm-ldap-utilities/build/attrs/amavisd-new-attrs.xml -- [DEST] ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/attrs/amavisd-new-attrs.xml, [FOUND_HERE] /home/shriram/Stash/zm-store/conf/attrs/amavisd-new-attrs.xml -- [DEST] ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/attrs/amavisd-new-attrs.xml
+# opt/zimbra/conf/attrs/zimbra-attrs.xml                                      :: IN_REPO :: [FOUND_HERE][DIFF] /home/shriram/Stash/zm-ldap-utilities/conf/attrs/zimbra-attrs.xml -- [DEST] ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/attrs/zimbra-attrs.xml, [FOUND_HERE][DIFF] /home/shriram/Stash/zm-ldap-utilities/build/attrs/zimbra-attrs.xml -- [DEST] ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/attrs/zimbra-attrs.xml, [FOUND_HERE][DIFF] /home/shriram/Stash/zm-store/conf/attrs/zimbra-attrs.xml -- [DEST] ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/attrs/zimbra-attrs.xml
+# opt/zimbra/conf/attrs/zimbra-ocs.xml                                        :: IN_REPO :: [FOUND_HERE] /home/shriram/Stash/zm-ldap-utilities/conf/attrs/zimbra-ocs.xml -- [DEST] ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/attrs/zimbra-ocs.xml, [FOUND_HERE] /home/shriram/Stash/zm-ldap-utilities/build/attrs/zimbra-ocs.xml -- [DEST] ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/attrs/zimbra-ocs.xml, [FOUND_HERE] /home/shriram/Stash/zm-store/conf/attrs/zimbra-ocs.xml -- [DEST] ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/attrs/zimbra-ocs.xml
 
-# opt/zimbra/conf/msgs/L10nMsg.properties
-# opt/zimbra/conf/msgs/ZsMsg.properties
-# opt/zimbra/conf/msgs/ZsMsgRights.properties
-# opt/zimbra/conf/msgs/ZsMsgRights_ar.properties
-# opt/zimbra/conf/msgs/ZsMsgRights_da.properties
-# opt/zimbra/conf/msgs/ZsMsgRights_de.properties
-# opt/zimbra/conf/msgs/ZsMsgRights_en_AU.properties
-# opt/zimbra/conf/msgs/ZsMsgRights_en_GB.properties
-# opt/zimbra/conf/msgs/ZsMsgRights_es.properties
-# opt/zimbra/conf/msgs/ZsMsgRights_eu.properties
-# opt/zimbra/conf/msgs/ZsMsgRights_fr.properties
-# opt/zimbra/conf/msgs/ZsMsgRights_fr_CA.properties
-# opt/zimbra/conf/msgs/ZsMsgRights_hi.properties
-# opt/zimbra/conf/msgs/ZsMsgRights_hu.properties
-# opt/zimbra/conf/msgs/ZsMsgRights_in.properties
-# opt/zimbra/conf/msgs/ZsMsgRights_it.properties
-# opt/zimbra/conf/msgs/ZsMsgRights_iw.properties
-# opt/zimbra/conf/msgs/ZsMsgRights_ja.properties
-# opt/zimbra/conf/msgs/ZsMsgRights_ko.properties
-# opt/zimbra/conf/msgs/ZsMsgRights_lo.properties
-# opt/zimbra/conf/msgs/ZsMsgRights_ms.properties
-# opt/zimbra/conf/msgs/ZsMsgRights_nl.properties
-# opt/zimbra/conf/msgs/ZsMsgRights_pl.properties
-# opt/zimbra/conf/msgs/ZsMsgRights_pt.properties
-# opt/zimbra/conf/msgs/ZsMsgRights_pt_BR.properties
-# opt/zimbra/conf/msgs/ZsMsgRights_ro.properties
-# opt/zimbra/conf/msgs/ZsMsgRights_ru.properties
-# opt/zimbra/conf/msgs/ZsMsgRights_sl.properties
-# opt/zimbra/conf/msgs/ZsMsgRights_sv.properties
-# opt/zimbra/conf/msgs/ZsMsgRights_th.properties
-# opt/zimbra/conf/msgs/ZsMsgRights_tr.properties
-# opt/zimbra/conf/msgs/ZsMsgRights_uk.properties
-# opt/zimbra/conf/msgs/ZsMsgRights_zh_CN.properties
-# opt/zimbra/conf/msgs/ZsMsgRights_zh_HK.properties
-# opt/zimbra/conf/msgs/ZsMsgRights_zh_TW.properties
-# opt/zimbra/conf/msgs/ZsMsg_ar.properties
-# opt/zimbra/conf/msgs/ZsMsg_da.properties
-# opt/zimbra/conf/msgs/ZsMsg_de.properties
-# opt/zimbra/conf/msgs/ZsMsg_en.properties
-# opt/zimbra/conf/msgs/ZsMsg_en_AU.properties
-# opt/zimbra/conf/msgs/ZsMsg_en_GB.properties
-# opt/zimbra/conf/msgs/ZsMsg_es.properties
-# opt/zimbra/conf/msgs/ZsMsg_eu.properties
-# opt/zimbra/conf/msgs/ZsMsg_fr.properties
-# opt/zimbra/conf/msgs/ZsMsg_fr_CA.properties
-# opt/zimbra/conf/msgs/ZsMsg_fr_FR.properties
-# opt/zimbra/conf/msgs/ZsMsg_hi.properties
-# opt/zimbra/conf/msgs/ZsMsg_hu.properties
-# opt/zimbra/conf/msgs/ZsMsg_in.properties
-# opt/zimbra/conf/msgs/ZsMsg_it.properties
-# opt/zimbra/conf/msgs/ZsMsg_iw.properties
-# opt/zimbra/conf/msgs/ZsMsg_ja.properties
-# opt/zimbra/conf/msgs/ZsMsg_ko.properties
-# opt/zimbra/conf/msgs/ZsMsg_lo.properties
-# opt/zimbra/conf/msgs/ZsMsg_ms.properties
-# opt/zimbra/conf/msgs/ZsMsg_nl.properties
-# opt/zimbra/conf/msgs/ZsMsg_pl.properties
-# opt/zimbra/conf/msgs/ZsMsg_pt.properties
-# opt/zimbra/conf/msgs/ZsMsg_pt_BR.properties
-# opt/zimbra/conf/msgs/ZsMsg_ro.properties
-# opt/zimbra/conf/msgs/ZsMsg_ru.properties
-# opt/zimbra/conf/msgs/ZsMsg_sl.properties
-# opt/zimbra/conf/msgs/ZsMsg_sv.properties
-# opt/zimbra/conf/msgs/ZsMsg_th.properties
-# opt/zimbra/conf/msgs/ZsMsg_tr.properties
-# opt/zimbra/conf/msgs/ZsMsg_uk.properties
-# opt/zimbra/conf/msgs/ZsMsg_zh_CN.properties
-# opt/zimbra/conf/msgs/ZsMsg_zh_HK.properties
-# opt/zimbra/conf/msgs/ZsMsg_zh_TW.properties
+   Copy ${repoDir}/zm-store-conf/conf/msgs/L10nMsg.properties                                       ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/L10nMsg.properties
+   Copy ${repoDir}/zm-store-conf/conf/msgs/ZsMsg.properties                                         ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsg.properties
+   Copy ${repoDir}/zm-store-conf/conf/msgs/ZsMsgRights.properties                                   ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsgRights.properties
+   Copy ${repoDir}/zm-store-conf/conf/msgs/ZsMsgRights_ar.properties                                ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsgRights_ar.properties
+   Copy ${repoDir}/zm-store-conf/conf/msgs/ZsMsgRights_da.properties                                ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsgRights_da.properties
+   Copy ${repoDir}/zm-store-conf/conf/msgs/ZsMsgRights_de.properties                                ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsgRights_de.properties
+   Copy ${repoDir}/zm-store-conf/conf/msgs/ZsMsgRights_en_AU.properties                             ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsgRights_en_AU.properties
+   Copy ${repoDir}/zm-store-conf/conf/msgs/ZsMsgRights_en_GB.properties                             ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsgRights_en_GB.properties
+   Copy ${repoDir}/zm-store-conf/conf/msgs/ZsMsgRights_es.properties                                ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsgRights_es.properties
+   Copy ${repoDir}/zm-store-conf/conf/msgs/ZsMsgRights_eu.properties                                ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsgRights_eu.properties
+   Copy ${repoDir}/zm-store-conf/conf/msgs/ZsMsgRights_fr.properties                                ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsgRights_fr.properties
+   Copy ${repoDir}/zm-store-conf/conf/msgs/ZsMsgRights_fr_CA.properties                             ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsgRights_fr_CA.properties
+   Copy ${repoDir}/zm-store-conf/conf/msgs/ZsMsgRights_hi.properties                                ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsgRights_hi.properties
+   Copy ${repoDir}/zm-store-conf/conf/msgs/ZsMsgRights_hu.properties                                ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsgRights_hu.properties
+   Copy ${repoDir}/zm-store-conf/conf/msgs/ZsMsgRights_in.properties                                ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsgRights_in.properties
+   Copy ${repoDir}/zm-store-conf/conf/msgs/ZsMsgRights_it.properties                                ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsgRights_it.properties
+   Copy ${repoDir}/zm-store-conf/conf/msgs/ZsMsgRights_iw.properties                                ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsgRights_iw.properties
+   Copy ${repoDir}/zm-store-conf/conf/msgs/ZsMsgRights_ja.properties                                ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsgRights_ja.properties
+   Copy ${repoDir}/zm-store-conf/conf/msgs/ZsMsgRights_ko.properties                                ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsgRights_ko.properties
+   Copy ${repoDir}/zm-store-conf/conf/msgs/ZsMsgRights_lo.properties                                ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsgRights_lo.properties
+   Copy ${repoDir}/zm-store-conf/conf/msgs/ZsMsgRights_ms.properties                                ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsgRights_ms.properties
+   Copy ${repoDir}/zm-store-conf/conf/msgs/ZsMsgRights_nl.properties                                ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsgRights_nl.properties
+   Copy ${repoDir}/zm-store-conf/conf/msgs/ZsMsgRights_pl.properties                                ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsgRights_pl.properties
+   Copy ${repoDir}/zm-store-conf/conf/msgs/ZsMsgRights_pt.properties                                ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsgRights_pt.properties
+   Copy ${repoDir}/zm-store-conf/conf/msgs/ZsMsgRights_pt_BR.properties                             ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsgRights_pt_BR.properties
+   Copy ${repoDir}/zm-store-conf/conf/msgs/ZsMsgRights_ro.properties                                ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsgRights_ro.properties
+   Copy ${repoDir}/zm-store-conf/conf/msgs/ZsMsgRights_ru.properties                                ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsgRights_ru.properties
+   Copy ${repoDir}/zm-store-conf/conf/msgs/ZsMsgRights_sl.properties                                ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsgRights_sl.properties
+   Copy ${repoDir}/zm-store-conf/conf/msgs/ZsMsgRights_sv.properties                                ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsgRights_sv.properties
+   Copy ${repoDir}/zm-store-conf/conf/msgs/ZsMsgRights_th.properties                                ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsgRights_th.properties
+   Copy ${repoDir}/zm-store-conf/conf/msgs/ZsMsgRights_tr.properties                                ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsgRights_tr.properties
+   Copy ${repoDir}/zm-store-conf/conf/msgs/ZsMsgRights_uk.properties                                ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsgRights_uk.properties
+   Copy ${repoDir}/zm-store-conf/conf/msgs/ZsMsgRights_zh_CN.properties                             ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsgRights_zh_CN.properties
+   Copy ${repoDir}/zm-store-conf/conf/msgs/ZsMsgRights_zh_HK.properties                             ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsgRights_zh_HK.properties
+   Copy ${repoDir}/zm-store-conf/conf/msgs/ZsMsgRights_zh_TW.properties                             ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsgRights_zh_TW.properties
+   Copy ${repoDir}/zm-store-conf/conf/msgs/ZsMsg_ar.properties                                      ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsg_ar.properties
+   Copy ${repoDir}/zm-store-conf/conf/msgs/ZsMsg_da.properties                                      ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsg_da.properties
+   Copy ${repoDir}/zm-store-conf/conf/msgs/ZsMsg_de.properties                                      ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsg_de.properties
+# opt/zimbra/conf/msgs/ZsMsg_en.properties                                    :: IN_REPO :: [FOUND_HERE][DIFF] /home/shriram/Stash/zm-store-conf/conf/msgs/ZsMsg_en.properties -- [DEST] ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsg_en.properties
+   Copy ${repoDir}/zm-store-conf/conf/msgs/ZsMsg_en_AU.properties                                   ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsg_en_AU.properties
+   Copy ${repoDir}/zm-store-conf/conf/msgs/ZsMsg_en_GB.properties                                   ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsg_en_GB.properties
+   Copy ${repoDir}/zm-store-conf/conf/msgs/ZsMsg_es.properties                                      ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsg_es.properties
+   Copy ${repoDir}/zm-store-conf/conf/msgs/ZsMsg_eu.properties                                      ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsg_eu.properties
+   Copy ${repoDir}/zm-store-conf/conf/msgs/ZsMsg_fr.properties                                      ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsg_fr.properties
+   Copy ${repoDir}/zm-store-conf/conf/msgs/ZsMsg_fr_CA.properties                                   ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsg_fr_CA.properties
+   Copy ${repoDir}/zm-store-conf/conf/msgs/ZsMsg_fr_FR.properties                                   ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsg_fr_FR.properties
+   Copy ${repoDir}/zm-store-conf/conf/msgs/ZsMsg_hi.properties                                      ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsg_hi.properties
+   Copy ${repoDir}/zm-store-conf/conf/msgs/ZsMsg_hu.properties                                      ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsg_hu.properties
+   Copy ${repoDir}/zm-store-conf/conf/msgs/ZsMsg_in.properties                                      ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsg_in.properties
+   Copy ${repoDir}/zm-store-conf/conf/msgs/ZsMsg_it.properties                                      ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsg_it.properties
+   Copy ${repoDir}/zm-store-conf/conf/msgs/ZsMsg_iw.properties                                      ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsg_iw.properties
+   Copy ${repoDir}/zm-store-conf/conf/msgs/ZsMsg_ja.properties                                      ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsg_ja.properties
+   Copy ${repoDir}/zm-store-conf/conf/msgs/ZsMsg_ko.properties                                      ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsg_ko.properties
+   Copy ${repoDir}/zm-store-conf/conf/msgs/ZsMsg_lo.properties                                      ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsg_lo.properties
+   Copy ${repoDir}/zm-store-conf/conf/msgs/ZsMsg_ms.properties                                      ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsg_ms.properties
+   Copy ${repoDir}/zm-store-conf/conf/msgs/ZsMsg_nl.properties                                      ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsg_nl.properties
+   Copy ${repoDir}/zm-store-conf/conf/msgs/ZsMsg_pl.properties                                      ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsg_pl.properties
+   Copy ${repoDir}/zm-store-conf/conf/msgs/ZsMsg_pt.properties                                      ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsg_pt.properties
+   Copy ${repoDir}/zm-store-conf/conf/msgs/ZsMsg_pt_BR.properties                                   ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsg_pt_BR.properties
+   Copy ${repoDir}/zm-store-conf/conf/msgs/ZsMsg_ro.properties                                      ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsg_ro.properties
+   Copy ${repoDir}/zm-store-conf/conf/msgs/ZsMsg_ru.properties                                      ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsg_ru.properties
+   Copy ${repoDir}/zm-store-conf/conf/msgs/ZsMsg_sl.properties                                      ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsg_sl.properties
+   Copy ${repoDir}/zm-store-conf/conf/msgs/ZsMsg_sv.properties                                      ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsg_sv.properties
+   Copy ${repoDir}/zm-store-conf/conf/msgs/ZsMsg_th.properties                                      ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsg_th.properties
+   Copy ${repoDir}/zm-store-conf/conf/msgs/ZsMsg_tr.properties                                      ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsg_tr.properties
+   Copy ${repoDir}/zm-store-conf/conf/msgs/ZsMsg_uk.properties                                      ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsg_uk.properties
+   Copy ${repoDir}/zm-store-conf/conf/msgs/ZsMsg_zh_CN.properties                                   ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsg_zh_CN.properties
+   Copy ${repoDir}/zm-store-conf/conf/msgs/ZsMsg_zh_HK.properties                                   ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsg_zh_HK.properties
+   Copy ${repoDir}/zm-store-conf/conf/msgs/ZsMsg_zh_TW.properties                                   ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsg_zh_TW.properties
 
-# opt/zimbra/conf/zmconfigd/postfix_content_filter.cf
-# opt/zimbra/conf/zmconfigd/smtpd_end_of_data_restrictions.cf
-# opt/zimbra/conf/zmconfigd/smtpd_recipient_restrictions.cf
-# opt/zimbra/conf/zmconfigd/smtpd_relay_restrictions.cf
-# opt/zimbra/conf/zmconfigd/smtpd_sender_login_maps.cf
-# opt/zimbra/conf/zmconfigd/smtpd_sender_restrictions.cf
+# opt/zimbra/conf/zmconfigd/postfix_content_filter.cf                         :: IN_REPO :: [FOUND_HERE] /home/shriram/Stash/zm-amavis/conf/zmconfigd/postfix_content_filter.cf -- [DEST] ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/zmconfigd/postfix_content_filter.cf, [FOUND_HERE] /home/shriram/Stash/zm-mta/zmconfigd/postfix_content_filter.cf -- [DEST] ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/zmconfigd/postfix_content_filter.cf
+# opt/zimbra/conf/zmconfigd/smtpd_end_of_data_restrictions.cf                 :: IN_REPO :: [FOUND_HERE] /home/shriram/Stash/zm-amavis/conf/zmconfigd/smtpd_end_of_data_restrictions.cf -- [DEST] ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/zmconfigd/smtpd_end_of_data_restrictions.cf, [FOUND_HERE] /home/shriram/Stash/zm-mta/zmconfigd/smtpd_end_of_data_restrictions.cf -- [DEST] ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/zmconfigd/smtpd_end_of_data_restrictions.cf
+# opt/zimbra/conf/zmconfigd/smtpd_recipient_restrictions.cf                   :: IN_REPO :: [FOUND_HERE] /home/shriram/Stash/zm-amavis/conf/zmconfigd/smtpd_recipient_restrictions.cf -- [DEST] ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/zmconfigd/smtpd_recipient_restrictions.cf, [FOUND_HERE] /home/shriram/Stash/zm-mta/zmconfigd/smtpd_recipient_restrictions.cf -- [DEST] ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/zmconfigd/smtpd_recipient_restrictions.cf
+# opt/zimbra/conf/zmconfigd/smtpd_relay_restrictions.cf                       :: IN_REPO :: [FOUND_HERE] /home/shriram/Stash/zm-amavis/conf/zmconfigd/smtpd_relay_restrictions.cf -- [DEST] ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/zmconfigd/smtpd_relay_restrictions.cf, [FOUND_HERE] /home/shriram/Stash/zm-mta/zmconfigd/smtpd_relay_restrictions.cf -- [DEST] ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/zmconfigd/smtpd_relay_restrictions.cf
+# opt/zimbra/conf/zmconfigd/smtpd_sender_login_maps.cf                        :: IN_REPO :: [FOUND_HERE] /home/shriram/Stash/zm-amavis/conf/zmconfigd/smtpd_sender_login_maps.cf -- [DEST] ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/zmconfigd/smtpd_sender_login_maps.cf, [FOUND_HERE] /home/shriram/Stash/zm-mta/zmconfigd/smtpd_sender_login_maps.cf -- [DEST] ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/zmconfigd/smtpd_sender_login_maps.cf
+# opt/zimbra/conf/zmconfigd/smtpd_sender_restrictions.cf                      :: IN_REPO :: [FOUND_HERE] /home/shriram/Stash/zm-amavis/conf/zmconfigd/smtpd_sender_restrictions.cf -- [DEST] ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/zmconfigd/smtpd_sender_restrictions.cf, [FOUND_HERE] /home/shriram/Stash/zm-mta/zmconfigd/smtpd_sender_restrictions.cf -- [DEST] ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/zmconfigd/smtpd_sender_restrictions.cf
 
-# opt/zimbra/conf/rights/adminconsole-ui.xml
-# opt/zimbra/conf/rights/zimbra-rights-adminconsole-domainadmin.xml
-# opt/zimbra/conf/rights/zimbra-rights-adminconsole.xml
-# opt/zimbra/conf/rights/zimbra-rights-domainadmin.xml
-# opt/zimbra/conf/rights/zimbra-rights-roles.xml
-# opt/zimbra/conf/rights/zimbra-rights.xml
-# opt/zimbra/conf/rights/zimbra-user-rights.xml
+# opt/zimbra/conf/rights/adminconsole-ui.xml                                  :: IN_REPO :: [FOUND_HERE][DIFF] /home/shriram/Stash/zm-store-conf/conf/rights/adminconsole-ui.xml -- [DEST] ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/rights/adminconsole-ui.xml
+   Copy ${repoDir}/zm-store-conf/conf/rights/zimbra-rights-adminconsole-domainadmin.xml             ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/rights/zimbra-rights-adminconsole-domainadmin.xml
+   Copy ${repoDir}/zm-store-conf/conf/rights/zimbra-rights-adminconsole.xml                         ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/rights/zimbra-rights-adminconsole.xml
+# opt/zimbra/conf/rights/zimbra-rights-domainadmin.xml                        :: IN_REPO :: [FOUND_HERE][DIFF] /home/shriram/Stash/zm-store-conf/conf/rights/zimbra-rights-domainadmin.xml -- [DEST] ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/rights/zimbra-rights-domainadmin.xml
+# opt/zimbra/conf/rights/zimbra-rights-roles.xml                              :: IN_REPO :: [FOUND_HERE][DIFF] /home/shriram/Stash/zm-store-conf/conf/rights/zimbra-rights-roles.xml -- [DEST] ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/rights/zimbra-rights-roles.xml
+   Copy ${repoDir}/zm-store-conf/conf/rights/zimbra-rights.xml                                      ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/rights/zimbra-rights.xml
+   Copy ${repoDir}/zm-store-conf/conf/rights/zimbra-user-rights.xml                                 ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/rights/zimbra-user-rights.xml
 
 # opt/zimbra/conf/sasl2/smtpd.conf.in
 
-# opt/zimbra/conf/externaldirsync/Exchange2000.xml
-# opt/zimbra/conf/externaldirsync/Exchange2003.xml
-# opt/zimbra/conf/externaldirsync/Exchange5.5.xml
-# opt/zimbra/conf/externaldirsync/domino.xml
-# opt/zimbra/conf/externaldirsync/novellGroupWise.xml
-# opt/zimbra/conf/externaldirsync/openldap.xml
+   Copy ${repoDir}/zm-ldap-utilities/conf/externaldirsync/Exchange2000.xml                          ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/externaldirsync/Exchange2000.xml
+   Copy ${repoDir}/zm-ldap-utilities/conf/externaldirsync/Exchange2003.xml                          ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/externaldirsync/Exchange2003.xml
+   Copy ${repoDir}/zm-ldap-utilities/conf/externaldirsync/Exchange5.5.xml                           ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/externaldirsync/Exchange5.5.xml
+   Copy ${repoDir}/zm-ldap-utilities/conf/externaldirsync/domino.xml                                ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/externaldirsync/domino.xml
+   Copy ${repoDir}/zm-ldap-utilities/conf/externaldirsync/novellGroupWise.xml                       ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/externaldirsync/novellGroupWise.xml
+   Copy ${repoDir}/zm-ldap-utilities/conf/externaldirsync/openldap.xml                              ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/externaldirsync/openldap.xml
 
 
    PrepareDeployDir "contrib"
@@ -292,119 +292,119 @@ main()
 
 
    PrepareDeployDir "libexec"
-# opt/zimbra/libexec/600.zimbra
-# opt/zimbra/libexec/addUser.sh
-# opt/zimbra/libexec/client_usage_report.py
-# opt/zimbra/libexec/configrewrite
-# opt/zimbra/libexec/get_plat_tag.sh
-# opt/zimbra/libexec/icalmig
-# opt/zimbra/libexec/libreoffice-installer.sh
-# opt/zimbra/libexec/postinstall.pm
-# opt/zimbra/libexec/postjournal
-# opt/zimbra/libexec/preinstall.pm
-# opt/zimbra/libexec/vmware-appmonitor
-# opt/zimbra/libexec/vmware-heartbeat
-# opt/zimbra/libexec/zcs
-# opt/zimbra/libexec/zimbra
-# opt/zimbra/libexec/zmaltermimeconfig
-# opt/zimbra/libexec/zmantispamdbinit
-# opt/zimbra/libexec/zmantispammycnf
-# opt/zimbra/libexec/zmbackupldap
-# opt/zimbra/libexec/zmbackupqueryldap
-# opt/zimbra/libexec/zmcbpolicydinit
-# opt/zimbra/libexec/zmcheckduplicatemysqld
-# opt/zimbra/libexec/zmcheckexpiredcerts
-# opt/zimbra/libexec/zmcleantmp
-# opt/zimbra/libexec/zmclientcertmgr
-# opt/zimbra/libexec/zmcompresslogs
-# opt/zimbra/libexec/zmcomputequotausage
-# opt/zimbra/libexec/zmconfigd
-# opt/zimbra/libexec/zmconvertdmod
-# opt/zimbra/libexec/zmcpustat
-# opt/zimbra/libexec/zmdailyreport
-# opt/zimbra/libexec/zmdbintegrityreport
-# opt/zimbra/libexec/zmdiaglog
-# opt/zimbra/libexec/zmdkimkeyutil
-# opt/zimbra/libexec/zmdnscachealign
-# opt/zimbra/libexec/zmdomaincertmgr
-# opt/zimbra/libexec/zmexplainslow
-# opt/zimbra/libexec/zmexplainsql
-# opt/zimbra/libexec/zmextractsql
-# opt/zimbra/libexec/zmfixperms
-# opt/zimbra/libexec/zmfixreminder
-# opt/zimbra/libexec/zmgenentitlement
-# opt/zimbra/libexec/zmgsaupdate
-# opt/zimbra/libexec/zmhspreport
-# opt/zimbra/libexec/zminiutil
-# opt/zimbra/libexec/zmiostat
-# opt/zimbra/libexec/zmiptool
-# opt/zimbra/libexec/zmjavawatch
-# opt/zimbra/libexec/zmjsprecompile
-# opt/zimbra/libexec/zmldapanon
-# opt/zimbra/libexec/zmldapapplyldif
-# opt/zimbra/libexec/zmldapenable-mmr
-# opt/zimbra/libexec/zmldapenablereplica
-# opt/zimbra/libexec/zmldapinit
-# opt/zimbra/libexec/zmldapmmrtool
-# opt/zimbra/libexec/zmldapmonitordb
-# opt/zimbra/libexec/zmldappromote-replica-mmr
-# opt/zimbra/libexec/zmldapreplicatool
-# opt/zimbra/libexec/zmldapschema
-# opt/zimbra/libexec/zmldapupdateldif
-# opt/zimbra/libexec/zmlogger
-# opt/zimbra/libexec/zmloggerinit
-# opt/zimbra/libexec/zmlogprocess
-# opt/zimbra/libexec/zmmailboxdmgr
-# opt/zimbra/libexec/zmmailboxdmgr.unrestricted
-# opt/zimbra/libexec/zmmsgtrace
-# opt/zimbra/libexec/zmmtainit
-# opt/zimbra/libexec/zmmtastatus
-# opt/zimbra/libexec/zmmycnf
-# opt/zimbra/libexec/zmmyinit
-# opt/zimbra/libexec/zmnotifyinstall
-# opt/zimbra/libexec/zmpostfixpolicyd
-# opt/zimbra/libexec/zmproxyconfgen
-# opt/zimbra/libexec/zmproxyconfig
-# opt/zimbra/libexec/zmproxypurge
-# opt/zimbra/libexec/zmqaction
-# opt/zimbra/libexec/zmqstat
-# opt/zimbra/libexec/zmqueuelog
-# opt/zimbra/libexec/zmrc
-# opt/zimbra/libexec/zmrcd
-# opt/zimbra/libexec/zmreplchk
-# opt/zimbra/libexec/zmresetmysqlpassword
-# opt/zimbra/libexec/zmrrdfetch
-# opt/zimbra/libexec/zmsacompile
-# opt/zimbra/libexec/zmsaupdate
-# opt/zimbra/libexec/zmserverips
-# opt/zimbra/libexec/zmsetservername
-# opt/zimbra/libexec/zmsetup.pl
-# opt/zimbra/libexec/zmslapadd
-# opt/zimbra/libexec/zmslapcat
-# opt/zimbra/libexec/zmslapd
-# opt/zimbra/libexec/zmslapindex
-# opt/zimbra/libexec/zmsnmpinit
-# opt/zimbra/libexec/zmspamextract
-# opt/zimbra/libexec/zmstat-allprocs
-# opt/zimbra/libexec/zmstat-cleanup
-# opt/zimbra/libexec/zmstat-convertd
-# opt/zimbra/libexec/zmstat-cpu
-# opt/zimbra/libexec/zmstat-df
-# opt/zimbra/libexec/zmstat-fd
-# opt/zimbra/libexec/zmstat-io
-# opt/zimbra/libexec/zmstat-ldap
-# opt/zimbra/libexec/zmstat-mtaqueue
-# opt/zimbra/libexec/zmstat-mysql
-# opt/zimbra/libexec/zmstat-nginx
-# opt/zimbra/libexec/zmstat-proc
-# opt/zimbra/libexec/zmstat-vm
-# opt/zimbra/libexec/zmstatuslog
-# opt/zimbra/libexec/zmsyslogsetup
-# opt/zimbra/libexec/zmthreadcpu
-# opt/zimbra/libexec/zmunbound
-# opt/zimbra/libexec/zmupdatedownload
-# opt/zimbra/libexec/zmupdatezco
-# opt/zimbra/libexec/zmupgrade.pm
+   Copy ${repoDir}/zm-core-utils/src/libexec/600.zimbra                                             ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/600.zimbra
+   Copy ${repoDir}/zm-build/rpmconf/Install/Util/addUser.sh                                         ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/addUser.sh
+   Copy ${repoDir}/zm-core-utils/src/libexec/client_usage_report.py                                 ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/client_usage_report.py
+   Copy ${repoDir}/zm-core-utils/src/libexec/configrewrite                                          ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/configrewrite
+# opt/zimbra/libexec/get_plat_tag.sh                                          :: IN_REPO :: [FOUND_HERE][DIFF] /home/shriram/Stash/zimbra-package-stub/bin/get_plat_tag.sh -- [DEST] ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/get_plat_tag.sh, [FOUND_HERE] /home/shriram/Stash/zm-build/rpmconf/Build/get_plat_tag.sh -- [DEST] ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/get_plat_tag.sh
+   Copy ${repoDir}/zm-core-utils/src/libexec/icalmig                                                ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/icalmig
+   Copy ${repoDir}/zm-core-utils/src/libexec/libreoffice-installer.sh                               ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/libreoffice-installer.sh
+# opt/zimbra/libexec/postinstall.pm                                           :: IN_REPO :: [FOUND_HERE][DIFF] /home/shriram/Stash/zm-build/rpmconf/Install/postinstall.pm -- [DEST] ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/postinstall.pm, [FOUND_HERE] /home/shriram/Stash/zm-network-build/rpmconf/Install/postinstall.pm -- [DEST] ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/postinstall.pm
+# opt/zimbra/libexec/postjournal                                              :: NOT_IN_REPO :: 
+# opt/zimbra/libexec/preinstall.pm                                            :: IN_REPO :: [FOUND_HERE][DIFF] /home/shriram/Stash/zm-build/rpmconf/Install/preinstall.pm -- [DEST] ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/preinstall.pm, [FOUND_HERE] /home/shriram/Stash/zm-network-build/rpmconf/Install/preinstall.pm -- [DEST] ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/preinstall.pm
+# opt/zimbra/libexec/vmware-appmonitor                                        :: NOT_IN_REPO :: 
+   Copy ${repoDir}/zm-network-store/src/libexec/vmware-heartbeat                                    ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/vmware-heartbeat
+   Copy ${repoDir}/zm-core-utils/src/libexec/zcs                                                    ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zcs
+   Copy ${repoDir}/zm-core-utils/src/libexec/zimbra                                                 ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zimbra
+   Copy ${repoDir}/zm-core-utils/src/libexec/zmaltermimeconfig                                      ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmaltermimeconfig
+   Copy ${repoDir}/zm-core-utils/src/libexec/zmantispamdbinit                                       ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmantispamdbinit
+   Copy ${repoDir}/zm-core-utils/src/libexec/zmantispammycnf                                        ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmantispammycnf
+   Copy ${repoDir}/zm-backup-utilities/src/libexec/zmbackupldap                                     ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmbackupldap
+   Copy ${repoDir}/zm-backup-utilities/src/libexec/zmbackupqueryldap                                ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmbackupqueryldap
+   Copy ${repoDir}/zm-core-utils/src/libexec/zmcbpolicydinit                                        ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmcbpolicydinit
+   Copy ${repoDir}/zm-core-utils/src/libexec/zmcheckduplicatemysqld                                 ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmcheckduplicatemysqld
+   Copy ${repoDir}/zm-core-utils/src/libexec/zmcheckexpiredcerts                                    ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmcheckexpiredcerts
+   Copy ${repoDir}/zm-core-utils/src/libexec/zmcleantmp                                             ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmcleantmp
+   Copy ${repoDir}/zm-core-utils/src/libexec/zmclientcertmgr                                        ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmclientcertmgr
+   Copy ${repoDir}/zm-core-utils/src/libexec/zmcompresslogs                                         ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmcompresslogs
+   Copy ${repoDir}/zm-core-utils/src/libexec/zmcomputequotausage                                    ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmcomputequotausage
+   Copy ${repoDir}/zm-core-utils/src/libexec/zmconfigd                                              ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmconfigd
+# opt/zimbra/libexec/zmconvertdmod                                            :: IN_REPO :: [FOUND_HERE][DIFF] /home/shriram/Stash/zm-convertd-native/src/libexec/zmconvertdmod -- [DEST] ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmconvertdmod
+   Copy ${repoDir}/zm-core-utils/src/libexec/zmcpustat                                              ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmcpustat
+   Copy ${repoDir}/zm-core-utils/src/libexec/zmdailyreport                                          ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmdailyreport
+   Copy ${repoDir}/zm-core-utils/src/libexec/zmdbintegrityreport                                    ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmdbintegrityreport
+   Copy ${repoDir}/zm-core-utils/src/libexec/zmdiaglog                                              ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmdiaglog
+   Copy ${repoDir}/zm-core-utils/src/libexec/zmdkimkeyutil                                          ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmdkimkeyutil
+   Copy ${repoDir}/zm-core-utils/src/libexec/zmdnscachealign                                        ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmdnscachealign
+   Copy ${repoDir}/zm-core-utils/src/libexec/zmdomaincertmgr                                        ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmdomaincertmgr
+   Copy ${repoDir}/zm-core-utils/src/libexec/zmexplainslow                                          ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmexplainslow
+   Copy ${repoDir}/zm-core-utils/src/libexec/zmexplainsql                                           ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmexplainsql
+   Copy ${repoDir}/zm-core-utils/src/libexec/zmextractsql                                           ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmextractsql
+   Copy ${repoDir}/zm-core-utils/src/libexec/zmfixperms                                             ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmfixperms
+   Copy ${repoDir}/zm-core-utils/src/libexec/zmfixreminder                                          ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmfixreminder
+   Copy ${repoDir}/zm-core-utils/src/libexec/zmgenentitlement                                       ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmgenentitlement
+   Copy ${repoDir}/zm-core-utils/src/libexec/zmgsaupdate                                            ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmgsaupdate
+   Copy ${repoDir}/zm-core-utils/src/libexec/zmhspreport                                            ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmhspreport
+   Copy ${repoDir}/zm-core-utils/src/libexec/zminiutil                                              ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zminiutil
+   Copy ${repoDir}/zm-core-utils/src/libexec/zmiostat                                               ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmiostat
+   Copy ${repoDir}/zm-core-utils/src/libexec/zmiptool                                               ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmiptool
+   Copy ${repoDir}/zm-core-utils/src/libexec/zmjavawatch                                            ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmjavawatch
+   Copy ${repoDir}/zm-core-utils/src/libexec/zmjsprecompile                                         ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmjsprecompile
+# opt/zimbra/libexec/zmldapanon                                               :: IN_REPO :: [FOUND_HERE] /home/shriram/Stash/zm-core-utils/src/libexec/zmldapanon -- [DEST] ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmldapanon, [FOUND_HERE] /home/shriram/Stash/zm-ldap-utilities/src/libexec/zmldapanon -- [DEST] ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmldapanon
+# opt/zimbra/libexec/zmldapapplyldif                                          :: IN_REPO :: [FOUND_HERE] /home/shriram/Stash/zm-core-utils/src/libexec/zmldapapplyldif -- [DEST] ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmldapapplyldif, [FOUND_HERE] /home/shriram/Stash/zm-ldap-utilities/src/libexec/zmldapapplyldif -- [DEST] ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmldapapplyldif
+# opt/zimbra/libexec/zmldapenable-mmr                                         :: IN_REPO :: [FOUND_HERE] /home/shriram/Stash/zm-core-utils/src/libexec/zmldapenable-mmr -- [DEST] ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmldapenable-mmr, [FOUND_HERE] /home/shriram/Stash/zm-ldap-utilities/src/libexec/zmldapenable-mmr -- [DEST] ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmldapenable-mmr
+# opt/zimbra/libexec/zmldapenablereplica                                      :: IN_REPO :: [FOUND_HERE] /home/shriram/Stash/zm-core-utils/src/libexec/zmldapenablereplica -- [DEST] ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmldapenablereplica, [FOUND_HERE] /home/shriram/Stash/zm-ldap-utilities/src/libexec/zmldapenablereplica -- [DEST] ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmldapenablereplica
+# opt/zimbra/libexec/zmldapinit                                               :: IN_REPO :: [FOUND_HERE] /home/shriram/Stash/zm-core-utils/src/libexec/zmldapinit -- [DEST] ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmldapinit, [FOUND_HERE] /home/shriram/Stash/zm-ldap-utilities/src/libexec/zmldapinit -- [DEST] ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmldapinit
+# opt/zimbra/libexec/zmldapmmrtool                                            :: IN_REPO :: [FOUND_HERE] /home/shriram/Stash/zm-core-utils/src/libexec/zmldapmmrtool -- [DEST] ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmldapmmrtool, [FOUND_HERE] /home/shriram/Stash/zm-ldap-utilities/src/libexec/zmldapmmrtool -- [DEST] ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmldapmmrtool
+# opt/zimbra/libexec/zmldapmonitordb                                          :: IN_REPO :: [FOUND_HERE] /home/shriram/Stash/zm-core-utils/src/libexec/zmldapmonitordb -- [DEST] ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmldapmonitordb, [FOUND_HERE] /home/shriram/Stash/zm-ldap-utilities/src/libexec/zmldapmonitordb -- [DEST] ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmldapmonitordb
+# opt/zimbra/libexec/zmldappromote-replica-mmr                                :: IN_REPO :: [FOUND_HERE] /home/shriram/Stash/zm-core-utils/src/libexec/zmldappromote-replica-mmr -- [DEST] ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmldappromote-replica-mmr, [FOUND_HERE] /home/shriram/Stash/zm-ldap-utilities/src/libexec/zmldappromote-replica-mmr -- [DEST] ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmldappromote-replica-mmr
+# opt/zimbra/libexec/zmldapreplicatool                                        :: IN_REPO :: [FOUND_HERE] /home/shriram/Stash/zm-core-utils/src/libexec/zmldapreplicatool -- [DEST] ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmldapreplicatool, [FOUND_HERE] /home/shriram/Stash/zm-ldap-utilities/src/libexec/zmldapreplicatool -- [DEST] ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmldapreplicatool
+# opt/zimbra/libexec/zmldapschema                                             :: IN_REPO :: [FOUND_HERE] /home/shriram/Stash/zm-core-utils/src/libexec/zmldapschema -- [DEST] ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmldapschema, [FOUND_HERE] /home/shriram/Stash/zm-ldap-utilities/src/libexec/zmldapschema -- [DEST] ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmldapschema
+# opt/zimbra/libexec/zmldapupdateldif                                         :: IN_REPO :: [FOUND_HERE] /home/shriram/Stash/zm-core-utils/src/libexec/zmldapupdateldif -- [DEST] ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmldapupdateldif, [FOUND_HERE] /home/shriram/Stash/zm-ldap-utilities/src/libexec/zmldapupdateldif -- [DEST] ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmldapupdateldif
+   Copy ${repoDir}/zm-core-utils/src/libexec/zmlogger                                               ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmlogger
+   Copy ${repoDir}/zm-core-utils/src/libexec/zmloggerinit                                           ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmloggerinit
+   Copy ${repoDir}/zm-core-utils/src/libexec/zmlogprocess                                           ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmlogprocess
+# opt/zimbra/libexec/zmmailboxdmgr                                            :: NOT_IN_REPO :: 
+# opt/zimbra/libexec/zmmailboxdmgr.unrestricted                               :: NOT_IN_REPO :: 
+   Copy ${repoDir}/zm-core-utils/src/libexec/zmmsgtrace                                             ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmmsgtrace
+   Copy ${repoDir}/zm-core-utils/src/libexec/zmmtainit                                              ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmmtainit
+   Copy ${repoDir}/zm-core-utils/src/libexec/zmmtastatus                                            ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmmtastatus
+   Copy ${repoDir}/zm-core-utils/src/libexec/zmmycnf                                                ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmmycnf
+   Copy ${repoDir}/zm-core-utils/src/libexec/zmmyinit                                               ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmmyinit
+   Copy ${repoDir}/zm-core-utils/src/libexec/zmnotifyinstall                                        ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmnotifyinstall
+   Copy ${repoDir}/zm-core-utils/src/libexec/zmpostfixpolicyd                                       ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmpostfixpolicyd
+   Copy ${repoDir}/zm-core-utils/src/libexec/zmproxyconfgen                                         ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmproxyconfgen
+   Copy ${repoDir}/zm-core-utils/src/libexec/zmproxyconfig                                          ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmproxyconfig
+   Copy ${repoDir}/zm-core-utils/src/libexec/zmproxypurge                                           ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmproxypurge
+   Copy ${repoDir}/zm-core-utils/src/libexec/zmqaction                                              ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmqaction
+   Copy ${repoDir}/zm-core-utils/src/libexec/zmqstat                                                ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmqstat
+   Copy ${repoDir}/zm-core-utils/src/libexec/zmqueuelog                                             ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmqueuelog
+   Copy ${repoDir}/zm-core-utils/src/libexec/zmrc                                                   ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmrc
+# opt/zimbra/libexec/zmrcd                                                    :: IN_REPO :: [FOUND_HERE] /home/shriram/Stash/zm-core-utils/src/libexec/zmrcd -- [DEST] ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmrcd, [FOUND_HERE] /home/shriram/Stash/zm-ldap-utilities/src/libexec/zmrcd -- [DEST] ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmrcd
+# opt/zimbra/libexec/zmreplchk                                                :: IN_REPO :: [FOUND_HERE] /home/shriram/Stash/zm-core-utils/src/libexec/zmreplchk -- [DEST] ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmreplchk, [FOUND_HERE] /home/shriram/Stash/zm-ldap-utilities/src/libexec/zmreplchk -- [DEST] ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmreplchk
+   Copy ${repoDir}/zm-core-utils/src/libexec/zmresetmysqlpassword                                   ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmresetmysqlpassword
+   Copy ${repoDir}/zm-core-utils/src/libexec/zmrrdfetch                                             ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmrrdfetch
+   Copy ${repoDir}/zm-core-utils/src/libexec/zmsacompile                                            ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmsacompile
+   Copy ${repoDir}/zm-core-utils/src/libexec/zmsaupdate                                             ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmsaupdate
+   Copy ${repoDir}/zm-core-utils/src/libexec/zmserverips                                            ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmserverips
+   Copy ${repoDir}/zm-core-utils/src/libexec/zmsetservername                                        ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmsetservername
+   Copy ${repoDir}/zm-build/rpmconf/Install/zmsetup.pl                                              ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmsetup.pl
+# opt/zimbra/libexec/zmslapadd                                                :: IN_REPO :: [FOUND_HERE] /home/shriram/Stash/zm-core-utils/src/libexec/zmslapadd -- [DEST] ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmslapadd, [FOUND_HERE] /home/shriram/Stash/zm-ldap-utilities/src/libexec/zmslapadd -- [DEST] ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmslapadd
+# opt/zimbra/libexec/zmslapcat                                                :: IN_REPO :: [FOUND_HERE] /home/shriram/Stash/zm-core-utils/src/libexec/zmslapcat -- [DEST] ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmslapcat, [FOUND_HERE] /home/shriram/Stash/zm-ldap-utilities/src/libexec/zmslapcat -- [DEST] ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmslapcat
+# opt/zimbra/libexec/zmslapd                                                  :: IN_REPO :: [FOUND_HERE] /home/shriram/Stash/zm-core-utils/src/libexec/zmslapd -- [DEST] ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmslapd, [FOUND_HERE] /home/shriram/Stash/zm-ldap-utilities/src/libexec/zmslapd -- [DEST] ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmslapd
+# opt/zimbra/libexec/zmslapindex                                              :: IN_REPO :: [FOUND_HERE] /home/shriram/Stash/zm-core-utils/src/libexec/zmslapindex -- [DEST] ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmslapindex, [FOUND_HERE] /home/shriram/Stash/zm-ldap-utilities/src/libexec/zmslapindex -- [DEST] ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmslapindex
+   Copy ${repoDir}/zm-core-utils/src/libexec/zmsnmpinit                                             ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmsnmpinit
+   Copy ${repoDir}/zm-core-utils/src/libexec/zmspamextract                                          ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmspamextract
+   Copy ${repoDir}/zm-core-utils/src/libexec/zmstat-allprocs                                        ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmstat-allprocs
+   Copy ${repoDir}/zm-core-utils/src/libexec/zmstat-cleanup                                         ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmstat-cleanup
+   Copy ${repoDir}/zm-core-utils/src/libexec/zmstat-convertd                                        ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmstat-convertd
+   Copy ${repoDir}/zm-core-utils/src/libexec/zmstat-cpu                                             ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmstat-cpu
+   Copy ${repoDir}/zm-core-utils/src/libexec/zmstat-df                                              ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmstat-df
+   Copy ${repoDir}/zm-core-utils/src/libexec/zmstat-fd                                              ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmstat-fd
+   Copy ${repoDir}/zm-core-utils/src/libexec/zmstat-io                                              ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmstat-io
+# opt/zimbra/libexec/zmstat-ldap                                              :: IN_REPO :: [FOUND_HERE] /home/shriram/Stash/zm-core-utils/src/libexec/zmstat-ldap -- [DEST] ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmstat-ldap, [FOUND_HERE] /home/shriram/Stash/zm-ldap-utilities/src/libexec/zmstat-ldap -- [DEST] ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmstat-ldap
+   Copy ${repoDir}/zm-core-utils/src/libexec/zmstat-mtaqueue                                        ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmstat-mtaqueue
+   Copy ${repoDir}/zm-core-utils/src/libexec/zmstat-mysql                                           ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmstat-mysql
+   Copy ${repoDir}/zm-core-utils/src/libexec/zmstat-nginx                                           ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmstat-nginx
+   Copy ${repoDir}/zm-core-utils/src/libexec/zmstat-proc                                            ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmstat-proc
+   Copy ${repoDir}/zm-core-utils/src/libexec/zmstat-vm                                              ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmstat-vm
+   Copy ${repoDir}/zm-core-utils/src/libexec/zmstatuslog                                            ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmstatuslog
+   Copy ${repoDir}/zm-core-utils/src/libexec/zmsyslogsetup                                          ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmsyslogsetup
+   Copy ${repoDir}/zm-core-utils/src/libexec/zmthreadcpu                                            ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmthreadcpu
+   Copy ${repoDir}/zm-core-utils/src/libexec/zmunbound                                              ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmunbound
+   Copy ${repoDir}/zm-core-utils/src/libexec/zmupdatedownload                                       ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmupdatedownload
+   Copy ${repoDir}/zm-core-utils/src/libexec/zmupdatezco                                            ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmupdatezco
+# opt/zimbra/libexec/zmupgrade.pm                                             :: IN_REPO :: [FOUND_HERE][DIFF] /home/shriram/Stash/zm-build/rpmconf/Upgrade/zmupgrade.pm -- [DEST] ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmupgrade.pm
 
    PrepareDeployDir "libexec/scripts"
    Copy ${repoDir}/zm-db-conf/src/db/migration/Migrate.pm                                           ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/scripts/Migrate.pm
@@ -557,8 +557,8 @@ main()
 # opt/zimbra/db/versions-init.sql
 
    PrepareDeployDir "logger/db/work"
-# opt/zimbra/logger/db/work/connection_failed.gif
-# opt/zimbra/logger/db/work/data_not_available.gif
+   Copy ${repoDir}/zm-build/rpmconf/Img/connection_failed.gif                                       ${repoDir}/zm-build/${currentPackage}/opt/zimbra/logger/db/work/connection_failed.gif
+   Copy ${repoDir}/zm-build/rpmconf/Img/data_not_available.gif                                      ${repoDir}/zm-build/${currentPackage}/opt/zimbra/logger/db/work/data_not_available.gif
 
    PrepareDeployDir "bin"
    Copy ${repoDir}/zm-backup-utilities/src/bin/zmbackup                                             ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmbackup
@@ -663,111 +663,111 @@ main()
 
    PrepareDeployDir "docs"
    PrepareDeployDir "docs/rebranding"
-# opt/zimbra/docs/INSTALL-DEV-MAC-UBUNTU-VM.md
-# opt/zimbra/docs/INSTALL-DEV-MULTISERVER.txt
-# opt/zimbra/docs/INSTALL-DEV-UBUNTU12_64.txt
-# opt/zimbra/docs/INSTALL-OSX.md
-# opt/zimbra/docs/INSTALL-SVN-WIN32.txt
-# opt/zimbra/docs/INSTALL-VOICE.txt
-# opt/zimbra/docs/INSTALL-win.txt
-# opt/zimbra/docs/Notification.md
-# opt/zimbra/docs/OAuthConsumer.txt
-# opt/zimbra/docs/RedoableOperations.txt
-# opt/zimbra/docs/ServerLocalization.txt
-# opt/zimbra/docs/YPL.txt
-# opt/zimbra/docs/ZPL.txt
-# opt/zimbra/docs/ZimbraVoice-Extension.txt
-# opt/zimbra/docs/abook.md
-# opt/zimbra/docs/accesscontrol.txt
-# opt/zimbra/docs/acl.md
-# opt/zimbra/docs/admin_soap_white_list.txt
-# opt/zimbra/docs/alarm.md
-# opt/zimbra/docs/autoprov.txt
-# opt/zimbra/docs/backup.txt
-# opt/zimbra/docs/caches.txt
-# opt/zimbra/docs/cal-todos.md
-# opt/zimbra/docs/certauth.txt
-# opt/zimbra/docs/changepasswordlistener.txt
-# opt/zimbra/docs/clienturls.txt
-# opt/zimbra/docs/customauth-hosted.txt
-# opt/zimbra/docs/customauth.txt
-# opt/zimbra/docs/dav.txt
-# opt/zimbra/docs/delegatedadmin.txt
-# opt/zimbra/docs/extensions.md
-# opt/zimbra/docs/externalldapauth.txt
-# opt/zimbra/docs/familymailboxes.md
-# opt/zimbra/docs/file-upload.txt
-# opt/zimbra/docs/freebusy-interop.md
-# opt/zimbra/docs/gal.txt
-# opt/zimbra/docs/groups.md
-# opt/zimbra/docs/hsm-soap-admin.txt
-# opt/zimbra/docs/idn.txt
-# opt/zimbra/docs/jetty.txt
-# opt/zimbra/docs/junk-notjunk.md
-# opt/zimbra/docs/keyview_eula.txt
-# opt/zimbra/docs/krb5.txt
-# opt/zimbra/docs/ldap.txt
-# opt/zimbra/docs/ldap_replication_howto.txt
-# opt/zimbra/docs/lockout.txt
-# opt/zimbra/docs/logging.md
-# opt/zimbra/docs/login.txt
-# opt/zimbra/docs/mailboxMove.txt
-# opt/zimbra/docs/mysql-monitoring.txt
-# opt/zimbra/docs/notes.txt
-# opt/zimbra/docs/open_source_licenses_zcs-windows.txt
-# opt/zimbra/docs/oracle_jdk_eula.txt
-# opt/zimbra/docs/pop-imap.txt
-# opt/zimbra/docs/postfix-ldap-tables.txt
-# opt/zimbra/docs/postfix-split-domain.md
-# opt/zimbra/docs/preauth.md
-# opt/zimbra/docs/qatests.txt
-# opt/zimbra/docs/query.md
-# opt/zimbra/docs/rest-admin.txt
-# opt/zimbra/docs/rest.txt
-# opt/zimbra/docs/rights-adminconsole.txt
-# opt/zimbra/docs/rights-ext.txt
-# opt/zimbra/docs/rights.txt
-# opt/zimbra/docs/share.md
-# opt/zimbra/docs/snmp.txt
-# opt/zimbra/docs/soap-admin.txt
-# opt/zimbra/docs/soap-calendar.txt
-# opt/zimbra/docs/soap-context-extension.txt
-# opt/zimbra/docs/soap-document.txt
-# opt/zimbra/docs/soap-im.txt
-# opt/zimbra/docs/soap-mobile.txt
-# opt/zimbra/docs/soap-right.txt
-# opt/zimbra/docs/soap-voice-admin.txt
-# opt/zimbra/docs/soap-voice.txt
-# opt/zimbra/docs/soap-waitset.txt
-# opt/zimbra/docs/soap.txt
-# opt/zimbra/docs/soapbackup.txt
-# opt/zimbra/docs/spnego.txt
-# opt/zimbra/docs/sync.txt
-# opt/zimbra/docs/testharness.txt
-# opt/zimbra/docs/twofactorauth.md
-# opt/zimbra/docs/urls.md
-# opt/zimbra/docs/using-gdb.txt
-# opt/zimbra/docs/webdav-mountpoint.txt
-# opt/zimbra/docs/xml-meta.txt
-# opt/zimbra/docs/zdesktop-dev-howto.txt
-# opt/zimbra/docs/zmztozmig.txt
+   Copy ${repoDir}/zm-store/docs/INSTALL-DEV-MAC-UBUNTU-VM.md                                       ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/INSTALL-DEV-MAC-UBUNTU-VM.md
+   Copy ${repoDir}/zm-store/docs/INSTALL-DEV-MULTISERVER.txt                                        ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/INSTALL-DEV-MULTISERVER.txt
+   Copy ${repoDir}/zm-store/docs/INSTALL-DEV-UBUNTU12_64.txt                                        ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/INSTALL-DEV-UBUNTU12_64.txt
+   Copy ${repoDir}/zm-store/docs/INSTALL-OSX.md                                                     ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/INSTALL-OSX.md
+   Copy ${repoDir}/zm-store/docs/INSTALL-SVN-WIN32.txt                                              ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/INSTALL-SVN-WIN32.txt
+   Copy ${repoDir}/zm-store/docs/INSTALL-VOICE.txt                                                  ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/INSTALL-VOICE.txt
+   Copy ${repoDir}/zm-store/docs/INSTALL-win.txt                                                    ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/INSTALL-win.txt
+   Copy ${repoDir}/zm-store/docs/Notification.md                                                    ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/Notification.md
+   Copy ${repoDir}/zm-store/docs/OAuthConsumer.txt                                                  ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/OAuthConsumer.txt
+   Copy ${repoDir}/zm-store/docs/RedoableOperations.txt                                             ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/RedoableOperations.txt
+   Copy ${repoDir}/zm-store/docs/ServerLocalization.txt                                             ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/ServerLocalization.txt
+# opt/zimbra/docs/YPL.txt                                                     :: NOT_IN_REPO :: 
+# opt/zimbra/docs/ZPL.txt                                                     :: NOT_IN_REPO :: 
+   Copy ${repoDir}/zm-voice-store/docs/ZimbraVoice-Extension.txt                                    ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/ZimbraVoice-Extension.txt
+   Copy ${repoDir}/zm-store/docs/abook.md                                                           ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/abook.md
+   Copy ${repoDir}/zm-store/docs/accesscontrol.txt                                                  ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/accesscontrol.txt
+   Copy ${repoDir}/zm-store/docs/acl.md                                                             ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/acl.md
+   Copy ${repoDir}/zm-store/docs/admin_soap_white_list.txt                                          ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/admin_soap_white_list.txt
+   Copy ${repoDir}/zm-store/docs/alarm.md                                                           ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/alarm.md
+   Copy ${repoDir}/zm-store/docs/autoprov.txt                                                       ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/autoprov.txt
+   Copy ${repoDir}/zm-backup-store/docs/backup.txt                                                  ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/backup.txt
+   Copy ${repoDir}/zm-store/docs/caches.txt                                                         ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/caches.txt
+   Copy ${repoDir}/zm-store/docs/cal-todos.md                                                       ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/cal-todos.md
+   Copy ${repoDir}/zm-store/docs/certauth.txt                                                       ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/certauth.txt
+   Copy ${repoDir}/zm-store/docs/changepasswordlistener.txt                                         ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/changepasswordlistener.txt
+   Copy ${repoDir}/zm-store/docs/clienturls.txt                                                     ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/clienturls.txt
+   Copy ${repoDir}/zm-store/docs/customauth-hosted.txt                                              ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/customauth-hosted.txt
+   Copy ${repoDir}/zm-store/docs/customauth.txt                                                     ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/customauth.txt
+   Copy ${repoDir}/zm-store/docs/dav.txt                                                            ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/dav.txt
+   Copy ${repoDir}/zm-store/docs/delegatedadmin.txt                                                 ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/delegatedadmin.txt
+   Copy ${repoDir}/zm-store/docs/extensions.md                                                      ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/extensions.md
+   Copy ${repoDir}/zm-store/docs/externalldapauth.txt                                               ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/externalldapauth.txt
+   Copy ${repoDir}/zm-store/docs/familymailboxes.md                                                 ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/familymailboxes.md
+   Copy ${repoDir}/zm-store/docs/file-upload.txt                                                    ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/file-upload.txt
+   Copy ${repoDir}/zm-store/docs/freebusy-interop.md                                                ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/freebusy-interop.md
+   Copy ${repoDir}/zm-store/docs/gal.txt                                                            ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/gal.txt
+   Copy ${repoDir}/zm-store/docs/groups.md                                                          ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/groups.md
+# opt/zimbra/docs/hsm-soap-admin.txt                                          :: NOT_IN_REPO :: 
+   Copy ${repoDir}/zm-store/docs/idn.txt                                                            ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/idn.txt
+   Copy ${repoDir}/zm-store/docs/jetty.txt                                                          ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/jetty.txt
+   Copy ${repoDir}/zm-store/docs/junk-notjunk.md                                                    ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/junk-notjunk.md
+   Copy ${repoDir}/zm-licenses/thirdparty/keyview_eula.txt                                          ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/keyview_eula.txt
+   Copy ${repoDir}/zm-store/docs/krb5.txt                                                           ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/krb5.txt
+   Copy ${repoDir}/zm-store/docs/ldap.txt                                                           ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/ldap.txt
+   Copy ${repoDir}/zm-store/docs/ldap_replication_howto.txt                                         ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/ldap_replication_howto.txt
+   Copy ${repoDir}/zm-store/docs/lockout.txt                                                        ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/lockout.txt
+   Copy ${repoDir}/zm-store/docs/logging.md                                                         ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/logging.md
+   Copy ${repoDir}/zm-store/docs/login.txt                                                          ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/login.txt
+   Copy ${repoDir}/zm-backup-store/docs/mailboxMove.txt                                             ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/mailboxMove.txt
+   Copy ${repoDir}/zm-store/docs/mysql-monitoring.txt                                               ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/mysql-monitoring.txt
+   Copy ${repoDir}/zm-store/docs/notes.txt                                                          ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/notes.txt
+   Copy ${repoDir}/zm-store/docs/open_source_licenses_zcs-windows.txt                               ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/open_source_licenses_zcs-windows.txt
+   Copy ${repoDir}/zm-licenses/thirdparty/oracle_jdk_eula.txt                                       ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/oracle_jdk_eula.txt
+   Copy ${repoDir}/zm-store/docs/pop-imap.txt                                                       ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/pop-imap.txt
+   Copy ${repoDir}/zm-store/docs/postfix-ldap-tables.txt                                            ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/postfix-ldap-tables.txt
+   Copy ${repoDir}/zm-store/docs/postfix-split-domain.md                                            ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/postfix-split-domain.md
+   Copy ${repoDir}/zm-store/docs/preauth.md                                                         ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/preauth.md
+   Copy ${repoDir}/zm-store/docs/qatests.txt                                                        ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/qatests.txt
+   Copy ${repoDir}/zm-store/docs/query.md                                                           ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/query.md
+   Copy ${repoDir}/zm-store/docs/rest-admin.txt                                                     ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/rest-admin.txt
+   Copy ${repoDir}/zm-store/docs/rest.txt                                                           ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/rest.txt
+   Copy ${repoDir}/zm-store/docs/rights-adminconsole.txt                                            ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/rights-adminconsole.txt
+   Copy ${repoDir}/zm-store/docs/rights-ext.txt                                                     ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/rights-ext.txt
+   Copy ${repoDir}/zm-store/docs/rights.txt                                                         ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/rights.txt
+   Copy ${repoDir}/zm-store/docs/share.md                                                           ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/share.md
+   Copy ${repoDir}/zm-store/docs/snmp.txt                                                           ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/snmp.txt
+# opt/zimbra/docs/soap-admin.txt                                              :: IN_REPO :: [FOUND_HERE][DIFF] /home/shriram/Stash/zm-hsm/docs/soap-admin.txt -- [DEST] ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/soap-admin.txt, [FOUND_HERE] /home/shriram/Stash/zm-store/docs/soap-admin.txt -- [DEST] ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/soap-admin.txt
+   Copy ${repoDir}/zm-store/docs/soap-calendar.txt                                                  ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/soap-calendar.txt
+   Copy ${repoDir}/zm-store/docs/soap-context-extension.txt                                         ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/soap-context-extension.txt
+   Copy ${repoDir}/zm-store/docs/soap-document.txt                                                  ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/soap-document.txt
+   Copy ${repoDir}/zm-store/docs/soap-im.txt                                                        ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/soap-im.txt
+   Copy ${repoDir}/zm-store/docs/soap-mobile.txt                                                    ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/soap-mobile.txt
+   Copy ${repoDir}/zm-store/docs/soap-right.txt                                                     ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/soap-right.txt
+   Copy ${repoDir}/zm-voice-store/docs/soap-voice-admin.txt                                         ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/soap-voice-admin.txt
+   Copy ${repoDir}/zm-voice-store/docs/soap-voice.txt                                               ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/soap-voice.txt
+   Copy ${repoDir}/zm-store/docs/soap-waitset.txt                                                   ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/soap-waitset.txt
+# opt/zimbra/docs/soap.txt                                                    :: IN_REPO :: [FOUND_HERE][DIFF] /home/shriram/Stash/zm-store/docs/soap.txt -- [DEST] ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/soap.txt, [FOUND_HERE][DIFF] /home/shriram/Stash/zm-xmbxsearch-store/docs/soap.txt -- [DEST] ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/soap.txt
+   Copy ${repoDir}/zm-backup-store/docs/soapbackup.txt                                              ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/soapbackup.txt
+   Copy ${repoDir}/zm-store/docs/spnego.txt                                                         ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/spnego.txt
+   Copy ${repoDir}/zm-store/docs/sync.txt                                                           ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/sync.txt
+   Copy ${repoDir}/zm-store/docs/testharness.txt                                                    ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/testharness.txt
+   Copy ${repoDir}/zm-twofactorauth-store/docs/twofactorauth.md                                     ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/twofactorauth.md
+   Copy ${repoDir}/zm-store/docs/urls.md                                                            ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/urls.md
+   Copy ${repoDir}/zm-store/docs/using-gdb.txt                                                      ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/using-gdb.txt
+   Copy ${repoDir}/zm-store/docs/webdav-mountpoint.txt                                              ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/webdav-mountpoint.txt
+   Copy ${repoDir}/zm-backup-store/docs/xml-meta.txt                                                ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/xml-meta.txt
+   Copy ${repoDir}/zm-store/docs/zdesktop-dev-howto.txt                                             ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/zdesktop-dev-howto.txt
+# opt/zimbra/docs/zmztozmig.txt                                               :: NOT_IN_REPO :: 
 
-# opt/zimbra/docs/rebranding/DE_Rebranding_directions.txt
-# opt/zimbra/docs/rebranding/ES_Rebranding_directions.txt
-# opt/zimbra/docs/rebranding/FR_Rebranding_directions.txt
-# opt/zimbra/docs/rebranding/IT_Rebranding_directions.txt
-# opt/zimbra/docs/rebranding/JA_Rebranding_directions.txt
-# opt/zimbra/docs/rebranding/NL_Rebranding_directions.txt
-# opt/zimbra/docs/rebranding/RU_Rebranding_directions.txt
-# opt/zimbra/docs/rebranding/en_US_Rebranding_directions.txt
-# opt/zimbra/docs/rebranding/pt_BR_Rebranding_directions.txt
-# opt/zimbra/docs/rebranding/zh_CN_Rebranding_directions.txt
-# opt/zimbra/docs/rebranding/zh_HK_Rebranding_directions.txt
+   Copy ${repoDir}/zm-web-client/docs/rebranding/DE_Rebranding_directions.txt                       ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/rebranding/DE_Rebranding_directions.txt
+   Copy ${repoDir}/zm-web-client/docs/rebranding/ES_Rebranding_directions.txt                       ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/rebranding/ES_Rebranding_directions.txt
+   Copy ${repoDir}/zm-web-client/docs/rebranding/FR_Rebranding_directions.txt                       ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/rebranding/FR_Rebranding_directions.txt
+   Copy ${repoDir}/zm-web-client/docs/rebranding/IT_Rebranding_directions.txt                       ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/rebranding/IT_Rebranding_directions.txt
+   Copy ${repoDir}/zm-web-client/docs/rebranding/JA_Rebranding_directions.txt                       ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/rebranding/JA_Rebranding_directions.txt
+   Copy ${repoDir}/zm-web-client/docs/rebranding/NL_Rebranding_directions.txt                       ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/rebranding/NL_Rebranding_directions.txt
+   Copy ${repoDir}/zm-web-client/docs/rebranding/RU_Rebranding_directions.txt                       ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/rebranding/RU_Rebranding_directions.txt
+   Copy ${repoDir}/zm-web-client/docs/rebranding/en_US_Rebranding_directions.txt                    ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/rebranding/en_US_Rebranding_directions.txt
+   Copy ${repoDir}/zm-web-client/docs/rebranding/pt_BR_Rebranding_directions.txt                    ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/rebranding/pt_BR_Rebranding_directions.txt
+   Copy ${repoDir}/zm-web-client/docs/rebranding/zh_CN_Rebranding_directions.txt                    ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/rebranding/zh_CN_Rebranding_directions.txt
+   Copy ${repoDir}/zm-web-client/docs/rebranding/zh_HK_Rebranding_directions.txt                    ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/rebranding/zh_HK_Rebranding_directions.txt
 
    PrepareDeployDir "lib"
-# opt/zimbra/lib/libappmonitorlib.so
-# opt/zimbra/lib/libjunixsocket-linux-1.5-amd64.so
-# opt/zimbra/lib/libzimbra-native.so
+# opt/zimbra/lib/libappmonitorlib.so                                          :: NOT_IN_REPO :: 
+# opt/zimbra/lib/libjunixsocket-linux-1.5-amd64.so                            :: NOT_IN_REPO :: 
+# opt/zimbra/lib/libzimbra-native.so                                          :: NOT_IN_REPO :: 
 
    PrepareDeployDir "lib/jars"
    PrepareDeployDir "lib/ext-common"
