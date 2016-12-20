@@ -87,6 +87,7 @@
       "stage_cmd" => sub {
            System("(cd .. && rsync -az --relative zm-ldap-utilities/build/ldap-config/zimbra_mimehandlers.ldif $GLOBAL_BUILD_DIR/)");
            System("(cd .. && rsync -az --relative zm-ldap-utilities/src/ldap/migration $GLOBAL_BUILD_DIR/)");
+           System("(cd .. && rsync -az --relative zm-ldap-utilities/conf $GLOBAL_BUILD_DIR/)");
       },
    },
    {
@@ -124,6 +125,7 @@
       "stage_cmd" => sub {
            System("mkdir -p $GLOBAL_BUILD_DIR/zm-backup-store/build/dist");
            System("cp -f -r build/dist $GLOBAL_BUILD_DIR/zm-backup-store/build");
+           System("(cd .. && rsync -az --relative zm-backup-store/docs $GLOBAL_BUILD_DIR/)");
       },
    },
    {
@@ -132,6 +134,7 @@
       "stage_cmd" => sub {
            System("mkdir -p $GLOBAL_BUILD_DIR/zm-voice-store/build/dist");
            System("cp -f -r build/dist $GLOBAL_BUILD_DIR/zm-voice-store/build");
+           System("(cd .. && rsync -az --relative zm-voice-store/docs $GLOBAL_BUILD_DIR/)");
       },
    },
    {
@@ -167,11 +170,20 @@
       },
    },
    {
+      "dir"         => "zm-licenses",
+      "ant_targets" => undef,
+      "stage_cmd" => sub {
+           System("mkdir -p $GLOBAL_BUILD_DIR/zm-licenses");
+           System("(cd .. && rsync -az --relative zm-licenses/ $GLOBAL_BUILD_DIR/)");           
+      },
+   },
+   {
       "dir"         => "zm-twofactorauth-store",
       "ant_targets" => ["publish-local"],
       "stage_cmd" => sub {
            System("mkdir -p $GLOBAL_BUILD_DIR/zm-twofactorauth-store/build/dist");
            System("cp -f -p build/zm-twofactorauth-store-*.jar $GLOBAL_BUILD_DIR/zm-twofactorauth-store/build/dist");
+           System("(cd .. && rsync -az --relative zm-twofactorauth-store/docs  $GLOBAL_BUILD_DIR/)");
       },
    },
    {
@@ -357,6 +369,7 @@
            System("mkdir -p $GLOBAL_BUILD_DIR/zm-network-store/build/dist");
            System("cp -f build/zm-network-store-*.jar $GLOBAL_BUILD_DIR/zm-network-store/build/dist/zimbranetwork.jar");
            System("(cd .. && rsync -az --relative zm-network-store/src/bin $GLOBAL_BUILD_DIR/)");
+           System("(cd .. && rsync -az --relative zm-network-store/src/libexec $GLOBAL_BUILD_DIR/)");
       },
    },
    {
@@ -373,6 +386,7 @@
       "stage_cmd" => sub {
            System("mkdir -p $GLOBAL_BUILD_DIR/zm-store/build/dist");
            System("cp -f build/service.war $GLOBAL_BUILD_DIR/zm-store/build/dist");
+           System("(cd .. && rsync -az --relative zm-store/docs $GLOBAL_BUILD_DIR/)");
       },
    },
    {
@@ -437,6 +451,7 @@
       "ant_targets" => undef,
       "stage_cmd" => sub {
            System("(cd .. && rsync -az --relative zm-backup-utilities/src/bin $GLOBAL_BUILD_DIR/)");
+           System("(cd .. && rsync -az --relative zm-backup-utilities/src/libexec $GLOBAL_BUILD_DIR/)");
       },
    },
    {
