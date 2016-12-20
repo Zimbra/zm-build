@@ -530,10 +530,10 @@ main()
    Copy ${repoDir}/zm-ldap-utilities/src/ldap/migration/migrate20141022-AddTLSBits.pl               ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/scripts/migrate20141022-AddTLSBits.pl
    Copy ${repoDir}/zm-ldap-utilities/src/ldap/migration/migrate20150930-AddSyncpovSessionlog.pl     ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/scripts/migrate20150930-AddSyncpovSessionlog.pl
 
-# opt/zimbra/libexec/scripts/migrate20130227-UpgradeCBPolicyDSchema.sql       :: NOT_IN_REPO :: [FOUND_HERE] /home/shriram/Stash/zcs-full/ZimbraServer/src/cbpolicyd/migration/migrate20130227-UpgradeCBPolicyDSchema.sql
-# opt/zimbra/libexec/scripts/migrate20130606-UpdateCBPolicydSchema.sql        :: NOT_IN_REPO :: [FOUND_HERE] /home/shriram/Stash/zcs-full/ZimbraServer/src/cbpolicyd/migration/migrate20130606-UpdateCBPolicydSchema.sql
-# opt/zimbra/libexec/scripts/migrate20130819-UpgradeQuotasTable.sql           :: NOT_IN_REPO :: [FOUND_HERE] /home/shriram/Stash/zcs-full/ZimbraServer/src/cbpolicyd/migration/migrate20130819-UpgradeQuotasTable.sql
-# opt/zimbra/libexec/scripts/migrate20131014-removezca.pl                     :: NOT_IN_REPO :: [FOUND_HERE] /home/shriram/Stash/zcs-full/ZimbraServer/src/zca/migration/migrate20131014-removezca.pl
+# opt/zimbra/libexec/scripts/migrate20130227-UpgradeCBPolicyDSchema.sql       :: NOT_IN_REPO :: [FOUND_HERE] /home/shriram/Stash/zcs-full/ZimbraServer/src/cbpolicyd/migration/migrate20130227-UpgradeCBPolicyDSchema.sql -- [DEST] ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/scripts/migrate20130227-UpgradeCBPolicyDSchema.sql
+# opt/zimbra/libexec/scripts/migrate20130606-UpdateCBPolicydSchema.sql        :: NOT_IN_REPO :: [FOUND_HERE] /home/shriram/Stash/zcs-full/ZimbraServer/src/cbpolicyd/migration/migrate20130606-UpdateCBPolicydSchema.sql -- [DEST] ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/scripts/migrate20130606-UpdateCBPolicydSchema.sql
+# opt/zimbra/libexec/scripts/migrate20130819-UpgradeQuotasTable.sql           :: NOT_IN_REPO :: [FOUND_HERE] /home/shriram/Stash/zcs-full/ZimbraServer/src/cbpolicyd/migration/migrate20130819-UpgradeQuotasTable.sql -- [DEST] ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/scripts/migrate20130819-UpgradeQuotasTable.sql
+# opt/zimbra/libexec/scripts/migrate20131014-removezca.pl                     :: NOT_IN_REPO :: [FOUND_HERE] /home/shriram/Stash/zcs-full/ZimbraServer/src/zca/migration/migrate20131014-removezca.pl -- [DEST] ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/scripts/migrate20131014-removezca.pl
 
 
    PrepareDeployDir "libexec/installer"
@@ -651,15 +651,15 @@ main()
    Copy ${repoDir}/zm-core-utils/src/bin/zmupdateauthkeys                                           ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmupdateauthkeys
    Copy ${repoDir}/zm-core-utils/src/bin/zmvolume                                                   ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmvolume
    Copy ${repoDir}/zm-core-utils/src/bin/zmzimletctl                                                ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmzimletctl
+   Copy ${repoDir}/zm-core-utils/src/bin/ldap.production                                            ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/ldap
 
    Copy ${repoDir}/zm-network-store/src/bin/zmhactl                                                 ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmhactl
    Copy ${repoDir}/zm-network-store/src/bin/zmmboxsearch                                            ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmmboxsearch
 
-# opt/zimbra/bin/ldap                                                         :: IN_REPO :: [FOUND_HERE][DIFF] /home/shriram/Stash/zm-core-utils/src/bin/ldap
-# opt/zimbra/bin/zmconvertctl                                                 :: IN_REPO :: [FOUND_HERE][DIFF] /home/shriram/Stash/zm-convertd-native/src/bin/zmconvertctl
-# opt/zimbra/bin/zmlicense                                                    :: NOT_IN_REPO :: [FOUND_HERE] /home/shriram/Stash/zcs-full/ZimbraLicenseTools/src/bin/zmlicense
-# opt/zimbra/bin/zmmailbox                                                    :: IN_REPO :: [FOUND_HERE][DIFF] /home/shriram/Stash/zm-core-utils/src/bin/zmmailbox
-# opt/zimbra/bin/zmresolverctl                                                :: IN_REPO :: [FOUND_HERE][DIFF] /home/shriram/Stash/zm-core-utils/src/bin/zmresolverctl
+   Copy ${repoDir}/zm-convertd-native/src/bin/zmconvertctl                                          ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmconvertctl
+# opt/zimbra/bin/zmlicense                                                    :: NOT_IN_REPO :: [FOUND_HERE] /home/shriram/Stash/zcs-full/ZimbraLicenseTools/src/bin/zmlicense -- [DEST] ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmlicense
+   Copy ${repoDir}/zm-core-utils/src/bin/zmmailbox                                                  ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmmailbox
+   Copy ${repoDir}/zm-core-utils/src/bin/zmresolverctl                                              ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmresolverctl
 
    PrepareDeployDir "docs"
    PrepareDeployDir "docs/rebranding"
