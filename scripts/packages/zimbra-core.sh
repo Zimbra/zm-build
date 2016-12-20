@@ -900,12 +900,16 @@ main()
 # opt/zimbra/lib/jars/zkclient-0.1.jar
 # opt/zimbra/lib/jars/zookeeper-3.4.5.jar
 
-# opt/zimbra/lib/ext/com_zimbra_bulkprovision/com_zimbra_bulkprovision.jar
-# opt/zimbra/lib/ext/com_zimbra_bulkprovision/commons-csv-1.2.jar
-# opt/zimbra/lib/ext/com_zimbra_cert_manager/com_zimbra_cert_manager.jar
-# opt/zimbra/lib/ext/com_zimbra_clientuploader/com_zimbra_clientuploader.jar
+  PrepareDeployDir "lib/ext/com_zimbra_bulkprovision"
+  PrepareDeployDir "lib/ext/com_zimbra_clientuploader"
+  PrepareDeployDir "lib/ext/com_zimbra_cert_manager"
+  Copy ${repoDir}/zm-bulkprovision-store/build/dist/zm-bulkprovision-store.jar  ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/com_zimbra_bulkprovision/com_zimbra_bulkprovision.jar
+  Copy ${repoDir}/zm-bulkprovision-store/build/dist/commons-csv-1.2.jar  ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/com_zimbra_bulkprovision
+  Copy ${repoDir}/zm-certificate-manager-store/build/zm-certificate-manager-store*.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/com_zimbra_cert_manager/com_zimbra_cert_manager.jar 
+  Copy ${repoDir}/zm-clientuploader-store/build/zm-clientuploader-store*.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/com_zimbra_clientuploader/com_zimbra_clientuploader.jar
 
-# opt/zimbra/lib/ext-common/zimbra-license-tools.jar
+  PrepareDeployDir "lib/ext-common"
+  Copy ${repoDir}/zm-license-tools/build/zm-license-tools*.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext-common/zimbra-license-tools.jar
 
 # opt/zimbra/lib/jars-ant/ant-1.6.5.jar
 

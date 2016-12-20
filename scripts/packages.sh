@@ -102,6 +102,12 @@
             cp -R ${gitRepoDir}/zm-webclient-portal-example ${repoDir}
             cp -R ${gitRepoDir}/zm-downloads ${repoDir}
             cp -R ${gitRepoDir}/zm-zimlets ${repoDir}
+            cp -R ${gitRepoDir}/zm-bulkprovision-store ${repoDir}
+            cp -R ${gitRepoDir}/zm-certificate-manager-store ${repoDir}
+            cp -R ${gitRepoDir}/zm-clientuploader-store ${repoDir}
+            cp -R ${gitRepoDir}/zm-license-tools ${repoDir}
+            cp -R ${gitRepoDir}/zm-db-conf ${repoDir}
+            cp -R ${gitRepoDir}/zm-backup-utilities ${repoDir}
         fi
 
 	echo -e "Exporting script argument values" >> ${buildLogFile}
