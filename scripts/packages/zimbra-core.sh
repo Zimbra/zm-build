@@ -550,10 +550,10 @@ main()
 # opt/zimbra/libexec/installer/util/utilfunc.sh
 
    PrepareDeployDir "db"
+   Copy ${repoDir}/zm-db-conf/src/db/mysql/db.sql ${repoDir}/zm-build/${currentPackage}/opt/zimbra/db
+   Copy ${repoDir}/zm-db-conf/src/db/mysql/create_database.sql  ${repoDir}/zm-build/${currentPackage}/opt/zimbra/db
+   Copy ${repoDir}/zm-backup-utilities/src/db/backup_schema.sql ${repoDir}/zm-build/${currentPackage}/opt/zimbra/db
 # opt/zimbra/db/backup-version-init.sql
-# opt/zimbra/db/backup_schema.sql
-# opt/zimbra/db/create_database.sql
-# opt/zimbra/db/db.sql
 # opt/zimbra/db/versions-init.sql
 
    PrepareDeployDir "logger/db/work"
