@@ -429,8 +429,8 @@ sub SlurpFile($)
 sub Run(%)
 {
    my %args  = (@_);
-   my $chdir = %args{cd};
-   my $call  = %args{call};
+   my $chdir = $args{cd};
+   my $call  = $args{call};
 
    my $child_pid = fork();
 
