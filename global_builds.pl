@@ -451,6 +451,7 @@
       "ant_targets" => undef,
       "stage_cmd" => sub {
            System("(cd .. && rsync -az --relative zm-db-conf/src/db/migration $GLOBAL_BUILD_DIR/)");
+           System("(cd .. && rsync -az --relative zm-db-conf/src/db/mysql     $GLOBAL_BUILD_DIR/)");
       },
    },
    {
@@ -458,7 +459,8 @@
       "ant_targets" => undef,
       "stage_cmd" => sub {
            System("(cd .. && rsync -az --relative zm-backup-utilities/src/bin $GLOBAL_BUILD_DIR/)");
-           System("(cd .. && rsync -az --relative zm-backup-utilities/src/libexec $GLOBAL_BUILD_DIR/)");
+           System("(cd .. && rsync -az --relative zm-backup-utilities/src/bin $GLOBAL_BUILD_DIR/)");
+           System("(cd .. && rsync -az --relative zm-backup-utilities/src/db  $GLOBAL_BUILD_DIR/)");
       },
    },
    {
