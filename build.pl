@@ -47,10 +47,13 @@ my @GLOBAL_REPOS = (
    { name => "zm-backup-restore-admin-zimlet", branch => "master", user => "zimbra" },
    { name => "zm-backup-store",                branch => "dev",    user => "zimbra" },
    { name => "zm-backup-utilities",            branch => "master", user => "zimbra" },
+   { name => "zm-bulkprovision-store",         branch => "master", user => "zimbra" },
 
    #   { name => "zm-build",                       branch => "dev",    user => "zimbra" },
+   { name => "zm-certificate-manager-store",branch => "master", user => "zimbra" },
    { name => "zm-clam-scanner-store",       branch => "dev",    user => "zimbra" },
    { name => "zm-client",                   branch => "dev",    user => "zimbra" },
+   { name => "zm-clientuploader-store",     branch => "master", user => "zimbra" },
    { name => "zm-common",                   branch => "dev",    user => "zimbra" },
    { name => "zm-convertd-admin-zimlet",    branch => "master", user => "zimbra" },
    { name => "zm-convertd-native",          branch => "master", user => "zimbra" },
@@ -64,9 +67,12 @@ my @GLOBAL_REPOS = (
    { name => "zm-ews-common",               branch => "dev",    user => "zimbra" },
    { name => "zm-ews-store",                branch => "dev",    user => "zimbra" },
    { name => "zm-ews-stub",                 branch => "dev",    user => "zimbra" },
+   { name => "zm-freebusy-provider-store",  branch => "judaspriest-870",    user => "zimbra" },
    { name => "zm-help",                     branch => "master", user => "zimbra" },
    { name => "zm-hsm",                      branch => "master", user => "zimbra" },
    { name => "zm-hsm-admin-zimlet",         branch => "master", user => "zimbra" },
+   { name => "zm-hsm-store",                branch => "master", user => "zimbra" },
+   { name => "zm-ldap-utils-store",         branch => "master", user => "zimbra" },
    { name => "zm-ldap-utilities",           branch => "master", user => "zimbra" },
    { name => "zm-license-admin-zimlet",     branch => "dev",    user => "zimbra" },
    { name => "zm-license-store",            branch => "dev",    user => "zimbra" },
@@ -99,6 +105,7 @@ my @GLOBAL_REPOS = (
    { name => "zm-twofactorauth-store",      branch => "dev",    user => "zimbra" },
    { name => "zm-uc-admin-zimlets",         branch => "master", user => "zimbra" },
    { name => "zm-ucconfig-admin-zimlet",    branch => "master", user => "zimbra" },
+   { name => "zm-versioncheck-store",       branch => "master", user => "zimbra" },
    { name => "zm-versioncheck-utilities",   branch => "master", user => "zimbra" },
    { name => "zm-voice-cisco-store",        branch => "dev",    user => "zimbra" },
    { name => "zm-voice-mitel-store",        branch => "dev",    user => "zimbra" },
@@ -218,6 +225,7 @@ sub Build()
 {
    my @GLOBAL_BUILDS;
    eval `cat $GLOBAL_PATH_TO_TOP/zm-build/global_builds.pl`;
+   die "FAILURE in global_builds.pl, (info=$!, err=$@)\n" if($@);
 
    for my $build_info (@GLOBAL_BUILDS)
    {

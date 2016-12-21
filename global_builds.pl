@@ -28,7 +28,7 @@
       "dir"         => "zm-license-tools",
       "ant_targets" => ["publish-local"],
       "stage_cmd"   => sub {
-           System("(cd .. && rsync -az --relative zm-license-tools/src/bin $GLOBAL_BUILD_DIR/)");
+#           System("(cd .. && rsync -az --relative zm-license-tools/src/bin $GLOBAL_BUILD_DIR/)");
       },
    },
    {
@@ -597,6 +597,78 @@
       "ant_targets" => undef,
       "stage_cmd" => sub {
            System("cp -f -r ../zm-windows-comp $GLOBAL_BUILD_DIR");
+      },
+   },
+   {
+      "dir"         => "zm-bulkprovision-store",
+      "ant_targets" => ["jar"],
+      "stage_cmd" => sub {
+           System("mkdir -p $GLOBAL_BUILD_DIR/zm-bulkprovision-store");
+           System("cp -f -r ../zm-bulkprovision-store/build $GLOBAL_BUILD_DIR/zm-bulkprovision-store");
+      },
+   },
+   {
+      "dir"         => "zm-certificate-manager-store",
+      "ant_targets" => ["jar"],
+      "stage_cmd" => sub {
+           System("mkdir -p $GLOBAL_BUILD_DIR/zm-certificate-manager-store");
+           System("cp -f -r ../zm-certificate-manager-store/build $GLOBAL_BUILD_DIR/zm-certificate-manager-store");
+      },
+   },
+   {
+      "dir"         => "zm-clientuploader-store",
+      "ant_targets" => ["jar"],
+      "stage_cmd" => sub {
+           System("mkdir -p $GLOBAL_BUILD_DIR/zm-clientuploader-store");
+           System("cp -f -r ../zm-clientuploader-store/build $GLOBAL_BUILD_DIR/zm-clientuploader-store");
+      },
+   },
+   {
+      "dir"         => "zm-freebusy-provider-store",
+      "ant_targets" => ["jar"],
+      "stage_cmd" => sub {
+           System("mkdir -p $GLOBAL_BUILD_DIR/zm-freebusy-provider-store");
+           System("cp -f -r ../zm-freebusy-provider-store/build $GLOBAL_BUILD_DIR/zm-freebusy-provider-store");
+      },
+   },
+   {
+      "dir"         => "zm-versioncheck-store",
+      "ant_targets" => ["jar"],
+      "stage_cmd" => sub {
+           System("mkdir -p $GLOBAL_BUILD_DIR/zm-versioncheck-store");
+           System("cp -f -r ../zm-versioncheck-store/build $GLOBAL_BUILD_DIR/zm-versioncheck-store");
+      },
+   },
+   {
+      "dir"         => "zm-hsm-store",
+      "ant_targets" => ["jar"],
+      "stage_cmd" => sub {
+           System("mkdir -p $GLOBAL_BUILD_DIR/zm-hsm-store");
+           System("cp -f -r ../zm-hsm-store/build $GLOBAL_BUILD_DIR/zm-hsm-store");
+      },
+   },
+   {
+      "dir"         => "zm-ldap-utils-store",
+      "ant_targets" => ["jar"],
+      "stage_cmd" => sub {
+           System("mkdir -p $GLOBAL_BUILD_DIR/zm-ldap-utils-store");
+           System("cp -f -r ../zm-ldap-utils-store/build $GLOBAL_BUILD_DIR/zm-ldap-utils-store");
+      },
+   },
+   {
+      "dir"         => "zm-network-store",
+      "ant_targets" => ["cmbsearch-jar"],
+      "stage_cmd" => sub {
+           System("mkdir -p $GLOBAL_BUILD_DIR/zm-network-store");
+           System("cp -f -r ../zm-network-store/build $GLOBAL_BUILD_DIR/zm-network-store");
+      },
+   },
+   {
+      "dir"         => "zm-license-tools",
+      "ant_targets" => ["jar"],
+      "stage_cmd" => sub {
+           System("mkdir -p $GLOBAL_BUILD_DIR/zm-license-tools");
+           System("cp -f -r ../zm-license-tools/build $GLOBAL_BUILD_DIR/zm-license-tools");
       },
    },
 );
