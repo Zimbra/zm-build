@@ -128,7 +128,7 @@ sub main()
 
 sub InitGlobalBuildVars()
 {
-   if( -f "/tmp/last.build_no_ts" && $ENV{ENV_RESUME_FLAG} )
+   if ( -f "/tmp/last.build_no_ts" && $ENV{ENV_RESUME_FLAG} )
    {
       my $x = LoadProperties("/tmp/last.build_no_ts");
 
@@ -165,6 +165,9 @@ sub InitGlobalBuildVars()
    print "BUILD RELEASE CANDIDATE : $GLOBAL_BUILD_RELEASE_CANDIDATE\n";
    print "=========================================================================================================\n";
 
+   $ENV{ENV_PACKAGE_EXCLUDE} = '.*' if ( $ENV{ENV_PACKAGE_INCLUDE} );
+   $ENV{ENV_BUILD_EXCLUDE}   = '.*' if ( $ENV{ENV_BUILD_INCLUDE} );
+
    foreach my $x (`grep -o '\\<[E][N][V]_[A-Z_]*\\>' $GLOBAL_PATH_TO_SCRIPT | sort | uniq`)
    {
       chomp($x);
@@ -176,7 +179,8 @@ sub InitGlobalBuildVars()
    print "BUILD DIR               : $GLOBAL_BUILD_DIR\n";
    print "=========================================================================================================\n";
    print "Press enter to proceed";
-   my $x; read STDIN, $x, 1;
+   my $x;
+   read STDIN, $x, 1;
 }
 
 sub Prepare()
@@ -184,7 +188,7 @@ sub Prepare()
    #system("rm", "-rf", "$ENV{HOME}/.zcs-deps");
    #system("rm", "-rf", "$ENV{HOME}/.ivy2/cache");
 
-   open(FD, ">", "/tmp/last.build_no_ts");
+   open( FD, ">", "/tmp/last.build_no_ts" );
    print FD "BUILD_NO=$GLOBAL_BUILD_NO\n";
    print FD "BUILD_TS=$GLOBAL_BUILD_TS\n";
    close(FD);
@@ -220,7 +224,10 @@ sub Build()
       if ( my $dir = $build_info->{dir} )
       {
          next
-           if ( grep { $build_info->{dir} =~ /$_/ } split( ",", $ENV{ENV_BUILD_EXCLUDE} || "" ) );
+           if (
+            !( $ENV{ENV_BUILD_INCLUDE} && grep { $build_info->{dir} =~ /$_/ } split( ",", $ENV{ENV_BUILD_INCLUDE} ) )
+            && ( $ENV{ENV_BUILD_EXCLUDE} && grep { $build_info->{dir} =~ /$_/ } split( ",", $ENV{ENV_BUILD_EXCLUDE} ) )
+           );
 
          print "=========================================================================================================\n";
          print "BUILDING: $build_info->{dir}\n";
@@ -278,7 +285,10 @@ sub Build()
          for my $package_script (@PACKAGE_LIST)
          {
             next
-              if ( grep { $package_script =~ /$_/ } split( ",", $ENV{ENV_PACKAGE_EXCLUDE} || "" ) );
+              if (
+               !( $ENV{ENV_PACKAGE_INCLUDE} && grep { $package_script =~ /$_/ } split( ",", $ENV{ENV_PACKAGE_INCLUDE} ) )
+               && ( $ENV{ENV_PACKAGE_EXCLUDE} && grep { $package_script =~ /$_/ } split( ",", $ENV{ENV_PACKAGE_EXCLUDE} ) )
+              );
 
             System(
                "  release='$GLOBAL_BUILD_RELEASE_NO.$GLOBAL_BUILD_RELEASE_CANDIDATE' \\
@@ -307,7 +317,7 @@ sub GetNewBuildNo()
 {
    my $line = 1000;
 
-   if( -f "/tmp/build_counter.txt" )
+   if ( -f "/tmp/build_counter.txt" )
    {
       open( FD1, "<", "/tmp/build_counter.txt" );
       $line = <FD1>;
