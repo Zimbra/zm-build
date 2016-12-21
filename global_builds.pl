@@ -27,7 +27,9 @@
    {
       "dir"         => "zm-license-tools",
       "ant_targets" => ["publish-local"],
-      "stage_cmd"   => undef,
+      "stage_cmd"   => sub {
+           System("(cd .. && rsync -az --relative zm-license-tools/src/bin $GLOBAL_BUILD_DIR/)");
+      },
    },
    {
       "dir"         => "zm-license-store",
@@ -451,6 +453,7 @@
       "ant_targets" => undef,
       "stage_cmd" => sub {
            System("(cd .. && rsync -az --relative zm-db-conf/src/db/migration $GLOBAL_BUILD_DIR/)");
+           System("(cd .. && rsync -az --relative zm-db-conf/src/db/mysql     $GLOBAL_BUILD_DIR/)");
       },
    },
    {
@@ -459,6 +462,7 @@
       "stage_cmd" => sub {
            System("(cd .. && rsync -az --relative zm-backup-utilities/src/bin $GLOBAL_BUILD_DIR/)");
            System("(cd .. && rsync -az --relative zm-backup-utilities/src/libexec $GLOBAL_BUILD_DIR/)");
+           System("(cd .. && rsync -az --relative zm-backup-utilities/src/db  $GLOBAL_BUILD_DIR/)");
       },
    },
    {
