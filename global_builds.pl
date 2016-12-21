@@ -426,6 +426,13 @@
       },
    },
    {
+      "dir"         => "zm-versioncheck-utilities",
+      "ant_targets" => undef,
+      "stage_cmd" => sub {
+           System("(cd .. && rsync -az --relative zm-versioncheck-utilities/src/libexec/zmcheckversion $GLOBAL_BUILD_DIR/)");
+      },
+   },
+   {
       "dir"         => "zm-webclient-portal-example",
       "ant_targets" => undef,
       "stage_cmd" => sub {
