@@ -27,7 +27,9 @@
    {
       "dir"         => "zm-license-tools",
       "ant_targets" => ["publish-local"],
-      "stage_cmd"   => undef,
+      "stage_cmd"   => sub {
+           System("(cd .. && rsync -az --relative zm-license-tools/src/bin $GLOBAL_BUILD_DIR/)");
+      },
    },
    {
       "dir"         => "zm-license-store",
