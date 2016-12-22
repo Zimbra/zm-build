@@ -117,6 +117,19 @@ my @GLOBAL_REPOS = (
    { name => "zm-xmbxsearch-zimlet",        branch => "dev",    user => "zimbra" },
    { name => "zm-zcs",                      branch => "master", user => "zimbra" },
    { name => "zm-zimlets",                  branch => "dev",    user => "zimbra" },
+   { name => "zm-zcs-lib",                  branch => "dev",    user => "zimbra" },
+   { name => "ical4j-0.9.16-patched",       branch => "dev",    user => "zimbra" },
+   { name => "ant-1.7.0-ziputil-patched",   branch => "dev",    user => "zimbra" },
+   { name => "ant-tar-patched",             branch => "dev",    user => "zimbra" },
+   { name => "nekohtml-1.9.13",             branch => "dev",    user => "zimbra" },
+   { name => "zm-charset",                  branch => "dev",    user => "zimbra" },
+   { name => "zm-versioncheck-admin-zimlet",branch => "master", user => "zimbra" },
+   { name => "zm-proxy-config-admin-zimlet",branch => "master", user => "zimbra" },
+   { name => "zm-helptooltip-zimlet",       branch => "master", user => "zimbra" },
+   { name => "zm-viewmail-admin-zimlet",    branch => "master", user => "zimbra" },
+   { name => "zm-bulkprovision-admin-zimlet", branch => "master",       user => "zimbra" },
+   { name => "zm-certificate-manager-admin-zimlet", branch => "master", user => "zimbra" },
+   { name => "zm-clientuploader-admin-zimlet", branch => "master",      user => "zimbra" }
 );
 
 ##############################################################################################

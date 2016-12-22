@@ -214,7 +214,20 @@
 
 
     echo -e "\tCopy zimlets files of /opt/zimbra/" >> ${buildLogFile}
+    mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/zimlets
+    zimletsArray=( "zm-versioncheck-admin-zimlet" \
+                   "zm-bulkprovision-admin-zimlet" \
+                   "zm-certificate-manager-admin-zimlet" \
+                   "zm-clientuploader-admin-zimlet" \
+                   "zm-proxy-config-admin-zimlet" \
+                   "zm-helptooltip-zimlet" \
+                   "zm-viewmail-admin-zimlet" )
+    for i in "${zimletsArray[@]}"
+    do
+        cp ${repoDir}/${i}/build/zimlet/*.zip ${repoDir}/zm-build/${currentPackage}/opt/zimbra/zimlets
+    done
 
+    cp -f ${repoDir}/zm-zimlets/build/dist/zimlets/*.zip ${repoDir}/zm-build/${currentPackage}/opt/zimbra/zimlets
 
     echo -e "\tCopy zimlets-network files of /opt/zimbra/" >> ${buildLogFile}
     mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/zimlets-network
@@ -239,6 +252,32 @@
         cp ${repoDir}/zm-uc-admin-zimlets/${i}/build/zimlet/*.zip ${repoDir}/zm-build/${currentPackage}/opt/zimbra/zimlets-network
     done
 
+    echo "\t\t***** Building jetty/common/ *****" >> ${buildLogFile}
+    
+    mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/common/lib
+    
+    zimbrapatchedjars=("ant-1.7.0-ziputil-patched.jar" "ical4j-0.9.16-patched.jar" "nekohtml-1.9.13.1z.jar");
+    for i in "${zimbrapatchedjars[@]}"
+    do
+        cp ${repoDir}/zm-zcs-lib/build/dist/${i} ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/common/lib
+    done
+    
+    thirdpartyjars=("apache-log4j-extras-1.0.jar" "bcprov-jdk15-1.46.jar" "commons-cli-1.2.jar" "commons-codec-1.7.jar" "commons-collections-3.2.2.jar" "commons-compress-1.10.jar" "commons-dbcp-1.4.jar" \
+        "commons-fileupload-1.2.2.jar" "commons-httpclient-3.1.jar" "commons-io-1.4.jar" "commons-lang-2.6.jar" "commons-logging-1.1.1.jar" "commons-net-3.3.jar" \
+        "commons-pool-1.6.jar" "concurrentlinkedhashmap-lru-1.3.1.jar" "dom4j-1.5.2.jar" "ganymed-ssh2-build210.jar" "guava-13.0.1.jar" \
+        "icu4j-4.8.1.1.jar" "mail-1.4.5.jar" "jaxen-1.1.3.jar" "jcommon-1.0.21.jar" "jdom-1.1.jar" "jfreechart-1.0.15.jar" "json-20090211.jar" "junixsocket-common-2.0.4.jar" \
+        "junixsocket-demo-2.0.4.jar" "junixsocket-mysql-2.0.4.jar" "junixsocket-rmi-2.0.4.jar" "jzlib-1.0.7.jar" "libidn-1.24.jar" "log4j-1.2.16.jar" "mariadb-java-client-1.1.8.jar" "yuicompressor-2.4.2-zimbra.jar" \
+        "spymemcached-2.9.1.jar"  "oauth-20100527.jar" "jtnef-1.9.0.jar" "unboundid-ldapsdk-2.3.5.jar" "xercesImpl-2.9.1.jar" "yuicompressor-2.4.2-zimbra.jar")
+    for i in "${thirdpartyjars[@]}"
+    do
+        cp ${repoDir}/zm-zcs-lib/build/dist/${i} ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/common/lib
+    done
+
+    zimbrajars=("zm-common-*.jar" "zm-native-*.jar")
+    for i in "${zimbrajars[@]}"
+    do
+        cp ${repoDir}/zm-zcs-lib/build/dist/${i} ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/common/lib
+    done
 
     echo -e "\tCreate debian package" >> ${buildLogFile}
     (cd ${repoDir}/zm-build/${currentPackage}; find . -type f ! -regex '.*jetty-distribution-.*/webapps/zimbra/WEB-INF/jetty-env.xml' ! \
