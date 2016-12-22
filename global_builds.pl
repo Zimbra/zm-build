@@ -774,4 +774,20 @@
            System("(cd .. && rsync -az --relative zm-freshclam $GLOBAL_BUILD_DIR/)");
       },
    },
+   {
+      "dir"         => "zm-libnative",
+      "stage_cmd" => sub {
+           System("make");
+           System("mkdir -p $GLOBAL_BUILD_DIR/zm-libnative/build/dist");
+           System("cp -f build/*.so $GLOBAL_BUILD_DIR/zm-libnative/build/dist");
+      },
+   },
+   {
+      "dir"         => "zm-jetty-conf",
+     "ant_targets" => undef,
+     "stage_cmd" => sub {
+           System("cp -f -r ../zm-jetty-conf $GLOBAL_BUILD_DIR");
+      },
+   },
+   
 );
