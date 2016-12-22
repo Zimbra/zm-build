@@ -753,4 +753,25 @@
            System("cp -f -r ../zm-zcs-lib $GLOBAL_BUILD_DIR");
       },
    },
+   {
+      "dir"         => "zm-jython",
+      "ant_targets" => undef,
+      "stage_cmd" => sub {
+           System("(cd .. && rsync -az --relative zm-jython $GLOBAL_BUILD_DIR/)");
+      },
+   },
+   {
+      "dir"         => "zm-mta",
+      "ant_targets" => undef,
+      "stage_cmd" => sub {
+           System("(cd .. && rsync -az --relative zm-mta $GLOBAL_BUILD_DIR/)");
+      },
+   },
+   {
+      "dir"         => "zm-freshclam",
+      "ant_targets" => undef,
+      "stage_cmd" => sub {
+           System("(cd .. && rsync -az --relative zm-freshclam $GLOBAL_BUILD_DIR/)");
+      },
+   },
 );
