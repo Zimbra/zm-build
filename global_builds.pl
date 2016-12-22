@@ -26,9 +26,11 @@
    },
    {
       "dir"         => "zm-license-tools",
-      "ant_targets" => ["publish-local"],
+      "ant_targets" => ["jar", "publish-local"],
       "stage_cmd"   => sub {
 #           System("(cd .. && rsync -az --relative zm-license-tools/src/bin $GLOBAL_BUILD_DIR/)");
+           System("mkdir -p $GLOBAL_BUILD_DIR/zm-license-tools");
+           System("cp -f -r ../zm-license-tools/build $GLOBAL_BUILD_DIR/zm-license-tools");
       },
    },
    {
@@ -661,14 +663,6 @@
       "stage_cmd" => sub {
            System("mkdir -p $GLOBAL_BUILD_DIR/zm-network-store");
            System("cp -f -r ../zm-network-store/build $GLOBAL_BUILD_DIR/zm-network-store");
-      },
-   },
-   {
-      "dir"         => "zm-license-tools",
-      "ant_targets" => ["jar"],
-      "stage_cmd" => sub {
-           System("mkdir -p $GLOBAL_BUILD_DIR/zm-license-tools");
-           System("cp -f -r ../zm-license-tools/build $GLOBAL_BUILD_DIR/zm-license-tools");
       },
    },
 );
