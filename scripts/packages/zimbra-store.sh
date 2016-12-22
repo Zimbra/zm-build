@@ -75,6 +75,9 @@
     echo -e "\tCopy lib files of /opt/zimbra/" >> ${buildLogFile}
 
     echo -e "\t\tCopy ext files of /opt/zimbra/lib/" >> ${buildLogFile}
+#need to add this file in /opt/zimbra/lib
+#${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/libsetuid.so
+
     mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/backup
     mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/zimbra-archive
     mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/voice
@@ -88,6 +91,10 @@
     mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/nginx-lookup
     mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/openidconsumer
     mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/zimbra-license
+    mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/zimbra-freebusy
+    mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/zimbraadminversioncheck
+    mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/zimbrahsm
+    mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/zimbraldaputils
     cp -rf ${repoDir}/zm-backup-store/build/dist ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/backup
     cp -rf ${repoDir}/zm-archive-store/build/dist ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/zimbra-archive
     cp -rf ${repoDir}/zm-voice-store/build/dist ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/zimbra-voice-store
@@ -118,6 +125,10 @@
     cp -rf ${repoDir}/zm-sync-common/build/dist ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/zimbrasync
     cp -rf ${repoDir}/zm-sync-store/build/dist ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/zimbrasync
     cp -rf ${repoDir}/zm-sync-tools/build/dist ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/zimbrasync
+    cp -f ${repoDir}/zm-freebusy-provider-store/build/zimbra-freebusyprovider.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/zimbra-freebusy/zimbra-freebusyprovider.jar
+    cp -f ${repoDir}/zm-versioncheck-store/build/zm-versioncheck-store*.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/zimbraadminversioncheck/zimbraadminversioncheck.jar
+    cp -f ${repoDir}/zm-hsm-store/build/zimbrahsm.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/zimbrahsm/zimbrahsm.jar
+    cp -f ${repoDir}/zm-ldap-utils-store/build/zm-ldap-utils-store-8.8.0.1470081257.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/zimbraldaputils/zimbraldaputils.jar
 
 
 #-------------------- Get wars content (service.war, zimbra.war and zimbraAdmin.war) ---------------------------
@@ -199,10 +210,13 @@
     cp -rf ${repoDir}/zm-web-client/build/dist/jetty/work ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/
 
     echo -e "\t\tCopy ext-common files of /opt/zimbra/lib/" >> ${buildLogFile}
+    mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext-common
+    cp -f ${repoDir}/zm-network-store/build/zimbracmbsearch.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext-common/zimbracmbsearch.jar
 
     echo -e "\t\tCopy jars files of /opt/zimbra/lib/" >> ${buildLogFile}
     mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/jars
     cp -f ${repoDir}/zm-milter/build/dist/zm-milter*.jar  ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/jars/
+    cp -f ${repoDir}/zm-windows-comp/ZimbraMigrationTools/jars/zmzimbratozimbramig.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/jars/zmzimbratozimbramig.jar
 
     echo -e "\tCopy libexec files of /opt/zimbra/" >> ${buildLogFile}
     mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec
