@@ -769,136 +769,44 @@ main()
 # opt/zimbra/lib/libjunixsocket-linux-1.5-amd64.so                            :: NOT_IN_REPO :: 
 # opt/zimbra/lib/libzimbra-native.so                                          :: NOT_IN_REPO :: 
 
-   PrepareDeployDir "lib/jars"
-   PrepareDeployDir "lib/ext-common"
-   PrepareDeployDir "lib/jars-ant"
-   PrepareDeployDir "lib/ext"
-# opt/zimbra/lib/jars/ant-1.7.0-ziputil-patched.jar
-# opt/zimbra/lib/jars/ant-contrib-1.0b1.jar
-# opt/zimbra/lib/jars/ant-tar-patched.jar
-# opt/zimbra/lib/jars/antlr-3.2.jar
-# opt/zimbra/lib/jars/apache-jsieve-core-0.5.jar
-# opt/zimbra/lib/jars/apache-log4j-extras-1.0.jar
-# opt/zimbra/lib/jars/asm-3.3.1.jar
-# opt/zimbra/lib/jars/bcprov-jdk15-146.jar
-# opt/zimbra/lib/jars/commons-cli-1.2.jar
-# opt/zimbra/lib/jars/commons-codec-1.7.jar
-# opt/zimbra/lib/jars/commons-collections-3.2.2.jar
-# opt/zimbra/lib/jars/commons-compress-1.10.jar
-# opt/zimbra/lib/jars/commons-dbcp-1.4.jar
-# opt/zimbra/lib/jars/commons-fileupload-1.2.2.jar
-# opt/zimbra/lib/jars/commons-httpclient-3.1.jar
-# opt/zimbra/lib/jars/commons-io-1.4.jar
-# opt/zimbra/lib/jars/commons-lang-2.6.jar
-# opt/zimbra/lib/jars/commons-logging.jar
-# opt/zimbra/lib/jars/commons-net-3.3.jar
-# opt/zimbra/lib/jars/commons-pool-1.6.jar
-# opt/zimbra/lib/jars/concurrentlinkedhashmap-lru-1.3.1.jar
-# opt/zimbra/lib/jars/curator-client-2.0.1-incubating.jar
-# opt/zimbra/lib/jars/curator-framework-2.0.1-incubating.jar
-# opt/zimbra/lib/jars/curator-recipes-2.0.1-incubating.jar
-# opt/zimbra/lib/jars/curator-x-discovery-2.0.1-incubating.jar
-# opt/zimbra/lib/jars/cxf-2.7.18.jar
-# opt/zimbra/lib/jars/dom4j-1.5.2.jar
-# opt/zimbra/lib/jars/ehcache-core-2.5.1.jar
-# opt/zimbra/lib/jars/ews_2010.jar
-# opt/zimbra/lib/jars/freemarker-2.3.19.jar
-# opt/zimbra/lib/jars/ganymed-ssh2-build210.jar
-# opt/zimbra/lib/jars/gifencoder.jar
-# opt/zimbra/lib/jars/gmbal-api-only-2.2.6.jar
-# opt/zimbra/lib/jars/guava-13.0.1.jar
-# opt/zimbra/lib/jars/helix-core-0.6.1-incubating.jar
-# opt/zimbra/lib/jars/httpasyncclient-4.0-beta3.jar
-# opt/zimbra/lib/jars/httpclient-4.2.1.jar
-# opt/zimbra/lib/jars/httpcore-4.2.2.jar
-# opt/zimbra/lib/jars/httpcore-nio-4.2.2.jar
-# opt/zimbra/lib/jars/ical4j-0.9.16-patched.jar
-# opt/zimbra/lib/jars/icu4j-4.8.1.1.jar
-# opt/zimbra/lib/jars/jackson-all-1.9.2.jar
-# opt/zimbra/lib/jars/jamm-0.2.5.jar
-# opt/zimbra/lib/jars/javamail-1.4.5.jar
-# opt/zimbra/lib/jars/javax.ws.rs-api-2.0-m10.jar
-# opt/zimbra/lib/jars/jaxb-api-2.2.6.jar
-# opt/zimbra/lib/jars/jaxb-impl-2.2.6.jar
-# opt/zimbra/lib/jars/jaxen-1.1.3.jar
-# opt/zimbra/lib/jars/jaxws-api-2.2.6.jar
-# opt/zimbra/lib/jars/jaxws-rt-2.2.6.jar
-# opt/zimbra/lib/jars/jcharset.jar
-# opt/zimbra/lib/jars/jcommon-1.0.20.jar
-# opt/zimbra/lib/jars/jcs-1.3.jar
-# opt/zimbra/lib/jars/jdom.jar
-# opt/zimbra/lib/jars/jersey-client-1.11.jar
-# opt/zimbra/lib/jars/jersey-core-1.11.jar
-# opt/zimbra/lib/jars/jersey-json-1.11.jar
-# opt/zimbra/lib/jars/jersey-multipart-1.12.jar
-# opt/zimbra/lib/jars/jersey-server-1.11.jar
-# opt/zimbra/lib/jars/jersey-servlet-1.11.jar
-# opt/zimbra/lib/jars/jetty-continuation-9.3.5.v20151012.jar
-# opt/zimbra/lib/jars/jetty-http-9.3.5.v20151012.jar
-# opt/zimbra/lib/jars/jetty-io-9.3.5.v20151012.jar
-# opt/zimbra/lib/jars/jetty-rewrite-9.3.5.v20151012.jar
-# opt/zimbra/lib/jars/jetty-security-9.3.5.v20151012.jar
-# opt/zimbra/lib/jars/jetty-server-9.3.5.v20151012.jar
-# opt/zimbra/lib/jars/jetty-servlet-9.3.5.v20151012.jar
-# opt/zimbra/lib/jars/jetty-servlets-9.3.5.v20151012.jar
-# opt/zimbra/lib/jars/jetty-util-9.3.5.v20151012.jar
-# opt/zimbra/lib/jars/jfreechart-1.0.16.jar
-# opt/zimbra/lib/jars/jna-3.4.0.jar
-# opt/zimbra/lib/jars/json.jar
-# opt/zimbra/lib/jars/jsr181-api-2.2.6.jar
-# opt/zimbra/lib/jars/jsr311-api-1.1.1.jar
-# opt/zimbra/lib/jars/junixsocket-1.3.jar
-# opt/zimbra/lib/jars/junixsocket-demo-1.3.jar
-# opt/zimbra/lib/jars/junixsocket-mysql-1.3.jar
-# opt/zimbra/lib/jars/junixsocket-rmi-1.3.jar
-# opt/zimbra/lib/jars/jython-2.5.2.jar
-# opt/zimbra/lib/jars/jzlib-1.0.7.jar
-# opt/zimbra/lib/jars/libidn-1.24.jar
-# opt/zimbra/lib/jars/log4j-1.2.16.jar
-# opt/zimbra/lib/jars/lucene-analyzers-3.5.0.jar
-# opt/zimbra/lib/jars/lucene-core-3.5.0.jar
-# opt/zimbra/lib/jars/lucene-smartcn-3.5.0.jar
-# opt/zimbra/lib/jars/mariadb-java-client-1.1.8.jar
-# opt/zimbra/lib/jars/memcached-2.6.jar
-# opt/zimbra/lib/jars/mina-core-2.0.4.jar
-# opt/zimbra/lib/jars/neethi-3.0.2.jar
-# opt/zimbra/lib/jars/nekohtml-1.9.13.1z.jar
-# opt/zimbra/lib/jars/oauth-1.4.jar
-# opt/zimbra/lib/jars/owasp-java-html-sanitizer-r239.jar
-# opt/zimbra/lib/jars/policy-2.2.6.jar
-# opt/zimbra/lib/jars/servlet-api-3.1.jar
-# opt/zimbra/lib/jars/slf4j-api-1.6.4.jar
-# opt/zimbra/lib/jars/slf4j-log4j12-1.6.4.jar
-# opt/zimbra/lib/jars/smack.jar
-# opt/zimbra/lib/jars/smackx-debug.jar
-# opt/zimbra/lib/jars/smackx-jingle.jar
-# opt/zimbra/lib/jars/smackx.jar
-# opt/zimbra/lib/jars/spring-aop-3.0.7.RELEASE.jar
-# opt/zimbra/lib/jars/spring-asm-3.0.7.RELEASE.jar
-# opt/zimbra/lib/jars/spring-beans-3.0.7.RELEASE.jar
-# opt/zimbra/lib/jars/spring-context-3.0.7.RELEASE.jar
-# opt/zimbra/lib/jars/spring-core-3.0.7.RELEASE.jar
-# opt/zimbra/lib/jars/spring-expression-3.0.7.RELEASE.jar
-# opt/zimbra/lib/jars/sqlite-jdbc-3.7.5-1.jar
-# opt/zimbra/lib/jars/stax-ex-2.2.6.jar
-# opt/zimbra/lib/jars/stax2-api-3.1.1.jar
-# opt/zimbra/lib/jars/streambuffer-2.2.6.jar
-# opt/zimbra/lib/jars/syslog4j-0.9.46-bin.jar
-# opt/zimbra/lib/jars/tnef-1.8.0.jar
-# opt/zimbra/lib/jars/unboundid-ldapsdk-2.3.5-se.jar
-# opt/zimbra/lib/jars/woodstox-core-asl-4.2.0.jar
-# opt/zimbra/lib/jars/wsdl4j-1.6.3.jar
-# opt/zimbra/lib/jars/xercesImpl-2.9.1.jar
-# opt/zimbra/lib/jars/xmlschema-core-2.0.3.jar
-# opt/zimbra/lib/jars/yuicompressor-2.4.2-zimbra.jar
-# opt/zimbra/lib/jars/zimbra-charset.jar
-# opt/zimbra/lib/jars/zimbra-native.jar
-# opt/zimbra/lib/jars/zimbraclient.jar
-# opt/zimbra/lib/jars/zimbracommon.jar
-# opt/zimbra/lib/jars/zimbrasoap.jar
-# opt/zimbra/lib/jars/zimbrastore.jar
-# opt/zimbra/lib/jars/zkclient-0.1.jar
-# opt/zimbra/lib/jars/zookeeper-3.4.5.jar
+mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/jars
+mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext-common
+mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/jars-ant
+mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext
+
+zimbrathirdpartyjars=("ant-1.7.0-ziputil-patched.jar" "ant-contrib-1.0b2.jar" "ant-tar-patched.jar" "antlr-3.2.jar" "apache-jsieve-core-0.5.jar" "apache-log4j-extras-1.0.jar" "asm-3.3.1.jar" \
+"bcprov-jdk15-1.46.jar"  "commons-cli-1.2.jar"  "commons-codec-1.7.jar"  "commons-collections-3.2.2.jar" "commons-compress-1.10.jar" "commons-dbcp-1.4.jar"  "commons-fileupload-1.2.2.jar" \
+"commons-httpclient-3.1.jar" "commons-io-1.4.jar" "commons-lang-2.6.jar" "commons-logging-1.1.1.jar" "commons-net-3.3.jar" "commons-pool-1.6.jar" "concurrentlinkedhashmap-lru-1.3.1.jar" \
+"curator-client-2.0.1-incubating.jar"  "curator-client-2.0.1-incubating.jar" "curator-framework-2.0.1-incubating.jar" "curator-recipes-2.0.1-incubating.jar"  "curator-x-discovery-2.0.1-incubating.jar" \
+"cxf-2.7.18.jar" "dom4j-1.5.2.jar" "ehcache-core-2.5.1.jar" "freemarker-2.3.19.jar" "ganymed-ssh2-build210.jar"  "gifencoder-0.9.jar" "gmbal-api-only-2.2.6.jar" "guava-13.0.1.jar" \
+"helix-core-0.6.1-incubating.jar" "httpasyncclient-4.0-beta3.jar" "httpclient-4.2.1.jar" "httpcore-4.2.2.jar" "httpcore-nio-4.2.2.jar"  "ical4j-0.9.16-patched.jar"  "icu4j-4.8.1.1.jar" 
+"zm-ews-stub-1.0.jar"  "jackson-mapper-asl-1.9.13.jar" "jamm-0.2.5.jar" "mail-1.4.5.jar"  "javax.ws.rs-api-2.0-m10.jar"  "jaxb-api-2.2.6.jar" "jaxb-impl-2.2.6.jar"  "jaxen-1.1.3.jar" "jaxws-api-2.2.6.jar" \
+"jaxws-rt-2.2.6.jar" "jcharset-2.0.jar" "jcommon-1.0.21.jar""jcs-1.3.jar"  "jdom-1.1.jar"  "jersey-client-1.11.jar" "jersey-core-1.11.jar"  "jersey-json-1.11.jar" \
+"jersey-multipart-1.12.jar" "jersey-server-1.11.jar" "jersey-servlet-1.11.jar" "jetty-continuation-9.3.5.v20151012.jar" "jetty-http-9.3.5.v20151012.jar" "jetty-io-9.3.5.v20151012.jar" \
+"jetty-rewrite-9.3.5.v20151012.jar" "jetty-security-9.3.5.v20151012.jar" "jetty-server-9.3.5.v20151012.jar" "jetty-servlet-9.3.5.v20151012.jar" "jetty-servlets-9.3.5.v20151012.jar" \
+"jetty-util-9.3.5.v20151012.jar" "jfreechart-1.0.15.jar"  "jna-3.4.0.jar"  "json-20090211.jar"  "jsr181-api-1.0-MR1.jar"  "jsr311-api-1.1.1.jar" "junixsocket-common-2.0.4.jar" \
+"junixsocket-demo-2.0.4.jar"  "junixsocket-mysql-2.0.4.jar"  "junixsocket-rmi-2.0.4.jar"  "jython-2.1.jar"  "jzlib-1.0.7.jar" "libidn-1.24.jar" "log4j-1.2.16.jar" "lucene-analyzers-3.5.0.jar" \
+"lucene-core-3.5.0.jar" "lucene-smartcn-3.5.0.jar" "mariadb-java-client-1.1.8.jar" "spymemcached-2.9.1.jar" "mina-core-2.0.4.jar"  "neethi-3.0.2.jar" "nekohtml-1.9.13.1z.jar" \
+"oauth-20100527.jar"  "owasp-java-html-sanitizer-r239.jar" "policy-2.3.jar" "servlet-api-3.1.jar" "slf4j-api-1.6.4.jar" "slf4j-log4j12-1.6.4.jar" "smack-3.1.0.jar" "smackx-3.1.0.jar" \
+"smackx-debug-3.2.1.jar"  "smackx-jingle-3.2.1.jar" "spring-aop-3.0.7.RELEASE.jar" "spring-asm-3.0.7.RELEASE.jar"  "spring-beans-3.0.7.RELEASE.jar" "spring-context-3.0.7.RELEASE.jar" \
+"spring-core-3.0.7.RELEASE.jar"  ":spring-expression-3.0.7.RELEASE.jar"  "sqlite-jdbc-3.7.15-M1.jar"  "stax-ex-1.7.7.jar" "stax2-api-3.1.1.jar" "streambuffer-2.2.6.jar" \
+"syslog4j-0.9.30.jar"  "unboundid-ldapsdk-2.3.5.jar"  "woodstox-core-asl-4.2.0.jar"  "wsdl4j-1.6.3.jar"  "xercesImpl-2.9.1.jar"  "xmlschema-core-2.0.3.jar"  "yuicompressor-2.4.2-zimbra.jar" \
+"zkclient-0.1.jar"  "zookeeper-3.4.5.jar")
+
+for i in "${zimbrathirdpartyjars[@]}"
+    do
+        cp ${repoDir}/zm-zcs-lib/build/dist/${i} ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/jars
+done
+
+
+cp ${repoDir}/zm-zcs-lib/build/dist/ant-1.6.5.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/jars-ant/
+
+
+zimbrajars=("zm-charset-*.jar"  "zm-native-*.jar"  "zm-charset-*.jar"  "zm-common-*.jar"  "zm-soap-*.jar"  "zm-client-*.jar" "zm-store-*.jar")
+for i in "${zimbrajars[@]}"
+    do
+        cp ${repoDir}/zm-zcs-lib/build/dist/${i} ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/jars
+done
 
   PrepareDeployDir "lib/ext/com_zimbra_bulkprovision"
   PrepareDeployDir "lib/ext/com_zimbra_clientuploader"
@@ -910,8 +818,6 @@ main()
 
   PrepareDeployDir "lib/ext-common"
 #  Copy ${repoDir}/zm-license-tools/build/zm-license-tools*.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext-common/zimbra-license-tools.jar
-
-# opt/zimbra/lib/jars-ant/ant-1.6.5.jar
 
    CreateDebianPackage
 }
