@@ -28,8 +28,8 @@
       "dir"         => "zm-license-tools",
       "ant_targets" => ["jar", "publish-local"],
       "stage_cmd"   => sub {
-#           System("(cd .. && rsync -az --relative zm-license-tools/src/bin $GLOBAL_BUILD_DIR/)");
            System("mkdir -p $GLOBAL_BUILD_DIR/zm-license-tools");
+           System("(cd .. && rsync -az --relative zm-license-tools/src/bin $GLOBAL_BUILD_DIR/)");
            System("cp -f -r ../zm-license-tools/build $GLOBAL_BUILD_DIR/zm-license-tools");
       },
    },
@@ -721,6 +721,7 @@
       "stage_cmd" => sub {
            System("mkdir -p $GLOBAL_BUILD_DIR/zm-network-store");
            System("cp -f -r ../zm-network-store/build $GLOBAL_BUILD_DIR/zm-network-store");
+      },
       "dir"         => "ant-1.7.0-ziputil-patched",
       "ant_targets" => ["jar"],
       "stage_cmd"   => undef,
@@ -747,9 +748,30 @@
    },
    {
       "dir"         => "zm-charset",
-      "ant_targets" => [publish-local"],
+      "ant_targets" => ["publish-local"],
       "stage_cmd" => sub {
            System("cp -f -r ../zm-zcs-lib $GLOBAL_BUILD_DIR");
+      },
+   },
+   {
+      "dir"         => "zm-jython",
+      "ant_targets" => undef,
+      "stage_cmd" => sub {
+           System("(cd .. && rsync -az --relative zm-jython $GLOBAL_BUILD_DIR/)");
+      },
+   },
+   {
+      "dir"         => "zm-mta",
+      "ant_targets" => undef,
+      "stage_cmd" => sub {
+           System("(cd .. && rsync -az --relative zm-mta $GLOBAL_BUILD_DIR/)");
+      },
+   },
+   {
+      "dir"         => "zm-freshclam",
+      "ant_targets" => undef,
+      "stage_cmd" => sub {
+           System("(cd .. && rsync -az --relative zm-freshclam $GLOBAL_BUILD_DIR/)");
       },
    },
 );
