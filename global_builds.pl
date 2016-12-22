@@ -308,8 +308,6 @@
             System("cp -f build/zimlet/*.zip $GLOBAL_BUILD_DIR/zm-viewmail-admin-zimlet/build/zimlet");
         },
    },
-
-
    {
       "dir"         => "zm-2fa-admin-zimlet",
       "ant_targets" => ["package-zimlet"],
