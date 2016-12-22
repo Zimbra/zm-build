@@ -776,7 +776,7 @@ mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext
 
 zimbrathirdpartyjars=("ant-1.7.0-ziputil-patched.jar" "ant-contrib-1.0b2.jar" "ant-tar-patched.jar" "antlr-3.2.jar" "apache-jsieve-core-0.5.jar" "apache-log4j-extras-1.0.jar" "asm-3.3.1.jar" \
 "bcprov-jdk15-1.46.jar"  "commons-cli-1.2.jar"  "commons-codec-1.7.jar"  "commons-collections-3.2.2.jar" "commons-compress-1.10.jar" "commons-dbcp-1.4.jar"  "commons-fileupload-1.2.2.jar" \
-"commons-httpclient-3.1.jar" "commons-io-1.4.jar" "commons-lang-2.6.jar" commons-logging-1.1.1.jar" "commons-net-3.3.jar" "commons-pool-1.6.jar" "concurrentlinkedhashmap-lru-1.3.1.jar" \
+"commons-httpclient-3.1.jar" "commons-io-1.4.jar" "commons-lang-2.6.jar" "commons-logging-1.1.1.jar" "commons-net-3.3.jar" "commons-pool-1.6.jar" "concurrentlinkedhashmap-lru-1.3.1.jar" \
 "curator-client-2.0.1-incubating.jar"  "curator-client-2.0.1-incubating.jar" "curator-framework-2.0.1-incubating.jar" "curator-recipes-2.0.1-incubating.jar"  "curator-x-discovery-2.0.1-incubating.jar" \
 "cxf-2.7.18.jar" "dom4j-1.5.2.jar" "ehcache-core-2.5.1.jar" "freemarker-2.3.19.jar" "ganymed-ssh2-build210.jar"  "gifencoder-0.9.jar" "gmbal-api-only-2.2.6.jar" "guava-13.0.1.jar" \
 "helix-core-0.6.1-incubating.jar" "httpasyncclient-4.0-beta3.jar" "httpclient-4.2.1.jar" "httpcore-4.2.2.jar" "httpcore-nio-4.2.2.jar"  "ical4j-0.9.16-patched.jar"  "icu4j-4.8.1.1.jar" 
