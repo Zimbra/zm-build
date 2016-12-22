@@ -116,6 +116,13 @@ my @GLOBAL_REPOS = (
    { name => "ant-tar-patched",             branch => "dev",    user => "zimbra" },
    { name => "nekohtml-1.9.13",             branch => "dev",    user => "zimbra" },
    { name => "zm-charset",                  branch => "dev",    user => "zimbra" },
+   { name => "zm-versioncheck-admin-zimlet",branch => "master", user => "zimbra" },
+   { name => "zm-proxy-config-admin-zimlet",branch => "master", user => "zimbra" },
+   { name => "zm-helptooltip-zimlet",       branch => "master", user => "zimbra" },
+   { name => "zm-viewmail-admin-zimlet",    branch => "master", user => "zimbra" },
+   { name => "zm-bulkprovision-admin-zimlet", branch => "master",       user => "zimbra" },
+   { name => "zm-certificate-manager-admin-zimlet", branch => "master", user => "zimbra" },
+   { name => "zm-clientuploader-admin-zimlet", branch => "master",      user => "zimbra" }
 );
 
 ##############################################################################################

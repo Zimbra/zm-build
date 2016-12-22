@@ -253,6 +253,64 @@
       },
    },
    {
+        "dir"         => "zm-versioncheck-admin-zimlet",
+        "ant_targets" => ["package-zimlet"],
+        "stage_cmd" => sub {
+            System("mkdir -p $GLOBAL_BUILD_DIR/zm-versioncheck-admin-zimlet/build/zimlet");
+            System("cp -f build/zimlet/*.zip $GLOBAL_BUILD_DIR/zm-versioncheck-admin-zimlet/build/zimlet");
+      },
+   },
+   {
+        "dir"         => "zm-bulkprovision-admin-zimlet",
+        "ant_targets" => ["package-zimlet"],
+        "stage_cmd" => sub {
+            System("mkdir -p $GLOBAL_BUILD_DIR/zm-bulkprovision-admin-zimlet/build/zimlet");
+            System("cp -f build/zimlet/*.zip $GLOBAL_BUILD_DIR/zm-bulkprovision-admin-zimlet/build/zimlet");
+        },
+   },
+   {
+        "dir"         => "zm-certificate-manager-admin-zimlet",
+        "ant_targets" => ["package-zimlet"],
+        "stage_cmd" => sub {
+            System("mkdir -p $GLOBAL_BUILD_DIR/zm-certificate-manager-admin-zimlet/build/zimlet");
+            System("cp -f build/zimlet/*.zip $GLOBAL_BUILD_DIR/zm-certificate-manager-admin-zimlet/build/zimlet");
+        },
+   },
+   {
+        "dir"         => "zm-clientuploader-admin-zimlet",
+        "ant_targets" => ["package-zimlet"],
+        "stage_cmd" => sub {
+            System("mkdir -p $GLOBAL_BUILD_DIR/zm-clientuploader-admin-zimlet/build/zimlet");
+            System("cp -f build/zimlet/*.zip $GLOBAL_BUILD_DIR/zm-clientuploader-admin-zimlet/build/zimlet");
+        },
+   },
+   {
+        "dir"         => "zm-proxy-config-admin-zimlet",
+        "ant_targets" => ["package-zimlet"],
+        "stage_cmd" => sub {
+            System("mkdir -p $GLOBAL_BUILD_DIR/zm-proxy-config-admin-zimlet/build/zimlet");
+            System("cp -f build/zimlet/*.zip $GLOBAL_BUILD_DIR/zm-proxy-config-admin-zimlet/build/zimlet");
+        },
+   },
+   {
+        "dir"         => "zm-helptooltip-zimlet",
+        "ant_targets" => ["package-zimlet"],
+        "stage_cmd" => sub {
+            System("mkdir -p $GLOBAL_BUILD_DIR/zm-helptooltip-zimlet/build/zimlet");
+            System("cp -f build/zimlet/*.zip $GLOBAL_BUILD_DIR/zm-helptooltip-zimlet/build/zimlet");
+        },
+   },
+   {
+        "dir"         => "zm-viewmail-admin-zimlet",
+        "ant_targets" => ["package-zimlet"],
+        "stage_cmd" => sub {
+            System("mkdir -p $GLOBAL_BUILD_DIR/zm-viewmail-admin-zimlet/build/zimlet");
+            System("cp -f build/zimlet/*.zip $GLOBAL_BUILD_DIR/zm-viewmail-admin-zimlet/build/zimlet");
+        },
+   },
+
+
+   {
       "dir"         => "zm-2fa-admin-zimlet",
       "ant_targets" => ["package-zimlet"],
       "stage_cmd" => sub {
@@ -393,10 +451,12 @@
    },
    {
       "dir"         => "zm-zimlets",
-      "ant_targets" => undef,
+      "ant_targets" => ["package-zimlets"],
       "stage_cmd" => sub {
            System("mkdir -p $GLOBAL_BUILD_DIR/zm-zimlets/conf");
            System("cp -f conf/zimbra.tld $GLOBAL_BUILD_DIR/zm-zimlets/conf");
+           System("mkdir -p $GLOBAL_BUILD_DIR/zm-zimlets/build/dist/zimlets");
+           System("cp -f build/dist/zimlets/*.zip $GLOBAL_BUILD_DIR/zm-zimlets/build/dist/zimlets");
       },
    },
    {

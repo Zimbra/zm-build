@@ -214,7 +214,20 @@
 
 
     echo -e "\tCopy zimlets files of /opt/zimbra/" >> ${buildLogFile}
+    mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/zimlets
+    zimletsArray=( "zm-versioncheck-admin-zimlet" \
+                   "zm-bulkprovision-admin-zimlet" \
+                   "zm-certificate-manager-admin-zimlet" \
+                   "zm-clientuploader-admin-zimlet" \
+                   "zm-proxy-config-admin-zimlet" \
+                   "zm-helptooltip-zimlet" \
+                   "zm-viewmail-admin-zimlet" )
+    for i in "${zimletsArray[@]}"
+    do
+        cp ${repoDir}/${i}/build/zimlet/*.zip ${repoDir}/zm-build/${currentPackage}/opt/zimbra/zimlets
+    done
 
+    cp -f ${repoDir}/zm-zimlets/build/dist/zimlets/*.zip ${repoDir}/zm-build/${currentPackage}/opt/zimbra/zimlets
 
     echo -e "\tCopy zimlets-network files of /opt/zimbra/" >> ${buildLogFile}
     mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/zimlets-network
