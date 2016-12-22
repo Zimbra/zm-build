@@ -447,6 +447,7 @@
            System("mkdir -p $GLOBAL_BUILD_DIR/zm-store/build/dist");
            System("cp -f build/service.war $GLOBAL_BUILD_DIR/zm-store/build/dist");
            System("(cd .. && rsync -az --relative zm-store/docs $GLOBAL_BUILD_DIR/)");
+           System("(cd .. && rsync -az --relative zm-store/conf $GLOBAL_BUILD_DIR/)");
       },
    },
    {
@@ -455,6 +456,7 @@
       "stage_cmd" => sub {
            System("mkdir -p $GLOBAL_BUILD_DIR/zm-zimlets/conf");
            System("cp -f conf/zimbra.tld $GLOBAL_BUILD_DIR/zm-zimlets/conf");
+           System("cp -f conf/web.xml.production $GLOBAL_BUILD_DIR/zm-zimlets/conf");
            System("mkdir -p $GLOBAL_BUILD_DIR/zm-zimlets/build/dist/zimlets");
            System("cp -f build/dist/zimlets/*.zip $GLOBAL_BUILD_DIR/zm-zimlets/build/dist/zimlets");
       },
