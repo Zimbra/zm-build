@@ -221,8 +221,30 @@ sub Prepare()
    System( "mkdir", "-p", "$GLOBAL_BUILD_DIR/logs" );
    System( "mkdir", "-p", "$ENV{HOME}/.zcs-deps" );
    System( "mkdir", "-p", "$ENV{HOME}/.ivy2/cache" );
-   System( "rsync", "-a", "root\@$GLOBAL_THIRDPARTY_SERVER:/ZimbraThirdParty/third-party-jars/*.*", "$ENV{HOME}/.zcs-deps/" )
-     if ( !$ENV{ENV_SKIP_INIT_FLAG} );
+
+
+   my @TP_JARS = (
+      "http://$GLOBAL_THIRDPARTY_SERVER/ZimbraThirdParty/third-party-jars/ant-1.7.0-ziputil-patched.jar",
+      "http://$GLOBAL_THIRDPARTY_SERVER/ZimbraThirdParty/third-party-jars/ant-contrib-1.0b1.jar",
+      "http://$GLOBAL_THIRDPARTY_SERVER/ZimbraThirdParty/third-party-jars/ews_2010-1.0.jar",
+      "http://$GLOBAL_THIRDPARTY_SERVER/ZimbraThirdParty/third-party-jars/jruby-complete-1.6.3.jar",
+      "http://$GLOBAL_THIRDPARTY_SERVER/ZimbraThirdParty/third-party-jars/plugin.jar",
+      "http://$GLOBAL_THIRDPARTY_SERVER/ZimbraThirdParty/third-party-jars/servlet-api-3.1.jar",
+      "http://$GLOBAL_THIRDPARTY_SERVER/ZimbraThirdParty/third-party-jars/unboundid-ldapsdk-2.3.5-se.jar",
+      "http://$GLOBAL_THIRDPARTY_SERVER/ZimbraThirdParty/third-party-jars/zimbrastore-test-1.0.jar",
+   );
+
+   for my $j_url ( @TP_JARS )
+   {
+      if( my $f = "$ENV{HOME}/.zcs-deps/" . basename($j_url) )
+      {
+         if( ! -f $f )
+         {
+            System("wget '$j_url' -O '$f.tmp'");
+            System("mv '$f.tmp' '$f'");
+         }
+      }
+   }
 }
 
 sub Checkout()
@@ -258,7 +280,7 @@ sub Build()
          print "BUILDING: $build_info->{dir}\n";
          print "\n";
 
-         my $x = Run(
+         Run(
             cd   => $dir,
             call => sub {
 
