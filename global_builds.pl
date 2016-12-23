@@ -533,6 +533,7 @@
       "stage_cmd" => sub {
            System("mkdir -p $GLOBAL_BUILD_DIR/zm-admin-console/build/dist/jetty/webapps");
            System("cp -f build/dist/jetty/webapps/zimbraAdmin.war $GLOBAL_BUILD_DIR/zm-admin-console/build/dist/jetty/webapps");
+           System("(cd .. && rsync -az --relative zm-admin-console/WebRoot/WEB-INF  $GLOBAL_BUILD_DIR/)");
       },
    },
    {
