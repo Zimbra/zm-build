@@ -98,6 +98,7 @@
            System("(cd .. && rsync -az --relative zm-ldap-utilities/build/ldap-config/zimbra_mimehandlers.ldif $GLOBAL_BUILD_DIR/)");
            System("(cd .. && rsync -az --relative zm-ldap-utilities/src/ldap/migration $GLOBAL_BUILD_DIR/)");
            System("(cd .. && rsync -az --relative zm-ldap-utilities/conf $GLOBAL_BUILD_DIR/)");
+           System("(cd .. && rsync -az --relative zm-ldap-utilities/src/libexec $GLOBAL_BUILD_DIR/)");
       },
    },
    {
@@ -475,19 +476,19 @@
            System("cp -f build/dist/jetty/webapps/zimbra.war $GLOBAL_BUILD_DIR/zm-web-client/build/dist/jetty/webapps");
       },
    },
-   {
+  {
       "dir"         => "zm-touch-client",
-      "ant_targets" => ["touch-webapp"],
+      "ant_targets" => ["touch"],
       "stage_cmd" => sub {
            System("mkdir -p $GLOBAL_BUILD_DIR/zm-touch-client/build/dist/jetty/webapps/css");
            System("mkdir -p $GLOBAL_BUILD_DIR/zm-touch-client/build/dist/jetty/webapps/public");
            System("mkdir -p $GLOBAL_BUILD_DIR/zm-touch-client/build/dist/jetty/webapps/t");
-           System("cp -f build/dist/jetty/webapps/css/ztouch.css $GLOBAL_BUILD_DIR/zm-touch-client/build/dist/jetty/webapps/css");
-           System("cp -f build/dist/jetty/webapps/public/loginTouch.jsp $GLOBAL_BUILD_DIR/zm-touch-client/build/dist/jetty/webapps/public");
-           System("cp -f -r build/dist/jetty/webapps/t $GLOBAL_BUILD_DIR/zm-touch-client/build/dist/jetty/webapps");
+           System("cp -f build/WebRoot/css/ztouch.css $GLOBAL_BUILD_DIR/zm-touch-client/build/dist/jetty/webapps/css");
+           System("cp -f build/WebRoot/public/loginTouch.jsp  $GLOBAL_BUILD_DIR/zm-touch-client/build/dist/jetty/webapps/public");
+           System("cp -f -r build/WebRoot/t $GLOBAL_BUILD_DIR/zm-touch-client/build/dist/jetty/webapps");
            System("cp -f -r WebRoot $GLOBAL_BUILD_DIR/zm-touch-client");
       },
-   },
+   }, 
    {
       "dir"         => "zm-help",
       "ant_targets" => undef,
@@ -753,7 +754,9 @@
    {
       "dir"         => "zm-zcs-lib",
       "ant_targets" => ["clean", "dist"],
+      "stage_cmd" => sub {
        System("(cd .. && rsync -az --relative zm-zcs-lib $GLOBAL_BUILD_DIR/)");
+      },
    },
    {
       "dir"         => "zm-jython",

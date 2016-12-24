@@ -212,7 +212,7 @@
 
     echo -e "\t\tCopy ext-common files of /opt/zimbra/lib/" >> ${buildLogFile}
     mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext-common
-    cp -f ${repoDir}/zm-network-store/build/zimbracmbsearch.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext-common/zimbracmbsearch.jar
+    cp -f ${repoDir}/zm-xmbxsearch-store/build/dist/*.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext-common/zimbracmbsearch.jar
 
     echo -e "\t\tCopy jars files of /opt/zimbra/lib/" >> ${buildLogFile}
     mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/jars
