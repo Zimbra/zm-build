@@ -7,9 +7,7 @@
    {
       "dir"         => "zm-charset",
       "ant_targets" => ["publish-local"],
-      "stage_cmd" => sub {
-           System("cp -f -r ../zm-zcs-lib $GLOBAL_BUILD_DIR");
-      },
+      "stage_cmd"   => undef,
    },
    {
       "dir"         => "zm-common",
