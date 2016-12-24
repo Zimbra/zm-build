@@ -5,6 +5,11 @@
       "stage_cmd"   => undef,
    },
    {
+      "dir"         => "zm-charset",
+      "ant_targets" => ["publish-local"],
+      "stage_cmd"   => undef,
+   },
+   {
       "dir"         => "zm-common",
       "ant_targets" => ["publish-local"],
       "stage_cmd"   => undef,
@@ -58,6 +63,7 @@
       "ant_targets" => ["publish-local"],
       "stage_cmd" => sub {
            System("mkdir -p $GLOBAL_BUILD_DIR/zm-milter/build/dist");
+           System("(cd .. && rsync -az --relative zm-milter/conf $GLOBAL_BUILD_DIR/)");
            System("cp -f build/zm-milter*.jar $GLOBAL_BUILD_DIR/zm-milter/build/dist/zm-milter.jar");
       },
    },
@@ -747,14 +753,7 @@
    {
       "dir"         => "zm-zcs-lib",
       "ant_targets" => ["clean", "dist"],
-      "stage_cmd"   => undef,
-   },
-   {
-      "dir"         => "zm-charset",
-      "ant_targets" => ["publish-local"],
-      "stage_cmd" => sub {
-           System("cp -f -r ../zm-zcs-lib $GLOBAL_BUILD_DIR");
-      },
+       System("(cd .. && rsync -az --relative zm-zcs-lib $GLOBAL_BUILD_DIR/)");
    },
    {
       "dir"         => "zm-jython",
@@ -790,6 +789,13 @@
      "ant_targets" => undef,
      "stage_cmd" => sub {
            System("cp -f -r ../zm-jetty-conf $GLOBAL_BUILD_DIR");
+      },
+   },
+   {
+      "dir"         => "zm-timezones",
+      "ant_targets" => undef,
+      "stage_cmd" => sub {
+           System("(cd .. && rsync -az --relative zm-timezones $GLOBAL_BUILD_DIR/)");
       },
    },
    
