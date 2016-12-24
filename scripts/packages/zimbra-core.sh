@@ -130,6 +130,10 @@ main()
    Copy ${repoDir}/zm-jython/jylibs/state.py                                                        ${repoDir}/zm-build/${currentPackage}/opt/zimbra/common/lib/jylibs/state.py
 
    PrepareDeployDir "common/lib/perl5/Zimbra"
+   PrepareDeployDir "common/lib/perl5/Zimbra/DB"
+   PrepareDeployDir "common/lib/perl5/Zimbra/Mon"
+   PrepareDeployDir "common/lib/perl5/Zimbra/SOAP"
+   PrepareDeployDir "common/lib/perl5/Zimbra/Util"
    Copy ${repoDir}/zm-build/lib/Zimbra/DB/DB.pm                                                     ${repoDir}/zm-build/${currentPackage}/opt/zimbra/common/lib/perl5/Zimbra/DB/DB.pm
    Copy ${repoDir}/zm-build/lib/Zimbra/Mon/Logger.pm                                                ${repoDir}/zm-build/${currentPackage}/opt/zimbra/common/lib/perl5/Zimbra/Mon/Logger.pm
    Copy ${repoDir}/zm-build/lib/Zimbra/Mon/LoggerSchema.pm                                          ${repoDir}/zm-build/${currentPackage}/opt/zimbra/common/lib/perl5/Zimbra/Mon/LoggerSchema.pm
