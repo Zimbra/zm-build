@@ -480,13 +480,8 @@
       "dir"         => "zm-touch-client",
       "ant_targets" => ["touch"],
       "stage_cmd" => sub {
-           System("mkdir -p $GLOBAL_BUILD_DIR/zm-touch-client/build/dist/jetty/webapps/css");
-           System("mkdir -p $GLOBAL_BUILD_DIR/zm-touch-client/build/dist/jetty/webapps/public");
-           System("mkdir -p $GLOBAL_BUILD_DIR/zm-touch-client/build/dist/jetty/webapps/t");
-           System("cp -f build/WebRoot/css/ztouch.css $GLOBAL_BUILD_DIR/zm-touch-client/build/dist/jetty/webapps/css");
-           System("cp -f build/WebRoot/public/loginTouch.jsp  $GLOBAL_BUILD_DIR/zm-touch-client/build/dist/jetty/webapps/public");
-           System("cp -f -r build/WebRoot/t $GLOBAL_BUILD_DIR/zm-touch-client/build/dist/jetty/webapps");
-           System("cp -f -r WebRoot $GLOBAL_BUILD_DIR/zm-touch-client");
+           System("mkdir -p $GLOBAL_BUILD_DIR/zm-touch-client/build");
+           System("cp -f -r build/Webroot $GLOBAL_BUILD_DIR/zm-touch-client/build");
       },
    }, 
    {
