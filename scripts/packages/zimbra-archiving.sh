@@ -24,7 +24,7 @@
     currentPackage=`echo ${currentScript}build | cut -d "-" -f 2` # archivingbuild
 
     jarDir=${repoDir}/zm-xmbxsearch-store/build/dist/
-    archiveZimletDir=${repoDir}/zm-archive-admin-zimlet/build/zimlet/
+    archiveZimletDir=${repoDir}/zm-archive-admin-zimlet/build/dist/
     xmbxZimletDir=${repoDir}/zm-xmbxsearch-zimlet/build/dist/
 
 

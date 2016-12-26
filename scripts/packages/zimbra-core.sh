@@ -874,7 +874,7 @@ zimbrathirdpartyjars=("ant-1.7.0-ziputil-patched.jar" \
 "oauth-20100527.jar" \
 "owasp-java-html-sanitizer-r239.jar" \
 "policy-2.3.jar" \
-"servlet-api-3.1.jar" \
+"javax.servlet-api-3.1.0.jar" \
 "slf4j-api-1.6.4.jar" \
 "slf4j-log4j12-1.6.4.jar" \
 "smack-3.1.0.jar" \
