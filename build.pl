@@ -133,6 +133,7 @@ my @GLOBAL_REPOS = (
    { name => "zm-zcs-lib",                          branch => "dev",             user => "zimbra" },
    { name => "zm-zimlets",                          branch => "dev",             user => "zimbra" },
    { name => "zm-libnative",                        branch => "dev",             user => "zimbra" },
+   { name => "zm-launcher",                         branch => "dev",             user => "zimbra" },
    { name => "zm-jetty-conf",                       branch => "dev",             user => "zimbra" },
 );
 
