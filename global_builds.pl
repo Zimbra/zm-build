@@ -481,7 +481,7 @@
       "ant_targets" => ["touch"],
       "stage_cmd" => sub {
            System("mkdir -p $GLOBAL_BUILD_DIR/zm-touch-client/build");
-           System("cp -f -r build/Webroot $GLOBAL_BUILD_DIR/zm-touch-client/build");
+           System("cp -f -r build/WebRoot $GLOBAL_BUILD_DIR/zm-touch-client/build");
       },
    }, 
    {
