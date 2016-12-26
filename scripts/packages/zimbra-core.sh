@@ -360,8 +360,8 @@ main()
    Copy ${repoDir}/zm-core-utils/src/libexec/zmlogger                                               ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmlogger
    Copy ${repoDir}/zm-core-utils/src/libexec/zmloggerinit                                           ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmloggerinit
    Copy ${repoDir}/zm-core-utils/src/libexec/zmlogprocess                                           ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmlogprocess
-   Copy ${repoDir}/zm-launcher/dist/zmmailboxdmgr                                                   ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmmailboxdmgr
-   Copy ${repoDir}/zm-launcher/dist/zmmailboxdmgr.unrestricted                                      ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmmailboxdmgr.unrestricted 
+   Copy ${repoDir}/zm-launcher/build/dist/zmmailboxdmgr                                             ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmmailboxdmgr
+   Copy ${repoDir}/zm-launcher/build/dist/zmmailboxdmgr.unrestricted                                ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmmailboxdmgr.unrestricted 
    Copy ${repoDir}/zm-core-utils/src/libexec/zmmsgtrace                                             ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmmsgtrace
    Copy ${repoDir}/zm-core-utils/src/libexec/zmmtainit                                              ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmmtainit
    Copy ${repoDir}/zm-core-utils/src/libexec/zmmtastatus                                            ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmmtastatus
