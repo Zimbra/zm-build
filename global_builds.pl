@@ -783,7 +783,15 @@
       },
    },
    {
-      "dir"         => "zm-jetty-conf",
+      "dir"         => "zm-launcher",
+      "stage_cmd" => sub {
+           System("make -f Makefile");
+           System("mkdir -p $GLOBAL_BUILD_DIR/zm-launcher/build/dist");
+           System("cp -f build/zmmailboxd* $GLOBAL_BUILD_DIR/zm-launcher/build/dist");
+      },
+   },
+   {
+     "dir"         => "zm-jetty-conf",
      "ant_targets" => undef,
      "stage_cmd" => sub {
            System("cp -f -r ../zm-jetty-conf $GLOBAL_BUILD_DIR");
