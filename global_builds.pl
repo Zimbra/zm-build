@@ -776,8 +776,8 @@
    },
    {
       "dir"         => "zm-libnative",
+       "ant_targets" => ["generate-native-headers"],
       "stage_cmd" => sub {
-           System("make");
            System("mkdir -p $GLOBAL_BUILD_DIR/zm-libnative/build/dist");
            System("cp -f build/*.so $GLOBAL_BUILD_DIR/zm-libnative/build/dist");
       },
