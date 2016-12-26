@@ -898,7 +898,7 @@ zimbrathirdpartyjars=("ant-1.7.0-ziputil-patched.jar" \
 "xercesImpl-2.9.1.jar" \
 "xmlschema-core-2.0.3.jar" \
 "yuicompressor-2.4.2-zimbra.jar" \
-"zkclient-0.1.jar" \
+"zkclient-0.1.0.jar" \
 "zookeeper-3.4.5.jar" )
 
     for i in "${zimbrathirdpartyjars[@]}"
