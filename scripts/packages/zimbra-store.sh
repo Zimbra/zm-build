@@ -69,8 +69,9 @@
     mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/extensions-network-extra
     cp -rf ${repoDir}/zm-saml-consumer-store/build/dist/saml ${repoDir}/zm-build/${currentPackage}/opt/zimbra/extensions-network-extra/
 
-    echo -e "\tCopy ${jettyVersion} files of /op/zimbra/" >> ${buildLogFile}
-
+    echo -e "\tCopy ${jettyVersion} files of /opt/zimbra/" >> ${buildLogFile}
+    cd ${repoDir}/opt/zimbra; tar xzf ${repoDir}/zm-zcs-lib/build/dist/${jettyVersion}.tar.gz;
+   
 
     echo -e "\tCopy lib files of /opt/zimbra/" >> ${buildLogFile}
 
@@ -269,6 +270,18 @@
     done
 
     echo "\t\t***** Building jetty/common/ *****" >> ${buildLogFile}
+    mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/common/endorsed
+    jettyendorsedjars=("jcharset-2.0.jar " "zm-charset-*.jar")
+    for i in "${jettyendorsedjars[@]}"
+    do
+        cp ${repoDir}/zm-zcs-lib/build/dist/${i} ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/common/endorsed
+    done
+    
+    zimbrapatchedjars=("ant-1.7.0-ziputil-patched.jar" "ical4j-0.9.16-patched.jar" "nekohtml-1.9.13.1z.jar");
+    for i in "${zimbrapatchedjars[@]}"
+    do
+        cp ${repoDir}/zm-zcs-lib/build/dist/${i} ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/common/lib
+    done
     
     mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/common/lib
     
