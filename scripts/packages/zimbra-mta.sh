@@ -30,6 +30,11 @@
     mkdir -p ${repoDir}/zm-build/${currentPackage}/etc/sudoers.d
     mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/common/conf
     mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/data/amavisd/mysql
+    mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/data/altermime
+    mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/data/cbpolicyd/db
+    mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/data/clamav
+    mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/data/opendkim
+    mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/data/postfix
     mkdir -p ${repoDir}/zm-build/${currentPackage}/DEBIAN
 
     echo -e "\tCopy package files" >> ${buildLogFile}
