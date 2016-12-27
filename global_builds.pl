@@ -449,7 +449,7 @@
    },
    {
       "dir"         => "zm-store",
-      "ant_targets" => ["war -Dis-production=true"],
+      "ant_targets" => ["war", "-Dis-production=true"],
       "stage_cmd" => sub {
            System("mkdir -p $GLOBAL_BUILD_DIR/zm-store/build/dist");
            System("cp -f build/service.war $GLOBAL_BUILD_DIR/zm-store/build/dist");

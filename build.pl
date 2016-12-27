@@ -450,7 +450,7 @@ sub System(@)
 {
    print "#: @_            #(pwd=" . Cwd::getcwd() . ")\n";
 
-   my $x = system "@_";
+   my $x = system @_;
 
    die "FAILURE in system, (info=$!, cmd='@_', ret=$x)\n"
      if ( $x != 0 );
