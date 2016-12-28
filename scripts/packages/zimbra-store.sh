@@ -169,6 +169,7 @@
     cd ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/webapps/zimbraAdmin; jar -xf ${repoDir}/zm-admin-console/build/dist/jetty/webapps/zimbraAdmin.war
 
     echo "\t\t***** help content *****" >> ${buildLogFile}
+    rsync -a ${repoDir}/zm-admin-help-common/WebRoot/help ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/webapps/zimbraAdmin/
     rsync -a ${repoDir}/zm-network-web-client/WebRoot/help ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/webapps/zimbraAdmin/
 
     echo "\t\t***** img content *****" >> ${buildLogFile}

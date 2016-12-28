@@ -499,6 +499,13 @@
       },
    },
    {
+      "dir"         => "zm-admin-help-common",
+      "ant_targets" => undef,
+      "stage_cmd" => sub {
+           System("cp -f -r ../zm-admin-help-common $GLOBAL_BUILD_DIR");
+      },
+   },
+   {
       "dir"         => "zm-versioncheck-utilities",
       "ant_targets" => undef,
       "stage_cmd" => sub {

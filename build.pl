@@ -95,6 +95,7 @@ my @GLOBAL_REPOS = (
    { name => "zm-network-build",                    branch => "dev",             user => "zimbra" },
    { name => "zm-network-store",                    branch => "master",          user => "zimbra" },    # dup
    { name => "zm-network-web-client",               branch => "master",          user => "zimbra" },
+   { name => "zm-admin-help-common",                branch => "master",          user => "zimbra" },
    { name => "zm-nginx-conf",                       branch => "master",          user => "zimbra" },
    { name => "zm-nginx-lookup-store",               branch => "master",          user => "zimbra" },
    { name => "zm-openid-consumer-store",            branch => "dev",             user => "zimbra" },
