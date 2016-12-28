@@ -449,7 +449,7 @@
    },
    {
       "dir"         => "zm-store",
-      "ant_targets" => ["war -Dis-production=true"],
+      "ant_targets" => ["war", "-Dis-production=true"],
       "stage_cmd" => sub {
            System("mkdir -p $GLOBAL_BUILD_DIR/zm-store/build/dist");
            System("cp -f build/service.war $GLOBAL_BUILD_DIR/zm-store/build/dist");
@@ -489,6 +489,20 @@
       "ant_targets" => undef,
       "stage_cmd" => sub {
            System("cp -f -r ../zm-help $GLOBAL_BUILD_DIR");
+      },
+   },
+   {
+      "dir"         => "zm-admin-help-network",
+      "ant_targets" => undef,
+      "stage_cmd" => sub {
+           System("cp -f -r ../zm-admin-help-network $GLOBAL_BUILD_DIR");
+      },
+   },
+   {
+      "dir"         => "zm-admin-help-common",
+      "ant_targets" => undef,
+      "stage_cmd" => sub {
+           System("cp -f -r ../zm-admin-help-common $GLOBAL_BUILD_DIR");
       },
    },
    {

@@ -94,7 +94,8 @@ my @GLOBAL_REPOS = (
    { name => "zm-native",                           branch => "master",          user => "zimbra" },
    { name => "zm-network-build",                    branch => "dev",             user => "zimbra" },
    { name => "zm-network-store",                    branch => "master",          user => "zimbra" },    # dup
-   { name => "zm-network-web-client",               branch => "master",          user => "zimbra" },
+   { name => "zm-admin-help-network",               branch => "master",          user => "zimbra" },
+   { name => "zm-admin-help-common",                branch => "master",          user => "zimbra" },
    { name => "zm-nginx-conf",                       branch => "master",          user => "zimbra" },
    { name => "zm-nginx-lookup-store",               branch => "master",          user => "zimbra" },
    { name => "zm-openid-consumer-store",            branch => "dev",             user => "zimbra" },
@@ -450,7 +451,7 @@ sub System(@)
 {
    print "#: @_            #(pwd=" . Cwd::getcwd() . ")\n";
 
-   my $x = system "@_";
+   my $x = system @_;
 
    die "FAILURE in system, (info=$!, cmd='@_', ret=$x)\n"
      if ( $x != 0 );
