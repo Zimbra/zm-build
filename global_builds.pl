@@ -492,10 +492,10 @@
       },
    },
    {
-      "dir"         => "zm-network-web-client",
+      "dir"         => "zm-admin-help-network",
       "ant_targets" => undef,
       "stage_cmd" => sub {
-           System("cp -f -r ../zm-network-web-client $GLOBAL_BUILD_DIR");
+           System("cp -f -r ../zm-admin-help-network $GLOBAL_BUILD_DIR");
       },
    },
    {
