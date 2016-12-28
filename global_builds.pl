@@ -492,6 +492,13 @@
       },
    },
    {
+      "dir"         => "zm-network-web-client",
+      "ant_targets" => undef,
+      "stage_cmd" => sub {
+           System("cp -f -r ../zm-network-web-client $GLOBAL_BUILD_DIR");
+      },
+   },
+   {
       "dir"         => "zm-versioncheck-utilities",
       "ant_targets" => undef,
       "stage_cmd" => sub {
