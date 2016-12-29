@@ -12,12 +12,12 @@
    { name => "zm-license-tools",                    branch => "dev",             user => "zimbra" },
    { name => "zm-licenses",                         branch => "master",          user => "zimbra" },
    { name => "zm-network-store",                    branch => "master",          user => "zimbra" },    # dup
+   { name => "zm-rebranding-docs",                  branch => "master",          user => "zimbra" },
    { name => "zm-saml-consumer-store",              branch => "master",          user => "zimbra" },
    { name => "zm-sync-store",                       branch => "dev",             user => "zimbra" },
    { name => "zm-sync-tools",                       branch => "dev",             user => "zimbra" },
    { name => "zm-touch-client",                     branch => "master",          user => "zimbra" },
    { name => "zm-twofactorauth-store",              branch => "dev",             user => "zimbra" },
    { name => "zm-voice-store",                      branch => "dev",             user => "zimbra" },
-   { name => "zm-web-client",                       branch => "dev",             user => "zimbra" },
    { name => "zm-windows-comp",                     branch => "dev",             user => "zimbra" },
 );

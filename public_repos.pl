@@ -71,6 +71,7 @@
    { name => "zm-viewmail-admin-zimlet",            branch => "master",          user => "zimbra" },
    { name => "zm-voice-cisco-store",                branch => "dev",             user => "zimbra" },
    { name => "zm-voice-mitel-store",                branch => "dev",             user => "zimbra" },
+   { name => "zm-web-client",                       branch => "dev",             user => "zimbra" },
    { name => "zm-webclient-portal-example",         branch => "master",          user => "zimbra" },
    { name => "zm-xmbxsearch-store",                 branch => "dev",             user => "zimbra" },
    { name => "zm-xmbxsearch-zimlet",                branch => "dev",             user => "zimbra" },

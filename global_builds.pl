@@ -476,7 +476,7 @@
            System("cp -f build/dist/jetty/webapps/zimbra.war $GLOBAL_BUILD_DIR/zm-web-client/build/dist/jetty/webapps");
       },
    },
-  {
+   {
       "dir"         => "zm-touch-client",
       "ant_targets" => ["touch"],
       "stage_cmd" => sub {
@@ -818,5 +818,11 @@
            System("(cd .. && rsync -az --relative zm-timezones $GLOBAL_BUILD_DIR/)");
       },
    },
-   
+   {
+      "dir"         => "zm-rebranding-docs",
+      "ant_targets" => undef,
+      "stage_cmd" => sub {
+           System("(cd .. && rsync -az --relative zm-rebranding-docs $GLOBAL_BUILD_DIR/)");
+      },
+   },
 );
