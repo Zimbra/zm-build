@@ -758,17 +758,20 @@ main()
    Copy ${repoDir}/zm-store/docs/zdesktop-dev-howto.txt                                             ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/zdesktop-dev-howto.txt
    Copy ${repoDir}/zm-windows-comp/ZimbraMigrationTools/ReadMe.txt                                  ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/zmztozmig.txt
 
-   Copy ${repoDir}/zm-web-client/docs/rebranding/DE_Rebranding_directions.txt                       ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/rebranding/DE_Rebranding_directions.txt
-   Copy ${repoDir}/zm-web-client/docs/rebranding/ES_Rebranding_directions.txt                       ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/rebranding/ES_Rebranding_directions.txt
-   Copy ${repoDir}/zm-web-client/docs/rebranding/FR_Rebranding_directions.txt                       ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/rebranding/FR_Rebranding_directions.txt
-   Copy ${repoDir}/zm-web-client/docs/rebranding/IT_Rebranding_directions.txt                       ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/rebranding/IT_Rebranding_directions.txt
-   Copy ${repoDir}/zm-web-client/docs/rebranding/JA_Rebranding_directions.txt                       ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/rebranding/JA_Rebranding_directions.txt
-   Copy ${repoDir}/zm-web-client/docs/rebranding/NL_Rebranding_directions.txt                       ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/rebranding/NL_Rebranding_directions.txt
-   Copy ${repoDir}/zm-web-client/docs/rebranding/RU_Rebranding_directions.txt                       ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/rebranding/RU_Rebranding_directions.txt
-   Copy ${repoDir}/zm-web-client/docs/rebranding/en_US_Rebranding_directions.txt                    ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/rebranding/en_US_Rebranding_directions.txt
-   Copy ${repoDir}/zm-web-client/docs/rebranding/pt_BR_Rebranding_directions.txt                    ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/rebranding/pt_BR_Rebranding_directions.txt
-   Copy ${repoDir}/zm-web-client/docs/rebranding/zh_CN_Rebranding_directions.txt                    ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/rebranding/zh_CN_Rebranding_directions.txt
-   Copy ${repoDir}/zm-web-client/docs/rebranding/zh_HK_Rebranding_directions.txt                    ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/rebranding/zh_HK_Rebranding_directions.txt
+   if [ "${buildType}" == "NETWORK" ]
+   then
+      Copy ${repoDir}/zm-rebranding-docs/docs/rebranding/DE_Rebranding_directions.txt                       ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/rebranding/DE_Rebranding_directions.txt
+      Copy ${repoDir}/zm-rebranding-docs/docs/rebranding/ES_Rebranding_directions.txt                       ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/rebranding/ES_Rebranding_directions.txt
+      Copy ${repoDir}/zm-rebranding-docs/docs/rebranding/FR_Rebranding_directions.txt                       ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/rebranding/FR_Rebranding_directions.txt
+      Copy ${repoDir}/zm-rebranding-docs/docs/rebranding/IT_Rebranding_directions.txt                       ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/rebranding/IT_Rebranding_directions.txt
+      Copy ${repoDir}/zm-rebranding-docs/docs/rebranding/JA_Rebranding_directions.txt                       ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/rebranding/JA_Rebranding_directions.txt
+      Copy ${repoDir}/zm-rebranding-docs/docs/rebranding/NL_Rebranding_directions.txt                       ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/rebranding/NL_Rebranding_directions.txt
+      Copy ${repoDir}/zm-rebranding-docs/docs/rebranding/RU_Rebranding_directions.txt                       ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/rebranding/RU_Rebranding_directions.txt
+      Copy ${repoDir}/zm-rebranding-docs/docs/rebranding/en_US_Rebranding_directions.txt                    ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/rebranding/en_US_Rebranding_directions.txt
+      Copy ${repoDir}/zm-rebranding-docs/docs/rebranding/pt_BR_Rebranding_directions.txt                    ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/rebranding/pt_BR_Rebranding_directions.txt
+      Copy ${repoDir}/zm-rebranding-docs/docs/rebranding/zh_CN_Rebranding_directions.txt                    ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/rebranding/zh_CN_Rebranding_directions.txt
+      Copy ${repoDir}/zm-rebranding-docs/docs/rebranding/zh_HK_Rebranding_directions.txt                    ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/rebranding/zh_HK_Rebranding_directions.txt
+   fi
 
    PrepareDeployDir "lib"
 # opt/zimbra/lib/libappmonitorlib.so                                          :: NOT_IN_REPO :: 
