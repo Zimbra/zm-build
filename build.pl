@@ -318,6 +318,7 @@ sub Build()
          System("mkdir -p $GLOBAL_BUILD_DIR/zm-build/$GLOBAL_BUILD_ARCH");
 
          my @PACKAGE_LIST = (
+            "zimbra-ldap",
             "zimbra-snmp",
             "zimbra-spell",
             "zimbra-logger",
