@@ -4,6 +4,7 @@
    { name => "ical4j-0.9.16-patched",               branch => "dev",             user => "zimbra" },
    { name => "nekohtml-1.9.13",                     branch => "dev",             user => "zimbra" },
    { name => "zm-2fa-admin-zimlet",                 branch => "master",          user => "zimbra" },
+   { name => "zm-admin-console",                    branch => "dev",             user => "zimbra" },
    { name => "zm-admin-help-common",                branch => "master",          user => "zimbra" },
    { name => "zm-admin-help-network",               branch => "master",          user => "zimbra" },
    { name => "zm-ajax",                             branch => "dev",             user => "zimbra" },
