@@ -1,5 +1,4 @@
 @REPOS = (
-   { name => "zm-admin-console",                    branch => "dev",             user => "zimbra" },
    { name => "zm-archive-utils",                    branch => "dev",             user => "zimbra" },
    { name => "zm-backup-store",                     branch => "dev",             user => "zimbra" },
    { name => "zm-backup-utilities",                 branch => "master",          user => "zimbra" },
