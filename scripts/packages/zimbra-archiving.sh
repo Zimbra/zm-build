@@ -29,19 +29,28 @@
 
 
 #-------------------- Build Package ---------------------------
-
+main()
+{
     echo -e "\tCreate package directories" >> ${buildLogFile}
     mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/com_zimbra_xmbxsearch
     mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/zimlets-network
-    mkdir -p ${repoDir}/zm-build/${currentPackage}/DEBIAN
+
 
     echo -e "\tCopy package files" >> ${buildLogFile}
     cp ${jarDir}zm-xmbxsearch-store.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/com_zimbra_xmbxsearch/com_zimbra_xmbxsearch.jar
     cp ${archiveZimletDir}com_zimbra_archive.zip ${repoDir}/zm-build/${currentPackage}/opt/zimbra/zimlets-network/com_zimbra_archive.zip
     cp ${xmbxZimletDir}com_zimbra_xmbxsearch.zip ${repoDir}/zm-build/${currentPackage}/opt/zimbra/zimlets-network/com_zimbra_xmbxsearch.zip
+
+
+
+    CreateDebianPackage
+}
+
+CreateDebianPackage()
+{
+    mkdir -p ${repoDir}/zm-build/${currentPackage}/DEBIAN
     cat ${repoDir}/zm-network-build/rpmconf/Spec/Scripts/${currentScript}.post >> ${repoDir}/zm-build/${currentPackage}/DEBIAN/postinst
     chmod 555 ${repoDir}/zm-build/${currentPackage}/DEBIAN/*
-
     echo -e "\tCreate debian package" >> ${buildLogFile}
     (cd ${repoDir}/zm-build/${currentPackage}; find . -type f ! -regex '.*?debian-binary.*' ! -regex '.*?DEBIAN.*' -print0 | xargs -0 md5sum | sed -e 's| \./| |' \
         > ${repoDir}/zm-build/${currentPackage}/DEBIAN/md5sums)
@@ -54,3 +63,7 @@
     else
         echo -e "\t*** ${currentPackage} package successfully created ***" >> ${buildLogFile}
     fi
+}
+
+############################################################################
+main "$@"

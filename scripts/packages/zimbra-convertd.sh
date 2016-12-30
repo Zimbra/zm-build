@@ -28,13 +28,13 @@
 
 
 #-------------------- Build Package ---------------------------
-
+main()
+{
     echo -e "\tCreate package directories" >> ${buildLogFile}
     mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/convertd/bin
     mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/convertd/conf/ldap
     mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/convertd/lib
     mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/keyview-${keyviewVersion}/conf
-    mkdir -p ${repoDir}/zm-build/${currentPackage}/DEBIAN
 
     cd ${repoDir}/zm-build/${currentPackage}/opt/zimbra
     wget http://${zimbraThirdPartyServer}/ZimbraThirdParty/build-essentials/keyview/keyview-${keyviewVersion}.tgz
@@ -59,6 +59,13 @@
     cp -f ${zimbraMimehandlersLdif} ${repoDir}/zm-build/${currentPackage}/opt/zimbra/convertd/conf/ldap/
     cp -f ${repoDir}/zm-convertd-native/conf/ldap/zimbra_mimehandlers.ldif ${repoDir}/zm-build/${currentPackage}/opt/zimbra/convertd/conf/ldap/convertd_mimehandlers.ldif
     cp -f ${repoDir}/zm-convertd-native/conf/httpd.conf.production ${repoDir}/zm-build/${currentPackage}/opt/zimbra/convertd/conf/httpd.conf
+
+    CreateDebianPackage
+}
+
+CreateDebianPackage()
+{
+    mkdir -p ${repoDir}/zm-build/${currentPackage}/DEBIAN
     cp ${repoDir}/zm-network-build/rpmconf/Spec/Scripts/zimbra-convertd.pre ${repoDir}/zm-build/${currentPackage}/DEBIAN/preinst
     cat ${repoDir}/zm-network-build/rpmconf/Spec/Scripts/zimbra-convertd.post >> ${repoDir}/zm-build/${currentPackage}/DEBIAN/postinst
     cp ${repoDir}/zm-network-build/rpmconf/Spec/Scripts/zimbra-convertd.postun ${repoDir}/zm-build/${currentPackage}/DEBIAN/postrm
@@ -77,3 +84,8 @@
     else
         echo -e "\t*** ${currentPackage} package successfully created ***" >> ${buildLogFile}
     fi
+
+}
+
+############################################################################
+main "$@"

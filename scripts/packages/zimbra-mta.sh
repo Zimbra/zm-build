@@ -25,7 +25,8 @@
 
 
 #-------------------- Build Package ---------------------------
-
+main()
+{
     echo -e "\tCreate package directories" >> ${buildLogFile}
     mkdir -p ${repoDir}/zm-build/${currentPackage}/etc/sudoers.d
     mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/common/conf
@@ -35,7 +36,7 @@
     mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/data/clamav
     mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/data/opendkim
     mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/data/postfix
-    mkdir -p ${repoDir}/zm-build/${currentPackage}/DEBIAN
+
 
     echo -e "\tCopy package files" >> ${buildLogFile}
     cp ${repoDir}/zm-build/rpmconf/Env/sudoers.d/02_${currentScript} ${repoDir}/zm-build/${currentPackage}/etc/sudoers.d/02_${currentScript}
@@ -43,6 +44,13 @@
     cp ${repoDir}/zm-postfix/conf/postfix/tag_as_foreign.re.in ${repoDir}/zm-build/${currentPackage}/opt/zimbra/common/conf/tag_as_foreign.re.in
     cp ${repoDir}/zm-postfix/conf/postfix/tag_as_originating.re.in ${repoDir}/zm-build/${currentPackage}/opt/zimbra/common/conf/tag_as_originating.re.in
     cp -f ${repoDir}/zm-amavis/conf/amavisd/mysql/antispamdb.sql ${repoDir}/zm-build/${currentPackage}/opt/zimbra/data/amavisd/mysql/antispamdb.sql
+
+    CreateDebianPackage
+}
+
+CreateDebianPackage()
+{
+    mkdir -p ${repoDir}/zm-build/${currentPackage}/DEBIAN
     cat ${repoDir}/zm-build/rpmconf/Spec/Scripts/${currentScript}.post >> ${repoDir}/zm-build/${currentPackage}/DEBIAN/postinst
     chmod 555 ${repoDir}/zm-build/${currentPackage}/DEBIAN/*
 
@@ -58,3 +66,7 @@
     else
         echo -e "\t*** ${currentPackage} package successfully created ***" >> ${buildLogFile}
     fi
+}
+
+############################################################################
+main "$@"
