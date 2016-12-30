@@ -459,10 +459,11 @@
    },
    {
       "dir"         => "zm-store",
-      "ant_targets" => ["war", "-Dis-production=true"],
+      "ant_targets" => ["war","create-version-sql", "-Dis-production=true"],
       "stage_cmd" => sub {
            System("mkdir -p $GLOBAL_BUILD_DIR/zm-store/build/dist");
            System("cp -f build/service.war $GLOBAL_BUILD_DIR/zm-store/build/dist");
+           System("cp -f build/dist/versions-init.sql $GLOBAL_BUILD_DIR/zm-store/build/dist/");
            System("(cd .. && rsync -az --relative zm-store/docs $GLOBAL_BUILD_DIR/)");
            System("(cd .. && rsync -az --relative zm-store/conf $GLOBAL_BUILD_DIR/)");
       },

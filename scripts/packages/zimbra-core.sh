@@ -602,7 +602,7 @@ main()
    Copy ${repoDir}/zm-store-conf/conf/rights/zimbra-user-rights.xml                                 ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/rights/zimbra-user-rights.xml
    Copy ${repoDir}/zm-store-conf/conf/stats.conf.in                                                 ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/stats.conf.in
 
-#  Copy ${repoDir}/zm-store/build/dist/versions-init.sql                                            ${repoDir}/zm-build/${currentPackage}/opt/zimbra/db/versions-init.sql         #FIXME - PRASHANT TO FIX THIS
+   Copy ${repoDir}/zm-store/build/dist/versions-init.sql                                            ${repoDir}/zm-build/${currentPackage}/opt/zimbra/db/versions-init.sql
    Copy ${repoDir}/zm-store/conf/attrs/amavisd-new-attrs.xml                                        ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/attrs/amavisd-new-attrs.xml
    Copy ${repoDir}/zm-store/conf/attrs/zimbra-attrs.xml                                             ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/attrs/zimbra-attrs.xml
    Copy ${repoDir}/zm-store/conf/attrs/zimbra-ocs.xml                                               ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/attrs/zimbra-ocs.xml
