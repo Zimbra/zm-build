@@ -25,24 +25,6 @@ currentPackage="$(echo ${currentScript}build | cut -d "-" -f 2)" # corebuild
 
 #-------------------- Util Functions ---------------------------
 
-PrepareEtcDir()
-{
-   local dirset=$1; shift;
-
-   echo -e "\tCopy etc/$dirset files" >> ${buildLogFile}
-
-   mkdir -p "${repoDir}/zm-build/${currentPackage}/etc/$dirset"
-}
-
-PrepareDeployDir()
-{
-   local dirset=$1; shift;
-
-   echo -e "\tCopy opt/zimbra/$dirset files" >> ${buildLogFile}
-
-   mkdir -p "${repoDir}/zm-build/${currentPackage}/opt/zimbra/$dirset"
-}
-
 CreateDebianPackage()
 {
    echo -e "\tCreate debian package" >> ${buildLogFile}
@@ -91,10 +73,22 @@ CreateDebianPackage()
 
 Copy()
 {
-   local src="$1"; shift;
-   local dest="$1"; shift;
+   local src_file="$1"; shift;
+   local dest_file="$1"; shift;
 
-   cp -f "$src" "$dest"
+   mkdir -p "$(dirname "$dest_file")"
+
+   cp -f "$src_file" "$dest_file"
+}
+
+Cpy2()
+{
+   local src_file="$1"; shift;
+   local dest_dir="$1"; shift;
+
+   mkdir -p "$dest_dir"
+
+   cp -f "$src_file" "$dest_dir"
 }
 
 #-------------------- main packaging ---------------------------
@@ -103,11 +97,9 @@ main()
 {
    set -e
 
-   PrepareEtcDir "sudoers.d"
    Copy ${repoDir}/zm-build/rpmconf/Env/sudoers.d/01_zimbra                                         ${repoDir}/zm-build/${currentPackage}/etc/sudoers.d/01_zimbra
    Copy ${repoDir}/zm-build/rpmconf/Env/sudoers.d/02_zimbra-core                                    ${repoDir}/zm-build/${currentPackage}/etc/sudoers.d/02_zimbra-core
 
-   PrepareDeployDir ""
    Copy ${repoDir}/zm-build/rpmconf/Env/zimbra.bash_profile                                         ${repoDir}/zm-build/${currentPackage}/opt/zimbra/.bash_profile
    Copy ${repoDir}/zm-build/rpmconf/Env/zimbra.bashrc                                               ${repoDir}/zm-build/${currentPackage}/opt/zimbra/.bashrc
    Copy ${repoDir}/zm-build/rpmconf/Env/zimbra.exrc                                                 ${repoDir}/zm-build/${currentPackage}/opt/zimbra/.exrc
@@ -115,7 +107,6 @@ main()
    Copy ${repoDir}/zm-build/rpmconf/Env/zimbra.platform                                             ${repoDir}/zm-build/${currentPackage}/opt/zimbra/.platform
    Copy ${repoDir}/zm-build/rpmconf/Env/zimbra.viminfo                                              ${repoDir}/zm-build/${currentPackage}/opt/zimbra/.viminfo
 
-   PrepareDeployDir "common/lib/jylibs"
    Copy ${repoDir}/zm-jython/jylibs/commands.py                                                     ${repoDir}/zm-build/${currentPackage}/opt/zimbra/common/lib/jylibs/commands.py
    Copy ${repoDir}/zm-jython/jylibs/conf.py                                                         ${repoDir}/zm-build/${currentPackage}/opt/zimbra/common/lib/jylibs/conf.py
    Copy ${repoDir}/zm-jython/jylibs/config.py                                                       ${repoDir}/zm-build/${currentPackage}/opt/zimbra/common/lib/jylibs/config.py
@@ -129,11 +120,6 @@ main()
    Copy ${repoDir}/zm-jython/jylibs/serverconfig.py                                                 ${repoDir}/zm-build/${currentPackage}/opt/zimbra/common/lib/jylibs/serverconfig.py
    Copy ${repoDir}/zm-jython/jylibs/state.py                                                        ${repoDir}/zm-build/${currentPackage}/opt/zimbra/common/lib/jylibs/state.py
 
-   PrepareDeployDir "common/lib/perl5/Zimbra"
-   PrepareDeployDir "common/lib/perl5/Zimbra/DB"
-   PrepareDeployDir "common/lib/perl5/Zimbra/Mon"
-   PrepareDeployDir "common/lib/perl5/Zimbra/SOAP"
-   PrepareDeployDir "common/lib/perl5/Zimbra/Util"
    Copy ${repoDir}/zm-build/lib/Zimbra/DB/DB.pm                                                     ${repoDir}/zm-build/${currentPackage}/opt/zimbra/common/lib/perl5/Zimbra/DB/DB.pm
    Copy ${repoDir}/zm-build/lib/Zimbra/Mon/Logger.pm                                                ${repoDir}/zm-build/${currentPackage}/opt/zimbra/common/lib/perl5/Zimbra/Mon/Logger.pm
    Copy ${repoDir}/zm-build/lib/Zimbra/Mon/LoggerSchema.pm                                          ${repoDir}/zm-build/${currentPackage}/opt/zimbra/common/lib/perl5/Zimbra/Mon/LoggerSchema.pm
@@ -147,15 +133,6 @@ main()
    Copy ${repoDir}/zm-build/lib/Zimbra/Util/LDAP.pm                                                 ${repoDir}/zm-build/${currentPackage}/opt/zimbra/common/lib/perl5/Zimbra/Util/LDAP.pm
    Copy ${repoDir}/zm-build/lib/Zimbra/Util/Timezone.pm                                             ${repoDir}/zm-build/${currentPackage}/opt/zimbra/common/lib/perl5/Zimbra/Util/Timezone.pm
    Copy ${repoDir}/zm-build/lib/Zimbra/ZmClient.pm                                                  ${repoDir}/zm-build/${currentPackage}/opt/zimbra/common/lib/perl5/Zimbra/ZmClient.pm
-
-   PrepareDeployDir "conf"
-   PrepareDeployDir "conf/crontabs"
-   PrepareDeployDir "conf/attrs"
-   PrepareDeployDir "conf/msgs"
-   PrepareDeployDir "conf/zmconfigd"
-   PrepareDeployDir "conf/rights"
-   PrepareDeployDir "conf/externaldirsync"
-   PrepareDeployDir "conf/sasl2"
 
    Copy ${repoDir}/zm-amavis/conf/amavisd/amavisd-custom.conf                                       ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/amavisd-custom.conf
    Copy ${repoDir}/zm-amavis/conf/amavisd.conf.in                                                   ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/amavisd.conf.in
@@ -292,11 +269,9 @@ main()
    Copy ${repoDir}/zm-ldap-utilities/conf/externaldirsync/openldap.xml                              ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/externaldirsync/openldap.xml
 
 
-   PrepareDeployDir "contrib"
    Copy ${repoDir}/zm-core-utils/src/contrib/zmfetchercfg                                           ${repoDir}/zm-build/${currentPackage}/opt/zimbra/contrib/zmfetchercfg
 
 
-   PrepareDeployDir "libexec"
    Copy ${repoDir}/zm-core-utils/src/libexec/600.zimbra                                             ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/600.zimbra
    Copy ${repoDir}/zm-build/rpmconf/Install/Util/addUser.sh                                         ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/addUser.sh
    Copy ${repoDir}/zm-core-utils/src/libexec/client_usage_report.py                                 ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/client_usage_report.py
@@ -412,7 +387,6 @@ main()
    Copy ${repoDir}/zm-core-utils/src/libexec/zmupdatezco                                            ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmupdatezco
    Copy ${repoDir}/zm-build/rpmconf/Upgrade/zmupgrade.pm                                            ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmupgrade.pm
 
-   PrepareDeployDir "libexec/scripts"
    Copy ${repoDir}/zm-db-conf/src/db/migration/Migrate.pm                                           ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/scripts/Migrate.pm
    Copy ${repoDir}/zm-db-conf/src/db/migration/clearArchivedFlag.pl                                 ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/scripts/clearArchivedFlag.pl
    Copy ${repoDir}/zm-db-conf/src/db/migration/fixConversationCounts.pl                             ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/scripts/fixConversationCounts.pl
@@ -541,11 +515,6 @@ main()
    Copy ${repoDir}/zm-db-conf/src/db/migration/migrate20130819-UpgradeQuotasTable.sql               ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/scripts/migrate20130819-UpgradeQuotasTable.sql
    Copy ${repoDir}/zm-core-utils/src/perl/migrate20131014-removezca.pl                              ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/scripts/migrate20131014-removezca.pl
 
-
-   PrepareDeployDir "libexec/installer"
-   PrepareDeployDir "libexec/installer/bin"
-   PrepareDeployDir "libexec/installer/util/modules"
-
    Copy ${repoDir}/zm-build/rpmconf/Build/get_plat_tag.sh                                           ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/installer/bin/get_plat_tag.sh
    Copy ${repoDir}/zm-build/rpmconf/Install/install.sh                                              ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/installer/install.sh
    Copy ${repoDir}/zm-build/rpmconf/Install/Util/addUser.sh                                         ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/installer/util/addUser.sh
@@ -555,18 +524,15 @@ main()
    Copy ${repoDir}/zm-build/rpmconf/Install/Util/modules/postinstall.sh                             ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/installer/util/modules/postinstall.sh
    Copy ${repoDir}/zm-build/rpmconf/Install/Util/utilfunc.sh                                        ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/installer/util/utilfunc.sh
 
-   PrepareDeployDir "db"
-   Copy ${repoDir}/zm-db-conf/src/db/mysql/db.sql ${repoDir}/zm-build/${currentPackage}/opt/zimbra/db
-   Copy ${repoDir}/zm-db-conf/src/db/mysql/create_database.sql  ${repoDir}/zm-build/${currentPackage}/opt/zimbra/db
-   Copy ${repoDir}/zm-backup-utilities/src/db/backup_schema.sql ${repoDir}/zm-build/${currentPackage}/opt/zimbra/db
+   Copy ${repoDir}/zm-db-conf/src/db/mysql/db.sql                                                   ${repoDir}/zm-build/${currentPackage}/opt/zimbra/db/db.sql
+   Copy ${repoDir}/zm-db-conf/src/db/mysql/create_database.sql                                      ${repoDir}/zm-build/${currentPackage}/opt/zimbra/db/create_database.sql
+   Copy ${repoDir}/zm-backup-utilities/src/db/backup_schema.sql                                     ${repoDir}/zm-build/${currentPackage}/opt/zimbra/db/backup_schema.sql
 # opt/zimbra/db/backup-version-init.sql
 # opt/zimbra/db/versions-init.sql
 
-   PrepareDeployDir "logger/db/work"
    Copy ${repoDir}/zm-build/rpmconf/Img/connection_failed.gif                                       ${repoDir}/zm-build/${currentPackage}/opt/zimbra/logger/db/work/connection_failed.gif
    Copy ${repoDir}/zm-build/rpmconf/Img/data_not_available.gif                                      ${repoDir}/zm-build/${currentPackage}/opt/zimbra/logger/db/work/data_not_available.gif
 
-   PrepareDeployDir "bin"
    Copy ${repoDir}/zm-backup-utilities/src/bin/zmbackup                                             ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmbackup
    Copy ${repoDir}/zm-backup-utilities/src/bin/zmbackupabort                                        ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmbackupabort
    Copy ${repoDir}/zm-backup-utilities/src/bin/zmbackupquery                                        ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmbackupquery
@@ -667,8 +633,6 @@ main()
    Copy ${repoDir}/zm-core-utils/src/bin/zmmailbox                                                  ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmmailbox
    Copy ${repoDir}/zm-core-utils/src/bin/zmresolverctl                                              ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmresolverctl
 
-   PrepareDeployDir "docs"
-   PrepareDeployDir "docs/rebranding"
    Copy ${repoDir}/zm-store/docs/INSTALL-DEV-MAC-UBUNTU-VM.md                                       ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/INSTALL-DEV-MAC-UBUNTU-VM.md
    Copy ${repoDir}/zm-store/docs/INSTALL-DEV-MULTISERVER.txt                                        ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/INSTALL-DEV-MULTISERVER.txt
    Copy ${repoDir}/zm-store/docs/INSTALL-DEV-UBUNTU12_64.txt                                        ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/INSTALL-DEV-UBUNTU12_64.txt
@@ -773,162 +737,164 @@ main()
       Copy ${repoDir}/zm-rebranding-docs/docs/rebranding/zh_HK_Rebranding_directions.txt                    ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/rebranding/zh_HK_Rebranding_directions.txt
    fi
 
-   PrepareDeployDir "lib"
 # opt/zimbra/lib/libappmonitorlib.so                                          :: NOT_IN_REPO :: 
 # opt/zimbra/lib/libjunixsocket-linux-1.5-amd64.so                            :: NOT_IN_REPO :: 
 # opt/zimbra/lib/libzimbra-native.so                                          :: NOT_IN_REPO :: 
 
-mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/jars
-mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext-common
-mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/jars-ant
-mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext
+   mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/jars
+   mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext-common
+   mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/jars-ant
+   mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext
 
-zimbrathirdpartyjars=("ant-1.7.0-ziputil-patched.jar" \
-"ant-contrib-1.0b2.jar" \
-"ant-tar-patched.jar" \
-"antlr-3.2.jar" \
-"apache-jsieve-core-0.5.jar" \
-"apache-log4j-extras-1.0.jar" \
-"asm-3.3.1.jar" \
-"bcprov-jdk15-1.46.jar" \
-"commons-cli-1.2.jar" \
-"commons-codec-1.7.jar" \
-"commons-collections-3.2.2.jar" \
-"commons-compress-1.10.jar" \
-"commons-dbcp-1.4.jar" \
-"commons-fileupload-1.2.2.jar" \
-"commons-httpclient-3.1.jar" \
-"commons-io-1.4.jar" \
-"commons-lang-2.6.jar" \
-"commons-logging-1.1.1.jar" \
-"commons-net-3.3.jar" \
-"commons-pool-1.6.jar" \
-"concurrentlinkedhashmap-lru-1.3.1.jar" \
-"curator-client-2.0.1-incubating.jar" \
-"curator-client-2.0.1-incubating.jar" \
-"curator-framework-2.0.1-incubating.jar" \
-"curator-recipes-2.0.1-incubating.jar" \
-"curator-x-discovery-2.0.1-incubating.jar" \
-"cxf-2.7.18.jar" \
-"dom4j-1.5.2.jar" \
-"ehcache-core-2.5.1.jar" \
-"freemarker-2.3.19.jar" \
-"ganymed-ssh2-build210.jar" \
-"gifencoder-0.9.jar" \
-"gmbal-api-only-2.2.6.jar" \
-"guava-13.0.1.jar" \
-"helix-core-0.6.1-incubating.jar" \
-"httpasyncclient-4.0-beta3.jar" \
-"httpclient-4.2.1.jar" \
-"httpcore-4.2.2.jar" \
-"httpcore-nio-4.2.2.jar" \
-"ical4j-0.9.16-patched.jar" \
-"icu4j-4.8.1.1.jar" \
-"zm-ews-stub-1.0.jar" \
-"jackson-mapper-asl-1.9.13.jar" \
-"jamm-0.2.5.jar" \
-"mail-1.4.5.jar" \
-"javax.ws.rs-api-2.0-m10.jar" \
-"jaxb-api-2.2.6.jar" \
-"jaxb-impl-2.2.6.jar" \
-"jaxen-1.1.3.jar" \
-"jaxws-api-2.2.6.jar" \
-"jaxws-rt-2.2.6.jar" \
-"jcharset-2.0.jar" \
-"jcommon-1.0.21.jar" \
-"jcs-1.3.jar" \
-"jdom-1.1.jar" \
-"jersey-client-1.11.jar" \
-"jersey-core-1.11.jar" \
-"jersey-json-1.11.jar" \
-"jersey-multipart-1.11.jar" \
-"jersey-server-1.11.jar" \
-"jersey-servlet-1.11.jar" \
-"jetty-continuation-9.3.5.v20151012.jar" \
-"jetty-http-9.3.5.v20151012.jar" \
-"jetty-io-9.3.5.v20151012.jar" \
-"jetty-rewrite-9.3.5.v20151012.jar" \
-"jetty-security-9.3.5.v20151012.jar" \
-"jetty-server-9.3.5.v20151012.jar" \
-"jetty-servlet-9.3.5.v20151012.jar" \
-"jetty-servlets-9.3.5.v20151012.jar" \
-"jetty-util-9.3.5.v20151012.jar" \
-"jfreechart-1.0.15.jar" \
-"jna-3.4.0.jar" \
-"json-20090211.jar" \
-"jsr181-api-1.0-MR1.jar" \
-"jsr311-api-1.1.1.jar" \
-"junixsocket-common-2.0.4.jar" \
-"junixsocket-demo-2.0.4.jar" \
-"junixsocket-mysql-2.0.4.jar" \
-"junixsocket-rmi-2.0.4.jar" \
-"jython-2.1.jar" \
-"jzlib-1.0.7.jar" \
-"libidn-1.24.jar" \
-"log4j-1.2.16.jar" \
-"lucene-analyzers-3.5.0.jar" \
-"lucene-core-3.5.0.jar" \
-"lucene-smartcn-3.5.0.jar" \
-"mariadb-java-client-1.1.8.jar" \
-"spymemcached-2.9.1.jar" \
-"mina-core-2.0.4.jar" \
-"neethi-3.0.2.jar" \
-"nekohtml-1.9.13.1z.jar" \
-"oauth-20100527.jar" \
-"owasp-java-html-sanitizer-r239.jar" \
-"policy-2.3.jar" \
-"javax.servlet-api-3.1.0.jar" \
-"slf4j-api-1.6.4.jar" \
-"slf4j-log4j12-1.6.4.jar" \
-"smack-3.1.0.jar" \
-"smackx-3.1.0.jar" \
-"smackx-debug-3.2.1.jar" \
-"smackx-jingle-3.2.1.jar" \
-"spring-aop-3.0.7.RELEASE.jar" \
-"spring-asm-3.0.7.RELEASE.jar" \
-"spring-beans-3.0.7.RELEASE.jar" \
-"spring-context-3.0.7.RELEASE.jar" \
-"spring-core-3.0.7.RELEASE.jar" \
-"spring-expression-3.0.7.RELEASE.jar" \
-"sqlite-jdbc-3.7.15-M1.jar" \
-"stax-ex-1.7.7.jar" \
-"stax2-api-3.1.1.jar" \
-"streambuffer-2.2.6.jar" \
-"syslog4j-0.9.30.jar" \
-"unboundid-ldapsdk-2.3.5.jar" \
-"woodstox-core-asl-4.2.0.jar" \
-"wsdl4j-1.6.3.jar" \
-"xercesImpl-2.9.1.jar" \
-"xmlschema-core-2.0.3.jar" \
-"yuicompressor-2.4.2-zimbra.jar" \
-"zkclient-0.1.0.jar" \
-"zookeeper-3.4.5.jar" )
+   local zimbrathirdpartyjars=(
+      "ant-1.7.0-ziputil-patched.jar"
+      "ant-contrib-1.0b2.jar"
+      "ant-tar-patched.jar"
+      "antlr-3.2.jar"
+      "apache-jsieve-core-0.5.jar"
+      "apache-log4j-extras-1.0.jar"
+      "asm-3.3.1.jar"
+      "bcprov-jdk15-1.46.jar"
+      "commons-cli-1.2.jar"
+      "commons-codec-1.7.jar"
+      "commons-collections-3.2.2.jar"
+      "commons-compress-1.10.jar"
+      "commons-dbcp-1.4.jar"
+      "commons-fileupload-1.2.2.jar"
+      "commons-httpclient-3.1.jar"
+      "commons-io-1.4.jar"
+      "commons-lang-2.6.jar"
+      "commons-logging-1.1.1.jar"
+      "commons-net-3.3.jar"
+      "commons-pool-1.6.jar"
+      "concurrentlinkedhashmap-lru-1.3.1.jar"
+      "curator-client-2.0.1-incubating.jar"
+      "curator-client-2.0.1-incubating.jar"
+      "curator-framework-2.0.1-incubating.jar"
+      "curator-recipes-2.0.1-incubating.jar"
+      "curator-x-discovery-2.0.1-incubating.jar"
+      "cxf-2.7.18.jar"
+      "dom4j-1.5.2.jar"
+      "ehcache-core-2.5.1.jar"
+      "freemarker-2.3.19.jar"
+      "ganymed-ssh2-build210.jar"
+      "gifencoder-0.9.jar"
+      "gmbal-api-only-2.2.6.jar"
+      "guava-13.0.1.jar"
+      "helix-core-0.6.1-incubating.jar"
+      "httpasyncclient-4.0-beta3.jar"
+      "httpclient-4.2.1.jar"
+      "httpcore-4.2.2.jar"
+      "httpcore-nio-4.2.2.jar"
+      "ical4j-0.9.16-patched.jar"
+      "icu4j-4.8.1.1.jar"
+      "zm-ews-stub-1.0.jar"
+      "jackson-mapper-asl-1.9.13.jar"
+      "jamm-0.2.5.jar"
+      "mail-1.4.5.jar"
+      "javax.ws.rs-api-2.0-m10.jar"
+      "jaxb-api-2.2.6.jar"
+      "jaxb-impl-2.2.6.jar"
+      "jaxen-1.1.3.jar"
+      "jaxws-api-2.2.6.jar"
+      "jaxws-rt-2.2.6.jar"
+      "jcharset-2.0.jar"
+      "jcommon-1.0.21.jar"
+      "jcs-1.3.jar"
+      "jdom-1.1.jar"
+      "jersey-client-1.11.jar"
+      "jersey-core-1.11.jar"
+      "jersey-json-1.11.jar"
+      "jersey-multipart-1.11.jar"
+      "jersey-server-1.11.jar"
+      "jersey-servlet-1.11.jar"
+      "jetty-continuation-9.3.5.v20151012.jar"
+      "jetty-http-9.3.5.v20151012.jar"
+      "jetty-io-9.3.5.v20151012.jar"
+      "jetty-rewrite-9.3.5.v20151012.jar"
+      "jetty-security-9.3.5.v20151012.jar"
+      "jetty-server-9.3.5.v20151012.jar"
+      "jetty-servlet-9.3.5.v20151012.jar"
+      "jetty-servlets-9.3.5.v20151012.jar"
+      "jetty-util-9.3.5.v20151012.jar"
+      "jfreechart-1.0.15.jar"
+      "jna-3.4.0.jar"
+      "json-20090211.jar"
+      "jsr181-api-1.0-MR1.jar"
+      "jsr311-api-1.1.1.jar"
+      "junixsocket-common-2.0.4.jar"
+      "junixsocket-demo-2.0.4.jar"
+      "junixsocket-mysql-2.0.4.jar"
+      "junixsocket-rmi-2.0.4.jar"
+      "jython-2.1.jar"
+      "jzlib-1.0.7.jar"
+      "libidn-1.24.jar"
+      "log4j-1.2.16.jar"
+      "lucene-analyzers-3.5.0.jar"
+      "lucene-core-3.5.0.jar"
+      "lucene-smartcn-3.5.0.jar"
+      "mariadb-java-client-1.1.8.jar"
+      "spymemcached-2.9.1.jar"
+      "mina-core-2.0.4.jar"
+      "neethi-3.0.2.jar"
+      "nekohtml-1.9.13.1z.jar"
+      "oauth-20100527.jar"
+      "owasp-java-html-sanitizer-r239.jar"
+      "policy-2.3.jar"
+      "javax.servlet-api-3.1.0.jar"
+      "slf4j-api-1.6.4.jar"
+      "slf4j-log4j12-1.6.4.jar"
+      "smack-3.1.0.jar"
+      "smackx-3.1.0.jar"
+      "smackx-debug-3.2.1.jar"
+      "smackx-jingle-3.2.1.jar"
+      "spring-aop-3.0.7.RELEASE.jar"
+      "spring-asm-3.0.7.RELEASE.jar"
+      "spring-beans-3.0.7.RELEASE.jar"
+      "spring-context-3.0.7.RELEASE.jar"
+      "spring-core-3.0.7.RELEASE.jar"
+      "spring-expression-3.0.7.RELEASE.jar"
+      "sqlite-jdbc-3.7.15-M1.jar"
+      "stax-ex-1.7.7.jar"
+      "stax2-api-3.1.1.jar"
+      "streambuffer-2.2.6.jar"
+      "syslog4j-0.9.30.jar"
+      "unboundid-ldapsdk-2.3.5.jar"
+      "woodstox-core-asl-4.2.0.jar"
+      "wsdl4j-1.6.3.jar"
+      "xercesImpl-2.9.1.jar"
+      "xmlschema-core-2.0.3.jar"
+      "yuicompressor-2.4.2-zimbra.jar"
+      "zkclient-0.1.0.jar"
+      "zookeeper-3.4.5.jar"
+   )
 
-    for i in "${zimbrathirdpartyjars[@]}"
-    do
-        cp ${repoDir}/zm-zcs-lib/build/dist/${i} ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/jars
-    done
+   for i in "${zimbrathirdpartyjars[@]}"
+   do
+      Cpy2 ${repoDir}/zm-zcs-lib/build/dist/${i}                                                       ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/jars
+   done
 
+   local zimbrajars=(
+      "zm-charset-*.jar"
+      "zm-native-*.jar"
+      "zm-charset-*.jar"
+      "zm-common-*.jar"
+      "zm-soap-*.jar"
+      "zm-client-*.jar"
+      "zm-store-*.jar"
+   )
 
-cp ${repoDir}/zm-zcs-lib/build/dist/ant-1.6.5.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/jars-ant/
+   for i in "${zimbrajars[@]}"
+   do
+      Cpy2 ${repoDir}/zm-zcs-lib/build/dist/${i}                                                       ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/jars
+   done
 
-
-zimbrajars=("zm-charset-*.jar"  "zm-native-*.jar"  "zm-charset-*.jar"  "zm-common-*.jar"  "zm-soap-*.jar"  "zm-client-*.jar" "zm-store-*.jar")
-for i in "${zimbrajars[@]}"
-    do
-        cp ${repoDir}/zm-zcs-lib/build/dist/${i} ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/jars
-done
-
-  PrepareDeployDir "lib/ext/com_zimbra_bulkprovision"
-  PrepareDeployDir "lib/ext/com_zimbra_clientuploader"
-  PrepareDeployDir "lib/ext/com_zimbra_cert_manager"
-  Copy ${repoDir}/zm-bulkprovision-store/build/dist/zm-bulkprovision-store*.jar  ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/com_zimbra_bulkprovision/com_zimbra_bulkprovision.jar
-  Copy ${repoDir}/zm-bulkprovision-store/build/dist/commons-csv-1.2.jar  ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/com_zimbra_bulkprovision
-  Copy ${repoDir}/zm-certificate-manager-store/build/zm-certificate-manager-store*.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/com_zimbra_cert_manager/com_zimbra_cert_manager.jar 
-  Copy ${repoDir}/zm-clientuploader-store/build/zm-clientuploader-store*.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/com_zimbra_clientuploader/com_zimbra_clientuploader.jar
-
-  PrepareDeployDir "lib/ext-common"
-  Copy ${repoDir}/zm-license-tools/build/zm-license-tools*.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext-common/zimbra-license-tools.jar
+   Copy ${repoDir}/zm-zcs-lib/build/dist/ant-1.6.5.jar                                              ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/jars-ant/ant-1.6.5.jar
+   Copy ${repoDir}/zm-bulkprovision-store/build/dist/zm-bulkprovision-store*.jar                    ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/com_zimbra_bulkprovision/com_zimbra_bulkprovision.jar
+   Copy ${repoDir}/zm-bulkprovision-store/build/dist/commons-csv-1.2.jar                            ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/com_zimbra_bulkprovision/commons-csv-1.2.jar
+   Copy ${repoDir}/zm-certificate-manager-store/build/zm-certificate-manager-store*.jar             ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/com_zimbra_cert_manager/com_zimbra_cert_manager.jar 
+   Copy ${repoDir}/zm-clientuploader-store/build/zm-clientuploader-store*.jar                       ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/com_zimbra_clientuploader/com_zimbra_clientuploader.jar
+   Copy ${repoDir}/zm-license-tools/build/zm-license-tools*.jar                                     ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext-common/zimbra-license-tools.jar
 
    CreateDebianPackage
 }
