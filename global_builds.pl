@@ -1,5 +1,15 @@
 @GLOBAL_BUILDS = (
    {
+      "dir"         => "junixsocket/junixsocket-native",
+      "ant_targets" => undef,
+      "stage_cmd"   => sub {
+           System("mvn clean package");
+           System("mkdir -p $GLOBAL_BUILD_DIR/junixsocket-native/build");
+           System("cp -f target/nar/junixsocket-native-2.0.4-amd64-Linux-gpp-jni/lib/amd64-Linux-gpp/jni/libjunixsocket-native-2.0.4.so $GLOBAL_BUILD_DIR/junixsocket-native/build/");
+           System("cp -f target/junixsocket-native-2.0.4-amd64-Linux-gpp-jni.nar  $GLOBAL_BUILD_DIR/junixsocket-native/build/");
+      },
+   },
+   {
       "dir"         => "zm-native",
       "ant_targets" => ["publish-local"],
       "stage_cmd"   => undef,
@@ -449,10 +459,11 @@
    },
    {
       "dir"         => "zm-store",
-      "ant_targets" => ["war", "-Dis-production=true"],
+      "ant_targets" => ["war","create-version-sql", "-Dis-production=true"],
       "stage_cmd" => sub {
            System("mkdir -p $GLOBAL_BUILD_DIR/zm-store/build/dist");
            System("cp -f build/service.war $GLOBAL_BUILD_DIR/zm-store/build/dist");
+           System("cp -f build/dist/versions-init.sql $GLOBAL_BUILD_DIR/zm-store/build/dist/");
            System("(cd .. && rsync -az --relative zm-store/docs $GLOBAL_BUILD_DIR/)");
            System("(cd .. && rsync -az --relative zm-store/conf $GLOBAL_BUILD_DIR/)");
       },
@@ -823,6 +834,22 @@
       "ant_targets" => undef,
       "stage_cmd" => sub {
            System("(cd .. && rsync -az --relative zm-rebranding-docs $GLOBAL_BUILD_DIR/)");
+      },
+   },
+   {
+      "dir"         => "zm-vmware-appmonitor",
+      "ant_targets" => ["clean", "dist"],,
+      "stage_cmd" => sub {
+           System("(cd .. && rsync -az --relative zm-vmware-appmonitor/build/dist $GLOBAL_BUILD_DIR/)");
+      },
+   },
+   {
+      "dir"         => "zm-postfixjournal",
+      "ant_targets" => undef,
+      "stage_cmd" => sub {
+           System("make -f Makefile");
+           System("mkdir -p $GLOBAL_BUILD_DIR/zm-postfixjournal/build/dist");
+           System("cp -f src/postjournal $GLOBAL_BUILD_DIR/zm-postfixjournal/build/dist");
       },
    },
 );

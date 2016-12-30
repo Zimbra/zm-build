@@ -153,7 +153,10 @@ sub Checkout($)
    {
       System( "git", "clone", "https://github.com/Zimbra/zimbra-package-stub.git" );
    }
-
+   if ( !-d "junixsocket" )
+   {
+      System( "git", "clone", "-b", "junixsocket-parent-2.0.4" ,"https://github.com/kohlschutter/junixsocket.git");
+   }
    if ( -f "$GLOBAL_PATH_TO_TOP/zm-build/$repo_file" )
    {
       my @REPOS = ();

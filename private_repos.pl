@@ -20,4 +20,6 @@
    { name => "zm-twofactorauth-store",              branch => "dev",             user => "zimbra" },
    { name => "zm-voice-store",                      branch => "dev",             user => "zimbra" },
    { name => "zm-windows-comp",                     branch => "dev",             user => "zimbra" },
+   { name => "zm-postfixjournal",                   branch => "fix-me",          user => "zimbra" },
+   { name => "zm-vmware-appmonitor",                branch => "master",          user => "zimbra" },
 );
