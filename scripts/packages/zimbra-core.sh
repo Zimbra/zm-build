@@ -104,11 +104,6 @@ main()
    Copy ${repoDir}/zm-amavis/conf/amavisd/amavisd-custom.conf                                       ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/amavisd-custom.conf
    Copy ${repoDir}/zm-amavis/conf/dspam.conf.in                                                     ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/dspam.conf.in
 
-   Copy ${repoDir}/zm-backup-store/docs/backup.txt                                                  ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/backup.txt
-   Copy ${repoDir}/zm-backup-store/docs/mailboxMove.txt                                             ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/mailboxMove.txt
-   Copy ${repoDir}/zm-backup-store/docs/soapbackup.txt                                              ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/soapbackup.txt
-   Copy ${repoDir}/zm-backup-store/docs/xml-meta.txt                                                ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/xml-meta.txt
-
    Copy ${repoDir}/zm-build/lib/Zimbra/DB/DB.pm                                                     ${repoDir}/zm-build/${currentPackage}/opt/zimbra/common/lib/perl5/Zimbra/DB/DB.pm
    Copy ${repoDir}/zm-build/lib/Zimbra/Mon/Logger.pm                                                ${repoDir}/zm-build/${currentPackage}/opt/zimbra/common/lib/perl5/Zimbra/Mon/Logger.pm
    Copy ${repoDir}/zm-build/lib/Zimbra/Mon/LoggerSchema.pm                                          ${repoDir}/zm-build/${currentPackage}/opt/zimbra/common/lib/perl5/Zimbra/Mon/LoggerSchema.pm
@@ -605,6 +600,8 @@ main()
    Copy ${repoDir}/zm-store-conf/conf/rights/zimbra-rights.xml                                      ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/rights/zimbra-rights.xml
    Copy ${repoDir}/zm-store-conf/conf/rights/zimbra-user-rights.xml                                 ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/rights/zimbra-user-rights.xml
    Copy ${repoDir}/zm-store-conf/conf/stats.conf.in                                                 ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/stats.conf.in
+
+#  Copy ${repoDir}/zm-store/build/dist/versions-init.sql                                            ${repoDir}/zm-build/${currentPackage}/opt/zimbra/db/versions-init.sql         #FIXME - PRASHANT TO FIX THIS
    Copy ${repoDir}/zm-store/conf/attrs/amavisd-new-attrs.xml                                        ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/attrs/amavisd-new-attrs.xml
    Copy ${repoDir}/zm-store/conf/attrs/zimbra-attrs.xml                                             ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/attrs/zimbra-attrs.xml
    Copy ${repoDir}/zm-store/conf/attrs/zimbra-ocs.xml                                               ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/attrs/zimbra-ocs.xml
@@ -695,10 +692,6 @@ main()
    Copy ${repoDir}/zm-windows-comp/ZimbraMigrationTools/ReadMe.txt                                  ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/zmztozmig.txt
 
 # opt/zimbra/conf/swatchrc.in                                                 :: NOT_IN_REPO :: 
-# opt/zimbra/db/backup-version-init.sql
-# opt/zimbra/db/versions-init.sql
-Copy ${repoDir}/zm-backup-store/build/dist/backup-version-init.sql                                 ${repoDir}/zm-build/${currentPackage}/opt/zimbra/db
-Copy ${repoDir}/zm-backup-store/build/dist/versions-init.sql                                       ${repoDir}/zm-build/${currentPackage}/opt/zimbra/db
 # opt/zimbra/libexec/postjournal                                              :: NOT_IN_REPO :: 
 # opt/zimbra/libexec/vmware-appmonitor                                        :: NOT_IN_REPO :: 
 # opt/zimbra/lib/libappmonitorlib.so                                          :: NOT_IN_REPO :: 
@@ -862,6 +855,12 @@ Copy ${repoDir}/zm-backup-store/build/dist/versions-init.sql                    
 
    if [ "${buildType}" == "NETWORK" ]
    then
+      Copy ${repoDir}/zm-backup-store/docs/backup.txt                                                  ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/backup.txt
+      Copy ${repoDir}/zm-backup-store/docs/mailboxMove.txt                                             ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/mailboxMove.txt
+      Copy ${repoDir}/zm-backup-store/docs/soapbackup.txt                                              ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/soapbackup.txt
+      Copy ${repoDir}/zm-backup-store/docs/xml-meta.txt                                                ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/xml-meta.txt
+      Copy ${repoDir}/zm-backup-store/build/dist/backup-version-init.sql                               ${repoDir}/zm-build/${currentPackage}/opt/zimbra/db/backup-version-init.sql
+
       Copy ${repoDir}/zm-backup-utilities/src/bin/zmbackup                                             ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmbackup
       Copy ${repoDir}/zm-backup-utilities/src/bin/zmbackupabort                                        ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmbackupabort
       Copy ${repoDir}/zm-backup-utilities/src/bin/zmbackupquery                                        ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmbackupquery
