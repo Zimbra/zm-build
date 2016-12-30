@@ -25,16 +25,24 @@
 
 
 #-------------------- Build Package ---------------------------
-
+main()
+{
     echo -e "\tCreate package directories" >> ${buildLogFile}
     mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/data/dns/ca
     mkdir -p ${repoDir}/zm-build/${currentPackage}/etc/sudoers.d
     mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/data/dns/trust
-    mkdir -p ${repoDir}/zm-build/${currentPackage}/DEBIAN
+
     mkdir -p ${repoDir}/zm-build/${currentPackage}/etc/resolvconf/update.d
 
     echo -e "\tCopy package files" >> ${buildLogFile}
     cp ${repoDir}/zm-build/rpmconf/Env/sudoers.d/02_${currentScript}.deb ${repoDir}/zm-build/${currentPackage}/etc/sudoers.d/02_${currentScript}
+
+    CreateDebianPackage
+}
+
+CreateDebianPackage()
+{
+    mkdir -p ${repoDir}/zm-build/${currentPackage}/DEBIAN
     cat ${repoDir}/zm-build/rpmconf/Spec/Scripts/${currentScript}.post >> ${repoDir}/zm-build/${currentPackage}/DEBIAN/postinst
     chmod 555 ${repoDir}/zm-build/${currentPackage}/DEBIAN/*
 
@@ -53,3 +61,7 @@
     else
         echo -e "\t*** ${currentPackage} package successfully created ***" >> ${buildLogFile}
     fi
+}
+
+############################################################################
+main "$@"

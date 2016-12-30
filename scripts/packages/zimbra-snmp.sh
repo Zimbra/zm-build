@@ -25,20 +25,28 @@
 
 
 #-------------------- Build Package ---------------------------
-
+main()
+{
     echo -e "\tCreate package directories" >> ${buildLogFile}
     mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/data/snmp/persist
     mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/data/snmp/state
     mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf
     mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/common/conf
     mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/common/share/snmp/mibs
-    mkdir -p ${repoDir}/zm-build/${currentPackage}/DEBIAN
+
 
     echo -e "\tCopy package files" >> ${buildLogFile}
     cp ${repoDir}/zm-build/rpmconf/Conf/snmp.conf ${repoDir}/zm-build/${currentPackage}/opt/zimbra/common/conf/snmp.conf
     cp ${repoDir}/zm-build/rpmconf/Conf/snmpd.conf.in ${repoDir}/zm-build/${currentPackage}/opt/zimbra/common/snmpd.conf.in
     cp ${repoDir}/zm-build/rpmconf/Conf/snmp.conf ${repoDir}/zm-build/${currentPackage}/opt/zimbra/common/share/snmp/snmp.conf
     cp ${repoDir}/zm-build/rpmconf/Conf/mibs/*mib ${repoDir}/zm-build/${currentPackage}/opt/zimbra/common/share/snmp/mibs
+
+    CreateDebianPackage
+}
+
+CreateDebianPackage()
+{
+    mkdir -p ${repoDir}/zm-build/${currentPackage}/DEBIAN
     cat ${repoDir}/zm-build/rpmconf/Spec/Scripts/${currentScript}.post >> ${repoDir}/zm-build/${currentPackage}/DEBIAN/postinst
     chmod 555 ${repoDir}/zm-build/${currentPackage}/DEBIAN/*
 
@@ -54,3 +62,7 @@
     else
         echo -e "\t*** ${currentPackage} package successfully created ***" >> ${buildLogFile}
     fi
+}
+
+############################################################################
+main "$@"

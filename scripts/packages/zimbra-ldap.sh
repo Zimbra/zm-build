@@ -27,15 +27,23 @@
 
 
 #-------------------- Build Package ---------------------------
-
+main()
+{
     echo -e "\tCreate package directories" >> ${buildLogFile}
     mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/common/etc/openldap/
     mkdir -p ${repoDir}/zm-build/${currentPackage}/etc/sudoers.d
-    mkdir -p ${repoDir}/zm-build/${currentPackage}/DEBIAN
+
 
     echo -e "\tCopy package files" >> ${buildLogFile}
     cp -rf ${ldapSchemaDir}/*  ${repoDir}/zm-build/${currentPackage}/opt/zimbra/common/etc/openldap/
     cp ${repoDir}/zm-build/rpmconf/Env/sudoers.d/02_${currentScript} ${repoDir}/zm-build/${currentPackage}/etc/sudoers.d/
+
+    CreateDebianPackage
+}
+
+CreateDebianPackage()
+{
+    mkdir -p ${repoDir}/zm-build/${currentPackage}/DEBIAN
     cat ${repoDir}/zm-build/rpmconf/Spec/Scripts/${currentScript}.post >> ${repoDir}/zm-build/${currentPackage}/DEBIAN/postinst
     chmod 555 ${repoDir}/zm-build/${currentPackage}/DEBIAN/*
 
@@ -51,3 +59,7 @@
     else
         echo -e "\t*** ${currentPackage} package successfully created ***" >> ${buildLogFile}
     fi
+}
+
+############################################################################
+main "$@"
