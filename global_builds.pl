@@ -4,7 +4,9 @@
       "ant_targets" => undef,
       "stage_cmd"   => sub {
            System("mvn clean package");
-           System("(cd .. && rsync -az --relative junixsocket-native/target $GLOBAL_BUILD_DIR/)");
+           System("mkdir -p $GLOBAL_BUILD_DIR/junixsocket-native/build");
+           System("cp -f target/nar/junixsocket-native-2.0.4-amd64-Linux-gpp-jni/lib/amd64-Linux-gpp/jni/libjunixsocket-native-2.0.4.so $GLOBAL_BUILD_DIR/junixsocket-native/build/");
+           System("cp -f target/junixsocket-native-2.0.4-amd64-Linux-gpp-jni.nar  $GLOBAL_BUILD_DIR/junixsocket-native/build/");
       },
    },
    {
@@ -846,7 +848,7 @@
       "stage_cmd" => sub {
            System("make -f Makefile");
            System("mkdir -p $GLOBAL_BUILD_DIR/zm-postfixjournal/build/dist");
-           System("cp -f src/postfixjournal $GLOBAL_BUILD_DIR/zm-postfixjournal/build/dist");
+           System("cp -f src/postjournal $GLOBAL_BUILD_DIR/zm-postfixjournal/build/dist");
       },
    },
 );

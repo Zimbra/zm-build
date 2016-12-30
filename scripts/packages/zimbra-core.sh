@@ -120,6 +120,7 @@ main()
 
    Copy ${repoDir}/zm-build/rpmconf/Build/get_plat_tag.sh                                           ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/get_plat_tag.sh
    Copy ${repoDir}/zm-build/rpmconf/Build/get_plat_tag.sh                                           ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/installer/bin/get_plat_tag.sh
+   Copy ${repoDir}/zm-build/rpmconf/Conf/swatchrc                                                   ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/swatchrc.in
    Copy ${repoDir}/zm-build/rpmconf/Conf/auditswatchrc                                              ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/auditswatchrc.in
    Copy ${repoDir}/zm-build/rpmconf/Conf/logswatchrc                                                ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/logswatchrc
    Copy ${repoDir}/zm-build/rpmconf/Conf/zmssl.cnf.in                                               ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/zmssl.cnf.in
@@ -690,13 +691,9 @@ main()
    Copy ${repoDir}/zm-voice-store/docs/soap-voice.txt                                               ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/soap-voice.txt
 
    Copy ${repoDir}/zm-windows-comp/ZimbraMigrationTools/ReadMe.txt                                  ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/zmztozmig.txt
-
-# opt/zimbra/conf/swatchrc.in                                                 :: NOT_IN_REPO :: 
-# opt/zimbra/libexec/postjournal                                              :: NOT_IN_REPO :: 
-# opt/zimbra/libexec/vmware-appmonitor                                        :: NOT_IN_REPO :: 
-# opt/zimbra/lib/libappmonitorlib.so                                          :: NOT_IN_REPO :: 
-# opt/zimbra/lib/libjunixsocket-linux-1.5-amd64.so                            :: NOT_IN_REPO :: 
-# opt/zimbra/lib/libzimbra-native.so                                          :: NOT_IN_REPO :: 
+   Copy ${repoDir}/junixsocket-native/build/junixsocket-native-2.0.4-amd64-Linux-gpp-jni.nar        ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/junixsocket-native-2.0.4-amd64-Linux-gpp-jni.nar
+   Copy ${repoDir}/junixsocket-native/build/libjunixsocket-native-2.0.4.so                          ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/libjunixsocket-native-2.0.4.so
+   Copy ${repoDir}/zm-libnative/build/dist/libzimbra-native.so                                      ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/libzimbra-native.so
 
    local zimbrathirdpartyjars=(
       "ant-1.7.0-ziputil-patched.jar"
@@ -878,6 +875,10 @@ main()
       Copy ${repoDir}/zm-convertd-native/conf/convertd.log4j.properties                                ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/convertd.log4j.properties
       Copy ${repoDir}/zm-convertd-native/src/bin/zmconvertctl                                          ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmconvertctl
       Copy ${repoDir}/zm-convertd-native/src/libexec/zmconvertdmod                                     ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmconvertdmod
+ 
+      Copy ${repoDir}/zm-postfixjournal/build/dist/postjournal               i                         ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/postjournal
+      Copy ${repoDir}/zm-vmware-appmonitor/build/dist/libexec/vmware-appmonitor                        ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/vmware-appmonitor
+      Copy ${repoDir}/zm-vmware-appmonitor/build/dist/lib/libappmonitorlib.so                          ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/libappmonitorlib.so
 
       Copy ${repoDir}/zm-rebranding-docs/docs/rebranding/DE_Rebranding_directions.txt                       ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/rebranding/DE_Rebranding_directions.txt
       Copy ${repoDir}/zm-rebranding-docs/docs/rebranding/ES_Rebranding_directions.txt                       ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/rebranding/ES_Rebranding_directions.txt
