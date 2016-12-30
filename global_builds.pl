@@ -1,5 +1,13 @@
 @GLOBAL_BUILDS = (
    {
+      "dir"         => "junixsocket/junixsocket-native",
+      "ant_targets" => undef,
+      "stage_cmd"   => sub {
+           System("mvn clean package");
+           System("(cd .. && rsync -az --relative junixsocket-native/target $GLOBAL_BUILD_DIR/)");
+      },
+   },
+   {
       "dir"         => "zm-native",
       "ant_targets" => ["publish-local"],
       "stage_cmd"   => undef,
@@ -823,6 +831,22 @@
       "ant_targets" => undef,
       "stage_cmd" => sub {
            System("(cd .. && rsync -az --relative zm-rebranding-docs $GLOBAL_BUILD_DIR/)");
+      },
+   },
+   {
+      "dir"         => "zm-vmware-appmonitor",
+      "ant_targets" => ["clean", "dist"],,
+      "stage_cmd" => sub {
+           System("(cd .. && rsync -az --relative zm-vmware-appmonitor/build/dist $GLOBAL_BUILD_DIR/)");
+      },
+   },
+   {
+      "dir"         => "zm-postfixjournal",
+      "ant_targets" => undef,
+      "stage_cmd" => sub {
+           System("make -f Makefile");
+           System("mkdir -p $GLOBAL_BUILD_DIR/zm-postfixjournal/build/dist");
+           System("cp -f src/postfixjournal $GLOBAL_BUILD_DIR/zm-postfixjournal/build/dist");
       },
    },
 );
