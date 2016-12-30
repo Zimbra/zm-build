@@ -44,7 +44,7 @@ sub main()
    InitGlobalBuildVars();
    Prepare();
    Checkout("public_repos.pl");
-   Checkout("private_repos.pl") if($GLOBAL_BUILD_TYPE eq "NETWORK");
+   Checkout("private_repos.pl") if ( $GLOBAL_BUILD_TYPE eq "NETWORK" );
    Build();
 }
 
@@ -132,11 +132,11 @@ sub Prepare()
       "http://$GLOBAL_THIRDPARTY_SERVER/ZimbraThirdParty/third-party-jars/zimbrastore-test-1.0.jar",
    );
 
-   for my $j_url ( @TP_JARS )
+   for my $j_url (@TP_JARS)
    {
-      if( my $f = "$ENV{HOME}/.zcs-deps/" . basename($j_url) )
+      if ( my $f = "$ENV{HOME}/.zcs-deps/" . basename($j_url) )
       {
-         if( ! -f $f )
+         if ( !-f $f )
          {
             System("wget '$j_url' -O '$f.tmp'");
             System("mv '$f.tmp' '$f'");
@@ -154,7 +154,7 @@ sub Checkout($)
       System( "git", "clone", "https://github.com/Zimbra/zimbra-package-stub.git" );
    }
 
-   if( -f "$GLOBAL_PATH_TO_TOP/zm-build/$repo_file" )
+   if ( -f "$GLOBAL_PATH_TO_TOP/zm-build/$repo_file" )
    {
       my @REPOS = ();
       eval `cat $GLOBAL_PATH_TO_TOP/zm-build/$repo_file`;
@@ -221,22 +221,12 @@ sub Build()
          System("(cd .. && rsync -az --delete zm-build $GLOBAL_BUILD_DIR/)");
          System("mkdir -p $GLOBAL_BUILD_DIR/zm-build/$GLOBAL_BUILD_ARCH");
 
-         my @PACKAGE_LIST = (
-            "zimbra-ldap",
-            "zimbra-snmp",
-            "zimbra-spell",
-            "zimbra-logger",
-            "zimbra-dnscache",
-            "zimbra-apache",
-            "zimbra-mta",
-            "zimbra-proxy",
-            "zimbra-archiving",
-            "zimbra-convertd",
-            "zimbra-store",
-            "zimbra-core",
-         );
+         my @ALL_PACKAGES = ();
 
-         for my $package_script (@PACKAGE_LIST)
+         push( @ALL_PACKAGES, @{ GetPackageList("public_packages.pl") } );
+         push( @ALL_PACKAGES, @{ GetPackageList("private_packages.pl") } ) if ( $GLOBAL_BUILD_TYPE eq "NETWORK" );
+
+         for my $package_script (@ALL_PACKAGES)
          {
             next
               if (
@@ -266,6 +256,23 @@ sub Build()
    print "=========================================================================================================\n";
    print "\n";
 }
+
+
+sub GetPackageList($)
+{
+   my $package_list_file = shift;
+
+   my @PACKAGES = ();
+
+   if ( -f "$GLOBAL_PATH_TO_TOP/zm-build/$package_list_file" )
+   {
+      eval `cat $GLOBAL_PATH_TO_TOP/zm-build/$package_list_file`;
+      die "FAILURE in $package_list_file, (info=$!, err=$@)\n" if ($@);
+   }
+
+   return \@PACKAGES;
+}
+
 
 sub GetNewBuildNo()
 {
@@ -299,7 +306,7 @@ sub GetBuildOS()
    chomp( my $r = `$GLOBAL_PATH_TO_TOP/zm-build/rpmconf/Build/get_plat_tag.sh` );
 
    return $r
-      if($r);
+     if ($r);
 
    die "Unknown OS";
 }
@@ -334,10 +341,11 @@ sub Clone($)
    {
       System( "git", "clone", "-b", $repo_branch, "ssh://git\@stash.corp.synacor.com:7999/$repo_user/$repo_name.git" );
    }
-#   else
-#   {
-#      System( "git", "pull", "origin", $repo_branch, "--rebase", "--ff-only" );
-#   }
+
+   #   else
+   #   {
+   #      System( "git", "pull", "origin", $repo_branch, "--rebase", "--ff-only" );
+   #   }
 }
 
 sub System(@)
