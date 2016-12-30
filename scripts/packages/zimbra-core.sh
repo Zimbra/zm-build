@@ -152,10 +152,6 @@ main()
    Copy ${repoDir}/zm-build/rpmconf/Install/zmsetup.pl                                              ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmsetup.pl
    Copy ${repoDir}/zm-build/rpmconf/Upgrade/zmupgrade.pm                                            ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmupgrade.pm
 
-   Copy ${repoDir}/zm-convertd-native/conf/convertd.log4j.properties                                ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/convertd.log4j.properties
-   Copy ${repoDir}/zm-convertd-native/src/bin/zmconvertctl                                          ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmconvertctl
-   Copy ${repoDir}/zm-convertd-native/src/libexec/zmconvertdmod                                     ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmconvertdmod
-
    Copy ${repoDir}/zm-core-utils/conf/dhparam.pem.zcs                                               ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/dhparam.pem.zcs
    Copy ${repoDir}/zm-core-utils/conf/zmlogrotate                                                   ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/zmlogrotate
    Copy ${repoDir}/zm-core-utils/src/bin/antispam-mysql                                             ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/antispam-mysql
@@ -879,6 +875,10 @@ Copy ${repoDir}/zm-backup-store/build/dist/versions-init.sql                    
       Copy ${repoDir}/zm-backup-utilities/src/db/backup_schema.sql                                     ${repoDir}/zm-build/${currentPackage}/opt/zimbra/db/backup_schema.sql
       Copy ${repoDir}/zm-backup-utilities/src/libexec/zmbackupldap                                     ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmbackupldap
       Copy ${repoDir}/zm-backup-utilities/src/libexec/zmbackupqueryldap                                ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmbackupqueryldap
+
+      Copy ${repoDir}/zm-convertd-native/conf/convertd.log4j.properties                                ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/convertd.log4j.properties
+      Copy ${repoDir}/zm-convertd-native/src/bin/zmconvertctl                                          ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmconvertctl
+      Copy ${repoDir}/zm-convertd-native/src/libexec/zmconvertdmod                                     ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmconvertdmod
 
       Copy ${repoDir}/zm-rebranding-docs/docs/rebranding/DE_Rebranding_directions.txt                       ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/rebranding/DE_Rebranding_directions.txt
       Copy ${repoDir}/zm-rebranding-docs/docs/rebranding/ES_Rebranding_directions.txt                       ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/rebranding/ES_Rebranding_directions.txt
