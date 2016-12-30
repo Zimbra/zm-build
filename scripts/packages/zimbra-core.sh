@@ -701,6 +701,8 @@ main()
 # opt/zimbra/conf/swatchrc.in                                                 :: NOT_IN_REPO :: 
 # opt/zimbra/db/backup-version-init.sql
 # opt/zimbra/db/versions-init.sql
+Copy ${repoDir}/zm-backup-store/build/dist/backup-version-init.sql                                 ${repoDir}/zm-build/${currentPackage}/opt/zimbra/db
+Copy ${repoDir}/zm-backup-store/build/dist/versions-init.sql                                       ${repoDir}/zm-build/${currentPackage}/opt/zimbra/db
 # opt/zimbra/libexec/postjournal                                              :: NOT_IN_REPO :: 
 # opt/zimbra/libexec/vmware-appmonitor                                        :: NOT_IN_REPO :: 
 # opt/zimbra/lib/libappmonitorlib.so                                          :: NOT_IN_REPO :: 
