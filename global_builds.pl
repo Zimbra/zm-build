@@ -132,7 +132,7 @@
    },
    {
       "dir"         => "zm-backup-store",
-      "ant_targets" => ["publish-local", "dist"],
+      "ant_targets" => ["publish-local", "dist", "create-init-sql"],
       "stage_cmd" => sub {
            System("mkdir -p $GLOBAL_BUILD_DIR/zm-backup-store/build/dist");
            System("cp -f -r build/dist $GLOBAL_BUILD_DIR/zm-backup-store/build");
