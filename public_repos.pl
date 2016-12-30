@@ -6,7 +6,6 @@
    { name => "zm-2fa-admin-zimlet",                 branch => "master",          user => "zimbra" },
    { name => "zm-admin-console",                    branch => "dev",             user => "zimbra" },
    { name => "zm-admin-help-common",                branch => "master",          user => "zimbra" },
-   { name => "zm-admin-help-network",               branch => "master",          user => "zimbra" },
    { name => "zm-ajax",                             branch => "dev",             user => "zimbra" },
    { name => "zm-amavis",                           branch => "master",          user => "zimbra" },
    { name => "zm-archive-admin-zimlet",             branch => "dev",             user => "zimbra" },
@@ -24,7 +23,7 @@
    { name => "zm-clientuploader-store",             branch => "master",          user => "zimbra" },
    { name => "zm-common",                           branch => "dev",             user => "zimbra" },
    { name => "zm-convertd-admin-zimlet",            branch => "master",          user => "zimbra" },
-   { name => "zm-convertd-store",                   branch => "master",          user => "zimbra" },    # dup
+   { name => "zm-convertd-store",                   branch => "master",          user => "zimbra" },
    { name => "zm-core-utils",                       branch => "master",          user => "zimbra" },
    { name => "zm-db-conf",                          branch => "master",          user => "zimbra" },
    { name => "zm-delegated-admin-zimlet",           branch => "master",          user => "zimbra" },
