@@ -294,28 +294,12 @@ sub GetNewBuildTs()
    return $x;
 }
 
-sub GetBuildOS()    # FIXME - use standard mechanism
+sub GetBuildOS()
 {
-   chomp( my $PROCESSOR_ARCH = `uname -m | grep -o 64` );
-   if ( -f "/etc/lsb-release" )
-   {
-      my $h = LoadProperties("/etc/lsb-release");
+   chomp( my $r = `$GLOBAL_PATH_TO_TOP/zm-build/rpmconf/Build/get_plat_tag.sh` );
 
-      my $DISTRIB_ID = uc( $h->{DISTRIB_ID} );
-
-      s/[.].*// for ( my $DISTRIB_RELEASE = $h->{DISTRIB_RELEASE} );
-
-      return $DISTRIB_ID . $DISTRIB_RELEASE . "_" . $PROCESSOR_ARCH;
-   }
-   elsif ( -f "/etc/redhat-release" )
-   {
-      my @x = split( / /, SlurpFile("/etc/redhat-release") );
-
-      my $DISTRIB_ID = uc( $x[0] );
-      s/[.].*// for ( my $DISTRIB_RELEASE = $x[3] );
-
-      return $DISTRIB_ID . $DISTRIB_RELEASE . "_" . $PROCESSOR_ARCH;
-   }
+   return $r
+      if($r);
 
    die "Unknown OS";
 }
