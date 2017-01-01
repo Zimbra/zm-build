@@ -21,6 +21,7 @@ installPackages() {
 	pkgcomp=""
 	pkglocal=""
 	for PKG in $INSTALL_PACKAGES; do
+	echo "$PKG will be downloaded."
 		findLatestPackage $PKG
 		if [ x$PKG != "xzimbra-memcached" ]; then
 			if [ ! -f "$file" ]; then
@@ -61,6 +62,46 @@ installPackages() {
 			repocomp="$repocomp zimbra-store-components"
 		fi
 	done
+# Download packages.
+	echo "Downloading packages. This will not modify the system. This may take some time."
+	$PACKAGEDOWNLOAD $repocomp >> $LOGFILE 2>&1
+	if [ $? -ne 0 ]; then
+		echo "Unable to download packages from repository. System is not modified."
+		exit 1
+	fi
+
+	if [ $UPGRADE = "yes" ]; then
+	    if [ ${ZM_CUR_MAJOR} -lt 8 ] || [ ${ZM_CUR_MAJOR} -eq 8 -a ${ZM_CUR_MINOR} -lt 7 ]; then
+	        POST87UPGRADE="false"
+	    else
+	        POST87UPGRADE="true"
+	    fi
+		# Special case for zimbra-memcached as pre-8.7.0 it is local package moved to remote.
+		if [ $POST87UPGRADE = "false" ]; then
+			if [ $ISUBUNTU = "true" ]; then
+				MEMCACHEDVER=`apt-cache show zimbra-memcached | grep -i version | \
+					grep "zimbra$ZM_INST_MAJOR.$ZM_INST_MINOR" | head -n1 | \
+					cut -d ':' -f 2 |  tr -d " "`
+				echo "Downloading Remote package zimbra-memcached version $MEMCACHEDVER";
+				$PACKAGEDOWNLOAD zimbra-memcached=$MEMCACHEDVER >> $LOGFILE 2>&1
+			else
+				MEMCACHEDVER=`yum --showduplicates list zimbra-memcached | \
+					grep "zimbra$ZM_INST_MAJOR.$ZM_INST_MINOR" | head -n1 | \
+					cut -d ' ' -f 2`
+				echo "Downloading Remote package zimbra-memcached version $MEMCACHEDVER";
+				yum downgrade --downloadonly --assumeyes zimbra-memcached-$MEMCACHEDVER >> $LOGFILE 2>&1
+			fi
+			if [ $? -ne 0 ]; then
+				echo "Unable to download packages zimbra-memcached from repository. System is not modified."
+			fi
+		fi
+		if [ "$FORCE_UPGRADE" = "yes" -o "$POST87UPGRADE" = "false" ]; then
+		    findUbuntuExternalPackageDependencies
+		fi
+		saveExistingConfig
+	fi
+
+	removeExistingInstall
 	echo "Local packages $pkglocal selected for installation"
 	echo "Monitor $LOGFILE for package installation progress"
 	echo "Remote package installation started"
@@ -84,6 +125,14 @@ installPackages() {
 	fi
 	D=`date +%s`
 	if [ $INSTRESULT = 0 ]; then
+	    echo "done"
+	    if [ "$ISUBUNTU" = "true" ] && [ ! -z "$EXTPACKAGES" ]; then
+	        echo -n "Re-installing $EXTPACKAGES ..."
+	        $REPOINST $EXTPACKAGES >> $LOGFILE 2>&1
+	        if [ $? -ne 0 ]; then
+	            echo "Failed to install package[s] $EXTPACKAGES."
+	        fi
+	    fi
 		echo "done"
 		for PKG in $INSTALL_PACKAGES; do
 			if [ x$PKG != "xzimbra-memcached" ]; then

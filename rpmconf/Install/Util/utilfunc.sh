@@ -388,8 +388,8 @@ checkUbuntuRelease() {
     return
   fi
 
-  if [ "x$DISTRIB_ID" = "xUbuntu" -a "x$DISTRIB_RELEASE" != "x12.04" -a "x$DISTRIB_RELEASE" != "x14.04" ]; then
-    echo "WARNING: ZCS is currently only supported on Ubuntu Server 12.04 and 14.04 LTS."
+  if [ "x$DISTRIB_ID" = "xUbuntu" -a "x$DISTRIB_RELEASE" != "x12.04" -a "x$DISTRIB_RELEASE" != "x14.04" -a "x$DISTRIB_RELEASE" != "x16.04" ]; then
+    echo "WARNING: ZCS is currently only supported on Ubuntu Server 12.04, 14.04 and 16.04 LTS."
     echo "You are attempting to install on $DISTRIB_DESCRIPTION which may not work."
     echo "Support will not be provided if you choose to continue."
     echo ""
@@ -1642,6 +1642,131 @@ saveExistingConfig() {
   fi
 }
 
+findUbuntuExternalPackageDependencies() {
+  # Handle external packages like logwatch, mailutils depends on zimbra-mta.
+  if [ $INSTALLED = "yes" -a $ISUBUNTU = "true" ]; then
+    $PACKAGERMSIMULATE $INSTALLED_PACKAGES > /dev/null 2>&1
+    if [ $? -ne 0 ]; then
+      EXTPACKAGESTMP=`$PACKAGERMSIMULATE $INSTALLED_PACKAGES 2>&1 | grep " depends on " | cut -d' ' -f2 | grep -v zimbra`
+      for p in $EXTPACKAGESTMP; do
+        EXTPACKAGES="$p $EXTPACKAGES"
+      done
+
+      if [ -z "$EXTPACKAGES" ]; then
+        removeErrorMessage
+      else
+        echo "External package dependencies found: $EXTPACKAGES"
+        $PACKAGERMSIMULATE $INSTALLED_PACKAGES $EXTPACKAGES >> $LOGFILE 2>&1
+        if [ $? -eq 0 ]; then
+          while :; do
+            askYN "$EXTPACKAGES package[s] will be removed. Continue?" "N"
+            if [ $response = "no" ]; then
+              askYN "Exit?" "N"
+              if [ $response = "yes" ]; then
+                removeErrorMessage
+              fi
+            else
+              break
+            fi
+          done
+        fi
+      fi
+    fi
+  fi
+}
+
+removeErrorMessage() {
+  echo "Can not remove packages. Check $LOGFILE for details."
+  echo "Exiting - the system is unchanged"
+  exit 1
+}
+
+removeExistingPackages() {
+  echo ""
+  echo "Removing existing packages"
+  echo ""
+  if [ $ISUBUNTU = "true" ] && [ ! -z "$EXTPACKAGES" ]; then
+    echo -n "$EXTPACKAGES ..."
+    apt-get remove -y $EXTPACKAGES >> $LOGFILE 2>&1
+    if [ $? -ne 0 ]; then
+      echo "Failed to remove $EXTPACKAGES"
+      exit 1;
+    fi
+    echo "done"
+  fi
+
+  for p in $INSTALLED_PACKAGES; do
+    if [ $p = "zimbra-core" ]; then
+      MOREPACKAGES="$MOREPACKAGES zimbra-core"
+      continue
+    fi
+    if [ $p = "zimbra-apache" ]; then
+      MOREPACKAGES="zimbra-apache $MOREPACKAGES"
+      continue
+    fi
+    if [ $p = "zimbra-store" ]; then
+      isInstalled "zimbra-archiving"
+      if [ x$PKGINSTALLED != "x" ]; then
+        echo -n "   zimbra-archiving..."
+        $PACKAGERM zimbra-archiving >/dev/null 2>&1
+        echo "done"
+      fi
+    fi
+    isInstalled $p
+
+    if [ x$PKGINSTALLED != "x" ]; then
+      echo -n "   $p..."
+	  if [ x$p = "xzimbra-memcached" ]; then
+        isInstalled "zimbra-memcached-base"
+        if [ x$PKGINSTALLED != "x" ]; then
+          $REPORM zimbra-memcached-base >>$LOGFILE 2>&1
+        else
+          $PACKAGERM $p > /dev/null 2>&1
+        fi
+      else
+        $PACKAGERM $p > /dev/null 2>&1
+	  fi
+      if [ x$p = "xzimbra-dnscache" ]; then
+        $REPORM zimbra-dnscache-base >>$LOGFILE 2>&1
+      fi
+      if [ x$p = "xzimbra-ldap" ]; then
+        $REPORM zimbra-ldap-base >>$LOGFILE 2>&1
+      fi
+      if [ x$p = "xzimbra-mta" ]; then
+        $REPORM zimbra-mta-base >>$LOGFILE 2>&1
+      fi
+      if [ x$p = "xzimbra-proxy" ]; then
+        $REPORM zimbra-proxy-base >>$LOGFILE 2>&1
+      fi
+      if [ x$p = "xzimbra-snmp" ]; then
+        $REPORM zimbra-snmp-base >>$LOGFILE 2>&1
+      fi
+      if [ x$p = "xzimbra-spell" ]; then
+        $REPORM zimbra-spell-base >>$LOGFILE 2>&1
+      fi
+      if [ x$p = "xzimbra-store" ]; then
+        $REPORM zimbra-store-base >>$LOGFILE 2>&1
+      fi
+      echo "done"
+    fi
+  done
+
+  for p in $MOREPACKAGES; do
+    isInstalled $p
+    if [ x$PKGINSTALLED != "x" ]; then
+      echo -n "   $p..."
+      $PACKAGERM $p > /dev/null 2>&1
+      if [ x$p = "xzimbra-core" ]; then
+        $REPORM zimbra-base >>$LOGFILE 2>&1
+      fi
+      if [ x$p = "xzimbra-apache" ]; then
+        $REPORM zimbra-apache-base >>$LOGFILE 2>&1
+      fi
+      echo "done"
+    fi
+  done
+}
+
 removeExistingInstall() {
   if [ $INSTALLED = "yes" ]; then
     echo ""
@@ -1686,87 +1811,11 @@ removeExistingInstall() {
         LD_LIBRARY_PATH=$OLD_LDR_PATH
       fi
     fi
-
-    echo ""
-    echo "Removing existing packages"
-    echo ""
-
-    for p in $INSTALLED_PACKAGES; do
-      if [ $p = "zimbra-core" ]; then
-        MOREPACKAGES="$MOREPACKAGES zimbra-core"
-        continue
-      fi
-      if [ $p = "zimbra-apache" ]; then
-        MOREPACKAGES="zimbra-apache $MOREPACKAGES"
-        continue
-      fi
-      if [ $p = "zimbra-store" ]; then
-        isInstalled "zimbra-archiving"
-        if [ x$PKGINSTALLED != "x" ]; then
-          echo -n "   zimbra-archiving..."
-          $PACKAGERM zimbra-archiving >/dev/null 2>&1
-          echo "done"
-        fi
-#        isInstalled "zimbra-syncshare"
-#        if [ x$PKGINSTALLED != "x" ]; then
-#          echo -n "   zimbra-syncshare..."
-#          $PACKAGERM zimbra-syncshare >/dev/null 2>&1
-#          echo "done"
-#        fi
-      fi
-      isInstalled $p
-      if [ x$PKGINSTALLED != "x" ]; then
-        echo -n "   $p..."
-	if [ x$p = "xzimbra-memcached" ]; then
-          isInstalled "zimbra-memcached-base"
-          if [ x$PKGINSTALLED != "x" ]; then
-            $REPORM zimbra-memcached-base >>$LOGFILE 2>&1
-          else
-            $PACKAGERM $p > /dev/null 2>&1
-          fi
-        else
-          $PACKAGERM $p > /dev/null 2>&1
-	fi
-        if [ x$p = "xzimbra-dnscache" ]; then
-          $REPORM zimbra-dnscache-base >>$LOGFILE 2>&1
-        fi
-        if [ x$p = "xzimbra-ldap" ]; then
-          $REPORM zimbra-ldap-base >>$LOGFILE 2>&1
-        fi
-        if [ x$p = "xzimbra-mta" ]; then
-          $REPORM zimbra-mta-base >>$LOGFILE 2>&1
-        fi
-        if [ x$p = "xzimbra-proxy" ]; then
-          $REPORM zimbra-proxy-base >>$LOGFILE 2>&1
-        fi
-        if [ x$p = "xzimbra-snmp" ]; then
-          $REPORM zimbra-snmp-base >>$LOGFILE 2>&1
-        fi
-        if [ x$p = "xzimbra-spell" ]; then
-          $REPORM zimbra-spell-base >>$LOGFILE 2>&1
-        fi
-        if [ x$p = "xzimbra-store" ]; then
-          $REPORM zimbra-store-base >>$LOGFILE 2>&1
-        fi
-        echo "done"
-      fi
-    done
-
-    for p in $MOREPACKAGES; do
-      isInstalled $p
-      if [ x$PKGINSTALLED != "x" ]; then
-        echo -n "   $p..."
-        $PACKAGERM $p > /dev/null 2>&1
-        if [ x$p = "xzimbra-core" ]; then
-            $REPORM zimbra-base >>$LOGFILE 2>&1
-        fi
-        if [ x$p = "xzimbra-apache" ]; then
-          $REPORM zimbra-apache-base >>$LOGFILE 2>&1
-        fi
-        echo "done"
-      fi
-    done
-
+    if [ "$UPGRADE" = "yes" -a "$POST87UPGRADE" = "true" -a  "$FORCE_UPGRADE" != "yes" ]; then
+      echo "Upgrading the remote packages"
+    else
+      removeExistingPackages
+    fi
     if egrep -q '^%zimbra[[:space:]]' /etc/sudoers 2>/dev/null; then
       local sudotmp=`mktemp -t zsudoers.XXXXX 2> /dev/null` || { echo "Failed to create tmpfile"; exit 1; }
       SUDOMODE=`perl -e 'my $mode=(stat("/etc/sudoers"))[2];printf("%04o\n",$mode & 07777);'`
@@ -2565,11 +2614,14 @@ getPlatformVars() {
   CONFLICT_PACKAGES=""
   echo $PLATFORM | egrep -q "UBUNTU|DEBIAN"
   if [ $? = 0 ]; then
+    ISUBUNTU=true
     checkUbuntuRelease
     REPOINST='apt-get install -y'
+    PACKAGEDOWNLOAD='apt-get --download-only install -y --force-yes'
     REPORM='apt-get -y --purge purge'
     PACKAGEINST='dpkg -i'
     PACKAGERM='dpkg --purge'
+    PACKAGERMSIMULATE='dpkg --purge --dry-run'
     PACKAGEQUERY='dpkg -s'
     PACKAGEEXT='deb'
     PACKAGEVERSION="dpkg-query -W -f \${Version}"
@@ -2578,10 +2630,23 @@ getPlatformVars() {
       STORE_PACKAGES="libreoffice"
     fi
   else
+      ISUBUNTU=false
       REPOINST='yum -y install'
       REPORM='yum erase -y'
       PACKAGEINST='yum -y --disablerepo=* localinstall -v'
+      # TODO: This should kept in os-requirement.
+      yum -y install --downloadonly dummyxxxxxxx 2>&1 | grep "no such option: --downloadonly" >/dev/null 2>&1
+      if [ $? -eq 0 ]; then
+        echo "Installing yum-plugin-downloadonly."
+        yum -y install yum-plugin-downloadonly
+        if [ $? -ne 0 ]; then
+          echo "yum --downloadonly should be available. To continue installation."
+          exit 1;
+        fi
+      fi
+      PACKAGEDOWNLOAD='yum -y install --downloadonly'
       PACKAGERM='yum -y --disablerepo=* erase -v'
+      PACKAGERMSIMULATE='yum -n --disablerepo=* erase -v'
       PACKAGEEXT='rpm'
       PACKAGEQUERY='rpm -q'
       PACKAGEVERIFY='rpm -K'
