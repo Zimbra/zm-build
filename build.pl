@@ -263,7 +263,7 @@ sub Build()
                 buildTimeStamp='$GLOBAL_BUILD_TS' \\
                 buildLogFile='$GLOBAL_BUILD_DIR/logs/build.log' \\
                 zimbraThirdPartyServer='$GLOBAL_THIRDPARTY_SERVER' \\
-                  bash $GLOBAL_PATH_TO_TOP/zm-build/scripts/packages/zimbra-bundle.sh
+                  bash $GLOBAL_PATH_TO_TOP/zm-build/scripts/packages/zcs-bundle.sh
             "
          );
       },
