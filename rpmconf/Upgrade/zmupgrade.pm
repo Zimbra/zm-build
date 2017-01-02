@@ -129,7 +129,9 @@ my %updateFuncs = (
   "8.7.0_BETA2" => \&upgrade870BETA2,
   "8.7.0_RC1" => \&upgrade870RC1,
   "8.7.0_RC2" => \&upgrade870RC2,
-  "8.8.0_BETA1" => \&upgrade880RC1,
+  "8.7.0_GA" => \&upgrade870GA,
+  "8.7.1_GA" => \&upgrade871GA,
+  "8.8.0_GA" => \&upgrade880GA,
   "9.0.0_BETA1" => \&upgrade900BETA1,
 );
 
@@ -177,7 +179,9 @@ my @versionOrder = (
   "8.7.0_BETA2",
   "8.7.0_RC1",
   "8.7.0_RC2",
-  "8.8.0_BETA1",
+  "8.7.0_GA",
+  "8.7.1_GA",
+  "8.8.0_GA",
   "9.0.0_BETA1",
 );
 
@@ -321,8 +325,12 @@ sub upgrade {
       main::progress("This appears to be 8.7.0_RC1\n");
   } elsif ($startVersion eq "8.7.0_RC2") {
       main::progress("This appears to be 8.7.0_RC2\n");
-  } elsif ($startVersion eq "8.8.0_RC1") {
-      main::progress("This appears to be 8.8.0_RC1\n");
+  } elsif ($startVersion eq "8.7.0_GA") {
+      main::progress("This appears to be 8.7.0_GA\n");
+  } elsif ($startVersion eq "8.7.1_GA") {
+      main::progress("This appears to be 8.7.1_GA\n");
+  } elsif ($startVersion eq "8.8.0_GA") {
+      main::progress("This appears to be 8.8.0_GA\n");
   } elsif ($startVersion eq "9.0.0_BETA1") {
       main::progress("This appears to be 9.0.0_BETA1\n");
   } else {
@@ -2273,16 +2281,28 @@ sub upgrade870RC2{
   return 0;
 }
 
-sub upgrade880BETA1 {
+sub upgrade870GA{
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
-  main::progress("Updating from 8.8.0_BETA1\n");
+  main::progress("Updating from 8.7.0_GA\n");
   return 0;
+}
+
+sub upgrade871GA{
+    my ($startBuild, $targetVersion, $targetBuild) = (@_);
+    main::progress("Updating from 8.7.1_GA\n");
+    return 0;
 }
 
 sub upgrade900BETA1 {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
   main::progress("Updating from 9.0.0_BETA1\n");
   return 0;
+}
+
+sub upgrade880GA{
+    my ($startBuild, $targetVersion, $targetBuild) = (@_);
+    main::progress("Updating from 8.8.0_GA\n");
+    return 0;
 }
 
 sub stopZimbra {
@@ -2590,6 +2610,7 @@ sub doMysql56Upgrade {
 
 sub doMariaDB101Upgrade {
     my $mysql_mycnf = main::getLocalConfig("mysql_mycnf");
+    main::deleteLocalConfig("mysql_socket");
     main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-mysql_socket --section=mysqld --key=socket --set --value='/opt/zimbra/data/tmp/mysql/mysql.sock' ${mysql_mycnf}");
     main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-mysql_pidfile --section=mysqld --key=pid-file --set --value='/opt/zimbra/log/mysql.pid' ${mysql_mycnf}");
     main::runAsZimbra("/opt/zimbra/libexec/zminiutil --backup=.pre-${targetVersion}-mysql_pidfile --section=mysqld_safe --key=pid-file --set --value='/opt/zimbra/log/mysql.pid' ${mysql_mycnf}");

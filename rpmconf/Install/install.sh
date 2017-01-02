@@ -182,6 +182,7 @@ if [ x$UNINSTALL = "xyes" ]; then
 	askYN "Completely remove existing installation?" "N"
 	if [ $response = "yes" ]; then
 		REMOVE="yes"
+		findUbuntuExternalPackageDependencies
 		saveExistingConfig
 		removeExistingInstall
 	fi
@@ -269,10 +270,7 @@ else
     fi
   fi
 fi
-if [ $UPGRADE = "yes" ]; then
-  saveExistingConfig
-fi
-removeExistingInstall
+
 
 echo "Installing packages"
 echo ""

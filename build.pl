@@ -252,6 +252,20 @@ sub Build()
                "
             );
          }
+         System(
+             "  release='$GLOBAL_BUILD_RELEASE_NO.$GLOBAL_BUILD_RELEASE_CANDIDATE' \\
+                branch='$GLOBAL_BUILD_RELEASE-$GLOBAL_BUILD_RELEASE_NO_SHORT' \\
+                buildNo='$GLOBAL_BUILD_NO' \\
+                os='$GLOBAL_BUILD_OS' \\
+                buildType='$GLOBAL_BUILD_TYPE' \\
+                repoDir='$GLOBAL_BUILD_DIR' \\
+                arch='$GLOBAL_BUILD_ARCH' \\
+                buildTimeStamp='$GLOBAL_BUILD_TS' \\
+                buildLogFile='$GLOBAL_BUILD_DIR/logs/build.log' \\
+                zimbraThirdPartyServer='$GLOBAL_THIRDPARTY_SERVER' \\
+                  bash $GLOBAL_PATH_TO_TOP/zm-build/scripts/packages/zcs-bundle.sh
+            "
+         );
       },
    );
 
