@@ -517,10 +517,6 @@ main()
    Copy ${repoDir}/zm-network-build/rpmconf/Install/postinstall.pm                                  ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/postinstall.pm
    Copy ${repoDir}/zm-network-build/rpmconf/Install/preinstall.pm                                   ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/preinstall.pm
 
-   Copy ${repoDir}/zm-network-store/src/bin/zmhactl                                                 ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmhactl
-   Copy ${repoDir}/zm-network-store/src/bin/zmmboxsearch                                            ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmmboxsearch
-   Copy ${repoDir}/zm-network-store/src/libexec/vmware-heartbeat                                    ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/vmware-heartbeat
-
    Copy ${repoDir}/zm-store-conf/conf/datasource.xml                                                ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/datasource.xml
    Copy ${repoDir}/zm-store-conf/conf/localconfig.xml.production                                    ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/localconfig.xml
    Copy ${repoDir}/zm-store-conf/conf/log4j.properties.production                                   ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/log4j.properties.in
@@ -686,10 +682,6 @@ main()
 
    Copy ${repoDir}/zm-twofactorauth-store/docs/twofactorauth.md                                     ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/twofactorauth.md
 
-   Copy ${repoDir}/zm-voice-store/docs/ZimbraVoice-Extension.txt                                    ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/ZimbraVoice-Extension.txt
-   Copy ${repoDir}/zm-voice-store/docs/soap-voice-admin.txt                                         ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/soap-voice-admin.txt
-   Copy ${repoDir}/zm-voice-store/docs/soap-voice.txt                                               ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/soap-voice.txt
-
    Copy ${repoDir}/zm-windows-comp/ZimbraMigrationTools/ReadMe.txt                                  ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/zmztozmig.txt
    Copy ${repoDir}/junixsocket-native/build/junixsocket-native-2.0.4-amd64-Linux-gpp-jni.nar        ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/junixsocket-native-2.0.4-amd64-Linux-gpp-jni.nar
    Copy ${repoDir}/junixsocket-native/build/libjunixsocket-native-2.0.4.so                          ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/libjunixsocket-native-2.0.4.so
@@ -814,7 +806,6 @@ main()
       "xmlschema-core-2.0.3.jar"
       "yuicompressor-2.4.2-zimbra.jar"
       "zkclient-0.1.0.jar"
-      "zm-ews-stub-1.0.jar"
       "zookeeper-3.4.5.jar"
    )
 
@@ -822,6 +813,16 @@ main()
    do
       Cpy2 ${repoDir}/zm-zcs-lib/build/dist/${i}                                                       ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/jars
    done
+
+   if [ "${buildType}" == "NETWORK" ]
+   then
+      local zimbrathirdpartyjars=( "zm-ews-stub-1.0.jar" )
+
+      for i in "${zimbrathirdpartyjars[@]}"
+      do
+         Cpy2 ${repoDir}/zm-zcs-lib/build/dist/${i}                                                       ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/jars
+      done
+   fi
 
    local zimbrajars=(
       "zm-charset-*.jar"
@@ -876,9 +877,18 @@ main()
       Copy ${repoDir}/zm-convertd-native/src/bin/zmconvertctl                                          ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmconvertctl
       Copy ${repoDir}/zm-convertd-native/src/libexec/zmconvertdmod                                     ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmconvertdmod
  
+      Copy ${repoDir}/zm-network-store/src/bin/zmhactl                                                 ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmhactl
+      Copy ${repoDir}/zm-network-store/src/bin/zmmboxsearch                                            ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmmboxsearch
+      Copy ${repoDir}/zm-network-store/src/libexec/vmware-heartbeat                                    ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/vmware-heartbeat
+
       Copy ${repoDir}/zm-postfixjournal/build/dist/postjournal               i                         ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/postjournal
+
       Copy ${repoDir}/zm-vmware-appmonitor/build/dist/libexec/vmware-appmonitor                        ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/vmware-appmonitor
       Copy ${repoDir}/zm-vmware-appmonitor/build/dist/lib/libappmonitorlib.so                          ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/libappmonitorlib.so
+
+      Copy ${repoDir}/zm-voice-store/docs/ZimbraVoice-Extension.txt                                    ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/ZimbraVoice-Extension.txt
+      Copy ${repoDir}/zm-voice-store/docs/soap-voice-admin.txt                                         ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/soap-voice-admin.txt
+      Copy ${repoDir}/zm-voice-store/docs/soap-voice.txt                                               ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/soap-voice.txt
 
       Copy ${repoDir}/zm-rebranding-docs/docs/rebranding/DE_Rebranding_directions.txt                       ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/rebranding/DE_Rebranding_directions.txt
       Copy ${repoDir}/zm-rebranding-docs/docs/rebranding/ES_Rebranding_directions.txt                       ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/rebranding/ES_Rebranding_directions.txt
