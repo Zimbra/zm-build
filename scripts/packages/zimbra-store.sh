@@ -75,7 +75,10 @@ main()
 
     echo -e "\tCopy extensions-network-extra files of /op/zimbra/" >> ${buildLogFile}
     mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/extensions-network-extra
-    cp -rf ${repoDir}/zm-saml-consumer-store/build/dist/saml ${repoDir}/zm-build/${currentPackage}/opt/zimbra/extensions-network-extra/
+    if [ "${buildType}" == "NETWORK" ]
+    then
+       cp -rf ${repoDir}/zm-saml-consumer-store/build/dist/saml ${repoDir}/zm-build/${currentPackage}/opt/zimbra/extensions-network-extra/
+    fi
 
     echo -e "\tCopy ${jettyVersion} files of /opt/zimbra/" >> ${buildLogFile}
     cd ${repoDir}/zm-build/${currentPackage}/opt/zimbra; tar xzf ${repoDir}/zm-zcs-lib/build/dist/${jettyVersion}.tar.gz;
