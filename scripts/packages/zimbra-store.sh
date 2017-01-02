@@ -60,7 +60,11 @@ main()
     cp -f ${repoDir}/zm-store-conf/conf/spnego_java_options.in ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf
     cp -f ${repoDir}/zm-store-conf/conf/contacts/zimbra-contact-fields.xml ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/zimbra-contact-fields.xml
     cp -f ${repoDir}/zm-windows-comp/ZimbraMigrationTools/zmztozmig.conf ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/zmztozmig.conf
-    cp -f ${repoDir}/zm-ews-store/resources/jaxb-bindings.xml ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf
+
+    if [ "${buildType}" == "NETWORK" ]
+    then
+       cp -f ${repoDir}/zm-ews-store/resources/jaxb-bindings.xml ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf
+    fi
     cp -rf ${repoDir}/zm-web-client/WebRoot/templates/ ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/templates
 
     echo -e "\tCopy extensions-extra files of /op/zimbra/" >> ${buildLogFile}
@@ -114,8 +118,12 @@ main()
     cp -rf ${repoDir}/zm-voice-mitel-store/build/dist/zm-voice-mitel-store.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/zimbra-voice-mitel-store
     cp -rf ${repoDir}/zm-voice-cisco-store/build/dist/zm-voice-cisco-store.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/zimbra-voice-cisco-store
     cp -rf ${repoDir}/zm-ews-common/build/dist/*.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/zimbraews
-    cp -rf ${repoDir}/zm-ews-store/build/dist/*.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/zimbraews
-    cp -rf ${repoDir}/zm-ews-stub/build/dist/*.* ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/zimbraews
+
+    if [ "${buildType}" == "NETWORK" ]
+    then
+       cp -rf ${repoDir}/zm-ews-store/build/dist/*.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/zimbraews
+       cp -rf ${repoDir}/zm-ews-stub/build/dist/*.* ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/zimbraews
+    fi
     cp -rf ${repoDir}/zm-sync-common/build/dist/*.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/zimbrasync
     cp -rf ${repoDir}/zm-sync-store/build/dist/*.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/zimbrasync
     cp -rf ${repoDir}/zm-sync-tools/build/dist/*.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/zimbrasync

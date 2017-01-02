@@ -242,9 +242,9 @@ sub Build()
          System("mkdir -p $GLOBAL_BUILD_DIR/zm-build/$GLOBAL_BUILD_ARCH");
 
          my @ALL_PACKAGES = ();
-
          push( @ALL_PACKAGES, @{ GetPackageList("public_packages.pl") } );
          push( @ALL_PACKAGES, @{ GetPackageList("private_packages.pl") } ) if ( $GLOBAL_BUILD_TYPE eq "NETWORK" );
+         push( @ALL_PACKAGES, "zcs-bundle.sh" );
 
          for my $package_script (@ALL_PACKAGES)
          {
@@ -269,20 +269,6 @@ sub Build()
                "
             );
          }
-         System(
-            "  release='$GLOBAL_BUILD_RELEASE_NO.$GLOBAL_BUILD_RELEASE_CANDIDATE' \\
-                branch='$GLOBAL_BUILD_RELEASE-$GLOBAL_BUILD_RELEASE_NO_SHORT' \\
-                buildNo='$GLOBAL_BUILD_NO' \\
-                os='$GLOBAL_BUILD_OS' \\
-                buildType='$GLOBAL_BUILD_TYPE' \\
-                repoDir='$GLOBAL_BUILD_DIR' \\
-                arch='$GLOBAL_BUILD_ARCH' \\
-                buildTimeStamp='$GLOBAL_BUILD_TS' \\
-                buildLogFile='$GLOBAL_BUILD_DIR/logs/build.log' \\
-                zimbraThirdPartyServer='$GLOBAL_THIRDPARTY_SERVER' \\
-                  bash $GLOBAL_PATH_TO_TOP/zm-build/scripts/packages/zcs-bundle.sh
-            "
-         );
       },
    );
 
