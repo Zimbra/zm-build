@@ -87,8 +87,9 @@ sub InitGlobalBuildVars()
    print "BUILD RELEASE CANDIDATE : $GLOBAL_BUILD_RELEASE_CANDIDATE\n";
    print "=========================================================================================================\n";
 
-   $ENV{ENV_PACKAGE_EXCLUDE} = '.*' if ( $ENV{ENV_PACKAGE_INCLUDE} );
-   $ENV{ENV_BUILD_EXCLUDE}   = '.*' if ( $ENV{ENV_BUILD_INCLUDE} );
+   $ENV{ENV_GIT_UPDATE_EXCLUDE} = '.*' if ( $ENV{ENV_GIT_UPDATE_INCLUDE} );
+   $ENV{ENV_PACKAGE_EXCLUDE}    = '.*' if ( $ENV{ENV_PACKAGE_INCLUDE} );
+   $ENV{ENV_BUILD_EXCLUDE}      = '.*' if ( $ENV{ENV_BUILD_INCLUDE} );
 
    foreach my $x (`grep -o '\\<[E][N][V]_[A-Z_]*\\>' $GLOBAL_PATH_TO_SCRIPT | sort | uniq`)
    {
@@ -153,10 +154,12 @@ sub Checkout($)
    {
       System( "git", "clone", "https://github.com/Zimbra/zimbra-package-stub.git" );
    }
+
    if ( !-d "junixsocket" )
    {
-      System( "git", "clone", "-b", "junixsocket-parent-2.0.4" ,"https://github.com/kohlschutter/junixsocket.git");
+      System( "git", "clone", "-b", "junixsocket-parent-2.0.4", "https://github.com/kohlschutter/junixsocket.git" );
    }
+
    if ( -f "$GLOBAL_PATH_TO_TOP/zm-build/$repo_file" )
    {
       my @REPOS = ();
@@ -189,32 +192,46 @@ sub Build()
          print "BUILDING: $build_info->{dir}\n";
          print "\n";
 
-         Run(
-            cd   => $dir,
-            call => sub {
+         if ( -f "$dir/.built.$GLOBAL_BUILD_TS" && $ENV{ENV_RESUME_FLAG} )
+         {
+            print "WARNING: SKIPPING - delete $dir/.built.$GLOBAL_BUILD_TS to build this\n";
+            print "=========================================================================================================\n";
+            print "\n";
+         }
+         else
+         {
+            Run(
+               cd   => $dir,
+               call => sub {
 
-               my $abs_dir = Cwd::abs_path();
+                  my $abs_dir = Cwd::abs_path();
 
-               if ( my $ant_targets = $build_info->{ant_targets} )
-               {
-                  my $ANT = $ENV{ENV_ANT_OVERRIDE_CMD} || "ant";
+                  if ( my $ant_targets = $build_info->{ant_targets} )
+                  {
+                     my $ANT = $ENV{ENV_ANT_OVERRIDE_CMD} || "ant";
 
-                  System( $ANT, "clean" )
-                    if ( $ENV{ENV_ANT_DO_CLEAN_FLAG} || $build_info->{clean_flag} );
+                     System( $ANT, "clean" )
+                       if ( $ENV{ENV_ANT_DO_CLEAN_FLAG} || $build_info->{clean_flag} );
 
-                  System( $ANT, @$ant_targets );
-               }
+                     System( $ANT, @$ant_targets );
+                  }
 
-               if ( my $stage_cmd = $build_info->{stage_cmd} )
-               {
-                  &$stage_cmd
-               }
-            },
-         );
+                  if ( my $stage_cmd = $build_info->{stage_cmd} )
+                  {
+                     &$stage_cmd
+                  }
+               },
+            );
 
-         print "\n";
-         print "=========================================================================================================\n";
-         print "\n";
+            unlink glob "$dir/.built.*";
+            print "Creating $dir/.built.$GLOBAL_BUILD_TS\n";
+            open( FD, "> $dir/.built.$GLOBAL_BUILD_TS" );
+            close(FD);
+
+            print "\n";
+            print "=========================================================================================================\n";
+            print "\n";
+         }
       }
    }
 
@@ -253,7 +270,7 @@ sub Build()
             );
          }
          System(
-             "  release='$GLOBAL_BUILD_RELEASE_NO.$GLOBAL_BUILD_RELEASE_CANDIDATE' \\
+            "  release='$GLOBAL_BUILD_RELEASE_NO.$GLOBAL_BUILD_RELEASE_CANDIDATE' \\
                 branch='$GLOBAL_BUILD_RELEASE-$GLOBAL_BUILD_RELEASE_NO_SHORT' \\
                 buildNo='$GLOBAL_BUILD_NO' \\
                 os='$GLOBAL_BUILD_OS' \\
@@ -358,11 +375,25 @@ sub Clone($)
    {
       System( "git", "clone", "-b", $repo_branch, "ssh://git\@stash.corp.synacor.com:7999/$repo_user/$repo_name.git" );
    }
+   else
+   {
+      return
+        if (
+         !( $ENV{ENV_GIT_UPDATE_INCLUDE} && grep { $repo_name =~ /$_/ } split( ",", $ENV{ENV_GIT_UPDATE_INCLUDE} ) )
+         && ( $ENV{ENV_GIT_UPDATE_EXCLUDE} && grep { $repo_name =~ /$_/ } split( ",", $ENV{ENV_GIT_UPDATE_EXCLUDE} ) )
+        );
 
-   #   else
-   #   {
-   #      System( "git", "pull", "origin", $repo_branch, "--rebase", "--ff-only" );
-   #   }
+      print "#: Updating $repo_name...\n";
+
+      chomp( my $z = `cd $repo_name && git pull origin` );
+
+      print $z . "\n";
+
+      if ( $z !~ /Already up-to-date/ )
+      {
+         System( "find", $repo_name, "-name", ".built.*", "-exec", "rm", "-f", "{}", ";" );
+      }
+   }
 }
 
 sub System(@)
