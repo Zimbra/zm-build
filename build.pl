@@ -78,11 +78,14 @@ sub InitGlobalBuildVars()
 
    my $cc    = DetectPrerequisite("cc");
    my $cpp   = DetectPrerequisite("c++");
-   my $java  = DetectPrerequisite("java");
-   my $javac = DetectPrerequisite("javac");
+   my $java  = DetectPrerequisite( "java", "$ENV{JAVA_HOME}/bin" );
+   my $javac = DetectPrerequisite( "javac", "$ENV{JAVA_HOME}/bin" );
    my $mvn   = DetectPrerequisite("mvn");
+   my $ant   = DetectPrerequisite("ant");
+   my $ruby  = DetectPrerequisite("ruby");
 
-   $ENV{JAVA_HOME} = dirname( dirname( Cwd::realpath($javac) ) );
+   $ENV{JAVA_HOME} ||= dirname( dirname( Cwd::realpath($javac) ) );
+   $ENV{PATH} = "$ENV{JAVA_HOME}/bin:$ENV{PATH}";
 
    print "=========================================================================================================\n";
    print "BUILD OS                      : $GLOBAL_BUILD_OS\n";
@@ -105,8 +108,10 @@ sub InitGlobalBuildVars()
    print "USING javac                   : $javac (JAVA_HOME=$ENV{JAVA_HOME})\n";
    print "USING java                    : $java\n";
    print "USING maven                   : $mvn\n";
+   print "USING ant                     : $ant\n";
    print "USING cc                      : $cc\n";
    print "USING c++                     : $cpp\n";
+   print "USING ruby                    : $ruby\n";
    print "=========================================================================================================\n";
    print "PATH TO BUILDS                : $GLOBAL_PATH_TO_BUILDS\n";
    print "BUILD DIR                     : $GLOBAL_BUILD_DIR\n";
@@ -118,8 +123,8 @@ sub InitGlobalBuildVars()
 
 sub Prepare()
 {
-   #system("rm", "-rf", "$ENV{HOME}/.zcs-deps");
-   #system("rm", "-rf", "$ENV{HOME}/.ivy2/cache");
+   system( "rm", "-rf", "$ENV{HOME}/.zcs-deps" )   if ( $ENV{ENV_CACHE_CLEAR_FLAG} );
+   system( "rm", "-rf", "$ENV{HOME}/.ivy2/cache" ) if ( $ENV{ENV_CACHE_CLEAR_FLAG} );
 
    open( FD, ">", "/tmp/last.build_no_ts" );
    print FD "BUILD_NO=$GLOBAL_BUILD_NO\n";
@@ -218,12 +223,16 @@ sub Build()
 
                   if ( my $ant_targets = $build_info->{ant_targets} )
                   {
-                     my $ANT = $ENV{ENV_ANT_OVERRIDE_CMD} || "ant";
+                     eval { System( "ant", "clean" ) if ( !$ENV{ENV_SKIP_CLEAN_FLAG} ); };
 
-                     System( $ANT, "clean" )
-                       if ( $ENV{ENV_ANT_DO_CLEAN_FLAG} || $build_info->{clean_flag} );
+                     System( "ant", @$ant_targets );
+                  }
 
-                     System( $ANT, @$ant_targets );
+                  if ( my $mvn_targets = $build_info->{mvn_targets} )
+                  {
+                     eval { System( "mvn", "clean" ) if ( !$ENV{ENV_SKIP_CLEAN_FLAG} ); };
+
+                     System( "mvn", @$mvn_targets );
                   }
 
                   if ( my $stage_cmd = $build_info->{stage_cmd} )
@@ -233,9 +242,12 @@ sub Build()
                },
             );
 
-            print "Creating $dir/.built.$GLOBAL_BUILD_TS\n";
-            open( FD, "> $dir/.built.$GLOBAL_BUILD_TS" );
-            close(FD);
+            if ( !exists $build_info->{partial} )
+            {
+               print "Creating $dir/.built.$GLOBAL_BUILD_TS\n";
+               open( FD, "> $dir/.built.$GLOBAL_BUILD_TS" );
+               close(FD);
+            }
 
             print "\n";
             print "=========================================================================================================\n";
@@ -421,11 +433,12 @@ sub SlurpFile($)
 }
 
 
-sub DetectPrerequisite($)
+sub DetectPrerequisite($;$)
 {
-   my $util_name = shift;
+   my $util_name       = shift;
+   my $additional_path = shift;
 
-   chomp( my $detected_util = `\which "$util_name" 2>/dev/null` );
+   chomp( my $detected_util = `PATH="$additional_path:\$PATH" \which "$util_name" 2>/dev/null | sed -e 's,//*,/,g'` );
 
    return $detected_util
      if ($detected_util);
