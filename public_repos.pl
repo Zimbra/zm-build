@@ -58,8 +58,6 @@
    { name => "zm-soap",                             branch => "dev",             user => "zimbra" },
    { name => "zm-store",                            branch => "dev",             user => "zimbra" },
    { name => "zm-store-conf",                       branch => "dev",             user => "zimbra" },
-   { name => "zm-sync-client",                      branch => "dev",             user => "zimbra" },
-   { name => "zm-sync-common",                      branch => "dev",             user => "zimbra" },
    { name => "zm-taglib",                           branch => "master",          user => "zimbra" },
    { name => "zm-timezones",                        branch => "master",          user => "zimbra" },
    { name => "zm-uc-admin-zimlets",                 branch => "master",          user => "zimbra" },
