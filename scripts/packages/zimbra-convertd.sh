@@ -24,7 +24,7 @@
     currentPackage=`echo ${currentScript}build | cut -d "-" -f 2` # convertdbuild
 
     keyviewVersion=10.13.0.0
-    zimbraMimehandlersLdif=${repoDir}/zm-ldap-utilities/build/ldap-config/zimbra_mimehandlers.ldif
+    zimbraMimehandlersLdif=${repoDir}/zm-ldap-utilities/build/dist/zimbra_mimehandlers.ldif
 
 
 #-------------------- Build Package ---------------------------
