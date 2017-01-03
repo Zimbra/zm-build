@@ -17,6 +17,8 @@
    { name => "zm-postfixjournal",                   branch => "fix-me",          user => "zimbra" },
    { name => "zm-rebranding-docs",                  branch => "master",          user => "zimbra" },
    { name => "zm-saml-consumer-store",              branch => "master",          user => "zimbra" },
+   { name => "zm-sync-client",                      branch => "dev",             user => "zimbra" },
+   { name => "zm-sync-common",                      branch => "dev",             user => "zimbra" },
    { name => "zm-sync-store",                       branch => "dev",             user => "zimbra" },
    { name => "zm-sync-tools",                       branch => "dev",             user => "zimbra" },
    { name => "zm-touch-client",                     branch => "master",          user => "zimbra" },
