@@ -240,7 +240,7 @@ sub Build()
          my @ALL_PACKAGES = ();
          push( @ALL_PACKAGES, @{ GetPackageList("public_packages.pl") } );
          push( @ALL_PACKAGES, @{ GetPackageList("private_packages.pl") } ) if ( $GLOBAL_BUILD_TYPE eq "NETWORK" );
-         push( @ALL_PACKAGES, "zcs-bundle.sh" );
+         push( @ALL_PACKAGES, "zcs-bundle" );
 
          for my $package_script (@ALL_PACKAGES)
          {
