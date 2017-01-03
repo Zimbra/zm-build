@@ -2,8 +2,8 @@
    {
       "dir"         => "junixsocket/junixsocket-native",
       "ant_targets" => undef,
+      "mvn_targets" => ["package"],
       "stage_cmd"   => sub {
-         System("mvn clean package");
          System("mkdir -p $GLOBAL_BUILD_DIR/junixsocket-native/build");
          System("cp -f target/nar/junixsocket-native-2.0.4-amd64-Linux-gpp-jni/lib/amd64-Linux-gpp/jni/libjunixsocket-native-2.0.4.so $GLOBAL_BUILD_DIR/junixsocket-native/build/");
          System("cp -f target/junixsocket-native-2.0.4-amd64-Linux-gpp-jni.nar  $GLOBAL_BUILD_DIR/junixsocket-native/build/");

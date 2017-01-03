@@ -223,14 +223,16 @@ sub Build()
 
                   if ( my $ant_targets = $build_info->{ant_targets} )
                   {
-                     my $ANT = $ENV{ENV_ANT_OVERRIDE_CMD} || "ant";
+                     eval { System( "ant", "clean" ) if ( !$ENV{ENV_SKIP_CLEAN_FLAG} ); };
 
-                     eval {
-                        System( $ANT, "clean" )
-                          if ( !$ENV{ENV_ANT_SKIP_CLEAN_FLAG} );
-                     };
+                     System( "ant", @$ant_targets );
+                  }
 
-                     System( $ANT, @$ant_targets );
+                  if ( my $mvn_targets = $build_info->{mvn_targets} )
+                  {
+                     eval { System( "mvn", "clean" ) if ( !$ENV{ENV_SKIP_CLEAN_FLAG} ); };
+
+                     System( "mvn", @$mvn_targets );
                   }
 
                   if ( my $stage_cmd = $build_info->{stage_cmd} )
@@ -240,7 +242,7 @@ sub Build()
                },
             );
 
-            if( !exists $build_info->{partial} )
+            if ( !exists $build_info->{partial} )
             {
                print "Creating $dir/.built.$GLOBAL_BUILD_TS\n";
                open( FD, "> $dir/.built.$GLOBAL_BUILD_TS" );
