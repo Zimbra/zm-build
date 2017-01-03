@@ -702,7 +702,6 @@ main()
       "commons-httpclient-3.1.jar"
       "commons-io-1.4.jar"
       "commons-lang-2.6.jar"
-      "commons-logging-1.1.1.jar"
       "commons-net-3.3.jar"
       "commons-pool-1.6.jar"
       "concurrentlinkedhashmap-lru-1.3.1.jar"
