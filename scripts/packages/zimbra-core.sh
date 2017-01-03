@@ -824,20 +824,12 @@ main()
       done
    fi
 
-   local zimbrajars=(
-      "zm-charset-*.jar"
-      "zm-charset-*.jar"
-      "zm-client-*.jar"
-      "zm-common-*.jar"
-      "zm-native-*.jar"
-      "zm-soap-*.jar"
-      "zm-store-*.jar"
-   )
-
-   for i in "${zimbrajars[@]}"
-   do
-      Cpy2 ${repoDir}/zm-zcs-lib/build/dist/${i}                                                       ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/jars
-   done
+   Cpy2 ${repoDir}/zm-zcs-lib/build/dist/zm-charset-*.jar                                                    ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/jars/zimbra-charset.jar
+   Cpy2 ${repoDir}/zm-zcs-lib/build/dist/zm-native-*.jar                                                     ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/jars/zimbra-native.jar
+   Cpy2 ${repoDir}/zm-zcs-lib/build/dist/zm-common-*.jar                                                     ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/jars/zimbracommon.jar
+   Cpy2 ${repoDir}/zm-zcs-lib/build/dist/zm-soap-*.jar                                                       ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/jars/zimbrasoap.jar
+   Cpy2 ${repoDir}/zm-zcs-lib/build/dist/zm-client-*.jar                                                     ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/jars/zimbraclient.jar
+   Cpy2 ${repoDir}/zm-zcs-lib/build/dist/zm-store-*.jar                                                      ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/jars/zimbrastore.jar
 
    Copy ${repoDir}/zm-zcs-lib/build/dist/ant-1.6.5.jar                                              ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/jars-ant/ant-1.6.5.jar
 

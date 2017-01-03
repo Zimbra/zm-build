@@ -336,11 +336,9 @@ main()
         cp ${repoDir}/zm-zcs-lib/build/dist/${i} ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/common/lib
     done
 
-    zimbrajars=("zm-common-*.jar" "zm-native-*.jar")
-    for i in "${zimbrajars[@]}"
-    do
-        cp ${repoDir}/zm-zcs-lib/build/dist/${i} ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/common/lib
-    done
+
+   cp ${repoDir}/zm-zcs-lib/build/dist/zm-common-*.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/common/lib/zimbracommon.jar
+   cp ${repoDir}/zm-zcs-lib/build/dist/zm-native-*.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/common/lib/zimbra-native.jar
     
    cp ${repoDir}/zm-zcs-lib/build/dist/apache-log4j-extras-1.0.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/lib
    cp ${repoDir}/zm-zcs-lib/build/dist/log4j-1.2.16.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/lib
