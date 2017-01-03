@@ -240,9 +240,12 @@ sub Build()
                },
             );
 
-            print "Creating $dir/.built.$GLOBAL_BUILD_TS\n";
-            open( FD, "> $dir/.built.$GLOBAL_BUILD_TS" );
-            close(FD);
+            if( !exists $build_info->{partial} )
+            {
+               print "Creating $dir/.built.$GLOBAL_BUILD_TS\n";
+               open( FD, "> $dir/.built.$GLOBAL_BUILD_TS" );
+               close(FD);
+            }
 
             print "\n";
             print "=========================================================================================================\n";

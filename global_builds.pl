@@ -35,9 +35,26 @@
       "stage_cmd"   => undef,
    },
    {
-      "dir"         => "zm-store",
+      "dir"         => "zm-store", #FIXME CIRCULAR DEPENDENCY in zm-store and zm-taglib
+      "partial"     => 1,
       "ant_targets" => ["publish-local"],
       "stage_cmd"   => undef,
+   },
+   {
+      "dir"         => "zm-taglib",
+      "ant_targets" => ["publish-local"],
+      "stage_cmd"   => undef,
+   },
+   {
+      "dir"         => "zm-store", #FIXME CIRCULAR DEPENDENCY in zm-store and zm-taglib
+      "ant_targets" => [ "publish-local", "war", "create-version-sql", "-Dis-production=true" ],
+      "stage_cmd"   => sub {
+         System("mkdir -p $GLOBAL_BUILD_DIR/zm-store/build/dist");
+         System("cp -f build/service.war $GLOBAL_BUILD_DIR/zm-store/build/dist");
+         System("cp -f build/dist/versions-init.sql $GLOBAL_BUILD_DIR/zm-store/build/dist/");
+         System("(cd .. && rsync -az --relative zm-store/docs $GLOBAL_BUILD_DIR/)");
+         System("(cd .. && rsync -az --relative zm-store/conf $GLOBAL_BUILD_DIR/)");
+      },
    },
    {
       "dir"         => "zm-license-tools",
@@ -51,17 +68,21 @@
    {
       "dir"         => "zm-license-store",
       "ant_targets" => ["publish-local"],
-      "stage_cmd"   => undef,
+      "stage_cmd"   => sub {
+         System("mkdir -p $GLOBAL_BUILD_DIR/zm-license-store/build/dist");
+         System("cp -f -rp build/zm-license-store-*.jar $GLOBAL_BUILD_DIR/zm-license-store/build/dist");
+      },
    },
    {
       "dir"         => "zm-network-store",
-      "ant_targets" => ["publish-local"],
-      "stage_cmd"   => undef,
-   },
-   {
-      "dir"         => "zm-taglib",
-      "ant_targets" => ["publish-local"],
-      "stage_cmd"   => undef,
+      "ant_targets" => [ "publish-local", "cmbsearch-jar" ],
+      "stage_cmd"   => sub {
+         System("mkdir -p $GLOBAL_BUILD_DIR/zm-network-store/build/dist");
+         System("cp -f -r ../zm-network-store/build $GLOBAL_BUILD_DIR/zm-network-store");
+         System("cp -f build/zm-network-store-*.jar $GLOBAL_BUILD_DIR/zm-network-store/build/dist/zimbranetwork.jar");
+         System("(cd .. && rsync -az --relative zm-network-store/src/bin $GLOBAL_BUILD_DIR/)");
+         System("(cd .. && rsync -az --relative zm-network-store/src/libexec $GLOBAL_BUILD_DIR/)");
+      },
    },
    {
       "dir"         => "zm-ajax",
@@ -183,14 +204,6 @@
       },
    },
    {
-      "dir"         => "zm-license-store",
-      "ant_targets" => undef,
-      "stage_cmd"   => sub {
-         System("mkdir -p $GLOBAL_BUILD_DIR/zm-license-store/build/dist");
-         System("cp -f -rp build/zm-license-store-*.jar $GLOBAL_BUILD_DIR/zm-license-store/build/dist");
-      },
-   },
-   {
       "dir"         => "zm-licenses",
       "ant_targets" => undef,
       "stage_cmd"   => sub {
@@ -245,6 +258,7 @@
       "stage_cmd"   => sub {
          System("mkdir -p $GLOBAL_BUILD_DIR/zm-ews-store/build/dist");
          System("cp -f -r build/dist $GLOBAL_BUILD_DIR/zm-ews-store/build");
+         System("cp -f -r ../zm-ews-store $GLOBAL_BUILD_DIR");
       },
    },
    {
@@ -260,7 +274,7 @@
       "ant_targets" => [ "publish-local", "dist" ],
       "stage_cmd"   => sub {
          System("mkdir -p $GLOBAL_BUILD_DIR/zm-sync-store/build/dist");
-         System("cp -f -r build/dist $GLOBAL_BUILD_DIR/zm-sync-store/build");
+         System("cp -f -r ../zm-sync-store $GLOBAL_BUILD_DIR");
       },
    },
    {
@@ -276,7 +290,7 @@
       "ant_targets" => [ "publish-local", "dist" ],
       "stage_cmd"   => sub {
          System("mkdir -p $GLOBAL_BUILD_DIR/zm-sync-tools/build/dist");
-         System("cp -f -r build/dist $GLOBAL_BUILD_DIR/zm-sync-tools/build");
+         System("cp -f -r ../zm-sync-tools $GLOBAL_BUILD_DIR");
       },
    },
    {
@@ -448,32 +462,12 @@
       },
    },
    {
-      "dir"         => "zm-network-store",
-      "ant_targets" => ["jar"],
-      "stage_cmd"   => sub {
-         System("mkdir -p $GLOBAL_BUILD_DIR/zm-network-store/build/dist");
-         System("cp -f build/zm-network-store-*.jar $GLOBAL_BUILD_DIR/zm-network-store/build/dist/zimbranetwork.jar");
-         System("(cd .. && rsync -az --relative zm-network-store/src/bin $GLOBAL_BUILD_DIR/)");
-         System("(cd .. && rsync -az --relative zm-network-store/src/libexec $GLOBAL_BUILD_DIR/)");
-      },
-   },
-   {
       "dir"         => "zm-convertd-store",
       "ant_targets" => ["dist"],
       "stage_cmd"   => sub {
          System("mkdir -p $GLOBAL_BUILD_DIR/zm-convertd-store/build/dist");
          System("cp -f build/dist/lib/ext/zimbraconvertd/zimbraconvertd.jar $GLOBAL_BUILD_DIR/zm-convertd-store/build/dist");
-      },
-   },
-   {
-      "dir"         => "zm-store",
-      "ant_targets" => [ "war", "create-version-sql", "-Dis-production=true" ],
-      "stage_cmd"   => sub {
-         System("mkdir -p $GLOBAL_BUILD_DIR/zm-store/build/dist");
-         System("cp -f build/service.war $GLOBAL_BUILD_DIR/zm-store/build/dist");
-         System("cp -f build/dist/versions-init.sql $GLOBAL_BUILD_DIR/zm-store/build/dist/");
-         System("(cd .. && rsync -az --relative zm-store/docs $GLOBAL_BUILD_DIR/)");
-         System("(cd .. && rsync -az --relative zm-store/conf $GLOBAL_BUILD_DIR/)");
+         System("cp -f -r ../zm-convertd-store $GLOBAL_BUILD_DIR");
       },
    },
    {
@@ -489,10 +483,12 @@
    },
    {
       "dir"         => "zm-web-client",
-      "ant_targets" => ["prod-war"],
+      "ant_targets" => [ "prod-war", "jspc.build" ],
       "stage_cmd"   => sub {
          System("mkdir -p $GLOBAL_BUILD_DIR/zm-web-client/build/dist/jetty/webapps");
          System("cp -f build/dist/jetty/webapps/zimbra.war $GLOBAL_BUILD_DIR/zm-web-client/build/dist/jetty/webapps");
+         System("cp -f -r build/dist/jetty/work $GLOBAL_BUILD_DIR/zm-web-client/build/dist/jetty");
+         System("cp -f -r ../zm-web-client $GLOBAL_BUILD_DIR");
       },
    },
    {
@@ -572,13 +568,6 @@
       },
    },
    {
-      "dir"         => "zm-web-client",
-      "ant_targets" => ["jspc.build"],
-      "stage_cmd"   => sub {
-         System("cp -f -r build/dist/jetty/work $GLOBAL_BUILD_DIR/zm-web-client/build/dist/jetty");
-      },
-   },
-   {
       "dir"         => "zm-aspell",
       "ant_targets" => undef,
       "stage_cmd"   => sub {
@@ -604,13 +593,6 @@
       "ant_targets" => undef,
       "stage_cmd"   => sub {
          System("cp -f -r ../zm-nginx-conf $GLOBAL_BUILD_DIR");
-      },
-   },
-   {
-      "dir"         => "zm-convertd-store",
-      "ant_targets" => undef,
-      "stage_cmd"   => sub {
-         System("cp -f -r ../zm-convertd-store $GLOBAL_BUILD_DIR");
       },
    },
    {
@@ -656,38 +638,10 @@
       },
    },
    {
-      "dir"         => "zm-sync-tools",
-      "ant_targets" => undef,
-      "stage_cmd"   => sub {
-         System("cp -f -r ../zm-sync-tools $GLOBAL_BUILD_DIR");
-      },
-   },
-   {
-      "dir"         => "zm-sync-store",
-      "ant_targets" => undef,
-      "stage_cmd"   => sub {
-         System("cp -f -r ../zm-sync-store $GLOBAL_BUILD_DIR");
-      },
-   },
-   {
       "dir"         => "zm-store-conf",
       "ant_targets" => undef,
       "stage_cmd"   => sub {
          System("cp -f -r ../zm-store-conf $GLOBAL_BUILD_DIR");
-      },
-   },
-   {
-      "dir"         => "zm-ews-store",
-      "ant_targets" => undef,
-      "stage_cmd"   => sub {
-         System("cp -f -r ../zm-ews-store $GLOBAL_BUILD_DIR");
-      },
-   },
-   {
-      "dir"         => "zm-web-client",
-      "ant_targets" => undef,
-      "stage_cmd"   => sub {
-         System("cp -f -r ../zm-web-client $GLOBAL_BUILD_DIR");
       },
    },
    {
@@ -754,12 +708,6 @@
       },
    },
    {
-      "dir"         => "zm-network-store",
-      "ant_targets" => ["cmbsearch-jar"],
-      "stage_cmd"   => sub {
-         System("mkdir -p $GLOBAL_BUILD_DIR/zm-network-store");
-         System("cp -f -r ../zm-network-store/build $GLOBAL_BUILD_DIR/zm-network-store");
-      },
       "dir"         => "ant-1.7.0-ziputil-patched",
       "ant_targets" => ["jar"],
       "stage_cmd"   => undef,
