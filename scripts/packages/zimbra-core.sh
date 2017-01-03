@@ -702,7 +702,6 @@ main()
       "commons-httpclient-3.1.jar"
       "commons-io-1.4.jar"
       "commons-lang-2.6.jar"
-      "commons-logging-1.1.1.jar"
       "commons-net-3.3.jar"
       "commons-pool-1.6.jar"
       "concurrentlinkedhashmap-lru-1.3.1.jar"
@@ -756,7 +755,6 @@ main()
       "jetty-util-9.3.5.v20151012.jar"
       "jfreechart-1.0.15.jar"
       "jna-3.4.0.jar"
-      "json-20090211.jar"
       "jsr181-api-1.0-MR1.jar"
       "jsr311-api-1.1.1.jar"
       "junixsocket-common-2.0.4.jar"
@@ -821,14 +819,16 @@ main()
       done
    fi
 
-   Cpy2 ${repoDir}/zm-zcs-lib/build/dist/zm-charset-*.jar                                                    ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/jars/zimbra-charset.jar
-   Cpy2 ${repoDir}/zm-zcs-lib/build/dist/zm-native-*.jar                                                     ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/jars/zimbra-native.jar
-   Cpy2 ${repoDir}/zm-zcs-lib/build/dist/zm-common-*.jar                                                     ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/jars/zimbracommon.jar
-   Cpy2 ${repoDir}/zm-zcs-lib/build/dist/zm-soap-*.jar                                                       ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/jars/zimbrasoap.jar
-   Cpy2 ${repoDir}/zm-zcs-lib/build/dist/zm-client-*.jar                                                     ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/jars/zimbraclient.jar
-   Cpy2 ${repoDir}/zm-zcs-lib/build/dist/zm-store-*.jar                                                      ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/jars/zimbrastore.jar
+   Copy ${repoDir}/zm-zcs-lib/build/dist/zm-charset-*.jar                                           ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/jars/zimbra-charset.jar
+   Copy ${repoDir}/zm-zcs-lib/build/dist/zm-native-*.jar                                            ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/jars/zimbra-native.jar
+   Copy ${repoDir}/zm-zcs-lib/build/dist/zm-common-*.jar                                            ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/jars/zimbracommon.jar
+   Copy ${repoDir}/zm-zcs-lib/build/dist/zm-soap-*.jar                                              ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/jars/zimbrasoap.jar
+   Copy ${repoDir}/zm-zcs-lib/build/dist/zm-client-*.jar                                            ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/jars/zimbraclient.jar
+   Copy ${repoDir}/zm-zcs-lib/build/dist/zm-store-*.jar                                             ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/jars/zimbrastore.jar
 
    Copy ${repoDir}/zm-zcs-lib/build/dist/ant-1.6.5.jar                                              ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/jars-ant/ant-1.6.5.jar
+   Copy ${repoDir}/zm-zcs-lib/build/dist/json-20090211.jar                                          ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/jars/json.jar
+   Copy ${repoDir}/zm-zcs-lib/build/dist/commons-logging-1.1.1.jar                                  ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/jars/commons-logging.jar
 
    Copy ${repoDir}/zm-bulkprovision-store/build/dist/commons-csv-1.2.jar                            ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/com_zimbra_bulkprovision/commons-csv-1.2.jar
    Copy ${repoDir}/zm-bulkprovision-store/build/dist/zm-bulkprovision-store*.jar                    ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/com_zimbra_bulkprovision/com_zimbra_bulkprovision.jar
