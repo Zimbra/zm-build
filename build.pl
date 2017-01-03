@@ -77,29 +77,25 @@ sub InitGlobalBuildVars()
    $GLOBAL_BUILD_DIR = "$GLOBAL_PATH_TO_BUILDS/$GLOBAL_BUILD_OS/$GLOBAL_BUILD_RELEASE-$GLOBAL_BUILD_RELEASE_NO_SHORT/${GLOBAL_BUILD_TS}_$GLOBAL_BUILD_TYPE";
 
    print "=========================================================================================================\n";
-   print "BUILD OS                : $GLOBAL_BUILD_OS\n";
-   print "BUILD ARCH              : $GLOBAL_BUILD_ARCH\n";
-   print "BUILD NO                : $GLOBAL_BUILD_NO\n";
-   print "BUILD TS                : $GLOBAL_BUILD_TS\n";
-   print "BUILD TYPE              : $GLOBAL_BUILD_TYPE\n";
-   print "BUILD RELEASE           : $GLOBAL_BUILD_RELEASE\n";
-   print "BUILD RELEASE NO        : $GLOBAL_BUILD_RELEASE_NO\n";
-   print "BUILD RELEASE CANDIDATE : $GLOBAL_BUILD_RELEASE_CANDIDATE\n";
+   print "BUILD OS                      : $GLOBAL_BUILD_OS\n";
+   print "BUILD ARCH                    : $GLOBAL_BUILD_ARCH\n";
+   print "BUILD NO                      : $GLOBAL_BUILD_NO\n";
+   print "BUILD TS                      : $GLOBAL_BUILD_TS\n";
+   print "BUILD TYPE                    : $GLOBAL_BUILD_TYPE\n";
+   print "BUILD RELEASE                 : $GLOBAL_BUILD_RELEASE\n";
+   print "BUILD RELEASE NO              : $GLOBAL_BUILD_RELEASE_NO\n";
+   print "BUILD RELEASE CANDIDATE       : $GLOBAL_BUILD_RELEASE_CANDIDATE\n";
    print "=========================================================================================================\n";
-
-   $ENV{ENV_GIT_UPDATE_EXCLUDE} = '.*' if ( $ENV{ENV_GIT_UPDATE_INCLUDE} );
-   $ENV{ENV_PACKAGE_EXCLUDE}    = '.*' if ( $ENV{ENV_PACKAGE_INCLUDE} );
-   $ENV{ENV_BUILD_EXCLUDE}      = '.*' if ( $ENV{ENV_BUILD_INCLUDE} );
 
    foreach my $x (`grep -o '\\<[E][N][V]_[A-Z_]*\\>' $GLOBAL_PATH_TO_SCRIPT | sort | uniq`)
    {
       chomp($x);
-      printf( "%-24s: $ENV{$x}\n", $x );
+      printf( "%-30s: %s\n", $x, defined $ENV{$x} ? $ENV{$x} : "(undef)" );
    }
 
    print "=========================================================================================================\n";
-   print "PATH TO BUILDS          : $GLOBAL_PATH_TO_BUILDS\n";
-   print "BUILD DIR               : $GLOBAL_BUILD_DIR\n";
+   print "PATH TO BUILDS                : $GLOBAL_PATH_TO_BUILDS\n";
+   print "BUILD DIR                     : $GLOBAL_BUILD_DIR\n";
    print "=========================================================================================================\n";
    print "Press enter to proceed";
    my $x;
@@ -178,28 +174,29 @@ sub Build()
    eval `cat $GLOBAL_PATH_TO_TOP/zm-build/global_builds.pl`;
    die "FAILURE in global_builds.pl, (info=$!, err=$@)\n" if ($@);
 
+   my $cnt = 1;
    for my $build_info (@GLOBAL_BUILDS)
    {
+      ++$cnt;
       if ( my $dir = $build_info->{dir} )
       {
-         next
-           if (
-            !( $ENV{ENV_BUILD_INCLUDE} && grep { $build_info->{dir} =~ /$_/ } split( ",", $ENV{ENV_BUILD_INCLUDE} ) )
-            && ( $ENV{ENV_BUILD_EXCLUDE} && grep { $build_info->{dir} =~ /$_/ } split( ",", $ENV{ENV_BUILD_EXCLUDE} ) )
-           );
-
          print "=========================================================================================================\n";
-         print "BUILDING: $build_info->{dir}\n";
+         print "\e[1;34m" . "BUILDING: $build_info->{dir} ($cnt of " . scalar(@GLOBAL_BUILDS) . ")\e[0m\n";
          print "\n";
 
-         if ( -f "$dir/.built.$GLOBAL_BUILD_TS" && $ENV{ENV_RESUME_FLAG} )
+         unlink glob "$dir/.built.*"
+            if ( $ENV{ENV_FORCE_REBUILD} && grep { $build_info->{dir} =~ /$_/ } split( ",", $ENV{ENV_FORCE_REBUILD} ) );
+
+         if ( $ENV{ENV_RESUME_FLAG} && -f "$dir/.built.$GLOBAL_BUILD_TS" )
          {
-            print "WARNING: SKIPPING - delete $dir/.built.$GLOBAL_BUILD_TS to build this\n";
+            print "\e[1;33m" . "WARNING: SKIPPING - to force a rebuild - either delete $dir/.built.$GLOBAL_BUILD_TS or include in ENV_FORCE_REBUILD" . "\e[0m\n";
             print "=========================================================================================================\n";
             print "\n";
          }
          else
          {
+            unlink glob "$dir/.built.*";
+
             Run(
                cd   => $dir,
                call => sub {
@@ -223,7 +220,6 @@ sub Build()
                },
             );
 
-            unlink glob "$dir/.built.*";
             print "Creating $dir/.built.$GLOBAL_BUILD_TS\n";
             open( FD, "> $dir/.built.$GLOBAL_BUILD_TS" );
             close(FD);
@@ -242,47 +238,30 @@ sub Build()
          System("mkdir -p $GLOBAL_BUILD_DIR/zm-build/$GLOBAL_BUILD_ARCH");
 
          my @ALL_PACKAGES = ();
-
          push( @ALL_PACKAGES, @{ GetPackageList("public_packages.pl") } );
          push( @ALL_PACKAGES, @{ GetPackageList("private_packages.pl") } ) if ( $GLOBAL_BUILD_TYPE eq "NETWORK" );
+         push( @ALL_PACKAGES, "zcs-bundle.sh" );
 
          for my $package_script (@ALL_PACKAGES)
          {
-            next
-              if (
-               !( $ENV{ENV_PACKAGE_INCLUDE} && grep { $package_script =~ /$_/ } split( ",", $ENV{ENV_PACKAGE_INCLUDE} ) )
-               && ( $ENV{ENV_PACKAGE_EXCLUDE} && grep { $package_script =~ /$_/ } split( ",", $ENV{ENV_PACKAGE_EXCLUDE} ) )
-              );
-
-            System(
-               "  release='$GLOBAL_BUILD_RELEASE_NO.$GLOBAL_BUILD_RELEASE_CANDIDATE' \\
-                  branch='$GLOBAL_BUILD_RELEASE-$GLOBAL_BUILD_RELEASE_NO_SHORT' \\
-                  buildNo='$GLOBAL_BUILD_NO' \\
-                  os='$GLOBAL_BUILD_OS' \\
-                  buildType='$GLOBAL_BUILD_TYPE' \\
-                  repoDir='$GLOBAL_BUILD_DIR' \\
-                  arch='$GLOBAL_BUILD_ARCH' \\
-                  buildTimeStamp='$GLOBAL_BUILD_TS' \\
-                  buildLogFile='$GLOBAL_BUILD_DIR/logs/build.log' \\
-                  zimbraThirdPartyServer='$GLOBAL_THIRDPARTY_SERVER' \\
-                     bash $GLOBAL_PATH_TO_TOP/zm-build/scripts/packages/$package_script.sh
-               "
-            );
+            if ( !defined $ENV{ENV_PACKAGE_INCLUDE} || grep { $package_script =~ /$_/ } split( ",", $ENV{ENV_PACKAGE_INCLUDE} ) )
+            {
+               System(
+                  "  release='$GLOBAL_BUILD_RELEASE_NO.$GLOBAL_BUILD_RELEASE_CANDIDATE' \\
+                     branch='$GLOBAL_BUILD_RELEASE-$GLOBAL_BUILD_RELEASE_NO_SHORT' \\
+                     buildNo='$GLOBAL_BUILD_NO' \\
+                     os='$GLOBAL_BUILD_OS' \\
+                     buildType='$GLOBAL_BUILD_TYPE' \\
+                     repoDir='$GLOBAL_BUILD_DIR' \\
+                     arch='$GLOBAL_BUILD_ARCH' \\
+                     buildTimeStamp='$GLOBAL_BUILD_TS' \\
+                     buildLogFile='$GLOBAL_BUILD_DIR/logs/build.log' \\
+                     zimbraThirdPartyServer='$GLOBAL_THIRDPARTY_SERVER' \\
+                        bash $GLOBAL_PATH_TO_TOP/zm-build/scripts/packages/$package_script.sh
+                  "
+               );
+            }
          }
-         System(
-            "  release='$GLOBAL_BUILD_RELEASE_NO.$GLOBAL_BUILD_RELEASE_CANDIDATE' \\
-                branch='$GLOBAL_BUILD_RELEASE-$GLOBAL_BUILD_RELEASE_NO_SHORT' \\
-                buildNo='$GLOBAL_BUILD_NO' \\
-                os='$GLOBAL_BUILD_OS' \\
-                buildType='$GLOBAL_BUILD_TYPE' \\
-                repoDir='$GLOBAL_BUILD_DIR' \\
-                arch='$GLOBAL_BUILD_ARCH' \\
-                buildTimeStamp='$GLOBAL_BUILD_TS' \\
-                buildLogFile='$GLOBAL_BUILD_DIR/logs/build.log' \\
-                zimbraThirdPartyServer='$GLOBAL_THIRDPARTY_SERVER' \\
-                  bash $GLOBAL_PATH_TO_TOP/zm-build/scripts/packages/zcs-bundle.sh
-            "
-         );
       },
    );
 
@@ -377,21 +356,18 @@ sub Clone($)
    }
    else
    {
-      return
-        if (
-         !( $ENV{ENV_GIT_UPDATE_INCLUDE} && grep { $repo_name =~ /$_/ } split( ",", $ENV{ENV_GIT_UPDATE_INCLUDE} ) )
-         && ( $ENV{ENV_GIT_UPDATE_EXCLUDE} && grep { $repo_name =~ /$_/ } split( ",", $ENV{ENV_GIT_UPDATE_EXCLUDE} ) )
-        );
-
-      print "#: Updating $repo_name...\n";
-
-      chomp( my $z = `cd $repo_name && git pull origin` );
-
-      print $z . "\n";
-
-      if ( $z !~ /Already up-to-date/ )
+      if ( !defined $ENV{ENV_GIT_UPDATE_INCLUDE} || grep { $repo_name =~ /$_/ } split( ",", $ENV{ENV_GIT_UPDATE_INCLUDE} ) )
       {
-         System( "find", $repo_name, "-name", ".built.*", "-exec", "rm", "-f", "{}", ";" );
+         print "#: Updating $repo_name...\n";
+
+         chomp( my $z = `cd $repo_name && git pull origin` );
+
+         print $z . "\n";
+
+         if ( $z !~ /Already up-to-date/ )
+         {
+            System( "find", $repo_name, "-name", ".built.*", "-exec", "rm", "-f", "{}", ";" );
+         }
       }
    }
 }
