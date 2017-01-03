@@ -76,6 +76,14 @@ sub InitGlobalBuildVars()
 
    $GLOBAL_BUILD_DIR = "$GLOBAL_PATH_TO_BUILDS/$GLOBAL_BUILD_OS/$GLOBAL_BUILD_RELEASE-$GLOBAL_BUILD_RELEASE_NO_SHORT/${GLOBAL_BUILD_TS}_$GLOBAL_BUILD_TYPE";
 
+   my $cc    = DetectPrerequisite("cc");
+   my $cpp   = DetectPrerequisite("c++");
+   my $java  = DetectPrerequisite("java");
+   my $javac = DetectPrerequisite("javac");
+   my $mvn   = DetectPrerequisite("mvn");
+
+   $ENV{JAVA_HOME} = dirname( dirname( Cwd::realpath($javac) ) );
+
    print "=========================================================================================================\n";
    print "BUILD OS                      : $GLOBAL_BUILD_OS\n";
    print "BUILD ARCH                    : $GLOBAL_BUILD_ARCH\n";
@@ -93,6 +101,12 @@ sub InitGlobalBuildVars()
       printf( "%-30s: %s\n", $x, defined $ENV{$x} ? $ENV{$x} : "(undef)" );
    }
 
+   print "=========================================================================================================\n";
+   print "USING javac                   : $javac (JAVA_HOME=$ENV{JAVA_HOME})\n";
+   print "USING java                    : $java\n";
+   print "USING maven                   : $mvn\n";
+   print "USING cc                      : $cc\n";
+   print "USING c++                     : $cpp\n";
    print "=========================================================================================================\n";
    print "PATH TO BUILDS                : $GLOBAL_PATH_TO_BUILDS\n";
    print "BUILD DIR                     : $GLOBAL_BUILD_DIR\n";
@@ -116,7 +130,6 @@ sub Prepare()
    System( "mkdir", "-p", "$GLOBAL_BUILD_DIR/logs" );
    System( "mkdir", "-p", "$ENV{HOME}/.zcs-deps" );
    System( "mkdir", "-p", "$ENV{HOME}/.ivy2/cache" );
-
 
    my @TP_JARS = (
       "http://$GLOBAL_THIRDPARTY_SERVER/ZimbraThirdParty/third-party-jars/ant-1.7.0-ziputil-patched.jar",
@@ -185,7 +198,7 @@ sub Build()
          print "\n";
 
          unlink glob "$dir/.built.*"
-            if ( $ENV{ENV_FORCE_REBUILD} && grep { $build_info->{dir} =~ /$_/ } split( ",", $ENV{ENV_FORCE_REBUILD} ) );
+           if ( $ENV{ENV_FORCE_REBUILD} && grep { $build_info->{dir} =~ /$_/ } split( ",", $ENV{ENV_FORCE_REBUILD} ) );
 
          if ( $ENV{ENV_RESUME_FLAG} && -f "$dir/.built.$GLOBAL_BUILD_TS" )
          {
@@ -405,6 +418,19 @@ sub SlurpFile($)
    close(FD);
 
    return \@x;
+}
+
+
+sub DetectPrerequisite($)
+{
+   my $util_name = shift;
+
+   chomp( my $detected_util = `\which "$util_name" 2>/dev/null` );
+
+   return $detected_util
+     if ($detected_util);
+
+   die "FAILURE: prerequisite $util_name missing in PATH\n";
 }
 
 
