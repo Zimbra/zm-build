@@ -103,9 +103,9 @@
    },
    {
       "dir"         => "zm-ldap-utilities",
-      "ant_targets" => ["generate-ldap-config", "-Dis-production=true"],
+      "ant_targets" => ["build-dist", "-Dis-production=true"],
       "stage_cmd" => sub {
-           System("(cd .. && rsync -az --relative zm-ldap-utilities/build/ldap-config/zimbra_mimehandlers.ldif $GLOBAL_BUILD_DIR/)");
+           System("(cd .. && rsync -az --relative zm-ldap-utilities/build/dist $GLOBAL_BUILD_DIR/)");
            System("(cd .. && rsync -az --relative zm-ldap-utilities/src/ldap/migration $GLOBAL_BUILD_DIR/)");
            System("(cd .. && rsync -az --relative zm-ldap-utilities/conf $GLOBAL_BUILD_DIR/)");
            System("(cd .. && rsync -az --relative zm-ldap-utilities/src/libexec $GLOBAL_BUILD_DIR/)");
