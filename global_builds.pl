@@ -765,8 +765,8 @@
    },
    {
       "dir"       => "zm-launcher",
+      "make"      => ["JAVA_BINARY=/opt/zimbra/common/bin/java"],
       "stage_cmd" => sub {
-         System("make -f Makefile");
          System("mkdir -p $GLOBAL_BUILD_DIR/zm-launcher/build/dist");
          System("cp -f build/zmmailboxd* $GLOBAL_BUILD_DIR/zm-launcher/build/dist");
       },

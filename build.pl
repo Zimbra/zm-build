@@ -235,6 +235,13 @@ sub Build()
                      System( "mvn", @$mvn_targets );
                   }
 
+                  if ( my $make_targets = $build_info->{make} )
+                  {
+                     eval { System( "make", "clean" ) if ( !$ENV{ENV_SKIP_CLEAN_FLAG} ); };
+
+                     System( "make", @$make_targets );
+                  }
+
                   if ( my $stage_cmd = $build_info->{stage_cmd} )
                   {
                      &$stage_cmd
