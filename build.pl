@@ -192,7 +192,7 @@ sub Build()
    eval `cat $GLOBAL_PATH_TO_TOP/zm-build/global_builds.pl`;
    die "FAILURE in global_builds.pl, (info=$!, err=$@)\n" if ($@);
 
-   my $cnt = 1;
+   my $cnt = 0;
    for my $build_info (@GLOBAL_BUILDS)
    {
       ++$cnt;
