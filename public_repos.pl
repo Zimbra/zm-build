@@ -37,7 +37,7 @@
    { name => "zm-jetty-conf",                       branch => "dev",             user => "zimbra" },
    { name => "zm-jython",                           branch => "master",          user => "zimbra" },
    { name => "zm-launcher",                         branch => "dev",             user => "zimbra" },
-   { name => "zm-ldap-utilities",                   branch => "master",          user => "zimbra" },
+   { name => "zm-ldap-utilities",                   branch => "dev",             user => "zimbra" },
    { name => "zm-ldap-utils-store",                 branch => "master",          user => "zimbra" },
    { name => "zm-libnative",                        branch => "dev",             user => "zimbra" },
    { name => "zm-license-admin-zimlet",             branch => "dev",             user => "zimbra" },
