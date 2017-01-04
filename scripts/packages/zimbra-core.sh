@@ -25,6 +25,10 @@ currentPackage="$(echo ${currentScript}build | cut -d "-" -f 2)" # corebuild
 
 #-------------------- Util Functions ---------------------------
 
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+
+source "$SCRIPT_DIR/utils.sh"
+
 CreateDebianPackage()
 {
    echo -e "\tCreate debian package" >> ${buildLogFile}
@@ -69,26 +73,6 @@ CreateDebianPackage()
    else
        echo -e "\t*** ${currentPackage} package successfully created ***" >> ${buildLogFile}
    fi
-}
-
-Copy()
-{
-   local src_file="$1"; shift;
-   local dest_file="$1"; shift;
-
-   mkdir -p "$(dirname "$dest_file")"
-
-   cp -f "$src_file" "$dest_file"
-}
-
-Cpy2()
-{
-   local src_file="$1"; shift;
-   local dest_dir="$1"; shift;
-
-   mkdir -p "$dest_dir"
-
-   cp -f "$src_file" "$dest_dir"
 }
 
 #-------------------- main packaging ---------------------------
@@ -869,7 +853,7 @@ main()
       Copy ${repoDir}/zm-network-build/rpmconf/Install/Util/modules/postinstall.sh                     ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/installer/util/modules/postinstall.sh
       Copy ${repoDir}/zm-network-build/rpmconf/Install/postinstall.pm                                  ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/postinstall.pm
       Copy ${repoDir}/zm-network-build/rpmconf/Install/preinstall.pm                                   ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/preinstall.pm
- 
+
       Copy ${repoDir}/zm-network-licenses/thirdparty/keyview_eula.txt                                  ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/keyview_eula.txt
       Copy ${repoDir}/zm-network-licenses/thirdparty/oracle_jdk_eula.txt                               ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/oracle_jdk_eula.txt
 
@@ -877,7 +861,7 @@ main()
       Copy ${repoDir}/zm-network-store/src/bin/zmmboxsearch                                            ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmmboxsearch
       Copy ${repoDir}/zm-network-store/src/libexec/vmware-heartbeat                                    ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/vmware-heartbeat
 
-      Copy ${repoDir}/zm-postfixjournal/build/dist/postjournal               i                         ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/postjournal
+      Copy ${repoDir}/zm-postfixjournal/build/dist/postjournal                                         ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/postjournal
 
       Copy ${repoDir}/zm-vmware-appmonitor/build/dist/libexec/vmware-appmonitor                        ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/vmware-appmonitor
       Copy ${repoDir}/zm-vmware-appmonitor/build/dist/lib/libappmonitorlib.so                          ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/libappmonitorlib.so
