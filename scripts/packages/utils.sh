@@ -20,7 +20,7 @@ Cpy2()
 {
    if [ $# -ne 2 ]
    then
-      echo "Usage: Copy <file1> <dir>" 1>&2
+      echo "Usage: Cpy2 <file1> <dir>" 1>&2
       exit 1;
    fi
 

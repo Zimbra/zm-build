@@ -821,9 +821,6 @@ main()
 
    Copy ${repoDir}/zm-clientuploader-store/build/zm-clientuploader-store*.jar                       ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/com_zimbra_clientuploader/com_zimbra_clientuploader.jar
 
-   Copy ${repoDir}/zm-license-tools/build/zm-license-tools*.jar                                     ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext-common/zimbra-license-tools.jar
-   Copy ${repoDir}/zm-license-tools/src/bin/zmlicense                                               ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmlicense
-
    if [ "${buildType}" == "NETWORK" ]
    then
       Copy ${repoDir}/zm-backup-store/docs/backup.txt                                                  ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/backup.txt
@@ -849,6 +846,9 @@ main()
       Copy ${repoDir}/zm-convertd-native/conf/convertd.log4j.properties                                ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/convertd.log4j.properties
       Copy ${repoDir}/zm-convertd-native/src/bin/zmconvertctl                                          ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmconvertctl
       Copy ${repoDir}/zm-convertd-native/src/libexec/zmconvertdmod                                     ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmconvertdmod
+
+      Copy ${repoDir}/zm-license-tools/build/zm-license-tools*.jar                                     ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext-common/zimbra-license-tools.jar
+      Copy ${repoDir}/zm-license-tools/src/bin/zmlicense                                               ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmlicense
 
       Copy ${repoDir}/zm-network-build/rpmconf/Install/Util/modules/postinstall.sh                     ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/installer/util/modules/postinstall.sh
       Copy ${repoDir}/zm-network-build/rpmconf/Install/postinstall.pm                                  ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/postinstall.pm
