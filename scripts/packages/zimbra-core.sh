@@ -424,8 +424,6 @@ main()
 
    Copy ${repoDir}/zm-freshclam/freshclam.conf.in                                                   ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/freshclam.conf.in
 
-   Copy ${repoDir}/zm-hsm/docs/soap-admin.txt                                                       ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/hsm-soap-admin.txt
-
    Copy ${repoDir}/zm-jython/jylibs/commands.py                                                     ${repoDir}/zm-build/${currentPackage}/opt/zimbra/common/lib/jylibs/commands.py
    Copy ${repoDir}/zm-jython/jylibs/conf.py                                                         ${repoDir}/zm-build/${currentPackage}/opt/zimbra/common/lib/jylibs/conf.py
    Copy ${repoDir}/zm-jython/jylibs/config.py                                                       ${repoDir}/zm-build/${currentPackage}/opt/zimbra/common/lib/jylibs/config.py
@@ -846,6 +844,8 @@ main()
       Copy ${repoDir}/zm-convertd-native/conf/convertd.log4j.properties                                ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/convertd.log4j.properties
       Copy ${repoDir}/zm-convertd-native/src/bin/zmconvertctl                                          ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmconvertctl
       Copy ${repoDir}/zm-convertd-native/src/libexec/zmconvertdmod                                     ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmconvertdmod
+
+      Copy ${repoDir}/zm-hsm/docs/soap-admin.txt                                                       ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/hsm-soap-admin.txt
 
       Copy ${repoDir}/zm-license-tools/build/zm-license-tools*.jar                                     ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext-common/zimbra-license-tools.jar
       Copy ${repoDir}/zm-license-tools/src/bin/zmlicense                                               ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmlicense
