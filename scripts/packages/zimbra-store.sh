@@ -351,6 +351,7 @@ main()
     cp -f ${repoDir}/zm-jetty-conf/conf/jetty/spnego/etc/krb5.ini ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/etc/krb5.ini.in
     cp -f ${repoDir}/zm-jetty-conf/conf/jetty/modules/*.mod  ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/modules
     cp -f ${repoDir}/zm-jetty-conf/conf/jetty/modules/*.mod.in ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/modules
+    rm  ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/start.ini
     
     
     mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/start.d
