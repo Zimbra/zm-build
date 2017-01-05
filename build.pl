@@ -196,14 +196,15 @@ sub Build()
    for my $build_info (@GLOBAL_BUILDS)
    {
       ++$cnt;
+
       if ( my $dir = $build_info->{dir} )
       {
          print "=========================================================================================================\n";
-         print "\e[1;34m" . "BUILDING: $build_info->{dir} ($cnt of " . scalar(@GLOBAL_BUILDS) . ")\e[0m\n";
+         print "\e[1;34m" . "BUILDING: $dir ($cnt of " . scalar(@GLOBAL_BUILDS) . ")\e[0m\n";
          print "\n";
 
          unlink glob "$dir/.built.*"
-           if ( $ENV{ENV_FORCE_REBUILD} && grep { $build_info->{dir} =~ /$_/ } split( ",", $ENV{ENV_FORCE_REBUILD} ) );
+           if ( $ENV{ENV_FORCE_REBUILD} && grep { $dir =~ /$_/ } split( ",", $ENV{ENV_FORCE_REBUILD} ) );
 
          if ( $ENV{ENV_RESUME_FLAG} && -f "$dir/.built.$GLOBAL_BUILD_TS" )
          {
@@ -215,29 +216,38 @@ sub Build()
          {
             unlink glob "$dir/.built.*";
 
+            my $force_clean = 1
+              if ( !$ENV{ENV_SKIP_CLEAN_FLAG} || -f "$dir/.force-clean" );
+
             Run(
                cd   => $dir,
                call => sub {
 
                   my $abs_dir = Cwd::abs_path();
 
+                  eval {
+                     s/\/*$//
+                       for ( my $sane_dir = $dir );
+                     System("cd '$GLOBAL_BUILD_DIR' && rm -rf '$sane_dir'") if ( $force_clean && $sane_dir );
+                  };
+
                   if ( my $ant_targets = $build_info->{ant_targets} )
                   {
-                     eval { System( "ant", "clean" ) if ( !$ENV{ENV_SKIP_CLEAN_FLAG} ); };
+                     eval { System( "ant", "clean" ) if ($force_clean); };
 
                      System( "ant", @$ant_targets );
                   }
 
                   if ( my $mvn_targets = $build_info->{mvn_targets} )
                   {
-                     eval { System( "mvn", "clean" ) if ( !$ENV{ENV_SKIP_CLEAN_FLAG} ); };
+                     eval { System( "mvn", "clean" ) if ($force_clean); };
 
                      System( "mvn", @$mvn_targets );
                   }
 
-                  if ( my $make_targets = $build_info->{make} )
+                  if ( my $make_targets = $build_info->{make_targets} )
                   {
-                     eval { System( "make", "clean" ) if ( !$ENV{ENV_SKIP_CLEAN_FLAG} ); };
+                     eval { System( "make", "clean" ) if ($force_clean); };
 
                      System( "make", @$make_targets );
                   }
@@ -251,6 +261,8 @@ sub Build()
 
             if ( !exists $build_info->{partial} )
             {
+               eval { unlink("$dir/.force-clean"); };
+
                print "Creating $dir/.built.$GLOBAL_BUILD_TS\n";
                open( FD, "> $dir/.built.$GLOBAL_BUILD_TS" );
                close(FD);
@@ -399,6 +411,8 @@ sub Clone($)
          if ( $z !~ /Already up-to-date/ )
          {
             System( "find", $repo_name, "-name", ".built.*", "-exec", "rm", "-f", "{}", ";" );
+            open( FD, "> $repo_name/.force-clean" );
+            close(FD);
          }
       }
    }
