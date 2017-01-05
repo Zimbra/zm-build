@@ -53,9 +53,9 @@ CreatePackage()
     fi
 
     if [ $? -ne 0 ]; then
-            echo -e "\t### ${currentPackage} package building failed ###" >> ${buildLogFile}
+        echo -e "\t### ${currentPackage} package building failed ###" >> ${buildLogFile}
     else
-            echo -e "\t*** ${currentPackage} package successfully created ***" >> ${buildLogFile}
+        echo -e "\t*** ${currentPackage} package successfully created ***" >> ${buildLogFile}
     fi
 
 }
