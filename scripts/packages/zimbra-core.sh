@@ -424,8 +424,6 @@ main()
 
    Copy ${repoDir}/zm-freshclam/freshclam.conf.in                                                   ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/freshclam.conf.in
 
-   Copy ${repoDir}/zm-hsm/docs/soap-admin.txt                                                       ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/hsm-soap-admin.txt
-
    Copy ${repoDir}/zm-jython/jylibs/commands.py                                                     ${repoDir}/zm-build/${currentPackage}/opt/zimbra/common/lib/jylibs/commands.py
    Copy ${repoDir}/zm-jython/jylibs/conf.py                                                         ${repoDir}/zm-build/${currentPackage}/opt/zimbra/common/lib/jylibs/conf.py
    Copy ${repoDir}/zm-jython/jylibs/config.py                                                       ${repoDir}/zm-build/${currentPackage}/opt/zimbra/common/lib/jylibs/config.py
@@ -661,8 +659,6 @@ main()
 
    Copy ${repoDir}/zm-timezones/conf/timezones.ics                                                  ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/timezones.ics
 
-   Copy ${repoDir}/zm-twofactorauth-store/docs/twofactorauth.md                                     ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/twofactorauth.md
-
    Copy ${repoDir}/zm-windows-comp/ZimbraMigrationTools/ReadMe.txt                                  ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/zmztozmig.txt
    Copy ${repoDir}/junixsocket-native/build/junixsocket-native-2.0.4-amd64-Linux-gpp-jni.nar        ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/junixsocket-native-2.0.4-amd64-Linux-gpp-jni.nar
    Copy ${repoDir}/junixsocket-native/build/libjunixsocket-native-2.0.4.so                          ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/libjunixsocket-native-2.0.4.so
@@ -847,6 +843,8 @@ main()
       Copy ${repoDir}/zm-convertd-native/src/bin/zmconvertctl                                          ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmconvertctl
       Copy ${repoDir}/zm-convertd-native/src/libexec/zmconvertdmod                                     ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmconvertdmod
 
+      Copy ${repoDir}/zm-hsm/docs/soap-admin.txt                                                       ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/hsm-soap-admin.txt
+
       Copy ${repoDir}/zm-license-tools/build/zm-license-tools*.jar                                     ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext-common/zimbra-license-tools.jar
       Copy ${repoDir}/zm-license-tools/src/bin/zmlicense                                               ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmlicense
 
@@ -874,6 +872,8 @@ main()
       Copy ${repoDir}/zm-rebranding-docs/docs/rebranding/pt_BR_Rebranding_directions.txt               ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/rebranding/pt_BR_Rebranding_directions.txt
       Copy ${repoDir}/zm-rebranding-docs/docs/rebranding/zh_CN_Rebranding_directions.txt               ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/rebranding/zh_CN_Rebranding_directions.txt
       Copy ${repoDir}/zm-rebranding-docs/docs/rebranding/zh_HK_Rebranding_directions.txt               ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/rebranding/zh_HK_Rebranding_directions.txt
+
+      Copy ${repoDir}/zm-twofactorauth-store/docs/twofactorauth.md                                     ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/twofactorauth.md
 
       Copy ${repoDir}/zm-vmware-appmonitor/build/dist/libexec/vmware-appmonitor                        ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/vmware-appmonitor
       Copy ${repoDir}/zm-vmware-appmonitor/build/dist/lib/libappmonitorlib.so                          ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/libappmonitorlib.so

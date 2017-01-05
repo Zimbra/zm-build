@@ -1,7 +1,6 @@
 @GLOBAL_BUILDS = (
    {
       "dir"         => "junixsocket/junixsocket-native",
-      "ant_targets" => undef,
       "mvn_targets" => ["package"],
       "stage_cmd"   => sub {
          System("mkdir -p $GLOBAL_BUILD_DIR/junixsocket-native/build");
@@ -729,7 +728,7 @@
    },
    {
       "dir"         => "zm-zcs-lib",
-      "ant_targets" => [ "clean", "dist" ],
+      "ant_targets" => [ "dist" ],
       "stage_cmd"   => sub {
          System("(cd .. && rsync -az --relative zm-zcs-lib $GLOBAL_BUILD_DIR/)");
       },
@@ -757,15 +756,15 @@
    },
    {
       "dir"       => "zm-libnative",
+      "make_targets" => [],
       "stage_cmd" => sub {
-         System("make -f Makefile");
          System("mkdir -p $GLOBAL_BUILD_DIR/zm-libnative/build/dist");
          System("cp -f build/*.so $GLOBAL_BUILD_DIR/zm-libnative/build/dist");
       },
    },
    {
       "dir"       => "zm-launcher",
-      "make"      => ["JAVA_BINARY=/opt/zimbra/common/bin/java"],
+      "make_targets" => ["JAVA_BINARY=/opt/zimbra/common/bin/java"],
       "stage_cmd" => sub {
          System("mkdir -p $GLOBAL_BUILD_DIR/zm-launcher/build/dist");
          System("cp -f build/zmmailboxd* $GLOBAL_BUILD_DIR/zm-launcher/build/dist");
@@ -794,16 +793,15 @@
    },
    {
       "dir"         => "zm-vmware-appmonitor",
-      "ant_targets" => [ "clean", "dist" ],,
+      "ant_targets" => [ "dist" ],,
       "stage_cmd"   => sub {
          System("(cd .. && rsync -az --relative zm-vmware-appmonitor/build/dist $GLOBAL_BUILD_DIR/)");
       },
    },
    {
       "dir"         => "zm-postfixjournal",
-      "ant_targets" => undef,
+      "make_targets" => [],
       "stage_cmd"   => sub {
-         System("make -f Makefile");
          System("mkdir -p $GLOBAL_BUILD_DIR/zm-postfixjournal/build/dist");
          System("cp -f src/postjournal $GLOBAL_BUILD_DIR/zm-postfixjournal/build/dist");
       },

@@ -40,10 +40,10 @@ main()
     cp ${repoDir}/zm-build/rpmconf/Env/sudoers.d/02_${currentScript} ${repoDir}/zm-build/${currentPackage}/etc/sudoers.d/02_${currentScript}
 
     echo -e "\tCopy bin files of /opt/zimbra/" >> ${buildLogFile}
-    cp -f ${repoDir}/zm-hsm/src/bin/zmhsm ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmhsm
 
     if [ "${buildType}" == "NETWORK" ]
     then
+       cp -f ${repoDir}/zm-hsm/src/bin/zmhsm ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmhsm
        cp -f ${repoDir}/zm-archive-utils/src/bin/zmarchiveconfig ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmarchiveconfig
        cp -f ${repoDir}/zm-archive-utils/src/bin/zmarchivesearch ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmarchivesearch
        cp -f ${repoDir}/zm-sync-tools/src/bin/zmsyncreverseproxy ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmsyncreverseproxy
@@ -134,14 +134,22 @@ main()
 
     cp -rf ${repoDir}/zm-convertd-store/build/dist/*jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/convertd
     cp -f ${repoDir}/zm-clam-scanner-store/build/dist/zm-clam-scanner-store*.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/clamscanner
-    cp -f ${repoDir}/zm-twofactorauth-store/build/dist/zm-twofactorauth-store*.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/twofactorauth
+
+    if [ "${buildType}" == "NETWORK" ]
+    then
+      cp -f ${repoDir}/zm-twofactorauth-store/build/dist/zm-twofactorauth-store*.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/twofactorauth
+    fi
+
     cp -f ${repoDir}/zm-nginx-lookup-store/build/dist/zm-nginx-lookup-store*.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/nginx-lookup
     cp -f ${repoDir}/zm-openid-consumer-store/build/dist/guice*.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/openidconsumer/
     cp -f ${repoDir}/zm-license-store/build/dist/zm-license-store*.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/zimbra-license/
  
     cp -f ${repoDir}/zm-freebusy-provider-store/build/zimbra-freebusyprovider.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/zimbra-freebusy/zimbra-freebusyprovider.jar
     cp -f ${repoDir}/zm-versioncheck-store/build/zm-versioncheck-store*.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/zimbraadminversioncheck/zimbraadminversioncheck.jar
-    cp -f ${repoDir}/zm-hsm-store/build/zimbrahsm.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/zimbrahsm/zimbrahsm.jar
+    if [ "${buildType}" == "NETWORK" ]
+    then
+       cp -f ${repoDir}/zm-hsm-store/build/zimbrahsm.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/zimbrahsm/zimbrahsm.jar
+    fi
     cp -f ${repoDir}/zm-ldap-utils-store/build/zm-ldap-utils-*.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/zimbraldaputils/zimbraldaputils.jar
 
 
@@ -269,22 +277,25 @@ main()
 
     cp -f ${repoDir}/zm-zimlets/build/dist/zimlets/*.zip ${repoDir}/zm-build/${currentPackage}/opt/zimbra/zimlets
 
-    echo -e "\tCopy zimlets-network files of /opt/zimbra/" >> ${buildLogFile}
-    mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/zimlets-network
-    adminZimlets=( "zm-license-admin-zimlet" \
-                   "zm-backup-restore-admin-zimlet" \
-                   "zm-convertd-admin-zimlet" \
-                   "zm-delegated-admin-zimlet" \
-                   "zm-hsm-admin-zimlet" \
-                   "zm-smime-applet" \
-                   "zm-smime-cert-admin-zimlet" \
-                   "zm-2fa-admin-zimlet" \
-                   "zm-ucconfig-admin-zimlet" \
-                   "zm-mobile-sync-admin-zimlet" )
-    for i in "${adminZimlets[@]}"
-    do
-        cp ${repoDir}/${i}/build/zimlet/*.zip ${repoDir}/zm-build/${currentPackage}/opt/zimbra/zimlets-network
-    done
+    if [ "${buildType}" == "NETWORK" ]
+    then
+      echo -e "\tCopy zimlets-network files of /opt/zimbra/" >> ${buildLogFile}
+      mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/zimlets-network
+      adminZimlets=( "zm-license-admin-zimlet" \
+                     "zm-backup-restore-admin-zimlet" \
+                     "zm-convertd-admin-zimlet" \
+                     "zm-delegated-admin-zimlet" \
+                     "zm-hsm-admin-zimlet" \
+                     "zm-smime-applet" \
+                     "zm-smime-cert-admin-zimlet" \
+                     "zm-2fa-admin-zimlet" \
+                     "zm-ucconfig-admin-zimlet" \
+                     "zm-mobile-sync-admin-zimlet" )
+      for i in "${adminZimlets[@]}"
+      do
+         cp ${repoDir}/${i}/build/zimlet/*.zip ${repoDir}/zm-build/${currentPackage}/opt/zimbra/zimlets-network
+      done
+    fi
 
     adminUcZimlets=( "cisco" "mitel" "voiceprefs" )
     for i in "${adminUcZimlets[@]}"
