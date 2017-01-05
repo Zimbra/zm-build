@@ -644,10 +644,10 @@
       },
    },
    {
-      "dir"         => "zm-windows-comp",
+      "dir"         => "zm-migration-tools",
       "ant_targets" => undef,
       "stage_cmd"   => sub {
-         System("cp -f -r ../zm-windows-comp $GLOBAL_BUILD_DIR");
+         System("cp -f -r ../zm-migration-tools $GLOBAL_BUILD_DIR");
       },
    },
    {

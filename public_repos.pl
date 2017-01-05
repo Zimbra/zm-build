@@ -39,6 +39,7 @@
    { name => "zm-licenses",                         branch => "master",          user => "zimbra" },
    { name => "zm-milter",                           branch => "dev",             user => "zimbra" },
    { name => "zm-mta",                              branch => "master",          user => "zimbra" },
+   { name => "zm-migration-tools",                  branch => "dev",             user => "zimbra" },
    { name => "zm-native",                           branch => "master",          user => "zimbra" },
    { name => "zm-nginx-conf",                       branch => "master",          user => "zimbra" },
    { name => "zm-nginx-lookup-store",               branch => "master",          user => "zimbra" },
