@@ -35,8 +35,14 @@ main()
     cp ${repoDir}/zm-convertd-store/conf/httpd.conf ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/httpd.conf
     cp ${repoDir}/zm-aspell/conf/php.ini ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/php.ini
 
-    CreateDebianPackage
+    CreatePackage "${os}"
 }
+
+#-------------------- Util Functions ---------------------------
+
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+
+source "$SCRIPT_DIR/utils.sh"
 
 CreateDebianPackage()
 {
@@ -48,11 +54,20 @@ CreateDebianPackage()
         > ${repoDir}/zm-build/${currentPackage}/DEBIAN/control
     (cd ${repoDir}/zm-build/${currentPackage}; dpkg -b ${repoDir}/zm-build/${currentPackage} ${repoDir}/zm-build/${arch})
 
-    if [ $? -ne 0 ]; then
-        echo -e "\t### ${currentPackage} package building failed ###" >> ${buildLogFile}
-    else
-        echo -e "\t*** ${currentPackage} package successfully created ***" >> ${buildLogFile}
-    fi
+}
+
+CreateRhelPackage()
+{
+  cat ${repoDir}/zm-build/rpmconf/Spec/${currentScript}.spec | \
+  sed -e "s/@@VERSION@@/${release}.${buildNo}.${os} /" \
+      -e "s/@@RELEASE@@/${buildTimeStamp}/" \
+      -e "s/^Copyright:/Copyright:/" > ${repoDir}/zm-build/${currentScript}.spec
+  echo "%attr(755, zimbra, zimbra) /opt/zimbra/conf" >> ${repoDir}/zm-build/${currentScript}.spec
+  echo "%attr(644, zimbra, zimbra) /opt/zimbra/conf/*" >> ${repoDir}/zm-build/${currentScript}.spec
+  echo "" >> ${repoDir}/zm-build/${currentScript}.spec
+  echo "%clean" >> ${repoDir}/zm-build/${currentScript}.spec
+  (cd ${repoDir}/zm-build/${currentPackage}; \
+  rpmbuild --target ${arch} --define '_rpmdir ../' --buildroot=${repoDir}/zm-build/${currentPackage} -bb ${repoDir}/zm-build/${currentScript}.spec )
 }
 
 ############################################################################

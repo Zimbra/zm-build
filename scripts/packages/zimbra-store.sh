@@ -385,8 +385,14 @@ main()
         -e '/REDIRECTEND/ s/^/%%comment VAR:zimbraMailMode,<!--,redirect%% /' \
         > ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/etc/zimbraAdmin.web.xml.in
 
-    CreateDebianPackage
+    CreatePackage "${os}"
 }
+
+#-------------------- Util Functions ---------------------------
+
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+
+source "$SCRIPT_DIR/utils.sh"
 
 CreateDebianPackage()
 {
@@ -407,12 +413,100 @@ CreateDebianPackage()
         > ${repoDir}/zm-build/${currentPackage}/DEBIAN/control
     (cd ${repoDir}/zm-build/${currentPackage}; dpkg -b ${repoDir}/zm-build/${currentPackage} ${repoDir}/zm-build/${arch})
 
-    if [ $? -ne 0 ]; then
-        echo -e "\t### ${currentPackage} package building failed ###" >> ${buildLogFile}
-    else
-        echo -e "\t*** ${currentPackage} package successfully created ***" >> ${buildLogFile}
-    fi
 }
 
+CreateRhelPackage()
+{
+    cp ${repoDir}/zm-network-build/rpmconf/Spec/Scripts/${currentScript}.pre ${repoDir}/zm-build/
+    cp ${repoDir}/zm-network-build/rpmconf/Spec/Scripts/${currentScript}.post ${repoDir}/zm-build/
+    cat ${repoDir}/zm-build/rpmconf/Spec/${currentScript}.spec | \
+    	sed -e "s/@@VERSION@@/${release}.${buildNo}.${os}/" \
+            	-e "s/@@RELEASE@@/${buildTimeStamp}/" \
+            	-e "s/^Copyright:/Copyright:/" \
+            	-e "/^%pre$/ r ${currentScript}.pre" \
+            	-e "/^%post$/ r ${currentScript}.post" > ${repoDir}/zm-build/${currentScript}.spec
+    rm -f ${repoDir}/zm-build/${currentScript}.post
+    rm -f ${repoDir}/zm-build/${currentScript}.pre
+    echo "%attr(-, root, root) /opt/zimbra/lib" >> \
+    	${repoDir}/zm-build/${currentScript}.spec
+    echo "%attr(440, root, root) /etc/sudoers.d/02_zimbra-store" >> \
+    	${repoDir}/zm-build/${currentScript}.spec
+    echo "%attr(755, zimbra, zimbra) /opt/zimbra/conf" >> \
+    	${repoDir}/zm-build/${currentScript}.spec
+    echo "%attr(644, zimbra, zimbra) /opt/zimbra/conf/*" >> \
+    	${repoDir}/zm-build/${currentScript}.spec
+    echo "%attr(755, zimbra, zimbra) /opt/zimbra/conf/templates" >> \
+    	${repoDir}/zm-build/${currentScript}.spec
+    echo "%attr(755, zimbra, zimbra) /opt/zimbra/conf/templates/templates" >> \
+    	${repoDir}/zm-build/${currentScript}.spec
+    echo "%attr(755, zimbra, zimbra) /opt/zimbra/conf/templates/templates/abook" >> \
+    	${repoDir}/zm-build/${currentScript}.spec
+    echo "%attr(644, zimbra, zimbra) /opt/zimbra/conf/templates/templates/abook/*" >> \
+    	${repoDir}/zm-build/${currentScript}.spec
+    echo "%attr(755, zimbra, zimbra) /opt/zimbra/conf/templates/templates/admin" >> \
+    	${repoDir}/zm-build/${currentScript}.spec
+    echo "%attr(644, zimbra, zimbra) /opt/zimbra/conf/templates/templates/admin/*" >> \
+    	${repoDir}/zm-build/${currentScript}.spec
+    echo "%attr(755, zimbra, zimbra) /opt/zimbra/conf/templates/templates/briefcase" >> \
+    	${repoDir}/zm-build/${currentScript}.spec
+    echo "%attr(644, zimbra, zimbra) /opt/zimbra/conf/templates/templates/briefcase/*" >> \
+    	${repoDir}/zm-build/${currentScript}.spec
+    echo "%attr(755, zimbra, zimbra) /opt/zimbra/conf/templates/templates/calendar" >> \
+    	${repoDir}/zm-build/${currentScript}.spec
+    echo "%attr(644, zimbra, zimbra) /opt/zimbra/conf/templates/templates/calendar/*" >> \
+    	${repoDir}/zm-build/${currentScript}.spec
+    echo "%attr(755, zimbra, zimbra) /opt/zimbra/conf/templates/templates/data" >> \
+    	${repoDir}/zm-build/${currentScript}.spec
+    echo "%attr(644, zimbra, zimbra) /opt/zimbra/conf/templates/templates/data/*" >> \
+    	${repoDir}/zm-build/${currentScript}.spec
+    echo "%attr(755, zimbra, zimbra) /opt/zimbra/conf/templates/templates/dwt" >> \
+    	${repoDir}/zm-build/${currentScript}.spec
+    echo "%attr(644, zimbra, zimbra) /opt/zimbra/conf/templates/templates/dwt/*" >> \
+    	${repoDir}/zm-build/${currentScript}.spec
+    echo "%attr(755, zimbra, zimbra) /opt/zimbra/conf/templates/templates/mail" >> \
+    	${repoDir}/zm-build/${currentScript}.spec
+    echo "%attr(644, zimbra, zimbra) /opt/zimbra/conf/templates/templates/mail/*" >> \
+    	${repoDir}/zm-build/${currentScript}.spec
+    echo "%attr(755, zimbra, zimbra) /opt/zimbra/conf/templates/templates/prefs" >> \
+    	${repoDir}/zm-build/${currentScript}.spec
+    echo "%attr(644, zimbra, zimbra) /opt/zimbra/conf/templates/templates/prefs/*" >> \
+    	${repoDir}/zm-build/${currentScript}.spec
+    echo "%attr(755, zimbra, zimbra) /opt/zimbra/conf/templates/templates/share" >> \
+    	${repoDir}/zm-build/${currentScript}.spec
+    echo "%attr(644, zimbra, zimbra) /opt/zimbra/conf/templates/templates/share/*" >> \
+    	${repoDir}/zm-build/${currentScript}.spec
+    echo "%attr(755, zimbra, zimbra) /opt/zimbra/conf/templates/templates/tasks" >> \
+    	${repoDir}/zm-build/${currentScript}.spec
+    echo "%attr(644, zimbra, zimbra) /opt/zimbra/conf/templates/templates/tasks/*" >> \
+    	${repoDir}/zm-build/${currentScript}.spec
+    echo "%attr(755, zimbra, zimbra) /opt/zimbra/conf/templates/templates/voicemail" >> \
+    	${repoDir}/zm-build/${currentScript}.spec
+    echo "%attr(644, zimbra, zimbra) /opt/zimbra/conf/templates/templates/voicemail/*" >> \
+    	${repoDir}/zm-build/${currentScript}.spec
+    echo "%attr(755, zimbra, zimbra) /opt/zimbra/conf/templates/templates/zimbra" >> \
+    	${repoDir}/zm-build/${currentScript}.spec
+    echo "%attr(644, zimbra, zimbra) /opt/zimbra/conf/templates/templates/zimbra/*" >> \
+    	${repoDir}/zm-build/${currentScript}.spec
+    echo "%attr(-, zimbra, zimbra) /opt/zimbra/log" >> \
+    	${repoDir}/zm-build/${currentScript}.spec
+    echo "%attr(-, zimbra, zimbra) /opt/zimbra/zimlets" >> \
+    	${repoDir}/zm-build/${currentScript}.spec
+    echo "%attr(-, zimbra, zimbra) /opt/zimbra/zimlets-network" >> \
+    	${repoDir}/zm-build/${currentScript}.spec
+    echo "%attr(-, zimbra, zimbra) /opt/zimbra/extensions-extra" >> \
+    	${repoDir}/zm-build/${currentScript}.spec
+    echo "%attr(-, zimbra, zimbra) /opt/zimbra/extensions-network-extra" >> \
+    	${repoDir}/zm-build/${currentScript}.spec
+    echo "%attr(755, root, root) /opt/zimbra/bin" >> \
+    	${repoDir}/zm-build/${currentScript}.spec
+    echo "%attr(755, root, root) /opt/zimbra/libexec" >> \
+    	${repoDir}/zm-build/${currentScript}.spec
+    echo "%attr(-, zimbra, zimbra) /opt/zimbra/jetty-distribution-9.3.5.v20151012" >> \
+    	${repoDir}/zm-build/${currentScript}.spec
+    echo "" >> ${repoDir}/zm-build/${currentScript}.spec
+    echo "%clean" >> ${repoDir}/zm-build/${currentScript}.spec
+    (cd ${repoDir}/zm-build/${currentPackage}; \
+    rpmbuild --target ${arch} --define '_rpmdir ../' --buildroot=${repoDir}/zm-build/${currentPackage} -bb ${repoDir}/zm-build/${currentScript}.spec )
+}
 ############################################################################
 main "$@"

@@ -30,9 +30,14 @@ main()
     echo -e "\tCreate package directories..." >> ${buildLogFile}
     mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/logger/db/data
 
-
-    CreateDebianPackage
+    CreatePackage "${os}"
 }
+
+#-------------------- Util Functions ---------------------------
+
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+
+source "$SCRIPT_DIR/utils.sh"
 
 CreateDebianPackage()
 {
@@ -46,11 +51,27 @@ CreateDebianPackage()
         > ${repoDir}/zm-build/${currentPackage}/DEBIAN/control
     (cd ${repoDir}/zm-build/${currentPackage}; dpkg -b ${repoDir}/zm-build/${currentPackage} ${repoDir}/zm-build/${arch})
 
-    if [ $? -ne 0 ]; then
-        echo -e "\t### ${currentPackage} package building failed ###" >> ${buildLogFile}
-    else
-        echo -e "\t*** ${currentPackage} package successfully created ***" >> ${buildLogFile}
-    fi
+}
+
+CreateRhelPackage()
+{
+    cp ${repoDir}/zm-build/rpmconf/Spec/Scripts/${currentScript}.post ${repoDir}/zm-build/
+    cat ${repoDir}/zm-build/rpmconf/Spec/${currentScript}.spec | \
+    	sed -e "s/@@VERSION@@/${release}.${buildNo}.${os}/" \
+            	-e "s/@@RELEASE@@/${buildTimeStamp}/" \
+            	-e "s/^Copyright:/Copyright:/" \
+            	-e "/^%post$/ r ${currentScript}.post" > ${repoDir}/zm-build/${currentScript}.spec
+    rm -f ${repoDir}/zm-build/${currentScript}.post
+    echo "%attr(755, zimbra, zimbra) /opt/zimbra/logger" >> \
+    	${repoDir}/zm-build/${currentScript}.spec
+    echo "%attr(755, zimbra, zimbra) /opt/zimbra/logger/db" >> \
+    	${repoDir}/zm-build/${currentScript}.spec
+    echo "%attr(755, zimbra, zimbra) /opt/zimbra/logger/db/data" >> \
+    	${repoDir}/zm-build/${currentScript}.spec
+    echo "" >> ${repoDir}/zm-build/${currentScript}.spec
+    echo "%clean" >> ${repoDir}/zm-build/${currentScript}.spec
+    (cd ${repoDir}/zm-build/${currentPackage}; \
+    	rpmbuild --target ${arch} --define '_rpmdir ../' --buildroot=${repoDir}/zm-build/${currentPackage} -bb ${repoDir}/zm-build/${currentScript}.spec )
 }
 
 ############################################################################
