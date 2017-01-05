@@ -355,7 +355,6 @@ main()
     
     
     mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/start.d
-    mkdir -p ${repoDir}/zm-build/${currentPackage}/webappbuild
 
     
     cp -f ${repoDir}/zm-jetty-conf/conf/jetty/start.d/*.ini.in   ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/start.d
@@ -364,15 +363,13 @@ main()
     cp -f ${repoDir}/zm-web-client/WebRoot/WEB-INF/jetty-env.xml ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/etc/zimbra-jetty-env.xml.in
     cp -f ${repoDir}/zm-web-client/WebRoot/WEB-INF/jetty-env.xml ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/etc/zimbraAdmin-jetty-env.xml.in
     cp -f ${repoDir}/zm-zimlets/conf/web.xml.production ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/etc/zimlet.web.xml.in
+
     
-    cp -f ${repoDir}/zm-admin-console/build/dist/zimbraAdmin.war ${repoDir}/zm-build/${currentPackage}/webappbuild
-    cd ${repoDir}/zm-build/${currentPackage}/webappbuild; jar xf  ${repoDir}/zm-build/${currentPackage}/webappbuild/zimbraAdmin.war;
-    
-    cat ${repoDir}/zm-web-client/WebRoot/WEB-INF/web.xml | \
+    cat  ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/webapps/zimbra/WEB-INF/web.xml | \
         sed -e '/REDIRECTBEGIN/ s/$/ %%comment VAR:zimbraMailMode,-->,redirect%%/' \
         -e '/REDIRECTEND/ s/^/%%comment VAR:zimbraMailMode,<!--,redirect%% /' \
         > ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/etc/zimbra.web.xml.in
-    cat ${repoDir}/zm-build/${currentPackage}/webappbuild/zimbraAdmin/WEB-INF/web.xml |\
+    cat  ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/webapps/zimbraAdmin/WEB-INF/web.xml | \
         sed -e '/REDIRECTBEGIN/ s/$/ %%comment VAR:zimbraMailMode,-->,redirect%%/' \
         -e '/REDIRECTEND/ s/^/%%comment VAR:zimbraMailMode,<!--,redirect%% /' \
         > ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/etc/zimbraAdmin.web.xml.in
