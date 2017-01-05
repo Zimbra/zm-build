@@ -49,6 +49,7 @@ CreatePackage()
         CreateRhelPackage
     else
         echo "OS not supported. Run using UBUNTU or RHEL system. "
+        exit 1
     fi
 
     if [ $? -ne 0 ]; then
