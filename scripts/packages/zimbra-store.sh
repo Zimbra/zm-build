@@ -58,12 +58,13 @@ main()
     cp -f ${repoDir}/zm-store-conf/conf/globs2.zimbra ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf
     cp -f ${repoDir}/zm-store-conf/conf/spnego_java_options.in ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf
     cp -f ${repoDir}/zm-store-conf/conf/contacts/zimbra-contact-fields.xml ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/zimbra-contact-fields.xml
-    cp -f ${repoDir}/zm-windows-comp/ZimbraMigrationTools/zmztozmig.conf ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/zmztozmig.conf
 
     if [ "${buildType}" == "NETWORK" ]
     then
        cp -f ${repoDir}/zm-ews-store/resources/jaxb-bindings.xml ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf
     fi
+
+    cp -f ${repoDir}/zm-migration-tools/zmztozmig.conf ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/zmztozmig.conf
     cp -rf ${repoDir}/zm-web-client/WebRoot/templates/ ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/templates
 
     echo -e "\tCopy extensions-extra files of /op/zimbra/" >> ${buildLogFile}
@@ -249,12 +250,13 @@ main()
     echo -e "\t\tCopy jars files of /opt/zimbra/lib/" >> ${buildLogFile}
     mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/jars
     cp -f ${repoDir}/zm-milter/build/dist/zm-milter*.jar  ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/jars/
-    cp -f ${repoDir}/zm-windows-comp/ZimbraMigrationTools/jars/zmzimbratozimbramig.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/jars/zmzimbratozimbramig.jar
 
     echo -e "\tCopy libexec files of /opt/zimbra/" >> ${buildLogFile}
     mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec
-    cp -f ${repoDir}/zm-windows-comp/ZimbraMigrationTools/src/libexec/zmztozmig ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec
-    cp -f ${repoDir}/zm-windows-comp/ZimbraMigrationTools/src/libexec/zmcleaniplanetics ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec
+
+    cp -f ${repoDir}/zm-migration-tools/jars/zmzimbratozimbramig.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/jars/zmzimbratozimbramig.jar
+    cp -f ${repoDir}/zm-migration-tools/src/libexec/zmztozmig ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec
+    cp -f ${repoDir}/zm-migration-tools/src/libexec/zmcleaniplanetics ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec
     cp -f ${repoDir}/zm-versioncheck-utilities/src/libexec/zmcheckversion ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec
 
     echo -e "\tCopy log files of /opt/zimbra/" >> ${buildLogFile}

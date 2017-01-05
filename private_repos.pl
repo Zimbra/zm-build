@@ -37,5 +37,4 @@
    { name => "zm-voice-cisco-store",                branch => "dev",             user => "zimbra" },
    { name => "zm-voice-mitel-store",                branch => "dev",             user => "zimbra" },
    { name => "zm-voice-store",                      branch => "dev",             user => "zimbra" },
-   { name => "zm-windows-comp",                     branch => "dev",             user => "zimbra" },
 );
