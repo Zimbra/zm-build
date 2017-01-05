@@ -57,7 +57,7 @@
    },
    {
       "dir"         => "zm-license-tools",
-      "ant_targets" => [ "jar", "publish-local" "-Dis-production=true"],
+      "ant_targets" => [ "jar", "publish-local", "-Dis-production=true"],
       "stage_cmd"   => sub {
          System("mkdir -p $GLOBAL_BUILD_DIR/zm-license-tools");
          System("(cd .. && rsync -az --relative zm-license-tools/src/bin $GLOBAL_BUILD_DIR/)");
