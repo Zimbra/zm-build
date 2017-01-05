@@ -68,11 +68,88 @@ CreateDebianPackage()
       dpkg -b ${repoDir}/zm-build/${currentPackage} ${repoDir}/zm-build/${arch}
    )
 
-   if [ $? -ne 0 ]; then
-       echo -e "\t### ${currentPackage} package building failed ###" >> ${buildLogFile}
-   else
-       echo -e "\t*** ${currentPackage} package successfully created ***" >> ${buildLogFile}
-   fi
+}
+
+CreateRhelPackage()
+{
+    cp ${repoDir}/zm-build/rpmconf/Spec/Scripts/${currentScript}.pre ${repoDir}/zm-build/
+        cp ${repoDir}/zm-build/rpmconf/Spec/Scripts/${currentScript}.post ${repoDir}/zm-build/
+    cat ${repoDir}/zm-build/rpmconf/Spec/${currentScript}.spec | \
+    	sed -e "s/@@VERSION@@/${release}.${buildNo}.${os}/" \
+            	-e "s/@@RELEASE@@/${buildTimeStamp}/" \
+            	-e "s/^Copyright:/Copyright:/" \
+            	-e "/^%pre$/ r ${currentScript}.pre" \
+            	-e "/Best email money can buy/ a Network edition" \
+            	-e "/^%post$/ r ${currentScript}.post" > ${repoDir}/zm-build/${currentScript}.spec
+    rm -f ${repoDir}/zm-build/${currentScript}.post
+    rm -f ${repoDir}/zm-build/${currentScript}.pre
+    (cd ${repoDir}/zm-build/corebuild; find opt -maxdepth 2 -type f -o -type l \
+    	| sed -e 's|^|%attr(-, zimbra, zimbra) /|' >> \
+    	${repoDir}/zm-build/${currentScript}.spec )
+    echo "%attr(440, root, root) /etc/sudoers.d/01_zimbra" >> \
+    	${repoDir}/zm-build/${currentScript}.spec
+    echo "%attr(440, root, root) /etc/sudoers.d/02_zimbra-core" >> \
+    	${repoDir}/zm-build/${currentScript}.spec
+    echo "%attr(755, root, root) /opt/zimbra/bin" >> \
+    	${repoDir}/zm-build/${currentScript}.spec
+    echo "%attr(755, zimbra, zimbra) /opt/zimbra/docs" >> \
+    	${repoDir}/zm-build/${currentScript}.spec
+    echo "%attr(444, zimbra, zimbra) /opt/zimbra/docs/*" >> \
+    	${repoDir}/zm-build/${currentScript}.spec
+    echo "%attr(755, zimbra, zimbra) /opt/zimbra/docs/rebranding" >> \
+    	${repoDir}/zm-build/${currentScript}.spec
+    echo "%attr(444, zimbra, zimbra) /opt/zimbra/docs/rebranding/*" >> \
+    	${repoDir}/zm-build/${currentScript}.spec
+    echo "%attr(755, root, root) /opt/zimbra/contrib" >> \
+    	${repoDir}/zm-build/${currentScript}.spec
+    echo "%attr(755, root, root) /opt/zimbra/libexec" >> \
+    	${repoDir}/zm-build/${currentScript}.spec
+    echo "%attr(755, zimbra, zimbra) /opt/zimbra/logger" >> \
+    	${repoDir}/zm-build/${currentScript}.spec
+    echo "%attr(755, zimbra, zimbra) /opt/zimbra/conf" >> \
+    	${repoDir}/zm-build/${currentScript}.spec
+    echo "%attr(644, zimbra, zimbra) /opt/zimbra/conf/*" >> \
+    	${repoDir}/zm-build/${currentScript}.spec
+    echo "%attr(755, zimbra, zimbra) /opt/zimbra/conf/attrs" >> \
+    	${repoDir}/zm-build/${currentScript}.spec
+    echo "%attr(644, zimbra, zimbra) /opt/zimbra/conf/attrs/*" >> \
+    	${repoDir}/zm-build/${currentScript}.spec
+    echo "%attr(755, zimbra, zimbra) /opt/zimbra/conf/externaldirsync" >> \
+    	${repoDir}/zm-build/${currentScript}.spec
+    echo "%attr(644, zimbra, zimbra) /opt/zimbra/conf/externaldirsync/*" >> \
+    	${repoDir}/zm-build/${currentScript}.spec
+    echo "%attr(755, zimbra, zimbra) /opt/zimbra/conf/msgs" >> \
+    	${repoDir}/zm-build/${currentScript}.spec
+    echo "%attr(644, zimbra, zimbra) /opt/zimbra/conf/msgs/*" >> \
+    	${repoDir}/zm-build/${currentScript}.spec
+    echo "%attr(755, zimbra, zimbra) /opt/zimbra/conf/rights" >> \
+    	${repoDir}/zm-build/${currentScript}.spec
+    echo "%attr(644, zimbra, zimbra) /opt/zimbra/conf/rights/*" >> \
+    	${repoDir}/zm-build/${currentScript}.spec
+    echo "%attr(755, zimbra, zimbra) /opt/zimbra/conf/sasl2" >> \
+    	${repoDir}/zm-build/${currentScript}.spec
+    echo "%attr(644, zimbra, zimbra) /opt/zimbra/conf/sasl2/*" >> \
+    	${repoDir}/zm-build/${currentScript}.spec
+    echo "%attr(755, zimbra, zimbra) /opt/zimbra/conf/zmconfigd" >> \
+    	${repoDir}/zm-build/${currentScript}.spec
+    echo "%attr(644, zimbra, zimbra) /opt/zimbra/conf/zmconfigd/*" >> \
+    	${repoDir}/zm-build/${currentScript}.spec
+    echo "%attr(-, zimbra, zimbra) /opt/zimbra/db" >> \
+    	${repoDir}/zm-build/${currentScript}.spec
+    echo "%attr(-, root, root) /opt/zimbra/lib" >> \
+    	${repoDir}/zm-build/${currentScript}.spec
+    echo "%attr(-, zimbra, zimbra) /opt/zimbra/conf/crontabs" >> \
+    	${repoDir}/zm-build/${currentScript}.spec
+    echo "%attr(-, root, root) /opt/zimbra/common/lib/jylibs" >> \
+    	${repoDir}/zm-build/${currentScript}.spec
+    echo "%attr(-, root, root) /opt/zimbra/common/lib/perl5/Zimbra" >> \
+    	${repoDir}/zm-build/${currentScript}.spec
+    echo "%attr(755, zimbra, zimbra) /opt/zimbra/logger/db/work" >> \
+    	${repoDir}/zm-build/${currentScript}.spec
+    echo "" >> ${repoDir}/zm-build/${currentScript}.spec
+    echo "%clean" >> ${repoDir}/zm-build/${currentScript}.spec
+    (cd ${repoDir}/zm-build/${currentPackage}; \
+    	rpmbuild --target ${arch} --define '_rpmdir ../' --buildroot=${repoDir}/zm-build/${currentPackage} -bb ${repoDir}/zm-build/${currentScript}.spec )
 }
 
 #-------------------- main packaging ---------------------------
@@ -883,7 +960,7 @@ main()
       Copy ${repoDir}/zm-voice-store/docs/soap-voice.txt                                               ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/soap-voice.txt
    fi
 
-   CreateDebianPackage
+   CreatePackage "${os}"
 }
 
 ############################################################################

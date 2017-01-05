@@ -45,8 +45,14 @@ main()
     cp ${repoDir}/zm-postfix/conf/postfix/tag_as_originating.re.in ${repoDir}/zm-build/${currentPackage}/opt/zimbra/common/conf/tag_as_originating.re.in
     cp -f ${repoDir}/zm-amavis/conf/amavisd/mysql/antispamdb.sql ${repoDir}/zm-build/${currentPackage}/opt/zimbra/data/amavisd/mysql/antispamdb.sql
 
-    CreateDebianPackage
+    CreatePackage "${os}"
 }
+
+#-------------------- Util Functions ---------------------------
+
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+
+source "$SCRIPT_DIR/utils.sh"
 
 CreateDebianPackage()
 {
@@ -61,11 +67,39 @@ CreateDebianPackage()
         -e "s/@@ARCH@@/${arch}/" -e "s/@@ARCH@@/amd64/" -e "s/^Copyright:/Copyright:/" -e "/^%post$/ r ${currentScript}.post" > ${repoDir}/zm-build/${currentPackage}/DEBIAN/control
     (cd ${repoDir}/zm-build/${currentPackage}; dpkg -b ${repoDir}/zm-build/${currentPackage} ${repoDir}/zm-build/${arch})
 
-    if [ $? -ne 0 ]; then
-        echo -e "\t### ${currentPackage} package building failed ###" >> ${buildLogFile}
-    else
-        echo -e "\t*** ${currentPackage} package successfully created ***" >> ${buildLogFile}
-    fi
+}
+
+CreateRhelPackage()
+{
+    cp cp ${repoDir}/zm-build/rpmconf/Spec/Scripts/${currentScript}.post ${repoDir}/zm-build/
+    cat ${repoDir}/zm-build/rpmconf/Spec/${currentScript}.spec | \
+        sed -e "s/@@VERSION@@/${release}.${buildNo}.${os}/" \
+            -e "s/@@RELEASE@@/${buildTimeStamp}/" \
+            -e "s/@@MTA_PROVIDES@@/smtpdaemon/" \
+            -e "s/^Copyright:/Copyright:/" \
+            -e "/^%post$/ r ${currentScript}.post" > ${repoDir}/zm-build/${currentScript}.spec
+    rm -f ${repoDir}/zm-build/${currentScript}.post
+    (cd ${repoDir}/zm-build/mtabuild; find opt -type f -o -type l -maxdepth 2 \
+        | sed -e 's|^|%attr(-, zimbra, zimbra) /|' >> \
+        ${repoDir}/zm-build/${currentScript}.spec )
+    echo "%attr(440, root, root) /etc/sudoers.d/02_zimbra-mta" >> \
+        ${repoDir}/zm-build/${currentScript}.spec
+    echo "%attr(-, zimbra, zimbra) /opt/zimbra/common/conf/master.cf.in" >> \
+        ${repoDir}/zm-build/${currentScript}.spec
+    echo "%attr(-, zimbra, zimbra) /opt/zimbra/common/conf/tag_as_foreign.re.in" >> \
+        ${repoDir}/zm-build/${currentScript}.spec
+    echo "%attr(-, zimbra, zimbra) /opt/zimbra/common/conf/tag_as_originating.re.in" >> \
+        ${repoDir}/zm-build/${currentScript}.spec
+    echo "%attr(-, zimbra, zimbra) /opt/zimbra/data/amavisd" >> \
+        ${repoDir}/zm-build/${currentScript}.spec
+    echo "%attr(-, zimbra, zimbra) /opt/zimbra/data/clamav" >> \
+        ${repoDir}/zm-build/${currentScript}.spec
+    echo "%attr(-, zimbra, zimbra) /opt/zimbra/data/cbpolicyd" >> \
+        ${repoDir}/zm-build/${currentScript}.spec
+    echo "%attr(-, zimbra, zimbra) /opt/zimbra/data/opendkim" >> \
+        ${repoDir}/zm-build/${currentScript}.spec
+    (cd ${repoDir}/zm-build/${currentPackage}; \
+        rpmbuild --target ${arch} --define '_rpmdir ../' --buildroot=${repoDir}/zm-build/${currentPackage} -bb ${repoDir}/zm-build/${currentScript}.spec )
 }
 
 ############################################################################

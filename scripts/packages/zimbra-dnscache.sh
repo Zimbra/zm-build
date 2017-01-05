@@ -37,8 +37,14 @@ main()
     echo -e "\tCopy package files" >> ${buildLogFile}
     cp ${repoDir}/zm-build/rpmconf/Env/sudoers.d/02_${currentScript}.deb ${repoDir}/zm-build/${currentPackage}/etc/sudoers.d/02_${currentScript}
 
-    CreateDebianPackage
+    CreatePackage "${os}"
 }
+
+#-------------------- Util Functions ---------------------------
+
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+
+source "$SCRIPT_DIR/utils.sh"
 
 CreateDebianPackage()
 {
@@ -56,11 +62,23 @@ CreateDebianPackage()
     cp  ${repoDir}/zm-dnscache/conf/dns/zimbra-unbound ${repoDir}/zm-build/${currentPackage}/etc/resolvconf/update.d
     (cd ${repoDir}/zm-build/${currentPackage}; dpkg -b ${repoDir}/zm-build/${currentPackage} ${repoDir}/zm-build/${arch})
 
-    if [ $? -ne 0 ]; then
-        echo -e "\t### ${currentPackage} package building failed ###" >> ${buildLogFile}
-    else
-        echo -e "\t*** ${currentPackage} package successfully created ***" >> ${buildLogFile}
-    fi
+}
+
+CreateRhelPackage()
+{
+    cp ${repoDir}/zm-build/rpmconf/Spec/Scripts/${currentScript}.post ${repoDir}/zm-build/
+    cat ${repoDir}/zm-build/rpmconf/Spec/${currentScript}.spec | \
+        sed -e "s/@@VERSION@@/${release}.${buildNo}.${os}/" \
+            -e "s/@@RELEASE@@/${buildTimeStamp}/" \
+            -e "s/^Copyright:/Copyright:/" \
+            -e "/^%post$/ r ${currentScript}.post" > ${repoDir}/zm-build/${currentScript}.spec
+    rm -f ${repoDir}/zm-build/${currentScript}.post
+    echo "%attr(-, zimbra, zimbra) /opt/zimbra/data/dns" >> \
+        ${repoDir}/zm-build/${currentScript}.spec
+    echo "%attr(440, root, root) /etc/sudoers.d/02_zimbra-dnscache" >> \
+        ${repoDir}/zm-build/${currentScript}.spec
+    (cd ${repoDir}/zm-build/${currentPackage}; \
+        rpmbuild --target ${arch} --define '_rpmdir ../' --buildroot=${repoDir}/zm-build/${currentPackage} -bb ${repoDir}/zm-build/${currentScript}.spec )
 }
 
 ############################################################################

@@ -60,8 +60,14 @@ main()
     cp -f ${repoDir}/zm-convertd-native/conf/ldap/zimbra_mimehandlers.ldif ${repoDir}/zm-build/${currentPackage}/opt/zimbra/convertd/conf/ldap/convertd_mimehandlers.ldif
     cp -f ${repoDir}/zm-convertd-native/conf/httpd.conf.production ${repoDir}/zm-build/${currentPackage}/opt/zimbra/convertd/conf/httpd.conf
 
-    CreateDebianPackage
+    CreatePackage "${os}"
 }
+
+#-------------------- Util Functions ---------------------------
+
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+
+source "$SCRIPT_DIR/utils.sh"
 
 CreateDebianPackage()
 {
@@ -79,12 +85,32 @@ CreateDebianPackage()
         > ${repoDir}/zm-build/${currentPackage}/DEBIAN/control
     (cd ${repoDir}/zm-build/${currentPackage}; dpkg -b ${repoDir}/zm-build/${currentPackage} ${repoDir}/zm-build/${arch})
 
-    if [ $? -ne 0 ]; then
-        echo -e "\t### ${currentPackage} package building failed ###" >> ${buildLogFile}
-    else
-        echo -e "\t*** ${currentPackage} package successfully created ***" >> ${buildLogFile}
-    fi
+}
 
+CreateRhelPackage()
+{
+    cp ${repoDir}/zm-network-build/rpmconf/Spec/Scripts/${currentScript}.pre ${repoDir}/zm-build/
+    cp ${repoDir}/zm-network-build/rpmconf/Spec/Scripts/${currentScript}.post ${repoDir}/zm-build/
+    cp ${repoDir}/zm-network-build/rpmconf/Spec/Scripts/${currentScript}.postun ${repoDir}/zm-build/
+
+    cat ${repoDir}/zm-network-build/rpmconf/Spec/${currentScript}.spec | \
+        sed -e "s/@@VERSION@@/${release}.${buildNo}.${os}/" \
+                -e "s/@@RELEASE@@/${buildTimeStamp}/" \
+                -e "s/^Copyright:/Copyright:/" \
+                -e "/^%pre$/ r ${currentScript}.pre" \
+                -e "/^%post$/ r ${currentScript}.post" \
+                -e "/^%postun$/ r ${currentScript}.postun" > ${repoDir}/zm-build/${currentScript}.spec
+    rm -f ${repoDir}/zm-build/${currentScript}.pre
+    rm -f ${repoDir}/zm-build/${currentScript}.post
+    rm -f ${repoDir}/zm-build/${currentScript}.postun
+    echo "%attr(-, zimbra, zimbra) /opt/zimbra/convertd" >> \
+        ${repoDir}/zm-build/${currentScript}.spec
+    echo "%attr(-, zimbra, zimbra) /opt/zimbra/keyview-10.13.0.0" >> \
+        ${repoDir}/zm-build/${currentScript}.spec
+    echo "" >> ${repoDir}/zm-build/${currentScript}.spec
+    echo "%clean" >> ${repoDir}/zm-build/${currentScript}.spec
+    (cd ${repoDir}/zm-build/${currentPackage}; \
+    rpmbuild --target ${arch} --define '_rpmdir ../' --buildroot=${repoDir}/zm-build/${currentPackage} -bb ${repoDir}/zm-build/${currentScript}.spec )
 }
 
 ############################################################################

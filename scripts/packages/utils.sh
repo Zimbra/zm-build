@@ -32,3 +32,31 @@ Cpy2()
    cp -f "$src_file" "$dest_dir"
 }
 
+
+CreatePackage()
+{
+    if [ $# -ne 1 ]
+    then
+      echo "Usage: CreatePackage <os-name>" 1>&2
+      exit 1
+    fi
+
+    if [[ $1 == UBUNTU* ]]
+    then
+        CreateDebianPackage
+    elif [[ $1 == RHEL* ]]
+    then
+        CreateRhelPackage
+    else
+        echo "OS not supported. Run using UBUNTU or RHEL system. "
+        exit 1
+    fi
+
+    if [ $? -ne 0 ]; then
+        echo -e "\t### ${currentPackage} package building failed ###" >> ${buildLogFile}
+    else
+        echo -e "\t*** ${currentPackage} package successfully created ***" >> ${buildLogFile}
+    fi
+
+}
+
