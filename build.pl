@@ -235,7 +235,7 @@ sub Build()
                   {
                      eval { System( "ant", "clean" ) if ($force_clean); };
 
-                     System( "ant", @$ant_targets );
+                     System( "ant", "-Dzimbra.buildinfo.buildnum=$GLOBAL_BUILD_RELEASE_NO", @$ant_targets );
                   }
 
                   if ( my $mvn_targets = $build_info->{mvn_targets} )
