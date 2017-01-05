@@ -8,7 +8,6 @@
    { name => "zm-convertd-admin-zimlet",            branch => "master",          user => "zimbra" },
    { name => "zm-convertd-native",                  branch => "master",          user => "zimbra" },
    { name => "zm-delegated-admin-zimlet",           branch => "master",          user => "zimbra" },
-   { name => "zm-downloads",                        branch => "master",          user => "zimbra" },
    { name => "zm-ews-common",                       branch => "dev",             user => "zimbra" },
    { name => "zm-ews-store",                        branch => "dev",             user => "zimbra" },
    { name => "zm-ews-stub",                         branch => "dev",             user => "zimbra" },
