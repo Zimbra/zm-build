@@ -41,10 +41,14 @@ CreatePackage()
       exit 1
     fi
 
-    if [[ $1 == UBUNTU* ]] ; then
+    if [[ $1 == UBUNTU* ]]
+    then
         CreateDebianPackage
-    else
+    elif [[ $1 == RHEL* ]]
+    then
         CreateRhelPackage
+    else
+        echo "OS not supported. Run using UBUNTU or RHEL system. "
     fi
 
     if [ $? -ne 0 ]; then

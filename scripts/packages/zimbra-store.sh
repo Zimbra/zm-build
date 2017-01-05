@@ -417,8 +417,8 @@ CreateDebianPackage()
 
 CreateRhelPackage()
 {
-    cp ${repoDir}/zm-network-build/rpmconf/Spec/Scripts/${currentScript}.pre ${repoDir}/zm-build/
-    cp ${repoDir}/zm-network-build/rpmconf/Spec/Scripts/${currentScript}.post ${repoDir}/zm-build/
+    cp ${repoDir}/zm-build/rpmconf/Spec/Scripts/${currentScript}.pre ${repoDir}/zm-build/
+    cp ${repoDir}/zm-build/rpmconf/Spec/Scripts/${currentScript}.post ${repoDir}/zm-build/
     cat ${repoDir}/zm-build/rpmconf/Spec/${currentScript}.spec | \
     	sed -e "s/@@VERSION@@/${release}.${buildNo}.${os}/" \
             	-e "s/@@RELEASE@@/${buildTimeStamp}/" \
@@ -501,7 +501,7 @@ CreateRhelPackage()
     	${repoDir}/zm-build/${currentScript}.spec
     echo "%attr(755, root, root) /opt/zimbra/libexec" >> \
     	${repoDir}/zm-build/${currentScript}.spec
-    echo "%attr(-, zimbra, zimbra) /opt/zimbra/jetty-distribution-9.3.5.v20151012" >> \
+    echo "%attr(-, zimbra, zimbra) /opt/zimbra/${jettyVersion}" >> \
     	${repoDir}/zm-build/${currentScript}.spec
     echo "" >> ${repoDir}/zm-build/${currentScript}.spec
     echo "%clean" >> ${repoDir}/zm-build/${currentScript}.spec

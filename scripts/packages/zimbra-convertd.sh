@@ -63,6 +63,12 @@ main()
     CreatePackage "${os}"
 }
 
+#-------------------- Util Functions ---------------------------
+
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+
+source "$SCRIPT_DIR/utils.sh"
+
 CreateDebianPackage()
 {
     mkdir -p ${repoDir}/zm-build/${currentPackage}/DEBIAN
