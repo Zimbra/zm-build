@@ -1,10 +1,12 @@
 #!/usr/bin/perl
 
 use strict;
+use warnings;
 
 use File::Basename;
 use Data::Dumper;
 use Net::Domain;
+use Term::ANSIColor;
 use Cwd;
 
 my $GLOBAL_PATH_TO_SCRIPT;
@@ -42,7 +44,7 @@ main();
 
 ##############################################################################################
 
-sub main()
+sub main
 {
    InitGlobalBuildVars();
    Prepare();
@@ -67,11 +69,11 @@ sub InitGlobalBuildVars()
    my $build_cfg = LoadProperties("$GLOBAL_PATH_TO_SCRIPT_DIR/build.config");
 
    $GLOBAL_PATH_TO_BUILDS          = $build_cfg->{PATH_TO_BUILDS}          || "$GLOBAL_PATH_TO_TOP/BUILDS";
-   $GLOBAL_BUILD_RELEASE           = $build_cfg->{BUILD_RELEASE}           || die "not specified BUILD_RELEASE";
-   $GLOBAL_BUILD_RELEASE_NO        = $build_cfg->{BUILD_RELEASE_NO}        || die "not specified BUILD_RELEASE_NO";
-   $GLOBAL_BUILD_RELEASE_CANDIDATE = $build_cfg->{BUILD_RELEASE_CANDIDATE} || die "not specified BUILD_RELEASE_CANDIDATE";
-   $GLOBAL_BUILD_TYPE              = $build_cfg->{BUILD_TYPE}              || die "not specified BUILD_TYPE";
-   $GLOBAL_THIRDPARTY_SERVER       = $build_cfg->{THIRDPARTY_SERVER}       || die "not specified THIRDPARTY_SERVER";
+   $GLOBAL_BUILD_RELEASE           = $build_cfg->{BUILD_RELEASE}           || Die("config not specified BUILD_RELEASE");
+   $GLOBAL_BUILD_RELEASE_NO        = $build_cfg->{BUILD_RELEASE_NO}        || Die("config not specified BUILD_RELEASE_NO");
+   $GLOBAL_BUILD_RELEASE_CANDIDATE = $build_cfg->{BUILD_RELEASE_CANDIDATE} || Die("config not specified BUILD_RELEASE_CANDIDATE");
+   $GLOBAL_BUILD_TYPE              = $build_cfg->{BUILD_TYPE}              || Die("config not specified BUILD_TYPE");
+   $GLOBAL_THIRDPARTY_SERVER       = $build_cfg->{THIRDPARTY_SERVER}       || Die("config not specified THIRDPARTY_SERVER");
    $GLOBAL_BUILD_PROD_FLAG         = $build_cfg->{BUILD_PROD_FLAG}         || "true";
    $GLOBAL_BUILD_DEBUG_FLAG        = $build_cfg->{BUILD_DEBUG_FLAG}        || "false";
    $GLOBAL_BUILD_OS                = GetBuildOS();
@@ -83,8 +85,8 @@ sub InitGlobalBuildVars()
 
    my $cc    = DetectPrerequisite("cc");
    my $cpp   = DetectPrerequisite("c++");
-   my $java  = DetectPrerequisite( "java", "$ENV{JAVA_HOME}/bin" );
-   my $javac = DetectPrerequisite( "javac", "$ENV{JAVA_HOME}/bin" );
+   my $java  = DetectPrerequisite( "java", $ENV{JAVA_HOME} ? "$ENV{JAVA_HOME}/bin" : "" );
+   my $javac = DetectPrerequisite( "javac", $ENV{JAVA_HOME} ? "$ENV{JAVA_HOME}/bin" : "" );
    my $mvn   = DetectPrerequisite("mvn");
    my $ant   = DetectPrerequisite("ant");
    my $ruby  = DetectPrerequisite("ruby");
@@ -92,38 +94,34 @@ sub InitGlobalBuildVars()
    $ENV{JAVA_HOME} ||= dirname( dirname( Cwd::realpath($javac) ) );
    $ENV{PATH} = "$ENV{JAVA_HOME}/bin:$ENV{PATH}";
 
-   print "=========================================================================================================\n";
-   print "BUILD OS                      : $GLOBAL_BUILD_OS\n";
-   print "BUILD ARCH                    : $GLOBAL_BUILD_ARCH\n";
-   print "BUILD NO                      : $GLOBAL_BUILD_NO\n";
-   print "BUILD TS                      : $GLOBAL_BUILD_TS\n";
-   print "BUILD TYPE                    : $GLOBAL_BUILD_TYPE\n";
-   print "BUILD RELEASE                 : $GLOBAL_BUILD_RELEASE\n";
-   print "BUILD RELEASE NO              : $GLOBAL_BUILD_RELEASE_NO\n";
-   print "BUILD RELEASE CANDIDATE       : $GLOBAL_BUILD_RELEASE_CANDIDATE\n";
-   print "=========================================================================================================\n";
+   my $fmt2v = " %-35s: %s\n";
 
-   foreach my $x (`grep -o '\\<[E][N][V]_[A-Z_]*\\>' $GLOBAL_PATH_TO_SCRIPT | sort | uniq`)
+   print "=========================================================================================================\n";
+   foreach my $x (`grep -o '\\<GLOBAL[_][A-Z_]*\\>' $GLOBAL_PATH_TO_SCRIPT | sort | uniq`)
    {
       chomp($x);
-      printf( "%-30s: %s\n", $x, defined $ENV{$x} ? $ENV{$x} : "(undef)" );
+      printf( $fmt2v, $x, eval "\$$x" );
    }
 
    print "=========================================================================================================\n";
-   print "USING javac                   : $javac (JAVA_HOME=$ENV{JAVA_HOME})\n";
-   print "USING java                    : $java\n";
-   print "USING maven                   : $mvn\n";
-   print "USING ant                     : $ant\n";
-   print "USING cc                      : $cc\n";
-   print "USING c++                     : $cpp\n";
-   print "USING ruby                    : $ruby\n";
+   foreach my $x (`grep -o '\\<[E][N][V]_[A-Z_]*\\>' $GLOBAL_PATH_TO_SCRIPT | sort | uniq`)
+   {
+      chomp($x);
+      printf( $fmt2v, $x, defined $ENV{$x} ? $ENV{$x} : "(undef)" );
+   }
+
    print "=========================================================================================================\n";
-   print "PATH TO BUILDS                : $GLOBAL_PATH_TO_BUILDS\n";
-   print "BUILD DIR                     : $GLOBAL_BUILD_DIR\n";
+   printf( $fmt2v, "USING javac", "$javac (JAVA_HOME=$ENV{JAVA_HOME})" );
+   printf( $fmt2v, "USING java", $java );
+   printf( $fmt2v, "USING maven", $mvn );
+   printf( $fmt2v, "USING ant", $ant );
+   printf( $fmt2v, "USING cc", $cc );
+   printf( $fmt2v, "USING c++", $cpp );
+   printf( $fmt2v, "USING ruby", $ruby );
    print "=========================================================================================================\n";
    print "Press enter to proceed";
-   my $x;
-   read STDIN, $x, 1;
+
+   read STDIN, $_, 1;
 }
 
 sub Prepare()
@@ -183,7 +181,8 @@ sub Checkout($)
    {
       my @REPOS = ();
       eval `cat $GLOBAL_PATH_TO_TOP/zm-build/$repo_file`;
-      die "FAILURE in $repo_file, (info=$!, err=$@)\n" if ($@);
+      Die("Error in $repo_file)", "$@") if ($@);
+
       for my $repo_details (@REPOS)
       {
          Clone($repo_details);
@@ -193,9 +192,9 @@ sub Checkout($)
 
 sub Build()
 {
-   my @GLOBAL_BUILDS;
+   my @ALL_BUILDS;
    eval `cat $GLOBAL_PATH_TO_TOP/zm-build/global_builds.pl`;
-   die "FAILURE in global_builds.pl, (info=$!, err=$@)\n" if ($@);
+   Die("Error in global_builds.pl", "$@") if ($@);
 
    my @ant_attributes = (
       "-Ddebug=${GLOBAL_BUILD_DEBUG_FLAG}",
@@ -210,14 +209,14 @@ sub Build()
    );
 
    my $cnt = 0;
-   for my $build_info (@GLOBAL_BUILDS)
+   for my $build_info (@ALL_BUILDS)
    {
       ++$cnt;
 
       if ( my $dir = $build_info->{dir} )
       {
          print "=========================================================================================================\n";
-         print "\e[1;34m" . "BUILDING: $dir ($cnt of " . scalar(@GLOBAL_BUILDS) . ")\e[0m\n";
+         print color('bright_blue') . "BUILDING: $dir ($cnt of " . scalar(@ALL_BUILDS) . color('reset') . ")\n";
          print "\n";
 
          unlink glob "$dir/.built.*"
@@ -225,7 +224,7 @@ sub Build()
 
          if ( $ENV{ENV_RESUME_FLAG} && -f "$dir/.built.$GLOBAL_BUILD_TS" )
          {
-            print "\e[1;33m" . "WARNING: SKIPPING - to force a rebuild - either delete $dir/.built.$GLOBAL_BUILD_TS or include in ENV_FORCE_REBUILD" . "\e[0m\n";
+            print color('bright_yellow') . "WARNING: SKIPPING - to force a rebuild - either delete $dir/.built.$GLOBAL_BUILD_TS or include in ENV_FORCE_REBUILD" . color('reset') . "\n";
             print "=========================================================================================================\n";
             print "\n";
          }
@@ -341,7 +340,7 @@ sub GetPackageList($)
    if ( -f "$GLOBAL_PATH_TO_TOP/zm-build/$package_list_file" )
    {
       eval `cat $GLOBAL_PATH_TO_TOP/zm-build/$package_list_file`;
-      die "FAILURE in $package_list_file, (info=$!, err=$@)\n" if ($@);
+      Die("Error in $package_list_file", "$@") if ($@);
    }
 
    return \@PACKAGES;
@@ -382,7 +381,7 @@ sub GetBuildOS()
    return $r
      if ($r);
 
-   die "Unknown OS";
+   Die("Unknown OS");
 }
 
 sub GetBuildArch()    # FIXME - use standard mechanism
@@ -397,7 +396,7 @@ sub GetBuildArch()    # FIXME - use standard mechanism
    return "x86_" . $PROCESSOR_ARCH
      if ( $b_os =~ /RHEL/ || $b_os =~ /CENTOS/ );
 
-   die "Unknown Arch"
+   Die("Unknown Arch");
 }
 
 
@@ -437,12 +436,23 @@ sub Clone($)
 
 sub System(@)
 {
-   print "#: @_            #(pwd=" . Cwd::getcwd() . ")\n";
+   my $sep = "";
+
+   print color('bright_green');
+   print "#: ";
+   for my $a (@_)
+   {
+      print $sep . $a;
+      $sep = " \\\n   ";
+   }
+
+   print $sep . " #(pwd=" . Cwd::getcwd() . ")\n\n";
+   print color('reset');
 
    my $x = system @_;
 
-   die "FAILURE in system, (info=$!, cmd='@_', ret=$x)\n"
-     if ( $x != 0 );
+   Die("cmd='@_'", "ret=$x")
+      if ( $x != 0 );
 }
 
 
@@ -462,7 +472,7 @@ sub SlurpFile($)
 {
    my $f = shift;
 
-   open( FD, "<", "$f" ) || die "FAILURE in open, (info=$!, file='$f')\n";
+   open( FD, "<", "$f" ) || Die("In open", "file='$f'");
 
    chomp( my @x = <FD> );
    close(FD);
@@ -474,14 +484,14 @@ sub SlurpFile($)
 sub DetectPrerequisite($;$)
 {
    my $util_name       = shift;
-   my $additional_path = shift;
+   my $additional_path = shift || "";
 
-   chomp( my $detected_util = `PATH="$additional_path:\$PATH" \which "$util_name" 2>/dev/null | sed -e 's,//*,/,g'` );
+   chomp( my $detected_util = `PATH="$additional_path:\$PATH" \\which "$util_name" 2>/dev/null | sed -e 's,//*,/,g'` );
 
    return $detected_util
      if ($detected_util);
 
-   die "FAILURE: prerequisite $util_name missing in PATH\n";
+   Die("Prerequisite '$util_name' missing in PATH");
 }
 
 
@@ -493,7 +503,7 @@ sub Run(%)
 
    my $child_pid = fork();
 
-   die "FAILURE while forking, (info=$!)\n"
+   Die("FAILURE while forking")
      if ( !defined $child_pid );
 
    if ( $child_pid != 0 )    # parent
@@ -501,7 +511,7 @@ sub Run(%)
       while ( waitpid( $child_pid, 0 ) == -1 ) { }
       my $x = $?;
 
-      die "FAILURE in run, (info=$!, ret=$x)\n"
+      Die("run $!", $x)
         if ( $x != 0 );
    }
    else
@@ -512,4 +522,34 @@ sub Run(%)
       my $ret = &$call;
       exit($ret);
    }
+}
+
+sub Die($;$)
+{
+   my $msg = shift;
+   my $info = shift || "";
+   my $err = "$!";
+
+   use Text::Wrap;
+
+   print "\n";
+   print "\n";
+   print "=========================================================================================================\n";
+   print color('red') . "FAILURE MSG" . color('reset') . " : " . wrap('', '            : ', $msg) . "\n";
+   print color('red') . "SYSTEM ERR " . color('reset') . " : " . wrap('', '            : ', $err) . "\n" if($err);
+   print color('red') . "EXTRA INFO " . color('reset') . " : " . wrap('', '            : ', $info) . "\n" if($info);
+   print "\n";
+   print "=========================================================================================================\n";
+   print color('red');
+   print "--Stack Trace--\n";
+   my $i = 1;
+   while ( (my @call_details = (caller($i++))) )
+   {
+      print $call_details[1] . ":" . $call_details[2] . " called from " . $call_details[3] . "\n";
+   }
+   print color('reset');
+   print "\n";
+   print "=========================================================================================================\n";
+
+   die "ABORTING";
 }
