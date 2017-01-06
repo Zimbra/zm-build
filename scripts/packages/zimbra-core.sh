@@ -54,7 +54,7 @@ CreateDebianPackage()
    (
       set -e;
       cat ${repoDir}/zm-build/rpmconf/Spec/${currentScript}.deb \
-         | sed -e "s/@@VERSION@@/${release}.${buildNo}.${os/_/.}/" \
+         | sed -e "s/@@VERSION@@/${releaseNo}.${releaseCandidate}.${buildNo}.${os/_/.}/" \
                -e "s/@@branch@@/${buildTimeStamp}/" \
                -e "s/@@ARCH@@/${arch}/" \
                -e "s/@@ARCH@@/amd64/" \
@@ -73,7 +73,7 @@ CreateDebianPackage()
 CreateRhelPackage()
 {
     cat ${repoDir}/zm-build/rpmconf/Spec/${currentScript}.spec | \
-    	sed -e "s/@@VERSION@@/${release}.${buildNo}.${os}/" \
+    	sed -e "s/@@VERSION@@/${releaseNo}_${releaseCandidate}_${buildNo}.${os}/" \
             	-e "s/@@RELEASE@@/${buildTimeStamp}/" \
             	-e "s/^Copyright:/Copyright:/" \
             	-e "/^%pre$/ r ${repoDir}/zm-build/rpmconf/Spec/Scripts/${currentScript}.pre" \

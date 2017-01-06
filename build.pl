@@ -310,7 +310,8 @@ sub Build()
             if ( !defined $ENV{ENV_PACKAGE_INCLUDE} || grep { $package_script =~ /$_/ } split( ",", $ENV{ENV_PACKAGE_INCLUDE} ) )
             {
                System(
-                  "  release='$GLOBAL_BUILD_RELEASE_NO.$GLOBAL_BUILD_RELEASE_CANDIDATE' \\
+                  "  releaseNo='$GLOBAL_BUILD_RELEASE_NO' \\
+                     releaseCandidate='$GLOBAL_BUILD_RELEASE_CANDIDATE' \\
                      branch='$GLOBAL_BUILD_RELEASE-$GLOBAL_BUILD_RELEASE_NO_SHORT' \\
                      buildNo='$GLOBAL_BUILD_NO' \\
                      os='$GLOBAL_BUILD_OS' \\
