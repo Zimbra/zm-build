@@ -89,20 +89,13 @@ CreateDebianPackage()
 
 CreateRhelPackage()
 {
-    cp ${repoDir}/zm-network-build/rpmconf/Spec/Scripts/${currentScript}.pre ${repoDir}/zm-build/
-    cp ${repoDir}/zm-network-build/rpmconf/Spec/Scripts/${currentScript}.post ${repoDir}/zm-build/
-    cp ${repoDir}/zm-network-build/rpmconf/Spec/Scripts/${currentScript}.postun ${repoDir}/zm-build/
-
     cat ${repoDir}/zm-network-build/rpmconf/Spec/${currentScript}.spec | \
         sed -e "s/@@VERSION@@/${release}.${buildNo}.${os}/" \
                 -e "s/@@RELEASE@@/${buildTimeStamp}/" \
                 -e "s/^Copyright:/Copyright:/" \
-                -e "/^%pre$/ r ${currentScript}.pre" \
-                -e "/^%post$/ r ${currentScript}.post" \
-                -e "/^%postun$/ r ${currentScript}.postun" > ${repoDir}/zm-build/${currentScript}.spec
-    rm -f ${repoDir}/zm-build/${currentScript}.pre
-    rm -f ${repoDir}/zm-build/${currentScript}.post
-    rm -f ${repoDir}/zm-build/${currentScript}.postun
+                -e "/^%pre$/ r ${repoDir}/zm-network-build/rpmconf/Spec/Scripts/${currentScript}.pre" \
+                -e "/^%post$/ r ${repoDir}/zm-network-build/rpmconf/Spec/Scripts/${currentScript}.post" \
+                -e "/^%postun$/ r ${repoDir}/zm-network-build/rpmconf/Spec/Scripts/${currentScript}.postun" > ${repoDir}/zm-build/${currentScript}.spec
     echo "%attr(-, zimbra, zimbra) /opt/zimbra/convertd" >> \
         ${repoDir}/zm-build/${currentScript}.spec
     echo "%attr(-, zimbra, zimbra) /opt/zimbra/keyview-10.13.0.0" >> \

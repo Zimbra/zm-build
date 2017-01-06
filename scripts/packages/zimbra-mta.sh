@@ -71,14 +71,12 @@ CreateDebianPackage()
 
 CreateRhelPackage()
 {
-    cp cp ${repoDir}/zm-build/rpmconf/Spec/Scripts/${currentScript}.post ${repoDir}/zm-build/
     cat ${repoDir}/zm-build/rpmconf/Spec/${currentScript}.spec | \
         sed -e "s/@@VERSION@@/${release}.${buildNo}.${os}/" \
             -e "s/@@RELEASE@@/${buildTimeStamp}/" \
             -e "s/@@MTA_PROVIDES@@/smtpdaemon/" \
             -e "s/^Copyright:/Copyright:/" \
-            -e "/^%post$/ r ${currentScript}.post" > ${repoDir}/zm-build/${currentScript}.spec
-    rm -f ${repoDir}/zm-build/${currentScript}.post
+            -e "/^%post$/ r ${repoDir}/zm-build/rpmconf/Spec/Scripts/${currentScript}.post" > ${repoDir}/zm-build/${currentScript}.spec
     (cd ${repoDir}/zm-build/mtabuild; find opt -type f -o -type l -maxdepth 2 \
         | sed -e 's|^|%attr(-, zimbra, zimbra) /|' >> \
         ${repoDir}/zm-build/${currentScript}.spec )

@@ -72,17 +72,13 @@ CreateDebianPackage()
 
 CreateRhelPackage()
 {
-    cp ${repoDir}/zm-build/rpmconf/Spec/Scripts/${currentScript}.pre ${repoDir}/zm-build/
-        cp ${repoDir}/zm-build/rpmconf/Spec/Scripts/${currentScript}.post ${repoDir}/zm-build/
     cat ${repoDir}/zm-build/rpmconf/Spec/${currentScript}.spec | \
     	sed -e "s/@@VERSION@@/${release}.${buildNo}.${os}/" \
             	-e "s/@@RELEASE@@/${buildTimeStamp}/" \
             	-e "s/^Copyright:/Copyright:/" \
-            	-e "/^%pre$/ r ${currentScript}.pre" \
+            	-e "/^%pre$/ r ${repoDir}/zm-build/rpmconf/Spec/Scripts/${currentScript}.pre" \
             	-e "/Best email money can buy/ a Network edition" \
-            	-e "/^%post$/ r ${currentScript}.post" > ${repoDir}/zm-build/${currentScript}.spec
-    rm -f ${repoDir}/zm-build/${currentScript}.post
-    rm -f ${repoDir}/zm-build/${currentScript}.pre
+            	-e "/^%post$/ r ${repoDir}/zm-build/rpmconf/Spec/Scripts/${currentScript}.post" > ${repoDir}/zm-build/${currentScript}.spec
     (cd ${repoDir}/zm-build/corebuild; find opt -maxdepth 2 -type f -o -type l \
     	| sed -e 's|^|%attr(-, zimbra, zimbra) /|' >> \
     	${repoDir}/zm-build/${currentScript}.spec )

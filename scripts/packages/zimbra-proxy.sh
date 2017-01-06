@@ -63,13 +63,11 @@ CreateDebianPackage()
 
 CreateRhelPackage()
 {
-    cp cp ${repoDir}/zm-build/rpmconf/Spec/Scripts/${currentScript}.post ${repoDir}/zm-build/
     cat ${repoDir}/zm-build/rpmconf/Spec/${currentScript}.spec | \
         sed -e "s/@@VERSION@@/${release}.${buildNo}.${os}/" \
                -e "s/@@RELEASE@@/${buildTimeStamp}/" \
                -e "s/^Copyright:/Copyright:/" \
-               -e "/^%post$/ r zimbra-proxy.post" > ${repoDir}/zm-build/${currentScript}.spec
-    rm -f ${repoDir}/zm-build/${currentScript}.post
+               -e "/^%post$/ r ${repoDir}/zm-build/rpmconf/Spec/Scripts/${currentScript}.post" > ${repoDir}/zm-build/${currentScript}.spec
     echo "%attr(440, root, root) /etc/sudoers.d/02_zimbra-proxy" >> \
         ${repoDir}/zm-build/${currentScript}.spec
     echo "%attr(755, zimbra, zimbra) /opt/zimbra/conf/nginx" >> \
