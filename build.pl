@@ -215,6 +215,9 @@ sub Build()
 
       if ( my $dir = $build_info->{dir} )
       {
+         next
+            unless ( !defined $ENV{ENV_BUILD_INCLUDE} || grep { $dir =~ /$_/ } split( ",", $ENV{ENV_BUILD_INCLUDE} ) );
+
          print "=========================================================================================================\n";
          print color('bright_blue') . "BUILDING: $dir ($cnt of " . scalar(@ALL_BUILDS) . color('reset') . ")\n";
          print "\n";
