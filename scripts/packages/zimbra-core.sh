@@ -858,6 +858,7 @@ main()
       "yuicompressor-2.4.2-zimbra.jar"
       "zkclient-0.1.0.jar"
       "zookeeper-3.4.5.jar"
+      "zm-ews-stub-1.0.jar"
    )
 
    for i in "${zimbrathirdpartyjars[@]}"
@@ -865,23 +866,12 @@ main()
       Cpy2 ${repoDir}/zm-zcs-lib/build/dist/${i}                                                       ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/jars
    done
 
-   if [ "${buildType}" == "NETWORK" ]
-   then
-      local zimbrathirdpartyjars=( "zm-ews-stub-1.0.jar" )
-
-      for i in "${zimbrathirdpartyjars[@]}"
-      do
-         Cpy2 ${repoDir}/zm-zcs-lib/build/dist/${i}                                                       ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/jars
-      done
-   fi
-
    Copy ${repoDir}/zm-zcs-lib/build/dist/zm-charset-*.jar                                           ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/jars/zimbra-charset.jar
    Copy ${repoDir}/zm-zcs-lib/build/dist/zm-native-*.jar                                            ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/jars/zimbra-native.jar
    Copy ${repoDir}/zm-zcs-lib/build/dist/zm-common-*.jar                                            ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/jars/zimbracommon.jar
    Copy ${repoDir}/zm-zcs-lib/build/dist/zm-soap-*.jar                                              ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/jars/zimbrasoap.jar
    Copy ${repoDir}/zm-zcs-lib/build/dist/zm-client-*.jar                                            ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/jars/zimbraclient.jar
    Copy ${repoDir}/zm-zcs-lib/build/dist/zm-store-*.jar                                             ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/jars/zimbrastore.jar
-
    Copy ${repoDir}/zm-zcs-lib/build/dist/ant-1.6.5.jar                                              ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/jars-ant/ant-1.6.5.jar
    Copy ${repoDir}/zm-zcs-lib/build/dist/json-20090211.jar                                          ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/jars/json.jar
    Copy ${repoDir}/zm-zcs-lib/build/dist/commons-logging-1.1.1.jar                                  ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/jars/commons-logging.jar
