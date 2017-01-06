@@ -4,6 +4,7 @@ use strict;
 
 use File::Basename;
 use Data::Dumper;
+use Net::Domain;
 use Cwd;
 
 my $GLOBAL_PATH_TO_SCRIPT;
@@ -22,6 +23,8 @@ my $GLOBAL_BUILD_RELEASE_CANDIDATE;
 my $GLOBAL_BUILD_TYPE;
 my $GLOBAL_BUILD_ARCH;
 my $GLOBAL_THIRDPARTY_SERVER;
+my $GLOBAL_BUILD_PROD_FLAG;
+my $GLOBAL_BUILD_DEBUG_FLAG;
 
 
 BEGIN
@@ -69,6 +72,8 @@ sub InitGlobalBuildVars()
    $GLOBAL_BUILD_RELEASE_CANDIDATE = $build_cfg->{BUILD_RELEASE_CANDIDATE} || die "not specified BUILD_RELEASE_CANDIDATE";
    $GLOBAL_BUILD_TYPE              = $build_cfg->{BUILD_TYPE}              || die "not specified BUILD_TYPE";
    $GLOBAL_THIRDPARTY_SERVER       = $build_cfg->{THIRDPARTY_SERVER}       || die "not specified THIRDPARTY_SERVER";
+   $GLOBAL_BUILD_PROD_FLAG         = $build_cfg->{BUILD_PROD_FLAG}         || "true";
+   $GLOBAL_BUILD_DEBUG_FLAG        = $build_cfg->{BUILD_DEBUG_FLAG}        || "false";
    $GLOBAL_BUILD_OS                = GetBuildOS();
    $GLOBAL_BUILD_ARCH              = GetBuildArch();
 
@@ -192,6 +197,18 @@ sub Build()
    eval `cat $GLOBAL_PATH_TO_TOP/zm-build/global_builds.pl`;
    die "FAILURE in global_builds.pl, (info=$!, err=$@)\n" if ($@);
 
+   my @ant_attributes = (
+      "-Ddebug=${GLOBAL_BUILD_DEBUG_FLAG}",
+      "-Dis-production=${GLOBAL_BUILD_PROD_FLAG}",
+      "-Dzimbra.buildinfo.platform=${GLOBAL_BUILD_OS}",
+      "-Dzimbra.buildinfo.version=${GLOBAL_BUILD_RELEASE_NO}_${GLOBAL_BUILD_RELEASE_CANDIDATE}_${GLOBAL_BUILD_NO}",
+      "-Dzimbra.buildinfo.type=${GLOBAL_BUILD_TYPE}",
+      "-Dzimbra.buildinfo.release=${GLOBAL_BUILD_TS}",
+      "-Dzimbra.buildinfo.date=${GLOBAL_BUILD_TS}",
+      "-Dzimbra.buildinfo.host=@{[Net::Domain::hostfqdn]}",
+      "-Dzimbra.buildinfo.buildnum=${GLOBAL_BUILD_RELEASE_NO}",
+   );
+
    my $cnt = 0;
    for my $build_info (@GLOBAL_BUILDS)
    {
@@ -235,7 +252,7 @@ sub Build()
                   {
                      eval { System( "ant", "clean" ) if ($force_clean); };
 
-                     System( "ant", "-Dzimbra.buildinfo.buildnum=$GLOBAL_BUILD_RELEASE_NO", @$ant_targets );
+                     System( "ant", @ant_attributes, @$ant_targets );
                   }
 
                   if ( my $mvn_targets = $build_info->{mvn_targets} )
