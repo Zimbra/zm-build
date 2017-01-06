@@ -46,7 +46,7 @@
    },
    {
       "dir"         => "zm-store", #FIXME CIRCULAR DEPENDENCY in zm-store and zm-taglib
-      "ant_targets" => [ "publish-local", "war", "create-version-sql", "-Dis-production=true" ],
+      "ant_targets" => [ "publish-local", "war", "create-version-sql" ],
       "stage_cmd"   => sub {
          System("mkdir -p $GLOBAL_BUILD_DIR/zm-store/build/dist");
          System("cp -f build/service.war $GLOBAL_BUILD_DIR/zm-store/build/dist");
@@ -57,7 +57,7 @@
    },
    {
       "dir"         => "zm-license-tools",
-      "ant_targets" => [ "jar", "publish-local", "-Dis-production=true"],
+      "ant_targets" => [ "jar", "publish-local" ],
       "stage_cmd"   => sub {
          System("mkdir -p $GLOBAL_BUILD_DIR/zm-license-tools");
          System("(cd .. && rsync -az --relative zm-license-tools/src/bin $GLOBAL_BUILD_DIR/)");
@@ -123,7 +123,7 @@
    },
    {
       "dir"         => "zm-ldap-utilities",
-      "ant_targets" => [ "build-dist", "-Dis-production=true" ],
+      "ant_targets" => [ "build-dist" ],
       "stage_cmd"   => sub {
          System("(cd .. && rsync -az --relative zm-ldap-utilities/build/dist $GLOBAL_BUILD_DIR/)");
          System("(cd .. && rsync -az --relative zm-ldap-utilities/src/ldap/migration $GLOBAL_BUILD_DIR/)");
