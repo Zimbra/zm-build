@@ -42,19 +42,6 @@ chdir($GLOBAL_PATH_TO_TOP);
 
 ##############################################################################################
 
-main();
-
-##############################################################################################
-
-sub main
-{
-   InitGlobalBuildVars();
-   Prepare();
-   Checkout("public_repos.pl");
-   Checkout("private_repos.pl") if ( $GLOBAL_BUILD_TYPE eq "NETWORK" );
-   Build();
-}
-
 sub InitGlobalBuildVars()
 {
    if ( -f "$GLOBAL_PATH_TO_SCRIPT_DIR/.build.last_no_ts" && $ENV{ENV_RESUME_FLAG} )
@@ -183,31 +170,49 @@ sub EvalFile($)
    return \@ENTRIES;
 }
 
+sub LoadRepos()
+{
+   my @agg_repos = ();
+
+   push( @agg_repos, @{ EvalFile("public_repos.pl") } );
+   push( @agg_repos, @{ EvalFile("private_repos.pl") } ) if ( $GLOBAL_BUILD_TYPE eq "NETWORK" );
+
+   return \@agg_repos;
+}
+
+
+sub LoadBuilds($)
+{
+   my $repo_list = shift;
+
+   my @agg_builds = @{ EvalFile("global_builds.pl") };
+
+   my %repo_hash = map { $_->{name} => 1 } @$repo_list;
+
+   my @filtered_builds = grep {
+      s/\/.*// for ( my $repo_name_from_dir = $_->{dir} );
+      $repo_hash{$repo_name_from_dir};
+   } @agg_builds;
+
+   return \@filtered_builds;
+}
+
+
 sub Checkout($)
 {
-   my $repo_file = shift;
+   my $repo_list = shift;
 
-   if ( !-d "zimbra-package-stub" )
-   {
-      System( "git", "clone", "https://github.com/Zimbra/zimbra-package-stub.git" );
-   }
-
-   if ( !-d "junixsocket" )
-   {
-      System( "git", "clone", "-b", "junixsocket-parent-2.0.4", "https://github.com/kohlschutter/junixsocket.git" );
-   }
-
-   my @REPOS = @{ EvalFile($repo_file) };
-
-   for my $repo_details (@REPOS)
+   for my $repo_details (@$repo_list)
    {
       Clone($repo_details);
    }
 }
 
-sub Build()
+sub Build($)
 {
-   my @ALL_BUILDS = @{ EvalFile("global_builds.pl") };
+   my $repo_list = shift;
+
+   my @ALL_BUILDS = @{ LoadBuilds($repo_list) };
 
    my @ant_attributes = (
       "-Ddebug=${GLOBAL_BUILD_DEBUG_FLAG}",
@@ -232,7 +237,7 @@ sub Build()
            unless ( !defined $ENV{ENV_BUILD_INCLUDE} || grep { $dir =~ /$_/ } split( ",", $ENV{ENV_BUILD_INCLUDE} ) );
 
          print "=========================================================================================================\n";
-         print color('bright_blue') . "BUILDING: $dir ($cnt of " . scalar(@ALL_BUILDS) . color('reset') . ")\n";
+         print color('bright_blue') . "BUILDING: $dir ($cnt of " . scalar(@ALL_BUILDS) . ")" . color('reset') . "\n";
          print "\n";
 
          unlink glob "$dir/.built.*"
@@ -251,17 +256,22 @@ sub Build()
             my $force_clean = 1
               if ( !$ENV{ENV_SKIP_CLEAN_FLAG} || -f "$dir/.force-clean" );
 
+            eval {
+               Run(
+                  cd    => $GLOBAL_BUILD_DIR,
+                  child => sub {
+                     my $sane_dir = $dir;
+                     $sane_dir =~ s/\/*$//;
+                     System( "rm", "-rf", $sane_dir ) if ($sane_dir);
+                  },
+               ) if ($force_clean);
+            };
+
             Run(
                cd    => $dir,
                child => sub {
 
                   my $abs_dir = Cwd::abs_path();
-
-                  eval {
-                     s/\/*$//
-                       for ( my $sane_dir = $dir );
-                     System("cd '$GLOBAL_BUILD_DIR' && rm -rf '$sane_dir'") if ( $force_clean && $sane_dir );
-                  };
 
                   if ( my $ant_targets = $build_info->{ant_targets} )
                   {
@@ -410,24 +420,39 @@ sub Clone($)
    my $repo_details = shift;
 
    my $repo_name   = $repo_details->{name};
-   my $repo_user   = $repo_details->{user};
    my $repo_branch = $repo_details->{branch};
 
-   if ( !-d $repo_name )
+   my $repo_dir = "$GLOBAL_PATH_TO_TOP/$repo_name";
+
+   if ( !-d $repo_dir )
    {
-      System( "git", "clone", "-b", $repo_branch, "ssh://git\@stash.corp.synacor.com:7999/$repo_user/$repo_name.git" );
+      if ( $repo_name =~ /zimbra-package-stub/ )
+      {
+         System( "git", "clone", "https://github.com/Zimbra/zimbra-package-stub.git", $repo_dir );
+      }
+      elsif ( $repo_name =~ /junixsocket/ )
+      {
+         System( "git", "clone", "-b", "$repo_branch", "https://github.com/kohlschutter/junixsocket.git", $repo_dir );
+      }
+      else
+      {
+         System( "git", "clone", "-b", $repo_branch, "ssh://git\@stash.corp.synacor.com:7999/zimbra/$repo_name.git", $repo_dir );
+      }
    }
    else
    {
       if ( !defined $ENV{ENV_GIT_UPDATE_INCLUDE} || grep { $repo_name =~ /$_/ } split( ",", $ENV{ENV_GIT_UPDATE_INCLUDE} ) )
       {
+         next
+           if ( $repo_name =~ /junixsocket/ );    #FIXME - some issue with branch junixsocket-parent-2.0.4"
+
          print "\n";
-         my $z = System("cd '$repo_name' && git pull origin");
+         my $z = System("cd '$repo_dir' && git pull origin");
 
          if ( "@{$z->{out}}" !~ /Already up-to-date/ )
          {
-            System( "find", $repo_name, "-name", ".built.*", "-exec", "rm", "-f", "{}", ";" );
-            open( FD, "> $repo_name/.force-clean" );
+            System( "find", $repo_dir, "-name", ".built.*", "-exec", "rm", "-f", "{}", ";" );
+            open( FD, "> $repo_dir/.force-clean" );
             close(FD);
          }
       }
@@ -556,3 +581,22 @@ sub Die($;$)
 
    die "END";
 }
+
+##############################################################################################
+
+sub main()
+{
+   InitGlobalBuildVars();
+
+   my $all_repos = LoadRepos();
+
+   Prepare();
+
+   Checkout($all_repos);
+
+   Build($all_repos);
+}
+
+main();
+
+##############################################################################################
