@@ -7,6 +7,7 @@ use Config;
 use Cwd;
 use Data::Dumper;
 use File::Basename;
+use File::Copy;
 use IPC::Cmd qw/run can_run/;
 use Net::Domain;
 use Term::ANSIColor;
@@ -75,17 +76,6 @@ sub InitGlobalBuildVars()
 
    $GLOBAL_BUILD_DIR = "$GLOBAL_PATH_TO_BUILDS/$GLOBAL_BUILD_OS/$GLOBAL_BUILD_RELEASE-$GLOBAL_BUILD_RELEASE_NO_SHORT/${GLOBAL_BUILD_TS}_$GLOBAL_BUILD_TYPE";
 
-   my $cc    = DetectPrerequisite("cc");
-   my $cpp   = DetectPrerequisite("c++");
-   my $java  = DetectPrerequisite( "java", $ENV{JAVA_HOME} ? "$ENV{JAVA_HOME}/bin" : "" );
-   my $javac = DetectPrerequisite( "javac", $ENV{JAVA_HOME} ? "$ENV{JAVA_HOME}/bin" : "" );
-   my $mvn   = DetectPrerequisite("mvn");
-   my $ant   = DetectPrerequisite("ant");
-   my $ruby  = DetectPrerequisite("ruby");
-
-   $ENV{JAVA_HOME} ||= dirname( dirname( Cwd::realpath($javac) ) );
-   $ENV{PATH} = "$ENV{JAVA_HOME}/bin:$ENV{PATH}";
-
    my $fmt2v = " %-35s: %s\n";
 
    print "=========================================================================================================\n";
@@ -103,16 +93,31 @@ sub InitGlobalBuildVars()
    }
 
    print "=========================================================================================================\n";
-   printf( $fmt2v, "USING javac", "$javac (JAVA_HOME=$ENV{JAVA_HOME})" );
-   printf( $fmt2v, "USING java",  $java );
-   printf( $fmt2v, "USING maven", $mvn );
-   printf( $fmt2v, "USING ant",   $ant );
-   printf( $fmt2v, "USING cc",    $cc );
-   printf( $fmt2v, "USING c++",   $cpp );
-   printf( $fmt2v, "USING ruby",  $ruby );
+   {
+      $ENV{PATH} = "$ENV{HOME}/.zm-dev-tools/bin/Sencha/Cmd/4.0.2.67:$ENV{HOME}/.zm-dev-tools/bin:$ENV{PATH}";
+
+      my $cc    = DetectPrerequisite("cc");
+      my $cpp   = DetectPrerequisite("c++");
+      my $java  = DetectPrerequisite( "java", $ENV{JAVA_HOME} ? "$ENV{JAVA_HOME}/bin" : "" );
+      my $javac = DetectPrerequisite( "javac", $ENV{JAVA_HOME} ? "$ENV{JAVA_HOME}/bin" : "" );
+      my $mvn   = DetectPrerequisite("mvn");
+      my $ant   = DetectPrerequisite("ant");
+      my $ruby  = DetectPrerequisite("ruby");
+
+      $ENV{JAVA_HOME} ||= dirname( dirname( Cwd::realpath($javac) ) );
+      $ENV{PATH} = "$ENV{JAVA_HOME}/bin:$ENV{PATH}";
+
+      printf( $fmt2v, "USING javac", "$javac (JAVA_HOME=$ENV{JAVA_HOME})" );
+      printf( $fmt2v, "USING java",  $java );
+      printf( $fmt2v, "USING maven", $mvn );
+      printf( $fmt2v, "USING ant",   $ant );
+      printf( $fmt2v, "USING cc",    $cc );
+      printf( $fmt2v, "USING c++",   $cpp );
+      printf( $fmt2v, "USING ruby",  $ruby );
+   }
+
    print "=========================================================================================================\n";
    print "Press enter to proceed";
-
    read STDIN, $_, 1;
 }
 
