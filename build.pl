@@ -177,10 +177,10 @@ sub Checkout($)
       System( "git", "clone", "-b", "junixsocket-parent-2.0.4", "https://github.com/kohlschutter/junixsocket.git" );
    }
 
-   if ( -f "$GLOBAL_PATH_TO_TOP/zm-build/$repo_file" )
+   if ( -f "$GLOBAL_PATH_TO_SCRIPT_DIR/$repo_file" )
    {
       my @REPOS = ();
-      eval `cat $GLOBAL_PATH_TO_TOP/zm-build/$repo_file`;
+      eval `cat $GLOBAL_PATH_TO_SCRIPT_DIR/$repo_file`;
       Die( "Error in $repo_file)", "$@" ) if ($@);
 
       for my $repo_details (@REPOS)
@@ -193,7 +193,7 @@ sub Checkout($)
 sub Build()
 {
    my @ALL_BUILDS;
-   eval `cat $GLOBAL_PATH_TO_TOP/zm-build/global_builds.pl`;
+   eval `cat $GLOBAL_PATH_TO_SCRIPT_DIR/global_builds.pl`;
    Die( "Error in global_builds.pl", "$@" ) if ($@);
 
    my @ant_attributes = (
@@ -295,9 +295,9 @@ sub Build()
    }
 
    Run(
-      cd   => "zm-build",
+      cd   => "$GLOBAL_PATH_TO_SCRIPT_DIR",
       call => sub {
-         System("(cd .. && rsync -az --delete zm-build $GLOBAL_BUILD_DIR/)");
+         System("rsync -az --delete . $GLOBAL_BUILD_DIR/zm-build");
          System("mkdir -p $GLOBAL_BUILD_DIR/zm-build/$GLOBAL_BUILD_ARCH");
 
          my @ALL_PACKAGES = ();
@@ -321,7 +321,7 @@ sub Build()
                      buildTimeStamp='$GLOBAL_BUILD_TS' \\
                      buildLogFile='$GLOBAL_BUILD_DIR/logs/build.log' \\
                      zimbraThirdPartyServer='$GLOBAL_THIRDPARTY_SERVER' \\
-                        bash $GLOBAL_PATH_TO_TOP/zm-build/scripts/packages/$package_script.sh
+                        bash $GLOBAL_PATH_TO_SCRIPT_DIR/scripts/packages/$package_script.sh
                   "
                );
             }
@@ -341,9 +341,9 @@ sub GetPackageList($)
 
    my @PACKAGES = ();
 
-   if ( -f "$GLOBAL_PATH_TO_TOP/zm-build/$package_list_file" )
+   if ( -f "$GLOBAL_PATH_TO_SCRIPT_DIR/$package_list_file" )
    {
-      eval `cat $GLOBAL_PATH_TO_TOP/zm-build/$package_list_file`;
+      eval `cat $GLOBAL_PATH_TO_SCRIPT_DIR/$package_list_file`;
       Die( "Error in $package_list_file", "$@" ) if ($@);
    }
 
@@ -382,7 +382,7 @@ sub GetNewBuildTs()
 
 sub GetBuildOS()
 {
-   chomp( my $r = `$GLOBAL_PATH_TO_TOP/zm-build/rpmconf/Build/get_plat_tag.sh` );
+   chomp( my $r = `$GLOBAL_PATH_TO_SCRIPT_DIR/rpmconf/Build/get_plat_tag.sh` );
 
    return $r
      if ($r);
