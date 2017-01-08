@@ -55,7 +55,10 @@ sub InitGlobalBuildVars()
    $GLOBAL_BUILD_NO ||= GetNewBuildNo();
    $GLOBAL_BUILD_TS ||= GetNewBuildTs();
 
-   my $build_cfg = LoadProperties("$GLOBAL_PATH_TO_SCRIPT_DIR/build.config");
+   Die("You need to create the file config.build, See config.build.in for an example" )
+      if ( !-f "$GLOBAL_PATH_TO_SCRIPT_DIR/config.build" );
+
+   my $build_cfg = LoadProperties("$GLOBAL_PATH_TO_SCRIPT_DIR/config.build");
 
    $GLOBAL_PATH_TO_BUILDS          = $build_cfg->{PATH_TO_BUILDS}          || "$GLOBAL_PATH_TO_TOP/BUILDS";
    $GLOBAL_BUILD_RELEASE           = $build_cfg->{BUILD_RELEASE}           || Die("config not specified BUILD_RELEASE");
