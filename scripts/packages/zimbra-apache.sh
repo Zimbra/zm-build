@@ -32,7 +32,7 @@ main()
     mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf
 
     echo -e "\tCopy package files" >> ${buildLogFile}
-    cp ${repoDir}/zm-convertd-store/conf/httpd.conf ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/httpd.conf
+    cp ${repoDir}/zm-aspell/conf/httpd.conf ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/httpd.conf
     cp ${repoDir}/zm-aspell/conf/php.ini ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/php.ini
 
     CreatePackage "${os}"

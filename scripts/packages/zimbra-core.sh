@@ -551,6 +551,7 @@ main()
    Copy ${repoDir}/zm-licenses/zimbra/ypl-full.txt                                                  ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/YPL.txt
    Copy ${repoDir}/zm-licenses/zimbra/zpl-full.txt                                                  ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/ZPL.txt
 
+   Copy ${repoDir}/zm-migration-tools/ReadMe.txt                                                    ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/zmztozmig.txt
    Copy ${repoDir}/zm-milter/conf/milter.log4j.properties                                           ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/milter.log4j.properties
    Copy ${repoDir}/zm-milter/conf/mta_milter_options.in                                             ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/mta_milter_options.in
 
@@ -943,8 +944,6 @@ main()
       Copy ${repoDir}/zm-voice-store/docs/ZimbraVoice-Extension.txt                                    ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/ZimbraVoice-Extension.txt
       Copy ${repoDir}/zm-voice-store/docs/soap-voice-admin.txt                                         ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/soap-voice-admin.txt
       Copy ${repoDir}/zm-voice-store/docs/soap-voice.txt                                               ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/soap-voice.txt
-
-      Copy ${repoDir}/zm-migration-tools/ReadMe.txt                                                    ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/zmztozmig.txt
    fi
 
    CreatePackage "${os}"
