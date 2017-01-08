@@ -255,31 +255,27 @@ sub Build($)
 
       if ( my $dir = $build_info->{dir} )
       {
+         my $target_dir = "$GLOBAL_BUILD_DIR/$dir";
+
          next
            unless ( !defined $ENV{ENV_BUILD_INCLUDE} || grep { $dir =~ /$_/ } split( ",", $ENV{ENV_BUILD_INCLUDE} ) );
+
+         RemoveTargetInDir( $dir, $GLOBAL_BUILD_DIR )
+           if ( ( $ENV{ENV_FORCE_REBUILD} && grep { $dir =~ /$_/ } split( ",", $ENV{ENV_FORCE_REBUILD} ) ) );
 
          print "=========================================================================================================\n";
          print color('bright_blue') . "BUILDING: $dir ($cnt of " . scalar(@ALL_BUILDS) . ")" . color('reset') . "\n";
          print "\n";
 
-         unlink glob "$dir/.built.*"
-           if ( $ENV{ENV_FORCE_REBUILD} && grep { $dir =~ /$_/ } split( ",", $ENV{ENV_FORCE_REBUILD} ) );
-
-         if ( $ENV{ENV_RESUME_FLAG} && -f "$dir/.built.$GLOBAL_BUILD_TS" )
+         if ( $ENV{ENV_RESUME_FLAG} && -f "$target_dir/.built.$GLOBAL_BUILD_TS" )
          {
-            print color('bright_yellow') . "WARNING: SKIPPING - to force a rebuild - either delete $dir/.built.$GLOBAL_BUILD_TS or include in ENV_FORCE_REBUILD" . color('reset') . "\n";
+            print color('bright_yellow') . "SKIPPING... [TO REBUILD REMOVE '$target_dir']" . color('reset') . "\n";
             print "=========================================================================================================\n";
             print "\n";
          }
          else
          {
-            unlink glob "$dir/.built.*";
-
-            my $force_clean = 1
-              if ( !$ENV{ENV_SKIP_CLEAN_FLAG} || -f "$dir/.force-clean" );
-
-            RemoveTargetInDir( $dir, $GLOBAL_BUILD_DIR )
-               if ($force_clean);
+            unlink glob "$target_dir/.built.*";
 
             Run(
                cd    => $dir,
@@ -289,21 +285,21 @@ sub Build($)
 
                   if ( my $ant_targets = $build_info->{ant_targets} )
                   {
-                     eval { System( "ant", "clean" ) if ($force_clean); };
+                     eval { System( "ant", "clean" ) if ( !$ENV{ENV_SKIP_CLEAN_FLAG} ); };
 
                      System( "ant", @ant_attributes, @$ant_targets );
                   }
 
                   if ( my $mvn_targets = $build_info->{mvn_targets} )
                   {
-                     eval { System( "mvn", "clean" ) if ($force_clean); };
+                     eval { System( "mvn", "clean" ) if ( !$ENV{ENV_SKIP_CLEAN_FLAG} ); };
 
                      System( "mvn", @$mvn_targets );
                   }
 
                   if ( my $make_targets = $build_info->{make_targets} )
                   {
-                     eval { System( "make", "clean" ) if ($force_clean); };
+                     eval { System( "make", "clean" ) if ( !$ENV{ENV_SKIP_CLEAN_FLAG} ); };
 
                      System( "make", @$make_targets );
                   }
@@ -312,17 +308,14 @@ sub Build($)
                   {
                      &$stage_cmd
                   }
+
+                  if ( !exists $build_info->{partial} )
+                  {
+                     system( "mkdir", "-p", "$target_dir" );
+                     System( "touch", "$target_dir/.built.$GLOBAL_BUILD_TS" );
+                  }
                },
             );
-
-            if ( !exists $build_info->{partial} )
-            {
-               eval { unlink("$dir/.force-clean"); };
-
-               print "Creating $dir/.built.$GLOBAL_BUILD_TS\n";
-               open( FD, "> $dir/.built.$GLOBAL_BUILD_TS" );
-               close(FD);
-            }
 
             print "\n";
             print "=========================================================================================================\n";
@@ -452,6 +445,8 @@ sub Clone($)
       {
          System( "git", "clone", "-b", $repo_branch, "ssh://git\@stash.corp.synacor.com:7999/zimbra/$repo_name.git", $repo_dir );
       }
+
+      RemoveTargetInDir( $repo_name, $GLOBAL_BUILD_DIR );
    }
    else
    {
@@ -465,9 +460,7 @@ sub Clone($)
 
          if ( "@{$z->{out}}" !~ /Already up-to-date/ )
          {
-            System( "find", $repo_dir, "-name", ".built.*", "-exec", "rm", "-f", "{}", ";" );
-            open( FD, "> $repo_dir/.force-clean" );
-            close(FD);
+            RemoveTargetInDir( $repo_name, $GLOBAL_BUILD_DIR );
          }
       }
    }

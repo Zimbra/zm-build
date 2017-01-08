@@ -733,8 +733,8 @@ main()
 
    Copy ${repoDir}/zm-timezones/conf/timezones.ics                                                  ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/timezones.ics
 
-   Copy ${repoDir}/junixsocket-native/build/junixsocket-native-2.0.4-amd64-Linux-gpp-jni.nar        ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/junixsocket-native-2.0.4-amd64-Linux-gpp-jni.nar
-   Copy ${repoDir}/junixsocket-native/build/libjunixsocket-native-2.0.4.so                          ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/libjunixsocket-native-2.0.4.so
+   Cpy2 ${repoDir}/junixsocket/junixsocket-native/build/junixsocket-native-*.nar                    ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/
+   Cpy2 ${repoDir}/junixsocket/junixsocket-native/build/libjunixsocket-native-*.so                  ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/
    Copy ${repoDir}/zm-libnative/build/dist/libzimbra-native.so                                      ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/libzimbra-native.so
 
    local zimbrathirdpartyjars=(
