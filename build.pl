@@ -72,9 +72,8 @@ sub InitGlobalBuildVars()
    $GLOBAL_BUILD_OS                = GetBuildOS();
    $GLOBAL_BUILD_ARCH              = GetBuildArch();
 
-   s/[.]//g for ( $GLOBAL_BUILD_RELEASE_NO_SHORT = $GLOBAL_BUILD_RELEASE_NO );
-
-   $GLOBAL_BUILD_DIR = "$GLOBAL_PATH_TO_BUILDS/$GLOBAL_BUILD_OS/$GLOBAL_BUILD_RELEASE-$GLOBAL_BUILD_RELEASE_NO_SHORT/${GLOBAL_BUILD_TS}_$GLOBAL_BUILD_TYPE";
+   $GLOBAL_BUILD_RELEASE_NO_SHORT = $GLOBAL_BUILD_RELEASE_NO =~ s/[.]//gr;
+   $GLOBAL_BUILD_DIR              = "$GLOBAL_PATH_TO_BUILDS/$GLOBAL_BUILD_OS/$GLOBAL_BUILD_RELEASE-$GLOBAL_BUILD_RELEASE_NO_SHORT/${GLOBAL_BUILD_TS}_$GLOBAL_BUILD_TYPE";
 
    my $fmt2v = " %-35s: %s\n";
 
@@ -197,10 +196,7 @@ sub LoadBuilds($)
 
    my %repo_hash = map { $_->{name} => 1 } @$repo_list;
 
-   my @filtered_builds = grep {
-      s/\/.*// for ( my $repo_name_from_dir = $_->{dir} );
-      $repo_hash{$repo_name_from_dir};
-   } @agg_builds;
+   my @filtered_builds = grep { $repo_hash{ $_->{dir} =~ s/\/.*//r }; } @agg_builds;
 
    return \@filtered_builds;
 }
@@ -268,8 +264,7 @@ sub Build($)
                Run(
                   cd    => $GLOBAL_BUILD_DIR,
                   child => sub {
-                     my $sane_dir = $dir;
-                     $sane_dir =~ s/\/*$//;
+                     my $sane_dir = $dir =~ s/\/*$//r;
                      System( "rm", "-rf", $sane_dir ) if ($sane_dir);
                   },
                ) if ($force_clean);
