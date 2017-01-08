@@ -3,9 +3,11 @@
 use strict;
 use warnings;
 
+use Config;
 use Cwd;
 use Data::Dumper;
 use File::Basename;
+use IPC::Cmd qw/run can_run/;
 use Net::Domain;
 use Term::ANSIColor;
 
@@ -126,8 +128,8 @@ sub InitGlobalBuildVars()
 
 sub Prepare()
 {
-   system( "rm", "-rf", "$ENV{HOME}/.zcs-deps" )   if ( $ENV{ENV_CACHE_CLEAR_FLAG} );
-   system( "rm", "-rf", "$ENV{HOME}/.ivy2/cache" ) if ( $ENV{ENV_CACHE_CLEAR_FLAG} );
+   System( "rm", "-rf", "$ENV{HOME}/.zcs-deps" )   if ( $ENV{ENV_CACHE_CLEAR_FLAG} );
+   System( "rm", "-rf", "$ENV{HOME}/.ivy2/cache" ) if ( $ENV{ENV_CACHE_CLEAR_FLAG} );
 
    open( FD, ">", "$GLOBAL_PATH_TO_SCRIPT_DIR/.build.last_no_ts" );
    print FD "BUILD_NO=$GLOBAL_BUILD_NO\n";
@@ -239,8 +241,8 @@ sub Build()
               if ( !$ENV{ENV_SKIP_CLEAN_FLAG} || -f "$dir/.force-clean" );
 
             Run(
-               cd   => $dir,
-               call => sub {
+               cd    => $dir,
+               child => sub {
 
                   my $abs_dir = Cwd::abs_path();
 
@@ -295,8 +297,8 @@ sub Build()
    }
 
    Run(
-      cd   => "$GLOBAL_PATH_TO_SCRIPT_DIR",
-      call => sub {
+      cd    => "$GLOBAL_PATH_TO_SCRIPT_DIR",
+      child => sub {
          System("rsync -az --delete . $GLOBAL_BUILD_DIR/zm-build");
          System("mkdir -p $GLOBAL_BUILD_DIR/zm-build/$GLOBAL_BUILD_ARCH");
 
@@ -424,13 +426,10 @@ sub Clone($)
    {
       if ( !defined $ENV{ENV_GIT_UPDATE_INCLUDE} || grep { $repo_name =~ /$_/ } split( ",", $ENV{ENV_GIT_UPDATE_INCLUDE} ) )
       {
-         print "#: Updating $repo_name...\n";
+         print "\n";
+         my $z = System("cd '$repo_name' && git pull origin");
 
-         chomp( my $z = `cd $repo_name && git pull origin` );
-
-         print $z . "\n";
-
-         if ( $z !~ /Already up-to-date/ )
+         if ( "@{$z->{out}}" !~ /Already up-to-date/ )
          {
             System( "find", $repo_name, "-name", ".built.*", "-exec", "rm", "-f", "{}", ";" );
             open( FD, "> $repo_name/.force-clean" );
@@ -442,23 +441,18 @@ sub Clone($)
 
 sub System(@)
 {
-   my $sep = "";
+   my $cmd_str = "@_";
 
-   print color('bright_green');
-   print "#: ";
-   for my $a (@_)
-   {
-      print $sep . $a;
-      $sep = " \\\n   ";
-   }
+   print color('bright_green') . "#: pwd=@{[Cwd::getcwd()]}" . color('reset') . "\n";
+   print color('bright_green') . "#: $cmd_str" . color('reset') . "\n";
 
-   print $sep . " #(pwd=" . Cwd::getcwd() . ")\n\n";
-   print color('reset');
+   $! = 0;
+   my ( $success, $error_message, $full_buf, $stdout_buf, $stderr_buf ) = run( command => \@_, verbose => 1 );
 
-   my $x = system @_;
+   Die( "cmd='$cmd_str'", $error_message )
+     if ( !$success );
 
-   Die( "cmd='@_'", "ret=$x" )
-     if ( $x != 0 );
+   return { msg => $error_message, out => $stdout_buf, err => $stderr_buf };
 }
 
 
@@ -505,7 +499,7 @@ sub Run(%)
 {
    my %args  = (@_);
    my $chdir = $args{cd};
-   my $call  = $args{call};
+   my $child = $args{child};
 
    my $child_pid = fork();
 
@@ -514,20 +508,29 @@ sub Run(%)
 
    if ( $child_pid != 0 )    # parent
    {
-      while ( waitpid( $child_pid, 0 ) == -1 ) { }
-      my $x = $?;
+      local $?;
 
-      Die( "run $!", $x )
-        if ( $x != 0 );
+      while ( waitpid( $child_pid, 0 ) == -1 ) { }
+
+      Die( "child $child_pid died", einfo($?) )
+        if ( $? != 0 );
    }
    else
    {
-      chdir($chdir)
-        if ($chdir);
+      Die( "chdir to '$chdir' failed", einfo($?) )
+        if ( $chdir && !chdir($chdir) );
 
-      my $ret = &$call;
-      exit($ret);
+      $! = 0;
+      &$child;
+      exit(0);
    }
+}
+
+sub einfo()
+{
+   my @SIG_NAME = split( / /, $Config{sig_name} );
+
+   return "ret=" . ( $? >> 8 ) . ( ( $? & 127 ) ? ", sig=SIG" . $SIG_NAME[ $? & 127 ] : "" );
 }
 
 sub Die($;$)
@@ -536,14 +539,12 @@ sub Die($;$)
    my $info = shift || "";
    my $err  = "$!";
 
-   use Text::Wrap;
-
    print "\n";
    print "\n";
    print "=========================================================================================================\n";
-   print color('red') . "FAILURE MSG" . color('reset') . " : " . wrap( '', '            : ', $msg ) . "\n";
-   print color('red') . "SYSTEM ERR " . color('reset') . " : " . wrap( '', '            : ', $err ) . "\n" if ($err);
-   print color('red') . "EXTRA INFO " . color('reset') . " : " . wrap( '', '            : ', $info ) . "\n" if ($info);
+   print color('red') . "FAILURE MSG" . color('reset') . " : $msg\n";
+   print color('red') . "SYSTEM ERR " . color('reset') . " : $err\n"  if ($err);
+   print color('red') . "EXTRA INFO " . color('reset') . " : $info\n" if ($info);
    print "\n";
    print "=========================================================================================================\n";
    print color('red');
@@ -558,5 +559,5 @@ sub Die($;$)
    print "\n";
    print "=========================================================================================================\n";
 
-   die "ABORTING";
+   die "END";
 }
