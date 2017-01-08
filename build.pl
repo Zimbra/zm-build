@@ -3,13 +3,13 @@
 use strict;
 use warnings;
 
-use File::Basename;
+use Cwd;
 use Data::Dumper;
+use File::Basename;
 use Net::Domain;
 use Term::ANSIColor;
-use Cwd;
 
-my $GLOBAL_PATH_TO_SCRIPT;
+my $GLOBAL_PATH_TO_SCRIPT_FILE;
 my $GLOBAL_PATH_TO_SCRIPT_DIR;
 my $GLOBAL_PATH_TO_TOP;
 my $GLOBAL_PATH_TO_BUILDS;
@@ -31,9 +31,9 @@ my $GLOBAL_BUILD_DEBUG_FLAG;
 
 BEGIN
 {
-   $GLOBAL_PATH_TO_SCRIPT     = Cwd::abs_path(__FILE__);
-   $GLOBAL_PATH_TO_SCRIPT_DIR = dirname($GLOBAL_PATH_TO_SCRIPT);
-   $GLOBAL_PATH_TO_TOP        = dirname($GLOBAL_PATH_TO_SCRIPT_DIR);
+   $GLOBAL_PATH_TO_SCRIPT_FILE = Cwd::abs_path(__FILE__);
+   $GLOBAL_PATH_TO_SCRIPT_DIR  = dirname($GLOBAL_PATH_TO_SCRIPT_FILE);
+   $GLOBAL_PATH_TO_TOP         = dirname($GLOBAL_PATH_TO_SCRIPT_DIR);
 }
 
 chdir($GLOBAL_PATH_TO_TOP);
@@ -97,14 +97,14 @@ sub InitGlobalBuildVars()
    my $fmt2v = " %-35s: %s\n";
 
    print "=========================================================================================================\n";
-   foreach my $x (`grep -o '\\<GLOBAL[_][A-Z_]*\\>' $GLOBAL_PATH_TO_SCRIPT | sort | uniq`)
+   foreach my $x (`grep -o '\\<GLOBAL[_][A-Z_]*\\>' '$GLOBAL_PATH_TO_SCRIPT_FILE' | sort | uniq`)
    {
       chomp($x);
       printf( $fmt2v, $x, eval "\$$x" );
    }
 
    print "=========================================================================================================\n";
-   foreach my $x (`grep -o '\\<[E][N][V]_[A-Z_]*\\>' $GLOBAL_PATH_TO_SCRIPT | sort | uniq`)
+   foreach my $x (`grep -o '\\<[E][N][V]_[A-Z_]*\\>' '$GLOBAL_PATH_TO_SCRIPT_FILE' | sort | uniq`)
    {
       chomp($x);
       printf( $fmt2v, $x, defined $ENV{$x} ? $ENV{$x} : "(undef)" );
@@ -112,12 +112,12 @@ sub InitGlobalBuildVars()
 
    print "=========================================================================================================\n";
    printf( $fmt2v, "USING javac", "$javac (JAVA_HOME=$ENV{JAVA_HOME})" );
-   printf( $fmt2v, "USING java", $java );
+   printf( $fmt2v, "USING java",  $java );
    printf( $fmt2v, "USING maven", $mvn );
-   printf( $fmt2v, "USING ant", $ant );
-   printf( $fmt2v, "USING cc", $cc );
-   printf( $fmt2v, "USING c++", $cpp );
-   printf( $fmt2v, "USING ruby", $ruby );
+   printf( $fmt2v, "USING ant",   $ant );
+   printf( $fmt2v, "USING cc",    $cc );
+   printf( $fmt2v, "USING c++",   $cpp );
+   printf( $fmt2v, "USING ruby",  $ruby );
    print "=========================================================================================================\n";
    print "Press enter to proceed";
 
@@ -181,7 +181,7 @@ sub Checkout($)
    {
       my @REPOS = ();
       eval `cat $GLOBAL_PATH_TO_TOP/zm-build/$repo_file`;
-      Die("Error in $repo_file)", "$@") if ($@);
+      Die( "Error in $repo_file)", "$@" ) if ($@);
 
       for my $repo_details (@REPOS)
       {
@@ -194,7 +194,7 @@ sub Build()
 {
    my @ALL_BUILDS;
    eval `cat $GLOBAL_PATH_TO_TOP/zm-build/global_builds.pl`;
-   Die("Error in global_builds.pl", "$@") if ($@);
+   Die( "Error in global_builds.pl", "$@" ) if ($@);
 
    my @ant_attributes = (
       "-Ddebug=${GLOBAL_BUILD_DEBUG_FLAG}",
@@ -216,7 +216,7 @@ sub Build()
       if ( my $dir = $build_info->{dir} )
       {
          next
-            unless ( !defined $ENV{ENV_BUILD_INCLUDE} || grep { $dir =~ /$_/ } split( ",", $ENV{ENV_BUILD_INCLUDE} ) );
+           unless ( !defined $ENV{ENV_BUILD_INCLUDE} || grep { $dir =~ /$_/ } split( ",", $ENV{ENV_BUILD_INCLUDE} ) );
 
          print "=========================================================================================================\n";
          print color('bright_blue') . "BUILDING: $dir ($cnt of " . scalar(@ALL_BUILDS) . color('reset') . ")\n";
@@ -344,7 +344,7 @@ sub GetPackageList($)
    if ( -f "$GLOBAL_PATH_TO_TOP/zm-build/$package_list_file" )
    {
       eval `cat $GLOBAL_PATH_TO_TOP/zm-build/$package_list_file`;
-      Die("Error in $package_list_file", "$@") if ($@);
+      Die( "Error in $package_list_file", "$@" ) if ($@);
    }
 
    return \@PACKAGES;
@@ -455,8 +455,8 @@ sub System(@)
 
    my $x = system @_;
 
-   Die("cmd='@_'", "ret=$x")
-      if ( $x != 0 );
+   Die( "cmd='@_'", "ret=$x" )
+     if ( $x != 0 );
 }
 
 
@@ -476,7 +476,7 @@ sub SlurpFile($)
 {
    my $f = shift;
 
-   open( FD, "<", "$f" ) || Die("In open", "file='$f'");
+   open( FD, "<", "$f" ) || Die( "In open", "file='$f'" );
 
    chomp( my @x = <FD> );
    close(FD);
@@ -487,7 +487,7 @@ sub SlurpFile($)
 
 sub DetectPrerequisite($;$)
 {
-   my $util_name       = shift;
+   my $util_name = shift;
    my $additional_path = shift || "";
 
    chomp( my $detected_util = `PATH="$additional_path:\$PATH" \\which "$util_name" 2>/dev/null | sed -e 's,//*,/,g'` );
@@ -515,7 +515,7 @@ sub Run(%)
       while ( waitpid( $child_pid, 0 ) == -1 ) { }
       my $x = $?;
 
-      Die("run $!", $x)
+      Die( "run $!", $x )
         if ( $x != 0 );
    }
    else
@@ -530,24 +530,25 @@ sub Run(%)
 
 sub Die($;$)
 {
-   my $msg = shift;
+   my $msg  = shift;
    my $info = shift || "";
-   my $err = "$!";
+   my $err  = "$!";
 
    use Text::Wrap;
 
    print "\n";
    print "\n";
    print "=========================================================================================================\n";
-   print color('red') . "FAILURE MSG" . color('reset') . " : " . wrap('', '            : ', $msg) . "\n";
-   print color('red') . "SYSTEM ERR " . color('reset') . " : " . wrap('', '            : ', $err) . "\n" if($err);
-   print color('red') . "EXTRA INFO " . color('reset') . " : " . wrap('', '            : ', $info) . "\n" if($info);
+   print color('red') . "FAILURE MSG" . color('reset') . " : " . wrap( '', '            : ', $msg ) . "\n";
+   print color('red') . "SYSTEM ERR " . color('reset') . " : " . wrap( '', '            : ', $err ) . "\n" if ($err);
+   print color('red') . "EXTRA INFO " . color('reset') . " : " . wrap( '', '            : ', $info ) . "\n" if ($info);
    print "\n";
    print "=========================================================================================================\n";
    print color('red');
    print "--Stack Trace--\n";
    my $i = 1;
-   while ( (my @call_details = (caller($i++))) )
+
+   while ( ( my @call_details = ( caller( $i++ ) ) ) )
    {
       print $call_details[1] . ":" . $call_details[2] . " called from " . $call_details[3] . "\n";
    }
