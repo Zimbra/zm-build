@@ -56,8 +56,8 @@ sub InitGlobalBuildVars()
    $GLOBAL_BUILD_NO ||= GetNewBuildNo();
    $GLOBAL_BUILD_TS ||= GetNewBuildTs();
 
-   Die("You need to create the file config.build, See config.build.in for an example" )
-      if ( !-f "$GLOBAL_PATH_TO_SCRIPT_DIR/config.build" );
+   Die("You need to create the file config.build, See config.build.in for an example")
+     if ( !-f "$GLOBAL_PATH_TO_SCRIPT_DIR/config.build" );
 
    my $build_cfg = LoadProperties("$GLOBAL_PATH_TO_SCRIPT_DIR/config.build");
 
