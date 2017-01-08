@@ -55,9 +55,9 @@ sub main
 
 sub InitGlobalBuildVars()
 {
-   if ( -f "/tmp/last.build_no_ts" && $ENV{ENV_RESUME_FLAG} )
+   if ( -f "$GLOBAL_PATH_TO_SCRIPT_DIR/.build.last_no_ts" && $ENV{ENV_RESUME_FLAG} )
    {
-      my $x = LoadProperties("/tmp/last.build_no_ts");
+      my $x = LoadProperties("$GLOBAL_PATH_TO_SCRIPT_DIR/.build.last_no_ts");
 
       $GLOBAL_BUILD_NO = $x->{BUILD_NO};
       $GLOBAL_BUILD_TS = $x->{BUILD_TS};
@@ -129,7 +129,7 @@ sub Prepare()
    system( "rm", "-rf", "$ENV{HOME}/.zcs-deps" )   if ( $ENV{ENV_CACHE_CLEAR_FLAG} );
    system( "rm", "-rf", "$ENV{HOME}/.ivy2/cache" ) if ( $ENV{ENV_CACHE_CLEAR_FLAG} );
 
-   open( FD, ">", "/tmp/last.build_no_ts" );
+   open( FD, ">", "$GLOBAL_PATH_TO_SCRIPT_DIR/.build.last_no_ts" );
    print FD "BUILD_NO=$GLOBAL_BUILD_NO\n";
    print FD "BUILD_TS=$GLOBAL_BUILD_TS\n";
    close(FD);
@@ -355,16 +355,18 @@ sub GetNewBuildNo()
 {
    my $line = 1000;
 
-   if ( -f "/tmp/build_counter.txt" )
+   my $file = "$GLOBAL_PATH_TO_SCRIPT_DIR/.build.number";
+
+   if ( -f $file )
    {
-      open( FD1, "<", "/tmp/build_counter.txt" );
+      open( FD1, "<", $file );
       $line = <FD1>;
       close(FD1);
 
-      $line += 2;
+      $line += 1;
    }
 
-   open( FD2, ">", "/tmp/build_counter.txt" );
+   open( FD2, ">", $file );
    printf( FD2 "%s\n", $line );
    close(FD2);
 
