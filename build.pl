@@ -122,8 +122,8 @@ sub InitGlobalBuildVars()
 
 sub Prepare()
 {
-   System( "rm", "-rf", "$ENV{HOME}/.zcs-deps" )   if ( $ENV{ENV_CACHE_CLEAR_FLAG} );
-   System( "rm", "-rf", "$ENV{HOME}/.ivy2/cache" ) if ( $ENV{ENV_CACHE_CLEAR_FLAG} );
+   RemoveTargetInDir( ".zcs-deps",   $ENV{HOME} ) if ( $ENV{ENV_CACHE_CLEAR_FLAG} );
+   RemoveTargetInDir( ".ivy2/cache", $ENV{HOME} ) if ( $ENV{ENV_CACHE_CLEAR_FLAG} );
 
    open( FD, ">", "$GLOBAL_PATH_TO_SCRIPT_DIR/.build.last_no_ts" );
    print FD "BUILD_NO=$GLOBAL_BUILD_NO\n";
@@ -212,6 +212,24 @@ sub Checkout($)
    }
 }
 
+
+sub RemoveTargetInDir($$)
+{
+   my $target = shift;
+   my $chdir  = shift;
+
+   s/\/\/*/\//g, s/\/*$// for ( my $sane_target = $target );    #remove multiple slashes, and ending slashes, dots
+
+   if ( $sane_target && $chdir && -d $chdir )
+   {
+      eval
+      {
+         Run( cd => $chdir, child => sub { System( "rm", "-rf", $sane_target ); } );
+      };
+   }
+}
+
+
 sub Build($)
 {
    my $repo_list = shift;
@@ -260,15 +278,8 @@ sub Build($)
             my $force_clean = 1
               if ( !$ENV{ENV_SKIP_CLEAN_FLAG} || -f "$dir/.force-clean" );
 
-            eval {
-               Run(
-                  cd    => $GLOBAL_BUILD_DIR,
-                  child => sub {
-                     my $sane_dir = $dir =~ s/\/*$//r;
-                     System( "rm", "-rf", $sane_dir ) if ($sane_dir);
-                  },
-               ) if ($force_clean);
-            };
+            RemoveTargetInDir( $dir, $GLOBAL_BUILD_DIR )
+               if ($force_clean);
 
             Run(
                cd    => $dir,
