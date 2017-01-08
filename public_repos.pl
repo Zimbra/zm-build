@@ -1,4 +1,4 @@
-@REPOS = (
+@ENTRIES = (
    { name => "ant-1.7.0-ziputil-patched",           branch => "dev",             user => "zimbra" },
    { name => "ant-tar-patched",                     branch => "dev",             user => "zimbra" },
    { name => "ical4j-0.9.16-patched",               branch => "dev",             user => "zimbra" },

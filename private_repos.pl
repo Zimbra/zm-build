@@ -1,4 +1,4 @@
-@REPOS = (
+@ENTRIES = (
    { name => "zm-2fa-admin-zimlet",                 branch => "master",          user => "zimbra" },
    { name => "zm-admin-help-network",               branch => "master",          user => "zimbra" },
    { name => "zm-archive-admin-zimlet",             branch => "dev",             user => "zimbra" },

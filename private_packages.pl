@@ -1,4 +1,4 @@
-@PACKAGES = (
+@ENTRIES = (
    "zimbra-archiving",
    "zimbra-convertd",
 );

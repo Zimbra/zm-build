@@ -1,4 +1,4 @@
-@ALL_BUILDS = (
+@ENTRIES = (
    {
       "dir"         => "junixsocket/junixsocket-native",
       "mvn_targets" => ["package"],

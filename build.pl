@@ -165,6 +165,24 @@ sub Prepare()
    }
 }
 
+sub EvalFile($)
+{
+   my $fname = shift;
+
+   my $file = "$GLOBAL_PATH_TO_SCRIPT_DIR/$fname";
+
+   Die( "Error in '$file'", "$@" )
+     if ( !-f $file );
+
+   my @ENTRIES;
+
+   eval `cat '$file'`;
+   Die( "Error in '$file'", "$@" )
+     if ($@);
+
+   return \@ENTRIES;
+}
+
 sub Checkout($)
 {
    my $repo_file = shift;
@@ -179,24 +197,17 @@ sub Checkout($)
       System( "git", "clone", "-b", "junixsocket-parent-2.0.4", "https://github.com/kohlschutter/junixsocket.git" );
    }
 
-   if ( -f "$GLOBAL_PATH_TO_SCRIPT_DIR/$repo_file" )
-   {
-      my @REPOS = ();
-      eval `cat $GLOBAL_PATH_TO_SCRIPT_DIR/$repo_file`;
-      Die( "Error in $repo_file)", "$@" ) if ($@);
+   my @REPOS = @{ EvalFile($repo_file) };
 
-      for my $repo_details (@REPOS)
-      {
-         Clone($repo_details);
-      }
+   for my $repo_details (@REPOS)
+   {
+      Clone($repo_details);
    }
 }
 
 sub Build()
 {
-   my @ALL_BUILDS;
-   eval `cat $GLOBAL_PATH_TO_SCRIPT_DIR/global_builds.pl`;
-   Die( "Error in global_builds.pl", "$@" ) if ($@);
+   my @ALL_BUILDS = @{ EvalFile("global_builds.pl") };
 
    my @ant_attributes = (
       "-Ddebug=${GLOBAL_BUILD_DEBUG_FLAG}",
@@ -303,8 +314,8 @@ sub Build()
          System("mkdir -p $GLOBAL_BUILD_DIR/zm-build/$GLOBAL_BUILD_ARCH");
 
          my @ALL_PACKAGES = ();
-         push( @ALL_PACKAGES, @{ GetPackageList("public_packages.pl") } );
-         push( @ALL_PACKAGES, @{ GetPackageList("private_packages.pl") } ) if ( $GLOBAL_BUILD_TYPE eq "NETWORK" );
+         push( @ALL_PACKAGES, @{ EvalFile("public_packages.pl") } );
+         push( @ALL_PACKAGES, @{ EvalFile("private_packages.pl") } ) if ( $GLOBAL_BUILD_TYPE eq "NETWORK" );
          push( @ALL_PACKAGES, "zcs-bundle" );
 
          for my $package_script (@ALL_PACKAGES)
@@ -334,22 +345,6 @@ sub Build()
    print "\n";
    print "=========================================================================================================\n";
    print "\n";
-}
-
-
-sub GetPackageList($)
-{
-   my $package_list_file = shift;
-
-   my @PACKAGES = ();
-
-   if ( -f "$GLOBAL_PATH_TO_SCRIPT_DIR/$package_list_file" )
-   {
-      eval `cat $GLOBAL_PATH_TO_SCRIPT_DIR/$package_list_file`;
-      Die( "Error in $package_list_file", "$@" ) if ($@);
-   }
-
-   return \@PACKAGES;
 }
 
 

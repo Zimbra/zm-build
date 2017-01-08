@@ -1,4 +1,4 @@
-@PACKAGES = (
+@ENTRIES = (
    "zimbra-ldap",
    "zimbra-snmp",
    "zimbra-spell",
