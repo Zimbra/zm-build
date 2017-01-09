@@ -3,13 +3,16 @@
 use strict;
 use warnings;
 
-use File::Basename;
+use Config;
+use Cwd;
 use Data::Dumper;
+use File::Basename;
+use File::Copy;
+use IPC::Cmd qw/run can_run/;
 use Net::Domain;
 use Term::ANSIColor;
-use Cwd;
 
-my $GLOBAL_PATH_TO_SCRIPT;
+my $GLOBAL_PATH_TO_SCRIPT_FILE;
 my $GLOBAL_PATH_TO_SCRIPT_DIR;
 my $GLOBAL_PATH_TO_TOP;
 my $GLOBAL_PATH_TO_BUILDS;
@@ -31,33 +34,20 @@ my $GLOBAL_BUILD_DEBUG_FLAG;
 
 BEGIN
 {
-   $GLOBAL_PATH_TO_SCRIPT     = Cwd::abs_path(__FILE__);
-   $GLOBAL_PATH_TO_SCRIPT_DIR = dirname($GLOBAL_PATH_TO_SCRIPT);
-   $GLOBAL_PATH_TO_TOP        = dirname($GLOBAL_PATH_TO_SCRIPT_DIR);
+   $GLOBAL_PATH_TO_SCRIPT_FILE = Cwd::abs_path(__FILE__);
+   $GLOBAL_PATH_TO_SCRIPT_DIR  = dirname($GLOBAL_PATH_TO_SCRIPT_FILE);
+   $GLOBAL_PATH_TO_TOP         = dirname($GLOBAL_PATH_TO_SCRIPT_DIR);
 }
 
 chdir($GLOBAL_PATH_TO_TOP);
 
 ##############################################################################################
 
-main();
-
-##############################################################################################
-
-sub main
-{
-   InitGlobalBuildVars();
-   Prepare();
-   Checkout("public_repos.pl");
-   Checkout("private_repos.pl") if ( $GLOBAL_BUILD_TYPE eq "NETWORK" );
-   Build();
-}
-
 sub InitGlobalBuildVars()
 {
-   if ( -f "/tmp/last.build_no_ts" && $ENV{ENV_RESUME_FLAG} )
+   if ( -f "$GLOBAL_PATH_TO_SCRIPT_DIR/.build.last_no_ts" && $ENV{ENV_RESUME_FLAG} )
    {
-      my $x = LoadProperties("/tmp/last.build_no_ts");
+      my $x = LoadProperties("$GLOBAL_PATH_TO_SCRIPT_DIR/.build.last_no_ts");
 
       $GLOBAL_BUILD_NO = $x->{BUILD_NO};
       $GLOBAL_BUILD_TS = $x->{BUILD_TS};
@@ -66,7 +56,10 @@ sub InitGlobalBuildVars()
    $GLOBAL_BUILD_NO ||= GetNewBuildNo();
    $GLOBAL_BUILD_TS ||= GetNewBuildTs();
 
-   my $build_cfg = LoadProperties("$GLOBAL_PATH_TO_SCRIPT_DIR/build.config");
+   Die("You need to create the file config.build, See config.build.in for an example")
+     if ( !-f "$GLOBAL_PATH_TO_SCRIPT_DIR/config.build" );
+
+   my $build_cfg = LoadProperties("$GLOBAL_PATH_TO_SCRIPT_DIR/config.build");
 
    $GLOBAL_PATH_TO_BUILDS          = $build_cfg->{PATH_TO_BUILDS}          || "$GLOBAL_PATH_TO_TOP/BUILDS";
    $GLOBAL_BUILD_RELEASE           = $build_cfg->{BUILD_RELEASE}           || Die("config not specified BUILD_RELEASE");
@@ -79,57 +72,60 @@ sub InitGlobalBuildVars()
    $GLOBAL_BUILD_OS                = GetBuildOS();
    $GLOBAL_BUILD_ARCH              = GetBuildArch();
 
-   s/[.]//g for ( $GLOBAL_BUILD_RELEASE_NO_SHORT = $GLOBAL_BUILD_RELEASE_NO );
-
-   $GLOBAL_BUILD_DIR = "$GLOBAL_PATH_TO_BUILDS/$GLOBAL_BUILD_OS/$GLOBAL_BUILD_RELEASE-$GLOBAL_BUILD_RELEASE_NO_SHORT/${GLOBAL_BUILD_TS}_$GLOBAL_BUILD_TYPE";
-
-   my $cc    = DetectPrerequisite("cc");
-   my $cpp   = DetectPrerequisite("c++");
-   my $java  = DetectPrerequisite( "java", $ENV{JAVA_HOME} ? "$ENV{JAVA_HOME}/bin" : "" );
-   my $javac = DetectPrerequisite( "javac", $ENV{JAVA_HOME} ? "$ENV{JAVA_HOME}/bin" : "" );
-   my $mvn   = DetectPrerequisite("mvn");
-   my $ant   = DetectPrerequisite("ant");
-   my $ruby  = DetectPrerequisite("ruby");
-
-   $ENV{JAVA_HOME} ||= dirname( dirname( Cwd::realpath($javac) ) );
-   $ENV{PATH} = "$ENV{JAVA_HOME}/bin:$ENV{PATH}";
+   $GLOBAL_BUILD_RELEASE_NO_SHORT = $GLOBAL_BUILD_RELEASE_NO =~ s/[.]//gr;
+   $GLOBAL_BUILD_DIR              = "$GLOBAL_PATH_TO_BUILDS/$GLOBAL_BUILD_OS/$GLOBAL_BUILD_RELEASE-$GLOBAL_BUILD_RELEASE_NO_SHORT/${GLOBAL_BUILD_TS}_$GLOBAL_BUILD_TYPE";
 
    my $fmt2v = " %-35s: %s\n";
 
    print "=========================================================================================================\n";
-   foreach my $x (`grep -o '\\<GLOBAL[_][A-Z_]*\\>' $GLOBAL_PATH_TO_SCRIPT | sort | uniq`)
+   foreach my $x (`grep -o '\\<GLOBAL[_][A-Z_]*\\>' '$GLOBAL_PATH_TO_SCRIPT_FILE' | sort | uniq`)
    {
       chomp($x);
       printf( $fmt2v, $x, eval "\$$x" );
    }
 
    print "=========================================================================================================\n";
-   foreach my $x (`grep -o '\\<[E][N][V]_[A-Z_]*\\>' $GLOBAL_PATH_TO_SCRIPT | sort | uniq`)
+   foreach my $x (`grep -o '\\<[E][N][V]_[A-Z_]*\\>' '$GLOBAL_PATH_TO_SCRIPT_FILE' | sort | uniq`)
    {
       chomp($x);
       printf( $fmt2v, $x, defined $ENV{$x} ? $ENV{$x} : "(undef)" );
    }
 
    print "=========================================================================================================\n";
-   printf( $fmt2v, "USING javac", "$javac (JAVA_HOME=$ENV{JAVA_HOME})" );
-   printf( $fmt2v, "USING java", $java );
-   printf( $fmt2v, "USING maven", $mvn );
-   printf( $fmt2v, "USING ant", $ant );
-   printf( $fmt2v, "USING cc", $cc );
-   printf( $fmt2v, "USING c++", $cpp );
-   printf( $fmt2v, "USING ruby", $ruby );
+   {
+      $ENV{PATH} = "$ENV{HOME}/.zm-dev-tools/bin/Sencha/Cmd/4.0.2.67:$ENV{HOME}/.zm-dev-tools/bin:$ENV{PATH}";
+
+      my $cc    = DetectPrerequisite("cc");
+      my $cpp   = DetectPrerequisite("c++");
+      my $java  = DetectPrerequisite( "java", $ENV{JAVA_HOME} ? "$ENV{JAVA_HOME}/bin" : "" );
+      my $javac = DetectPrerequisite( "javac", $ENV{JAVA_HOME} ? "$ENV{JAVA_HOME}/bin" : "" );
+      my $mvn   = DetectPrerequisite("mvn");
+      my $ant   = DetectPrerequisite("ant");
+      my $ruby  = DetectPrerequisite("ruby");
+
+      $ENV{JAVA_HOME} ||= dirname( dirname( Cwd::realpath($javac) ) );
+      $ENV{PATH} = "$ENV{JAVA_HOME}/bin:$ENV{PATH}";
+
+      printf( $fmt2v, "USING javac", "$javac (JAVA_HOME=$ENV{JAVA_HOME})" );
+      printf( $fmt2v, "USING java",  $java );
+      printf( $fmt2v, "USING maven", $mvn );
+      printf( $fmt2v, "USING ant",   $ant );
+      printf( $fmt2v, "USING cc",    $cc );
+      printf( $fmt2v, "USING c++",   $cpp );
+      printf( $fmt2v, "USING ruby",  $ruby );
+   }
+
    print "=========================================================================================================\n";
    print "Press enter to proceed";
-
    read STDIN, $_, 1;
 }
 
 sub Prepare()
 {
-   system( "rm", "-rf", "$ENV{HOME}/.zcs-deps" )   if ( $ENV{ENV_CACHE_CLEAR_FLAG} );
-   system( "rm", "-rf", "$ENV{HOME}/.ivy2/cache" ) if ( $ENV{ENV_CACHE_CLEAR_FLAG} );
+   RemoveTargetInDir( ".zcs-deps",   $ENV{HOME} ) if ( $ENV{ENV_CACHE_CLEAR_FLAG} );
+   RemoveTargetInDir( ".ivy2/cache", $ENV{HOME} ) if ( $ENV{ENV_CACHE_CLEAR_FLAG} );
 
-   open( FD, ">", "/tmp/last.build_no_ts" );
+   open( FD, ">", "$GLOBAL_PATH_TO_SCRIPT_DIR/.build.last_no_ts" );
    print FD "BUILD_NO=$GLOBAL_BUILD_NO\n";
    print FD "BUILD_TS=$GLOBAL_BUILD_TS\n";
    close(FD);
@@ -163,38 +159,82 @@ sub Prepare()
    }
 }
 
+sub EvalFile($)
+{
+   my $fname = shift;
+
+   my $file = "$GLOBAL_PATH_TO_SCRIPT_DIR/$fname";
+
+   Die( "Error in '$file'", "$@" )
+     if ( !-f $file );
+
+   my @ENTRIES;
+
+   eval `cat '$file'`;
+   Die( "Error in '$file'", "$@" )
+     if ($@);
+
+   return \@ENTRIES;
+}
+
+sub LoadRepos()
+{
+   my @agg_repos = ();
+
+   push( @agg_repos, @{ EvalFile("public_repos.pl") } );
+   push( @agg_repos, @{ EvalFile("private_repos.pl") } ) if ( $GLOBAL_BUILD_TYPE eq "NETWORK" );
+
+   return \@agg_repos;
+}
+
+
+sub LoadBuilds($)
+{
+   my $repo_list = shift;
+
+   my @agg_builds = @{ EvalFile("global_builds.pl") };
+
+   my %repo_hash = map { $_->{name} => 1 } @$repo_list;
+
+   my @filtered_builds = grep { $repo_hash{ $_->{dir} =~ s/\/.*//r }; } @agg_builds;
+
+   return \@filtered_builds;
+}
+
+
 sub Checkout($)
 {
-   my $repo_file = shift;
+   my $repo_list = shift;
 
-   if ( !-d "zimbra-package-stub" )
+   for my $repo_details (@$repo_list)
    {
-      System( "git", "clone", "https://github.com/Zimbra/zimbra-package-stub.git" );
-   }
-
-   if ( !-d "junixsocket" )
-   {
-      System( "git", "clone", "-b", "junixsocket-parent-2.0.4", "https://github.com/kohlschutter/junixsocket.git" );
-   }
-
-   if ( -f "$GLOBAL_PATH_TO_TOP/zm-build/$repo_file" )
-   {
-      my @REPOS = ();
-      eval `cat $GLOBAL_PATH_TO_TOP/zm-build/$repo_file`;
-      Die("Error in $repo_file)", "$@") if ($@);
-
-      for my $repo_details (@REPOS)
-      {
-         Clone($repo_details);
-      }
+      Clone($repo_details);
    }
 }
 
-sub Build()
+
+sub RemoveTargetInDir($$)
 {
-   my @ALL_BUILDS;
-   eval `cat $GLOBAL_PATH_TO_TOP/zm-build/global_builds.pl`;
-   Die("Error in global_builds.pl", "$@") if ($@);
+   my $target = shift;
+   my $chdir  = shift;
+
+   s/\/\/*/\//g, s/\/*$// for ( my $sane_target = $target );    #remove multiple slashes, and ending slashes, dots
+
+   if ( $sane_target && $chdir && -d $chdir )
+   {
+      eval
+      {
+         Run( cd => $chdir, child => sub { System( "rm", "-rf", $sane_target ); } );
+      };
+   }
+}
+
+
+sub Build($)
+{
+   my $repo_list = shift;
+
+   my @ALL_BUILDS = @{ LoadBuilds($repo_list) };
 
    my @ant_attributes = (
       "-Ddebug=${GLOBAL_BUILD_DEBUG_FLAG}",
@@ -215,58 +255,51 @@ sub Build()
 
       if ( my $dir = $build_info->{dir} )
       {
+         my $target_dir = "$GLOBAL_BUILD_DIR/$dir";
+
          next
-            unless ( !defined $ENV{ENV_BUILD_INCLUDE} || grep { $dir =~ /$_/ } split( ",", $ENV{ENV_BUILD_INCLUDE} ) );
+           unless ( !defined $ENV{ENV_BUILD_INCLUDE} || grep { $dir =~ /$_/ } split( ",", $ENV{ENV_BUILD_INCLUDE} ) );
+
+         RemoveTargetInDir( $dir, $GLOBAL_BUILD_DIR )
+           if ( ( $ENV{ENV_FORCE_REBUILD} && grep { $dir =~ /$_/ } split( ",", $ENV{ENV_FORCE_REBUILD} ) ) );
 
          print "=========================================================================================================\n";
-         print color('bright_blue') . "BUILDING: $dir ($cnt of " . scalar(@ALL_BUILDS) . color('reset') . ")\n";
+         print color('bright_blue') . "BUILDING: $dir ($cnt of " . scalar(@ALL_BUILDS) . ")" . color('reset') . "\n";
          print "\n";
 
-         unlink glob "$dir/.built.*"
-           if ( $ENV{ENV_FORCE_REBUILD} && grep { $dir =~ /$_/ } split( ",", $ENV{ENV_FORCE_REBUILD} ) );
-
-         if ( $ENV{ENV_RESUME_FLAG} && -f "$dir/.built.$GLOBAL_BUILD_TS" )
+         if ( $ENV{ENV_RESUME_FLAG} && -f "$target_dir/.built.$GLOBAL_BUILD_TS" )
          {
-            print color('bright_yellow') . "WARNING: SKIPPING - to force a rebuild - either delete $dir/.built.$GLOBAL_BUILD_TS or include in ENV_FORCE_REBUILD" . color('reset') . "\n";
+            print color('bright_yellow') . "SKIPPING... [TO REBUILD REMOVE '$target_dir']" . color('reset') . "\n";
             print "=========================================================================================================\n";
             print "\n";
          }
          else
          {
-            unlink glob "$dir/.built.*";
-
-            my $force_clean = 1
-              if ( !$ENV{ENV_SKIP_CLEAN_FLAG} || -f "$dir/.force-clean" );
+            unlink glob "$target_dir/.built.*";
 
             Run(
-               cd   => $dir,
-               call => sub {
+               cd    => $dir,
+               child => sub {
 
                   my $abs_dir = Cwd::abs_path();
 
-                  eval {
-                     s/\/*$//
-                       for ( my $sane_dir = $dir );
-                     System("cd '$GLOBAL_BUILD_DIR' && rm -rf '$sane_dir'") if ( $force_clean && $sane_dir );
-                  };
-
                   if ( my $ant_targets = $build_info->{ant_targets} )
                   {
-                     eval { System( "ant", "clean" ) if ($force_clean); };
+                     eval { System( "ant", "clean" ) if ( !$ENV{ENV_SKIP_CLEAN_FLAG} ); };
 
                      System( "ant", @ant_attributes, @$ant_targets );
                   }
 
                   if ( my $mvn_targets = $build_info->{mvn_targets} )
                   {
-                     eval { System( "mvn", "clean" ) if ($force_clean); };
+                     eval { System( "mvn", "clean" ) if ( !$ENV{ENV_SKIP_CLEAN_FLAG} ); };
 
                      System( "mvn", @$mvn_targets );
                   }
 
                   if ( my $make_targets = $build_info->{make_targets} )
                   {
-                     eval { System( "make", "clean" ) if ($force_clean); };
+                     eval { System( "make", "clean" ) if ( !$ENV{ENV_SKIP_CLEAN_FLAG} ); };
 
                      System( "make", @$make_targets );
                   }
@@ -275,17 +308,14 @@ sub Build()
                   {
                      &$stage_cmd
                   }
+
+                  if ( !exists $build_info->{partial} )
+                  {
+                     system( "mkdir", "-p", "$target_dir" );
+                     System( "touch", "$target_dir/.built.$GLOBAL_BUILD_TS" );
+                  }
                },
             );
-
-            if ( !exists $build_info->{partial} )
-            {
-               eval { unlink("$dir/.force-clean"); };
-
-               print "Creating $dir/.built.$GLOBAL_BUILD_TS\n";
-               open( FD, "> $dir/.built.$GLOBAL_BUILD_TS" );
-               close(FD);
-            }
 
             print "\n";
             print "=========================================================================================================\n";
@@ -295,14 +325,14 @@ sub Build()
    }
 
    Run(
-      cd   => "zm-build",
-      call => sub {
-         System("(cd .. && rsync -az --delete zm-build $GLOBAL_BUILD_DIR/)");
+      cd    => "$GLOBAL_PATH_TO_SCRIPT_DIR",
+      child => sub {
+         System("rsync -az --delete . $GLOBAL_BUILD_DIR/zm-build");
          System("mkdir -p $GLOBAL_BUILD_DIR/zm-build/$GLOBAL_BUILD_ARCH");
 
          my @ALL_PACKAGES = ();
-         push( @ALL_PACKAGES, @{ GetPackageList("public_packages.pl") } );
-         push( @ALL_PACKAGES, @{ GetPackageList("private_packages.pl") } ) if ( $GLOBAL_BUILD_TYPE eq "NETWORK" );
+         push( @ALL_PACKAGES, @{ EvalFile("public_packages.pl") } );
+         push( @ALL_PACKAGES, @{ EvalFile("private_packages.pl") } ) if ( $GLOBAL_BUILD_TYPE eq "NETWORK" );
          push( @ALL_PACKAGES, "zcs-bundle" );
 
          for my $package_script (@ALL_PACKAGES)
@@ -321,7 +351,7 @@ sub Build()
                      buildTimeStamp='$GLOBAL_BUILD_TS' \\
                      buildLogFile='$GLOBAL_BUILD_DIR/logs/build.log' \\
                      zimbraThirdPartyServer='$GLOBAL_THIRDPARTY_SERVER' \\
-                        bash $GLOBAL_PATH_TO_TOP/zm-build/scripts/packages/$package_script.sh
+                        bash $GLOBAL_PATH_TO_SCRIPT_DIR/scripts/packages/$package_script.sh
                   "
                );
             }
@@ -335,36 +365,22 @@ sub Build()
 }
 
 
-sub GetPackageList($)
-{
-   my $package_list_file = shift;
-
-   my @PACKAGES = ();
-
-   if ( -f "$GLOBAL_PATH_TO_TOP/zm-build/$package_list_file" )
-   {
-      eval `cat $GLOBAL_PATH_TO_TOP/zm-build/$package_list_file`;
-      Die("Error in $package_list_file", "$@") if ($@);
-   }
-
-   return \@PACKAGES;
-}
-
-
 sub GetNewBuildNo()
 {
    my $line = 1000;
 
-   if ( -f "/tmp/build_counter.txt" )
+   my $file = "$GLOBAL_PATH_TO_SCRIPT_DIR/.build.number";
+
+   if ( -f $file )
    {
-      open( FD1, "<", "/tmp/build_counter.txt" );
+      open( FD1, "<", $file );
       $line = <FD1>;
       close(FD1);
 
-      $line += 2;
+      $line += 1;
    }
 
-   open( FD2, ">", "/tmp/build_counter.txt" );
+   open( FD2, ">", $file );
    printf( FD2 "%s\n", $line );
    close(FD2);
 
@@ -380,7 +396,7 @@ sub GetNewBuildTs()
 
 sub GetBuildOS()
 {
-   chomp( my $r = `$GLOBAL_PATH_TO_TOP/zm-build/rpmconf/Build/get_plat_tag.sh` );
+   chomp( my $r = `$GLOBAL_PATH_TO_SCRIPT_DIR/rpmconf/Build/get_plat_tag.sh` );
 
    return $r
      if ($r);
@@ -411,28 +427,40 @@ sub Clone($)
    my $repo_details = shift;
 
    my $repo_name   = $repo_details->{name};
-   my $repo_user   = $repo_details->{user};
    my $repo_branch = $repo_details->{branch};
 
-   if ( !-d $repo_name )
+   my $repo_dir = "$GLOBAL_PATH_TO_TOP/$repo_name";
+
+   if ( !-d $repo_dir )
    {
-      System( "git", "clone", "-b", $repo_branch, "ssh://git\@stash.corp.synacor.com:7999/$repo_user/$repo_name.git" );
+      if ( $repo_name =~ /zimbra-package-stub/ )
+      {
+         System( "git", "clone", "https://github.com/Zimbra/zimbra-package-stub.git", $repo_dir );
+      }
+      elsif ( $repo_name =~ /junixsocket/ )
+      {
+         System( "git", "clone", "-b", "$repo_branch", "https://github.com/kohlschutter/junixsocket.git", $repo_dir );
+      }
+      else
+      {
+         System( "git", "clone", "-b", $repo_branch, "ssh://git\@stash.corp.synacor.com:7999/zimbra/$repo_name.git", $repo_dir );
+      }
+
+      RemoveTargetInDir( $repo_name, $GLOBAL_BUILD_DIR );
    }
    else
    {
       if ( !defined $ENV{ENV_GIT_UPDATE_INCLUDE} || grep { $repo_name =~ /$_/ } split( ",", $ENV{ENV_GIT_UPDATE_INCLUDE} ) )
       {
-         print "#: Updating $repo_name...\n";
+         next
+           if ( $repo_name =~ /junixsocket/ );    #FIXME - some issue with branch junixsocket-parent-2.0.4"
 
-         chomp( my $z = `cd $repo_name && git pull origin` );
+         print "\n";
+         my $z = System("cd '$repo_dir' && git pull origin");
 
-         print $z . "\n";
-
-         if ( $z !~ /Already up-to-date/ )
+         if ( "@{$z->{out}}" !~ /Already up-to-date/ )
          {
-            System( "find", $repo_name, "-name", ".built.*", "-exec", "rm", "-f", "{}", ";" );
-            open( FD, "> $repo_name/.force-clean" );
-            close(FD);
+            RemoveTargetInDir( $repo_name, $GLOBAL_BUILD_DIR );
          }
       }
    }
@@ -440,23 +468,18 @@ sub Clone($)
 
 sub System(@)
 {
-   my $sep = "";
+   my $cmd_str = "@_";
 
-   print color('bright_green');
-   print "#: ";
-   for my $a (@_)
-   {
-      print $sep . $a;
-      $sep = " \\\n   ";
-   }
+   print color('bright_green') . "#: pwd=@{[Cwd::getcwd()]}" . color('reset') . "\n";
+   print color('bright_green') . "#: $cmd_str" . color('reset') . "\n";
 
-   print $sep . " #(pwd=" . Cwd::getcwd() . ")\n\n";
-   print color('reset');
+   $! = 0;
+   my ( $success, $error_message, $full_buf, $stdout_buf, $stderr_buf ) = run( command => \@_, verbose => 1 );
 
-   my $x = system @_;
+   Die( "cmd='$cmd_str'", $error_message )
+     if ( !$success );
 
-   Die("cmd='@_'", "ret=$x")
-      if ( $x != 0 );
+   return { msg => $error_message, out => $stdout_buf, err => $stderr_buf };
 }
 
 
@@ -476,7 +499,7 @@ sub SlurpFile($)
 {
    my $f = shift;
 
-   open( FD, "<", "$f" ) || Die("In open", "file='$f'");
+   open( FD, "<", "$f" ) || Die( "In open", "file='$f'" );
 
    chomp( my @x = <FD> );
    close(FD);
@@ -487,7 +510,7 @@ sub SlurpFile($)
 
 sub DetectPrerequisite($;$)
 {
-   my $util_name       = shift;
+   my $util_name = shift;
    my $additional_path = shift || "";
 
    chomp( my $detected_util = `PATH="$additional_path:\$PATH" \\which "$util_name" 2>/dev/null | sed -e 's,//*,/,g'` );
@@ -503,7 +526,7 @@ sub Run(%)
 {
    my %args  = (@_);
    my $chdir = $args{cd};
-   my $call  = $args{call};
+   my $child = $args{child};
 
    my $child_pid = fork();
 
@@ -512,42 +535,50 @@ sub Run(%)
 
    if ( $child_pid != 0 )    # parent
    {
-      while ( waitpid( $child_pid, 0 ) == -1 ) { }
-      my $x = $?;
+      local $?;
 
-      Die("run $!", $x)
-        if ( $x != 0 );
+      while ( waitpid( $child_pid, 0 ) == -1 ) { }
+
+      Die( "child $child_pid died", einfo($?) )
+        if ( $? != 0 );
    }
    else
    {
-      chdir($chdir)
-        if ($chdir);
+      Die( "chdir to '$chdir' failed", einfo($?) )
+        if ( $chdir && !chdir($chdir) );
 
-      my $ret = &$call;
-      exit($ret);
+      $! = 0;
+      &$child;
+      exit(0);
    }
+}
+
+sub einfo()
+{
+   my @SIG_NAME = split( / /, $Config{sig_name} );
+
+   return "ret=" . ( $? >> 8 ) . ( ( $? & 127 ) ? ", sig=SIG" . $SIG_NAME[ $? & 127 ] : "" );
 }
 
 sub Die($;$)
 {
-   my $msg = shift;
+   my $msg  = shift;
    my $info = shift || "";
-   my $err = "$!";
-
-   use Text::Wrap;
+   my $err  = "$!";
 
    print "\n";
    print "\n";
    print "=========================================================================================================\n";
-   print color('red') . "FAILURE MSG" . color('reset') . " : " . wrap('', '            : ', $msg) . "\n";
-   print color('red') . "SYSTEM ERR " . color('reset') . " : " . wrap('', '            : ', $err) . "\n" if($err);
-   print color('red') . "EXTRA INFO " . color('reset') . " : " . wrap('', '            : ', $info) . "\n" if($info);
+   print color('red') . "FAILURE MSG" . color('reset') . " : $msg\n";
+   print color('red') . "SYSTEM ERR " . color('reset') . " : $err\n"  if ($err);
+   print color('red') . "EXTRA INFO " . color('reset') . " : $info\n" if ($info);
    print "\n";
    print "=========================================================================================================\n";
    print color('red');
    print "--Stack Trace--\n";
    my $i = 1;
-   while ( (my @call_details = (caller($i++))) )
+
+   while ( ( my @call_details = ( caller( $i++ ) ) ) )
    {
       print $call_details[1] . ":" . $call_details[2] . " called from " . $call_details[3] . "\n";
    }
@@ -555,5 +586,24 @@ sub Die($;$)
    print "\n";
    print "=========================================================================================================\n";
 
-   die "ABORTING";
+   die "END";
 }
+
+##############################################################################################
+
+sub main()
+{
+   InitGlobalBuildVars();
+
+   my $all_repos = LoadRepos();
+
+   Prepare();
+
+   Checkout($all_repos);
+
+   Build($all_repos);
+}
+
+main();
+
+##############################################################################################

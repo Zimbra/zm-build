@@ -1,11 +1,11 @@
-@ALL_BUILDS = (
+@ENTRIES = (
    {
       "dir"         => "junixsocket/junixsocket-native",
       "mvn_targets" => ["package"],
       "stage_cmd"   => sub {
-         System("mkdir -p $GLOBAL_BUILD_DIR/junixsocket-native/build");
-         System("cp -f target/nar/junixsocket-native-2.0.4-amd64-Linux-gpp-jni/lib/amd64-Linux-gpp/jni/libjunixsocket-native-2.0.4.so $GLOBAL_BUILD_DIR/junixsocket-native/build/");
-         System("cp -f target/junixsocket-native-2.0.4-amd64-Linux-gpp-jni.nar  $GLOBAL_BUILD_DIR/junixsocket-native/build/");
+         System("mkdir -p $GLOBAL_BUILD_DIR/junixsocket/junixsocket-native/build");
+         System("cp -f target/nar/junixsocket-native-*/lib/*/jni/libjunixsocket-native-*.so $GLOBAL_BUILD_DIR/junixsocket/junixsocket-native/build/");
+         System("cp -f target/junixsocket-native-*.nar  $GLOBAL_BUILD_DIR/junixsocket/junixsocket-native/build/");
       },
    },
    {
