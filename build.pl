@@ -27,7 +27,7 @@ my $GLOBAL_BUILD_RELEASE_NO_SHORT;
 my $GLOBAL_BUILD_RELEASE_CANDIDATE;
 my $GLOBAL_BUILD_TYPE;
 my $GLOBAL_BUILD_ARCH;
-my $GLOBAL_THIRDPARTY_SERVER;
+my $GLOBAL_BUILD_THIRDPARTY_SERVER;
 my $GLOBAL_BUILD_PROD_FLAG;
 my $GLOBAL_BUILD_DEBUG_FLAG;
 
@@ -66,7 +66,7 @@ sub InitGlobalBuildVars()
    $GLOBAL_BUILD_RELEASE_NO        = $build_cfg->{BUILD_RELEASE_NO}        || Die("config not specified BUILD_RELEASE_NO");
    $GLOBAL_BUILD_RELEASE_CANDIDATE = $build_cfg->{BUILD_RELEASE_CANDIDATE} || Die("config not specified BUILD_RELEASE_CANDIDATE");
    $GLOBAL_BUILD_TYPE              = $build_cfg->{BUILD_TYPE}              || Die("config not specified BUILD_TYPE");
-   $GLOBAL_THIRDPARTY_SERVER       = $build_cfg->{THIRDPARTY_SERVER}       || Die("config not specified THIRDPARTY_SERVER");
+   $GLOBAL_BUILD_THIRDPARTY_SERVER = $build_cfg->{BUILD_THIRDPARTY_SERVER} || Die("config not specified BUILD_THIRDPARTY_SERVER");
    $GLOBAL_BUILD_PROD_FLAG         = $build_cfg->{BUILD_PROD_FLAG}         || "true";
    $GLOBAL_BUILD_DEBUG_FLAG        = $build_cfg->{BUILD_DEBUG_FLAG}        || "false";
    $GLOBAL_BUILD_OS                = GetBuildOS();
@@ -136,14 +136,14 @@ sub Prepare()
    System( "mkdir", "-p", "$ENV{HOME}/.ivy2/cache" );
 
    my @TP_JARS = (
-      "http://$GLOBAL_THIRDPARTY_SERVER/ZimbraThirdParty/third-party-jars/ant-1.7.0-ziputil-patched.jar",
-      "http://$GLOBAL_THIRDPARTY_SERVER/ZimbraThirdParty/third-party-jars/ant-contrib-1.0b1.jar",
-      "http://$GLOBAL_THIRDPARTY_SERVER/ZimbraThirdParty/third-party-jars/ews_2010-1.0.jar",
-      "http://$GLOBAL_THIRDPARTY_SERVER/ZimbraThirdParty/third-party-jars/jruby-complete-1.6.3.jar",
-      "http://$GLOBAL_THIRDPARTY_SERVER/ZimbraThirdParty/third-party-jars/plugin.jar",
-      "http://$GLOBAL_THIRDPARTY_SERVER/ZimbraThirdParty/third-party-jars/servlet-api-3.1.jar",
-      "http://$GLOBAL_THIRDPARTY_SERVER/ZimbraThirdParty/third-party-jars/unboundid-ldapsdk-2.3.5-se.jar",
-      "http://$GLOBAL_THIRDPARTY_SERVER/ZimbraThirdParty/third-party-jars/zimbrastore-test-1.0.jar",
+      "http://$GLOBAL_BUILD_THIRDPARTY_SERVER/ZimbraThirdParty/third-party-jars/ant-1.7.0-ziputil-patched.jar",
+      "http://$GLOBAL_BUILD_THIRDPARTY_SERVER/ZimbraThirdParty/third-party-jars/ant-contrib-1.0b1.jar",
+      "http://$GLOBAL_BUILD_THIRDPARTY_SERVER/ZimbraThirdParty/third-party-jars/ews_2010-1.0.jar",
+      "http://$GLOBAL_BUILD_THIRDPARTY_SERVER/ZimbraThirdParty/third-party-jars/jruby-complete-1.6.3.jar",
+      "http://$GLOBAL_BUILD_THIRDPARTY_SERVER/ZimbraThirdParty/third-party-jars/plugin.jar",
+      "http://$GLOBAL_BUILD_THIRDPARTY_SERVER/ZimbraThirdParty/third-party-jars/servlet-api-3.1.jar",
+      "http://$GLOBAL_BUILD_THIRDPARTY_SERVER/ZimbraThirdParty/third-party-jars/unboundid-ldapsdk-2.3.5-se.jar",
+      "http://$GLOBAL_BUILD_THIRDPARTY_SERVER/ZimbraThirdParty/third-party-jars/zimbrastore-test-1.0.jar",
    );
 
    for my $j_url (@TP_JARS)
