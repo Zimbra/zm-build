@@ -15,8 +15,8 @@ use Term::ANSIColor;
 my $GLOBAL_PATH_TO_SCRIPT_FILE;
 my $GLOBAL_PATH_TO_SCRIPT_DIR;
 my $GLOBAL_PATH_TO_TOP;
-my $GLOBAL_PATH_TO_BUILDS;
 
+my $GLOBAL_BUILD_ARTIFACTS_BASE_DIR;
 my $GLOBAL_BUILD_NO;
 my $GLOBAL_BUILD_TS;
 my $GLOBAL_BUILD_DIR;
@@ -61,7 +61,7 @@ sub InitGlobalBuildVars()
 
    my $build_cfg = LoadProperties("$GLOBAL_PATH_TO_SCRIPT_DIR/config.build");
 
-   $GLOBAL_PATH_TO_BUILDS          = $build_cfg->{PATH_TO_BUILDS}          || "$GLOBAL_PATH_TO_TOP/BUILDS";
+   $GLOBAL_BUILD_ARTIFACTS_BASE_DIR = $build_cfg->{BUILD_ARTIFACTS_BASE_DIR} || "$GLOBAL_PATH_TO_TOP/BUILDS";
    $GLOBAL_BUILD_RELEASE           = $build_cfg->{BUILD_RELEASE}           || Die("config not specified BUILD_RELEASE");
    $GLOBAL_BUILD_RELEASE_NO        = $build_cfg->{BUILD_RELEASE_NO}        || Die("config not specified BUILD_RELEASE_NO");
    $GLOBAL_BUILD_RELEASE_CANDIDATE = $build_cfg->{BUILD_RELEASE_CANDIDATE} || Die("config not specified BUILD_RELEASE_CANDIDATE");
@@ -71,9 +71,8 @@ sub InitGlobalBuildVars()
    $GLOBAL_BUILD_DEBUG_FLAG        = $build_cfg->{BUILD_DEBUG_FLAG}        || "false";
    $GLOBAL_BUILD_OS                = GetBuildOS();
    $GLOBAL_BUILD_ARCH              = GetBuildArch();
-
-   $GLOBAL_BUILD_RELEASE_NO_SHORT = $GLOBAL_BUILD_RELEASE_NO =~ s/[.]//gr;
-   $GLOBAL_BUILD_DIR              = "$GLOBAL_PATH_TO_BUILDS/$GLOBAL_BUILD_OS/$GLOBAL_BUILD_RELEASE-$GLOBAL_BUILD_RELEASE_NO_SHORT/${GLOBAL_BUILD_TS}_$GLOBAL_BUILD_TYPE";
+   $GLOBAL_BUILD_RELEASE_NO_SHORT  = $GLOBAL_BUILD_RELEASE_NO =~ s/[.]//gr;
+   $GLOBAL_BUILD_DIR               = "$GLOBAL_BUILD_ARTIFACTS_BASE_DIR/$GLOBAL_BUILD_OS/$GLOBAL_BUILD_RELEASE-$GLOBAL_BUILD_RELEASE_NO_SHORT/${GLOBAL_BUILD_TS}_$GLOBAL_BUILD_TYPE";
 
    my $fmt2v = " %-35s: %s\n";
 
