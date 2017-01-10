@@ -17,6 +17,7 @@ my $GLOBAL_PATH_TO_SCRIPT_DIR;
 my $GLOBAL_PATH_TO_TOP;
 
 my $GLOBAL_BUILD_ARTIFACTS_BASE_DIR;
+my $GLOBAL_BUILD_SOURCES_BASE_DIR;
 my $GLOBAL_BUILD_NO;
 my $GLOBAL_BUILD_TS;
 my $GLOBAL_BUILD_DIR;
@@ -62,6 +63,7 @@ sub InitGlobalBuildVars()
    my $build_cfg = LoadProperties("$GLOBAL_PATH_TO_SCRIPT_DIR/config.build");
 
    $GLOBAL_BUILD_ARTIFACTS_BASE_DIR = $build_cfg->{BUILD_ARTIFACTS_BASE_DIR} || "$GLOBAL_PATH_TO_TOP/BUILDS";
+   $GLOBAL_BUILD_SOURCES_BASE_DIR  = $build_cfg->{BUILD_SOURCES_BASE_DIR}  || $GLOBAL_PATH_TO_TOP;
    $GLOBAL_BUILD_RELEASE           = $build_cfg->{BUILD_RELEASE}           || Die("config not specified BUILD_RELEASE");
    $GLOBAL_BUILD_RELEASE_NO        = $build_cfg->{BUILD_RELEASE_NO}        || Die("config not specified BUILD_RELEASE_NO");
    $GLOBAL_BUILD_RELEASE_CANDIDATE = $build_cfg->{BUILD_RELEASE_CANDIDATE} || Die("config not specified BUILD_RELEASE_CANDIDATE");
@@ -428,7 +430,7 @@ sub Clone($)
    my $repo_name   = $repo_details->{name};
    my $repo_branch = $repo_details->{branch};
 
-   my $repo_dir = "$GLOBAL_PATH_TO_TOP/$repo_name";
+   my $repo_dir = "$GLOBAL_BUILD_SOURCES_BASE_DIR/$repo_name";
 
    if ( !-d $repo_dir )
    {
