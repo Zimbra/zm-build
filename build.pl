@@ -8,6 +8,7 @@ use Cwd;
 use Data::Dumper;
 use File::Basename;
 use File::Copy;
+use Getopt::Long;
 use IPC::Cmd qw/run can_run/;
 use Net::Domain;
 use Term::ANSIColor;
@@ -15,6 +16,8 @@ use Term::ANSIColor;
 my $GLOBAL_PATH_TO_SCRIPT_FILE;
 my $GLOBAL_PATH_TO_SCRIPT_DIR;
 my $GLOBAL_PATH_TO_TOP;
+
+#FIXME - remove following $GLOBAL_BUILD_*, and instead use the hash %CFG every place
 
 my $GLOBAL_BUILD_ARTIFACTS_BASE_DIR;
 my $GLOBAL_BUILD_SOURCES_BASE_DIR;
@@ -31,7 +34,9 @@ my $GLOBAL_BUILD_ARCH;
 my $GLOBAL_BUILD_THIRDPARTY_SERVER;
 my $GLOBAL_BUILD_PROD_FLAG;
 my $GLOBAL_BUILD_DEBUG_FLAG;
+my $GLOBAL_BUILD_DEV_TOOL_BASE_DIR;
 
+my %CFG = ();
 
 BEGIN
 {
@@ -44,57 +49,132 @@ chdir($GLOBAL_PATH_TO_TOP);
 
 ##############################################################################################
 
+sub LoadConfiguration($)
+{
+   my $args = shift;
+
+   my $cfg_name    = $args->{name};
+   my $cmd_hash    = $args->{hash_src};
+   my $default_sub = $args->{default_sub};
+
+   my @cfg_list = ();
+   push( @cfg_list, "config.build" );
+   push( @cfg_list, ".build.last_no_ts" ) if ( $ENV{ENV_RESUME_FLAG} );
+
+   my $val;
+   my $src;
+
+   if ( !defined $val )
+   {
+      my $cmd_name = $cfg_name =~ y/A-Z_/a-z-/r;
+
+      if ( $cmd_hash && exists $cmd_hash->{$cmd_name} )
+      {
+         $val = $cmd_hash->{$cmd_name};
+         $src = "cmdline";
+      }
+   }
+
+   if ( !defined $val )
+   {
+      foreach my $file_basename (@cfg_list)
+      {
+         my $file = "$GLOBAL_PATH_TO_SCRIPT_DIR/$file_basename";
+         my $hash = LoadProperties($file)
+           if ( -f $file );
+
+         if ( $hash && exists $hash->{$cfg_name} )
+         {
+            $val = $hash->{$cfg_name};
+            $src = $file_basename;
+            last;
+         }
+      }
+   }
+
+   if ( !defined $val )
+   {
+      if ($default_sub)
+      {
+         $val = &$default_sub($cfg_name);
+         $src = "default";
+      }
+   }
+
+   if ( defined $val )
+   {
+      if ( $cfg_name =~ /BUILD_/ )
+      {
+         eval "\$GLOBAL_${cfg_name} = \"$val\"";    #FIXME - remove eval and instead use the hash %CFG every place
+      }
+
+      $CFG{$cfg_name} = $val;
+
+      printf( " %-25s: %-17s : %s\n", $cfg_name, $cmd_hash ? $src : "detected", $val );
+   }
+}
+
 sub InitGlobalBuildVars()
 {
-   if ( -f "$GLOBAL_PATH_TO_SCRIPT_DIR/.build.last_no_ts" && $ENV{ENV_RESUME_FLAG} )
    {
-      my $x = LoadProperties("$GLOBAL_PATH_TO_SCRIPT_DIR/.build.last_no_ts");
+      my $build_dir_func = sub {
+         return "$GLOBAL_BUILD_ARTIFACTS_BASE_DIR/$GLOBAL_BUILD_OS/$GLOBAL_BUILD_RELEASE-$GLOBAL_BUILD_RELEASE_NO_SHORT/${GLOBAL_BUILD_TS}_$GLOBAL_BUILD_TYPE";
+      };
 
-      $GLOBAL_BUILD_NO = $x->{BUILD_NO};
-      $GLOBAL_BUILD_TS = $x->{BUILD_TS};
+      my %cmd_hash = ();
+
+      my @cmd_args = (
+         { name => "BUILD_NO",                 type => "=i", hash_src => \%cmd_hash, default_sub => sub { return GetNewBuildNo(); }, },
+         { name => "BUILD_TS",                 type => "=i", hash_src => \%cmd_hash, default_sub => sub { return GetNewBuildTs(); }, },
+         { name => "BUILD_ARTIFACTS_BASE_DIR", type => "=s", hash_src => \%cmd_hash, default_sub => sub { return "$GLOBAL_PATH_TO_TOP/BUILDS"; }, },
+         { name => "BUILD_SOURCES_BASE_DIR",   type => "=s", hash_src => \%cmd_hash, default_sub => sub { return $GLOBAL_PATH_TO_TOP; }, },
+         { name => "BUILD_RELEASE",            type => "=s", hash_src => \%cmd_hash, default_sub => sub { Die("@_ not specified"); }, },
+         { name => "BUILD_RELEASE_NO",         type => "=s", hash_src => \%cmd_hash, default_sub => sub { Die("@_ not specified"); }, },
+         { name => "BUILD_RELEASE_CANDIDATE",  type => "=s", hash_src => \%cmd_hash, default_sub => sub { Die("@_ not specified"); }, },
+         { name => "BUILD_TYPE",               type => "=s", hash_src => \%cmd_hash, default_sub => sub { Die("@_ not specified"); }, },
+         { name => "BUILD_THIRDPARTY_SERVER",  type => "=s", hash_src => \%cmd_hash, default_sub => sub { Die("@_ not specified"); }, },
+         { name => "BUILD_PROD_FLAG",          type => "!",  hash_src => \%cmd_hash, default_sub => sub { return 1; }, },
+         { name => "BUILD_DEBUG_FLAG",         type => "!",  hash_src => \%cmd_hash, default_sub => sub { return 0; }, },
+         { name => "BUILD_DEV_TOOL_BASE_DIR",  type => "=s", hash_src => \%cmd_hash, default_sub => sub { return "$ENV{HOME}/.zm-dev-tools"; }, },
+         { name => "INTERACTIVE",              type => "!",  hash_src => \%cmd_hash, default_sub => sub { return 1; }, },
+
+         { name => "BUILD_OS",               type => "", hash_src => undef, default_sub => sub { return GetBuildOS(); }, },
+         { name => "BUILD_ARCH",             type => "", hash_src => undef, default_sub => sub { return GetBuildArch(); }, },
+         { name => "BUILD_RELEASE_NO_SHORT", type => "", hash_src => undef, default_sub => sub { return $GLOBAL_BUILD_RELEASE_NO =~ s/[.]//gr; }, },
+         { name => "BUILD_DIR",              type => "", hash_src => undef, default_sub => $build_dir_func, },
+      );
+
+      {
+         my @cmd_opts = ( map { { opt => ( $_->{name} =~ y/A-Z_/a-z-/r ), opt_s => $_->{type} } } grep { $_->{type} } @cmd_args );
+
+         my $help_func = sub {
+            print "Usage: $0 <options>\n";
+            print "Supported options: \n";
+            print "   --$_->{opt}$_->{opt_s}\n" foreach (@cmd_opts);
+            exit(0);
+         };
+
+         if ( !GetOptions( \%cmd_hash, ( map { $_->{opt} . $_->{opt_s} } @cmd_opts ), help => $help_func ) )
+         {
+            print Die("wrong commandline options, use --help");
+         }
+      }
+
+      print "=========================================================================================================\n";
+      LoadConfiguration($_) foreach (@cmd_args);
+      print "=========================================================================================================\n";
    }
 
-   $GLOBAL_BUILD_NO ||= GetNewBuildNo();
-   $GLOBAL_BUILD_TS ||= GetNewBuildTs();
-
-   Die("You need to create the file config.build, See config.build.in for an example")
-     if ( !-f "$GLOBAL_PATH_TO_SCRIPT_DIR/config.build" );
-
-   my $build_cfg = LoadProperties("$GLOBAL_PATH_TO_SCRIPT_DIR/config.build");
-
-   $GLOBAL_BUILD_ARTIFACTS_BASE_DIR = $build_cfg->{BUILD_ARTIFACTS_BASE_DIR} || "$GLOBAL_PATH_TO_TOP/BUILDS";
-   $GLOBAL_BUILD_SOURCES_BASE_DIR  = $build_cfg->{BUILD_SOURCES_BASE_DIR}  || $GLOBAL_PATH_TO_TOP;
-   $GLOBAL_BUILD_RELEASE           = $build_cfg->{BUILD_RELEASE}           || Die("config not specified BUILD_RELEASE");
-   $GLOBAL_BUILD_RELEASE_NO        = $build_cfg->{BUILD_RELEASE_NO}        || Die("config not specified BUILD_RELEASE_NO");
-   $GLOBAL_BUILD_RELEASE_CANDIDATE = $build_cfg->{BUILD_RELEASE_CANDIDATE} || Die("config not specified BUILD_RELEASE_CANDIDATE");
-   $GLOBAL_BUILD_TYPE              = $build_cfg->{BUILD_TYPE}              || Die("config not specified BUILD_TYPE");
-   $GLOBAL_BUILD_THIRDPARTY_SERVER = $build_cfg->{BUILD_THIRDPARTY_SERVER} || Die("config not specified BUILD_THIRDPARTY_SERVER");
-   $GLOBAL_BUILD_PROD_FLAG         = $build_cfg->{BUILD_PROD_FLAG}         || "true";
-   $GLOBAL_BUILD_DEBUG_FLAG        = $build_cfg->{BUILD_DEBUG_FLAG}        || "false";
-   $GLOBAL_BUILD_OS                = GetBuildOS();
-   $GLOBAL_BUILD_ARCH              = GetBuildArch();
-   $GLOBAL_BUILD_RELEASE_NO_SHORT  = $GLOBAL_BUILD_RELEASE_NO =~ s/[.]//gr;
-   $GLOBAL_BUILD_DIR               = "$GLOBAL_BUILD_ARTIFACTS_BASE_DIR/$GLOBAL_BUILD_OS/$GLOBAL_BUILD_RELEASE-$GLOBAL_BUILD_RELEASE_NO_SHORT/${GLOBAL_BUILD_TS}_$GLOBAL_BUILD_TYPE";
-
-   my $fmt2v = " %-35s: %s\n";
-
-   print "=========================================================================================================\n";
-   foreach my $x (`grep -o '\\<GLOBAL[_][A-Z_]*\\>' '$GLOBAL_PATH_TO_SCRIPT_FILE' | sort | uniq`)
-   {
-      chomp($x);
-      printf( $fmt2v, $x, eval "\$$x" );
-   }
-
-   print "=========================================================================================================\n";
    foreach my $x (`grep -o '\\<[E][N][V]_[A-Z_]*\\>' '$GLOBAL_PATH_TO_SCRIPT_FILE' | sort | uniq`)
    {
       chomp($x);
+      my $fmt2v = " %-25s: %s\n";
       printf( $fmt2v, $x, defined $ENV{$x} ? $ENV{$x} : "(undef)" );
    }
 
    print "=========================================================================================================\n";
    {
-      $ENV{PATH} = "$ENV{HOME}/.zm-dev-tools/bin/Sencha/Cmd/4.0.2.67:$ENV{HOME}/.zm-dev-tools/bin:$ENV{PATH}";
+      $ENV{PATH} = "$GLOBAL_BUILD_DEV_TOOL_BASE_DIR/bin/Sencha/Cmd/4.0.2.67:$GLOBAL_BUILD_DEV_TOOL_BASE_DIR/bin:$ENV{PATH}";
 
       my $cc    = DetectPrerequisite("cc");
       my $cpp   = DetectPrerequisite("c++");
@@ -107,6 +187,7 @@ sub InitGlobalBuildVars()
       $ENV{JAVA_HOME} ||= dirname( dirname( Cwd::realpath($javac) ) );
       $ENV{PATH} = "$ENV{JAVA_HOME}/bin:$ENV{PATH}";
 
+      my $fmt2v = " %-25s: %s\n";
       printf( $fmt2v, "USING javac", "$javac (JAVA_HOME=$ENV{JAVA_HOME})" );
       printf( $fmt2v, "USING java",  $java );
       printf( $fmt2v, "USING maven", $mvn );
@@ -117,8 +198,12 @@ sub InitGlobalBuildVars()
    }
 
    print "=========================================================================================================\n";
-   print "Press enter to proceed";
-   read STDIN, $_, 1;
+
+   if ( $CFG{INTERACTIVE} )
+   {
+      print "Press enter to proceed";
+      read STDIN, $_, 1;
+   }
 }
 
 sub Prepare()
@@ -351,7 +436,7 @@ sub Build($)
                      arch='$GLOBAL_BUILD_ARCH' \\
                      buildTimeStamp='$GLOBAL_BUILD_TS' \\
                      buildLogFile='$GLOBAL_BUILD_DIR/logs/build.log' \\
-                     zimbraThirdPartyServer='$GLOBAL_THIRDPARTY_SERVER' \\
+                     zimbraThirdPartyServer='$GLOBAL_BUILD_THIRDPARTY_SERVER' \\
                         bash $GLOBAL_PATH_TO_SCRIPT_DIR/scripts/packages/$package_script.sh
                   "
                );
