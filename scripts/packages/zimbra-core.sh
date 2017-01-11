@@ -844,7 +844,7 @@ main()
       "spring-context-3.0.7.RELEASE.jar"
       "spring-core-3.0.7.RELEASE.jar"
       "spring-expression-3.0.7.RELEASE.jar"
-      "spymemcached-2.6.jar"
+      "spymemcached-2.12.1.jar"
       "sqlite-jdbc-3.7.15-M1.jar"
       "stax-ex-1.7.7.jar"
       "stax2-api-3.1.1.jar"
