@@ -37,6 +37,9 @@ main()
     echo -e "\tCopy package files" >> ${buildLogFile}
     cp ${repoDir}/zm-build/rpmconf/Env/sudoers.d/02_${currentScript}.deb ${repoDir}/zm-build/${currentPackage}/etc/sudoers.d/02_${currentScript}
 
+    cp  ${repoDir}/zm-dnscache/conf/dns/zimbra-unbound ${repoDir}/zm-build/${currentPackage}/etc/resolvconf/update.d
+    (cd ${repoDir}/zm-build/${currentPackage}; dpkg -b ${repoDir}/zm-build/${currentPackage} ${repoDir}/zm-build/${arch})
+
     CreatePackage "${os}"
 }
 
@@ -58,10 +61,6 @@ CreateDebianPackage()
     cat ${repoDir}/zm-build/rpmconf/Spec/${currentScript}.deb | sed -e "s/@@VERSION@@/${releaseNo}.${releaseCandidate}.${buildNo}.${os/_/.}/" \
         -e "s/@@branch@@/${buildTimeStamp}/" -e "s/@@ARCH@@/${arch}/" -e "s/^Copyright:/Copyright:/" -e "/^%post$/ r ${currentPackage}.post" \
         > ${repoDir}/zm-build/${currentPackage}/DEBIAN/control
-
-    cp  ${repoDir}/zm-dnscache/conf/dns/zimbra-unbound ${repoDir}/zm-build/${currentPackage}/etc/resolvconf/update.d
-    (cd ${repoDir}/zm-build/${currentPackage}; dpkg -b ${repoDir}/zm-build/${currentPackage} ${repoDir}/zm-build/${arch})
-
 }
 
 CreateRhelPackage()
