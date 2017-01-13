@@ -243,6 +243,14 @@ sub Prepare()
          }
       }
    }
+
+   my ( $MAJOR, $MINOR, $MICRO ) = split(/[.]/, "${GLOBAL_BUILD_RELEASE_NO}_${GLOBAL_BUILD_RELEASE_CANDIDATE}" );
+
+   EchoToFile( "$GLOBAL_PATH_TO_SCRIPT_DIR/RE/BUILD", $GLOBAL_BUILD_NO );
+   EchoToFile( "$GLOBAL_PATH_TO_SCRIPT_DIR/RE/MAJOR", $MAJOR );
+   EchoToFile( "$GLOBAL_PATH_TO_SCRIPT_DIR/RE/MINOR", $MINOR );
+   EchoToFile( "$GLOBAL_PATH_TO_SCRIPT_DIR/RE/MICRO", $MICRO );
+   close(FD);
 }
 
 sub EvalFile($)
@@ -521,7 +529,7 @@ sub Clone($)
    {
       if ( $repo_name =~ /zimbra-package-stub/ )
       {
-         System( "git", "clone", "https://github.com/Zimbra/zimbra-package-stub.git", $repo_dir );
+         System( "git", "clone", "-b", "$repo_branch", "https://github.com/Zimbra/zimbra-package-stub.git", $repo_dir );
       }
       elsif ( $repo_name =~ /junixsocket/ )
       {
@@ -585,12 +593,23 @@ sub SlurpFile($)
 {
    my $f = shift;
 
-   open( FD, "<", "$f" ) || Die( "In open", "file='$f'" );
+   open( FD, "<", "$f" ) || Die( "In open for read", "file='$f'" );
 
    chomp( my @x = <FD> );
    close(FD);
 
    return \@x;
+}
+
+
+sub EchoToFile($$)
+{
+   my $f = shift;
+   my $w = shift;
+
+   open( FD, ">", "$f" ) || Die( "In open for write", "file='$f'" );
+   print FD $w . "\n";
+   close(FD);
 }
 
 
