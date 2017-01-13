@@ -66,7 +66,7 @@ sub LoadConfiguration($)
 
    if ( !defined $val )
    {
-      my $cmd_name = $cfg_name =~ y/A-Z_/a-z-/r;
+      y/A-Z_/a-z-/ foreach ( my $cmd_name = $cfg_name );
 
       if ( $cmd_hash && exists $cmd_hash->{$cmd_name} )
       {
@@ -145,12 +145,16 @@ sub InitGlobalBuildVars()
       );
 
       {
-         my @cmd_opts = ( map { { opt => ( $_->{name} =~ y/A-Z_/a-z-/r ), opt_s => $_->{type} } } grep { $_->{type} } @cmd_args );
+         my @cmd_opts =
+           map { $_->{opt} =~ y/A-Z_/a-z-/; $_; }    # convert the opt named to lowercase to make command line options
+           map { { opt => $_->{name}, opt_s => $_->{type} } }    # create a new hash with keys opt, opt_s
+           grep { $_->{type} }                                   # get only names which have a valid type
+           @cmd_args;
 
          my $help_func = sub {
             print "Usage: $0 <options>\n";
             print "Supported options: \n";
-            print "   --$_->{opt}$_->{opt_s}\n" foreach (@cmd_opts);
+            print "   --" . "$_->{opt}$_->{opt_s}\n" foreach (@cmd_opts);
             exit(0);
          };
 
@@ -244,7 +248,7 @@ sub Prepare()
       }
    }
 
-   my ( $MAJOR, $MINOR, $MICRO ) = split(/[.]/, "${GLOBAL_BUILD_RELEASE_NO}_${GLOBAL_BUILD_RELEASE_CANDIDATE}" );
+   my ( $MAJOR, $MINOR, $MICRO ) = split( /[.]/, "${GLOBAL_BUILD_RELEASE_NO}_${GLOBAL_BUILD_RELEASE_CANDIDATE}" );
 
    EchoToFile( "$GLOBAL_PATH_TO_SCRIPT_DIR/RE/BUILD", $GLOBAL_BUILD_NO );
    EchoToFile( "$GLOBAL_PATH_TO_SCRIPT_DIR/RE/MAJOR", $MAJOR );
@@ -290,7 +294,10 @@ sub LoadBuilds($)
 
    my %repo_hash = map { $_->{name} => 1 } @$repo_list;
 
-   my @filtered_builds = grep { $repo_hash{ $_->{dir} =~ s/\/.*//r }; } @agg_builds;
+   my @filtered_builds1 = grep { $repo_hash{ $_->{dir} =~ s/\/.*//r }; } @agg_builds;
+   my @filtered_builds =
+     grep { my $d = $_->{dir}; $d =~ s/\/.*//; $repo_hash{$d} }    # extract the repository from the 'dir' entry, filter out entries which do not exist in repo_list
+     @agg_builds;
 
    return \@filtered_builds;
 }
@@ -299,6 +306,12 @@ sub LoadBuilds($)
 sub Checkout($)
 {
    my $repo_list = shift;
+
+   print "\n";
+   print "=========================================================================================================\n";
+   print " Processing " . scalar(@$repo_list) . " repositories\n";
+   print "=========================================================================================================\n";
+   print "\n";
 
    for my $repo_details (@$repo_list)
    {
@@ -533,7 +546,10 @@ sub Clone($)
       }
       elsif ( $repo_name =~ /junixsocket/ )
       {
-         System( "git", "clone", "-b", "$repo_branch", "https://github.com/kohlschutter/junixsocket.git", $repo_dir );
+         System( "rm", "-rf", "$repo_dir.tmp" );
+         System( "git", "clone", "https://github.com/kohlschutter/junixsocket.git", "$repo_dir.tmp" );
+         System( "cd '$repo_dir.tmp' && git checkout $repo_branch" );
+         System( "mv", "$repo_dir.tmp", $repo_dir);
       }
       else
       {
@@ -583,7 +599,10 @@ sub LoadProperties($)
 
    my $x = SlurpFile($f);
 
-   my %h = map { split( /\s*=\s*/, $_, 2 ) } @$x;
+   my %h =
+     map { $_ =~ s/^\s+|\s+$//g; $_ }    # trim
+     map { split( /=/, $_, 2 ) }         # split around =
+     @$x;
 
    return \%h;
 }
