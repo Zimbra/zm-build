@@ -546,7 +546,10 @@ sub Clone($)
       }
       elsif ( $repo_name =~ /junixsocket/ )
       {
-         System( "git", "clone", "-b", "$repo_branch", "https://github.com/kohlschutter/junixsocket.git", $repo_dir );
+         System( "rm", "-rf", "$repo_dir.tmp" );
+         System( "git", "clone", "https://github.com/kohlschutter/junixsocket.git", "$repo_dir.tmp" );
+         System( "cd '$repo_dir.tmp' && git checkout $repo_branch" );
+         System( "mv", "$repo_dir.tmp", $repo_dir);
       }
       else
       {
