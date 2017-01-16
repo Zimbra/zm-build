@@ -74,11 +74,11 @@
    },
    {
       "dir"         => "zm-network-store",
-      "ant_targets" => [ "jar", "cmbsearch-jar" ],
+      "ant_targets" => [ "publish-local", "cmbsearch-jar" ],
       "stage_cmd"   => sub {
          System("mkdir -p $GLOBAL_BUILD_DIR/zm-network-store/build/dist");
          System("cp -f -r ../zm-network-store/build $GLOBAL_BUILD_DIR/zm-network-store");
-         System("cp -f build/zimbranetwork.jar $GLOBAL_BUILD_DIR/zm-network-store/build/dist/zimbranetwork.jar");
+         System("cp -f build/zm-network-store-*.jar $GLOBAL_BUILD_DIR/zm-network-store/build/dist/zimbranetwork.jar");
          System("(cd .. && rsync -az --relative zm-network-store/src/bin $GLOBAL_BUILD_DIR/)");
          System("(cd .. && rsync -az --relative zm-network-store/src/libexec $GLOBAL_BUILD_DIR/)");
       },
