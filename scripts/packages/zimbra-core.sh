@@ -92,10 +92,15 @@ CreateRhelPackage()
     	${repoDir}/zm-build/${currentScript}.spec
     echo "%attr(444, zimbra, zimbra) /opt/zimbra/docs/*" >> \
     	${repoDir}/zm-build/${currentScript}.spec
-    echo "%attr(755, zimbra, zimbra) /opt/zimbra/docs/rebranding" >> \
-    	${repoDir}/zm-build/${currentScript}.spec
-    echo "%attr(444, zimbra, zimbra) /opt/zimbra/docs/rebranding/*" >> \
-    	${repoDir}/zm-build/${currentScript}.spec
+
+    if [ "${buildType}" == "NETWORK" ]
+    then
+      echo "%attr(755, zimbra, zimbra) /opt/zimbra/docs/rebranding" >> \
+         ${repoDir}/zm-build/${currentScript}.spec
+      echo "%attr(444, zimbra, zimbra) /opt/zimbra/docs/rebranding/*" >> \
+         ${repoDir}/zm-build/${currentScript}.spec
+    fi
+
     echo "%attr(755, root, root) /opt/zimbra/contrib" >> \
     	${repoDir}/zm-build/${currentScript}.spec
     echo "%attr(755, root, root) /opt/zimbra/libexec" >> \

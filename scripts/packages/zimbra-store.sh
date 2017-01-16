@@ -480,12 +480,17 @@ CreateRhelPackage()
     	${repoDir}/zm-build/${currentScript}.spec
     echo "%attr(-, zimbra, zimbra) /opt/zimbra/zimlets" >> \
     	${repoDir}/zm-build/${currentScript}.spec
-    echo "%attr(-, zimbra, zimbra) /opt/zimbra/zimlets-network" >> \
-    	${repoDir}/zm-build/${currentScript}.spec
     echo "%attr(-, zimbra, zimbra) /opt/zimbra/extensions-extra" >> \
     	${repoDir}/zm-build/${currentScript}.spec
-    echo "%attr(-, zimbra, zimbra) /opt/zimbra/extensions-network-extra" >> \
-    	${repoDir}/zm-build/${currentScript}.spec
+
+   if [ "${buildType}" == "NETWORK" ]
+   then
+      echo "%attr(-, zimbra, zimbra) /opt/zimbra/zimlets-network" >> \
+         ${repoDir}/zm-build/${currentScript}.spec
+      echo "%attr(-, zimbra, zimbra) /opt/zimbra/extensions-network-extra" >> \
+         ${repoDir}/zm-build/${currentScript}.spec
+   fi
+
     echo "%attr(755, root, root) /opt/zimbra/bin" >> \
     	${repoDir}/zm-build/${currentScript}.spec
     echo "%attr(755, root, root) /opt/zimbra/libexec" >> \
