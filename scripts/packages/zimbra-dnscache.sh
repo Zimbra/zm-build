@@ -28,12 +28,9 @@
 main()
 {
     echo -e "\tCreate package directories" >> ${buildLogFile}
-    mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/data/dns/ca
     mkdir -p ${repoDir}/zm-build/${currentPackage}/etc/sudoers.d
+    mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/data/dns/ca
     mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/data/dns/trust
-
-    echo -e "\tCopy package files" >> ${buildLogFile}
-    cp  ${repoDir}/zm-dnscache/conf/dns/zimbra-unbound ${repoDir}/zm-build/${currentPackage}/etc/resolvconf/update.d
 
     CreatePackage "${os}"
 }
@@ -51,6 +48,7 @@ CreateDebianPackage()
     chmod 555 ${repoDir}/zm-build/${currentPackage}/DEBIAN/*
 
     mkdir -p ${repoDir}/zm-build/${currentPackage}/etc/resolvconf/update.d
+    cp ${repoDir}/zm-dnscache/conf/dns/zimbra-unbound ${repoDir}/zm-build/${currentPackage}/etc/resolvconf/update.d
     cp ${repoDir}/zm-build/rpmconf/Env/sudoers.d/02_${currentScript}.deb ${repoDir}/zm-build/${currentPackage}/etc/sudoers.d/02_${currentScript}
 
     echo -e "\tCreate debian package" >> ${buildLogFile}
@@ -65,6 +63,8 @@ CreateDebianPackage()
 
 CreateRhelPackage()
 {
+    cp ${repoDir}/zm-build/rpmconf/Env/sudoers.d/02_${currentScript}.rpm ${repoDir}/zm-build/${currentPackage}/etc/sudoers.d/02_${currentScript}
+
     cat ${repoDir}/zm-build/rpmconf/Spec/${currentScript}.spec | \
         sed -e "s/@@VERSION@@/${releaseNo}_${releaseCandidate}_${buildNo}.${os}/" \
             -e "s/@@RELEASE@@/${buildTimeStamp}/" \
