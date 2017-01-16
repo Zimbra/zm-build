@@ -140,7 +140,7 @@ sub InitGlobalBuildVars()
 
          { name => "BUILD_OS",               type => "", hash_src => undef, default_sub => sub { return GetBuildOS(); }, },
          { name => "BUILD_ARCH",             type => "", hash_src => undef, default_sub => sub { return GetBuildArch(); }, },
-         { name => "BUILD_RELEASE_NO_SHORT", type => "", hash_src => undef, default_sub => sub { return $GLOBAL_BUILD_RELEASE_NO =~ s/[.]//gr; }, },
+         { name => "BUILD_RELEASE_NO_SHORT", type => "", hash_src => undef, default_sub => sub { my $x = $GLOBAL_BUILD_RELEASE_NO; $x =~ s/[.]//g; return $x; }, },
          { name => "BUILD_DIR",              type => "", hash_src => undef, default_sub => $build_dir_func, },
       );
 
@@ -294,7 +294,6 @@ sub LoadBuilds($)
 
    my %repo_hash = map { $_->{name} => 1 } @$repo_list;
 
-   my @filtered_builds1 = grep { $repo_hash{ $_->{dir} =~ s/\/.*//r }; } @agg_builds;
    my @filtered_builds =
      grep { my $d = $_->{dir}; $d =~ s/\/.*//; $repo_hash{$d} }    # extract the repository from the 'dir' entry, filter out entries which do not exist in repo_list
      @agg_builds;
