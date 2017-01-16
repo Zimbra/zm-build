@@ -66,7 +66,7 @@ sub LoadConfiguration($)
 
    if ( !defined $val )
    {
-      my $cmd_name = $cfg_name =~ y/A-Z_/a-z-/r;
+      y/A-Z_/a-z-/ foreach ( my $cmd_name = $cfg_name );
 
       if ( $cmd_hash && exists $cmd_hash->{$cmd_name} )
       {
@@ -140,17 +140,21 @@ sub InitGlobalBuildVars()
 
          { name => "BUILD_OS",               type => "", hash_src => undef, default_sub => sub { return GetBuildOS(); }, },
          { name => "BUILD_ARCH",             type => "", hash_src => undef, default_sub => sub { return GetBuildArch(); }, },
-         { name => "BUILD_RELEASE_NO_SHORT", type => "", hash_src => undef, default_sub => sub { return $GLOBAL_BUILD_RELEASE_NO =~ s/[.]//gr; }, },
+         { name => "BUILD_RELEASE_NO_SHORT", type => "", hash_src => undef, default_sub => sub { my $x = $GLOBAL_BUILD_RELEASE_NO; $x =~ s/[.]//g; return $x; }, },
          { name => "BUILD_DIR",              type => "", hash_src => undef, default_sub => $build_dir_func, },
       );
 
       {
-         my @cmd_opts = ( map { { opt => ( $_->{name} =~ y/A-Z_/a-z-/r ), opt_s => $_->{type} } } grep { $_->{type} } @cmd_args );
+         my @cmd_opts =
+           map { $_->{opt} =~ y/A-Z_/a-z-/; $_; }    # convert the opt named to lowercase to make command line options
+           map { { opt => $_->{name}, opt_s => $_->{type} } }    # create a new hash with keys opt, opt_s
+           grep { $_->{type} }                                   # get only names which have a valid type
+           @cmd_args;
 
          my $help_func = sub {
             print "Usage: $0 <options>\n";
             print "Supported options: \n";
-            print "   --$_->{opt}$_->{opt_s}\n" foreach (@cmd_opts);
+            print "   --" . "$_->{opt}$_->{opt_s}\n" foreach (@cmd_opts);
             exit(0);
          };
 
@@ -243,6 +247,14 @@ sub Prepare()
          }
       }
    }
+
+   my ( $MAJOR, $MINOR, $MICRO ) = split( /[.]/, "${GLOBAL_BUILD_RELEASE_NO}_${GLOBAL_BUILD_RELEASE_CANDIDATE}" );
+
+   EchoToFile( "$GLOBAL_PATH_TO_SCRIPT_DIR/RE/BUILD", $GLOBAL_BUILD_NO );
+   EchoToFile( "$GLOBAL_PATH_TO_SCRIPT_DIR/RE/MAJOR", $MAJOR );
+   EchoToFile( "$GLOBAL_PATH_TO_SCRIPT_DIR/RE/MINOR", $MINOR );
+   EchoToFile( "$GLOBAL_PATH_TO_SCRIPT_DIR/RE/MICRO", $MICRO );
+   close(FD);
 }
 
 sub EvalFile($)
@@ -282,7 +294,9 @@ sub LoadBuilds($)
 
    my %repo_hash = map { $_->{name} => 1 } @$repo_list;
 
-   my @filtered_builds = grep { $repo_hash{ $_->{dir} =~ s/\/.*//r }; } @agg_builds;
+   my @filtered_builds =
+     grep { my $d = $_->{dir}; $d =~ s/\/.*//; $repo_hash{$d} }    # extract the repository from the 'dir' entry, filter out entries which do not exist in repo_list
+     @agg_builds;
 
    return \@filtered_builds;
 }
@@ -291,6 +305,12 @@ sub LoadBuilds($)
 sub Checkout($)
 {
    my $repo_list = shift;
+
+   print "\n";
+   print "=========================================================================================================\n";
+   print " Processing " . scalar(@$repo_list) . " repositories\n";
+   print "=========================================================================================================\n";
+   print "\n";
 
    for my $repo_details (@$repo_list)
    {
@@ -350,12 +370,12 @@ sub Build($)
            if ( ( $ENV{ENV_FORCE_REBUILD} && grep { $dir =~ /$_/ } split( ",", $ENV{ENV_FORCE_REBUILD} ) ) );
 
          print "=========================================================================================================\n";
-         print color('bright_blue') . "BUILDING: $dir ($cnt of " . scalar(@ALL_BUILDS) . ")" . color('reset') . "\n";
+         print color('blue') . "BUILDING: $dir ($cnt of " . scalar(@ALL_BUILDS) . ")" . color('reset') . "\n";
          print "\n";
 
          if ( $ENV{ENV_RESUME_FLAG} && -f "$target_dir/.built.$GLOBAL_BUILD_TS" )
          {
-            print color('bright_yellow') . "SKIPPING... [TO REBUILD REMOVE '$target_dir']" . color('reset') . "\n";
+            print color('yellow') . "SKIPPING... [TO REBUILD REMOVE '$target_dir']" . color('reset') . "\n";
             print "=========================================================================================================\n";
             print "\n";
          }
@@ -521,11 +541,14 @@ sub Clone($)
    {
       if ( $repo_name =~ /zimbra-package-stub/ )
       {
-         System( "git", "clone", "https://github.com/Zimbra/zimbra-package-stub.git", $repo_dir );
+         System( "git", "clone", "-b", "$repo_branch", "https://github.com/Zimbra/zimbra-package-stub.git", $repo_dir );
       }
       elsif ( $repo_name =~ /junixsocket/ )
       {
-         System( "git", "clone", "-b", "$repo_branch", "https://github.com/kohlschutter/junixsocket.git", $repo_dir );
+         System( "rm", "-rf", "$repo_dir.tmp" );
+         System( "git", "clone", "https://github.com/kohlschutter/junixsocket.git", "$repo_dir.tmp" );
+         System( "cd '$repo_dir.tmp' && git checkout $repo_branch" );
+         System( "mv", "$repo_dir.tmp", $repo_dir);
       }
       else
       {
@@ -556,8 +579,8 @@ sub System(@)
 {
    my $cmd_str = "@_";
 
-   print color('bright_green') . "#: pwd=@{[Cwd::getcwd()]}" . color('reset') . "\n";
-   print color('bright_green') . "#: $cmd_str" . color('reset') . "\n";
+   print color('green') . "#: pwd=@{[Cwd::getcwd()]}" . color('reset') . "\n";
+   print color('green') . "#: $cmd_str" . color('reset') . "\n";
 
    $! = 0;
    my ( $success, $error_message, $full_buf, $stdout_buf, $stderr_buf ) = run( command => \@_, verbose => 1 );
@@ -575,7 +598,10 @@ sub LoadProperties($)
 
    my $x = SlurpFile($f);
 
-   my %h = map { split( /\s*=\s*/, $_, 2 ) } @$x;
+   my %h =
+     map { $_ =~ s/^\s+|\s+$//g; $_ }    # trim
+     map { split( /=/, $_, 2 ) }         # split around =
+     @$x;
 
    return \%h;
 }
@@ -585,12 +611,23 @@ sub SlurpFile($)
 {
    my $f = shift;
 
-   open( FD, "<", "$f" ) || Die( "In open", "file='$f'" );
+   open( FD, "<", "$f" ) || Die( "In open for read", "file='$f'" );
 
    chomp( my @x = <FD> );
    close(FD);
 
    return \@x;
+}
+
+
+sub EchoToFile($$)
+{
+   my $f = shift;
+   my $w = shift;
+
+   open( FD, ">", "$f" ) || Die( "In open for write", "file='$f'" );
+   print FD $w . "\n";
+   close(FD);
 }
 
 
