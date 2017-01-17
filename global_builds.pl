@@ -806,4 +806,12 @@
          System("cp -f src/postjournal $GLOBAL_BUILD_DIR/zm-postfixjournal/build/dist");
       },
    },
+   {
+      "dir"         => "zm-smime-store",
+      "ant_targets" => ["publish-local"],
+       "stage_cmd"   => sub {
+         System("mkdir -p $GLOBAL_BUILD_DIR/zm-smime-store/build/dist");
+         System("cp -f -r build/dist $GLOBAL_BUILD_DIR/zm-smime-store/build");
+      },
+   },
 );
