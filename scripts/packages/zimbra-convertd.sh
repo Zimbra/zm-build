@@ -25,6 +25,7 @@
 
     keyviewVersion=10.13.0.0
     zimbraMimehandlersLdif=${repoDir}/zm-ldap-utilities/build/dist/zimbra_mimehandlers.ldif
+    buildOS=`( set -e; bash ${repoDir}/zm-build/rpmconf/Build/get_plat_tag.sh )`
 
 
 #-------------------- Build Package ---------------------------
@@ -42,11 +43,11 @@ main()
     rm -rf keyview-${keyviewVersion}.tgz
 
     cd ${repoDir}/zm-build/${currentPackage}/opt/zimbra/convertd/lib
-    wget http://${zimbraThirdPartyServer}/ZimbraThirdParty/build-essentials/keyview/libkeyview.so
-    wget http://${zimbraThirdPartyServer}/ZimbraThirdParty/build-essentials/keyview/libmod_convert.so
+    wget http://${zimbraThirdPartyServer}/ZimbraThirdParty/build-essentials/keyview/${buildOS}/libkeyview.so
+    wget http://${zimbraThirdPartyServer}/ZimbraThirdParty/build-essentials/keyview/${buildOS}/libmod_convert.so
 
     cd ${repoDir}/zm-build/${currentPackage}/opt/zimbra/convertd/bin
-    wget http://${zimbraThirdPartyServer}/ZimbraThirdParty/build-essentials/keyview/converter
+    wget http://${zimbraThirdPartyServer}/ZimbraThirdParty/build-essentials/keyview/${buildOS}/converter
 
     echo -e "\tCopy package files" >> ${buildLogFile}
     chmod -R 755 ${repoDir}/zm-build/${currentPackage}/opt/zimbra/keyview-${keyviewVersion}/FilterSDK/bin/
