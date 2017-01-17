@@ -77,7 +77,7 @@ CreateRhelPackage()
             -e "s/@@MTA_PROVIDES@@/smtpdaemon/" \
             -e "s/^Copyright:/Copyright:/" \
             -e "/^%post$/ r ${repoDir}/zm-build/rpmconf/Spec/Scripts/${currentScript}.post" > ${repoDir}/zm-build/${currentScript}.spec
-    (cd ${repoDir}/zm-build/mtabuild; find opt -type f -o -type l -maxdepth 2 \
+    (cd ${repoDir}/zm-build/mtabuild; find opt -maxdepth 2 -type f -o -type l \
         | sed -e 's|^|%attr(-, zimbra, zimbra) /|' >> \
         ${repoDir}/zm-build/${currentScript}.spec )
     echo "%attr(440, root, root) /etc/sudoers.d/02_zimbra-mta" >> \

@@ -370,12 +370,12 @@ sub Build($)
            if ( ( $ENV{ENV_FORCE_REBUILD} && grep { $dir =~ /$_/ } split( ",", $ENV{ENV_FORCE_REBUILD} ) ) );
 
          print "=========================================================================================================\n";
-         print color('bright_blue') . "BUILDING: $dir ($cnt of " . scalar(@ALL_BUILDS) . ")" . color('reset') . "\n";
+         print color('blue') . "BUILDING: $dir ($cnt of " . scalar(@ALL_BUILDS) . ")" . color('reset') . "\n";
          print "\n";
 
          if ( $ENV{ENV_RESUME_FLAG} && -f "$target_dir/.built.$GLOBAL_BUILD_TS" )
          {
-            print color('bright_yellow') . "SKIPPING... [TO REBUILD REMOVE '$target_dir']" . color('reset') . "\n";
+            print color('yellow') . "SKIPPING... [TO REBUILD REMOVE '$target_dir']" . color('reset') . "\n";
             print "=========================================================================================================\n";
             print "\n";
          }
@@ -579,8 +579,8 @@ sub System(@)
 {
    my $cmd_str = "@_";
 
-   print color('bright_green') . "#: pwd=@{[Cwd::getcwd()]}" . color('reset') . "\n";
-   print color('bright_green') . "#: $cmd_str" . color('reset') . "\n";
+   print color('green') . "#: pwd=@{[Cwd::getcwd()]}" . color('reset') . "\n";
+   print color('green') . "#: $cmd_str" . color('reset') . "\n";
 
    $! = 0;
    my ( $success, $error_message, $full_buf, $stdout_buf, $stderr_buf ) = run( command => \@_, verbose => 1 );
