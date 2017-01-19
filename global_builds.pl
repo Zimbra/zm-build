@@ -814,4 +814,12 @@
          System("cp -f -r build/dist $GLOBAL_BUILD_DIR/zm-smime-store/build");
       },
    },
+   {
+      "dir"         => "zm-securemail-zimlet",
+      "ant_targets" => ["package-zimlet"],
+      "stage_cmd"   => sub {
+         System("mkdir -p $GLOBAL_BUILD_DIR/zm-securemail-zimlet/build/dist");
+         System("cp -f build/zimlet/com_zimbra_securemai.zip $GLOBAL_BUILD_DIR/zm-securemail-zimlet/build/dist");
+      },
+   },
 );
