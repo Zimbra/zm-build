@@ -58,6 +58,9 @@ cp -f ${repoDir}/zm-admin-help-common/WebRoot/help/en_US/admin/txt/readme_binary
 
 if [ "${buildType}" = "NETWORK" ]
 then
+   cp -f ${repoDir}/zm-admin-help-network/WebRoot/help/en_US/admin/pdf/*.pdf               ${ZCS_REL}/docs/en_US
+   cp -f ${repoDir}/zm-admin-help-network/WebRoot/help/en_US/admin/txt/readme_binary.txt   ${ZCS_REL}/readme_binary_en_US.txt
+
    cp -f ${repoDir}/zm-backup-store/build/dist/backup-version-init.sql                     ${ZCS_REL}/data
    cp -f ${repoDir}/zm-license-tools/build/zm-license-tools-*.jar                          ${ZCS_REL}/lib/jars/zimbra-license-tools.jar
 
