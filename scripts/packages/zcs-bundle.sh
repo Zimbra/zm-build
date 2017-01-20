@@ -76,6 +76,17 @@ else
    cp -f ${repoDir}/zm-licenses/zimbra/zcl.txt                                                        ${ZCS_REL}/docs
 fi
 
+##########################################
+
+if [ "${buildType}" == "NETWORK" ]
+then
+   echo "NETWORK" > ${ZCS_REL}/.BUILD_TYPE
+else
+   echo "FOSS" > ${ZCS_REL}/.BUILD_TYPE
+fi
+
+##########################################
+
 tar czf ${ZCS_REL}.tgz  ${ZCS_REL}
 
 echo "ZCS build completed: ${repoDir}/zm-build/${ZCS_REL}.tgz"
