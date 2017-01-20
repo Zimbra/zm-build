@@ -711,19 +711,8 @@ determineVersionType() {
   fi
 
   # need way to determine type for other package types
-  if [ "x$PACKAGEEXT" = "xrpm" ]; then
-    if [ x"`rpm --qf '%{description}' -qp ./packages/zimbra-core* | grep Network`" = "x" ]; then
-      ZMTYPE_INSTALLABLE="FOSS"
-    else
-      ZMTYPE_INSTALLABLE="NETWORK"
-    fi
-  elif [ "x$PACKAGEEXT" = "xdeb" ]; then
-    if [ x"`dpkg -f ./packages/zimbra-core* Description | grep Network`" = "x" ]; then
-      ZMTYPE_INSTALLABLE="FOSS"
-    else
-      ZMTYPE_INSTALLABLE="NETWORK"
-    fi
-  fi
+  ZMTYPE_INSTALLABLE="$(cat ${MYDIR}/.BUILD_TYPE)"
+
   ZM_INST_MAJOR=$(perl -e '$v=glob("packages/zimbra-core*"); $v =~ s/^packages\/zimbra-core[-_]//; $v =~ s/^(\d+\.\d+\.[^_]*_[^_]+_[^.]+).*/\1/; ($maj,$min,$mic) = $v =~ m/^(\d+)\.(\d+)\.(\d+)/; print "$maj\n"')
   ZM_INST_MINOR=$(perl -e '$v=glob("packages/zimbra-core*"); $v =~ s/^packages\/zimbra-core[-_]//; $v =~ s/^(\d+\.\d+\.[^_]*_[^_]+_[^.]+).*/\1/; ($maj,$min,$mic) = $v =~ m/^(\d+)\.(\d+)\.(\d+)/; print "$min\n"')
   ZM_INST_MICRO=$(perl -e '$v=glob("packages/zimbra-core*"); $v =~ s/^packages\/zimbra-core[-_]//; $v =~ s/^(\d+\.\d+\.[^_]*_[^_]+_[^.]+).*/\1/; ($maj,$min,$mic) = $v =~ m/^(\d+)\.(\d+)\.(\d+)/; print "$mic\n"')
@@ -1056,16 +1045,8 @@ verifyLicenseAvailable() {
   fi
 
   # need to finish for other native packagers
-  if [ "x$PACKAGEEXT" = "xrpm" ]; then
-    if [ x"`rpm --qf '%{description}' -qp ./packages/zimbra-core* | grep Network`" = "x" ]; then
+  if [ "$(cat ${MYDIR}/.BUILD_TYPE)" != "NETWORK" ]; then
      return
-    fi
-  elif [ "x$PACKAGEEXT" = "xdeb" ]; then
-    if [ x"`dpkg -f ./packages/zimbra-core* Description | grep Network`" = "x" ]; then
-      return
-    fi
-  else
-    return
   fi
 
   echo "Checking for available license file..."
