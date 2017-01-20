@@ -17,7 +17,7 @@
 
 cd ${repoDir}/zm-build
 
-if [ ${buildType} == "NETWORK" ]
+if [ "${buildType}" = "NETWORK" ]
 then
    ZCS_REL=zcs-${buildType}-${releaseNo}_${releaseCandidate}_${buildNo}.${os}.${buildTimeStamp}
 else
@@ -56,7 +56,7 @@ chmod 755 ${ZCS_REL}/install.sh
 cp -f ${repoDir}/zm-admin-help-common/WebRoot/help/en_US/admin/pdf/*.pdf                ${ZCS_REL}/docs/en_US
 cp -f ${repoDir}/zm-admin-help-common/WebRoot/help/en_US/admin/txt/readme_binary.txt    ${ZCS_REL}/readme_binary_en_US.txt
 
-if [ "${buildType}" == "NETWORK" ]
+if [ "${buildType}" = "NETWORK" ]
 then
    cp -f ${repoDir}/zm-admin-help-network/WebRoot/help/en_US/admin/pdf/*.pdf               ${ZCS_REL}/docs/en_US
    cp -f ${repoDir}/zm-admin-help-network/WebRoot/help/en_US/admin/txt/readme_binary.txt   ${ZCS_REL}/readme_binary_en_US.txt
@@ -72,8 +72,10 @@ then
    cp -f ${repoDir}/zm-network-build/rpmconf/Util/checkValidBackup                         ${ZCS_REL}/bin/checkValidBackup
 
    chmod 755 ${ZCS_REL}/bin/checkValidBackup
+else
+   cp -f ${repoDir}/zm-licenses/zimbra/zcl.txt                                                        ${ZCS_REL}/docs
 fi
 
 tar czf ${ZCS_REL}.tgz  ${ZCS_REL}
 
-echo "Zcs build completed: ${repoDir}/zm-build/${ZCS_REL}.tgz"
+echo "ZCS build completed: ${repoDir}/zm-build/${ZCS_REL}.tgz"

@@ -152,6 +152,9 @@ main()
 
     echo "\t\t***** zimbra.tld content *****" >> ${buildLogFile}
     cp ${repoDir}/zm-zimlets/conf/zimbra.tld ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/webapps/service/WEB-INF
+    
+    echo "\t\t***** zimlettaglib.jar to lib *****" >> ${buildLogFile}
+    cp ${repoDir}/zm-zimlets/build/dist/zimlettaglib.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/webapps/service/WEB-INF/lib
 
 
     echo "\t\t++++++++++ zimbra.war content ++++++++++" >> ${buildLogFile}
