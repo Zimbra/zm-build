@@ -45,4 +45,6 @@
    { name => "zm-voice-store",                 branch => "dev", },
    { name => "zm-xmbxsearch-store",            branch => "dev", },
    { name => "zm-xmbxsearch-zimlet",           branch => "dev", },
+   { name => "zm-smime-store",                 branch => "smime", },
+   { name => "zm-securemail-zimlet",           branch => "smime", },
 );
