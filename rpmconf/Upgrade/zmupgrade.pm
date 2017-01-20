@@ -132,8 +132,6 @@ my %updateFuncs = (
   "8.7.0_GA" => \&upgrade870GA,
   "8.7.1_GA" => \&upgrade871GA,
   "8.7.2_GA" => \&upgrade872GA,
-  "8.8.0_GA" => \&upgrade880GA,
-  "9.0.0_BETA1" => \&upgrade900BETA1,
 );
 
 my @versionOrder = (
@@ -183,8 +181,6 @@ my @versionOrder = (
   "8.7.0_GA",
   "8.7.1_GA",
   "8.7.2_GA",
-  "8.8.0_GA",
-  "9.0.0_BETA1",
 );
 
 my ($startVersion,$startMajor,$startMinor,$startMicro);
@@ -333,10 +329,6 @@ sub upgrade {
       main::progress("This appears to be 8.7.1_GA\n");
   } elsif ($startVersion eq "8.7.2_GA") {
       main::progress("This appears to be 8.7.2_GA\n");
-  } elsif ($startVersion eq "8.8.0_GA") {
-      main::progress("This appears to be 8.8.0_GA\n");
-  } elsif ($startVersion eq "9.0.0_BETA1") {
-      main::progress("This appears to be 9.0.0_BETA1\n");
   } else {
     if ($startVersion eq "") {
       main::progress("ERROR: Unable to find initial version to upgrade from.\n");
@@ -2297,21 +2289,9 @@ sub upgrade871GA{
     return 0;
 }
 
-sub upgrade872GA{
+sub upgrade872GA {
     my ($startBuild, $targetVersion, $targetBuild) = (@_);
     main::progress("Updating from 8.7.2_GA\n");
-    return 0;
-}
-
-sub upgrade900BETA1 {
-  my ($startBuild, $targetVersion, $targetBuild) = (@_);
-  main::progress("Updating from 9.0.0_BETA1\n");
-  return 0;
-}
-
-sub upgrade880GA{
-    my ($startBuild, $targetVersion, $targetBuild) = (@_);
-    main::progress("Updating from 8.8.0_GA\n");
     return 0;
 }
 
