@@ -471,13 +471,15 @@
    },
    {
       "dir"         => "zm-zimlets",
-      "ant_targets" => ["package-zimlets"],
+      "ant_targets" => ["package-zimlets", "jar"],
       "stage_cmd"   => sub {
          System("mkdir -p $GLOBAL_BUILD_DIR/zm-zimlets/conf");
          System("cp -f conf/zimbra.tld $GLOBAL_BUILD_DIR/zm-zimlets/conf");
          System("cp -f conf/web.xml.production $GLOBAL_BUILD_DIR/zm-zimlets/conf");
          System("mkdir -p $GLOBAL_BUILD_DIR/zm-zimlets/build/dist/zimlets");
          System("cp -f build/dist/zimlets/*.zip $GLOBAL_BUILD_DIR/zm-zimlets/build/dist/zimlets");
+         System("mkdir -p $GLOBAL_BUILD_DIR/zm-zimlets/build/dist");
+         System("cp -f build/dist/lib/zimlettaglib.jar $GLOBAL_BUILD_DIR/zm-zimlets/build/dist/zimlettaglib.jar");
       },
    },
    {
