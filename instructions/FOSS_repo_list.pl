@@ -47,6 +47,7 @@
    { name => "zm-web-client",                       branch => "dev",},
    { name => "zm-webclient-portal-example",         branch => "dev", },
    { name => "zm-zcs",                              branch => "dev", },
-   { name => "zm-zcs-lib",                          branch => "dev", },
+   { name => "zm-zcs-lib",                          branch => "feature", },
+   { name => "zm-ssdb-ephemeral-store",             branch => "feature", },
    { name => "zm-zimlets",                          branch => "dev", },
 );

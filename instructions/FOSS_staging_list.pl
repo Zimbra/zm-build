@@ -55,6 +55,14 @@
       "stage_cmd"   => undef,
    },
    {
+      "dir"         => "zm-ssdb-ephemeral-store",
+      "ant_targets" => [ "publish-local" ],
+      "stage_cmd"   => sub {
+         System("mkdir -p $GLOBAL_BUILD_DIR/zm-ssdb-ephemeral-store/build/dist");
+         System("cp -f build/zm-ssdb-ephemeral-store*.jar $GLOBAL_BUILD_DIR/zm-ssdb-ephemeral-store/build/dist");
+      },
+   },
+   {
       "dir"         => "zm-openid-consumer-store",
       "ant_targets" => ["dist-package"],
       "stage_cmd"   => sub {
