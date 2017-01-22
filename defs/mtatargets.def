@@ -40,7 +40,7 @@ $(BUILD_ROOT)/zimbra-mta.spec:
 		-e 's/^Copyright:/$(RPMCOPYRIGHTSTR):/' \
 		-e '/^%post$$/ r zimbra-mta.post' > $(BUILD_ROOT)/zimbra-mta.spec
 	rm -f zimbra-mta.post
-	(cd $(MTA_DEST_ROOT); find opt -type f -o -type l -maxdepth 2 \
+	(cd $(MTA_DEST_ROOT); find opt -maxdepth 2 -type f -o -type l \
 		| sed -e 's|^|%attr(-, zimbra, zimbra) /|' >> \
 		$(BUILD_ROOT)/zimbra-mta.spec )
 	echo "%attr(440, root, root) /etc/sudoers.d/02_zimbra-mta" >> \

@@ -150,6 +150,9 @@ main()
 
     echo "\t\t***** zimbra.tld content *****" >> ${buildLogFile}
     cp ${repoDir}/zm-zimlets/conf/zimbra.tld ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/webapps/service/WEB-INF
+    
+    echo "\t\t***** zimlettaglib.jar to lib *****" >> ${buildLogFile}
+    cp ${repoDir}/zm-zimlets/build/dist/zimlettaglib.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/webapps/service/WEB-INF/lib
 
 
     echo "\t\t++++++++++ zimbra.war content ++++++++++" >> ${buildLogFile}
@@ -480,12 +483,17 @@ CreateRhelPackage()
     	${repoDir}/zm-build/${currentScript}.spec
     echo "%attr(-, zimbra, zimbra) /opt/zimbra/zimlets" >> \
     	${repoDir}/zm-build/${currentScript}.spec
-    echo "%attr(-, zimbra, zimbra) /opt/zimbra/zimlets-network" >> \
-    	${repoDir}/zm-build/${currentScript}.spec
     echo "%attr(-, zimbra, zimbra) /opt/zimbra/extensions-extra" >> \
     	${repoDir}/zm-build/${currentScript}.spec
-    echo "%attr(-, zimbra, zimbra) /opt/zimbra/extensions-network-extra" >> \
-    	${repoDir}/zm-build/${currentScript}.spec
+
+   if [ "${buildType}" == "NETWORK" ]
+   then
+      echo "%attr(-, zimbra, zimbra) /opt/zimbra/zimlets-network" >> \
+         ${repoDir}/zm-build/${currentScript}.spec
+      echo "%attr(-, zimbra, zimbra) /opt/zimbra/extensions-network-extra" >> \
+         ${repoDir}/zm-build/${currentScript}.spec
+   fi
+
     echo "%attr(755, root, root) /opt/zimbra/bin" >> \
     	${repoDir}/zm-build/${currentScript}.spec
     echo "%attr(755, root, root) /opt/zimbra/libexec" >> \
