@@ -19,7 +19,7 @@ perlcode 0 my %statuses=('started'=>1,'stopped'=>0);
 
 perlcode 0 sub donotify {   my %args = (@_); if ($args{HOST} eq "localhost") {$args{HOST}=$hostname;}; if ($notifications{smtp}) { dosmtp(%args) if $args{SERVICE}; dodisksmtp(%args) if $args{DISK};}; if ($notifications{snmp}) {dosnmp(%args);};  }
 
-perlcode 0 sub dosmtp {   my %args = @_; if (my $smtp=Zimbra::SMTP->new) {unless($smtp->send(from=>$fr,to=>$pwc,subject=>"Service $args{SERVICE} args{STATUS} on $args{HOST}",message=>$args{MESSAGE})){warn "message send failed: ",$smtp->error}} else {warn "failed new Zimbra::SMTP: ",Zimbra::SMTP->error} }
+perlcode 0 sub dosmtp {   my %args = @_; if (my $smtp=Zimbra::SMTP->new) {unless($smtp->send(from=>$fr,to=>$pwc,subject=>"Service $args{SERVICE} $args{STATUS} on $args{HOST}",message=>$args{MESSAGE})){warn "message send failed: ",$smtp->error}} else {warn "failed new Zimbra::SMTP: ",Zimbra::SMTP->error} }
 
 perlcode 0 sub dodisksmtp {   my %args = (@_);  print "SMTP notification: $args{MESSAGE}\n"; if (my $smtp=Zimbra::SMTP->new) {unless($smtp->send(from=>$fr,to=>$pwc,subject=>"Disk $args{DISK} at $args{UTIL}\% on $args{HOST}",message=>$args{MESSAGE})){warn "message send failed: ",$smtp->error}}else{warn "failed new Zimbra::SMTP: ",Zimbra::SMTP->error}}
 
