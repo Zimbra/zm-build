@@ -821,7 +821,7 @@
       "ant_targets" => ["package-zimlet"],
       "stage_cmd"   => sub {
          System("mkdir -p $GLOBAL_BUILD_DIR/zm-securemail-zimlet/build/dist");
-         System("cp -f build/zimlet/com_zimbra_securemai.zip $GLOBAL_BUILD_DIR/zm-securemail-zimlet/build/dist");
+         System("cp -f build/zimlet/com_zimbra_securemail.zip $GLOBAL_BUILD_DIR/zm-securemail-zimlet/build/dist");
       },
    },
 );
