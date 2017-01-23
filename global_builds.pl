@@ -813,7 +813,7 @@
       "ant_targets" => ["publish-local"],
        "stage_cmd"   => sub {
          System("mkdir -p $GLOBAL_BUILD_DIR/zm-smime-store/build/dist");
-         System("cp -f -r build $GLOBAL_BUILD_DIR/zm-smime-store/build/dist");
+         System("cp -f -r build/zm-smime-store-*.jar $GLOBAL_BUILD_DIR/zm-smime-store/build/dist");
       },
    },
    {
