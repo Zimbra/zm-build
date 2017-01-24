@@ -52,7 +52,7 @@
    { name => "zm-versioncheck-store",               branch => "master", },
    { name => "zm-versioncheck-utilities",           branch => "master", },
    { name => "zm-viewmail-admin-zimlet",            branch => "master", },
-   { name => "zm-web-client",                       branch => "feature/smime", },
+   { name => "zm-web-client",                       branch => "smime", },
    { name => "zm-webclient-portal-example",         branch => "master", },
    { name => "zm-zcs",                              branch => "master", },
    { name => "zm-zcs-lib",                          branch => "dev", },
