@@ -46,7 +46,7 @@
    { name => "zm-soap",                             branch => "dev", },
    { name => "zm-store",                            branch => "dev", },
    { name => "zm-store-conf",                       branch => "dev", },
-   { name => "zm-taglib",                           branch => "master", },
+   { name => "zm-taglib",                           branch => "dev", },
    { name => "zm-timezones",                        branch => "master", },
    { name => "zm-versioncheck-admin-zimlet",        branch => "master", },
    { name => "zm-versioncheck-store",               branch => "master", },
