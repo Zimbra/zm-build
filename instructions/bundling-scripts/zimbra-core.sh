@@ -267,6 +267,7 @@ main()
    Copy ${repoDir}/zm-core-utils/src/bin/zmmailboxdctl                                              ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmmailboxdctl
    Copy ${repoDir}/zm-core-utils/src/bin/zmmemcachedctl                                             ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmmemcachedctl
    Copy ${repoDir}/zm-core-utils/src/bin/zmmetadump                                                 ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmmetadump
+   Copy ${repoDir}/zm-core-utils/src/bin/zmmigrateattrs                                             ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmmigrateattrs
    Copy ${repoDir}/zm-core-utils/src/bin/zmmilterctl                                                ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmmilterctl
    Copy ${repoDir}/zm-core-utils/src/bin/zmmtactl                                                   ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmmtactl
    Copy ${repoDir}/zm-core-utils/src/bin/zmmypasswd                                                 ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmmypasswd
