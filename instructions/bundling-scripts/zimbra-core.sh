@@ -775,7 +775,6 @@ main()
       "curator-x-discovery-2.0.1-incubating.jar"
       "cxf-2.7.18.jar"
       "dom4j-1.5.2.jar"
-      "ehcache-core-2.5.1.jar"
       "freemarker-2.3.19.jar"
       "ganymed-ssh2-build210.jar"
       "gifencoder-0.9.jar"
