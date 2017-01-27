@@ -4,7 +4,6 @@
    { name => "ical4j-0.9.16-patched",               branch => "dev", },
    { name => "junixsocket",                         branch => "junixsocket-parent-2.0.4", },
    { name => "nekohtml-1.9.13",                     branch => "dev", },
-   { name => "zimbra-package-stub",                 branch => "master", },
    { name => "zm-admin-console",                    branch => "dev", },
    { name => "zm-admin-help-common",                branch => "dev", },
    { name => "zm-ajax",                             branch => "dev", },
