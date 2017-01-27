@@ -539,11 +539,7 @@ sub Clone($)
 
    if ( !-d $repo_dir )
    {
-      if ( $repo_name =~ /zimbra-package-stub/ )
-      {
-         System( "git", "clone", "-b", "$repo_branch", "https://github.com/Zimbra/zimbra-package-stub.git", $repo_dir );
-      }
-      elsif ( $repo_name =~ /junixsocket/ )
+      if ( $repo_name =~ /junixsocket/ )
       {
          System( "rm", "-rf", "$repo_dir.tmp" );
          System( "git", "clone", "https://github.com/kohlschutter/junixsocket.git", "$repo_dir.tmp" );
