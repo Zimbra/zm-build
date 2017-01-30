@@ -303,11 +303,8 @@ main()
     mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/common/endorsed
     mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/common/lib
     
-    jettyendorsedjars=("jcharset-2.0.jar " "zm-charset-*.jar")
-    for i in "${jettyendorsedjars[@]}"
-    do
-        cp ${repoDir}/zm-zcs-lib/build/dist/${i} ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/common/endorsed
-    done
+    cp ${repoDir}/zm-zcs-lib/build/dist/jcharset-2.0.jar  ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/common/endorsed/jcharset.jar
+    cp ${repoDir}/zm-zcs-lib/build/dist/zm-charset-*.jar  ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/common/endorsed/zimbra-charset.jar
     
     zimbrapatchedjars=("ant-1.7.0-ziputil-patched.jar" "ical4j-0.9.16-patched.jar" "nekohtml-1.9.13.1z.jar");
     for i in "${zimbrapatchedjars[@]}"
