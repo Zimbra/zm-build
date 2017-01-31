@@ -2286,15 +2286,15 @@ sub upgrade870GA{
 sub upgrade871GA{
     my ($startBuild, $targetVersion, $targetBuild) = (@_);
     main::progress("Updating from 8.7.1_GA\n");
-    if (main::isInstalled("zimbra-convertd") && !(-l "/opt/zimbra/keyview")) {
-      symlink("/opt/zimbra/keyview-10.13.0.0", "/opt/zimbra/keyview") 
-    }  
     return 0;
 }
 
 sub upgrade872GA {
     my ($startBuild, $targetVersion, $targetBuild) = (@_);
     main::progress("Updating from 8.7.2_GA\n");
+    if (main::isInstalled("zimbra-convertd") && !(-l "/opt/zimbra/keyview")) {
+      symlink("/opt/zimbra/keyview-10.13.0.0", "/opt/zimbra/keyview") 
+    }  
     return 0;
 }
 
