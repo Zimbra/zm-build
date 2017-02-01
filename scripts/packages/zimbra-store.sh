@@ -287,7 +287,6 @@ main()
                      "zm-convertd-admin-zimlet" \
                      "zm-delegated-admin-zimlet" \
                      "zm-hsm-admin-zimlet" \
-                     "zm-smime-applet" \
                      "zm-smime-cert-admin-zimlet" \
                      "zm-2fa-admin-zimlet" \
                      "zm-ucconfig-admin-zimlet" \
