@@ -1577,6 +1577,7 @@ sub setDefaults {
     $config{ldap_nginx_password} = $config{LDAPADMINPASS};
     $config{ldap_bes_searcher_password} = $config{LDAPADMINPASS};
     $config{LDAPREPLICATIONTYPE} = "master"; # Values can be master, mmr, replica
+    $config{USEEPHEMERALSTORE} = "no";
     $config{LDAPSERVERID} = 2; # Aleady enabled master should be 1, so default to next ID.
     $ldapRepChanged = 1;
     $ldapPostChanged = 1;
@@ -2102,6 +2103,25 @@ sub askFileName {
     if ($v ne "" && -f $v) {return $v;}
     print "A non-blank answer is required\n" if ($v eq "");
     print "$v must exist and be readable\n" if (!-f $v && $v ne "");
+  }
+}
+
+sub setEphemeralBackendURL {
+  my $rc = 1;
+  while ($rc != 0) {
+    my $newURL = ask("Value for zimbraEphemeralBackendURL:", $config{EphemeralBackendURL});
+    $rc = runAsZimbra("zmjava com.zimbra.cs.ephemeral.EphemeralStore -u $newURL");
+    if ($rc == 0) {
+        $config{EphemeralBackendURL} = $newURL;
+        last;
+    }
+    progress("\nUnable to access the Ephemeral Store provider using $newURL\n");
+    progress("The Ephemeral Store provider must be active\n");
+    if (askYN("Revert to storing ephemeral attributes in Ldap?","No") eq "yes") {
+      $config{USEEPHEMERALSTORE} = "no";
+      delete($config{EphemeralBackendURL}) if (exists($config{EphemeralBackendURL}));
+      last;
+    }
   }
 }
 
@@ -3569,6 +3589,22 @@ sub createLdapMenu {
         "prompt" => "Domain to create:",
         "var" => \$config{CREATEDOMAIN},
         "callback" => \&setCreateDomain,
+        };
+      $i++;
+    }
+    $config{USEEPHEMERALSTORE} = "no" unless (exists $config{USEEPHEMERALSTORE});
+    $$lm{menuitems}{$i} = {
+      "prompt" => "Store ephemeral attributes outside Ldap:",
+      "var" => \$config{USEEPHEMERALSTORE},
+      "callback" => \&toggleYN,
+      "arg" => "USEEPHEMERALSTORE",
+      };
+    $i++;
+    if ($config{USEEPHEMERALSTORE} eq "yes") {
+      $$lm{menuitems}{$i} = {
+        "prompt" => "Value for zimbraEphemeralBackendURL:",
+        "var" => \$config{EphemeralBackendURL},
+        "callback" => \&setEphemeralBackendURL,
         };
       $i++;
     }
@@ -5746,6 +5782,9 @@ sub configSetStoreDefaults {
   }
   if ($newinstall && isStoreWebNode()) {
     setLdapGlobalConfig("+zimbraReverseProxyUpstreamLoginServers", "$config{HOSTNAME}");
+  }
+  if (exists($config{EphemeralBackendURL})) {
+    setLdapGlobalConfig("zimbraEphemeralBackendURL", "$config{EphemeralBackendURL}")
   }
   setLdapServerConfig("zimbraReverseProxyLookupTarget", $config{zimbraReverseProxyLookupTarget});
   setLdapServerConfig("zimbraMtaAuthTarget", $config{zimbraMtaAuthTarget});
