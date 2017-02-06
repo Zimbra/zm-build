@@ -17,6 +17,8 @@ requires: zimbra-core
 %description
 Best email money can buy
 
+%define __spec_install_pre /bin/true
+
 %prep
 
 %build
