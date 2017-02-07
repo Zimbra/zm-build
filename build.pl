@@ -257,7 +257,7 @@ sub Prepare()
    close(FD);
 }
 
-sub EvalFile($)
+sub EvalFile($;$)
 {
    my $fname = shift;
 
@@ -279,8 +279,7 @@ sub LoadRepos()
 {
    my @agg_repos = ();
 
-   push( @agg_repos, @{ EvalFile("public_repos.pl") } );
-   push( @agg_repos, @{ EvalFile("private_repos.pl") } ) if ( $GLOBAL_BUILD_TYPE eq "NETWORK" );
+   push( @agg_repos, @{ EvalFile("instructions/${GLOBAL_BUILD_TYPE}_repo_list.pl") } );
 
    return \@agg_repos;
 }
@@ -290,7 +289,9 @@ sub LoadBuilds($)
 {
    my $repo_list = shift;
 
-   my @agg_builds = @{ EvalFile("global_builds.pl") };
+   my @agg_builds = ();
+
+   push( @agg_builds, @{ EvalFile("instructions/${GLOBAL_BUILD_TYPE}_staging_list.pl") } );
 
    my %repo_hash = map { $_->{name} => 1 } @$repo_list;
 
@@ -437,8 +438,7 @@ sub Build($)
          System("mkdir -p $GLOBAL_BUILD_DIR/zm-build/$GLOBAL_BUILD_ARCH");
 
          my @ALL_PACKAGES = ();
-         push( @ALL_PACKAGES, @{ EvalFile("public_packages.pl") } );
-         push( @ALL_PACKAGES, @{ EvalFile("private_packages.pl") } ) if ( $GLOBAL_BUILD_TYPE eq "NETWORK" );
+         push( @ALL_PACKAGES, @{ EvalFile("instructions/${GLOBAL_BUILD_TYPE}_package_list.pl") } );
          push( @ALL_PACKAGES, "zcs-bundle" );
 
          for my $package_script (@ALL_PACKAGES)
@@ -457,7 +457,7 @@ sub Build($)
                      buildTimeStamp='$GLOBAL_BUILD_TS' \\
                      buildLogFile='$GLOBAL_BUILD_DIR/logs/build.log' \\
                      zimbraThirdPartyServer='$GLOBAL_BUILD_THIRDPARTY_SERVER' \\
-                        bash $GLOBAL_PATH_TO_SCRIPT_DIR/scripts/packages/$package_script.sh
+                        bash $GLOBAL_PATH_TO_SCRIPT_DIR/instructions/bundling-scripts/$package_script.sh
                   "
                );
             }
