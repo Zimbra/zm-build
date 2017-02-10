@@ -3531,6 +3531,22 @@ sub createCommonMenu {
       };
     $i++;
   }
+  $config{USEEPHEMERALSTORE} = "no" unless (exists $config{USEEPHEMERALSTORE});
+  $$lm{menuitems}{$i} = {
+    "prompt" => "Store ephemeral attributes outside Ldap:",
+    "var" => \$config{USEEPHEMERALSTORE},
+    "callback" => \&toggleYN,
+    "arg" => "USEEPHEMERALSTORE",
+    };
+  $i++;
+  if ($config{USEEPHEMERALSTORE} eq "yes") {
+    $$lm{menuitems}{$i} = {
+      "prompt" => "Value for zimbraEphemeralBackendURL:",
+      "var" => \$config{EphemeralBackendURL},
+      "callback" => \&setEphemeralBackendURL,
+      };
+    $i++;
+  }
   # interprocess security
   $$lm{menuitems}{$i} = {
     "prompt" => "Secure interprocess communications:",
@@ -3589,22 +3605,6 @@ sub createLdapMenu {
         "prompt" => "Domain to create:",
         "var" => \$config{CREATEDOMAIN},
         "callback" => \&setCreateDomain,
-        };
-      $i++;
-    }
-    $config{USEEPHEMERALSTORE} = "no" unless (exists $config{USEEPHEMERALSTORE});
-    $$lm{menuitems}{$i} = {
-      "prompt" => "Store ephemeral attributes outside Ldap:",
-      "var" => \$config{USEEPHEMERALSTORE},
-      "callback" => \&toggleYN,
-      "arg" => "USEEPHEMERALSTORE",
-      };
-    $i++;
-    if ($config{USEEPHEMERALSTORE} eq "yes") {
-      $$lm{menuitems}{$i} = {
-        "prompt" => "Value for zimbraEphemeralBackendURL:",
-        "var" => \$config{EphemeralBackendURL},
-        "callback" => \&setEphemeralBackendURL,
         };
       $i++;
     }
