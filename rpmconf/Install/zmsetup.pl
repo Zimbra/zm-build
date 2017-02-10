@@ -5454,6 +5454,14 @@ sub configSetupLdap {
 
 }
 
+sub configSetupEphemeralBackend {
+  if (exists($config{EphemeralBackendURL})) {
+    setLdapGlobalConfig("zimbraEphemeralBackendURL", "$config{EphemeralBackendURL}")
+  }
+  configLog("configSetupEphemeralBackend");
+  return 0;
+}
+
 sub configSaveCA {
 
   if ($configStatus{configSaveCA} eq "CONFIGURED") {
@@ -5782,9 +5790,6 @@ sub configSetStoreDefaults {
   }
   if ($newinstall && isStoreWebNode()) {
     setLdapGlobalConfig("+zimbraReverseProxyUpstreamLoginServers", "$config{HOSTNAME}");
-  }
-  if (exists($config{EphemeralBackendURL})) {
-    setLdapGlobalConfig("zimbraEphemeralBackendURL", "$config{EphemeralBackendURL}")
   }
   setLdapServerConfig("zimbraReverseProxyLookupTarget", $config{zimbraReverseProxyLookupTarget});
   setLdapServerConfig("zimbraMtaAuthTarget", $config{zimbraMtaAuthTarget});
@@ -6941,6 +6946,7 @@ sub applyConfig {
 
     configSetStoreDefaults();
   }
+  configSetupEphemeralBackend();
 
   if (isNetwork() && isEnabled("zimbra-convertd")) {
     configConvertdURL();
