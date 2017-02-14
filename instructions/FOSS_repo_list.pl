@@ -2,7 +2,7 @@
    { name => "ant-1.7.0-ziputil-patched",           branch => "dev", },
    { name => "ant-tar-patched",                     branch => "dev", },
    { name => "ical4j-0.9.16-patched",               branch => "dev", },
-   { name => "junixsocket",                         branch => "junixsocket-parent-2.0.4", },
+   { name => "junixsocket",                         branch => "junixsocket-parent-2.0.4", remote => "gh-ks" },
    { name => "nekohtml-1.9.13",                     branch => "dev", },
    { name => "zm-admin-console",                    branch => "dev", },
    { name => "zm-admin-help-common",                branch => "dev", },

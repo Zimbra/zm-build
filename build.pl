@@ -141,7 +141,7 @@ sub InitGlobalBuildVars()
          { name => "BUILD_OS",               type => "", hash_src => undef, default_sub => sub { return GetBuildOS(); }, },
          { name => "BUILD_ARCH",             type => "", hash_src => undef, default_sub => sub { return GetBuildArch(); }, },
          { name => "BUILD_RELEASE_NO_SHORT", type => "", hash_src => undef, default_sub => sub { my $x = $GLOBAL_BUILD_RELEASE_NO; $x =~ s/[.]//g; return $x; }, },
-         { name => "BUILD_DIR",              type => "", hash_src => undef, default_sub => $build_dir_func, },
+         { name => "BUILD_DIR",              type => "", hash_src => undef, default_sub => sub { return &$build_dir_func; }, },
       );
 
       {
@@ -285,6 +285,14 @@ sub LoadRepos()
 }
 
 
+sub LoadRemotes()
+{
+   my %details = @{ EvalFile("instructions/${GLOBAL_BUILD_TYPE}_remote_list.pl") };
+
+   return \%details;
+}
+
+
 sub LoadBuilds($)
 {
    my $repo_list = shift;
@@ -313,9 +321,11 @@ sub Checkout($)
    print "=========================================================================================================\n";
    print "\n";
 
+   my $repo_remote_details = LoadRemotes();
+
    for my $repo_details (@$repo_list)
    {
-      Clone($repo_details);
+      Clone( $repo_details, $repo_remote_details );
    }
 }
 
@@ -528,28 +538,25 @@ sub GetBuildArch()    # FIXME - use standard mechanism
 
 ##############################################################################################
 
-sub Clone($)
+sub Clone($$)
 {
-   my $repo_details = shift;
+   my $repo_details        = shift;
+   my $repo_remote_details = shift;
 
-   my $repo_name   = $repo_details->{name};
-   my $repo_branch = $repo_details->{branch};
+   my $repo_name       = $repo_details->{name};
+   my $repo_branch     = $repo_details->{branch} || "dev";
+   my $repo_remote     = $repo_details->{remote} || "zm";
+   my $repo_url_prefix = $repo_remote_details->{$repo_remote}->{'url-prefix'} || Die( "unresolved url-prefix for remote='$repo_remote'", "" );
 
    my $repo_dir = "$GLOBAL_BUILD_SOURCES_BASE_DIR/$repo_name";
 
    if ( !-d $repo_dir )
    {
-      if ( $repo_name =~ /junixsocket/ )
-      {
-         System( "rm", "-rf", "$repo_dir.tmp" );
-         System( "git", "clone", "https://github.com/kohlschutter/junixsocket.git", "$repo_dir.tmp" );
-         System( "cd '$repo_dir.tmp' && git checkout $repo_branch" );
-         System( "mv", "$repo_dir.tmp", $repo_dir);
-      }
-      else
-      {
-         System( "git", "clone", "-b", $repo_branch, "ssh://git\@stash.corp.synacor.com:7999/zimbra/$repo_name.git", $repo_dir );
-      }
+      System( "rm", "-rf", "$repo_dir.tmp" );
+      System( "git", "clone", "$repo_url_prefix/$repo_name.git", "$repo_dir.tmp" );
+      System("cd '$repo_dir.tmp' && git remote rename origin $repo_remote");
+      System("cd '$repo_dir.tmp' && git checkout $repo_branch");
+      System( "mv", "$repo_dir.tmp", $repo_dir );
 
       RemoveTargetInDir( $repo_name, $GLOBAL_BUILD_DIR );
    }
@@ -557,11 +564,8 @@ sub Clone($)
    {
       if ( !defined $ENV{ENV_GIT_UPDATE_INCLUDE} || grep { $repo_name =~ /$_/ } split( ",", $ENV{ENV_GIT_UPDATE_INCLUDE} ) )
       {
-         return
-           if ( $repo_name =~ /junixsocket/ );    #FIXME - some issue with branch junixsocket-parent-2.0.4"
-
          print "\n";
-         my $z = System("cd '$repo_dir' && git pull origin");
+         my $z = System("cd '$repo_dir' && git pull --ff-only $repo_remote $repo_branch");
 
          if ( "@{$z->{out}}" !~ /Already up-to-date/ )
          {
