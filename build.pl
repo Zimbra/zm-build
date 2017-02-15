@@ -225,6 +225,8 @@ sub Prepare()
    System( "mkdir", "-p", "$ENV{HOME}/.zcs-deps" );
    System( "mkdir", "-p", "$ENV{HOME}/.ivy2/cache" );
 
+   System( "find", $GLOBAL_BUILD_DIR, "-type", "f", "-name", ".built.*", "-delete" ) if ( $ENV{ENV_CACHE_CLEAR_FLAG} );
+
    my @TP_JARS = (
       "http://$GLOBAL_BUILD_THIRDPARTY_SERVER/ZimbraThirdParty/third-party-jars/ant-1.7.0-ziputil-patched.jar",
       "http://$GLOBAL_BUILD_THIRDPARTY_SERVER/ZimbraThirdParty/third-party-jars/ant-contrib-1.0b1.jar",
