@@ -1,8 +1,8 @@
 #
-# spec file for zextras.rpm
+# spec file for zimbra.rpm
 #
-Summary: Zextras Openchat
-Name: zextras-openchat
+Summary: Zimbra Chat
+Name: zimbra-chat
 Version: @@VERSION@@
 Release: @@RELEASE@@
 License: ZPL and other

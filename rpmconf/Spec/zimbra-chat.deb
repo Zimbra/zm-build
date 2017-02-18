@@ -1,6 +1,6 @@
-Package: zextras-openchat
+Package: zimbra-chat
 Version: @@VERSION@@
-Description: Zextras Openchat
+Description: Zimbra Chat
 Maintainer: Zimbra Packaging Services <packaging-devel@zimbra.com>
 Section: Mail
 Priority: optional

@@ -9,5 +9,5 @@
    "zimbra-apache",
    "zimbra-spell",
    "zimbra-proxy",
-   "zextras-openchat",
+   "zimbra-chat",
 );

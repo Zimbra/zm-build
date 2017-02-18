@@ -37,7 +37,7 @@ zimbra-archiving"
 SERVICES=""
 
 OPTIONAL_PACKAGES="zimbra-qatest \
-zextras-openchat"
+zimbra-chat"
 
 PACKAGE_DIR=`dirname $0`/packages
 

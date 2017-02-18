@@ -15,12 +15,12 @@
 # If not, see <https://www.gnu.org/licenses/>.
 # ***** END LICENSE BLOCK *****
 
-# Shell script to create zextras openchat package
+# Shell script to create zimbra chat package
 
 
 #-------------------- Configuration ---------------------------
 
-    currentScript=`basename $0 | cut -d "." -f 1`                          # zextras openchat
+    currentScript=`basename $0 | cut -d "." -f 1`                          # zimbra chat
     currentPackage=`echo ${currentScript}build | cut -d "-" -f 2` # openchatbuild
 
     openZalMajorVersion="1.11"
@@ -36,9 +36,11 @@ main()
     mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/zimlets
     
     cd ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/openchat
-    wget http://openzal.org.s3.amazonaws.com/${openZalMajorVersion}/zal-${openZalMajorVersion}.${openZalMinorVersion}-${zimbraVersion}.jar
+    #wget http://openzal.org.s3.amazonaws.com/${openZalMajorVersion}/zal-${openZalMajorVersion}.${openZalMinorVersion}-${zimbraVersion}.jar
+    wget http://${zimbraThirdPartyServer}/ZimbraThirdParty/zextras/zal-dev.jar
     if [ $? -ne 0 ]; then
-        echo -e "### Couldn't download zal-${openZalMajorVersion}.${openZalMinorVersion}-${zimbraVersion}.jar file ###"
+        #echo -e "### Couldn't download zal-${openZalMajorVersion}.${openZalMinorVersion}-${zimbraVersion}.jar file ###"
+	echo -e "### Couldn't download zal-dev.jar file ###"
         exit 1
     fi
     wget http://${zimbraThirdPartyServer}/ZimbraThirdParty/zextras/openchat.jar
@@ -48,9 +50,10 @@ main()
     fi
 
     cd ${repoDir}/zm-build/${currentPackage}/opt/zimbra/zimlets
-    wget https://download.zextras.com/com_zextras_chat.zip
+    #wget https://download.zextras.com/com_zextras_chat.zip
+    wget http://${zimbraThirdPartyServer}/ZimbraThirdParty/zextras/com_zextras_chat_open.zip
     if [ $? -ne 0 ]; then
-        echo -e "### Couldn't download com_zextras_chat.zip file ###"
+        echo -e "### Couldn't download com_zextras_chat_open.zip file ###"
         exit 1
     fi
     
