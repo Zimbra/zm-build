@@ -34,7 +34,7 @@
    { name => "zm-migration-tools",                  branch => "dev", },
    { name => "zm-mta",                              branch => "dev", },
    { name => "zm-nginx-conf",                       branch => "dev", },
-   { name => "zm-nginx-lookup-store",               branch => "dev", },
+   { name => "zm-nginx-lookup-store",               branch => "zms-dev", },
    { name => "zm-openid-consumer-store",            branch => "dev", },
    { name => "zm-postfix",                          branch => "dev", },
    { name => "zm-proxy-config-admin-zimlet",        branch => "dev", },
