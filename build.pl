@@ -355,17 +355,19 @@ sub Build($)
 
    my @ALL_BUILDS = @{ LoadBuilds($repo_list) };
 
-   my @ant_attributes = (
-      "-Ddebug=${GLOBAL_BUILD_DEBUG_FLAG}",
-      "-Dis-production=${GLOBAL_BUILD_PROD_FLAG}",
-      "-Dzimbra.buildinfo.platform=${GLOBAL_BUILD_OS}",
-      "-Dzimbra.buildinfo.version=${GLOBAL_BUILD_RELEASE_NO}_${GLOBAL_BUILD_RELEASE_CANDIDATE}_${GLOBAL_BUILD_NO}",
-      "-Dzimbra.buildinfo.type=${GLOBAL_BUILD_TYPE}",
-      "-Dzimbra.buildinfo.release=${GLOBAL_BUILD_TS}",
-      "-Dzimbra.buildinfo.date=${GLOBAL_BUILD_TS}",
-      "-Dzimbra.buildinfo.host=@{[Net::Domain::hostfqdn]}",
-      "-Dzimbra.buildinfo.buildnum=${GLOBAL_BUILD_RELEASE_NO}",
-   );
+   my $tool_attributes = {
+         ant => [
+            "-Ddebug=${GLOBAL_BUILD_DEBUG_FLAG}",
+            "-Dis-production=${GLOBAL_BUILD_PROD_FLAG}",
+            "-Dzimbra.buildinfo.platform=${GLOBAL_BUILD_OS}",
+            "-Dzimbra.buildinfo.version=${GLOBAL_BUILD_RELEASE_NO}_${GLOBAL_BUILD_RELEASE_CANDIDATE}_${GLOBAL_BUILD_NO}",
+            "-Dzimbra.buildinfo.type=${GLOBAL_BUILD_TYPE}",
+            "-Dzimbra.buildinfo.release=${GLOBAL_BUILD_TS}",
+            "-Dzimbra.buildinfo.date=${GLOBAL_BUILD_TS}",
+            "-Dzimbra.buildinfo.host=@{[Net::Domain::hostfqdn]}",
+            "-Dzimbra.buildinfo.buildnum=${GLOBAL_BUILD_RELEASE_NO}",
+         ],
+      };
 
    my $cnt = 0;
    for my $build_info (@ALL_BUILDS)
@@ -402,25 +404,17 @@ sub Build($)
 
                   my $abs_dir = Cwd::abs_path();
 
-                  if ( my $ant_targets = $build_info->{ant_targets} )
+                  if ( my $tool_seq = $build_info->{tool_seq} || [ "ant", "mvn", "make" ] )
                   {
-                     eval { System( "ant", "clean" ) if ( !$ENV{ENV_SKIP_CLEAN_FLAG} ); };
+                     for my $tool ( @$tool_seq )
+                     {
+                        if ( my $targets = $build_info->{ $tool . "_targets"} ) #Known values are: ant_targets, mvn_targets, make_targets
+                        {
+                           eval { System( $tool, "clean" ) if ( !$ENV{ENV_SKIP_CLEAN_FLAG} ); };
 
-                     System( "ant", @ant_attributes, @$ant_targets );
-                  }
-
-                  if ( my $mvn_targets = $build_info->{mvn_targets} )
-                  {
-                     eval { System( "mvn", "clean" ) if ( !$ENV{ENV_SKIP_CLEAN_FLAG} ); };
-
-                     System( "mvn", @$mvn_targets );
-                  }
-
-                  if ( my $make_targets = $build_info->{make_targets} )
-                  {
-                     eval { System( "make", "clean" ) if ( !$ENV{ENV_SKIP_CLEAN_FLAG} ); };
-
-                     System( "make", @$make_targets );
+                           System( $tool, @{ $tool_attributes->{$tool} || [] }, @$targets );
+                        }
+                     }
                   }
 
                   if ( my $stage_cmd = $build_info->{stage_cmd} )
