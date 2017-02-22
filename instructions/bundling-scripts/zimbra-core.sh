@@ -759,6 +759,7 @@ main()
       "commons-codec-1.7.jar"
       "commons-collections-3.2.2.jar"
       "commons-compress-1.10.jar"
+      "commons-csv-1.2.jar"
       "commons-dbcp-1.4.jar"
       "commons-fileupload-1.2.2.jar"
       "commons-httpclient-3.1.jar"
