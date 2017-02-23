@@ -17,7 +17,7 @@
    { name => "zm-clam-scanner-store",               branch => "dev", },
    { name => "zm-clientuploader-admin-zimlet",      branch => "dev", },
    { name => "zm-clientuploader-store",             branch => "dev", },
-   { name => "zm-core-utils",                       branch => "dev", },
+   { name => "zm-core-utils",                       branch => "feature", },
    { name => "zm-db-conf",                          branch => "dev", },
    { name => "zm-dnscache",                         branch => "dev", },
    { name => "zm-downloads",                        branch => "dev", },
