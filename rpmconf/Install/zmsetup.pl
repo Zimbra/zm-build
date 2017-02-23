@@ -6399,6 +6399,9 @@ sub configInstallZimlets {
       # disable click2call zimlets by default.  #73987
       setLdapCOSConfig("+zimbraZimletAvailableZimlets", "-$zimlet")
         if ($zimlet =~ /click2call/);
+      #disable old smime zimlet
+      setLdapCOSConfig("+zimbraZimletAvailableZimlets", "-$zimlet")
+        if ($zimlet =~ /smime/);
 
       if (($rc == 0) && ($zimlet eq "com_zimbra_smime") && ($config{UIWEBAPPS} eq "yes")) {
         system("cp /opt/zimbra/zimlets-deployed/com_zimbra_smime/com_zimbra_smime.jarx /opt/zimbra/jetty/webapps/zimbra/public/com_zimbra_smime.jarx");
