@@ -133,8 +133,8 @@ my %updateFuncs = (
   "8.7.1_GA" => \&upgrade871GA,
   "8.7.2_GA" => \&upgrade872GA,
   "8.7.3_GA" => \&upgrade873GA,
-  "8.7.4_GA" => \&upgrade873GA,
-  "8.7.3_GA" => \&upgrade873GA,
+  "8.7.4_GA" => \&upgrade874GA,
+  "8.8.0_GA" => \&upgrade880GA,
 );
 
 my @versionOrder = (
