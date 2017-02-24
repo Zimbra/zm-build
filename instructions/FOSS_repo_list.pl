@@ -44,7 +44,7 @@
    { name => "zm-versioncheck-store",               branch => "dev", },
    { name => "zm-versioncheck-utilities",           branch => "dev", },
    { name => "zm-viewmail-admin-zimlet",            branch => "dev", },
-   { name => "zm-web-client",                       branch => "dev",},
+   { name => "zm-web-client",                       branch => "feature",},
    { name => "zm-webclient-portal-example",         branch => "dev", },
    { name => "zm-zcs",                              branch => "dev", },
    { name => "zm-zcs-lib",                          branch => "feature", },
