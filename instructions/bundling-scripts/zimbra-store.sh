@@ -52,12 +52,12 @@ main()
     fi
 
     echo -e "\tCopy conf files of /opt/zimbra/" >> ${buildLogFile}
-    cp -f ${repoDir}/zm-store-conf/conf/globs2 ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf
-    cp -f ${repoDir}/zm-store-conf/conf/magic ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf
-    cp -f ${repoDir}/zm-store-conf/conf/magic.zimbra ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf
-    cp -f ${repoDir}/zm-store-conf/conf/globs2.zimbra ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf
-    cp -f ${repoDir}/zm-store-conf/conf/spnego_java_options.in ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf
-    cp -f ${repoDir}/zm-store-conf/conf/contacts/zimbra-contact-fields.xml ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/zimbra-contact-fields.xml
+    cp -f ${repoDir}/zm-mailbox/store-conf/conf/globs2 ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf
+    cp -f ${repoDir}/zm-mailbox/store-conf/conf/magic ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf
+    cp -f ${repoDir}/zm-mailbox/store-conf/conf/magic.zimbra ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf
+    cp -f ${repoDir}/zm-mailbox/store-conf/conf/globs2.zimbra ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf
+    cp -f ${repoDir}/zm-mailbox/store-conf/conf/spnego_java_options.in ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf
+    cp -f ${repoDir}/zm-mailbox/store-conf/conf/contacts/zimbra-contact-fields.xml ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/zimbra-contact-fields.xml
 
     if [ "${buildType}" == "NETWORK" ]
     then
@@ -88,7 +88,7 @@ main()
 
     echo -e "\t\tCopy ext files of /opt/zimbra/lib/" >> ${buildLogFile}
     mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib
-    #cp -f ${repoDir}/zm-libnative/build/dist/libsetuid.so ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/   #FIXME - PRASHANT - ZCS-458
+    #cp -f ${repoDir}/zm-mailbox/native/build/dist/libsetuid.so ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/   #FIXME - PRASHANT - ZCS-458
 
     mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/mitel
     mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/clamscanner
@@ -147,12 +147,13 @@ main()
 
     echo "\t\t++++++++++ service.war content ++++++++++" >> ${buildLogFile}
     mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/webapps/service
-    cd ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/webapps/service; jar -xf ${repoDir}/zm-store/build/dist/service.war
+    cd ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/webapps/service; jar -xf ${repoDir}/zm-mailbox/store/build/dist/service.war
 
     echo "\t\t***** zimbra.tld content *****" >> ${buildLogFile}
     cp ${repoDir}/zm-zimlets/conf/zimbra.tld ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/webapps/service/WEB-INF
     
-    echo "\t\t***** zimlettaglib.jar to lib *****" >> ${buildLogFile}
+    echo "\t\t***** taglib jars to lib *****" >> ${buildLogFile}
+    cp ${repoDir}/zm-taglib/build/zm-taglib*.jar         ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/webapps/service/WEB-INF/lib
     cp ${repoDir}/zm-zimlets/build/dist/zimlettaglib.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/webapps/service/WEB-INF/lib
 
 
@@ -244,7 +245,7 @@ main()
 
     echo -e "\t\tCopy jars files of /opt/zimbra/lib/" >> ${buildLogFile}
     mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/jars
-    cp -f ${repoDir}/zm-milter/build/dist/zm-milter*.jar  ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/jars/
+    cp -f ${repoDir}/zm-mailbox/milter/build/dist/zm-milter*.jar  ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/jars/
 
     echo -e "\tCopy libexec files of /opt/zimbra/" >> ${buildLogFile}
     mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec
@@ -364,7 +365,7 @@ main()
     
     cp -f ${repoDir}/zm-jetty-conf/conf/jetty/start.d/*.ini.in   ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/start.d
     cp -f ${repoDir}/zm-jetty-conf/conf/jetty/modules/npn/*.mod  ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/modules/npn
-    cp -f ${repoDir}/zm-store/conf/web.xml.production ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/etc/service.web.xml.in
+    cp -f ${repoDir}/zm-mailbox/store/conf/web.xml.production    ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/etc/service.web.xml.in
     cp -f ${repoDir}/zm-web-client/WebRoot/WEB-INF/jetty-env.xml ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/etc/zimbra-jetty-env.xml.in
     cp -f ${repoDir}/zm-web-client/WebRoot/WEB-INF/jetty-env.xml ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/etc/zimbraAdmin-jetty-env.xml.in
     cp -f ${repoDir}/zm-zimlets/conf/web.xml.production ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/etc/zimlet.web.xml.in

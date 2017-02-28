@@ -141,7 +141,7 @@ sub InitGlobalBuildVars()
          { name => "BUILD_OS",               type => "", hash_src => undef, default_sub => sub { return GetBuildOS(); }, },
          { name => "BUILD_ARCH",             type => "", hash_src => undef, default_sub => sub { return GetBuildArch(); }, },
          { name => "BUILD_RELEASE_NO_SHORT", type => "", hash_src => undef, default_sub => sub { my $x = $GLOBAL_BUILD_RELEASE_NO; $x =~ s/[.]//g; return $x; }, },
-         { name => "BUILD_DIR",              type => "", hash_src => undef, default_sub => $build_dir_func, },
+         { name => "BUILD_DIR",              type => "", hash_src => undef, default_sub => sub { return &$build_dir_func; }, },
       );
 
       {
@@ -225,6 +225,8 @@ sub Prepare()
    System( "mkdir", "-p", "$ENV{HOME}/.zcs-deps" );
    System( "mkdir", "-p", "$ENV{HOME}/.ivy2/cache" );
 
+   System( "find", $GLOBAL_BUILD_DIR, "-type", "f", "-name", ".built.*", "-delete" ) if ( $ENV{ENV_CACHE_CLEAR_FLAG} );
+
    my @TP_JARS = (
       "http://$GLOBAL_BUILD_THIRDPARTY_SERVER/ZimbraThirdParty/third-party-jars/ant-1.7.0-ziputil-patched.jar",
       "http://$GLOBAL_BUILD_THIRDPARTY_SERVER/ZimbraThirdParty/third-party-jars/ant-contrib-1.0b1.jar",
@@ -285,6 +287,14 @@ sub LoadRepos()
 }
 
 
+sub LoadRemotes()
+{
+   my %details = @{ EvalFile("instructions/${GLOBAL_BUILD_TYPE}_remote_list.pl") };
+
+   return \%details;
+}
+
+
 sub LoadBuilds($)
 {
    my $repo_list = shift;
@@ -313,9 +323,11 @@ sub Checkout($)
    print "=========================================================================================================\n";
    print "\n";
 
+   my $repo_remote_details = LoadRemotes();
+
    for my $repo_details (@$repo_list)
    {
-      Clone($repo_details);
+      Clone( $repo_details, $repo_remote_details );
    }
 }
 
@@ -343,17 +355,19 @@ sub Build($)
 
    my @ALL_BUILDS = @{ LoadBuilds($repo_list) };
 
-   my @ant_attributes = (
-      "-Ddebug=${GLOBAL_BUILD_DEBUG_FLAG}",
-      "-Dis-production=${GLOBAL_BUILD_PROD_FLAG}",
-      "-Dzimbra.buildinfo.platform=${GLOBAL_BUILD_OS}",
-      "-Dzimbra.buildinfo.version=${GLOBAL_BUILD_RELEASE_NO}_${GLOBAL_BUILD_RELEASE_CANDIDATE}_${GLOBAL_BUILD_NO}",
-      "-Dzimbra.buildinfo.type=${GLOBAL_BUILD_TYPE}",
-      "-Dzimbra.buildinfo.release=${GLOBAL_BUILD_TS}",
-      "-Dzimbra.buildinfo.date=${GLOBAL_BUILD_TS}",
-      "-Dzimbra.buildinfo.host=@{[Net::Domain::hostfqdn]}",
-      "-Dzimbra.buildinfo.buildnum=${GLOBAL_BUILD_RELEASE_NO}",
-   );
+   my $tool_attributes = {
+         ant => [
+            "-Ddebug=${GLOBAL_BUILD_DEBUG_FLAG}",
+            "-Dis-production=${GLOBAL_BUILD_PROD_FLAG}",
+            "-Dzimbra.buildinfo.platform=${GLOBAL_BUILD_OS}",
+            "-Dzimbra.buildinfo.version=${GLOBAL_BUILD_RELEASE_NO}_${GLOBAL_BUILD_RELEASE_CANDIDATE}_${GLOBAL_BUILD_NO}",
+            "-Dzimbra.buildinfo.type=${GLOBAL_BUILD_TYPE}",
+            "-Dzimbra.buildinfo.release=${GLOBAL_BUILD_TS}",
+            "-Dzimbra.buildinfo.date=${GLOBAL_BUILD_TS}",
+            "-Dzimbra.buildinfo.host=@{[Net::Domain::hostfqdn]}",
+            "-Dzimbra.buildinfo.buildnum=${GLOBAL_BUILD_RELEASE_NO}",
+         ],
+      };
 
    my $cnt = 0;
    for my $build_info (@ALL_BUILDS)
@@ -390,25 +404,17 @@ sub Build($)
 
                   my $abs_dir = Cwd::abs_path();
 
-                  if ( my $ant_targets = $build_info->{ant_targets} )
+                  if ( my $tool_seq = $build_info->{tool_seq} || [ "ant", "mvn", "make" ] )
                   {
-                     eval { System( "ant", "clean" ) if ( !$ENV{ENV_SKIP_CLEAN_FLAG} ); };
+                     for my $tool ( @$tool_seq )
+                     {
+                        if ( my $targets = $build_info->{ $tool . "_targets"} ) #Known values are: ant_targets, mvn_targets, make_targets
+                        {
+                           eval { System( $tool, "clean" ) if ( !$ENV{ENV_SKIP_CLEAN_FLAG} ); };
 
-                     System( "ant", @ant_attributes, @$ant_targets );
-                  }
-
-                  if ( my $mvn_targets = $build_info->{mvn_targets} )
-                  {
-                     eval { System( "mvn", "clean" ) if ( !$ENV{ENV_SKIP_CLEAN_FLAG} ); };
-
-                     System( "mvn", @$mvn_targets );
-                  }
-
-                  if ( my $make_targets = $build_info->{make_targets} )
-                  {
-                     eval { System( "make", "clean" ) if ( !$ENV{ENV_SKIP_CLEAN_FLAG} ); };
-
-                     System( "make", @$make_targets );
+                           System( $tool, @{ $tool_attributes->{$tool} || [] }, @$targets );
+                        }
+                     }
                   }
 
                   if ( my $stage_cmd = $build_info->{stage_cmd} )
@@ -528,28 +534,25 @@ sub GetBuildArch()    # FIXME - use standard mechanism
 
 ##############################################################################################
 
-sub Clone($)
+sub Clone($$)
 {
-   my $repo_details = shift;
+   my $repo_details        = shift;
+   my $repo_remote_details = shift;
 
-   my $repo_name   = $repo_details->{name};
-   my $repo_branch = $repo_details->{branch};
+   my $repo_name       = $repo_details->{name};
+   my $repo_branch     = $repo_details->{branch} || "dev";
+   my $repo_remote     = $repo_details->{remote} || "zm";
+   my $repo_url_prefix = $repo_remote_details->{$repo_remote}->{'url-prefix'} || Die( "unresolved url-prefix for remote='$repo_remote'", "" );
 
    my $repo_dir = "$GLOBAL_BUILD_SOURCES_BASE_DIR/$repo_name";
 
    if ( !-d $repo_dir )
    {
-      if ( $repo_name =~ /junixsocket/ )
-      {
-         System( "rm", "-rf", "$repo_dir.tmp" );
-         System( "git", "clone", "https://github.com/kohlschutter/junixsocket.git", "$repo_dir.tmp" );
-         System( "cd '$repo_dir.tmp' && git checkout $repo_branch" );
-         System( "mv", "$repo_dir.tmp", $repo_dir);
-      }
-      else
-      {
-         System( "git", "clone", "-b", $repo_branch, "ssh://git\@stash.corp.synacor.com:7999/zimbra/$repo_name.git", $repo_dir );
-      }
+      System( "rm", "-rf", "$repo_dir.tmp" );
+      System( "git", "clone", "$repo_url_prefix/$repo_name.git", "$repo_dir.tmp" );
+      System("cd '$repo_dir.tmp' && git remote rename origin $repo_remote");
+      System("cd '$repo_dir.tmp' && git checkout $repo_branch");
+      System( "mv", "$repo_dir.tmp", $repo_dir );
 
       RemoveTargetInDir( $repo_name, $GLOBAL_BUILD_DIR );
    }
@@ -557,11 +560,8 @@ sub Clone($)
    {
       if ( !defined $ENV{ENV_GIT_UPDATE_INCLUDE} || grep { $repo_name =~ /$_/ } split( ",", $ENV{ENV_GIT_UPDATE_INCLUDE} ) )
       {
-         return
-           if ( $repo_name =~ /junixsocket/ );    #FIXME - some issue with branch junixsocket-parent-2.0.4"
-
          print "\n";
-         my $z = System("cd '$repo_dir' && git pull origin");
+         my $z = System("cd '$repo_dir' && git pull --ff-only $repo_remote $repo_branch");
 
          if ( "@{$z->{out}}" !~ /Already up-to-date/ )
          {

@@ -1,5 +1,24 @@
 @ENTRIES = (
    {
+      "dir"         => "zm-mailbox",
+      "ant_targets" => ["all"],
+      "stage_cmd"    => sub {
+         System("mkdir -p                                 $GLOBAL_BUILD_DIR/zm-mailbox/native/build/dist");
+         System("mkdir -p                                 $GLOBAL_BUILD_DIR/zm-mailbox/store/build/dist");
+         System("mkdir -p                                 $GLOBAL_BUILD_DIR/zm-mailbox/milter/build/dist");
+         System("mkdir -p                                 $GLOBAL_BUILD_DIR/zm-mailbox/store-conf/");
+
+         System("cp -f native/build/*.so                  $GLOBAL_BUILD_DIR/zm-mailbox/native/build/dist");
+         System("cp -f store/build/service.war            $GLOBAL_BUILD_DIR/zm-mailbox/store/build/dist");
+         System("cp -f store/build/dist/versions-init.sql $GLOBAL_BUILD_DIR/zm-mailbox/store/build/dist");
+         System("rsync -az store/docs                     $GLOBAL_BUILD_DIR/zm-mailbox/store/");
+         System("rsync -az store/conf                     $GLOBAL_BUILD_DIR/zm-mailbox/store/");
+         System("rsync -az milter/conf                    $GLOBAL_BUILD_DIR/zm-mailbox/milter/");
+         System("cp -f     milter/build/zm-milter*.jar    $GLOBAL_BUILD_DIR/zm-mailbox/milter/build/dist/zm-milter.jar");
+         System("rsync -az store-conf/conf                $GLOBAL_BUILD_DIR/zm-mailbox/store-conf/");
+      },
+   },
+   {
       "dir"         => "junixsocket/junixsocket-native",
       "mvn_targets" => ["package"],
       "stage_cmd"   => sub {
@@ -9,9 +28,12 @@
       },
    },
    {
-      "dir"         => "zm-native",
+      "dir"         => "zm-taglib",
       "ant_targets" => ["publish-local"],
-      "stage_cmd"   => undef,
+      "stage_cmd"   => sub {
+         System("mkdir -p $GLOBAL_BUILD_DIR/zm-taglib/build");
+         System("cp -f build/zm-taglib*.jar  $GLOBAL_BUILD_DIR/zm-taglib/build/");
+      },
    },
    {
       "dir"         => "zm-charset",
@@ -19,65 +41,19 @@
       "stage_cmd"   => undef,
    },
    {
-      "dir"         => "zm-common",
-      "ant_targets" => ["publish-local"],
-      "stage_cmd"   => undef,
-   },
-   {
-      "dir"         => "zm-soap",
-      "ant_targets" => ["publish-local"],
-      "stage_cmd"   => undef,
-   },
-   {
-      "dir"         => "zm-client",
-      "ant_targets" => ["publish-local"],
-      "stage_cmd"   => undef,
-   },
-   {
-      "dir"         => "zm-store", #FIXME CIRCULAR DEPENDENCY in zm-store and zm-taglib
-      "partial"     => 1,
-      "ant_targets" => ["publish-local"],
-      "stage_cmd"   => undef,
-   },
-   {
-      "dir"         => "zm-taglib",
-      "ant_targets" => ["publish-local"],
-      "stage_cmd"   => undef,
-   },
-   {
-      "dir"         => "zm-store", #FIXME CIRCULAR DEPENDENCY in zm-store and zm-taglib
-      "ant_targets" => [ "publish-local", "war", "create-version-sql" ],
-      "stage_cmd"   => sub {
-         System("mkdir -p $GLOBAL_BUILD_DIR/zm-store/build/dist");
-         System("cp -f build/service.war $GLOBAL_BUILD_DIR/zm-store/build/dist");
-         System("cp -f build/dist/versions-init.sql $GLOBAL_BUILD_DIR/zm-store/build/dist/");
-         System("(cd .. && rsync -az --relative zm-store/docs $GLOBAL_BUILD_DIR/)");
-         System("(cd .. && rsync -az --relative zm-store/conf $GLOBAL_BUILD_DIR/)");
-      },
-   },
-   {
-      "dir"         => "zm-ajax",
-      "ant_targets" => ["publish-local"],
-      "stage_cmd"   => undef,
-   },
-   {
-      "dir"         => "zm-milter",
-      "ant_targets" => ["publish-local"],
-      "stage_cmd"   => sub {
-         System("mkdir -p $GLOBAL_BUILD_DIR/zm-milter/build/dist");
-         System("(cd .. && rsync -az --relative zm-milter/conf $GLOBAL_BUILD_DIR/)");
-         System("cp -f build/zm-milter*.jar $GLOBAL_BUILD_DIR/zm-milter/build/dist/zm-milter.jar");
-      },
-   },
-   {
       "dir"         => "zm-ldap-utilities",
-      "ant_targets" => [ "build-dist" ],
+      "ant_targets" => ["build-dist"],
       "stage_cmd"   => sub {
          System("(cd .. && rsync -az --relative zm-ldap-utilities/build/dist $GLOBAL_BUILD_DIR/)");
          System("(cd .. && rsync -az --relative zm-ldap-utilities/src/ldap/migration $GLOBAL_BUILD_DIR/)");
          System("(cd .. && rsync -az --relative zm-ldap-utilities/conf $GLOBAL_BUILD_DIR/)");
          System("(cd .. && rsync -az --relative zm-ldap-utilities/src/libexec $GLOBAL_BUILD_DIR/)");
       },
+   },
+   {
+      "dir"         => "zm-ajax",
+      "ant_targets" => ["publish-local"],
+      "stage_cmd"   => undef,
    },
    {
       "dir"         => "zm-openid-consumer-store",
@@ -169,7 +145,7 @@
    },
    {
       "dir"         => "zm-zimlets",
-      "ant_targets" => ["package-zimlets", "jar"],
+      "ant_targets" => [ "package-zimlets", "jar" ],
       "stage_cmd"   => sub {
          System("mkdir -p $GLOBAL_BUILD_DIR/zm-zimlets/conf");
          System("cp -f conf/zimbra.tld $GLOBAL_BUILD_DIR/zm-zimlets/conf");
@@ -285,13 +261,6 @@
       },
    },
    {
-      "dir"         => "zm-store-conf",
-      "ant_targets" => undef,
-      "stage_cmd"   => sub {
-         System("cp -f -r ../zm-store-conf $GLOBAL_BUILD_DIR");
-      },
-   },
-   {
       "dir"         => "zm-migration-tools",
       "ant_targets" => undef,
       "stage_cmd"   => sub {
@@ -360,7 +329,7 @@
    },
    {
       "dir"         => "zm-zcs-lib",
-      "ant_targets" => [ "dist" ],
+      "ant_targets" => ["dist"],
       "stage_cmd"   => sub {
          System("(cd .. && rsync -az --relative zm-zcs-lib $GLOBAL_BUILD_DIR/)");
       },
@@ -387,17 +356,9 @@
       },
    },
    {
-      "dir"       => "zm-libnative",
-      "make_targets" => [],
-      "stage_cmd" => sub {
-         System("mkdir -p $GLOBAL_BUILD_DIR/zm-libnative/build/dist");
-         System("cp -f build/*.so $GLOBAL_BUILD_DIR/zm-libnative/build/dist");
-      },
-   },
-   {
-      "dir"       => "zm-launcher",
+      "dir"          => "zm-launcher",
       "make_targets" => ["JAVA_BINARY=/opt/zimbra/common/bin/java"],
-      "stage_cmd" => sub {
+      "stage_cmd"    => sub {
          System("mkdir -p $GLOBAL_BUILD_DIR/zm-launcher/build/dist");
          System("cp -f build/zmmailboxd* $GLOBAL_BUILD_DIR/zm-launcher/build/dist");
       },

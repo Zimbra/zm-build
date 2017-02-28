@@ -44,7 +44,7 @@ cp -f ${repoDir}/zm-build/rpmconf/Install/Util/modules/postinstall.sh           
 cp -f ${repoDir}/zm-build/rpmconf/Install/Util/utilfunc.sh                              ${ZCS_REL}/util
 cp -f ${repoDir}/zm-build/rpmconf/Install/install.sh                                    ${ZCS_REL}/
 cp -f ${repoDir}/zm-core-utils/src/libexec/zmdbintegrityreport                          ${ZCS_REL}/bin
-cp -f ${repoDir}/zm-store/build/dist/versions-init.sql                                  ${ZCS_REL}/data
+cp -f ${repoDir}/zm-mailbox/store/build/dist/versions-init.sql                          ${ZCS_REL}/data
 cp -f ${repoDir}/zm-build/${arch}/*.*                                                   ${ZCS_REL}/packages
 
 chmod 755 ${ZCS_REL}/bin/checkService.pl
