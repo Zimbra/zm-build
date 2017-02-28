@@ -550,7 +550,6 @@ sub Clone($$)
    {
       System( "rm", "-rf", "$repo_dir.tmp" );
       System( "git", "clone", "$repo_url_prefix/$repo_name.git", "$repo_dir.tmp" );
-      System("cd '$repo_dir.tmp' && git remote rename origin $repo_remote");
       System("cd '$repo_dir.tmp' && git checkout $repo_branch");
       System( "mv", "$repo_dir.tmp", $repo_dir );
 
@@ -561,7 +560,7 @@ sub Clone($$)
       if ( !defined $ENV{ENV_GIT_UPDATE_INCLUDE} || grep { $repo_name =~ /$_/ } split( ",", $ENV{ENV_GIT_UPDATE_INCLUDE} ) )
       {
          print "\n";
-         my $z = System("cd '$repo_dir' && git pull --ff-only $repo_remote $repo_branch");
+         my $z = System("cd '$repo_dir' && git pull --ff-only $repo_branch");
 
          if ( "@{$z->{out}}" !~ /Already up-to-date/ )
          {
