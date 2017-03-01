@@ -560,7 +560,7 @@ sub Clone($$)
       if ( !defined $ENV{ENV_GIT_UPDATE_INCLUDE} || grep { $repo_name =~ /$_/ } split( ",", $ENV{ENV_GIT_UPDATE_INCLUDE} ) )
       {
          print "\n";
-         my $z = System("cd '$repo_dir' && git pull --ff-only $repo_branch");
+         my $z = System("cd '$repo_dir' && git pull --ff-only");
 
          if ( "@{$z->{out}}" !~ /Already up-to-date/ )
          {
