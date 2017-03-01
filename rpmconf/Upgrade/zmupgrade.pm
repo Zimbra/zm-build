@@ -41,7 +41,7 @@ chomp $rundir;
 my $scriptDir = "/opt/zimbra/libexec/scripts";
 
 my $lowVersion = 52;
-my $hiVersion = 107; # this should be set to the DB version expected by current server code
+my $hiVersion = 108; # this should be set to the DB version expected by current server code
 
 my $needSlapIndexing = 0;
 my $mysqlcnfUpdated = 0;
@@ -83,6 +83,7 @@ my %updateScripts = (
   '104' => "migrate20150515-DataSourcePurgeTables.pl", #8.7.0
   '105' => "migrate20150623-ZmgDevices.pl",            #8.7.0
   '106' => "migrate20150702-ZmgDevices.pl",            #8.7.0
+  '107' => "migrate20170301-ZimbraChat.pl",            #8.7.6
 );
 
 my %updateFuncs = (
