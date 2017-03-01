@@ -539,10 +539,10 @@ sub Clone($$)
    my $repo_details        = shift;
    my $repo_remote_details = shift;
 
-   my $repo_name       = $repo_details->{name};
-   my $repo_branch     = $repo_details->{branch} || "dev";
-   my $repo_remote     = $repo_details->{remote} || "zm";
-   my $repo_url_prefix = $repo_remote_details->{$repo_remote}->{'url-prefix'} || Die( "unresolved url-prefix for remote='$repo_remote'", "" );
+   my $repo_name          = $repo_details->{name};
+   my $repo_branch_or_tag = $repo_details->{branch} || $repo_details->{tag} || "dev";
+   my $repo_remote        = $repo_details->{remote} || "zm";
+   my $repo_url_prefix    = $repo_remote_details->{$repo_remote}->{'url-prefix'} || Die( "unresolved url-prefix for remote='$repo_remote'", "" );
 
    my $repo_dir = "$GLOBAL_BUILD_SOURCES_BASE_DIR/$repo_name";
 
@@ -550,7 +550,7 @@ sub Clone($$)
    {
       System( "rm", "-rf", "$repo_dir.tmp" );
       System( "git", "clone", "$repo_url_prefix/$repo_name.git", "$repo_dir.tmp" );
-      System("cd '$repo_dir.tmp' && git checkout $repo_branch");
+      System("cd '$repo_dir.tmp' && git checkout $repo_branch_or_tag");
       System( "mv", "$repo_dir.tmp", $repo_dir );
 
       RemoveTargetInDir( $repo_name, $GLOBAL_BUILD_DIR );
@@ -559,12 +559,15 @@ sub Clone($$)
    {
       if ( !defined $ENV{ENV_GIT_UPDATE_INCLUDE} || grep { $repo_name =~ /$_/ } split( ",", $ENV{ENV_GIT_UPDATE_INCLUDE} ) )
       {
-         print "\n";
-         my $z = System("cd '$repo_dir' && git pull --ff-only");
-
-         if ( "@{$z->{out}}" !~ /Already up-to-date/ )
+         if( !$repo_details->{tag} )
          {
-            RemoveTargetInDir( $repo_name, $GLOBAL_BUILD_DIR );
+            print "\n";
+            my $z = System("cd '$repo_dir' && git pull --ff-only");
+
+            if ( "@{$z->{out}}" !~ /Already up-to-date/ )
+            {
+               RemoveTargetInDir( $repo_name, $GLOBAL_BUILD_DIR );
+            }
          }
       }
    }
