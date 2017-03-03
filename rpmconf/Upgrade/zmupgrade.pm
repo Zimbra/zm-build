@@ -134,6 +134,7 @@ my %updateFuncs = (
   "8.7.2_GA" => \&upgrade872GA,
   "8.7.3_GA" => \&upgrade873GA,
   "8.7.4_GA" => \&upgrade874GA,
+  "8.7.5_GA" => \&upgrade875GA,
 );
 
 my @versionOrder = (
@@ -185,6 +186,7 @@ my @versionOrder = (
   "8.7.2_GA",
   "8.7.3_GA",
   "8.7.4_GA",
+  "8.7.5_GA",
 );
 
 my ($startVersion,$startMajor,$startMinor,$startMicro);
@@ -2315,6 +2317,12 @@ sub upgrade873GA {
 sub upgrade874GA {
     my ($startBuild, $targetVersion, $targetBuild) = (@_);
     main::progress("Updating from 8.7.4_GA\n"); 
+    return 0;
+}
+
+sub upgrade875GA {
+    my ($startBuild, $targetVersion, $targetBuild) = (@_);
+    main::progress("Updating from 8.7.5_GA\n");
     return 0;
 }
 
