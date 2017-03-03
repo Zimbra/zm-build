@@ -45,15 +45,7 @@
    { name => "zm-versioncheck-store",               branch => "dev", },
    { name => "zm-versioncheck-utilities",           branch => "dev", },
    { name => "zm-viewmail-admin-zimlet",            branch => "dev", },
-<<<<<<< HEAD
    { name => "zm-web-client",                       branch => "smime",},
-=======
-<<<<<<< HEAD:instructions/FOSS_repo_list.pl
-   { name => "zm-web-client",                       branch => "smime",},
-=======
-   { name => "zm-web-client",                       branch => "smime", },
->>>>>>> 98cbd1d54f75125a9b3cd4b88c3da4adc6afb405:public_repos.pl
->>>>>>> 193d0b158917069e19f7a72fd5cfa2073ef4b26f
    { name => "zm-webclient-portal-example",         branch => "dev", },
    { name => "zm-zcs",                              branch => "dev", },
    { name => "zm-zcs-lib",                          branch => "dev", },
