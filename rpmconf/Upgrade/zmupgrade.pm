@@ -339,6 +339,8 @@ sub upgrade {
       main::progress("This appears to be 8.7.3_GA\n");
   } elsif ($startVersion eq "8.7.4_GA") {
       main::progress("This appears to be 8.7.4_GA\n");
+  } elsif ($startVersion eq "8.7.5_GA") {
+      main::progress("This appears to be 8.7.5_GA\n");
   } else {
     if ($startVersion eq "") {
       main::progress("ERROR: Unable to find initial version to upgrade from.\n");
