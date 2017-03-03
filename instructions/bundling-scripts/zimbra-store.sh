@@ -292,10 +292,16 @@ main()
                      "zm-smime-cert-admin-zimlet" \
                      "zm-2fa-admin-zimlet" \
                      "zm-ucconfig-admin-zimlet" \
+<<<<<<< HEAD
                      "zm-smime-applet" \
                      "zm-mobile-sync-admin-zimlet" )
                      "zm-mobile-sync-admin-zimlet" \
                      "zm-securemail-zimlet" )
+=======
+                     "zm-securemail-zimlet" \
+                     "zm-smime-applet" \
+                     "zm-mobile-sync-admin-zimlet" )
+>>>>>>> 193d0b158917069e19f7a72fd5cfa2073ef4b26f
       for i in "${adminZimlets[@]}"
       do
          cp ${repoDir}/${i}/build/zimlet/*.zip ${repoDir}/zm-build/${currentPackage}/opt/zimbra/zimlets-network
