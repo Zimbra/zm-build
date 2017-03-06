@@ -6,7 +6,7 @@
    { name => "nekohtml-1.9.13",                     branch => "dev", },
    { name => "zm-admin-console",                    branch => "dev", },
    { name => "zm-admin-help-common",                branch => "dev", },
-   { name => "zm-ajax",                             branch => "dev", },
+   { name => "zm-ajax",                             branch => "feature", },
    { name => "zm-amavis",                           branch => "dev", },
    { name => "zm-aspell",                           branch => "dev", },
    { name => "zm-bulkprovision-admin-zimlet",       branch => "dev", },
