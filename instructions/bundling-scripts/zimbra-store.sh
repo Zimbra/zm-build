@@ -17,6 +17,7 @@
 
 # Shell script to create zimbra store package
 
+set -e
 
 #-------------------- Configuration ---------------------------
 
@@ -250,7 +251,6 @@ main()
 
     echo -e "\t\tCopy jars files of /opt/zimbra/lib/" >> ${buildLogFile}
     mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/jars
-    cp -f ${repoDir}/zm-mailbox/milter/build/dist/zm-milter*.jar  ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/jars/
 
     echo -e "\tCopy libexec files of /opt/zimbra/" >> ${buildLogFile}
     mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec

@@ -560,8 +560,8 @@ main()
    Copy ${repoDir}/zm-licenses/zimbra/zpl-full.txt                                                  ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/ZPL.txt
 
    Copy ${repoDir}/zm-migration-tools/ReadMe.txt                                                    ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/zmztozmig.txt
-   Copy ${repoDir}/zm-mailbox/milter/conf/milter.log4j.properties                                   ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/milter.log4j.properties
-   Copy ${repoDir}/zm-mailbox/milter/conf/mta_milter_options.in                                     ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/mta_milter_options.in
+   Copy ${repoDir}/zm-mailbox/milter-conf/conf/milter.log4j.properties                              ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/milter.log4j.properties
+   Copy ${repoDir}/zm-mailbox/milter-conf/conf/mta_milter_options.in                                ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/mta_milter_options.in
 
    Copy ${repoDir}/zm-mta/cbpolicyd.conf.in                                                         ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/cbpolicyd.conf.in
    Copy ${repoDir}/zm-mta/clamd.conf.in                                                             ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/clamd.conf.in
