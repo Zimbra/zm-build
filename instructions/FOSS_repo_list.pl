@@ -30,7 +30,7 @@
    { name => "zm-ldap-utilities",                   branch => "feature", },
    { name => "zm-ldap-utils-store",                 branch => "dev", },
    { name => "zm-licenses",                         branch => "dev", },
-   { name => "zm-mailbox",                          branch => "dev", },
+   { name => "zm-mailbox",                          branch => "feature", },
    { name => "zm-migration-tools",                  branch => "dev", },
    { name => "zm-mta",                              branch => "dev", },
    { name => "zm-nginx-conf",                       branch => "dev", },
