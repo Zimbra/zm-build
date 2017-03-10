@@ -137,6 +137,9 @@ sub InitGlobalBuildVars()
          { name => "BUILD_DEBUG_FLAG",         type => "!",  hash_src => \%cmd_hash, default_sub => sub { return 0; }, },
          { name => "BUILD_DEV_TOOL_BASE_DIR",  type => "=s", hash_src => \%cmd_hash, default_sub => sub { return "$ENV{HOME}/.zm-dev-tools"; }, },
          { name => "INTERACTIVE",              type => "!",  hash_src => \%cmd_hash, default_sub => sub { return 1; }, },
+         { name => "GIT_DEFAULT_TAG",          type => "=s", hash_src => \%cmd_hash, default_sub => sub { return undef; }, },
+         { name => "GIT_DEFAULT_REMOTE",       type => "=s", hash_src => \%cmd_hash, default_sub => sub { return undef; }, },
+         { name => "GIT_DEFAULT_BRANCH",       type => "=s", hash_src => \%cmd_hash, default_sub => sub { return undef; }, },
 
          { name => "BUILD_OS",               type => "", hash_src => undef, default_sub => sub { return GetBuildOS(); }, },
          { name => "BUILD_ARCH",             type => "", hash_src => undef, default_sub => sub { return GetBuildArch(); }, },
@@ -356,18 +359,18 @@ sub Build($)
    my @ALL_BUILDS = @{ LoadBuilds($repo_list) };
 
    my $tool_attributes = {
-         ant => [
-            "-Ddebug=${GLOBAL_BUILD_DEBUG_FLAG}",
-            "-Dis-production=${GLOBAL_BUILD_PROD_FLAG}",
-            "-Dzimbra.buildinfo.platform=${GLOBAL_BUILD_OS}",
-            "-Dzimbra.buildinfo.version=${GLOBAL_BUILD_RELEASE_NO}_${GLOBAL_BUILD_RELEASE_CANDIDATE}_${GLOBAL_BUILD_NO}",
-            "-Dzimbra.buildinfo.type=${GLOBAL_BUILD_TYPE}",
-            "-Dzimbra.buildinfo.release=${GLOBAL_BUILD_TS}",
-            "-Dzimbra.buildinfo.date=${GLOBAL_BUILD_TS}",
-            "-Dzimbra.buildinfo.host=@{[Net::Domain::hostfqdn]}",
-            "-Dzimbra.buildinfo.buildnum=${GLOBAL_BUILD_RELEASE_NO}",
-         ],
-      };
+      ant => [
+         "-Ddebug=${GLOBAL_BUILD_DEBUG_FLAG}",
+         "-Dis-production=${GLOBAL_BUILD_PROD_FLAG}",
+         "-Dzimbra.buildinfo.platform=${GLOBAL_BUILD_OS}",
+         "-Dzimbra.buildinfo.version=${GLOBAL_BUILD_RELEASE_NO}_${GLOBAL_BUILD_RELEASE_CANDIDATE}_${GLOBAL_BUILD_NO}",
+         "-Dzimbra.buildinfo.type=${GLOBAL_BUILD_TYPE}",
+         "-Dzimbra.buildinfo.release=${GLOBAL_BUILD_TS}",
+         "-Dzimbra.buildinfo.date=${GLOBAL_BUILD_TS}",
+         "-Dzimbra.buildinfo.host=@{[Net::Domain::hostfqdn]}",
+         "-Dzimbra.buildinfo.buildnum=${GLOBAL_BUILD_RELEASE_NO}",
+      ],
+   };
 
    my $cnt = 0;
    for my $build_info (@ALL_BUILDS)
@@ -406,9 +409,9 @@ sub Build($)
 
                   if ( my $tool_seq = $build_info->{tool_seq} || [ "ant", "mvn", "make" ] )
                   {
-                     for my $tool ( @$tool_seq )
+                     for my $tool (@$tool_seq)
                      {
-                        if ( my $targets = $build_info->{ $tool . "_targets"} ) #Known values are: ant_targets, mvn_targets, make_targets
+                        if ( my $targets = $build_info->{ $tool . "_targets" } )    #Known values are: ant_targets, mvn_targets, make_targets
                         {
                            eval { System( $tool, "clean" ) if ( !$ENV{ENV_SKIP_CLEAN_FLAG} ); };
 
@@ -539,19 +542,24 @@ sub Clone($$)
    my $repo_details        = shift;
    my $repo_remote_details = shift;
 
-   my $repo_name          = $repo_details->{name};
-   my $repo_branch_or_tag = $repo_details->{branch} || $repo_details->{tag} || "dev";
-   my $repo_remote        = $repo_details->{remote} || "zm";
-   my $repo_url_prefix    = $repo_remote_details->{$repo_remote}->{'url-prefix'} || Die( "unresolved url-prefix for remote='$repo_remote'", "" );
+   my $repo_name       = $repo_details->{name};
+   my $repo_branch     = $CFG{GIT_OVERRIDE_BRANCH}{$repo_name} || $repo_details->{branch} || $CFG{GIT_DEFAULT_BRANCH} || "dev";
+   my $repo_tag        = $CFG{GIT_OVERRIDE_TAG}{$repo_name}    || $repo_details->{tag}    || $CFG{GIT_DEFAULT_TAG};
+   my $repo_remote     = $CFG{GIT_OVERRIDE_REMOTE}{$repo_name} || $repo_details->{remote} || $CFG{GIT_DEFAULT_REMOTE} || "zm";
+   my $repo_url_prefix = $repo_remote_details->{$repo_remote}->{'url-prefix'} || Die( "unresolved url-prefix for remote='$repo_remote'", "" );
 
    my $repo_dir = "$GLOBAL_BUILD_SOURCES_BASE_DIR/$repo_name";
 
    if ( !-d $repo_dir )
    {
-      System( "rm", "-rf", "$repo_dir.tmp" );
-      System( "git", "clone", "$repo_url_prefix/$repo_name.git", "$repo_dir.tmp" );
-      System("cd '$repo_dir.tmp' && git checkout $repo_branch_or_tag");
-      System( "mv", "$repo_dir.tmp", $repo_dir );
+      if ($repo_tag)
+      {
+         System( "git", "clone", "--depth=1", "-b", $repo_tag, "-o", $repo_remote, "$repo_url_prefix/$repo_name.git", "$repo_dir" );
+      }
+      else
+      {
+         System( "git", "clone", "--depth=1", "-b", $repo_branch, "-o", $repo_remote, "$repo_url_prefix/$repo_name.git", "$repo_dir" );
+      }
 
       RemoveTargetInDir( $repo_name, $GLOBAL_BUILD_DIR );
    }
@@ -559,7 +567,14 @@ sub Clone($$)
    {
       if ( !defined $ENV{ENV_GIT_UPDATE_INCLUDE} || grep { $repo_name =~ /$_/ } split( ",", $ENV{ENV_GIT_UPDATE_INCLUDE} ) )
       {
-         if( !$repo_details->{tag} )
+         if ($repo_tag)
+         {
+            print "\n";
+            System("cd '$repo_dir' && git checkout $repo_tag");
+
+            RemoveTargetInDir( $repo_name, $GLOBAL_BUILD_DIR );
+         }
+         else
          {
             print "\n";
             my $z = System("cd '$repo_dir' && git pull --ff-only");
