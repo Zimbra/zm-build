@@ -140,6 +140,7 @@ sub InitGlobalBuildVars()
          { name => "GIT_DEFAULT_TAG",          type => "=s", hash_src => \%cmd_hash, default_sub => sub { return undef; }, },
          { name => "GIT_DEFAULT_REMOTE",       type => "=s", hash_src => \%cmd_hash, default_sub => sub { return undef; }, },
          { name => "GIT_DEFAULT_BRANCH",       type => "=s", hash_src => \%cmd_hash, default_sub => sub { return undef; }, },
+         { name => "STOP_AFTER_CHECKOUT",      type => "!",  hash_src => \%cmd_hash, default_sub => sub { return 0; }, },
 
          { name => "BUILD_OS",               type => "", hash_src => undef, default_sub => sub { return GetBuildOS(); }, },
          { name => "BUILD_ARCH",             type => "", hash_src => undef, default_sub => sub { return GetBuildArch(); }, },
@@ -205,6 +206,9 @@ sub InitGlobalBuildVars()
    }
 
    print "=========================================================================================================\n";
+
+   print "NOTE: THIS WILL STOP AFTER CHECKOUTS\n"
+      if ( $CFG{STOP_AFTER_CHECKOUT} );
 
    if ( $CFG{INTERACTIVE} )
    {
@@ -737,7 +741,8 @@ sub main()
 
    Checkout($all_repos);
 
-   Build($all_repos);
+   Build($all_repos)
+      if ( !$CFG{STOP_AFTER_CHECKOUT} );
 }
 
 main();
