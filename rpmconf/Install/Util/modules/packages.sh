@@ -93,6 +93,7 @@ installPackages() {
 			fi
 			if [ $? -ne 0 ]; then
 				echo "Unable to download packages zimbra-memcached from repository. System is not modified."
+				exit 1
 			fi
 		fi
 		if [ "$FORCE_UPGRADE" = "yes" -o "$POST87UPGRADE" = "false" ]; then
