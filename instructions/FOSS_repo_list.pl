@@ -38,7 +38,6 @@
    { name => "zm-openid-consumer-store",            branch => "dev", },
    { name => "zm-postfix",                          branch => "dev", },
    { name => "zm-proxy-config-admin-zimlet",        branch => "dev", },
-   { name => "zm-store-conf",                       branch => "dev", },
    { name => "zm-taglib",                           branch => "dev", },
    { name => "zm-timezones",                        branch => "dev", },
    { name => "zm-versioncheck-admin-zimlet",        branch => "dev", },
