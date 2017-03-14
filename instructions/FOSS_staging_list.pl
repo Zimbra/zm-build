@@ -5,16 +5,15 @@
       "stage_cmd"    => sub {
          System("mkdir -p                                 $GLOBAL_BUILD_DIR/zm-mailbox/native/build/dist");
          System("mkdir -p                                 $GLOBAL_BUILD_DIR/zm-mailbox/store/build/dist");
-         System("mkdir -p                                 $GLOBAL_BUILD_DIR/zm-mailbox/milter/build/dist");
          System("mkdir -p                                 $GLOBAL_BUILD_DIR/zm-mailbox/store-conf/");
 
          System("cp -f native/build/*.so                  $GLOBAL_BUILD_DIR/zm-mailbox/native/build/dist");
          System("cp -f store/build/service.war            $GLOBAL_BUILD_DIR/zm-mailbox/store/build/dist");
          System("cp -f store/build/dist/versions-init.sql $GLOBAL_BUILD_DIR/zm-mailbox/store/build/dist");
+
          System("rsync -az store/docs                     $GLOBAL_BUILD_DIR/zm-mailbox/store/");
          System("rsync -az store/conf                     $GLOBAL_BUILD_DIR/zm-mailbox/store/");
-         System("rsync -az milter/conf                    $GLOBAL_BUILD_DIR/zm-mailbox/milter/");
-         System("cp -f     milter/build/zm-milter*.jar    $GLOBAL_BUILD_DIR/zm-mailbox/milter/build/dist/zm-milter.jar");
+         System("rsync -az milter-conf/conf               $GLOBAL_BUILD_DIR/zm-mailbox/milter-conf/");
          System("rsync -az store-conf/conf                $GLOBAL_BUILD_DIR/zm-mailbox/store-conf/");
       },
    },
