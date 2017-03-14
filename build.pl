@@ -103,14 +103,26 @@ sub LoadConfiguration($)
 
    if ( defined $val )
    {
-      if ( $cfg_name =~ /BUILD_/ )
+      if ( ref($val) eq "HASH" )
       {
-         eval "\$GLOBAL_${cfg_name} = \"$val\"";    #FIXME - remove eval and instead use the hash %CFG every place
+         foreach my $k ( keys %{$val} )
+         {
+            $CFG{$cfg_name}{$k} = ${$val}{$k};
+
+            printf( " %-25s: %-17s : %s\n", $cfg_name, $cmd_hash ? $src : "detected", $k . " => " . ${$val}{$k} );
+         }
       }
+      else
+      {
+         if ( $cfg_name =~ /BUILD_/ )
+         {
+            eval "\$GLOBAL_${cfg_name} = \"$val\"";    #FIXME - remove eval and instead use the hash %CFG every place
+         }
 
-      $CFG{$cfg_name} = $val;
+         $CFG{$cfg_name} = $val;
 
-      printf( " %-25s: %-17s : %s\n", $cfg_name, $cmd_hash ? $src : "detected", $val );
+         printf( " %-25s: %-17s : %s\n", $cfg_name, $cmd_hash ? $src : "detected", $val );
+      }
    }
 }
 
@@ -124,19 +136,24 @@ sub InitGlobalBuildVars()
       my %cmd_hash = ();
 
       my @cmd_args = (
-         { name => "BUILD_NO",                 type => "=i", hash_src => \%cmd_hash, default_sub => sub { return GetNewBuildNo(); }, },
-         { name => "BUILD_TS",                 type => "=i", hash_src => \%cmd_hash, default_sub => sub { return GetNewBuildTs(); }, },
-         { name => "BUILD_ARTIFACTS_BASE_DIR", type => "=s", hash_src => \%cmd_hash, default_sub => sub { return "$GLOBAL_PATH_TO_TOP/BUILDS"; }, },
-         { name => "BUILD_SOURCES_BASE_DIR",   type => "=s", hash_src => \%cmd_hash, default_sub => sub { return $GLOBAL_PATH_TO_TOP; }, },
-         { name => "BUILD_RELEASE",            type => "=s", hash_src => \%cmd_hash, default_sub => sub { Die("@_ not specified"); }, },
-         { name => "BUILD_RELEASE_NO",         type => "=s", hash_src => \%cmd_hash, default_sub => sub { Die("@_ not specified"); }, },
-         { name => "BUILD_RELEASE_CANDIDATE",  type => "=s", hash_src => \%cmd_hash, default_sub => sub { Die("@_ not specified"); }, },
-         { name => "BUILD_TYPE",               type => "=s", hash_src => \%cmd_hash, default_sub => sub { Die("@_ not specified"); }, },
-         { name => "BUILD_THIRDPARTY_SERVER",  type => "=s", hash_src => \%cmd_hash, default_sub => sub { Die("@_ not specified"); }, },
-         { name => "BUILD_PROD_FLAG",          type => "!",  hash_src => \%cmd_hash, default_sub => sub { return 1; }, },
-         { name => "BUILD_DEBUG_FLAG",         type => "!",  hash_src => \%cmd_hash, default_sub => sub { return 0; }, },
-         { name => "BUILD_DEV_TOOL_BASE_DIR",  type => "=s", hash_src => \%cmd_hash, default_sub => sub { return "$ENV{HOME}/.zm-dev-tools"; }, },
-         { name => "INTERACTIVE",              type => "!",  hash_src => \%cmd_hash, default_sub => sub { return 1; }, },
+         { name => "BUILD_NO",                 type => "=i",  hash_src => \%cmd_hash, default_sub => sub { return GetNewBuildNo(); }, },
+         { name => "BUILD_TS",                 type => "=i",  hash_src => \%cmd_hash, default_sub => sub { return GetNewBuildTs(); }, },
+         { name => "BUILD_ARTIFACTS_BASE_DIR", type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return "$GLOBAL_PATH_TO_TOP/BUILDS"; }, },
+         { name => "BUILD_SOURCES_BASE_DIR",   type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return $GLOBAL_PATH_TO_TOP; }, },
+         { name => "BUILD_RELEASE",            type => "=s",  hash_src => \%cmd_hash, default_sub => sub { Die("@_ not specified"); }, },
+         { name => "BUILD_RELEASE_NO",         type => "=s",  hash_src => \%cmd_hash, default_sub => sub { Die("@_ not specified"); }, },
+         { name => "BUILD_RELEASE_CANDIDATE",  type => "=s",  hash_src => \%cmd_hash, default_sub => sub { Die("@_ not specified"); }, },
+         { name => "BUILD_TYPE",               type => "=s",  hash_src => \%cmd_hash, default_sub => sub { Die("@_ not specified"); }, },
+         { name => "BUILD_THIRDPARTY_SERVER",  type => "=s",  hash_src => \%cmd_hash, default_sub => sub { Die("@_ not specified"); }, },
+         { name => "BUILD_PROD_FLAG",          type => "!",   hash_src => \%cmd_hash, default_sub => sub { return 1; }, },
+         { name => "BUILD_DEBUG_FLAG",         type => "!",   hash_src => \%cmd_hash, default_sub => sub { return 0; }, },
+         { name => "BUILD_DEV_TOOL_BASE_DIR",  type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return "$ENV{HOME}/.zm-dev-tools"; }, },
+         { name => "INTERACTIVE",              type => "!",   hash_src => \%cmd_hash, default_sub => sub { return 1; }, },
+         { name => "GIT_OVERRIDES",            type => "=s%", hash_src => \%cmd_hash, default_sub => sub { return {}; }, },
+         { name => "GIT_DEFAULT_TAG",          type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return undef; }, },
+         { name => "GIT_DEFAULT_REMOTE",       type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return undef; }, },
+         { name => "GIT_DEFAULT_BRANCH",       type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return undef; }, },
+         { name => "STOP_AFTER_CHECKOUT",      type => "!",   hash_src => \%cmd_hash, default_sub => sub { return 0; }, },
 
          { name => "BUILD_OS",               type => "", hash_src => undef, default_sub => sub { return GetBuildOS(); }, },
          { name => "BUILD_ARCH",             type => "", hash_src => undef, default_sub => sub { return GetBuildArch(); }, },
@@ -202,6 +219,9 @@ sub InitGlobalBuildVars()
    }
 
    print "=========================================================================================================\n";
+
+   print "NOTE: THIS WILL STOP AFTER CHECKOUTS\n"
+     if ( $CFG{STOP_AFTER_CHECKOUT} );
 
    if ( $CFG{INTERACTIVE} )
    {
@@ -356,18 +376,18 @@ sub Build($)
    my @ALL_BUILDS = @{ LoadBuilds($repo_list) };
 
    my $tool_attributes = {
-         ant => [
-            "-Ddebug=${GLOBAL_BUILD_DEBUG_FLAG}",
-            "-Dis-production=${GLOBAL_BUILD_PROD_FLAG}",
-            "-Dzimbra.buildinfo.platform=${GLOBAL_BUILD_OS}",
-            "-Dzimbra.buildinfo.version=${GLOBAL_BUILD_RELEASE_NO}_${GLOBAL_BUILD_RELEASE_CANDIDATE}_${GLOBAL_BUILD_NO}",
-            "-Dzimbra.buildinfo.type=${GLOBAL_BUILD_TYPE}",
-            "-Dzimbra.buildinfo.release=${GLOBAL_BUILD_TS}",
-            "-Dzimbra.buildinfo.date=${GLOBAL_BUILD_TS}",
-            "-Dzimbra.buildinfo.host=@{[Net::Domain::hostfqdn]}",
-            "-Dzimbra.buildinfo.buildnum=${GLOBAL_BUILD_RELEASE_NO}",
-         ],
-      };
+      ant => [
+         "-Ddebug=${GLOBAL_BUILD_DEBUG_FLAG}",
+         "-Dis-production=${GLOBAL_BUILD_PROD_FLAG}",
+         "-Dzimbra.buildinfo.platform=${GLOBAL_BUILD_OS}",
+         "-Dzimbra.buildinfo.version=${GLOBAL_BUILD_RELEASE_NO}_${GLOBAL_BUILD_RELEASE_CANDIDATE}_${GLOBAL_BUILD_NO}",
+         "-Dzimbra.buildinfo.type=${GLOBAL_BUILD_TYPE}",
+         "-Dzimbra.buildinfo.release=${GLOBAL_BUILD_TS}",
+         "-Dzimbra.buildinfo.date=${GLOBAL_BUILD_TS}",
+         "-Dzimbra.buildinfo.host=@{[Net::Domain::hostfqdn]}",
+         "-Dzimbra.buildinfo.buildnum=${GLOBAL_BUILD_RELEASE_NO}",
+      ],
+   };
 
    my $cnt = 0;
    for my $build_info (@ALL_BUILDS)
@@ -406,9 +426,9 @@ sub Build($)
 
                   if ( my $tool_seq = $build_info->{tool_seq} || [ "ant", "mvn", "make" ] )
                   {
-                     for my $tool ( @$tool_seq )
+                     for my $tool (@$tool_seq)
                      {
-                        if ( my $targets = $build_info->{ $tool . "_targets"} ) #Known values are: ant_targets, mvn_targets, make_targets
+                        if ( my $targets = $build_info->{ $tool . "_targets" } )    #Known values are: ant_targets, mvn_targets, make_targets
                         {
                            eval { System( $tool, "clean" ) if ( !$ENV{ENV_SKIP_CLEAN_FLAG} ); };
 
@@ -539,19 +559,26 @@ sub Clone($$)
    my $repo_details        = shift;
    my $repo_remote_details = shift;
 
-   my $repo_name          = $repo_details->{name};
-   my $repo_branch_or_tag = $repo_details->{branch} || $repo_details->{tag} || "dev";
-   my $repo_remote        = $repo_details->{remote} || "zm";
-   my $repo_url_prefix    = $repo_remote_details->{$repo_remote}->{'url-prefix'} || Die( "unresolved url-prefix for remote='$repo_remote'", "" );
+   my $repo_name       = $repo_details->{name};
+   my $repo_branch     = $CFG{GIT_OVERRIDES}->{"$repo_name.branch"} || $repo_details->{branch} || $CFG{GIT_DEFAULT_BRANCH} || "dev";
+   my $repo_tag        = $CFG{GIT_OVERRIDES}->{"$repo_name.tag"} || $repo_details->{tag} || $CFG{GIT_DEFAULT_TAG} if ( $CFG{GIT_OVERRIDES}->{"$repo_name.tag"} || !$CFG{GIT_OVERRIDES}->{"$repo_name.branch"} );
+   my $repo_remote     = $CFG{GIT_OVERRIDES}->{"$repo_name.remote"} || $repo_details->{remote} || $CFG{GIT_DEFAULT_REMOTE} || "zm";
+   my $repo_url_prefix = $CFG{GIT_OVERRIDES}->{"$repo_remote.url-prefix"} || $repo_remote_details->{$repo_remote}->{'url-prefix'} || Die( "unresolved url-prefix for remote='$repo_remote'", "" );
+
+   $repo_url_prefix =~ s,/*$,,;
 
    my $repo_dir = "$GLOBAL_BUILD_SOURCES_BASE_DIR/$repo_name";
 
    if ( !-d $repo_dir )
    {
-      System( "rm", "-rf", "$repo_dir.tmp" );
-      System( "git", "clone", "$repo_url_prefix/$repo_name.git", "$repo_dir.tmp" );
-      System("cd '$repo_dir.tmp' && git checkout $repo_branch_or_tag");
-      System( "mv", "$repo_dir.tmp", $repo_dir );
+      if ($repo_tag)
+      {
+         System( "git", "clone", "--depth=1", "-b", $repo_tag, "-o", $repo_remote, "$repo_url_prefix/$repo_name.git", "$repo_dir" );
+      }
+      else
+      {
+         System( "git", "clone", "--depth=1", "-b", $repo_branch, "-o", $repo_remote, "$repo_url_prefix/$repo_name.git", "$repo_dir" );
+      }
 
       RemoveTargetInDir( $repo_name, $GLOBAL_BUILD_DIR );
    }
@@ -559,7 +586,14 @@ sub Clone($$)
    {
       if ( !defined $ENV{ENV_GIT_UPDATE_INCLUDE} || grep { $repo_name =~ /$_/ } split( ",", $ENV{ENV_GIT_UPDATE_INCLUDE} ) )
       {
-         if( !$repo_details->{tag} )
+         if ($repo_tag)
+         {
+            print "\n";
+            System("cd '$repo_dir' && git checkout $repo_tag");
+
+            RemoveTargetInDir( $repo_name, $GLOBAL_BUILD_DIR );
+         }
+         else
          {
             print "\n";
             my $z = System("cd '$repo_dir' && git pull --ff-only");
@@ -596,12 +630,33 @@ sub LoadProperties($)
 
    my $x = SlurpFile($f);
 
-   my %h =
+   my @cfg_kvs =
      map { $_ =~ s/^\s+|\s+$//g; $_ }    # trim
      map { split( /=/, $_, 2 ) }         # split around =
+     map { $_ =~ s/#.*$//g; $_ }         # strip comments
+     grep { $_ !~ /^\s*#/ }              # ignore comments
+     grep { $_ !~ /^\s*$/ }              # ignore empty lines
      @$x;
 
-   return \%h;
+   my %ret_hash = ();
+   for ( my $e = 0 ; $e < scalar @cfg_kvs ; $e += 2 )
+   {
+      my $probe_key = $cfg_kvs[$e];
+      my $probe_val = $cfg_kvs[ $e + 1 ];
+
+      if ( $probe_key =~ /^%(.*)/ )
+      {
+         my @val_kv_pair = split( /=/, $probe_val, 2 );
+
+         $ret_hash{$1}{ $val_kv_pair[0] } = $val_kv_pair[1];
+      }
+      else
+      {
+         $ret_hash{$probe_key} = $probe_val;
+      }
+   }
+
+   return \%ret_hash;
 }
 
 
@@ -722,7 +777,8 @@ sub main()
 
    Checkout($all_repos);
 
-   Build($all_repos);
+   Build($all_repos)
+     if ( !$CFG{STOP_AFTER_CHECKOUT} );
 }
 
 main();

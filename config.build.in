@@ -1,5 +1,15 @@
+# Example config:
+# - please change as appropriate.
+# - command line overrides the config.
+
 BUILD_RELEASE           = JUDASPRIEST
 BUILD_RELEASE_NO        = 8.8.0
 BUILD_RELEASE_CANDIDATE = GA
 BUILD_TYPE              = FOSS
 BUILD_THIRDPARTY_SERVER = zdev-vm008.eng.zimbra.com
+
+# Example of GIT_OVERRIDES (hash)
+# %GIT_OVERRIDES          = myremote.url-prefix=ssh://git@stash.corp.synacor.com:7999/~user/zm-mailbox.git
+# %GIT_OVERRIDES          = zm-mailbox.branch=dev
+# %GIT_OVERRIDES          = zm-mailbox.remote=myremote
+# %GIT_OVERRIDES          = zm-mailbox.tag=judaspriest-872    # .tag always overrides .branch
