@@ -103,14 +103,26 @@ sub LoadConfiguration($)
 
    if ( defined $val )
    {
-      if ( $cfg_name =~ /BUILD_/ )
+      if ( ref($val) eq "HASH" )
       {
-         eval "\$GLOBAL_${cfg_name} = \"$val\"";    #FIXME - remove eval and instead use the hash %CFG every place
+         foreach my $k ( keys %{$val} )
+         {
+            $CFG{$cfg_name}{$k} = ${$val}{$k};
+
+            printf( " %-25s: %-17s : %s\n", $cfg_name, $cmd_hash ? $src : "detected", $k . " => " . ${$val}{$k} );
+         }
       }
+      else
+      {
+         if ( $cfg_name =~ /BUILD_/ )
+         {
+            eval "\$GLOBAL_${cfg_name} = \"$val\"";    #FIXME - remove eval and instead use the hash %CFG every place
+         }
 
-      $CFG{$cfg_name} = $val;
+         $CFG{$cfg_name} = $val;
 
-      printf( " %-25s: %-17s : %s\n", $cfg_name, $cmd_hash ? $src : "detected", $val );
+         printf( " %-25s: %-17s : %s\n", $cfg_name, $cmd_hash ? $src : "detected", $val );
+      }
    }
 }
 
@@ -124,23 +136,24 @@ sub InitGlobalBuildVars()
       my %cmd_hash = ();
 
       my @cmd_args = (
-         { name => "BUILD_NO",                 type => "=i", hash_src => \%cmd_hash, default_sub => sub { return GetNewBuildNo(); }, },
-         { name => "BUILD_TS",                 type => "=i", hash_src => \%cmd_hash, default_sub => sub { return GetNewBuildTs(); }, },
-         { name => "BUILD_ARTIFACTS_BASE_DIR", type => "=s", hash_src => \%cmd_hash, default_sub => sub { return "$GLOBAL_PATH_TO_TOP/BUILDS"; }, },
-         { name => "BUILD_SOURCES_BASE_DIR",   type => "=s", hash_src => \%cmd_hash, default_sub => sub { return $GLOBAL_PATH_TO_TOP; }, },
-         { name => "BUILD_RELEASE",            type => "=s", hash_src => \%cmd_hash, default_sub => sub { Die("@_ not specified"); }, },
-         { name => "BUILD_RELEASE_NO",         type => "=s", hash_src => \%cmd_hash, default_sub => sub { Die("@_ not specified"); }, },
-         { name => "BUILD_RELEASE_CANDIDATE",  type => "=s", hash_src => \%cmd_hash, default_sub => sub { Die("@_ not specified"); }, },
-         { name => "BUILD_TYPE",               type => "=s", hash_src => \%cmd_hash, default_sub => sub { Die("@_ not specified"); }, },
-         { name => "BUILD_THIRDPARTY_SERVER",  type => "=s", hash_src => \%cmd_hash, default_sub => sub { Die("@_ not specified"); }, },
-         { name => "BUILD_PROD_FLAG",          type => "!",  hash_src => \%cmd_hash, default_sub => sub { return 1; }, },
-         { name => "BUILD_DEBUG_FLAG",         type => "!",  hash_src => \%cmd_hash, default_sub => sub { return 0; }, },
-         { name => "BUILD_DEV_TOOL_BASE_DIR",  type => "=s", hash_src => \%cmd_hash, default_sub => sub { return "$ENV{HOME}/.zm-dev-tools"; }, },
-         { name => "INTERACTIVE",              type => "!",  hash_src => \%cmd_hash, default_sub => sub { return 1; }, },
-         { name => "GIT_DEFAULT_TAG",          type => "=s", hash_src => \%cmd_hash, default_sub => sub { return undef; }, },
-         { name => "GIT_DEFAULT_REMOTE",       type => "=s", hash_src => \%cmd_hash, default_sub => sub { return undef; }, },
-         { name => "GIT_DEFAULT_BRANCH",       type => "=s", hash_src => \%cmd_hash, default_sub => sub { return undef; }, },
-         { name => "STOP_AFTER_CHECKOUT",      type => "!",  hash_src => \%cmd_hash, default_sub => sub { return 0; }, },
+         { name => "BUILD_NO",                 type => "=i",  hash_src => \%cmd_hash, default_sub => sub { return GetNewBuildNo(); }, },
+         { name => "BUILD_TS",                 type => "=i",  hash_src => \%cmd_hash, default_sub => sub { return GetNewBuildTs(); }, },
+         { name => "BUILD_ARTIFACTS_BASE_DIR", type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return "$GLOBAL_PATH_TO_TOP/BUILDS"; }, },
+         { name => "BUILD_SOURCES_BASE_DIR",   type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return $GLOBAL_PATH_TO_TOP; }, },
+         { name => "BUILD_RELEASE",            type => "=s",  hash_src => \%cmd_hash, default_sub => sub { Die("@_ not specified"); }, },
+         { name => "BUILD_RELEASE_NO",         type => "=s",  hash_src => \%cmd_hash, default_sub => sub { Die("@_ not specified"); }, },
+         { name => "BUILD_RELEASE_CANDIDATE",  type => "=s",  hash_src => \%cmd_hash, default_sub => sub { Die("@_ not specified"); }, },
+         { name => "BUILD_TYPE",               type => "=s",  hash_src => \%cmd_hash, default_sub => sub { Die("@_ not specified"); }, },
+         { name => "BUILD_THIRDPARTY_SERVER",  type => "=s",  hash_src => \%cmd_hash, default_sub => sub { Die("@_ not specified"); }, },
+         { name => "BUILD_PROD_FLAG",          type => "!",   hash_src => \%cmd_hash, default_sub => sub { return 1; }, },
+         { name => "BUILD_DEBUG_FLAG",         type => "!",   hash_src => \%cmd_hash, default_sub => sub { return 0; }, },
+         { name => "BUILD_DEV_TOOL_BASE_DIR",  type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return "$ENV{HOME}/.zm-dev-tools"; }, },
+         { name => "INTERACTIVE",              type => "!",   hash_src => \%cmd_hash, default_sub => sub { return 1; }, },
+         { name => "GIT_OVERRIDES",            type => "=s%", hash_src => \%cmd_hash, default_sub => sub { return {}; }, },
+         { name => "GIT_DEFAULT_TAG",          type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return undef; }, },
+         { name => "GIT_DEFAULT_REMOTE",       type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return undef; }, },
+         { name => "GIT_DEFAULT_BRANCH",       type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return undef; }, },
+         { name => "STOP_AFTER_CHECKOUT",      type => "!",   hash_src => \%cmd_hash, default_sub => sub { return 0; }, },
 
          { name => "BUILD_OS",               type => "", hash_src => undef, default_sub => sub { return GetBuildOS(); }, },
          { name => "BUILD_ARCH",             type => "", hash_src => undef, default_sub => sub { return GetBuildArch(); }, },
@@ -208,7 +221,7 @@ sub InitGlobalBuildVars()
    print "=========================================================================================================\n";
 
    print "NOTE: THIS WILL STOP AFTER CHECKOUTS\n"
-      if ( $CFG{STOP_AFTER_CHECKOUT} );
+     if ( $CFG{STOP_AFTER_CHECKOUT} );
 
    if ( $CFG{INTERACTIVE} )
    {
@@ -547,10 +560,12 @@ sub Clone($$)
    my $repo_remote_details = shift;
 
    my $repo_name       = $repo_details->{name};
-   my $repo_branch     = $CFG{GIT_OVERRIDE_BRANCH}{$repo_name} || $repo_details->{branch} || $CFG{GIT_DEFAULT_BRANCH} || "dev";
-   my $repo_tag        = $CFG{GIT_OVERRIDE_TAG}{$repo_name}    || $repo_details->{tag}    || $CFG{GIT_DEFAULT_TAG};
-   my $repo_remote     = $CFG{GIT_OVERRIDE_REMOTE}{$repo_name} || $repo_details->{remote} || $CFG{GIT_DEFAULT_REMOTE} || "zm";
-   my $repo_url_prefix = $repo_remote_details->{$repo_remote}->{'url-prefix'} || Die( "unresolved url-prefix for remote='$repo_remote'", "" );
+   my $repo_branch     = $CFG{GIT_OVERRIDES}->{"$repo_name.branch"} || $repo_details->{branch} || $CFG{GIT_DEFAULT_BRANCH} || "dev";
+   my $repo_tag        = $CFG{GIT_OVERRIDES}->{"$repo_name.tag"} || $repo_details->{tag} || $CFG{GIT_DEFAULT_TAG} if ( $CFG{GIT_OVERRIDES}->{"$repo_name.tag"} || !$CFG{GIT_OVERRIDES}->{"$repo_name.branch"} );
+   my $repo_remote     = $CFG{GIT_OVERRIDES}->{"$repo_name.remote"} || $repo_details->{remote} || $CFG{GIT_DEFAULT_REMOTE} || "zm";
+   my $repo_url_prefix = $CFG{GIT_OVERRIDES}->{"$repo_remote.url-prefix"} || $repo_remote_details->{$repo_remote}->{'url-prefix'} || Die( "unresolved url-prefix for remote='$repo_remote'", "" );
+
+   $repo_url_prefix =~ s,/*$,,;
 
    my $repo_dir = "$GLOBAL_BUILD_SOURCES_BASE_DIR/$repo_name";
 
@@ -615,12 +630,33 @@ sub LoadProperties($)
 
    my $x = SlurpFile($f);
 
-   my %h =
+   my @cfg_kvs =
      map { $_ =~ s/^\s+|\s+$//g; $_ }    # trim
      map { split( /=/, $_, 2 ) }         # split around =
+     map { $_ =~ s/#.*$//g; $_ }         # strip comments
+     grep { $_ !~ /^\s*#/ }              # ignore comments
+     grep { $_ !~ /^\s*$/ }              # ignore empty lines
      @$x;
 
-   return \%h;
+   my %ret_hash = ();
+   for ( my $e = 0 ; $e < scalar @cfg_kvs ; $e += 2 )
+   {
+      my $probe_key = $cfg_kvs[$e];
+      my $probe_val = $cfg_kvs[ $e + 1 ];
+
+      if ( $probe_key =~ /^%(.*)/ )
+      {
+         my @val_kv_pair = split( /=/, $probe_val, 2 );
+
+         $ret_hash{$1}{ $val_kv_pair[0] } = $val_kv_pair[1];
+      }
+      else
+      {
+         $ret_hash{$probe_key} = $probe_val;
+      }
+   }
+
+   return \%ret_hash;
 }
 
 
@@ -742,7 +778,7 @@ sub main()
    Checkout($all_repos);
 
    Build($all_repos)
-      if ( !$CFG{STOP_AFTER_CHECKOUT} );
+     if ( !$CFG{STOP_AFTER_CHECKOUT} );
 }
 
 main();
