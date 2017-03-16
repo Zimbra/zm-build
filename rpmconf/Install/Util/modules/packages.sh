@@ -1,5 +1,5 @@
 #!/bin/bash
-# 
+#
 # ***** BEGIN LICENSE BLOCK *****
 # Zimbra Collaboration Suite Server
 # Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2013, 2014, 2015, 2016 Synacor, Inc.
@@ -14,302 +14,302 @@
 # You should have received a copy of the GNU General Public License along with this program.
 # If not, see <https://www.gnu.org/licenses/>.
 # ***** END LICENSE BLOCK *****
-# 
+#
 
 installPackages() {
-	repocomp=""
-	pkgcomp=""
-	pkglocal=""
-	for PKG in $INSTALL_PACKAGES; do
-	echo "$PKG will be downloaded."
-		findLatestPackage $PKG
-		if [ x$PKG != "xzimbra-memcached" ]; then
-			if [ ! -f "$file" ]; then
-				echo "file $file not found."
-				exit 1
-			fi
-			pkgcomp="$pkgcomp $file"
-			pkglocal="$pkglocal $PKG"
-		fi
-		if [ x$PKG = "xzimbra-core" ]; then
-			repocomp="zimbra-core-components $repocomp"
-		fi
-		if [ x$PKG = "xzimbra-apache" ]; then
-			repocomp="$repocomp zimbra-apache-components"
-		fi
-		if [ x$PKG = "xzimbra-dnscache" ]; then
-			repocomp="$repocomp zimbra-dnscache-components"
-		fi
-		if [ x$PKG = "xzimbra-ldap" ]; then
-			repocomp="$repocomp zimbra-ldap-components"
-		fi
-		if [ x$PKG = "xzimbra-mta" ]; then
-			repocomp="$repocomp zimbra-mta-components"
-		fi
-		if [ x$PKG = "xzimbra-memcached" ]; then
-			repocomp="$repocomp zimbra-memcached"
-		fi
-		if [ x$PKG = "xzimbra-proxy" ]; then
-			repocomp="$repocomp zimbra-proxy-components"
-		fi
-		if [ x$PKG = "xzimbra-snmp" ]; then
-			repocomp="$repocomp zimbra-snmp-components"
-		fi
-		if [ x$PKG = "xzimbra-spell" ]; then
-			repocomp="$repocomp zimbra-spell-components"
-		fi
-		if [ x$PKG = "xzimbra-store" ]; then
-			repocomp="$repocomp zimbra-store-components"
-		fi
-	done
-# Download packages.
-	echo "Downloading packages. This will not modify the system. This may take some time."
-	$PACKAGEDOWNLOAD $repocomp >> $LOGFILE 2>&1
-	if [ $? -ne 0 ]; then
-		echo "Unable to download packages from repository. System is not modified."
-		exit 1
-	fi
+   repocomp=""
+   pkgcomp=""
+   pkglocal=""
+   for PKG in $INSTALL_PACKAGES; do
+      echo "$PKG will be downloaded."
+      findLatestPackage $PKG
+      if [ x$PKG != "xzimbra-memcached" ]; then
+         if [ ! -f "$file" ]; then
+            echo "file $file not found."
+            exit 1
+         fi
+         pkgcomp="$pkgcomp $file"
+         pkglocal="$pkglocal $PKG"
+      fi
+      if [ x$PKG = "xzimbra-core" ]; then
+         repocomp="zimbra-core-components $repocomp"
+      fi
+      if [ x$PKG = "xzimbra-apache" ]; then
+         repocomp="$repocomp zimbra-apache-components"
+      fi
+      if [ x$PKG = "xzimbra-dnscache" ]; then
+         repocomp="$repocomp zimbra-dnscache-components"
+      fi
+      if [ x$PKG = "xzimbra-ldap" ]; then
+         repocomp="$repocomp zimbra-ldap-components"
+      fi
+      if [ x$PKG = "xzimbra-mta" ]; then
+         repocomp="$repocomp zimbra-mta-components"
+      fi
+      if [ x$PKG = "xzimbra-memcached" ]; then
+         repocomp="$repocomp zimbra-memcached"
+      fi
+      if [ x$PKG = "xzimbra-proxy" ]; then
+         repocomp="$repocomp zimbra-proxy-components"
+      fi
+      if [ x$PKG = "xzimbra-snmp" ]; then
+         repocomp="$repocomp zimbra-snmp-components"
+      fi
+      if [ x$PKG = "xzimbra-spell" ]; then
+         repocomp="$repocomp zimbra-spell-components"
+      fi
+      if [ x$PKG = "xzimbra-store" ]; then
+         repocomp="$repocomp zimbra-store-components"
+      fi
+   done
+   # Download packages.
+   echo "Downloading packages. This will not modify the system. This may take some time."
+   $PACKAGEDOWNLOAD $repocomp >> $LOGFILE 2>&1
+   if [ $? -ne 0 ]; then
+      echo "Unable to download packages from repository. System is not modified."
+      exit 1
+   fi
 
-	if [ $UPGRADE = "yes" ]; then
-	    if [ ${ZM_CUR_MAJOR} -lt 8 ] || [ ${ZM_CUR_MAJOR} -eq 8 -a ${ZM_CUR_MINOR} -lt 7 ]; then
-	        POST87UPGRADE="false"
-	    else
-	        POST87UPGRADE="true"
-	    fi
-		# Special case for zimbra-memcached as pre-8.7.0 it is local package moved to remote.
-		if [ $POST87UPGRADE = "false" ]; then
-			if [ $ISUBUNTU = "true" ]; then
-				MEMCACHEDVER=`apt-cache show zimbra-memcached | grep -i version | \
-					grep "zimbra$ZM_INST_MAJOR.$ZM_INST_MINOR" | head -n1 | \
-					cut -d ':' -f 2 |  tr -d " "`
-				echo "Downloading Remote package zimbra-memcached version $MEMCACHEDVER";
-				$PACKAGEDOWNLOAD zimbra-memcached=$MEMCACHEDVER >> $LOGFILE 2>&1
-			else
-				MEMCACHEDVER=`yum --showduplicates list zimbra-memcached | \
-					grep "zimbra$ZM_INST_MAJOR.$ZM_INST_MINOR" | head -n1 | \
-					cut -d ' ' -f 2`
-				echo "Downloading Remote package zimbra-memcached version $MEMCACHEDVER";
-				yum downgrade --downloadonly --assumeyes zimbra-memcached-$MEMCACHEDVER >> $LOGFILE 2>&1
-			fi
-			if [ $? -ne 0 ]; then
-				echo "Unable to download packages zimbra-memcached from repository. System is not modified."
-				exit 1
-			fi
-		fi
-		if [ "$FORCE_UPGRADE" = "yes" -o "$POST87UPGRADE" = "false" ]; then
-		    findUbuntuExternalPackageDependencies
-		fi
-		saveExistingConfig
-	fi
+   if [ $UPGRADE = "yes" ]; then
+      if [ ${ZM_CUR_MAJOR} -lt 8 ] || [ ${ZM_CUR_MAJOR} -eq 8 -a ${ZM_CUR_MINOR} -lt 7 ]; then
+         POST87UPGRADE="false"
+      else
+         POST87UPGRADE="true"
+      fi
+      # Special case for zimbra-memcached as pre-8.7.0 it is local package moved to remote.
+      if [ $POST87UPGRADE = "false" ]; then
+         if [ $ISUBUNTU = "true" ]; then
+            MEMCACHEDVER=`apt-cache show zimbra-memcached | grep -i version | \
+               grep "zimbra$ZM_INST_MAJOR.$ZM_INST_MINOR" | head -n1 | \
+               cut -d ':' -f 2 |  tr -d " "`
+            echo "Downloading Remote package zimbra-memcached version $MEMCACHEDVER";
+            $PACKAGEDOWNLOAD zimbra-memcached=$MEMCACHEDVER >> $LOGFILE 2>&1
+         else
+            MEMCACHEDVER=`yum --showduplicates list zimbra-memcached | \
+               grep "zimbra$ZM_INST_MAJOR.$ZM_INST_MINOR" | head -n1 | \
+               cut -d ' ' -f 2`
+            echo "Downloading Remote package zimbra-memcached version $MEMCACHEDVER";
+            yum downgrade --downloadonly --assumeyes zimbra-memcached-$MEMCACHEDVER >> $LOGFILE 2>&1
+         fi
+         if [ $? -ne 0 ]; then
+            echo "Unable to download packages zimbra-memcached from repository. System is not modified."
+            exit 1
+         fi
+      fi
+      if [ "$FORCE_UPGRADE" = "yes" -o "$POST87UPGRADE" = "false" ]; then
+         findUbuntuExternalPackageDependencies
+      fi
+      saveExistingConfig
+   fi
 
-	removeExistingInstall
-	echo "Local packages $pkglocal selected for installation"
-	echo "Monitor $LOGFILE for package installation progress"
-	echo "Remote package installation started"
-	echo "REMOTE PACKAGES: $repocomp" >> $LOGFILE 2>&1
-	echo "LOCAL PACKAGES: $pkglocal" >> $LOGFILE 2>&1
-	echo -n "Installing $repocomp...."
-	$REPOINST $repocomp >>$LOGFILE 2>&1
-	if [ $? != 0 ]; then
-		pkgError
-	fi
-	echo "done"
-	INSTRESULT=0
-	echo "Local package installation started"
-	echo -n "Installing $pkglocal..."
-	$PACKAGEINST $pkgcomp >> $LOGFILE 2>&1
-	INSTRESULT=$?
-	if [ $UPGRADE = "yes" ]; then
-		ST="UPGRADED"
-	else
-		ST="INSTALLED"
-	fi
-	D=`date +%s`
-	if [ $INSTRESULT = 0 ]; then
-	    echo "done"
-	    if [ "$ISUBUNTU" = "true" ] && [ ! -z "$EXTPACKAGES" ]; then
-	        echo -n "Re-installing $EXTPACKAGES ..."
-	        $REPOINST $EXTPACKAGES >> $LOGFILE 2>&1
-	        if [ $? -ne 0 ]; then
-	            echo "Failed to install package[s] $EXTPACKAGES."
-	        fi
-	    fi
-		echo "done"
-		for PKG in $INSTALL_PACKAGES; do
-			if [ x$PKG != "xzimbra-memcached" ]; then
-				findLatestPackage $PKG
-				f=`basename $file`
-				echo "${D}: $ST $f" >> /opt/zimbra/.install_history
-			fi
-		done
-	else
-		echo -n "FAILED"
-		echo ""
-		echo "###ERROR###"
-		echo ""
-		echo "Installation cancelled"
-		echo ""
-		exit 1
-	fi
+   removeExistingInstall
+   echo "Local packages $pkglocal selected for installation"
+   echo "Monitor $LOGFILE for package installation progress"
+   echo "Remote package installation started"
+   echo "REMOTE PACKAGES: $repocomp" >> $LOGFILE 2>&1
+   echo "LOCAL PACKAGES: $pkglocal" >> $LOGFILE 2>&1
+   echo -n "Installing $repocomp...."
+   $REPOINST $repocomp >>$LOGFILE 2>&1
+   if [ $? != 0 ]; then
+      pkgError
+   fi
+   echo "done"
+   INSTRESULT=0
+   echo "Local package installation started"
+   echo -n "Installing $pkglocal..."
+   $PACKAGEINST $pkgcomp >> $LOGFILE 2>&1
+   INSTRESULT=$?
+   if [ $UPGRADE = "yes" ]; then
+      ST="UPGRADED"
+   else
+      ST="INSTALLED"
+   fi
+   D=`date +%s`
+   if [ $INSTRESULT = 0 ]; then
+      echo "done"
+      if [ "$ISUBUNTU" = "true" ] && [ ! -z "$EXTPACKAGES" ]; then
+         echo -n "Re-installing $EXTPACKAGES ..."
+         $REPOINST $EXTPACKAGES >> $LOGFILE 2>&1
+         if [ $? -ne 0 ]; then
+            echo "Failed to install package[s] $EXTPACKAGES."
+         fi
+      fi
+      echo "done"
+      for PKG in $INSTALL_PACKAGES; do
+         if [ x$PKG != "xzimbra-memcached" ]; then
+            findLatestPackage $PKG
+            f=`basename $file`
+            echo "${D}: $ST $f" >> /opt/zimbra/.install_history
+         fi
+      done
+   else
+      echo -n "FAILED"
+      echo ""
+      echo "###ERROR###"
+      echo ""
+      echo "Installation cancelled"
+      echo ""
+      exit 1
+   fi
 }
 
 pkgError() {
-  echo ""
-  echo "ERROR: Unable to install required packages"
-  if [ $UPGRADE = "yes" ]; then
-    echo "WARNING: REMOTE PACKAGE INSTALLATION FAILED."
-    echo "To proceed, review the instructions at:"
-    echo "https://wiki.zimbra.com/wiki/Recovering_from_upgrade_failure"
-    echo "Failure to follow the instructions on the wiki will result in complete data loss."
-  else
-    echo "Fix the issues with remote package installation and rerun the installer"
-  fi
-  exit 1
+   echo ""
+   echo "ERROR: Unable to install required packages"
+   if [ $UPGRADE = "yes" ]; then
+      echo "WARNING: REMOTE PACKAGE INSTALLATION FAILED."
+      echo "To proceed, review the instructions at:"
+      echo "https://wiki.zimbra.com/wiki/Recovering_from_upgrade_failure"
+      echo "Failure to follow the instructions on the wiki will result in complete data loss."
+   else
+      echo "Fix the issues with remote package installation and rerun the installer"
+   fi
+   exit 1
 }
 
 findLatestPackage() {
-	package=$1
+   package=$1
 
-	latest=""
-	himajor=0
-	himinor=0
-	histamp=0
+   latest=""
+   himajor=0
+   himinor=0
+   histamp=0
 
-	files=`ls $PACKAGE_DIR/$package*.$PACKAGEEXT 2> /dev/null`
-	for q in $files; do
-		f=`basename $q`
-		if [ x"$PACKAGEEXT" = "xrpm" ]; then
-			id=`echo $f | awk -F- '{print $3}'`
-			version=`echo $id | awk -F_ '{print $1}'`
-			major=`echo $version | awk -F. '{print $1}'`
-			minor=`echo $version | awk -F. '{print $2}'`
-			micro=`echo $version | awk -F. '{print $3}'`
-			stamp=`echo $f | awk -F_ '{print $3}' | awk -F. '{print $1}'`
-		elif [ x"$PACKAGEEXT" = "xdeb" ]; then
-			id=`basename $f .deb | awk -F_ '{print $2"_"$3}'`
-			id=`echo $id | sed -e 's/_i386$//'`
-			id=`echo $id | sed -e 's/_amd64$//'`
-			version=`echo $id | awk -F. '{print $1"."$2"."$3"_"$4}'`
-			major=`echo $version | awk -F. '{print $1}'`
-			minor=`echo $version | awk -F. '{print $2}'`
-			micro=`echo $version | awk -F. '{print $3}'`
-			stamp=`echo $id | awk -F. '{print $4}'`
-		else
-			id=`echo $f | awk -F_ '{print $2}'`
-			version=`echo $id | awk -F_ '{print $1}'`
-			major=`echo $version | awk -F. '{print $1}'`
-			minor=`echo $version | awk -F. '{print $2}'`
-			micro=`echo $version | awk -F. '{print $3}'`
-			stamp=`echo $f | awk -F_ '{print $3}' | awk -F. '{print $1}'`
-		fi
-		if [ x"$PACKAGEEXT" = "xdeb" ]; then
-			debos=`echo $id | awk -F. '{print $6}'`
-			hwbits=`echo $id | awk -F. '{print $7}'`
-			if [ x"$hwbits" = "x64" ]; then
-				installable_platform=${debos}_${hwbits}
-			else
-				installable_platform=${debos}
-			fi
-		else
-			installable_platform=`echo $id | awk -F. '{print $4}'`
-		fi
+   files=`ls $PACKAGE_DIR/$package*.$PACKAGEEXT 2> /dev/null`
+   for q in $files; do
+      f=`basename $q`
+      if [ x"$PACKAGEEXT" = "xrpm" ]; then
+         id=`echo $f | awk -F- '{print $3}'`
+         version=`echo $id | awk -F_ '{print $1}'`
+         major=`echo $version | awk -F. '{print $1}'`
+         minor=`echo $version | awk -F. '{print $2}'`
+         micro=`echo $version | awk -F. '{print $3}'`
+         stamp=`echo $f | awk -F_ '{print $3}' | awk -F. '{print $1}'`
+         elif [ x"$PACKAGEEXT" = "xdeb" ]; then
+         id=`basename $f .deb | awk -F_ '{print $2"_"$3}'`
+         id=`echo $id | sed -e 's/_i386$//'`
+         id=`echo $id | sed -e 's/_amd64$//'`
+         version=`echo $id | awk -F. '{print $1"."$2"."$3"_"$4}'`
+         major=`echo $version | awk -F. '{print $1}'`
+         minor=`echo $version | awk -F. '{print $2}'`
+         micro=`echo $version | awk -F. '{print $3}'`
+         stamp=`echo $id | awk -F. '{print $4}'`
+      else
+         id=`echo $f | awk -F_ '{print $2}'`
+         version=`echo $id | awk -F_ '{print $1}'`
+         major=`echo $version | awk -F. '{print $1}'`
+         minor=`echo $version | awk -F. '{print $2}'`
+         micro=`echo $version | awk -F. '{print $3}'`
+         stamp=`echo $f | awk -F_ '{print $3}' | awk -F. '{print $1}'`
+      fi
+      if [ x"$PACKAGEEXT" = "xdeb" ]; then
+         debos=`echo $id | awk -F. '{print $6}'`
+         hwbits=`echo $id | awk -F. '{print $7}'`
+         if [ x"$hwbits" = "x64" ]; then
+            installable_platform=${debos}_${hwbits}
+         else
+            installable_platform=${debos}
+         fi
+      else
+         installable_platform=`echo $id | awk -F. '{print $4}'`
+      fi
 
-		if [ $major -gt $himajor ]; then
-			himajor=$major
-			himinor=$minor
-			histamp=$stamp
-			latest=$q
-			continue
-		fi
-		if [ $minor -gt $himinor ]; then
-			himajor=$major
-			himinor=$minor
-			histamp=$stamp
-			latest=$q
-			continue
-		fi
-		if [ $stamp -gt $histamp ]; then
-			himajor=$major
-			himinor=$minor
-			histamp=$stamp
-			latest=$q
-			continue
-		fi
-	done
+      if [ $major -gt $himajor ]; then
+         himajor=$major
+         himinor=$minor
+         histamp=$stamp
+         latest=$q
+         continue
+      fi
+      if [ $minor -gt $himinor ]; then
+         himajor=$major
+         himinor=$minor
+         histamp=$stamp
+         latest=$q
+         continue
+      fi
+      if [ $stamp -gt $histamp ]; then
+         himajor=$major
+         himinor=$minor
+         histamp=$stamp
+         latest=$q
+         continue
+      fi
+   done
 
-	file=$latest
+   file=$latest
 }
 
 checkPackages() {
-	echo ""
-	echo "Checking for installable packages"
-	echo ""
+   echo ""
+   echo "Checking for installable packages"
+   echo ""
 
-	for i in $CORE_PACKAGES; do
-		findLatestPackage $i
-		if [ ! -f "$file" ]; then
-			echo "ERROR: Required Core package $i not found in $PACKAGE_DIR"
-			echo "Exiting"
-			exit 1
-		else
-			echo $file | grep -q i386
-			if [ $? -eq 0 ]; then
-				PROC="i386"
-			else
-				PROC="x86_64"
-			fi
-			echo "Found $i"
-		fi
-	done
+   for i in $CORE_PACKAGES; do
+      findLatestPackage $i
+      if [ ! -f "$file" ]; then
+         echo "ERROR: Required Core package $i not found in $PACKAGE_DIR"
+         echo "Exiting"
+         exit 1
+      else
+         echo $file | grep -q i386
+         if [ $? -eq 0 ]; then
+            PROC="i386"
+         else
+            PROC="x86_64"
+         fi
+         echo "Found $i"
+      fi
+   done
 
-	if [[ $PLATFORM == "DEBIAN"* || $PLATFORM == "UBUNTU"* ]]; then
-		LOCALPROC=`dpkg --print-architecture`
-		if [ x"$LOCALPROC" == "xamd64" ]; then
-			LOCALPROC="x86_64"
-		fi
-	else
-		LOCALPROC=`uname -i`
-	fi
+   if [[ $PLATFORM == "DEBIAN"* || $PLATFORM == "UBUNTU"* ]]; then
+      LOCALPROC=`dpkg --print-architecture`
+      if [ x"$LOCALPROC" == "xamd64" ]; then
+         LOCALPROC="x86_64"
+      fi
+   else
+      LOCALPROC=`uname -i`
+   fi
 
-	if [ x$LOCALPROC != x$PROC ]; then
-		echo "Error: attempting to install $PROC packages on a $LOCALPROC OS."
-		echo "Exiting..."
-		echo ""
-		exit 1
-	fi
+   if [ x$LOCALPROC != x$PROC ]; then
+      echo "Error: attempting to install $PROC packages on a $LOCALPROC OS."
+      echo "Exiting..."
+      echo ""
+      exit 1
+   fi
 
-	AVAILABLE_PACKAGES=""
+   AVAILABLE_PACKAGES=""
 
-	for i in $PACKAGES $OPTIONAL_PACKAGES; do
-		findLatestPackage $i
-		if [ -f "$file" ]; then
-			if [ x"$PACKAGEVERIFY" != "x" ]; then
-				`$PACKAGEVERIFY $file > /dev/null 2>&1`
-				if [ $? = 0 ]; then
-					if [ x"$i" = "xzimbra-proxy" ]; then
-						AVAILABLE_PACKAGES="$AVAILABLE_PACKAGES zimbra-memcached"
-						AVAILABLE_PACKAGES="$AVAILABLE_PACKAGES $i"
-						echo "Found zimbra-memcached"
-					else
-						AVAILABLE_PACKAGES="$AVAILABLE_PACKAGES $i"
-					fi
-					echo "Found $i"
-				else 
-					echo "Found $i but package is not installable. (possibly corrupt)"
-					echo "Unable to continue. Please correct package corruption and rerun the installation."
-					exit 1
-				fi
-			else 
-				if [ x"$i" = "xzimbra-proxy" ]; then
-					AVAILABLE_PACKAGES="$AVAILABLE_PACKAGES zimbra-memcached"
-					AVAILABLE_PACKAGES="$AVAILABLE_PACKAGES $i"
-					echo "Found zimbra-memcached"
-				else
-					AVAILABLE_PACKAGES="$AVAILABLE_PACKAGES $i"
-				fi
-                                echo "Found $i"
-			fi
-		fi
-	done
-	echo ""
+   for i in $PACKAGES $OPTIONAL_PACKAGES; do
+      findLatestPackage $i
+      if [ -f "$file" ]; then
+         if [ x"$PACKAGEVERIFY" != "x" ]; then
+            `$PACKAGEVERIFY $file > /dev/null 2>&1`
+            if [ $? = 0 ]; then
+               if [ x"$i" = "xzimbra-proxy" ]; then
+                  AVAILABLE_PACKAGES="$AVAILABLE_PACKAGES zimbra-memcached"
+                  AVAILABLE_PACKAGES="$AVAILABLE_PACKAGES $i"
+                  echo "Found zimbra-memcached"
+               else
+                  AVAILABLE_PACKAGES="$AVAILABLE_PACKAGES $i"
+               fi
+               echo "Found $i"
+            else
+               echo "Found $i but package is not installable. (possibly corrupt)"
+               echo "Unable to continue. Please correct package corruption and rerun the installation."
+               exit 1
+            fi
+         else
+            if [ x"$i" = "xzimbra-proxy" ]; then
+               AVAILABLE_PACKAGES="$AVAILABLE_PACKAGES zimbra-memcached"
+               AVAILABLE_PACKAGES="$AVAILABLE_PACKAGES $i"
+               echo "Found zimbra-memcached"
+            else
+               AVAILABLE_PACKAGES="$AVAILABLE_PACKAGES $i"
+            fi
+            echo "Found $i"
+         fi
+      fi
+   done
+   echo ""
 }
