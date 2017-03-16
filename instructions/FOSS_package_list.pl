@@ -9,5 +9,4 @@
    "zimbra-apache",
    "zimbra-spell",
    "zimbra-proxy",
-   "zimbra-chat",
 );

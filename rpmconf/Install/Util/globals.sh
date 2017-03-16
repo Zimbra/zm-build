@@ -37,9 +37,10 @@ zimbra-archiving"
 SERVICES=""
 
 OPTIONAL_PACKAGES="zimbra-qatest \
-zimbra-chat"
+zimbra-chat \
+zimbra-drive"
 
-PACKAGE_DIR=`dirname $0`/packages
+PACKAGE_DIR="$(CDPATH= cd "$(dirname "$0")" && pwd)/packages"
 
 SAVEDIR="/opt/zimbra/.saveconfig"
 

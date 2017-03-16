@@ -1,8 +1,0 @@
-Package: zimbra-chat
-Version: @@VERSION@@
-Description: Zimbra Chat
-Maintainer: Zimbra Packaging Services <packaging-devel@zimbra.com>
-Section: Mail
-Priority: optional
-Architecture: @@ARCH@@
-Depends: zimbra-core

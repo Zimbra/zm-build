@@ -17,54 +17,65 @@
 #
 
 installPackages() {
-   repocomp=""
-   pkgcomp=""
-   pkglocal=""
-   for PKG in $INSTALL_PACKAGES; do
-      echo "$PKG will be downloaded."
-      findLatestPackage $PKG
-      if [ x$PKG != "xzimbra-memcached" ]; then
-         if [ ! -f "$file" ]; then
-            echo "file $file not found."
-            exit 1
+   local repo_pkg_names_delayed=()
+   local repo_pkg_names=()
+   local local_pkg_files=()
+   local local_pkg_names=()
+
+   gather_package_info() {
+      local PKG;
+      for PKG in "$@"
+      do
+         findLatestPackage $PKG
+         if [ "$file_location" == "local" ]
+         then
+            if ! grep -q -w -e $PKG <(echo "${local_pkg_names[*]}")
+            then
+               echo "$PKG will be installed."
+               local_pkg_files=( "${local_pkg_files[@]}" "$file" )
+               local_pkg_names=( "${local_pkg_names[@]}" "$PKG" )
+            fi
+         elif [ "$file_location" == "repo" ]
+         then
+            if [ "$file_delayed_install" == "1" ]
+            then
+               if ! grep -q -w -e $PKG <(echo "${repo_pkg_names_delayed[*]}")
+               then
+                  echo "$PKG will be downloaded."
+                  repo_pkg_names_delayed=( "${repo_pkg_names_delayed[@]}" "$PKG" )
+               fi
+            else
+               if ! grep -q -w -e $PKG <(echo "${repo_pkg_names[*]}")
+               then
+                  echo "$PKG will be downloaded."
+                  repo_pkg_names=( "${repo_pkg_names[@]}" "$PKG" )
+               fi
+            fi
          fi
-         pkgcomp="$pkgcomp $file"
-         pkglocal="$pkglocal $PKG"
-      fi
-      if [ x$PKG = "xzimbra-core" ]; then
-         repocomp="zimbra-core-components $repocomp"
-      fi
-      if [ x$PKG = "xzimbra-apache" ]; then
-         repocomp="$repocomp zimbra-apache-components"
-      fi
-      if [ x$PKG = "xzimbra-dnscache" ]; then
-         repocomp="$repocomp zimbra-dnscache-components"
-      fi
-      if [ x$PKG = "xzimbra-ldap" ]; then
-         repocomp="$repocomp zimbra-ldap-components"
-      fi
-      if [ x$PKG = "xzimbra-mta" ]; then
-         repocomp="$repocomp zimbra-mta-components"
-      fi
-      if [ x$PKG = "xzimbra-memcached" ]; then
-         repocomp="$repocomp zimbra-memcached"
-      fi
-      if [ x$PKG = "xzimbra-proxy" ]; then
-         repocomp="$repocomp zimbra-proxy-components"
-      fi
-      if [ x$PKG = "xzimbra-snmp" ]; then
-         repocomp="$repocomp zimbra-snmp-components"
-      fi
-      if [ x$PKG = "xzimbra-spell" ]; then
-         repocomp="$repocomp zimbra-spell-components"
-      fi
-      if [ x$PKG = "xzimbra-store" ]; then
-         repocomp="$repocomp zimbra-store-components"
-      fi
+      done
+   }
+
+   local PKG;
+   for PKG in $INSTALL_PACKAGES
+   do
+      gather_package_info $PKG;
+
+      [ x$PKG = "xzimbra-drive"    ] && gather_package_info "zimbra-core"
+      [ x$PKG = "xzimbra-chat"     ] && gather_package_info "zimbra-core"
+      [ x$PKG = "xzimbra-core"     ] && gather_package_info "zimbra-core-components"
+      [ x$PKG = "xzimbra-apache"   ] && gather_package_info "zimbra-apache-components"
+      [ x$PKG = "xzimbra-dnscache" ] && gather_package_info "zimbra-dnscache-components"
+      [ x$PKG = "xzimbra-ldap"     ] && gather_package_info "zimbra-ldap-components"
+      [ x$PKG = "xzimbra-mta"      ] && gather_package_info "zimbra-mta-components"
+      [ x$PKG = "xzimbra-proxy"    ] && gather_package_info "zimbra-proxy-components" "zimbra-memcached"
+      [ x$PKG = "xzimbra-snmp"     ] && gather_package_info "zimbra-snmp-components"
+      [ x$PKG = "xzimbra-spell"    ] && gather_package_info "zimbra-spell-components"
+      [ x$PKG = "xzimbra-store"    ] && gather_package_info "zimbra-store-components"
    done
+
    # Download packages.
    echo "Downloading packages. This will not modify the system. This may take some time."
-   $PACKAGEDOWNLOAD $repocomp >> $LOGFILE 2>&1
+   $PACKAGEDOWNLOAD "${repo_pkg_names[@]}" >> $LOGFILE 2>&1
    if [ $? -ne 0 ]; then
       echo "Unable to download packages from repository. System is not modified."
       exit 1
@@ -103,54 +114,55 @@ installPackages() {
    fi
 
    removeExistingInstall
-   echo "Local packages $pkglocal selected for installation"
-   echo "Monitor $LOGFILE for package installation progress"
-   echo "Remote package installation started"
-   echo "REMOTE PACKAGES: $repocomp" >> $LOGFILE 2>&1
-   echo "LOCAL PACKAGES: $pkglocal" >> $LOGFILE 2>&1
-   echo -n "Installing $repocomp...."
-   $REPOINST $repocomp >>$LOGFILE 2>&1
+   echo "Monitor $LOGFILE for package installation progress..."
+   echo "Local packages ${local_pkg_names[@]} selected for installation" | tee -a $LOGFILE
+   echo "Repo packages ${repo_pkg_names[@]} selected for installation"   | tee -a $LOGFILE
+   echo "Repo packages ${repo_pkg_names_delayed[@]} (extras) selected for installation" | tee -a $LOGFILE
+
+   echo -n "Installing repo packages..."
+   $REPOINST "${repo_pkg_names[@]}" >>$LOGFILE 2>&1
    if [ $? != 0 ]; then
       pkgError
    fi
    echo "done"
-   INSTRESULT=0
-   echo "Local package installation started"
-   echo -n "Installing $pkglocal..."
-   $PACKAGEINST $pkgcomp >> $LOGFILE 2>&1
-   INSTRESULT=$?
+
+   echo -n "Installing local packages..."
+   $PACKAGEINST "${local_pkg_files[@]}" >> $LOGFILE 2>&1
+   if [ $? != 0 ]; then
+      pkgError
+   fi
+   echo "done"
+
+   echo -n "Downloading and installing repo packages (extras)..."
+   $REPOINST "${repo_pkg_names_delayed[@]}" >>$LOGFILE 2>&1
+   if [ $? != 0 ]; then
+      echo "Unable to download extra packages from repository. Proceeding without this..."
+      # not exiting on error
+   else
+      echo "done"
+   fi
+
    if [ $UPGRADE = "yes" ]; then
       ST="UPGRADED"
    else
       ST="INSTALLED"
    fi
+
    D=`date +%s`
-   if [ $INSTRESULT = 0 ]; then
-      echo "done"
-      if [ "$ISUBUNTU" = "true" ] && [ ! -z "$EXTPACKAGES" ]; then
-         echo -n "Re-installing $EXTPACKAGES ..."
-         $REPOINST $EXTPACKAGES >> $LOGFILE 2>&1
-         if [ $? -ne 0 ]; then
-            echo "Failed to install package[s] $EXTPACKAGES."
-         fi
+   if [ "$ISUBUNTU" = "true" ] && [ ! -z "$EXTPACKAGES" ]; then
+      echo -n "Re-installing $EXTPACKAGES ..."
+      $REPOINST $EXTPACKAGES >> $LOGFILE 2>&1
+      if [ $? -ne 0 ]; then
+         echo "Failed to install package[s] $EXTPACKAGES."
+         # not exiting on error
       fi
       echo "done"
-      for PKG in $INSTALL_PACKAGES; do
-         if [ x$PKG != "xzimbra-memcached" ]; then
-            findLatestPackage $PKG
-            f=`basename $file`
-            echo "${D}: $ST $f" >> /opt/zimbra/.install_history
-         fi
-      done
-   else
-      echo -n "FAILED"
-      echo ""
-      echo "###ERROR###"
-      echo ""
-      echo "Installation cancelled"
-      echo ""
-      exit 1
    fi
+
+   for f in "${local_pkg_files[@]}"; do
+      f=`basename $f`
+      echo "${D}: $ST $f" >> /opt/zimbra/.install_history
+   done
 }
 
 pkgError() {
@@ -237,7 +249,37 @@ findLatestPackage() {
       fi
    done
 
-   file=$latest
+   unset file
+   unset file_location
+   unset file_delayed_install
+
+   if [ -f "$latest" ]
+   then
+      file=$latest
+      file_location="local"
+      file_delayed_install=1
+   else
+      if [ $ISUBUNTU = "true" ]
+      then
+         if grep -q -w -e "^$package" <(apt-cache search --names-only "^$package" 2>/dev/null)
+         then
+            file_location="repo"
+         fi
+      else
+         if grep -q -w -e "^$package" <(yum list available -q -e 0 "$package" 2>/dev/null)
+         then
+            file_location="repo"
+         fi
+      fi
+
+      if [ "$file_location" == "repo" ]
+      then
+         if [ "$package" == "zimbra-chat" ] || [ "$package" == "zimbra-drive" ]
+         then
+            file_delayed_install=1
+         fi
+      fi
+   fi
 }
 
 checkPackages() {
@@ -245,69 +287,69 @@ checkPackages() {
    echo "Checking for installable packages"
    echo ""
 
-   for i in $CORE_PACKAGES; do
+   AVAILABLE_PACKAGES=""
+
+   for i in $CORE_PACKAGES $PACKAGES $OPTIONAL_PACKAGES;
+   do
       findLatestPackage $i
-      if [ ! -f "$file" ]; then
-         echo "ERROR: Required Core package $i not found in $PACKAGE_DIR"
-         echo "Exiting"
-         exit 1
-      else
-         echo $file | grep -q i386
-         if [ $? -eq 0 ]; then
+      if [ "$file_location" == "local" ]
+      then
+         if grep -q i386 <(echo $file)
+         then
             PROC="i386"
          else
             PROC="x86_64"
          fi
-         echo "Found $i"
-      fi
-   done
 
-   if [[ $PLATFORM == "DEBIAN"* || $PLATFORM == "UBUNTU"* ]]; then
-      LOCALPROC=`dpkg --print-architecture`
-      if [ x"$LOCALPROC" == "xamd64" ]; then
-         LOCALPROC="x86_64"
-      fi
-   else
-      LOCALPROC=`uname -i`
-   fi
+         if [[ $PLATFORM == "DEBIAN"* || $PLATFORM == "UBUNTU"* ]]; then
+            LOCALPROC=`dpkg --print-architecture`
+            if [ x"$LOCALPROC" == "xamd64" ]; then
+               LOCALPROC="x86_64"
+            fi
+         else
+            LOCALPROC=`uname -i`
+         fi
 
-   if [ x$LOCALPROC != x$PROC ]; then
-      echo "Error: attempting to install $PROC packages on a $LOCALPROC OS."
-      echo "Exiting..."
-      echo ""
-      exit 1
-   fi
+         if [ x$LOCALPROC != x$PROC ]; then
+            echo "Error: attempting to install $PROC packages on a $LOCALPROC OS."
+            echo "Exiting..."
+            echo ""
+            exit 1
+         fi
 
-   AVAILABLE_PACKAGES=""
-
-   for i in $PACKAGES $OPTIONAL_PACKAGES; do
-      findLatestPackage $i
-      if [ -f "$file" ]; then
+         file_check="unverified"
          if [ x"$PACKAGEVERIFY" != "x" ]; then
-            `$PACKAGEVERIFY $file > /dev/null 2>&1`
-            if [ $? = 0 ]; then
-               if [ x"$i" = "xzimbra-proxy" ]; then
-                  AVAILABLE_PACKAGES="$AVAILABLE_PACKAGES zimbra-memcached"
-                  AVAILABLE_PACKAGES="$AVAILABLE_PACKAGES $i"
-                  echo "Found zimbra-memcached"
-               else
-                  AVAILABLE_PACKAGES="$AVAILABLE_PACKAGES $i"
-               fi
-               echo "Found $i"
+            if $PACKAGEVERIFY $file > /dev/null 2>&1
+            then
+               file_check="verified";
             else
-               echo "Found $i but package is not installable. (possibly corrupt)"
+               echo "Found $i locally, but package is not installable. (possibly corrupt)"
                echo "Unable to continue. Please correct package corruption and rerun the installation."
                exit 1
             fi
-         else
-            if [ x"$i" = "xzimbra-proxy" ]; then
-               AVAILABLE_PACKAGES="$AVAILABLE_PACKAGES zimbra-memcached"
-               AVAILABLE_PACKAGES="$AVAILABLE_PACKAGES $i"
-               echo "Found zimbra-memcached"
-            else
-               AVAILABLE_PACKAGES="$AVAILABLE_PACKAGES $i"
-            fi
-            echo "Found $i"
+         fi
+
+         if ! grep -q -w -e "$package" <(echo "$CORE_PACKAGES")
+         then
+            AVAILABLE_PACKAGES="$AVAILABLE_PACKAGES $i"
+         fi
+
+         printf "%s\n" "Found $i ($file_location)"
+
+      elif [ "$file_location" == "repo" ]
+      then
+         if ! grep -q -w -e "$package" <(echo "$CORE_PACKAGES")
+         then
+            AVAILABLE_PACKAGES="$AVAILABLE_PACKAGES $i"
+         fi
+
+         printf "%s\n" "Found $i ($file_location)"
+      else
+         if grep -q -w -e "$package" <(echo "$CORE_PACKAGES")
+         then
+            echo "ERROR: Required Core package $i not found in $PACKAGE_DIR"
+            echo "Exiting"
+            exit 1
          fi
       fi
    done

@@ -2115,7 +2115,7 @@ verifyLdapServer() {
 }
 
 configurePackageServer() {
-  echo ""
+  echo -e ""
   response="no"
   TMP_PACKAGE_SERVER="repo.zimbra.com"
   if [ x"$USE_ZIMBRA_PACKAGE_SERVER" = "x" ]; then
@@ -2139,7 +2139,9 @@ configurePackageServer() {
       fi
     fi
   fi
+
   if [ x"$USE_ZIMBRA_PACKAGE_SERVER" = "xyes" ]; then # Handle automated installations correctly
+    echo "";
     if [ x"$PACKAGE_SERVER" = "x" ]; then # Allow config files w/ no PACKAGE_SERVER variable set
       PACKAGE_SERVER=$TMP_PACKAGE_SERVER
     fi
@@ -2165,6 +2167,7 @@ configurePackageServer() {
           exit 1
         fi
       fi
+      echo
       echo "Configuring package repository"
       apt-get install -y apt-transport-https >>$LOGFILE 2>&1
       if [ $? -ne 0 ]; then
@@ -2201,6 +2204,7 @@ EOF
           exit 1
         fi
       fi
+      echo
       echo "Configuring package repository"
 cat > /etc/yum.repos.d/zimbra.repo <<EOF
 [zimbra]
