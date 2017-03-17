@@ -135,6 +135,7 @@ my %updateFuncs = (
   "8.7.3_GA" => \&upgrade873GA,
   "8.7.4_GA" => \&upgrade874GA,
   "8.7.5_GA" => \&upgrade875GA,
+  "8.7.6_GA" => \&upgrade876GA,
 );
 
 my @versionOrder = (
@@ -187,6 +188,7 @@ my @versionOrder = (
   "8.7.3_GA",
   "8.7.4_GA",
   "8.7.5_GA",
+  "8.7.6_GA",
 );
 
 my ($startVersion,$startMajor,$startMinor,$startMicro);
@@ -341,6 +343,8 @@ sub upgrade {
       main::progress("This appears to be 8.7.4_GA\n");
   } elsif ($startVersion eq "8.7.5_GA") {
       main::progress("This appears to be 8.7.5_GA\n");
+  } elsif ($startVersion eq "8.7.6_GA") {
+      main::progress("This appears to be 8.7.6_GA\n");
   } else {
     if ($startVersion eq "") {
       main::progress("ERROR: Unable to find initial version to upgrade from.\n");
@@ -2305,26 +2309,32 @@ sub upgrade872GA {
     my ($startBuild, $targetVersion, $targetBuild) = (@_);
     main::progress("Updating from 8.7.2_GA\n");
     if (main::isInstalled("zimbra-convertd") && !(-l "/opt/zimbra/keyview")) {
-      symlink("/opt/zimbra/keyview-10.13.0.0", "/opt/zimbra/keyview") 
-    }  
+      symlink("/opt/zimbra/keyview-10.13.0.0", "/opt/zimbra/keyview")
+    }
     return 0;
 }
 
 sub upgrade873GA {
     my ($startBuild, $targetVersion, $targetBuild) = (@_);
-    main::progress("Updating from 8.7.3_GA\n"); 
+    main::progress("Updating from 8.7.3_GA\n");
     return 0;
 }
 
 sub upgrade874GA {
     my ($startBuild, $targetVersion, $targetBuild) = (@_);
-    main::progress("Updating from 8.7.4_GA\n"); 
+    main::progress("Updating from 8.7.4_GA\n");
     return 0;
 }
 
 sub upgrade875GA {
     my ($startBuild, $targetVersion, $targetBuild) = (@_);
     main::progress("Updating from 8.7.5_GA\n");
+    return 0;
+}
+
+sub upgrade876GA {
+    my ($startBuild, $targetVersion, $targetBuild) = (@_);
+    main::progress("Updating from 8.7.6_GA\n");
     return 0;
 }
 
