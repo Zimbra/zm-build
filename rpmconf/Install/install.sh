@@ -201,8 +201,6 @@ fi
 
 checkRequired
 
-checkPackages
-
 findLatestPackage zimbra-core
 if [ x"$PLATFORM" = x"$installable_platform" -a x"${ALLOW_PLATFORM_OVERRIDE}" = "xyes" ]; then
   ALLOW_PLATFORM_OVERRIDE="no"
@@ -211,6 +209,8 @@ fi
 if [ x"${ALLOW_PLATFORM_OVERRIDE}" = "xno" ]; then
   configurePackageServer
 fi
+
+checkPackages
 
 if [ $AUTOINSTALL = "no" ]; then
   setRemove
