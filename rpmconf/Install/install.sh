@@ -272,8 +272,6 @@ else
 fi
 
 
-echo "Installing packages"
-echo ""
 D=`date +%s`
 echo "${D}: INSTALL SESSION START" >> /opt/zimbra/.install_history
 installPackages

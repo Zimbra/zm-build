@@ -17,10 +17,28 @@
 #
 
 installPackages() {
+   echo
+   echo "Beginning Installation - see $LOGFILE for details..."
+   echo
+
    local repo_pkg_names_delayed=()
    local repo_pkg_names=()
    local local_pkg_files=()
    local local_pkg_names=()
+
+   pretty_display() {
+      local banner=$1; shift;
+      local pk=("$@");
+      echo
+      echo "$banner (${#pk[*]}):" | tee -a $LOGFILE
+      local p;
+      for p in "${pk[@]}"
+      do
+         echo "   $(basename $p)" | tee -a $LOGFILE
+      done
+      echo -n "      ...";
+      echo >> $LOGFILE
+   }
 
    gather_package_info() {
       local PKG;
@@ -31,7 +49,7 @@ installPackages() {
          then
             if ! grep -q -w -e $PKG <(echo "${local_pkg_names[*]}")
             then
-               echo "$PKG will be installed."
+               printf "%28s %s\n" "$PKG" "will be installed."
                local_pkg_files=( "${local_pkg_files[@]}" "$file" )
                local_pkg_names=( "${local_pkg_names[@]}" "$PKG" )
             fi
@@ -41,13 +59,13 @@ installPackages() {
             then
                if ! grep -q -w -e $PKG <(echo "${repo_pkg_names_delayed[*]}")
                then
-                  echo "$PKG will be downloaded."
+                  printf "%28s %s\n" "$PKG" "will be downloaded and installed."
                   repo_pkg_names_delayed=( "${repo_pkg_names_delayed[@]}" "$PKG" )
                fi
             else
                if ! grep -q -w -e $PKG <(echo "${repo_pkg_names[*]}")
                then
-                  echo "$PKG will be downloaded."
+                  printf "%28s %s\n" "$PKG" "will be downloaded and installed."
                   repo_pkg_names=( "${repo_pkg_names[@]}" "$PKG" )
                fi
             fi
@@ -119,12 +137,9 @@ installPackages() {
 
    removeExistingInstall
 
-   echo "Monitor $LOGFILE for package installation progress..."
-
    if [ "${#repo_pkg_names[@]}" -gt 0 ]
    then
-      echo -n "Installing repo packages..." | tee -a $LOGFILE
-      echo >> $LOGFILE
+      pretty_display "Installing repo packages" "${repo_pkg_names[@]}";
       $REPOINST "${repo_pkg_names[@]}" >>$LOGFILE 2>&1
       if [ $? != 0 ]; then
          pkgError
@@ -134,8 +149,7 @@ installPackages() {
 
    if [ "${#local_pkg_files[@]}" -gt 0 ]
    then
-      echo -n "Installing local packages..." | tee -a $LOGFILE
-      echo >> $LOGFILE
+      pretty_display "Installing local packages" "${local_pkg_names[@]}";
       $PACKAGEINST "${local_pkg_files[@]}" >> $LOGFILE 2>&1
       if [ $? != 0 ]; then
          pkgError
@@ -145,8 +159,7 @@ installPackages() {
 
    if [ "${#repo_pkg_names_delayed[@]}" -gt 0 ]
    then
-      echo -n "Downloading and installing extra repo packages..." | tee -a $LOGFILE
-      echo >> $LOGFILE
+      pretty_display "Installing extra packages" "${repo_pkg_names_delayed[@]}";
       $REPOINST "${repo_pkg_names_delayed[@]}" >>$LOGFILE 2>&1
       if [ $? != 0 ]; then
          echo "Unable to download extra packages from repository. Proceeding without this..."
@@ -177,6 +190,9 @@ installPackages() {
       f=`basename $f`
       echo "${D}: $ST $f" >> /opt/zimbra/.install_history
    done
+
+   echo
+   echo "Running Post Installation Configuration:"
 }
 
 pkgError() {
