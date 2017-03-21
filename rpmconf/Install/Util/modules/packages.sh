@@ -114,32 +114,42 @@ installPackages() {
    fi
 
    removeExistingInstall
+
    echo "Monitor $LOGFILE for package installation progress..."
-   echo "Local packages ${local_pkg_names[@]} selected for installation" | tee -a $LOGFILE
-   echo "Repo packages ${repo_pkg_names[@]} selected for installation"   | tee -a $LOGFILE
-   echo "Repo packages ${repo_pkg_names_delayed[@]} (extras) selected for installation" | tee -a $LOGFILE
 
-   echo -n "Installing repo packages..."
-   $REPOINST "${repo_pkg_names[@]}" >>$LOGFILE 2>&1
-   if [ $? != 0 ]; then
-      pkgError
-   fi
-   echo "done"
-
-   echo -n "Installing local packages..."
-   $PACKAGEINST "${local_pkg_files[@]}" >> $LOGFILE 2>&1
-   if [ $? != 0 ]; then
-      pkgError
-   fi
-   echo "done"
-
-   echo -n "Downloading and installing repo packages (extras)..."
-   $REPOINST "${repo_pkg_names_delayed[@]}" >>$LOGFILE 2>&1
-   if [ $? != 0 ]; then
-      echo "Unable to download extra packages from repository. Proceeding without this..."
-      # not exiting on error
-   else
+   if [ "${#repo_pkg_names[@]}" -gt 0 ]
+   then
+      echo -n "Installing repo packages..." | tee -a $LOGFILE
+      echo >> $LOGFILE
+      $REPOINST "${repo_pkg_names[@]}" >>$LOGFILE 2>&1
+      if [ $? != 0 ]; then
+         pkgError
+      fi
       echo "done"
+   fi
+
+   if [ "${#local_pkg_files[@]}" -gt 0 ]
+   then
+      echo -n "Installing local packages..." | tee -a $LOGFILE
+      echo >> $LOGFILE
+      $PACKAGEINST "${local_pkg_files[@]}" >> $LOGFILE 2>&1
+      if [ $? != 0 ]; then
+         pkgError
+      fi
+      echo "done"
+   fi
+
+   if [ "${#repo_pkg_names_delayed[@]}" -gt 0 ]
+   then
+      echo -n "Downloading and installing extra repo packages..." | tee -a $LOGFILE
+      echo >> $LOGFILE
+      $REPOINST "${repo_pkg_names_delayed[@]}" >>$LOGFILE 2>&1
+      if [ $? != 0 ]; then
+         echo "Unable to download extra packages from repository. Proceeding without this..."
+         # not exiting on error
+      else
+         echo "done"
+      fi
    fi
 
    if [ $UPGRADE = "yes" ]; then
