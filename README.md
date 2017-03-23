@@ -129,3 +129,162 @@ Then just run `./build.pl`.
 The above command, run on a CentOS 7 machine with the options as shown in `config.build`, created the following:
 
     $HOME/installer-build/BUILDS/RHEL7_64/JUDASPRIEST-876/20170323061131_FOSS/zm-build/zcs-8.7.6_GA_1713.RHEL7_64.20170323061131.tgz
+
+# Development
+
+## Setup
+
+The following is a walk-through of the basic steps required to do ZCS development.  The first step is to simply install a current FOSS build on the machine that you wish to use.  The instructions that follow assume that this has been done.
+
+
+1. Create `/home/zimbra` and make `zimbra` the owner.
+
+		sudo mkdir /home/zimbra
+		sudo chown zimbra:zimbra /home/zimbra
+
+2. Install  `git`, `ant`, and `ant-contrib` by whichever method is appropriate for your distro:
+
+		sudo apt-get install git ant ant-contrib
+
+	or
+
+		sudo yum install git ant ant-contrib
+
+3. Configure `/opt/zimbra/.ssh/config` to use your ssh key for the git remotes that you need to access.
+4. Perform the following edits on `/opt/zimbra/.bash_profile`
+   * Comment-out `export LANG=C` and `export LC_ALL=C`.
+   * Add export `LANG=en_US.UTF-8`
+   * Add export `ANT_OPTS=-Ddev.home=/home/zimbra`
+5. Change permissions on files and folders that you will be updating; e.g.,
+
+		sudo chmod -R o+w /opt/zimbra/lib/
+		sudo chmod -R o+w /opt/zimbra/jetty/
+		sudo chown zimbra:zimbra /opt/zimbra
+		
+	**Note:** If you run `zmfixperms`, some of these permissions will be overwritten.
+
+6. Add file `/opt/zimbra/.gitconfig` and update as needed.  At a minimum:
+
+		[user]
+			email = YOUR-EMAIL-ADDRESS
+			name = YOUR-FIRST-AND-LAST-NAME
+
+7. As the `zimbra` user, create a base directory under `/home/zimbra` from which to work.
+
+		cd /home/zimbra
+		mkdir zcs
+		cd zcs
+
+8. Now you can clone any repositories that you require and get to work.
+
+## Email Delivery
+
+If you want email delivery to work, set up a DNS server on your host
+machine or another VM and configure `zimbraDNSMasterIP` to point to it.
+To configure `zimbraDNSMasterIP`, do the following as the `zimbra` user:
+
+	zmprov ms `zmhostname` zimbraDNSMasterIP DNS-SERVER-IP-ADDRESS
+
+You may receive the following error when trying to send email:
+
+	No SMTP hosts available for domain
+
+If this occurs, you need to manually configure `zimbraSmtpHostname` for your domain(s).
+To configure `zimbraSmtpHostname`, do the following as the `zimbra` user:
+
+	zmprov md DOMAIN-NAME zimbraSmtpHostname `zmhostname`
+
+## zm-mailbox example
+
+As the `zimbra` user, `cd /home/zimbra/zcs`.  Then clone the `zm-mailbox` repository from github
+
+	git clone git@github.com:Zimbra/zm-mailbox.git
+
+The following sub-directories `zm-mailbox` build and deploy separately:
+
+	client
+	common
+	milter-conf
+	native
+	soap
+	store
+	store-conf
+
+The top-level `build.xml` is used by the `zm-build` scripts to create
+an installer package.  You will not use that for normal development.  There are build-order
+dependencies between the above-listed deployment targets.  These can be determined by 
+inspection of the `ivy.xml` files within each subdirectory.
+
+For example:
+
+	grep 'org="zimbra"' store/ivy.xml
+
+	<dependency org="zimbra" name="zm-common" rev="latest.integration" />
+	<dependency org="zimbra" name="zm-soap" rev="latest.integration" />
+	<dependency org="zimbra" name="zm-client" rev="latest.integration" />
+	<dependency org="zimbra" name="zm-native" rev="latest.integration"/>
+
+Here you can see that the deployment target, `zm-store` (the `store` 
+subdirectory), depends upon `common`, `soap`, `client`, and `native`.  Here is the current
+ordering dependencies among all of the `zm-mailbox` deployment targets. The higher-numbered 
+deployment targets depend upon the lower-numbered ones.  Note that `milter-conf` and 
+`store-conf` have no cross-dependencies.
+
+1. `native`
+2. `common`
+3. `soap`
+4. `client`
+5. `store`
+
+So, from the `native` sub-directory:
+
+	ant -Dzimbra.buildinfo.version=8.7.6_GA clean compile publish-local deploy
+	
+Comments:
+
+- The requirement to include `-Dzimbra.buildinfo.version=8.7.6_GA` to ant is due to a change
+  that was made when the FOSS code was moved to GitHub.  You can also just add that option
+  to your `ANT_OPTS` enviroment variable that you defined in `$HOME/.bash_profile` as follows:
+  
+	  export ANT_OPTS="-Ddev.home=/home/zimbra -Dzimbra.buildinfo.version=8.7.6_GA"
+	  
+  If you do that, then you can omit that `-D...` argument to the `ant` command and future
+  examples will reflect that.
+- The `publish-local` target adds the artifact to `/home/zimbra/.zcs-deps`, which is 
+  included in the Ivy resolution path.
+- The `deploy` target installs the artifact to its run-time location and restarts the appropriate
+  service(s). This will allow you to test your changes.
+
+Then, from the `common`, `soap`, `client`, and `store` sub-directories (in that order):
+
+	ant clean compile publish-local deploy
+
+## Adding a new LDAP Attribute
+
+Start by cloning _both_ the `zm-ldap-utilites` and the `zm-mailbox` repositories from GitHub.
+Check out the appropriate branch of each. Then proceed as follows:
+
+* Add your new attribute to `zm-mailbox/store/conf/attrs/zimbra-attrs.xml`
+* From `zm-common/store` invoke the following command:
+
+		ant generate-getters
+
+* Do the following as `root`:
+
+		chmod -R o+w /opt/zimbra/common/etc/openldap/schema
+		chmod o+w /opt/zimbra/conf/zimbra.ldif
+		chmod +w /opt/zimbra/conf/attrs/zimbra-attrs.xml
+		chmod -R o+w /opt/zimbra/common/etc/openldap/zimbra
+
+* Back as the `zimbra` user, invoke the following command from `zm-mailbox/common`:
+
+		ant deploy publish-local
+
+* Then from the `zm-mailbox/store` directory:
+
+		ant deploy update-ldap-schema
+
+
+Your ZCS development server should now be running with the new attribute(s).  You can test that
+by querying them and modifying them with `zmprov`.  You can `git add ...` and `git commit`
+your changes now.
