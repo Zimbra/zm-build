@@ -73,12 +73,16 @@ installPackages() {
       [ x$PKG = "xzimbra-store"    ] && gather_package_info "zimbra-store-components"
    done
 
-   # Download packages.
-   echo "Downloading packages. This will not modify the system. This may take some time."
-   $PACKAGEDOWNLOAD "${repo_pkg_names[@]}" >> $LOGFILE 2>&1
-   if [ $? -ne 0 ]; then
-      echo "Unable to download packages from repository. System is not modified."
-      exit 1
+   if [ "${#repo_pkg_names[@]}" -gt 0 ]
+   then
+      # Download packages.
+      pretty_display "Downloading packages" "${repo_pkg_names[@]}";
+      $PACKAGEDOWNLOAD "${repo_pkg_names[@]}" >> $LOGFILE 2>&1
+      if [ $? -ne 0 ]; then
+         echo "Unable to download packages from repository. System is not modified."
+         exit 1
+      fi
+      echo "done"
    fi
 
    if [ $UPGRADE = "yes" ]; then
