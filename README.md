@@ -110,7 +110,7 @@ You _can_ specify all the options on the command-line, as follows:
 The completed build will be archived into a `*.tgz` file that is stored in the appropriate platform and release-specific
 subdirectory of the `BUILDS` directory.  The above command, run on an Ubuntu 16.04 machine, created the following:
 
-    $HOME/installer_build/BUILDS/UBUNTU16_64/JUDASPRIEST-877/20170322153033_FOSS/zm-build/zcs-8.7.7_8.7.7_1713.UBUNTU16_64.20170322153033.tgz
+    $HOME/installer_build/BUILDS/UBUNTU16_64/JUDASPRIEST-876/20170322153033_FOSS/zm-build/zcs-8.7.6_1713.UBUNTU16_64.20170322153033.tgz
 
 You can also specify any or all of the required options by placing them in a file
 called `config.build`.  This file should be at the top level of the `zm-build`
