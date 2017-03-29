@@ -1,5 +1,9 @@
 @ENTRIES = (
    {
+      "dir"         => "zm-zextras",
+      "make_targets" => ["PKG_RELEASE=1zimbra${GLOBAL_BUILD_RELEASE_NO_MAJOR}.${GLOBAL_BUILD_RELEASE_NO_MINOR}b1", "all"],
+   }
+   {
       "dir"         => "zm-mailbox",
       "ant_targets" => ["all"],
       "stage_cmd"    => sub {

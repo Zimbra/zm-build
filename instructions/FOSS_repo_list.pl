@@ -49,5 +49,6 @@
    { name => "zm-zcs",                               },
    { name => "zm-zcs-lib",                           },
    { name => "zm-ssdb-ephemeral-store",              },
+   { name => "zm-zextras",                           },
    { name => "zm-zimlets",                           },
 );
