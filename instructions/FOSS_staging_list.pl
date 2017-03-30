@@ -17,6 +17,13 @@
          System("rsync -az store-conf/conf                $GLOBAL_BUILD_DIR/zm-mailbox/store-conf/");
       },
    },
+
+   {
+      "dir"         => "zm-thirdparty",
+      "ant_targets" => ["all"],
+      "stage_cmd"   => undef,
+   },
+
    {
       "dir"         => "junixsocket/junixsocket-native",
       "mvn_targets" => ["package"],
@@ -313,26 +320,6 @@
          System("mkdir -p $GLOBAL_BUILD_DIR/zm-ldap-utils-store");
          System("cp -f -r ../zm-ldap-utils-store/build $GLOBAL_BUILD_DIR/zm-ldap-utils-store");
       },
-   },
-   {
-      "dir"         => "ant-1.7.0-ziputil-patched",
-      "ant_targets" => ["jar"],
-      "stage_cmd"   => undef,
-   },
-   {
-      "dir"         => "ant-tar-patched",
-      "ant_targets" => ["jar"],
-      "stage_cmd"   => undef,
-   },
-   {
-      "dir"         => "nekohtml-1.9.13",
-      "ant_targets" => ["jar"],
-      "stage_cmd"   => undef,
-   },
-   {
-      "dir"         => "ical4j-0.9.16-patched",
-      "ant_targets" => [ "clean-compile", "package" ],
-      "stage_cmd"   => undef,
    },
    {
       "dir"         => "zm-zcs-lib",
