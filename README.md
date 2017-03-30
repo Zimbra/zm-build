@@ -104,7 +104,7 @@ You _can_ specify all the options on the command-line, as follows:
 
     ./build.pl --build-no=1713 --build-ts=`date +'%Y%m%d%H%M%S'` \
       --build-release=JUDASPRIEST --build-release-no=8.7.6 \
-      --build-release-candidate=GA --build-type=FOSS 
+      --build-release-candidate=GA --build-type=FOSS \
       --build-thirdparty-server=files.zimbra.com --no-interactive
 
 The completed build will be archived into a `*.tgz` file that is stored in the appropriate platform and release-specific
