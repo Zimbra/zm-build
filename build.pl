@@ -204,6 +204,7 @@ sub InitGlobalBuildVars()
       my $mvn   = DetectPrerequisite("mvn");
       my $ant   = DetectPrerequisite("ant");
       my $ruby  = DetectPrerequisite("ruby");
+      my $make  = DetectPrerequisite("make");
 
       $ENV{JAVA_HOME} ||= dirname( dirname( Cwd::realpath($javac) ) );
       $ENV{PATH} = "$ENV{JAVA_HOME}/bin:$ENV{PATH}";
@@ -216,6 +217,7 @@ sub InitGlobalBuildVars()
       printf( $fmt2v, "USING cc",    $cc );
       printf( $fmt2v, "USING c++",   $cpp );
       printf( $fmt2v, "USING ruby",  $ruby );
+      printf( $fmt2v, "USING make",  $make );
    }
 
    print "=========================================================================================================\n";
@@ -525,14 +527,23 @@ sub GetNewBuildTs()
    return $x;
 }
 
+
 sub GetBuildOS()
 {
-   chomp( my $r = `$GLOBAL_PATH_TO_SCRIPT_DIR/rpmconf/Build/get_plat_tag.sh` );
+   my $detected_os = undef;
 
-   return $r
-     if ($r);
+   sub detect_os
+   {
+      chomp( $detected_os = `$GLOBAL_PATH_TO_SCRIPT_DIR/rpmconf/Build/get_plat_tag.sh` )
+         if(!$detected_os);
 
-   Die("Unknown OS");
+      return $detected_os
+         if ($detected_os);
+
+      Die("Unknown OS");
+   }
+
+   return detect_os();
 }
 
 sub GetBuildArch()    # FIXME - use standard mechanism

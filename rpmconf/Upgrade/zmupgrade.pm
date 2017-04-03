@@ -41,7 +41,7 @@ chomp $rundir;
 my $scriptDir = "/opt/zimbra/libexec/scripts";
 
 my $lowVersion = 52;
-my $hiVersion = 107; # this should be set to the DB version expected by current server code
+my $hiVersion = 108; # this should be set to the DB version expected by current server code
 
 my $needSlapIndexing = 0;
 my $mysqlcnfUpdated = 0;
@@ -83,6 +83,7 @@ my %updateScripts = (
   '104' => "migrate20150515-DataSourcePurgeTables.pl", #8.7.0
   '105' => "migrate20150623-ZmgDevices.pl",            #8.7.0
   '106' => "migrate20150702-ZmgDevices.pl",            #8.7.0
+  '107' => "migrate20170301-ZimbraChat.pl",            #8.7.6
 );
 
 my %updateFuncs = (
@@ -135,6 +136,7 @@ my %updateFuncs = (
   "8.7.3_GA" => \&upgrade873GA,
   "8.7.4_GA" => \&upgrade874GA,
   "8.7.5_GA" => \&upgrade875GA,
+  "8.7.6_GA" => \&upgrade876GA,
 );
 
 my @versionOrder = (
@@ -187,6 +189,7 @@ my @versionOrder = (
   "8.7.3_GA",
   "8.7.4_GA",
   "8.7.5_GA",
+  "8.7.6_GA",
 );
 
 my ($startVersion,$startMajor,$startMinor,$startMicro);
@@ -341,6 +344,8 @@ sub upgrade {
       main::progress("This appears to be 8.7.4_GA\n");
   } elsif ($startVersion eq "8.7.5_GA") {
       main::progress("This appears to be 8.7.5_GA\n");
+  } elsif ($startVersion eq "8.7.6_GA") {
+      main::progress("This appears to be 8.7.6_GA\n");
   } else {
     if ($startVersion eq "") {
       main::progress("ERROR: Unable to find initial version to upgrade from.\n");
@@ -2305,26 +2310,32 @@ sub upgrade872GA {
     my ($startBuild, $targetVersion, $targetBuild) = (@_);
     main::progress("Updating from 8.7.2_GA\n");
     if (main::isInstalled("zimbra-convertd") && !(-l "/opt/zimbra/keyview")) {
-      symlink("/opt/zimbra/keyview-10.13.0.0", "/opt/zimbra/keyview") 
-    }  
+      symlink("/opt/zimbra/keyview-10.13.0.0", "/opt/zimbra/keyview")
+    }
     return 0;
 }
 
 sub upgrade873GA {
     my ($startBuild, $targetVersion, $targetBuild) = (@_);
-    main::progress("Updating from 8.7.3_GA\n"); 
+    main::progress("Updating from 8.7.3_GA\n");
     return 0;
 }
 
 sub upgrade874GA {
     my ($startBuild, $targetVersion, $targetBuild) = (@_);
-    main::progress("Updating from 8.7.4_GA\n"); 
+    main::progress("Updating from 8.7.4_GA\n");
     return 0;
 }
 
 sub upgrade875GA {
     my ($startBuild, $targetVersion, $targetBuild) = (@_);
     main::progress("Updating from 8.7.5_GA\n");
+    return 0;
+}
+
+sub upgrade876GA {
+    my ($startBuild, $targetVersion, $targetBuild) = (@_);
+    main::progress("Updating from 8.7.6_GA\n");
     return 0;
 }
 

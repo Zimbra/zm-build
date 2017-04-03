@@ -36,9 +36,11 @@ zimbra-archiving"
 
 SERVICES=""
 
-OPTIONAL_PACKAGES="zimbra-qatest"
+OPTIONAL_PACKAGES="zimbra-qatest \
+zimbra-chat \
+zimbra-drive"
 
-PACKAGE_DIR=`dirname $0`/packages
+PACKAGE_DIR="$(CDPATH= cd "$(dirname "$0")" && pwd)/packages"
 
 SAVEDIR="/opt/zimbra/.saveconfig"
 
@@ -57,7 +59,7 @@ REMOVE="no"
 UPGRADE="no"
 HOSTNAME=`hostname --fqdn`
 ZIMBRAINTERNAL=no
-echo $HOSTNAME | egrep -qe 'eng.vmware.com$|eng.zimbra.com$|lab.zimbra.com$' > /dev/null 2>&1
+echo $HOSTNAME | egrep -qe 'eng.synacor.com$|eng.zimbra.com$|lab.zimbra.com$' > /dev/null 2>&1
 if [ $? = 0 ]; then
   ZIMBRAINTERNAL=yes
 fi
