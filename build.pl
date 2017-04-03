@@ -398,6 +398,23 @@ sub Build($)
          "-Dzimbra.buildinfo.date=${GLOBAL_BUILD_TS}",
          "-Dzimbra.buildinfo.host=@{[Net::Domain::hostfqdn]}",
          "-Dzimbra.buildinfo.buildnum=${GLOBAL_BUILD_RELEASE_NO}",
+         "-Dzimbra.buildinfo.buildnum.major=${GLOBAL_BUILD_RELEASE_NO_MAJOR}",
+         "-Dzimbra.buildinfo.buildnum.minor=${GLOBAL_BUILD_RELEASE_NO_MINOR}",
+         "-Dzimbra.buildinfo.buildnum.micro=${GLOBAL_BUILD_RELEASE_NO_MICRO}",
+      ],
+      make => [
+         "debug=${GLOBAL_BUILD_DEBUG_FLAG}",
+         "is-production=${GLOBAL_BUILD_PROD_FLAG}",
+         "zimbra.buildinfo.platform=${GLOBAL_BUILD_OS}",
+         "zimbra.buildinfo.version=${GLOBAL_BUILD_RELEASE_NO}_${GLOBAL_BUILD_RELEASE_CANDIDATE}_${GLOBAL_BUILD_NO}",
+         "zimbra.buildinfo.type=${GLOBAL_BUILD_TYPE}",
+         "zimbra.buildinfo.release=${GLOBAL_BUILD_TS}",
+         "zimbra.buildinfo.date=${GLOBAL_BUILD_TS}",
+         "zimbra.buildinfo.host=@{[Net::Domain::hostfqdn]}",
+         "zimbra.buildinfo.buildnum=${GLOBAL_BUILD_RELEASE_NO}",
+         "zimbra.buildinfo.buildnum.major=${GLOBAL_BUILD_RELEASE_NO_MAJOR}",
+         "zimbra.buildinfo.buildnum.minor=${GLOBAL_BUILD_RELEASE_NO_MINOR}",
+         "zimbra.buildinfo.buildnum.micro=${GLOBAL_BUILD_RELEASE_NO_MICRO}",
       ],
    };
 

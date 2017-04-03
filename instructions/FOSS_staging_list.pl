@@ -5,7 +5,7 @@
    }
    {
       "dir"         => "zm-mailbox",
-      "ant_targets" => ["all"],
+      "ant_targets" => ["all", "pkg"],
       "stage_cmd"    => sub {
          System("mkdir -p                                 $GLOBAL_BUILD_DIR/zm-mailbox/native/build/dist");
          System("mkdir -p                                 $GLOBAL_BUILD_DIR/zm-mailbox/store/build/dist");
