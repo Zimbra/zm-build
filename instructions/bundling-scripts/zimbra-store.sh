@@ -345,12 +345,51 @@ main()
         cp ${repoDir}/zm-zcs-lib/build/dist/${i} ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/common/lib
     done
 
-    thirdpartyJars=("apache-log4j-extras-1.0.jar" "commons-cli-1.2.jar" "commons-codec-1.7.jar" "commons-collections-3.2.2.jar" "commons-compress-1.10.jar" "commons-dbcp-1.4.jar" \
-        "commons-fileupload-1.2.2.jar" "commons-httpclient-3.1.jar" "commons-io-1.4.jar" "commons-lang-2.6.jar" "commons-logging-1.1.1.jar" "commons-net-3.3.jar" \
-        "commons-pool-1.6.jar" "concurrentlinkedhashmap-lru-1.3.1.jar" "dom4j-1.5.2.jar" "ganymed-ssh2-build210.jar" "guava-13.0.1.jar" \
-        "icu4j-4.8.1.1.jar" "mail-1.4.5.jar" "jaxen-1.1.3.jar" "jcommon-1.0.21.jar" "jdom-1.1.jar" "jfreechart-1.0.15.jar" "json-20090211.jar" "junixsocket-common-2.0.4.jar" \
-        "junixsocket-demo-2.0.4.jar" "junixsocket-mysql-2.0.4.jar" "junixsocket-rmi-2.0.4.jar" "jzlib-1.0.7.jar" "libidn-1.24.jar" "log4j-1.2.16.jar" "mariadb-java-client-1.1.8.jar" "yuicompressor-2.4.2-zimbra.jar" \
-        "spymemcached-2.12.1.jar"  "oauth-20100527.jar" "jtnef-1.9.0.jar" "unboundid-ldapsdk-2.3.5.jar" "xercesImpl-2.9.1-patch-01.jar" "yuicompressor-2.4.2-zimbra.jar" "bcprov-jdk15on-1.55.jar")
+    thirdpartyJars=(
+        "apache-log4j-extras-1.0.jar"
+        "bcprov-jdk15on-1.55.jar"
+        "commons-cli-1.2.jar"
+        "commons-codec-1.7.jar"
+        "commons-collections-3.2.2.jar"
+        "commons-compress-1.10.jar"
+        "commons-dbcp-1.4.jar"
+        "commons-fileupload-1.2.2.jar"
+        "commons-httpclient-3.1.jar"
+        "commons-io-1.4.jar"
+        "commons-lang-2.6.jar"
+        "commons-logging-1.1.1.jar"
+        "commons-net-3.3.jar"
+        "commons-pool-1.6.jar"
+        "concurrentlinkedhashmap-lru-1.3.1.jar"
+        "dom4j-1.5.2.jar"
+        "ganymed-ssh2-build210.jar"
+        "guava-13.0.1.jar"
+        "httpasyncclient-4.1.2.jar"
+        "httpclient-4.5.2.jar"
+        "httpcore-4.4.5.jar"
+        "httpcore-nio-4.4.5.jar"
+        "icu4j-4.8.1.1.jar"
+        "jaxen-1.1.3.jar"
+        "jcommon-1.0.21.jar"
+        "jdom-1.1.jar"
+        "jfreechart-1.0.15.jar"
+        "json-20090211.jar"
+        "jtnef-1.9.0.jar"
+        "junixsocket-common-2.0.4.jar"
+        "junixsocket-demo-2.0.4.jar"
+        "junixsocket-mysql-2.0.4.jar"
+        "junixsocket-rmi-2.0.4.jar"
+        "jzlib-1.0.7.jar"
+        "libidn-1.24.jar"
+        "log4j-1.2.16.jar"
+        "mail-1.4.5.jar"
+        "mariadb-java-client-1.1.8.jar"
+        "oauth-20100527.jar"
+        "spymemcached-2.12.1.jar"
+        "unboundid-ldapsdk-2.3.5.jar"
+        "xercesImpl-2.9.1-patch-01.jar"
+        "yuicompressor-2.4.2-zimbra.jar"
+    )
     for i in "${thirdpartyJars[@]}"
     do
         cp ${repoDir}/zm-zcs-lib/build/dist/${i} ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/common/lib
