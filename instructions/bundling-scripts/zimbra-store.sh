@@ -367,7 +367,6 @@ main()
         "unboundid-ldapsdk-2.3.5.jar"
         "xercesImpl-2.9.1.jar"
         "yuicompressor-2.4.2-zimbra.jar"
-        "yuicompressor-2.4.2-zimbra.jar"
 	)
     for i in "${thirdpartyjars[@]}"
     do
