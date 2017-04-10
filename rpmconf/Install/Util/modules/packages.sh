@@ -120,7 +120,7 @@ installPackages() {
          else
             MEMCACHEDVER=`yum --showduplicates list zimbra-memcached | \
                grep "zimbra$ZM_INST_MAJOR.$ZM_INST_MINOR" | head -n1 | \
-               cut -d ' ' -f 2`
+               awk '{print $2}'`
             echo "Downloading Remote package zimbra-memcached version $MEMCACHEDVER";
             yum downgrade --downloadonly --assumeyes zimbra-memcached-$MEMCACHEDVER >> $LOGFILE 2>&1
          fi
@@ -296,7 +296,7 @@ findLatestPackage() {
             file_location="repo"
          fi
       else
-         if grep -q -w -e "^$package" <(yum list available -q -e 0 "$package" 2>/dev/null)
+         if grep -q -w -e "^$package" <(yum --show-duplicate list available -q -e 0 "$package" 2>/dev/null)
          then
             file_location="repo"
          fi
