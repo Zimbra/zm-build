@@ -296,7 +296,7 @@ findLatestPackage() {
             file_location="repo"
          fi
       else
-         if grep -q -w -e "^$package" <(yum --show-duplicate list available -q -e 0 "$package" 2>/dev/null)
+         if grep -q -w -e "^$package" <(yum --showduplicates list available -q -e 0 "$package" 2>/dev/null)
          then
             file_location="repo"
          fi
