@@ -33,7 +33,7 @@
    { name => "zm-mailbox",                          branch => "feature/imap", },
    { name => "zm-migration-tools",                   },
    { name => "zm-mta",                               },
-   { name => "zm-nginx-conf",                        },
+   { name => "zm-nginx-conf",                       branch => "feature/imap", },
    { name => "zm-nginx-lookup-store",               branch => "feature/imap", },
    { name => "zm-openid-consumer-store",             },
    { name => "zm-pkg-tool",                          },
