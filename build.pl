@@ -250,15 +250,14 @@ sub Prepare()
    System( "find", $GLOBAL_BUILD_DIR, "-type", "f", "-name", ".built.*", "-delete" ) if ( $ENV{ENV_CACHE_CLEAR_FLAG} );
 
    my @TP_JARS = (
-      "http://$GLOBAL_BUILD_THIRDPARTY_SERVER/ZimbraThirdParty/third-party-jars/ant-1.7.0-ziputil-patched.jar",
-      "http://$GLOBAL_BUILD_THIRDPARTY_SERVER/ZimbraThirdParty/third-party-jars/ant-contrib-1.0b1.jar",
-      "http://$GLOBAL_BUILD_THIRDPARTY_SERVER/ZimbraThirdParty/third-party-jars/ews_2010-1.0.jar",
-      "http://$GLOBAL_BUILD_THIRDPARTY_SERVER/ZimbraThirdParty/third-party-jars/jruby-complete-1.6.3.jar",
-      "http://$GLOBAL_BUILD_THIRDPARTY_SERVER/ZimbraThirdParty/third-party-jars/plugin.jar",
-      "http://$GLOBAL_BUILD_THIRDPARTY_SERVER/ZimbraThirdParty/third-party-jars/servlet-api-3.1.jar",
-      "http://$GLOBAL_BUILD_THIRDPARTY_SERVER/ZimbraThirdParty/third-party-jars/unboundid-ldapsdk-2.3.5-se.jar",
-      "http://$GLOBAL_BUILD_THIRDPARTY_SERVER/ZimbraThirdParty/third-party-jars/zimbrastore-test-1.0.jar",
-   );
+      "https://files.zimbra.com/repository/ant-1.7.0-ziputil-patched/ant-1.7.0-ziputil-patched-1.0.jar",
+      "https://files.zimbra.com/repository/ant-contrib/ant-contrib-1.0b1.jar",
+      "https://files.zimbra.com/repository/ews_2010/ews_2010-1.0.jar",
+      "https://files.zimbra.com/repository/jruby/jruby-complete-1.6.3.jar",
+      "https://files.zimbra.com/repository/applet/plugin.jar",
+      "https://files.zimbra.com/repository/servlet-api/servlet-api-3.1.jar",
+      "https://files.zimbra.com/repository/unbound-ldapsdk/unboundid-ldapsdk-2.3.5-se.jar",
+);
 
    for my $j_url (@TP_JARS)
    {
@@ -571,9 +570,9 @@ sub Clone($$)
    my $repo_remote_details = shift;
 
    my $repo_name       = $repo_details->{name};
-   my $repo_branch     = $CFG{GIT_OVERRIDES}->{"$repo_name.branch"} || $repo_details->{branch} || $CFG{GIT_DEFAULT_BRANCH} || "dev";
+   my $repo_branch     = $CFG{GIT_OVERRIDES}->{"$repo_name.branch"} || $repo_details->{branch} || $CFG{GIT_DEFAULT_BRANCH} || "develop";
    my $repo_tag        = $CFG{GIT_OVERRIDES}->{"$repo_name.tag"} || $repo_details->{tag} || $CFG{GIT_DEFAULT_TAG} if ( $CFG{GIT_OVERRIDES}->{"$repo_name.tag"} || !$CFG{GIT_OVERRIDES}->{"$repo_name.branch"} );
-   my $repo_remote     = $CFG{GIT_OVERRIDES}->{"$repo_name.remote"} || $repo_details->{remote} || $CFG{GIT_DEFAULT_REMOTE} || "zm";
+   my $repo_remote     = $CFG{GIT_OVERRIDES}->{"$repo_name.remote"} || $repo_details->{remote} || $CFG{GIT_DEFAULT_REMOTE} || "gh-zm";
    my $repo_url_prefix = $CFG{GIT_OVERRIDES}->{"$repo_remote.url-prefix"} || $repo_remote_details->{$repo_remote}->{'url-prefix'} || Die( "unresolved url-prefix for remote='$repo_remote'", "" );
 
    $repo_url_prefix =~ s,/*$,,;
