@@ -38,7 +38,8 @@ SERVICES=""
 
 OPTIONAL_PACKAGES="zimbra-qatest \
 zimbra-chat \
-zimbra-drive"
+zimbra-drive \
+zimbra-suiteplus"
 
 PACKAGE_DIR="$(CDPATH= cd "$(dirname "$0")" && pwd)/packages"
 
