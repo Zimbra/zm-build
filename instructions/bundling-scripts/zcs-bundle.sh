@@ -46,6 +46,10 @@ cp -f ${repoDir}/zm-build/rpmconf/Install/install.sh                            
 cp -f ${repoDir}/zm-core-utils/src/libexec/zmdbintegrityreport                          ${ZCS_REL}/bin
 cp -f ${repoDir}/zm-mailbox/store/build/dist/versions-init.sql                          ${ZCS_REL}/data
 cp -f ${repoDir}/zm-build/${arch}/*.*                                                   ${ZCS_REL}/packages
+if [ "${buildType}" = "NETWORK" ]
+then
+   cp -f ${repoDir}/zm-network-zextras/build/dist/*.{deb,rpm}                           ${ZCS_REL}/packages
+fi
 
 chmod 755 ${ZCS_REL}/bin/checkService.pl
 chmod 755 ${ZCS_REL}/bin/checkLicense.pl
