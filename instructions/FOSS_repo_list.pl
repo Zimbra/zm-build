@@ -37,6 +37,7 @@
    { name => "zm-nginx-lookup-store",                },
    { name => "zm-openid-consumer-store",             },
    { name => "zm-postfix",                           },
+   { name => "zm-pkg-tool",                          },
    { name => "zm-proxy-config-admin-zimlet",         },
    { name => "zm-taglib",                            },
    { name => "zm-timezones",                         },
