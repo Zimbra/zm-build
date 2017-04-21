@@ -64,20 +64,20 @@ CreateDebianPackage()
 CreateRhelPackage()
 {
     cat ${repoDir}/zm-build/rpmconf/Spec/${currentScript}.spec | \
-    	sed -e "s/@@VERSION@@/${releaseNo}_${releaseCandidate}_${buildNo}.${os}/" \
-    	-e "s/@@RELEASE@@/${buildTimeStamp}/" \
-    	-e "s/^Copyright:/Copyright:/" \
-    	> ${repoDir}/zm-build/${currentScript}.spec
+        sed -e "s/@@VERSION@@/${releaseNo}_${releaseCandidate}_${buildNo}.${os}/" \
+        -e "s/@@RELEASE@@/${buildTimeStamp}/" \
+        -e "s/^Copyright:/Copyright:/" \
+        > ${repoDir}/zm-build/${currentScript}.spec
     echo "%attr(-, root, root) /opt/zimbra/bin/zmimapdctl" >> \
-    	${repoDir}/zm-build/${currentScript}.spec
+        ${repoDir}/zm-build/${currentScript}.spec
     echo "%attr(-, root, root) /opt/zimbra/lib/jars/oauth-1.4.jar" >> \
-    	${repoDir}/zm-build/${currentScript}.spec
+        ${repoDir}/zm-build/${currentScript}.spec
     echo "%attr(755, zimbra, zimbra) /opt/zimbra/conf/imap.log4j.properties" >> \
         ${repoDir}/zm-build/${currentScript}.spec
     echo "" >> ${repoDir}/zm-build/${currentScript}.spec
     echo "%clean" >> ${repoDir}/zm-build/${currentScript}.spec
     (cd ${repoDir}/zm-build/${currentPackage}; \
-    	rpmbuild --target ${arch} --define '_rpmdir ../' --buildroot=${repoDir}/zm-build/${currentPackage} -bb ${repoDir}/zm-build/${currentScript}.spec )
+        rpmbuild --target ${arch} --define '_rpmdir ../' --buildroot=${repoDir}/zm-build/${currentPackage} -bb ${repoDir}/zm-build/${currentScript}.spec )
 }
 
 ############################################################################
