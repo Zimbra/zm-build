@@ -28,13 +28,14 @@ main()
 {
     echo -e "\tCreate package directories" >> ${buildLogFile}
     mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin
+    mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf
     mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/jars
 
 
     echo -e "\tCopy package files" >> ${buildLogFile}
     cp ${repoDir}/zm-core-utils/src/bin/zmimapdctl ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmimapdctl
     cp ${repoDir}/zm-zcs-lib/build/dist/oauth-1.4.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/jars/oauth-1.4.jar
-
+    cp ${repoDir}/zm-mailbox/store-conf/conf/imap.log4j.properties ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/imap.log4j.properties
     CreatePackage "${os}"
 }
 
@@ -71,6 +72,8 @@ CreateRhelPackage()
     	${repoDir}/zm-build/${currentScript}.spec
     echo "%attr(-, root, root) /opt/zimbra/lib/jars/oauth-1.4.jar" >> \
     	${repoDir}/zm-build/${currentScript}.spec
+    echo "%attr(755, zimbra, zimbra) /opt/zimbra/conf/imap.log4j.properties" >> \
+        ${repoDir}/zm-build/${currentScript}.spec
     echo "" >> ${repoDir}/zm-build/${currentScript}.spec
     echo "%clean" >> ${repoDir}/zm-build/${currentScript}.spec
     (cd ${repoDir}/zm-build/${currentPackage}; \
