@@ -5503,6 +5503,28 @@ sub configCreateCert {
   }
 
   my $rc;
+  if (isInstalled("zimbra-imap")) {
+    if ( !-f "$config{mailboxd_keystore}" && !-f "/opt/zimbra/ssl/zimbra/server/server.crt" ) {
+      progress ( "Creating SSL zimbra-store certificate..." );
+      $rc = runAsZimbra("/opt/zimbra/bin/zmcertmgr createcrt $needNewCert");
+      if ($rc != 0) {
+        progress ( "failed.\n" );
+        exit 1;
+      } else {
+        progress ( "done.\n" );
+      }
+    } elsif ( $needNewCert ne "" && $ssl_cert_type eq "self") {
+      progress ( "Creating new zimbra-store SSL certificate..." );
+      $rc = runAsZimbra("/opt/zimbra/bin/zmcertmgr createcrt $needNewCert");
+      if ($rc != 0) {
+        progress ( "failed.\n" );
+        exit 1;
+      } else {
+        progress ( "done.\n" );
+      }
+    }
+  }
+
   if (isInstalled("zimbra-store")) {
     if ( !-f "$config{mailboxd_keystore}" && !-f "/opt/zimbra/ssl/zimbra/server/server.crt" ) {
       if (!-d "$config{mailboxd_directory}") {
@@ -5637,6 +5659,28 @@ sub configInstallCert {
       }
     } else {
       configLog("configInstallCertStore");
+    }
+  }
+
+  if ($configStatus{configInstallCertImap} eq "CONFIGURED" && $needNewCert eq "") {
+    configLog("configInstallCertImap");
+  } elsif (isInstalled("zimbra-imap")) {
+    if (! (-f "$config{mailboxd_keystore}") || $needNewCert ne "") {
+      progress ("Installing imap SSL certificates...");
+      detail("$config{mailboxd_keystore} didn't exist.")
+        if (! -f "$config{mailboxd_keystore}");
+      detail("$needNewCert was ne \"\".")
+        if ($needNewCert ne "");
+      $rc = runAsZimbra("/opt/zimbra/bin/zmcertmgr deploycrt $ssl_cert_type");
+      if ($rc != 0) {
+        progress ( "failed.\n" );
+        exit 1;
+      } else {
+        progress ( "done.\n" );
+        configLog("configInstallCertImap");
+      }
+    } else {
+      configLog("configInstallCertImap");
     }
   }
 
