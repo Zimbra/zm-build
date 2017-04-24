@@ -2303,35 +2303,33 @@ getInstallPackages() {
     fi
 
     if [ $UPGRADE = "yes" ]; then
+
       if [ $i = "zimbra-archiving" ]; then
         if [ $STORE_SELECTED = "yes" ]; then
           askYN "Install $i" "N"
-        fi
-      else
-        askYN "Install $i" "N"
-      fi
-      if [ $i = "zimbra-chat" ]; then
+	fi
+      
+      elif [ $i = "zimbra-chat" ]; then
         if [ $STORE_SELECTED = "yes" ]; then
           askYN "Install $i" "N"
-        fi
-      else
-        askYN "Install $i" "N"
-      fi
-      if [ $i = "zimbra-drive" ]; then
+	fi
+
+      elif [ $i = "zimbra-drive" ]; then
         if [ $STORE_SELECTED = "yes" ]; then
           askYN "Install $i" "N"
-        fi
-      else
-        askYN "Install $i" "N"
-      fi
-      if [ $i = "zimbra-suiteplus" ]; then
+	fi
+
+      elif [ $i = "zimbra-suiteplus" ]; then
         if [ $STORE_SELECTED = "yes" ]; then
           askYN "Install $i" "N"
-        fi
+	fi
+
       else
         askYN "Install $i" "N"
       fi
+      
     else
+
       if [ $i = "zimbra-archiving" ]; then
         # only prompt to install archiving if zimbra-store is selected
         if [ $STORE_SELECTED = "yes" ]; then
