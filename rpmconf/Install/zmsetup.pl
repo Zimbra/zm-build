@@ -1111,32 +1111,34 @@ sub setLdapDefaults {
   my $serverid = getLdapServerValue("zimbraId");
   if ($serverid ne "")  {
 
-    $config{zimbraIPMode}     = getLdapServerValue("zimbraIPMode");
-    $config{zimbraDNSMasterIP} = getLdapServerValue("zimbraDNSMasterIP");
-    $config{zimbraDNSUseTCP} = getLdapServerValue("zimbraDNSUseTCP");
-    $config{zimbraDNSUseUDP} = getLdapServerValue("zimbraDNSUseUDP");
-    $config{zimbraDNSTCPUpstream} = getLdapServerValue("zimbraDNSTCPUpstream");
+    $config{zimbraIPMode}          = getLdapServerValue("zimbraIPMode");
+    $config{zimbraDNSMasterIP}     = getLdapServerValue("zimbraDNSMasterIP");
+    $config{zimbraDNSUseTCP}       = getLdapServerValue("zimbraDNSUseTCP");
+    $config{zimbraDNSUseUDP}       = getLdapServerValue("zimbraDNSUseUDP");
+    $config{zimbraDNSTCPUpstream}  = getLdapServerValue("zimbraDNSTCPUpstream");
 
-    $config{IMAPPORT}         = getLdapServerValue("zimbraImapBindPort");
-    $config{IMAPSSLPORT}      = getLdapServerValue("zimbraImapSSLBindPort");
-    $config{POPPORT}          = getLdapServerValue("zimbraPop3BindPort");
-    $config{POPSSLPORT}       = getLdapServerValue("zimbraPop3SSLBindPort");
+    $config{IMAPPORT}              = getLdapServerValue("zimbraImapBindPort");
+    $config{IMAPSSLPORT}           = getLdapServerValue("zimbraImapSSLBindPort");
 
-    $config{IMAPPROXYPORT}    = getLdapServerValue("zimbraImapProxyBindPort");
-    $config{IMAPSSLPROXYPORT} = getLdapServerValue("zimbraImapSSLProxyBindPort");
-    $config{POPPROXYPORT}     = getLdapServerValue("zimbraPop3ProxyBindPort");
-    $config{POPSSLPROXYPORT}  = getLdapServerValue("zimbraPop3SSLProxyBindPort");
-    $config{MAILPROXY}        = getLdapServerValue("zimbraReverseProxyMailEnabled");
 
-    $config{MODE}             = getLdapServerValue("zimbraMailMode");
-    $config{PROXYMODE}        = getLdapServerValue("zimbraReverseProxyMailMode");
-    $config{HTTPPORT}         = getLdapServerValue("zimbraMailPort");
-    $config{HTTPSPORT}        = getLdapServerValue("zimbraMailSSLPort");
+    $config{POPPORT}               = getLdapServerValue("zimbraPop3BindPort");
+    $config{POPSSLPORT}            = getLdapServerValue("zimbraPop3SSLBindPort");
 
-    $config{HTTPPROXYPORT}    = getLdapServerValue("zimbraMailProxyPort");
-    $config{HTTPSPROXYPORT}   = getLdapServerValue("zimbraMailSSLProxyPort");
-    $config{HTTPPROXY}        = getLdapServerValue("zimbraReverseProxyHttpEnabled");
-    $config{SMTPHOST}         = getLdapServerValue("zimbraSmtpHostname");
+    $config{IMAPPROXYPORT}         = getLdapServerValue("zimbraImapProxyBindPort");
+    $config{IMAPSSLPROXYPORT}      = getLdapServerValue("zimbraImapSSLProxyBindPort");
+    $config{POPPROXYPORT}          = getLdapServerValue("zimbraPop3ProxyBindPort");
+    $config{POPSSLPROXYPORT}       = getLdapServerValue("zimbraPop3SSLProxyBindPort");
+    $config{MAILPROXY}             = getLdapServerValue("zimbraReverseProxyMailEnabled");
+
+    $config{MODE}                  = getLdapServerValue("zimbraMailMode");
+    $config{PROXYMODE}             = getLdapServerValue("zimbraReverseProxyMailMode");
+    $config{HTTPPORT}              = getLdapServerValue("zimbraMailPort");
+    $config{HTTPSPORT}             = getLdapServerValue("zimbraMailSSLPort");
+
+    $config{HTTPPROXYPORT}         = getLdapServerValue("zimbraMailProxyPort");
+    $config{HTTPSPROXYPORT}        = getLdapServerValue("zimbraMailSSLProxyPort");
+    $config{HTTPPROXY}             = getLdapServerValue("zimbraReverseProxyHttpEnabled");
+    $config{SMTPHOST}              = getLdapServerValue("zimbraSmtpHostname");
 
     $config{zimbraReverseProxyLookupTarget} = getLdapServerValue("zimbraReverseProxyLookupTarget")
       if ($config{zimbraReverseProxyLookupTarget} eq "");
