@@ -2346,22 +2346,16 @@ getInstallPackages() {
       elif [ $i = "zimbra-chat" ]; then
         if [ $STORE_SELECTED = "yes" ]; then
           askYN "Install $i" "Y"
-        else
-          askYN "Install $i" "N"
         fi
 
       elif [ $i = "zimbra-drive" ]; then
         if [ $STORE_SELECTED = "yes" ]; then
           askYN "Install $i" "Y"
-        else
-          askYN "Install $i" "N"
         fi
 
       elif [ $i = "zimbra-suiteplus" ]; then
         if [ $STORE_SELECTED = "yes" ]; then
           askYN "Install $i" "Y"
-        else
-          askYN "Install $i" "N"
         fi
 
       elif [ $i = "zimbra-dnscache" ]; then
