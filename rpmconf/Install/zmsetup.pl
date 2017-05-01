@@ -1488,6 +1488,11 @@ sub setDefaults {
   $config{mailboxd_keystore_password} = genRandomPass();
   $config{mailboxd_truststore_password} = "changeit";
 
+  if ( -f "/opt/zimbra/bin/zmimapdctl" ) {
+    $config{imapd_keystore} = "/opt/zimbra/conf/imapd.keystore";
+    $config{imapd_keystore_password} = $config{mailboxd_keystore_password};
+  }
+
   $config{SMTPHOST} = "";
   $config{SNMPTRAPHOST} = $config{HOSTNAME};
   $config{DOCREATEDOMAIN} = "no";
@@ -5543,8 +5548,8 @@ sub configCreateCert {
 
   my $rc;
   if (isInstalled("zimbra-imap")) {
-    if ( !-f "$config{mailboxd_keystore}" && !-f "/opt/zimbra/ssl/zimbra/server/server.crt" ) {
-      progress ( "Creating SSL zimbra-store certificate..." );
+    if ( !-f "$config{imapd_keystore}" && !-f "/opt/zimbra/conf/server.crt" ) {
+      progress ( "Creating SSL zimbra-imap certificate..." );
       $rc = runAsZimbra("/opt/zimbra/bin/zmcertmgr createcrt $needNewCert");
       if ($rc != 0) {
         progress ( "failed.\n" );
@@ -5553,7 +5558,7 @@ sub configCreateCert {
         progress ( "done.\n" );
       }
     } elsif ( $needNewCert ne "" && $ssl_cert_type eq "self") {
-      progress ( "Creating new zimbra-store SSL certificate..." );
+      progress ( "Creating new zimbra-imap SSL certificate..." );
       $rc = runAsZimbra("/opt/zimbra/bin/zmcertmgr createcrt $needNewCert");
       if ($rc != 0) {
         progress ( "failed.\n" );
@@ -5704,10 +5709,10 @@ sub configInstallCert {
   if ($configStatus{configInstallCertImap} eq "CONFIGURED" && $needNewCert eq "") {
     configLog("configInstallCertImap");
   } elsif (isInstalled("zimbra-imap")) {
-    if (! (-f "$config{mailboxd_keystore}") || $needNewCert ne "") {
-      progress ("Installing imap SSL certificates...");
-      detail("$config{mailboxd_keystore} didn't exist.")
-        if (! -f "$config{mailboxd_keystore}");
+    if (! (-f "$config{imapd_keystore}") || $needNewCert ne "") {
+      progress ("Installing imapd SSL certificates...");
+      detail("$config{imapd_keystore} didn't exist.")
+        if (! -f "$config{imapd_keystore}");
       detail("$needNewCert was ne \"\".")
         if ($needNewCert ne "");
       $rc = runAsZimbra("/opt/zimbra/bin/zmcertmgr deploycrt $ssl_cert_type");
