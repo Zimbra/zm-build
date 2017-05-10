@@ -14,12 +14,12 @@
 # If not, see <https://www.gnu.org/licenses/>.
 # ***** END LICENSE BLOCK *****
 
-# Shell script to create zimbra spell package
+# Shell script to create zimbra-imapd package
 
 
 #-------------------- Configuration ---------------------------
 
-    currentScript=`basename $0 | cut -d "." -f 1`                          # zimbra-imap
+    currentScript=`basename $0 | cut -d "." -f 1`                          # zimbra-imapd
     currentPackage=`echo ${currentScript}build | cut -d "-" -f 2`          # imapbuild
 
 
@@ -35,7 +35,7 @@ main()
     echo -e "\tCopy package files" >> ${buildLogFile}
     cp ${repoDir}/zm-core-utils/src/bin/zmimapdctl ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmimapdctl
     cp ${repoDir}/zm-zcs-lib/build/dist/oauth-1.4.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/jars/oauth-1.4.jar
-    cp ${repoDir}/zm-mailbox/store-conf/conf/imap.log4j.properties ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/imap.log4j.properties
+    cp ${repoDir}/zm-mailbox/store-conf/conf/imapd.log4j.properties ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/imapd.log4j.properties
     CreatePackage "${os}"
 }
 
@@ -48,7 +48,6 @@ source "$SCRIPT_DIR/utils.sh"
 CreateDebianPackage()
 {
     mkdir -p ${repoDir}/zm-build/${currentPackage}/DEBIAN
-    # TOOD - create this
     cat ${repoDir}/zm-build/rpmconf/Spec/Scripts/${currentScript}.post >> ${repoDir}/zm-build/${currentPackage}/DEBIAN/postinst
     chmod 555 ${repoDir}/zm-build/${currentPackage}/DEBIAN/*
 
@@ -72,7 +71,7 @@ CreateRhelPackage()
         ${repoDir}/zm-build/${currentScript}.spec
     echo "%attr(-, root, root) /opt/zimbra/lib/jars/oauth-1.4.jar" >> \
         ${repoDir}/zm-build/${currentScript}.spec
-    echo "%attr(755, zimbra, zimbra) /opt/zimbra/conf/imap.log4j.properties" >> \
+    echo "%attr(755, zimbra, zimbra) /opt/zimbra/conf/imapd.log4j.properties" >> \
         ${repoDir}/zm-build/${currentScript}.spec
     echo "" >> ${repoDir}/zm-build/${currentScript}.spec
     echo "%clean" >> ${repoDir}/zm-build/${currentScript}.spec

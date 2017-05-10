@@ -1,8 +1,8 @@
 #
-# spec file for zimbra-imap.rpm
+# spec file for zimbra-imapd.rpm
 #
 Summary: Zimbra IMAP
-Name: zimbra-imap
+Name: zimbra-imapd
 Version: @@VERSION@@
 Release: @@RELEASE@@
 License: Various
