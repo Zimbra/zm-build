@@ -83,7 +83,7 @@ my @packageList = (
   "zimbra-memcached",
   "zimbra-proxy",
   "zimbra-archiving",
-  "zimbra-imap",
+  "zimbra-imapd",
 );
 
 my %packageServiceMap = (
@@ -93,7 +93,7 @@ my %packageServiceMap = (
   opendkim  => "zimbra-mta",
   cbpolicyd => "zimbra-mta",
   dnscache  => "zimbra-dnscache",
-  imap      => "zimbra-imap",
+  imapd     => "zimbra-imapd",
   mta       => "zimbra-mta",
   logger    => "zimbra-logger",
   mailbox   => "zimbra-store",
@@ -404,8 +404,8 @@ sub checkPortConflicts {
     7306 => 'zimbra-store',
     7307 => 'zimbra-store',
     7780 => 'zimbra-spell',
-    8143 => 'zimbra-imap',
-    8993 => 'zimbra-imap',
+    8143 => 'zimbra-imapd',
+    8993 => 'zimbra-imapd',
     8465 => 'zimbra-mta',
     10024 => 'zimbra-mta',
     10025 => 'zimbra-mta',
@@ -1577,8 +1577,8 @@ sub setDefaults {
 
   }
 
-  if (isEnabled("zimbra-imap")) {
-    progress  "setting defaults for zimbra-imap.\n" if $options{d};
+  if (isEnabled("zimbra-imapd")) {
+    progress  "setting defaults for zimbra-imapd.\n" if $options{d};
     $config{DOADDUPSTREAMIMAP} = "yes";
   }
 
@@ -3499,7 +3499,7 @@ sub createPackageMenu {
     return createProxyMenu($package);
   } elsif ($package eq "zimbra-dnscache") {
     return createDNSCacheMenu($package);
-  } elsif ($package eq "zimbra-imap") {
+  } elsif ($package eq "zimbra-imapd") {
     return createImapMenu($package);
   }
 }
@@ -4072,7 +4072,7 @@ sub createImapMenu {
   my $package = shift;
   my $lm = genPackageMenu($package);
 
-  $$lm{title} = "IMAP configuration";
+  $$lm{title} = "IMAPD configuration";
 
   $$lm{createsub} = \&createImapMenu;
   $$lm{createarg} = $package;
@@ -5547,9 +5547,9 @@ sub configCreateCert {
   }
 
   my $rc;
-  if (isInstalled("zimbra-imap")) {
+  if (isInstalled("zimbra-imapd")) {
     if ( !-f "$config{imapd_keystore}" && !-f "/opt/zimbra/conf/server.crt" ) {
-      progress ( "Creating SSL zimbra-imap certificate..." );
+      progress ( "Creating SSL zimbra-imapd certificate..." );
       $rc = runAsZimbra("/opt/zimbra/bin/zmcertmgr createcrt $needNewCert");
       if ($rc != 0) {
         progress ( "failed.\n" );
@@ -5558,7 +5558,7 @@ sub configCreateCert {
         progress ( "done.\n" );
       }
     } elsif ( $needNewCert ne "" && $ssl_cert_type eq "self") {
-      progress ( "Creating new zimbra-imap SSL certificate..." );
+      progress ( "Creating new zimbra-imapd SSL certificate..." );
       $rc = runAsZimbra("/opt/zimbra/bin/zmcertmgr createcrt $needNewCert");
       if ($rc != 0) {
         progress ( "failed.\n" );
@@ -5708,7 +5708,7 @@ sub configInstallCert {
 
   if ($configStatus{configInstallCertImap} eq "CONFIGURED" && $needNewCert eq "") {
     configLog("configInstallCertImap");
-  } elsif (isInstalled("zimbra-imap")) {
+  } elsif (isInstalled("zimbra-imapd")) {
     if (! (-f "$config{imapd_keystore}") || $needNewCert ne "") {
       progress ("Installing imapd SSL certificates...");
       detail("$config{imapd_keystore} didn't exist.")
@@ -7124,7 +7124,7 @@ sub applyConfig {
   setLdapServerConfig($config{HOSTNAME}, 'zimbraServerVersionType', $curVersionType);
   setLdapServerConfig($config{HOSTNAME}, 'zimbraServerVersionBuild', $curVersionBuild);
 
-  if ($newinstall && isEnabled("zimbra-imap")) {
+  if ($newinstall && isEnabled("zimbra-imapd")) {
     configImap();
   }
 
