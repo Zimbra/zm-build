@@ -40,7 +40,7 @@ OPTIONAL_PACKAGES="zimbra-qatest \
 zimbra-chat \
 zimbra-drive \
 zimbra-suiteplus \
-zimbra-imap"
+zimbra-imapd"
 
 PACKAGE_DIR="$(CDPATH= cd "$(dirname "$0")" && pwd)/packages"
 
