@@ -83,6 +83,7 @@ my @packageList = (
   "zimbra-memcached",
   "zimbra-proxy",
   "zimbra-archiving",
+  "zimbra-imapd",
 );
 
 my %packageServiceMap = (
@@ -92,6 +93,7 @@ my %packageServiceMap = (
   opendkim  => "zimbra-mta",
   cbpolicyd => "zimbra-mta",
   dnscache  => "zimbra-dnscache",
+  imapd     => "zimbra-imapd",
   mta       => "zimbra-mta",
   logger    => "zimbra-logger",
   mailbox   => "zimbra-store",
@@ -402,6 +404,8 @@ sub checkPortConflicts {
     7306 => 'zimbra-store',
     7307 => 'zimbra-store',
     7780 => 'zimbra-spell',
+    8143 => 'zimbra-imapd',
+    8993 => 'zimbra-imapd',
     8465 => 'zimbra-mta',
     10024 => 'zimbra-mta',
     10025 => 'zimbra-mta',
@@ -1111,32 +1115,35 @@ sub setLdapDefaults {
   my $serverid = getLdapServerValue("zimbraId");
   if ($serverid ne "")  {
 
-    $config{zimbraIPMode}     = getLdapServerValue("zimbraIPMode");
-    $config{zimbraDNSMasterIP} = getLdapServerValue("zimbraDNSMasterIP");
-    $config{zimbraDNSUseTCP} = getLdapServerValue("zimbraDNSUseTCP");
-    $config{zimbraDNSUseUDP} = getLdapServerValue("zimbraDNSUseUDP");
-    $config{zimbraDNSTCPUpstream} = getLdapServerValue("zimbraDNSTCPUpstream");
+    $config{zimbraIPMode}          = getLdapServerValue("zimbraIPMode");
+    $config{zimbraDNSMasterIP}     = getLdapServerValue("zimbraDNSMasterIP");
+    $config{zimbraDNSUseTCP}       = getLdapServerValue("zimbraDNSUseTCP");
+    $config{zimbraDNSUseUDP}       = getLdapServerValue("zimbraDNSUseUDP");
+    $config{zimbraDNSTCPUpstream}  = getLdapServerValue("zimbraDNSTCPUpstream");
 
-    $config{IMAPPORT}         = getLdapServerValue("zimbraImapBindPort");
-    $config{IMAPSSLPORT}      = getLdapServerValue("zimbraImapSSLBindPort");
-    $config{POPPORT}          = getLdapServerValue("zimbraPop3BindPort");
-    $config{POPSSLPORT}       = getLdapServerValue("zimbraPop3SSLBindPort");
+    $config{IMAPPORT}              = getLdapServerValue("zimbraImapBindPort");
+    $config{IMAPSSLPORT}           = getLdapServerValue("zimbraImapSSLBindPort");
+    $config{REMOTEIMAPBINDPORT}    = getLdapServerValue("zimbraRemoteImapBindPort");
+    $config{REMOTEIMAPSSLBINDPORT} = getLdapServerValue("zimbraRemoteImapSSLBindPort");
+    $config{POPPORT}               = getLdapServerValue("zimbraPop3BindPort");
+    $config{POPSSLPORT}            = getLdapServerValue("zimbraPop3SSLBindPort");
 
-    $config{IMAPPROXYPORT}    = getLdapServerValue("zimbraImapProxyBindPort");
-    $config{IMAPSSLPROXYPORT} = getLdapServerValue("zimbraImapSSLProxyBindPort");
-    $config{POPPROXYPORT}     = getLdapServerValue("zimbraPop3ProxyBindPort");
-    $config{POPSSLPROXYPORT}  = getLdapServerValue("zimbraPop3SSLProxyBindPort");
-    $config{MAILPROXY}        = getLdapServerValue("zimbraReverseProxyMailEnabled");
+    $config{IMAPPROXYPORT}         = getLdapServerValue("zimbraImapProxyBindPort");
+    $config{IMAPSSLPROXYPORT}      = getLdapServerValue("zimbraImapSSLProxyBindPort");
+    $config{POPPROXYPORT}          = getLdapServerValue("zimbraPop3ProxyBindPort");
+    $config{POPSSLPROXYPORT}       = getLdapServerValue("zimbraPop3SSLProxyBindPort");
+    $config{MAILPROXY}             = getLdapServerValue("zimbraReverseProxyMailEnabled");
 
-    $config{MODE}             = getLdapServerValue("zimbraMailMode");
-    $config{PROXYMODE}        = getLdapServerValue("zimbraReverseProxyMailMode");
-    $config{HTTPPORT}         = getLdapServerValue("zimbraMailPort");
-    $config{HTTPSPORT}        = getLdapServerValue("zimbraMailSSLPort");
+    $config{MODE}                  = getLdapServerValue("zimbraMailMode");
+    $config{PROXYMODE}             = getLdapServerValue("zimbraReverseProxyMailMode");
+    $config{HTTPPORT}              = getLdapServerValue("zimbraMailPort");
+    $config{HTTPSPORT}             = getLdapServerValue("zimbraMailSSLPort");
 
-    $config{HTTPPROXYPORT}    = getLdapServerValue("zimbraMailProxyPort");
-    $config{HTTPSPROXYPORT}   = getLdapServerValue("zimbraMailSSLProxyPort");
-    $config{HTTPPROXY}        = getLdapServerValue("zimbraReverseProxyHttpEnabled");
-    $config{SMTPHOST}         = getLdapServerValue("zimbraSmtpHostname");
+    $config{HTTPPROXYPORT}         = getLdapServerValue("zimbraMailProxyPort");
+    $config{HTTPSPROXYPORT}        = getLdapServerValue("zimbraMailSSLProxyPort");
+    $config{HTTPPROXY}             = getLdapServerValue("zimbraReverseProxyHttpEnabled");
+    $config{SMTPHOST}              = getLdapServerValue("zimbraSmtpHostname");
+
 
     $config{zimbraReverseProxyLookupTarget} = getLdapServerValue("zimbraReverseProxyLookupTarget")
       if ($config{zimbraReverseProxyLookupTarget} eq "");
@@ -1255,6 +1262,8 @@ sub setLdapDefaults {
   $config{HTTPSPORT} = 443 if ($config{HTTPSPORT} eq 0);
   $config{MODE} = "https" if ($config{MODE} eq "");
   $config{PROXYMODE} = "https" if ($config{PROXYMODE} eq "");
+  $config{REMOTEIMAPBINDPORT} = 8143 if ($config{REMOTEIMAPBINDPORT} eq 0);
+  $config{REMOTEIMAPSSLBINDPORT} = 8993 if ($config{REMOTEIMAPSSLBINDPORT} eq 0);
 
   if (isInstalled("zimbra-proxy") && isEnabled("zimbra-proxy")) {
      if ($config{MAILPROXY} eq "TRUE") {
@@ -1479,6 +1488,11 @@ sub setDefaults {
   $config{mailboxd_keystore_password} = genRandomPass();
   $config{mailboxd_truststore_password} = "changeit";
 
+  if ( -f "/opt/zimbra/bin/zmimapdctl" ) {
+    $config{imapd_keystore} = "/opt/zimbra/conf/imapd.keystore";
+    $config{imapd_keystore_password} = $config{mailboxd_keystore_password};
+  }
+
   $config{SMTPHOST} = "";
   $config{SNMPTRAPHOST} = $config{HOSTNAME};
   $config{DOCREATEDOMAIN} = "no";
@@ -1561,6 +1575,11 @@ sub setDefaults {
         if ($config{zimbraFeatureTasksEnabled} eq "");
     }
 
+  }
+
+  if (isEnabled("zimbra-imapd")) {
+    progress  "setting defaults for zimbra-imapd.\n" if $options{d};
+    $config{DOADDUPSTREAMIMAP} = "yes";
   }
 
   $config{zimbra_require_interprocess_security} = 1;
@@ -3477,9 +3496,11 @@ sub createPackageMenu {
   } elsif ($package eq "zimbra-store") {
     return createStoreMenu($package);
   } elsif ($package eq "zimbra-proxy") {
-    return createProxyMenu($package)
+    return createProxyMenu($package);
   } elsif ($package eq "zimbra-dnscache") {
-    return createDNSCacheMenu($package)
+    return createDNSCacheMenu($package);
+  } elsif ($package eq "zimbra-imapd") {
+    return createImapMenu($package);
   }
 }
 
@@ -4045,6 +4066,29 @@ sub createDNSCacheMenu {
     $i++;
   }
   return $lm;
+}
+
+sub createImapMenu {
+  my $package = shift;
+  my $lm = genPackageMenu($package);
+
+  $$lm{title} = "IMAPD configuration";
+
+  $$lm{createsub} = \&createImapMenu;
+  $$lm{createarg} = $package;
+
+  my $i = 2;
+  if (isEnabled($package)) {
+    $$lm{menuitems}{$i} = {
+      "prompt" => "Add to upstream IMAP Servers?:",
+      "var" => \$config{DOADDUPSTREAMIMAP},
+      "callback" => \&toggleYN,
+      "arg" => "DOADDUPSTREAMIMAP",
+      };
+    $i++;
+  }
+  return $lm;
+
 }
 
 sub createStoreMenu {
@@ -5503,6 +5547,28 @@ sub configCreateCert {
   }
 
   my $rc;
+  if (isInstalled("zimbra-imapd")) {
+    if ( !-f "$config{imapd_keystore}" && !-f "/opt/zimbra/conf/server.crt" ) {
+      progress ( "Creating SSL zimbra-imapd certificate..." );
+      $rc = runAsZimbra("/opt/zimbra/bin/zmcertmgr createcrt $needNewCert");
+      if ($rc != 0) {
+        progress ( "failed.\n" );
+        exit 1;
+      } else {
+        progress ( "done.\n" );
+      }
+    } elsif ( $needNewCert ne "" && $ssl_cert_type eq "self") {
+      progress ( "Creating new zimbra-imapd SSL certificate..." );
+      $rc = runAsZimbra("/opt/zimbra/bin/zmcertmgr createcrt $needNewCert");
+      if ($rc != 0) {
+        progress ( "failed.\n" );
+        exit 1;
+      } else {
+        progress ( "done.\n" );
+      }
+    }
+  }
+
   if (isInstalled("zimbra-store")) {
     if ( !-f "$config{mailboxd_keystore}" && !-f "/opt/zimbra/ssl/zimbra/server/server.crt" ) {
       if (!-d "$config{mailboxd_directory}") {
@@ -5637,6 +5703,28 @@ sub configInstallCert {
       }
     } else {
       configLog("configInstallCertStore");
+    }
+  }
+
+  if ($configStatus{configInstallCertImap} eq "CONFIGURED" && $needNewCert eq "") {
+    configLog("configInstallCertImap");
+  } elsif (isInstalled("zimbra-imapd")) {
+    if (! (-f "$config{imapd_keystore}") || $needNewCert ne "") {
+      progress ("Installing imapd SSL certificates...");
+      detail("$config{imapd_keystore} didn't exist.")
+        if (! -f "$config{imapd_keystore}");
+      detail("$needNewCert was ne \"\".")
+        if ($needNewCert ne "");
+      $rc = runAsZimbra("/opt/zimbra/bin/zmcertmgr deploycrt $ssl_cert_type");
+      if ($rc != 0) {
+        progress ( "failed.\n" );
+        exit 1;
+      } else {
+        progress ( "done.\n" );
+        configLog("configInstallCertImap");
+      }
+    } else {
+      configLog("configInstallCertImap");
     }
   }
 
@@ -6794,6 +6882,26 @@ sub configCreateDefaultDomainGALSyncAcct {
   }
 }
 
+sub configImap {
+  progress("Enabling IMAP protocol for zimbra-imapd service...");
+  runAsZimbra("$ZMPROV mcf zimbraRemoteImapServerEnabled TRUE");
+  progress("done.\n");
+  progress("Enabling IMAPS protocol for zimbra-imapd service...");
+  runAsZimbra("$ZMPROV mcf zimbraRemoteImapSSLServerEnabled TRUE");
+  progress("done.\n");
+  if ($config{DOADDUPSTREAMIMAP} eq "yes") {
+    progress("Adding $config{HOSTNAME} to list of zimbraReverseProxyUpstreamImapServers...");
+    runAsZimbra("$ZMPROV mcf +zimbraReverseProxyUpstreamImapServers $config{HOSTNAME}");
+    progress("done.\n");
+    progress("Disabling IMAP protocol in mailboxd...");
+    runAsZimbra("$ZMPROV mcf zimbraImapServerEnabled FALSE");
+    progress("done.\n");
+    progress("Disabling IMAPS protocol in mailboxd...");
+    runAsZimbra("$ZMPROV mcf zimbraImapSSLServerEnabled FALSE");
+    progress("done.\n");
+  }
+}
+
 sub configSetEnabledServices {
 
   if ($configStatus{configSetEnabledServices} eq "CONFIGURED") {
@@ -7015,6 +7123,10 @@ sub applyConfig {
   setLdapServerConfig($config{HOSTNAME}, 'zimbraServerVersionMicro', $curVersionMicroMicro);
   setLdapServerConfig($config{HOSTNAME}, 'zimbraServerVersionType', $curVersionType);
   setLdapServerConfig($config{HOSTNAME}, 'zimbraServerVersionBuild', $curVersionBuild);
+
+  if ($newinstall && isEnabled("zimbra-imapd")) {
+    configImap();
+  }
 
   if ($config{STARTSERVERS} eq "yes") {
 
