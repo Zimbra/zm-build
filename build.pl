@@ -35,6 +35,9 @@ my $GLOBAL_BUILD_THIRDPARTY_SERVER;
 my $GLOBAL_BUILD_PROD_FLAG;
 my $GLOBAL_BUILD_DEBUG_FLAG;
 my $GLOBAL_BUILD_DEV_TOOL_BASE_DIR;
+my $GLOBAL_BUILD_RELEASE_NO_MAJOR;
+my $GLOBAL_BUILD_RELEASE_NO_MINOR;
+my $GLOBAL_BUILD_RELEASE_NO_MICRO;
 
 my %CFG = ();
 
@@ -184,6 +187,9 @@ sub InitGlobalBuildVars()
       print "=========================================================================================================\n";
       LoadConfiguration($_) foreach (@cmd_args);
       print "=========================================================================================================\n";
+
+      Die( "Bad version '${GLOBAL_BUILD_RELEASE_NO}'", "$@" )
+         if ( ${GLOBAL_BUILD_RELEASE_NO} !~ m/^[0-9][0-9]*[.][0-9][0-9]*[.][0-9][0-9]*$/ );
    }
 
    foreach my $x (`grep -o '\\<[E][N][V]_[A-Z_]*\\>' '$GLOBAL_PATH_TO_SCRIPT_FILE' | sort | uniq`)
@@ -277,6 +283,11 @@ sub Prepare()
    EchoToFile( "$GLOBAL_PATH_TO_SCRIPT_DIR/RE/MAJOR", $MAJOR );
    EchoToFile( "$GLOBAL_PATH_TO_SCRIPT_DIR/RE/MINOR", $MINOR );
    EchoToFile( "$GLOBAL_PATH_TO_SCRIPT_DIR/RE/MICRO", $MICRO );
+
+   ${GLOBAL_BUILD_RELEASE_NO_MAJOR} = $MAJOR;
+   ${GLOBAL_BUILD_RELEASE_NO_MINOR} = $MINOR;
+   ${GLOBAL_BUILD_RELEASE_NO_MICRO} = $MICRO;
+
    close(FD);
 }
 
@@ -530,7 +541,7 @@ sub GetNewBuildTs()
 
 sub GetBuildOS()
 {
-   my $detected_os = undef;
+   our $detected_os = undef;
 
    sub detect_os
    {
