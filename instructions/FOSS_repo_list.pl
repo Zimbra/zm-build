@@ -36,8 +36,10 @@
    { name => "zm-nginx-conf",                        },
    { name => "zm-nginx-lookup-store",                },
    { name => "zm-openid-consumer-store",             },
+   { name => "zm-pkg-tool",                          },
    { name => "zm-postfix",                           },
    { name => "zm-proxy-config-admin-zimlet",         },
+   { name => "zm-ssdb-ephemeral-store",              },
    { name => "zm-taglib",                            },
    { name => "zm-timezones",                         },
    { name => "zm-versioncheck-admin-zimlet",         },
@@ -48,7 +50,6 @@
    { name => "zm-webclient-portal-example",          },
    { name => "zm-zcs",                               },
    { name => "zm-zcs-lib",                           },
-   { name => "zm-ssdb-ephemeral-store",              },
    { name => "zm-zextras",                           },
    { name => "zm-zimlets",                           },
 );

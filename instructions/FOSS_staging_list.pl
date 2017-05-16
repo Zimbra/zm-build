@@ -1,14 +1,16 @@
 @ENTRIES = (
    {
-      "dir"         => "zm-zextras",
-      "make_targets" => ["PKG_RELEASE=1zimbra${GLOBAL_BUILD_RELEASE_NO_MAJOR}.${GLOBAL_BUILD_RELEASE_NO_MINOR}b1", "all"],
-   }
-   {
-      "dir"         => "zm-mailbox",
-      "ant_targets" => ["all", "pkg"],
-      "stage_cmd"    => sub {
+      "dir"             => "zm-mailbox",
+      "ant_targets"     => [ "all", "pkg" ],
+      "deploy_pkg_into" => "bundle",
+      "stage_cmd"       => sub {
          System("install -T -D store/build/dist/versions-init.sql $GLOBAL_BUILD_DIR/zm-mailbox/store/build/dist/versions-init.sql");
       },
+   },
+   {
+      "dir"             => "zm-zextras",
+      "make_targets"    => [ "PKG_RELEASE=1zimbra${GLOBAL_BUILD_RELEASE_NO_MAJOR}.${GLOBAL_BUILD_RELEASE_NO_MINOR}b1", "all" ],
+      "deploy_pkg_into" => "repo-dev",
    },
    {
       "dir"         => "junixsocket/junixsocket-native",
@@ -49,7 +51,7 @@
    },
    {
       "dir"         => "zm-ssdb-ephemeral-store",
-      "ant_targets" => [ "publish-local" ],
+      "ant_targets" => ["publish-local"],
       "stage_cmd"   => sub {
          System("mkdir -p $GLOBAL_BUILD_DIR/zm-ssdb-ephemeral-store/build/dist");
          System("cp -f build/zm-ssdb-ephemeral-store*.jar $GLOBAL_BUILD_DIR/zm-ssdb-ephemeral-store/build/dist");

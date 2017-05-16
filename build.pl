@@ -189,7 +189,7 @@ sub InitGlobalBuildVars()
       print "=========================================================================================================\n";
 
       Die( "Bad version '${GLOBAL_BUILD_RELEASE_NO}'", "$@" )
-         if ( ${GLOBAL_BUILD_RELEASE_NO} !~ m/^[0-9][0-9]*[.][0-9][0-9]*[.][0-9][0-9]*$/ );
+        if ( ${GLOBAL_BUILD_RELEASE_NO} !~ m/^\d+[.]\d+[.]\d+$/ );
    }
 
    foreach my $x (`grep -o '\\<[E][N][V]_[A-Z_]*\\>' '$GLOBAL_PATH_TO_SCRIPT_FILE' | sort | uniq`)
@@ -263,7 +263,7 @@ sub Prepare()
       "https://files.zimbra.com/repository/applet/plugin.jar",
       "https://files.zimbra.com/repository/servlet-api/servlet-api-3.1.jar",
       "https://files.zimbra.com/repository/unbound-ldapsdk/unboundid-ldapsdk-2.3.5-se.jar",
-);
+   );
 
    for my $j_url (@TP_JARS)
    {
@@ -277,12 +277,12 @@ sub Prepare()
       }
    }
 
-   my ( $MAJOR, $MINOR, $MICRO ) = split( /[.]/, "${GLOBAL_BUILD_RELEASE_NO}_${GLOBAL_BUILD_RELEASE_CANDIDATE}" );
+   my ( $MAJOR, $MINOR, $MICRO ) = split( /[.]/, ${GLOBAL_BUILD_RELEASE_NO} );
 
    EchoToFile( "$GLOBAL_PATH_TO_SCRIPT_DIR/RE/BUILD", $GLOBAL_BUILD_NO );
    EchoToFile( "$GLOBAL_PATH_TO_SCRIPT_DIR/RE/MAJOR", $MAJOR );
    EchoToFile( "$GLOBAL_PATH_TO_SCRIPT_DIR/RE/MINOR", $MINOR );
-   EchoToFile( "$GLOBAL_PATH_TO_SCRIPT_DIR/RE/MICRO", $MICRO );
+   EchoToFile( "$GLOBAL_PATH_TO_SCRIPT_DIR/RE/MICRO", "${MICRO}_${GLOBAL_BUILD_RELEASE_CANDIDATE}" );
 
    ${GLOBAL_BUILD_RELEASE_NO_MAJOR} = $MAJOR;
    ${GLOBAL_BUILD_RELEASE_NO_MINOR} = $MINOR;
@@ -322,6 +322,14 @@ sub LoadRepos()
 sub LoadRemotes()
 {
    my %details = @{ EvalFile("instructions/${GLOBAL_BUILD_TYPE}_remote_list.pl") };
+
+   return \%details;
+}
+
+
+sub LoadPkgDeployPaths()
+{
+   my %details = @{ EvalFile("instructions/${GLOBAL_BUILD_TYPE}_pkg_deploy_paths.pl") };
 
    return \%details;
 }
@@ -397,10 +405,7 @@ sub Build($)
          "-Dzimbra.buildinfo.release=${GLOBAL_BUILD_TS}",
          "-Dzimbra.buildinfo.date=${GLOBAL_BUILD_TS}",
          "-Dzimbra.buildinfo.host=@{[Net::Domain::hostfqdn]}",
-         "-Dzimbra.buildinfo.buildnum=${GLOBAL_BUILD_RELEASE_NO}",
-         "-Dzimbra.buildinfo.buildnum.major=${GLOBAL_BUILD_RELEASE_NO_MAJOR}",
-         "-Dzimbra.buildinfo.buildnum.minor=${GLOBAL_BUILD_RELEASE_NO_MINOR}",
-         "-Dzimbra.buildinfo.buildnum.micro=${GLOBAL_BUILD_RELEASE_NO_MICRO}",
+         "-Dzimbra.buildinfo.buildnum=${GLOBAL_BUILD_NO}",
       ],
       make => [
          "debug=${GLOBAL_BUILD_DEBUG_FLAG}",
@@ -411,12 +416,11 @@ sub Build($)
          "zimbra.buildinfo.release=${GLOBAL_BUILD_TS}",
          "zimbra.buildinfo.date=${GLOBAL_BUILD_TS}",
          "zimbra.buildinfo.host=@{[Net::Domain::hostfqdn]}",
-         "zimbra.buildinfo.buildnum=${GLOBAL_BUILD_RELEASE_NO}",
-         "zimbra.buildinfo.buildnum.major=${GLOBAL_BUILD_RELEASE_NO_MAJOR}",
-         "zimbra.buildinfo.buildnum.minor=${GLOBAL_BUILD_RELEASE_NO_MINOR}",
-         "zimbra.buildinfo.buildnum.micro=${GLOBAL_BUILD_RELEASE_NO_MICRO}",
+         "zimbra.buildinfo.buildnum=${GLOBAL_BUILD_NO}",
       ],
    };
+
+   my $pkg_deploy_path_details = LoadPkgDeployPaths();
 
    my $cnt = 0;
    for my $build_info (@ALL_BUILDS)
@@ -469,6 +473,23 @@ sub Build($)
                   if ( my $stage_cmd = $build_info->{stage_cmd} )
                   {
                      &$stage_cmd
+                  }
+
+                  if ( my $deploy_pkg_into = $build_info->{deploy_pkg_into} )
+                  {
+                     my $pkg_deploy_method = $pkg_deploy_path_details->{$deploy_pkg_into}->{method} || "cp";
+                     my $pkg_deploy_path   = $pkg_deploy_path_details->{$deploy_pkg_into}->{path}   || "$GLOBAL_BUILD_DIR/packages";
+
+                     system("mkdir -p '$pkg_deploy_path'");
+
+                     if ( $pkg_deploy_method eq "cp" )
+                     {
+                        System("cp -a build/dist/* '$pkg_deploy_path/'");
+                     }
+                     else
+                     {
+                        Die("Unknown Pkg Deploy Method: '$pkg_deploy_method'");
+                     }
                   }
 
                   if ( !exists $build_info->{partial} )
@@ -563,10 +584,10 @@ sub GetBuildOS()
    sub detect_os
    {
       chomp( $detected_os = `$GLOBAL_PATH_TO_SCRIPT_DIR/rpmconf/Build/get_plat_tag.sh` )
-         if(!$detected_os);
+        if ( !$detected_os );
 
       return $detected_os
-         if ($detected_os);
+        if ($detected_os);
 
       Die("Unknown OS");
    }
@@ -609,14 +630,13 @@ sub Clone($$)
 
    if ( !-d $repo_dir )
    {
-      if ($repo_tag)
-      {
-         System( "git", "clone", "--depth=1", "-b", $repo_tag, "-o", $repo_remote, "$repo_url_prefix/$repo_name.git", "$repo_dir" );
-      }
-      else
-      {
-         System( "git", "clone", "--depth=1", "-b", $repo_branch, "-o", $repo_remote, "$repo_url_prefix/$repo_name.git", "$repo_dir" );
-      }
+      my @clone_cmd_args = ( "git", "clone" );
+
+      push( @clone_cmd_args, "--depth=1" ) if ( not $ENV{ENV_GIT_FULL_CLONE} );
+      push( @clone_cmd_args, "-b", $repo_tag ? $repo_tag : $repo_branch );
+      push( @clone_cmd_args, "-o", $repo_remote, "$repo_url_prefix/$repo_name.git", "$repo_dir" );
+
+      System(@clone_cmd_args);
 
       RemoveTargetInDir( $repo_name, $GLOBAL_BUILD_DIR );
    }

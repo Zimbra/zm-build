@@ -138,15 +138,10 @@ main()
 #-------------------- Get wars content (service.war, zimbra.war and zimbraAdmin.war) ---------------------------
 
     echo "\t\t++++++++++ service.war content ++++++++++" >> ${buildLogFile}
-    mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/webapps/service
-
-    echo "\t\t***** zimbra.tld content *****" >> ${buildLogFile}
+    mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/webapps/service/WEB-INF/lib
     cp ${repoDir}/zm-zimlets/conf/zimbra.tld ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/webapps/service/WEB-INF
-    
-    echo "\t\t***** taglib jars to lib *****" >> ${buildLogFile}
     cp ${repoDir}/zm-taglib/build/zm-taglib*.jar         ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/webapps/service/WEB-INF/lib
     cp ${repoDir}/zm-zimlets/build/dist/zimlettaglib.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/webapps/service/WEB-INF/lib
-
 
     echo "\t\t++++++++++ zimbra.war content ++++++++++" >> ${buildLogFile}
     mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/webapps/zimbra

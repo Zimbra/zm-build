@@ -45,7 +45,17 @@ cp -f ${repoDir}/zm-build/rpmconf/Install/Util/utilfunc.sh                      
 cp -f ${repoDir}/zm-build/rpmconf/Install/install.sh                                    ${ZCS_REL}/
 cp -f ${repoDir}/zm-core-utils/src/libexec/zmdbintegrityreport                          ${ZCS_REL}/bin
 cp -f ${repoDir}/zm-mailbox/store/build/dist/versions-init.sql                          ${ZCS_REL}/data
+
+# all local packages to bundle
 cp -f ${repoDir}/zm-build/${arch}/*.*                                                   ${ZCS_REL}/packages
+
+for pkgf in ${repoDir}/zm-packages/bundle/*/*.{rpm,deb}
+do
+   if ! [[ "$pkgf" =~ src.rpm$ ]]
+   then
+      [ -f "$pkgf" ] && cp -f "$pkgf"                                                   ${ZCS_REL}/packages
+   fi
+done
 
 chmod 755 ${ZCS_REL}/bin/checkService.pl
 chmod 755 ${ZCS_REL}/bin/checkLicense.pl
