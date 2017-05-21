@@ -21,11 +21,6 @@ installPackages() {
    echo "Beginning Installation - see $LOGFILE for details..."
    echo
 
-   local repo_pkg_names_delayed=()
-   local repo_pkg_names=()
-   local local_pkg_files=()
-   local local_pkg_names=()
-
    pretty_display() {
       local banner=$1; shift;
       local pk=("$@");
@@ -40,55 +35,86 @@ installPackages() {
       echo >> $LOGFILE
    }
 
-   gather_package_info() {
-      local PKG;
-      for PKG in "$@"
-      do
-         findLatestPackage $PKG
-         if [ "$file_location" == "local" ]
+   gather_package_info()
+   {
+      local pkg=$1; shift;
+
+      if [ -z "${gather_visit_flag[$pkg]}" ]
+      then
+         echo "gathering packgage info for: $pkg" >> $LOGFILE
+
+         locatePackage $pkg
+
+         gather_visit_flag[$pkg]=1
+
+         if [ "${global_pkg_loc[$pkg]}" == "local" ]
          then
-            if ! grep -q -w -e $PKG <(echo "${local_pkg_names[*]}")
+            local deps=( $(LocalPackageDepList "${global_pkg_file[$pkg]}") )
+            local dep
+            for dep in "${deps[@]}"
+            do
+               if [[ $dep =~ ^zimbra-.*-svc$ ]]   # descend into zimbra-.*-svc first (because it is part of dependency loop)
+               then
+                  echo "descending into dependency: $pkg (local) --deps-> $dep" >> $LOGFILE
+                  gather_package_info "$dep"
+               fi
+            done
+            for dep in "${deps[@]}"
+            do
+               if ! [[ $dep =~ ^zimbra-.*-svc$ ]]   # descend into non zimbra-.*-svc later
+               then
+                  echo "descending into dependency: $pkg (local) --deps-> $dep" >> $LOGFILE
+                  gather_package_info "$dep"
+               fi
+            done
+
+            printf "%48s %s\n" "$pkg" "will be installed."
+
+            local_pkg_names+=( "$pkg" )
+            local_pkg_files+=( "${global_pkg_file[$pkg]}" )
+
+         elif [ "${global_pkg_loc[$pkg]}" == "repo" ]
+         then
+            local delay=0
+
+            if ! [[ "$pkg" =~ ^zimbra-.*-components$ ]]
             then
-               printf "%28s %s\n" "$PKG" "will be installed."
-               local_pkg_files=( "${local_pkg_files[@]}" "$file" )
-               local_pkg_names=( "${local_pkg_names[@]}" "$PKG" )
+               local dep
+               for dep in $(RepoPackageDepList "$pkg")
+               do
+                  echo "locating dependency: $pkg (remote) --deps-> $dep" >> $LOGFILE
+                  locatePackage "$dep"
+                  if [ "${global_pkg_loc[$dep]}" == "local" ]
+                  then
+                     delay=1
+                  fi
+               done
             fi
-         elif [ "$file_location" == "repo" ]
-         then
-            if [ "$file_delayed_install" == "1" ]
+
+            if [ "$delay" == "1" ]
             then
-               if ! grep -q -w -e $PKG <(echo "${repo_pkg_names_delayed[*]}")
-               then
-                  printf "%28s %s\n" "$PKG" "will be downloaded and installed."
-                  repo_pkg_names_delayed=( "${repo_pkg_names_delayed[@]}" "$PKG" )
-               fi
+               printf "%48s %s\n" "$pkg" "will be downloaded and installed (later)."
+               repo_pkg_names_delayed+=( "$pkg" )
             else
-               if ! grep -q -w -e $PKG <(echo "${repo_pkg_names[*]}")
-               then
-                  printf "%28s %s\n" "$PKG" "will be downloaded and installed."
-                  repo_pkg_names=( "${repo_pkg_names[@]}" "$PKG" )
-               fi
+               printf "%48s %s\n" "$pkg" "will be downloaded and installed."
+               repo_pkg_names+=( "$pkg" )
             fi
          fi
-      done
+
+         gather_visit_flag[$pkg]=2
+      fi
    }
+
+   local -A gather_visit_flag=()
+   local repo_pkg_names_delayed=()
+   local repo_pkg_names=()
+   local local_pkg_names=()
+   local local_pkg_files=()
 
    local PKG;
    for PKG in $INSTALL_PACKAGES
    do
       gather_package_info $PKG;
-
-      [ x$PKG = "xzimbra-drive"    ] && gather_package_info "zimbra-core"
-      [ x$PKG = "xzimbra-chat"     ] && gather_package_info "zimbra-core"
-      [ x$PKG = "xzimbra-core"     ] && gather_package_info "zimbra-core-components"
-      [ x$PKG = "xzimbra-apache"   ] && gather_package_info "zimbra-apache-components"
-      [ x$PKG = "xzimbra-dnscache" ] && gather_package_info "zimbra-dnscache-components"
-      [ x$PKG = "xzimbra-ldap"     ] && gather_package_info "zimbra-ldap-components"
-      [ x$PKG = "xzimbra-mta"      ] && gather_package_info "zimbra-mta-components"
-      [ x$PKG = "xzimbra-proxy"    ] && gather_package_info "zimbra-proxy-components" "zimbra-memcached"
-      [ x$PKG = "xzimbra-snmp"     ] && gather_package_info "zimbra-snmp-components"
-      [ x$PKG = "xzimbra-spell"    ] && gather_package_info "zimbra-spell-components"
-      [ x$PKG = "xzimbra-store"    ] && gather_package_info "zimbra-store-components"
    done
 
    if [ "${#repo_pkg_names[@]}" -gt 0 ]
@@ -209,104 +235,27 @@ pkgError() {
    exit 1
 }
 
-findLatestPackage() {
-   package=$1
+declare -A global_pkg_loc
+declare -A global_pkg_file
 
-   latest=""
-   himajor=0
-   himinor=0
-   histamp=0
+locatePackage() {
+   local package="$1"; shift;
 
-   files=`ls $PACKAGE_DIR/$package*.$PACKAGEEXT 2> /dev/null`
-   for q in $files; do
-      f=`basename $q`
-      if [ x"$PACKAGEEXT" = "xrpm" ]; then
-         id=`echo $f | awk -F- '{print $3}'`
-         version=`echo $id | awk -F_ '{print $1}'`
-         major=`echo $version | awk -F. '{print $1}'`
-         minor=`echo $version | awk -F. '{print $2}'`
-         micro=`echo $version | awk -F. '{print $3}'`
-         stamp=`echo $f | awk -F_ '{print $3}' | awk -F. '{print $1}'`
-         elif [ x"$PACKAGEEXT" = "xdeb" ]; then
-         id=`basename $f .deb | awk -F_ '{print $2"_"$3}'`
-         id=`echo $id | sed -e 's/_i386$//'`
-         id=`echo $id | sed -e 's/_amd64$//'`
-         version=`echo $id | awk -F. '{print $1"."$2"."$3"_"$4}'`
-         major=`echo $version | awk -F. '{print $1}'`
-         minor=`echo $version | awk -F. '{print $2}'`
-         micro=`echo $version | awk -F. '{print $3}'`
-         stamp=`echo $id | awk -F. '{print $4}'`
-      else
-         id=`echo $f | awk -F_ '{print $2}'`
-         version=`echo $id | awk -F_ '{print $1}'`
-         major=`echo $version | awk -F. '{print $1}'`
-         minor=`echo $version | awk -F. '{print $2}'`
-         micro=`echo $version | awk -F. '{print $3}'`
-         stamp=`echo $f | awk -F_ '{print $3}' | awk -F. '{print $1}'`
-      fi
-      if [ x"$PACKAGEEXT" = "xdeb" ]; then
-         debos=`echo $id | awk -F. '{print $6}'`
-         hwbits=`echo $id | awk -F. '{print $7}'`
-         if [ x"$hwbits" = "x64" ]; then
-            installable_platform=${debos}_${hwbits}
-         else
-            installable_platform=${debos}
-         fi
-      else
-         installable_platform=`echo $id | awk -F. '{print $4}'`
-      fi
-
-      if [ $major -gt $himajor ]; then
-         himajor=$major
-         himinor=$minor
-         histamp=$stamp
-         latest=$q
-         continue
-      fi
-      if [ $minor -gt $himinor ]; then
-         himajor=$major
-         himinor=$minor
-         histamp=$stamp
-         latest=$q
-         continue
-      fi
-      if [ $stamp -gt $histamp ]; then
-         himajor=$major
-         himinor=$minor
-         histamp=$stamp
-         latest=$q
-         continue
-      fi
-   done
-
-   unset file
-   unset file_location
-   unset file_delayed_install
-
-   if [ -f "$latest" ]
+   if [ -z "${global_pkg_loc[$package]}" ]
    then
-      file=$latest
-      file_location="local"
-      file_delayed_install=1
-   else
-      if [ $ISUBUNTU = "true" ]
+      local check_file="$(echo "$PACKAGE_DIR/$package"[-_][0-9]*."$PACKAGEEXT")"
+      if [ -f "$check_file" ]
       then
-         if grep -q -w -e "^$package" <(apt-cache search --names-only "^$package" 2>/dev/null)
-         then
-            file_location="repo"
-         fi
+         global_pkg_loc[$package]="local"
+         global_pkg_file[$package]=$check_file
       else
-         if grep -q -w -e "^$package" <(yum --showduplicates list available -q -e 0 "$package" 2>/dev/null)
+         if grep -q -w -e "^$package" <(LocatePackageInRepo "$package")
          then
-            file_location="repo"
-         fi
-      fi
-
-      if [ "$file_location" == "repo" ]
-      then
-         if [ "$package" == "zimbra-chat" ] || [ "$package" == "zimbra-drive" ]
-         then
-            file_delayed_install=1
+            global_pkg_loc[$package]="repo"
+            global_pkg_file[$package]=""
+         else
+            global_pkg_loc[$package]="unknown"
+            global_pkg_file[$package]=""
          fi
       fi
    fi
@@ -319,11 +268,13 @@ checkPackages() {
 
    AVAILABLE_PACKAGES=""
 
-   for i in $CORE_PACKAGES $PACKAGES $OPTIONAL_PACKAGES;
+   local package
+   for package in $CORE_PACKAGES $PACKAGES $OPTIONAL_PACKAGES;
    do
-      findLatestPackage $i
-      if [ "$file_location" == "local" ]
+      locatePackage $package
+      if [ "${global_pkg_loc[$package]}" == "local" ]
       then
+         local file=${global_pkg_file[$package]}
          if grep -q i386 <(echo $file)
          then
             PROC="i386"
@@ -353,7 +304,7 @@ checkPackages() {
             then
                file_check="verified";
             else
-               echo "Found $i locally, but package is not installable. (possibly corrupt)"
+               echo "Found $package locally, but package is not installable. (possibly corrupt)"
                echo "Unable to continue. Please correct package corruption and rerun the installation."
                exit 1
             fi
@@ -361,23 +312,23 @@ checkPackages() {
 
          if ! grep -q -w -e "$package" <(echo "$CORE_PACKAGES")
          then
-            AVAILABLE_PACKAGES="$AVAILABLE_PACKAGES $i"
+            AVAILABLE_PACKAGES="$AVAILABLE_PACKAGES $package"
          fi
 
-         printf "%s\n" "Found $i ($file_location)"
+         printf "%s\n" "Found $package (local)"
 
-      elif [ "$file_location" == "repo" ]
+      elif [ "${global_pkg_loc[$package]}" == "repo" ]
       then
          if ! grep -q -w -e "$package" <(echo "$CORE_PACKAGES")
          then
-            AVAILABLE_PACKAGES="$AVAILABLE_PACKAGES $i"
+            AVAILABLE_PACKAGES="$AVAILABLE_PACKAGES $package"
          fi
 
-         printf "%s\n" "Found $i ($file_location)"
+         printf "%s\n" "Found $package (repo)"
       else
          if grep -q -w -e "$package" <(echo "$CORE_PACKAGES")
          then
-            echo "ERROR: Required Core package $i not found in $PACKAGE_DIR"
+            echo "ERROR: Required Core package $package not found in $PACKAGE_DIR"
             echo "Exiting"
             exit 1
          fi

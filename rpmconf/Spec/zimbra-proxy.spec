@@ -12,7 +12,7 @@ Vendor: Zimbra, Inc.
 Packager: Zimbra, Inc.
 BuildRoot: /opt/zimbra
 AutoReqProv: no
-requires: zimbra-core, zimbra-proxy-components
+requires: zimbra-core, zimbra-proxy-components, zimbra-memcached
 
 %description
 Best email money can buy

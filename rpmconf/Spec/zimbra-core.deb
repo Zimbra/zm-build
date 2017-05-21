@@ -5,4 +5,4 @@ Maintainer: build@zimbra.com
 Section: mail
 Priority: optional
 Architecture: @@ARCH@@
-Depends: zimbra-core-components
+Depends: zimbra-core-components@@MORE_DEPENDS@@

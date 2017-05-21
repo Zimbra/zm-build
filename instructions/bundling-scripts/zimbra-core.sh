@@ -53,12 +53,17 @@ CreateDebianPackage()
 
    (
       set -e;
+      MORE_DEPENDS="$(find ${repoDir}/zm-packages/ -name \*.deb \
+                         | xargs -n1 basename \
+                         | sed -e 's/_[0-9].*//' \
+                         | grep zimbra-common- \
+                         | sed '1s/^/, /; :a; {N;s/\n/, /;ba}')";
+
       cat ${repoDir}/zm-build/rpmconf/Spec/${currentScript}.deb \
          | sed -e "s/@@VERSION@@/${releaseNo}.${releaseCandidate}.${buildNo}.${os/_/.}/" \
                -e "s/@@branch@@/${buildTimeStamp}/" \
                -e "s/@@ARCH@@/${arch}/" \
-               -e "s/@@ARCH@@/amd64/" \
-               -e "s/^Copyright:/Copyright:/" \
+               -e "s/@@MORE_DEPENDS@@/${MORE_DEPENDS}/" \
                -e "/^%post$/ r ${currentScript}.post"
    ) > ${repoDir}/zm-build/${currentPackage}/DEBIAN/control
 
@@ -67,15 +72,20 @@ CreateDebianPackage()
       cd ${repoDir}/zm-build/${currentPackage}
       dpkg -b ${repoDir}/zm-build/${currentPackage} ${repoDir}/zm-build/${arch}
    )
-
 }
 
 CreateRhelPackage()
 {
+    MORE_DEPENDS="$(find ${repoDir}/zm-packages/ -name \*.rpm \
+                       | xargs -n1 basename \
+                       | sed -e 's/-[0-9].*//' \
+                       | grep zimbra-common- \
+                       | sed '1s/^/, /; :a; {N;s/\n/, /;ba}')";
+
     cat ${repoDir}/zm-build/rpmconf/Spec/${currentScript}.spec | \
     	sed -e "s/@@VERSION@@/${releaseNo}_${releaseCandidate}_${buildNo}.${os}/" \
             	-e "s/@@RELEASE@@/${buildTimeStamp}/" \
-            	-e "s/^Copyright:/Copyright:/" \
+                -e "s/@@MORE_DEPENDS@@/${MORE_DEPENDS}/" \
             	-e "/^%pre$/ r ${repoDir}/zm-build/rpmconf/Spec/Scripts/${currentScript}.pre" \
             	-e "/Best email money can buy/ a Network edition" \
             	-e "/^%post$/ r ${repoDir}/zm-build/rpmconf/Spec/Scripts/${currentScript}.post" > ${repoDir}/zm-build/${currentScript}.spec

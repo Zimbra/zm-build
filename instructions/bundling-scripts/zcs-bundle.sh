@@ -95,6 +95,8 @@ else
    echo "FOSS" > ${ZCS_REL}/.BUILD_TYPE
 fi
 
+echo "${os}" > ${ZCS_REL}/.BUILD_PLATFORM
+
 ##########################################
 
 tar czf ${ZCS_REL}.tgz  ${ZCS_REL}
