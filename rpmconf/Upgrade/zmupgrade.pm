@@ -2557,7 +2557,7 @@ sub updateMySQLcnf {
     my $mycnfChanged = 0;
     my $tmpfile = "/tmp/my.cnf.$$";;
     my $zimbra_user = qx(${zmlocalconfig} -m nokey zimbra_user 2> /dev/null) || "zimbra";;
-    my $zimbra_tmp_directory = qx(${zmlocalconfig} -m nokey zimbra_tmp_directory 2> /dev/null) || "zimbra";;
+    my $zimbra_tmp_directory = qx(${zmlocalconfig} -m nokey zimbra_tmp_directory 2> /dev/null) || "/opt/zimbra/data/tmp";
     open(TMP, ">$tmpfile");
     foreach (@CNF) {
       if (/^port/ && $CNF[$i+1] !~ m/^user/) {
@@ -2695,7 +2695,7 @@ sub doMariaDB101Upgrade {
 
 sub doMysqlUpgrade {
     my $db_pass = main::getLocalConfig("mysql_root_password");
-    my $zimbra_tmp = main::getLocalConfig("zimbra_tmp_directory") || "/tmp";
+    my $zimbra_tmp = main::getLocalConfig("zimbra_tmp_directory") || "/opt/zimbra/data/tmp";
     my $mysql_socket = main::getLocalConfig("mysql_socket");
     my $mysql_mycnf = main::getLocalConfig("mysql_mycnf");
     my $mysqlUpgrade = "/opt/zimbra/common/bin/mysql_upgrade";
