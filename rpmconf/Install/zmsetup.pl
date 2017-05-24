@@ -1579,7 +1579,7 @@ sub setDefaults {
 
   if (isEnabled("zimbra-imapd")) {
     progress  "setting defaults for zimbra-imapd.\n" if $options{d};
-    $config{DOADDUPSTREAMIMAP} = "yes";
+    $config{DOADDUPSTREAMIMAP} = "no";
   }
 
   $config{zimbra_require_interprocess_security} = 1;
