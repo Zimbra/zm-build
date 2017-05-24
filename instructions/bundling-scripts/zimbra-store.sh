@@ -189,7 +189,9 @@ main()
       scp -r root@${zimbraThirdPartyServer}:/ZimbraThirdParty/zco-migration-builds/current/* ${downloadsDir}
       cd ${downloadsDir}
 
-      zcoMigrationBuilds=("ZimbraConnectorOLK_*_x64.msi" \
+      zcoMigrationBuilds=("ZmCustomizeMsi.js" \
+          "ZimbraBrandMsi.vbs" \
+          "ZimbraConnectorOLK_*_x64.msi" \
           "ZimbraConnectorOLK_*_x64-UNSIGNED.msi" \
           "ZimbraConnectorOLK_*_x86.msi" \
           "ZimbraConnectorOLK_*_x86-UNSIGNED.msi" \
@@ -213,6 +215,14 @@ main()
     if [ "${buildType}" == "NETWORK" ]
     then
       cd ${downloadsDir}
+
+      # ZmCustomizeMsi.js
+      download=`ls ZmCustomizeMsi.js`
+      echo "CONNECTOR_MSI_DOWNLOAD_LINK = /downloads/${download}" >> ${zaMsgPropertiesFile}; \
+      
+      # ZimbraBrandMsi.vbs
+      download=`ls ZimbraBrandMsi.vbs`
+      echo "ZCO_BRANDING_DOWNLOAD_LINK = /downloads/${download}" >> ${zaMsgPropertiesFile}; \
 
       # ZimbraConnectorOLK_*_x64.msi
       download=`ls ZimbraConnectorOLK_*_x64.msi`
