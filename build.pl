@@ -634,7 +634,7 @@ sub Clone($$)
 
       push( @clone_cmd_args, "--depth=1" ) if ( not $ENV{ENV_GIT_FULL_CLONE} );
       push( @clone_cmd_args, "-b", $repo_tag ? $repo_tag : $repo_branch );
-      push( @clone_cmd_args, "-o", $repo_remote, "$repo_url_prefix/$repo_name.git", "$repo_dir" );
+      push( @clone_cmd_args, "$repo_url_prefix/$repo_name.git", "$repo_dir" );
 
       System(@clone_cmd_args);
 
