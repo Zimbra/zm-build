@@ -271,8 +271,8 @@ sub Prepare()
       {
          if ( !-f $f )
          {
-            System("wget '$j_url' -O '$f.tmp'");
-            System("mv '$f.tmp' '$f'");
+            System( "wget", $j_url, "-O", "$f.tmp" );
+            System( "mv", "$f.tmp", $f );
          }
       }
    }
@@ -480,7 +480,7 @@ sub Build($)
                      my $pkg_deploy_method = $pkg_deploy_path_details->{$deploy_pkg_into}->{method} || "cp";
                      my $pkg_deploy_path   = $pkg_deploy_path_details->{$deploy_pkg_into}->{path}   || "$GLOBAL_BUILD_DIR/packages";
 
-                     system("mkdir -p '$pkg_deploy_path'");
+                     System( "mkdir", "-p", $pkg_deploy_path );
 
                      if ( $pkg_deploy_method eq "cp" )
                      {
@@ -510,8 +510,8 @@ sub Build($)
    Run(
       cd    => "$GLOBAL_PATH_TO_SCRIPT_DIR",
       child => sub {
-         System("rsync -az --delete . $GLOBAL_BUILD_DIR/zm-build");
-         System("mkdir -p $GLOBAL_BUILD_DIR/zm-build/$GLOBAL_BUILD_ARCH");
+         System( "rsync", "-az", "--delete", ".", "$GLOBAL_BUILD_DIR/zm-build" );
+         System( "mkdir", "-p", "$GLOBAL_BUILD_DIR/zm-build/$GLOBAL_BUILD_ARCH" );
 
          my @ALL_PACKAGES = ();
          push( @ALL_PACKAGES, @{ EvalFile("instructions/${GLOBAL_BUILD_TYPE}_package_list.pl") } );
@@ -647,19 +647,24 @@ sub Clone($$)
          if ($repo_tag)
          {
             print "\n";
-            System("cd '$repo_dir' && git checkout $repo_tag");
+            Run( cd => $repo_dir, child => sub { System( "git", "checkout", $repo_tag ); } );
 
             RemoveTargetInDir( $repo_name, $GLOBAL_BUILD_DIR );
          }
          else
          {
             print "\n";
-            my $z = System("cd '$repo_dir' && git pull --ff-only");
+            Run(
+               cd    => $repo_dir,
+               child => sub {
+                  my $z = System("git", "pull", "--ff-only");
 
-            if ( "@{$z->{out}}" !~ /Already up-to-date/ )
-            {
-               RemoveTargetInDir( $repo_name, $GLOBAL_BUILD_DIR );
-            }
+                  if ( "@{$z->{out}}" !~ /Already up-to-date/ )
+                  {
+                     RemoveTargetInDir( $repo_name, $GLOBAL_BUILD_DIR );
+                  }
+               },
+            );
          }
       }
    }
