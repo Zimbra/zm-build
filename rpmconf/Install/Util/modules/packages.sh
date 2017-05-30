@@ -53,19 +53,8 @@ installPackages() {
             local dep
             for dep in "${deps[@]}"
             do
-               if [[ $dep =~ ^zimbra-.*-svc$ ]]   # descend into zimbra-.*-svc first (because it is part of dependency loop)
-               then
-                  echo "descending into dependency: $pkg (local) --deps-> $dep" >> $LOGFILE
-                  gather_package_info "$dep"
-               fi
-            done
-            for dep in "${deps[@]}"
-            do
-               if ! [[ $dep =~ ^zimbra-.*-svc$ ]]   # descend into non zimbra-.*-svc later
-               then
-                  echo "descending into dependency: $pkg (local) --deps-> $dep" >> $LOGFILE
-                  gather_package_info "$dep"
-               fi
+               echo "descending into dependency: $pkg (local) --deps-> $dep" >> $LOGFILE
+               gather_package_info "$dep"
             done
 
             printf "%48s %s\n" "$pkg" "will be installed."
