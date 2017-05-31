@@ -659,7 +659,9 @@ checkExistingInstall() {
     isInstalled $i
     if [ x"$PKGINSTALLED" != "x" ]; then
       echo "FOUND $PKGINSTALLED"
-      INSTALLED="yes"
+      if [ "$i" != "zimbra-memcached" ]; then
+         INSTALLED="yes"
+      fi
       INSTALLED_PACKAGES="$INSTALLED_PACKAGES $i"
     else
       if [ x$i = "xzimbra-archiving" ]; then
@@ -2241,6 +2243,9 @@ getInstallPackages() {
   MTA_SELECTED="no"
 
   for i in $AVAILABLE_PACKAGES; do
+    if [ $i = "zimbra-core" ]; then
+      continue
+    fi
     # Reset the response before processing the next package.
     response="no"
 
@@ -2249,9 +2254,6 @@ getInstallPackages() {
       echo $INSTALLED_PACKAGES | grep $i > /dev/null 2>&1
       if [ $? = 0 ]; then
         echo "    Upgrading $i"
-        if [ $i = "zimbra-core" ]; then
-          continue
-        fi
         if [ $i = "zimbra-mta" ]; then
           CONFLICTS="no"
           for j in $CONFLICT_PACKAGES; do
@@ -2619,6 +2621,23 @@ getPlatformVars() {
     if [ $PLATFORM = "UBUNTU12_64" -o $PLATFORM = "UBUNTU14_64" -o $PLATFORM = "UBUNTU16_64" ]; then
       STORE_PACKAGES="libreoffice"
     fi
+    LocalPackageDepList() {
+       local pkg_f="$1"; shift;
+       dpkg -I "$pkg_f" \
+          | sed -n -e '/Depends:/ { s/.*:\s*//; s/,\s*/\n/g; p; }' \
+          | sed -n -e '/^zimbra-/ { s/\s*(.*//; p; }'
+    }
+    RepoPackageDepList() {
+       local pkg="$1"; shift;
+       apt-cache depends "^$pkg$" \
+          | sed -e 's/[<]\([a-z]\)/\1/g' \
+                -e 's/\([a-z]\)[>]/\1/g' \
+          | sed -n -e '/Depends:\s*zimbra-/ { s/.*:\s*//; p; }'
+    }
+    LocatePackageInRepo() {
+       local pkg="$1"; shift;
+       apt-cache search --names-only "^$pkg" 2>/dev/null
+    }
   else
       ISUBUNTU=false
       REPOINST='yum -y install'
@@ -2640,8 +2659,22 @@ getPlatformVars() {
       PACKAGEEXT='rpm'
       PACKAGEQUERY='rpm -q'
       PACKAGEVERIFY='rpm -K'
-    if [ $PLATFORM = "RHEL6_64" -o $PLATFORM = "RHEL7_64" ]; then
-      STORE_PACKAGES="libreoffice libreoffice-headless"
-    fi
+      if [ $PLATFORM = "RHEL6_64" -o $PLATFORM = "RHEL7_64" ]; then
+         STORE_PACKAGES="libreoffice libreoffice-headless"
+      fi
+      LocalPackageDepList() {
+         local pkg_f="$1"; shift;
+         rpm -q --requires -p "$pkg_f" \
+            | sed -n -e '/^zimbra-/ { s/\s*[<=>].*//; p; }'
+      }
+      RepoPackageDepList() {
+         local pkg="$1"; shift;
+         yum deplist "$pkg" \
+            | sed -n -e '/dependency:\s*zimbra-/ { s/^[^:]*:\s*//; s/\s*[<=>].*//; p }'
+      }
+      LocatePackageInRepo() {
+         local pkg="$1"; shift;
+         yum --showduplicates list available -q -e 0 "$pkg" 2>/dev/null
+      }
   fi
 }
