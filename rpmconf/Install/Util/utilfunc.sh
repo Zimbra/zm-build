@@ -1706,10 +1706,10 @@ removeExistingPackages() {
         echo "done"
       fi
 
-      isInstalled "zimbra-suiteplus"
+      isInstalled "zimbra-network-modules-ng"
       if [ x$PKGINSTALLED != "x" ]; then
-        echo -n "   zimbra-suiteplus..."
-        $PACKAGERM zimbra-suiteplus >/dev/null 2>&1
+        echo -n "   zimbra-network-modules-ng..."
+        $PACKAGERM zimbra-network-modules-ng >/dev/null 2>&1
         echo "done"
       fi
     fi
@@ -2319,7 +2319,7 @@ getInstallPackages() {
           askYN "Install $i" "N"
 	fi
 
-      elif [ $i = "zimbra-suiteplus" ]; then
+      elif [ $i = "zimbra-network-modules-ng" ]; then
         if [ $STORE_SELECTED = "yes" ]; then
           askYN "Install $i" "N"
 	fi
@@ -2353,7 +2353,7 @@ getInstallPackages() {
           askYN "Install $i" "Y"
         fi
 
-      elif [ $i = "zimbra-suiteplus" ]; then
+      elif [ $i = "zimbra-network-modules-ng" ]; then
         if [ $STORE_SELECTED = "yes" ]; then
           askYN "Install $i" "Y"
         fi
