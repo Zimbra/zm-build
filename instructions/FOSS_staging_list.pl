@@ -4,6 +4,8 @@
       "ant_targets"     => [ "all", "pkg" ],
       "deploy_pkg_into" => "bundle",
       "stage_cmd"       => sub {
+         System("mkdir -p                                 $GLOBAL_BUILD_DIR/zm-mailbox/store-conf/");
+         System("rsync -az store-conf/conf                $GLOBAL_BUILD_DIR/zm-mailbox/store-conf/");
          System("install -T -D store/build/dist/versions-init.sql $GLOBAL_BUILD_DIR/zm-mailbox/store/build/dist/versions-init.sql");
       },
    },
