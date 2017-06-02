@@ -29,7 +29,7 @@ main()
                REPO_NAME=$(git remote -v | awk '{ print $2; exit; }' | xargs -n1 '-I{}' -- basename '{}' .git)
             else
                LOCAL_BRANCH=$( git branch -vv | grep '^[*]' | sed -e 's/no branch/no-branch/' | awk '{ print $2 }')
-               REMOTE_BRANCH=$(git branch -vv | grep '^[*]' | grep -o '\[[^]]*\]' | sed -e 's,:.*\],],' -e 's,^.,,' -e 's,\]$,,' -e 's,.*/,,')
+               REMOTE_BRANCH=$(git branch -vv | grep '^[*]' | grep -o '\[[^]]*\]' | sed -e 's,:.*\],],' -e 's,^.,,' -e 's,\]$,,' -e 's,[^/]*/,,')
                REMOTE_NAME=$(  git branch -vv | grep '^[*]' | grep -o '\[[^]]*\]' | sed -e 's,:.*\],],' -e 's,^.,,' -e 's,\]$,,' -e 's,/.*,,')
                REMOTE_URL=$(   git remote get-url "$REMOTE_NAME" 2>/dev/null)
                REPO_NAME=$(basename "$REMOTE_URL" .git)
