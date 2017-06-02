@@ -22,7 +22,7 @@ main()
             cd $i;
             if [ "$BR" ]
             then
-               LOCAL_BRANCH=$( git branch -a | grep suiteplus | grep '^\s*remotes' | sed -e 's,\s*remotes/,,' -e 's,/, ,' | head -1 | awk '{ print $2 }')
+               LOCAL_BRANCH=$( git branch -r | grep -w "$BR" | grep -v -e '->' | sed -e 's,^\s*,,' -e 's,/, ,' | head -1 | awk '{ print $2 }')
                REMOTE_BRANCH=$LOCAL_BRANCH
                REMOTE_NAME=
                REMOTE_URL=
