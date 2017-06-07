@@ -643,7 +643,7 @@ checkExistingInstall() {
   fi
 
   echo "Checking for existing installation..."
-  
+
   for i in $OPTIONAL_PACKAGES; do
     isInstalled $i
     if [ x$PKGINSTALLED != "x" ]; then
@@ -669,13 +669,6 @@ checkExistingInstall() {
           echo "FOUND zimbra-cms"
           INSTALLED_PACKAGES="$INSTALLED_PACKAGES zimbra-archiving"
         else
-#          echo "NOT FOUND"
-#        fi
-#      elif [ x$i = "xzimbra-syncshare" ]; then
-#        if [ -f "/opt/zimbra/lib/ext/zimbramezeo/zimbramezeo.jar" -a -f "/opt/zimbra/zimlets-network/com_zimbra_zss.zip" ]; then
-#          echo "FOUND zimbra-syncshare"
-#          INSTALLED_PACKAGES="$INSTALLED_PACKAGES zimbra-syncshare"
-#        else
           echo "NOT FOUND"
         fi
       else
@@ -1693,10 +1686,32 @@ removeExistingPackages() {
       continue
     fi
     if [ $p = "zimbra-store" ]; then
+
       isInstalled "zimbra-archiving"
       if [ x$PKGINSTALLED != "x" ]; then
         echo -n "   zimbra-archiving..."
         $PACKAGERM zimbra-archiving >/dev/null 2>&1
+        echo "done"
+      fi
+
+      isInstalled "zimbra-chat"
+      if [ x$PKGINSTALLED != "x" ]; then
+        echo -n "   zimbra-chat..."
+        $PACKAGERM zimbra-chat >/dev/null 2>&1
+        echo "done"
+      fi
+
+      isInstalled "zimbra-drive"
+      if [ x$PKGINSTALLED != "x" ]; then
+        echo -n "   zimbra-drive..."
+        $PACKAGERM zimbra-drive >/dev/null 2>&1
+        echo "done"
+      fi
+
+      isInstalled "zimbra-suiteplus"
+      if [ x$PKGINSTALLED != "x" ]; then
+        echo -n "   zimbra-suiteplus..."
+        $PACKAGERM zimbra-suiteplus >/dev/null 2>&1
         echo "done"
       fi
     fi
@@ -2294,32 +2309,65 @@ getInstallPackages() {
         if [ $STORE_SELECTED = "yes" ]; then
           askYN "Install $i" "N"
         fi
-#      else
-#        askYN "Install $i" "N"
-#      fi
-#      elif [ $i = "zimbra-syncshare" ]; then
-#        if [ $STORE_SELECTED = "yes" ]; then
-#          askYN "Install $i" "N"
-#        fi
       else
         askYN "Install $i" "N"
       fi
-     else
+      if [ $i = "zimbra-chat" ]; then
+        if [ $STORE_SELECTED = "yes" ]; then
+          askYN "Install $i" "N"
+        fi
+      else
+        askYN "Install $i" "N"
+      fi
+      if [ $i = "zimbra-drive" ]; then
+        if [ $STORE_SELECTED = "yes" ]; then
+          askYN "Install $i" "N"
+        fi
+      else
+        askYN "Install $i" "N"
+      fi
+      if [ $i = "zimbra-suiteplus" ]; then
+        if [ $STORE_SELECTED = "yes" ]; then
+          askYN "Install $i" "N"
+        fi
+      else
+        askYN "Install $i" "N"
+      fi
+    else
       if [ $i = "zimbra-archiving" ]; then
         # only prompt to install archiving if zimbra-store is selected
         if [ $STORE_SELECTED = "yes" ]; then
           askYN "Install $i" "N"
         fi
-#      elif [ $i = "zimbra-syncshare" ]; then
-#        if [ $STORE_SELECTED = "yes" ]; then
-#          askYN "Install $i" "N"
-#        fi
+
       elif [ $i = "zimbra-convertd" ]; then
         if [ $STORE_SELECTED = "yes" ]; then
           askYN "Install $i" "Y"
         else
           askYN "Install $i" "N"
         fi
+
+      elif [ $i = "zimbra-chat" ]; then
+        if [ $STORE_SELECTED = "yes" ]; then
+          askYN "Install $i" "Y"
+        else
+          askYN "Install $i" "N"
+        fi
+
+      elif [ $i = "zimbra-drive" ]; then
+        if [ $STORE_SELECTED = "yes" ]; then
+          askYN "Install $i" "Y"
+        else
+          askYN "Install $i" "N"
+        fi
+
+      elif [ $i = "zimbra-suiteplus" ]; then
+        if [ $STORE_SELECTED = "yes" ]; then
+          askYN "Install $i" "Y"
+        else
+          askYN "Install $i" "N"
+        fi
+
       elif [ $i = "zimbra-dnscache" ]; then
         if [ $MTA_SELECTED = "yes" ]; then
           askYN "Install $i" "Y"

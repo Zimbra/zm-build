@@ -48,6 +48,10 @@ cp -f ${repoDir}/zm-mailbox/store/build/dist/versions-init.sql                  
 
 # all local packages to bundle
 cp -f ${repoDir}/zm-build/${arch}/*.*                                                   ${ZCS_REL}/packages
+if [ "${buildType}" = "NETWORK" ]
+then
+   cp -f ${repoDir}/zm-network-zextras/build/dist/*.{deb,rpm}                           ${ZCS_REL}/packages
+fi
 
 for pkgf in ${repoDir}/zm-packages/bundle/*/*.{rpm,deb}
 do
