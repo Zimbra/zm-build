@@ -2663,20 +2663,23 @@ getPlatformVars() {
     fi
     LocalPackageDepList() {
        local pkg_f="$1"; shift;
-       dpkg -I "$pkg_f" \
-          | sed -n -e '/Depends:/ { s/.*:\s*//; s/,\s*/\n/g; p; }' \
-          | sed -n -e '/^zimbra-/ { s/\s*(.*//; p; }'
+       LANG="en_US.UTF-8" LANGUAGE="en_US" \
+         dpkg -I "$pkg_f" \
+            | sed -n -e '/Depends:/ { s/.*:\s*//; s/,\s*/\n/g; p; }' \
+            | sed -n -e '/^zimbra-/ { s/\s*(.*//; p; }'
     }
     RepoPackageDepList() {
        local pkg="$1"; shift;
-       apt-cache depends "^$pkg$" \
-          | sed -e 's/[<]\([a-z]\)/\1/g' \
-                -e 's/\([a-z]\)[>]/\1/g' \
-          | sed -n -e '/Depends:\s*zimbra-/ { s/.*:\s*//; p; }'
+       LANG="en_US.UTF-8" LANGUAGE="en_US" \
+         apt-cache depends "^$pkg$" \
+            | sed -e 's/[<]\([a-z]\)/\1/g' \
+                  -e 's/\([a-z]\)[>]/\1/g' \
+            | sed -n -e '/Depends:\s*zimbra-/ { s/.*:\s*//; p; }'
     }
     LocatePackageInRepo() {
        local pkg="$1"; shift;
-       apt-cache search --names-only "^$pkg" 2>/dev/null
+       LANG="en_US.UTF-8" LANGUAGE="en_US" \
+         apt-cache search --names-only "^$pkg" 2>/dev/null
     }
   else
       ISUBUNTU=false
@@ -2704,17 +2707,20 @@ getPlatformVars() {
       fi
       LocalPackageDepList() {
          local pkg_f="$1"; shift;
-         rpm -q --requires -p "$pkg_f" \
-            | sed -n -e '/^zimbra-/ { s/\s*[<=>].*//; p; }'
+         LANG="en_US.UTF-8" LANGUAGE="en_US" \
+            rpm -q --requires -p "$pkg_f" \
+               | sed -n -e '/^zimbra-/ { s/\s*[<=>].*//; p; }'
       }
       RepoPackageDepList() {
          local pkg="$1"; shift;
-         yum deplist "$pkg" \
-            | sed -n -e '/dependency:\s*zimbra-/ { s/^[^:]*:\s*//; s/\s*[<=>].*//; p }'
+         LANG="en_US.UTF-8" LANGUAGE="en_US" \
+            yum deplist "$pkg" \
+               | sed -n -e '/dependency:\s*zimbra-/ { s/^[^:]*:\s*//; s/\s*[<=>].*//; p }'
       }
       LocatePackageInRepo() {
          local pkg="$1"; shift;
-         yum --showduplicates list available -q -e 0 "$pkg" 2>/dev/null
+         LANG="en_US.UTF-8" LANGUAGE="en_US" \
+            yum --showduplicates list available -q -e 0 "$pkg" 2>/dev/null
       }
   fi
 }
