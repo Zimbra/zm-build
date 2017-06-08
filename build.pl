@@ -16,6 +16,7 @@ use Term::ANSIColor;
 my $GLOBAL_PATH_TO_SCRIPT_FILE;
 my $GLOBAL_PATH_TO_SCRIPT_DIR;
 my $GLOBAL_PATH_TO_TOP;
+my $CWD;
 
 #FIXME - remove following $GLOBAL_BUILD_*, and instead use the hash %CFG every place
 
@@ -43,9 +44,11 @@ my %CFG = ();
 
 BEGIN
 {
+   $ENV{ANSI_COLORS_DISABLED} = 1 if ( ! -t STDOUT );
    $GLOBAL_PATH_TO_SCRIPT_FILE = Cwd::abs_path(__FILE__);
    $GLOBAL_PATH_TO_SCRIPT_DIR  = dirname($GLOBAL_PATH_TO_SCRIPT_FILE);
    $GLOBAL_PATH_TO_TOP         = dirname($GLOBAL_PATH_TO_SCRIPT_DIR);
+   $CWD                        = getcwd();
 }
 
 chdir($GLOBAL_PATH_TO_TOP);
