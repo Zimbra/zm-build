@@ -124,26 +124,6 @@ installPackages() {
       else
          POST87UPGRADE="true"
       fi
-      # Special case for zimbra-memcached as pre-8.7.0 it is local package moved to remote.
-      if [ $POST87UPGRADE = "false" ]; then
-         if [ $ISUBUNTU = "true" ]; then
-            MEMCACHEDVER=`apt-cache show zimbra-memcached | grep -i version | \
-               grep "zimbra$ZM_INST_MAJOR.$ZM_INST_MINOR" | head -n1 | \
-               cut -d ':' -f 2 |  tr -d " "`
-            echo "Downloading Remote package zimbra-memcached version $MEMCACHEDVER";
-            $PACKAGEDOWNLOAD zimbra-memcached=$MEMCACHEDVER >> $LOGFILE 2>&1
-         else
-            MEMCACHEDVER=`yum --showduplicates list zimbra-memcached | \
-               grep "zimbra$ZM_INST_MAJOR.$ZM_INST_MINOR" | head -n1 | \
-               awk '{print $2}'`
-            echo "Downloading Remote package zimbra-memcached version $MEMCACHEDVER";
-            yum downgrade --downloadonly --assumeyes zimbra-memcached-$MEMCACHEDVER >> $LOGFILE 2>&1
-         fi
-         if [ $? -ne 0 ]; then
-            echo "Unable to download packages zimbra-memcached from repository. System is not modified."
-            exit 1
-         fi
-      fi
       if [ "$FORCE_UPGRADE" = "yes" -o "$POST87UPGRADE" = "false" ]; then
          findUbuntuExternalPackageDependencies
       fi
