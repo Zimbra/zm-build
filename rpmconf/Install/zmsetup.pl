@@ -7024,6 +7024,11 @@ sub applyConfig {
         if (($platform =~ m/DEBIAN/ || $platform =~ m/UBUNTU/) && ! $newinstall);
     }
 
+    if (!isInstalled("zimbra-network-modules-ng")) {
+      main::progress("Disabling zimbraNetworkModulesNGEnabled \n");
+      setLdapServerConfig($config{HOSTNAME}, 'zimbraNetworkModulesNGEnabled', 'FALSE');
+    }
+
     progress ( "Starting servers..." );
     runAsZimbra ("/opt/zimbra/bin/zmcontrol stop");
     runAsZimbra ("/opt/zimbra/bin/zmcontrol start");
