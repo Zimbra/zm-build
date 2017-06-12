@@ -91,17 +91,9 @@ my %updateFuncs = (
   "7.0.1_GA" => \&upgrade701GA,
   "7.1.0_GA" => \&upgrade710GA,
   "7.1.1_GA" => \&upgrade711GA,
-  "7.1.2_GA" => \&upgrade712GA,
   "7.1.3_GA" => \&upgrade713GA,
   "7.1.4_GA" => \&upgrade714GA,
   "7.2.0_GA" => \&upgrade720GA,
-  "7.2.1_GA" => \&upgrade721GA,
-  "7.2.2_GA" => \&upgrade722GA,
-  "7.2.3_GA" => \&upgrade723GA,
-  "7.2.4_GA" => \&upgrade724GA,
-  "7.2.5_GA" => \&upgrade725GA,
-  "7.2.6_GA" => \&upgrade726GA,
-  "7.2.7_GA" => \&upgrade727GA,
   "8.0.0_BETA1" => \&upgrade800BETA1,
   "8.0.0_BETA2" => \&upgrade800BETA2,
   "8.0.0_BETA3" => \&upgrade800BETA3,
@@ -114,9 +106,7 @@ my %updateFuncs = (
   "8.0.4_GA" => \&upgrade804GA,
   "8.0.5_GA" => \&upgrade805GA,
   "8.0.6_GA" => \&upgrade806GA,
-  "8.0.7_GA" => \&upgrade807GA,
   "8.0.8_GA" => \&upgrade808GA,
-  "8.0.9_GA" => \&upgrade809GA,
   "8.5.0_BETA1" => \&upgrade850BETA1,
   "8.5.0_BETA2" => \&upgrade850BETA2,
   "8.5.0_BETA3" => \&upgrade850BETA3,
@@ -125,83 +115,69 @@ my %updateFuncs = (
   "8.6.0_BETA1" => \&upgrade860BETA1,
   "8.6.0_BETA2" => \&upgrade860BETA2,
   "8.6.0_GA" => \&upgrade860GA,
-  "8.6.1_GA" => \&upgrade861GA,
   "8.7.0_BETA1" => \&upgrade870BETA1,
   "8.7.0_BETA2" => \&upgrade870BETA2,
   "8.7.0_RC1" => \&upgrade870RC1,
-  "8.7.0_RC2" => \&upgrade870RC2,
-  "8.7.0_GA" => \&upgrade870GA,
-  "8.7.1_GA" => \&upgrade871GA,
   "8.7.2_GA" => \&upgrade872GA,
-  "8.7.3_GA" => \&upgrade873GA,
-  "8.7.4_GA" => \&upgrade874GA,
-  "8.7.5_GA" => \&upgrade875GA,
-  "8.7.6_GA" => \&upgrade876GA,
-  "8.7.7_GA" => \&upgrade877GA,
-  "8.7.8_GA" => \&upgrade878GA,
-  "8.7.9_GA" => \&upgrade879GA,
-  "8.7.10_GA" => \&upgrade8710GA,
 );
 
-my @versionOrder = (
-  "7.0.0_GA",
-  "7.0.1_GA",
-  "7.1.0_GA",
-  "7.1.1_GA",
-  "7.1.2_GA",
-  "7.1.3_GA",
-  "7.1.4_GA",
-  "7.2.0_GA",
-  "7.2.1_GA",
-  "7.2.2_GA",
-  "7.2.3_GA",
-  "7.2.4_GA",
-  "7.2.5_GA",
-  "7.2.6_GA",
-  "7.2.7_GA",
-  "8.0.0_BETA1",
-  "8.0.0_BETA2",
-  "8.0.0_BETA3",
-  "8.0.0_BETA4",
-  "8.0.0_BETA5",
-  "8.0.0_GA",
-  "8.0.1_GA",
-  "8.0.2_GA",
-  "8.0.3_GA",
-  "8.0.4_GA",
-  "8.0.5_GA",
-  "8.0.6_GA",
-  "8.0.7_GA",
-  "8.0.8_GA",
-  "8.0.9_GA",
-  "8.5.0_BETA1",
-  "8.5.0_BETA2",
-  "8.5.0_BETA3",
-  "8.5.0_GA",
-  "8.5.1_GA",
-  "8.6.0_BETA1",
-  "8.6.0_BETA2",
-  "8.6.0_GA",
-  "8.6.1_GA",
-  "8.7.0_BETA1",
-  "8.7.0_BETA2",
-  "8.7.0_RC1",
-  "8.7.0_RC2",
-  "8.7.0_GA",
-  "8.7.1_GA",
-  "8.7.2_GA",
-  "8.7.3_GA",
-  "8.7.4_GA",
-  "8.7.5_GA",
-  "8.7.6_GA",
-  "8.7.7_GA",
-  "8.7.8_GA",
-  "8.7.9_GA",
-  "8.7.10_GA",
+my %updateMysql = (
+  "8.0.0_BETA1" => \&doMysql55Upgrade,
+  "8.5.0_BETA3" => \&doMysql56Upgrade,
+  "8.7.0_BETA1" => \&doMariaDB101Upgrade,
 );
+
+my %setNeedMysqlUpgrade = (
+  "8.0.0_GA" => 1,
+  "8.5.0_BETA1" => 1,
+);
+
+sub version_cmp($$)
+{
+  my $left = shift;
+  my $right = shift;
+
+  $left =~ s/ALPHA/0./;
+  $right =~ s/ALPHA/0./;
+
+  $left =~ s/BETA/1./;
+  $right =~ s/BETA/1./;
+
+  $left =~ s/RC/2./;
+  $right =~ s/RC/2./;
+
+  $left =~ s/GA/3./;
+  $right =~ s/GA/3./;
+
+  my @left_a = split(/[._]/, $left, 5);
+  my @right_a = split(/[._]/, $right, 5);
+
+  for( my $i = 0; $i < 5; ++$i )
+  {
+    $left_a[$i] ||= 0;
+    $right_a[$i] ||= 0;
+
+    return -1
+     if( $left_a[$i] < $right_a[$i] );
+
+    return 1
+      if( $left_a[$i] > $right_a[$i] );
+  }
+
+  return 0;
+}
 
 my ($startVersion,$startMajor,$startMinor,$startMicro);
 my ($targetVersion,$targetMajor,$targetMinor,$targetMicro,$targetMicroMicro,$targetType);
+
+sub applicableVersions {
+  my $versionHash = shift;
+  my @versionOrder;
+  foreach my $key ( grep { !(version_cmp($_, $startVersion) < 0) } sort { version_cmp($a, $b); } keys %$versionHash) {
+    push(@versionOrder,$key);
+  }
+  return \@versionOrder;
+}
 
 my @packageList = (
   "zimbra-core",
@@ -254,124 +230,12 @@ sub upgrade {
 
   if (stopZimbra()) { return 1; }
 
-  if ($startVersion eq "7.0.0_GA") {
-    main::progress("This appears to be 7.0.0_GA\n");
-  } elsif ($startVersion eq "7.0.1_GA") {
-    main::progress("This appears to be 7.0.1_GA\n");
-  } elsif ($startVersion eq "7.1.0_GA") {
-    main::progress("This appears to be 7.1.0_GA\n");
-  } elsif ($startVersion eq "7.1.1_GA") {
-    main::progress("This appears to be 7.1.1_GA\n");
-  } elsif ($startVersion eq "7.1.2_GA") {
-    main::progress("This appears to be 7.1.2_GA\n");
-  } elsif ($startVersion eq "7.1.3_GA") {
-    main::progress("This appears to be 7.1.3_GA\n");
-  } elsif ($startVersion eq "7.1.4_GA") {
-    main::progress("This appears to be 7.1.4_GA\n");
-  } elsif ($startVersion eq "7.2.0_GA") {
-    main::progress("This appears to be 7.2.0_GA\n");
-  } elsif ($startVersion eq "7.2.1_GA") {
-    main::progress("This appears to be 7.2.1_GA\n");
-  } elsif ($startVersion eq "7.2.2_GA") {
-    main::progress("This appears to be 7.2.2_GA\n");
-  } elsif ($startVersion eq "7.2.3_GA") {
-    main::progress("This appears to be 7.2.3_GA\n");
-  } elsif ($startVersion eq "7.2.4_GA") {
-    main::progress("This appears to be 7.2.4_GA\n");
-  } elsif ($startVersion eq "7.2.5_GA") {
-    main::progress("This appears to be 7.2.5_GA\n");
-  } elsif ($startVersion eq "7.2.6_GA") {
-    main::progress("This appears to be 7.2.6_GA\n");
-  } elsif ($startVersion eq "7.2.7_GA") {
-    main::progress("This appears to be 7.2.7_GA\n");
-  } elsif ($startVersion eq "8.0.0_BETA1") {
-    main::progress("This appears to be 8.0.0_BETA1\n");
-  } elsif ($startVersion eq "8.0.0_BETA2") {
-    main::progress("This appears to be 8.0.0_BETA2\n");
-  } elsif ($startVersion eq "8.0.0_BETA3") {
-    main::progress("This appears to be 8.0.0_BETA3\n");
-  } elsif ($startVersion eq "8.0.0_BETA4") {
-    main::progress("This appears to be 8.0.0_BETA4\n");
-  } elsif ($startVersion eq "8.0.0_BETA5") {
-    main::progress("This appears to be 8.0.0_BETA5\n");
-  } elsif ($startVersion eq "8.0.0_GA") {
-    main::progress("This appears to be 8.0.0_GA\n");
-  } elsif ($startVersion eq "8.0.1_GA") {
-    main::progress("This appears to be 8.0.1_GA\n");
-  } elsif ($startVersion eq "8.0.2_GA") {
-    main::progress("This appears to be 8.0.2_GA\n");
-  } elsif ($startVersion eq "8.0.3_GA") {
-    main::progress("This appears to be 8.0.3_GA\n");
-  } elsif ($startVersion eq "8.0.4_GA") {
-    main::progress("This appears to be 8.0.4_GA\n");
-  } elsif ($startVersion eq "8.0.5_GA") {
-    main::progress("This appears to be 8.0.5_GA\n");
-  } elsif ($startVersion eq "8.0.6_GA") {
-    main::progress("This appears to be 8.0.6_GA\n");
-  } elsif ($startVersion eq "8.0.7_GA") {
-    main::progress("This appears to be 8.0.7_GA\n");
-  } elsif ($startVersion eq "8.0.8_GA") {
-    main::progress("This appears to be 8.0.8_GA\n");
-  } elsif ($startVersion eq "8.0.9_GA") {
-    main::progress("This appears to be 8.0.9_GA\n");
-  } elsif ($startVersion eq "8.5.0_BETA1") {
-    main::progress("This appears to be 8.5.0_BETA1\n");
-  } elsif ($startVersion eq "8.5.0_BETA2") {
-      main::progress("This appears to be 8.5.0_BETA2\n");
-  } elsif ($startVersion eq "8.5.0_BETA3") {
-      main::progress("This appears to be 8.5.0_BETA3\n");
-  } elsif ($startVersion eq "8.5.0_GA") {
-      main::progress("This appears to be 8.5.0_GA\n");
-  } elsif ($startVersion eq "8.5.1_GA") {
-      main::progress("This appears to be 8.5.1_GA\n");
-  } elsif ($startVersion eq "8.6.0_BETA1") {
-      main::progress("This appears to be 8.6.0_BETA1\n");
-  } elsif ($startVersion eq "8.6.0_BETA2") {
-      main::progress("This appears to be 8.6.0_BETA2\n");
-  } elsif ($startVersion eq "8.6.0_GA") {
-      main::progress("This appears to be 8.6.0_GA\n");
-  } elsif ($startVersion eq "8.6.1_GA") {
-      main::progress("This appears to be 8.6.1_GA\n");
-  } elsif ($startVersion eq "8.7.0_BETA1") {
-      main::progress("This appears to be 8.7.0_BETA1\n");
-  } elsif ($startVersion eq "8.7.0_BETA2") {
-      main::progress("This appears to be 8.7.0_BETA2\n");
-  } elsif ($startVersion eq "8.7.0_RC1") {
-      main::progress("This appears to be 8.7.0_RC1\n");
-  } elsif ($startVersion eq "8.7.0_RC2") {
-      main::progress("This appears to be 8.7.0_RC2\n");
-  } elsif ($startVersion eq "8.7.0_GA") {
-      main::progress("This appears to be 8.7.0_GA\n");
-  } elsif ($startVersion eq "8.7.1_GA") {
-      main::progress("This appears to be 8.7.1_GA\n");
-  } elsif ($startVersion eq "8.7.2_GA") {
-      main::progress("This appears to be 8.7.2_GA\n");
-  } elsif ($startVersion eq "8.7.3_GA") {
-      main::progress("This appears to be 8.7.3_GA\n");
-  } elsif ($startVersion eq "8.7.4_GA") {
-      main::progress("This appears to be 8.7.4_GA\n");
-  } elsif ($startVersion eq "8.7.5_GA") {
-      main::progress("This appears to be 8.7.5_GA\n");
-  } elsif ($startVersion eq "8.7.6_GA") {
-      main::progress("This appears to be 8.7.6_GA\n");
-  } elsif ($startVersion eq "8.7.7_GA") {
-      main::progress("This appears to be 8.7.7_GA\n");
-  } elsif ($startVersion eq "8.7.8_GA") {
-      main::progress("This appears to be 8.7.8_GA\n");
-  } elsif ($startVersion eq "8.7.9_GA") {
-      main::progress("This appears to be 8.7.9_GA\n");
-  } elsif ($startVersion eq "8.7.10_GA") {
-      main::progress("This appears to be 8.7.10_GA\n");
+  if ($startVersion) {
+    main::progress("This appears to be $startVersion\n");
   } else {
-    if ($startVersion eq "") {
       main::progress("ERROR: Unable to find initial version to upgrade from.\n");
       main::progress("       This indicates a corrupted /opt/zimbra/.install_history file.\n");
       main::progress("       DO NOT ATTEMPT UPGRADING AGAIN UNTIL THE FILE IS FIXED.\n");
-    } else {
-      main::progress("ERROR: I can't upgrade unknown version $startVersion\n\n");
-      main::progress("       This indicates an attempt to upgrade to an out of date release.\n");
-      main::progress("       Please download and install the latest release from Zimbra.\n");
-    }
     return 1;
   }
 
@@ -379,7 +243,6 @@ sub upgrade {
   my $needMysqlUpgrade = 0;
 
   if (main::isInstalled("zimbra-store")) {
-    my $version_found = 0;
     if ($startMajor <= 7 || ($startMajor == 8 && $startMinor < 7))
     {
         # Bug 96857 - MySQL meta files (pid file, socket, ..) should not be placed in db directory
@@ -387,29 +250,17 @@ sub upgrade {
         symlink("/opt/zimbra/db/mysql.pid", "/opt/zimbra/log/mysql.pid");
         symlink("/opt/zimbra/db/mysql.sock", "/opt/zimbra/data/tmp/mysql/mysql.sock");
     }
-    foreach my $v (@versionOrder) {
-      $version_found = 1 if ($v eq $startVersion);
-      if ($version_found) {
-        &doMysql55Upgrade if ($v eq "8.0.0_BETA1");
-        &doMysql56Upgrade if ($v eq "8.5.0_BETA3");
-        &doMariaDB101Upgrade if ($v eq "8.7.0_BETA1");
-      }
-      last if ($v eq $targetVersion);
+    foreach my $v (@{applicableVersions(\%updateMysql)}) {
+      $updateMysql{$v}();  
     }
 
     if (startSql()) { return 1; };
 
     $curSchemaVersion = Migrate::getSchemaVersion();
 
-    my $schema_found = 0;
-    foreach my $v (@versionOrder) {
-      $schema_found = 1 if ($v eq $startVersion);
-      if ($schema_found) {
-        $needMysqlUpgrade=1 if ($v eq "8.0.0_GA");
-        $needMysqlUpgrade=1 if ($v eq "8.5.0_BETA1");
-      }
-      last if ($v eq $targetVersion);
-    }
+    if (@{applicableVersions(\%setNeedMysqlUpgrade)}) {
+      $needMysqlUpgrade=1;
+   } 
   }
 
   main::setLocalConfig("ssl_allow_untrusted_certs", "true") if ($startMajor <= 7 && $targetMajor >= 8);
@@ -459,24 +310,15 @@ sub upgrade {
     stopSql();
   }
 
-  my $found = 0;
-  foreach my $v (@versionOrder) {
-    if ($v eq $startVersion) {
-      $found = 1;
-      next unless ($startVersion eq $targetVersion && $targetBuild > $startBuild);
-    }
-    if ($found) {
-      if (defined ($updateFuncs{$v}) ) {
-        if (&{$updateFuncs{$v}}($startBuild, $targetVersion, $targetBuild)) {
-          return 1;
-        }
-      } else {
-        main::progress("I don't know how to update $v - exiting\n");
+  if($startVersion ne $targetVersion # if you are upgrading across versions
+  || $targetBuild > $startBuild)     # or you are upgrading across new builds of the same version
+  {
+    foreach my $v (@{applicableVersions(\%updateFuncs)}) {
+      main::progress("Applying updates for $v \n");
+      if (&{$updateFuncs{$v}}($startBuild, $targetVersion, $targetBuild)) {
+        main::progress("Something failed while applying updates for $v - exiting\n");
         return 1;
       }
-    }
-    if ($v eq $targetVersion) {
-      last;
     }
   }
 
@@ -488,7 +330,7 @@ sub upgrade {
   if ($needSlapIndexing) {
     main::detail("Updating slapd indices\n");
     &indexLdap();
-        }
+  }
   if (main::isInstalled ("zimbra-ldap")) {
     stopLdap();
   }
@@ -498,7 +340,6 @@ sub upgrade {
 
 sub upgrade700GA {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
-  main::progress("Updating from 7.0.0_GA\n");
   if (main::isInstalled("zimbra-store")) {
     main::deleteLocalConfig("calendar_outlook_compatible_allday_events");
   }
@@ -507,7 +348,6 @@ sub upgrade700GA {
 
 sub upgrade701GA {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
-  main::progress("Updating from 7.0.1_GA\n");
   if (main::isInstalled("zimbra-store")) {
     #56318
     my $mysql_mycnf = main::getLocalConfig("mysql_mycnf");
@@ -523,7 +363,6 @@ sub upgrade701GA {
 
 sub upgrade710GA {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
-  main::progress("Updating from 7.1.0_GA\n");
   my $mysql_data_directory =
     main::getLocalConfig("mysql_data_directory") || "/opt/zimbra/db/data";
   my $zimbra_tmp_directory =
@@ -555,7 +394,6 @@ sub upgrade710GA {
 
 sub upgrade711GA {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
-  main::progress("Updating from 7.1.1_GA\n");
   if (main::isInstalled("zimbra-ldap")) {
     if ($isLdapMaster) {
       runLdapAttributeUpgrade("57855");
@@ -577,15 +415,8 @@ sub upgrade711GA {
   return 0;
 }
 
-sub upgrade712GA {
-  my ($startBuild, $targetVersion, $targetBuild) = (@_);
-  main::progress("Updating from 7.1.2_GA\n");
-  return 0;
-}
-
 sub upgrade713GA {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
-  main::progress("Updating from 7.1.3_GA\n");
   if (main::isInstalled("zimbra-ldap")) {
     if ($isLdapMaster) {
       runLdapAttributeUpgrade("11562");
@@ -706,7 +537,6 @@ sub upgrade713GA {
 
 sub upgrade714GA {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
-  main::progress("Updating from 7.1.4_GA\n");
   if (main::isInstalled("zimbra-ldap")) {
     # 43040, must be done on all LDAP servers
     my $ldap_pass = qx($su "zmlocalconfig -s -m nokey ldap_root_password");
@@ -752,7 +582,6 @@ sub upgrade714GA {
 
 sub upgrade720GA {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
-  main::progress("Updating from 7.2.0_GA\n");
   main::setLocalConfig("ldap_read_timeout", "0"); #70437
   if (main::isInstalled("zimbra-store")) {
     # Bug #64466
@@ -769,51 +598,8 @@ sub upgrade720GA {
   return 0;
 }
 
-sub upgrade721GA {
-  my ($startBuild, $targetVersion, $targetBuild) = (@_);
-  main::progress("Updating from 7.2.1_GA\n");
-  return 0;
-}
-
-sub upgrade722GA {
-  my ($startBuild, $targetVersion, $targetBuild) = (@_);
-  main::progress("Updating from 7.2.2_GA\n");
-  return 0;
-}
-
-sub upgrade723GA {
-  my ($startBuild, $targetVersion, $targetBuild) = (@_);
-  main::progress("Updating from 7.2.3_GA\n");
-  return 0;
-}
-
-sub upgrade724GA {
-  my ($startBuild, $targetVersion, $targetBuild) = (@_);
-  main::progress("Updating from 7.2.4_GA\n");
-  return 0;
-}
-
-sub upgrade725GA {
-  my ($startBuild, $targetVersion, $targetBuild) = (@_);
-  main::progress("Updating from 7.2.5_GA\n");
-  return 0;
-}
-
-sub upgrade726GA {
-  my ($startBuild, $targetVersion, $targetBuild) = (@_);
-  main::progress("Updating from 7.2.6_GA\n");
-  return 0;
-}
-
-sub upgrade727GA {
-  my ($startBuild, $targetVersion, $targetBuild) = (@_);
-  main::progress("Updating from 7.2.7_GA\n");
-  return 0;
-}
-
 sub upgrade800BETA1 {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
-  main::progress("Updating from 8.0.0_BETA1\n");
   # bug 59607 - migrate old zmmtaconfig variables to zmconfigd
   foreach my $lc_var (qw(enable_config_restarts interval log_level listen_port debug watchdog watchdog_services)) {
     my $val = main::getLocalConfig("zmmtaconfig_${lc_var}");
@@ -897,7 +683,6 @@ sub upgrade800BETA1 {
 
 sub upgrade800BETA2 {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
-  main::progress("Updating from 8.0.0_BETA2\n");
   if (main::isInstalled("zimbra-ldap")) {
     if ($isLdapMaster) {
       runLdapAttributeUpgrade("63722");
@@ -950,7 +735,6 @@ FIX_RIGHTS_EOF
 
 sub upgrade800BETA3 {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
-  main::progress("Updating from 8.0.0_BETA3\n");
   main::setLocalConfig("ldap_read_timeout", "0"); #70437
   main::detail("Removing /opt/zimbra/ssl/zimbra/{ca,server} to force creation or download of new ca and certificates.");
   system("rm -rf /opt/zimbra/ssl/zimbra/ca > /dev/null 2>&1");
@@ -993,7 +777,6 @@ sub upgrade800BETA3 {
 
 sub upgrade800BETA4 {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
-  main::progress("Updating from 8.0.0_BETA4\n");
   if (main::isInstalled("zimbra-ldap")) {
     if ($isLdapMaster) {
         runLdapAttributeUpgrade("68190");
@@ -1087,7 +870,6 @@ sub upgrade800BETA4 {
 
 sub upgrade800BETA5 {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
-  main::progress("Updating from 8.0.0_BETA5\n");
   if (main::isInstalled("zimbra-ldap")) {
     if ($isLdapMaster) {
         runLdapAttributeUpgrade("67237");
@@ -1098,7 +880,6 @@ sub upgrade800BETA5 {
 
 sub upgrade800GA {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
-  main::progress("Updating from 8.0.0_GA\n");
   if (main::isInstalled("zimbra-ldap")) {
     if ($isLdapMaster) {
         runLdapAttributeUpgrade("75450");
@@ -1117,7 +898,6 @@ sub upgrade800GA {
 
 sub upgrade801GA {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
-  main::progress("Updating from 8.0.1_GA\n");
   if (main::isInstalled("zimbra-ldap")) {
     my $ldap_pass = qx($su "zmlocalconfig -s -m nokey ldap_root_password");
     chomp($ldap_pass);
@@ -1180,7 +960,6 @@ sub upgrade801GA {
 
 sub upgrade802GA {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
-  main::progress("Updating from 8.0.2_GA\n");
   if (main::isInstalled("zimbra-ldap")) {
     if ($isLdapMaster) {
       my $ldap_pass = qx($su "zmlocalconfig -s -m nokey ldap_root_password");
@@ -1216,7 +995,6 @@ sub upgrade802GA {
 
 sub upgrade803GA {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
-  main::progress("Updating from 8.0.3_GA\n");
   if (main::isInstalled("zimbra-ldap")) {
      main::setLocalConfig("ldap_common_toolthreads", "2");
   }
@@ -1234,7 +1012,6 @@ sub upgrade803GA {
 
 sub upgrade804GA {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
-  main::progress("Updating from 8.0.4_GA\n");
   if (main::isInstalled("zimbra-ldap")) {
     my $ldap_pass = qx($su "zmlocalconfig -s -m nokey ldap_root_password");
     chomp($ldap_pass);
@@ -1298,7 +1075,6 @@ sub upgrade804GA {
 
 sub upgrade805GA {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
-  main::progress("Updating from 8.0.5_GA\n");
   if (main::isInstalled("zimbra-mta")) {
     my $cbpdb="/opt/zimbra/data/cbpolicyd/db/cbpolicyd.sqlitedb";
     if (-f $cbpdb) {
@@ -1317,7 +1093,6 @@ sub upgrade805GA {
 
 sub upgrade806GA {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
-  main::progress("Updating from 8.0.6_GA\n");
   if (main::isZCA()) {
     main::progress("ZCA Install detected.  Removing VAMI Components...");
     my $rc = main::runAsRoot("${scriptDir}/migrate20131014-removezca.pl");
@@ -1330,15 +1105,8 @@ sub upgrade806GA {
   return 0;
 }
 
-sub upgrade807GA {
-  my ($startBuild, $targetVersion, $targetBuild) = (@_);
-  main::progress("Updating from 8.0.7_GA\n");
-  return 0;
-}
-
 sub upgrade808GA {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
-  main::progress("Updating from 8.0.8_GA\n");
   my $ldap_read_timeout=main::getLocalConfig("ldap_read_timeout");
   if ($ldap_read_timeout == 0) {
     main::deleteLocalConfig("ldap_read_timeout"); #85299
@@ -1362,15 +1130,8 @@ sub upgrade808GA {
   return 0;
 }
 
-sub upgrade809GA {
-  my ($startBuild, $targetVersion, $targetBuild) = (@_);
-  main::progress("Updating from 8.0.9_GA\n");
-  return 0;
-}
-
 sub upgrade850BETA1 {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
-  main::progress("Updating from 8.5.0_BETA1\n");
   if (main::isInstalled("zimbra-store")) {
     my $mailboxd_java_options=main::getLocalConfigRaw("mailboxd_java_options");
     my $new_mailboxd_options="";
@@ -1913,7 +1674,6 @@ sub upgrade850BETA1 {
 
 sub upgrade850BETA2 {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
-  main::progress("Updating from 8.5.0_BETA2\n");
   if (main::isInstalled("zimbra-ldap")) {
     if ($isLdapMaster) {
       main::setLdapGlobalConfig("zimbraVersionCheckURL","https://www.zimbra.com/aus/universal/update.php");
@@ -1964,7 +1724,6 @@ sub upgrade850BETA2 {
 
 sub upgrade850BETA3 {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
-  main::progress("Updating from 8.5.0_BETA3\n");
   if (main::isInstalled("zimbra-ldap")) {
     if ($isLdapMaster) {
       runLdapAttributeUpgrade("85224");
@@ -1995,7 +1754,6 @@ sub upgrade850BETA3 {
 
 sub upgrade850GA {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
-  main::progress("Updating from 8.5.0_GA\n");
 
   if (main::isInstalled("zimbra-ldap")) {
       main::runAsZimbra("perl -I${scriptDir} ${scriptDir}/migrate20140728-AddSSHA512.pl");
@@ -2009,7 +1767,6 @@ sub upgrade850GA {
 
 sub upgrade851GA {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
-  main::progress("Updating from 8.5.1_GA\n");
   if (main::isInstalled("zimbra-ldap")) {
     if ($isLdapMaster) {
       my $ldap_pass = qx($su "zmlocalconfig -s -m nokey ldap_root_password");
@@ -2057,7 +1814,6 @@ sub upgrade851GA {
 
 sub upgrade860BETA1 {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
-  main::progress("Updating from 8.6.0_BETA1\n");
   my $ssl_default_digest = main::getLocalConfig("ssl_default_digest");
   if ($ssl_default_digest eq "sha1") {
       main::setLocalConfig("ssl_default_digest", "sha256");
@@ -2074,7 +1830,6 @@ sub upgrade860BETA1 {
 
 sub upgrade860BETA2 {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
-  main::progress("Updating from 8.6.0_BETA2\n");
   if (main::isInstalled("zimbra-ldap")) {
       main::runAsZimbra("perl -I${scriptDir} ${scriptDir}/migrate20141022-AddTLSBits.pl");
   }
@@ -2102,7 +1857,6 @@ sub upgrade860BETA2 {
 
 sub upgrade860GA {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
-  main::progress("Updating from 8.6.0_GA\n");
   if(main::isInstalled("zimbra-ldap")) {
     if ($isLdapMaster) {
       my $mtasmtpdprotocols=main::getLdapConfigValue("zimbraMtaSmtpdTlsProtocols");
@@ -2117,15 +1871,8 @@ sub upgrade860GA {
   return 0;
 }
 
-sub upgrade861GA {
-  my ($startBuild, $targetVersion, $targetBuild) = (@_);
-  main::progress("Updating from 8.6.1_GA\n");
-  return 0;
-}
-
 sub upgrade870BETA1 {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
-  main::progress("Updating from 8.7.0_BETA1\n");
   if(main::isInstalled("zimbra-ldap")) {
     if ($isLdapMaster) {
       # Bug 99616 - Update olcSpSessionLog
@@ -2226,7 +1973,6 @@ sub upgrade870BETA1 {
 
 sub upgrade870BETA2 {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
-  main::progress("Updating from 8.7.0_BETA2\n");
   if (main::isInstalled("zimbra-mta")) {
     my $antispam_mysql_mycnf = main::getLocalConfig("antispam_mysql_mycnf");
     if ( -e ${antispam_mysql_mycnf} ) {
@@ -2259,7 +2005,6 @@ sub upgrade870BETA2 {
 
 sub upgrade870RC1 {
   my ($startBuild, $targetVersion, $targetBuild) = (@_);
-  main::progress("Updating from 8.7.0_RC1\n");
   if (main::isInstalled("zimbra-ldap")) {
     if ($isLdapMaster) {
       main::setLdapGlobalConfig("zimbraSSLDHParam", "/opt/zimbra/conf/dhparam.pem.zcs");
@@ -2304,78 +2049,11 @@ sub upgrade870RC1 {
   return 0;
 }
 
-sub upgrade870RC2{
-  my ($startBuild, $targetVersion, $targetBuild) = (@_);
-  main::progress("Updating from 8.7.0_RC2\n");
-  return 0;
-}
-
-sub upgrade870GA{
-  my ($startBuild, $targetVersion, $targetBuild) = (@_);
-  main::progress("Updating from 8.7.0_GA\n");
-  return 0;
-}
-
-sub upgrade871GA{
-    my ($startBuild, $targetVersion, $targetBuild) = (@_);
-    main::progress("Updating from 8.7.1_GA\n");
-    return 0;
-}
-
 sub upgrade872GA {
     my ($startBuild, $targetVersion, $targetBuild) = (@_);
-    main::progress("Updating from 8.7.2_GA\n");
     if (main::isInstalled("zimbra-convertd") && !(-l "/opt/zimbra/keyview")) {
       symlink("/opt/zimbra/keyview-10.13.0.0", "/opt/zimbra/keyview")
     }
-    return 0;
-}
-
-sub upgrade873GA {
-    my ($startBuild, $targetVersion, $targetBuild) = (@_);
-    main::progress("Updating from 8.7.3_GA\n");
-    return 0;
-}
-
-sub upgrade874GA {
-    my ($startBuild, $targetVersion, $targetBuild) = (@_);
-    main::progress("Updating from 8.7.4_GA\n");
-    return 0;
-}
-
-sub upgrade875GA {
-    my ($startBuild, $targetVersion, $targetBuild) = (@_);
-    main::progress("Updating from 8.7.5_GA\n");
-    return 0;
-}
-
-sub upgrade876GA {
-    my ($startBuild, $targetVersion, $targetBuild) = (@_);
-    main::progress("Updating from 8.7.6_GA\n");
-    return 0;
-}
-
-sub upgrade877GA {
-    my ($startBuild, $targetVersion, $targetBuild) = (@_);
-    main::progress("Updating from 8.7.7_GA\n");
-    return 0;
-}
-
-sub upgrade878GA {
-    my ($startBuild, $targetVersion, $targetBuild) = (@_);
-    main::progress("Updating from 8.7.8_GA\n");
-    return 0;
-}
-
-sub upgrade879GA {
-    my ($startBuild, $targetVersion, $targetBuild) = (@_);
-    main::progress("Updating from 8.7.9_GA\n");
-    return 0;
-}
-
-sub upgrade8710GA {
-    my ($startBuild, $targetVersion, $targetBuild) = (@_);
-    main::progress("Updating from 8.7.10_GA\n");
     return 0;
 }
 
@@ -2557,7 +2235,7 @@ sub updateMySQLcnf {
     my $mycnfChanged = 0;
     my $tmpfile = "/tmp/my.cnf.$$";;
     my $zimbra_user = qx(${zmlocalconfig} -m nokey zimbra_user 2> /dev/null) || "zimbra";;
-    my $zimbra_tmp_directory = qx(${zmlocalconfig} -m nokey zimbra_tmp_directory 2> /dev/null) || "zimbra";;
+    my $zimbra_tmp_directory = qx(${zmlocalconfig} -m nokey zimbra_tmp_directory 2> /dev/null) || "/opt/zimbra/data/tmp";
     open(TMP, ">$tmpfile");
     foreach (@CNF) {
       if (/^port/ && $CNF[$i+1] !~ m/^user/) {
@@ -2695,7 +2373,7 @@ sub doMariaDB101Upgrade {
 
 sub doMysqlUpgrade {
     my $db_pass = main::getLocalConfig("mysql_root_password");
-    my $zimbra_tmp = main::getLocalConfig("zimbra_tmp_directory") || "/tmp";
+    my $zimbra_tmp = main::getLocalConfig("zimbra_tmp_directory") || "/opt/zimbra/data/tmp";
     my $mysql_socket = main::getLocalConfig("mysql_socket");
     my $mysql_mycnf = main::getLocalConfig("mysql_mycnf");
     my $mysqlUpgrade = "/opt/zimbra/common/bin/mysql_upgrade";
