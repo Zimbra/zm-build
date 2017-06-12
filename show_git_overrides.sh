@@ -20,6 +20,7 @@ main()
       if [ -d "$i/.git" ]; then
          (
             cd $i;
+            _J=$( git fetch --all )
             if [ "$BR" ]
             then
                LOCAL_BRANCH=$( git branch -r | grep -w "$BR" | grep -v -e '->' | sed -e 's,^\s*,,' -e 's,/, ,' | head -1 | awk '{ print $2 }')
@@ -46,7 +47,7 @@ main()
                then
                   echo "%GIT_OVERRIDES          = ${REPO_NAME}.branch=$LOCAL_BRANCH"
                else
-                  echo "--git-overrides '${REPO_NAME}.branch=$LOCAL_BRANCH'"
+                  echo "--git-overrides ${REPO_NAME}.branch=$LOCAL_BRANCH"
                fi
             fi
 
@@ -56,7 +57,7 @@ main()
                then
                   echo "%GIT_OVERRIDES          = ${REPO_NAME}.branch=$REMOTE_BRANCH"
                else
-                  echo "# --git-overrides '${REPO_NAME}.branch=$REMOTE_BRANCH'"
+                  echo "# --git-overrides ${REPO_NAME}.branch=$REMOTE_BRANCH"
                fi
             fi
 
@@ -69,8 +70,8 @@ main()
                      echo "%GIT_OVERRIDES          = ${REPO_NAME}.remote=my-${REPO_NAME}-rem"
                      echo "%GIT_OVERRIDES          = my-${REPO_NAME}-rem.url-prefix=$REMOTE_URL"
                   else
-                     echo "--git-overrides '${REPO_NAME}.remote=my-${REPO_NAME}-rem'"
-                     echo "--git-overrides 'my-${REPO_NAME}-rem.url-prefix=$REMOTE_URL'"
+                     echo "--git-overrides ${REPO_NAME}.remote=my-${REPO_NAME}-rem"
+                     echo "--git-overrides my-${REPO_NAME}-rem.url-prefix=$REMOTE_URL"
                   fi
                fi
             fi
