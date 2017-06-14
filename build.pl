@@ -160,6 +160,7 @@ sub InitGlobalBuildVars()
          { name => "GIT_DEFAULT_REMOTE",       type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return undef; }, },
          { name => "GIT_DEFAULT_BRANCH",       type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return undef; }, },
          { name => "STOP_AFTER_CHECKOUT",      type => "!",   hash_src => \%cmd_hash, default_sub => sub { return 0; }, },
+         { name => "ANT_OPTIONS",              type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return undef; }, },
 
          { name => "BUILD_OS",               type => "", hash_src => undef, default_sub => sub { return GetBuildOS(); }, },
          { name => "BUILD_ARCH",             type => "", hash_src => undef, default_sub => sub { return GetBuildArch(); }, },
@@ -422,6 +423,9 @@ sub Build($)
          "zimbra.buildinfo.buildnum=${GLOBAL_BUILD_NO}",
       ],
    };
+
+   push( @{$tool_attributes->{ant}}, $CFG{ANT_OPTIONS} )
+      if($CFG{ANT_OPTIONS});
 
    my $pkg_deploy_path_details = LoadPkgDeployPaths();
 
