@@ -643,7 +643,7 @@ checkExistingInstall() {
   fi
 
   echo "Checking for existing installation..."
-  
+
   for i in $OPTIONAL_PACKAGES; do
     isInstalled $i
     if [ x$PKGINSTALLED != "x" ]; then
@@ -669,13 +669,6 @@ checkExistingInstall() {
           echo "FOUND zimbra-cms"
           INSTALLED_PACKAGES="$INSTALLED_PACKAGES zimbra-archiving"
         else
-#          echo "NOT FOUND"
-#        fi
-#      elif [ x$i = "xzimbra-syncshare" ]; then
-#        if [ -f "/opt/zimbra/lib/ext/zimbramezeo/zimbramezeo.jar" -a -f "/opt/zimbra/zimlets-network/com_zimbra_zss.zip" ]; then
-#          echo "FOUND zimbra-syncshare"
-#          INSTALLED_PACKAGES="$INSTALLED_PACKAGES zimbra-syncshare"
-#        else
           echo "NOT FOUND"
         fi
       else
@@ -1693,10 +1686,32 @@ removeExistingPackages() {
       continue
     fi
     if [ $p = "zimbra-store" ]; then
+
       isInstalled "zimbra-archiving"
       if [ x$PKGINSTALLED != "x" ]; then
         echo -n "   zimbra-archiving..."
         $PACKAGERM zimbra-archiving >/dev/null 2>&1
+        echo "done"
+      fi
+
+      isInstalled "zimbra-chat"
+      if [ x$PKGINSTALLED != "x" ]; then
+        echo -n "   zimbra-chat..."
+        $PACKAGERM zimbra-chat >/dev/null 2>&1
+        echo "done"
+      fi
+
+      isInstalled "zimbra-drive"
+      if [ x$PKGINSTALLED != "x" ]; then
+        echo -n "   zimbra-drive..."
+        $PACKAGERM zimbra-drive >/dev/null 2>&1
+        echo "done"
+      fi
+
+      isInstalled "zimbra-network-modules-ng"
+      if [ x$PKGINSTALLED != "x" ]; then
+        echo -n "   zimbra-network-modules-ng..."
+        $PACKAGERM zimbra-network-modules-ng >/dev/null 2>&1
         echo "done"
       fi
     fi
@@ -2290,36 +2305,61 @@ getInstallPackages() {
     fi
 
     if [ $UPGRADE = "yes" ]; then
+
       if [ $i = "zimbra-archiving" ]; then
         if [ $STORE_SELECTED = "yes" ]; then
           askYN "Install $i" "N"
-        fi
-#      else
-#        askYN "Install $i" "N"
-#      fi
-#      elif [ $i = "zimbra-syncshare" ]; then
-#        if [ $STORE_SELECTED = "yes" ]; then
-#          askYN "Install $i" "N"
-#        fi
+	fi
+      
+      elif [ $i = "zimbra-chat" ]; then
+        if [ $STORE_SELECTED = "yes" ]; then
+          askYN "Install $i" "N"
+	fi
+
+      elif [ $i = "zimbra-drive" ]; then
+        if [ $STORE_SELECTED = "yes" ]; then
+          askYN "Install $i" "N"
+	fi
+
+      elif [ $i = "zimbra-network-modules-ng" ]; then
+        if [ $STORE_SELECTED = "yes" ]; then
+          askYN "Install $i" "N"
+	fi
+
       else
         askYN "Install $i" "N"
       fi
-     else
+      
+    else
+
       if [ $i = "zimbra-archiving" ]; then
         # only prompt to install archiving if zimbra-store is selected
         if [ $STORE_SELECTED = "yes" ]; then
           askYN "Install $i" "N"
         fi
-#      elif [ $i = "zimbra-syncshare" ]; then
-#        if [ $STORE_SELECTED = "yes" ]; then
-#          askYN "Install $i" "N"
-#        fi
+
       elif [ $i = "zimbra-convertd" ]; then
         if [ $STORE_SELECTED = "yes" ]; then
           askYN "Install $i" "Y"
         else
           askYN "Install $i" "N"
         fi
+
+      elif [ $i = "zimbra-chat" ]; then
+        if [ $STORE_SELECTED = "yes" ]; then
+          askYN "Install $i" "Y"
+        fi
+
+      elif [ $i = "zimbra-drive" ]; then
+        if [ $STORE_SELECTED = "yes" ]; then
+          askYN "Install $i" "Y"
+        fi
+
+      elif [ $i = "zimbra-network-modules-ng" ]; then
+        if [ $STORE_SELECTED = "yes" ]; then
+          askYN "Install $i" "Y"
+        fi
+
       elif [ $i = "zimbra-dnscache" ]; then
         if [ $MTA_SELECTED = "yes" ]; then
           askYN "Install $i" "Y"
@@ -2623,20 +2663,23 @@ getPlatformVars() {
     fi
     LocalPackageDepList() {
        local pkg_f="$1"; shift;
-       dpkg -I "$pkg_f" \
-          | sed -n -e '/Depends:/ { s/.*:\s*//; s/,\s*/\n/g; p; }' \
-          | sed -n -e '/^zimbra-/ { s/\s*(.*//; p; }'
+       LANG="en_US.UTF-8" LANGUAGE="en_US" \
+         dpkg -I "$pkg_f" \
+            | sed -n -e '/Depends:/ { s/.*:\s*//; s/,\s*/\n/g; p; }' \
+            | sed -n -e '/^zimbra-/ { s/\s*(.*//; p; }'
     }
     RepoPackageDepList() {
        local pkg="$1"; shift;
-       apt-cache depends "^$pkg$" \
-          | sed -e 's/[<]\([a-z]\)/\1/g' \
-                -e 's/\([a-z]\)[>]/\1/g' \
-          | sed -n -e '/Depends:\s*zimbra-/ { s/.*:\s*//; p; }'
+       LANG="en_US.UTF-8" LANGUAGE="en_US" \
+         apt-cache depends "^$pkg$" \
+            | sed -e 's/[<]\([a-z]\)/\1/g' \
+                  -e 's/\([a-z]\)[>]/\1/g' \
+            | sed -n -e '/Depends:\s*zimbra-/ { s/.*:\s*//; p; }'
     }
     LocatePackageInRepo() {
        local pkg="$1"; shift;
-       apt-cache search --names-only "^$pkg" 2>/dev/null
+       LANG="en_US.UTF-8" LANGUAGE="en_US" \
+         apt-cache search --names-only "^$pkg" 2>/dev/null
     }
   else
       ISUBUNTU=false
@@ -2664,17 +2707,20 @@ getPlatformVars() {
       fi
       LocalPackageDepList() {
          local pkg_f="$1"; shift;
-         rpm -q --requires -p "$pkg_f" \
-            | sed -n -e '/^zimbra-/ { s/\s*[<=>].*//; p; }'
+         LANG="en_US.UTF-8" LANGUAGE="en_US" \
+            rpm -q --requires -p "$pkg_f" \
+               | sed -n -e '/^zimbra-/ { s/\s*[<=>].*//; p; }'
       }
       RepoPackageDepList() {
          local pkg="$1"; shift;
-         yum deplist "$pkg" \
-            | sed -n -e '/dependency:\s*zimbra-/ { s/^[^:]*:\s*//; s/\s*[<=>].*//; p }'
+         LANG="en_US.UTF-8" LANGUAGE="en_US" \
+            yum deplist "$pkg" \
+               | sed -n -e '/dependency:\s*zimbra-/ { s/^[^:]*:\s*//; s/\s*[<=>].*//; p }'
       }
       LocatePackageInRepo() {
          local pkg="$1"; shift;
-         yum --showduplicates list available -q -e 0 "$pkg" 2>/dev/null
+         LANG="en_US.UTF-8" LANGUAGE="en_US" \
+            yum --showduplicates list available -q -e 0 "$pkg" 2>/dev/null
       }
   fi
 }
