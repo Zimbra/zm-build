@@ -75,12 +75,13 @@ main()
 
     echo -e "\tCopy ${jettyVersion} files of /opt/zimbra/" >> ${buildLogFile}
     ( cd ${repoDir}/zm-build/${currentPackage}/opt/zimbra; tar xzf ${repoDir}/zm-zcs-lib/build/dist/${jettyVersion}.tar.gz; )
-   
+
 
     echo -e "\tCopy lib files of /opt/zimbra/" >> ${buildLogFile}
 
     echo -e "\t\tCopy ext files of /opt/zimbra/lib/" >> ${buildLogFile}
-    mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib
+    mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/jars
+    mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec
     mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/mitel
     mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/clamscanner
     mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/twofactorauth
@@ -186,7 +187,7 @@ main()
 
         download=`ls ZmCustomizeMsi.js`
         echo "CONNECTOR_MSI_DOWNLOAD_LINK = /downloads/${download}" >> ${zaMsgPropertiesFile};
-        
+
         download=`ls ZimbraBrandMsi.vbs`
         echo "ZCO_BRANDING_DOWNLOAD_LINK = /downloads/${download}" >> ${zaMsgPropertiesFile};
 
@@ -279,12 +280,6 @@ main()
       cp -f ${repoDir}/zm-zcs-lib/build/dist/bcprov-jdk15on-1.55.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext-common/
     fi
 
-    echo -e "\t\tCopy jars files of /opt/zimbra/lib/" >> ${buildLogFile}
-    mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/jars
-
-    echo -e "\tCopy libexec files of /opt/zimbra/" >> ${buildLogFile}
-    mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec
-
     cp -f ${repoDir}/zm-migration-tools/jars/zmzimbratozimbramig.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/jars/zmzimbratozimbramig.jar
     cp -f ${repoDir}/zm-migration-tools/src/libexec/zmztozmig ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec
     cp -f ${repoDir}/zm-migration-tools/src/libexec/zmcleaniplanetics ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec
@@ -340,49 +335,40 @@ main()
     echo "\t\t***** Building jetty/common/ *****" >> ${buildLogFile}
     mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/common/endorsed
     mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/common/lib
-    
+
     cp ${repoDir}/zm-zcs-lib/build/dist/jcharset-2.0.jar  ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/common/endorsed/jcharset.jar
     cp ${repoDir}/zm-zcs-lib/build/dist/zm-charset-*.jar  ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/common/endorsed/zimbra-charset.jar
-    
-    zimbrapatchedjars=("ant-1.7.0-ziputil-patched.jar" "ical4j-0.9.16-patched.jar" "nekohtml-1.9.13.1z.jar");
-    for i in "${zimbrapatchedjars[@]}"
+
+    zimbraPatchedJars=("ant-1.7.0-ziputil-patched.jar" "ical4j-0.9.16-patched.jar" "nekohtml-1.9.13.1z.jar");
+    for i in "${zimbraPatchedJars[@]}"
     do
         cp ${repoDir}/zm-zcs-lib/build/dist/${i} ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/common/lib
     done
-    
-    
-    
-    zimbrapatchedjars=("ant-1.7.0-ziputil-patched.jar" "ical4j-0.9.16-patched.jar" "nekohtml-1.9.13.1z.jar");
-    for i in "${zimbrapatchedjars[@]}"
-    do
-        cp ${repoDir}/zm-zcs-lib/build/dist/${i} ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/common/lib
-    done
-    
-    thirdpartyjars=("apache-log4j-extras-1.0.jar" "commons-cli-1.2.jar" "commons-codec-1.7.jar" "commons-collections-3.2.2.jar" "commons-compress-1.10.jar" "commons-dbcp-1.4.jar" \
+
+    thirdpartyJars=("apache-log4j-extras-1.0.jar" "commons-cli-1.2.jar" "commons-codec-1.7.jar" "commons-collections-3.2.2.jar" "commons-compress-1.10.jar" "commons-dbcp-1.4.jar" \
         "commons-fileupload-1.2.2.jar" "commons-httpclient-3.1.jar" "commons-io-1.4.jar" "commons-lang-2.6.jar" "commons-logging-1.1.1.jar" "commons-net-3.3.jar" \
         "commons-pool-1.6.jar" "concurrentlinkedhashmap-lru-1.3.1.jar" "dom4j-1.5.2.jar" "ganymed-ssh2-build210.jar" "guava-13.0.1.jar" \
         "icu4j-4.8.1.1.jar" "mail-1.4.5.jar" "jaxen-1.1.3.jar" "jcommon-1.0.21.jar" "jdom-1.1.jar" "jfreechart-1.0.15.jar" "json-20090211.jar" "junixsocket-common-2.0.4.jar" \
         "junixsocket-demo-2.0.4.jar" "junixsocket-mysql-2.0.4.jar" "junixsocket-rmi-2.0.4.jar" "jzlib-1.0.7.jar" "libidn-1.24.jar" "log4j-1.2.16.jar" "mariadb-java-client-1.1.8.jar" "yuicompressor-2.4.2-zimbra.jar" \
         "spymemcached-2.12.1.jar"  "oauth-20100527.jar" "jtnef-1.9.0.jar" "unboundid-ldapsdk-2.3.5.jar" "xercesImpl-2.9.1-patch-01.jar" "yuicompressor-2.4.2-zimbra.jar" "bcprov-jdk15on-1.55.jar")
-    for i in "${thirdpartyjars[@]}"
+    for i in "${thirdpartyJars[@]}"
     do
         cp ${repoDir}/zm-zcs-lib/build/dist/${i} ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/common/lib
     done
 
-
    cp ${repoDir}/zm-zcs-lib/build/dist/zm-common-*.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/common/lib/zimbracommon.jar
    cp ${repoDir}/zm-zcs-lib/build/dist/zm-native-*.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/common/lib/zimbra-native.jar
-    
+
    cp ${repoDir}/zm-zcs-lib/build/dist/apache-log4j-extras-1.0.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/lib
    cp ${repoDir}/zm-zcs-lib/build/dist/log4j-1.2.16.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/lib
-   
+
    mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/temp
    touch ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/temp/.emptyfile
 
      echo -e "\tCreate jetty conf" >> ${buildLogFile}
      mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/etc
      mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/modules
-     
+
     cp -f ${repoDir}/zm-jetty-conf/conf/jetty/jettyrc  ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/etc/
     cp -f ${repoDir}/zm-jetty-conf/conf/jetty/zimbra.policy.example ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/etc/
     cp -f ${repoDir}/zm-jetty-conf/conf/jetty/jetty.xml.production ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/etc/jetty.xml.in
@@ -394,18 +380,18 @@ main()
     cp -f ${repoDir}/zm-jetty-conf/conf/jetty/modules/*.mod  ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/modules
     cp -f ${repoDir}/zm-jetty-conf/conf/jetty/modules/*.mod.in ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/modules
     rm  ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/start.ini
-    
-    
+
+
     mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/start.d
 
-    
+
     cp -f ${repoDir}/zm-jetty-conf/conf/jetty/start.d/*.ini.in   ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/start.d
     cp -f ${repoDir}/zm-jetty-conf/conf/jetty/modules/npn/*.mod  ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/modules/npn
     cp -f ${repoDir}/zm-web-client/WebRoot/WEB-INF/jetty-env.xml ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/etc/zimbra-jetty-env.xml.in
     cp -f ${repoDir}/zm-web-client/WebRoot/WEB-INF/jetty-env.xml ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/etc/zimbraAdmin-jetty-env.xml.in
     cp -f ${repoDir}/zm-zimlets/conf/web.xml.production ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/etc/zimlet.web.xml.in
 
-    
+
     cat  ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/webapps/zimbra/WEB-INF/web.xml | \
         sed -e '/REDIRECTBEGIN/ s/$/ %%comment VAR:zimbraMailMode,-->,redirect%%/' \
         -e '/REDIRECTEND/ s/^/%%comment VAR:zimbraMailMode,<!--,redirect%% /' \

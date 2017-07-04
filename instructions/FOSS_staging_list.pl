@@ -8,6 +8,11 @@
       },
    },
    {
+      "dir"             => "zm-mailbox/store",
+      "ant_targets"     => [ "publish-store-test" ],
+      "stage_cmd"   => undef,
+   },
+   {
       "dir"             => "zm-zextras",
       "make_targets"    => [ "PKG_RELEASE=1zimbra${GLOBAL_BUILD_RELEASE_NO_MAJOR}.${GLOBAL_BUILD_RELEASE_NO_MINOR}b1", "all" ],
       "deploy_pkg_into" => "repo-dev",
