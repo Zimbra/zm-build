@@ -262,7 +262,6 @@ sub Prepare()
    my @TP_JARS = (
       "https://files.zimbra.com/repository/ant-1.7.0-ziputil-patched/ant-1.7.0-ziputil-patched-1.0.jar",
       "https://files.zimbra.com/repository/ant-contrib/ant-contrib-1.0b1.jar",
-      "https://files.zimbra.com/repository/ews_2010/ews_2010-1.0.jar",
       "https://files.zimbra.com/repository/jruby/jruby-complete-1.6.3.jar",
       "https://files.zimbra.com/repository/applet/plugin.jar",
       "https://files.zimbra.com/repository/servlet-api/servlet-api-3.1.jar",

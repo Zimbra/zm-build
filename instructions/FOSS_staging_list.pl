@@ -8,6 +8,14 @@
       },
    },
    {
+      "dir"             => "zm-mailbox/store",
+      "ant_targets"     => [ "publish-store-test" ],
+      "stage_cmd"       => sub {
+         System("mkdir -p $GLOBAL_BUILD_DIR/zm-mailbox/store/build/dist");
+         System("cp -f -rp build/zimbrastore-test.jar $GLOBAL_BUILD_DIR/zm-mailbox/store/build/dist");
+      },
+   },
+   {
       "dir"             => "zm-zextras",
       "make_targets"    => [ "PKG_RELEASE=1zimbra${GLOBAL_BUILD_RELEASE_NO_MAJOR}.${GLOBAL_BUILD_RELEASE_NO_MINOR}b1", "all" ],
       "deploy_pkg_into" => "repo-dev",
