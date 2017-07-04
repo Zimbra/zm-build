@@ -10,10 +10,7 @@
    {
       "dir"             => "zm-mailbox/store",
       "ant_targets"     => [ "publish-store-test" ],
-      "stage_cmd"       => sub {
-         System("mkdir -p $GLOBAL_BUILD_DIR/zm-mailbox/store/build/dist");
-         System("cp -f -rp build/zimbrastore-test.jar $GLOBAL_BUILD_DIR/zm-mailbox/store/build/dist");
-      },
+      "stage_cmd"   => undef,
    },
    {
       "dir"             => "zm-zextras",
