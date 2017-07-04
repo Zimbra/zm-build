@@ -7024,9 +7024,9 @@ sub applyConfig {
         if (($platform =~ m/DEBIAN/ || $platform =~ m/UBUNTU/) && ! $newinstall);
     }
 
-    if (!isInstalled("zimbra-network-modules-ng") || !$newinstall) {
-      main::progress("Disabling zimbraNetworkModulesNGEnabled \n");
-      setLdapServerConfig($config{HOSTNAME}, 'zimbraNetworkModulesNGEnabled', 'FALSE');
+    if (!isInstalled("zimbra-network-modules-ng") || (!$newinstall && $prevVersionMajor <= 8 && $prevVersionMinor < 8)) {
+      main::progress("Disabling zimbraNetworkMobileNGEnabled \n");
+      setLdapServerConfig($config{HOSTNAME}, 'zimbraNetworkMobileNGEnabled', 'FALSE');
     }
 
     progress ( "Starting servers..." );
@@ -7204,7 +7204,7 @@ sub setupCrontab {
         runAsZimbra("/opt/zimbra/bin/zmschedulebackup -A $backupSchedule[$i]");
       }
     }
-  } elsif ( -f "/opt/zimbra/bin/zmschedulebackup" && scalar @backupSchedule == 0 && !$newinstall && $nohsm) {
+  } elsif ( -f "/opt/zimbra/bin/zmschedulebackup" && scalar @backupSchedule == 0 && !$newinstall && $nohsm ) {
     detail("crontab: No backup schedule found: installing default schedule.");
     qx($SU "/opt/zimbra/bin/zmschedulebackup -D" >> $logfile 2>&1);
   }
