@@ -7024,9 +7024,15 @@ sub applyConfig {
         if (($platform =~ m/DEBIAN/ || $platform =~ m/UBUNTU/) && ! $newinstall);
     }
 
-    if (!isInstalled("zimbra-network-modules-ng") || !$newinstall) {
-      main::progress("Disabling zimbraNetworkModulesNGEnabled \n");
-      setLdapServerConfig($config{HOSTNAME}, 'zimbraNetworkModulesNGEnabled', 'FALSE');
+    sub prevVersionBelow880 {
+      if (($prevVersionMajor < 8) || ($prevVersionMajor = 8 && $prevVersionMinor < 8)) {
+        return 1;
+      }
+    }
+
+    if (!isInstalled("zimbra-network-modules-ng") || (!$newinstall && prevVersionBelow880())) {
+      main::progress("Disabling zimbraNetworkMobileNGEnabled \n");
+      setLdapServerConfig($config{HOSTNAME}, 'zimbraNetworkMobileNGEnabled', 'FALSE');
     }
 
     progress ( "Starting servers..." );
