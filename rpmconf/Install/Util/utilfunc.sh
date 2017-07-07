@@ -2391,10 +2391,10 @@ getInstallPackages() {
           echo "ports 8735 and 8736 are properly filtered from public access "
           echo "by your firewall."
           echo ""
-          echo "Please remember that he Backup NG module needs to be initialized in order"
+          echo "Please remember that the Backup NG module needs to be initialized in order"
           echo "to be functional. This is a one-time operation only that can be performed"
           echo "by clicking the 'Initialize' button within the Backup section of the"
-          echo "Network NG Modules \in the Administration Console or by running"
+          echo "Network NG Modules in the Administration Console or by running"
           echo "\`zxsuite backup doSmartScan\` as the zimbra user."
           echo ""
       fi
