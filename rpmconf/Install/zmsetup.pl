@@ -7030,6 +7030,11 @@ sub applyConfig {
       }
     }
 
+    if (!isInstalled("zimbra-network-modules-ng")) {
+      main::progress("Disabling zimbraNetworkModulesNGEnabled \n");
+      setLdapServerConfig($config{HOSTNAME}, 'zimbraNetworkModulesNGEnabled', 'FALSE');
+    }
+
     if (!isInstalled("zimbra-network-modules-ng") || (!$newinstall && prevVersionBelow880())) {
       main::progress("Disabling zimbraNetworkMobileNGEnabled \n");
       setLdapServerConfig($config{HOSTNAME}, 'zimbraNetworkMobileNGEnabled', 'FALSE');
