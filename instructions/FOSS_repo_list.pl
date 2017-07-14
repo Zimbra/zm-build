@@ -39,7 +39,7 @@
    { name => "zm-pkg-tool",                          },
    { name => "zm-postfix",                           },
    { name => "zm-proxy-config-admin-zimlet",         },
-   { name => "zm-ssdb-ephemeral-store",              },
+   { name => "zm-ssdb-ephemeral-store",             branch => "feature/imap", },
    { name => "zm-taglib",                            },
    { name => "zm-timezones",                         },
    { name => "zm-versioncheck-admin-zimlet",         },
