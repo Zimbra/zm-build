@@ -62,6 +62,11 @@
       "stage_cmd"   => undef,
    },
    {
+      "dir"         => "zm-admin-ajax",
+      "ant_targets" => ["publish-local"],
+      "stage_cmd"   => undef,
+   },
+   {
       "dir"         => "zm-ssdb-ephemeral-store",
       "ant_targets" => ["publish-local"],
       "stage_cmd"   => sub {
