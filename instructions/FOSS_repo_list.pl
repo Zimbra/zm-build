@@ -7,6 +7,7 @@
    { name => "zm-admin-console",                     },
    { name => "zm-admin-help-common",                 },
    { name => "zm-ajax",                              },
+   { name => "zm-admin-ajax",                        },
    { name => "zm-amavis",                            },
    { name => "zm-aspell",                            },
    { name => "zm-bulkprovision-admin-zimlet",        },
