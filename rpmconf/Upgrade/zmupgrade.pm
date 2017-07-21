@@ -127,11 +127,6 @@ my %updateMysql = (
   "8.7.0_BETA1" => \&doMariaDB101Upgrade,
 );
 
-my %setNeedMysqlUpgrade = (
-  "8.0.0_GA" => 1,
-  "8.5.0_BETA1" => 1,
-);
-
 sub version_cmp($$)
 {
   my $left = shift;
@@ -240,7 +235,6 @@ sub upgrade {
   }
 
   my $curSchemaVersion;
-  my $needMysqlUpgrade = 0;
 
   if (main::isInstalled("zimbra-store")) {
     if ($startMajor <= 7 || ($startMajor == 8 && $startMinor < 7))
@@ -257,10 +251,6 @@ sub upgrade {
     if (startSql()) { return 1; };
 
     $curSchemaVersion = Migrate::getSchemaVersion();
-
-    if (@{applicableVersions(\%setNeedMysqlUpgrade)}) {
-      $needMysqlUpgrade=1;
-   } 
   }
 
   main::setLocalConfig("ssl_allow_untrusted_certs", "true") if ($startMajor <= 7 && $targetMajor >= 8);
@@ -289,7 +279,7 @@ sub upgrade {
 
   if (main::isInstalled("zimbra-store")) {
 
-    doMysqlUpgrade() if ($needMysqlUpgrade);
+    doMysqlUpgrade();
 
     doBackupRestoreVersionUpdate($startVersion);
 
