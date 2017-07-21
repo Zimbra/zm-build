@@ -18,33 +18,11 @@ my $GLOBAL_PATH_TO_SCRIPT_DIR;
 my $GLOBAL_PATH_TO_TOP;
 my $CWD;
 
-#FIXME - remove following $GLOBAL_BUILD_*, and instead use the hash %CFG every place
-
-my $GLOBAL_BUILD_ARTIFACTS_BASE_DIR;
-my $GLOBAL_BUILD_SOURCES_BASE_DIR;
-my $GLOBAL_BUILD_NO;
-my $GLOBAL_BUILD_TS;
-my $GLOBAL_BUILD_DIR;
-my $GLOBAL_BUILD_OS;
-my $GLOBAL_BUILD_RELEASE;
-my $GLOBAL_BUILD_RELEASE_NO;
-my $GLOBAL_BUILD_RELEASE_NO_SHORT;
-my $GLOBAL_BUILD_RELEASE_CANDIDATE;
-my $GLOBAL_BUILD_TYPE;
-my $GLOBAL_BUILD_ARCH;
-my $GLOBAL_BUILD_THIRDPARTY_SERVER;
-my $GLOBAL_BUILD_PROD_FLAG;
-my $GLOBAL_BUILD_DEBUG_FLAG;
-my $GLOBAL_BUILD_DEV_TOOL_BASE_DIR;
-my $GLOBAL_BUILD_RELEASE_NO_MAJOR;
-my $GLOBAL_BUILD_RELEASE_NO_MINOR;
-my $GLOBAL_BUILD_RELEASE_NO_MICRO;
-
 my %CFG = ();
 
 BEGIN
 {
-   $ENV{ANSI_COLORS_DISABLED} = 1 if ( ! -t STDOUT );
+   $ENV{ANSI_COLORS_DISABLED} = 1 if ( !-t STDOUT );
    $GLOBAL_PATH_TO_SCRIPT_FILE = Cwd::abs_path(__FILE__);
    $GLOBAL_PATH_TO_SCRIPT_DIR  = dirname($GLOBAL_PATH_TO_SCRIPT_FILE);
    $GLOBAL_PATH_TO_TOP         = dirname($GLOBAL_PATH_TO_SCRIPT_DIR);
@@ -120,11 +98,6 @@ sub LoadConfiguration($)
       }
       else
       {
-         if ( $cfg_name =~ /BUILD_/ )
-         {
-            eval "\$GLOBAL_${cfg_name} = \"$val\"";    #FIXME - remove eval and instead use the hash %CFG every place
-         }
-
          $CFG{$cfg_name} = $val;
 
          printf( " %-25s: %-17s : %s\n", $cfg_name, $cmd_hash ? $src : "detected", $val );
@@ -136,7 +109,7 @@ sub InitGlobalBuildVars()
 {
    {
       my $build_dir_func = sub {
-         return "$GLOBAL_BUILD_ARTIFACTS_BASE_DIR/$GLOBAL_BUILD_OS/$GLOBAL_BUILD_RELEASE-$GLOBAL_BUILD_RELEASE_NO_SHORT/${GLOBAL_BUILD_TS}_$GLOBAL_BUILD_TYPE";
+         return "$CFG{BUILD_ARTIFACTS_BASE_DIR}/$CFG{BUILD_OS}/$CFG{BUILD_RELEASE}-$CFG{BUILD_RELEASE_NO_SHORT}/$CFG{BUILD_TS}_$CFG{BUILD_TYPE}";
       };
 
       my %cmd_hash = ();
@@ -164,7 +137,7 @@ sub InitGlobalBuildVars()
 
          { name => "BUILD_OS",               type => "", hash_src => undef, default_sub => sub { return GetBuildOS(); }, },
          { name => "BUILD_ARCH",             type => "", hash_src => undef, default_sub => sub { return GetBuildArch(); }, },
-         { name => "BUILD_RELEASE_NO_SHORT", type => "", hash_src => undef, default_sub => sub { my $x = $GLOBAL_BUILD_RELEASE_NO; $x =~ s/[.]//g; return $x; }, },
+         { name => "BUILD_RELEASE_NO_SHORT", type => "", hash_src => undef, default_sub => sub { my $x = $CFG{BUILD_RELEASE_NO}; $x =~ s/[.]//g; return $x; }, },
          { name => "BUILD_DIR",              type => "", hash_src => undef, default_sub => sub { return &$build_dir_func; }, },
       );
 
@@ -192,8 +165,8 @@ sub InitGlobalBuildVars()
       LoadConfiguration($_) foreach (@cmd_args);
       print "=========================================================================================================\n";
 
-      Die( "Bad version '${GLOBAL_BUILD_RELEASE_NO}'", "$@" )
-        if ( ${GLOBAL_BUILD_RELEASE_NO} !~ m/^\d+[.]\d+[.]\d+$/ );
+      Die( "Bad version '$CFG{BUILD_RELEASE_NO}'", "$@" )
+        if ( $CFG{BUILD_RELEASE_NO} !~ m/^\d+[.]\d+[.]\d+$/ );
    }
 
    foreach my $x (`grep -o '\\<[E][N][V]_[A-Z_]*\\>' '$GLOBAL_PATH_TO_SCRIPT_FILE' | sort | uniq`)
@@ -205,7 +178,7 @@ sub InitGlobalBuildVars()
 
    print "=========================================================================================================\n";
    {
-      $ENV{PATH} = "$GLOBAL_BUILD_DEV_TOOL_BASE_DIR/bin/Sencha/Cmd/4.0.2.67:$GLOBAL_BUILD_DEV_TOOL_BASE_DIR/bin:$ENV{PATH}";
+      $ENV{PATH} = "$CFG{BUILD_DEV_TOOL_BASE_DIR}/bin/Sencha/Cmd/4.0.2.67:$CFG{BUILD_DEV_TOOL_BASE_DIR}/bin:$ENV{PATH}";
 
       my $cc    = DetectPrerequisite("cc");
       my $cpp   = DetectPrerequisite("c++");
@@ -248,16 +221,16 @@ sub Prepare()
    RemoveTargetInDir( ".ivy2/cache", $ENV{HOME} ) if ( $ENV{ENV_CACHE_CLEAR_FLAG} );
 
    open( FD, ">", "$GLOBAL_PATH_TO_SCRIPT_DIR/.build.last_no_ts" );
-   print FD "BUILD_NO=$GLOBAL_BUILD_NO\n";
-   print FD "BUILD_TS=$GLOBAL_BUILD_TS\n";
+   print FD "BUILD_NO=$CFG{BUILD_NO}\n";
+   print FD "BUILD_TS=$CFG{BUILD_TS}\n";
    close(FD);
 
-   System( "mkdir", "-p", "$GLOBAL_BUILD_DIR" );
-   System( "mkdir", "-p", "$GLOBAL_BUILD_DIR/logs" );
+   System( "mkdir", "-p", "$CFG{BUILD_DIR}" );
+   System( "mkdir", "-p", "$CFG{BUILD_DIR}/logs" );
    System( "mkdir", "-p", "$ENV{HOME}/.zcs-deps" );
    System( "mkdir", "-p", "$ENV{HOME}/.ivy2/cache" );
 
-   System( "find", $GLOBAL_BUILD_DIR, "-type", "f", "-name", ".built.*", "-delete" ) if ( $ENV{ENV_CACHE_CLEAR_FLAG} );
+   System( "find", $CFG{BUILD_DIR}, "-type", "f", "-name", ".built.*", "-delete" ) if ( $ENV{ENV_CACHE_CLEAR_FLAG} );
 
    my @TP_JARS = (
       "https://files.zimbra.com/repository/ant-1.7.0-ziputil-patched/ant-1.7.0-ziputil-patched-1.0.jar",
@@ -280,16 +253,12 @@ sub Prepare()
       }
    }
 
-   my ( $MAJOR, $MINOR, $MICRO ) = split( /[.]/, ${GLOBAL_BUILD_RELEASE_NO} );
+   my ( $MAJOR, $MINOR, $MICRO ) = split( /[.]/, $CFG{BUILD_RELEASE_NO} );
 
-   EchoToFile( "$GLOBAL_PATH_TO_SCRIPT_DIR/RE/BUILD", $GLOBAL_BUILD_NO );
+   EchoToFile( "$GLOBAL_PATH_TO_SCRIPT_DIR/RE/BUILD", $CFG{BUILD_NO} );
    EchoToFile( "$GLOBAL_PATH_TO_SCRIPT_DIR/RE/MAJOR", $MAJOR );
    EchoToFile( "$GLOBAL_PATH_TO_SCRIPT_DIR/RE/MINOR", $MINOR );
-   EchoToFile( "$GLOBAL_PATH_TO_SCRIPT_DIR/RE/MICRO", "${MICRO}_${GLOBAL_BUILD_RELEASE_CANDIDATE}" );
-
-   ${GLOBAL_BUILD_RELEASE_NO_MAJOR} = $MAJOR;
-   ${GLOBAL_BUILD_RELEASE_NO_MINOR} = $MINOR;
-   ${GLOBAL_BUILD_RELEASE_NO_MICRO} = $MICRO;
+   EchoToFile( "$GLOBAL_PATH_TO_SCRIPT_DIR/RE/MICRO", "${MICRO}_$CFG{BUILD_RELEASE_CANDIDATE}" );
 
    close(FD);
 }
@@ -316,7 +285,7 @@ sub LoadRepos()
 {
    my @agg_repos = ();
 
-   push( @agg_repos, @{ EvalFile("instructions/${GLOBAL_BUILD_TYPE}_repo_list.pl") } );
+   push( @agg_repos, @{ EvalFile("instructions/$CFG{BUILD_TYPE}_repo_list.pl") } );
 
    return \@agg_repos;
 }
@@ -324,7 +293,7 @@ sub LoadRepos()
 
 sub LoadRemotes()
 {
-   my %details = @{ EvalFile("instructions/${GLOBAL_BUILD_TYPE}_remote_list.pl") };
+   my %details = @{ EvalFile("instructions/$CFG{BUILD_TYPE}_remote_list.pl") };
 
    return \%details;
 }
@@ -332,7 +301,7 @@ sub LoadRemotes()
 
 sub LoadPkgDeployPaths()
 {
-   my %details = @{ EvalFile("instructions/${GLOBAL_BUILD_TYPE}_pkg_deploy_paths.pl") };
+   my %details = @{ EvalFile("instructions/$CFG{BUILD_TYPE}_pkg_deploy_paths.pl") };
 
    return \%details;
 }
@@ -344,7 +313,7 @@ sub LoadBuilds($)
 
    my @agg_builds = ();
 
-   push( @agg_builds, @{ EvalFile("instructions/${GLOBAL_BUILD_TYPE}_staging_list.pl") } );
+   push( @agg_builds, @{ EvalFile("instructions/$CFG{BUILD_TYPE}_staging_list.pl") } );
 
    my %repo_hash = map { $_->{name} => 1 } @$repo_list;
 
@@ -400,31 +369,31 @@ sub Build($)
 
    my $tool_attributes = {
       ant => [
-         "-Ddebug=${GLOBAL_BUILD_DEBUG_FLAG}",
-         "-Dis-production=${GLOBAL_BUILD_PROD_FLAG}",
-         "-Dzimbra.buildinfo.platform=${GLOBAL_BUILD_OS}",
-         "-Dzimbra.buildinfo.version=${GLOBAL_BUILD_RELEASE_NO}_${GLOBAL_BUILD_RELEASE_CANDIDATE}_${GLOBAL_BUILD_NO}",
-         "-Dzimbra.buildinfo.type=${GLOBAL_BUILD_TYPE}",
-         "-Dzimbra.buildinfo.release=${GLOBAL_BUILD_TS}",
-         "-Dzimbra.buildinfo.date=${GLOBAL_BUILD_TS}",
+         "-Ddebug=$CFG{BUILD_DEBUG_FLAG}",
+         "-Dis-production=$CFG{BUILD_PROD_FLAG}",
+         "-Dzimbra.buildinfo.platform=$CFG{BUILD_OS}",
+         "-Dzimbra.buildinfo.version=$CFG{BUILD_RELEASE_NO}_$CFG{BUILD_RELEASE_CANDIDATE}_$CFG{BUILD_NO}",
+         "-Dzimbra.buildinfo.type=$CFG{BUILD_TYPE}",
+         "-Dzimbra.buildinfo.release=$CFG{BUILD_TS}",
+         "-Dzimbra.buildinfo.date=$CFG{BUILD_TS}",
          "-Dzimbra.buildinfo.host=@{[Net::Domain::hostfqdn]}",
-         "-Dzimbra.buildinfo.buildnum=${GLOBAL_BUILD_NO}",
+         "-Dzimbra.buildinfo.buildnum=$CFG{BUILD_NO}",
       ],
       make => [
-         "debug=${GLOBAL_BUILD_DEBUG_FLAG}",
-         "is-production=${GLOBAL_BUILD_PROD_FLAG}",
-         "zimbra.buildinfo.platform=${GLOBAL_BUILD_OS}",
-         "zimbra.buildinfo.version=${GLOBAL_BUILD_RELEASE_NO}_${GLOBAL_BUILD_RELEASE_CANDIDATE}_${GLOBAL_BUILD_NO}",
-         "zimbra.buildinfo.type=${GLOBAL_BUILD_TYPE}",
-         "zimbra.buildinfo.release=${GLOBAL_BUILD_TS}",
-         "zimbra.buildinfo.date=${GLOBAL_BUILD_TS}",
+         "debug=$CFG{BUILD_DEBUG_FLAG}",
+         "is-production=$CFG{BUILD_PROD_FLAG}",
+         "zimbra.buildinfo.platform=$CFG{BUILD_OS}",
+         "zimbra.buildinfo.version=$CFG{BUILD_RELEASE_NO}_$CFG{BUILD_RELEASE_CANDIDATE}_$CFG{BUILD_NO}",
+         "zimbra.buildinfo.type=$CFG{BUILD_TYPE}",
+         "zimbra.buildinfo.release=$CFG{BUILD_TS}",
+         "zimbra.buildinfo.date=$CFG{BUILD_TS}",
          "zimbra.buildinfo.host=@{[Net::Domain::hostfqdn]}",
-         "zimbra.buildinfo.buildnum=${GLOBAL_BUILD_NO}",
+         "zimbra.buildinfo.buildnum=$CFG{BUILD_NO}",
       ],
    };
 
-   push( @{$tool_attributes->{ant}}, $CFG{ANT_OPTIONS} )
-      if($CFG{ANT_OPTIONS});
+   push( @{ $tool_attributes->{ant} }, $CFG{ANT_OPTIONS} )
+     if ( $CFG{ANT_OPTIONS} );
 
    my $pkg_deploy_path_details = LoadPkgDeployPaths();
 
@@ -435,19 +404,19 @@ sub Build($)
 
       if ( my $dir = $build_info->{dir} )
       {
-         my $target_dir = "$GLOBAL_BUILD_DIR/$dir";
+         my $target_dir = "$CFG{BUILD_DIR}/$dir";
 
          next
            unless ( !defined $ENV{ENV_BUILD_INCLUDE} || grep { $dir =~ /$_/ } split( ",", $ENV{ENV_BUILD_INCLUDE} ) );
 
-         RemoveTargetInDir( $dir, $GLOBAL_BUILD_DIR )
+         RemoveTargetInDir( $dir, $CFG{BUILD_DIR} )
            if ( ( $ENV{ENV_FORCE_REBUILD} && grep { $dir =~ /$_/ } split( ",", $ENV{ENV_FORCE_REBUILD} ) ) );
 
          print "=========================================================================================================\n";
          print color('blue') . "BUILDING: $dir ($cnt of " . scalar(@ALL_BUILDS) . ")" . color('reset') . "\n";
          print "\n";
 
-         if ( $ENV{ENV_RESUME_FLAG} && -f "$target_dir/.built.$GLOBAL_BUILD_TS" )
+         if ( $ENV{ENV_RESUME_FLAG} && -f "$target_dir/.built.$CFG{BUILD_TS}" )
          {
             print color('yellow') . "SKIPPING... [TO REBUILD REMOVE '$target_dir']" . color('reset') . "\n";
             print "=========================================================================================================\n";
@@ -484,7 +453,7 @@ sub Build($)
                   if ( my $deploy_pkg_into = $build_info->{deploy_pkg_into} )
                   {
                      my $pkg_deploy_method = $pkg_deploy_path_details->{$deploy_pkg_into}->{method} || "cp";
-                     my $pkg_deploy_path   = $pkg_deploy_path_details->{$deploy_pkg_into}->{path}   || "$GLOBAL_BUILD_DIR/packages";
+                     my $pkg_deploy_path   = $pkg_deploy_path_details->{$deploy_pkg_into}->{path}   || "$CFG{BUILD_DIR}/packages";
 
                      System( "mkdir", "-p", $pkg_deploy_path );
 
@@ -501,7 +470,7 @@ sub Build($)
                   if ( !exists $build_info->{partial} )
                   {
                      system( "mkdir", "-p", "$target_dir" );
-                     System( "touch", "$target_dir/.built.$GLOBAL_BUILD_TS" );
+                     System( "touch", "$target_dir/.built.$CFG{BUILD_TS}" );
                   }
                },
             );
@@ -516,11 +485,11 @@ sub Build($)
    Run(
       cd    => "$GLOBAL_PATH_TO_SCRIPT_DIR",
       child => sub {
-         System( "rsync", "-az", "--delete", ".", "$GLOBAL_BUILD_DIR/zm-build" );
-         System( "mkdir", "-p", "$GLOBAL_BUILD_DIR/zm-build/$GLOBAL_BUILD_ARCH" );
+         System( "rsync", "-az", "--delete", ".", "$CFG{BUILD_DIR}/zm-build" );
+         System( "mkdir", "-p", "$CFG{BUILD_DIR}/zm-build/$CFG{BUILD_ARCH}" );
 
          my @ALL_PACKAGES = ();
-         push( @ALL_PACKAGES, @{ EvalFile("instructions/${GLOBAL_BUILD_TYPE}_package_list.pl") } );
+         push( @ALL_PACKAGES, @{ EvalFile("instructions/$CFG{BUILD_TYPE}_package_list.pl") } );
          push( @ALL_PACKAGES, "zcs-bundle" );
 
          for my $package_script (@ALL_PACKAGES)
@@ -528,17 +497,17 @@ sub Build($)
             if ( !defined $ENV{ENV_PACKAGE_INCLUDE} || grep { $package_script =~ /$_/ } split( ",", $ENV{ENV_PACKAGE_INCLUDE} ) )
             {
                System(
-                  "  releaseNo='$GLOBAL_BUILD_RELEASE_NO' \\
-                     releaseCandidate='$GLOBAL_BUILD_RELEASE_CANDIDATE' \\
-                     branch='$GLOBAL_BUILD_RELEASE-$GLOBAL_BUILD_RELEASE_NO_SHORT' \\
-                     buildNo='$GLOBAL_BUILD_NO' \\
-                     os='$GLOBAL_BUILD_OS' \\
-                     buildType='$GLOBAL_BUILD_TYPE' \\
-                     repoDir='$GLOBAL_BUILD_DIR' \\
-                     arch='$GLOBAL_BUILD_ARCH' \\
-                     buildTimeStamp='$GLOBAL_BUILD_TS' \\
-                     buildLogFile='$GLOBAL_BUILD_DIR/logs/build.log' \\
-                     zimbraThirdPartyServer='$GLOBAL_BUILD_THIRDPARTY_SERVER' \\
+                  "  releaseNo='$CFG{BUILD_RELEASE_NO}' \\
+                     releaseCandidate='$CFG{BUILD_RELEASE_CANDIDATE}' \\
+                     branch='$CFG{BUILD_RELEASE}-$CFG{BUILD_RELEASE_NO_SHORT}' \\
+                     buildNo='$CFG{BUILD_NO}' \\
+                     os='$CFG{BUILD_OS}' \\
+                     buildType='$CFG{BUILD_TYPE}' \\
+                     repoDir='$CFG{BUILD_DIR}' \\
+                     arch='$CFG{BUILD_ARCH}' \\
+                     buildTimeStamp='$CFG{BUILD_TS}' \\
+                     buildLogFile='$CFG{BUILD_DIR}/logs/build.log' \\
+                     zimbraThirdPartyServer='$CFG{BUILD_THIRDPARTY_SERVER}' \\
                         bash $GLOBAL_PATH_TO_SCRIPT_DIR/instructions/bundling-scripts/$package_script.sh
                   "
                );
@@ -632,7 +601,7 @@ sub Clone($$)
 
    $repo_url_prefix =~ s,/*$,,;
 
-   my $repo_dir = "$GLOBAL_BUILD_SOURCES_BASE_DIR/$repo_name";
+   my $repo_dir = "$CFG{BUILD_SOURCES_BASE_DIR}/$repo_name";
 
    if ( !-d $repo_dir )
    {
@@ -644,7 +613,7 @@ sub Clone($$)
 
       System(@clone_cmd_args);
 
-      RemoveTargetInDir( $repo_name, $GLOBAL_BUILD_DIR );
+      RemoveTargetInDir( $repo_name, $CFG{BUILD_DIR} );
    }
    else
    {
@@ -655,7 +624,7 @@ sub Clone($$)
             print "\n";
             Run( cd => $repo_dir, child => sub { System( "git", "checkout", $repo_tag ); } );
 
-            RemoveTargetInDir( $repo_name, $GLOBAL_BUILD_DIR );
+            RemoveTargetInDir( $repo_name, $CFG{BUILD_DIR} );
          }
          else
          {
@@ -663,11 +632,11 @@ sub Clone($$)
             Run(
                cd    => $repo_dir,
                child => sub {
-                  my $z = System("git", "pull", "--ff-only");
+                  my $z = System( "git", "pull", "--ff-only" );
 
                   if ( "@{$z->{out}}" !~ /Already up-to-date/ )
                   {
-                     RemoveTargetInDir( $repo_name, $GLOBAL_BUILD_DIR );
+                     RemoveTargetInDir( $repo_name, $CFG{BUILD_DIR} );
                   }
                },
             );
