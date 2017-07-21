@@ -130,6 +130,8 @@ my %updateMysql = (
 my %setNeedMysqlUpgrade = (
   "8.0.0_GA" => 1,
   "8.5.0_BETA1" => 1,
+  # Bug #107976
+  "8.8.0_BETA1" => 1,
 );
 
 sub version_cmp($$)
@@ -260,7 +262,7 @@ sub upgrade {
 
     if (@{applicableVersions(\%setNeedMysqlUpgrade)}) {
       $needMysqlUpgrade=1;
-   } 
+    }
   }
 
   main::setLocalConfig("ssl_allow_untrusted_certs", "true") if ($startMajor <= 7 && $targetMajor >= 8);
