@@ -53,12 +53,17 @@ CreateDebianPackage()
 
    (
       set -e;
+      MORE_DEPENDS="$(find ${repoDir}/zm-packages/ -name \*.deb \
+                         | xargs -n1 basename \
+                         | sed -e 's/_[0-9].*//' \
+                         | grep zimbra-common- \
+                         | sed '1s/^/, /; :a; {N;s/\n/, /;ba}')";
+
       cat ${repoDir}/zm-build/rpmconf/Spec/${currentScript}.deb \
          | sed -e "s/@@VERSION@@/${releaseNo}.${releaseCandidate}.${buildNo}.${os/_/.}/" \
                -e "s/@@branch@@/${buildTimeStamp}/" \
                -e "s/@@ARCH@@/${arch}/" \
-               -e "s/@@ARCH@@/amd64/" \
-               -e "s/^Copyright:/Copyright:/" \
+               -e "s/@@MORE_DEPENDS@@/${MORE_DEPENDS}/" \
                -e "/^%post$/ r ${currentScript}.post"
    ) > ${repoDir}/zm-build/${currentPackage}/DEBIAN/control
 
@@ -67,15 +72,20 @@ CreateDebianPackage()
       cd ${repoDir}/zm-build/${currentPackage}
       dpkg -b ${repoDir}/zm-build/${currentPackage} ${repoDir}/zm-build/${arch}
    )
-
 }
 
 CreateRhelPackage()
 {
+    MORE_DEPENDS="$(find ${repoDir}/zm-packages/ -name \*.rpm \
+                       | xargs -n1 basename \
+                       | sed -e 's/-[0-9].*//' \
+                       | grep zimbra-common- \
+                       | sed '1s/^/, /; :a; {N;s/\n/, /;ba}')";
+
     cat ${repoDir}/zm-build/rpmconf/Spec/${currentScript}.spec | \
     	sed -e "s/@@VERSION@@/${releaseNo}_${releaseCandidate}_${buildNo}.${os}/" \
             	-e "s/@@RELEASE@@/${buildTimeStamp}/" \
-            	-e "s/^Copyright:/Copyright:/" \
+                -e "s/@@MORE_DEPENDS@@/${MORE_DEPENDS}/" \
             	-e "/^%pre$/ r ${repoDir}/zm-build/rpmconf/Spec/Scripts/${currentScript}.pre" \
             	-e "/Best email money can buy/ a Network edition" \
             	-e "/^%post$/ r ${repoDir}/zm-build/rpmconf/Spec/Scripts/${currentScript}.post" > ${repoDir}/zm-build/${currentScript}.spec
@@ -111,21 +121,9 @@ CreateRhelPackage()
     	${repoDir}/zm-build/${currentScript}.spec
     echo "%attr(644, zimbra, zimbra) /opt/zimbra/conf/*" >> \
     	${repoDir}/zm-build/${currentScript}.spec
-    echo "%attr(755, zimbra, zimbra) /opt/zimbra/conf/attrs" >> \
-    	${repoDir}/zm-build/${currentScript}.spec
-    echo "%attr(644, zimbra, zimbra) /opt/zimbra/conf/attrs/*" >> \
-    	${repoDir}/zm-build/${currentScript}.spec
     echo "%attr(755, zimbra, zimbra) /opt/zimbra/conf/externaldirsync" >> \
     	${repoDir}/zm-build/${currentScript}.spec
     echo "%attr(644, zimbra, zimbra) /opt/zimbra/conf/externaldirsync/*" >> \
-    	${repoDir}/zm-build/${currentScript}.spec
-    echo "%attr(755, zimbra, zimbra) /opt/zimbra/conf/msgs" >> \
-    	${repoDir}/zm-build/${currentScript}.spec
-    echo "%attr(644, zimbra, zimbra) /opt/zimbra/conf/msgs/*" >> \
-    	${repoDir}/zm-build/${currentScript}.spec
-    echo "%attr(755, zimbra, zimbra) /opt/zimbra/conf/rights" >> \
-    	${repoDir}/zm-build/${currentScript}.spec
-    echo "%attr(644, zimbra, zimbra) /opt/zimbra/conf/rights/*" >> \
     	${repoDir}/zm-build/${currentScript}.spec
     echo "%attr(755, zimbra, zimbra) /opt/zimbra/conf/sasl2" >> \
     	${repoDir}/zm-build/${currentScript}.spec
@@ -562,8 +560,6 @@ main()
    Copy ${repoDir}/zm-licenses/zimbra/zpl-full.txt                                                  ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/ZPL.txt
 
    Copy ${repoDir}/zm-migration-tools/ReadMe.txt                                                    ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/zmztozmig.txt
-   Copy ${repoDir}/zm-mailbox/milter-conf/conf/milter.log4j.properties                              ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/milter.log4j.properties
-   Copy ${repoDir}/zm-mailbox/milter-conf/conf/mta_milter_options.in                                ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/mta_milter_options.in
 
    Copy ${repoDir}/zm-mta/cbpolicyd.conf.in                                                         ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/cbpolicyd.conf.in
    Copy ${repoDir}/zm-mta/clamd.conf.in                                                             ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/clamd.conf.in
@@ -580,172 +576,10 @@ main()
    Copy ${repoDir}/zm-mta/zmconfigd/smtpd_sender_login_maps.cf                                      ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/zmconfigd/smtpd_sender_login_maps.cf
    Copy ${repoDir}/zm-mta/zmconfigd/smtpd_sender_restrictions.cf                                    ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/zmconfigd/smtpd_sender_restrictions.cf
 
-   Copy ${repoDir}/zm-mailbox/store-conf/conf/datasource.xml                                        ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/datasource.xml
-   Copy ${repoDir}/zm-mailbox/store-conf/conf/localconfig.xml.production                            ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/localconfig.xml
-   Copy ${repoDir}/zm-mailbox/store-conf/conf/log4j.properties.production                           ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/log4j.properties.in
-   Copy ${repoDir}/zm-mailbox/store-conf/conf/msgs/L10nMsg.properties                               ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/L10nMsg.properties
-   Copy ${repoDir}/zm-mailbox/store-conf/conf/msgs/ZsMsg.properties                                 ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsg.properties
-   Copy ${repoDir}/zm-mailbox/store-conf/conf/msgs/ZsMsgRights.properties                           ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsgRights.properties
-   Copy ${repoDir}/zm-mailbox/store-conf/conf/msgs/ZsMsgRights_ar.properties                        ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsgRights_ar.properties
-   Copy ${repoDir}/zm-mailbox/store-conf/conf/msgs/ZsMsgRights_da.properties                        ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsgRights_da.properties
-   Copy ${repoDir}/zm-mailbox/store-conf/conf/msgs/ZsMsgRights_de.properties                        ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsgRights_de.properties
-   Copy ${repoDir}/zm-mailbox/store-conf/conf/msgs/ZsMsgRights_en_AU.properties                     ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsgRights_en_AU.properties
-   Copy ${repoDir}/zm-mailbox/store-conf/conf/msgs/ZsMsgRights_en_GB.properties                     ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsgRights_en_GB.properties
-   Copy ${repoDir}/zm-mailbox/store-conf/conf/msgs/ZsMsgRights_es.properties                        ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsgRights_es.properties
-   Copy ${repoDir}/zm-mailbox/store-conf/conf/msgs/ZsMsgRights_eu.properties                        ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsgRights_eu.properties
-   Copy ${repoDir}/zm-mailbox/store-conf/conf/msgs/ZsMsgRights_fr.properties                        ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsgRights_fr.properties
-   Copy ${repoDir}/zm-mailbox/store-conf/conf/msgs/ZsMsgRights_fr_CA.properties                     ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsgRights_fr_CA.properties
-   Copy ${repoDir}/zm-mailbox/store-conf/conf/msgs/ZsMsgRights_hi.properties                        ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsgRights_hi.properties
-   Copy ${repoDir}/zm-mailbox/store-conf/conf/msgs/ZsMsgRights_hu.properties                        ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsgRights_hu.properties
-   Copy ${repoDir}/zm-mailbox/store-conf/conf/msgs/ZsMsgRights_in.properties                        ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsgRights_in.properties
-   Copy ${repoDir}/zm-mailbox/store-conf/conf/msgs/ZsMsgRights_it.properties                        ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsgRights_it.properties
-   Copy ${repoDir}/zm-mailbox/store-conf/conf/msgs/ZsMsgRights_iw.properties                        ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsgRights_iw.properties
-   Copy ${repoDir}/zm-mailbox/store-conf/conf/msgs/ZsMsgRights_ja.properties                        ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsgRights_ja.properties
-   Copy ${repoDir}/zm-mailbox/store-conf/conf/msgs/ZsMsgRights_ko.properties                        ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsgRights_ko.properties
-   Copy ${repoDir}/zm-mailbox/store-conf/conf/msgs/ZsMsgRights_lo.properties                        ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsgRights_lo.properties
-   Copy ${repoDir}/zm-mailbox/store-conf/conf/msgs/ZsMsgRights_ms.properties                        ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsgRights_ms.properties
-   Copy ${repoDir}/zm-mailbox/store-conf/conf/msgs/ZsMsgRights_nl.properties                        ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsgRights_nl.properties
-   Copy ${repoDir}/zm-mailbox/store-conf/conf/msgs/ZsMsgRights_pl.properties                        ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsgRights_pl.properties
-   Copy ${repoDir}/zm-mailbox/store-conf/conf/msgs/ZsMsgRights_pt.properties                        ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsgRights_pt.properties
-   Copy ${repoDir}/zm-mailbox/store-conf/conf/msgs/ZsMsgRights_pt_BR.properties                     ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsgRights_pt_BR.properties
-   Copy ${repoDir}/zm-mailbox/store-conf/conf/msgs/ZsMsgRights_ro.properties                        ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsgRights_ro.properties
-   Copy ${repoDir}/zm-mailbox/store-conf/conf/msgs/ZsMsgRights_ru.properties                        ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsgRights_ru.properties
-   Copy ${repoDir}/zm-mailbox/store-conf/conf/msgs/ZsMsgRights_sl.properties                        ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsgRights_sl.properties
-   Copy ${repoDir}/zm-mailbox/store-conf/conf/msgs/ZsMsgRights_sv.properties                        ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsgRights_sv.properties
-   Copy ${repoDir}/zm-mailbox/store-conf/conf/msgs/ZsMsgRights_th.properties                        ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsgRights_th.properties
-   Copy ${repoDir}/zm-mailbox/store-conf/conf/msgs/ZsMsgRights_tr.properties                        ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsgRights_tr.properties
-   Copy ${repoDir}/zm-mailbox/store-conf/conf/msgs/ZsMsgRights_uk.properties                        ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsgRights_uk.properties
-   Copy ${repoDir}/zm-mailbox/store-conf/conf/msgs/ZsMsgRights_zh_CN.properties                     ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsgRights_zh_CN.properties
-   Copy ${repoDir}/zm-mailbox/store-conf/conf/msgs/ZsMsgRights_zh_HK.properties                     ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsgRights_zh_HK.properties
-   Copy ${repoDir}/zm-mailbox/store-conf/conf/msgs/ZsMsgRights_zh_TW.properties                     ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsgRights_zh_TW.properties
-   Copy ${repoDir}/zm-mailbox/store-conf/conf/msgs/ZsMsg_ar.properties                              ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsg_ar.properties
-   Copy ${repoDir}/zm-mailbox/store-conf/conf/msgs/ZsMsg_da.properties                              ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsg_da.properties
-   Copy ${repoDir}/zm-mailbox/store-conf/conf/msgs/ZsMsg_de.properties                              ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsg_de.properties
-   Copy ${repoDir}/zm-mailbox/store-conf/conf/msgs/ZsMsg_en.properties                              ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsg_en.properties
-   Copy ${repoDir}/zm-mailbox/store-conf/conf/msgs/ZsMsg_en_AU.properties                           ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsg_en_AU.properties
-   Copy ${repoDir}/zm-mailbox/store-conf/conf/msgs/ZsMsg_en_GB.properties                           ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsg_en_GB.properties
-   Copy ${repoDir}/zm-mailbox/store-conf/conf/msgs/ZsMsg_es.properties                              ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsg_es.properties
-   Copy ${repoDir}/zm-mailbox/store-conf/conf/msgs/ZsMsg_eu.properties                              ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsg_eu.properties
-   Copy ${repoDir}/zm-mailbox/store-conf/conf/msgs/ZsMsg_fr.properties                              ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsg_fr.properties
-   Copy ${repoDir}/zm-mailbox/store-conf/conf/msgs/ZsMsg_fr_CA.properties                           ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsg_fr_CA.properties
-   Copy ${repoDir}/zm-mailbox/store-conf/conf/msgs/ZsMsg_fr_FR.properties                           ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsg_fr_FR.properties
-   Copy ${repoDir}/zm-mailbox/store-conf/conf/msgs/ZsMsg_hi.properties                              ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsg_hi.properties
-   Copy ${repoDir}/zm-mailbox/store-conf/conf/msgs/ZsMsg_hu.properties                              ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsg_hu.properties
-   Copy ${repoDir}/zm-mailbox/store-conf/conf/msgs/ZsMsg_in.properties                              ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsg_in.properties
-   Copy ${repoDir}/zm-mailbox/store-conf/conf/msgs/ZsMsg_it.properties                              ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsg_it.properties
-   Copy ${repoDir}/zm-mailbox/store-conf/conf/msgs/ZsMsg_iw.properties                              ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsg_iw.properties
-   Copy ${repoDir}/zm-mailbox/store-conf/conf/msgs/ZsMsg_ja.properties                              ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsg_ja.properties
-   Copy ${repoDir}/zm-mailbox/store-conf/conf/msgs/ZsMsg_ko.properties                              ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsg_ko.properties
-   Copy ${repoDir}/zm-mailbox/store-conf/conf/msgs/ZsMsg_lo.properties                              ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsg_lo.properties
-   Copy ${repoDir}/zm-mailbox/store-conf/conf/msgs/ZsMsg_ms.properties                              ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsg_ms.properties
-   Copy ${repoDir}/zm-mailbox/store-conf/conf/msgs/ZsMsg_nl.properties                              ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsg_nl.properties
-   Copy ${repoDir}/zm-mailbox/store-conf/conf/msgs/ZsMsg_pl.properties                              ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsg_pl.properties
-   Copy ${repoDir}/zm-mailbox/store-conf/conf/msgs/ZsMsg_pt.properties                              ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsg_pt.properties
-   Copy ${repoDir}/zm-mailbox/store-conf/conf/msgs/ZsMsg_pt_BR.properties                           ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsg_pt_BR.properties
-   Copy ${repoDir}/zm-mailbox/store-conf/conf/msgs/ZsMsg_ro.properties                              ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsg_ro.properties
-   Copy ${repoDir}/zm-mailbox/store-conf/conf/msgs/ZsMsg_ru.properties                              ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsg_ru.properties
-   Copy ${repoDir}/zm-mailbox/store-conf/conf/msgs/ZsMsg_sl.properties                              ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsg_sl.properties
-   Copy ${repoDir}/zm-mailbox/store-conf/conf/msgs/ZsMsg_sv.properties                              ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsg_sv.properties
-   Copy ${repoDir}/zm-mailbox/store-conf/conf/msgs/ZsMsg_th.properties                              ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsg_th.properties
-   Copy ${repoDir}/zm-mailbox/store-conf/conf/msgs/ZsMsg_tr.properties                              ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsg_tr.properties
-   Copy ${repoDir}/zm-mailbox/store-conf/conf/msgs/ZsMsg_uk.properties                              ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsg_uk.properties
-   Copy ${repoDir}/zm-mailbox/store-conf/conf/msgs/ZsMsg_zh_CN.properties                           ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsg_zh_CN.properties
-   Copy ${repoDir}/zm-mailbox/store-conf/conf/msgs/ZsMsg_zh_HK.properties                           ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsg_zh_HK.properties
-   Copy ${repoDir}/zm-mailbox/store-conf/conf/msgs/ZsMsg_zh_TW.properties                           ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/msgs/ZsMsg_zh_TW.properties
-   Copy ${repoDir}/zm-mailbox/store-conf/conf/rights/adminconsole-ui.xml                            ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/rights/adminconsole-ui.xml
-   Copy ${repoDir}/zm-mailbox/store-conf/conf/rights/zimbra-rights-adminconsole-domainadmin.xml     ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/rights/zimbra-rights-adminconsole-domainadmin.xml
-   Copy ${repoDir}/zm-mailbox/store-conf/conf/rights/zimbra-rights-adminconsole.xml                 ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/rights/zimbra-rights-adminconsole.xml
-   Copy ${repoDir}/zm-mailbox/store-conf/conf/rights/zimbra-rights-domainadmin.xml                  ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/rights/zimbra-rights-domainadmin.xml
-   Copy ${repoDir}/zm-mailbox/store-conf/conf/rights/zimbra-rights-roles.xml                        ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/rights/zimbra-rights-roles.xml
-   Copy ${repoDir}/zm-mailbox/store-conf/conf/rights/zimbra-rights.xml                              ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/rights/zimbra-rights.xml
-   Copy ${repoDir}/zm-mailbox/store-conf/conf/rights/zimbra-user-rights.xml                         ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/rights/zimbra-user-rights.xml
-   Copy ${repoDir}/zm-mailbox/store-conf/conf/stats.conf.in                                         ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/stats.conf.in
-
-   Copy ${repoDir}/zm-mailbox/store/build/dist/versions-init.sql                                    ${repoDir}/zm-build/${currentPackage}/opt/zimbra/db/versions-init.sql
-   Copy ${repoDir}/zm-mailbox/store/conf/attrs/amavisd-new-attrs.xml                                ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/attrs/amavisd-new-attrs.xml
-   Copy ${repoDir}/zm-mailbox/store/conf/attrs/zimbra-attrs.xml                                     ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/attrs/zimbra-attrs.xml
-   Copy ${repoDir}/zm-mailbox/store/conf/attrs/zimbra-ocs.xml                                       ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/attrs/zimbra-ocs.xml
-   Copy ${repoDir}/zm-mailbox/store/conf/unbound.conf.in                                            ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/unbound.conf.in
-   Copy ${repoDir}/zm-mailbox/store/docs/INSTALL-DEV-MAC-UBUNTU-VM.md                               ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/INSTALL-DEV-MAC-UBUNTU-VM.md
-   Copy ${repoDir}/zm-mailbox/store/docs/INSTALL-DEV-MULTISERVER.txt                                ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/INSTALL-DEV-MULTISERVER.txt
-   Copy ${repoDir}/zm-mailbox/store/docs/INSTALL-DEV-UBUNTU12_64.txt                                ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/INSTALL-DEV-UBUNTU12_64.txt
-   Copy ${repoDir}/zm-mailbox/store/docs/INSTALL-OSX.md                                             ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/INSTALL-OSX.md
-   Copy ${repoDir}/zm-mailbox/store/docs/INSTALL-SVN-WIN32.txt                                      ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/INSTALL-SVN-WIN32.txt
-   Copy ${repoDir}/zm-mailbox/store/docs/INSTALL-VOICE.txt                                          ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/INSTALL-VOICE.txt
-   Copy ${repoDir}/zm-mailbox/store/docs/INSTALL-win.txt                                            ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/INSTALL-win.txt
-   Copy ${repoDir}/zm-mailbox/store/docs/Notification.md                                            ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/Notification.md
-   Copy ${repoDir}/zm-mailbox/store/docs/OAuthConsumer.txt                                          ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/OAuthConsumer.txt
-   Copy ${repoDir}/zm-mailbox/store/docs/RedoableOperations.txt                                     ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/RedoableOperations.txt
-   Copy ${repoDir}/zm-mailbox/store/docs/ServerLocalization.txt                                     ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/ServerLocalization.txt
-   Copy ${repoDir}/zm-mailbox/store/docs/abook.md                                                   ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/abook.md
-   Copy ${repoDir}/zm-mailbox/store/docs/accesscontrol.txt                                          ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/accesscontrol.txt
-   Copy ${repoDir}/zm-mailbox/store/docs/acl.md                                                     ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/acl.md
-   Copy ${repoDir}/zm-mailbox/store/docs/admin_soap_white_list.txt                                  ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/admin_soap_white_list.txt
-   Copy ${repoDir}/zm-mailbox/store/docs/alarm.md                                                   ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/alarm.md
-   Copy ${repoDir}/zm-mailbox/store/docs/autoprov.txt                                               ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/autoprov.txt
-   Copy ${repoDir}/zm-mailbox/store/docs/caches.txt                                                 ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/caches.txt
-   Copy ${repoDir}/zm-mailbox/store/docs/cal-todos.md                                               ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/cal-todos.md
-   Copy ${repoDir}/zm-mailbox/store/docs/certauth.txt                                               ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/certauth.txt
-   Copy ${repoDir}/zm-mailbox/store/docs/changepasswordlistener.txt                                 ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/changepasswordlistener.txt
-   Copy ${repoDir}/zm-mailbox/store/docs/clienturls.txt                                             ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/clienturls.txt
-   Copy ${repoDir}/zm-mailbox/store/docs/customauth-hosted.txt                                      ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/customauth-hosted.txt
-   Copy ${repoDir}/zm-mailbox/store/docs/customauth.txt                                             ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/customauth.txt
-   Copy ${repoDir}/zm-mailbox/store/docs/dav.txt                                                    ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/dav.txt
-   Copy ${repoDir}/zm-mailbox/store/docs/delegatedadmin.txt                                         ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/delegatedadmin.txt
-   Copy ${repoDir}/zm-mailbox/store/docs/extensions.md                                              ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/extensions.md
-   Copy ${repoDir}/zm-mailbox/store/docs/externalldapauth.txt                                       ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/externalldapauth.txt
-   Copy ${repoDir}/zm-mailbox/store/docs/familymailboxes.md                                         ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/familymailboxes.md
-   Copy ${repoDir}/zm-mailbox/store/docs/file-upload.txt                                            ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/file-upload.txt
-   Copy ${repoDir}/zm-mailbox/store/docs/freebusy-interop.md                                        ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/freebusy-interop.md
-   Copy ${repoDir}/zm-mailbox/store/docs/gal.txt                                                    ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/gal.txt
-   Copy ${repoDir}/zm-mailbox/store/docs/groups.md                                                  ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/groups.md
-   Copy ${repoDir}/zm-mailbox/store/docs/idn.txt                                                    ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/idn.txt
-   Copy ${repoDir}/zm-mailbox/store/docs/jetty.txt                                                  ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/jetty.txt
-   Copy ${repoDir}/zm-mailbox/store/docs/junk-notjunk.md                                            ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/junk-notjunk.md
-   Copy ${repoDir}/zm-mailbox/store/docs/krb5.txt                                                   ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/krb5.txt
-   Copy ${repoDir}/zm-mailbox/store/docs/ldap.txt                                                   ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/ldap.txt
-   Copy ${repoDir}/zm-mailbox/store/docs/ldap_replication_howto.txt                                 ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/ldap_replication_howto.txt
-   Copy ${repoDir}/zm-mailbox/store/docs/lockout.txt                                                ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/lockout.txt
-   Copy ${repoDir}/zm-mailbox/store/docs/logging.md                                                 ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/logging.md
-   Copy ${repoDir}/zm-mailbox/store/docs/login.txt                                                  ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/login.txt
-   Copy ${repoDir}/zm-mailbox/store/docs/mysql-monitoring.txt                                       ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/mysql-monitoring.txt
-   Copy ${repoDir}/zm-mailbox/store/docs/notes.txt                                                  ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/notes.txt
-   Copy ${repoDir}/zm-mailbox/store/docs/open_source_licenses_zcs-windows.txt                       ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/open_source_licenses_zcs-windows.txt
-   Copy ${repoDir}/zm-mailbox/store/docs/pop-imap.txt                                               ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/pop-imap.txt
-   Copy ${repoDir}/zm-mailbox/store/docs/postfix-ldap-tables.txt                                    ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/postfix-ldap-tables.txt
-   Copy ${repoDir}/zm-mailbox/store/docs/postfix-split-domain.md                                    ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/postfix-split-domain.md
-   Copy ${repoDir}/zm-mailbox/store/docs/preauth.md                                                 ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/preauth.md
-   Copy ${repoDir}/zm-mailbox/store/docs/qatests.txt                                                ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/qatests.txt
-   Copy ${repoDir}/zm-mailbox/store/docs/query.md                                                   ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/query.md
-   Copy ${repoDir}/zm-mailbox/store/docs/rest-admin.txt                                             ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/rest-admin.txt
-   Copy ${repoDir}/zm-mailbox/store/docs/rest.txt                                                   ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/rest.txt
-   Copy ${repoDir}/zm-mailbox/store/docs/rights-adminconsole.txt                                    ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/rights-adminconsole.txt
-   Copy ${repoDir}/zm-mailbox/store/docs/rights-ext.txt                                             ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/rights-ext.txt
-   Copy ${repoDir}/zm-mailbox/store/docs/rights.txt                                                 ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/rights.txt
-   Copy ${repoDir}/zm-mailbox/store/docs/share.md                                                   ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/share.md
-   Copy ${repoDir}/zm-mailbox/store/docs/snmp.txt                                                   ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/snmp.txt
-   Copy ${repoDir}/zm-mailbox/store/docs/soap-admin.txt                                             ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/soap-admin.txt
-   Copy ${repoDir}/zm-mailbox/store/docs/soap-calendar.txt                                          ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/soap-calendar.txt
-   Copy ${repoDir}/zm-mailbox/store/docs/soap-context-extension.txt                                 ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/soap-context-extension.txt
-   Copy ${repoDir}/zm-mailbox/store/docs/soap-document.txt                                          ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/soap-document.txt
-   Copy ${repoDir}/zm-mailbox/store/docs/soap-im.txt                                                ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/soap-im.txt
-   Copy ${repoDir}/zm-mailbox/store/docs/soap-mobile.txt                                            ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/soap-mobile.txt
-   Copy ${repoDir}/zm-mailbox/store/docs/soap-right.txt                                             ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/soap-right.txt
-   Copy ${repoDir}/zm-mailbox/store/docs/soap-waitset.txt                                           ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/soap-waitset.txt
-   Copy ${repoDir}/zm-mailbox/store/docs/soap.txt                                                   ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/soap.txt
-   Copy ${repoDir}/zm-mailbox/store/docs/spnego.txt                                                 ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/spnego.txt
-   Copy ${repoDir}/zm-mailbox/store/docs/sync.txt                                                   ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/sync.txt
-   Copy ${repoDir}/zm-mailbox/store/docs/testharness.txt                                            ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/testharness.txt
-   Copy ${repoDir}/zm-mailbox/store/docs/urls.md                                                    ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/urls.md
-   Copy ${repoDir}/zm-mailbox/store/docs/using-gdb.txt                                              ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/using-gdb.txt
-   Copy ${repoDir}/zm-mailbox/store/docs/webdav-mountpoint.txt                                      ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/webdav-mountpoint.txt
-   Copy ${repoDir}/zm-mailbox/store/docs/zdesktop-dev-howto.txt                                     ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/zdesktop-dev-howto.txt
-
    Copy ${repoDir}/zm-timezones/conf/timezones.ics                                                  ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/timezones.ics
 
    Cpy2 ${repoDir}/junixsocket/junixsocket-native/build/junixsocket-native-*.nar                    ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/
    Cpy2 ${repoDir}/junixsocket/junixsocket-native/build/libjunixsocket-native-*.so                  ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/
-   Copy ${repoDir}/zm-mailbox/native/build/dist/libzimbra-native.so                                 ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/libzimbra-native.so
 
    local zimbrathirdpartyjars=(
       "ant-1.7.0-ziputil-patched.jar"

@@ -28,7 +28,7 @@ if [ ! -x "/usr/bin/perl" ]; then
   exit 1
 fi
 
-MYDIR=`dirname $0`
+MYDIR="$(cd "$(dirname "$0")" && pwd)"
 
 . ./util/utilfunc.sh
 
@@ -201,7 +201,8 @@ fi
 
 checkRequired
 
-findLatestPackage zimbra-core
+installable_platform=$(cat ${MYDIR}/.BUILD_PLATFORM)
+
 if [ x"$PLATFORM" = x"$installable_platform" -a x"${ALLOW_PLATFORM_OVERRIDE}" = "xyes" ]; then
   ALLOW_PLATFORM_OVERRIDE="no"
 fi
@@ -217,7 +218,6 @@ if [ $AUTOINSTALL = "no" ]; then
 
   getInstallPackages
 
-  findLatestPackage zimbra-core
   if [ x"$PLATFORM" != x"$installable_platform" ]; then
     echo ""
     echo "You appear to be installing packages on a platform different"

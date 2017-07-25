@@ -52,14 +52,6 @@ main()
        cp -f ${repoDir}/zm-sync-store/src/bin/zmgdcutil ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmgdcutil
     fi
 
-    echo -e "\tCopy conf files of /opt/zimbra/" >> ${buildLogFile}
-    cp -f ${repoDir}/zm-mailbox/store-conf/conf/globs2 ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf
-    cp -f ${repoDir}/zm-mailbox/store-conf/conf/magic ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf
-    cp -f ${repoDir}/zm-mailbox/store-conf/conf/magic.zimbra ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf
-    cp -f ${repoDir}/zm-mailbox/store-conf/conf/globs2.zimbra ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf
-    cp -f ${repoDir}/zm-mailbox/store-conf/conf/spnego_java_options.in ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf
-    cp -f ${repoDir}/zm-mailbox/store-conf/conf/contacts/zimbra-contact-fields.xml ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/zimbra-contact-fields.xml
-
     if [ "${buildType}" == "NETWORK" ]
     then
        cp -f ${repoDir}/zm-ews-store/resources/jaxb-bindings.xml ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf
@@ -82,15 +74,13 @@ main()
     fi
 
     echo -e "\tCopy ${jettyVersion} files of /opt/zimbra/" >> ${buildLogFile}
-    cd ${repoDir}/zm-build/${currentPackage}/opt/zimbra; tar xzf ${repoDir}/zm-zcs-lib/build/dist/${jettyVersion}.tar.gz;
+    ( cd ${repoDir}/zm-build/${currentPackage}/opt/zimbra; tar xzf ${repoDir}/zm-zcs-lib/build/dist/${jettyVersion}.tar.gz; )
    
 
     echo -e "\tCopy lib files of /opt/zimbra/" >> ${buildLogFile}
 
     echo -e "\t\tCopy ext files of /opt/zimbra/lib/" >> ${buildLogFile}
     mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib
-    #cp -f ${repoDir}/zm-mailbox/native/build/dist/libsetuid.so ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/   #FIXME - PRASHANT - ZCS-458
-
     mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/mitel
     mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/clamscanner
     mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/twofactorauth
@@ -148,20 +138,14 @@ main()
 #-------------------- Get wars content (service.war, zimbra.war and zimbraAdmin.war) ---------------------------
 
     echo "\t\t++++++++++ service.war content ++++++++++" >> ${buildLogFile}
-    mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/webapps/service
-    cd ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/webapps/service; jar -xf ${repoDir}/zm-mailbox/store/build/dist/service.war
-
-    echo "\t\t***** zimbra.tld content *****" >> ${buildLogFile}
+    mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/webapps/service/WEB-INF/lib
     cp ${repoDir}/zm-zimlets/conf/zimbra.tld ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/webapps/service/WEB-INF
-    
-    echo "\t\t***** taglib jars to lib *****" >> ${buildLogFile}
     cp ${repoDir}/zm-taglib/build/zm-taglib*.jar         ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/webapps/service/WEB-INF/lib
     cp ${repoDir}/zm-zimlets/build/dist/zimlettaglib.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/webapps/service/WEB-INF/lib
 
-
     echo "\t\t++++++++++ zimbra.war content ++++++++++" >> ${buildLogFile}
     mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/webapps/zimbra
-    cd ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/webapps/zimbra; jar -xf ${repoDir}/zm-web-client/build/dist/jetty/webapps/zimbra.war
+    ( cd ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/webapps/zimbra; jar -xf ${repoDir}/zm-web-client/build/dist/jetty/webapps/zimbra.war )
 
     if [ "${buildType}" == "NETWORK" ]
     then
@@ -179,6 +163,15 @@ main()
     mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/webapps/zimbra/portals/example
     cp -rf ${repoDir}/zm-webclient-portal-example/example ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/webapps/zimbra/portals
 
+    echo "\t\t***** robots.txt content *****" >> ${buildLogFile}
+    cp -rf ${repoDir}/zm-aspell/conf/robots.txt ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/webapps/zimbra
+
+    echo "\t\t++++++++++ zimbraAdmin.war content ++++++++++" >> ${buildLogFile}
+    mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/webapps/zimbraAdmin
+    ( cd ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/webapps/zimbraAdmin; jar -xf ${repoDir}/zm-admin-console/build/dist/jetty/webapps/zimbraAdmin.war )
+
+    zaMsgPropertiesFile="${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/webapps/zimbraAdmin/WEB-INF/classes/messages/ZaMsg.properties"
+
     echo "\t\t***** downloads content *****" >> ${buildLogFile}
     downloadsDir=${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/webapps/zimbra/downloads
     mkdir -p ${downloadsDir}
@@ -186,83 +179,47 @@ main()
 
     if [ "${buildType}" == "NETWORK" ]
     then
-      scp -r root@${zimbraThirdPartyServer}:/ZimbraThirdParty/zco-migration-builds/current/* ${downloadsDir}
-      cd ${downloadsDir}
+      (
+        set -e
+        cd ${downloadsDir}
+        wget -r -nd --no-parent --reject "index.*" http://${zimbraThirdPartyServer}/ZimbraThirdParty/zco-migration-builds/current/
 
-      zcoMigrationBuilds=("ZmCustomizeMsi.js" \
-          "ZimbraBrandMsi.vbs" \
-          "ZimbraConnectorOLK_*_x64.msi" \
-          "ZimbraConnectorOLK_*_x64-UNSIGNED.msi" \
-          "ZimbraConnectorOLK_*_x86.msi" \
-          "ZimbraConnectorOLK_*_x86-UNSIGNED.msi" \
-          "ZimbraMigration_*_x64.zip" \
-          "ZimbraMigration_*_x86.zip" \
-          "ZCSPSTImportWizard-*.zip" \
-          "ZCSDominoMigrationWizard-*.zip \
-          "ZCSGroupwiseMigrationWizard-*.exe \
-          "ZCSExchangeMigrationWizard-*.zip");
-    fi
+        download=`ls ZmCustomizeMsi.js`
+        echo "CONNECTOR_MSI_DOWNLOAD_LINK = /downloads/${download}" >> ${zaMsgPropertiesFile};
+        
+        download=`ls ZimbraBrandMsi.vbs`
+        echo "ZCO_BRANDING_DOWNLOAD_LINK = /downloads/${download}" >> ${zaMsgPropertiesFile};
 
-    echo "\t\t***** robots.txt content *****" >> ${buildLogFile}
-    cp -rf ${repoDir}/zm-aspell/conf/robots.txt ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/webapps/zimbra
+        download=`ls ZimbraConnectorOLK_*_x64.msi`
+        echo "CONNECTOR_64_DOWNLOAD_LINK = /downloads/${download}" >> ${zaMsgPropertiesFile};
 
-    echo "\t\t++++++++++ zimbraAdmin.war content ++++++++++" >> ${buildLogFile}
-    mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/webapps/zimbraAdmin
-    cd ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/webapps/zimbraAdmin; jar -xf ${repoDir}/zm-admin-console/build/dist/jetty/webapps/zimbraAdmin.war
+        download=`ls ZimbraConnectorOLK_*_x64-UNSIGNED.msi`
+        echo "CONNECTOR_UNSIGNED_64_DOWNLOAD_LINK = /downloads/${download}" >> ${zaMsgPropertiesFile};
 
-    zaMsgPropertiesFile="${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/webapps/zimbraAdmin/WEB-INF/classes/messages/ZaMsg.properties"
+        download=`ls ZimbraConnectorOLK_*_x86.msi`
+        echo "CONNECTOR_32_DOWNLOAD_LINK = /downloads/${download}" >> ${zaMsgPropertiesFile};
 
-    if [ "${buildType}" == "NETWORK" ]
-    then
-      cd ${downloadsDir}
+        download=`ls ZimbraConnectorOLK_*_x86-UNSIGNED.msi`
+        echo "CONNECTOR_UNSIGNED_32_DOWNLOAD_LINK = /downloads/${download}" >> ${zaMsgPropertiesFile};
 
-      # ZmCustomizeMsi.js
-      download=`ls ZmCustomizeMsi.js`
-      echo "CONNECTOR_MSI_DOWNLOAD_LINK = /downloads/${download}" >> ${zaMsgPropertiesFile}; \
-      
-      # ZimbraBrandMsi.vbs
-      download=`ls ZimbraBrandMsi.vbs`
-      echo "ZCO_BRANDING_DOWNLOAD_LINK = /downloads/${download}" >> ${zaMsgPropertiesFile}; \
+        download=`ls ZimbraMigration_*_x64.zip`
+        echo "GENERAL_MIG_WIZ_X64_DOWNLOAD_LINK = /downloads/${download}" >> ${zaMsgPropertiesFile};
 
-      # ZimbraConnectorOLK_*_x64.msi
-      download=`ls ZimbraConnectorOLK_*_x64.msi`
-      echo "CONNECTOR_64_DOWNLOAD_LINK = /downloads/${download}" >> ${zaMsgPropertiesFile}; \
+        download=`ls ZimbraMigration_*_x86.zip`
+        echo "GENERAL_MIG_WIZ_X86_DOWNLOAD_LINK = /downloads/${download}" >> ${zaMsgPropertiesFile};
 
-      # ZimbraConnectorOLK_*_x64-UNSIGNED.msi
-      download=`ls ZimbraConnectorOLK_*_x64-UNSIGNED.msi`
-      echo "CONNECTOR_UNSIGNED_64_DOWNLOAD_LINK = /downloads/${download}" >> ${zaMsgPropertiesFile}; \
+        download=`ls ZCSPSTImportWizard-*.zip`
+        echo "IMPORT_WIZ_DOWNLOAD_LINK = /downloads/${download}" >> ${zaMsgPropertiesFile};
 
-      # ZimbraConnectorOLK_*_x86.msi
-      download=`ls ZimbraConnectorOLK_*_x86.msi`
-      echo "CONNECTOR_32_DOWNLOAD_LINK = /downloads/${download}" >> ${zaMsgPropertiesFile}; \
+        download=`ls ZCSDominoMigrationWizard-*.zip`
+        echo "DOMINO_MIG_WIZ_DOWNLOAD_LINK = /downloads/${download}" >> ${zaMsgPropertiesFile};
 
-      # ZimbraConnectorOLK_*_x86-UNSIGNED.msi
-      download=`ls ZimbraConnectorOLK_*_x86-UNSIGNED.msi`
-      echo "CONNECTOR_UNSIGNED_32_DOWNLOAD_LINK = /downloads/${download}" >> ${zaMsgPropertiesFile}; \
+        download=`ls ZCSGroupwiseMigrationWizard-*.exe`
+        echo "GROUPWISE_MIG_WIZ_DOWNLOAD_LINK = /downloads/${download}" >> ${zaMsgPropertiesFile};
 
-      # ZimbraMigration_*_x64.zip
-      download=`ls ZimbraMigration_*_x64.zip`
-      echo "GENERAL_MIG_WIZ_X64_DOWNLOAD_LINK = /downloads/${download}" >> ${zaMsgPropertiesFile}; \
-
-      # ZimbraMigration_*_x86.zip
-      download=`ls ZimbraMigration_*_x86.zip`
-      echo "GENERAL_MIG_WIZ_X86_DOWNLOAD_LINK = /downloads/${download}" >> ${zaMsgPropertiesFile}; \
-
-      # ZCSPSTImportWizard-*.zip
-      download=`ls ZCSPSTImportWizard-*.zip`
-      echo "IMPORT_WIZ_DOWNLOAD_LINK = /downloads/${download}" >> ${zaMsgPropertiesFile}; \
-
-      # ZCSDominoMigrationWizard-*.zip
-      download=`ls ZCSDominoMigrationWizard-*.zip`
-      echo "DOMINO_MIG_WIZ_DOWNLOAD_LINK = /downloads/${download}" >> ${zaMsgPropertiesFile}; \
-
-      # ZCSGroupwiseMigrationWizard-*.exe
-      download=`ls ZCSGroupwiseMigrationWizard-*.exe`
-      echo "GROUPWISE_MIG_WIZ_DOWNLOAD_LINK = /downloads/${download}" >> ${zaMsgPropertiesFile}; \
-
-      # ZCSExchangeMigrationWizard-*.zip
-      download=`ls ZCSExchangeMigrationWizard-*.zip`
-      echo "MIG_WIZ_DOWNLOAD_LINK = /downloads/${download}" >> ${zaMsgPropertiesFile}; \
+        download=`ls ZCSExchangeMigrationWizard-*.zip`
+        echo "MIG_WIZ_DOWNLOAD_LINK = /downloads/${download}" >> ${zaMsgPropertiesFile};
+      )
     fi
 
     echo "\t\t***** help content *****" >> ${buildLogFile}
@@ -444,7 +401,6 @@ main()
     
     cp -f ${repoDir}/zm-jetty-conf/conf/jetty/start.d/*.ini.in   ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/start.d
     cp -f ${repoDir}/zm-jetty-conf/conf/jetty/modules/npn/*.mod  ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/modules/npn
-    cp -f ${repoDir}/zm-mailbox/store/conf/web.xml.production    ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/etc/service.web.xml.in
     cp -f ${repoDir}/zm-web-client/WebRoot/WEB-INF/jetty-env.xml ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/etc/zimbra-jetty-env.xml.in
     cp -f ${repoDir}/zm-web-client/WebRoot/WEB-INF/jetty-env.xml ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/etc/zimbraAdmin-jetty-env.xml.in
     cp -f ${repoDir}/zm-zimlets/conf/web.xml.production ${repoDir}/zm-build/${currentPackage}/opt/zimbra/${jettyVersion}/etc/zimlet.web.xml.in
@@ -482,19 +438,39 @@ CreateDebianPackage()
         -regex '.*jetty-distribution-.*/webapps/zimbra/WEB-INF/web.xml' ! -regex '.*jetty-distribution-.*/webapps/service/WEB-INF/web.xml' ! \
         -regex '.*jetty-distribution-.*/work/.*' ! -regex '.*.hg.*' ! -regex '.*?debian-binary.*' ! -regex '.*?DEBIAN.*' -print0 | xargs -0 md5sum | \sed -e 's| \./| |' \
         > ${repoDir}/zm-build/${currentPackage}/DEBIAN/md5sums)
-    cat ${repoDir}/zm-build/rpmconf/Spec/${currentScript}.deb | sed -e "s/@@VERSION@@/${releaseNo}.${releaseCandidate}.${buildNo}.${os/_/.}/" -e "s/@@branch@@/${buildTimeStamp}/" \
-        -e "s/@@ARCH@@/${arch}/" -e "s/@@ARCH@@/amd64/" -e "s/^Copyright:/Copyright:/" -e "/^%post$/ r ${currentScript}.post" \
-        > ${repoDir}/zm-build/${currentPackage}/DEBIAN/control
+
+    (
+      set -e
+      MORE_DEPENDS="$(find ${repoDir}/zm-packages/ -name \*.deb \
+                         | xargs -n1 basename \
+                         | sed -e 's/_[0-9].*//' \
+                         | grep zimbra-mbox- \
+                         | sed '1s/^/, /; :a; {N;s/\n/, /;ba}')";
+
+      cat ${repoDir}/zm-build/rpmconf/Spec/${currentScript}.deb \
+         | sed -e "s/@@VERSION@@/${releaseNo}.${releaseCandidate}.${buildNo}.${os/_/.}/" \
+               -e "s/@@branch@@/${buildTimeStamp}/" \
+               -e "s/@@ARCH@@/${arch}/" \
+               -e "s/@@MORE_DEPENDS@@/${MORE_DEPENDS}/" \
+               -e "/^%post$/ r ${currentScript}.post"
+    ) > ${repoDir}/zm-build/${currentPackage}/DEBIAN/control
+
     (cd ${repoDir}/zm-build/${currentPackage}; dpkg -b ${repoDir}/zm-build/${currentPackage} ${repoDir}/zm-build/${arch})
 
 }
 
 CreateRhelPackage()
 {
+    MORE_DEPENDS="$(find ${repoDir}/zm-packages/ -name \*.rpm \
+                       | xargs -n1 basename \
+                       | sed -e 's/-[0-9].*//' \
+                       | grep zimbra-mbox- \
+                       | sed '1s/^/, /; :a; {N;s/\n/, /;ba}')";
+
     cat ${repoDir}/zm-build/rpmconf/Spec/${currentScript}.spec | \
     	sed -e "s/@@VERSION@@/${releaseNo}_${releaseCandidate}_${buildNo}.${os}/" \
             	-e "s/@@RELEASE@@/${buildTimeStamp}/" \
-            	-e "s/^Copyright:/Copyright:/" \
+                -e "s/@@MORE_DEPENDS@@/${MORE_DEPENDS}/" \
             	-e "/^%pre$/ r ${repoDir}/zm-build/rpmconf/Spec/Scripts/${currentScript}.pre" \
             	-e "/^%post$/ r ${repoDir}/zm-build/rpmconf/Spec/Scripts/${currentScript}.post" > ${repoDir}/zm-build/${currentScript}.spec
     echo "%attr(-, root, root) /opt/zimbra/lib" >> \
