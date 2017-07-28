@@ -2,7 +2,7 @@
    {
       "dir"             => "zm-mailbox",
       "ant_targets"     => [ "all", "pkg", "test-all-plough-through" ],
-      "deploy_pkg_into" => "bundle",
+      "deploy_pkg_into" => "zimbra-foss",
       "stage_cmd"       => sub {
          System("mkdir -p                                 $CFG{BUILD_DIR}/zm-mailbox/store-conf/");
          System("rsync -az store-conf/conf                $CFG{BUILD_DIR}/zm-mailbox/store-conf/");
@@ -10,14 +10,14 @@
       },
    },
    {
-      "dir"             => "zm-mailbox/store",
-      "ant_targets"     => [ "publish-store-test" ],
+      "dir"         => "zm-mailbox/store",
+      "ant_targets" => ["publish-store-test"],
       "stage_cmd"   => undef,
    },
    {
       "dir"             => "zm-zextras",
-      "make_targets"    => [ "all" ],
-      "deploy_pkg_into" => "repo-dev",
+      "make_targets"    => ["all"],
+      "deploy_pkg_into" => "zimbra-zextras",
    },
    {
       "dir"         => "zm-timezones",

@@ -13,6 +13,7 @@ use IPC::Cmd qw/run can_run/;
 use Net::Domain;
 use Term::ANSIColor;
 
+my $GLOBAL_NGINX_PORT = 8008;
 my $GLOBAL_PATH_TO_SCRIPT_FILE;
 my $GLOBAL_PATH_TO_SCRIPT_DIR;
 my $GLOBAL_PATH_TO_TOP;
@@ -93,14 +94,14 @@ sub LoadConfiguration($)
          {
             $CFG{$cfg_name}{$k} = ${$val}{$k};
 
-            printf( " %-25s: %-17s : %s\n", $cfg_name, $cmd_hash ? $src : "detected", $k . " => " . ${$val}{$k} );
+            printf( " %-35s: %-17s : %s\n", $cfg_name, $cmd_hash ? $src : "detected", $k . " => " . ${$val}{$k} );
          }
       }
       else
       {
          $CFG{$cfg_name} = $val;
 
-         printf( " %-25s: %-17s : %s\n", $cfg_name, $cmd_hash ? $src : "detected", $val );
+         printf( " %-35s: %-17s : %s\n", $cfg_name, $cmd_hash ? $src : "detected", $val );
       }
    }
 }
@@ -108,36 +109,41 @@ sub LoadConfiguration($)
 sub InitGlobalBuildVars()
 {
    {
+      my $destination_name_func = sub {
+         return "$CFG{BUILD_OS}-$CFG{BUILD_RELEASE}-$CFG{BUILD_RELEASE_NO_SHORT}-$CFG{BUILD_TS}-$CFG{BUILD_TYPE}-$CFG{BUILD_NO}";
+      };
+
       my $build_dir_func = sub {
-         return "$CFG{BUILD_ARTIFACTS_BASE_DIR}/$CFG{BUILD_OS}/$CFG{BUILD_RELEASE}-$CFG{BUILD_RELEASE_NO_SHORT}/$CFG{BUILD_TS}_$CFG{BUILD_TYPE}";
+         return "$CFG{BUILD_SOURCES_BASE_DIR}/.staging/$CFG{DESTINATION_NAME}";
       };
 
       my %cmd_hash = ();
 
       my @cmd_args = (
-         { name => "BUILD_NO",                 type => "=i",  hash_src => \%cmd_hash, default_sub => sub { return GetNewBuildNo(); }, },
-         { name => "BUILD_TS",                 type => "=i",  hash_src => \%cmd_hash, default_sub => sub { return GetNewBuildTs(); }, },
-         { name => "BUILD_ARTIFACTS_BASE_DIR", type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return "$GLOBAL_PATH_TO_TOP/BUILDS"; }, },
-         { name => "BUILD_SOURCES_BASE_DIR",   type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return $GLOBAL_PATH_TO_TOP; }, },
-         { name => "BUILD_RELEASE",            type => "=s",  hash_src => \%cmd_hash, default_sub => sub { Die("@_ not specified"); }, },
-         { name => "BUILD_RELEASE_NO",         type => "=s",  hash_src => \%cmd_hash, default_sub => sub { Die("@_ not specified"); }, },
-         { name => "BUILD_RELEASE_CANDIDATE",  type => "=s",  hash_src => \%cmd_hash, default_sub => sub { Die("@_ not specified"); }, },
-         { name => "BUILD_TYPE",               type => "=s",  hash_src => \%cmd_hash, default_sub => sub { Die("@_ not specified"); }, },
-         { name => "BUILD_THIRDPARTY_SERVER",  type => "=s",  hash_src => \%cmd_hash, default_sub => sub { Die("@_ not specified"); }, },
-         { name => "BUILD_PROD_FLAG",          type => "!",   hash_src => \%cmd_hash, default_sub => sub { return 1; }, },
-         { name => "BUILD_DEBUG_FLAG",         type => "!",   hash_src => \%cmd_hash, default_sub => sub { return 0; }, },
-         { name => "BUILD_DEV_TOOL_BASE_DIR",  type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return "$ENV{HOME}/.zm-dev-tools"; }, },
-         { name => "INTERACTIVE",              type => "!",   hash_src => \%cmd_hash, default_sub => sub { return 1; }, },
-         { name => "GIT_OVERRIDES",            type => "=s%", hash_src => \%cmd_hash, default_sub => sub { return {}; }, },
-         { name => "GIT_DEFAULT_TAG",          type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return undef; }, },
-         { name => "GIT_DEFAULT_REMOTE",       type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return undef; }, },
-         { name => "GIT_DEFAULT_BRANCH",       type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return undef; }, },
-         { name => "STOP_AFTER_CHECKOUT",      type => "!",   hash_src => \%cmd_hash, default_sub => sub { return 0; }, },
-         { name => "ANT_OPTIONS",              type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return undef; }, },
+         { name => "BUILD_NO",                   type => "=i",  hash_src => \%cmd_hash, default_sub => sub { return GetNewBuildNo(); }, },
+         { name => "BUILD_TS",                   type => "=i",  hash_src => \%cmd_hash, default_sub => sub { return GetNewBuildTs(); }, },
+         { name => "BUILD_DESTINATION_BASE_DIR", type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return "$GLOBAL_PATH_TO_TOP/BUILDS"; }, },
+         { name => "BUILD_SOURCES_BASE_DIR",     type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return $GLOBAL_PATH_TO_TOP; }, },
+         { name => "BUILD_RELEASE",              type => "=s",  hash_src => \%cmd_hash, default_sub => sub { Die("@_ not specified"); }, },
+         { name => "BUILD_RELEASE_NO",           type => "=s",  hash_src => \%cmd_hash, default_sub => sub { Die("@_ not specified"); }, },
+         { name => "BUILD_RELEASE_CANDIDATE",    type => "=s",  hash_src => \%cmd_hash, default_sub => sub { Die("@_ not specified"); }, },
+         { name => "BUILD_TYPE",                 type => "=s",  hash_src => \%cmd_hash, default_sub => sub { Die("@_ not specified"); }, },
+         { name => "BUILD_THIRDPARTY_SERVER",    type => "=s",  hash_src => \%cmd_hash, default_sub => sub { Die("@_ not specified"); }, },
+         { name => "BUILD_PROD_FLAG",            type => "!",   hash_src => \%cmd_hash, default_sub => sub { return 1; }, },
+         { name => "BUILD_DEBUG_FLAG",           type => "!",   hash_src => \%cmd_hash, default_sub => sub { return 0; }, },
+         { name => "BUILD_DEV_TOOL_BASE_DIR",    type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return "$ENV{HOME}/.zm-dev-tools"; }, },
+         { name => "INTERACTIVE",                type => "!",   hash_src => \%cmd_hash, default_sub => sub { return 1; }, },
+         { name => "GIT_OVERRIDES",              type => "=s%", hash_src => \%cmd_hash, default_sub => sub { return {}; }, },
+         { name => "GIT_DEFAULT_TAG",            type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return undef; }, },
+         { name => "GIT_DEFAULT_REMOTE",         type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return undef; }, },
+         { name => "GIT_DEFAULT_BRANCH",         type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return undef; }, },
+         { name => "STOP_AFTER_CHECKOUT",        type => "!",   hash_src => \%cmd_hash, default_sub => sub { return 0; }, },
+         { name => "ANT_OPTIONS",                type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return undef; }, },
 
          { name => "BUILD_OS",               type => "", hash_src => undef, default_sub => sub { return GetBuildOS(); }, },
          { name => "BUILD_ARCH",             type => "", hash_src => undef, default_sub => sub { return GetBuildArch(); }, },
          { name => "BUILD_RELEASE_NO_SHORT", type => "", hash_src => undef, default_sub => sub { my $x = $CFG{BUILD_RELEASE_NO}; $x =~ s/[.]//g; return $x; }, },
+         { name => "DESTINATION_NAME",       type => "", hash_src => undef, default_sub => sub { return &$destination_name_func; }, },
          { name => "BUILD_DIR",              type => "", hash_src => undef, default_sub => sub { return &$build_dir_func; }, },
       );
 
@@ -172,7 +178,7 @@ sub InitGlobalBuildVars()
    foreach my $x (`grep -o '\\<[E][N][V]_[A-Z_]*\\>' '$GLOBAL_PATH_TO_SCRIPT_FILE' | sort | uniq`)
    {
       chomp($x);
-      my $fmt2v = " %-25s: %s\n";
+      my $fmt2v = " %-35s: %s\n";
       printf( $fmt2v, $x, defined $ENV{$x} ? $ENV{$x} : "(undef)" );
    }
 
@@ -192,7 +198,7 @@ sub InitGlobalBuildVars()
       $ENV{JAVA_HOME} ||= dirname( dirname( Cwd::realpath($javac) ) );
       $ENV{PATH} = "$ENV{JAVA_HOME}/bin:$ENV{PATH}";
 
-      my $fmt2v = " %-25s: %s\n";
+      my $fmt2v = " %-35s: %s\n";
       printf( $fmt2v, "USING javac", "$javac (JAVA_HOME=$ENV{JAVA_HOME})" );
       printf( $fmt2v, "USING java",  $java );
       printf( $fmt2v, "USING maven", $mvn );
@@ -299,14 +305,6 @@ sub LoadRemotes()
 }
 
 
-sub LoadPkgDeployPaths()
-{
-   my %details = @{ EvalFile("instructions/$CFG{BUILD_TYPE}_pkg_deploy_paths.pl") };
-
-   return \%details;
-}
-
-
 sub LoadBuilds($)
 {
    my $repo_list = shift;
@@ -360,6 +358,59 @@ sub RemoveTargetInDir($$)
    }
 }
 
+sub EmitArchiveAccessInstructions($)
+{
+   my $archive_names = shift;
+
+   if ( -f "/etc/redhat-release" )
+   {
+      return <<EOM_DUMP;
+#########################################
+# INSTRUCTIONS TO ACCESS FROM CLIENT BOX
+#########################################
+
+sudo bash -s <<"EOM_SCRIPT"
+cat > /etc/yum.repos.d/zimbra-packages.repo <<EOM
+@{[
+   join("\n",
+      map {
+"[$_]
+name=Zimbra Package Archive ($_)
+baseurl=http://@{[Net::Domain::hostfqdn]}:$GLOBAL_NGINX_PORT/$CFG{DESTINATION_NAME}/archives/$_/
+enabled=1
+gpgcheck=0
+protect=0"
+      }
+      @$archive_names
+   )]}
+EOM
+yum clean all
+EOM_SCRIPT
+EOM_DUMP
+   }
+   else
+   {
+      return <<EOM_DUMP;
+#########################################
+# INSTRUCTIONS TO ACCESS FROM CLIENT BOX
+#########################################
+
+sudo bash -s <<"EOM_SCRIPT"
+cat > /etc/apt/sources.list.d/zimbra-packages.list << EOM
+@{[
+   join("\n",
+      map {
+"deb [trusted=yes] http://@{[Net::Domain::hostfqdn]}:$GLOBAL_NGINX_PORT/$CFG{DESTINATION_NAME}/archives/$_ ./ # Zimbra Package Archive ($_)"
+      }
+      @$archive_names
+   )]}
+EOM
+apt-get update
+EOM_SCRIPT
+EOM_DUMP
+   }
+}
+
 
 sub Build($)
 {
@@ -394,8 +445,6 @@ sub Build($)
 
    push( @{ $tool_attributes->{ant} }, $CFG{ANT_OPTIONS} )
      if ( $CFG{ANT_OPTIONS} );
-
-   my $pkg_deploy_path_details = LoadPkgDeployPaths();
 
    my $cnt = 0;
    for my $build_info (@ALL_BUILDS)
@@ -452,19 +501,16 @@ sub Build($)
 
                   if ( my $deploy_pkg_into = $build_info->{deploy_pkg_into} )
                   {
-                     my $pkg_deploy_method = $pkg_deploy_path_details->{$deploy_pkg_into}->{method} || "cp";
-                     my $pkg_deploy_path   = $pkg_deploy_path_details->{$deploy_pkg_into}->{path}   || "$CFG{BUILD_DIR}/packages";
+                     $deploy_pkg_into = "bundle"
+                       if ( $deploy_pkg_into eq "zimbra-foss" && !$ENV{ENV_ENABLE_ARCHIVE_ZIMBRA_FOSS} );
 
-                     System( "mkdir", "-p", $pkg_deploy_path );
+                     $deploy_pkg_into .= "-$ENV{ENV_ARCHIVE_SUFFIX_STR}"
+                       if ( $deploy_pkg_into ne "bundle" && $ENV{ENV_ARCHIVE_SUFFIX_STR} );
 
-                     if ( $pkg_deploy_method eq "cp" )
-                     {
-                        System("cp -a build/dist/* '$pkg_deploy_path/'");
-                     }
-                     else
-                     {
-                        Die("Unknown Pkg Deploy Method: '$pkg_deploy_method'");
-                     }
+                     my $packages_path = "$CFG{BUILD_DIR}/zm-packages/$deploy_pkg_into";
+
+                     System( "mkdir", "-p", $packages_path );
+                     System("rsync -av build/dist/[urc]* '$packages_path/'");
                   }
 
                   if ( !exists $build_info->{partial} )
@@ -515,6 +561,77 @@ sub Build($)
          }
       },
    );
+}
+
+
+sub Deploy()
+{
+   print "\n";
+   print "=========================================================================================================\n";
+   print color('blue') . "DEPLOYING ARTIFACTS" . color('reset') . "\n";
+   print "\n";
+   print "\n";
+
+   my $destination_dir = "$CFG{BUILD_DESTINATION_BASE_DIR}/$CFG{DESTINATION_NAME}";
+
+   System( "mkdir", "-p", "$destination_dir/archives" );
+
+   my @archive_names = map { basename($_) } grep { -d $_ && $_ !~ m/\/bundle$/ } glob("$CFG{BUILD_DIR}/zm-packages/*");
+
+   foreach my $archive_name (@archive_names)
+   {
+      System( "rsync", "-av", "--delete", "$CFG{BUILD_DIR}/zm-packages/$archive_name/", "$destination_dir/archives/$archive_name" );
+
+      if ( -f "/etc/redhat-release" )
+      {
+         System("cd '$destination_dir/archives/$archive_name' && createrepo '.'");
+      }
+      else
+      {
+         System("cd '$destination_dir/archives/$archive_name' && dpkg-scanpackages '.' /dev/null > Packages");
+      }
+   }
+
+   EchoToFile( "$destination_dir/archive-access.txt", EmitArchiveAccessInstructions( \@archive_names ) );
+
+   System("cp $CFG{BUILD_DIR}/zm-build/zcs-*.$CFG{BUILD_TS}.tgz $destination_dir/");
+
+   if ( !-f "/etc/nginx/conf.d/zimbra-pkg-archives-host.conf" || !`pgrep -f -P1 '[n]ginx'` )
+   {
+      print "\n";
+      print "=========================================================================================================\n";
+      print <<EOM_DUMP;
+@{[color('bold white')]}
+############################################
+# INSTRUCTIONS TO SETUP NGINX PACKAGES HOST
+############################################
+@{[color('reset')]}
+# You might need to resolve network, firewall, selinux, permissions issues appropriately before proceeding:
+
+# sudo sed -i -e s/^SELINUX=enforcing/SELINUX=permissive/ /etc/selinux/config
+# sudo setenforce permissive
+# sudo systemctl stop firewalld
+# sudo ufw disable
+@{[color('yellow')]}
+sudo bash -s <<"EOM_SCRIPT"
+[ -f /etc/redhat-release ] && ( yum install -y epel-release && yum install -y nginx && service nginx start )
+[ -f /etc/redhat-release ] || ( apt-get -y install nginx && service nginx start )
+tee /etc/nginx/conf.d/zimbra-pkg-archives-host.conf <<EOM
+server {
+  listen $GLOBAL_NGINX_PORT;
+  location / {
+     root $CFG{BUILD_DESTINATION_BASE_DIR};
+     autoindex on;
+  }
+}
+EOM
+service httpd stop 2>/dev/null
+service nginx restart
+service nginx status
+EOM_SCRIPT
+@{[color('reset')]}
+EOM_DUMP
+   }
 
    print "\n";
    print "=========================================================================================================\n";
@@ -732,7 +849,12 @@ sub DetectPrerequisite($;$)
    return $detected_util
      if ($detected_util);
 
-   Die("Prerequisite '$util_name' missing in PATH");
+   Die(
+      "Prerequisite '$util_name' missing in PATH"
+        . "\nTry: "
+        . "\n   [ -f /etc/redhat-release ] && sudo yum install perl-Data-Dumper perl-IPC-Cmd gcc-c++ java-1.8.0-openjdk ant ruby maven wget rpm-build createrepo"
+        . "\n   [ -f /etc/redhat-release ] || sudo apt-get install software-properties-common openjdk-8-jdk ant ruby git maven build-essential "
+   );
 }
 
 
@@ -815,8 +937,12 @@ sub main()
 
    Checkout($all_repos);
 
-   Build($all_repos)
-     if ( !$CFG{STOP_AFTER_CHECKOUT} );
+   if ( !$CFG{STOP_AFTER_CHECKOUT} )
+   {
+      Build($all_repos);
+
+      Deploy();
+   }
 }
 
 main();
