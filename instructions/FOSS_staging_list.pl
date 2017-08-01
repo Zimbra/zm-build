@@ -1,7 +1,7 @@
 @ENTRIES = (
    {
       "dir"             => "zm-mailbox",
-      "ant_targets"     => [ "all", "pkg" ],
+      "ant_targets"     => [ "all", "pkg", "test-all-plough-through" ],
       "deploy_pkg_into" => "bundle",
       "stage_cmd"       => sub {
          System("mkdir -p                                 $GLOBAL_BUILD_DIR/zm-mailbox/store-conf/");
