@@ -584,11 +584,17 @@ sub Deploy()
 
       if ( -f "/etc/redhat-release" )
       {
-         System("cd '$destination_dir/archives/$archive_name' && createrepo '.'");
+         if ( DetectPrerequisite( "createrepo", "", 1 ) )
+         {
+            System("cd '$destination_dir/archives/$archive_name' && createrepo '.'");
+         }
       }
       else
       {
-         System("cd '$destination_dir/archives/$archive_name' && dpkg-scanpackages '.' /dev/null > Packages");
+         if ( DetectPrerequisite( "dpkg-scanpackages", "", 1 ) )
+         {
+            System("cd '$destination_dir/archives/$archive_name' && dpkg-scanpackages '.' /dev/null > Packages");
+         }
       }
    }
 
@@ -839,10 +845,11 @@ sub EchoToFile($$)
 }
 
 
-sub DetectPrerequisite($;$)
+sub DetectPrerequisite($;$$)
 {
-   my $util_name = shift;
+   my $util_name       = shift;
    my $additional_path = shift || "";
+   my $warn_only       = shift || 0;
 
    chomp( my $detected_util = `PATH="$additional_path:\$PATH" \\which "$util_name" 2>/dev/null | sed -e 's,//*,/,g'` );
 
@@ -853,7 +860,9 @@ sub DetectPrerequisite($;$)
       "Prerequisite '$util_name' missing in PATH"
         . "\nTry: "
         . "\n   [ -f /etc/redhat-release ] && sudo yum install perl-Data-Dumper perl-IPC-Cmd gcc-c++ java-1.8.0-openjdk ant ruby maven wget rpm-build createrepo"
-        . "\n   [ -f /etc/redhat-release ] || sudo apt-get install software-properties-common openjdk-8-jdk ant ruby git maven build-essential "
+        . "\n   [ -f /etc/redhat-release ] || sudo apt-get install software-properties-common openjdk-8-jdk ant ruby git maven build-essential",
+      "",
+      $warn_only
    );
 }
 
@@ -896,33 +905,40 @@ sub einfo()
    return "ret=" . ( $? >> 8 ) . ( ( $? & 127 ) ? ", sig=SIG" . $SIG_NAME[ $? & 127 ] : "" );
 }
 
-sub Die($;$)
+sub Die($;$$)
 {
-   my $msg  = shift;
-   my $info = shift || "";
-   my $err  = "$!";
+   my $msg       = shift;
+   my $info      = shift || "";
+   my $warn_only = shift || 0;
 
-   print "\n";
+   my $err = "$!";
+
+   print "\n" if ( !$warn_only );
    print "\n";
    print "=========================================================================================================\n";
-   print color('red') . "FAILURE MSG" . color('reset') . " : $msg\n";
+   print color('red') . "FAILURE MSG" . color('reset') . " : $msg\n"  if ( !$warn_only );
+   print color('red') . "WARNING MSG" . color('reset') . " : $msg\n"  if ($warn_only);
    print color('red') . "SYSTEM ERR " . color('reset') . " : $err\n"  if ($err);
    print color('red') . "EXTRA INFO " . color('reset') . " : $info\n" if ($info);
    print "\n";
    print "=========================================================================================================\n";
-   print color('red');
-   print "--Stack Trace--\n";
-   my $i = 1;
 
-   while ( ( my @call_details = ( caller( $i++ ) ) ) )
+   if ( !$warn_only )
    {
-      print $call_details[1] . ":" . $call_details[2] . " called from " . $call_details[3] . "\n";
-   }
-   print color('reset');
-   print "\n";
-   print "=========================================================================================================\n";
+      print color('red');
+      print "--Stack Trace--\n";
+      my $i = 1;
 
-   die "END";
+      while ( ( my @call_details = ( caller( $i++ ) ) ) )
+      {
+         print $call_details[1] . ":" . $call_details[2] . " called from " . $call_details[3] . "\n";
+      }
+      print color('reset');
+      print "\n";
+      print "=========================================================================================================\n";
+
+      die "END"
+   }
 }
 
 ##############################################################################################
