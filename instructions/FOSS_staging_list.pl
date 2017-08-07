@@ -20,11 +20,9 @@
       "deploy_pkg_into" => "zimbra-zextras",
    },
    {
-      "dir"         => "zm-timezones",
-      "ant_targets" => ["publish-local"],
-      "stage_cmd"   => sub {
-         System("(cd .. && rsync -az --relative zm-timezones $CFG{BUILD_DIR}/)");
-      },
+      "dir"             => "zm-timezones",
+      "ant_targets"     => ["pkg"],
+      "deploy_pkg_into" => "bundle",         # Change this to zimbra-foss once zimbra-core and zimbra-store are moved to repo as well.
    },
    {
       "dir"         => "junixsocket/junixsocket-native",

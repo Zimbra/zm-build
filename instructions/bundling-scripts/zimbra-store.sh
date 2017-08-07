@@ -469,7 +469,7 @@ CreateDebianPackage()
       MORE_DEPENDS="$(find ${repoDir}/zm-packages/ -name \*.deb \
                          | xargs -n1 basename \
                          | sed -e 's/_[0-9].*//' \
-                         | grep zimbra-mbox- \
+                         | grep -e zimbra-mbox- \
                          | sed '1s/^/, /; :a; {N;s/\n/, /;ba}')";
 
       cat ${repoDir}/zm-build/rpmconf/Spec/${currentScript}.deb \
@@ -489,7 +489,7 @@ CreateRhelPackage()
     MORE_DEPENDS="$(find ${repoDir}/zm-packages/ -name \*.rpm \
                        | xargs -n1 basename \
                        | sed -e 's/-[0-9].*//' \
-                       | grep zimbra-mbox- \
+                       | grep -e zimbra-mbox- \
                        | sed '1s/^/, /; :a; {N;s/\n/, /;ba}')";
 
     cat ${repoDir}/zm-build/rpmconf/Spec/${currentScript}.spec | \
