@@ -701,7 +701,7 @@ main()
       "yuicompressor-2.4.2-zimbra.jar"
       "zkclient-0.1.0.jar"
       "zookeeper-3.4.5.jar"
-      "zm-ews-stub-1.0.jar"
+      "zm-ews-stub-2.0.jar"
       "ehcache-3.1.2.jar"
    )
 

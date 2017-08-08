@@ -4,13 +4,27 @@
       "ant_targets"     => [ "all", "pkg" ],
       "deploy_pkg_into" => "bundle",
       "stage_cmd"       => sub {
+         System("mkdir -p                                 $GLOBAL_BUILD_DIR/zm-mailbox/store-conf/");
+         System("rsync -az store-conf/conf                $GLOBAL_BUILD_DIR/zm-mailbox/store-conf/");
          System("install -T -D store/build/dist/versions-init.sql $GLOBAL_BUILD_DIR/zm-mailbox/store/build/dist/versions-init.sql");
       },
+   },
+   {
+      "dir"             => "zm-mailbox/store",
+      "ant_targets"     => [ "publish-store-test" ],
+      "stage_cmd"   => undef,
    },
    {
       "dir"             => "zm-zextras",
       "make_targets"    => [ "PKG_RELEASE=1zimbra${GLOBAL_BUILD_RELEASE_NO_MAJOR}.${GLOBAL_BUILD_RELEASE_NO_MINOR}b1", "all" ],
       "deploy_pkg_into" => "repo-dev",
+   },
+   {
+      "dir"         => "zm-timezones",
+      "ant_targets" => ["publish-local"],
+      "stage_cmd"   => sub {
+         System("(cd .. && rsync -az --relative zm-timezones $GLOBAL_BUILD_DIR/)");
+      },
    },
    {
       "dir"         => "junixsocket/junixsocket-native",
@@ -46,6 +60,11 @@
    },
    {
       "dir"         => "zm-ajax",
+      "ant_targets" => ["publish-local"],
+      "stage_cmd"   => undef,
+   },
+   {
+      "dir"         => "zm-admin-ajax",
       "ant_targets" => ["publish-local"],
       "stage_cmd"   => undef,
    },
@@ -370,13 +389,6 @@
       "ant_targets" => undef,
       "stage_cmd"   => sub {
          System("cp -f -r ../zm-jetty-conf $GLOBAL_BUILD_DIR");
-      },
-   },
-   {
-      "dir"         => "zm-timezones",
-      "ant_targets" => undef,
-      "stage_cmd"   => sub {
-         System("(cd .. && rsync -az --relative zm-timezones $GLOBAL_BUILD_DIR/)");
       },
    },
 );

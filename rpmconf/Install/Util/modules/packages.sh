@@ -88,6 +88,9 @@ installPackages() {
                printf "%48s %s\n" "$pkg" "will be downloaded and installed."
                repo_pkg_names+=( "$pkg" )
             fi
+         else
+            printf "%48s %s\n" "$pkg" "is missing.                                    ERROR";
+            (( ++gather_dep_errors ))
          fi
 
          gather_visit_flag[$pkg]=2
@@ -95,6 +98,7 @@ installPackages() {
    }
 
    local -A gather_visit_flag=()
+   local gather_dep_errors=0
    local repo_pkg_names_delayed=()
    local repo_pkg_names=()
    local local_pkg_names=()
@@ -105,6 +109,13 @@ installPackages() {
    do
       gather_package_info $PKG;
    done
+
+   if [ "$gather_dep_errors" -gt 0 ]
+   then
+      echo
+      echo "Unable to find missing packages in repository. System is not modified."
+      exit 1
+   fi
 
    if [ "${#repo_pkg_names[@]}" -gt 0 ]
    then
