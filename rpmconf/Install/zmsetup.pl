@@ -1478,7 +1478,7 @@ sub setDefaults {
   $config{ldap_dit_base_dn_config} = "cn=zimbra"
     if ($config{ldap_dit_base_dn_config} eq "");
   $config{mailboxd_directory} = "/opt/zimbra/mailboxd";
-  if ( -f "/opt/zimbra/jetty/start.jar" ) {
+  if ( -f "/opt/zimbra/common/jetty_home/start.jar" ) {
     $config{mailboxd_keystore} = "$config{mailboxd_directory}/etc/keystore";
     $config{mailboxd_server} = "jetty";
   } elsif ( -f "/opt/zimbra/tomcat/bin/startup.sh" ) {
