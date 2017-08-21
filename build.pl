@@ -880,8 +880,6 @@ sub Run(%)
 
    if ( $child_pid != 0 )    # parent
    {
-      local $?;
-
       while ( waitpid( $child_pid, 0 ) == -1 ) { }
 
       Die( "child $child_pid died", einfo($?) )
@@ -926,7 +924,7 @@ sub Die($;$$)
    if ( !$warn_only )
    {
       print color('red');
-      print "--Stack Trace--\n";
+      print "--Stack Trace-- ($$)\n";
       my $i = 1;
 
       while ( ( my @call_details = ( caller( $i++ ) ) ) )
