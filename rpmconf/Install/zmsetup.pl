@@ -199,6 +199,9 @@ if (! $newinstall ) {
   }
 
   # if we're an upgrade, run the upgrader...
+  if ($prevVersion eq "") {
+    $prevVersion = $curVersion;
+  }
   if (($prevVersion ne $curVersion )) {
     progress ("Upgrading from $prevVersion to $curVersion\n");
     open (H, ">>/opt/zimbra/.install_history");
