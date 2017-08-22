@@ -421,6 +421,7 @@ sub Build($)
 
    my $tool_attributes = {
       ant => [
+         "-silent",
          "-Ddebug=$CFG{BUILD_DEBUG_FLAG}",
          "-Dis-production=$CFG{BUILD_PROD_FLAG}",
          "-Dzimbra.buildinfo.platform=$CFG{BUILD_OS}",
@@ -432,6 +433,7 @@ sub Build($)
          "-Dzimbra.buildinfo.buildnum=$CFG{BUILD_NO}",
       ],
       make => [
+         "--quiet",
          "debug=$CFG{BUILD_DEBUG_FLAG}",
          "is-production=$CFG{BUILD_PROD_FLAG}",
          "zimbra.buildinfo.platform=$CFG{BUILD_OS}",
@@ -441,6 +443,9 @@ sub Build($)
          "zimbra.buildinfo.date=$CFG{BUILD_TS}",
          "zimbra.buildinfo.host=$CFG{BUILD_HOSTNAME}",
          "zimbra.buildinfo.buildnum=$CFG{BUILD_NO}",
+      ],
+      mvn => [
+         "--quiet",
       ],
    };
 
