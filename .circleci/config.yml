@@ -14,6 +14,7 @@ references:
             --build-release-candidate="$ZIMBRA_CI_BUILD_RELEASE_CANDIDATE" \
             --build-thirdparty-server="$ZIMBRA_CI_THIRDPARTY_SERVER" \
             --deploy-url-prefix="https://$ZIMBRA_CI_DEPLOY_HOSTNAME/$ZIMBRA_CI_DEPLOY_PATH" \
+            --git-default-branch="$ZIMBRA_CI_GIT_DEFAULT_BRANCH" \
             "${ZIMBRA_CI_OVERRIDES[@]}" \
             --build-os="$ZIMBRA_BUILD_OS" \
             --build-no="$CIRCLE_BUILD_NUM" \

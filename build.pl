@@ -726,8 +726,8 @@ sub Clone($$)
    my $repo_remote_details = shift;
 
    my $repo_name       = $repo_details->{name};
-   my $repo_branch     = $CFG{GIT_OVERRIDES}->{"$repo_name.branch"} || $repo_details->{branch} || $CFG{GIT_DEFAULT_BRANCH} || "develop";
-   my $repo_tag        = $CFG{GIT_OVERRIDES}->{"$repo_name.tag"} || $repo_details->{tag} || $CFG{GIT_DEFAULT_TAG} if ( $CFG{GIT_OVERRIDES}->{"$repo_name.tag"} || !$CFG{GIT_OVERRIDES}->{"$repo_name.branch"} );
+   my $repo_branch_csv = $CFG{GIT_OVERRIDES}->{"$repo_name.branch"} || $repo_details->{branch} || $CFG{GIT_DEFAULT_BRANCH} || "develop";
+   my $repo_tag_csv    = $CFG{GIT_OVERRIDES}->{"$repo_name.tag"} || $repo_details->{tag} || $CFG{GIT_DEFAULT_TAG} if ( $CFG{GIT_OVERRIDES}->{"$repo_name.tag"} || !$CFG{GIT_OVERRIDES}->{"$repo_name.branch"} );
    my $repo_remote     = $CFG{GIT_OVERRIDES}->{"$repo_name.remote"} || $repo_details->{remote} || $CFG{GIT_DEFAULT_REMOTE} || "gh-zm";
    my $repo_url_prefix = $CFG{GIT_OVERRIDES}->{"$repo_remote.url-prefix"} || $repo_remote_details->{$repo_remote}->{'url-prefix'} || Die( "unresolved url-prefix for remote='$repo_remote'", "" );
 
@@ -737,13 +737,27 @@ sub Clone($$)
 
    if ( !-d $repo_dir )
    {
-      my @clone_cmd_args = ( "git", "clone" );
+      my $s = 0;
+      foreach my $minus_b_arg ( split( /,/, $repo_tag_csv ? $repo_tag_csv : $repo_branch_csv ) )
+      {
+         my @clone_cmd_args = ( "git", "clone" );
 
-      push( @clone_cmd_args, "--depth=1" ) if ( not $ENV{ENV_GIT_FULL_CLONE} );
-      push( @clone_cmd_args, "-b", $repo_tag ? $repo_tag : $repo_branch );
-      push( @clone_cmd_args, "$repo_url_prefix/$repo_name.git", "$repo_dir" );
+         push( @clone_cmd_args, "--depth=1" ) if ( not $ENV{ENV_GIT_FULL_CLONE} );
+         push( @clone_cmd_args, "-b", $minus_b_arg );
+         push( @clone_cmd_args, "$repo_url_prefix/$repo_name.git", "$repo_dir" );
 
-      System(@clone_cmd_args);
+         print "\n";
+         my $r = System( { continue_on_error => 1 }, @clone_cmd_args );
+
+         if ( $r->{success} )
+         {
+            $s++;
+            last;
+         }
+      }
+
+      Die("Clone Attempts Failed")
+        if ( !$s );
 
       RemoveTargetInDir( $repo_name, $CFG{BUILD_DIR} );
    }
@@ -751,10 +765,28 @@ sub Clone($$)
    {
       if ( !defined $ENV{ENV_GIT_UPDATE_INCLUDE} || grep { $repo_name =~ /$_/ } split( ",", $ENV{ENV_GIT_UPDATE_INCLUDE} ) )
       {
-         if ($repo_tag)
+         if ($repo_tag_csv)
          {
-            print "\n";
-            Run( cd => $repo_dir, child => sub { System( "git", "checkout", $repo_tag ); } );
+            Run(
+               cd    => $repo_dir,
+               child => sub {
+
+                  my $s = 0;
+                  foreach my $minus_b_arg ( split( /,/, $repo_tag_csv ) )
+                  {
+                     print "\n";
+                     my $r = System( "git", "checkout", $minus_b_arg );
+                     if ( $r->{success} )
+                     {
+                        $s++;
+                        last;
+                     }
+                  }
+
+                  Die("Clone Attempts Failed")
+                    if ( !$s );
+               },
+            );
 
             RemoveTargetInDir( $repo_name, $CFG{BUILD_DIR} );
          }
@@ -779,18 +811,27 @@ sub Clone($$)
 
 sub System(@)
 {
+   my $options = shift
+     if ( @_ && ref( $_[0] ) eq "HASH" );
+
+   $options->{continue_on_error} ||= 0;
+   $options->{verbose}           ||= 1;
+
    my $cmd_str = "@_";
 
-   print color('green') . "#: pwd=@{[Cwd::getcwd()]}" . color('reset') . "\n";
-   print color('green') . "#: $cmd_str" . color('reset') . "\n";
+   if ( $options->{verbose} )
+   {
+      print color('green') . "#: pwd=@{[Cwd::getcwd()]}" . color('reset') . "\n";
+      print color('green') . "#: $cmd_str" . color('reset') . "\n";
+   }
 
    $! = 0;
    my ( $success, $error_message, $full_buf, $stdout_buf, $stderr_buf ) = run( command => \@_, verbose => 1 );
 
    Die( "cmd='$cmd_str'", $error_message )
-     if ( !$success );
+     if ( !$success && !$options->{continue_on_error} );
 
-   return { msg => $error_message, out => $stdout_buf, err => $stderr_buf };
+   return { msg => $error_message, out => $stdout_buf, err => $stderr_buf, success => $success };
 }
 
 
