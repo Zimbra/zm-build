@@ -660,7 +660,7 @@ main()
       "junixsocket-rmi-2.0.4.jar"
       "junixsocket-native-common-2.0.4.jar"
       "native-lib-loader-2.0.2.jar"
-      "jython-standalone-2.5.2.jar"
+      "jython-standalone-2.7.1.jar"
       "jline-0.9.93.jar"
       "jzlib-1.0.7.jar"
       "libidn-1.24.jar"
