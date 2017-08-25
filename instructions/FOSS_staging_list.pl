@@ -1,7 +1,7 @@
 @ENTRIES = (
    {
       "dir"             => "zm-mailbox",
-      "ant_targets"     => [ "all", "pkg", "test-all-plough-through" ],
+      "ant_targets"     => ["pkg-after-plough-through-tests"],
       "deploy_pkg_into" => "zimbra-foss",
       "stage_cmd"       => sub {
          System("mkdir -p                                 $CFG{BUILD_DIR}/zm-mailbox/store-conf/");
