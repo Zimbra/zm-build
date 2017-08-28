@@ -464,6 +464,7 @@ CreateDebianPackage()
                -e "s/@@branch@@/${buildTimeStamp}/" \
                -e "s/@@ARCH@@/${arch}/" \
                -e "s/@@MORE_DEPENDS@@/${MORE_DEPENDS}/" \
+               -e "s/@@PKG_OS_TAG@@/${PKG_OS_TAG}/" \
                -e "/^%post$/ r ${currentScript}.post"
     ) > ${repoDir}/zm-build/${currentPackage}/DEBIAN/control
 
@@ -483,8 +484,10 @@ CreateRhelPackage()
     	sed -e "s/@@VERSION@@/${releaseNo}_${releaseCandidate}_${buildNo}.${os}/" \
             	-e "s/@@RELEASE@@/${buildTimeStamp}/" \
                 -e "s/@@MORE_DEPENDS@@/${MORE_DEPENDS}/" \
+                -e "s/@@PKG_OS_TAG@@/${PKG_OS_TAG}/" \
             	-e "/^%pre$/ r ${repoDir}/zm-build/rpmconf/Spec/Scripts/${currentScript}.pre" \
             	-e "/^%post$/ r ${repoDir}/zm-build/rpmconf/Spec/Scripts/${currentScript}.post" > ${repoDir}/zm-build/${currentScript}.spec
+
     echo "%attr(-, root, root) /opt/zimbra/lib" >> \
     	${repoDir}/zm-build/${currentScript}.spec
     echo "%attr(440, root, root) /etc/sudoers.d/02_zimbra-store" >> \
