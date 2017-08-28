@@ -143,6 +143,7 @@ sub InitGlobalBuildVars()
          { name => "DEPLOY_URL_PREFIX",          type => "=s",  hash_src => \%cmd_hash, default_sub => sub { $CFG{LOCAL_DEPLOY} = 1; return "http://" . Net::Domain::hostfqdn . ":8008"; }, },
 
          { name => "BUILD_ARCH",             type => "", hash_src => undef, default_sub => sub { return GetBuildArch(); }, },
+         { name => "PKG_OS_TAG",             type => "", hash_src => undef, default_sub => sub { return GetPkgOsTag(); }, },
          { name => "BUILD_RELEASE_NO_SHORT", type => "", hash_src => undef, default_sub => sub { my $x = $CFG{BUILD_RELEASE_NO}; $x =~ s/[.]//g; return $x; }, },
          { name => "DESTINATION_NAME",       type => "", hash_src => undef, default_sub => sub { return &$destination_name_func; }, },
          { name => "BUILD_DIR",              type => "", hash_src => undef, default_sub => sub { return &$build_dir_func; }, },
@@ -554,6 +555,7 @@ sub Build($)
                      branch='$CFG{BUILD_RELEASE}-$CFG{BUILD_RELEASE_NO_SHORT}' \\
                      buildNo='$CFG{BUILD_NO}' \\
                      os='$CFG{BUILD_OS}' \\
+                     PKG_OS_TAG='$CFG{PKG_OS_TAG}' \\
                      buildType='$CFG{BUILD_TYPE}' \\
                      repoDir='$CFG{BUILD_DIR}' \\
                      arch='$CFG{BUILD_ARCH}' \\
@@ -684,7 +686,7 @@ sub GetNewBuildTs()
 }
 
 
-sub GetBuildOS()
+sub GetBuildOS()    # FIXME - use standard mechanism
 {
    our $detected_os = undef;
 
@@ -702,19 +704,30 @@ sub GetBuildOS()
    return detect_os();
 }
 
-sub GetBuildArch()    # FIXME - use standard mechanism
+sub GetBuildArch()
 {
-   chomp( my $PROCESSOR_ARCH = `uname -m | grep -o 64` );
-
    my $b_os = $CFG{BUILD_OS};
 
-   return "amd" . $PROCESSOR_ARCH
-     if ( $b_os =~ /UBUNTU/ );
+   return "amd64"
+     if ( $b_os =~ /UBUNTU[0-9]+_64/ );
 
-   return "x86_" . $PROCESSOR_ARCH
-     if ( $b_os =~ /RHEL/ || $b_os =~ /CENTOS/ );
+   return "x86_64"
+     if ( $b_os =~ /RHEL[0-9]+_64/ || $b_os =~ /CENTOS[0-9]+_64/ );
 
-   Die("Unknown Arch");
+   Die("Could not determine BUILD_ARCH");
+}
+
+sub GetPkgOsTag()
+{
+   my $b_os = $CFG{BUILD_OS};
+
+   return "u$1"
+      if ( $b_os =~ /UBUNTU([0-9]+)_/ );
+
+   return "r$1"
+     if ( $b_os =~ /RHEL([0-9]+)_/ || $b_os =~ /CENTOS([0-9]+)_/ );
+
+   Die("Could not determine PKG_OS_TAG");
 }
 
 

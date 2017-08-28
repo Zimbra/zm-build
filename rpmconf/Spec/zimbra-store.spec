@@ -12,7 +12,7 @@ Vendor: Zimbra, Inc.
 Packager: Zimbra, Inc.
 BuildRoot: /opt/zimbra
 AutoReqProv: no
-requires: zimbra-core, zimbra-store-components@@MORE_DEPENDS@@
+requires: zimbra-core, zimbra-store-components, zimbra-jetty-distribution >= 9.3.5.v20151012-1.@@PKG_OS_TAG@@@@MORE_DEPENDS@@
 
 %description
 Best email money can buy

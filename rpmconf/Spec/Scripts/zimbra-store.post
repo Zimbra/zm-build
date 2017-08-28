@@ -18,7 +18,6 @@
 
 H=`hostname -s`
 I=`hostname -i`
-JETTY_VERSION=distribution-9.3.5.v20151012
 
 if [ -f /opt/zimbra/db/db.sql ]; then
   mv /opt/zimbra/db/db.sql /opt/zimbra/db/db.sql.in
@@ -27,10 +26,8 @@ if [ -f /opt/zimbra/db/db.sql ]; then
   chmod 440 /opt/zimbra/db/db.sql*
 fi
 
-rm -f /opt/zimbra/mailboxd
-rm -f /opt/zimbra/jetty
-ln -s /opt/zimbra/jetty-${JETTY_VERSION} /opt/zimbra/jetty
-ln -s /opt/zimbra/jetty-${JETTY_VERSION} /opt/zimbra/mailboxd
+( cd /opt/zimbra && rm -f jetty    && ln -s jetty_base jetty    )
+( cd /opt/zimbra && rm -f mailboxd && ln -s jetty_base mailboxd )
 
 mkdir -p /opt/zimbra/mailboxd/logs
 chown zimbra:zimbra /opt/zimbra/mailboxd/logs
