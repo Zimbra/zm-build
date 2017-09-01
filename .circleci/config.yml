@@ -25,7 +25,7 @@ references:
                   "${ZIMBRA_CI_OVERRIDES[@]}" \
                   --build-os="$ZIMBRA_BUILD_OS" \
                   --build-no="$CIRCLE_BUILD_NUM" \
-                  --build-ts="$(.circleci/timestamp_hoop.sh)" \
+                  --build-ts="$(date "+%Y%m%d%M%H%S")" \
                   --no-interactive \
                | tee -a build.log;
                mkdir -p ../BUILDS
@@ -109,11 +109,13 @@ workflows:
       jobs:
          - build_u16
          - build_u14
+         - build_c7
          - hold:
             type: approval
             requires:
                - build_u16
                - build_u14
+               - build_c7
          - deploy_s3:
             requires:
                - hold
