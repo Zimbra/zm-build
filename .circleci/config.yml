@@ -27,7 +27,7 @@ references:
                   --build-no="$CIRCLE_BUILD_NUM" \
                   --build-ts="$(date "+%Y%m%d%M%H%S")" \
                   --no-interactive \
-               | tee -a build.log;
+               2>&1 | tee -a build.log;
                mkdir -p ../BUILDS
                mv build.log ../BUILDS/build-${ZIMBRA_OS_TAG}.log
          - store_artifacts:
@@ -109,12 +109,14 @@ workflows:
       jobs:
          - build_u16
          - build_u14
+         - build_u12
          - build_c7
          - hold:
             type: approval
             requires:
                - build_u16
                - build_u14
+               - build_u12
                - build_c7
          - deploy_s3:
             requires:

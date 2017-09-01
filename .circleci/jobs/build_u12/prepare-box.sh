@@ -20,5 +20,5 @@ apt-get -qq update
 
 apt-get -qq install -y git perl ruby
 apt-get -qq install -y build-essential
-apt-get -qq install -y openjdk-8-jdk ant ant-optional maven
+apt-get -qq install -y --no-install-recommends openjdk-8-jdk ant ant-optional maven
 apt-get -qq install -y debhelper
