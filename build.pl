@@ -750,19 +750,22 @@ sub Clone($$)
       my $s = 0;
       foreach my $minus_b_arg ( split( /,/, $repo_tag_csv ? $repo_tag_csv : $repo_branch_csv ) )
       {
-         my @clone_cmd_args = ( "git", "clone" );
-
-         push( @clone_cmd_args, "--depth=1" ) if ( not $ENV{ENV_GIT_FULL_CLONE} );
-         push( @clone_cmd_args, "-b", $minus_b_arg );
-         push( @clone_cmd_args, "$repo_url_prefix/$repo_name.git", "$repo_dir" );
-
-         print "\n";
-         my $r = SysExec( { continue_on_error => 1 }, @clone_cmd_args );
-
-         if ( $r->{success} )
+         my $r = SysExec( { continue_on_error => 1 }, "git", "ls-remote", "--exit-code", $repo_tag_csv ? "--tags" : "--heads", "$repo_url_prefix/$repo_name.git", "$minus_b_arg" );
+         if( $r->{success} )
          {
-            $s++;
-            last;
+            my @clone_cmd_args = ( "git", "clone" );
+
+            push( @clone_cmd_args, "--depth=1" ) if ( not $ENV{ENV_GIT_FULL_CLONE} );
+            push( @clone_cmd_args, "-b", $minus_b_arg );
+            push( @clone_cmd_args, "$repo_url_prefix/$repo_name.git", "$repo_dir" );
+
+            print "\n";
+            my $r = SysExec( @clone_cmd_args );
+            if ( $r->{success} )
+            {
+               $s++;
+               last;
+            }
          }
       }
 
