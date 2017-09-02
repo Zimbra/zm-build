@@ -719,7 +719,7 @@ sub GetPkgOsTag()
    my $b_os = $CFG{BUILD_OS};
 
    return "u$1"
-      if ( $b_os =~ /UBUNTU([0-9]+)_/ );
+     if ( $b_os =~ /UBUNTU([0-9]+)_/ );
 
    return "r$1"
      if ( $b_os =~ /RHEL([0-9]+)_/ || $b_os =~ /CENTOS([0-9]+)_/ );
@@ -751,7 +751,7 @@ sub Clone($$)
       foreach my $minus_b_arg ( split( /,/, $repo_tag_csv ? $repo_tag_csv : $repo_branch_csv ) )
       {
          my $r = SysExec( { continue_on_error => 1 }, "git", "ls-remote", "--exit-code", $repo_tag_csv ? "--tags" : "--heads", "$repo_url_prefix/$repo_name.git", "$minus_b_arg" );
-         if( $r->{success} )
+         if ( $r->{success} )
          {
             my @clone_cmd_args = ( "git", "clone" );
 
@@ -760,7 +760,7 @@ sub Clone($$)
             push( @clone_cmd_args, "$repo_url_prefix/$repo_name.git", "$repo_dir" );
 
             print "\n";
-            my $r = SysExec( @clone_cmd_args );
+            my $r = SysExec(@clone_cmd_args);
             if ( $r->{success} )
             {
                $s++;
