@@ -111,6 +111,7 @@ workflows:
          - build_u14
          - build_u12
          - build_c7
+         - build_c6
          - hold:
             type: approval
             requires:
@@ -118,6 +119,7 @@ workflows:
                - build_u14
                - build_u12
                - build_c7
+               - build_c6
          - deploy_s3:
             requires:
                - hold

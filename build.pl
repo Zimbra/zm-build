@@ -186,7 +186,13 @@ sub InitGlobalBuildVars()
 
    print "=========================================================================================================\n";
    {
-      $ENV{PATH} = "$CFG{BUILD_DEV_TOOL_BASE_DIR}/bin/Sencha/Cmd/4.0.2.67:$CFG{BUILD_DEV_TOOL_BASE_DIR}/bin:$ENV{PATH}";
+      $ENV{PATH} = join(
+         ":",
+         "$CFG{BUILD_DEV_TOOL_BASE_DIR}/bin/Sencha/Cmd/4.0.2.67",    #remove nw specific requirements
+         reverse sort glob("$CFG{BUILD_DEV_TOOL_BASE_DIR}/*/bin"),
+         "$CFG{BUILD_DEV_TOOL_BASE_DIR}/bin",
+         "$ENV{PATH}"
+      );
 
       my $cc    = DetectPrerequisite("cc");
       my $cpp   = DetectPrerequisite("c++");
