@@ -9,7 +9,7 @@ use Data::Dumper;
 use File::Basename;
 use File::Copy;
 use Getopt::Long;
-use IPC::Cmd qw/run can_run/;
+use IPC::Cmd qw/run/;
 use Net::Domain;
 use Term::ANSIColor;
 
@@ -233,12 +233,12 @@ sub Prepare()
    print FD "BUILD_TS=$CFG{BUILD_TS}\n";
    close(FD);
 
-   System( "mkdir", "-p", "$CFG{BUILD_DIR}" );
-   System( "mkdir", "-p", "$CFG{BUILD_DIR}/logs" );
-   System( "mkdir", "-p", "$ENV{HOME}/.zcs-deps" );
-   System( "mkdir", "-p", "$ENV{HOME}/.ivy2/cache" );
+   SysExec( "mkdir", "-p", "$CFG{BUILD_DIR}" );
+   SysExec( "mkdir", "-p", "$CFG{BUILD_DIR}/logs" );
+   SysExec( "mkdir", "-p", "$ENV{HOME}/.zcs-deps" );
+   SysExec( "mkdir", "-p", "$ENV{HOME}/.ivy2/cache" );
 
-   System( "find", $CFG{BUILD_DIR}, "-type", "f", "-name", ".built.*", "-delete" ) if ( $ENV{ENV_CACHE_CLEAR_FLAG} );
+   SysExec( "find", $CFG{BUILD_DIR}, "-type", "f", "-name", ".built.*", "-delete" ) if ( $ENV{ENV_CACHE_CLEAR_FLAG} );
 
    my @TP_JARS = (
       "https://files.zimbra.com/repository/ant-1.7.0-ziputil-patched/ant-1.7.0-ziputil-patched-1.0.jar",
@@ -255,8 +255,8 @@ sub Prepare()
       {
          if ( !-f $f )
          {
-            System( "wget", $j_url, "-O", "$f.tmp" );
-            System( "mv", "$f.tmp", $f );
+            SysExec( "wget", $j_url, "-O", "$f.tmp" );
+            SysExec( "mv", "$f.tmp", $f );
          }
       }
    }
@@ -355,7 +355,7 @@ sub RemoveTargetInDir($$)
    {
       eval
       {
-         Run( cd => $chdir, child => sub { System( "rm", "-rf", $sane_target ); } );
+         RunInDir( cd => $chdir, child => sub { SysExec( "rm", "-rf", $sane_target ); } );
       };
    }
 }
@@ -482,7 +482,7 @@ sub Build($)
          {
             unlink glob "$target_dir/.built.*";
 
-            Run(
+            RunInDir(
                cd    => $dir,
                child => sub {
 
@@ -494,9 +494,9 @@ sub Build($)
                      {
                         if ( my $targets = $build_info->{ $tool . "_targets" } )    #Known values are: ant_targets, mvn_targets, make_targets
                         {
-                           eval { System( $tool, "clean" ) if ( !$ENV{ENV_SKIP_CLEAN_FLAG} ); };
+                           eval { SysExec( $tool, "clean" ) if ( !$ENV{ENV_SKIP_CLEAN_FLAG} ); };
 
-                           System( $tool, @{ $tool_attributes->{$tool} || [] }, @$targets );
+                           SysExec( $tool, @{ $tool_attributes->{$tool} || [] }, @$targets );
                         }
                      }
                   }
@@ -516,14 +516,14 @@ sub Build($)
 
                      my $packages_path = "$CFG{BUILD_DIR}/zm-packages/$deploy_pkg_into";
 
-                     System( "mkdir", "-p", $packages_path );
-                     System("rsync -av build/dist/[urc]* '$packages_path/'");
+                     SysExec( "mkdir", "-p", $packages_path );
+                     SysExec("rsync -av build/dist/[urc]* '$packages_path/'");
                   }
 
                   if ( !exists $build_info->{partial} )
                   {
-                     system( "mkdir", "-p", "$target_dir" );
-                     System( "touch", "$target_dir/.built.$CFG{BUILD_TS}" );
+                     SysExec( "mkdir", "-p", "$target_dir" );
+                     SysExec( "touch", "$target_dir/.built.$CFG{BUILD_TS}" );
                   }
                },
             );
@@ -535,11 +535,11 @@ sub Build($)
       }
    }
 
-   Run(
+   RunInDir(
       cd    => "$GLOBAL_PATH_TO_SCRIPT_DIR",
       child => sub {
-         System( "rsync", "-az", "--delete", ".", "$CFG{BUILD_DIR}/zm-build" );
-         System( "mkdir", "-p", "$CFG{BUILD_DIR}/zm-build/$CFG{BUILD_ARCH}" );
+         SysExec( "rsync", "-az", "--delete", ".", "$CFG{BUILD_DIR}/zm-build" );
+         SysExec( "mkdir", "-p", "$CFG{BUILD_DIR}/zm-build/$CFG{BUILD_ARCH}" );
 
          my @ALL_PACKAGES = ();
          push( @ALL_PACKAGES, @{ EvalFile("instructions/$CFG{BUILD_TYPE}_package_list.pl") } );
@@ -549,7 +549,7 @@ sub Build($)
          {
             if ( !defined $ENV{ENV_PACKAGE_INCLUDE} || grep { $package_script =~ /$_/ } split( ",", $ENV{ENV_PACKAGE_INCLUDE} ) )
             {
-               System(
+               SysExec(
                   "  releaseNo='$CFG{BUILD_RELEASE_NO}' \\
                      releaseCandidate='$CFG{BUILD_RELEASE_CANDIDATE}' \\
                      branch='$CFG{BUILD_RELEASE}-$CFG{BUILD_RELEASE_NO_SHORT}' \\
@@ -582,33 +582,33 @@ sub Deploy()
 
    my $destination_dir = "$CFG{BUILD_DESTINATION_BASE_DIR}/$CFG{DESTINATION_NAME}";
 
-   System( "mkdir", "-p", "$destination_dir/archives" );
+   SysExec( "mkdir", "-p", "$destination_dir/archives" );
 
    my @archive_names = map { basename($_) } grep { -d $_ && $_ !~ m/\/bundle$/ } glob("$CFG{BUILD_DIR}/zm-packages/*");
 
    foreach my $archive_name (@archive_names)
    {
-      System( "rsync", "-av", "--delete", "$CFG{BUILD_DIR}/zm-packages/$archive_name/", "$destination_dir/archives/$archive_name" );
+      SysExec( "rsync", "-av", "--delete", "$CFG{BUILD_DIR}/zm-packages/$archive_name/", "$destination_dir/archives/$archive_name" );
 
       if ( -f "/etc/redhat-release" )
       {
          if ( !$CFG{LOCAL_DEPLOY} || DetectPrerequisite( "createrepo", "", 1 ) )
          {
-            System("cd '$destination_dir/archives/$archive_name' && createrepo '.'");
+            SysExec("cd '$destination_dir/archives/$archive_name' && createrepo '.'");
          }
       }
       else
       {
          if ( !$CFG{LOCAL_DEPLOY} || DetectPrerequisite( "dpkg-scanpackages", "", 1 ) )
          {
-            System("cd '$destination_dir/archives/$archive_name' && dpkg-scanpackages '.' /dev/null > Packages");
+            SysExec("cd '$destination_dir/archives/$archive_name' && dpkg-scanpackages '.' /dev/null > Packages");
          }
       }
    }
 
    EchoToFile( "$destination_dir/archive-access.txt", EmitArchiveAccessInstructions( \@archive_names ) );
 
-   System("cp $CFG{BUILD_DIR}/zm-build/zcs-*.$CFG{BUILD_TS}.tgz $destination_dir/");
+   SysExec("cp $CFG{BUILD_DIR}/zm-build/zcs-*.$CFG{BUILD_TS}.tgz $destination_dir/");
 
    if ( $CFG{LOCAL_DEPLOY} )
    {
@@ -760,7 +760,7 @@ sub Clone($$)
          push( @clone_cmd_args, "$repo_url_prefix/$repo_name.git", "$repo_dir" );
 
          print "\n";
-         my $r = System( { continue_on_error => 1 }, @clone_cmd_args );
+         my $r = SysExec( { continue_on_error => 1 }, @clone_cmd_args );
 
          if ( $r->{success} )
          {
@@ -780,7 +780,7 @@ sub Clone($$)
       {
          if ($repo_tag_csv)
          {
-            Run(
+            RunInDir(
                cd    => $repo_dir,
                child => sub {
 
@@ -788,7 +788,7 @@ sub Clone($$)
                   foreach my $minus_b_arg ( split( /,/, $repo_tag_csv ) )
                   {
                      print "\n";
-                     my $r = System( "git", "checkout", $minus_b_arg );
+                     my $r = SysExec( "git", "checkout", $minus_b_arg );
                      if ( $r->{success} )
                      {
                         $s++;
@@ -806,10 +806,10 @@ sub Clone($$)
          else
          {
             print "\n";
-            Run(
+            RunInDir(
                cd    => $repo_dir,
                child => sub {
-                  my $z = System( "git", "pull", "--ff-only" );
+                  my $z = SysExec( "git", "pull", "--ff-only" );
 
                   if ( "@{$z->{out}}" !~ /Already up-to-date/ )
                   {
@@ -822,7 +822,7 @@ sub Clone($$)
    }
 }
 
-sub System(@)
+sub SysExec(@)
 {
    my $options = shift
      if ( @_ && ref( $_[0] ) eq "HASH" );
@@ -930,7 +930,7 @@ sub DetectPrerequisite($;$$)
 }
 
 
-sub Run(%)
+sub RunInDir(%)
 {
    my %args  = (@_);
    my $chdir = $args{cd};
