@@ -750,8 +750,8 @@ sub Clone($$)
       my $s = 0;
       foreach my $minus_b_arg ( split( /,/, $repo_tag_csv ? $repo_tag_csv : $repo_branch_csv ) )
       {
-         my $r = SysExec( { continue_on_error => 1 }, "git", "ls-remote", "--exit-code", $repo_tag_csv ? "--tags" : "--heads", "$repo_url_prefix/$repo_name.git", "$minus_b_arg" );
-         if ( $r->{success} )
+         my $r = SysExec( "git", "ls-remote", $repo_tag_csv ? "--tags" : "--heads", "$repo_url_prefix/$repo_name.git", "$minus_b_arg" );
+         if ( $r->{success} && "@{$r->{out}}" =~ /$minus_b_arg$/ )
          {
             my @clone_cmd_args = ( "git", "clone" );
 
