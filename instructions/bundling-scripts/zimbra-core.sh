@@ -56,7 +56,8 @@ CreateDebianPackage()
       MORE_DEPENDS="$(find ${repoDir}/zm-packages/ -name \*.deb \
                          | xargs -n1 basename \
                          | sed -e 's/_[0-9].*//' \
-                         | grep zimbra-common- \
+                         | grep -e zimbra-common- \
+                                -e zimbra-timezone-data \
                          | sed '1s/^/, /; :a; {N;s/\n/, /;ba}')";
 
       cat ${repoDir}/zm-build/rpmconf/Spec/${currentScript}.deb \
@@ -79,7 +80,8 @@ CreateRhelPackage()
     MORE_DEPENDS="$(find ${repoDir}/zm-packages/ -name \*.rpm \
                        | xargs -n1 basename \
                        | sed -e 's/-[0-9].*//' \
-                       | grep zimbra-common- \
+                       | grep -e zimbra-common- \
+                              -e zimbra-timezone-data \
                        | sed '1s/^/, /; :a; {N;s/\n/, /;ba}')";
 
     cat ${repoDir}/zm-build/rpmconf/Spec/${currentScript}.spec | \
@@ -576,8 +578,6 @@ main()
    Copy ${repoDir}/zm-mta/zmconfigd/smtpd_sender_login_maps.cf                                      ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/zmconfigd/smtpd_sender_login_maps.cf
    Copy ${repoDir}/zm-mta/zmconfigd/smtpd_sender_restrictions.cf                                    ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/zmconfigd/smtpd_sender_restrictions.cf
 
-   Copy ${repoDir}/zm-timezones/conf/timezones.ics                                                  ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/timezones.ics
-
    Cpy2 ${repoDir}/junixsocket/junixsocket-native/build/junixsocket-native-*.nar                    ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/
    Cpy2 ${repoDir}/junixsocket/junixsocket-native/build/libjunixsocket-native-*.so                  ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/
 
@@ -658,7 +658,10 @@ main()
       "junixsocket-demo-2.0.4.jar"
       "junixsocket-mysql-2.0.4.jar"
       "junixsocket-rmi-2.0.4.jar"
+      "junixsocket-native-common-2.0.4.jar"
+      "native-lib-loader-2.0.2.jar"
       "jython-standalone-2.5.2.jar"
+      "jline-0.9.93.jar"
       "jzlib-1.0.7.jar"
       "libidn-1.24.jar"
       "log4j-1.2.16.jar"

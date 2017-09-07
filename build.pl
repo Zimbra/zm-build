@@ -13,7 +13,6 @@ use IPC::Cmd qw/run can_run/;
 use Net::Domain;
 use Term::ANSIColor;
 
-my $GLOBAL_NGINX_PORT = 8008;
 my $GLOBAL_PATH_TO_SCRIPT_FILE;
 my $GLOBAL_PATH_TO_SCRIPT_DIR;
 my $GLOBAL_PATH_TO_TOP;
@@ -122,6 +121,7 @@ sub InitGlobalBuildVars()
       my @cmd_args = (
          { name => "BUILD_NO",                   type => "=i",  hash_src => \%cmd_hash, default_sub => sub { return GetNewBuildNo(); }, },
          { name => "BUILD_TS",                   type => "=i",  hash_src => \%cmd_hash, default_sub => sub { return GetNewBuildTs(); }, },
+         { name => "BUILD_OS",                   type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return GetBuildOS(); }, },
          { name => "BUILD_DESTINATION_BASE_DIR", type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return "$GLOBAL_PATH_TO_TOP/BUILDS"; }, },
          { name => "BUILD_SOURCES_BASE_DIR",     type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return $GLOBAL_PATH_TO_TOP; }, },
          { name => "BUILD_RELEASE",              type => "=s",  hash_src => \%cmd_hash, default_sub => sub { Die("@_ not specified"); }, },
@@ -139,8 +139,9 @@ sub InitGlobalBuildVars()
          { name => "GIT_DEFAULT_BRANCH",         type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return undef; }, },
          { name => "STOP_AFTER_CHECKOUT",        type => "!",   hash_src => \%cmd_hash, default_sub => sub { return 0; }, },
          { name => "ANT_OPTIONS",                type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return undef; }, },
+         { name => "BUILD_HOSTNAME",             type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return Net::Domain::hostfqdn; }, },
+         { name => "DEPLOY_URL_PREFIX",          type => "=s",  hash_src => \%cmd_hash, default_sub => sub { $CFG{LOCAL_DEPLOY} = 1; return "http://" . Net::Domain::hostfqdn . ":8008"; }, },
 
-         { name => "BUILD_OS",               type => "", hash_src => undef, default_sub => sub { return GetBuildOS(); }, },
          { name => "BUILD_ARCH",             type => "", hash_src => undef, default_sub => sub { return GetBuildArch(); }, },
          { name => "BUILD_RELEASE_NO_SHORT", type => "", hash_src => undef, default_sub => sub { my $x = $CFG{BUILD_RELEASE_NO}; $x =~ s/[.]//g; return $x; }, },
          { name => "DESTINATION_NAME",       type => "", hash_src => undef, default_sub => sub { return &$destination_name_func; }, },
@@ -376,7 +377,7 @@ cat > /etc/yum.repos.d/zimbra-packages.repo <<EOM
       map {
 "[$_]
 name=Zimbra Package Archive ($_)
-baseurl=http://@{[Net::Domain::hostfqdn]}:$GLOBAL_NGINX_PORT/$CFG{DESTINATION_NAME}/archives/$_/
+baseurl=$CFG{DEPLOY_URL_PREFIX}/$CFG{DESTINATION_NAME}/archives/$_/
 enabled=1
 gpgcheck=0
 protect=0"
@@ -400,7 +401,7 @@ cat > /etc/apt/sources.list.d/zimbra-packages.list << EOM
 @{[
    join("\n",
       map {
-"deb [trusted=yes] http://@{[Net::Domain::hostfqdn]}:$GLOBAL_NGINX_PORT/$CFG{DESTINATION_NAME}/archives/$_ ./ # Zimbra Package Archive ($_)"
+"deb [trusted=yes] $CFG{DEPLOY_URL_PREFIX}/$CFG{DESTINATION_NAME}/archives/$_ ./ # Zimbra Package Archive ($_)"
       }
       @$archive_names
    )]}
@@ -420,6 +421,7 @@ sub Build($)
 
    my $tool_attributes = {
       ant => [
+         "-silent",
          "-Ddebug=$CFG{BUILD_DEBUG_FLAG}",
          "-Dis-production=$CFG{BUILD_PROD_FLAG}",
          "-Dzimbra.buildinfo.platform=$CFG{BUILD_OS}",
@@ -427,10 +429,11 @@ sub Build($)
          "-Dzimbra.buildinfo.type=$CFG{BUILD_TYPE}",
          "-Dzimbra.buildinfo.release=$CFG{BUILD_TS}",
          "-Dzimbra.buildinfo.date=$CFG{BUILD_TS}",
-         "-Dzimbra.buildinfo.host=@{[Net::Domain::hostfqdn]}",
+         "-Dzimbra.buildinfo.host=$CFG{BUILD_HOSTNAME}",
          "-Dzimbra.buildinfo.buildnum=$CFG{BUILD_NO}",
       ],
       make => [
+         "--quiet",
          "debug=$CFG{BUILD_DEBUG_FLAG}",
          "is-production=$CFG{BUILD_PROD_FLAG}",
          "zimbra.buildinfo.platform=$CFG{BUILD_OS}",
@@ -438,8 +441,11 @@ sub Build($)
          "zimbra.buildinfo.type=$CFG{BUILD_TYPE}",
          "zimbra.buildinfo.release=$CFG{BUILD_TS}",
          "zimbra.buildinfo.date=$CFG{BUILD_TS}",
-         "zimbra.buildinfo.host=@{[Net::Domain::hostfqdn]}",
+         "zimbra.buildinfo.host=$CFG{BUILD_HOSTNAME}",
          "zimbra.buildinfo.buildnum=$CFG{BUILD_NO}",
+      ],
+      mvn => [
+         "--quiet",
       ],
    };
 
@@ -584,14 +590,14 @@ sub Deploy()
 
       if ( -f "/etc/redhat-release" )
       {
-         if ( DetectPrerequisite( "createrepo", "", 1 ) )
+         if ( !$CFG{LOCAL_DEPLOY} || DetectPrerequisite( "createrepo", "", 1 ) )
          {
             System("cd '$destination_dir/archives/$archive_name' && createrepo '.'");
          }
       }
       else
       {
-         if ( DetectPrerequisite( "dpkg-scanpackages", "", 1 ) )
+         if ( !$CFG{LOCAL_DEPLOY} || DetectPrerequisite( "dpkg-scanpackages", "", 1 ) )
          {
             System("cd '$destination_dir/archives/$archive_name' && dpkg-scanpackages '.' /dev/null > Packages");
          }
@@ -602,11 +608,13 @@ sub Deploy()
 
    System("cp $CFG{BUILD_DIR}/zm-build/zcs-*.$CFG{BUILD_TS}.tgz $destination_dir/");
 
-   if ( !-f "/etc/nginx/conf.d/zimbra-pkg-archives-host.conf" || !`pgrep -f -P1 '[n]ginx'` )
+   if ( $CFG{LOCAL_DEPLOY} )
    {
-      print "\n";
-      print "=========================================================================================================\n";
-      print <<EOM_DUMP;
+      if ( !-f "/etc/nginx/conf.d/zimbra-pkg-archives-host.conf" || !`pgrep -f -P1 '[n]ginx'` )
+      {
+         print "\n";
+         print "=========================================================================================================\n";
+         print <<EOM_DUMP;
 @{[color('bold white')]}
 ############################################
 # INSTRUCTIONS TO SETUP NGINX PACKAGES HOST
@@ -624,7 +632,7 @@ sudo bash -s <<"EOM_SCRIPT"
 [ -f /etc/redhat-release ] || ( apt-get -y install nginx && service nginx start )
 tee /etc/nginx/conf.d/zimbra-pkg-archives-host.conf <<EOM
 server {
-  listen $GLOBAL_NGINX_PORT;
+  listen 8008;
   location / {
      root $CFG{BUILD_DESTINATION_BASE_DIR};
      autoindex on;
@@ -637,6 +645,7 @@ service nginx status
 EOM_SCRIPT
 @{[color('reset')]}
 EOM_DUMP
+      }
    }
 
    print "\n";
@@ -697,7 +706,7 @@ sub GetBuildArch()    # FIXME - use standard mechanism
 {
    chomp( my $PROCESSOR_ARCH = `uname -m | grep -o 64` );
 
-   my $b_os = GetBuildOS();
+   my $b_os = $CFG{BUILD_OS};
 
    return "amd" . $PROCESSOR_ARCH
      if ( $b_os =~ /UBUNTU/ );
@@ -717,8 +726,8 @@ sub Clone($$)
    my $repo_remote_details = shift;
 
    my $repo_name       = $repo_details->{name};
-   my $repo_branch     = $CFG{GIT_OVERRIDES}->{"$repo_name.branch"} || $repo_details->{branch} || $CFG{GIT_DEFAULT_BRANCH} || "develop";
-   my $repo_tag        = $CFG{GIT_OVERRIDES}->{"$repo_name.tag"} || $repo_details->{tag} || $CFG{GIT_DEFAULT_TAG} if ( $CFG{GIT_OVERRIDES}->{"$repo_name.tag"} || !$CFG{GIT_OVERRIDES}->{"$repo_name.branch"} );
+   my $repo_branch_csv = $CFG{GIT_OVERRIDES}->{"$repo_name.branch"} || $repo_details->{branch} || $CFG{GIT_DEFAULT_BRANCH} || "develop";
+   my $repo_tag_csv    = $CFG{GIT_OVERRIDES}->{"$repo_name.tag"} || $repo_details->{tag} || $CFG{GIT_DEFAULT_TAG} if ( $CFG{GIT_OVERRIDES}->{"$repo_name.tag"} || !$CFG{GIT_OVERRIDES}->{"$repo_name.branch"} );
    my $repo_remote     = $CFG{GIT_OVERRIDES}->{"$repo_name.remote"} || $repo_details->{remote} || $CFG{GIT_DEFAULT_REMOTE} || "gh-zm";
    my $repo_url_prefix = $CFG{GIT_OVERRIDES}->{"$repo_remote.url-prefix"} || $repo_remote_details->{$repo_remote}->{'url-prefix'} || Die( "unresolved url-prefix for remote='$repo_remote'", "" );
 
@@ -728,13 +737,27 @@ sub Clone($$)
 
    if ( !-d $repo_dir )
    {
-      my @clone_cmd_args = ( "git", "clone" );
+      my $s = 0;
+      foreach my $minus_b_arg ( split( /,/, $repo_tag_csv ? $repo_tag_csv : $repo_branch_csv ) )
+      {
+         my @clone_cmd_args = ( "git", "clone" );
 
-      push( @clone_cmd_args, "--depth=1" ) if ( not $ENV{ENV_GIT_FULL_CLONE} );
-      push( @clone_cmd_args, "-b", $repo_tag ? $repo_tag : $repo_branch );
-      push( @clone_cmd_args, "$repo_url_prefix/$repo_name.git", "$repo_dir" );
+         push( @clone_cmd_args, "--depth=1" ) if ( not $ENV{ENV_GIT_FULL_CLONE} );
+         push( @clone_cmd_args, "-b", $minus_b_arg );
+         push( @clone_cmd_args, "$repo_url_prefix/$repo_name.git", "$repo_dir" );
 
-      System(@clone_cmd_args);
+         print "\n";
+         my $r = System( { continue_on_error => 1 }, @clone_cmd_args );
+
+         if ( $r->{success} )
+         {
+            $s++;
+            last;
+         }
+      }
+
+      Die("Clone Attempts Failed")
+        if ( !$s );
 
       RemoveTargetInDir( $repo_name, $CFG{BUILD_DIR} );
    }
@@ -742,10 +765,28 @@ sub Clone($$)
    {
       if ( !defined $ENV{ENV_GIT_UPDATE_INCLUDE} || grep { $repo_name =~ /$_/ } split( ",", $ENV{ENV_GIT_UPDATE_INCLUDE} ) )
       {
-         if ($repo_tag)
+         if ($repo_tag_csv)
          {
-            print "\n";
-            Run( cd => $repo_dir, child => sub { System( "git", "checkout", $repo_tag ); } );
+            Run(
+               cd    => $repo_dir,
+               child => sub {
+
+                  my $s = 0;
+                  foreach my $minus_b_arg ( split( /,/, $repo_tag_csv ) )
+                  {
+                     print "\n";
+                     my $r = System( "git", "checkout", $minus_b_arg );
+                     if ( $r->{success} )
+                     {
+                        $s++;
+                        last;
+                     }
+                  }
+
+                  Die("Clone Attempts Failed")
+                    if ( !$s );
+               },
+            );
 
             RemoveTargetInDir( $repo_name, $CFG{BUILD_DIR} );
          }
@@ -770,18 +811,27 @@ sub Clone($$)
 
 sub System(@)
 {
+   my $options = shift
+     if ( @_ && ref( $_[0] ) eq "HASH" );
+
+   $options->{continue_on_error} ||= 0;
+   $options->{verbose}           ||= 1;
+
    my $cmd_str = "@_";
 
-   print color('green') . "#: pwd=@{[Cwd::getcwd()]}" . color('reset') . "\n";
-   print color('green') . "#: $cmd_str" . color('reset') . "\n";
+   if ( $options->{verbose} )
+   {
+      print color('green') . "#: pwd=@{[Cwd::getcwd()]}" . color('reset') . "\n";
+      print color('green') . "#: $cmd_str" . color('reset') . "\n";
+   }
 
    $! = 0;
    my ( $success, $error_message, $full_buf, $stdout_buf, $stderr_buf ) = run( command => \@_, verbose => 1 );
 
    Die( "cmd='$cmd_str'", $error_message )
-     if ( !$success );
+     if ( !$success && !$options->{continue_on_error} );
 
-   return { msg => $error_message, out => $stdout_buf, err => $stderr_buf };
+   return { msg => $error_message, out => $stdout_buf, err => $stderr_buf, success => $success };
 }
 
 
@@ -859,8 +909,8 @@ sub DetectPrerequisite($;$$)
    Die(
       "Prerequisite '$util_name' missing in PATH"
         . "\nTry: "
-        . "\n   [ -f /etc/redhat-release ] && sudo yum install perl-Data-Dumper perl-IPC-Cmd gcc-c++ java-1.8.0-openjdk ant ruby maven wget rpm-build createrepo"
-        . "\n   [ -f /etc/redhat-release ] || sudo apt-get install software-properties-common openjdk-8-jdk ant ruby git maven build-essential",
+        . "\n   [ -f /etc/redhat-release ] && sudo yum install perl-Data-Dumper perl-IPC-Cmd gcc-c++ java-1.8.0-openjdk ant ant-junit ruby maven wget rpm-build createrepo"
+        . "\n   [ -f /etc/redhat-release ] || sudo apt-get install software-properties-common openjdk-8-jdk ant ant-optional ruby git maven build-essential",
       "",
       $warn_only
    );
@@ -880,8 +930,6 @@ sub Run(%)
 
    if ( $child_pid != 0 )    # parent
    {
-      local $?;
-
       while ( waitpid( $child_pid, 0 ) == -1 ) { }
 
       Die( "child $child_pid died", einfo($?) )
@@ -926,7 +974,7 @@ sub Die($;$$)
    if ( !$warn_only )
    {
       print color('red');
-      print "--Stack Trace--\n";
+      print "--Stack Trace-- ($$)\n";
       my $i = 1;
 
       while ( ( my @call_details = ( caller( $i++ ) ) ) )
