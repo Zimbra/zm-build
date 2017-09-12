@@ -10,7 +10,7 @@ export DEBIAN_FRONTEND=noninteractive
 apt-get -qq update
 apt-get -qq install -y apt-utils
 apt-get -qq install -y ca-certificates tzdata
-apt-get -qq install -y curl wget jq
+apt-get -qq install -y curl wget
 apt-get -qq install -y software-properties-common
 
 # JOB

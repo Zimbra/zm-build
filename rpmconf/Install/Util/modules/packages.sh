@@ -130,7 +130,7 @@ installPackages() {
    fi
 
    if [ $UPGRADE = "yes" ]; then
-      if [ ${ZM_CUR_MAJOR} -lt 8 ] || [ ${ZM_CUR_MAJOR} -eq 8 -a ${ZM_CUR_MINOR} -lt 7 ]; then
+      if [ "${ZM_CUR_MAJOR}" -lt 8 ] || [ "${ZM_CUR_MAJOR}" -eq 8 -a "${ZM_CUR_MINOR}" -lt 7 ]; then
          POST87UPGRADE="false"
       else
          POST87UPGRADE="true"

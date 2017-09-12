@@ -26,6 +26,7 @@ references:
                   --build-os="$ZIMBRA_BUILD_OS" \
                   --build-no="$CIRCLE_BUILD_NUM" \
                   --build-ts="$(date "+%Y%m%d%M%H%S")" \
+                  --ant-options="-DskipTests=1" \
                   --no-interactive \
                2>&1 | tee -a build.log;
                mkdir -p ../BUILDS
