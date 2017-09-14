@@ -620,6 +620,7 @@ main()
       "httpclient-4.5.2.jar"
       "httpcore-4.4.5.jar"
       "httpcore-nio-4.4.5.jar"
+      "httpmime-4.3.1.jar"
       "ical4j-0.9.16-patched.jar"
       "icu4j-4.8.1.1.jar"
       "jackson-mapper-asl-1.9.13.jar"
