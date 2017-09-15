@@ -1,0 +1,27 @@
+# vi:ft=dockerfile
+FROM ubuntu:16.04
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+# SYSTEM
+RUN apt-get -qq update
+RUN apt-get -qq dist-upgrade -y
+RUN apt-get -qq autoremove -y
+RUN apt-get -qq install -y apt-utils
+RUN apt-get -qq install -y ca-certificates tzdata
+RUN apt-get -qq install -y curl wget
+RUN apt-get -qq install -y software-properties-common
+RUN apt-get -qq install -y sudo
+
+# ENVIRONMENT
+RUN apt-get -qq install -y git perl ruby
+RUN apt-get -qq install -y build-essential
+RUN apt-get -qq install -y openjdk-8-jdk ant ant-optional maven
+RUN apt-get -qq install -y debhelper
+
+# USERS
+RUN useradd -ms /bin/bash -G sudo build
+
+# REDUCE PRIVILEGE
+USER build
+WORKDIR /home/build

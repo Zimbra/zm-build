@@ -1,0 +1,22 @@
+# vi:ft=dockerfile
+FROM centos:7
+
+# SYSTEM
+RUN yum clean all
+RUN yum upgrade -y
+RUN yum install -y curl wget which
+RUN yum install -y sudo
+
+# ENVIRONMENT
+RUN yum install -y git perl ruby
+RUN yum install -y perl-Data-Dumper perl-IPC-Cmd
+RUN yum install -y gcc gcc-c++ make
+RUN yum install -y java-1.8.0-openjdk ant ant-junit maven
+RUN yum install -y rpm-build createrepo
+
+# USERS
+RUN useradd -ms /bin/bash -G wheel build
+
+# REDUCE PRIVILEGE
+USER build
+WORKDIR /home/build

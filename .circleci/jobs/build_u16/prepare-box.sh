@@ -1,20 +1,6 @@
 #!/bin/bash
 
-set -x
-set -e
-set -o pipefail
+set -euxo pipefail
 
-export DEBIAN_FRONTEND=noninteractive
-
-# SYSTEM
-apt-get -qq update
-apt-get -qq install -y apt-utils
-apt-get -qq install -y ca-certificates tzdata
-apt-get -qq install -y curl wget
-apt-get -qq install -y software-properties-common
-
-# JOB
-apt-get -qq install -y git perl ruby
-apt-get -qq install -y build-essential
-apt-get -qq install -y openjdk-8-jdk ant ant-optional maven
-apt-get -qq install -y debhelper
+#sudo apt-get -qq update
+#sudo apt-get -qq dist-upgrade -y
