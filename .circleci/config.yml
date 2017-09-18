@@ -56,6 +56,17 @@ references:
          - deploy:
             command: .circleci/jobs/${CIRCLE_JOB}/deploy.sh
 
+   deploy_ec2_job_steps: &deploy_ec2_job_steps
+      steps:
+         - checkout
+         - run:
+            name: Preparing OS
+            command: .circleci/jobs/${CIRCLE_JOB}/prepare-box.sh
+         - attach_workspace:
+            at: ../BUILDS
+         - deploy:
+            command: .circleci/jobs/${CIRCLE_JOB}/deploy.sh
+
 ############################################################################
 
 jobs:
@@ -110,6 +121,12 @@ jobs:
          - image: zimbra/zm-base-os:core-ubuntu
       <<: *deploy_s3_job_steps
 
+   deploy_ec2:
+      working_directory: ~/zm-build
+      docker:
+         - image: zimbra/zm-base-os:core-ubuntu
+      <<: *deploy_ec2_job_steps
+
 ############################################################################
 
 workflows:
@@ -132,3 +149,11 @@ workflows:
          - deploy_s3:
             requires:
                - deploy_s3_hold
+         - deploy_ec2_hold:
+            type: approval
+            requires:
+               - build_u16
+         - deploy_ec2:
+            context: org-global
+            requires:
+               - deploy_ec2_hold
