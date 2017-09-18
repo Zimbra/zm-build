@@ -26,6 +26,7 @@ references:
                   --build-os="$ZIMBRA_BUILD_OS" \
                   --build-no="$CIRCLE_BUILD_NUM" \
                   --build-ts="$(date "+%Y%m%d%M%H%S")" \
+                  --ant-options="-DskipTests=1" \
                   --no-interactive \
                2>&1 | tee -a build.log;
                mkdir -p ../BUILDS
@@ -36,7 +37,26 @@ references:
             root: ../BUILDS
             paths: ./*
 
-   deploy_job_steps: &deploy_job_steps
+   stub_build_job_steps: &stub_build_job_steps
+      steps:
+         - run:
+            name: Creating nothing
+            command: |
+               date
+               echo nothing
+
+   deploy_s3_job_steps: &deploy_s3_job_steps
+      steps:
+         - checkout
+         - run:
+            name: Preparing OS
+            command: .circleci/jobs/${CIRCLE_JOB}/prepare-box.sh
+         - attach_workspace:
+            at: ../BUILDS
+         - deploy:
+            command: .circleci/jobs/${CIRCLE_JOB}/deploy.sh
+
+   deploy_ec2_job_steps: &deploy_ec2_job_steps
       steps:
          - checkout
          - run:
@@ -56,7 +76,7 @@ jobs:
          - ZIMBRA_OS_TAG: u16
          - ZIMBRA_BUILD_OS: UBUNTU16_64
       docker:
-         - image: ubuntu:16.04
+         - image: zimbra/zm-base-os:devcore-ubuntu-16.04
       <<: *build_job_steps
 
    build_u14:
@@ -65,7 +85,7 @@ jobs:
          - ZIMBRA_OS_TAG: u14
          - ZIMBRA_BUILD_OS: UBUNTU14_64
       docker:
-         - image: ubuntu:14.04
+         - image: zimbra/zm-base-os:devcore-ubuntu-14.04
       <<: *build_job_steps
 
    build_u12:
@@ -74,7 +94,7 @@ jobs:
          - ZIMBRA_OS_TAG: u12
          - ZIMBRA_BUILD_OS: UBUNTU12_64
       docker:
-         - image: ubuntu:12.04
+         - image: zimbra/zm-base-os:devcore-ubuntu-12.04
       <<: *build_job_steps
 
    build_c7:
@@ -83,7 +103,7 @@ jobs:
          - ZIMBRA_OS_TAG: c7
          - ZIMBRA_BUILD_OS: RHEL7_64
       docker:
-         - image: centos:7
+         - image: zimbra/zm-base-os:devcore-centos-7
       <<: *build_job_steps
 
    build_c6:
@@ -92,14 +112,20 @@ jobs:
          - ZIMBRA_OS_TAG: c6
          - ZIMBRA_BUILD_OS: RHEL6_64
       docker:
-         - image: centos:6
+         - image: zimbra/zm-base-os:devcore-centos-6
       <<: *build_job_steps
 
    deploy_s3:
       working_directory: ~/zm-build
       docker:
-         - image: ubuntu
-      <<: *deploy_job_steps
+         - image: zimbra/zm-base-os:core-ubuntu
+      <<: *deploy_s3_job_steps
+
+   deploy_ec2:
+      working_directory: ~/zm-build
+      docker:
+         - image: zimbra/zm-base-os:core-ubuntu
+      <<: *deploy_ec2_job_steps
 
 ############################################################################
 
@@ -112,7 +138,7 @@ workflows:
          - build_u12
          - build_c7
          - build_c6
-         - hold:
+         - deploy_s3_hold:
             type: approval
             requires:
                - build_u16
@@ -122,4 +148,12 @@ workflows:
                - build_c6
          - deploy_s3:
             requires:
-               - hold
+               - deploy_s3_hold
+         - deploy_ec2_hold:
+            type: approval
+            requires:
+               - build_u16
+         - deploy_ec2:
+            context: org-global
+            requires:
+               - deploy_ec2_hold
