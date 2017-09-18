@@ -3,114 +3,103 @@ version: 2
 ############################################################################
 
 references:
-   build_cmd: &build_cmd
-      command: |
-         source .circleci/get-env.sh;
-         ./build.pl \
-            --build-type="$ZIMBRA_CI_BUILD_TYPE" \
-            --build-hostname="$ZIMBRA_CI_BUILD_HOSTNAME" \
-            --build-release="$ZIMBRA_CI_BUILD_RELEASE" \
-            --build-release-no="$ZIMBRA_CI_BUILD_RELEASE_NO" \
-            --build-release-candidate="$ZIMBRA_CI_BUILD_RELEASE_CANDIDATE" \
-            --build-thirdparty-server="$ZIMBRA_CI_THIRDPARTY_SERVER" \
-            --deploy-url-prefix="https://$ZIMBRA_CI_DEPLOY_HOSTNAME/$ZIMBRA_CI_DEPLOY_PATH" \
-            --git-default-branch="$ZIMBRA_CI_GIT_DEFAULT_BRANCH" \
-            "${ZIMBRA_CI_OVERRIDES[@]}" \
-            --build-os="$ZIMBRA_BUILD_OS" \
-            --build-no="$CIRCLE_BUILD_NUM" \
-            --build-ts="$(.circleci/timestamp_hoop.sh)" \
-            --no-interactive \
-         | tee -a build.log;
-         mkdir -p ../BUILDS
-         mv build.log ../BUILDS
+   build_job_steps: &build_job_steps
+      steps:
+         - checkout
+         - run:
+            name: Preparing OS
+            command: .circleci/jobs/${CIRCLE_JOB}/prepare-box.sh
+         - run:
+            name: Creating build
+            command: |
+               source .circleci/get-env.sh;
+               ./build.pl \
+                  --build-type="$ZIMBRA_CI_BUILD_TYPE" \
+                  --build-hostname="$ZIMBRA_CI_BUILD_HOSTNAME" \
+                  --build-release="$ZIMBRA_CI_BUILD_RELEASE" \
+                  --build-release-no="$ZIMBRA_CI_BUILD_RELEASE_NO" \
+                  --build-release-candidate="$ZIMBRA_CI_BUILD_RELEASE_CANDIDATE" \
+                  --build-thirdparty-server="$ZIMBRA_CI_THIRDPARTY_SERVER" \
+                  --deploy-url-prefix="https://$ZIMBRA_CI_DEPLOY_HOSTNAME/$ZIMBRA_CI_DEPLOY_PATH" \
+                  --git-default-branch="$ZIMBRA_CI_GIT_DEFAULT_BRANCH" \
+                  "${ZIMBRA_CI_OVERRIDES[@]}" \
+                  --build-os="$ZIMBRA_BUILD_OS" \
+                  --build-no="$CIRCLE_BUILD_NUM" \
+                  --build-ts="$(date "+%Y%m%d%M%H%S")" \
+                  --no-interactive \
+               2>&1 | tee -a build.log;
+               mkdir -p ../BUILDS
+               mv build.log ../BUILDS/build-${ZIMBRA_OS_TAG}.log
+         - store_artifacts:
+            path: ../BUILDS
+         - persist_to_workspace:
+            root: ../BUILDS
+            paths: ./*
+
+   deploy_job_steps: &deploy_job_steps
+      steps:
+         - checkout
+         - run:
+            name: Preparing OS
+            command: .circleci/jobs/${CIRCLE_JOB}/prepare-box.sh
+         - attach_workspace:
+            at: ../BUILDS
+         - deploy:
+            command: .circleci/jobs/${CIRCLE_JOB}/deploy.sh
 
 ############################################################################
 
 jobs:
-   build_and_deploy_u16:
+   build_u16:
       working_directory: ~/zm-build
       environment:
+         - ZIMBRA_OS_TAG: u16
          - ZIMBRA_BUILD_OS: UBUNTU16_64
       docker:
          - image: ubuntu:16.04
-      steps:
-         - checkout
-         - run: .circleci/prepare-u16.sh
-         - run:
-            name: Build
-            <<: *build_cmd
-         - store_artifacts:
-            path: ../BUILDS
-         - deploy:
-            command: .circleci/deploy-to-s3.sh
+      <<: *build_job_steps
 
-   build_and_deploy_u14:
+   build_u14:
       working_directory: ~/zm-build
       environment:
+         - ZIMBRA_OS_TAG: u14
          - ZIMBRA_BUILD_OS: UBUNTU14_64
       docker:
          - image: ubuntu:14.04
-      steps:
-         - checkout
-         - run: .circleci/prepare-u14.sh
-         - run:
-            name: Build
-            <<: *build_cmd
-         - store_artifacts:
-            path: ../BUILDS
-         - deploy:
-            command: .circleci/deploy-to-s3.sh
+      <<: *build_job_steps
 
-   build_and_deploy_u12:
+   build_u12:
       working_directory: ~/zm-build
       environment:
+         - ZIMBRA_OS_TAG: u12
          - ZIMBRA_BUILD_OS: UBUNTU12_64
       docker:
          - image: ubuntu:12.04
-      steps:
-         - checkout
-         - run: .circleci/prepare-u12.sh
-         - run:
-            name: Build
-            <<: *build_cmd
-         - store_artifacts:
-            path: ../BUILDS
-         - deploy:
-            command: .circleci/deploy-to-s3.sh
+      <<: *build_job_steps
 
-   build_and_deploy_c7:
+   build_c7:
       working_directory: ~/zm-build
       environment:
+         - ZIMBRA_OS_TAG: c7
          - ZIMBRA_BUILD_OS: RHEL7_64
       docker:
          - image: centos:7
-      steps:
-         - checkout
-         - run: .circleci/prepare-c7.sh
-         - run:
-            name: Build
-            <<: *build_cmd
-         - store_artifacts:
-            path: ../BUILDS
-         - deploy:
-            command: .circleci/deploy-to-s3.sh
+      <<: *build_job_steps
 
-   build_and_deploy_c6:
+   build_c6:
       working_directory: ~/zm-build
       environment:
+         - ZIMBRA_OS_TAG: c6
          - ZIMBRA_BUILD_OS: RHEL6_64
       docker:
          - image: centos:6
-      steps:
-         - checkout
-         - run: .circleci/prepare-c6.sh
-         - run:
-            name: Build
-            <<: *build_cmd
-         - store_artifacts:
-            path: ../BUILDS
-         - deploy:
-            command: .circleci/deploy-to-s3.sh
+      <<: *build_job_steps
+
+   deploy_s3:
+      working_directory: ~/zm-build
+      docker:
+         - image: ubuntu
+      <<: *deploy_job_steps
 
 ############################################################################
 
@@ -118,8 +107,19 @@ workflows:
    version: 2
    build_and_deploy:
       jobs:
-         - build_and_deploy_u16
-#         - build_and_deploy_u14
-#         - build_and_deploy_u12
-#         - build_and_deploy_c7
-#         - build_and_deploy_c6
+         - build_u16
+         - build_u14
+         - build_u12
+         - build_c7
+         - build_c6
+         - hold:
+            type: approval
+            requires:
+               - build_u16
+               - build_u14
+               - build_u12
+               - build_c7
+               - build_c6
+         - deploy_s3:
+            requires:
+               - hold
