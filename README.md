@@ -219,9 +219,9 @@ For example:
 
 	grep 'org="zimbra"' store/ivy.xml
 
-	<dependency org="zimbra" name="zm-common" rev="latest.integration" />
-	<dependency org="zimbra" name="zm-soap" rev="latest.integration" />
-	<dependency org="zimbra" name="zm-client" rev="latest.integration" />
+	<dependency org="zimbra" name="zm-common" rev="latest.integration"/>
+	<dependency org="zimbra" name="zm-soap" rev="latest.integration"/>
+	<dependency org="zimbra" name="zm-client" rev="latest.integration"/>
 	<dependency org="zimbra" name="zm-native" rev="latest.integration"/>
 
 Here you can see that the deployment target, `zm-store` (the `store` 
