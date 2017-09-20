@@ -52,9 +52,16 @@ echo -----------------------------------
 
 (
  set +e;
+ sudo killall master zmstat-fd
+ sudo killall -u zimbra
+ sudo killall -u postfix
+ sudo pkill -f 'amavi[s]'
+ sleep 10
  sudo killall -9 master zmstat-fd
  sudo killall -9 -u zimbra
  sudo killall -9 -u postfix
+ sudo pkill -9 -f 'amavi[s]'
+ sleep 10
  sudo apt-get remove --purge -y zimbra-*
  sudo rm -rf /opt/zimbra
  echo
