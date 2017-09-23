@@ -2309,27 +2309,27 @@ getInstallPackages() {
       if [ $i = "zimbra-archiving" ]; then
         if [ $STORE_SELECTED = "yes" ]; then
           askYN "Install $i" "N"
-	fi
-      
+        fi
+
       elif [ $i = "zimbra-chat" ]; then
         if [ $STORE_SELECTED = "yes" ]; then
           askYN "Install $i" "N"
-	fi
+        fi
 
       elif [ $i = "zimbra-drive" ]; then
         if [ $STORE_SELECTED = "yes" ]; then
           askYN "Install $i" "N"
-	fi
+        fi
 
       elif [ $i = "zimbra-network-modules-ng" ]; then
         if [ $STORE_SELECTED = "yes" ]; then
           askYN "Install $i" "N"
-	fi
+        fi
 
       else
         askYN "Install $i" "N"
       fi
-      
+
     else
 
       if [ $i = "zimbra-archiving" ]; then
@@ -2360,6 +2360,9 @@ getInstallPackages() {
           askYN "Install $i" "Y"
         fi
 
+      elif [ $i = "zimbra-imapd" ]; then
+          askYN "Install $i (BETA - for evaluation only)" "N"
+
       elif [ $i = "zimbra-dnscache" ]; then
         if [ $MTA_SELECTED = "yes" ]; then
           askYN "Install $i" "Y"
@@ -2381,7 +2384,7 @@ getInstallPackages() {
       elif [ $i = "zimbra-mta" ]; then
         MTA_SELECTED="yes"
       fi
-      
+
       if [ $i = "zimbra-network-modules-ng" ]; then
           echo "###WARNING###"
           echo ""
