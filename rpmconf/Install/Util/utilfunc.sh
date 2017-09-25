@@ -2177,7 +2177,7 @@ configurePackageServer() {
       apt-key list | grep -w 9BE6ED79 >/dev/null
       if [ $? -ne 0 ]; then
         echo "Importing Zimbra GPG key"
-        apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 9BE6ED79 >>$LOGFILE 2>&1
+        apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 9BE6ED79 >>$LOGFILE 2>&1
         if [ $? -ne 0 ]; then
           echo "ERROR: Unable to retrive Zimbra GPG key for package validation"
           echo "Please fix system to allow normal package installation before proceeding"
