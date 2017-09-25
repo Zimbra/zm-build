@@ -7127,7 +7127,7 @@ sub applyConfig {
   setLdapServerConfig($config{HOSTNAME}, 'zimbraServerVersionType', $curVersionType);
   setLdapServerConfig($config{HOSTNAME}, 'zimbraServerVersionBuild', $curVersionBuild);
 
-  if ($newinstall && isEnabled("zimbra-imapd")) {
+  if (isEnabled("zimbra-imapd")) {
     configImap();
   }
 
