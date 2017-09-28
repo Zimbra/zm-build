@@ -7145,14 +7145,11 @@ sub applyConfig {
       }
     }
 
-    if (!isInstalled("zimbra-network-modules-ng")) {
-      main::progress("Disabling zimbraNetworkModulesNGEnabled \n");
-      setLdapServerConfig($config{HOSTNAME}, 'zimbraNetworkModulesNGEnabled', 'FALSE');
-    }
-
-    if (!isInstalled("zimbra-network-modules-ng") || (!$newinstall && prevVersionBelow880())) {
-      main::progress("Disabling zimbraNetworkMobileNGEnabled \n");
-      setLdapServerConfig($config{HOSTNAME}, 'zimbraNetworkMobileNGEnabled', 'FALSE');
+    if (isInstalled("zimbra-network-modules-ng") && $newinstall) {
+      main::progress("Enabling zimbra network NG modules features: Backup, HSM and Mobile\n");
+      setLdapServerConfig($config{HOSTNAME}, 'zimbraNetworkMobileNGEnabled', 'TRUE');
+      setLdapServerConfig($config{HOSTNAME}, 'zimbraNetworkBackupNGEnabled', 'TRUE');
+      setLdapServerConfig($config{HOSTNAME}, 'zimbraNetworkHSMNGEnabled', 'TRUE');
     }
 
     progress ( "Starting servers..." );
