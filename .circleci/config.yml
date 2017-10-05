@@ -50,28 +50,29 @@ references:
          - checkout
          - run:
             name: Preparing OS
-            command: .circleci/jobs/${CIRCLE_JOB}/prepare-box.sh
+            command: .circleci/jobs/${CIRCLE_JOB/@?*/}/prepare-box.sh
          - attach_workspace:
             at: ../BUILDS
          - deploy:
-            command: .circleci/jobs/${CIRCLE_JOB}/deploy.sh
+            command: .circleci/jobs/${CIRCLE_JOB/@?*/}/deploy.sh
 
    deploy_ec2_job_steps: &deploy_ec2_job_steps
       steps:
          - checkout
          - run:
             name: Preparing OS
-            command: .circleci/jobs/${CIRCLE_JOB}/prepare-box.sh
+            command: .circleci/jobs/${CIRCLE_JOB/@?*/}/prepare-box.sh
          - attach_workspace:
             at: ../BUILDS
          - deploy:
-            command: .circleci/jobs/${CIRCLE_JOB}/deploy.sh
+            command: .circleci/jobs/${CIRCLE_JOB/@?*/}/deploy.sh
 
 ############################################################################
 
 jobs:
    build_u16:
       working_directory: ~/zm-build
+      shell: /bin/bash -eo pipefail
       environment:
          - ZIMBRA_OS_TAG: u16
          - ZIMBRA_BUILD_OS: UBUNTU16_64
@@ -81,6 +82,7 @@ jobs:
 
    build_u14:
       working_directory: ~/zm-build
+      shell: /bin/bash -eo pipefail
       environment:
          - ZIMBRA_OS_TAG: u14
          - ZIMBRA_BUILD_OS: UBUNTU14_64
@@ -90,6 +92,7 @@ jobs:
 
    build_u12:
       working_directory: ~/zm-build
+      shell: /bin/bash -eo pipefail
       environment:
          - ZIMBRA_OS_TAG: u12
          - ZIMBRA_BUILD_OS: UBUNTU12_64
@@ -99,6 +102,7 @@ jobs:
 
    build_c7:
       working_directory: ~/zm-build
+      shell: /bin/bash -eo pipefail
       environment:
          - ZIMBRA_OS_TAG: c7
          - ZIMBRA_BUILD_OS: RHEL7_64
@@ -108,6 +112,7 @@ jobs:
 
    build_c6:
       working_directory: ~/zm-build
+      shell: /bin/bash -eo pipefail
       environment:
          - ZIMBRA_OS_TAG: c6
          - ZIMBRA_BUILD_OS: RHEL6_64
@@ -117,12 +122,14 @@ jobs:
 
    deploy_s3:
       working_directory: ~/zm-build
+      shell: /bin/bash -eo pipefail
       docker:
          - image: zimbra/zm-base-os:core-ubuntu
       <<: *deploy_s3_job_steps
 
-   deploy_ec2:
+   deploy_ec2@app1:
       working_directory: ~/zm-build
+      shell: /bin/bash -eo pipefail
       docker:
          - image: zimbra/zm-base-os:core-ubuntu
       <<: *deploy_ec2_job_steps
@@ -136,7 +143,7 @@ workflows:
          - build_u16
          - build_u14
          - build_u12
-         - build_c7
+#         - build_c7    (core dump issue while running ant)
          - build_c6
          - deploy_s3_hold:
             type: approval
@@ -144,15 +151,15 @@ workflows:
                - build_u16
                - build_u14
                - build_u12
-               - build_c7
+#               - build_c7    (core dump issue while running ant)
                - build_c6
          - deploy_s3:
             requires:
                - deploy_s3_hold
-         - deploy_ec2_hold:
+         - deploy_ec2@app1_hold:
             type: approval
             requires:
                - build_u16
-         - deploy_ec2:
+         - deploy_ec2@app1:
             requires:
-               - deploy_ec2_hold
+               - deploy_ec2@app1_hold
