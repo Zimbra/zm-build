@@ -40,7 +40,8 @@ OPTIONAL_PACKAGES="zimbra-qatest \
 zimbra-chat \
 zimbra-drive \
 zimbra-imapd \
-zimbra-network-modules-ng"
+zimbra-network-modules-ng \
+zimbra-rpost"
 
 PACKAGE_DIR="$(CDPATH= cd "$(dirname "$0")" && pwd)/packages"
 
