@@ -2326,6 +2326,11 @@ getInstallPackages() {
           askYN "Install $i" "N"
         fi
 
+      elif [ $i = "zimbra-rpost" ]; then
+        if [ $STORE_SELECTED = "yes" ]; then
+          INSTALL_PACKAGES="$INSTALL_PACKAGES zimbra-rpost"
+        fi
+
       else
         askYN "Install $i" "N"
       fi
@@ -2370,7 +2375,13 @@ getInstallPackages() {
           askYN "Install $i" "N"
         fi
       else
-        askYN "Install $i" "Y"
+        if [ $i = "zimbra-rpost" ]; then
+          if [ $STORE_SELECTED = "yes" ]; then
+            INSTALL_PACKAGES="$INSTALL_PACKAGES zimbra-rpost"
+          fi
+        else
+          askYN "Install $i" "Y"
+        fi
       fi
     fi
 

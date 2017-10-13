@@ -6586,6 +6586,10 @@ sub configInstallZimlets {
     }
   }
 
+  if (isInstalled("zimbra-rpost")) {
+    runAsZimbra("/opt/zimbra/bin/zmzimletctl disable com_rpost_rmail");
+  }
+
   configLog("configInstallZimlets");
 }
 
