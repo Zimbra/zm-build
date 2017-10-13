@@ -1773,6 +1773,7 @@ sub setDefaults {
   }
   if (isInstalled("zimbra-proxy")) {
     progress  "setting defaults for zimbra-proxy.\n" if $options{d};
+    $config{STRICTSERVERNAMEENABLED} = "TRUE";
     $config{IMAPPROXYPORT} = 143;
     $config{IMAPSSLPROXYPORT} = 993;
     $config{POPPROXYPORT} = 110;
@@ -3915,6 +3916,13 @@ sub createProxyMenu {
       "var" => \$config{MAILPROXY},
       "callback" => \&toggleTF,
       "arg" => "MAILPROXY",
+    };
+    $i++;
+    $$lm{menuitems}{$i} = {
+      "prompt" => "Enable strict server name enforcement?",
+      "var" => \$config{STRICTSERVERNAMEENABLED},
+      "callback" => \&toggleYN,
+      "arg" => "STRICTSERVERNAMEENABLED",
     };
     $i++;
     if($config{MAILPROXY} eq "TRUE") {
@@ -6197,6 +6205,15 @@ sub setProxyBits {
 
 sub configSetProxyPrefs {
    if (isEnabled("zimbra-proxy")) {
+     if ($config{STRICTSERVERNAMEENABLED} eq "yes") {
+        progress("Enabling strict server name enforcement on $config{HOSTNAME}...");
+        runAsZimbra("$ZMPROV ms $config{HOSTNAME} +zimbraReverseProxyStrictServerNameEnabled TRUE");
+        progress("done.\n");
+     } else {
+        progress("Disabling strict server name enforcement on $config{HOSTNAME}...");
+        runAsZimbra("$ZMPROV ms $config{HOSTNAME} +zimbraReverseProxyStrictServerNameEnabled FALSE");
+        progress("done.\n");
+     }
      if ($config{MAILPROXY} eq "FALSE" && $config{HTTPPROXY} eq "FALSE") {
         $enabledPackages{"zimbra-proxy"} = "Disabled";
      } else {
