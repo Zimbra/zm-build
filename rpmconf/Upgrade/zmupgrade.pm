@@ -245,7 +245,7 @@ sub upgrade {
         symlink("/opt/zimbra/db/mysql.sock", "/opt/zimbra/data/tmp/mysql/mysql.sock");
     }
     foreach my $v (@{applicableVersions(\%updateMysql)}) {
-      $updateMysql{$v}();  
+      $updateMysql{$v}();
     }
 
     if (startSql()) { return 1; };
@@ -2043,6 +2043,19 @@ sub upgrade872GA {
     my ($startBuild, $targetVersion, $targetBuild) = (@_);
     if (main::isInstalled("zimbra-convertd") && !(-l "/opt/zimbra/keyview")) {
       symlink("/opt/zimbra/keyview-10.13.0.0", "/opt/zimbra/keyview")
+    }
+    return 0;
+}
+
+sub upgrade886GA {
+    my ($startBuild, $targetVersion, $targetBuild) = (@_);
+    if (main::isInstalled("zimbra-proxy")) {
+        # In order to avoid breaking existing installations 'Strict Server Name Enforcement' capability
+        # will remain disabled during upgrades. The maintainer may enable it after the upgrade process
+        # has completed and after configuring the appropriate domain(s) with the relevant
+        # 'zimbraVirtualHostName' and 'zimbraVirtualIPAddress' entries. This maintains current
+        # behavior for all upgrades until the administrator decides to enable the strict name enforcement.
+        main::setLdapServerConfig($hn, 'zimbraReverseProxyStrictServerNameEnabled', "FALSE");
     }
     return 0;
 }
