@@ -137,6 +137,7 @@ postInstallConfiguration()
    sudo su - zimbra -c "zmprov -l mcf zimbraPublicServiceHostname $DOMAIN_NAME"
    sudo su - zimbra -c "zmprov -l mcf zimbraPublicServicePort 443"
    sudo su - zimbra -c "zmprov -l mcf zimbraPublicServiceProtocol https"
+   sudo su - zimbra -c "zmprov mc default zimbraFeatureNotebookEnabled TRUE"
    sudo su - zimbra -c "zmmailboxdctl restart"
 }
 
