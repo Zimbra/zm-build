@@ -1,0 +1,6 @@
+PACKAGE_SERVER="repo.zimbra.com"
+REMOVE="no"
+UPGRADE="yes"
+USE_ZIMBRA_PACKAGE_SERVER="yes"
+VERSIONUPDATECHECKS="TRUE"
+INSTALL_PACKAGES="zimbra-core zimbra-ldap zimbra-logger zimbra-mta zimbra-dnscache zimbra-snmp zimbra-store zimbra-apache zimbra-spell zimbra-memcached zimbra-proxy "
