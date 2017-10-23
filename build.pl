@@ -133,6 +133,8 @@ sub InitGlobalBuildVars()
          { name => "BUILD_DEBUG_FLAG",           type => "!",   hash_src => \%cmd_hash, default_sub => sub { return 0; }, },
          { name => "BUILD_DEV_TOOL_BASE_DIR",    type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return "$ENV{HOME}/.zm-dev-tools"; }, },
          { name => "INTERACTIVE",                type => "!",   hash_src => \%cmd_hash, default_sub => sub { return 1; }, },
+         { name => "DISABLE_TAR",                type => "!",   hash_src => \%cmd_hash, default_sub => sub { return 0; }, },
+         { name => "DISABLE_BUNDLE",             type => "!",   hash_src => \%cmd_hash, default_sub => sub { return 0; }, },
          { name => "GIT_OVERRIDES",              type => "=s%", hash_src => \%cmd_hash, default_sub => sub { return {}; }, },
          { name => "GIT_DEFAULT_TAG",            type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return undef; }, },
          { name => "GIT_DEFAULT_REMOTE",         type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return undef; }, },
@@ -226,6 +228,26 @@ sub InitGlobalBuildVars()
    {
       print "Press enter to proceed";
       read STDIN, $_, 1;
+   }
+}
+
+sub TranslateToPackagePath
+{
+   my $deploy_pkg_into = shift;
+
+   if ( my $pkg_dir = $deploy_pkg_into )
+   {
+      $pkg_dir = "zimbra-" . lc( $CFG{BUILD_TYPE} )
+        if ( $pkg_dir eq "bundle" && $CFG{DISABLE_BUNDLE} );
+
+      $pkg_dir .= "-$ENV{ENV_ARCHIVE_SUFFIX_STR}"
+        if ( $pkg_dir ne "bundle" && $ENV{ENV_ARCHIVE_SUFFIX_STR} );
+
+      return "$CFG{BUILD_DIR}/zm-packages/$pkg_dir/$CFG{PKG_OS_TAG}";
+   }
+   else
+   {
+      return undef;
    }
 }
 
@@ -509,18 +531,10 @@ sub Build($)
                      &$stage_cmd
                   }
 
-                  if ( my $deploy_pkg_into = $build_info->{deploy_pkg_into} )
+                  if ( my $packages_path = TranslateToPackagePath( $build_info->{deploy_pkg_into} ) )
                   {
-                     $deploy_pkg_into = "bundle"
-                       if ( $deploy_pkg_into eq "zimbra-foss" && !$ENV{ENV_ENABLE_ARCHIVE_ZIMBRA_FOSS} );
-
-                     $deploy_pkg_into .= "-$ENV{ENV_ARCHIVE_SUFFIX_STR}"
-                       if ( $deploy_pkg_into ne "bundle" && $ENV{ENV_ARCHIVE_SUFFIX_STR} );
-
-                     my $packages_path = "$CFG{BUILD_DIR}/zm-packages/$deploy_pkg_into";
-
                      SysExec( "mkdir", "-p", $packages_path );
-                     SysExec("rsync -av build/dist/[urc]* '$packages_path/'");
+                     SysExec( "rsync", "-av", "build/dist/$CFG{PKG_OS_TAG}/", "$packages_path/" );
                   }
 
                   if ( !exists $build_info->{partial} )
@@ -546,7 +560,8 @@ sub Build($)
 
          my @ALL_PACKAGES = ();
          push( @ALL_PACKAGES, @{ EvalFile("instructions/$CFG{BUILD_TYPE}_package_list.pl") } );
-         push( @ALL_PACKAGES, "zcs-bundle" );
+         push( @ALL_PACKAGES, "zcs-bundle" )
+           if ( !$CFG{DISABLE_TAR} );
 
          for my $package_script (@ALL_PACKAGES)
          {
@@ -568,6 +583,14 @@ sub Build($)
                         bash $GLOBAL_PATH_TO_SCRIPT_DIR/instructions/bundling-scripts/$package_script.sh
                   "
                );
+
+               if ( $CFG{DISABLE_BUNDLE} )    # move created packages out of the tar for independent deployment in archive.
+               {
+                  my $alt_dest_pkg_dir = TranslateToPackagePath("bundle");
+
+                  SysExec( "mkdir", "-p", $alt_dest_pkg_dir );
+                  SysExec( "rsync", "-av", "--remove-source-files", "$CFG{BUILD_DIR}/zm-build/$CFG{BUILD_ARCH}/", "$alt_dest_pkg_dir/" );
+               }
             }
          }
       },
@@ -611,7 +634,8 @@ sub Deploy()
 
    EchoToFile( "$destination_dir/archive-access.txt", EmitArchiveAccessInstructions( \@archive_names ) );
 
-   SysExec("cp $CFG{BUILD_DIR}/zm-build/zcs-*.$CFG{BUILD_TS}.tgz $destination_dir/");
+   SysExec("cp $CFG{BUILD_DIR}/zm-build/zcs-*.$CFG{BUILD_TS}.tgz $destination_dir/")
+     if ( !$CFG{DISABLE_TAR} );
 
    if ( $CFG{LOCAL_DEPLOY} )
    {

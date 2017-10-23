@@ -28,7 +28,8 @@ references:
                   --build-ts="$(date "+%Y%m%d%M%H%S")" \
                   --ant-options="-DskipTests=1" \
                   --no-interactive \
-               2>&1 | tee -a build.log;
+                  --disable-bundle \
+                  2>&1 | tee -a build.log;
                mkdir -p ../BUILDS
                mv build.log ../BUILDS/build-${ZIMBRA_OS_TAG}.log
          - store_artifacts:
