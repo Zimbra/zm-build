@@ -2,5 +2,5 @@
 
 set -euxo pipefail
 
-#sudo yum clean all
-#sudo yum -y upgrade
+sudo yum clean all
+sudo yum -y upgrade
