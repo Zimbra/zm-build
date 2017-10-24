@@ -66,6 +66,13 @@ references:
          - deploy:
             command: .circleci/jobs/deploy_ec2/deploy.sh ${OPERATION}
 
+   std_filters: &std_filters
+      filters:
+         branches:
+            only:
+               - master
+               - develop
+
 ############################################################################
 
 jobs:
@@ -155,6 +162,7 @@ workflows:
          - build_u12
 #         - build_c7    (core dump issue while running ant)
          - build_c6
+
          - deploy_s3_hold:
             type: approval
             requires:
@@ -163,20 +171,31 @@ workflows:
                - build_u12
 #               - build_c7    (core dump issue while running ant)
                - build_c6
+            <<: *std_filters
+
          - deploy_s3:
             requires:
                - deploy_s3_hold
+            <<: *std_filters
+
          - app1_ec2_install:
             type: approval
             requires:
                - build_u16
+            <<: *std_filters
+
          - app1_ec2_upgrade:
             type: approval
             requires:
                - build_u16
+            <<: *std_filters
+
          - deploy_ec2@app1_install:
             requires:
                - app1_ec2_install
+            <<: *std_filters
+
          - deploy_ec2@app1_upgrade:
             requires:
                - app1_ec2_upgrade
+            <<: *std_filters
