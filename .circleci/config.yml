@@ -51,33 +51,22 @@ references:
          - checkout
          - run:
             name: Preparing OS
-            command: .circleci/jobs/${CIRCLE_JOB/@?*/}/prepare-box.sh
+            command: .circleci/jobs/deploy_s3/prepare-box.sh
          - attach_workspace:
             at: ../BUILDS
          - deploy:
-            command: .circleci/jobs/${CIRCLE_JOB/@?*/}/deploy.sh
+            command: .circleci/jobs/deploy_s3/deploy.sh
 
    deploy_ec2_job_steps: &deploy_ec2_job_steps
       steps:
          - checkout
          - run:
             name: Preparing OS
-            command: .circleci/jobs/${CIRCLE_JOB/@?*/}/prepare-box.sh
+            command: .circleci/jobs/deploy_ec2/prepare-box.sh
          - attach_workspace:
             at: ../BUILDS
          - deploy:
-            command: .circleci/jobs/${CIRCLE_JOB/@?*/}/deploy.sh install
-
-   deploy_ec2_upgrade_job_steps: &deploy_ec2_upgrade_job_steps
-      steps:
-         - checkout
-         - run:
-            name: Preparing OS
-            command: .circleci/jobs/${CIRCLE_JOB/@?*/}/prepare-box.sh
-         - attach_workspace:
-            at: ../BUILDS
-         - deploy:
-            command: .circleci/jobs/${CIRCLE_JOB/@?*/}/deploy.sh upgrade
+            command: .circleci/jobs/deploy_ec2/deploy.sh ${OPERATION}
 
 ############################################################################
 
@@ -142,6 +131,8 @@ jobs:
    deploy_ec2@app1_install:
       working_directory: ~/zm-build
       shell: /bin/bash -eo pipefail
+      environment:
+         - OPERATION: install
       docker:
          - image: zimbra/zm-base-os:core-ubuntu
       <<: *deploy_ec2_job_steps
@@ -149,9 +140,11 @@ jobs:
    deploy_ec2@app1_upgrade:
       working_directory: ~/zm-build
       shell: /bin/bash -eo pipefail
+      environment:
+         - OPERATION: upgrade
       docker:
          - image: zimbra/zm-base-os:core-ubuntu
-      <<: *deploy_ec2_upgrade_job_steps
+      <<: *deploy_ec2_job_steps
 
 ############################################################################
 
