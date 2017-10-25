@@ -12,17 +12,15 @@ references:
          - run:
             name: Creating build
             command: |
-               source .circleci/get-env.sh;
                ./build.pl \
-                  --build-type="$ZIMBRA_CI_BUILD_TYPE" \
-                  --build-hostname="$ZIMBRA_CI_BUILD_HOSTNAME" \
-                  --build-release="$ZIMBRA_CI_BUILD_RELEASE" \
-                  --build-release-no="$ZIMBRA_CI_BUILD_RELEASE_NO" \
-                  --build-release-candidate="$ZIMBRA_CI_BUILD_RELEASE_CANDIDATE" \
-                  --build-thirdparty-server="$ZIMBRA_CI_THIRDPARTY_SERVER" \
-                  --deploy-url-prefix="https://$ZIMBRA_CI_DEPLOY_HOSTNAME/$ZIMBRA_CI_DEPLOY_PATH" \
-                  --git-default-branch="$ZIMBRA_CI_GIT_DEFAULT_BRANCH" \
-                  "${ZIMBRA_CI_OVERRIDES[@]}" \
+                  --build-type=FOSS \
+                  --build-hostname=build.zimbra.org \
+                  --build-release="$CIRCLE_PROJECT_USERNAME" \
+                  --build-release-no=$(.circleci/misc/glean_version.pl) \
+                  --build-release-candidate=beta \
+                  --build-thirdparty-server=zdev-vm008.eng.zimbra.com \
+                  --deploy-url-prefix="https://files.zimbra.com/dev-releases" \
+                  --git-default-branch="$CIRCLE_BRANCH,develop" \
                   --build-os="$ZIMBRA_BUILD_OS" \
                   --build-no="$CIRCLE_BUILD_NUM" \
                   --build-ts="$(date "+%Y%m%d%M%H%S")" \

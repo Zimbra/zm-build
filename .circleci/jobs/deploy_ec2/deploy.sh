@@ -7,8 +7,6 @@ OP="$1"
 [ "$APP1_SSH_HOST" ] || exit 1;
 [ "$APP1_ADMIN_PASS" ] || exit 1;
 
-source .circleci/get-env.sh;
-
 SSH_OPTS=(
    "-o" "UserKnownHostsFile=/dev/null"
    "-o" "StrictHostKeyChecking=no"
