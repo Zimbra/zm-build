@@ -2331,6 +2331,9 @@ getInstallPackages() {
           INSTALL_PACKAGES="$INSTALL_PACKAGES zimbra-rpost"
         fi
 
+      elif [ $i = "zimbra-imapd" ]; then
+        askYN "Install $i (BETA - for evaluation only)" "N"
+
       else
         askYN "Install $i" "N"
       fi
