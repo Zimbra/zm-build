@@ -2562,6 +2562,7 @@ sub upgradeLdap($) {
           close(OUT);
           close(IN);
           qx(mv $outfile $infile);
+          qx(chown zimbra:zimbra $infile);
         }
         main::configLog("LdapUpgraded$upgradeVersion");
       }
@@ -2609,6 +2610,7 @@ sub upgradeLdap($) {
           close(OUT);
           close(IN);
           qx(mv $outfile $infile);
+          qx(chown zimbra:zimbra $infile);
         }
         main::configLog("LdapUpgraded$upgradeVersion");
       }
@@ -2693,6 +2695,7 @@ sub upgradeLdap($) {
             close(OUT);
             close(IN);
             qx(mv $outfile $infile);
+            qx(chown zimbra:zimbra $infile);
           }
           if (-f '/opt/zimbra/data/ldap/config/cn=config.ldif') {
             $infile="/opt/zimbra/data/ldap/config/cn\=config.ldif";
