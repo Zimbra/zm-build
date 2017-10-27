@@ -119,6 +119,7 @@ my %updateFuncs = (
   "8.7.0_BETA2" => \&upgrade870BETA2,
   "8.7.0_RC1" => \&upgrade870RC1,
   "8.7.2_GA" => \&upgrade872GA,
+  "8.8.6_GA" => \&upgrade886GA,
 );
 
 my %updateMysql = (
@@ -2057,6 +2058,8 @@ sub upgrade886GA {
         # behavior for all upgrades until the administrator decides to enable the strict name enforcement.
         main::setLdapServerConfig($hn, 'zimbraReverseProxyStrictServerNameEnabled', "FALSE");
     }
+    # ClientIpHash is now obsolete
+    upgradeLdapConfigValue("zimbraImapLoadBalancingAlgorithm", "AccountIdHash", "ClientIpHash");
     return 0;
 }
 
@@ -2559,6 +2562,7 @@ sub upgradeLdap($) {
           close(OUT);
           close(IN);
           qx(mv $outfile $infile);
+          qx(chown zimbra:zimbra $infile);
         }
         main::configLog("LdapUpgraded$upgradeVersion");
       }
@@ -2606,6 +2610,7 @@ sub upgradeLdap($) {
           close(OUT);
           close(IN);
           qx(mv $outfile $infile);
+          qx(chown zimbra:zimbra $infile);
         }
         main::configLog("LdapUpgraded$upgradeVersion");
       }
@@ -2690,6 +2695,7 @@ sub upgradeLdap($) {
             close(OUT);
             close(IN);
             qx(mv $outfile $infile);
+            qx(chown zimbra:zimbra $infile);
           }
           if (-f '/opt/zimbra/data/ldap/config/cn=config.ldif') {
             $infile="/opt/zimbra/data/ldap/config/cn\=config.ldif";
