@@ -46,7 +46,7 @@ logged in as a non-root user with `sudo` privileges.
 ### CentOS 7
 
     sudo yum groupinstall 'Development Tools'
-    sudo yum install java-1.8.0-openjdk ant ruby git maven cpan wget perl-IPC-Cmd
+    sudo yum install java-1.8.0-openjdk ant ant-junit ruby git maven cpan wget perl-IPC-Cmd
 
 ### CentOS 6
 
