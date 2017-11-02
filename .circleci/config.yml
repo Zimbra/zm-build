@@ -97,21 +97,21 @@ jobs:
          - image: zimbra/zm-base-os:devcore-ubuntu-12.04
       <<: *build_job_steps
 
-   build_c7:
+   build_r7:
       working_directory: ~/zm-build
       shell: /bin/bash -eo pipefail
       environment:
-         - ZIMBRA_OS_TAG: c7
+         - ZIMBRA_OS_TAG: r7
          - ZIMBRA_BUILD_OS: RHEL7_64
       docker:
          - image: zimbra/zm-base-os:devcore-centos-7
       <<: *build_job_steps
 
-   build_c6:
+   build_r6:
       working_directory: ~/zm-build
       shell: /bin/bash -eo pipefail
       environment:
-         - ZIMBRA_OS_TAG: c6
+         - ZIMBRA_OS_TAG: r6
          - ZIMBRA_BUILD_OS: RHEL6_64
       docker:
          - image: zimbra/zm-base-os:devcore-centos-6
@@ -151,8 +151,8 @@ workflows:
          - build_u16
          - build_u14
          - build_u12
-#         - build_c7    (core dump issue while running ant)
-         - build_c6
+#         - build_r7    (core dump issue while running ant)
+         - build_r6
 
          - deploy_s3_hold:
             type: approval
@@ -160,8 +160,8 @@ workflows:
                - build_u16
                - build_u14
                - build_u12
-#               - build_c7    (core dump issue while running ant)
-               - build_c6
+#               - build_r7    (core dump issue while running ant)
+               - build_r6
             <<: *std_filters
 
          - deploy_s3:
