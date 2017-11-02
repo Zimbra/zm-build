@@ -148,6 +148,7 @@ sub InitGlobalBuildVars()
          { name => "BUILD_RELEASE_NO_SHORT",     type => "=s",  hash_src => \%cmd_hash, default_sub => sub { my $x = $CFG{BUILD_RELEASE_NO}; $x =~ s/[.]//g; return $x; }, },
          { name => "DESTINATION_NAME",           type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return &$destination_name_func; }, },
          { name => "BUILD_DIR",                  type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return &$build_dir_func; }, },
+         { name => "DUMP_CONFIG_TO",             type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return undef; }, },
       );
 
       {
@@ -219,6 +220,31 @@ sub InitGlobalBuildVars()
    }
 
    print "=========================================================================================================\n";
+
+   if ( $CFG{DUMP_CONFIG_TO} )
+   {
+      open( my $fh, ">", $CFG{DUMP_CONFIG_TO} ) or Die("Could not open '$CFG{DUMP_CONFIG_TO}'");
+
+      print $fh "# Dumping config to file...\n\n";
+
+      foreach my $k ( sort keys %CFG )
+      {
+         my $v = $CFG{$k};
+         if ( ref($v) eq "HASH" )
+         {
+            foreach my $sk ( sort keys %$v )
+            {
+               printf $fh "%-30s = %s\n", '%' . $k, "$sk=$v->{$sk}";
+            }
+         }
+         else
+         {
+            printf $fh "%-30s = %s\n", $k, $v;
+         }
+      }
+
+      print "NOTE: DUMPED CONFIG TO FILE - $CFG{DUMP_CONFIG_TO}\n";
+   }
 
    print "NOTE: THIS WILL STOP AFTER CHECKOUTS\n"
      if ( $CFG{STOP_AFTER_CHECKOUT} );
