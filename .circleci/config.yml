@@ -7,9 +7,6 @@ references:
       steps:
          - checkout
          - run:
-            name: Preparing OS
-            command: .circleci/jobs/${CIRCLE_JOB}/prepare-box.sh
-         - run:
             name: Creating build
             command: |
                ./build.pl \
@@ -47,9 +44,6 @@ references:
    deploy_s3_job_steps: &deploy_s3_job_steps
       steps:
          - checkout
-         - run:
-            name: Preparing OS
-            command: .circleci/jobs/deploy_s3/prepare-box.sh
          - attach_workspace:
             at: ../BUILDS
          - deploy:
@@ -58,9 +52,6 @@ references:
    deploy_ec2_job_steps: &deploy_ec2_job_steps
       steps:
          - checkout
-         - run:
-            name: Preparing OS
-            command: .circleci/jobs/deploy_ec2/prepare-box.sh
          - attach_workspace:
             at: ../BUILDS
          - deploy:
