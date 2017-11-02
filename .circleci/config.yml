@@ -20,7 +20,7 @@ references:
                   --build-release-no=$(.circleci/misc/glean_version.pl) \
                   --build-release-candidate=beta \
                   --build-thirdparty-server=zdev-vm008.eng.zimbra.com \
-                  --deploy-url-prefix="https://files.zimbra.com/dev-releases" \
+                  --deploy-url-prefix="https://files.zimbra.com/dev-releases/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/$CIRCLE_BRANCH-$CIRCLE_BUILD_NUM" \
                   --git-default-branch="$CIRCLE_BRANCH,develop" \
                   --build-os="UBUNTU16_64" \
                   --pkg-os-tag="u16" \
@@ -76,7 +76,21 @@ references:
          - attach_workspace:
             at: ../..
          - deploy:
-            command: .circleci/jobs/deploy_s3/deploy.sh
+            name: Deploying to S3
+            command: |
+               for i in ../BUILDS/*
+               do
+                  if [ -d "$i" ]
+                  then
+                     # NOTE: We are not using $CIRCLE_BUILD_NUM as its different for each job of the workflow
+                     #       Instead, we need $CIRCLE_BUILD_NUM allocated for 'checkout' job, (stored in config.build)
+                     BUILD_NO=$(cat config.build | sed -ne '/^BUILD_NO\>/ { s/.*=\s*//p }'); [ ! -z "$BUILD_NO" ] || exit 2;
+
+                     aws s3 sync "$i" "s3://files.zimbra.com/dev-releases/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/$CIRCLE_BRANCH-$BUILD_NO/" \
+                        --acl public-read \
+                        --region us-east-1
+                  fi
+               done
 
    deploy_ec2_job_steps: &deploy_ec2_job_steps
       steps:

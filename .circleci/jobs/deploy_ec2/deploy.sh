@@ -99,7 +99,7 @@ updatePackages()
    echo Setup local archives
    echo -----------------------------------
 
-   for archives in $HOME/BUILD/archives/*
+   for archives in $HOME/BUILD/archives/*/u16
    do
       echo "deb [trusted=yes] file://$archives ./"
    done | sudo tee /etc/apt/sources.list.d/zimbra-local.list
