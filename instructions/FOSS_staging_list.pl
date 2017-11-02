@@ -15,11 +15,6 @@
       "stage_cmd"   => undef,
    },
    {
-      "dir"             => "zm-zextras",
-      "make_targets"    => ["all"],
-      "deploy_pkg_into" => "zimbra-zextras",
-   },
-   {
       "dir"             => "zm-timezones",
       "ant_targets"     => ["pkg"],
       "deploy_pkg_into" => "bundle",
