@@ -1,3 +1,6 @@
+
+# vim:expandtab:ts=3
+
 version: 2
 
 ############################################################################
@@ -33,14 +36,6 @@ references:
             root: ../BUILDS
             paths: ./*
 
-   stub_build_job_steps: &stub_build_job_steps
-      steps:
-         - run:
-            name: Creating nothing
-            command: |
-               date
-               echo nothing
-
    deploy_s3_job_steps: &deploy_s3_job_steps
       steps:
          - checkout
@@ -69,7 +64,7 @@ references:
 jobs:
    build_u16:
       working_directory: ~/zm-build
-      shell: /bin/bash -eo pipefail
+      shell: /bin/bash -euo pipefail
       environment:
          - ZIMBRA_OS_TAG: u16
          - ZIMBRA_BUILD_OS: UBUNTU16_64
@@ -79,7 +74,7 @@ jobs:
 
    build_u14:
       working_directory: ~/zm-build
-      shell: /bin/bash -eo pipefail
+      shell: /bin/bash -euo pipefail
       environment:
          - ZIMBRA_OS_TAG: u14
          - ZIMBRA_BUILD_OS: UBUNTU14_64
@@ -89,7 +84,7 @@ jobs:
 
    build_u12:
       working_directory: ~/zm-build
-      shell: /bin/bash -eo pipefail
+      shell: /bin/bash -euo pipefail
       environment:
          - ZIMBRA_OS_TAG: u12
          - ZIMBRA_BUILD_OS: UBUNTU12_64
@@ -99,7 +94,7 @@ jobs:
 
    build_r7:
       working_directory: ~/zm-build
-      shell: /bin/bash -eo pipefail
+      shell: /bin/bash -euo pipefail
       environment:
          - ZIMBRA_OS_TAG: r7
          - ZIMBRA_BUILD_OS: RHEL7_64
@@ -109,7 +104,7 @@ jobs:
 
    build_r6:
       working_directory: ~/zm-build
-      shell: /bin/bash -eo pipefail
+      shell: /bin/bash -euo pipefail
       environment:
          - ZIMBRA_OS_TAG: r6
          - ZIMBRA_BUILD_OS: RHEL6_64
@@ -119,14 +114,14 @@ jobs:
 
    deploy_s3:
       working_directory: ~/zm-build
-      shell: /bin/bash -eo pipefail
+      shell: /bin/bash -euo pipefail
       docker:
          - image: zimbra/zm-base-os:core-ubuntu
       <<: *deploy_s3_job_steps
 
    deploy_ec2@app1_install:
       working_directory: ~/zm-build
-      shell: /bin/bash -eo pipefail
+      shell: /bin/bash -euo pipefail
       environment:
          - OPERATION: install
       docker:
@@ -135,7 +130,7 @@ jobs:
 
    deploy_ec2@app1_upgrade:
       working_directory: ~/zm-build
-      shell: /bin/bash -eo pipefail
+      shell: /bin/bash -euo pipefail
       environment:
          - OPERATION: upgrade
       docker:
