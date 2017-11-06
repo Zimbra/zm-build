@@ -26,7 +26,7 @@ Ssh()
 
 DIR=$(echo ../BUILDS/UBUNTU16_64* | head -1); [ -d "$DIR" ] || exit 1;
 
-#Rsync --delete -avz ~/zm-build "$APP1_SSH_USER@$APP1_SSH_HOST:"
+#Rsync --delete -avz ../zm-build "$APP1_SSH_USER@$APP1_SSH_HOST:"
 Rsync --delete -avz "$DIR/" "$APP1_SSH_USER@$APP1_SSH_HOST:BUILD/"
 Rsync .circleci/jobs/deploy_ec2/install.conf.in "$APP1_SSH_USER@$APP1_SSH_HOST:BUILD/install.conf.in"
 Rsync .circleci/jobs/deploy_ec2/upgrade.conf.in "$APP1_SSH_USER@$APP1_SSH_HOST:BUILD/upgrade.conf.in"
