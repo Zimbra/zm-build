@@ -2695,6 +2695,10 @@ getPlatformVars() {
     if [ $PLATFORM = "UBUNTU12_64" -o $PLATFORM = "UBUNTU14_64" -o $PLATFORM = "UBUNTU16_64" ]; then
       STORE_PACKAGES="libreoffice"
     fi
+    DumpFileDetailsFromPackage() {
+       local pkg_n="$1"; shift
+       LANG="en_US.UTF-8" LANGUAGE="en_US" dpkg-query -W -f='${package}_${Version}_${Architecture}.deb\n' "$pkg_n"
+    }
     LocalPackageDepList() {
        local pkg_f="$1"; shift;
        LANG="en_US.UTF-8" LANGUAGE="en_US" \
@@ -2739,6 +2743,10 @@ getPlatformVars() {
       if [ $PLATFORM = "RHEL6_64" -o $PLATFORM = "RHEL7_64" ]; then
          STORE_PACKAGES="libreoffice libreoffice-headless"
       fi
+      DumpFileDetailsFromPackage() {
+         local pkg_n="$1"; shift
+         echo "$(LANG="en_US.UTF-8" LANGUAGE="en_US" rpm -q "$pkg_n").rpm"
+      }
       LocalPackageDepList() {
          local pkg_f="$1"; shift;
          LANG="en_US.UTF-8" LANGUAGE="en_US" \
