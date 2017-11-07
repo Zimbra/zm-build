@@ -135,6 +135,7 @@ sub InitGlobalBuildVars()
          { name => "INTERACTIVE",                type => "!",   hash_src => \%cmd_hash, default_sub => sub { return 1; }, },
          { name => "DISABLE_TAR",                type => "!",   hash_src => \%cmd_hash, default_sub => sub { return 0; }, },
          { name => "DISABLE_BUNDLE",             type => "!",   hash_src => \%cmd_hash, default_sub => sub { return 0; }, },
+         { name => "EXCLUDE_GIT_REPOS",          type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return ""; }, },
          { name => "GIT_OVERRIDES",              type => "=s%", hash_src => \%cmd_hash, default_sub => sub { return {}; }, },
          { name => "GIT_DEFAULT_TAG",            type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return undef; }, },
          { name => "GIT_DEFAULT_REMOTE",         type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return undef; }, },
@@ -346,7 +347,10 @@ sub LoadRepos()
 {
    my @agg_repos = ();
 
-   push( @agg_repos, @{ EvalFile("instructions/$CFG{BUILD_TYPE}_repo_list.pl") } );
+   my %exclusions = ();
+   map { $exclusions{$_} = 1; } split(/,/, $CFG{EXCLUDE_GIT_REPOS});
+
+   push( @agg_repos, grep { !exists $exclusions{$_->{name}} } @{ EvalFile("instructions/$CFG{BUILD_TYPE}_repo_list.pl") } );
 
    return \@agg_repos;
 }
