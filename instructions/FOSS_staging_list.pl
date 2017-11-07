@@ -15,6 +15,9 @@
       "stage_cmd"   => undef,
    },
    {
+      # This repo can be removed and made independent of zm-zextras
+      # This cannot be done unless the packages from zm-timezones are pushed to public repo
+      # This is already excluded in CircleCI builds
       "dir"             => "zm-timezones",
       "ant_targets"     => ["pkg"],
       "deploy_pkg_into" => "bundle",

@@ -31,6 +31,7 @@ references:
                   --disable-bundle \
                   --dump-config-to="$PWD/config.build" \
                   --stop-after-checkout \
+                  --exclude-git-repos=zm-timezones \
                   2>&1 \
                | tee ../BUILDS/checkout.log;
 

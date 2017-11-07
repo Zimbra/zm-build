@@ -103,6 +103,13 @@ updatePackages()
    do
       echo "deb [trusted=yes] file://$archives ./"
    done | sudo tee /etc/apt/sources.list.d/zimbra-local.list
+
+   echo "deb [trusted=yes] https://files.zimbra.com/dev-releases/hold/Zimbra/zm-zextras/develop-52/archives/zimbra-zextras/u16 ./" | sudo tee /etc/apt/sources.list.d/zimbra-zextras.list
+   echo "deb [trusted=yes] https://files.zimbra.com/dev-releases/hold/Zimbra/zm-timezones/develop-35/archives/zimbra-foss/u16  ./" | sudo tee /etc/apt/sources.list.d/zimbra-foss.list
+
+   #echo "deb [arch=amd64] https://repo.zimbra.com/apt/zimbra-zextras xenial zimbra" | sudo tee /etc/apt/sources.list.d/zimbra-zextras.list
+   #echo "deb [arch=amd64] https://repo.zimbra.com/apt/zimbra-foss xenial zimbra"    | sudo tee /etc/apt/sources.list.d/zimbra-foss.list
+
    sudo apt-get update -qq
 }
 
