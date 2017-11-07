@@ -138,6 +138,20 @@ main()
     cp ${repoDir}/zm-taglib/build/zm-taglib*.jar         ${repoDir}/zm-build/${currentPackage}/opt/zimbra/jetty_base/webapps/service/WEB-INF/lib
     cp ${repoDir}/zm-zimlets/build/dist/zimlettaglib.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/jetty_base/webapps/service/WEB-INF/lib
 
+    solrJars=(
+        "httpmime-4.3.5.jar"
+        "lucene-analyzers-common-6.6.0.jar"
+        "lucene-core-6.6.0.jar"
+        "noggit-0.7.jar"
+        "solr-core-6.6.0.jar"
+        "solr-solrj-6.6.0.jar"
+        "zookeeper-3.4.5.jar"
+    )
+    for i in "${solrJars[@]}"
+    do
+        cp ${repoDir}/zm-zcs-lib/build/dist/${i} ${repoDir}/zm-build/${currentPackage}/opt/zimbra/jetty_base/webapps/service/WEB-INF/lib
+    done
+
     echo "\t\t++++++++++ zimbra.war content ++++++++++" >> ${buildLogFile}
     mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/jetty_base/webapps/zimbra
     ( cd ${repoDir}/zm-build/${currentPackage}/opt/zimbra/jetty_base/webapps/zimbra; jar -xf ${repoDir}/zm-web-client/build/dist/jetty/webapps/zimbra.war )
@@ -362,7 +376,7 @@ main()
         "httpclient-4.5.2.jar"
         "httpcore-4.4.5.jar"
         "httpcore-nio-4.4.5.jar"
-	"httpmime-4.3.1.jar"
+        "httpmime-4.3.5.jar"
         "icu4j-4.8.1.1.jar"
         "jaxen-1.1.3.jar"
         "jcommon-1.0.21.jar"
