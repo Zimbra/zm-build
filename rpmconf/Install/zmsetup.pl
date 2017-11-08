@@ -1234,6 +1234,9 @@ sub setLdapDefaults {
       if ($config{zimbraVersionCheckNotificationEmailFrom} eq "");
   }
 
+  $config{EphemeralBackendURL} = getLdapConfigValue("zimbraEphemeralBackendURL");
+  $config{USEEPHEMERALSTORE} = "yes" if ($config{EphemeralBackendURL} ne "");
+
   #
   # Load default COS
   #
