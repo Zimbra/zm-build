@@ -98,7 +98,18 @@ references:
          - attach_workspace:
             at: ../..
          - deploy:
-            command: .circleci/jobs/deploy_ec2/deploy.sh ${OPERATION}
+            name: Deploying to EC2
+            command: |
+               MY_SSH_HOST_var="${EC2_TARGET}_SSH_HOST";
+               MY_SSH_USER_var="${EC2_TARGET}_SSH_USER";
+               MY_ADMIN_PASS_var="${EC2_TARGET}_ADMIN_PASS";
+
+               .circleci/jobs/deploy_ec2/deploy.sh \
+                  -o ${OPERATION} \
+                  -t ${PKG_OS_TAG} \
+                  -h ${!MY_SSH_HOST_var} \
+                  -u ${!MY_SSH_USER_var} \
+                  -a ${!MY_ADMIN_PASS_var}
 
    std_filters: &std_filters
       filters:
@@ -178,7 +189,9 @@ jobs:
       working_directory: ~/checkout/zm-build
       shell: /bin/bash -euo pipefail
       environment:
+         - EC2_TARGET: APP1
          - OPERATION: install
+         - PKG_OS_TAG: u16
       docker:
          - image: zimbra/zm-base-os:core-ubuntu
       <<: *deploy_ec2_job_steps
@@ -187,7 +200,31 @@ jobs:
       working_directory: ~/checkout/zm-build
       shell: /bin/bash -euo pipefail
       environment:
+         - EC2_TARGET: APP2
          - OPERATION: upgrade
+         - PKG_OS_TAG: u16
+      docker:
+         - image: zimbra/zm-base-os:core-ubuntu
+      <<: *deploy_ec2_job_steps
+
+   deploy_ec2@app2_install:
+      working_directory: ~/checkout/zm-build
+      shell: /bin/bash -euo pipefail
+      environment:
+         - EC2_TARGET: APP2
+         - OPERATION: install
+         - PKG_OS_TAG: r6
+      docker:
+         - image: zimbra/zm-base-os:core-ubuntu
+      <<: *deploy_ec2_job_steps
+
+   deploy_ec2@app2_upgrade:
+      working_directory: ~/checkout/zm-build
+      shell: /bin/bash -euo pipefail
+      environment:
+         - EC2_TARGET: APP2
+         - OPERATION: upgrade
+         - PKG_OS_TAG: r6
       docker:
          - image: zimbra/zm-base-os:core-ubuntu
       <<: *deploy_ec2_job_steps
@@ -257,4 +294,28 @@ workflows:
          - deploy_ec2@app1_upgrade:
             requires:
                - app1_ec2_upgrade
+            <<: *std_filters
+
+         #########################
+
+         - app2_ec2_install:
+            type: approval
+            requires:
+               - build_r6
+            <<: *std_filters
+
+         - app2_ec2_upgrade:
+            type: approval
+            requires:
+               - build_r6
+            <<: *std_filters
+
+         - deploy_ec2@app2_install:
+            requires:
+               - app2_ec2_install
+            <<: *std_filters
+
+         - deploy_ec2@app2_upgrade:
+            requires:
+               - app2_ec2_upgrade
             <<: *std_filters
