@@ -1,11 +1,85 @@
 #!/bin/bash
 
 set -euo pipefail
-OP="$1"
-[ -d .circleci ] || exit 1
-[ "$APP1_SSH_USER" ] || exit 1;
-[ "$APP1_SSH_HOST" ] || exit 1;
-[ "$APP1_ADMIN_PASS" ] || exit 1;
+
+SCRIPT_DIR=$(CDPATH= cd "$(dirname "$0")" && pwd);
+CIRCLE_DIR=$(dirname "$(dirname "$SCRIPT_DIR")")
+
+usage()
+{
+   echo "Usage: $0 -o <upgrade|install> -t <u16|u14|u12|r7|r6> -h <ssh-ec2-host> -u <ssh-ec2-user> -a <admin-pass-to-set>" 1>&2;
+   echo 1>&2;
+   echo "Example:" 1>&2;
+   echo "   $0 -o upgrade -t u16 -h ec2-xx-xx-xx-xx.us-east-2.compute.amazonaws.com -u ubuntu -a admin123" 1>&2;
+   exit 1
+}
+
+#######################################################################
+##### PARSE ARGS, SANITIZE #####
+#######################################################################
+
+set +u
+while getopts "o:t:h:u:a:" cur_opt; do
+    case "${cur_opt}" in
+        o)
+            OPERATION="${OPTARG}"
+            if [ "$OPERATION" != "upgrade" ] && [ "$OPERATION" != "install" ]
+            then
+	       usage
+            fi
+            ;;
+        t)
+            PKG_OS_TAG=${OPTARG}
+            case "$PKG_OS_TAG" in
+               u16) DIR=$(echo $CIRCLE_DIR/../../BUILDS/UBUNTU16_64* | head -1); ;;
+               u14) DIR=$(echo $CIRCLE_DIR/../../BUILDS/UBUNTU14_64* | head -1); ;;
+               u12) DIR=$(echo $CIRCLE_DIR/../../BUILDS/UBUNTU12_64* | head -1); ;;
+                r7) DIR=$(echo $CIRCLE_DIR/../../BUILDS/RHEL7_64* | head -1); ;;
+                r6) DIR=$(echo $CIRCLE_DIR/../../BUILDS/RHEL6_64* | head -1); ;;
+                *) usage; ;;
+            esac
+            ;;
+        h)
+            MY_SSH_HOST=${OPTARG}
+            ;;
+        u)
+            MY_SSH_USER=${OPTARG}
+            ;;
+        a)
+            MY_ADMIN_PASS=${OPTARG}
+            ;;
+        *)
+            usage
+            ;;
+    esac
+done
+shift $((OPTIND-1))
+
+if [ -z "$MY_SSH_USER" ] || [ -z "$MY_SSH_HOST" ] || [ -z "$MY_ADMIN_PASS" ] || [ -z "$PKG_OS_TAG" ]
+then
+   usage;
+fi
+
+if [ ! -f "$CIRCLE_DIR/config.yml" ]
+then
+   echo "Rerun from within .circleci directory";
+   exit 1
+fi
+
+if [ ! -d "$DIR" ]
+then
+   echo "Could not find the BUILD";
+   exit 1;
+fi
+set -u
+
+##### END GETOPT #####
+#######################################################################
+
+
+#######################################################################
+##### RSYNC #####
+#######################################################################
 
 SSH_OPTS=(
    "-o" "UserKnownHostsFile=/dev/null"
@@ -24,14 +98,27 @@ Ssh()
    ssh "${SSH_OPTS[@]}" "$@"
 }
 
-DIR=$(echo ../BUILDS/UBUNTU16_64* | head -1); [ -d "$DIR" ] || exit 1;
+#Rsync --delete -avz $CIRCLE_DIR/../zm-build "$MY_SSH_USER@$MY_SSH_HOST:"
+Rsync --delete -avz "$DIR/" "$MY_SSH_USER@$MY_SSH_HOST:BUILD/"
+Rsync $CIRCLE_DIR/jobs/deploy_ec2/install.conf.in "$MY_SSH_USER@$MY_SSH_HOST:BUILD/install.conf.in"
+Rsync $CIRCLE_DIR/jobs/deploy_ec2/upgrade.conf.in "$MY_SSH_USER@$MY_SSH_HOST:BUILD/upgrade.conf.in"
 
-#Rsync --delete -avz ~/zm-build "$APP1_SSH_USER@$APP1_SSH_HOST:"
-Rsync --delete -avz "$DIR/" "$APP1_SSH_USER@$APP1_SSH_HOST:BUILD/"
-Rsync .circleci/jobs/deploy_ec2/install.conf.in "$APP1_SSH_USER@$APP1_SSH_HOST:BUILD/install.conf.in"
-Rsync .circleci/jobs/deploy_ec2/upgrade.conf.in "$APP1_SSH_USER@$APP1_SSH_HOST:BUILD/upgrade.conf.in"
+##### END RSYNC #####
+#######################################################################
 
-Ssh "$APP1_SSH_USER@$APP1_SSH_HOST" -- "DOMAIN_NAME=$APP1_SSH_HOST" "ADMIN_PASS=$APP1_ADMIN_PASS" "OP=$OP" bash -s <<"SCRIPT_EOM"
+
+#######################################################################
+##### FORWARD SCRIPT TO EXECUTE #####
+#######################################################################
+
+Ssh "$MY_SSH_USER@$MY_SSH_HOST" -- tee /tmp/injected_bash_script.sh <<"SCRIPT_EOM"
+#!/bin/bash
+
+[ -z "$DOMAIN_NAME" ] && echo "DOMAIN_NAME is not defined" && exit 1;
+[ -z "$ADMIN_PASS"  ] && echo "ADMIN_PASS is not defined"  && exit 1;
+[ -z "$OPERATION"   ] && echo "OPERATION is not defined"   && exit 1;
+[ -z "$PKG_OS_TAG"  ] && echo "PKG_OS_TAG is not defined"  && exit 1;
+
 set -euxo pipefail
 
 setUp()
@@ -62,19 +149,37 @@ setUp()
    sudo killall -9 -u postfix
    sudo pkill -9 -f 'amavi[s]'
    sleep 10
-   sudo apt-get remove --purge -y zimbra-*
+   [[ "$PKG_OS_TAG" =~ u* ]] && sudo apt-get remove --purge -y zimbra-*
+   [[ "$PKG_OS_TAG" =~ r* ]] && sudo yum erase -y zimbra-*
    sudo rm -rf /opt/zimbra
+
+   [[ "$PKG_OS_TAG" =~ u* ]] && sudo apt-get install -y perl
+   [[ "$PKG_OS_TAG" =~ r* ]] && sudo yum install -y perl
+   if [[ "$PKG_OS_TAG" =~ r6 ]]
+   then
+      if [ ! -f /usr/lib/python2.6/site-packages/yum/__init__.py.patched ]
+      then
+         #We are running into a curious yum bug - See https://bugzilla.redhat.com/show_bug.cgi?id=993567
+
+         sudo yum -y install wget patch
+         sudo wget http://s3.amazonaws.com/files.zimbra.com/dev-releases/hold/r6-yum-patch/yum.patch -O ~/yum.patch
+         sudo cp /usr/lib/python2.6/site-packages/yum/__init__.py{,.orig}
+         sudo patch -p0 < ~/yum.patch
+         sudo cp /usr/lib/python2.6/site-packages/yum/__init__.py{,.patched}
+      fi
+   fi
    echo
 }
 
 buildCleanUp()
 {
    echo -----------------------------------
-   echo Build Cleanup
+   echo Build Cleanup, Uncompress new tarball
    echo -----------------------------------
 
    sudo rm -rf ~/WDIR
    mkdir ~/WDIR
+   tar -C ~/WDIR -xzf BUILD/zcs-*.tgz
 }
 
 prepareConfig()
@@ -99,21 +204,57 @@ updatePackages()
    echo Setup local archives
    echo -----------------------------------
 
-   for archives in $HOME/BUILD/archives/*
-   do
-      echo "deb [trusted=yes] file://$archives ./"
-   done | sudo tee /etc/apt/sources.list.d/zimbra-local.list
-   sudo apt-get update -qq
+   if [[ "$PKG_OS_TAG" =~ u* ]]
+   then
+      sudo rm -f /etc/apt/sources.list.d/zimbra-*.list
+
+      echo "deb [trusted=yes] file://$(echo $HOME/BUILD/archives/*/$PKG_OS_TAG) ./"                                                           | sudo tee -a /etc/apt/sources.list.d/zimbra-local.list
+      echo "deb [trusted=yes] https://files.zimbra.com/dev-releases/hold/Zimbra/zm-zextras/develop-52/archives/zimbra-zextras/$PKG_OS_TAG ./" | sudo tee -a /etc/apt/sources.list.d/zimbra-zextras.list
+      echo "deb [trusted=yes] https://files.zimbra.com/dev-releases/hold/Zimbra/zm-timezones/develop-35/archives/zimbra-foss/$PKG_OS_TAG  ./" | sudo tee -a /etc/apt/sources.list.d/zimbra-foss.list
+
+      #echo "deb [arch=amd64] https://repo.zimbra.com/apt/zimbra-zextras xenial zimbra" | sudo tee -a /etc/apt/sources.list.d/zimbra-zextras.list
+      #echo "deb [arch=amd64] https://repo.zimbra.com/apt/zimbra-foss xenial zimbra"    | sudo tee -a /etc/apt/sources.list.d/zimbra-foss.list
+
+      sudo apt-get update -qq
+   fi
+
+   if [[ "$PKG_OS_TAG" =~ r* ]]
+   then
+      sudo rm -f /etc/yum.repos.d/zimbra-*.repo
+
+      sudo tee -a /etc/yum.repos.d/zimbra-local.repo <<EOM
+[zimbra-local-zm-build]
+name=zimbra-local
+baseurl=file://$(echo $HOME/BUILD/archives/*/$PKG_OS_TAG)
+enabled=1
+gpgcheck=0
+protect=0
+EOM
+
+      sudo tee -a /etc/yum.repos.d/zimbra-zextras.repo <<EOM
+[zimbra-zextras-zm-zextras]
+name=zimbra-zextras
+baseurl=https://files.zimbra.com/dev-releases/hold/Zimbra/zm-zextras/develop-52/archives/zimbra-zextras/$PKG_OS_TAG
+enabled=1
+gpgcheck=0
+protect=0
+EOM
+
+      sudo tee -a /etc/yum.repos.d/zimbra-foss.repo <<EOM
+[zimbra-foss-zm-timezones]
+name=zimbra-foss
+baseurl=https://files.zimbra.com/dev-releases/hold/Zimbra/zm-timezones/develop-35/archives/zimbra-foss/$PKG_OS_TAG
+enabled=1
+gpgcheck=0
+protect=0
+EOM
+
+      sudo yum clean all
+   fi
 }
 
 deploy()
 {
-   echo -----------------------------------
-   echo Uncompress tarball
-   echo -----------------------------------
-
-   tar -C ~/WDIR -xzf BUILD/zcs-*.tgz
-
    echo -----------------------------------
    echo Upgrade/Install
    echo -----------------------------------
@@ -140,8 +281,8 @@ postInstallConfiguration()
 }
 
 Main() {
-   echo $OP
-   if [ "$OP" == "upgrade" ]; then
+   echo $OPERATION
+   if [ "$OPERATION" == "upgrade" ]; then
       buildCleanUp
       prepareConfig
       updatePackages
@@ -162,4 +303,12 @@ echo INSTALL FINISHED
 echo -----------------------------------
 SCRIPT_EOM
 
-echo DEPLOY FINISHED - https://$APP1_SSH_HOST/
+#######################################################################
+##### EXECUTE SCRIPT IN EC2 #####
+#######################################################################
+
+# XXX:  All variables have to be explicitly forwarded to the script below, and it runs inside the remote machines's context
+
+Ssh "$MY_SSH_USER@$MY_SSH_HOST" -- "DOMAIN_NAME=$MY_SSH_HOST" "ADMIN_PASS=$MY_ADMIN_PASS" "OPERATION=$OPERATION" "PKG_OS_TAG=$PKG_OS_TAG" bash /tmp/injected_bash_script.sh
+
+echo DEPLOY FINISHED - https://$MY_SSH_HOST/

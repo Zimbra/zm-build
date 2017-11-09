@@ -135,6 +135,7 @@ sub InitGlobalBuildVars()
          { name => "INTERACTIVE",                type => "!",   hash_src => \%cmd_hash, default_sub => sub { return 1; }, },
          { name => "DISABLE_TAR",                type => "!",   hash_src => \%cmd_hash, default_sub => sub { return 0; }, },
          { name => "DISABLE_BUNDLE",             type => "!",   hash_src => \%cmd_hash, default_sub => sub { return 0; }, },
+         { name => "EXCLUDE_GIT_REPOS",          type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return ""; }, },
          { name => "GIT_OVERRIDES",              type => "=s%", hash_src => \%cmd_hash, default_sub => sub { return {}; }, },
          { name => "GIT_DEFAULT_TAG",            type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return undef; }, },
          { name => "GIT_DEFAULT_REMOTE",         type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return undef; }, },
@@ -142,13 +143,13 @@ sub InitGlobalBuildVars()
          { name => "STOP_AFTER_CHECKOUT",        type => "!",   hash_src => \%cmd_hash, default_sub => sub { return 0; }, },
          { name => "ANT_OPTIONS",                type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return undef; }, },
          { name => "BUILD_HOSTNAME",             type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return Net::Domain::hostfqdn; }, },
-         { name => "DEPLOY_URL_PREFIX",          type => "=s",  hash_src => \%cmd_hash, default_sub => sub { $CFG{LOCAL_DEPLOY} = 1; return "http://" . Net::Domain::hostfqdn . ":8008"; }, },
-
-         { name => "BUILD_ARCH",             type => "", hash_src => undef, default_sub => sub { return GetBuildArch(); }, },
-         { name => "PKG_OS_TAG",             type => "", hash_src => undef, default_sub => sub { return GetPkgOsTag(); }, },
-         { name => "BUILD_RELEASE_NO_SHORT", type => "", hash_src => undef, default_sub => sub { my $x = $CFG{BUILD_RELEASE_NO}; $x =~ s/[.]//g; return $x; }, },
-         { name => "DESTINATION_NAME",       type => "", hash_src => undef, default_sub => sub { return &$destination_name_func; }, },
-         { name => "BUILD_DIR",              type => "", hash_src => undef, default_sub => sub { return &$build_dir_func; }, },
+         { name => "BUILD_ARCH",                 type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return GetBuildArch(); }, },
+         { name => "PKG_OS_TAG",                 type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return GetPkgOsTag(); }, },
+         { name => "BUILD_RELEASE_NO_SHORT",     type => "=s",  hash_src => \%cmd_hash, default_sub => sub { my $x = $CFG{BUILD_RELEASE_NO}; $x =~ s/[.]//g; return $x; }, },
+         { name => "DESTINATION_NAME",           type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return &$destination_name_func; }, },
+         { name => "BUILD_DIR",                  type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return &$build_dir_func; }, },
+         { name => "DEPLOY_URL_PREFIX",          type => "=s",  hash_src => \%cmd_hash, default_sub => sub { $CFG{LOCAL_DEPLOY} = 1; return "http://" . Net::Domain::hostfqdn . ":8008/$CFG{DESTINATION_NAME}"; }, },
+         { name => "DUMP_CONFIG_TO",             type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return undef; }, },
       );
 
       {
@@ -220,6 +221,31 @@ sub InitGlobalBuildVars()
    }
 
    print "=========================================================================================================\n";
+
+   if ( $CFG{DUMP_CONFIG_TO} )
+   {
+      open( my $fh, ">", $CFG{DUMP_CONFIG_TO} ) or Die("Could not open '$CFG{DUMP_CONFIG_TO}'");
+
+      print $fh "# Dumping config to file...\n\n";
+
+      foreach my $k ( sort keys %CFG )
+      {
+         my $v = $CFG{$k};
+         if ( ref($v) eq "HASH" )
+         {
+            foreach my $sk ( sort keys %$v )
+            {
+               printf $fh "%-30s = %s\n", '%' . $k, "$sk=$v->{$sk}";
+            }
+         }
+         else
+         {
+            printf $fh "%-30s = %s\n", $k, $v;
+         }
+      }
+
+      print "NOTE: DUMPED CONFIG TO FILE - $CFG{DUMP_CONFIG_TO}\n";
+   }
 
    print "NOTE: THIS WILL STOP AFTER CHECKOUTS\n"
      if ( $CFG{STOP_AFTER_CHECKOUT} );
@@ -321,7 +347,10 @@ sub LoadRepos()
 {
    my @agg_repos = ();
 
-   push( @agg_repos, @{ EvalFile("instructions/$CFG{BUILD_TYPE}_repo_list.pl") } );
+   my %exclusions = ();
+   map { $exclusions{$_} = 1; } split(/,/, $CFG{EXCLUDE_GIT_REPOS});
+
+   push( @agg_repos, grep { !exists $exclusions{$_->{name}} } @{ EvalFile("instructions/$CFG{BUILD_TYPE}_repo_list.pl") } );
 
    return \@agg_repos;
 }
@@ -406,7 +435,7 @@ cat > /etc/yum.repos.d/zimbra-packages.repo <<EOM
       map {
 "[$_]
 name=Zimbra Package Archive ($_)
-baseurl=$CFG{DEPLOY_URL_PREFIX}/$CFG{DESTINATION_NAME}/archives/$_/
+baseurl=$CFG{DEPLOY_URL_PREFIX}/archives/$_/$CFG{PKG_OS_TAG}/
 enabled=1
 gpgcheck=0
 protect=0"
@@ -430,7 +459,7 @@ cat > /etc/apt/sources.list.d/zimbra-packages.list << EOM
 @{[
    join("\n",
       map {
-"deb [trusted=yes] $CFG{DEPLOY_URL_PREFIX}/$CFG{DESTINATION_NAME}/archives/$_ ./ # Zimbra Package Archive ($_)"
+"deb [trusted=yes] $CFG{DEPLOY_URL_PREFIX}/archives/$_/$CFG{PKG_OS_TAG} ./ # Zimbra Package Archive ($_)"
       }
       @$archive_names
    )]}
@@ -453,6 +482,7 @@ sub Build($)
          "-Ddebug=$CFG{BUILD_DEBUG_FLAG}",
          "-Dis-production=$CFG{BUILD_PROD_FLAG}",
          "-Dzimbra.buildinfo.platform=$CFG{BUILD_OS}",
+         "-Dzimbra.buildinfo.pkg_os_tag=$CFG{PKG_OS_TAG}",
          "-Dzimbra.buildinfo.version=$CFG{BUILD_RELEASE_NO}_$CFG{BUILD_RELEASE_CANDIDATE}_$CFG{BUILD_NO}",
          "-Dzimbra.buildinfo.type=$CFG{BUILD_TYPE}",
          "-Dzimbra.buildinfo.release=$CFG{BUILD_TS}",
@@ -464,6 +494,7 @@ sub Build($)
          "debug=$CFG{BUILD_DEBUG_FLAG}",
          "is-production=$CFG{BUILD_PROD_FLAG}",
          "zimbra.buildinfo.platform=$CFG{BUILD_OS}",
+         "zimbra.buildinfo.pkg_os_tag=$CFG{PKG_OS_TAG}",
          "zimbra.buildinfo.version=$CFG{BUILD_RELEASE_NO}_$CFG{BUILD_RELEASE_CANDIDATE}_$CFG{BUILD_NO}",
          "zimbra.buildinfo.type=$CFG{BUILD_TYPE}",
          "zimbra.buildinfo.release=$CFG{BUILD_TS}",
@@ -620,19 +651,19 @@ sub Deploy()
       {
          if ( !$CFG{LOCAL_DEPLOY} || DetectPrerequisite( "createrepo", "", 1 ) )
          {
-            SysExec("cd '$destination_dir/archives/$archive_name' && createrepo '.'");
+            SysExec("cd '$destination_dir/archives/$archive_name/$CFG{PKG_OS_TAG}' && createrepo '.'");
          }
       }
       else
       {
          if ( !$CFG{LOCAL_DEPLOY} || DetectPrerequisite( "dpkg-scanpackages", "", 1 ) )
          {
-            SysExec("cd '$destination_dir/archives/$archive_name' && dpkg-scanpackages '.' /dev/null > Packages");
+            SysExec("cd '$destination_dir/archives/$archive_name/$CFG{PKG_OS_TAG}' && dpkg-scanpackages '.' /dev/null > Packages");
          }
       }
    }
 
-   EchoToFile( "$destination_dir/archive-access.txt", EmitArchiveAccessInstructions( \@archive_names ) );
+   EchoToFile( "$destination_dir/archive-access-$CFG{PKG_OS_TAG}.txt", EmitArchiveAccessInstructions( \@archive_names ) );
 
    SysExec("cp $CFG{BUILD_DIR}/zm-build/zcs-*.$CFG{BUILD_TS}.tgz $destination_dir/")
      if ( !$CFG{DISABLE_TAR} );

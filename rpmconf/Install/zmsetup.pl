@@ -1865,6 +1865,14 @@ sub getInstallStatus {
       }
     }
 
+    if( !exists $installStatus{"zimbra-core"} )
+    {
+       progress ("\nERROR:\n");
+       progress ("zimbra-core does not seem to be installed.\n");
+       progress ("Please install required components first. Exiting.\n\n");
+       exit (1);
+    }
+
     if ( ($installStatus{"zimbra-core"}{op} eq "INSTALLED") &&
       ($configStatus{"END"} ne "CONFIGURED") ){
       $newinstall = 1;

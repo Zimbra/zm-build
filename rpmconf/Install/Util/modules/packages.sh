@@ -192,9 +192,10 @@ installPackages() {
       echo "done"
    fi
 
-   for f in "${local_pkg_files[@]}"; do
-      f=`basename $f`
-      echo "${D}: $ST $f" >> /opt/zimbra/.install_history
+   local pkg_n
+   for pkg_n in "${local_pkg_names[@]}" "${repo_pkg_names[@]}" "${repo_pkg_names_delayed[@]}"
+   do
+      echo "${D}: $ST $(DumpFileDetailsFromPackage "$pkg_n")" >> /opt/zimbra/.install_history
    done
 
    echo
