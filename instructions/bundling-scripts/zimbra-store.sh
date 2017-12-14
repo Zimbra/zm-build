@@ -384,6 +384,11 @@ main()
         "unboundid-ldapsdk-2.3.5.jar"
         "xercesImpl-2.9.1-patch-01.jar"
         "yuicompressor-2.4.2-zimbra.jar"
+        "commons-text-1.1.jar"
+	"commons-lang3-3.7.jar"
+	"commons-rng-client-api-1.0.jar"
+	"commons-rng-core-1.0.jar"
+	"commons-rng-simple-1.0.jar"
     )
     for i in "${thirdpartyJars[@]}"
     do
