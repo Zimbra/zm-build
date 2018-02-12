@@ -359,6 +359,7 @@ main()
    Copy ${repoDir}/zm-core-utils/src/libexec/zmrrdfetch                                             ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmrrdfetch
    Copy ${repoDir}/zm-core-utils/src/libexec/zmsacompile                                            ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmsacompile
    Copy ${repoDir}/zm-core-utils/src/libexec/zmsaupdate                                             ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmsaupdate
+   Copy ${repoDir}/zm-core-utils/src/libexec/zmsearchndelete                                        ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmsearchndelete
    Copy ${repoDir}/zm-core-utils/src/libexec/zmserverips                                            ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmserverips
    Copy ${repoDir}/zm-core-utils/src/libexec/zmsetservername                                        ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmsetservername
    Copy ${repoDir}/zm-core-utils/src/libexec/zmsnmpinit                                             ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmsnmpinit
