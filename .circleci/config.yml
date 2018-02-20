@@ -1,125 +1,321 @@
+
+# vim:expandtab:ts=3
+
 version: 2
 
 ############################################################################
 
 references:
-   build_job_steps: &build_job_steps
+   checkout_job_steps: &checkout_job_steps
       steps:
          - checkout
          - run:
-            name: Preparing OS
-            command: .circleci/jobs/${CIRCLE_JOB}/prepare-box.sh
+            name: Checking out dependencies
+            command: |
+               mkdir -p ../BUILDS
+               ./build.pl \
+                  --build-type=FOSS \
+                  --build-hostname=build.zimbra.org \
+                  --build-release="$CIRCLE_PROJECT_USERNAME" \
+                  --build-release-no=$(.circleci/misc/glean_version.pl) \
+                  --build-release-candidate=beta \
+                  --build-thirdparty-server=zdev-vm008.eng.zimbra.com \
+                  --deploy-url-prefix="https://files.zimbra.com/dev-releases/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/$CIRCLE_BRANCH-$CIRCLE_BUILD_NUM" \
+                  --git-default-branch="$CIRCLE_BRANCH,develop" \
+                  --build-os="UBUNTU16_64" \
+                  --pkg-os-tag="u16" \
+                  --build-no="$CIRCLE_BUILD_NUM" \
+                  --build-ts="$(date "+%Y%m%d%M%H%S")" \
+                  --ant-options="-DskipTests=1" \
+                  --no-interactive \
+                  --disable-bundle \
+                  --dump-config-to="$PWD/config.build" \
+                  --stop-after-checkout \
+                  --exclude-git-repos=zm-timezones \
+                  2>&1 \
+               | tee ../BUILDS/checkout.log;
+
+               # FIXME: remove this hack, and fix --dump-config-to
+               sed -i \
+                  -e '/^DUMP_CONFIG_TO/d' \
+                  -e '/^STOP_AFTER_CHECKOUT/d' \
+                  -e '/^INTERACTIVE/d' \
+                  -e '/^BUILD_OS/d' \
+                  -e '/^PKG_OS_TAG/d' \
+                  -e '/^BUILD_ARCH/d' \
+                  -e '/\<UBUNTU16_64\>/d' \
+                  -e '/\<BUILDS\>/d' \
+                  config.build;
+         - persist_to_workspace:
+            root: ../..
+            paths:
+               - checkout
+               - .zcs-deps
+
+   build_job_steps: &build_job_steps
+      steps:
+         - attach_workspace:
+            at: ../..
          - run:
             name: Creating build
             command: |
-               source .circleci/get-env.sh;
-               ./build.pl \
-                  --build-type="$ZIMBRA_CI_BUILD_TYPE" \
-                  --build-hostname="$ZIMBRA_CI_BUILD_HOSTNAME" \
-                  --build-release="$ZIMBRA_CI_BUILD_RELEASE" \
-                  --build-release-no="$ZIMBRA_CI_BUILD_RELEASE_NO" \
-                  --build-release-candidate="$ZIMBRA_CI_BUILD_RELEASE_CANDIDATE" \
-                  --build-thirdparty-server="$ZIMBRA_CI_THIRDPARTY_SERVER" \
-                  --deploy-url-prefix="https://$ZIMBRA_CI_DEPLOY_HOSTNAME/$ZIMBRA_CI_DEPLOY_PATH" \
-                  --git-default-branch="$ZIMBRA_CI_GIT_DEFAULT_BRANCH" \
-                  "${ZIMBRA_CI_OVERRIDES[@]}" \
-                  --build-os="$ZIMBRA_BUILD_OS" \
-                  --build-no="$CIRCLE_BUILD_NUM" \
-                  --build-ts="$(date "+%Y%m%d%M%H%S")" \
-                  --no-interactive \
-               2>&1 | tee -a build.log;
-               mkdir -p ../BUILDS
-               mv build.log ../BUILDS/build-${ZIMBRA_OS_TAG}.log
+               rm ../BUILDS/checkout.log
+               ENV_GIT_UPDATE_INCLUDE=@ \
+                  ./build.pl 2>&1 \
+                     --build-os="$ZIMBRA_BUILD_OS" \
+                     --pkg-os-tag="$ZIMBRA_OS_TAG" \
+                     --no-interactive \
+               | tee -a ../BUILDS/build-${ZIMBRA_OS_TAG}.log
          - store_artifacts:
             path: ../BUILDS
          - persist_to_workspace:
-            root: ../BUILDS
-            paths: ./*
+            root: ../..
+            paths: checkout/BUILDS
 
-   deploy_job_steps: &deploy_job_steps
+   deploy_s3_job_steps: &deploy_s3_job_steps
       steps:
-         - checkout
-         - run:
-            name: Preparing OS
-            command: .circleci/jobs/${CIRCLE_JOB}/prepare-box.sh
          - attach_workspace:
-            at: ../BUILDS
+            at: ../..
          - deploy:
-            command: .circleci/jobs/${CIRCLE_JOB}/deploy.sh
+            name: Deploying to S3
+            command: |
+               for i in ../BUILDS/*
+               do
+                  if [ -d "$i" ]
+                  then
+                     # NOTE: We are not using $CIRCLE_BUILD_NUM as its different for each job of the workflow
+                     #       Instead, we need $CIRCLE_BUILD_NUM allocated for 'checkout' job, (stored in config.build)
+                     BUILD_NO=$(cat config.build | sed -ne '/^BUILD_NO\>/ { s/.*=\s*//p }'); [ ! -z "$BUILD_NO" ] || exit 2;
+
+                     aws s3 sync "$i" "s3://files.zimbra.com/dev-releases/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/$CIRCLE_BRANCH-$BUILD_NO/" \
+                        --acl public-read \
+                        --region us-east-1
+                  fi
+               done
+
+   deploy_ec2_job_steps: &deploy_ec2_job_steps
+      steps:
+         - attach_workspace:
+            at: ../..
+         - deploy:
+            name: Deploying to EC2
+            command: |
+               MY_SSH_HOST_var="${EC2_TARGET}_SSH_HOST";
+               MY_SSH_USER_var="${EC2_TARGET}_SSH_USER";
+               MY_ADMIN_PASS_var="${EC2_TARGET}_ADMIN_PASS";
+
+               .circleci/jobs/deploy_ec2/deploy.sh \
+                  -o ${OPERATION} \
+                  -t ${PKG_OS_TAG} \
+                  -h ${!MY_SSH_HOST_var} \
+                  -u ${!MY_SSH_USER_var} \
+                  -a ${!MY_ADMIN_PASS_var}
+
+   std_filters: &std_filters
+      filters:
+         branches:
+            only:
+               - master
+               - develop
 
 ############################################################################
 
 jobs:
+   checkout:
+      working_directory: ~/checkout/zm-build
+      shell: /bin/bash -euo pipefail
+      docker:
+         - image: zimbra/zm-base-os:devcore-ubuntu-16.04
+      <<: *checkout_job_steps
+
    build_u16:
-      working_directory: ~/zm-build
+      working_directory: ~/checkout/zm-build
+      shell: /bin/bash -euo pipefail
       environment:
          - ZIMBRA_OS_TAG: u16
          - ZIMBRA_BUILD_OS: UBUNTU16_64
       docker:
-         - image: ubuntu:16.04
+         - image: zimbra/zm-base-os:devcore-ubuntu-16.04
       <<: *build_job_steps
 
    build_u14:
-      working_directory: ~/zm-build
+      working_directory: ~/checkout/zm-build
+      shell: /bin/bash -euo pipefail
       environment:
          - ZIMBRA_OS_TAG: u14
          - ZIMBRA_BUILD_OS: UBUNTU14_64
       docker:
-         - image: ubuntu:14.04
+         - image: zimbra/zm-base-os:devcore-ubuntu-14.04
       <<: *build_job_steps
 
    build_u12:
-      working_directory: ~/zm-build
+      working_directory: ~/checkout/zm-build
+      shell: /bin/bash -euo pipefail
       environment:
          - ZIMBRA_OS_TAG: u12
          - ZIMBRA_BUILD_OS: UBUNTU12_64
       docker:
-         - image: ubuntu:12.04
+         - image: zimbra/zm-base-os:devcore-ubuntu-12.04
       <<: *build_job_steps
 
-   build_c7:
-      working_directory: ~/zm-build
+   build_r7:
+      working_directory: ~/checkout/zm-build
+      shell: /bin/bash -euo pipefail
       environment:
-         - ZIMBRA_OS_TAG: c7
+         - ZIMBRA_OS_TAG: r7
          - ZIMBRA_BUILD_OS: RHEL7_64
       docker:
-         - image: centos:7
+         - image: zimbra/zm-base-os:devcore-centos-7
       <<: *build_job_steps
 
-   build_c6:
-      working_directory: ~/zm-build
+   build_r6:
+      working_directory: ~/checkout/zm-build
+      shell: /bin/bash -euo pipefail
       environment:
-         - ZIMBRA_OS_TAG: c6
+         - ZIMBRA_OS_TAG: r6
          - ZIMBRA_BUILD_OS: RHEL6_64
       docker:
-         - image: centos:6
+         - image: zimbra/zm-base-os:devcore-centos-6
       <<: *build_job_steps
 
    deploy_s3:
-      working_directory: ~/zm-build
+      working_directory: ~/checkout/zm-build
+      shell: /bin/bash -euo pipefail
       docker:
-         - image: ubuntu
-      <<: *deploy_job_steps
+         - image: zimbra/zm-base-os:core-ubuntu
+      <<: *deploy_s3_job_steps
+
+   deploy_ec2@app1_install:
+      working_directory: ~/checkout/zm-build
+      shell: /bin/bash -euo pipefail
+      environment:
+         - EC2_TARGET: APP1
+         - OPERATION: install
+         - PKG_OS_TAG: u16
+      docker:
+         - image: zimbra/zm-base-os:core-ubuntu
+      <<: *deploy_ec2_job_steps
+
+   deploy_ec2@app1_upgrade:
+      working_directory: ~/checkout/zm-build
+      shell: /bin/bash -euo pipefail
+      environment:
+         - EC2_TARGET: APP2
+         - OPERATION: upgrade
+         - PKG_OS_TAG: u16
+      docker:
+         - image: zimbra/zm-base-os:core-ubuntu
+      <<: *deploy_ec2_job_steps
+
+   deploy_ec2@app2_install:
+      working_directory: ~/checkout/zm-build
+      shell: /bin/bash -euo pipefail
+      environment:
+         - EC2_TARGET: APP2
+         - OPERATION: install
+         - PKG_OS_TAG: r6
+      docker:
+         - image: zimbra/zm-base-os:core-ubuntu
+      <<: *deploy_ec2_job_steps
+
+   deploy_ec2@app2_upgrade:
+      working_directory: ~/checkout/zm-build
+      shell: /bin/bash -euo pipefail
+      environment:
+         - EC2_TARGET: APP2
+         - OPERATION: upgrade
+         - PKG_OS_TAG: r6
+      docker:
+         - image: zimbra/zm-base-os:core-ubuntu
+      <<: *deploy_ec2_job_steps
 
 ############################################################################
 
 workflows:
    version: 2
-   build_and_deploy:
+   main:
       jobs:
-         - build_u16
-         - build_u14
-         - build_u12
-         - build_c7
-         - build_c6
-         - hold:
+         - checkout
+
+         #########################
+
+         - build_u16:
+            requires:
+               - checkout
+         - build_u14:
+            requires:
+               - checkout
+         - build_u12:
+            requires:
+               - checkout
+#         - build_r7:
+#            requires:
+#               - checkout
+         - build_r6:
+            requires:
+               - checkout
+
+         #########################
+
+         - deploy_s3_hold:
             type: approval
             requires:
                - build_u16
                - build_u14
                - build_u12
-               - build_c7
-               - build_c6
+#               - build_r7    (core dump issue while running ant)
+               - build_r6
+            <<: *std_filters
+
          - deploy_s3:
             requires:
-               - hold
+               - deploy_s3_hold
+            <<: *std_filters
+
+         #########################
+
+         - app1_ec2_install:
+            type: approval
+            requires:
+               - build_u16
+            <<: *std_filters
+
+         - app1_ec2_upgrade:
+            type: approval
+            requires:
+               - build_u16
+            <<: *std_filters
+
+         - deploy_ec2@app1_install:
+            requires:
+               - app1_ec2_install
+            <<: *std_filters
+
+         - deploy_ec2@app1_upgrade:
+            requires:
+               - app1_ec2_upgrade
+            <<: *std_filters
+
+         #########################
+
+         - app2_ec2_install:
+            type: approval
+            requires:
+               - build_r6
+            <<: *std_filters
+
+         - app2_ec2_upgrade:
+            type: approval
+            requires:
+               - build_r6
+            <<: *std_filters
+
+         - deploy_ec2@app2_install:
+            requires:
+               - app2_ec2_install
+            <<: *std_filters
+
+         - deploy_ec2@app2_upgrade:
+            requires:
+               - app2_ec2_upgrade
+            <<: *std_filters

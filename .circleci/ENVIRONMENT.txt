@@ -1,0 +1,17 @@
+ENV VARIABLES:
+   (used by deploy_ec2@app1_install, deploy_ec2@app1_upgrade):
+      APP1_ADMIN_PASS =  password to set admin user to.
+      APP1_SSH_HOST   =  ec2 machine
+      APP1_SSH_USER   =  ec2 username (with sudo)
+   (used by deploy_ec2@app2_install, deploy_ec2@app2_upgrade):
+      APP2_ADMIN_PASS =  password to set admin user to.
+      APP2_SSH_HOST   =  ec2 machine
+      APP2_SSH_USER   =  ec2 username (with sudo)
+
+SSH PERMISSIONS: (used by deploy_ec2)
+   (private key for ec2 machine named in $APP1_SSH_HOST above)
+   (private key for ec2 machine named in $APP2_SSH_HOST above)
+
+AWS PERMISSIONS: (used by deploy_s3)
+   Access Key ID
+   Secret Access Key

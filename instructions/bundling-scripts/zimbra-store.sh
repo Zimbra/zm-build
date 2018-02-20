@@ -362,6 +362,7 @@ main()
         "httpclient-4.5.2.jar"
         "httpcore-4.4.5.jar"
         "httpcore-nio-4.4.5.jar"
+	"httpmime-4.3.1.jar"
         "icu4j-4.8.1.1.jar"
         "jaxen-1.1.3.jar"
         "jcommon-1.0.21.jar"

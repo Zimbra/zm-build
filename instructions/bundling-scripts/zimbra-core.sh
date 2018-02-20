@@ -53,11 +53,10 @@ CreateDebianPackage()
 
    (
       set -e;
-      MORE_DEPENDS="$(find ${repoDir}/zm-packages/ -name \*.deb \
+      MORE_DEPENDS=", zimbra-timezone-data (>= 1.0.1+1510156506-1.$PKG_OS_TAG) $(find ${repoDir}/zm-packages/ -name \*.deb \
                          | xargs -n1 basename \
                          | sed -e 's/_[0-9].*//' \
                          | grep -e zimbra-common- \
-                                -e zimbra-timezone-data \
                          | sed '1s/^/, /; :a; {N;s/\n/, /;ba}')";
 
       cat ${repoDir}/zm-build/rpmconf/Spec/${currentScript}.deb \
@@ -77,11 +76,10 @@ CreateDebianPackage()
 
 CreateRhelPackage()
 {
-    MORE_DEPENDS="$(find ${repoDir}/zm-packages/ -name \*.rpm \
+    MORE_DEPENDS=", zimbra-timezone-data >= 1.0.1+1510156506-1.$PKG_OS_TAG $(find ${repoDir}/zm-packages/ -name \*.rpm \
                        | xargs -n1 basename \
                        | sed -e 's/-[0-9].*//' \
                        | grep -e zimbra-common- \
-                              -e zimbra-timezone-data \
                        | sed '1s/^/, /; :a; {N;s/\n/, /;ba}')";
 
     cat ${repoDir}/zm-build/rpmconf/Spec/${currentScript}.spec | \
@@ -620,9 +618,13 @@ main()
       "httpclient-4.5.2.jar"
       "httpcore-4.4.5.jar"
       "httpcore-nio-4.4.5.jar"
+      "httpmime-4.3.1.jar"
       "ical4j-0.9.16-patched.jar"
       "icu4j-4.8.1.1.jar"
       "jackson-mapper-asl-1.9.13.jar"
+      "jackson-core-asl-1.9.13.jar"
+      "jackson-xc-1.9.13.jar"
+      "jackson-smile-1.9.13.jar"
       "jamm-0.2.5.jar"
       "javax.servlet-api-3.1.0.jar"
       "javax.ws.rs-api-2.0-m10.jar"

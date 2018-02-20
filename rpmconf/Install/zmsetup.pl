@@ -1234,6 +1234,9 @@ sub setLdapDefaults {
       if ($config{zimbraVersionCheckNotificationEmailFrom} eq "");
   }
 
+  $config{EphemeralBackendURL} = getLdapConfigValue("zimbraEphemeralBackendURL");
+  $config{USEEPHEMERALSTORE} = "yes" if ($config{EphemeralBackendURL} ne "");
+
   #
   # Load default COS
   #
@@ -1773,6 +1776,7 @@ sub setDefaults {
   }
   if (isInstalled("zimbra-proxy")) {
     progress  "setting defaults for zimbra-proxy.\n" if $options{d};
+    $config{STRICTSERVERNAMEENABLED} = "TRUE";
     $config{IMAPPROXYPORT} = 143;
     $config{IMAPSSLPROXYPORT} = 993;
     $config{POPPROXYPORT} = 110;
@@ -1862,6 +1866,14 @@ sub getInstallStatus {
           $prevVersion = $curVersion;
         }
       }
+    }
+
+    if( !exists $installStatus{"zimbra-core"} )
+    {
+       progress ("\nERROR:\n");
+       progress ("zimbra-core does not seem to be installed.\n");
+       progress ("Please install required components first. Exiting.\n\n");
+       exit (1);
     }
 
     if ( ($installStatus{"zimbra-core"}{op} eq "INSTALLED") &&
@@ -3915,6 +3927,13 @@ sub createProxyMenu {
       "var" => \$config{MAILPROXY},
       "callback" => \&toggleTF,
       "arg" => "MAILPROXY",
+    };
+    $i++;
+    $$lm{menuitems}{$i} = {
+      "prompt" => "Enable strict server name enforcement?",
+      "var" => \$config{STRICTSERVERNAMEENABLED},
+      "callback" => \&toggleYN,
+      "arg" => "STRICTSERVERNAMEENABLED",
     };
     $i++;
     if($config{MAILPROXY} eq "TRUE") {
@@ -6197,6 +6216,15 @@ sub setProxyBits {
 
 sub configSetProxyPrefs {
    if (isEnabled("zimbra-proxy")) {
+     if ($config{STRICTSERVERNAMEENABLED} eq "yes") {
+        progress("Enabling strict server name enforcement on $config{HOSTNAME}...");
+        runAsZimbra("$ZMPROV ms $config{HOSTNAME} +zimbraReverseProxyStrictServerNameEnabled TRUE");
+        progress("done.\n");
+     } else {
+        progress("Disabling strict server name enforcement on $config{HOSTNAME}...");
+        runAsZimbra("$ZMPROV ms $config{HOSTNAME} +zimbraReverseProxyStrictServerNameEnabled FALSE");
+        progress("done.\n");
+     }
      if ($config{MAILPROXY} eq "FALSE" && $config{HTTPPROXY} eq "FALSE") {
         $enabledPackages{"zimbra-proxy"} = "Disabled";
      } else {
@@ -6584,6 +6612,10 @@ sub configInstallZimlets {
       progress("Finished updating non-standard zimlets.\n");
     $result = $ldap->unbind;
     }
+  }
+
+  if (isInstalled("zimbra-rpost")) {
+    runAsZimbra("/opt/zimbra/bin/zmzimletctl disable com_rpost_rmail");
   }
 
   configLog("configInstallZimlets");
@@ -7127,7 +7159,7 @@ sub applyConfig {
   setLdapServerConfig($config{HOSTNAME}, 'zimbraServerVersionType', $curVersionType);
   setLdapServerConfig($config{HOSTNAME}, 'zimbraServerVersionBuild', $curVersionBuild);
 
-  if ($newinstall && isEnabled("zimbra-imapd")) {
+  if (isEnabled("zimbra-imapd")) {
     configImap();
   }
 
@@ -7146,13 +7178,15 @@ sub applyConfig {
     }
 
     if (!isInstalled("zimbra-network-modules-ng")) {
-      main::progress("Disabling zimbraNetworkModulesNGEnabled \n");
       setLdapServerConfig($config{HOSTNAME}, 'zimbraNetworkModulesNGEnabled', 'FALSE');
+    } else {
+      setLdapServerConfig($config{HOSTNAME}, 'zimbraNetworkModulesNGEnabled', 'TRUE');
     }
 
-    if (!isInstalled("zimbra-network-modules-ng") || (!$newinstall && prevVersionBelow880())) {
-      main::progress("Disabling zimbraNetworkMobileNGEnabled \n");
-      setLdapServerConfig($config{HOSTNAME}, 'zimbraNetworkMobileNGEnabled', 'FALSE');
+    if (isInstalled("zimbra-network-modules-ng") && $newinstall) {
+      main::progress("Enabling zimbra network NG modules features.\n");
+      setLdapServerConfig($config{HOSTNAME}, 'zimbraNetworkMobileNGEnabled', 'TRUE');
+      setLdapServerConfig($config{HOSTNAME}, 'zimbraNetworkAdminNGEnabled', 'TRUE');
     }
 
     progress ( "Starting servers..." );

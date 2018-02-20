@@ -2,7 +2,7 @@
    {
       "dir"             => "zm-mailbox",
       "ant_targets"     => ["pkg-after-plough-through-tests"],
-      "deploy_pkg_into" => "zimbra-foss",
+      "deploy_pkg_into" => "bundle",
       "stage_cmd"       => sub {
          SysExec("mkdir -p                                 $CFG{BUILD_DIR}/zm-mailbox/store-conf/");
          SysExec("rsync -az store-conf/conf                $CFG{BUILD_DIR}/zm-mailbox/store-conf/");
@@ -15,14 +15,12 @@
       "stage_cmd"   => undef,
    },
    {
-      "dir"             => "zm-zextras",
-      "make_targets"    => ["all"],
-      "deploy_pkg_into" => "zimbra-zextras",
-   },
-   {
+      # This repo can be removed and made independent of zm-zextras
+      # This cannot be done unless the packages from zm-timezones are pushed to public repo
+      # This is already excluded in CircleCI builds
       "dir"             => "zm-timezones",
       "ant_targets"     => ["pkg"],
-      "deploy_pkg_into" => "bundle",         # Change this to zimbra-foss once zimbra-core and zimbra-store are moved to repo as well.
+      "deploy_pkg_into" => "bundle",
    },
    {
       "dir"         => "junixsocket/junixsocket-native",

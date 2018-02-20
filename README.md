@@ -14,7 +14,43 @@ This repository contains the build script and supporting files required to creat
       build each component repository.
     * `FOSS_staging_list.pl` - defines the staging order and details.
 
-## Setup
+## Setup with Zimbra Development Images (used for building)
+
+* Set up docker on your box
+* You can then pull and run using development images (built from Zimbra/zm-base-os.git)
+* In case you need to customze the images for your purposes, you could maintain your own Dockerfile such as this:
+
+        $ cat Dockerfile
+        FROM zimbra/zm-base-os:devcore-ubuntu-16.04
+        RUN sudo apt-get install emacs my-special-tool etc..
+        RUN ...
+
+        $ docker build -t myuser/my-devcore-ubuntu-16 .
+        $ docker run -it myuser/my-devcore-ubuntu-16 bash
+
+### Ubuntu 16.04
+
+    docker run -it zimbra/zm-base-os:devcore-ubtunu-16.04 bash
+
+### Ubuntu 14.04
+
+    docker run -it zimbra/zm-base-os:devcore-ubtunu-14.04 bash
+
+### Ubuntu 12.04
+
+    docker run -it zimbra/zm-base-os:devcore-ubtunu-12.04 bash
+
+### CentOS 7
+
+    docker run -it zimbra/zm-base-os:devcore-centos-7 bash
+
+### CentOS 6
+
+    docker run -it zimbra/zm-base-os:devcore-centos-6 bash
+
+    # some tools are installed inside /home/build/.zm-dev-tools/, zm-build automatically sources this path.
+
+## Setup (traditional)
 
 ### Ubuntu 16.04
 
@@ -46,7 +82,7 @@ logged in as a non-root user with `sudo` privileges.
 ### CentOS 7
 
     sudo yum groupinstall 'Development Tools'
-    sudo yum install java-1.8.0-openjdk ant ruby git maven cpan wget perl-IPC-Cmd
+    sudo yum install java-1.8.0-openjdk ant ant-junit ruby git maven cpan wget perl-IPC-Cmd
 
 ### CentOS 6
 
@@ -219,9 +255,9 @@ For example:
 
 	grep 'org="zimbra"' store/ivy.xml
 
-	<dependency org="zimbra" name="zm-common" rev="latest.integration" />
-	<dependency org="zimbra" name="zm-soap" rev="latest.integration" />
-	<dependency org="zimbra" name="zm-client" rev="latest.integration" />
+	<dependency org="zimbra" name="zm-common" rev="latest.integration"/>
+	<dependency org="zimbra" name="zm-soap" rev="latest.integration"/>
+	<dependency org="zimbra" name="zm-client" rev="latest.integration"/>
 	<dependency org="zimbra" name="zm-native" rev="latest.integration"/>
 
 Here you can see that the deployment target, `zm-store` (the `store` 
@@ -288,3 +324,5 @@ Check out the appropriate branch of each. Then proceed as follows:
 Your ZCS development server should now be running with the new attribute(s).  You can test that
 by querying them and modifying them with `zmprov`.  You can `git add ...` and `git commit`
 your changes now.
+
+
