@@ -587,7 +587,7 @@ main()
       "apache-jsieve-core-0.5.jar"
       "apache-log4j-extras-1.0.jar"
       "asm-3.3.1.jar"
-      "bcprov-jdk15-1.46.jar"
+      "bcprov-jdk15on-1.55.jar"
       "commons-cli-1.2.jar"
       "commons-codec-1.7.jar"
       "commons-collections-3.2.2.jar"
