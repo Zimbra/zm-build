@@ -698,7 +698,6 @@ main()
       "xercesImpl-2.9.1-patch-01.jar"
       "xmlschema-core-2.0.3.jar"
       "yuicompressor-2.4.2-zimbra.jar"
-      "zkclient-0.1.0.jar"
       "zm-ews-stub-2.0.jar"
       "zookeeper-3.4.5.jar"
    )
