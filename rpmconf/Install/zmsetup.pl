@@ -134,6 +134,12 @@ our $curVersion = "";
 my ($prevVersionMinor,$prevVersionMajor,$prevVersionMicro,$prevVersionBuild);
 my ($curVersionMinor,$curVersionMajor,$curVersionMicro,$curVersionMicroMicro,$curVersionType,$curVersionBuild);
 our $newinstall = 1;
+chomp (my $ldapSchemaVersion = do {
+    local $/ = undef;
+    open my $fh, "<", "/opt/zimbra/conf/zimbra-attrs-schema"
+        or die "could not open /opt/zimbra/conf/zimbra-attrs-schema: $!";
+    <$fh>;
+});
 
 my $ldapConfigured = 0;
 my $ldapRunning = 0;
@@ -7102,6 +7108,9 @@ sub applyConfig {
     # 32295
     setLdapGlobalConfig("zimbraSkinLogoURL", "http://www.zimbra.com")
       if isFoss();
+
+    progress ("Updating zimbraLDAPSchemaVersion to version '$ldapSchemaVersion'\n");
+    setLdapGlobalConfig('zimbraLDAPSchemaVersion', $ldapSchemaVersion);
   }
 
   if ($newinstall && isInstalled("zimbra-proxy")) {
