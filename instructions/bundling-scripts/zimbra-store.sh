@@ -140,11 +140,11 @@ main()
 
     solrJars=(
         "httpmime-4.3.5.jar"
-        "lucene-analyzers-common-6.6.0.jar"
-        "lucene-core-6.6.0.jar"
+        "lucene-analyzers-common-7.2.1.jar"
+        "lucene-core-7.2.1.jar"
         "noggit-0.7.jar"
-        "solr-core-6.6.0.jar"
-        "solr-solrj-6.6.0.jar"
+        "solr-core-7.2.1.jar"
+        "solr-solrj-7.2.1.jar"
         "zookeeper-3.4.5.jar"
     )
     for i in "${solrJars[@]}"
