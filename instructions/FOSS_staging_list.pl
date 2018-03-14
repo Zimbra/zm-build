@@ -175,13 +175,8 @@
    },
    {
       "dir"         => "zm-web-client",
-      "ant_targets" => [ "prod-war", "jspc.build" ],
-      "stage_cmd"   => sub {
-         SysExec("mkdir -p $CFG{BUILD_DIR}/zm-web-client/build/dist/jetty/webapps");
-         SysExec("cp -f build/dist/jetty/webapps/zimbra.war $CFG{BUILD_DIR}/zm-web-client/build/dist/jetty/webapps");
-         SysExec("cp -f -r build/dist/jetty/work $CFG{BUILD_DIR}/zm-web-client/build/dist/jetty");
-         SysExec("cp -f -r ../zm-web-client $CFG{BUILD_DIR}");
-      },
+      "ant_targets"     => ["pkg"],
+      "deploy_pkg_into" => "bundle",
    },
    {
       "dir"         => "zm-help",
