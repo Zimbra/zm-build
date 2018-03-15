@@ -223,12 +223,8 @@
    },
    {
       "dir"         => "zm-admin-console",
-      "ant_targets" => ["admin-war"],
-      "stage_cmd"   => sub {
-         SysExec("mkdir -p $CFG{BUILD_DIR}/zm-admin-console/build/dist/jetty/webapps");
-         SysExec("cp -f build/dist/jetty/webapps/zimbraAdmin.war $CFG{BUILD_DIR}/zm-admin-console/build/dist/jetty/webapps");
-         SysExec("(cd .. && rsync -az --relative zm-admin-console/WebRoot/WEB-INF  $CFG{BUILD_DIR}/)");
-      },
+      "ant_targets" => ["pkg"],
+      "deploy_pkg_into" => "bundle",
    },
    {
       "dir"         => "zm-aspell",

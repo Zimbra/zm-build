@@ -157,8 +157,6 @@ main()
     cp -rf ${repoDir}/zm-aspell/conf/robots.txt ${repoDir}/zm-build/${currentPackage}/opt/zimbra/jetty_base/webapps/zimbra
 
     echo "\t\t++++++++++ zimbraAdmin.war content ++++++++++" >> ${buildLogFile}
-    mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/jetty_base/webapps/zimbraAdmin
-    ( cd ${repoDir}/zm-build/${currentPackage}/opt/zimbra/jetty_base/webapps/zimbraAdmin; jar -xf ${repoDir}/zm-admin-console/build/dist/jetty/webapps/zimbraAdmin.war )
     zaMsgPropertiesFile="${repoDir}/zm-build/${currentPackage}/opt/zimbra/jetty_base/webapps/zimbraAdmin/WEB-INF/classes/messages/ZaMsg.properties"
 
     echo "\t\t***** downloads content *****" >> ${buildLogFile}
@@ -305,7 +303,6 @@ main()
     cp -f ${repoDir}/zm-jetty-conf/conf/jetty/start.d/*.ini.in   ${repoDir}/zm-build/${currentPackage}/opt/zimbra/jetty_base/start.d
     cp -f ${repoDir}/zm-jetty-conf/conf/jetty/modules/npn/*.mod  ${repoDir}/zm-build/${currentPackage}/opt/zimbra/jetty_base/modules/npn
 
-    cp -f ${repoDir}/zm-admin-console/WebRoot/WEB-INF/jetty-env.xml ${repoDir}/zm-build/${currentPackage}/opt/zimbra/jetty_base/etc/zimbraAdmin-jetty-env.xml.in
     cp -f ${repoDir}/zm-zimlets/conf/web.xml.production ${repoDir}/zm-build/${currentPackage}/opt/zimbra/jetty_base/etc/zimlet.web.xml.in
 
     cat  ${repoDir}/zm-build/${currentPackage}/opt/zimbra/jetty_base/webapps/zimbra/WEB-INF/web.xml | \
