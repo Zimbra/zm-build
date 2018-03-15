@@ -156,11 +156,6 @@ main()
     echo "\t\t***** robots.txt content *****" >> ${buildLogFile}
     cp -rf ${repoDir}/zm-aspell/conf/robots.txt ${repoDir}/zm-build/${currentPackage}/opt/zimbra/jetty_base/webapps/zimbra
 
-    echo "\t\t++++++++++ zimbraAdmin.war content ++++++++++" >> ${buildLogFile}
-    mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/jetty_base/webapps/zimbraAdmin
-    ( cd ${repoDir}/zm-build/${currentPackage}/opt/zimbra/jetty_base/webapps/zimbraAdmin; jar -xf ${repoDir}/zm-admin-console/build/dist/jetty/webapps/zimbraAdmin.war )
-    zaMsgPropertiesFile="${repoDir}/zm-build/${currentPackage}/opt/zimbra/jetty_base/webapps/zimbraAdmin/WEB-INF/classes/messages/ZaMsg.properties"
-
     echo "\t\t***** downloads content *****" >> ${buildLogFile}
     downloadsDir=${repoDir}/zm-build/${currentPackage}/opt/zimbra/jetty_base/webapps/zimbra/downloads
     mkdir -p ${downloadsDir}
@@ -168,47 +163,9 @@ main()
 
     if [ "${buildType}" == "NETWORK" ]
     then
-      (
         set -e
         cd ${downloadsDir}
         wget -r -nd --no-parent --reject "index.*" http://${zimbraThirdPartyServer}/ZimbraThirdParty/zco-migration-builds/current/
-
-        download=`ls ZmCustomizeMsi.js`
-        echo "CONNECTOR_MSI_DOWNLOAD_LINK = /downloads/${download}" >> ${zaMsgPropertiesFile};
-
-        download=`ls ZimbraBrandMsi.vbs`
-        echo "ZCO_BRANDING_DOWNLOAD_LINK = /downloads/${download}" >> ${zaMsgPropertiesFile};
-
-        download=`ls ZimbraConnectorOLK_*_x64.msi`
-        echo "CONNECTOR_64_DOWNLOAD_LINK = /downloads/${download}" >> ${zaMsgPropertiesFile};
-
-        download=`ls ZimbraConnectorOLK_*_x64-UNSIGNED.msi`
-        echo "CONNECTOR_UNSIGNED_64_DOWNLOAD_LINK = /downloads/${download}" >> ${zaMsgPropertiesFile};
-
-        download=`ls ZimbraConnectorOLK_*_x86.msi`
-        echo "CONNECTOR_32_DOWNLOAD_LINK = /downloads/${download}" >> ${zaMsgPropertiesFile};
-
-        download=`ls ZimbraConnectorOLK_*_x86-UNSIGNED.msi`
-        echo "CONNECTOR_UNSIGNED_32_DOWNLOAD_LINK = /downloads/${download}" >> ${zaMsgPropertiesFile};
-
-        download=`ls ZimbraMigration_*_x64.zip`
-        echo "GENERAL_MIG_WIZ_X64_DOWNLOAD_LINK = /downloads/${download}" >> ${zaMsgPropertiesFile};
-
-        download=`ls ZimbraMigration_*_x86.zip`
-        echo "GENERAL_MIG_WIZ_X86_DOWNLOAD_LINK = /downloads/${download}" >> ${zaMsgPropertiesFile};
-
-        download=`ls ZCSPSTImportWizard-*.zip`
-        echo "IMPORT_WIZ_DOWNLOAD_LINK = /downloads/${download}" >> ${zaMsgPropertiesFile};
-
-        download=`ls ZCSDominoMigrationWizard-*.zip`
-        echo "DOMINO_MIG_WIZ_DOWNLOAD_LINK = /downloads/${download}" >> ${zaMsgPropertiesFile};
-
-        download=`ls ZCSGroupwiseMigrationWizard-*.exe`
-        echo "GROUPWISE_MIG_WIZ_DOWNLOAD_LINK = /downloads/${download}" >> ${zaMsgPropertiesFile};
-
-        download=`ls ZCSExchangeMigrationWizard-*.zip`
-        echo "MIG_WIZ_DOWNLOAD_LINK = /downloads/${download}" >> ${zaMsgPropertiesFile};
-      )
     fi
 
     echo "\t\t***** help content *****" >> ${buildLogFile}
@@ -305,17 +262,7 @@ main()
     cp -f ${repoDir}/zm-jetty-conf/conf/jetty/start.d/*.ini.in   ${repoDir}/zm-build/${currentPackage}/opt/zimbra/jetty_base/start.d
     cp -f ${repoDir}/zm-jetty-conf/conf/jetty/modules/npn/*.mod  ${repoDir}/zm-build/${currentPackage}/opt/zimbra/jetty_base/modules/npn
 
-    cp -f ${repoDir}/zm-admin-console/WebRoot/WEB-INF/jetty-env.xml ${repoDir}/zm-build/${currentPackage}/opt/zimbra/jetty_base/etc/zimbraAdmin-jetty-env.xml.in
     cp -f ${repoDir}/zm-zimlets/conf/web.xml.production ${repoDir}/zm-build/${currentPackage}/opt/zimbra/jetty_base/etc/zimlet.web.xml.in
-
-    cat  ${repoDir}/zm-build/${currentPackage}/opt/zimbra/jetty_base/webapps/zimbra/WEB-INF/web.xml | \
-        sed -e '/REDIRECTBEGIN/ s/$/ %%comment VAR:zimbraMailMode,-->,redirect%%/' \
-        -e '/REDIRECTEND/ s/^/%%comment VAR:zimbraMailMode,<!--,redirect%% /' \
-        > ${repoDir}/zm-build/${currentPackage}/opt/zimbra/jetty_base/etc/zimbra.web.xml.in
-    cat  ${repoDir}/zm-build/${currentPackage}/opt/zimbra/jetty_base/webapps/zimbraAdmin/WEB-INF/web.xml | \
-        sed -e '/REDIRECTBEGIN/ s/$/ %%comment VAR:zimbraMailMode,-->,redirect%%/' \
-        -e '/REDIRECTEND/ s/^/%%comment VAR:zimbraMailMode,<!--,redirect%% /' \
-        > ${repoDir}/zm-build/${currentPackage}/opt/zimbra/jetty_base/etc/zimbraAdmin.web.xml.in
 
     CreatePackage "${os}"
 }
