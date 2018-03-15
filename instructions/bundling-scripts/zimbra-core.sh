@@ -620,19 +620,12 @@ main()
 
       Copy ${repoDir}/zm-hsm/docs/soap-admin.txt                                                       ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/hsm-soap-admin.txt
 
-      Copy ${repoDir}/zm-license-tools/build/zm-license-tools*.jar                                     ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext-common/zimbra-license-tools.jar
-      Copy ${repoDir}/zm-license-tools/src/bin/zmlicense                                               ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmlicense
-
       Copy ${repoDir}/zm-network-build/rpmconf/Install/Util/modules/postinstall.sh                     ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/installer/util/modules/postinstall.sh
       Copy ${repoDir}/zm-network-build/rpmconf/Install/postinstall.pm                                  ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/postinstall.pm
       Copy ${repoDir}/zm-network-build/rpmconf/Install/preinstall.pm                                   ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/preinstall.pm
 
       Copy ${repoDir}/zm-network-licenses/thirdparty/keyview_eula.txt                                  ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/keyview_eula.txt
       Copy ${repoDir}/zm-network-licenses/thirdparty/oracle_jdk_eula.txt                               ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/oracle_jdk_eula.txt
-
-      Copy ${repoDir}/zm-network-store/src/bin/zmhactl                                                 ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmhactl
-      Copy ${repoDir}/zm-network-store/src/bin/zmmboxsearch                                            ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmmboxsearch
-      Copy ${repoDir}/zm-network-store/src/libexec/vmware-heartbeat                                    ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/vmware-heartbeat
 
       Copy ${repoDir}/zm-postfixjournal/build/dist/postjournal                                         ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/postjournal
 
