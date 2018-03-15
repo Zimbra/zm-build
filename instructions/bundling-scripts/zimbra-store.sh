@@ -221,19 +221,6 @@ main()
        rsync -a ${repoDir}/zm-admin-help-network/WebRoot/help ${repoDir}/zm-build/${currentPackage}/opt/zimbra/jetty_base/webapps/zimbraAdmin/
     fi
 
-    echo "\t\t***** templates content *****" >> ${buildLogFile}
-    mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/jetty_base/webapps/zimbraAdmin/templates/abook
-    mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/jetty_base/webapps/zimbraAdmin/templates/calendar
-    cp -rf ${repoDir}/zm-build/${currentPackage}/opt/zimbra/jetty_base/webapps/zimbra/templates/abook/*.properties ${repoDir}/zm-build/${currentPackage}/opt/zimbra/jetty_base/webapps/zimbraAdmin/templates/abook
-    cp -rf ${repoDir}/zm-build/${currentPackage}/opt/zimbra/jetty_base/webapps/zimbra/templates/calendar/*.properties ${repoDir}/zm-build/${currentPackage}/opt/zimbra/jetty_base/webapps/zimbraAdmin/templates/calendar
-
-    echo "\t\t***** messages content *****" >> ${buildLogFile}
-    declare -a messagesArray=("ZbMsg*.properties" "ZhMsg*.properties" "ZmMsg*.properties" "ZMsg*.properties" "ZmSMS*.properties" "ZtMsg*.properties" "AjxTemplateMsg*.properties")
-    for i in "${messagesArray[@]}"
-    do
-        cp -rf ${repoDir}/zm-build/${currentPackage}/opt/zimbra/jetty_base/webapps/zimbra/WEB-INF/classes/messages/${i} ${repoDir}/zm-build/${currentPackage}/opt/zimbra/jetty_base/webapps/zimbraAdmin/WEB-INF/classes/messages
-    done
-
     if [ "${buildType}" == "NETWORK" ]
     then
       echo -e "\t\tCopy ext-common files of /opt/zimbra/lib/" >> ${buildLogFile}
