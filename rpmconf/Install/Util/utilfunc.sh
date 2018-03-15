@@ -268,6 +268,12 @@ askInstallPkgYN() {
   fi
 }
 
+ifStoreSelectedY() {
+  if [ "$STORE_SELECTED" = "yes" ]; then
+    response="yes"
+  fi
+}
+
 checkUser() {
   user=$1
   if [ x`whoami` != x$user ]; then
@@ -2329,11 +2335,11 @@ getInstallPackages() {
     # askInstallPkgYN args : PROMPT REQUIRE_STORE=yes|no YES_STORE_DEFAULT=Y|N NO_STORE_DEFAULT=Y|N
 
     if [ $i = "zimbra-license-tools" ]; then
-        response="yes"
+      response="yes"
     elif [ $i = "zimbra-license-extension" ]; then
-        response="yes"
+      ifStoreSelectedY
     elif [ $i = "zimbra-network-store" ]; then
-        response="yes"
+      ifStoreSelectedY
     elif [ $UPGRADE = "yes" ]; then
       if [ $i = "zimbra-archiving" ]; then
         askInstallPkgYN "Install $i" "yes" "N" "N"
