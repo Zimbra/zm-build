@@ -341,10 +341,8 @@
    },
    {
       "dir"         => "zm-zcs-lib",
-      "ant_targets" => ["dist"],
-      "stage_cmd"   => sub {
-         SysExec("(cd .. && rsync -az --relative zm-zcs-lib $CFG{BUILD_DIR}/)");
-      },
+      "ant_targets" => ["dist", "pkg"],
+      "deploy_pkg_into" => "bundle",
    },
    {
       "dir"         => "zm-jython",
