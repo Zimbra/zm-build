@@ -40,6 +40,9 @@ OPTIONAL_PACKAGES="zimbra-qatest \
 zimbra-chat \
 zimbra-drive \
 zimbra-imapd \
+zimbra-license-tools \
+zimbra-license-extension \
+zimbra-network-store \
 zimbra-network-modules-ng"
 
 PACKAGE_DIR="$(CDPATH= cd "$(dirname "$0")" && pwd)/packages"
