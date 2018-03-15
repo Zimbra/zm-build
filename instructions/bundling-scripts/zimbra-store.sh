@@ -264,15 +264,6 @@ main()
 
     cp -f ${repoDir}/zm-zimlets/conf/web.xml.production ${repoDir}/zm-build/${currentPackage}/opt/zimbra/jetty_base/etc/zimlet.web.xml.in
 
-    cat  ${repoDir}/zm-build/${currentPackage}/opt/zimbra/jetty_base/webapps/zimbra/WEB-INF/web.xml | \
-        sed -e '/REDIRECTBEGIN/ s/$/ %%comment VAR:zimbraMailMode,-->,redirect%%/' \
-        -e '/REDIRECTEND/ s/^/%%comment VAR:zimbraMailMode,<!--,redirect%% /' \
-        > ${repoDir}/zm-build/${currentPackage}/opt/zimbra/jetty_base/etc/zimbra.web.xml.in
-    cat  ${repoDir}/zm-build/${currentPackage}/opt/zimbra/jetty_base/webapps/zimbraAdmin/WEB-INF/web.xml | \
-        sed -e '/REDIRECTBEGIN/ s/$/ %%comment VAR:zimbraMailMode,-->,redirect%%/' \
-        -e '/REDIRECTEND/ s/^/%%comment VAR:zimbraMailMode,<!--,redirect%% /' \
-        > ${repoDir}/zm-build/${currentPackage}/opt/zimbra/jetty_base/etc/zimbraAdmin.web.xml.in
-
     CreatePackage "${os}"
 }
 
