@@ -341,7 +341,7 @@
    },
    {
       "dir"         => "zm-zcs-lib",
-      "ant_targets" => ["dist"],
+      "ant_targets" => ["dist", "pkg"],
       "stage_cmd"   => sub {
          SysExec("(cd .. && rsync -az --relative zm-zcs-lib $CFG{BUILD_DIR}/)");
       },
