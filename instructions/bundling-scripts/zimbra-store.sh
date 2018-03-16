@@ -325,58 +325,6 @@ CreateRhelPackage()
     	${repoDir}/zm-build/${currentScript}.spec
     echo "%attr(644, zimbra, zimbra) /opt/zimbra/conf/*" >> \
     	${repoDir}/zm-build/${currentScript}.spec
-    echo "%attr(755, zimbra, zimbra) /opt/zimbra/conf/templates" >> \
-    	${repoDir}/zm-build/${currentScript}.spec
-    echo "%attr(755, zimbra, zimbra) /opt/zimbra/conf/templates/templates" >> \
-    	${repoDir}/zm-build/${currentScript}.spec
-    echo "%attr(755, zimbra, zimbra) /opt/zimbra/conf/templates/templates/abook" >> \
-    	${repoDir}/zm-build/${currentScript}.spec
-    echo "%attr(644, zimbra, zimbra) /opt/zimbra/conf/templates/templates/abook/*" >> \
-    	${repoDir}/zm-build/${currentScript}.spec
-    echo "%attr(755, zimbra, zimbra) /opt/zimbra/conf/templates/templates/admin" >> \
-    	${repoDir}/zm-build/${currentScript}.spec
-    echo "%attr(644, zimbra, zimbra) /opt/zimbra/conf/templates/templates/admin/*" >> \
-    	${repoDir}/zm-build/${currentScript}.spec
-    echo "%attr(755, zimbra, zimbra) /opt/zimbra/conf/templates/templates/briefcase" >> \
-    	${repoDir}/zm-build/${currentScript}.spec
-    echo "%attr(644, zimbra, zimbra) /opt/zimbra/conf/templates/templates/briefcase/*" >> \
-    	${repoDir}/zm-build/${currentScript}.spec
-    echo "%attr(755, zimbra, zimbra) /opt/zimbra/conf/templates/templates/calendar" >> \
-    	${repoDir}/zm-build/${currentScript}.spec
-    echo "%attr(644, zimbra, zimbra) /opt/zimbra/conf/templates/templates/calendar/*" >> \
-    	${repoDir}/zm-build/${currentScript}.spec
-    echo "%attr(755, zimbra, zimbra) /opt/zimbra/conf/templates/templates/data" >> \
-    	${repoDir}/zm-build/${currentScript}.spec
-    echo "%attr(644, zimbra, zimbra) /opt/zimbra/conf/templates/templates/data/*" >> \
-    	${repoDir}/zm-build/${currentScript}.spec
-    echo "%attr(755, zimbra, zimbra) /opt/zimbra/conf/templates/templates/dwt" >> \
-    	${repoDir}/zm-build/${currentScript}.spec
-    echo "%attr(644, zimbra, zimbra) /opt/zimbra/conf/templates/templates/dwt/*" >> \
-    	${repoDir}/zm-build/${currentScript}.spec
-    echo "%attr(755, zimbra, zimbra) /opt/zimbra/conf/templates/templates/mail" >> \
-    	${repoDir}/zm-build/${currentScript}.spec
-    echo "%attr(644, zimbra, zimbra) /opt/zimbra/conf/templates/templates/mail/*" >> \
-    	${repoDir}/zm-build/${currentScript}.spec
-    echo "%attr(755, zimbra, zimbra) /opt/zimbra/conf/templates/templates/prefs" >> \
-    	${repoDir}/zm-build/${currentScript}.spec
-    echo "%attr(644, zimbra, zimbra) /opt/zimbra/conf/templates/templates/prefs/*" >> \
-    	${repoDir}/zm-build/${currentScript}.spec
-    echo "%attr(755, zimbra, zimbra) /opt/zimbra/conf/templates/templates/share" >> \
-    	${repoDir}/zm-build/${currentScript}.spec
-    echo "%attr(644, zimbra, zimbra) /opt/zimbra/conf/templates/templates/share/*" >> \
-    	${repoDir}/zm-build/${currentScript}.spec
-    echo "%attr(755, zimbra, zimbra) /opt/zimbra/conf/templates/templates/tasks" >> \
-    	${repoDir}/zm-build/${currentScript}.spec
-    echo "%attr(644, zimbra, zimbra) /opt/zimbra/conf/templates/templates/tasks/*" >> \
-    	${repoDir}/zm-build/${currentScript}.spec
-    echo "%attr(755, zimbra, zimbra) /opt/zimbra/conf/templates/templates/voicemail" >> \
-    	${repoDir}/zm-build/${currentScript}.spec
-    echo "%attr(644, zimbra, zimbra) /opt/zimbra/conf/templates/templates/voicemail/*" >> \
-    	${repoDir}/zm-build/${currentScript}.spec
-    echo "%attr(755, zimbra, zimbra) /opt/zimbra/conf/templates/templates/zimbra" >> \
-    	${repoDir}/zm-build/${currentScript}.spec
-    echo "%attr(644, zimbra, zimbra) /opt/zimbra/conf/templates/templates/zimbra/*" >> \
-    	${repoDir}/zm-build/${currentScript}.spec
     echo "%attr(-, zimbra, zimbra) /opt/zimbra/log" >> \
     	${repoDir}/zm-build/${currentScript}.spec
     echo "%attr(-, zimbra, zimbra) /opt/zimbra/zimlets" >> \
