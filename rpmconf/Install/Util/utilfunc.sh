@@ -2713,7 +2713,7 @@ getPlatformVars() {
       ISUBUNTU=false
       REPOINST='yum -y install'
       REPORM='yum erase -y'
-      PACKAGEINST='rpm -Uvh --replacefiles'
+      PACKAGEINST='rpm -Uvh --replacefiles --replacepkgs'
       # TODO: This should kept in os-requirement.
       yum -y install --downloadonly dummyxxxxxxx 2>&1 | grep "no such option: --downloadonly" >/dev/null 2>&1
       if [ $? -eq 0 ]; then
