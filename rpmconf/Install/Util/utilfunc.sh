@@ -1728,6 +1728,13 @@ removeExistingPackages() {
         echo "done"
       fi
 
+      isInstalled "zimbra-talk"
+      if [ x$PKGINSTALLED != "x" ]; then
+        echo -n "   zimbra-talk..."
+        $PACKAGERM zimbra-talk >/dev/null 2>&1
+        echo "done"
+      fi
+
       isInstalled "zimbra-network-modules-ng"
       if [ x$PKGINSTALLED != "x" ]; then
         echo -n "   zimbra-network-modules-ng..."
