@@ -132,10 +132,12 @@ main()
     if [ "${buildType}" == "NETWORK" ]
     then
       echo "\t\t***** css, public and t content *****" >> ${buildLogFile}
-      cp ${repoDir}/zm-touch-client/build/WebRoot/css/ztouch.css ${repoDir}/zm-build/${currentPackage}/opt/zimbra/jetty_base/webapps/zimbra/css
-      cp ${repoDir}/zm-touch-client/build/WebRoot/public/loginTouch.jsp ${repoDir}/zm-build/${currentPackage}/opt/zimbra/jetty_base/webapps/zimbra/public
-      cp -rf ${repoDir}/zm-touch-client/build/WebRoot/t ${repoDir}/zm-build/${currentPackage}/opt/zimbra/jetty_base/webapps/zimbra/t
-      cp -rf ${repoDir}/zm-touch-client/build/WebRoot/tdebug ${repoDir}/zm-build/${currentPackage}/opt/zimbra/jetty_base/webapps/zimbra/tdebug
+      mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/jetty_base/webapps/zimbra/css
+      mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/jetty_base/webapps/zimbra/public
+      cp ${repoDir}/zm-touch-client/build/WebRoot/css/ztouch.css ${repoDir}/zm-build/${currentPackage}/opt/zimbra/jetty_base/webapps/zimbra/css/ztouch.css
+      cp ${repoDir}/zm-touch-client/build/WebRoot/public/loginTouch.jsp ${repoDir}/zm-build/${currentPackage}/opt/zimbra/jetty_base/webapps/zimbra/public/loginTouch.jsp
+      cp -rf ${repoDir}/zm-touch-client/build/WebRoot/t ${repoDir}/zm-build/${currentPackage}/opt/zimbra/jetty_base/webapps/zimbra/
+      cp -rf ${repoDir}/zm-touch-client/build/WebRoot/tdebug ${repoDir}/zm-build/${currentPackage}/opt/zimbra/jetty_base/webapps/zimbra/
     fi
 
     echo "\t\t***** help content *****" >> ${buildLogFile}
@@ -146,7 +148,7 @@ main()
     cp -rf ${repoDir}/zm-webclient-portal-example/example ${repoDir}/zm-build/${currentPackage}/opt/zimbra/jetty_base/webapps/zimbra/portals
 
     echo "\t\t***** robots.txt content *****" >> ${buildLogFile}
-    cp -rf ${repoDir}/zm-aspell/conf/robots.txt ${repoDir}/zm-build/${currentPackage}/opt/zimbra/jetty_base/webapps/zimbra
+    cp -f ${repoDir}/zm-aspell/conf/robots.txt ${repoDir}/zm-build/${currentPackage}/opt/zimbra/jetty_base/webapps/zimbra/robots.txt
 
     echo "\t\t***** downloads content *****" >> ${buildLogFile}
     downloadsDir=${repoDir}/zm-build/${currentPackage}/opt/zimbra/jetty_base/webapps/zimbra/downloads
