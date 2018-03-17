@@ -1728,6 +1728,13 @@ removeExistingPackages() {
         echo "done"
       fi
 
+      isInstalled "zimbra-talk"
+      if [ x$PKGINSTALLED != "x" ]; then
+        echo -n "   zimbra-talk..."
+        $PACKAGERM zimbra-talk >/dev/null 2>&1
+        echo "done"
+      fi
+
       isInstalled "zimbra-network-modules-ng"
       if [ x$PKGINSTALLED != "x" ]; then
         echo -n "   zimbra-network-modules-ng..."
@@ -2215,6 +2222,7 @@ configurePackageServer() {
 cat > /etc/apt/sources.list.d/zimbra.list << EOF
 deb     [arch=amd64] https://$PACKAGE_SERVER/apt/87 $repo zimbra
 deb     [arch=amd64] https://$PACKAGE_SERVER/apt/zv1 $repo zimbra
+deb     [arch=amd64] https://$PACKAGE_SERVER/apt/888patch $repo zimbra
 deb-src [arch=amd64] https://$PACKAGE_SERVER/apt/87 $repo zimbra
 EOF
       apt-get update >>$LOGFILE 2>&1
@@ -2255,11 +2263,18 @@ name=Zimbra New RPM Repository
 baseurl=https://$PACKAGE_SERVER/rpm/zv1/$repo
 gpgcheck=1
 enabled=1
+[zimbra-888-patch]
+name=Zimbra New RPM Repository
+baseurl=https://$PACKAGE_SERVER/rpm/888patch/$repo
+gpgcheck=1
+enabled=1
 EOF
       yum --disablerepo=* --enablerepo=zimbra clean metadata >>$LOGFILE 2>&1
       yum check-update --disablerepo=* --enablerepo=zimbra --noplugins >>$LOGFILE 2>&1
       yum --disablerepo=* --enablerepo=zimbra-v1 clean metadata >>$LOGFILE 2>&1
       yum check-update --disablerepo=* --enablerepo=zimbra-v1 --noplugins >>$LOGFILE 2>&1
+      yum --disablerepo=* --enablerepo=zimbra-888-patch clean metadata >>$LOGFILE 2>&1
+      yum check-update --disablerepo=* --enablerepo=zimbra-888-patch --noplugins >>$LOGFILE 2>&1
       if [ $? -ne 0 -a $? -ne 100 ]; then
         echo "ERROR: yum check-update failed"
         echo "Please validate ability to install packages"
