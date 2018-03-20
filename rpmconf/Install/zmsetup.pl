@@ -209,6 +209,12 @@ if (! $newinstall ) {
     $prevVersion = $curVersion;
   }
   if (($prevVersion ne $curVersion )) {
+    # set required attribute in schema before upgrade to avoid schema violations
+    progress ("Updating zimbraLDAPSchemaVersion to version '$ldapSchemaVersion'\n");
+    my $ldaprc = runAsZimbra("/opt/zimbra/bin/ldap status");
+    startLdap() if ($ldaprc);
+    setLdapGlobalConfig('zimbraLDAPSchemaVersion', $ldapSchemaVersion);
+    stopLdap() if ($ldaprc);
     progress ("Upgrading from $prevVersion to $curVersion\n");
     open (H, ">>/opt/zimbra/.install_history");
     print H time(),": CONFIG SESSION START\n";
@@ -7103,14 +7109,14 @@ sub applyConfig {
   }
 
   if (isEnabled("zimbra-ldap")) {
+    # Might do this twice if upgrading but better safe than sorry
+    progress ("Updating zimbraLDAPSchemaVersion to version '$ldapSchemaVersion'\n");
+    setLdapGlobalConfig('zimbraLDAPSchemaVersion', $ldapSchemaVersion);
     configSetTimeZonePref();
 
     # 32295
     setLdapGlobalConfig("zimbraSkinLogoURL", "http://www.zimbra.com")
       if isFoss();
-
-    progress ("Updating zimbraLDAPSchemaVersion to version '$ldapSchemaVersion'\n");
-    setLdapGlobalConfig('zimbraLDAPSchemaVersion', $ldapSchemaVersion);
   }
 
   if ($newinstall && isInstalled("zimbra-proxy")) {
