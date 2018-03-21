@@ -121,6 +121,7 @@ my %updateFuncs = (
   "8.7.0_RC1" => \&upgrade870RC1,
   "8.7.2_GA" => \&upgrade872GA,
   "8.8.6_GA" => \&upgrade886GA,
+  "8.8.8_GA" => \&upgrade888GA,
 );
 
 my %updateMysql = (
@@ -2061,6 +2062,12 @@ sub upgrade886GA {
     }
     # ClientIpHash is now obsolete
     upgradeLdapConfigValue("zimbraImapLoadBalancingAlgorithm", "AccountIdHash", "ClientIpHash");
+    return 0;
+}
+
+sub upgrade888GA {
+    my ($startBuild, $targetVersion, $targetBuild) = (@_);
+    main::configLDAPSchemaVersion() if ($isLdapMaster);
     return 0;
 }
 

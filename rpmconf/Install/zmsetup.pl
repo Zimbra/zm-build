@@ -142,6 +142,7 @@ chomp (my $ldapSchemaVersion = do {
 });
 
 my $ldapConfigured = 0;
+my $haveSetLdapSchemaVersion = 0;
 my $ldapRunning = 0;
 my $sqlConfigured = 0;
 my $sqlRunning = 0;
@@ -209,12 +210,6 @@ if (! $newinstall ) {
     $prevVersion = $curVersion;
   }
   if (($prevVersion ne $curVersion )) {
-    # set required attribute in schema before upgrade to avoid schema violations
-    progress ("Updating zimbraLDAPSchemaVersion to version '$ldapSchemaVersion'\n");
-    my $ldaprc = runAsZimbra("/opt/zimbra/bin/ldap status");
-    startLdap() if ($ldaprc);
-    setLdapGlobalConfig('zimbraLDAPSchemaVersion', $ldapSchemaVersion);
-    stopLdap() if ($ldaprc);
     progress ("Upgrading from $prevVersion to $curVersion\n");
     open (H, ">>/opt/zimbra/.install_history");
     print H time(),": CONFIG SESSION START\n";
@@ -5532,6 +5527,15 @@ sub configSetupLdap {
 
 }
 
+sub configLDAPSchemaVersion {
+  return if ($haveSetLdapSchemaVersion);
+  if (isEnabled("zimbra-ldap")) {
+    progress ("Updating zimbraLDAPSchemaVersion to version '$ldapSchemaVersion'\n");
+    setLdapGlobalConfig('zimbraLDAPSchemaVersion', $ldapSchemaVersion);
+    $haveSetLdapSchemaVersion = 1;
+  }
+}
+
 sub configSetupEphemeralBackend {
   if (exists($config{EphemeralBackendURL})) {
     setLdapGlobalConfig("zimbraEphemeralBackendURL", "$config{EphemeralBackendURL}")
@@ -7108,10 +7112,9 @@ sub applyConfig {
     configSetDNSCacheDefaults();
   }
 
+  configLDAPSchemaVersion();
+
   if (isEnabled("zimbra-ldap")) {
-    # Might do this twice if upgrading but better safe than sorry
-    progress ("Updating zimbraLDAPSchemaVersion to version '$ldapSchemaVersion'\n");
-    setLdapGlobalConfig('zimbraLDAPSchemaVersion', $ldapSchemaVersion);
     configSetTimeZonePref();
 
     # 32295
