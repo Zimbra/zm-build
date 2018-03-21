@@ -200,7 +200,7 @@ jobs:
       working_directory: ~/checkout/zm-build
       shell: /bin/bash -euo pipefail
       environment:
-         - EC2_TARGET: APP2
+         - EC2_TARGET: APP1
          - OPERATION: upgrade
          - PKG_OS_TAG: u16
       docker:

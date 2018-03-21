@@ -204,7 +204,7 @@ updatePackages()
    echo Setup local archives
    echo -----------------------------------
 
-   if [[ "$PKG_OS_TAG" =~ u* ]]
+   if [[ "$PKG_OS_TAG" =~ u ]]
    then
       sudo rm -f /etc/apt/sources.list.d/zimbra-*.list
 
@@ -218,7 +218,7 @@ updatePackages()
       sudo apt-get update -qq
    fi
 
-   if [[ "$PKG_OS_TAG" =~ r* ]]
+   if [[ "$PKG_OS_TAG" =~ r ]]
    then
       sudo rm -f /etc/yum.repos.d/zimbra-*.repo
 

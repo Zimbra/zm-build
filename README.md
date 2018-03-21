@@ -30,15 +30,15 @@ This repository contains the build script and supporting files required to creat
 
 ### Ubuntu 16.04
 
-    docker run -it zimbra/zm-base-os:devcore-ubtunu-16.04 bash
+    docker run -it zimbra/zm-base-os:devcore-ubuntu-16.04 bash
 
 ### Ubuntu 14.04
 
-    docker run -it zimbra/zm-base-os:devcore-ubtunu-14.04 bash
+    docker run -it zimbra/zm-base-os:devcore-ubuntu-14.04 bash
 
 ### Ubuntu 12.04
 
-    docker run -it zimbra/zm-base-os:devcore-ubtunu-12.04 bash
+    docker run -it zimbra/zm-base-os:devcore-ubuntu-12.04 bash
 
 ### CentOS 7
 
@@ -58,7 +58,7 @@ The following steps assume that your are starting with a clean VM and are
 logged in as a non-root user with `sudo` privileges.
 
     sudo apt-get update
-    sudo apt-get install software-properties-common openjdk-8-jdk ant ruby git maven build-essential
+    sudo apt-get install software-properties-common openjdk-8-jdk ant ant-optional ant-contrib ruby git maven build-essential
 
 ### Ubuntu 14.04
 
@@ -69,7 +69,7 @@ logged in as a non-root user with `sudo` privileges.
     sudo add-apt-repository ppa:openjdk-r/ppa
     sudo apt-get update
     sudo update-ca-certificates -f
-    sudo apt-get install openjdk-8-jdk ant ruby git maven build-essential
+    sudo apt-get install openjdk-8-jdk ant ant-optional ant-contrib ruby git maven build-essential
 
 ### Ubuntu 12.04
 
@@ -77,7 +77,7 @@ logged in as a non-root user with `sudo` privileges.
     sudo add-apt-repository ppa:openjdk-r/ppa
     sudo apt-get update
     sudo update-ca-certificates -f
-    sudo apt-get install openjdk-8-jdk ant ruby git maven build-essential zlib1g-dev
+    sudo apt-get install openjdk-8-jdk ant ant-optional ant-contrib ruby git maven build-essential zlib1g-dev
 
 ### CentOS 7
 
