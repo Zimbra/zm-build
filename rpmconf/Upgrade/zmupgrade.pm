@@ -121,7 +121,6 @@ my %updateFuncs = (
   "8.7.0_RC1" => \&upgrade870RC1,
   "8.7.2_GA" => \&upgrade872GA,
   "8.8.6_GA" => \&upgrade886GA,
-  "8.8.8_GA" => \&upgrade888GA,
 );
 
 my %updateMysql = (
@@ -306,6 +305,7 @@ sub upgrade {
   if($startVersion ne $targetVersion # if you are upgrading across versions
   || $targetBuild > $startBuild)     # or you are upgrading across new builds of the same version
   {
+    main::configLDAPSchemaVersion() if ($isLdapMaster);
     foreach my $v (@{applicableVersions(\%updateFuncs)}) {
       main::progress("Applying updates for $v \n");
       if (&{$updateFuncs{$v}}($startBuild, $targetVersion, $targetBuild)) {
@@ -2062,12 +2062,6 @@ sub upgrade886GA {
     }
     # ClientIpHash is now obsolete
     upgradeLdapConfigValue("zimbraImapLoadBalancingAlgorithm", "AccountIdHash", "ClientIpHash");
-    return 0;
-}
-
-sub upgrade888GA {
-    my ($startBuild, $targetVersion, $targetBuild) = (@_);
-    main::configLDAPSchemaVersion() if ($isLdapMaster);
     return 0;
 }
 
