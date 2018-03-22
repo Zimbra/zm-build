@@ -256,8 +256,8 @@ askInt() {
 
 askInstallPkgYN() {
   PROMPT="$1"
-  REQUIRE_STORE="$3"
-  YES_STORE_DEFAULT="$2"
+  REQUIRE_STORE="$2"
+  YES_STORE_DEFAULT="$3"
   NO_STORE_DEFAULT="$4"
   if [ "$STORE_SELECTED" = "yes" ]; then
     askYN "$PROMPT" "$YES_STORE_DEFAULT"
