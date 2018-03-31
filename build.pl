@@ -152,6 +152,7 @@ sub InitGlobalBuildVars()
          { name => "BUILD_DEBUG_FLAG",         type => "!",   hash_src => \%cmd_hash, default_sub => sub { return 0; }, },
          { name => "BUILD_DEV_TOOL_BASE_DIR",  type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return "$ENV{HOME}/.zm-dev-tools"; }, },
          { name => "INTERACTIVE",              type => "!",   hash_src => \%cmd_hash, default_sub => sub { return 1; }, },
+         { name => "CREATE_PATCH",             type => "!",   hash_src => \%cmd_hash, default_sub => sub { return 0; }, },
          { name => "GIT_OVERRIDES",            type => "=s%", hash_src => \%cmd_hash, default_sub => sub { return {}; }, },
          { name => "GIT_DEFAULT_TAG",          type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return undef; }, },
          { name => "GIT_DEFAULT_REMOTE",       type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return undef; }, },
@@ -478,6 +479,10 @@ sub Build($)
          my @ALL_PACKAGES = ();
          push( @ALL_PACKAGES, @{ EvalFile("instructions/${GLOBAL_BUILD_TYPE}_package_list.pl") } );
          push( @ALL_PACKAGES, "zcs-bundle" );
+         if ( $CFG{CREATE_PATCH} )
+         {
+            push( @ALL_PACKAGES, "zcs-patch" );
+         }
 
          for my $package_script (@ALL_PACKAGES)
          {

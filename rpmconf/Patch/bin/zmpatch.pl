@@ -2,7 +2,7 @@
 # 
 # ***** BEGIN LICENSE BLOCK *****
 # Zimbra Collaboration Suite Server
-# Copyright (C) 2010, 2011, 2012, 2013, 2014, 2015, 2016 Synacor, Inc.
+# Copyright (C) 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018 Synacor, Inc.
 #
 # This program is free software: you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free Software Foundation,
@@ -62,7 +62,7 @@ $options{verbose} = 0 unless $options{verbose};
 
 if ($options{build}) {
   usage() unless ($options{build_source} && $options{build_version});
-  $options{build_target}="$options{build_source}/ZimbraBuild/zcs-patch-$options{build_version}" unless $options{build_target};
+  $options{build_target}="$options{build_source}/zm-build/zcs-patch-$options{build_version}" unless $options{build_target};
 }
 
 my $logfile;
@@ -82,8 +82,8 @@ if($options{build_source}) {
 }
 
 if ($options{build}) {
-  if (-f "$options{build_source}/ZimbraBuild/RE/BUILD") {
-    open(BUILD, "$options{build_source}/ZimbraBuild/RE/BUILD");
+  if (-f "$options{build_source}/zm-build/RE/BUILD") {
+    open(BUILD, "$options{build_source}/zm-build/RE/BUILD");
   } else {
     progress("Unable to determine build number.\n", 0, 0);
     exit 1;
@@ -141,9 +141,9 @@ sub initPatchDir() {
   make_path($bin_dir);
   make_path($conf_dir);
   make_path($src_dir);
-  copy("$options{build_source}/ZimbraBuild/rpmconf/Patch/bin/zmpatch.pl", $bin_dir);
-  copy("$options{build_source}/ZimbraBuild/rpmconf/Patch/conf/zmpatch.xml", $conf_dir);
-  copy("$options{build_source}/ZimbraBuild/rpmconf/Patch/installPatch.sh", $options{build_target});
+  copy("$options{build_source}/zm-build/rpmconf/Patch/bin/zmpatch.pl", $bin_dir);
+  copy("$options{build_source}/zm-build/rpmconf/Patch/conf/zmpatch.xml", $conf_dir);
+  copy("$options{build_source}/zm-build/rpmconf/Patch/installPatch.sh", $options{build_target});
   system("chmod 755 $options{build_target}/installPatch.sh");
   open(B, ">${src_dir}/build");
   print B "$patchBuildNumber\n";
