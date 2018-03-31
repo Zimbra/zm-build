@@ -22,10 +22,10 @@ PATCH_NAME=zcs-patch-${PATCH_VERSION}
 cd ${BUILD_DIR}
 
 # Download perl libraries required for patch script.
-wget "https://files.zimbra.com/repository/perl-libs/${os}/perllib.tgz"
+wget -O perllib.tgz "https://files.zimbra.com/repository/perl-libs/${os}/perllib.tgz"
 tar -xzf perllib.tgz -C lib
 
-perl ${BUILD_DIR}/rpmconf/Patch/bin/zmpatch.pl -c ${BUILD_DIR}/rpmconf/Patch/conf/zmpatch.xml /
+perl ${BUILD_DIR}/rpmconf/Patch/bin/zmpatch.pl -c ${BUILD_DIR}/rpmconf/Patch/conf/zmpatch.xml \
  -build -target ${BUILD_DIR}/${PATCH_NAME} -version ${PATCH_VERSION} -source ${BUILD_DIR}/.. -v -v
 
 
