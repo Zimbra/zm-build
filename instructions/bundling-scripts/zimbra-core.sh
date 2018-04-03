@@ -356,6 +356,7 @@ main()
    Copy ${repoDir}/zm-core-utils/src/libexec/zmrc                                                   ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmrc
    Copy ${repoDir}/zm-core-utils/src/libexec/zmrcd                                                  ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmrcd
    Copy ${repoDir}/zm-core-utils/src/libexec/zmresetmysqlpassword                                   ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmresetmysqlpassword
+   Copy ${repoDir}/zm-core-utils/src/libexec/zmrestoreblob                                          ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmrestoreblob
    Copy ${repoDir}/zm-core-utils/src/libexec/zmrrdfetch                                             ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmrrdfetch
    Copy ${repoDir}/zm-core-utils/src/libexec/zmsacompile                                            ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmsacompile
    Copy ${repoDir}/zm-core-utils/src/libexec/zmsaupdate                                             ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmsaupdate
