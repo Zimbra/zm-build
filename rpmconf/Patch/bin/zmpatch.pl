@@ -187,6 +187,7 @@ sub doPatchBuild() {
         my $fref=$pref->{file}->{$file};
         
         foreach my $target (@{$fref->{target}}) {
+          my $tfile = "$options{build_target}/source/$patchName/$package/$target";
           my $fpath="$options{build_target}/source/$patchName/$package/" . dirname($target);
           progress("$target\n",3,1);
           unless (make_path($fpath)) {
@@ -196,7 +197,7 @@ sub doPatchBuild() {
           }
           my $source="$options{build_source}/$file";
           if (-f $source) {
-            copy($source,$fpath);
+            copy($source,$tfile);
           } else {
             progress("Failed to copy $source\n",3,0);
             $buildStatus++;
