@@ -586,8 +586,8 @@ sub Clone($$)
    my $repo_remote_details = shift;
 
    my $repo_name       = $repo_details->{name};
-   my $repo_branch     = $CFG{GIT_OVERRIDES}->{"$repo_name.branch"} || $repo_details->{branch} || $CFG{GIT_DEFAULT_BRANCH} || "develop";
-   my $repo_tag        = $CFG{GIT_OVERRIDES}->{"$repo_name.tag"} || $repo_details->{tag} || $CFG{GIT_DEFAULT_TAG} if ( $CFG{GIT_OVERRIDES}->{"$repo_name.tag"} || !$CFG{GIT_OVERRIDES}->{"$repo_name.branch"} );
+   my $repo_branch_csv = $CFG{GIT_OVERRIDES}->{"$repo_name.branch"} || $repo_details->{branch} || $CFG{GIT_DEFAULT_BRANCH} || "develop";
+   my $repo_tag_csv    = $CFG{GIT_OVERRIDES}->{"$repo_name.tag"} || $repo_details->{tag} || $CFG{GIT_DEFAULT_TAG} if ( $CFG{GIT_OVERRIDES}->{"$repo_name.tag"} || !$CFG{GIT_OVERRIDES}->{"$repo_name.branch"} );
    my $repo_remote     = $CFG{GIT_OVERRIDES}->{"$repo_name.remote"} || $repo_details->{remote} || $CFG{GIT_DEFAULT_REMOTE} || "gh-zm";
    my $repo_url_prefix = $CFG{GIT_OVERRIDES}->{"$repo_remote.url-prefix"} || $repo_remote_details->{$repo_remote}->{'url-prefix'} || Die( "unresolved url-prefix for remote='$repo_remote'", "" );
 
@@ -597,39 +597,132 @@ sub Clone($$)
 
    if ( !-d $repo_dir )
    {
-      if ($repo_tag)
+      my $s = 0;
+      foreach my $minus_b_arg ( split( /,/, $repo_tag_csv ? $repo_tag_csv : $repo_branch_csv ) )
       {
-         System( "git", "clone", "--depth=1", "-b", $repo_tag, "-o", $repo_remote, "$repo_url_prefix/$repo_name.git", "$repo_dir" );
-      }
-      else
-      {
-         System( "git", "clone", "--depth=1", "-b", $repo_branch, "-o", $repo_remote, "$repo_url_prefix/$repo_name.git", "$repo_dir" );
+         my $r = SysExec( "git", "ls-remote", $repo_tag_csv ? "--tags" : "--heads", "$repo_url_prefix/$repo_name.git", "$minus_b_arg" );
+         if ( $r->{success} && "@{$r->{out}}" =~ /$minus_b_arg$/ )
+         {
+            my @clone_cmd_args = ( "git", "clone" );
+
+            push( @clone_cmd_args, "--depth=1" ) if ( not $ENV{ENV_GIT_FULL_CLONE} );
+            push( @clone_cmd_args, "-b", $minus_b_arg );
+            push( @clone_cmd_args, "$repo_url_prefix/$repo_name.git", "$repo_dir" );
+
+            print "\n";
+            my $r = SysExec(@clone_cmd_args);
+            if ( $r->{success} )
+            {
+               $s++;
+               last;
+            }
+         }
       }
 
-      RemoveTargetInDir( $repo_name, $GLOBAL_BUILD_DIR );
+      Die("Clone Attempts Failed")
+        if ( !$s );
+
+      RemoveTargetInDir( $repo_name, $GLOBAL_BUILD_DIR);
    }
    else
    {
       if ( !defined $ENV{ENV_GIT_UPDATE_INCLUDE} || grep { $repo_name =~ /$_/ } split( ",", $ENV{ENV_GIT_UPDATE_INCLUDE} ) )
       {
-         if ($repo_tag)
+         if ($repo_tag_csv)
          {
-            print "\n";
-            System("cd '$repo_dir' && git checkout $repo_tag");
+            RunInDir(
+               cd    => $repo_dir,
+               child => sub {
+
+                  my $s = 0;
+                  foreach my $minus_b_arg ( split( /,/, $repo_tag_csv ) )
+                  {
+                     print "\n";
+                     my $r = SysExec( "git", "checkout", $minus_b_arg );
+                     if ( $r->{success} )
+                     {
+                        $s++;
+                        last;
+                     }
+                  }
+
+                  Die("Clone Attempts Failed")
+                    if ( !$s );
+               },
+            );
 
             RemoveTargetInDir( $repo_name, $GLOBAL_BUILD_DIR );
          }
          else
          {
             print "\n";
-            my $z = System("cd '$repo_dir' && git pull --ff-only");
+            RunInDir(
+               cd    => $repo_dir,
+               child => sub {
+                  my $z = SysExec( "git", "pull", "--ff-only" );
 
-            if ( "@{$z->{out}}" !~ /Already up-to-date/ )
-            {
-               RemoveTargetInDir( $repo_name, $GLOBAL_BUILD_DIR );
-            }
+                  if ( "@{$z->{out}}" !~ /Already up-to-date/ )
+                  {
+                     RemoveTargetInDir( $repo_name, $GLOBAL_BUILD_DIR);
+                  }
+               },
+            );
          }
       }
+   }
+}
+
+sub SysExec(@)
+{
+   my $options = shift
+     if ( @_ && ref( $_[0] ) eq "HASH" );
+
+   $options->{continue_on_error} ||= 0;
+   $options->{verbose}           ||= 1;
+
+   my $cmd_str = "@_";
+
+   if ( $options->{verbose} )
+   {
+      print color('green') . "#: pwd=@{[Cwd::getcwd()]}" . color('reset') . "\n";
+      print color('green') . "#: $cmd_str" . color('reset') . "\n";
+   }
+
+   $! = 0;
+   my ( $success, $error_message, $full_buf, $stdout_buf, $stderr_buf ) = run( command => \@_, verbose => 1 );
+
+   Die( "cmd='$cmd_str'", $error_message )
+     if ( !$success && !$options->{continue_on_error} );
+
+   return { msg => $error_message, out => $stdout_buf, err => $stderr_buf, success => $success };
+}
+
+sub RunInDir(%)
+{
+   my %args  = (@_);
+   my $chdir = $args{cd};
+   my $child = $args{child};
+
+   my $child_pid = fork();
+
+   Die("FAILURE while forking")
+     if ( !defined $child_pid );
+
+   if ( $child_pid != 0 )    # parent
+   {
+      while ( waitpid( $child_pid, 0 ) == -1 ) { }
+
+      Die( "child $child_pid died", einfo($?) )
+        if ( $? != 0 );
+   }
+   else
+   {
+      Die( "chdir to '$chdir' failed", einfo($?) )
+        if ( $chdir && !chdir($chdir) );
+
+      $! = 0;
+      &$child;
+      exit(0);
    }
 }
 
