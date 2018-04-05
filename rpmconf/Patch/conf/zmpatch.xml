@@ -106,24 +106,21 @@
         <perms owner="zimbra" mode="0664" />
       </file>
       <file>
-        <source>ZimbraBuild/corebuild/opt/zimbra/lib/jars/zimbrastore.jar</source>
+        <source>zm-build/corebuild/opt/zimbra/lib/jars/zimbrastore.jar</source>
         <target>/opt/zimbra/jetty-distribution-9.3.5.v20151012/webapps/service/WEB-INF/lib/zm-store-8.7.11.1496138832.jar</target>
         <target>/opt/zimbra/jetty-distribution-9.3.5.v20151012/webapps/zimbra/WEB-INF/lib/zm-store-8.7.11.1496138832.jar</target>
         <target>/opt/zimbra/jetty-distribution-9.3.5.v20151012/webapps/zimbraAdmin/WEB-INF/lib/zm-store-8.7.11.1496138832.jar</target>
-        <perms owner="root" mode="0444" />
-     </file>
-     <file>
-        <source>ZimbraBuild/corebuild/opt/zimbra/lib/jars/zimbracommon.jar</source>
-        <target>/opt/zimbra/lib/jars/zimbracommon.jar</target>
-        <perms owner="root" mode="444"/>
-     </file>
-     <file>
-        <source>ZimbraBuild/corebuild/opt/zimbra/lib/jars/zimbrastore.jar</source>
         <target>/opt/zimbra/lib/jars/zimbrastore.jar</target>
         <perms owner="root" mode="0444" />
      </file>
      <file>
-        <source>ZimbraBuild/storebuild/opt/zimbra/jetty-distribution-9.3.5.v20151012/common/lib/zimbracommon.jar</source>
+        <source>zm-build/corebuild/opt/zimbra/lib/jars/zimbracommon.jar</source>
+        <target>/opt/zimbra/lib/jars/zimbracommon.jar</target>
+        <perms owner="root" mode="444"/>
+     </file>
+   
+     <file>
+        <source>zm-build/corebuild/opt/zimbra/lib/jars/zimbracommon.jar</source>
         <target>/opt/zimbra/jetty/common/lib/zimbracommon.jar</target>
         <perms owner="root" mode="444"/>
     </file>
