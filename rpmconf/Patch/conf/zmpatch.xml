@@ -96,12 +96,12 @@
         <perms owner="zimbra" mode="444"/>
       </file>
       <file>
-        <source>ZimbraBuild/storebuild/opt/zimbra/jetty-distribution-9.3.5.v20151012/webapps/zimbra/public/login.jsp</source>
+        <source>zm-build/storebuild/opt/zimbra/jetty-distribution-9.3.5.v20151012/webapps/zimbra/public/login.jsp</source>
         <target>/opt/zimbra/jetty-distribution-9.3.5.v20151012/webapps/zimbra/public/login.jsp</target>
         <perms owner="zimbra" mode="0664" />
       </file>
       <file>
-        <source>ZimbraBuild/storebuild/opt/zimbra/jetty-distribution-9.3.5.v20151012/webapps/zimbra/public/hostedlogin.jsp</source>
+        <source>zm-build/storebuild/opt/zimbra/jetty-distribution-9.3.5.v20151012/webapps/zimbra/public/hostedlogin.jsp</source>
         <target>/opt/zimbra/jetty-distribution-9.3.5.v20151012/webapps/zimbra/public/hostedlogin.jsp</target>
         <perms owner="zimbra" mode="0664" />
       </file>
@@ -118,10 +118,9 @@
         <target>/opt/zimbra/lib/jars/zimbracommon.jar</target>
         <perms owner="root" mode="444"/>
      </file>
-   
      <file>
         <source>zm-build/corebuild/opt/zimbra/lib/jars/zimbracommon.jar</source>
-        <target>/opt/zimbra/jetty/common/lib/zimbracommon.jar</target>
+        <target>/opt/zimbra/jetty-distribution-9.3.5.v20151012/common/lib/zimbracommon.jar</target>
         <perms owner="root" mode="444"/>
     </file>
   </package>
