@@ -54,6 +54,5 @@
    { name => "zm-webclient-portal-example",          },
    { name => "zm-zcs",                               },
    { name => "zm-zcs-lib",                           },
-   { name => "zm-ssdb-ephemeral-store",              },
    { name => "zm-zimlets",                           },
 );
