@@ -388,13 +388,9 @@
          SysExec("cp -f -rp build/zm-oauth-social-*.jar $CFG{BUILD_DIR}/zm-oauth-social/build/dist");
       },
    },
-   
    {
-      "dir"         => "zm-gql",
-      "ant_targets" => ["publish-local"],
-      "stage_cmd"   => sub {
-         SysExec("mkdir -p $CFG{BUILD_DIR}/zm-gql/build/dist");
-         SysExec("cp -f -rp build/zm-gql-*.jar $CFG{BUILD_DIR}/zm-gql/build/dist");
-      },
+      "dir"         => "zm-network-store",
+      "ant_targets" => [ "publish-local", "pkg" ],
+      "deploy_pkg_into" => "bundle",
    },
 );
