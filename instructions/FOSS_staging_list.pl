@@ -389,46 +389,8 @@
       },
    },
    {
-      "dir"         => "zm-backup-store",
-      "ant_targets" => [ "publish-local", "dist", "create-init-sql" ],
-      "stage_cmd"   => sub {
-         SysExec("mkdir -p $CFG{BUILD_DIR}/zm-backup-store/build/dist");
-         SysExec("cp -f -r build/dist $CFG{BUILD_DIR}/zm-backup-store/build");
-         SysExec("(cd .. && rsync -az --relative zm-backup-store/docs $CFG{BUILD_DIR}/)");
-      },
-   },
-   {
-      "dir"         => "zm-backup-utilities",
-      "ant_targets" => undef,
-      "stage_cmd"   => sub {
-         SysExec("(cd .. && rsync -az --relative zm-backup-utilities/src/bin $CFG{BUILD_DIR}/)");
-         SysExec("(cd .. && rsync -az --relative zm-backup-utilities/src/libexec $CFG{BUILD_DIR}/)");
-         SysExec("(cd .. && rsync -az --relative zm-backup-utilities/src/db  $CFG{BUILD_DIR}/)");
-      },
-   },
-   {
-      "dir"         => "zm-backup-restore-admin-zimlet",
-      "ant_targets" => ["package-zimlet"],
-      "stage_cmd"   => sub {
-         SysExec("mkdir -p $CFG{BUILD_DIR}/zm-backup-restore-admin-zimlet/build/zimlet");
-         SysExec("cp -f build/zimlet/*.zip $CFG{BUILD_DIR}/zm-backup-restore-admin-zimlet/build/zimlet");
-      },
-   },
-   {
       "dir"         => "zm-network-store",
       "ant_targets" => [ "publish-local", "pkg" ],
       "deploy_pkg_into" => "bundle",
-      "stage_cmd"   => sub {
-         SysExec("mkdir -p $CFG{BUILD_DIR}/zm-network-store/build/dist");
-         SysExec("cp -f build/zm-network-store*.jar  $CFG{BUILD_DIR}/zm-network-store/build/dist");
-      },
-   },
-   {
-      "dir"         => "zm-smime-applet",
-      "ant_targets" => ["dist"],
-      "stage_cmd"   => sub {
-         SysExec("mkdir -p $CFG{BUILD_DIR}/zm-smime-applet/build/zimlet");
-         SysExec("cp -f build/zimlet/*.zip $CFG{BUILD_DIR}/zm-smime-applet/build/zimlet");
-      },
    },
 );
