@@ -55,6 +55,5 @@
    { name => "zm-zcs",                               },
    { name => "zm-zcs-lib",                           },
    { name => "zm-zimlets",                           },
-   { name => "zm-oauth-social",                      },
-   { name => "zm-gql",		                     },
+   { name => "zm-network-store", remote => "zm-nw",  },
 );
