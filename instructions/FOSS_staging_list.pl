@@ -388,4 +388,9 @@
          SysExec("cp -f -rp build/zm-oauth-social-*.jar $CFG{BUILD_DIR}/zm-oauth-social/build/dist");
       },
    },
+   {
+      "dir"         => "zm-network-store",
+      "ant_targets" => [ "publish-local", "pkg" ],
+      "deploy_pkg_into" => "bundle",
+   },
 );
