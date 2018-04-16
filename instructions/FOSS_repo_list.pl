@@ -55,5 +55,4 @@
    { name => "zm-zcs",                               },
    { name => "zm-zcs-lib",                           },
    { name => "zm-zimlets",                           },
-   { name => "zm-network-store", remote => "zm-nw",  },
 );
