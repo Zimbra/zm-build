@@ -387,9 +387,4 @@
          SysExec("cp -f -r ../zm-jetty-conf $CFG{BUILD_DIR}");
       },
    },
-   {
-      "dir"         => "zm-network-store",
-      "ant_targets" => [ "publish-local", "pkg" ],
-      "deploy_pkg_into" => "bundle",
-   },
 );
