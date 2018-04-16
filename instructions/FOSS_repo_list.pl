@@ -56,5 +56,4 @@
    { name => "zm-zcs-lib",                           },
    { name => "zm-ssdb-ephemeral-store",              },
    { name => "zm-zimlets",                           },
-   { name => "zm-network-store", remote => "zm-nw",  },
 );
