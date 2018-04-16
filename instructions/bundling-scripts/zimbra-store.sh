@@ -292,6 +292,7 @@ main()
                    "zm-clientuploader-admin-zimlet" \
                    "zm-proxy-config-admin-zimlet" \
                    "zm-helptooltip-zimlet" \
+                   "zm-smime-applet" \
                    "zm-viewmail-admin-zimlet" )
     for i in "${zimletsArray[@]}"
     do

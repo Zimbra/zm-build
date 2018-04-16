@@ -34,12 +34,14 @@
    { name => "zm-mailbox",                           },
    { name => "zm-migration-tools",                   },
    { name => "zm-mta",                               },
+   { name => "zm-network-store", remote => "zm-nw",  },
    { name => "zm-nginx-conf",                        },
    { name => "zm-nginx-lookup-store",                },
    { name => "zm-openid-consumer-store",             },
    { name => "zm-pkg-tool",                          },
    { name => "zm-postfix",                           },
    { name => "zm-proxy-config-admin-zimlet",         },
+   { name => "zm-smime-applet", remote => "zm-nw",   },
    { name => "zm-ssdb-ephemeral-store",              },
    { name => "zm-taglib",                            },
       # zm-timezones repo can be removed and made independent of zm-zextras
@@ -56,5 +58,4 @@
    { name => "zm-zcs-lib",                           },
    { name => "zm-ssdb-ephemeral-store",              },
    { name => "zm-zimlets",                           },
-   { name => "zm-network-store", remote => "zm-nw",  },
 );

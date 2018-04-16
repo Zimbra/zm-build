@@ -392,4 +392,12 @@
       "ant_targets" => [ "publish-local", "pkg" ],
       "deploy_pkg_into" => "bundle",
    },
+   {
+      "dir"         => "zm-smime-applet",
+      "ant_targets" => ["dist"],
+      "stage_cmd"   => sub {
+         SysExec("mkdir -p $CFG{BUILD_DIR}/zm-smime-applet/build/zimlet");
+         SysExec("cp -f build/zimlet/*.zip $CFG{BUILD_DIR}/zm-smime-applet/build/zimlet");
+      },
+   },
 );
