@@ -383,6 +383,10 @@
       "dir"         => "zm-network-store",
       "ant_targets" => [ "publish-local", "pkg" ],
       "deploy_pkg_into" => "bundle",
+      "stage_cmd"   => sub {
+         SysExec("mkdir -p $CFG{BUILD_DIR}/zm-network-store/build/dist");
+         SysExec("cp -f build/zm-network-store*.jar  $CFG{BUILD_DIR}/zm-network-store/build/dist");
+      },
    },
    {
       "dir"         => "zm-smime-applet",
