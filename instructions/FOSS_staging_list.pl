@@ -379,4 +379,21 @@
          SysExec("cp -f -r ../zm-jetty-conf $CFG{BUILD_DIR}");
       },
    },
+   {
+      "dir"         => "zm-network-store",
+      "ant_targets" => [ "publish-local", "pkg" ],
+      "deploy_pkg_into" => "bundle",
+      "stage_cmd"   => sub {
+         SysExec("mkdir -p $CFG{BUILD_DIR}/zm-network-store/build/dist");
+         SysExec("cp -f build/zm-network-store*.jar  $CFG{BUILD_DIR}/zm-network-store/build/dist");
+      },
+   },
+   {
+      "dir"         => "zm-smime-applet",
+      "ant_targets" => ["dist"],
+      "stage_cmd"   => sub {
+         SysExec("mkdir -p $CFG{BUILD_DIR}/zm-smime-applet/build/zimlet");
+         SysExec("cp -f build/zimlet/*.zip $CFG{BUILD_DIR}/zm-smime-applet/build/zimlet");
+      },
+   },
 );
