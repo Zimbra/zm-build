@@ -85,6 +85,8 @@ main()
     mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/zimbra-freebusy
     mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/zimbraadminversioncheck
     mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/zimbraldaputils
+    mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/backup
+    cp -f ${repoDir}/zm-backup-store/build/dist/zm-backup-store.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/backup/zimbrabackup.jar
 
     if [ "${buildType}" == "NETWORK" ]
     then
@@ -288,6 +290,7 @@ main()
     echo -e "\tCopy zimlets files of /opt/zimbra/" >> ${buildLogFile}
     mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/zimlets
     zimletsArray=( "zm-versioncheck-admin-zimlet" \
+                   "zm-backup-restore-admin-zimlet" \
                    "zm-bulkprovision-admin-zimlet" \
                    "zm-certificate-manager-admin-zimlet" \
                    "zm-clientuploader-admin-zimlet" \

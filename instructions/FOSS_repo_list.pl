@@ -58,4 +58,7 @@
    { name => "zm-zcs-lib",                           },
    { name => "zm-ssdb-ephemeral-store",              },
    { name => "zm-zimlets",                           },
+   { name => "zm-backup-store",                remote => "zm-nw", },
+   { name => "zm-backup-utilities",            remote => "zm-nw", },
+   { name => "zm-backup-restore-admin-zimlet", remote => "zm-nw", },
 );
