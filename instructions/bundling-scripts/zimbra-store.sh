@@ -85,6 +85,12 @@ main()
     mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/zimbra-freebusy
     mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/zimbraadminversioncheck
     mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/zimbraldaputils
+    mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/backup
+    mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/db
+    cp -f ${repoDir}/zm-backup-store/build/dist/zm-backup-store.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/backup/zimbrabackup.jar
+    cp -f ${repoDir}/zm-backup-utilities/src/bin/* ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/
+    cp -f ${repoDir}/zm-backup-utilities/src/libexec/* ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/
+    cp -f ${repoDir}/zm-backup-utilities/src/db/* ${repoDir}/zm-build/${currentPackage}/opt/zimbra/db/
 
     if [ "${buildType}" == "NETWORK" ]
     then
@@ -288,6 +294,7 @@ main()
     echo -e "\tCopy zimlets files of /opt/zimbra/" >> ${buildLogFile}
     mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/zimlets
     zimletsArray=( "zm-versioncheck-admin-zimlet" \
+                   "zm-backup-restore-admin-zimlet" \
                    "zm-bulkprovision-admin-zimlet" \
                    "zm-certificate-manager-admin-zimlet" \
                    "zm-clientuploader-admin-zimlet" \
@@ -571,6 +578,8 @@ CreateRhelPackage()
     	${repoDir}/zm-build/${currentScript}.spec
     echo "%attr(755, root, root) /opt/zimbra/libexec" >> \
     	${repoDir}/zm-build/${currentScript}.spec
+    echo "%attr(755, root, root) /opt/zimbra/db" >> \
+        ${repoDir}/zm-build/${currentScript}.spec
     echo "%attr(-, zimbra, zimbra) /opt/zimbra/jetty_base" >> \
     	${repoDir}/zm-build/${currentScript}.spec
     echo "" >> ${repoDir}/zm-build/${currentScript}.spec
