@@ -3477,7 +3477,7 @@ sub genSubMenu {
 }
 
 sub isNetwork {
-  return((-f "/opt/zimbra/bin/zmbackup") ? 1 : 0);
+  return 0;
 }
 
 sub isLdapMaster {
