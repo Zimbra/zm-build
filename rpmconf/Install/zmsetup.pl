@@ -6561,6 +6561,9 @@ sub configInstallZimlets {
         progress("failed. This may impact system functionality.\n");
       }
 
+      if (($rc == 0) && ($zimlet eq "com_zimbra_smime") && ($config{UIWEBAPPS} eq "yes")) {
+        system("cp /opt/zimbra/zimlets-deployed/com_zimbra_smime/com_zimbra_smime.jarx /opt/zimbra/jetty/webapps/zimbra/public/com_zimbra_smime.jarx");
+      }
     }
     progress ( "Finished installing common zimlets.\n" );
   }
