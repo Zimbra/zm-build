@@ -356,7 +356,7 @@ CreateRhelPackage()
     	${repoDir}/zm-build/${currentScript}.spec
     echo "%attr(755, root, root) /opt/zimbra/libexec" >> \
     	${repoDir}/zm-build/${currentScript}.spec
-    echo "%attr(755, root, root) /opt/zimbra/db" >> \
+    echo "%attr(-, zimbra, zimbra) /opt/zimbra/db" >> \
         ${repoDir}/zm-build/${currentScript}.spec
     echo "%attr(-, zimbra, zimbra) /opt/zimbra/jetty_base" >> \
     	${repoDir}/zm-build/${currentScript}.spec
