@@ -55,14 +55,14 @@
   <bug>108786</bug>
   <bug>97579</bug>
   <bug>ZCS-4859</bug>
-   <bug>ZCS-4859</bug>
-   <bug>ZCS-4865</bug>
-   <bug>ZCS-4864</bug>
-   <bug>ZCS-4863</bug>
-   <bug>ZCS-4862</bug>
-   <bug>ZCS-4861</bug>
-   <bug>ZCS-4860</bug>
-   <bug>ZCS-4461</bug>
+  <bug>ZCS-4859</bug>
+  <bug>ZCS-4865</bug>
+  <bug>ZCS-4864</bug>
+  <bug>ZCS-4863</bug>
+  <bug>ZCS-4862</bug>
+  <bug>ZCS-4861</bug>
+  <bug>ZCS-4860</bug>
+  <bug>ZCS-4461</bug>
   <package name="zimbra-store">
       <file>
         <source>zm-build/storebuild/opt/zimbra/jetty-distribution-9.3.5.v20151012/webapps/zimbra/js/MailCore_all.js.zgz</source>
