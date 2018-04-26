@@ -54,7 +54,7 @@
   <bug>108265</bug>
   <bug>108786</bug>
   <bug>97579</bug>
-  <bug>ZCS-4859</bug>
+  <bug>ZCS-4848</bug>
   <bug>ZCS-4859</bug>
   <bug>ZCS-4865</bug>
   <bug>ZCS-4864</bug>
@@ -120,6 +120,13 @@
         <target>/opt/zimbra/jetty-distribution-9.3.5.v20151012/webapps/zimbra/WEB-INF/lib/zm-store-8.7.11.1496138832.jar</target>
         <target>/opt/zimbra/jetty-distribution-9.3.5.v20151012/webapps/zimbraAdmin/WEB-INF/lib/zm-store-8.7.11.1496138832.jar</target>
         <perms owner="root" mode="0444" />
+      </file>
+      <file>
+        <source>zm-build/corebuild/opt/zimbra/lib/jars/zimbrasoap.jar</source>
+        <target>/opt/zimbra/jetty-distribution-9.3.5.v20151012/webapps/service/WEB-INF/lib/zm-soap-8.7.11.1496138832.jar</target>
+        <target>/opt/zimbra/jetty-distribution-9.3.5.v20151012/webapps/zimbra/WEB-INF/lib/zm-soap-8.7.11.1496138832.jar</target>
+        <target>/opt/zimbra/jetty-distribution-9.3.5.v20151012/webapps/zimbraAdmin/WEB-INF/lib/zm-soap-8.7.11.1496138832.jar</target>
+        <perms owner="root" mode="0444" />
      </file>
      <file>
         <source>zm-build/corebuild/opt/zimbra/lib/jars/zimbracommon.jar</source>
@@ -156,6 +163,11 @@
      <file>
         <source>zm-build/corebuild/opt/zimbra/lib/jars/zimbracommon.jar</source>
         <target>/opt/zimbra/lib/jars/zimbracommon.jar</target>
+        <perms owner="root" mode="444"/>
+    </file>
+    <file>
+        <source>zm-build/corebuild/opt/zimbra/lib/jars/zimbrasoap.jar</source>
+        <target>/opt/zimbra/lib/jars/zimbrasoap.jar</target>
         <perms owner="root" mode="444"/>
     </file>
     <file>
