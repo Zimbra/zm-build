@@ -175,6 +175,21 @@
         <target>/opt/zimbra/lib/jars/zimbrastore.jar</target>
         <perms owner="root" mode="444"/>
     </file>
+    <file>
+        <source>zm-build/corebuild/opt/zimbra/lib/jars/jackson-core-asl-1.9.13.jar</source>
+        <target>/opt/zimbra/lib/jars/jackson-core-asl-1.9.13.jar</target>
+        <perms owner="root" mode="444"/>
+    </file>
+    <file>
+        <source>zm-build/corebuild/opt/zimbra/lib/jars/jackson-xc-1.9.13.jar</source>
+        <target>/opt/zimbra/lib/jars/jackson-xc-1.9.13.jar</target>
+        <perms owner="root" mode="444"/>
+    </file>
+    <file>
+        <source>zm-build/corebuild/opt/zimbra/lib/jars/jackson-smile-1.9.13.jar</source>
+        <target>/opt/zimbra/lib/jars/jackson-smile-1.9.13.jar</target>
+        <perms owner="root" mode="444"/>
+    </file>
   </package>
   <preinstall></preinstall>
   <postinstall></postinstall>
