@@ -6234,11 +6234,11 @@ sub configSetProxyPrefs {
    if (isEnabled("zimbra-proxy")) {
      if ($config{STRICTSERVERNAMEENABLED} eq "yes") {
         progress("Enabling strict server name enforcement on $config{HOSTNAME}...");
-        runAsZimbra("$ZMPROV ms $config{HOSTNAME} +zimbraReverseProxyStrictServerNameEnabled TRUE");
+        runAsZimbra("$ZMPROV ms $config{HOSTNAME} zimbraReverseProxyStrictServerNameEnabled TRUE");
         progress("done.\n");
      } else {
         progress("Disabling strict server name enforcement on $config{HOSTNAME}...");
-        runAsZimbra("$ZMPROV ms $config{HOSTNAME} +zimbraReverseProxyStrictServerNameEnabled FALSE");
+        runAsZimbra("$ZMPROV ms $config{HOSTNAME} zimbraReverseProxyStrictServerNameEnabled FALSE");
         progress("done.\n");
      }
      if ($config{MAILPROXY} eq "FALSE" && $config{HTTPPROXY} eq "FALSE") {
