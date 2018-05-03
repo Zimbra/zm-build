@@ -484,6 +484,7 @@ main()
    Copy ${repoDir}/zm-db-conf/src/db/migration/migrate20150623-ZmgDevices.pl                        ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/scripts/migrate20150623-ZmgDevices.pl
    Copy ${repoDir}/zm-db-conf/src/db/migration/migrate20150702-ZmgDevices.pl                        ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/scripts/migrate20150702-ZmgDevices.pl
    Copy ${repoDir}/zm-db-conf/src/db/migration/migrate20170301-ZimbraChat.pl                        ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/scripts/migrate20170301-ZimbraChat.pl
+   Copy ${repoDir}/zm-db-conf/src/db/migration/migrate20180301-ZimbraChat.pl                        ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/scripts/migrate20180301-ZimbraChat.pl
    Copy ${repoDir}/zm-db-conf/src/db/migration/migrateAmavisLdap20050810.pl                         ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/scripts/migrateAmavisLdap20050810.pl
    Copy ${repoDir}/zm-db-conf/src/db/migration/migrateClearSpamFlag.pl                              ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/scripts/migrateClearSpamFlag.pl
    Copy ${repoDir}/zm-db-conf/src/db/migration/migrateLargeMetadata.pl                              ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/scripts/migrateLargeMetadata.pl
@@ -581,143 +582,6 @@ main()
    Cpy2 ${repoDir}/junixsocket/junixsocket-native/build/junixsocket-native-*.nar                    ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/
    Cpy2 ${repoDir}/junixsocket/junixsocket-native/build/libjunixsocket-native-*.so                  ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/
 
-   local zimbrathirdpartyjars=(
-      "ant-1.7.0-ziputil-patched.jar"
-      "ant-contrib-1.0b2.jar"
-      "ant-tar-patched.jar"
-      "antlr-3.2.jar"
-      "apache-jsieve-core-0.5.jar"
-      "apache-log4j-extras-1.0.jar"
-      "asm-3.3.1.jar"
-      "bcprov-jdk15-1.46.jar"
-      "commons-cli-1.2.jar"
-      "commons-codec-1.7.jar"
-      "commons-collections-3.2.2.jar"
-      "commons-compress-1.10.jar"
-      "commons-csv-1.2.jar"
-      "commons-dbcp-1.4.jar"
-      "commons-fileupload-1.2.2.jar"
-      "commons-httpclient-3.1.jar"
-      "commons-io-1.4.jar"
-      "commons-lang-2.6.jar"
-      "commons-net-3.3.jar"
-      "commons-pool-1.6.jar"
-      "concurrentlinkedhashmap-lru-1.3.1.jar"
-      "curator-client-2.0.1-incubating.jar"
-      "curator-client-2.0.1-incubating.jar"
-      "curator-framework-2.0.1-incubating.jar"
-      "curator-recipes-2.0.1-incubating.jar"
-      "curator-x-discovery-2.0.1-incubating.jar"
-      "cxf-2.7.18.jar"
-      "dom4j-1.5.2.jar"
-      "freemarker-2.3.19.jar"
-      "ganymed-ssh2-build210.jar"
-      "gifencoder-0.9.jar"
-      "gmbal-api-only-2.2.6.jar"
-      "guava-13.0.1.jar"
-      "helix-core-0.6.1-incubating.jar"
-      "httpasyncclient-4.1.2.jar"
-      "httpclient-4.5.2.jar"
-      "httpcore-4.4.5.jar"
-      "httpcore-nio-4.4.5.jar"
-      "httpmime-4.3.1.jar"
-      "ical4j-0.9.16-patched.jar"
-      "icu4j-4.8.1.1.jar"
-      "jackson-mapper-asl-1.9.13.jar"
-      "jackson-core-asl-1.9.13.jar"
-      "jackson-xc-1.9.13.jar"
-      "jackson-smile-1.9.13.jar"
-      "jamm-0.2.5.jar"
-      "javax.servlet-api-3.1.0.jar"
-      "javax.ws.rs-api-2.0-m10.jar"
-      "jaxb-api-2.2.6.jar"
-      "jaxb-impl-2.2.6.jar"
-      "jaxen-1.1.3.jar"
-      "jaxws-api-2.2.6.jar"
-      "jaxws-rt-2.2.6.jar"
-      "jcharset-2.0.jar"
-      "jcommon-1.0.21.jar"
-      "jcs-1.3.jar"
-      "jdom-1.1.jar"
-      "jersey-client-1.11.jar"
-      "jersey-core-1.11.jar"
-      "jersey-json-1.11.jar"
-      "jersey-multipart-1.11.jar"
-      "jersey-server-1.11.jar"
-      "jersey-servlet-1.11.jar"
-      "jfreechart-1.0.15.jar"
-      "jna-3.4.0.jar"
-      "jsr181-api-1.0-MR1.jar"
-      "jsr311-api-1.1.1.jar"
-      "junixsocket-common-2.0.4.jar"
-      "junixsocket-demo-2.0.4.jar"
-      "junixsocket-mysql-2.0.4.jar"
-      "junixsocket-rmi-2.0.4.jar"
-      "junixsocket-native-common-2.0.4.jar"
-      "native-lib-loader-2.0.2.jar"
-      "jython-standalone-2.5.2.jar"
-      "jline-0.9.93.jar"
-      "jzlib-1.0.7.jar"
-      "libidn-1.24.jar"
-      "log4j-1.2.16.jar"
-      "lucene-analyzers-3.5.0.jar"
-      "lucene-core-3.5.0.jar"
-      "lucene-smartcn-3.5.0.jar"
-      "mail-1.4.5.jar"
-      "mariadb-java-client-1.1.8.jar"
-      "mina-core-2.0.4.jar"
-      "neethi-3.0.2.jar"
-      "nekohtml-1.9.13.1z.jar"
-      "oauth-20100527.jar"
-      "owasp-java-html-sanitizer-r239.jar"
-      "policy-2.3.jar"
-      "slf4j-api-1.6.4.jar"
-      "slf4j-log4j12-1.6.4.jar"
-      "smack-3.1.0.jar"
-      "smackx-3.1.0.jar"
-      "smackx-debug-3.2.1.jar"
-      "smackx-jingle-3.2.1.jar"
-      "spring-aop-3.0.7.RELEASE.jar"
-      "spring-asm-3.0.7.RELEASE.jar"
-      "spring-beans-3.0.7.RELEASE.jar"
-      "spring-context-3.0.7.RELEASE.jar"
-      "spring-core-3.0.7.RELEASE.jar"
-      "spring-expression-3.0.7.RELEASE.jar"
-      "spymemcached-2.12.1.jar"
-      "jedis-2.9.0.jar"
-      "commons-pool2-2.4.2.jar"
-      "sqlite-jdbc-3.7.15-M1.jar"
-      "stax-ex-1.7.7.jar"
-      "stax2-api-3.1.1.jar"
-      "streambuffer-2.2.6.jar"
-      "syslog4j-0.9.46.jar"
-      "unboundid-ldapsdk-2.3.5.jar"
-      "woodstox-core-asl-4.2.0.jar"
-      "wsdl4j-1.6.3.jar"
-      "xercesImpl-2.9.1-patch-01.jar"
-      "xmlschema-core-2.0.3.jar"
-      "yuicompressor-2.4.2-zimbra.jar"
-      "zkclient-0.1.0.jar"
-      "zookeeper-3.4.5.jar"
-      "zm-ews-stub-2.0.jar"
-      "ehcache-3.1.2.jar"
-   )
-
-   for i in "${zimbrathirdpartyjars[@]}"
-   do
-      Cpy2 ${repoDir}/zm-zcs-lib/build/dist/${i}                                                       ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/jars
-   done
-
-   Copy ${repoDir}/zm-zcs-lib/build/dist/zm-charset-*.jar                                           ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/jars/zimbra-charset.jar
-   Copy ${repoDir}/zm-zcs-lib/build/dist/zm-native-*.jar                                            ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/jars/zimbra-native.jar
-   Copy ${repoDir}/zm-zcs-lib/build/dist/zm-common-*.jar                                            ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/jars/zimbracommon.jar
-   Copy ${repoDir}/zm-zcs-lib/build/dist/zm-soap-*.jar                                              ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/jars/zimbrasoap.jar
-   Copy ${repoDir}/zm-zcs-lib/build/dist/zm-client-*.jar                                            ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/jars/zimbraclient.jar
-   Copy ${repoDir}/zm-zcs-lib/build/dist/zm-store-*.jar                                             ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/jars/zimbrastore.jar
-   Copy ${repoDir}/zm-zcs-lib/build/dist/ant-1.6.5.jar                                              ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/jars-ant/ant-1.6.5.jar
-   Copy ${repoDir}/zm-zcs-lib/build/dist/json-20090211.jar                                          ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/jars/json.jar
-   Copy ${repoDir}/zm-zcs-lib/build/dist/commons-logging-1.1.1.jar                                  ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/jars/commons-logging.jar
-
    Copy ${repoDir}/zm-bulkprovision-store/build/dist/commons-csv-1.2.jar                            ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/com_zimbra_bulkprovision/commons-csv-1.2.jar
    Copy ${repoDir}/zm-bulkprovision-store/build/dist/zm-bulkprovision-store*.jar                    ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/com_zimbra_bulkprovision/com_zimbra_bulkprovision.jar
 
@@ -758,19 +622,12 @@ main()
 
       Copy ${repoDir}/zm-hsm/docs/soap-admin.txt                                                       ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/hsm-soap-admin.txt
 
-      Copy ${repoDir}/zm-license-tools/build/zm-license-tools*.jar                                     ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext-common/zimbra-license-tools.jar
-      Copy ${repoDir}/zm-license-tools/src/bin/zmlicense                                               ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmlicense
-
       Copy ${repoDir}/zm-network-build/rpmconf/Install/Util/modules/postinstall.sh                     ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/installer/util/modules/postinstall.sh
       Copy ${repoDir}/zm-network-build/rpmconf/Install/postinstall.pm                                  ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/postinstall.pm
       Copy ${repoDir}/zm-network-build/rpmconf/Install/preinstall.pm                                   ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/preinstall.pm
 
       Copy ${repoDir}/zm-network-licenses/thirdparty/keyview_eula.txt                                  ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/keyview_eula.txt
       Copy ${repoDir}/zm-network-licenses/thirdparty/oracle_jdk_eula.txt                               ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/oracle_jdk_eula.txt
-
-      Copy ${repoDir}/zm-network-store/src/bin/zmhactl                                                 ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmhactl
-      Copy ${repoDir}/zm-network-store/src/bin/zmmboxsearch                                            ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmmboxsearch
-      Copy ${repoDir}/zm-network-store/src/libexec/vmware-heartbeat                                    ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/vmware-heartbeat
 
       Copy ${repoDir}/zm-postfixjournal/build/dist/postjournal                                         ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/postjournal
 

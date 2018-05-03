@@ -254,6 +254,26 @@ askInt() {
   done
 }
 
+askInstallPkgYN() {
+  PROMPT="$1"
+  REQUIRE_STORE="$2"
+  YES_STORE_DEFAULT="$3"
+  NO_STORE_DEFAULT="$4"
+  if [ "$STORE_SELECTED" = "yes" ]; then
+    askYN "$PROMPT" "$YES_STORE_DEFAULT"
+  else
+    if [ "$REQUIRE_STORE" = "yes" ]; then
+      askYN "$PROMPT" "$NO_STORE_DEFAULT"
+    fi
+  fi
+}
+
+ifStoreSelectedY() {
+  if [ "$STORE_SELECTED" = "yes" ]; then
+    response="yes"
+  fi
+}
+
 checkUser() {
   user=$1
   if [ x`whoami` != x$user ]; then
@@ -1626,6 +1646,10 @@ saveExistingConfig() {
 findUbuntuExternalPackageDependencies() {
   # Handle external packages like logwatch, mailutils depends on zimbra-mta.
   if [ $INSTALLED = "yes" -a $ISUBUNTU = "true" ]; then
+    isInstalled "zimbra-talk"
+    if [ x$PKGINSTALLED != "x" ]; then
+      INSTALLED_PACKAGES="$INSTALLED_PACKAGES zimbra-talk"
+    fi
     $PACKAGERMSIMULATE $INSTALLED_PACKAGES > /dev/null 2>&1
     if [ $? -ne 0 ]; then
       EXTPACKAGESTMP=`$PACKAGERMSIMULATE $INSTALLED_PACKAGES 2>&1 | grep " depends on " | cut -d' ' -f2 | grep -v zimbra`
@@ -1705,6 +1729,13 @@ removeExistingPackages() {
       if [ x$PKGINSTALLED != "x" ]; then
         echo -n "   zimbra-drive..."
         $PACKAGERM zimbra-drive >/dev/null 2>&1
+        echo "done"
+      fi
+
+      isInstalled "zimbra-talk"
+      if [ x$PKGINSTALLED != "x" ]; then
+        echo -n "   zimbra-talk..."
+        $PACKAGERM zimbra-talk >/dev/null 2>&1
         echo "done"
       fi
 
@@ -2194,6 +2225,8 @@ configurePackageServer() {
       fi
 cat > /etc/apt/sources.list.d/zimbra.list << EOF
 deb     [arch=amd64] https://$PACKAGE_SERVER/apt/87 $repo zimbra
+deb     [arch=amd64] https://$PACKAGE_SERVER/apt/zv1 $repo zimbra
+deb     [arch=amd64] https://$PACKAGE_SERVER/apt/888patch $repo zimbra
 deb-src [arch=amd64] https://$PACKAGE_SERVER/apt/87 $repo zimbra
 EOF
       apt-get update >>$LOGFILE 2>&1
@@ -2229,9 +2262,23 @@ name=Zimbra RPM Repository
 baseurl=https://$PACKAGE_SERVER/rpm/87/$repo
 gpgcheck=1
 enabled=1
+[zimbra-v1]
+name=Zimbra New RPM Repository
+baseurl=https://$PACKAGE_SERVER/rpm/zv1/$repo
+gpgcheck=1
+enabled=1
+[zimbra-888-patch]
+name=Zimbra New RPM Repository
+baseurl=https://$PACKAGE_SERVER/rpm/888patch/$repo
+gpgcheck=1
+enabled=1
 EOF
       yum --disablerepo=* --enablerepo=zimbra clean metadata >>$LOGFILE 2>&1
       yum check-update --disablerepo=* --enablerepo=zimbra --noplugins >>$LOGFILE 2>&1
+      yum --disablerepo=* --enablerepo=zimbra-v1 clean metadata >>$LOGFILE 2>&1
+      yum check-update --disablerepo=* --enablerepo=zimbra-v1 --noplugins >>$LOGFILE 2>&1
+      yum --disablerepo=* --enablerepo=zimbra-888-patch clean metadata >>$LOGFILE 2>&1
+      yum check-update --disablerepo=* --enablerepo=zimbra-888-patch --noplugins >>$LOGFILE 2>&1
       if [ $? -ne 0 -a $? -ne 100 ]; then
         echo "ERROR: yum check-update failed"
         echo "Please validate ability to install packages"
@@ -2304,73 +2351,41 @@ getInstallPackages() {
       fi
     fi
 
-    if [ $UPGRADE = "yes" ]; then
+    # askInstallPkgYN args : PROMPT REQUIRE_STORE=yes|no YES_STORE_DEFAULT=Y|N NO_STORE_DEFAULT=Y|N
 
+    if [ $i = "zimbra-license-tools" ]; then
+      response="yes"
+    elif [ $i = "zimbra-license-extension" ]; then
+      ifStoreSelectedY
+    elif [ $i = "zimbra-network-store" ]; then
+      ifStoreSelectedY
+    elif [ $UPGRADE = "yes" ]; then
       if [ $i = "zimbra-archiving" ]; then
-        if [ $STORE_SELECTED = "yes" ]; then
-          askYN "Install $i" "N"
-        fi
-
+        askInstallPkgYN "Install $i" "yes" "N" "N"
       elif [ $i = "zimbra-chat" ]; then
-        if [ $STORE_SELECTED = "yes" ]; then
-          askYN "Install $i" "N"
-        fi
-
+        askInstallPkgYN "Install $i" "yes" "N" "N"
       elif [ $i = "zimbra-drive" ]; then
-        if [ $STORE_SELECTED = "yes" ]; then
-          askYN "Install $i" "N"
-        fi
-
+        askInstallPkgYN "Install $i" "yes" "N" "N"
       elif [ $i = "zimbra-network-modules-ng" ]; then
-        if [ $STORE_SELECTED = "yes" ]; then
-          askYN "Install $i" "N"
-        fi
-
-      elif [ $i = "zimbra-rpost" ]; then
-        if [ $STORE_SELECTED = "yes" ]; then
-          INSTALL_PACKAGES="$INSTALL_PACKAGES zimbra-rpost"
-        fi
-
+        askInstallPkgYN "Install $i" "yes" "N" "N"
       elif [ $i = "zimbra-imapd" ]; then
-        askYN "Install $i (BETA - for evaluation only)" "N"
-
+        askInstallPkgYN "Install $i (BETA - for evaluation only)" "no" "N" "N"
       else
         askYN "Install $i" "N"
       fi
-
     else
-
       if [ $i = "zimbra-archiving" ]; then
-        # only prompt to install archiving if zimbra-store is selected
-        if [ $STORE_SELECTED = "yes" ]; then
-          askYN "Install $i" "N"
-        fi
-
+        askInstallPkgYN "Install $i" "yes" "N" "N"
       elif [ $i = "zimbra-convertd" ]; then
-        if [ $STORE_SELECTED = "yes" ]; then
-          askYN "Install $i" "Y"
-        else
-          askYN "Install $i" "N"
-        fi
-
+        askInstallPkgYN "Install $i" "no" "Y" "N"
       elif [ $i = "zimbra-chat" ]; then
-        if [ $STORE_SELECTED = "yes" ]; then
-          askYN "Install $i" "Y"
-        fi
-
+        askInstallPkgYN "Install $i" "yes" "Y" "N"
       elif [ $i = "zimbra-drive" ]; then
-        if [ $STORE_SELECTED = "yes" ]; then
-          askYN "Install $i" "Y"
-        fi
-
+        askInstallPkgYN "Install $i" "yes" "Y" "N"
       elif [ $i = "zimbra-network-modules-ng" ]; then
-        if [ $STORE_SELECTED = "yes" ]; then
-          askYN "Install $i" "Y"
-        fi
-
+        askInstallPkgYN "Install $i" "yes" "Y" "N"
       elif [ $i = "zimbra-imapd" ]; then
-          askYN "Install $i (BETA - for evaluation only)" "N"
-
+        askInstallPkgYN "Install $i (BETA - for evaluation only)" "no" "N" "N"
       elif [ $i = "zimbra-dnscache" ]; then
         if [ $MTA_SELECTED = "yes" ]; then
           askYN "Install $i" "Y"
@@ -2378,13 +2393,7 @@ getInstallPackages() {
           askYN "Install $i" "N"
         fi
       else
-        if [ $i = "zimbra-rpost" ]; then
-          if [ $STORE_SELECTED = "yes" ]; then
-            INSTALL_PACKAGES="$INSTALL_PACKAGES zimbra-rpost"
-          fi
-        else
-          askYN "Install $i" "Y"
-        fi
+        askYN "Install $i" "Y"
       fi
     fi
 
@@ -2723,7 +2732,7 @@ getPlatformVars() {
       ISUBUNTU=false
       REPOINST='yum -y install'
       REPORM='yum erase -y'
-      PACKAGEINST='yum -y --disablerepo=* localinstall -v'
+      PACKAGEINST='rpm -Uvh --replacefiles --replacepkgs'
       # TODO: This should kept in os-requirement.
       yum -y install --downloadonly dummyxxxxxxx 2>&1 | grep "no such option: --downloadonly" >/dev/null 2>&1
       if [ $? -eq 0 ]; then
