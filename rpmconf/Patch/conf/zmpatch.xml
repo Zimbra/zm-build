@@ -48,8 +48,8 @@
   
 -->
 <patches>
-  <patch name="8.7.11_GA" version="8.7.11_P3">
-  <desc>Patch 8.7.11_P2</desc>
+  <patch name="8.7.11_GA" version="8.7.11_P4">
+  <desc>Patch 8.7.11_P4</desc>
   <bug>107925</bug>
   <bug>108265</bug>
   <bug>108786</bug>
@@ -63,6 +63,7 @@
   <bug>ZCS-4861</bug>
   <bug>ZCS-4860</bug>
   <bug>ZCS-4461</bug>
+  <bug>ZCS-4644</bug>
   <package name="zimbra-store">
       <file>
         <source>zm-build/storebuild/opt/zimbra/jetty-distribution-9.3.5.v20151012/webapps/zimbra/js/MailCore_all.js.zgz</source>
@@ -95,6 +96,26 @@
         <perms owner="zimbra" mode="444"/>
       </file>
       <file>
+        <source>zm-build/storebuild/opt/zimbra/jetty-distribution-9.3.5.v20151012/webapps/zimbra/js/Startup1_2_all.js.zgz</source>
+        <target>/opt/zimbra/jetty-distribution-9.3.5.v20151012/webapps/zimbra/js/Startup1_2_all.js.zgz</target>
+        <perms owner="zimbra" mode="444"/>
+      </file>
+      <file>
+        <source>zm-build/storebuild/opt/zimbra/jetty-distribution-9.3.5.v20151012/webapps/zimbra/js/Startup1_2_all.js</source>
+        <target>/opt/zimbra/jetty-distribution-9.3.5.v20151012/webapps/zimbra/js/Startup1_2_all.js</target>
+        <perms owner="zimbra" mode="444"/>
+      </file>
+      <file>
+        <source>zm-build/storebuild/opt/zimbra/jetty-distribution-9.3.5.v20151012/webapps/zimbra/js/Contacts_all.js.zgz</source>
+        <target>/opt/zimbra/jetty-distribution-9.3.5.v20151012/webapps/zimbra/js/Contacts_all.js.zgz</target>
+        <perms owner="zimbra" mode="444"/>
+      </file>
+      <file>
+        <source>zm-build/storebuild/opt/zimbra/jetty-distribution-9.3.5.v20151012/webapps/zimbra/js/Contacts_all.js</source>
+        <target>/opt/zimbra/jetty-distribution-9.3.5.v20151012/webapps/zimbra/js/Contacts_all.js</target>
+        <perms owner="zimbra" mode="444"/>
+      </file>
+      <file>
         <source>zm-build/storebuild/opt/zimbra/jetty-distribution-9.3.5.v20151012/webapps/zimbra/js/zimbraMail/mail/controller/ZmMailListController.js</source>
         <target>/opt/zimbra/jetty-distribution-9.3.5.v20151012/webapps/zimbra/js/zimbraMail/mail/controller/ZmMailListController.js</target>
         <perms owner="zimbra" mode="444"/>
@@ -102,6 +123,16 @@
       <file>
         <source>zm-build/storebuild/opt/zimbra/jetty-distribution-9.3.5.v20151012/webapps/zimbra/js/zimbraMail/mail/view/ZmMailMsgView.js</source>
         <target>/opt/zimbra/jetty-distribution-9.3.5.v20151012/webapps/zimbra/js/zimbraMail/mail/view/ZmMailMsgView.js</target>
+        <perms owner="zimbra" mode="444"/>
+      </file>
+      <file>
+        <source>zm-build/storebuild/opt/zimbra/jetty-distribution-9.3.5.v20151012/webapps/zimbra/js/zimbraMail/abook/view/ZmContactSplitView.js</source>
+        <target>/opt/zimbra/jetty-distribution-9.3.5.v20151012/webapps/zimbra/js/zimbraMail/abook/view/ZmContactSplitView.js</target>
+        <perms owner="zimbra" mode="444"/>
+      </file>
+      <file>
+        <source>zm-build/storebuild/opt/zimbra/jetty-distribution-9.3.5.v20151012/webapps/zimbra/js/zimbraMail/share/model/ZmObjectManager.js</source>
+        <target>/opt/zimbra/jetty-distribution-9.3.5.v20151012/webapps/zimbra/js/zimbraMail/share/model/ZmObjectManager.js</target>
         <perms owner="zimbra" mode="444"/>
       </file>
       <file>
