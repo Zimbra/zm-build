@@ -1,4 +1,4 @@
 @ENTRIES = (
-   "gh-zm" => { 'url-prefix' => "https://github.com/ZimbraOS", },
+   "gh-zm" => { 'url-prefix' => "git\@github.com:ZimbraOS", },
    "gh-ks" => { 'url-prefix' => "https://github.com/kohlschutter", },
 );
