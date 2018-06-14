@@ -486,6 +486,7 @@ main()
    Copy ${repoDir}/zm-db-conf/src/db/migration/migrate20180301-ZimbraChat.pl                        ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/scripts/migrate20180301-ZimbraChat.pl
    Copy ${repoDir}/zm-db-conf/src/db/migration/migrate20170829-SearchHistory.pl                     ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/scripts/migrate20170829-SearchHistory.pl
    Copy ${repoDir}/zm-db-conf/src/db/migration/migrate20180110-DistributedRedolog.pl                ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/scripts/migrate20180110-DistributedRedolog.pl
+   Copy ${repoDir}/zm-db-conf/src/db/migration/migrate20180613-EventFlagColumn.pl                   ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/scripts/migrate20180613-EventFlagColumn.pl
    Copy ${repoDir}/zm-db-conf/src/db/migration/migrateAmavisLdap20050810.pl                         ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/scripts/migrateAmavisLdap20050810.pl
    Copy ${repoDir}/zm-db-conf/src/db/migration/migrateClearSpamFlag.pl                              ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/scripts/migrateClearSpamFlag.pl
    Copy ${repoDir}/zm-db-conf/src/db/migration/migrateLargeMetadata.pl                              ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/scripts/migrateLargeMetadata.pl
