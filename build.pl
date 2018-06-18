@@ -300,7 +300,7 @@ sub Prepare()
       "https://files.zimbra.com/repository/jruby/jruby-complete-1.6.3.jar",
       "https://files.zimbra.com/repository/applet/plugin.jar",
       "https://files.zimbra.com/repository/servlet-api/servlet-api-3.1.jar",
-      "https://files.zimbra.com/repository/unbound-ldapsdk/unboundid-ldapsdk-2.3.5-se.jar",
+      "https://files.zimbra.com/repository/unbound-ldapsdk/unboundid-ldapsdk-4.0.6.jar",
    );
 
    for my $j_url (@TP_JARS)
