@@ -1650,10 +1650,6 @@ findUbuntuExternalPackageDependencies() {
     if [ x$PKGINSTALLED != "x" ]; then
       INSTALLED_PACKAGES="$INSTALLED_PACKAGES zimbra-talk"
     fi
-    isInstalled "zimbra-patch"
-    if [ x$PKGINSTALLED != "x" ]; then
-      INSTALLED_PACKAGES="$INSTALLED_PACKAGES zimbra-patch"
-    fi
     $PACKAGERMSIMULATE $INSTALLED_PACKAGES > /dev/null 2>&1
     if [ $? -ne 0 ]; then
       EXTPACKAGESTMP=`$PACKAGERMSIMULATE $INSTALLED_PACKAGES 2>&1 | grep " depends on " | cut -d' ' -f2 | grep -v zimbra`
