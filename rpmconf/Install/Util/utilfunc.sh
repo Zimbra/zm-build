@@ -2347,6 +2347,10 @@ getChatOrTalkPackage() {
        response="no"
     fi
  fi
+<<<<<<< HEAD
+=======
+
+>>>>>>> Added check if NG is installed then install zimbra-talk otherwise install zimbra-chat
 }
 
 getInstallPackages() {
@@ -2428,13 +2432,15 @@ getInstallPackages() {
     elif [ $UPGRADE = "yes" ]; then
       if [ $i = "zimbra-archiving" ]; then
         askInstallPkgYN "Install $i" "yes" "N" "N"
-      elif [ $i = "zimbra-chat" ]; then
-        askInstallPkgYN "Install $i" "yes" "N" "N"
       elif [ $i = "zimbra-drive" ]; then
         askInstallPkgYN "Install $i" "yes" "N" "N"
       elif [ $i = "zimbra-network-modules-ng" ]; then
         askInstallPkgYN "Install $i" "yes" "N" "N"
+<<<<<<< HEAD
 	getChatOrTalkPackage
+=======
+        getChatOrTalkPackage
+>>>>>>> Added check if NG is installed then install zimbra-talk otherwise install zimbra-chat
       elif [ $i = "zimbra-imapd" ]; then
         askInstallPkgYN "Install $i (BETA - for evaluation only)" "no" "N" "N"
       else
@@ -2445,13 +2451,15 @@ getInstallPackages() {
         askInstallPkgYN "Install $i" "yes" "N" "N"
       elif [ $i = "zimbra-convertd" ]; then
         askInstallPkgYN "Install $i" "no" "Y" "N"
-      elif [ $i = "zimbra-chat" ]; then
-        askInstallPkgYN "Install $i" "yes" "Y" "N"
       elif [ $i = "zimbra-drive" ]; then
         askInstallPkgYN "Install $i" "yes" "Y" "N"
       elif [ $i = "zimbra-network-modules-ng" ]; then
         askInstallPkgYN "Install $i" "yes" "Y" "N"
+<<<<<<< HEAD
 	getChatOrTalkPackage
+=======
+        getChatOrTalkPackage
+>>>>>>> Added check if NG is installed then install zimbra-talk otherwise install zimbra-chat
       elif [ $i = "zimbra-imapd" ]; then
         askInstallPkgYN "Install $i (BETA - for evaluation only)" "no" "N" "N"
       elif [ $i = "zimbra-dnscache" ]; then
@@ -2762,7 +2770,7 @@ getPlatformVars() {
     REPOINST='apt-get install -y'
     PACKAGEDOWNLOAD='apt-get --download-only install -y --force-yes'
     REPORM='apt-get -y --purge purge'
-    PACKAGEINST='dpkg -i --auto-deconfigure'
+    PACKAGEINST='dpkg -i'
     PACKAGERM='dpkg --purge'
     PACKAGERMSIMULATE='dpkg --purge --dry-run'
     PACKAGEQUERY='dpkg -s'
