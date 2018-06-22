@@ -49,7 +49,7 @@
 -->
 <patches>
   <patch name="8.7.11_GA" version="8.7.11_P4">
-  <desc>Patch 8.7.11_P4</desc>
+  <desc>Patch 8.7.11_P5</desc>
   <bug>107925</bug>
   <bug>108265</bug>
   <bug>108786</bug>
@@ -64,6 +64,7 @@
   <bug>ZCS-4860</bug>
   <bug>ZCS-4461</bug>
   <bug>ZCS-4644</bug>
+  <bug>ZCS-4931</bug>
   <package name="zimbra-store">
       <file>
         <source>zm-build/storebuild/opt/zimbra/jetty-distribution-9.3.5.v20151012/webapps/zimbra/js/MailCore_all.js.zgz</source>
@@ -219,6 +220,11 @@
     <file>
         <source>zm-build/corebuild/opt/zimbra/lib/jars/jackson-smile-1.9.13.jar</source>
         <target>/opt/zimbra/lib/jars/jackson-smile-1.9.13.jar</target>
+        <perms owner="root" mode="444"/>
+    </file>
+    <file>
+        <source>zm-build/corebuild/opt/zimbra/lib/jars/jython-standalone-2.7.1.jar</source>
+        <target>/opt/zimbra/lib/jars/jython-standalone-2.7.1.jar</target>
         <perms owner="root" mode="444"/>
     </file>
   </package>

@@ -827,7 +827,7 @@ main()
       "junixsocket-demo-2.0.4.jar"
       "junixsocket-mysql-2.0.4.jar"
       "junixsocket-rmi-2.0.4.jar"
-      "jython-standalone-2.5.2.jar"
+      "jython-standalone-2.7.1.jar"
       "jzlib-1.0.7.jar"
       "libidn-1.24.jar"
       "log4j-1.2.16.jar"
