@@ -1646,9 +1646,9 @@ saveExistingConfig() {
 findUbuntuExternalPackageDependencies() {
   # Handle external packages like logwatch, mailutils depends on zimbra-mta.
   if [ $INSTALLED = "yes" -a $ISUBUNTU = "true" ]; then
-    isInstalled "zimbra-talk"
+    isInstalled "zimbra-chat"
     if [ x$PKGINSTALLED != "x" ]; then
-      INSTALLED_PACKAGES="$INSTALLED_PACKAGES zimbra-talk"
+      INSTALLED_PACKAGES="$INSTALLED_PACKAGES zimbra-chat"
     fi
     $PACKAGERMSIMULATE $INSTALLED_PACKAGES > /dev/null 2>&1
     if [ $? -ne 0 ]; then
@@ -2303,6 +2303,25 @@ fi
   fi
 }
 
+getChatOrTalkPackage() {
+
+ if [ $response = "yes" ]; then
+    askInstallPkgYN "Install zimbra-talk" "yes" "Y" "N"
+    if [ $response = "yes" ]; then
+       INSTALL_PACKAGES="$INSTALL_PACKAGES zimbra-talk"
+    elif [ $response = "no" ]; then
+       response="yes"
+    fi
+  elif [ $response = "no" ]; then
+    askInstallPkgYN "Install zimbra-chat" "yes" "Y" "N"
+    if [ $response = "yes" ]; then
+       INSTALL_PACKAGES="$INSTALL_PACKAGES zimbra-chat"
+       response="no"
+    fi
+ fi
+
+}
+
 getInstallPackages() {
 
   echo ""
@@ -2377,12 +2396,11 @@ getInstallPackages() {
     elif [ $UPGRADE = "yes" ]; then
       if [ $i = "zimbra-archiving" ]; then
         askInstallPkgYN "Install $i" "yes" "N" "N"
-      elif [ $i = "zimbra-chat" ]; then
-        askInstallPkgYN "Install $i" "yes" "N" "N"
       elif [ $i = "zimbra-drive" ]; then
         askInstallPkgYN "Install $i" "yes" "N" "N"
       elif [ $i = "zimbra-network-modules-ng" ]; then
         askInstallPkgYN "Install $i" "yes" "N" "N"
+        getChatOrTalkPackage
       elif [ $i = "zimbra-imapd" ]; then
         askInstallPkgYN "Install $i (BETA - for evaluation only)" "no" "N" "N"
       else
@@ -2393,12 +2411,11 @@ getInstallPackages() {
         askInstallPkgYN "Install $i" "yes" "N" "N"
       elif [ $i = "zimbra-convertd" ]; then
         askInstallPkgYN "Install $i" "no" "Y" "N"
-      elif [ $i = "zimbra-chat" ]; then
-        askInstallPkgYN "Install $i" "yes" "Y" "N"
       elif [ $i = "zimbra-drive" ]; then
         askInstallPkgYN "Install $i" "yes" "Y" "N"
       elif [ $i = "zimbra-network-modules-ng" ]; then
         askInstallPkgYN "Install $i" "yes" "Y" "N"
+        getChatOrTalkPackage
       elif [ $i = "zimbra-imapd" ]; then
         askInstallPkgYN "Install $i (BETA - for evaluation only)" "no" "N" "N"
       elif [ $i = "zimbra-dnscache" ]; then
@@ -2709,7 +2726,7 @@ getPlatformVars() {
     REPOINST='apt-get install -y'
     PACKAGEDOWNLOAD='apt-get --download-only install -y --force-yes'
     REPORM='apt-get -y --purge purge'
-    PACKAGEINST='dpkg -i --auto-deconfigure'
+    PACKAGEINST='dpkg -i'
     PACKAGERM='dpkg --purge'
     PACKAGERMSIMULATE='dpkg --purge --dry-run'
     PACKAGEQUERY='dpkg -s'
