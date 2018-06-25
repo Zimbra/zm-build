@@ -2187,11 +2187,6 @@ sub runSchemaUpgrade {
     return 1;
   }
 
-  if (! -x "${scriptDir}/$updateScripts{$curVersion}" ) {
-    main::progress ("Can't run ${scriptDir}/$updateScripts{$curVersion} - not executable!\n");
-    return 1;
-  }
-
   main::progress ("Running ${scriptDir}/$updateScripts{$curVersion}\n");
   open(MIG, "$su \"/usr/bin/perl -I${scriptDir} ${scriptDir}/$updateScripts{$curVersion}\" 2>&1|");
   while (<MIG>) {
