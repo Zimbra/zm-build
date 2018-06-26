@@ -1671,7 +1671,7 @@ findUbuntuExternalPackageDependencies() {
         removeErrorMessage
       else
         echo "External package dependencies found: $EXTPACKAGES"
-        $PACKAGERMSIMULATE $INSTALLED_PACKAGES $EXTPACKAGES >> $LOGFILE 2>&1
+        $PACKAGERMSIMULATE $INSTALLED_PACKAGES $EXTPACKAGES
         if [ $? -eq 0 ]; then
           while :; do
             askYN "$EXTPACKAGES package[s] will be removed. Continue?" "N"
@@ -2348,9 +2348,12 @@ getChatOrTalkPackage() {
     fi
  fi
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 
 >>>>>>> Added check if NG is installed then install zimbra-talk otherwise install zimbra-chat
+=======
+>>>>>>> added chat and talk packages as CHAT_PACKAGES to show while uninstalling and added zimbra-talk installation check while uninstalling
 }
 
 getInstallPackages() {
@@ -2432,15 +2435,21 @@ getInstallPackages() {
     elif [ $UPGRADE = "yes" ]; then
       if [ $i = "zimbra-archiving" ]; then
         askInstallPkgYN "Install $i" "yes" "N" "N"
+      elif [ $i = "zimbra-chat" ]; then
+        askInstallPkgYN "Install $i" "yes" "N" "N"
       elif [ $i = "zimbra-drive" ]; then
         askInstallPkgYN "Install $i" "yes" "N" "N"
       elif [ $i = "zimbra-network-modules-ng" ]; then
         askInstallPkgYN "Install $i" "yes" "N" "N"
 <<<<<<< HEAD
+<<<<<<< HEAD
 	getChatOrTalkPackage
 =======
         getChatOrTalkPackage
 >>>>>>> Added check if NG is installed then install zimbra-talk otherwise install zimbra-chat
+=======
+	getChatOrTalkPackage
+>>>>>>> added chat and talk packages as CHAT_PACKAGES to show while uninstalling and added zimbra-talk installation check while uninstalling
       elif [ $i = "zimbra-imapd" ]; then
         askInstallPkgYN "Install $i (BETA - for evaluation only)" "no" "N" "N"
       else
@@ -2451,15 +2460,21 @@ getInstallPackages() {
         askInstallPkgYN "Install $i" "yes" "N" "N"
       elif [ $i = "zimbra-convertd" ]; then
         askInstallPkgYN "Install $i" "no" "Y" "N"
+      elif [ $i = "zimbra-chat" ]; then
+        askInstallPkgYN "Install $i" "yes" "Y" "N"
       elif [ $i = "zimbra-drive" ]; then
         askInstallPkgYN "Install $i" "yes" "Y" "N"
       elif [ $i = "zimbra-network-modules-ng" ]; then
         askInstallPkgYN "Install $i" "yes" "Y" "N"
 <<<<<<< HEAD
+<<<<<<< HEAD
 	getChatOrTalkPackage
 =======
         getChatOrTalkPackage
 >>>>>>> Added check if NG is installed then install zimbra-talk otherwise install zimbra-chat
+=======
+	getChatOrTalkPackage
+>>>>>>> added chat and talk packages as CHAT_PACKAGES to show while uninstalling and added zimbra-talk installation check while uninstalling
       elif [ $i = "zimbra-imapd" ]; then
         askInstallPkgYN "Install $i (BETA - for evaluation only)" "no" "N" "N"
       elif [ $i = "zimbra-dnscache" ]; then
