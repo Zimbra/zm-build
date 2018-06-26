@@ -1671,7 +1671,7 @@ findUbuntuExternalPackageDependencies() {
         removeErrorMessage
       else
         echo "External package dependencies found: $EXTPACKAGES"
-        $PACKAGERMSIMULATE $INSTALLED_PACKAGES $EXTPACKAGES
+        $PACKAGERMSIMULATE $INSTALLED_PACKAGES $EXTPACKAGES >> $LOGFILE 2>&1
         if [ $? -eq 0 ]; then
           while :; do
             askYN "$EXTPACKAGES package[s] will be removed. Continue?" "N"
