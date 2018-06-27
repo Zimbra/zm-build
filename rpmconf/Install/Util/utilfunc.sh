@@ -1654,14 +1654,12 @@ saveExistingConfig() {
 findUbuntuExternalPackageDependencies() {
   # Handle external packages like logwatch, mailutils depends on zimbra-mta.
   if [ $INSTALLED = "yes" -a $ISUBUNTU = "true" ]; then
-    isInstalled "zimbra-talk"
-    if [ x$PKGINSTALLED != "x" ]; then
-      INSTALLED_PACKAGES="$INSTALLED_PACKAGES zimbra-talk"
-    fi
-    isInstalled "zimbra-chat"
-    if [ x$PKGINSTALLED != "x" ]; then
-      INSTALLED_PACKAGES="$INSTALLED_PACKAGES zimbra-chat"
-    fi
+    for i in $CHAT_PACKAGES; do
+      isInstalled $i
+     if [ x$PKGINSTALLED != "x" ]; then
+      INSTALLED_PACKAGES="$INSTALLED_PACKAGES $i"
+     fi
+    done
     $PACKAGERMSIMULATE $INSTALLED_PACKAGES > /dev/null 2>&1
     if [ $? -ne 0 ]; then
       EXTPACKAGESTMP=`$PACKAGERMSIMULATE $INSTALLED_PACKAGES 2>&1 | grep " depends on " | cut -d' ' -f2 | grep -v zimbra`
@@ -2353,6 +2351,9 @@ getInstallPackages() {
       echo $INSTALLED_PACKAGES | grep $i > /dev/null 2>&1
       if [ $? = 0 ]; then
         echo "    Upgrading $i"
+        if [ $i = "zimbra-network-modules-ng" ]; then
+          INSTALL_PACKAGES="$INSTALL_PACKAGES zimbra-talk"
+        fi
         if [ $i = "zimbra-mta" ]; then
           CONFLICTS="no"
           for j in $CONFLICT_PACKAGES; do
