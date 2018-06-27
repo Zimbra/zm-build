@@ -1818,6 +1818,23 @@ removeExistingPackages() {
   done
 }
 
+removeChatIfInstalled() {
+   for i in $INSTALL_PACKAGES; do
+     if [ x$i = "xzimbra-talk" ]; then
+        echo ""
+        echo "Checking zimbra-chat already installed or not..."
+       isInstalled "zimbra-chat"
+        if [ x$PKGINSTALLED != "x" ]; then
+          echo -n "   zimbra-chat FOUND..."
+          echo ""
+          echo -n "   Removing zimbra-chat..."
+          $PACKAGERM zimbra-chat >/dev/null 2>&1
+          echo "done"
+        fi
+      fi
+    done
+}
+
 removeExistingInstall() {
   if [ $INSTALLED = "yes" ]; then
     echo ""
@@ -1864,6 +1881,7 @@ removeExistingInstall() {
     fi
     if [ "$UPGRADE" = "yes" -a "$POST87UPGRADE" = "true" -a "$FORCE_UPGRADE" != "yes" -a "$ZM_CUR_BUILD" != "$ZM_INST_BUILD" ]; then
       echo "Upgrading the remote packages"
+      removeChatIfInstalled
     else
       removeExistingPackages
     fi
