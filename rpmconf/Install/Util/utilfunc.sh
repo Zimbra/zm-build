@@ -2744,7 +2744,7 @@ getPlatformVars() {
     REPOINST='apt-get install -y'
     PACKAGEDOWNLOAD='apt-get --download-only install -y --force-yes'
     REPORM='apt-get -y --purge purge'
-    PACKAGEINST='dpkg -i'
+    PACKAGEINST='dpkg -i --auto-deconfigure'
     PACKAGERM='dpkg --purge'
     PACKAGERMSIMULATE='dpkg --purge --dry-run'
     PACKAGEQUERY='dpkg -s'
