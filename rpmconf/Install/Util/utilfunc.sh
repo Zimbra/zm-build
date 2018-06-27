@@ -2400,6 +2400,8 @@ getInstallPackages() {
 
     if [ $i = "zimbra-license-tools" ]; then
       response="yes"
+    elif [ $i = "zimbra-patch" ]; then
+      response="yes"
     elif [ $i = "zimbra-license-extension" ]; then
       ifStoreSelectedY
     elif [ $i = "zimbra-network-store" ]; then
