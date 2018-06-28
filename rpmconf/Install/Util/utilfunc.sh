@@ -2315,7 +2315,7 @@ if [ x"$ZMTYPE_INSTALLABLE" = "xNETWORK" ]; then
 cat >> /etc/yum.repos.d/zimbra.repo <<EOF
 [zimbra-889-network]
 name=Zimbra New RPM Repository
-baseurl=https://$PACKAGE_SERVER/rpm/889-nw/$repo
+baseurl=https://$PACKAGE_SERVER/rpm/889-ne/$repo
 gpgcheck=1
 enabled=1
 EOF
