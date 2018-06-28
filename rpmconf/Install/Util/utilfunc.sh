@@ -679,6 +679,8 @@ checkExistingInstall() {
     if [ x$PKGINSTALLED != "x" ]; then
       echo "    $i...FOUND $PKGINSTALLED"
       INSTALLED_PACKAGES="$INSTALLED_PACKAGES $i"
+    else
+      echo "    $i...NOT FOUND"
     fi
   done
 
@@ -2347,13 +2349,6 @@ getChatOrTalkPackage() {
        response="no"
     fi
  fi
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-
->>>>>>> Added check if NG is installed then install zimbra-talk otherwise install zimbra-chat
-=======
->>>>>>> added chat and talk packages as CHAT_PACKAGES to show while uninstalling and added zimbra-talk installation check while uninstalling
 }
 
 getInstallPackages() {
@@ -2371,6 +2366,10 @@ getInstallPackages() {
   LOGGER_SELECTED="no"
   STORE_SELECTED="no"
   MTA_SELECTED="no"
+
+  if [ x"$ZMTYPE_INSTALLABLE" = "xFOSS" ]; then
+     AVAILABLE_PACKAGES="$AVAILABLE_PACKAGES zimbra-chat"
+  fi
 
   for i in $AVAILABLE_PACKAGES; do
     if [ $i = "zimbra-core" ]; then
@@ -2438,8 +2437,11 @@ getInstallPackages() {
       elif [ $i = "zimbra-chat" ]; then
         askInstallPkgYN "Install $i" "yes" "N" "N"
       elif [ $i = "zimbra-drive" ]; then
-        askInstallPkgYN "Install $i" "yes" "N" "N"
+	if [ $STORE_SELECTED = "yes" ]; then
+          askInstallPkgYN "Install $i" "yes" "N" "N"
+	fi
       elif [ $i = "zimbra-network-modules-ng" ]; then
+<<<<<<< HEAD
         askInstallPkgYN "Install $i" "yes" "N" "N"
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -2450,6 +2452,12 @@ getInstallPackages() {
 =======
 	getChatOrTalkPackage
 >>>>>>> added chat and talk packages as CHAT_PACKAGES to show while uninstalling and added zimbra-talk installation check while uninstalling
+=======
+	if [ $STORE_SELECTED = "yes" ]; then
+          askInstallPkgYN "Install $i" "yes" "N" "N"
+	  getChatOrTalkPackage
+	fi
+>>>>>>> Fixed the missing chat prompt for FOSS.
       elif [ $i = "zimbra-imapd" ]; then
         askInstallPkgYN "Install $i (BETA - for evaluation only)" "no" "N" "N"
       else
@@ -2463,8 +2471,11 @@ getInstallPackages() {
       elif [ $i = "zimbra-chat" ]; then
         askInstallPkgYN "Install $i" "yes" "Y" "N"
       elif [ $i = "zimbra-drive" ]; then
-        askInstallPkgYN "Install $i" "yes" "Y" "N"
+	if [ $STORE_SELECTED = "yes" ]; then
+          askInstallPkgYN "Install $i" "yes" "Y" "N"
+	fi
       elif [ $i = "zimbra-network-modules-ng" ]; then
+<<<<<<< HEAD
         askInstallPkgYN "Install $i" "yes" "Y" "N"
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -2475,6 +2486,12 @@ getInstallPackages() {
 =======
 	getChatOrTalkPackage
 >>>>>>> added chat and talk packages as CHAT_PACKAGES to show while uninstalling and added zimbra-talk installation check while uninstalling
+=======
+	if [ $STORE_SELECTED = "yes" ]; then
+          askInstallPkgYN "Install $i" "yes" "Y" "N"
+	  getChatOrTalkPackage
+	fi
+>>>>>>> Fixed the missing chat prompt for FOSS.
       elif [ $i = "zimbra-imapd" ]; then
         askInstallPkgYN "Install $i (BETA - for evaluation only)" "no" "N" "N"
       elif [ $i = "zimbra-dnscache" ]; then
