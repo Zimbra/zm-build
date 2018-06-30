@@ -2434,18 +2434,20 @@ getInstallPackages() {
       if [ $i = "zimbra-archiving" ]; then
         askInstallPkgYN "Install $i" "yes" "N" "N"
       elif [ $i = "zimbra-chat" ]; then
-        askInstallPkgYN "Install $i" "yes" "N" "N"
+	if [ $STORE_SELECTED = "yes" ]; then
+          askInstallPkgYN "Install $i" "yes" "N" "N"
+	fi
       elif [ $i = "zimbra-drive" ]; then
 	if [ $STORE_SELECTED = "yes" ]; then
           askInstallPkgYN "Install $i" "yes" "N" "N"
 	fi
+      elif [ $i = "zimbra-imapd" ]; then
+        askInstallPkgYN "Install $i (BETA - for evaluation only)" "no" "N" "N"
       elif [ $i = "zimbra-network-modules-ng" ]; then
 	if [ $STORE_SELECTED = "yes" ]; then
           askInstallPkgYN "Install $i" "yes" "N" "N"
 	  getChatOrTalkPackage
 	fi
-      elif [ $i = "zimbra-imapd" ]; then
-        askInstallPkgYN "Install $i (BETA - for evaluation only)" "no" "N" "N"
       else
         askYN "Install $i" "N"
       fi
@@ -2455,18 +2457,20 @@ getInstallPackages() {
       elif [ $i = "zimbra-convertd" ]; then
         askInstallPkgYN "Install $i" "no" "Y" "N"
       elif [ $i = "zimbra-chat" ]; then
-        askInstallPkgYN "Install $i" "yes" "Y" "N"
+	if [ $STORE_SELECTED = "yes" ]; then
+          askInstallPkgYN "Install $i" "yes" "Y" "N"
+	fi
       elif [ $i = "zimbra-drive" ]; then
 	if [ $STORE_SELECTED = "yes" ]; then
           askInstallPkgYN "Install $i" "yes" "Y" "N"
 	fi
+      elif [ $i = "zimbra-imapd" ]; then
+        askInstallPkgYN "Install $i (BETA - for evaluation only)" "no" "N" "N"
       elif [ $i = "zimbra-network-modules-ng" ]; then
 	if [ $STORE_SELECTED = "yes" ]; then
           askInstallPkgYN "Install $i" "yes" "Y" "N"
 	  getChatOrTalkPackage
 	fi
-      elif [ $i = "zimbra-imapd" ]; then
-        askInstallPkgYN "Install $i (BETA - for evaluation only)" "no" "N" "N"
       elif [ $i = "zimbra-dnscache" ]; then
         if [ $MTA_SELECTED = "yes" ]; then
           askYN "Install $i" "Y"
