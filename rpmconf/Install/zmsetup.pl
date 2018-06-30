@@ -7191,10 +7191,10 @@ sub applyConfig {
       }
     }
 
-    if (!isInstalled("zimbra-network-modules-ng")) {
-      setLdapServerConfig($config{HOSTNAME}, 'zimbraNetworkModulesNGEnabled', 'FALSE');
-    } else {
-      setLdapServerConfig($config{HOSTNAME}, 'zimbraNetworkModulesNGEnabled', 'TRUE');
+    if (isInstalled("zimbra-network-modules-ng")) {
+       if ($prevVersionMajor <= 8 && $prevVersionMinor <= 7) {
+        setLdapServerConfig($config{HOSTNAME}, 'zimbraNetworkModulesNGEnabled', 'TRUE');
+        }
     }
 
     if (isInstalled("zimbra-network-modules-ng") && $newinstall) {
