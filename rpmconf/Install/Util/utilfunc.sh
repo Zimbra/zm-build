@@ -2383,7 +2383,10 @@ getInstallPackages() {
       if [ $? = 0 ]; then
         echo "    Upgrading $i"
         if [ $i = "zimbra-network-modules-ng" ]; then
-          INSTALL_PACKAGES="$INSTALL_PACKAGES zimbra-talk"
+            askInstallPkgYN "Install zimbra-talk" "yes" "Y" "N"
+            if [ $response = "yes" ]; then
+                INSTALL_PACKAGES="$INSTALL_PACKAGES zimbra-talk"
+            fi
         fi
         if [ $i = "zimbra-mta" ]; then
           CONFLICTS="no"
