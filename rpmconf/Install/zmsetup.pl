@@ -7196,6 +7196,9 @@ sub applyConfig {
         setLdapServerConfig($config{HOSTNAME}, 'zimbraNetworkModulesNGEnabled', 'TRUE');
         }
     }
+    else {
+      setLdapServerConfig($config{HOSTNAME}, 'zimbraNetworkModulesNGEnabled', 'FALSE');
+    }
 
     if (isInstalled("zimbra-network-modules-ng") && $newinstall) {
       main::progress("Enabling zimbra network NG modules features.\n");
