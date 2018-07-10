@@ -6234,11 +6234,11 @@ sub configSetProxyPrefs {
    if (isEnabled("zimbra-proxy")) {
      if ($config{STRICTSERVERNAMEENABLED} eq "yes") {
         progress("Enabling strict server name enforcement on $config{HOSTNAME}...");
-        runAsZimbra("$ZMPROV ms $config{HOSTNAME} +zimbraReverseProxyStrictServerNameEnabled TRUE");
+        runAsZimbra("$ZMPROV ms $config{HOSTNAME} zimbraReverseProxyStrictServerNameEnabled TRUE");
         progress("done.\n");
      } else {
         progress("Disabling strict server name enforcement on $config{HOSTNAME}...");
-        runAsZimbra("$ZMPROV ms $config{HOSTNAME} +zimbraReverseProxyStrictServerNameEnabled FALSE");
+        runAsZimbra("$ZMPROV ms $config{HOSTNAME} zimbraReverseProxyStrictServerNameEnabled FALSE");
         progress("done.\n");
      }
      if ($config{MAILPROXY} eq "FALSE" && $config{HTTPPROXY} eq "FALSE") {
@@ -6496,7 +6496,7 @@ sub zimletCleanup {
     return 1;
   } else {
     detail("ldap bind done for $ldap_dn");
-    $result = $ldap->search(base => $ldap_base, scope => 'one', filter => "(|(cn=convertd)(cn=hsm)(cn=hotbackup)(cn=zimbra_cert_manager)(cn=com_zimbra_search)(cn=zimbra_xmbxsearch)(cn=com_zimbra_domainadmin)(cn=com_zimbra_tinymce)(cn=com_zimbra_tasksreminder)(cn=com_zimbra_linkedin)(cn=com_zimbra_social)(cn=com_zimbra_dnd))", attrs => ['cn']);
+    $result = $ldap->search(base => $ldap_base, scope => 'one', filter => "(|(cn=convertd)(cn=hsm)(cn=hotbackup)(cn=zimbra_cert_manager)(cn=com_zimbra_search)(cn=zimbra_xmbxsearch)(cn=com_zimbra_domainadmin)(cn=com_zimbra_tinymce)(cn=com_zimbra_tasksreminder)(cn=com_zimbra_linkedin)(cn=com_zimbra_social)(cn=com_zimbra_dnd)(cn=com_zextras_chat_open))", attrs => ['cn']);
     return $result if ($result->code());
     detail("Processing ldap search results");
     foreach my $entry ($result->all_entries) {
@@ -7191,10 +7191,13 @@ sub applyConfig {
       }
     }
 
-    if (!isInstalled("zimbra-network-modules-ng")) {
+    if (isInstalled("zimbra-network-modules-ng")) {
+       if ($prevVersionMajor <= 8 && $prevVersionMinor <= 7) {
+        setLdapServerConfig($config{HOSTNAME}, 'zimbraNetworkModulesNGEnabled', 'TRUE');
+        }
+    }
+    else {
       setLdapServerConfig($config{HOSTNAME}, 'zimbraNetworkModulesNGEnabled', 'FALSE');
-    } else {
-      setLdapServerConfig($config{HOSTNAME}, 'zimbraNetworkModulesNGEnabled', 'TRUE');
     }
 
     if (isInstalled("zimbra-network-modules-ng") && $newinstall) {
