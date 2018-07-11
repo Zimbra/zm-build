@@ -193,7 +193,7 @@
    </file>
    <file type="network">
     <source>zm-build/storebuild/opt/zimbra/lib/ext/smime/zm-smime-store-*.jar</source>
-    <target>/opt/zimbra/lib/ext/smime/zm-smime-store-*.jar</target>
+    <target>/opt/zimbra/lib/ext/smime/zm-smime-store-8.7.11.1487930761.jar</target>
     <perms owner="root" mode="0444" />
    </file>
   </package>
