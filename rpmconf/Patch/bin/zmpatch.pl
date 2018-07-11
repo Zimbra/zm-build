@@ -196,6 +196,7 @@ sub doPatchBuild() {
             next;
           }
           my $source="$options{build_source}/$file";
+          $source = join($", glob($source));
           if (-f $source) {
             copy($source,$tfile);
           } else {
