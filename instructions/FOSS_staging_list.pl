@@ -368,6 +368,7 @@
       "dir"          => "zm-launcher",
       "make_targets" => ["JAVA_BINARY=/opt/zimbra/common/bin/java"],
       "stage_cmd"    => sub {
+      
          SysExec("mkdir -p $CFG{BUILD_DIR}/zm-launcher/build/dist");
          SysExec("cp -f build/zmmailboxd* $CFG{BUILD_DIR}/zm-launcher/build/dist");
       },
