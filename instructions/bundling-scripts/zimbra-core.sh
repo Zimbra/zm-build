@@ -240,6 +240,7 @@ main()
    Copy ${repoDir}/zm-core-utils/src/bin/zmcertmgr                                                  ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmcertmgr
    Copy ${repoDir}/zm-core-utils/src/bin/zmclamdctl                                                 ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmclamdctl
    Copy ${repoDir}/zm-core-utils/src/bin/zmconfigdctl                                               ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmconfigdctl
+   Copy ${repoDir}/zm-core-utils/src/bin/zmcontactbackup                                            ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmcontactbackup
    Copy ${repoDir}/zm-core-utils/src/bin/zmcontrol                                                  ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmcontrol
    Copy ${repoDir}/zm-core-utils/src/bin/zmdedupe                                                   ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmdedupe
    Copy ${repoDir}/zm-core-utils/src/bin/zmdhparam                                                  ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmdhparam

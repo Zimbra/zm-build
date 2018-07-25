@@ -80,6 +80,7 @@ main()
     mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/zimbra-freebusy
     mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/zimbraadminversioncheck
     mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/zimbraldaputils
+    mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/zm-oauth-social
     mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/backup
     mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/db
     cp -f ${repoDir}/zm-backup-store/build/dist/zm-backup-store.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/backup/zimbrabackup.jar
@@ -124,6 +125,8 @@ main()
     cp -f ${repoDir}/zm-openid-consumer-store/build/dist/guice*.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/openidconsumer/
     cp -f ${repoDir}/zm-versioncheck-store/build/zm-versioncheck-store*.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/zimbraadminversioncheck/zimbraadminversioncheck.jar
     cp -f ${repoDir}/zm-ldap-utils-store/build/zm-ldap-utils-*.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/zimbraldaputils/zimbraldaputils.jar
+    cp -f ${repoDir}/zm-oauth-social/build/dist/zm-oauth-social*.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/zm-oauth-social/zmoauthsocial.jar
+    cp -f ${repoDir}/zm-zcs-lib/build/dist/java-jwt-3.2.0.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/zm-oauth-social/
 
 
 #-------------------- Get wars content (service.war, zimbra.war and zimbraAdmin.war) ---------------------------
