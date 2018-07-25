@@ -368,6 +368,7 @@
       "dir"          => "zm-launcher",
       "make_targets" => ["JAVA_BINARY=/opt/zimbra/common/bin/java"],
       "stage_cmd"    => sub {
+      
          SysExec("mkdir -p $CFG{BUILD_DIR}/zm-launcher/build/dist");
          SysExec("cp -f build/zmmailboxd* $CFG{BUILD_DIR}/zm-launcher/build/dist");
       },
@@ -412,6 +413,14 @@
       "stage_cmd"   => sub {
          SysExec("mkdir -p $CFG{BUILD_DIR}/zm-backup-restore-admin-zimlet/build/zimlet");
          SysExec("cp -f build/zimlet/*.zip $CFG{BUILD_DIR}/zm-backup-restore-admin-zimlet/build/zimlet");
+      },
+   },
+   {
+      "dir"         => "zm-oauth-social",
+      "ant_targets" => ["publish-local"],
+      "stage_cmd"   => sub {
+         SysExec("mkdir -p $CFG{BUILD_DIR}/zm-oauth-social/build/dist");
+         SysExec("cp -f -rp build/zm-oauth-social-*.jar $CFG{BUILD_DIR}/zm-oauth-social/build/dist");
       },
    },
    {
