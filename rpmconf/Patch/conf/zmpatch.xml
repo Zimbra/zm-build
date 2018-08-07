@@ -66,6 +66,10 @@
   <bug>ZCS-4644</bug>
   <bug>ZBUG-481</bug>
   <bug>ZBUG-389</bug>
+  <bug>ZBUG-543</bug>
+  <bug>ZBUG-516</bug>
+  <bug>ZBUG-502</bug>
+  <bug>ZCS-5998</bug>
   <package name="zimbra-store">
       <file>
         <source>zm-build/storebuild/opt/zimbra/jetty-distribution-9.3.5.v20151012/webapps/zimbra/js/MailCore_all.js.zgz</source>
@@ -195,6 +199,16 @@
     <source>zm-build/storebuild/opt/zimbra/lib/ext/smime/zm-smime-store-*.jar</source>
     <target>/opt/zimbra/lib/ext/smime/zm-smime-store-8.7.11.1487930761.jar</target>
     <perms owner="root" mode="0444" />
+   </file>
+    <file type="network">
+    <source>zm-build/storebuild/opt/zimbra/lib/ext/zimbrasync/zm-sync-common.jar</source>
+    <target>/opt/zimbra/lib/ext/zimbrasync/zm-sync-common.jar</target>
+    <perms owner="root" mode="0444"/>
+   </file>
+   <file type="network">
+    <source>zm-build/storebuild/opt/zimbra/lib/ext/zimbrasync/zm-sync-store.jar</source>
+    <target>/opt/zimbra/lib/ext/zimbrasync/zm-sync-store.jar</target>
+    <perms owner="root" mode="0444"/>
    </file>
   </package>
   <package name="zimbra-core">
