@@ -7298,6 +7298,8 @@ sub setupSyslog {
 sub setupCrontab {
   my @backupSchedule=();
   my $nohsm=1;
+  my $NGbackup = qx(/opt/zimbra/bin/zxsuite backup getBackupInfo | awk \'/valid/ {print \$2}\');
+  detail(" we will modify the crontab if NGBackup=false: $NGbackup");
   progress ("Setting up zimbra crontab...");
   if ( -x "/opt/zimbra/bin/zmschedulebackup") {
     detail("Getting current backup schedule in restorable format.");
@@ -7381,7 +7383,7 @@ sub setupCrontab {
         runAsZimbra("/opt/zimbra/bin/zmschedulebackup -A $backupSchedule[$i]");
       }
     }
-  } elsif ( -f "/opt/zimbra/bin/zmschedulebackup" && scalar @backupSchedule == 0 && !$newinstall && $nohsm) {
+  } elsif ( -f "/opt/zimbra/bin/zmschedulebackup" && scalar @backupSchedule == 0 && !$newinstall && $nohsm && $NGbackup == "false") {
     detail("crontab: No backup schedule found: installing default schedule.");
     qx($SU "/opt/zimbra/bin/zmschedulebackup -D" >> $logfile 2>&1);
   }
