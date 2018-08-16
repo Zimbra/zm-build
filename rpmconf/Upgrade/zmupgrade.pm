@@ -41,7 +41,7 @@ chomp $rundir;
 my $scriptDir = "/opt/zimbra/libexec/scripts";
 
 my $lowVersion = 52;
-my $hiVersion = 112; # this should be set to the DB version expected by current server code
+our $hiVersion = 112; # this should be set to the DB version expected by current server code
 
 my $needSlapIndexing = 0;
 my $mysqlcnfUpdated = 0;
@@ -2184,11 +2184,6 @@ sub runSchemaUpgrade {
 
   if (! defined ($updateScripts{$curVersion})) {
     main::progress ("Can't upgrade from version $curVersion - no script!\n");
-    return 1;
-  }
-
-  if (! -x "${scriptDir}/$updateScripts{$curVersion}" ) {
-    main::progress ("Can't run ${scriptDir}/$updateScripts{$curVersion} - not executable!\n");
     return 1;
   }
 
