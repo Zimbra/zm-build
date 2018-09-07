@@ -82,7 +82,7 @@ logged in as a non-root user with `sudo` privileges.
 ### CentOS 7
 
     sudo yum groupinstall 'Development Tools'
-    sudo yum install java-1.8.0-openjdk ant ant-junit ruby git maven cpan wget perl-IPC-Cmd
+    sudo yum install java-1.8.0-openjdk ant ant-junit ant-apache-regexp ruby git maven cpan wget perl-IPC-Cmd
 
 ### CentOS 6
 
@@ -180,11 +180,11 @@ The following is a walk-through of the basic steps required to do ZCS developmen
 
 2. Install  `git`, `ant`, and `ant-contrib` by whichever method is appropriate for your distro:
 
-		sudo apt-get install git ant ant-contrib
+		sudo apt-get install git ant ant-contrib ant-apache-regexp
 
 	or
 
-		sudo yum install git ant ant-contrib
+		sudo yum install git ant ant-contrib ant-apache-regexp
 
 3. Configure `/opt/zimbra/.ssh/config` to use your ssh key for the git remotes that you need to access.
 4. Perform the following edits on `/opt/zimbra/.bash_profile`
