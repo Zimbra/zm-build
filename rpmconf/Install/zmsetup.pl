@@ -7298,8 +7298,12 @@ sub setupSyslog {
 sub setupCrontab {
   my @backupSchedule=();
   my $nohsm=1;
-  my $NGbackup = qx(/opt/zimbra/bin/zxsuite backup getBackupInfo | awk \'/valid/ {print \$2}\');
-  detail(" we will modify the crontab if NGBackup=false: $NGbackup");
+  my $NGbackup = "false";
+  if (-f "/opt/zimbra/bin/zxsuite") {
+  detail("20 second delay added to make sure NG service started working");
+  $NGbackup = qx(sleep 20; /opt/zimbra/bin/zxsuite backup getBackupInfo| grep valid | awk '{print \$2}' );
+  detail("we will modify the crontab if zxsuite backup getBackupInfo has valid=false: valid=$NGbackup ...");
+  }
   progress ("Setting up zimbra crontab...");
   if ( -x "/opt/zimbra/bin/zmschedulebackup") {
     detail("Getting current backup schedule in restorable format.");
