@@ -7295,13 +7295,22 @@ sub setupSyslog {
   configLog("setupSyslog");
 }
 
+sub zxsuitIsAvailable {
+  my $checkNGstatus = 0;
+  progress("Checking if the NG started running...");
+  while ( $checkNGstatus != 1 ){
+    $checkNGstatus = qx(/opt/zimbra/bin/zxsuite backup getBackupInfo | grep valid | wc -l);
+  }
+  progress("done. \n");
+}
+
 sub setupCrontab {
   my @backupSchedule=();
   my $nohsm=1;
   my $NGbackup = "false";
   if (-f "/opt/zimbra/bin/zxsuite") {
-  detail("20 second delay added to make sure NG service started working");
-  $NGbackup = qx(sleep 20; /opt/zimbra/bin/zxsuite backup getBackupInfo| grep valid | awk '{print \$2}' );
+  zxsuitIsAvailable();
+  $NGbackup = qx(/opt/zimbra/bin/zxsuite backup getBackupInfo| grep valid | awk '{print \$2}' );
   detail("we will modify the crontab if zxsuite backup getBackupInfo has valid=false: valid=$NGbackup ...");
   }
   progress ("Setting up zimbra crontab...");
