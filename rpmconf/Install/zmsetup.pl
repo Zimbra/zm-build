@@ -7297,12 +7297,19 @@ sub setupSyslog {
 
 sub zxsuitIsAvailable {
   my $checkNGstatus = 0;
+  my $trying = 0;
+  my $output;
   progress("Checking if the NG started running...");
-  while ( $checkNGstatus != 1 ){
-    $checkNGstatus = qx(/opt/zimbra/bin/zxsuite backup getBackupInfo | grep valid | wc -l);
+  while (( $checkNGstatus != 1 ) && ( $trying < 7 )) {
+        $output = qx(/opt/zimbra/bin/zxsuite backup getBackupInfo);
+        last if ($output =~ /valid/);
+        detail($output);
+        detail ("retry ".  ++$trying);
+        sleep 5;
   }
   progress("done. \n");
 }
+
 
 sub setupCrontab {
   my @backupSchedule=();
