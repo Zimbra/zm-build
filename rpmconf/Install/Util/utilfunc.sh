@@ -2400,6 +2400,10 @@ getInstallPackages() {
      AVAILABLE_PACKAGES="$AVAILABLE_PACKAGES zimbra-chat"
   fi
 
+  if [ x"$ZMTYPE_INSTALLABLE" = "xFOSS" ]; then
+     AVAILABLE_PACKAGES="$AVAILABLE_PACKAGES zimbra-chat"
+  fi
+
   for i in $AVAILABLE_PACKAGES; do
     if [ $i = "zimbra-core" ]; then
       continue
