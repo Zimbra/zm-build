@@ -1758,27 +1758,6 @@ removeExistingPackages() {
         echo "done"
       fi
 
-      isInstalled "zimbra-proxy-patch"
-      if [ x$PKGINSTALLED != "x" ]; then
-        echo -n "   zimbra-proxy-patch..."
-        $PACKAGERM zimbra-proxy-patch >/dev/null 2>&1
-        echo "done"
-      fi
-
-      isInstalled "zimbra-mta-patch"
-      if [ x$PKGINSTALLED != "x" ]; then
-        echo -n "   zimbra-mta-patch..."
-        $PACKAGERM zimbra-mta-patch >/dev/null 2>&1
-        echo "done"
-      fi
-
-      isInstalled "zimbra-zco"
-      if [ x$PKGINSTALLED != "x" ]; then
-        echo -n "   zimbra-zco..."
-        $PACKAGERM zimbra-zco >/dev/null 2>&1
-        echo "done"
-      fi
-
       isInstalled "zimbra-network-modules-ng"
       if [ x$PKGINSTALLED != "x" ]; then
         echo -n "   zimbra-network-modules-ng..."
@@ -2291,12 +2270,12 @@ configurePackageServer() {
       fi
 cat > /etc/apt/sources.list.d/zimbra.list << EOF
 deb     [arch=amd64] https://$PACKAGE_SERVER/apt/87 $repo zimbra
-deb     [arch=amd64] https://$PACKAGE_SERVER/apt/8812 $repo zimbra
+deb     [arch=amd64] https://$PACKAGE_SERVER/apt/889 $repo zimbra
 deb-src [arch=amd64] https://$PACKAGE_SERVER/apt/87 $repo zimbra
 EOF
 if [ x"$ZMTYPE_INSTALLABLE" = "xNETWORK" ]; then
 cat >> /etc/apt/sources.list.d/zimbra.list << EOF
-deb     [arch=amd64] https://$PACKAGE_SERVER/apt/8812-ne $repo zimbra
+deb     [arch=amd64] https://$PACKAGE_SERVER/apt/889-ne $repo zimbra
 EOF
 fi
       apt-get update >>$LOGFILE 2>&1
@@ -2332,26 +2311,26 @@ name=Zimbra RPM Repository
 baseurl=https://$PACKAGE_SERVER/rpm/87/$repo
 gpgcheck=1
 enabled=1
-[zimbra-8812-oss]
+[zimbra-889-oss]
 name=Zimbra New RPM Repository
-baseurl=https://$PACKAGE_SERVER/rpm/8812/$repo
+baseurl=https://$PACKAGE_SERVER/rpm/889/$repo
 gpgcheck=1
 enabled=1
 EOF
       yum --disablerepo=* --enablerepo=zimbra clean metadata >>$LOGFILE 2>&1
       yum check-update --disablerepo=* --enablerepo=zimbra --noplugins >>$LOGFILE 2>&1
-      yum --disablerepo=* --enablerepo=zimbra-8812-oss clean metadata >>$LOGFILE 2>&1
-      yum check-update --disablerepo=* --enablerepo=zimbra-8812-oss --noplugins >>$LOGFILE 2>&1
+      yum --disablerepo=* --enablerepo=zimbra-889-oss clean metadata >>$LOGFILE 2>&1
+      yum check-update --disablerepo=* --enablerepo=zimbra-889-oss --noplugins >>$LOGFILE 2>&1
 if [ x"$ZMTYPE_INSTALLABLE" = "xNETWORK" ]; then
 cat >> /etc/yum.repos.d/zimbra.repo <<EOF
-[zimbra-8812-network]
+[zimbra-889-network]
 name=Zimbra New RPM Repository
-baseurl=https://$PACKAGE_SERVER/rpm/8812-ne/$repo
+baseurl=https://$PACKAGE_SERVER/rpm/889-ne/$repo
 gpgcheck=1
 enabled=1
 EOF
-      yum --disablerepo=* --enablerepo=zimbra-8812-network clean metadata >>$LOGFILE 2>&1
-      yum check-update --disablerepo=* --enablerepo=zimbra-8812-network --noplugins >>$LOGFILE 2>&1
+      yum --disablerepo=* --enablerepo=zimbra-889-network clean metadata >>$LOGFILE 2>&1
+      yum check-update --disablerepo=* --enablerepo=zimbra-889-network --noplugins >>$LOGFILE 2>&1
 fi
       if [ $? -ne 0 -a $? -ne 100 ]; then
         echo "ERROR: yum check-update failed"
@@ -2395,6 +2374,10 @@ getInstallPackages() {
   STORE_SELECTED="no"
   MTA_SELECTED="no"
   PROXY_SELECTED="no"
+
+  if [ x"$ZMTYPE_INSTALLABLE" = "xFOSS" ]; then
+     AVAILABLE_PACKAGES="$AVAILABLE_PACKAGES zimbra-chat"
+  fi
 
   if [ x"$ZMTYPE_INSTALLABLE" = "xFOSS" ]; then
      AVAILABLE_PACKAGES="$AVAILABLE_PACKAGES zimbra-chat"
@@ -2461,10 +2444,6 @@ getInstallPackages() {
       response="yes"
     elif [ $i = "zimbra-patch" ]; then
       ifStoreSelectedY
-    elif [ $i = "zimbra-mta-patch" ]; then
-      response="$MTA_SELECTED"
-    elif [ $i = "zimbra-proxy-patch" ]; then
-      response="$PROXY_SELECTED"
     elif [ $i = "zimbra-license-extension" ]; then
       ifStoreSelectedY
     elif [ $i = "zimbra-network-store" ]; then
