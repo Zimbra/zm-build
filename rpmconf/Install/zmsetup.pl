@@ -7299,27 +7299,30 @@ sub zxsuitIsAvailable {
   my $checkNGstatus = 0;
   my $trying = 0;
   my $output;
+  my $NGbackup;
   progress("Checking if the NG started running...");
   while (( $checkNGstatus != 1 ) && ( $trying < 7 )) {
         $output = qx(/opt/zimbra/bin/zxsuite backup getBackupInfo);
         last if ($output =~ /valid/);
-        detail($output);
         detail ("retry ".  ++$trying);
         sleep 5;
   }
   progress("done. \n");
+  if ((-f "/opt/zimbra/bin/zxsuite") && ($output =~ /valid(.*)true/ )) {
+     $NGbackup = "true";
+     detail("NG backup is already initialized because /opt/zimbra/bin/zxsuite backup getBackupInfo valid has value: $NGbackup \n");
+  } else {
+    $NGbackup = "false";
+    detail("Modifying the crontab with default schedule because \"/opt/zimbra/bin/zxsuite backup getBackupInfo\" valid has value: $NGbackup \n");
+  }
+  return $NGbackup
 }
 
 
 sub setupCrontab {
   my @backupSchedule=();
   my $nohsm=1;
-  my $NGbackup = "false";
-  if (-f "/opt/zimbra/bin/zxsuite") {
-  zxsuitIsAvailable();
-  $NGbackup = qx(/opt/zimbra/bin/zxsuite backup getBackupInfo| grep valid | awk '{print \$2}' );
-  detail("we will modify the crontab if zxsuite backup getBackupInfo has valid=false: valid=$NGbackup ...");
-  }
+  my $NG_backup = zxsuitIsAvailable();
   progress ("Setting up zimbra crontab...");
   if ( -x "/opt/zimbra/bin/zmschedulebackup") {
     detail("Getting current backup schedule in restorable format.");
@@ -7403,7 +7406,7 @@ sub setupCrontab {
         runAsZimbra("/opt/zimbra/bin/zmschedulebackup -A $backupSchedule[$i]");
       }
     }
-  } elsif ( -f "/opt/zimbra/bin/zmschedulebackup" && scalar @backupSchedule == 0 && !$newinstall && $nohsm && $NGbackup == "false") {
+  } elsif ( -f "/opt/zimbra/bin/zmschedulebackup" && scalar @backupSchedule == 0 && !$newinstall && $nohsm && $NG_backup == "false") {
     detail("crontab: No backup schedule found: installing default schedule.");
     qx($SU "/opt/zimbra/bin/zmschedulebackup -D" >> $logfile 2>&1);
   }
