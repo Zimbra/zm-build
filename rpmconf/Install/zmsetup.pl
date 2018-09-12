@@ -7295,7 +7295,7 @@ sub setupSyslog {
   configLog("setupSyslog");
 }
 
-sub zxsuitIsAvailable {
+sub zxsuiteIsAvailable {
   my $checkNGstatus = 0;
   my $trying = 0;
   my $output;
@@ -7322,7 +7322,7 @@ sub zxsuitIsAvailable {
 sub setupCrontab {
   my @backupSchedule=();
   my $nohsm=1;
-  my $NG_backup = zxsuitIsAvailable();
+  my $NG_backup = zxsuiteIsAvailable();
   progress ("Setting up zimbra crontab...");
   if ( -x "/opt/zimbra/bin/zmschedulebackup") {
     detail("Getting current backup schedule in restorable format.");
