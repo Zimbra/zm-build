@@ -816,7 +816,7 @@ sub Clone($$)
          {
             my @clone_cmd_args = ( "git", "clone" );
 
-            push( @clone_cmd_args, "--depth=1" ) if ( not $ENV{ENV_GIT_FULL_CLONE} );
+            push( @clone_cmd_args, "--depth=1" ) if ( not $ENV{ENV_GIT_FULL_CLONE} && $repo_name != "zm-mailbox");
             push( @clone_cmd_args, "-b", $minus_b_arg );
             push( @clone_cmd_args, "$repo_url_prefix/$repo_name.git", "$repo_dir" );
 
