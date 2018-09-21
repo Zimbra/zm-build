@@ -506,7 +506,7 @@ sub Build($)
       ],
    };
 
-   push( @{ $tool_attributes->{ant} }, $CFG{ANT_OPTIONS} )
+   push( @{ $tool_attributes->{ant} }, split ' ', $CFG{ANT_OPTIONS} )
      if ( $CFG{ANT_OPTIONS} );
 
    my $cnt = 0;
