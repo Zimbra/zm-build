@@ -408,8 +408,8 @@ checkUbuntuRelease() {
     return
   fi
 
-  if [ "x$DISTRIB_ID" = "xUbuntu" -a "x$DISTRIB_RELEASE" != "x12.04" -a "x$DISTRIB_RELEASE" != "x14.04" -a "x$DISTRIB_RELEASE" != "x16.04" ]; then
-    echo "WARNING: ZCS is currently only supported on Ubuntu Server 12.04, 14.04 and 16.04 LTS."
+  if [ "x$DISTRIB_ID" = "xUbuntu" -a "x$DISTRIB_RELEASE" != "x12.04" -a "x$DISTRIB_RELEASE" != "x14.04" -a "x$DISTRIB_RELEASE" != "x16.04" -a "x$DISTRIB_RELEASE" != "x18.04" ]; then
+    echo "WARNING: ZCS is currently only supported on Ubuntu Server 12.04, 14.04, 16.04 and 18.04 LTS."
     echo "You are attempting to install on $DISTRIB_DESCRIPTION which may not work."
     echo "Support will not be provided if you choose to continue."
     echo ""
@@ -991,7 +991,7 @@ verifyLicenseActivationServer() {
     elif [ ${ZM_CUR_MAJOR} -gt "7" ]; then
       /opt/zimbra/bin/zmlicense --ping > /dev/null 2>&1
     else
-      /opt/zimbra/java/bin/java -XX:ErrorFile=/opt/zimbra/log -client -Xmx256m -Dzimbra.home=/opt/zimbra -Djava.library.path=/opt/zimbra/lib -Djava.ext.dirs=/opt/zimbra/java/jre/lib/ext:/opt/zimbra/lib/jars -classpath ./lib/jars/zimbra-license-tools.jar com.zimbra.cs.license.LicenseCLI --ping > /dev/null 2>&1
+      /opt/zimbra/java/bin/java -XX:ErrorFile=/opt/zimbra/log -client -Xmx256m -Dzimbra.home=/opt/zimbra -Djava.library.path=/opt/zimbra/lib  -classpath ./lib/jars/zimbra-license-tools.jar:/opt/zimbra/lib/jars/* com.zimbra.cs.license.LicenseCLI --ping > /dev/null 2>&1
     fi
     if [ $? != 0 ]; then
       activationWarning
@@ -1576,7 +1576,7 @@ saveExistingConfig() {
 
   if [ -x "/opt/zimbra/bin/zmlocalconfig" ]; then
     runAsZimbra "zmlocalconfig -e zimbra_java_home=/opt/zimbra/common/lib/jvm/java"
-    runAsZimbra "zmlocalconfig -e mailboxd_truststore=/opt/zimbra/common/lib/jvm/java/jre/lib/security/cacerts"
+    runAsZimbra "zmlocalconfig -e mailboxd_truststore=/opt/zimbra/common/lib/jvm/java/lib/security/cacerts"
   fi
   if [ ! -d "$SAVEDIR" ]; then
     mkdir -p $SAVEDIR
@@ -1600,10 +1600,10 @@ saveExistingConfig() {
   if [ -f "/opt/zimbra/conf/localconfig.xml" ]; then
     cp -f /opt/zimbra/conf/localconfig.xml $SAVEDIR/localconfig.xml
   fi
-  if [ -f "/opt/zimbra/common/lib/jvm/java/jre/lib/security/cacerts" ]; then
-    cp -f /opt/zimbra/common/lib/jvm/java/jre/lib/security/cacerts $SAVEDIR
-  elif [ -f "/opt/zimbra/java/jre/lib/security/cacerts" ]; then
-    cp -f /opt/zimbra/java/jre/lib/security/cacerts $SAVEDIR
+  if [ -f "/opt/zimbra/common/lib/jvm/java/lib/security/cacerts" ]; then
+    cp -f /opt/zimbra/common/lib/jvm/java/lib/security/cacerts $SAVEDIR
+  elif [ -f "/opt/zimbra/java/lib/security/cacerts" ]; then
+    cp -f /opt/zimbra/java/lib/security/cacerts $SAVEDIR
   fi
   if [ -f "/opt/zimbra/jetty/etc/keystore" ]; then
     cp -f /opt/zimbra/jetty/etc/keystore $SAVEDIR
@@ -1758,6 +1758,27 @@ removeExistingPackages() {
         echo "done"
       fi
 
+      isInstalled "zimbra-proxy-patch"
+      if [ x$PKGINSTALLED != "x" ]; then
+        echo -n "   zimbra-proxy-patch..."
+        $PACKAGERM zimbra-proxy-patch >/dev/null 2>&1
+        echo "done"
+      fi
+
+      isInstalled "zimbra-mta-patch"
+      if [ x$PKGINSTALLED != "x" ]; then
+        echo -n "   zimbra-mta-patch..."
+        $PACKAGERM zimbra-mta-patch >/dev/null 2>&1
+        echo "done"
+      fi
+
+      isInstalled "zimbra-zco"
+      if [ x$PKGINSTALLED != "x" ]; then
+        echo -n "   zimbra-zco..."
+        $PACKAGERM zimbra-zco >/dev/null 2>&1
+        echo "done"
+      fi
+
       isInstalled "zimbra-network-modules-ng"
       if [ x$PKGINSTALLED != "x" ]; then
         echo -n "   zimbra-network-modules-ng..."
@@ -1880,6 +1901,12 @@ removeExistingInstall() {
       if [ x"$OLD_LDR_PATH" != "x" ]; then
         LD_LIBRARY_PATH=$OLD_LDR_PATH
       fi
+    fi
+    isInstalled "zimbra-zco"
+    if [ x$PKGINSTALLED != "x" ]; then
+      echo -n "Removing stale package zimbra-zco while upgrade..."
+      $PACKAGERM zimbra-zco >/dev/null 2>&1
+      echo "done"
     fi
     if [ "$UPGRADE" = "yes" -a "$POST87UPGRADE" = "true" -a "$FORCE_UPGRADE" != "yes" -a "$ZM_CUR_BUILD" != "$ZM_INST_BUILD" ]; then
       echo "Upgrading the remote packages"
@@ -2232,7 +2259,9 @@ configurePackageServer() {
     fi
     echo $PLATFORM | egrep -q "UBUNTU|DEBIAN"
     if [ $? = 0 ]; then
-      if [ $PLATFORM = "UBUNTU16_64" ]; then
+      if [ $PLATFORM = "UBUNTU18_64" ]; then
+        repo="bionic"
+      elif [ $PLATFORM = "UBUNTU16_64" ]; then
         repo="xenial"
       elif [ $PLATFORM = "UBUNTU14_64" ]; then
         repo="trusty"
@@ -2262,12 +2291,12 @@ configurePackageServer() {
       fi
 cat > /etc/apt/sources.list.d/zimbra.list << EOF
 deb     [arch=amd64] https://$PACKAGE_SERVER/apt/87 $repo zimbra
-deb     [arch=amd64] https://$PACKAGE_SERVER/apt/889 $repo zimbra
+deb     [arch=amd64] https://$PACKAGE_SERVER/apt/8812 $repo zimbra
 deb-src [arch=amd64] https://$PACKAGE_SERVER/apt/87 $repo zimbra
 EOF
 if [ x"$ZMTYPE_INSTALLABLE" = "xNETWORK" ]; then
 cat >> /etc/apt/sources.list.d/zimbra.list << EOF
-deb     [arch=amd64] https://$PACKAGE_SERVER/apt/889-ne $repo zimbra
+deb     [arch=amd64] https://$PACKAGE_SERVER/apt/8812-ne $repo zimbra
 EOF
 fi
       apt-get update >>$LOGFILE 2>&1
@@ -2303,26 +2332,26 @@ name=Zimbra RPM Repository
 baseurl=https://$PACKAGE_SERVER/rpm/87/$repo
 gpgcheck=1
 enabled=1
-[zimbra-889-oss]
+[zimbra-8812-oss]
 name=Zimbra New RPM Repository
-baseurl=https://$PACKAGE_SERVER/rpm/889/$repo
+baseurl=https://$PACKAGE_SERVER/rpm/8812/$repo
 gpgcheck=1
 enabled=1
 EOF
       yum --disablerepo=* --enablerepo=zimbra clean metadata >>$LOGFILE 2>&1
       yum check-update --disablerepo=* --enablerepo=zimbra --noplugins >>$LOGFILE 2>&1
-      yum --disablerepo=* --enablerepo=zimbra-889-oss clean metadata >>$LOGFILE 2>&1
-      yum check-update --disablerepo=* --enablerepo=zimbra-889-oss --noplugins >>$LOGFILE 2>&1
+      yum --disablerepo=* --enablerepo=zimbra-8812-oss clean metadata >>$LOGFILE 2>&1
+      yum check-update --disablerepo=* --enablerepo=zimbra-8812-oss --noplugins >>$LOGFILE 2>&1
 if [ x"$ZMTYPE_INSTALLABLE" = "xNETWORK" ]; then
 cat >> /etc/yum.repos.d/zimbra.repo <<EOF
-[zimbra-889-network]
+[zimbra-8812-network]
 name=Zimbra New RPM Repository
-baseurl=https://$PACKAGE_SERVER/rpm/889-ne/$repo
+baseurl=https://$PACKAGE_SERVER/rpm/8812-ne/$repo
 gpgcheck=1
 enabled=1
 EOF
-      yum --disablerepo=* --enablerepo=zimbra-889-network clean metadata >>$LOGFILE 2>&1
-      yum check-update --disablerepo=* --enablerepo=zimbra-889-network --noplugins >>$LOGFILE 2>&1
+      yum --disablerepo=* --enablerepo=zimbra-8812-network clean metadata >>$LOGFILE 2>&1
+      yum check-update --disablerepo=* --enablerepo=zimbra-8812-network --noplugins >>$LOGFILE 2>&1
 fi
       if [ $? -ne 0 -a $? -ne 100 ]; then
         echo "ERROR: yum check-update failed"
@@ -2365,6 +2394,11 @@ getInstallPackages() {
   LOGGER_SELECTED="no"
   STORE_SELECTED="no"
   MTA_SELECTED="no"
+  PROXY_SELECTED="no"
+
+  if [ x"$ZMTYPE_INSTALLABLE" = "xFOSS" ]; then
+     AVAILABLE_PACKAGES="$AVAILABLE_PACKAGES zimbra-chat"
+  fi
 
   if [ x"$ZMTYPE_INSTALLABLE" = "xFOSS" ]; then
      AVAILABLE_PACKAGES="$AVAILABLE_PACKAGES zimbra-chat"
@@ -2418,6 +2452,8 @@ getInstallPackages() {
           STORE_SELECTED="yes"
         elif [ $i = "zimbra-mta" ]; then
           MTA_SELECTED="yes"
+        elif [ $i = "zimbra-proxy" ]; then
+          PROXY_SELECTED="yes"
         fi
         continue
       fi
@@ -2429,6 +2465,10 @@ getInstallPackages() {
       response="yes"
     elif [ $i = "zimbra-patch" ]; then
       ifStoreSelectedY
+    elif [ $i = "zimbra-mta-patch" ]; then
+      response="$MTA_SELECTED"
+    elif [ $i = "zimbra-proxy-patch" ]; then
+      response="$PROXY_SELECTED"
     elif [ $i = "zimbra-license-extension" ]; then
       ifStoreSelectedY
     elif [ $i = "zimbra-network-store" ]; then
@@ -2494,6 +2534,8 @@ getInstallPackages() {
         APACHE_SELECTED="yes"
       elif [ $i = "zimbra-mta" ]; then
         MTA_SELECTED="yes"
+      elif [ $i = "zimbra-proxy" ]; then
+        PROXY_SELECTED="yes"
       fi
 
       if [ $i = "zimbra-network-modules-ng" ]; then
@@ -2562,6 +2604,7 @@ getInstallPackages() {
     echo "    $i"
   done
 }
+
 
 deleteWebApp() {
   WEBAPPNAME=$1
@@ -2789,7 +2832,7 @@ getPlatformVars() {
     PACKAGEEXT='deb'
     PACKAGEVERSION="dpkg-query -W -f \${Version}"
     CONFLICT_PACKAGES="mail-transport-agent"
-    if [ $PLATFORM = "UBUNTU12_64" -o $PLATFORM = "UBUNTU14_64" -o $PLATFORM = "UBUNTU16_64" ]; then
+    if [ $PLATFORM = "UBUNTU12_64" -o $PLATFORM = "UBUNTU14_64" -o $PLATFORM = "UBUNTU16_64" -o $PLATFORM = "UBUNTU18_64" ]; then
       STORE_PACKAGES="libreoffice"
     fi
     DumpFileDetailsFromPackage() {

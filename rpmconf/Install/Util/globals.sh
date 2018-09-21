@@ -40,6 +40,8 @@ OPTIONAL_PACKAGES="zimbra-qatest \
 zimbra-drive \
 zimbra-imapd \
 zimbra-patch \
+zimbra-mta-patch \
+zimbra-proxy-patch \
 zimbra-license-tools \
 zimbra-license-extension \
 zimbra-network-store \

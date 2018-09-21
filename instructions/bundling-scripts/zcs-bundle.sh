@@ -49,7 +49,7 @@ cp -f ${repoDir}/zm-mailbox/store/build/dist/versions-init.sql                  
 # all local packages to bundle
 cp -f ${repoDir}/zm-build/${arch}/*.*                                                   ${ZCS_REL}/packages
 
-for pkgf in ${repoDir}/zm-packages/bundle/*/*.{rpm,deb}
+for pkgf in ${repoDir}/zm-packages/bundle/*/*.{rpm,deb,changes}
 do
    if ! [[ "$pkgf" =~ src.rpm$ ]]
    then
