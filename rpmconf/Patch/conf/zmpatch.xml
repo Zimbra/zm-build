@@ -48,8 +48,8 @@
   
 -->
 <patches>
-  <patch name="8.7.11_GA" version="8.7.11_P6">
-  <desc>Patch 8.7.11_P6</desc>
+  <patch name="8.7.11_GA" version="8.7.11_P7">
+  <desc>Patch 8.7.11_P7</desc>
   <bug>107925</bug>
   <bug>108265</bug>
   <bug>108786</bug>
@@ -70,6 +70,8 @@
   <bug>ZBUG-516</bug>
   <bug>ZBUG-502</bug>
   <bug>ZCS-5998</bug>
+  <bug>ZCS-5625</bug>
+  <bug>ZBUG-179</bug>
   <package name="zimbra-store">
       <file>
         <source>zm-build/storebuild/opt/zimbra/jetty-distribution-9.3.5.v20151012/webapps/zimbra/js/MailCore_all.js.zgz</source>
@@ -119,6 +121,11 @@
       <file>
         <source>zm-build/storebuild/opt/zimbra/jetty-distribution-9.3.5.v20151012/webapps/zimbra/js/Contacts_all.js</source>
         <target>/opt/zimbra/jetty-distribution-9.3.5.v20151012/webapps/zimbra/js/Contacts_all.js</target>
+        <perms owner="zimbra" mode="444"/>
+      </file>
+      <file>
+        <source>zm-build/storebuild/opt/zimbra/jetty-distribution-9.3.5.v20151012/webapps/zimbra/js/zimbraMail/share/controller/ZmImportExportController.js</source>
+        <target>/opt/zimbra/jetty-distribution-9.3.5.v20151012/webapps/zimbra/js/zimbraMail/share/controller/ZmImportExportController.js</target>
         <perms owner="zimbra" mode="444"/>
       </file>
       <file>
@@ -178,6 +185,16 @@
     <file>
         <source>zm-build/storebuild/opt/zimbra/jetty-distribution-9.3.5.v20151012/webapps/zimbra/templates/calendar/Appointment.template.js</source>
         <target>/opt/zimbra/jetty-distribution-9.3.5.v20151012/webapps/zimbra/templates/calendar/Appointment.template.js</target>
+        <perms owner="zimbra" mode="444"/>
+    </file>
+    <file>
+        <source>zm-build/storebuild/opt/zimbra/jetty-distribution-9.3.5.v20151012/webapps/zimbra/js/ImportExport_all.js</source>
+        <target>/opt/zimbra/jetty-distribution-9.3.5.v20151012/webapps/zimbra/js/ImportExport_all.js</target>
+        <perms owner="zimbra" mode="444"/>
+    </file>
+    <file>
+        <source>zm-build/storebuild/opt/zimbra/jetty-distribution-9.3.5.v20151012/webapps/zimbra/js/ImportExport_all.js.zgz</source>
+        <target>/opt/zimbra/jetty-distribution-9.3.5.v20151012/webapps/zimbra/js/ImportExport_all.js.zgz</target>
         <perms owner="zimbra" mode="444"/>
     </file>
     <file>
