@@ -23,6 +23,7 @@ use lib qw(/opt/zimbra/common/lib/perl5/ /opt/zimbra/zimbramon/lib);
 use Getopt::Long;
 use Net::LDAP;
 use Zimbra::LocalConfig qw(getLocalConfig);
+use Zimbra::Util::Ldap qw(getLdapi);
 
 my ( %options );
 
@@ -151,13 +152,11 @@ if ( $options{l} ) {
         if ( $options{vmajor} < 8
             || ( $options{vmajor} == 8 && $options{vminor} == 0 ) )
         {
-            $ldap = Net::LDAP->new(
-                'ldapi://%2fopt%2fzimbra%2fopenldap%2fvar%2frun%2fldapi/')
+            $ldap = Net::LDAP->new( getLdapi() )
               or die "$@";
         }
         else {
-            $ldap = Net::LDAP->new(
-                'ldapi://%2fopt%2fzimbra%2fdata%2fldap%2fstate%2frun%2fldapi/')
+            $ldap = Net::LDAP->new( getLdapi() )
               or die "$@";
         }
         my $mesg = $ldap->bind( "cn=config", password => $ldap_root_password );
