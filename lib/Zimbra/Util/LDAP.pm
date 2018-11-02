@@ -1,5 +1,5 @@
 #!/usr/bin/perl
-# 
+#
 # ***** BEGIN LICENSE BLOCK *****
 # Zimbra Collaboration Suite Server
 # Copyright (C) 2009, 2010, 2011, 2012, 2013, 2014, 2016 Synacor, Inc.
@@ -15,9 +15,10 @@
 # If not, see <https://www.gnu.org/licenses/>.
 # ***** END LICENSE BLOCK *****
 
-package Zimbra::Util::LDAP; 
+package Zimbra::Util::LDAP;
 use strict;
 use Net::LDAP;
+use Zimbra::LocalConfig qw(getLocalConfig);
 
 sub doLdap() {
   my $self=shift;
@@ -27,7 +28,7 @@ sub doLdap() {
   my $rc=0;
   my $real_master=0;
   my ($dn,$ldap_key);
-  my $ldap = Net::LDAP->new('ldapi://%2fopt%2fzimbra%2fdata%2fldap%2fstate%2frun%2fldapi/') or die "$@";
+  my $ldap = Net::LDAP->new(getLocalConfig("ldap_ldapi_socket_file")) or die "$@";
   my $mesg = $ldap->bind("cn=config", password=>"$pw");
   if($mesg->code) {
     main::logMsg(2,"LDAP: Failed to bind");
@@ -169,7 +170,7 @@ sub doLdap() {
       $rc=1;
     }
   }
-  
+
   $ldap->unbind;
   return $rc;
 }

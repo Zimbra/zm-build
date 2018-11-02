@@ -22,10 +22,10 @@ use strict;
 use lib qw(/opt/zimbra/common/lib/perl5/ /opt/zimbra/zimbramon/lib);
 use Getopt::Long;
 use Net::LDAP;
+use Zimbra::LocalConfig qw(getLocalConfig);
 
-my ( %c, %loaded, %options );
+my ( %options );
 
-$c{zmlocalconfig} = "/opt/zimbra/bin/zmlocalconfig";
 my @verargs = qw (vmajor vminor vmicro umajor uminor umicro);
 
 my $opts_good = GetOptions(
@@ -176,15 +176,4 @@ if ( $options{l} ) {
         }
         $ldap->unbind();
     }
-}
-
-sub getLocalConfig {
-    my ( $key, $force ) = @_;
-
-    return $loaded{lc}{$key}
-      if ( exists $loaded{lc}{$key} && !$force );
-    my $val = qx($c{zmlocalconfig} -x -s -m nokey ${key} 2> /dev/null);
-    chomp($val);
-    $loaded{lc}{$key} = $val;
-    return $val;
 }

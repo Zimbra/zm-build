@@ -26,6 +26,7 @@ use Net::LDAP;
 use Time::localtime qw(ctime);
 use Zimbra::Util::Common;
 use Zimbra::Util::Timezone;
+use Zimbra::LocalConfig qw(getLocalConfig setLocalConfig);
 
 $| = 1;    # don't buffer stdout
 
@@ -5549,68 +5550,6 @@ sub runAsZimbraWithOutput {
     my $dumped_core = $? & 128;
     detail("DEBUG: exit status from cmd was $exit_value") if $debug;
     return $exit_value;
-}
-
-sub getLocalConfig {
-    my ( $key, $force ) = @_;
-
-    return $main::loaded{lc}{$key}
-      if ( exists $main::loaded{lc}{$key} && !$force );
-
-    detail("Getting local config $key");
-    my $val =
-      qx(/opt/zimbra/bin/zmlocalconfig -x -s -m nokey ${key} 2> /dev/null);
-    chomp $val;
-    detail("DEBUG: LC Loaded $key=$val") if $debug;
-    $main::loaded{lc}{$key} = $val;
-    return $val;
-}
-
-sub getLocalConfigRaw {
-    my ( $key, $force ) = @_;
-
-    return $main::loaded{lc}{$key}
-      if ( exists $main::loaded{lc}{$key} && !$force );
-
-    detail("Getting local config $key");
-    my $val = qx(/opt/zimbra/bin/zmlocalconfig -s -m nokey ${key} 2> /dev/null);
-    chomp $val;
-    detail("DEBUG: LC Loaded $key=$val") if $debug;
-    $main::loaded{lc}{$key} = $val;
-    return $val;
-}
-
-sub deleteLocalConfig {
-    my $key = shift;
-
-    detail("Deleting local config $key");
-    my $rc =
-      runAsZimbra("/opt/zimbra/bin/zmlocalconfig -u ${key} 2> /dev/null");
-    if ( $rc == 0 ) {
-        detail("DEBUG: deleted localconfig key $key") if $debug;
-        delete( $main::loaded{lc}{$key} ) if ( exists $main::loaded{lc}{$key} );
-        return 1;
-    }
-    else {
-        detail("DEBUG: failed to deleted localconfig key $key") if $debug;
-        return undef;
-    }
-}
-
-sub setLocalConfig {
-    my $key = shift;
-    my $val = shift;
-
-    if ( exists $main::saved{lc}{$key} && $main::saved{lc}{$key} eq $val ) {
-        detail("Skipping update of unchanged value for $key=$val.");
-        return;
-    }
-    detail("Setting local config $key to $val");
-    $main::saved{lc}{$key}  = $val;
-    $main::loaded{lc}{$key} = $val;
-    $val =~ s/\$/\\\$/g;
-    runAsZimbra(
-        "/opt/zimbra/bin/zmlocalconfig -f -e ${key}=\'${val}\' 2> /dev/null");
 }
 
 sub updateKeyValue {
