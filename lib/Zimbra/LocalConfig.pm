@@ -1,11 +1,16 @@
 package Zimbra::LocalConfig;
 
+require Exporter;
+
 use strict;
 use warnings;
 
 use XML::Simple;
 
 my $ERROR;
+
+use Exporter qw(import);
+our @EXPORT_OK= qw(deleteLocalConfig getLocalConfig getLocalConfigRaw setLocalConfig setLocalConfigRandom);
 
 =head1 NAME
 
@@ -123,10 +128,86 @@ sub get {
     }
 }
 
-=head1 SEE ALSO
+our %loaded=();
+our %saved=();
 
-L<XML::Simple>
+=head2 deleteLocalConfig
+
+Deletes the key specified using zmlocalconfig.
 
 =cut
+sub deleteLocalConfig {
+    my $key = shift;
+
+    detail("Deleting local config $key");
+    my $rc = qx("/opt/zimbra/bin/zmlocalconfig -u ${key} 2> /dev/null");
+    if ( $rc == 0 ) {
+        delete( $loaded{lc}{$key} ) if ( exists $loaded{lc}{$key} );
+        return 1;
+    }
+    else {
+        return;
+    }
+}
+
+=head2 getLocalConfig
+
+Returns the value for the key specified using zmlocalconfig with substitutions.
+
+=cut
+sub getLocalConfig {
+  my $key = shift;
+
+  return $loaded{lc}{$key}
+    if (exists $loaded{lc}{$key});
+
+  my $val = qx(/opt/zimbra/bin/zmlocalconfig -x -s -m nokey ${key} 2> /dev/null);
+  chomp $val;
+  $loaded{lc}{$key} = $val;
+  return $val;
+}
+
+=head2 getLocalConfigRaw
+
+Returns the raw value for the key specified using zmlocalconfig.
+
+=cut
+sub getLocalConfigRaw {
+    my $key = shift;
+
+    return $loaded{lc}{"$key-raw"}
+      if ( exists $loaded{lc}{"$key-raw"} );
+
+    my $val = qx(/opt/zimbra/bin/zmlocalconfig -s -m nokey ${key} 2> /dev/null);
+    chomp $val;
+    $loaded{lc}{"$key-raw"} = $val;
+    return $val;
+}
+
+=head2 setLocalConfig
+
+Sets the key specified with the value provided using zmlocalconfig.
+
+=cut
+sub setLocalConfig {
+  my $key = shift;
+  my $val = shift;
+
+  if (exists $saved{lc}{$key} && $saved{lc}{$key} eq $val) {
+    return;
+  }
+  $saved{lc}{$key} = $val;
+  qx(/opt/zimbra/bin/zmlocalconfig -f -e ${key}=\'${val}\' 2> /dev/null);
+}
+
+=head2 setLocalConfigRandom
+
+Sets a random value to the key specified using zmlocalconfig.
+
+=cut
+sub setLocalConfigRandom {
+  my $key = shift;
+  qx(/opt/zimbra/bin/zmlocalconfig -f -e -r ${key} 2> /dev/null);
+}
 
 1;
