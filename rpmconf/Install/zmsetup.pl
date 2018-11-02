@@ -20,12 +20,12 @@ use strict;
 
 use lib "/opt/zimbra/libexec";
 use lib "/opt/zimbra/common/lib/perl5";
+use Cwd;
+use IPC::Open3;
+use Net::LDAP;
+use Time::localtime qw(ctime);
 use Zimbra::Util::Common;
 use Zimbra::Util::Timezone;
-use Net::LDAP;
-use IPC::Open3;
-use Cwd;
-use Time::localtime qw(ctime);
 
 $| = 1;    # don't buffer stdout
 

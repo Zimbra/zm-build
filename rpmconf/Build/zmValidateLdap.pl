@@ -20,8 +20,8 @@
 
 use strict;
 use lib qw(/opt/zimbra/common/lib/perl5/ /opt/zimbra/zimbramon/lib);
-use Net::LDAP;
 use Getopt::Long;
+use Net::LDAP;
 
 my ( %c, %loaded, %options );
 

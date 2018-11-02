@@ -22,12 +22,12 @@ package zmupgrade;
 use strict;
 use lib "/opt/zimbra/libexec/scripts";
 use lib "/opt/zimbra/common/lib/perl5";
+use File::Grep qw (fgrep);
+use FileHandle;
+use File::Path;
+use IPC::Open3;
 use Migrate;
 use Net::LDAP;
-use IPC::Open3;
-use FileHandle;
-use File::Grep qw (fgrep);
-use File::Path;
 use XML::Simple;
 
 my $zmlocalconfig = "/opt/zimbra/bin/zmlocalconfig";
