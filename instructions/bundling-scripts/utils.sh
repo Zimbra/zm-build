@@ -44,7 +44,7 @@ CreatePackage()
     if [[ $1 == UBUNTU* ]]
     then
         CreateDebianPackage
-    elif [[ $1 == RHEL* ]]
+    elif [[ $1 == RHEL* ]] || [[ $1 == GENTOO* ]]
     then
         CreateRhelPackage
     else

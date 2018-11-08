@@ -171,6 +171,17 @@ if [ -f /etc/lsb-release ]; then
   fi
 fi
 
+if [ -f /etc/gentoo-release ]; then
+  m=$(uname -m)
+  if [[ "x$m" == "xx86_64" ]]; then
+    echo "GENTOO_64"
+    exit 0
+  else
+    echo "GENTOO"
+    exit 0
+  fi
+fi
+
 if [ -f /etc/debian_version ]; then
   echo "DEBIANUNKNOWN${i}"
   exit 0
