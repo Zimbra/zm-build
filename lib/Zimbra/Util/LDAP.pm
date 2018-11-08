@@ -17,8 +17,17 @@
 
 package Zimbra::Util::LDAP;
 use strict;
+use Exporter qw(import);
 use Net::LDAP;
 use Zimbra::LocalConfig qw(getLocalConfig);
+our @EXPORT_OK=
+  qw(getLdapi);
+
+sub getLdapi() {
+    my $ldapi = getLocalConfig("ldap_ldapi_socket_file");
+    $ldapi =~ s/\//%2F/g;
+    return "ldapi://$ldapi/";
+}
 
 sub doLdap() {
   my $self=shift;
@@ -28,7 +37,7 @@ sub doLdap() {
   my $rc=0;
   my $real_master=0;
   my ($dn,$ldap_key);
-  my $ldap = Net::LDAP->new(getLocalConfig("ldap_ldapi_socket_file")) or die "$@";
+  my $ldap = Net::LDAP->new( getLdapi() ) or die "$@";
   my $mesg = $ldap->bind("cn=config", password=>"$pw");
   if($mesg->code) {
     main::logMsg(2,"LDAP: Failed to bind");
