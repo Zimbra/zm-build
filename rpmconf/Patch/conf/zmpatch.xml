@@ -48,8 +48,8 @@
   
 -->
 <patches>
-  <patch name="8.7.11_GA" version="8.7.11_P7">
-  <desc>Patch 8.7.11_P7</desc>
+  <patch name="8.7.11_GA" version="8.7.11_P8">
+  <desc>Patch 8.7.11_P8</desc>
   <bug>107925</bug>
   <bug>108265</bug>
   <bug>108786</bug>
@@ -72,6 +72,7 @@
   <bug>ZCS-5998</bug>
   <bug>ZCS-5625</bug>
   <bug>ZBUG-179</bug>
+  <bug>ZCS-5624</bug>
   <package name="zimbra-store">
       <file>
         <source>zm-build/storebuild/opt/zimbra/jetty-distribution-9.3.5.v20151012/webapps/zimbra/js/MailCore_all.js.zgz</source>
@@ -207,6 +208,11 @@
         <target>/opt/zimbra/jetty-distribution-9.3.5.v20151012/webapps/zimbra/js/CalendarCore_all.js.zgz</target>
         <perms owner="zimbra" mode="444"/>
     </file>
+    <file>
+        <source>zm-build/storebuild/opt/zimbra/jetty-distribution-9.3.5.v20151012/webapps/zimbra/WEB-INF/tags/button.tag</source>
+        <target>/opt/zimbra/jetty-distribution-9.3.5.v20151012/webapps/zimbra/WEB-INF/tags/button.tag</target>
+        <perms owner="zimbra" mode="0664" />
+   </file>
    <file type="network">
     <source>zm-build/storebuild/opt/zimbra/lib/ext/zimbraews/zm-ews-store.jar</source>
     <target>/opt/zimbra/lib/ext/zimbraews/zm-ews-store.jar</target>
