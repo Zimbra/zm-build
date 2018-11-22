@@ -10,6 +10,7 @@ BUILD_NO                = 2009
 %GIT_OVERRIDES          = zm-web-client.branch=snickers
 %GIT_OVERRIDES          = zm-taglib.branch=snickers
 %GIT_OVERRIDES          = zm-core-utils.branch=snickers
+%GIT_OVERRIDES          = zm-ldap-utilities.branch=snickers
 %GIT_OVERRIDES          = zm-network-store.branch=snickers
 %GIT_OVERRIDES          = zm-smime-applet.branch=snickers
 %GIT_OVERRIDES          = zm-backup-store.branch=snickers
@@ -20,4 +21,5 @@ BUILD_NO                = 2009
 %GIT_OVERRIDES          = zm-oauth-social.tag=8.8.9.p3
 %GIT_OVERRIDES          = zm-admin-console.tag=8.8.9.p3
 %GIT_OVERRIDES          = zm-zcs-lib.branch=snickers
-%GIT_OVERRIDES          = zm-nicps.branch=feature/NICPS-476
+%GIT_OVERRIDES          = zm-nicps.branch=snickers
+
