@@ -465,4 +465,13 @@
          SysExec("cp -f build/zimlet/*.zip $CFG{BUILD_DIR}/zm-smime-applet/build/zimlet");
       },
    },
+   {
+      "dir"         => "zm-nicps",
+      "stage_cmd"   => sub {
+         SysExec("mkdir -p $CFG{BUILD_DIR}/zm-nicps/ldap/schema");
+         SysExec("mkdir -p $CFG{BUILD_DIR}/zm-nicps/ldap/attrs");
+         SysExec("cp -f ldap/schema/*  $CFG{BUILD_DIR}/zm-nicps/ldap/schema/");
+         SysExec("cp -f ldap/attrs/*  $CFG{BUILD_DIR}/zm-nicps/ldap/attrs/");
+      },
+   },
 );
