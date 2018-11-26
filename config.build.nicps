@@ -1,0 +1,25 @@
+BUILD_RELEASE           = SNICKERS
+BUILD_RELEASE_NO        = 8.8.9
+BUILD_RELEASE_CANDIDATE = GA
+BUILD_TYPE              = FOSS
+BUILD_THIRDPARTY_SERVER = files.zimbra.com
+GIT_DEFAULT_TAG         = 8.8.9
+BUILD_NO                = 2009
+%GIT_OVERRIDES          = zm-mailbox.branch=snickers
+%GIT_OVERRIDES          = zm-ajax.branch=snickers
+%GIT_OVERRIDES          = zm-web-client.branch=snickers
+%GIT_OVERRIDES          = zm-taglib.branch=snickers
+%GIT_OVERRIDES          = zm-core-utils.branch=snickers
+%GIT_OVERRIDES          = zm-ldap-utilities.branch=snickers
+%GIT_OVERRIDES          = zm-network-store.branch=snickers
+%GIT_OVERRIDES          = zm-smime-applet.branch=snickers
+%GIT_OVERRIDES          = zm-backup-store.branch=snickers
+%GIT_OVERRIDES          = zm-admin-help-common.tag=8.8.5 # no 8.8.6 tag
+%GIT_OVERRIDES          = zm-clientuploader-admin-zimlet.tag=8.8.5 # no 8.8.6 tag
+%GIT_OVERRIDES          = zm-help.branch=snickers
+%GIT_OVERRIDES          = zm-zimlets.branch=snickers
+%GIT_OVERRIDES          = zm-oauth-social.tag=8.8.9.p3
+%GIT_OVERRIDES          = zm-admin-console.tag=8.8.9.p3
+%GIT_OVERRIDES          = zm-zcs-lib.branch=snickers
+%GIT_OVERRIDES          = zm-nicps.branch=snickers
+

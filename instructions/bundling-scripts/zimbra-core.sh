@@ -121,6 +121,10 @@ CreateRhelPackage()
     	${repoDir}/zm-build/${currentScript}.spec
     echo "%attr(644, zimbra, zimbra) /opt/zimbra/conf/*" >> \
     	${repoDir}/zm-build/${currentScript}.spec
+    echo "%attr(755, zimbra, zimbra) /opt/zimbra/conf/attrs" >> \
+    	${repoDir}/zm-build/${currentScript}.spec
+    echo "%attr(644, zimbra, zimbra) /opt/zimbra/conf/attrs/*" >> \
+    	${repoDir}/zm-build/${currentScript}.spec
     echo "%attr(755, zimbra, zimbra) /opt/zimbra/conf/externaldirsync" >> \
     	${repoDir}/zm-build/${currentScript}.spec
     echo "%attr(644, zimbra, zimbra) /opt/zimbra/conf/externaldirsync/*" >> \
@@ -163,7 +167,7 @@ main()
    Copy ${repoDir}/zm-amavis/conf/amavisd.conf.in                                                   ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/amavisd.conf.in
    Copy ${repoDir}/zm-amavis/conf/amavisd/amavisd-custom.conf                                       ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/amavisd-custom.conf
    Copy ${repoDir}/zm-amavis/conf/dspam.conf.in                                                     ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/dspam.conf.in
-
+   Copy ${repoDir}/zm-nicps/ldap/attrs/legacy-attrs.xml                                             ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/attrs/legacy-attrs.xml
    Copy ${repoDir}/zm-build/lib/Zimbra/DB/DB.pm                                                     ${repoDir}/zm-build/${currentPackage}/opt/zimbra/common/lib/perl5/Zimbra/DB/DB.pm
    Copy ${repoDir}/zm-build/lib/Zimbra/LDAP.pm                                                      ${repoDir}/zm-build/${currentPackage}/opt/zimbra/common/lib/perl5/Zimbra/LDAP.pm
    Copy ${repoDir}/zm-build/lib/Zimbra/LocalConfig.pm                                               ${repoDir}/zm-build/${currentPackage}/opt/zimbra/common/lib/perl5/Zimbra/LocalConfig.pm
