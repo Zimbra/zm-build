@@ -7220,6 +7220,10 @@ sub applyConfig {
     if (isEnabled("zimbra-store")) {
       configInstallZimlets();
 
+      progress ( "\nDisabling openchat zimlet...");
+      runAsZimbra ("zmprov mc default -zimbraZimletAvailableZimlets com_zextras_chat_open");
+      progress ( "done. \n");
+
       progress ( "Restarting mailboxd...");
       runAsZimbra("/opt/zimbra/bin/zmmailboxdctl restart");
       progress ( "done.\n" );
