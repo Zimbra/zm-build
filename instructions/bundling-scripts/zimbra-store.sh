@@ -146,7 +146,9 @@ main()
     fi
 
     echo "\t\t***** help content *****" >> ${buildLogFile}
-    cp -rf ${repoDir}/zm-help/. ${repoDir}/zm-build/${currentPackage}/opt/zimbra/jetty_base/webapps/zimbra/help
+    helpDir="${repoDir}/zm-build/${currentPackage}/opt/zimbra/jetty_base/webapps/zimbra/help"
+    mkdir -p "${helpDir}"
+    cp -rf ${repoDir}/zm-help/* "${helpDir}"
 
     echo "\t\t***** portals example content *****" >> ${buildLogFile}
     mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/jetty_base/webapps/zimbra/portals/example
@@ -158,7 +160,7 @@ main()
     echo "\t\t***** downloads content *****" >> ${buildLogFile}
     downloadsDir=${repoDir}/zm-build/${currentPackage}/opt/zimbra/jetty_base/webapps/zimbra/downloads
     mkdir -p ${downloadsDir}
-    cp -rf ${repoDir}/zm-downloads/. ${downloadsDir}
+    cp -rf ${repoDir}/zm-downloads/* ${downloadsDir}
 
     if [ "${buildType}" == "NETWORK" ]
     then
