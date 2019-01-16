@@ -111,6 +111,7 @@ main()
       cp -f ${repoDir}/zm-hsm-store/build/zimbrahsm.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/zimbrahsm/zimbrahsm.jar
       cp -f ${repoDir}/zm-freebusy-provider-store/build/zimbra-freebusyprovider.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/zimbra-freebusy/zimbra-freebusyprovider.jar
       cp -rf ${repoDir}/zm-smime-store/build/dist/*.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/smime
+      cp -f ${repoDir}/zm-network-gql/build/dist/zm-network-gql*.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/zm-gql/zmnetworkgql.jar
     fi
 
     cp -f ${repoDir}/zm-clam-scanner-store/build/dist/zm-clam-scanner-store*.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/clamscanner/clamscanner.jar
