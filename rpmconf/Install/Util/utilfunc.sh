@@ -1576,7 +1576,7 @@ saveExistingConfig() {
 
   if [ -x "/opt/zimbra/bin/zmlocalconfig" ]; then
     runAsZimbra "zmlocalconfig -e zimbra_java_home=/opt/zimbra/common/lib/jvm/java"
-    runAsZimbra "zmlocalconfig -e mailboxd_truststore=/opt/zimbra/common/lib/jvm/java/jre/lib/security/cacerts"
+    runAsZimbra "zmlocalconfig -e mailboxd_truststore=/opt/zimbra/common/lib/jvm/java/lib/security/cacerts"
   fi
   if [ ! -d "$SAVEDIR" ]; then
     mkdir -p $SAVEDIR
@@ -1600,10 +1600,10 @@ saveExistingConfig() {
   if [ -f "/opt/zimbra/conf/localconfig.xml" ]; then
     cp -f /opt/zimbra/conf/localconfig.xml $SAVEDIR/localconfig.xml
   fi
-  if [ -f "/opt/zimbra/common/lib/jvm/java/jre/lib/security/cacerts" ]; then
-    cp -f /opt/zimbra/common/lib/jvm/java/jre/lib/security/cacerts $SAVEDIR
-  elif [ -f "/opt/zimbra/java/jre/lib/security/cacerts" ]; then
-    cp -f /opt/zimbra/java/jre/lib/security/cacerts $SAVEDIR
+  if [ -f "/opt/zimbra/common/lib/jvm/java/lib/security/cacerts" ]; then
+    cp -f /opt/zimbra/common/lib/jvm/java/lib/security/cacerts $SAVEDIR
+  elif [ -f "/opt/zimbra/java/lib/security/cacerts" ]; then
+    cp -f /opt/zimbra/java/lib/security/cacerts $SAVEDIR
   fi
   if [ -f "/opt/zimbra/jetty/etc/keystore" ]; then
     cp -f /opt/zimbra/jetty/etc/keystore $SAVEDIR
