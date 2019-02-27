@@ -275,6 +275,8 @@ fi
 D=`date +%s`
 echo "${D}: INSTALL SESSION START" >> /opt/zimbra/.install_history
 installPackages
+installJdk11
+
 D=`date +%s`
 echo "${D}: INSTALL SESSION COMPLETE" >> /opt/zimbra/.install_history
 
