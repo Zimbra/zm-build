@@ -1576,7 +1576,7 @@ saveExistingConfig() {
 
   if [ -x "/opt/zimbra/bin/zmlocalconfig" ]; then
     runAsZimbra "zmlocalconfig -e zimbra_java_home=/opt/zimbra/common/lib/jvm/java"
-    runAsZimbra "zmlocalconfig -e mailboxd_truststore=/opt/zimbra/common/lib/jvm/java/lib/security/cacerts"
+    runAsZimbra "zmlocalconfig -e mailboxd_truststore=/opt/zimbra/common/lib/jvm/java/jre/lib/security/cacerts"
   fi
   if [ ! -d "$SAVEDIR" ]; then
     mkdir -p $SAVEDIR
@@ -1600,10 +1600,10 @@ saveExistingConfig() {
   if [ -f "/opt/zimbra/conf/localconfig.xml" ]; then
     cp -f /opt/zimbra/conf/localconfig.xml $SAVEDIR/localconfig.xml
   fi
-  if [ -f "/opt/zimbra/common/lib/jvm/java/lib/security/cacerts" ]; then
-    cp -f /opt/zimbra/common/lib/jvm/java/lib/security/cacerts $SAVEDIR
-  elif [ -f "/opt/zimbra/java/lib/security/cacerts" ]; then
-    cp -f /opt/zimbra/java/lib/security/cacerts $SAVEDIR
+  if [ -f "/opt/zimbra/common/lib/jvm/java/jre/lib/security/cacerts" ]; then
+    cp -f /opt/zimbra/common/lib/jvm/java/jre/lib/security/cacerts $SAVEDIR
+  elif [ -f "/opt/zimbra/java/jre/lib/security/cacerts" ]; then
+    cp -f /opt/zimbra/java/jre/lib/security/cacerts $SAVEDIR
   fi
   if [ -f "/opt/zimbra/jetty/etc/keystore" ]; then
     cp -f /opt/zimbra/jetty/etc/keystore $SAVEDIR
@@ -2564,6 +2564,18 @@ getInstallPackages() {
     echo "    $i"
   done
 }
+
+installJdk11()  {
+	echo "Installing: JDK 11"
+  wget -O /tmp/openjdk-11.0.2_linux-x64_bin.tar.gz https://download.java.net/java/GA/jdk11/9/GPL/openjdk-11.0.2_linux-x64_bin.tar.gz
+  sudo tar xfvz /tmp/openjdk-11.0.2_linux-x64_bin.tar.gz --directory /usr/lib/jvm
+  rm -f /tmp/openjdk-11.0.2_linux-x64_bin.tar.gz
+  unlink /opt/zimbra/common/lib/jvm/java
+  ln -s /usr/lib/jvm/jdk-11.0.2/ /opt/zimbra/common/lib/jvm/java
+
+}
+
+
 
 deleteWebApp() {
   WEBAPPNAME=$1
