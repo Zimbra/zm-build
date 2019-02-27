@@ -2570,7 +2570,8 @@ installJdk11()  {
   wget -O /tmp/openjdk-11.0.2_linux-x64_bin.tar.gz https://download.java.net/java/GA/jdk11/9/GPL/openjdk-11.0.2_linux-x64_bin.tar.gz
   sudo tar xfvz /tmp/openjdk-11.0.2_linux-x64_bin.tar.gz --directory /usr/lib/jvm
   rm -f /tmp/openjdk-11.0.2_linux-x64_bin.tar.gz
-  unlink /opt/zimbra/common/lib/jvm/java
+  chmod a+rwx /usr/lib/jvm/jdk-11.0.2/lib/security/cacerts 
+  unlink /opt/zimbra/common/lib/jvm/java/
   ln -s /usr/lib/jvm/jdk-11.0.2/ /opt/zimbra/common/lib/jvm/java
 
 }
