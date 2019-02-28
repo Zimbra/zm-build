@@ -2571,7 +2571,7 @@ installJdk11()  {
   sudo tar xfvz /tmp/openjdk-11.0.2_linux-x64_bin.tar.gz --directory /usr/lib/jvm
   rm -f /tmp/openjdk-11.0.2_linux-x64_bin.tar.gz
   chmod a+rwx /usr/lib/jvm/jdk-11.0.2/lib/security/cacerts 
-  unlink /opt/zimbra/common/lib/jvm/java/
+  unlink /opt/zimbra/common/lib/jvm/java
   ln -s /usr/lib/jvm/jdk-11.0.2/ /opt/zimbra/common/lib/jvm/java
 
 }
