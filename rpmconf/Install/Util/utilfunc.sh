@@ -991,7 +991,7 @@ verifyLicenseActivationServer() {
     elif [ ${ZM_CUR_MAJOR} -gt "7" ]; then
       /opt/zimbra/bin/zmlicense --ping > /dev/null 2>&1
     else
-      /opt/zimbra/java/bin/java -XX:ErrorFile=/opt/zimbra/log -client -Xmx256m -Dzimbra.home=/opt/zimbra -Djava.library.path=/opt/zimbra/lib -Djava.ext.dirs=/opt/zimbra/java/jre/lib/ext:/opt/zimbra/lib/jars -classpath ./lib/jars/zimbra-license-tools.jar com.zimbra.cs.license.LicenseCLI --ping > /dev/null 2>&1
+      /opt/zimbra/java/bin/java -XX:ErrorFile=/opt/zimbra/log -client -Xmx256m -Dzimbra.home=/opt/zimbra -Djava.library.path=/opt/zimbra/lib  -classpath ./lib/jars/zimbra-license-tools.jar:/opt/zimbra/lib/jars/* com.zimbra.cs.license.LicenseCLI --ping > /dev/null 2>&1
     fi
     if [ $? != 0 ]; then
       activationWarning
@@ -1576,7 +1576,7 @@ saveExistingConfig() {
 
   if [ -x "/opt/zimbra/bin/zmlocalconfig" ]; then
     runAsZimbra "zmlocalconfig -e zimbra_java_home=/opt/zimbra/common/lib/jvm/java"
-    runAsZimbra "zmlocalconfig -e mailboxd_truststore=/opt/zimbra/common/lib/jvm/java/jre/lib/security/cacerts"
+    runAsZimbra "zmlocalconfig -e mailboxd_truststore=/opt/zimbra/common/lib/jvm/java/lib/security/cacerts"
   fi
   if [ ! -d "$SAVEDIR" ]; then
     mkdir -p $SAVEDIR
@@ -1600,10 +1600,10 @@ saveExistingConfig() {
   if [ -f "/opt/zimbra/conf/localconfig.xml" ]; then
     cp -f /opt/zimbra/conf/localconfig.xml $SAVEDIR/localconfig.xml
   fi
-  if [ -f "/opt/zimbra/common/lib/jvm/java/jre/lib/security/cacerts" ]; then
-    cp -f /opt/zimbra/common/lib/jvm/java/jre/lib/security/cacerts $SAVEDIR
-  elif [ -f "/opt/zimbra/java/jre/lib/security/cacerts" ]; then
-    cp -f /opt/zimbra/java/jre/lib/security/cacerts $SAVEDIR
+  if [ -f "/opt/zimbra/common/lib/jvm/java/lib/security/cacerts" ]; then
+    cp -f /opt/zimbra/common/lib/jvm/java/lib/security/cacerts $SAVEDIR
+  elif [ -f "/opt/zimbra/java/lib/security/cacerts" ]; then
+    cp -f /opt/zimbra/java/lib/security/cacerts $SAVEDIR
   fi
   if [ -f "/opt/zimbra/jetty/etc/keystore" ]; then
     cp -f /opt/zimbra/jetty/etc/keystore $SAVEDIR
@@ -2570,6 +2570,7 @@ installJdk11()  {
   wget -O /tmp/openjdk-11.0.2_linux-x64_bin.tar.gz https://download.java.net/java/GA/jdk11/9/GPL/openjdk-11.0.2_linux-x64_bin.tar.gz
   sudo tar xfvz /tmp/openjdk-11.0.2_linux-x64_bin.tar.gz --directory /usr/lib/jvm
   rm -f /tmp/openjdk-11.0.2_linux-x64_bin.tar.gz
+  chmod a+rwx /usr/lib/jvm/jdk-11.0.2/lib/security/cacerts 
   unlink /opt/zimbra/common/lib/jvm/java
   ln -s /usr/lib/jvm/jdk-11.0.2/ /opt/zimbra/common/lib/jvm/java
 
