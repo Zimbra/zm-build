@@ -122,6 +122,7 @@ my %updateFuncs = (
   "8.7.2_GA" => \&upgrade872GA,
   "8.8.6_GA" => \&upgrade886GA,
   "8.8.11_GA" => \&upgrade8811GA,
+  "8.8.12_GA" => \&upgrade8812GA,
 );
 
 my %updateMysql = (
@@ -2127,6 +2128,25 @@ sub upgrade8811GA {
     }
     $ldap->unbind;
   }
+  return 0;
+}
+
+sub upgrade8812GA {
+  print "applying 8812GA upgrade changes\n";
+  print "Installing JDK 11"
+
+  system "wget-O /tmp/openjdk-11.0.2_linux-x64_bin.tar.gz https://download.java.net/java/GA/jdk11/9/GPL/openjdk-11.0.2_linux-x64_bin.tar.gz"; 
+  system "sudo tar xfz /tmp/openjdk-11.0.2_linux-x64_bin.tar.gz --directory /usr/lib/jvm";
+  system "rm -f /tmp/openjdk-11.0.2_linux-x64_bin.tar.gz";
+  system "chmod a+rwx /usr/lib/jvm/jdk-11.0.2/lib/security/cacerts";
+  system "unlink /opt/zimbra/common/lib/jvm/java"
+  system "ln -s /usr/lib/jvm/jdk-11.0.2/ /opt/zimbra/common/lib/jvm/java"
+  
+  print "Updating to CA certs path\n"
+  
+  qx($su "zmlocalconfig -e mailboxd_truststore=/opt/zimbra/common/lib/jvm/java/lib/security/cacerts");
+  qx($su "zmlocalconfig -e mailboxd_java_options=-server -Dhttps.protocols=TLSv1,TLSv1.1,TLSv1.2 -Djdk.tls.client.protocols=TLSv1,TLSv1.1,TLSv1.2 -Djava.awt.headless=true -Dsun.net.inetaddr.ttl=${networkaddress_cache_ttl} -Dorg.apache.jasper.compiler.disablejsr199=true -XX:+UseG1GC -XX:SoftRefLRUPolicyMSPerMB=1 -XX:-OmitStackTraceInFastThrow -verbose:gc -Xlog:gc*=debug,safepoint=info:file=/opt/zimbra/log/gc.log:time:filecount=20,filesize=10m -Djava.net.preferIPv4Stack=true");
+  
   return 0;
 }
 
