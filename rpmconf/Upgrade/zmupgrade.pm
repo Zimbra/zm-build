@@ -2139,7 +2139,8 @@ sub upgrade8812GA {
    system "sudo tar xfz /tmp/openjdk-11.0.2_linux-x64_bin.tar.gz --directory /usr/lib/jvm";
    system "rm -f /tmp/openjdk-11.0.2_linux-x64_bin.tar.gz"; 
    system "chmod a+rwx /usr/lib/jvm/jdk-11.0.2/lib/security/cacerts";
-   system "unlink /opt/zimbra/common/lib/jvm/java";
+   system "unlink /opt/zimbra/common/lib/jvm/java"; 
+   system "ln -s /usr/lib/jvm/jdk-11.0.2/ /opt/zimbra/common/lib/jvm/java";
    system "cp   /opt/zimbra/common/etc/java/cacerts  /opt/zimbra/common/lib/jvm/java/lib/security/cacerts";
 
    print "Updating to CA certs path\n";
