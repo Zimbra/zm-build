@@ -1758,6 +1758,27 @@ removeExistingPackages() {
         echo "done"
       fi
 
+      isInstalled "zimbra-proxy-patch"
+      if [ x$PKGINSTALLED != "x" ]; then
+        echo -n "   zimbra-proxy-patch..."
+        $PACKAGERM zimbra-proxy-patch >/dev/null 2>&1
+        echo "done"
+      fi
+
+      isInstalled "zimbra-mta-patch"
+      if [ x$PKGINSTALLED != "x" ]; then
+        echo -n "   zimbra-mta-patch..."
+        $PACKAGERM zimbra-mta-patch >/dev/null 2>&1
+        echo "done"
+      fi
+
+      isInstalled "zimbra-zco"
+      if [ x$PKGINSTALLED != "x" ]; then
+        echo -n "   zimbra-zco..."
+        $PACKAGERM zimbra-zco >/dev/null 2>&1
+        echo "done"
+      fi
+
       isInstalled "zimbra-network-modules-ng"
       if [ x$PKGINSTALLED != "x" ]; then
         echo -n "   zimbra-network-modules-ng..."
@@ -1880,6 +1901,12 @@ removeExistingInstall() {
       if [ x"$OLD_LDR_PATH" != "x" ]; then
         LD_LIBRARY_PATH=$OLD_LDR_PATH
       fi
+    fi
+    isInstalled "zimbra-zco"
+    if [ x$PKGINSTALLED != "x" ]; then
+      echo -n "Removing stale package zimbra-zco while upgrade..."
+      $PACKAGERM zimbra-zco >/dev/null 2>&1
+      echo "done"
     fi
     if [ "$UPGRADE" = "yes" -a "$POST87UPGRADE" = "true" -a "$FORCE_UPGRADE" != "yes" -a "$ZM_CUR_BUILD" != "$ZM_INST_BUILD" ]; then
       echo "Upgrading the remote packages"
@@ -2367,6 +2394,7 @@ getInstallPackages() {
   LOGGER_SELECTED="no"
   STORE_SELECTED="no"
   MTA_SELECTED="no"
+  PROXY_SELECTED="no"
 
   if [ x"$ZMTYPE_INSTALLABLE" = "xFOSS" ]; then
      AVAILABLE_PACKAGES="$AVAILABLE_PACKAGES zimbra-chat"
@@ -2420,6 +2448,8 @@ getInstallPackages() {
           STORE_SELECTED="yes"
         elif [ $i = "zimbra-mta" ]; then
           MTA_SELECTED="yes"
+        elif [ $i = "zimbra-proxy" ]; then
+          PROXY_SELECTED="yes"
         fi
         continue
       fi
@@ -2431,6 +2461,10 @@ getInstallPackages() {
       response="yes"
     elif [ $i = "zimbra-patch" ]; then
       ifStoreSelectedY
+    elif [ $i = "zimbra-mta-patch" ]; then
+      response="$MTA_SELECTED"
+    elif [ $i = "zimbra-proxy-patch" ]; then
+      response="$PROXY_SELECTED"
     elif [ $i = "zimbra-license-extension" ]; then
       ifStoreSelectedY
     elif [ $i = "zimbra-network-store" ]; then
