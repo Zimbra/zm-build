@@ -2530,6 +2530,8 @@ getInstallPackages() {
         APACHE_SELECTED="yes"
       elif [ $i = "zimbra-mta" ]; then
         MTA_SELECTED="yes"
+      elif [ $i = "zimbra-proxy" ]; then
+        PROXY_SELECTED="yes"
       fi
 
       if [ $i = "zimbra-network-modules-ng" ]; then
