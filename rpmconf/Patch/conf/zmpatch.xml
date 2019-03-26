@@ -48,8 +48,8 @@
   
 -->
 <patches>
-  <patch name="8.7.11_GA" version="8.7.11_P10">
-  <desc>Patch 8.7.11_P10</desc>
+  <patch name="8.7.11_GA" version="8.7.11_P11">
+  <desc>Patch 8.7.11_P11</desc>
   <bug>107925</bug>
   <bug>108265</bug>
   <bug>108786</bug>
@@ -76,6 +76,7 @@
   <bug>ZBUG-866</bug>
   <bug>ZBUG-747</bug>
   <bug>ZBUG-909</bug>
+  <bug>ZBUG-817</bug>
   <package name="zimbra-store">
       <file>
         <source>zm-build/storebuild/opt/zimbra/jetty-distribution-9.3.5.v20151012/webapps/zimbra/js/MailCore_all.js.zgz</source>
@@ -330,6 +331,27 @@
         <source>zm-build/storebuild/opt/zimbra/jetty-distribution-9.3.5.v20151012/webapps/zimbra/WEB-INF/tags/button.tag</source>
         <target>/opt/zimbra/jetty-distribution-9.3.5.v20151012/webapps/zimbra/WEB-INF/tags/button.tag</target>
         <perms owner="zimbra" mode="0664" />
+   </file>
+   <file>
+        <source>zm-build/storebuild/opt/zimbra/jetty-distribution-9.3.5.v20151012/webapps/zimbra/WEB-INF/tags/briefcase/briefcaseListViewToolbar.tag</source>
+        <target>/opt/zimbra/jetty-distribution-9.3.5.v20151012/webapps/zimbra/WEB-INF/tags/briefcase/briefcaseListViewToolbar.tag</target>
+        <perms owner="zimbra" mode="0664" />
+   </file>
+    <file>
+        <source>zm-build/storebuild/opt/zimbra/jetty-distribution-9.3.5.v20151012/webapps/zimbra/WEB-INF/tags/briefcase/newBriefCheck.tag</source>
+        <target>/opt/zimbra/jetty-distribution-9.3.5.v20151012/webapps/zimbra/WEB-INF/tags/briefcase/newBriefCheck.tag</target>
+        <perms owner="zimbra" mode="0664" />
+   </file>
+   <file>
+        <source>zm-build/storebuild/opt/zimbra/jetty-distribution-9.3.5.v20151012/webapps/service/WEB-INF/lib/zimbrataglib.jar</source>
+        <target>/opt/zimbra/jetty-distribution-9.3.5.v20151012/webapps/service/WEB-INF/lib/zimbrataglib.jar</target>
+        <perms owner="root" mode="0444" />
+   </file>
+   <file>
+        <source>zm-build/storebuild/opt/zimbra/jetty-distribution-9.3.5.v20151012/webapps/zimbra/WEB-INF/lib/zimbrataglib.jar</source>
+        <target>/opt/zimbra/jetty-distribution-9.3.5.v20151012/webapps/zimbra/WEB-INF/lib/zimbrataglib.jar</target>
+        <target>/opt/zimbra/jetty-distribution-9.3.5.v20151012/webapps/zimbraAdmin/WEB-INF/lib/zimbrataglib.jar</target>
+        <perms owner="root" mode="0444" />
    </file>
    <file type="network">
     <source>zm-build/storebuild/opt/zimbra/lib/ext/zimbraews/zm-ews-store.jar</source>
