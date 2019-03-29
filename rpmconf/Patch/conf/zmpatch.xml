@@ -298,16 +298,6 @@
         <perms owner="zimbra" mode="444"/>
     </file>
     <file>
-        <source>zm-build/storebuild/opt/zimbra/jetty-distribution-9.3.5.v20151012/webapps/zimbra/js/PasswordRecovery_all.js</source>
-        <target>/opt/zimbra/jetty-distribution-9.3.5.v20151012/webapps/zimbra/js/PasswordRecovery_all.js</target>
-        <perms owner="zimbra" mode="444"/>
-    </file>
-    <file>
-        <source>zm-build/storebuild/opt/zimbra/jetty-distribution-9.3.5.v20151012/webapps/zimbra/js/PasswordRecovery_all.js.zgz</source>
-        <target>/opt/zimbra/jetty-distribution-9.3.5.v20151012/webapps/zimbra/js/PasswordRecovery_all.js.zgz</target>
-        <perms owner="zimbra" mode="444"/>
-    </file>
-    <file>
         <source>zm-build/storebuild/opt/zimbra/jetty-distribution-9.3.5.v20151012/webapps/zimbra/js/DocsPreview_all.js</source>
         <target>/opt/zimbra/jetty-distribution-9.3.5.v20151012/webapps/zimbra/js/DocsPreview_all.js</target>
         <perms owner="zimbra" mode="444"/>
@@ -343,14 +333,10 @@
         <perms owner="zimbra" mode="0664" />
    </file>
    <file>
-        <source>zm-build/storebuild/opt/zimbra/jetty-distribution-9.3.5.v20151012/webapps/service/WEB-INF/lib/zimbrataglib.jar</source>
-        <target>/opt/zimbra/jetty-distribution-9.3.5.v20151012/webapps/service/WEB-INF/lib/zimbrataglib.jar</target>
-        <perms owner="root" mode="0444" />
-   </file>
-   <file>
-        <source>zm-build/storebuild/opt/zimbra/jetty-distribution-9.3.5.v20151012/webapps/zimbra/WEB-INF/lib/zimbrataglib.jar</source>
-        <target>/opt/zimbra/jetty-distribution-9.3.5.v20151012/webapps/zimbra/WEB-INF/lib/zimbrataglib.jar</target>
-        <target>/opt/zimbra/jetty-distribution-9.3.5.v20151012/webapps/zimbraAdmin/WEB-INF/lib/zimbrataglib.jar</target>
+        <source>zm-build/storebuild/opt/zimbra/jetty-distribution-9.3.5.v20151012/webapps/zimbra/WEB-INF/lib/zm-taglib*.jar</source>
+        <target>/opt/zimbra/jetty-distribution-9.3.5.v20151012/webapps/zimbra/WEB-INF/lib/zm-taglib-8.7.11.1496138968.jar</target>
+        <target>/opt/zimbra/jetty-distribution-9.3.5.v20151012/webapps/zimbraAdmin/WEB-INF/lib/zm-taglib-8.7.11.1496138968.jar</target>
+        <target>/opt/zimbra/jetty-distribution-9.3.5.v20151012/webapps/service/WEB-INF/lib/zm-taglib-8.7.11.1496138968.jar</target>
         <perms owner="root" mode="0444" />
    </file>
    <file type="network">
