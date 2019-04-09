@@ -1765,13 +1765,6 @@ removeExistingPackages() {
         echo "done"
       fi
 
-      isInstalled "zimbra-mta-patch"
-      if [ x$PKGINSTALLED != "x" ]; then
-        echo -n "   zimbra-mta-patch..."
-        $PACKAGERM zimbra-mta-patch >/dev/null 2>&1
-        echo "done"
-      fi
-
       isInstalled "zimbra-zco"
       if [ x$PKGINSTALLED != "x" ]; then
         echo -n "   zimbra-zco..."
@@ -2395,10 +2388,6 @@ getInstallPackages() {
   STORE_SELECTED="no"
   MTA_SELECTED="no"
   PROXY_SELECTED="no"
-
-  if [ x"$ZMTYPE_INSTALLABLE" = "xFOSS" ]; then
-     AVAILABLE_PACKAGES="$AVAILABLE_PACKAGES zimbra-chat"
-  fi
 
   if [ x"$ZMTYPE_INSTALLABLE" = "xFOSS" ]; then
      AVAILABLE_PACKAGES="$AVAILABLE_PACKAGES zimbra-chat"
