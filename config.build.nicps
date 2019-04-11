@@ -11,7 +11,7 @@ BUILD_NO                = 2049
 %GIT_OVERRIDES          = zm-taglib.branch=rebase/NICPS-571
 %GIT_OVERRIDES          = zm-core-utils.branch=rebase/NICPS-571
 %GIT_OVERRIDES          = zm-ldap-utilities.branch=rebase/NICPS-571
-%GIT_OVERRIDES          = zm-network-store.branch=snickers
+%GIT_OVERRIDES          = zm-network-store.branch=rebase_merge/NICPS-571
 %GIT_OVERRIDES          = zm-smime-applet.branch=rebase/NICPS-571
 %GIT_OVERRIDES          = zm-backup-store.branch=rebase/NICPS-571
 %GIT_OVERRIDES          = zm-admin-help-common.tag=8.8.12 # no 8.8.6 tag
