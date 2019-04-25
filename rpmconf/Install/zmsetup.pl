@@ -1497,7 +1497,7 @@ sub setDefaults {
   } else {
     $config{mailboxd_keystore} = "/opt/zimbra/conf/keystore";
   }
-  $config{mailboxd_truststore} = "/opt/zimbra/common/lib/jvm/java/jre/lib/security/cacerts";
+  $config{mailboxd_truststore} = "/opt/zimbra/common/lib/jvm/java/lib/security/cacerts";
   $config{mailboxd_keystore_password} = genRandomPass();
   $config{mailboxd_truststore_password} = "changeit";
 
