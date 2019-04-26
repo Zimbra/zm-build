@@ -140,6 +140,10 @@ if [ -f /etc/lsb-release ]; then
       echo "16${i}"
       exit 0
     fi
+    if [ "$RELEASE" = "bionic" ]; then
+      echo "18${i}"
+      exit 0
+    fi
     echo "UNKNOWN${i}"
     exit 0
   fi
