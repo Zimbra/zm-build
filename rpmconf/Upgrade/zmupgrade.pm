@@ -121,6 +121,8 @@ my %updateFuncs = (
   "8.7.0_RC1" => \&upgrade870RC1,
   "8.7.2_GA" => \&upgrade872GA,
   "8.8.6_GA" => \&upgrade886GA,
+  "8.8.11_GA" => \&upgrade8811GA,
+  "8.8.12_GA" => \&upgrade8812GA,
 );
 
 my %updateMysql = (
@@ -2064,6 +2066,81 @@ sub upgrade886GA {
     upgradeLdapConfigValue("zimbraImapLoadBalancingAlgorithm", "AccountIdHash", "ClientIpHash");
     return 0;
 }
+
+sub upgrade8811GA {
+  print "applying 8811GA upgrade changes";
+  my ($startBuild, $targetVersion, $targetBuild) = (@_);
+  if (main::isInstalled("zimbra-ldap")) {
+    my $doIndex = &addLdapIndex("zimbraOldMailAddress","eq");
+    if ($doIndex) {
+      &indexLdapAttribute("zimbraOldMailAddress");
+    }
+    my $ldap_pass = qx($su "zmlocalconfig -s -m nokey ldap_root_password");
+    chomp($ldap_pass);
+    my $ldap;
+    unless($ldap = Net::LDAP->new('ldapi://%2fopt%2fzimbra%2fdata%2fldap%2fstate%2frun%2fldapi/')) {
+       main::progress("Unable to connect to ldapi: $!\n");
+    }
+    my $result = $ldap->bind("cn=config", password => $ldap_pass);
+    my $dn="olcDatabase={2}mdb,cn=config";
+    if ($isLdapMaster) {
+      $result = $ldap->search(
+                        base=> "cn=accesslog",
+                        filter=>"(objectClass=*)",
+                        scope => "base",
+                        attrs => ['1.1'],
+      );
+      my $size = $result->count;
+      if ($size > 0 ) {
+        $dn="olcDatabase={3}mdb,cn=config";
+      }
+    }
+    $result = $ldap->search(
+      base=> "$dn",
+      filter=>"(objectClass=*)",
+      scope => "base",
+      attrs => ['olcAccess'],
+    );
+    my $entry=$result->entry($result->count-1);
+    my @attrvals=$entry->get_value("olcAccess");
+    my $aclNumber=-1;
+    my $attrMod="";
+
+    foreach my $attr (@attrvals) {
+      if ($attr =~ /zimbraMailCatchAllAddress/) {
+        if ($attr !~ /zimbraOldMailAddress/) {
+          ($aclNumber) = $attr =~ /^\{(\d+)\}*/;
+          $attrMod=$attr;
+        }
+      }
+    }
+
+    if ($aclNumber != -1 && $attrMod ne "") {
+      $attrMod =~ s/zimbraMailCatchAllAddress/zimbraMailCatchAllAddress,zimbraOldMailAddress/;
+      $result = $ldap->modify(
+          $dn,
+          delete => {olcAccess => "{$aclNumber}"},
+      );
+      $result = $ldap->modify(
+          $dn,
+          add =>{olcAccess=>"$attrMod"},
+      );
+    }
+    $ldap->unbind;
+  }
+  return 0;
+}
+
+sub upgrade8812GA {
+   print "applying 8812GA upgrade changes\n";
+   
+   print "Updating to CA certs path\n";
+
+  qx($su "zmlocalconfig -e mailboxd_truststore=/opt/zimbra/common/lib/jvm/java/lib/security/cacerts");
+  qx($su "zmlocalconfig -e mailboxd_java_options='-server -Dhttps.protocols=TLSv1,TLSv1.1,TLSv1.2 -Djdk.tls.client.protocols=TLSv1,TLSv1.1,TLSv1.2 -Djava.awt.headless=true -Dsun.net.inetaddr.ttl=$ENV{networkaddress_cache_ttl} -Dorg.apache.jasper.compiler.disablejsr199=true -XX:+UseG1GC -XX:SoftRefLRUPolicyMSPerMB=1 -XX:-OmitStackTraceInFastThrow -verbose:gc  -Xlog:gc*=debug,safepoint=info:file=/opt/zimbra/log/gc.log:time:filecount=20,filesize=10m -Djava.net.preferIPv4Stack=true'");
+  return 0;
+}
+
 
 sub stopZimbra {
   main::progress("Stopping zimbra services...");
