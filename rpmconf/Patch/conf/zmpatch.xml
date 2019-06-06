@@ -77,6 +77,8 @@
   <bug>ZBUG-747</bug>
   <bug>ZBUG-909</bug>
   <bug>ZBUG-817</bug>
+  <bug>ZBUG-815</bug>
+  <bug>ZCS-6957</bug>
   <package name="zimbra-store">
       <file>
         <source>zm-build/storebuild/opt/zimbra/jetty-distribution-9.3.5.v20151012/webapps/zimbra/js/MailCore_all.js.zgz</source>
@@ -345,6 +347,11 @@
     <perms owner="root" mode="0444" />
    </file>
    <file type="network">
+    <source>zm-build/storebuild/opt/zimbra/lib/ext/zimbraews/zm-ews-common.jar</source>
+    <target>/opt/zimbra/lib/ext/zimbraews/zm-ews-common.jar</target>
+    <perms owner="root" mode="0444" />
+   </file>
+   <file type="network">
     <source>zm-build/storebuild/opt/zimbra/lib/ext/smime/zm-smime-store-*.jar</source>
     <target>/opt/zimbra/lib/ext/smime/zm-smime-store-8.7.11.1487930761.jar</target>
     <perms owner="root" mode="0444" />
@@ -359,6 +366,16 @@
     <target>/opt/zimbra/lib/ext/zimbrasync/zm-sync-store.jar</target>
     <perms owner="root" mode="0444"/>
    </file>
+   <file>
+        <source>zm-build/storebuild/opt/zimbra/conf/owasp_policy.xml</source>
+        <target>/opt/zimbra/conf/owasp_policy.xml</target>
+        <perms owner="zimbra" mode="444"/>
+    </file>
+    <file>
+        <source>zm-build/corebuild/opt/zimbra/lib/jars/owasp-java-html-sanitizer-20190503.1.jar</source>
+        <target>/opt/zimbra/jetty-distribution-9.3.5.v20151012/webapps/service/WEB-INF/lib/owasp-java-html-sanitizer-r239.jar</target>
+        <perms owner="root" mode="0444" />
+      </file>
   </package>
   <package name="zimbra-core">
      <file>
@@ -389,6 +406,11 @@
     <file>
         <source>zm-build/corebuild/opt/zimbra/lib/jars/jackson-smile-1.9.13.jar</source>
         <target>/opt/zimbra/lib/jars/jackson-smile-1.9.13.jar</target>
+        <perms owner="root" mode="444"/>
+    </file>
+    <file>
+        <source>zm-build/corebuild/opt/zimbra/lib/jars/owasp-java-html-sanitizer-20190503.1.jar</source>
+        <target>/opt/zimbra/lib/jars/owasp-java-html-sanitizer-r239.jar</target>
         <perms owner="root" mode="444"/>
     </file>
   </package>
