@@ -840,7 +840,7 @@ main()
       "neethi-3.0.2.jar"
       "nekohtml-1.9.13.1z.jar"
       "oauth-20100527.jar"
-      "owasp-java-html-sanitizer-r239.jar"
+      "owasp-java-html-sanitizer-20190503.1.jar"
       "policy-2.3.jar"
       "slf4j-api-1.6.4.jar"
       "slf4j-log4j12-1.6.4.jar"

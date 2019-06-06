@@ -48,8 +48,8 @@
   
 -->
 <patches>
-  <patch name="8.7.11_GA" version="8.7.11_P11">
-  <desc>Patch 8.7.11_P11</desc>
+  <patch name="8.7.11_GA" version="8.7.11_P12">
+  <desc>Patch 8.7.11_P12</desc>
   <bug>107925</bug>
   <bug>108265</bug>
   <bug>108786</bug>
