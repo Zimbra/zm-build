@@ -79,6 +79,7 @@
   <bug>ZBUG-817</bug>
   <bug>ZBUG-815</bug>
   <bug>ZCS-6957</bug>
+  <bug>ZCS-7209</bug>
   <package name="zimbra-store">
       <file>
         <source>zm-build/storebuild/opt/zimbra/jetty-distribution-9.3.5.v20151012/webapps/zimbra/js/MailCore_all.js.zgz</source>
@@ -238,6 +239,11 @@
       <file>
         <source>zm-build/storebuild/opt/zimbra/jetty-distribution-9.3.5.v20151012/webapps/zimbra/js/zimbraMail/share/model/ZmObjectManager.js</source>
         <target>/opt/zimbra/jetty-distribution-9.3.5.v20151012/webapps/zimbra/js/zimbraMail/share/model/ZmObjectManager.js</target>
+        <perms owner="zimbra" mode="444"/>
+      </file>
+      <file>
+        <source>zm-build/storebuild/opt/zimbra/jetty-distribution-9.3.5.v20151012/webapps/zimbra/js/zimbraMail/mail/model/ZmMailMsg.js</source>
+        <target>/opt/zimbra/jetty-distribution-9.3.5.v20151012/webapps/zimbra/js/zimbraMail/mail/model/ZmMailMsg.js</target>
         <perms owner="zimbra" mode="444"/>
       </file>
       <file>
