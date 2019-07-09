@@ -67,6 +67,7 @@ main()
 
     cp -f ${repoDir}/zm-migration-tools/zmztozmig.conf ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/zmztozmig.conf
     cp -f ${repoDir}/zm-mailbox/store-conf/conf/owasp_policy.xml ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/owasp_policy.xml
+    cp -f ${repoDir}/zm-mailbox/store-conf/conf/antisamy.xml ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/antisamy.xml
     cp -rf ${repoDir}/zm-web-client/WebRoot/templates/ ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/templates
 
     echo -e "\tCopy extensions-extra files of /op/zimbra/" >> ${buildLogFile}
