@@ -183,6 +183,7 @@ main()
       cp -f ${repoDir}/zm-zcs-lib/build/dist/bcpkix-jdk15on-1.55.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext-common/
       cp -f ${repoDir}/zm-zcs-lib/build/dist/bcmail-jdk15on-1.55.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext-common/
       cp -f ${repoDir}/zm-zcs-lib/build/dist/bcprov-jdk15on-1.55.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext-common/
+      cp -f ${repoDir}/zm-zcs-lib/build/dist/saaj-impl-1.5.1.jar     ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext-common/
     fi
 
     cp -f ${repoDir}/zm-migration-tools/src/libexec/zmztozmig ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec
