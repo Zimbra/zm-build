@@ -467,11 +467,6 @@
         <target>/opt/zimbra/lib/jars/jackson-smile-1.9.13.jar</target>
         <perms owner="root" mode="444"/>
     </file>
-    <file>
-        <source>zm-build/corebuild/opt/zimbra/lib/jars/owasp-java-html-sanitizer-20190503.1.jar</source>
-        <target>/opt/zimbra/lib/jars/owasp-java-html-sanitizer-r239.jar</target>
-        <perms owner="root" mode="444"/>
-    </file>
   </package>
   <preinstall></preinstall>
   <postinstall></postinstall>
