@@ -2149,6 +2149,7 @@ sub upgrade8815GA {
    
    print "Updating OWASP LC config\n";
 
+  main::deleteLocalConfig("zimbra_use_owasp_html_sanitizer");
   qx($su "zmlocalconfig -e zimbra_use_owasp_html_sanitizer=true");
   return 0;
 }
