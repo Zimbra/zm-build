@@ -8,7 +8,7 @@ BUILD_NO                = 2009
 %GIT_OVERRIDES          = zm-mailbox.branch=NICPS-OWASP
 %GIT_OVERRIDES          = zm-ajax.branch=snickers
 %GIT_OVERRIDES          = zm-web-client.branch=NICPS-OWASP
-%GIT_OVERRIDES          = zm-taglib.branch=snickers
+%GIT_OVERRIDES          = zm-taglib.branch=NICPS-release2019021
 %GIT_OVERRIDES          = zm-core-utils.branch=snickers
 %GIT_OVERRIDES          = zm-ldap-utilities.branch=snickers
 %GIT_OVERRIDES          = zm-network-store.branch=snickers
