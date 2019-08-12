@@ -1,13 +1,13 @@
 BUILD_RELEASE           = SNICKERS
-BUILD_RELEASE_NO        = 8.8.12
+BUILD_RELEASE_NO        = 8.8.9
 BUILD_RELEASE_CANDIDATE = GA
 BUILD_TYPE              = FOSS
 BUILD_THIRDPARTY_SERVER = files.zimbra.com
-GIT_DEFAULT_TAG         = 8.8.12
+GIT_DEFAULT_TAG         = 8.8.9
 BUILD_NO                = 2009
-%GIT_OVERRIDES          = zm-mailbox.branch=snickers
+%GIT_OVERRIDES          = zm-mailbox.branch=NICPS-OWASP
 %GIT_OVERRIDES          = zm-ajax.branch=snickers
-%GIT_OVERRIDES          = zm-web-client.branch=snickers
+%GIT_OVERRIDES          = zm-web-client.branch=NICPS-OWASP
 %GIT_OVERRIDES          = zm-taglib.branch=snickers
 %GIT_OVERRIDES          = zm-core-utils.branch=snickers
 %GIT_OVERRIDES          = zm-ldap-utilities.branch=snickers
