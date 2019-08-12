@@ -18,8 +18,7 @@ BUILD_NO                = 2009
 %GIT_OVERRIDES          = zm-clientuploader-admin-zimlet.tag=8.8.12 # no 8.8.6 tag
 %GIT_OVERRIDES          = zm-help.branch=snickers
 %GIT_OVERRIDES          = zm-zimlets.branch=snickers
-%GIT_OVERRIDES          = zm-oauth-social.tag=snickers
+%GIT_OVERRIDES          = zm-oauth-social.tag=8.8.12
 %GIT_OVERRIDES          = zm-admin-console.tag=8.8.12
 %GIT_OVERRIDES          = zm-zcs-lib.branch=snickers
 %GIT_OVERRIDES          = zm-nicps.branch=snickers
-
