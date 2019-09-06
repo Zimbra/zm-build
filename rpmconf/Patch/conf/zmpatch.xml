@@ -48,8 +48,8 @@
   
 -->
 <patches>
-  <patch name="8.7.11_GA" version="8.7.11_P13">
-  <desc>Patch 8.7.11_P13</desc>
+  <patch name="8.7.11_GA" version="8.7.11_P14">
+  <desc>Patch 8.7.11_P14</desc>
   <bug>107925</bug>
   <bug>108265</bug>
   <bug>108786</bug>
@@ -83,6 +83,7 @@
   <bug>ZBUG-1046</bug>
   <bug>ZBUG-1044</bug>
   <bug>ZBUG-1037</bug>
+  <bug>ZBUG-1015</bug>
   <package name="zimbra-store">
       <file>
         <source>zm-build/storebuild/opt/zimbra/jetty-distribution-9.3.5.v20151012/webapps/zimbra/js/MailCore_all.js.zgz</source>
@@ -192,6 +193,16 @@
       <file>
         <source>zm-build/storebuild/opt/zimbra/jetty-distribution-9.3.5.v20151012/webapps/zimbra/js/Calendar_all.js</source>
         <target>/opt/zimbra/jetty-distribution-9.3.5.v20151012/webapps/zimbra/js/Calendar_all.js</target>
+        <perms owner="zimbra" mode="444"/>
+      </file>
+      <file>
+        <source>zm-build/storebuild/opt/zimbra/jetty-distribution-9.3.5.v20151012/webapps/zimbraAdmin/js/Admin_all.js</source>
+        <target>/opt/zimbra/jetty-distribution-9.3.5.v20151012/webapps/zimbraAdmin/js/Admin_all.js</target>
+        <perms owner="zimbra" mode="444"/>
+      </file>
+      <file>
+        <source>zm-build/storebuild/opt/zimbra/jetty-distribution-9.3.5.v20151012/webapps/zimbraAdmin/js/common/ZaLoginDialog.js</source>
+        <target>/opt/zimbra/jetty-distribution-9.3.5.v20151012/webapps/zimbraAdmin/js/common/ZaLoginDialog.js</target>
         <perms owner="zimbra" mode="444"/>
       </file>
       <file>
