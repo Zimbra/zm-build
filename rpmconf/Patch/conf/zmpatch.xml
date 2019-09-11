@@ -203,6 +203,11 @@
         <perms owner="zimbra" mode="444"/>
       </file>
       <file>
+        <source>zm-build/storebuild/opt/zimbra/jetty-distribution-9.3.5.v20151012/webapps/zimbraAdmin/js/Admin_all.js.zgz</source>
+        <target>/opt/zimbra/jetty-distribution-9.3.5.v20151012/webapps/zimbraAdmin/js/Admin_all.js.zgz</target>
+        <perms owner="zimbra" mode="444"/>
+      </file>
+      <file>
         <source>zm-build/storebuild/opt/zimbra/jetty-distribution-9.3.5.v20151012/webapps/zimbraAdmin/js/common/ZaLoginDialog.js</source>
         <target>/opt/zimbra/jetty-distribution-9.3.5.v20151012/webapps/zimbraAdmin/js/common/ZaLoginDialog.js</target>
         <perms owner="zimbra" mode="444"/>
