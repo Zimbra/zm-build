@@ -7,7 +7,7 @@ GIT_DEFAULT_TAG         = 8.8.15
 BUILD_NO                = 2009
 %GIT_OVERRIDES          = zm-mailbox.branch=rebase/NICPS-666
 %GIT_OVERRIDES          = zm-ajax.branch=rebase/NICPS-666
-%GIT_OVERRIDES          = zm-web-client.branch=rebase/NICPS-666
+%GIT_OVERRIDES          = zm-web-client.branch=snickers
 %GIT_OVERRIDES          = zm-taglib.branch=rebase/NICPS-666
 %GIT_OVERRIDES          = zm-core-utils.branch=rebase/NICPS-666
 %GIT_OVERRIDES          = zm-ldap-utilities.branch=rebase/NICPS-666
