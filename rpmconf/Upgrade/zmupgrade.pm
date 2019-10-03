@@ -41,7 +41,7 @@ chomp $rundir;
 my $scriptDir = "/opt/zimbra/libexec/scripts";
 
 my $lowVersion = 52;
-my $hiVersion = 109; # this should be set to the DB version expected by current server code
+my $hiVersion = 111; # this should be set to the DB version expected by current server code
 
 my $needSlapIndexing = 0;
 my $mysqlcnfUpdated = 0;
@@ -85,6 +85,8 @@ my %updateScripts = (
   '106' => "migrate20150702-ZmgDevices.pl",            #8.7.0
   '107' => "migrate20170301-ZimbraChat.pl",            #8.7.6
   '108' => "migrate20180301-ZimbraChat.pl",            #8.8.8
+  '109' => "migrate20190401-ZimbraChat.pl",            #8.8.15
+  '110' => "migrate20190611-ZimbraChat.pl",            #8.8.15
 );
 
 my %updateFuncs = (
@@ -123,6 +125,7 @@ my %updateFuncs = (
   "8.8.6_GA" => \&upgrade886GA,
   "8.8.11_GA" => \&upgrade8811GA,
   "8.8.12_GA" => \&upgrade8812GA,
+  "8.8.15_GA" => \&upgrade8815GA,
 );
 
 my %updateMysql = (
@@ -2138,6 +2141,15 @@ sub upgrade8812GA {
 
   qx($su "zmlocalconfig -e mailboxd_truststore=/opt/zimbra/common/lib/jvm/java/lib/security/cacerts");
   qx($su "zmlocalconfig -e mailboxd_java_options='-server -Dhttps.protocols=TLSv1,TLSv1.1,TLSv1.2 -Djdk.tls.client.protocols=TLSv1,TLSv1.1,TLSv1.2 -Djava.awt.headless=true -Dsun.net.inetaddr.ttl=$ENV{networkaddress_cache_ttl} -Dorg.apache.jasper.compiler.disablejsr199=true -XX:+UseG1GC -XX:SoftRefLRUPolicyMSPerMB=1 -XX:-OmitStackTraceInFastThrow -verbose:gc  -Xlog:gc*=debug,safepoint=info:file=/opt/zimbra/log/gc.log:time:filecount=20,filesize=10m -Djava.net.preferIPv4Stack=true'");
+  return 0;
+}
+
+sub upgrade8815GA {
+   print "applying 8815GA upgrade changes\n";
+   
+   print "Updating OWASP LC config\n";
+
+  main::deleteLocalConfig("zimbra_use_owasp_html_sanitizer");
   return 0;
 }
 
