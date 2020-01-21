@@ -1,3 +1,4 @@
+@ENTRIES = (
    {
       "dir"             => "zm-mailbox",
       "ant_targets"     => ["pkg-after-plough-through-tests"],
