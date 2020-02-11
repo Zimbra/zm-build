@@ -298,7 +298,7 @@ CreateDebianPackage()
 
       if [ "${buildType}" == "NETWORK" ]
       then
-		 MORE_DEPENDS="${MORE_DEPENDS} zimbra-modern-ui zimbra-modern-zimlets"
+         MORE_DEPENDS="${MORE_DEPENDS}, zimbra-modern-ui, zimbra-modern-zimlets"
       fi
       cat ${repoDir}/zm-build/rpmconf/Spec/${currentScript}.deb \
          | sed -e "s/@@VERSION@@/${releaseNo}.${releaseCandidate}.${buildNo}.${os/_/.}/" \
@@ -322,7 +322,7 @@ CreateRhelPackage()
                        | sed '1s/^/, /; :a; {N;s/\n/, /;ba}')";
     if [ "${buildType}" == "NETWORK" ]
     then
-	   MORE_DEPENDS="${MORE_DEPENDS} zimbra-modern-ui zimbra-modern-zimlets"
+       MORE_DEPENDS="${MORE_DEPENDS}, zimbra-modern-ui, zimbra-modern-zimlets"
     fi
 
     cat ${repoDir}/zm-build/rpmconf/Spec/${currentScript}.spec | \
