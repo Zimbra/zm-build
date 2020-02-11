@@ -143,10 +143,6 @@ main()
       echo "\t\t***** css, public and t content *****" >> ${buildLogFile}
       mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/jetty_base/webapps/zimbra/css
       mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/jetty_base/webapps/zimbra/public
-      cp ${repoDir}/zm-touch-client/build/WebRoot/css/ztouch.css ${repoDir}/zm-build/${currentPackage}/opt/zimbra/jetty_base/webapps/zimbra/css/ztouch.css
-      cp ${repoDir}/zm-touch-client/build/WebRoot/public/loginTouch.jsp ${repoDir}/zm-build/${currentPackage}/opt/zimbra/jetty_base/webapps/zimbra/public/loginTouch.jsp
-      cp -rf ${repoDir}/zm-touch-client/build/WebRoot/t ${repoDir}/zm-build/${currentPackage}/opt/zimbra/jetty_base/webapps/zimbra/
-      cp -rf ${repoDir}/zm-touch-client/build/WebRoot/tdebug ${repoDir}/zm-build/${currentPackage}/opt/zimbra/jetty_base/webapps/zimbra/
     fi
 
     echo "\t\t***** help content *****" >> ${buildLogFile}
@@ -300,6 +296,10 @@ CreateDebianPackage()
                          | grep -e zimbra-mbox- \
                          | sed '1s/^/, /; :a; {N;s/\n/, /;ba}')";
 
+      if [ "${buildType}" == "NETWORK" ]
+      then
+         MORE_DEPENDS = "${MORE_DEPENDS} zimbra-modern-ui zimbra-modern-zimlets"
+      fi
       cat ${repoDir}/zm-build/rpmconf/Spec/${currentScript}.deb \
          | sed -e "s/@@VERSION@@/${releaseNo}.${releaseCandidate}.${buildNo}.${os/_/.}/" \
                -e "s/@@branch@@/${buildTimeStamp}/" \
@@ -320,6 +320,10 @@ CreateRhelPackage()
                        | sed -e 's/-[0-9].*//' \
                        | grep -e zimbra-mbox- \
                        | sed '1s/^/, /; :a; {N;s/\n/, /;ba}')";
+    if [ "${buildType}" == "NETWORK" ]
+    then
+       MORE_DEPENDS = "${MORE_DEPENDS} zimbra-modern-ui zimbra-modern-zimlets"
+    fi
 
     cat ${repoDir}/zm-build/rpmconf/Spec/${currentScript}.spec | \
     	sed -e "s/@@VERSION@@/${releaseNo}_${releaseCandidate}_${buildNo}.${os}/" \
