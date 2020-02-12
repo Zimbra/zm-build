@@ -1750,7 +1750,21 @@ removeExistingPackages() {
         $PACKAGERM zimbra-talk >/dev/null 2>&1
         echo "done"
       fi
-
+       
+      isInstalled "zimbra-modern-ui"
+      if [ x$PKGINSTALLED != "x" ]; then
+         echo -n "   zimbra-modern-ui..."
+         $PACKAGERM zimbra-modern-ui >/dev/null 2>&1
+        echo "done"
+      fi
+	  
+      isInstalled "zimbra-modern-zimlets"
+      if [ x$PKGINSTALLED != "x" ]; then
+         echo -n "   zimbra-modern-zimlets..."
+         $PACKAGERM zimbra-modern-zimlets >/dev/null 2>&1
+         echo "done"
+      fi
+	  
       isInstalled "zimbra-patch"
       if [ x$PKGINSTALLED != "x" ]; then
         echo -n "   zimbra-patch..."
@@ -2459,6 +2473,10 @@ getInstallPackages() {
 
     if [ $i = "zimbra-license-tools" ]; then
       response="yes"
+    elif [ $i = "zimbra-modern-ui" ]; then
+      ifStoreSelectedY
+    elif [ $i = "zimbra-modern-zimlets" ]; then
+      ifStoreSelectedY
     elif [ $i = "zimbra-patch" ]; then
       ifStoreSelectedY
     elif [ $i = "zimbra-mta-patch" ]; then

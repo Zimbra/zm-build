@@ -39,6 +39,8 @@ SERVICES=""
 OPTIONAL_PACKAGES="zimbra-qatest \
 zimbra-drive \
 zimbra-imapd \
+zimbra-modern-ui \
+zimbra-modern-zimlets \
 zimbra-patch \
 zimbra-mta-patch \
 zimbra-proxy-patch \

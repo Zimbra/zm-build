@@ -296,10 +296,6 @@ CreateDebianPackage()
                          | grep -e zimbra-mbox- \
                          | sed '1s/^/, /; :a; {N;s/\n/, /;ba}')";
 
-      if [ "${buildType}" == "NETWORK" ]
-      then
-         MORE_DEPENDS="${MORE_DEPENDS}, zimbra-modern-ui, zimbra-modern-zimlets"
-      fi
       cat ${repoDir}/zm-build/rpmconf/Spec/${currentScript}.deb \
          | sed -e "s/@@VERSION@@/${releaseNo}.${releaseCandidate}.${buildNo}.${os/_/.}/" \
                -e "s/@@branch@@/${buildTimeStamp}/" \
@@ -320,10 +316,6 @@ CreateRhelPackage()
                        | sed -e 's/-[0-9].*//' \
                        | grep -e zimbra-mbox- \
                        | sed '1s/^/, /; :a; {N;s/\n/, /;ba}')";
-    if [ "${buildType}" == "NETWORK" ]
-    then
-       MORE_DEPENDS="${MORE_DEPENDS}, zimbra-modern-ui, zimbra-modern-zimlets"
-    fi
 
     cat ${repoDir}/zm-build/rpmconf/Spec/${currentScript}.spec | \
     	sed -e "s/@@VERSION@@/${releaseNo}_${releaseCandidate}_${buildNo}.${os}/" \
