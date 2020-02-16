@@ -1736,20 +1736,6 @@ removeExistingPackages() {
         $PACKAGERM zimbra-chat >/dev/null 2>&1
         echo "done"
       fi
-
-      isInstalled "zimbra-drive"
-      if [ x$PKGINSTALLED != "x" ]; then
-        echo -n "   zimbra-drive..."
-        $PACKAGERM zimbra-drive >/dev/null 2>&1
-        echo "done"
-      fi
-
-      isInstalled "zimbra-talk"
-      if [ x$PKGINSTALLED != "x" ]; then
-        echo -n "   zimbra-talk..."
-        $PACKAGERM zimbra-talk >/dev/null 2>&1
-        echo "done"
-      fi
        
       isInstalled "zimbra-modern-ui"
       if [ x$PKGINSTALLED != "x" ]; then
@@ -2377,14 +2363,7 @@ fi
 }
 
 getChatOrTalkPackage() {
- if [ $response = "yes" ]; then
-    askInstallPkgYN "Install zimbra-talk" "yes" "Y" "N"
-    if [ $response = "yes" ]; then
-       INSTALL_PACKAGES="$INSTALL_PACKAGES zimbra-talk"
-    elif [ $response = "no" ]; then
-       response="yes"
-    fi
-  elif [ $response = "no" ]; then
+ if [ $response = "no" ]; then
     askInstallPkgYN "Install zimbra-chat" "yes" "Y" "N"
     if [ $response = "yes" ]; then
        INSTALL_PACKAGES="$INSTALL_PACKAGES zimbra-chat"
@@ -2426,12 +2405,6 @@ getInstallPackages() {
       echo $INSTALLED_PACKAGES | grep $i > /dev/null 2>&1
       if [ $? = 0 ]; then
         echo "    Upgrading $i"
-        if [ $i = "zimbra-network-modules-ng" ]; then
-            askInstallPkgYN "Install zimbra-talk" "yes" "Y" "N"
-            if [ $response = "yes" ]; then
-                INSTALL_PACKAGES="$INSTALL_PACKAGES zimbra-talk"
-            fi
-        fi
         if [ $i = "zimbra-mta" ]; then
           CONFLICTS="no"
           for j in $CONFLICT_PACKAGES; do
@@ -2494,10 +2467,6 @@ getInstallPackages() {
 	if [ $STORE_SELECTED = "yes" ]; then
           askInstallPkgYN "Install $i" "yes" "N" "N"
 	fi
-      elif [ $i = "zimbra-drive" ]; then
-	if [ $STORE_SELECTED = "yes" ]; then
-          askInstallPkgYN "Install $i" "yes" "N" "N"
-	fi
       elif [ $i = "zimbra-imapd" ]; then
         askInstallPkgYN "Install $i (BETA - for evaluation only)" "no" "N" "N"
       elif [ $i = "zimbra-network-modules-ng" ]; then
@@ -2514,10 +2483,6 @@ getInstallPackages() {
       elif [ $i = "zimbra-convertd" ]; then
         askInstallPkgYN "Install $i" "no" "Y" "N"
       elif [ $i = "zimbra-chat" ]; then
-	if [ $STORE_SELECTED = "yes" ]; then
-          askInstallPkgYN "Install $i" "yes" "Y" "N"
-	fi
-      elif [ $i = "zimbra-drive" ]; then
 	if [ $STORE_SELECTED = "yes" ]; then
           askInstallPkgYN "Install $i" "yes" "Y" "N"
 	fi

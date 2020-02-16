@@ -37,7 +37,6 @@ zimbra-archiving"
 SERVICES=""
 
 OPTIONAL_PACKAGES="zimbra-qatest \
-zimbra-drive \
 zimbra-imapd \
 zimbra-modern-ui \
 zimbra-modern-zimlets \
@@ -49,8 +48,7 @@ zimbra-license-extension \
 zimbra-network-store \
 zimbra-network-modules-ng"
 
-CHAT_PACKAGES="zimbra-chat \
-zimbra-talk"
+CHAT_PACKAGES="zimbra-chat"
 
 PACKAGE_DIR="$(CDPATH= cd "$(dirname "$0")" && pwd)/packages"
 
