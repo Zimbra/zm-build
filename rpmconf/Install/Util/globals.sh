@@ -37,7 +37,6 @@ zimbra-archiving"
 SERVICES=""
 
 OPTIONAL_PACKAGES="zimbra-qatest \
-zimbra-imapd \
 zimbra-modern-ui \
 zimbra-modern-zimlets \
 zimbra-patch \
