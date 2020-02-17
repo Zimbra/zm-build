@@ -47,8 +47,6 @@ zimbra-license-extension \
 zimbra-network-store \
 zimbra-network-modules-ng"
 
-CHAT_PACKAGES="zimbra-chat"
-
 PACKAGE_DIR="$(CDPATH= cd "$(dirname "$0")" && pwd)/packages"
 
 SAVEDIR="/opt/zimbra/.saveconfig"

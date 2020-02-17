@@ -674,16 +674,6 @@ checkExistingInstall() {
     fi
   done
 
-  for i in $CHAT_PACKAGES; do
-    isInstalled $i
-    if [ x$PKGINSTALLED != "x" ]; then
-      echo "    $i...FOUND $PKGINSTALLED"
-      INSTALLED_PACKAGES="$INSTALLED_PACKAGES $i"
-    else
-      echo "    $i...NOT FOUND"
-    fi
-  done
-
   for i in $PACKAGES $CORE_PACKAGES; do
     echo -n "    $i..."
     isInstalled $i
@@ -1656,12 +1646,6 @@ saveExistingConfig() {
 findUbuntuExternalPackageDependencies() {
   # Handle external packages like logwatch, mailutils depends on zimbra-mta.
   if [ $INSTALLED = "yes" -a $ISUBUNTU = "true" ]; then
-    for i in $CHAT_PACKAGES; do
-      isInstalled $i
-     if [ x$PKGINSTALLED != "x" ]; then
-      INSTALLED_PACKAGES="$INSTALLED_PACKAGES $i"
-     fi
-    done
     $PACKAGERMSIMULATE $INSTALLED_PACKAGES > /dev/null 2>&1
     if [ $? -ne 0 ]; then
       EXTPACKAGESTMP=`$PACKAGERMSIMULATE $INSTALLED_PACKAGES 2>&1 | grep " depends on " | cut -d' ' -f2 | grep -v zimbra`
@@ -1727,13 +1711,6 @@ removeExistingPackages() {
       if [ x$PKGINSTALLED != "x" ]; then
         echo -n "   zimbra-archiving..."
         $PACKAGERM zimbra-archiving >/dev/null 2>&1
-        echo "done"
-      fi
-
-      isInstalled "zimbra-chat"
-      if [ x$PKGINSTALLED != "x" ]; then
-        echo -n "   zimbra-chat..."
-        $PACKAGERM zimbra-chat >/dev/null 2>&1
         echo "done"
       fi
        
@@ -2389,10 +2366,6 @@ getInstallPackages() {
   MTA_SELECTED="no"
   PROXY_SELECTED="no"
 
-  if [ x"$ZMTYPE_INSTALLABLE" = "xFOSS" ]; then
-     AVAILABLE_PACKAGES="$AVAILABLE_PACKAGES zimbra-chat"
-  fi
-
   for i in $AVAILABLE_PACKAGES; do
     if [ $i = "zimbra-core" ]; then
       continue
@@ -2463,14 +2436,13 @@ getInstallPackages() {
     elif [ $UPGRADE = "yes" ]; then
       if [ $i = "zimbra-archiving" ]; then
         askInstallPkgYN "Install $i" "yes" "N" "N"
-      elif [ $i = "zimbra-chat" ]; then
 	if [ $STORE_SELECTED = "yes" ]; then
           askInstallPkgYN "Install $i" "yes" "N" "N"
 	fi
       elif [ $i = "zimbra-network-modules-ng" ]; then
 	if [ $STORE_SELECTED = "yes" ]; then
           askInstallPkgYN "Install $i" "yes" "N" "N"
-	  getChatOrTalkPackage
+	  #getChatOrTalkPackage
 	fi
       else
         askYN "Install $i" "N"
@@ -2480,14 +2452,13 @@ getInstallPackages() {
         askInstallPkgYN "Install $i" "yes" "N" "N"
       elif [ $i = "zimbra-convertd" ]; then
         askInstallPkgYN "Install $i" "no" "Y" "N"
-      elif [ $i = "zimbra-chat" ]; then
 	if [ $STORE_SELECTED = "yes" ]; then
           askInstallPkgYN "Install $i" "yes" "Y" "N"
 	fi
       elif [ $i = "zimbra-network-modules-ng" ]; then
 	if [ $STORE_SELECTED = "yes" ]; then
           askInstallPkgYN "Install $i" "yes" "Y" "N"
-	  getChatOrTalkPackage
+	  #getChatOrTalkPackage
 	fi
       elif [ $i = "zimbra-dnscache" ]; then
         if [ $MTA_SELECTED = "yes" ]; then
