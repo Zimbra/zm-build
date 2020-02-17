@@ -2436,9 +2436,6 @@ getInstallPackages() {
     elif [ $UPGRADE = "yes" ]; then
       if [ $i = "zimbra-archiving" ]; then
         askInstallPkgYN "Install $i" "yes" "N" "N"
-	if [ $STORE_SELECTED = "yes" ]; then
-          askInstallPkgYN "Install $i" "yes" "N" "N"
-	fi
       elif [ $i = "zimbra-network-modules-ng" ]; then
 	if [ $STORE_SELECTED = "yes" ]; then
           askInstallPkgYN "Install $i" "yes" "N" "N"
