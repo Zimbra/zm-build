@@ -179,9 +179,9 @@ main()
     then
       echo -e "\t\tCopy ext-common files of /opt/zimbra/lib/" >> ${buildLogFile}
       mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext-common
-      cp -f ${repoDir}/zm-zcs-lib/build/dist/bcpkix-jdk15on-1.55.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext-common/
-      cp -f ${repoDir}/zm-zcs-lib/build/dist/bcmail-jdk15on-1.55.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext-common/
-      cp -f ${repoDir}/zm-zcs-lib/build/dist/bcprov-jdk15on-1.55.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext-common/
+      cp -f ${repoDir}/zm-zcs-lib/build/dist/bcpkix-jdk15on-1.64.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext-common/
+      cp -f ${repoDir}/zm-zcs-lib/build/dist/bcmail-jdk15on-1.64.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext-common/
+      cp -f ${repoDir}/zm-zcs-lib/build/dist/bcprov-jdk15on-1.64.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext-common/
       cp -f ${repoDir}/zm-zcs-lib/build/dist/saaj-impl-1.5.1.jar     ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext-common/
     fi
 
