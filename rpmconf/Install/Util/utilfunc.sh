@@ -1670,7 +1670,7 @@ findUbuntuExternalPackageDependencies() {
       done
 
       if [ -z "$EXTPACKAGES" ]; then
-        removeErrorMessage
+        echo "External package dependencies not found"
       else
         echo "External package dependencies found: $EXTPACKAGES"
         $PACKAGERMSIMULATE $INSTALLED_PACKAGES $EXTPACKAGES >> $LOGFILE 2>&1
