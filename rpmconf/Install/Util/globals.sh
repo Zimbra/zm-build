@@ -50,7 +50,7 @@ zimbra-network-store \
 zimbra-network-modules-ng"
 
 CHAT_PACKAGES="zimbra-chat \
-zimbra-talk"
+zimbra-connect"
 
 PACKAGE_DIR="$(CDPATH= cd "$(dirname "$0")" && pwd)/packages"
 

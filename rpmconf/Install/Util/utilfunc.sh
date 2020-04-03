@@ -1713,7 +1713,7 @@ removeExistingPackages() {
 
 removeChatIfInstalled() {
    for i in $INSTALL_PACKAGES; do
-     if [ x$i = "xzimbra-talk" ]; then
+     if [ x$i = "xzimbra-connect" ]; then
         echo ""
         echo "Checking zimbra-chat already installed or not..."
        isInstalled "zimbra-chat"
@@ -1726,6 +1726,19 @@ removeChatIfInstalled() {
         fi
       fi
     done
+}
+
+removeTalkIfInstalled() {
+     echo ""
+     echo "Remove zimbra-talk if it is installed ..."
+     isInstalled "zimbra-talk"
+     if [ x$PKGINSTALLED != "x" ]; then
+          echo -n "   zimbra-talk FOUND..."
+          echo ""
+          echo -n "   Removing zimbra-talk..."
+          $PACKAGERM zimbra-talk >/dev/null 2>&1
+          echo "done"
+     fi
 }
 
 removeExistingInstall() {
@@ -1781,6 +1794,7 @@ removeExistingInstall() {
     if [ "$UPGRADE" = "yes" -a "$POST87UPGRADE" = "true" -a "$FORCE_UPGRADE" != "yes" -a "$ZM_CUR_BUILD" != "$ZM_INST_BUILD" ]; then
       echo "Upgrading the remote packages"
       removeChatIfInstalled
+	  removeTalkIfInstalled
     else
       removeExistingPackages
     fi
@@ -2232,11 +2246,11 @@ fi
   fi
 }
 
-getChatOrTalkPackage() {
+getChatOrConnectPackage() {
  if [ $response = "yes" ]; then
-    askInstallPkgYN "Install zimbra-talk" "yes" "Y" "N"
+    askInstallPkgYN "Install zimbra-connect" "yes" "Y" "N"
     if [ $response = "yes" ]; then
-       INSTALL_PACKAGES="$INSTALL_PACKAGES zimbra-talk"
+       INSTALL_PACKAGES="$INSTALL_PACKAGES zimbra-connect"
     elif [ $response = "no" ]; then
        response="yes"
     fi
@@ -2283,9 +2297,9 @@ getInstallPackages() {
       if [ $? = 0 ]; then
         echo "    Upgrading $i"
         if [ $i = "zimbra-network-modules-ng" ]; then
-            askInstallPkgYN "Install zimbra-talk" "yes" "Y" "N"
+            askInstallPkgYN "Install zimbra-connect" "yes" "Y" "N"
             if [ $response = "yes" ]; then
-                INSTALL_PACKAGES="$INSTALL_PACKAGES zimbra-talk"
+                INSTALL_PACKAGES="$INSTALL_PACKAGES zimbra-connect"
             fi
         fi
         if [ $i = "zimbra-mta" ]; then
@@ -2359,7 +2373,7 @@ getInstallPackages() {
       elif [ $i = "zimbra-network-modules-ng" ]; then
 	if [ $STORE_SELECTED = "yes" ]; then
           askInstallPkgYN "Install $i" "yes" "N" "N"
-	  getChatOrTalkPackage
+	  getChatOrConnectPackage
 	fi
       else
         askYN "Install $i" "N"
@@ -2382,7 +2396,7 @@ getInstallPackages() {
       elif [ $i = "zimbra-network-modules-ng" ]; then
 	if [ $STORE_SELECTED = "yes" ]; then
           askInstallPkgYN "Install $i" "yes" "Y" "N"
-	  getChatOrTalkPackage
+	  getChatOrConnectPackage
 	fi
       elif [ $i = "zimbra-dnscache" ]; then
         if [ $MTA_SELECTED = "yes" ]; then
