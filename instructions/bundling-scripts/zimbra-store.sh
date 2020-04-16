@@ -143,10 +143,6 @@ main()
       echo "\t\t***** css, public and t content *****" >> ${buildLogFile}
       mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/jetty_base/webapps/zimbra/css
       mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/jetty_base/webapps/zimbra/public
-      cp ${repoDir}/zm-touch-client/build/WebRoot/css/ztouch.css ${repoDir}/zm-build/${currentPackage}/opt/zimbra/jetty_base/webapps/zimbra/css/ztouch.css
-      cp ${repoDir}/zm-touch-client/build/WebRoot/public/loginTouch.jsp ${repoDir}/zm-build/${currentPackage}/opt/zimbra/jetty_base/webapps/zimbra/public/loginTouch.jsp
-      cp -rf ${repoDir}/zm-touch-client/build/WebRoot/t ${repoDir}/zm-build/${currentPackage}/opt/zimbra/jetty_base/webapps/zimbra/
-      cp -rf ${repoDir}/zm-touch-client/build/WebRoot/tdebug ${repoDir}/zm-build/${currentPackage}/opt/zimbra/jetty_base/webapps/zimbra/
     fi
 
     echo "\t\t***** help content *****" >> ${buildLogFile}
@@ -183,9 +179,9 @@ main()
     then
       echo -e "\t\tCopy ext-common files of /opt/zimbra/lib/" >> ${buildLogFile}
       mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext-common
-      cp -f ${repoDir}/zm-zcs-lib/build/dist/bcpkix-jdk15on-1.55.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext-common/
-      cp -f ${repoDir}/zm-zcs-lib/build/dist/bcmail-jdk15on-1.55.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext-common/
-      cp -f ${repoDir}/zm-zcs-lib/build/dist/bcprov-jdk15on-1.55.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext-common/
+      cp -f ${repoDir}/zm-zcs-lib/build/dist/bcpkix-jdk15on-1.64.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext-common/
+      cp -f ${repoDir}/zm-zcs-lib/build/dist/bcmail-jdk15on-1.64.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext-common/
+      cp -f ${repoDir}/zm-zcs-lib/build/dist/bcprov-jdk15on-1.64.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext-common/
       cp -f ${repoDir}/zm-zcs-lib/build/dist/saaj-impl-1.5.1.jar     ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext-common/
     fi
 

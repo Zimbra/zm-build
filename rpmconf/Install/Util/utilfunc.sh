@@ -1670,7 +1670,7 @@ findUbuntuExternalPackageDependencies() {
       done
 
       if [ -z "$EXTPACKAGES" ]; then
-        removeErrorMessage
+        echo "External package dependencies not found"
       else
         echo "External package dependencies found: $EXTPACKAGES"
         $PACKAGERMSIMULATE $INSTALLED_PACKAGES $EXTPACKAGES >> $LOGFILE 2>&1
@@ -1702,148 +1702,18 @@ removeExistingPackages() {
   echo ""
   echo "Removing existing packages"
   echo ""
-  if [ $ISUBUNTU = "true" ] && [ ! -z "$EXTPACKAGES" ]; then
-    echo -n "$EXTPACKAGES ..."
-    apt-get remove -y $EXTPACKAGES >> $LOGFILE 2>&1
-    if [ $? -ne 0 ]; then
-      echo "Failed to remove $EXTPACKAGES"
+  $REPORM zimbra-* >>$LOGFILE 2>&1
+  if [ $? -ne 0 ]; then
+      echo "Failed to remove existing zimbra packages"
       exit 1;
-    fi
-    echo "done"
+  else
+      echo "done"
   fi
-
-  for p in $INSTALLED_PACKAGES; do
-    if [ $p = "zimbra-core" ]; then
-      MOREPACKAGES="$MOREPACKAGES zimbra-core"
-      continue
-    fi
-    if [ $p = "zimbra-apache" ]; then
-      MOREPACKAGES="zimbra-apache $MOREPACKAGES"
-      continue
-    fi
-    if [ $p = "zimbra-store" ]; then
-
-      isInstalled "zimbra-archiving"
-      if [ x$PKGINSTALLED != "x" ]; then
-        echo -n "   zimbra-archiving..."
-        $PACKAGERM zimbra-archiving >/dev/null 2>&1
-        echo "done"
-      fi
-
-      isInstalled "zimbra-chat"
-      if [ x$PKGINSTALLED != "x" ]; then
-        echo -n "   zimbra-chat..."
-        $PACKAGERM zimbra-chat >/dev/null 2>&1
-        echo "done"
-      fi
-
-      isInstalled "zimbra-drive"
-      if [ x$PKGINSTALLED != "x" ]; then
-        echo -n "   zimbra-drive..."
-        $PACKAGERM zimbra-drive >/dev/null 2>&1
-        echo "done"
-      fi
-
-      isInstalled "zimbra-talk"
-      if [ x$PKGINSTALLED != "x" ]; then
-        echo -n "   zimbra-talk..."
-        $PACKAGERM zimbra-talk >/dev/null 2>&1
-        echo "done"
-      fi
-
-      isInstalled "zimbra-patch"
-      if [ x$PKGINSTALLED != "x" ]; then
-        echo -n "   zimbra-patch..."
-        $PACKAGERM zimbra-patch >/dev/null 2>&1
-        echo "done"
-      fi
-
-      isInstalled "zimbra-proxy-patch"
-      if [ x$PKGINSTALLED != "x" ]; then
-        echo -n "   zimbra-proxy-patch..."
-        $PACKAGERM zimbra-proxy-patch >/dev/null 2>&1
-        echo "done"
-      fi
-
-      isInstalled "zimbra-mta-patch"
-      if [ x$PKGINSTALLED != "x" ]; then
-        echo -n "   zimbra-mta-patch..."
-        $PACKAGERM zimbra-mta-patch >/dev/null 2>&1
-        echo "done"
-      fi
-
-      isInstalled "zimbra-zco"
-      if [ x$PKGINSTALLED != "x" ]; then
-        echo -n "   zimbra-zco..."
-        $PACKAGERM zimbra-zco >/dev/null 2>&1
-        echo "done"
-      fi
-
-      isInstalled "zimbra-network-modules-ng"
-      if [ x$PKGINSTALLED != "x" ]; then
-        echo -n "   zimbra-network-modules-ng..."
-        $PACKAGERM zimbra-network-modules-ng >/dev/null 2>&1
-        echo "done"
-      fi
-    fi
-    isInstalled $p
-
-    if [ x$PKGINSTALLED != "x" ]; then
-      echo -n "   $p..."
-	  if [ x$p = "xzimbra-memcached" ]; then
-        isInstalled "zimbra-memcached-base"
-        if [ x$PKGINSTALLED != "x" ]; then
-          $REPORM zimbra-memcached-base >>$LOGFILE 2>&1
-        else
-          $PACKAGERM $p > /dev/null 2>&1
-        fi
-      else
-        $PACKAGERM $p > /dev/null 2>&1
-	  fi
-      if [ x$p = "xzimbra-dnscache" ]; then
-        $REPORM zimbra-dnscache-base >>$LOGFILE 2>&1
-      fi
-      if [ x$p = "xzimbra-ldap" ]; then
-        $REPORM zimbra-ldap-base >>$LOGFILE 2>&1
-      fi
-      if [ x$p = "xzimbra-mta" ]; then
-        $REPORM zimbra-mta-base >>$LOGFILE 2>&1
-      fi
-      if [ x$p = "xzimbra-proxy" ]; then
-        $REPORM zimbra-proxy-base >>$LOGFILE 2>&1
-      fi
-      if [ x$p = "xzimbra-snmp" ]; then
-        $REPORM zimbra-snmp-base >>$LOGFILE 2>&1
-      fi
-      if [ x$p = "xzimbra-spell" ]; then
-        $REPORM zimbra-spell-base >>$LOGFILE 2>&1
-      fi
-      if [ x$p = "xzimbra-store" ]; then
-        $REPORM zimbra-store-base >>$LOGFILE 2>&1
-      fi
-      echo "done"
-    fi
-  done
-
-  for p in $MOREPACKAGES; do
-    isInstalled $p
-    if [ x$PKGINSTALLED != "x" ]; then
-      echo -n "   $p..."
-      $PACKAGERM $p > /dev/null 2>&1
-      if [ x$p = "xzimbra-core" ]; then
-        $REPORM zimbra-base >>$LOGFILE 2>&1
-      fi
-      if [ x$p = "xzimbra-apache" ]; then
-        $REPORM zimbra-apache-base >>$LOGFILE 2>&1
-      fi
-      echo "done"
-    fi
-  done
 }
 
 removeChatIfInstalled() {
    for i in $INSTALL_PACKAGES; do
-     if [ x$i = "xzimbra-talk" ]; then
+     if [ x$i = "xzimbra-connect" ]; then
         echo ""
         echo "Checking zimbra-chat already installed or not..."
        isInstalled "zimbra-chat"
@@ -1856,6 +1726,19 @@ removeChatIfInstalled() {
         fi
       fi
     done
+}
+
+removeTalkIfInstalled() {
+     echo ""
+     echo "Remove zimbra-talk if it is installed ..."
+     isInstalled "zimbra-talk"
+     if [ x$PKGINSTALLED != "x" ]; then
+          echo -n "   zimbra-talk FOUND..."
+          echo ""
+          echo -n "   Removing zimbra-talk..."
+          $PACKAGERM zimbra-talk >/dev/null 2>&1
+          echo "done"
+     fi
 }
 
 removeExistingInstall() {
@@ -1911,6 +1794,7 @@ removeExistingInstall() {
     if [ "$UPGRADE" = "yes" -a "$POST87UPGRADE" = "true" -a "$FORCE_UPGRADE" != "yes" -a "$ZM_CUR_BUILD" != "$ZM_INST_BUILD" ]; then
       echo "Upgrading the remote packages"
       removeChatIfInstalled
+	  removeTalkIfInstalled
     else
       removeExistingPackages
     fi
@@ -2291,12 +2175,12 @@ configurePackageServer() {
       fi
 cat > /etc/apt/sources.list.d/zimbra.list << EOF
 deb     [arch=amd64] https://$PACKAGE_SERVER/apt/87 $repo zimbra
-deb     [arch=amd64] https://$PACKAGE_SERVER/apt/8815 $repo zimbra
+deb     [arch=amd64] https://$PACKAGE_SERVER/apt/90 $repo zimbra
 deb-src [arch=amd64] https://$PACKAGE_SERVER/apt/87 $repo zimbra
 EOF
 if [ x"$ZMTYPE_INSTALLABLE" = "xNETWORK" ]; then
 cat >> /etc/apt/sources.list.d/zimbra.list << EOF
-deb     [arch=amd64] https://$PACKAGE_SERVER/apt/8815-ne $repo zimbra
+deb     [arch=amd64] https://$PACKAGE_SERVER/apt/90-ne $repo zimbra
 EOF
 fi
       apt-get update >>$LOGFILE 2>&1
@@ -2332,26 +2216,26 @@ name=Zimbra RPM Repository
 baseurl=https://$PACKAGE_SERVER/rpm/87/$repo
 gpgcheck=1
 enabled=1
-[zimbra-8815-oss]
+[zimbra-90-oss]
 name=Zimbra New RPM Repository
-baseurl=https://$PACKAGE_SERVER/rpm/8815/$repo
+baseurl=https://$PACKAGE_SERVER/rpm/90/$repo
 gpgcheck=1
 enabled=1
 EOF
       yum --disablerepo=* --enablerepo=zimbra clean metadata >>$LOGFILE 2>&1
       yum check-update --disablerepo=* --enablerepo=zimbra --noplugins >>$LOGFILE 2>&1
-      yum --disablerepo=* --enablerepo=zimbra-8815-oss clean metadata >>$LOGFILE 2>&1
-      yum check-update --disablerepo=* --enablerepo=zimbra-8815-oss --noplugins >>$LOGFILE 2>&1
+      yum --disablerepo=* --enablerepo=zimbra-90-oss clean metadata >>$LOGFILE 2>&1
+      yum check-update --disablerepo=* --enablerepo=zimbra-90-oss --noplugins >>$LOGFILE 2>&1
 if [ x"$ZMTYPE_INSTALLABLE" = "xNETWORK" ]; then
 cat >> /etc/yum.repos.d/zimbra.repo <<EOF
-[zimbra-8815-network]
+[zimbra-90-network]
 name=Zimbra New RPM Repository
-baseurl=https://$PACKAGE_SERVER/rpm/8815-ne/$repo
+baseurl=https://$PACKAGE_SERVER/rpm/90-ne/$repo
 gpgcheck=1
 enabled=1
 EOF
-      yum --disablerepo=* --enablerepo=zimbra-8815-network clean metadata >>$LOGFILE 2>&1
-      yum check-update --disablerepo=* --enablerepo=zimbra-8815-network --noplugins >>$LOGFILE 2>&1
+      yum --disablerepo=* --enablerepo=zimbra-90-network clean metadata >>$LOGFILE 2>&1
+      yum check-update --disablerepo=* --enablerepo=zimbra-90-network --noplugins >>$LOGFILE 2>&1
 fi
       if [ $? -ne 0 -a $? -ne 100 ]; then
         echo "ERROR: yum check-update failed"
@@ -2362,11 +2246,11 @@ fi
   fi
 }
 
-getChatOrTalkPackage() {
+getChatOrConnectPackage() {
  if [ $response = "yes" ]; then
-    askInstallPkgYN "Install zimbra-talk" "yes" "Y" "N"
+    askInstallPkgYN "Install zimbra-connect" "yes" "Y" "N"
     if [ $response = "yes" ]; then
-       INSTALL_PACKAGES="$INSTALL_PACKAGES zimbra-talk"
+       INSTALL_PACKAGES="$INSTALL_PACKAGES zimbra-connect"
     elif [ $response = "no" ]; then
        response="yes"
     fi
@@ -2413,9 +2297,9 @@ getInstallPackages() {
       if [ $? = 0 ]; then
         echo "    Upgrading $i"
         if [ $i = "zimbra-network-modules-ng" ]; then
-            askInstallPkgYN "Install zimbra-talk" "yes" "Y" "N"
+            askInstallPkgYN "Install zimbra-connect" "yes" "Y" "N"
             if [ $response = "yes" ]; then
-                INSTALL_PACKAGES="$INSTALL_PACKAGES zimbra-talk"
+                INSTALL_PACKAGES="$INSTALL_PACKAGES zimbra-connect"
             fi
         fi
         if [ $i = "zimbra-mta" ]; then
@@ -2459,6 +2343,10 @@ getInstallPackages() {
 
     if [ $i = "zimbra-license-tools" ]; then
       response="yes"
+    elif [ $i = "zimbra-modern-ui" ]; then
+      ifStoreSelectedY
+    elif [ $i = "zimbra-modern-zimlets" ]; then
+      ifStoreSelectedY
     elif [ $i = "zimbra-patch" ]; then
       ifStoreSelectedY
     elif [ $i = "zimbra-mta-patch" ]; then
@@ -2485,7 +2373,7 @@ getInstallPackages() {
       elif [ $i = "zimbra-network-modules-ng" ]; then
 	if [ $STORE_SELECTED = "yes" ]; then
           askInstallPkgYN "Install $i" "yes" "N" "N"
-	  getChatOrTalkPackage
+	  getChatOrConnectPackage
 	fi
       else
         askYN "Install $i" "N"
@@ -2508,7 +2396,7 @@ getInstallPackages() {
       elif [ $i = "zimbra-network-modules-ng" ]; then
 	if [ $STORE_SELECTED = "yes" ]; then
           askInstallPkgYN "Install $i" "yes" "Y" "N"
-	  getChatOrTalkPackage
+	  getChatOrConnectPackage
 	fi
       elif [ $i = "zimbra-dnscache" ]; then
         if [ $MTA_SELECTED = "yes" ]; then
