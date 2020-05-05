@@ -89,8 +89,6 @@ CreateRhelPackage()
         ${repoDir}/zm-build/${currentScript}.spec
     echo "%attr(-, root, root) /opt/zimbra/common/etc/openldap/zimbra/config/cn=config/olcDatabase={2}mdb" >> \
         ${repoDir}/zm-build/${currentScript}.spec
-    echo "%attr(-, root, root) /opt/zimbra/common/etc/openldap/zimbra/config/cn=config/olcDatabase={2}mdb/*" >> \
-        ${repoDir}/zm-build/${currentScript}.spec
     echo "%attr(-, root, root) /opt/zimbra/common/etc/openldap/zimbra/schema" >> \
         ${repoDir}/zm-build/${currentScript}.spec
     echo "%attr(-, root, root) /opt/zimbra/common/etc/openldap/zimbra/schema/*" >> \
