@@ -395,7 +395,7 @@
       "ant_targets" => ["publish-local", "oauth-social-common-jar", "oauth-social-jar"],
       "stage_cmd"   => sub {
          SysExec("mkdir -p $CFG{BUILD_DIR}/zm-oauth-social/build/dist");
-         SysExec("cp -f -rp build/zm-oauth-social-*.jar $CFG{BUILD_DIR}/zm-oauth-social/build/dist");
+         SysExec("cp -f -rp build/zm-oauth-social*.jar $CFG{BUILD_DIR}/zm-oauth-social/build/dist");
       },
    },
    
