@@ -116,6 +116,7 @@ main()
       cp -f ${repoDir}/zm-freebusy-provider-store/build/zimbra-freebusyprovider.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/zimbra-freebusy/zimbra-freebusyprovider.jar
       cp -rf ${repoDir}/zm-smime-store/build/dist/*.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/smime
       cp -f ${repoDir}/zm-network-gql/build/dist/zm-network-gql*.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/zm-gql/zmnetworkgql.jar
+      cp -f ${repoDir}/zm-zcs-lib/build/dist/tika-app-1.24.1.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/convertd/
     fi
 
     cp -f ${repoDir}/zm-clam-scanner-store/build/dist/zm-clam-scanner-store*.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/clamscanner/clamscanner.jar
@@ -129,8 +130,6 @@ main()
     
     cp -f ${repoDir}/zm-zcs-lib/build/dist/java-jwt-3.2.0.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/zm-oauth-social/
     cp -f ${repoDir}/zm-gql/build/dist/zm-gql*.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/zm-gql/zmgql.jar
-    cp -f ${repoDir}/zm-zcs-lib/build/dist/tika-app-1.24.1.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/convertd/
-
 
 #-------------------- Get wars content (service.war, zimbra.war and zimbraAdmin.war) ---------------------------
 
