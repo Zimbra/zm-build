@@ -2181,6 +2181,7 @@ EOF
 if [ x"$ZMTYPE_INSTALLABLE" = "xNETWORK" ]; then
 cat >> /etc/apt/sources.list.d/zimbra.list << EOF
 deb     [arch=amd64] https://$PACKAGE_SERVER/apt/90-ne $repo zimbra
+deb     [arch=amd64] https://$PACKAGE_SERVER/apt/910-ne $repo zimbra
 EOF
 fi
       apt-get update >>$LOGFILE 2>&1
@@ -2235,9 +2236,16 @@ name=Zimbra New RPM Repository
 baseurl=https://$PACKAGE_SERVER/rpm/90-ne/$repo
 gpgcheck=1
 enabled=1
+[zimbra-910-network]
+name=Zimbra New RPM Repository
+baseurl=https://$PACKAGE_SERVER/rpm/910-ne/$repo
+gpgcheck=1
+enabled=1
 EOF
       yum --disablerepo=* --enablerepo=zimbra-90-network clean metadata >>$LOGFILE 2>&1
       yum check-update --disablerepo=* --enablerepo=zimbra-90-network --noplugins >>$LOGFILE 2>&1
+      yum --disablerepo=* --enablerepo=zimbra-910-network clean metadata >>$LOGFILE 2>&1
+      yum check-update --disablerepo=* --enablerepo=zimbra-910-network --noplugins >>$LOGFILE 2>&1
 fi
       if [ $? -ne 0 -a $? -ne 100 ]; then
         echo "ERROR: yum check-update failed"
