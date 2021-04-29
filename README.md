@@ -18,7 +18,7 @@ This repository contains the build script and supporting files required to creat
 
 * Set up docker on your box
 * You can then pull and run using development images (built from Zimbra/zm-base-os.git)
-* In case you need to customze the images for your purposes, you could maintain your own Dockerfile such as this:
+* In case you need to customize the images for your purposes, you could maintain your own Dockerfile such as this:
 
         $ cat Dockerfile
         FROM zimbra/zm-base-os:devcore-ubuntu-16.04
