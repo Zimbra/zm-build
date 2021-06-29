@@ -2289,6 +2289,7 @@ getInstallPackages() {
   STORE_SELECTED="no"
   MTA_SELECTED="no"
   PROXY_SELECTED="no"
+  ONLYOFFICE_SELECTED="no"
 
   if [ x"$ZMTYPE_INSTALLABLE" = "xFOSS" ]; then
      AVAILABLE_PACKAGES="$AVAILABLE_PACKAGES zimbra-chat"
@@ -2430,6 +2431,8 @@ getInstallPackages() {
         MTA_SELECTED="yes"
       elif [ $i = "zimbra-proxy" ]; then
         PROXY_SELECTED="yes"
+      elif [ $i = "zimbra-onlyoffice" ]; then
+        ONLYOFFICE_SELECTED="yes"
       fi
 
       if [ $i = "zimbra-network-modules-ng" ]; then
@@ -2488,9 +2491,12 @@ getInstallPackages() {
 
   isInstalled zimbra-store
   isToBeInstalled zimbra-store
+
   if [ "x$PKGINSTALLED" != "x" -o "x$PKGTOBEINSTALLED" != "x" ]; then
     checkStoreRequirements
   fi
+
+  isOnlyofficeStandalone $ONLYOFFICE_SELECTED
 
   echo ""
   echo "Installing:"
@@ -2499,6 +2505,23 @@ getInstallPackages() {
   done
 }
 
+isOnlyofficeStandalone() {
+  onlyofficepkg=$1
+  # check if stroe is being installed too.
+  # if it is not being intsalled, add zimbra-mariadb to the list of packages to be installed
+  isInstalled zimbra-store
+  isToBeInstalled zimbra-store
+  isStandAlone="yes"
+
+  if [ "x$PKGINSTALLED" != "x" -o "x$PKGTOBEINSTALLED" != "x" ]; then
+    $isStandAlone="no"
+  fi
+
+  if [ $isStandAlone == "yes" -a $onlyofficepkg == "yes" ]; then
+    INSTALL_PACKAGES="$INSTALL_PACKAGES zimbra-mariadb"
+  fi
+
+}
 
 deleteWebApp() {
   WEBAPPNAME=$1
