@@ -7237,13 +7237,13 @@ sub applyConfig {
 
     # configure onlyoffice
     print "Configuring Onlyoffice...\n";
-    if (isEnabled("zimbra-store")) {
-      open(my $py, "|-", "/opt/zimbra/onlyoffice/bin/zmonlyofficeconfig");
-      while (<$py>) {
-        print "$py";
-      }
-      close($py);
+
+    open(my $py, "|-", "/opt/zimbra/onlyoffice/bin/zmonlyofficeconfig");
+    while (<$py>) {
+      print "$py";
     }
+    close($py);
+
   }
 
   if ($config{STARTSERVERS} eq "yes") {
@@ -7355,6 +7355,9 @@ sub createDirForStandaloneOnlyoffice {
         chmod(0755, $dir);
       }
   }
+  qx(chmod +x /opt/zimbra/onlyoffice/bin/rabbitmq_install);
+  qx(chmod +x /opt/zimbra/onlyoffice/bin/zmonlyofficeconfig);
+  qx(chmod 775 /opt/zimbra/onlyoffice/bin/process_id.json);
 }
 
 sub createOnlyofficeDB {
