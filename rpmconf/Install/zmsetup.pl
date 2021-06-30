@@ -7187,8 +7187,6 @@ sub applyConfig {
     createDirForStandaloneOnlyoffice();
 
     setLocalConfig ("mysql_bind_address", '127.0.0.1');
-    qx(chown zimbra:zimbra /opt/zimbra/onlyoffice/bin/process_id.json);
-
   }
 
   configInitSql();
@@ -7224,6 +7222,13 @@ sub applyConfig {
 
   # create onlyoffice db and configure it
   if (isEnabled("zimbra-onlyoffice") && $newinstall) {
+
+    qx(chmod +x /opt/zimbra/onlyoffice/bin/rabbitmq_install);
+    qx(chmod +x /opt/zimbra/onlyoffice/bin/zmonlyofficeconfig);
+    qx(chmod 775 /opt/zimbra/onlyoffice/bin/process_id.json);
+    qx(chown -R zimbra:zimbra /opt/zimbra/onlyoffice/documentserver/);
+    qx(chown zimbra:zimbra /opt/zimbra/onlyoffice/bin/process_id.json);
+
     # on new install
     createOnlyofficeDB();
     # install and start rabbitmq
@@ -7355,9 +7360,6 @@ sub createDirForStandaloneOnlyoffice {
         chmod(0755, $dir);
       }
   }
-  qx(chmod +x /opt/zimbra/onlyoffice/bin/rabbitmq_install);
-  qx(chmod +x /opt/zimbra/onlyoffice/bin/zmonlyofficeconfig);
-  qx(chmod 775 /opt/zimbra/onlyoffice/bin/process_id.json);
 }
 
 sub createOnlyofficeDB {
