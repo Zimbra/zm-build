@@ -7187,6 +7187,10 @@ sub applyConfig {
     createDirForStandaloneOnlyoffice();
 
     setLocalConfig ("mysql_bind_address", '127.0.0.1');
+    if ( !-e "/etc/sudoers.d/02_zimbra-store") {
+      system("echo \"%zimbra ALL=NOPASSWD:/opt/zimbra/libexec/zmmailboxdmg\" > /etc/sudoers.d/02_zimbra-store");
+      system("chmod 440 /etc/sudoers.d/02_zimbra-store");
+    }
   }
 
   configInitSql();
