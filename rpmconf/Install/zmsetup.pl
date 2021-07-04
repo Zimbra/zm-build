@@ -7181,8 +7181,9 @@ sub applyConfig {
   configCreateDomain();
 
 
-    # onlyoffice
-  if (isEnabled("zimbra-onlyoffice") && $newinstall && !isEnabled("zimbra-store")) {
+  # onlyoffice
+  if (isEnabled("zimbra-onlyoffice") && !isEnabled("zimbra-store")
+    && ( $newinstall || $configStatus{configOnlyoffice} ne "CONFIGURED") ) {
     ##create the directories required
     createDirForStandaloneOnlyoffice();
 
@@ -7224,36 +7225,7 @@ sub applyConfig {
     configImap();
   }
 
-  # create onlyoffice db and configure it
-  if (isEnabled("zimbra-onlyoffice") && $newinstall) {
-
-    qx(chmod +x /opt/zimbra/onlyoffice/bin/rabbitmq_install);
-    qx(chmod +x /opt/zimbra/onlyoffice/bin/zmonlyofficeconfig);
-    qx(chmod 775 /opt/zimbra/onlyoffice/bin/process_id.json);
-    qx(chown -R zimbra:zimbra /opt/zimbra/onlyoffice/documentserver/);
-    qx(chown zimbra:zimbra /opt/zimbra/onlyoffice/bin/process_id.json);
-
-    # on new install
-    createOnlyofficeDB();
-    # install and start rabbitmq
-    print "Installing Rabbit MQ...\n";
-    # my $rmq = system("/opt/zimbra/onlyoffice/bin/install_rabbitmq.py 2>&1");
-    open(my $py, "|-", "/opt/zimbra/onlyoffice/bin/rabbitmq_install");
-    while (<$py>) {
-      print "$py";
-    }
-    close($py);
-
-    # configure onlyoffice
-    print "Configuring Onlyoffice...\n";
-
-    open(my $py, "|-", "/opt/zimbra/onlyoffice/bin/zmonlyofficeconfig");
-    while (<$py>) {
-      print "$py";
-    }
-    close($py);
-
-  }
+  configureOnlyoffice();
 
   if ($config{STARTSERVERS} eq "yes") {
     # bug 6270
@@ -7347,6 +7319,46 @@ sub applyConfig {
     print "\n\n";
     close LOGFILE;
     exit 0;
+  }
+}
+
+sub configureOnlyoffice {
+    # create onlyoffice db and configure it
+  if (isEnabled("zimbra-onlyoffice") ) {
+    if ($configStatus{configOnlyoffice} eq "CONFIGURED") {
+      configLog("configOnlyoffice");
+      return 0;
+    }
+
+    if($configStatus{configOnlyoffice} ne "CONFIGURED" || $newinstall){
+          qx(chmod +x /opt/zimbra/onlyoffice/bin/rabbitmq_install);
+          qx(chmod +x /opt/zimbra/onlyoffice/bin/zmonlyofficeconfig);
+          qx(chmod 775 /opt/zimbra/onlyoffice/bin/process_id.json);
+          qx(chown -R zimbra:zimbra /opt/zimbra/onlyoffice/documentserver/);
+          qx(chown zimbra:zimbra /opt/zimbra/onlyoffice/bin/process_id.json);
+
+          # on new install
+          createOnlyofficeDB();
+          # install and start rabbitmq
+          print "Installing Rabbit MQ...\n";
+          # my $rmq = system("/opt/zimbra/onlyoffice/bin/install_rabbitmq.py 2>&1");
+          open(my $py, "|-", "/opt/zimbra/onlyoffice/bin/rabbitmq_install");
+          while (<$py>) {
+            print "$py";
+          }
+          close($py);
+
+          # configure onlyoffice
+          print "Configuring Onlyoffice...\n";
+
+          open(my $py, "|-", "/opt/zimbra/onlyoffice/bin/zmonlyofficeconfig");
+          while (<$py>) {
+            print "$py";
+          }
+          close($py);
+
+          configLog("configOnlyoffice");
+    }
   }
 }
 
