@@ -2516,6 +2516,10 @@ isOnlyofficeStandalone() {
   if [ "x$PKGINSTALLED" != "x" -o "x$PKGTOBEINSTALLED" != "x" ]; then
     $isStandAlone="no"
   fi
+  ## install rabbit mq
+  if [ $onlyofficepkg == "yes" ]; then
+    INSTALL_PACKAGES="$INSTALL_PACKAGES rabbit-mq"
+  fi
 
   if [ $isStandAlone == "yes" -a $onlyofficepkg == "yes" ]; then
     INSTALL_PACKAGES="$INSTALL_PACKAGES zimbra-mariadb"

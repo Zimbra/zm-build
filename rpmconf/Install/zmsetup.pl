@@ -1250,6 +1250,11 @@ sub setLdapDefaults {
   $config{EphemeralBackendURL} = getLdapConfigValue("zimbraEphemeralBackendURL");
   $config{USEEPHEMERALSTORE} = "yes" if ($config{EphemeralBackendURL} ne "");
 
+  # get the onlyoffice zimbraDocumentServerHost global config
+  if (isEnabled("zimbra-onlyoffice")) {
+    my $tmpval = getLdapConfigValue("zimbraDocumentServerHost");
+    $config{ONLYOFFICEHOSTNAME} = $tmpval;
+  }
   #
   # Load default COS
   #
@@ -2679,6 +2684,12 @@ sub setSnmpTrapHost {
       $config{SNMPTRAPHOST});
 }
 
+sub setOnlyOfficeHost {
+  $config{ONLYOFFICEHOSTNAME} =
+    askNonBlank("Onlyoffice server:",
+      $config{ONLYOFFICEHOSTNAME});
+}
+
 sub setAvUser {
   $config{AVUSER} =
     askNonBlank("Notification address for AV alerts:",
@@ -3529,6 +3540,8 @@ sub createPackageMenu {
     return createDNSCacheMenu($package);
   } elsif ($package eq "zimbra-imapd") {
     return createImapMenu($package);
+  } elsif ($package eq "zimbra-onlyoffice") {
+    return createOnlyofficeMenu($package);
   }
 }
 
@@ -3628,6 +3641,52 @@ sub createCommonMenu {
     "callback" => \&setSSLDefaultDigest
   };
   $i++;
+  return $lm;
+}
+
+sub createOnlyofficeMenu {
+  my $package = shift;
+  my $lm = genPackageMenu($package);
+
+  $$lm{title} = "Onlyoffice configuration";
+
+  $$lm{createsub} = \&createOnlyofficeMenu;
+  $$lm{createarg} = $package;
+
+  my $i = 2;
+
+  if (isEnabled($package)) {
+    # get the hostname for onlyoffice to be put into config
+    # if standalone server :
+    #    1. global config already present, do not override
+    #    2. global config not present, this server name goes as global config
+    # if not standalone:
+    #    set the server host name at server level config
+    if (isEnabled("zimbra-store")) {
+      $config{ONLYOFFICESTANDALONE} = "no";
+      $config{ONLYOFFICEHOSTNAME} = $config{HOSTNAME};
+    } else {
+      $config{ONLYOFFICESTANDALONE} = "yes";
+      if ($config{ONLYOFFICEHOSTNAME} eq "") {
+        print "ONLYOFFICEHOSTNAME not set";
+        $config{ONLYOFFICEHOSTNAME} = $config{HOSTNAME};
+      }
+
+    }
+    $$lm{menuitems}{$i} = {
+      "prompt" => "Onlyoffice server:",
+      "var" => \$config{ONLYOFFICEHOSTNAME},
+      "callback" => \&setOnlyOfficeHost
+      };
+    $i++;
+
+    $$lm{menuitems}{$i} = {
+      "prompt" => "Standalone Onlyoffice:",
+      "var" => \$config{ONLYOFFICESTANDALONE}
+      };
+    $i++;
+  }
+
   return $lm;
 }
 
@@ -4576,7 +4635,6 @@ sub createMainMenu {
     if ($package eq "zimbra-apache") {next;}
     if ($package eq "zimbra-archiving") {next;}
     if ($package eq "zimbra-memcached") {next;}
-    if ($package eq "zimbra-onlyoffice") {next;}
     if (defined($installedPackages{$package})) {
       if ($package =~ /logger|spell|convertd/) {
         $mm{menuitems}{$i} = {
@@ -4667,6 +4725,7 @@ sub createMainMenu {
         if (checkLdapReplicationEnabled($config{zimbra_ldap_userdn},$config{LDAPADMINPASS}));
     }
   }
+
   return \%mm;
 }
 
@@ -7339,15 +7398,6 @@ sub configureOnlyoffice {
 
           # on new install
           createOnlyofficeDB();
-          # install and start rabbitmq
-          print "Installing Rabbit MQ...\n";
-          # my $rmq = system("/opt/zimbra/onlyoffice/bin/install_rabbitmq.py 2>&1");
-          open(my $py, "|-", "/opt/zimbra/onlyoffice/bin/rabbitmq_install");
-          while (<$py>) {
-            print "$py";
-          }
-          close($py);
-
           # configure onlyoffice
           print "Configuring Onlyoffice...\n";
 
@@ -7357,6 +7407,22 @@ sub configureOnlyoffice {
           }
           close($py);
 
+          # set the config value zimbraDocumentServerHost
+          # if standalone server :
+          #    1. global config already present, do not override
+          #    2. global config not present, this server name goes as global config
+          # if not standalone:
+          #    set the server host name at server level config
+          if (isEnabled("zimbra-store") && $config{ONLYOFFICESTANDALONE} eq "no") {
+            setLdapServerConfig($config{HOSTNAME}, 'zimbraDocumentServerHost', $config{HOSTNAME});
+          } else {
+              my $tmpval = getLdapConfigValue("zimbraDocumentServerHost");
+              if ($tmpval eq "") {
+                setLdapGlobalConfig("zimbraDocumentServerHost", $config{HOSTNAME});
+              } else {
+                setLdapGlobalConfig("zimbraDocumentServerHost", $config{ONLYOFFICEHOSTNAME});
+              }
+          }
           configLog("configOnlyoffice");
     }
   }
