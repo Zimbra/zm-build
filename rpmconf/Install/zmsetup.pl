@@ -26,6 +26,8 @@ use Net::LDAP;
 use IPC::Open3;
 use Cwd;
 use Time::localtime qw(ctime);
+use File::Path qw(make_path);
+
 
 $|=1; # don't buffer stdout
 
@@ -84,6 +86,7 @@ my @packageList = (
   "zimbra-proxy",
   "zimbra-archiving",
   "zimbra-imapd",
+  "zimbra-onlyoffice",
 );
 
 my %packageServiceMap = (
@@ -110,6 +113,7 @@ my %packageServiceMap = (
   zimbra    => "zimbra-store",
   zimbraAdmin   => "zimbra-store",
   zimlet    => "zimbra-store",
+  onlyoffice    => "zimbra-onlyoffice",
 );
 
 my @webappList = (
@@ -424,6 +428,8 @@ sub checkPortConflicts {
     10028 => 'zimbra-mta',
     10029 => 'zimbra-mta',
     10030 => 'zimbra-mta',
+    7084 => 'zimbra-onlyoffice',
+    7085 => 'zimbra-onlyoffice',
   );
 
   open PORTS, "netstat -an | egrep '^tcp' | grep LISTEN | awk '{print \$4}' | sed -e 's/.*://' |";
@@ -4570,6 +4576,7 @@ sub createMainMenu {
     if ($package eq "zimbra-apache") {next;}
     if ($package eq "zimbra-archiving") {next;}
     if ($package eq "zimbra-memcached") {next;}
+    if ($package eq "zimbra-onlyoffice") {next;}
     if (defined($installedPackages{$package})) {
       if ($package =~ /logger|spell|convertd/) {
         $mm{menuitems}{$i} = {
@@ -5700,6 +5707,28 @@ sub configCreateCert {
     }
   }
 
+  if (isInstalled("zimbra-onlyoffice")) {
+    if ( !-f "/opt/zimbra/ssl/zimbra/server/server.crt") {
+      progress ( "Creating SSL certificate..." );
+      $rc = runAsZimbra("/opt/zimbra/bin/zmcertmgr createcrt $needNewCert");
+      if ($rc != 0) {
+        progress ( "failed.\n" );
+        exit 1;
+      } else {
+        progress ( "done.\n" );
+      }
+    } elsif ( $needNewCert ne "" && $ssl_cert_type eq "self") {
+      progress ( "Creating new SSL certificate..." );
+      $rc = runAsZimbra("/opt/zimbra/bin/zmcertmgr createcrt $needNewCert");
+      if ($rc != 0) {
+        progress ( "failed.\n" );
+        exit 1;
+      } else {
+        progress ( "done.\n" );
+      }
+    }
+  }
+
   configLog("configCreateCert");
 }
 
@@ -6779,7 +6808,11 @@ sub configInitSql {
     return 0;
   }
 
-  if (!$sqlConfigured && isEnabled("zimbra-store")) {
+  if (!$sqlConfigured &&
+    (isEnabled("zimbra-store") ||
+      (isEnabled("zimbra-onlyoffice") && $newinstall && !isEnabled("zimbra-store"))
+    )
+    ) {
     progress ( "Initializing store sql database..." );
     runAsZimbra ("/opt/zimbra/libexec/zmmyinit --mysql_memory_percent $config{MYSQLMEMORYPERCENT}");
     progress ( "done.\n" );
@@ -7018,6 +7051,7 @@ sub failConfig {
 }
 
 sub applyConfig {
+
   defineInstallWebapps();
   if (!(defined ($options{c})) && $newinstall ) {
     if (askYN("Save configuration data to a file?", "Yes") eq "yes") {
@@ -7146,6 +7180,20 @@ sub applyConfig {
 
   configCreateDomain();
 
+
+  # onlyoffice
+  if (isEnabled("zimbra-onlyoffice") && !isEnabled("zimbra-store")
+    && ( $newinstall || $configStatus{configOnlyoffice} ne "CONFIGURED") ) {
+    ##create the directories required
+    createDirForStandaloneOnlyoffice();
+
+    setLocalConfig ("mysql_bind_address", '127.0.0.1');
+    if ( !-e "/etc/sudoers.d/02_zimbra-store") {
+      system("echo \"%zimbra ALL=NOPASSWD:/opt/zimbra/libexec/zmmailboxdmg\" > /etc/sudoers.d/02_zimbra-store");
+      system("chmod 440 /etc/sudoers.d/02_zimbra-store");
+    }
+  }
+
   configInitSql();
 
   configInitLogger();
@@ -7177,8 +7225,9 @@ sub applyConfig {
     configImap();
   }
 
-  if ($config{STARTSERVERS} eq "yes") {
+  configureOnlyoffice();
 
+  if ($config{STARTSERVERS} eq "yes") {
     # bug 6270
     if (isEnabled("zimbra-store")) {
       qx(chown zimbra:zimbra /opt/zimbra/redolog/redo.log)
@@ -7271,6 +7320,70 @@ sub applyConfig {
     close LOGFILE;
     exit 0;
   }
+}
+
+sub configureOnlyoffice {
+    # create onlyoffice db and configure it
+  if (isEnabled("zimbra-onlyoffice") ) {
+    if ($configStatus{configOnlyoffice} eq "CONFIGURED") {
+      configLog("configOnlyoffice");
+      return 0;
+    }
+
+    if($configStatus{configOnlyoffice} ne "CONFIGURED" || $newinstall){
+          qx(chmod +x /opt/zimbra/onlyoffice/bin/rabbitmq_install);
+          qx(chmod +x /opt/zimbra/onlyoffice/bin/zmonlyofficeconfig);
+          qx(chmod 775 /opt/zimbra/onlyoffice/bin/process_id.json);
+          qx(chown -R zimbra:zimbra /opt/zimbra/onlyoffice/documentserver/);
+          qx(chown zimbra:zimbra /opt/zimbra/onlyoffice/bin/process_id.json);
+
+          # on new install
+          createOnlyofficeDB();
+          # install and start rabbitmq
+          print "Installing Rabbit MQ...\n";
+          # my $rmq = system("/opt/zimbra/onlyoffice/bin/install_rabbitmq.py 2>&1");
+          open(my $py, "|-", "/opt/zimbra/onlyoffice/bin/rabbitmq_install");
+          while (<$py>) {
+            print "$py";
+          }
+          close($py);
+
+          # configure onlyoffice
+          print "Configuring Onlyoffice...\n";
+
+          open(my $py, "|-", "/opt/zimbra/onlyoffice/bin/zmonlyofficeconfig");
+          while (<$py>) {
+            print "$py";
+          }
+          close($py);
+
+          configLog("configOnlyoffice");
+    }
+  }
+}
+
+sub createDirForStandaloneOnlyoffice {
+
+  my (undef,undef,$uid,$gid) = getpwnam("zimbra");
+
+  my @dir_to_create = ('/opt/zimbra/index', '/opt/zimbra/store', '/opt/zimbra/data/tmp/mysql', '/opt/zimbra/mailboxd', 'opt/zimbra/common/conf');
+  foreach my $dir (@dir_to_create) {
+      eval { make_path($dir) };
+      if ($@) {
+        print "Couldn't create $dir: $@";
+      }else{
+        chown($uid,$gid, $dir);
+        chmod(0755, $dir);
+      }
+  }
+}
+
+sub createOnlyofficeDB {
+
+  my $mysql_root_pass = getLocalConfig ("mysql_root_password");
+  progress ( "Creating onlyoffice database..." );
+  runAsZimbra ("exec /opt/zimbra/common/bin/mysql -S /opt/zimbra/data/tmp/mysql/mysql.sock -u root --password=$mysql_root_pass < /opt/zimbra/onlyoffice/bin/createdb.sql");
+  progress ( "done.\n" );
 }
 
 sub configLog {
