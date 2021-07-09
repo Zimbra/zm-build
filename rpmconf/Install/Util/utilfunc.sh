@@ -35,36 +35,6 @@ displayLicense() {
   echo ""
 }
 
-displayThirdPartyLicenses() {
-  echo ""
-  echo ""
-  if [ -f ${MYDIR}/docs/keyview_eula.txt ]; then
-    cat $MYDIR/docs/keyview_eula.txt
-    echo ""
-    echo ""
-    if [ x$DEFAULTFILE = "x" ]; then
-      askYN "Do you agree with the terms of the software license agreement?" "N"
-      if [ $response != "yes" ]; then
-        exit
-      fi
-    fi
-    echo ""
-    echo ""
-  fi
-  #if [ -f ${MYDIR}/docs/oracle_jdk_eula.txt ]; then
-  #  cat $MYDIR/docs/oracle_jdk_eula.txt
-  #  echo ""
-  #  echo ""
-  #  if [ x$DEFAULTFILE = "x" ]; then
-  #    askYN "Do you agree with the terms of the software license agreement?" "N"
-  #    if [ $response != "yes" ]; then
-  #      exit
-  #    fi
-  #  fi
-  #fi
-  #echo ""
-}
-
 isFQDN() {
   #fqdn is > 2 dots.  because I said so.
   if [ x"$1" = "x" ]; then
@@ -674,15 +644,6 @@ checkExistingInstall() {
     fi
   done
 
-  for i in $CHAT_PACKAGES; do
-    isInstalled $i
-    if [ x$PKGINSTALLED != "x" ]; then
-      echo "    $i...FOUND $PKGINSTALLED"
-      INSTALLED_PACKAGES="$INSTALLED_PACKAGES $i"
-    else
-      echo "    $i...NOT FOUND"
-    fi
-  done
 
   for i in $PACKAGES $CORE_PACKAGES; do
     echo -n "    $i..."
@@ -1656,12 +1617,6 @@ saveExistingConfig() {
 findUbuntuExternalPackageDependencies() {
   # Handle external packages like logwatch, mailutils depends on zimbra-mta.
   if [ $INSTALLED = "yes" -a $ISUBUNTU = "true" ]; then
-    for i in $CHAT_PACKAGES; do
-      isInstalled $i
-     if [ x$PKGINSTALLED != "x" ]; then
-      INSTALLED_PACKAGES="$INSTALLED_PACKAGES $i"
-     fi
-    done
     $PACKAGERMSIMULATE $INSTALLED_PACKAGES > /dev/null 2>&1
     if [ $? -ne 0 ]; then
       EXTPACKAGESTMP=`$PACKAGERMSIMULATE $INSTALLED_PACKAGES 2>&1 | grep " depends on " | cut -d' ' -f2 | grep -v zimbra`
@@ -1711,34 +1666,19 @@ removeExistingPackages() {
   fi
 }
 
-removeChatIfInstalled() {
-   for i in $INSTALL_PACKAGES; do
-     if [ x$i = "xzimbra-connect" ]; then
-        echo ""
-        echo "Checking zimbra-chat already installed or not..."
-       isInstalled "zimbra-chat"
-        if [ x$PKGINSTALLED != "x" ]; then
-          echo -n "   zimbra-chat FOUND..."
-          echo ""
-          echo -n "   Removing zimbra-chat..."
-          $PACKAGERM zimbra-chat >/dev/null 2>&1
-          echo "done"
-        fi
-      fi
-    done
-}
-
-removeTalkIfInstalled() {
-     echo ""
-     echo "Remove zimbra-talk if it is installed ..."
-     isInstalled "zimbra-talk"
-     if [ x$PKGINSTALLED != "x" ]; then
-          echo -n "   zimbra-talk FOUND..."
-          echo ""
-          echo -n "   Removing zimbra-talk..."
-          $PACKAGERM zimbra-talk >/dev/null 2>&1
-          echo "done"
-     fi
+removeZextrasPackagesIfInstalled() {
+	for i in $ZEXTRAS_PACKAGES; do
+		echo ""
+		echo "Remove $i if it is installed ..."
+		isInstalled $i
+		if [ x$PKGINSTALLED != "x" ]; then
+			echo -n "   $i FOUND..."
+			echo ""
+			echo -n "   Removing $i..."
+			$PACKAGERM $i >/dev/null 2>&1
+			echo "done"
+		fi
+	done
 }
 
 removeExistingInstall() {
@@ -1793,8 +1733,7 @@ removeExistingInstall() {
     fi
     if [ "$UPGRADE" = "yes" -a "$POST87UPGRADE" = "true" -a "$FORCE_UPGRADE" != "yes" -a "$ZM_CUR_BUILD" != "$ZM_INST_BUILD" ]; then
       echo "Upgrading the remote packages"
-      removeChatIfInstalled
-	  removeTalkIfInstalled
+      removeZextrasPackagesIfInstalled
     else
       removeExistingPackages
     fi
@@ -2256,22 +2195,6 @@ fi
   fi
 }
 
-getChatOrConnectPackage() {
- if [ $response = "yes" ]; then
-    askInstallPkgYN "Install zimbra-connect" "yes" "Y" "N"
-    if [ $response = "yes" ]; then
-       INSTALL_PACKAGES="$INSTALL_PACKAGES zimbra-connect"
-    elif [ $response = "no" ]; then
-       response="yes"
-    fi
-  elif [ $response = "no" ]; then
-    askInstallPkgYN "Install zimbra-chat" "yes" "Y" "N"
-    if [ $response = "yes" ]; then
-       INSTALL_PACKAGES="$INSTALL_PACKAGES zimbra-chat"
-       response="no"
-    fi
- fi
-}
 
 getInstallPackages() {
 
@@ -2291,10 +2214,6 @@ getInstallPackages() {
   PROXY_SELECTED="no"
   ONLYOFFICE_SELECTED="no"
 
-  if [ x"$ZMTYPE_INSTALLABLE" = "xFOSS" ]; then
-     AVAILABLE_PACKAGES="$AVAILABLE_PACKAGES zimbra-chat"
-  fi
-
   for i in $AVAILABLE_PACKAGES; do
     if [ $i = "zimbra-core" ]; then
       continue
@@ -2307,12 +2226,6 @@ getInstallPackages() {
       echo $INSTALLED_PACKAGES | grep $i > /dev/null 2>&1
       if [ $? = 0 ]; then
         echo "    Upgrading $i"
-        if [ $i = "zimbra-network-modules-ng" ]; then
-            askInstallPkgYN "Install zimbra-connect" "yes" "Y" "N"
-            if [ $response = "yes" ]; then
-                INSTALL_PACKAGES="$INSTALL_PACKAGES zimbra-connect"
-            fi
-        fi
         if [ $i = "zimbra-mta" ]; then
           CONFLICTS="no"
           for j in $CONFLICT_PACKAGES; do
@@ -2371,21 +2284,8 @@ getInstallPackages() {
     elif [ $UPGRADE = "yes" ]; then
       if [ $i = "zimbra-archiving" ]; then
         askInstallPkgYN "Install $i" "yes" "N" "N"
-      elif [ $i = "zimbra-chat" ]; then
-	if [ $STORE_SELECTED = "yes" ]; then
-          askInstallPkgYN "Install $i" "yes" "N" "N"
-	fi
-      elif [ $i = "zimbra-drive" ]; then
-	if [ $STORE_SELECTED = "yes" ]; then
-          askInstallPkgYN "Install $i" "yes" "N" "N"
-	fi
       elif [ $i = "zimbra-imapd" ]; then
         askInstallPkgYN "Install $i (BETA - for evaluation only)" "no" "N" "N"
-      elif [ $i = "zimbra-network-modules-ng" ]; then
-	if [ $STORE_SELECTED = "yes" ]; then
-          askInstallPkgYN "Install $i" "yes" "N" "N"
-	  getChatOrConnectPackage
-	fi
       else
         askYN "Install $i" "N"
       fi
@@ -2394,21 +2294,8 @@ getInstallPackages() {
         askInstallPkgYN "Install $i" "yes" "N" "N"
       elif [ $i = "zimbra-convertd" ]; then
         askInstallPkgYN "Install $i" "no" "Y" "N"
-      elif [ $i = "zimbra-chat" ]; then
-	if [ $STORE_SELECTED = "yes" ]; then
-          askInstallPkgYN "Install $i" "yes" "Y" "N"
-	fi
-      elif [ $i = "zimbra-drive" ]; then
-	if [ $STORE_SELECTED = "yes" ]; then
-          askInstallPkgYN "Install $i" "yes" "Y" "N"
-	fi
       elif [ $i = "zimbra-imapd" ]; then
         askInstallPkgYN "Install $i (BETA - for evaluation only)" "no" "N" "N"
-      elif [ $i = "zimbra-network-modules-ng" ]; then
-	if [ $STORE_SELECTED = "yes" ]; then
-          askInstallPkgYN "Install $i" "yes" "Y" "N"
-	  getChatOrConnectPackage
-	fi
       elif [ $i = "zimbra-dnscache" ]; then
         if [ $MTA_SELECTED = "yes" ]; then
           askYN "Install $i" "Y"
@@ -2433,23 +2320,6 @@ getInstallPackages() {
         PROXY_SELECTED="yes"
       elif [ $i = "zimbra-onlyoffice" ]; then
         ONLYOFFICE_SELECTED="yes"
-      fi
-
-      if [ $i = "zimbra-network-modules-ng" ]; then
-          echo "###WARNING###"
-          echo ""
-          echo "Network Modules NG needs to bind on TCP ports 8735 and 8736 in order"
-          echo "to operate, for inter-instance communication."
-          echo "Please verify no other service listens on these ports and that "
-          echo "ports 8735 and 8736 are properly filtered from public access "
-          echo "by your firewall."
-          echo ""
-          echo "Please remember that the Backup NG module needs to be initialized in order"
-          echo "to be functional. This is a one-time operation only that can be performed"
-          echo "by clicking the 'Initialize' button within the Backup section of the"
-          echo "Network NG Modules in the Administration Console or by running"
-          echo "\`zxsuite backup doSmartScan\` as the zimbra user."
-          echo ""
       fi
 
       if [ $i = "zimbra-mta" ]; then
