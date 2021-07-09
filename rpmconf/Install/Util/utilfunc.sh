@@ -2384,7 +2384,7 @@ isOnlyofficeStandalone() {
   isStandAlone="yes"
 
   if [ "x$PKGINSTALLED" != "x" -o "x$PKGTOBEINSTALLED" != "x" ]; then
-    $isStandAlone="no"
+    isStandAlone="no"
   fi
   ## install rabbit mq
   if [ $onlyofficepkg == "yes" ]; then
