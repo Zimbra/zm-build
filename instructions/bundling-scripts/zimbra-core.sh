@@ -631,7 +631,6 @@ main()
       Copy ${repoDir}/zm-network-build/rpmconf/Install/postinstall.pm                                  ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/postinstall.pm
       Copy ${repoDir}/zm-network-build/rpmconf/Install/preinstall.pm                                   ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/preinstall.pm
 
-      Copy ${repoDir}/zm-network-licenses/thirdparty/keyview_eula.txt                                  ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/keyview_eula.txt
       Copy ${repoDir}/zm-network-licenses/thirdparty/oracle_jdk_eula.txt                               ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/oracle_jdk_eula.txt
 
       Copy ${repoDir}/zm-postfixjournal/build/dist/postjournal                                         ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/postjournal

@@ -7263,8 +7263,6 @@ sub applyConfig {
 
   setupSyslog();
 
-  postinstall::configure({'zimbra-network-modules-ng'=>isInstalled("zimbra-network-modules-ng")});
-
   qx(touch /opt/zimbra/.bash_history);
   qx(chown zimbra:zimbra /opt/zimbra/.bash_history);
 
@@ -7297,21 +7295,6 @@ sub applyConfig {
       if (($prevVersionMajor < 8) || ($prevVersionMajor = 8 && $prevVersionMinor < 8)) {
         return 1;
       }
-    }
-
-    if (isInstalled("zimbra-network-modules-ng")) {
-       if ($prevVersionMajor <= 8 && $prevVersionMinor <= 7) {
-        setLdapServerConfig($config{HOSTNAME}, 'zimbraNetworkModulesNGEnabled', 'TRUE');
-        }
-    }
-    else {
-      setLdapServerConfig($config{HOSTNAME}, 'zimbraNetworkModulesNGEnabled', 'FALSE');
-    }
-
-    if (isInstalled("zimbra-network-modules-ng") && $newinstall) {
-      main::progress("Enabling zimbra network NG modules features.\n");
-      setLdapServerConfig($config{HOSTNAME}, 'zimbraNetworkMobileNGEnabled', 'TRUE');
-      setLdapServerConfig($config{HOSTNAME}, 'zimbraNetworkAdminNGEnabled', 'TRUE');
     }
 
     progress ( "Starting servers..." );
