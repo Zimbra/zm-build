@@ -3668,7 +3668,6 @@ sub createOnlyofficeMenu {
     } else {
       $config{ONLYOFFICESTANDALONE} = "yes";
       if ($config{ONLYOFFICEHOSTNAME} eq "") {
-        print "ONLYOFFICEHOSTNAME not set";
         $config{ONLYOFFICEHOSTNAME} = $config{HOSTNAME};
       }
 
