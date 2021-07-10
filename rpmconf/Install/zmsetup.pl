@@ -7373,7 +7373,6 @@ sub configureOnlyoffice {
     }
 
     if($configStatus{configOnlyoffice} ne "CONFIGURED" || $newinstall){
-          qx(chmod +x /opt/zimbra/onlyoffice/bin/rabbitmq_install);
           qx(chmod +x /opt/zimbra/onlyoffice/bin/zmonlyofficeconfig);
           qx(chmod 775 /opt/zimbra/onlyoffice/bin/process_id.json);
           qx(chown -R zimbra:zimbra /opt/zimbra/onlyoffice/documentserver/);
