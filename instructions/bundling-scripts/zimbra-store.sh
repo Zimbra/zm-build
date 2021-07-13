@@ -168,7 +168,7 @@ main()
     then
         set -e
         cd ${downloadsDir}
-        wget -r -nd --no-parent --reject "index.*" http://${zimbraThirdPartyServer}/ZimbraThirdParty/zco-migration-builds/current/
+        wget -r -nd --no-parent --reject-regex="/backup/" --reject "index.*" http://${zimbraThirdPartyServer}/ZimbraThirdParty/zco-migration-builds/current/
     fi
 
     echo "\t\t***** help content *****" >> ${buildLogFile}
