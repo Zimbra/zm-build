@@ -1617,12 +1617,22 @@ saveExistingConfig() {
 findUbuntuExternalPackageDependencies() {
   # Handle external packages like logwatch, mailutils depends on zimbra-mta.
   if [ $INSTALLED = "yes" -a $ISUBUNTU = "true" ]; then
+    RABBITMQINSTALLED="no"
+    isInstalled "zimbra-onlyoffice"
+    if [ x$PKGINSTALLED != "x" ]; then
+      RABBITMQINSTALLED="yes"
+    fi
+
     $PACKAGERMSIMULATE $INSTALLED_PACKAGES > /dev/null 2>&1
     if [ $? -ne 0 ]; then
       EXTPACKAGESTMP=`$PACKAGERMSIMULATE $INSTALLED_PACKAGES 2>&1 | grep " depends on " | cut -d' ' -f2 | grep -v zimbra`
       for p in $EXTPACKAGESTMP; do
         EXTPACKAGES="$p $EXTPACKAGES"
       done
+
+      if [ $RABBITMQINSTALLED = "yes" ]; then
+        EXTPACKAGES="rabbitmq-server $EXTPACKAGES"
+      fi
 
       if [ -z "$EXTPACKAGES" ]; then
         echo "External package dependencies not found"
@@ -1688,6 +1698,13 @@ removeExistingInstall() {
     shutDownSystem
     if [ -f "/opt/zimbra/bin/zmiptables" ]; then
       /opt/zimbra/bin/zmiptables -u
+    fi
+
+    isInstalled "zimbra-onlyoffice"
+    if [ x$PKGINSTALLED != "x" ]; then
+      echo -n "Removing rabbitmq-server..."
+      $PACKAGERM rabbitmq-server >/dev/null 2>&1
+      echo "done"
     fi
 
     isInstalled "zimbra-ldap"

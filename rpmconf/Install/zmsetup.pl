@@ -7366,6 +7366,9 @@ sub applyConfig {
 sub configureOnlyoffice {
     # create onlyoffice db and configure it
   if (isEnabled("zimbra-onlyoffice") ) {
+    #enable preview
+    setLocalConfig ("oo_linux_install_path", "onlyoffice");
+
     if ($configStatus{configOnlyoffice} eq "CONFIGURED") {
       configLog("configOnlyoffice");
       return 0;
