@@ -2394,7 +2394,7 @@ getInstallPackages() {
 
 isOnlyofficeStandalone() {
   onlyofficepkg=$1
-  # check if stroe is being installed too.
+  # check if store is being installed too.
   # if it is not being intsalled, add zimbra-mariadb to the list of packages to be installed
   isInstalled zimbra-store
   isToBeInstalled zimbra-store

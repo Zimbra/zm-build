@@ -82,7 +82,6 @@ type=rpm-md'
 	else
 	   echo "Yum Erlang installation failed. ${install_op}"
 	fi
-	
 }
 
 install_rabbitmq()
@@ -112,19 +111,16 @@ metadata_expire=300'
 	else
 	   echo "RabbitMQ Server installation failed. ${install_op}"
 	fi
-	
 }
 
 install_on_ubuntu()
 {
-	
 	install_op=$(sudo apt-get install rabbitmq-server -y)
 	if [ $? -eq 0 ]; then
 	   echo "RabbitMQ Server installation complete."
 	else
 	   echo "RabbitMQ Server installation failed. ${install_op}"
 	fi
-	
 }
 
 install_on_rhel()
@@ -138,7 +134,6 @@ install_on_rhel()
 
 install_rmq()
 {
-
 	echo $PLATFORM | egrep -q "UBUNTU|DEBIAN"
 	if [ $? = 0 ]; then
 		install_on_ubuntu
