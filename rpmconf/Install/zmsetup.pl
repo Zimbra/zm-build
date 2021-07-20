@@ -7374,7 +7374,7 @@ sub configureOnlyoffice {
       return 0;
     }
 
-    if($configStatus{configOnlyoffice} ne "CONFIGURED" || $newinstall){
+    if ($configStatus{configOnlyoffice} ne "CONFIGURED" || $newinstall) {
           qx(chmod +x /opt/zimbra/onlyoffice/bin/zmonlyofficeconfig);
           qx(chmod 775 /opt/zimbra/onlyoffice/bin/process_id.json);
           qx(chown -R zimbra:zimbra /opt/zimbra/onlyoffice/documentserver/);
@@ -7421,7 +7421,7 @@ sub createDirForStandaloneOnlyoffice {
       eval { make_path($dir) };
       if ($@) {
         print "Couldn't create $dir: $@";
-      }else{
+      } else {
         chown($uid,$gid, $dir);
         chmod(0755, $dir);
       }
