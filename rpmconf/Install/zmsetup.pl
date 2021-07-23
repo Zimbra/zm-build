@@ -7262,7 +7262,7 @@ sub applyConfig {
 
   setupSyslog();
 
-  postinstall::configure({'zimbra-network-modules-ng'=>isInstalled("zimbra-network-modules-ng")});
+  postinstall::configure();
 
   qx(touch /opt/zimbra/.bash_history);
   qx(chown zimbra:zimbra /opt/zimbra/.bash_history);
