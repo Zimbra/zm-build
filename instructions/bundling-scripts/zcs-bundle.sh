@@ -41,6 +41,7 @@ cp -f ${repoDir}/zm-build/rpmconf/Install/Util/globals.sh                       
 cp -f ${repoDir}/zm-build/rpmconf/Install/Util/modules/getconfig.sh                     ${ZCS_REL}/util/modules
 cp -f ${repoDir}/zm-build/rpmconf/Install/Util/modules/packages.sh                      ${ZCS_REL}/util/modules
 cp -f ${repoDir}/zm-build/rpmconf/Install/Util/modules/postinstall.sh                   ${ZCS_REL}/util/modules
+cp -f ${repoDir}/zm-build/rpmconf/Install/Util/modules/install_rabbitmq.sh              ${ZCS_REL}/util/modules
 cp -f ${repoDir}/zm-build/rpmconf/Install/Util/utilfunc.sh                              ${ZCS_REL}/util
 cp -f ${repoDir}/zm-build/rpmconf/Install/install.sh                                    ${ZCS_REL}/
 cp -f ${repoDir}/zm-core-utils/src/libexec/zmdbintegrityreport                          ${ZCS_REL}/bin
@@ -87,7 +88,6 @@ then
    cp -f ${repoDir}/zm-backup-store/build/dist/backup-version-init.sql                     ${ZCS_REL}/data
    cp -f ${repoDir}/zm-license-tools/build/zm-license-tools-*.jar                          ${ZCS_REL}/lib/jars/zimbra-license-tools.jar
 
-   cp -f ${repoDir}/zm-network-licenses/thirdparty/keyview_eula.txt                        ${ZCS_REL}/docs/keyview_eula.txt
    cp -f ${repoDir}/zm-network-licenses/thirdparty/oracle_jdk_eula.txt                     ${ZCS_REL}/docs/oracle_jdk_eula.txt
    cp -f ${repoDir}/zm-network-licenses/zimbra/zimbra_network_eula.txt                     ${ZCS_REL}/docs/zimbra_network_eula.txt
 

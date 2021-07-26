@@ -15,6 +15,7 @@
 # If not, see <https://www.gnu.org/licenses/>.
 # ***** END LICENSE BLOCK *****
 #
+. ./util/modules/install_rabbitmq.sh
 
 installPackages() {
    echo
@@ -88,6 +89,11 @@ installPackages() {
                printf "%48s %s\n" "$pkg" "will be downloaded and installed."
                repo_pkg_names+=( "$pkg" )
             fi
+         # for external packages
+         elif [ "${global_pkg_loc[$pkg]}" == "unknown" -a "$pkg" == "rabbit-mq" ]
+         then
+            ext_pkg_names+=( "$pkg" )
+
          else
             printf "%48s %s\n" "$pkg" "is missing.                                    ERROR";
             (( ++gather_dep_errors ))
@@ -103,6 +109,8 @@ installPackages() {
    local repo_pkg_names=()
    local local_pkg_names=()
    local local_pkg_files=()
+   #for external packages
+   local ext_pkg_names=()
 
    local PKG;
    for PKG in $INSTALL_PACKAGES
@@ -142,6 +150,20 @@ installPackages() {
    fi
 
    removeExistingInstall
+
+   if [ "${#ext_pkg_names[@]}" -gt 0 ]
+   then
+      pretty_display "Installing external packages" "${ext_pkg_names[@]}";
+      for i in "${ext_pkg_names[@]}"
+      do
+         install_rmq >>$LOGFILE 2>&1
+         if [ $? != 0 ]; then
+            echo "Unable to download/install external package $i. Proceeding without this..."
+         # not exiting on error
+         fi
+      done
+      echo "done"
+   fi
 
    if [ "${#repo_pkg_names[@]}" -gt 0 ]
    then

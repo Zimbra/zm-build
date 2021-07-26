@@ -205,6 +205,7 @@ main()
    Copy ${repoDir}/zm-build/rpmconf/Install/Util/globals.sh                                         ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/installer/util/globals.sh
    Copy ${repoDir}/zm-build/rpmconf/Install/Util/modules/getconfig.sh                               ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/installer/util/modules/getconfig.sh
    Copy ${repoDir}/zm-build/rpmconf/Install/Util/modules/packages.sh                                ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/installer/util/modules/packages.sh
+   Copy ${repoDir}/zm-build/rpmconf/Install/Util/modules/install_rabbitmq.sh                        ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/installer/util/modules/install_rabbitmq.sh
    Copy ${repoDir}/zm-build/rpmconf/Install/Util/modules/postinstall.sh                             ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/installer/util/modules/postinstall.sh
    Copy ${repoDir}/zm-build/rpmconf/Install/Util/utilfunc.sh                                        ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/installer/util/utilfunc.sh
    Copy ${repoDir}/zm-build/rpmconf/Install/install.sh                                              ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/installer/install.sh
@@ -299,6 +300,7 @@ main()
    Copy ${repoDir}/zm-core-utils/src/bin/zmupdateauthkeys                                           ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmupdateauthkeys
    Copy ${repoDir}/zm-core-utils/src/bin/zmvolume                                                   ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmvolume
    Copy ${repoDir}/zm-core-utils/src/bin/zmzimletctl                                                ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmzimletctl
+   Copy ${repoDir}/zm-core-utils/src/bin/zmonlyofficectl                                            ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmonlyofficectl
    Copy ${repoDir}/zm-core-utils/src/contrib/zmfetchercfg                                           ${repoDir}/zm-build/${currentPackage}/opt/zimbra/contrib/zmfetchercfg
    Copy ${repoDir}/zm-core-utils/src/libexec/600.zimbra                                             ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/600.zimbra
    Copy ${repoDir}/zm-core-utils/src/libexec/client_usage_report.py                                 ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/client_usage_report.py
@@ -630,7 +632,6 @@ main()
       Copy ${repoDir}/zm-network-build/rpmconf/Install/postinstall.pm                                  ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/postinstall.pm
       Copy ${repoDir}/zm-network-build/rpmconf/Install/preinstall.pm                                   ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/preinstall.pm
 
-      Copy ${repoDir}/zm-network-licenses/thirdparty/keyview_eula.txt                                  ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/keyview_eula.txt
       Copy ${repoDir}/zm-network-licenses/thirdparty/oracle_jdk_eula.txt                               ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/oracle_jdk_eula.txt
 
       Copy ${repoDir}/zm-postfixjournal/build/dist/postjournal                                         ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/postjournal

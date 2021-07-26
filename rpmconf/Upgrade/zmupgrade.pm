@@ -2052,9 +2052,6 @@ sub upgrade870RC1 {
 
 sub upgrade872GA {
     my ($startBuild, $targetVersion, $targetBuild) = (@_);
-    if (main::isInstalled("zimbra-convertd") && !(-l "/opt/zimbra/keyview")) {
-      symlink("/opt/zimbra/keyview-10.13.0.0", "/opt/zimbra/keyview")
-    }
     return 0;
 }
 
