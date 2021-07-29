@@ -7298,7 +7298,10 @@ sub applyConfig {
       }
     }
 
-    setLdapServerConfig($config{HOSTNAME}, 'zimbraNetworkModulesNGEnabled', 'FALSE');
+    my $zimbraNetworkModulesNGEnabled = getLdapServerValue("zimbraNetworkModulesNGEnabled");
+    if ($zimbraNetworkModulesNGEnabled eq "TRUE"){
+       setLdapServerConfig($config{HOSTNAME}, 'zimbraNetworkModulesNGEnabled', 'FALSE');
+    }
     progress ( "Starting servers..." );
     runAsZimbra ("/opt/zimbra/bin/zmcontrol stop");
     runAsZimbra ("/opt/zimbra/bin/zmcontrol start");
