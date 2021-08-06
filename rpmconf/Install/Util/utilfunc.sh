@@ -2275,7 +2275,6 @@ getInstallPackages() {
           MTA_SELECTED="yes"
         elif [ $i = "zimbra-proxy" ]; then
           PROXY_SELECTED="yes"
-        fi
         elif [ $i = "zimbra-onlyoffice" ]; then
           ONLYOFFICE_SELECTED="yes"
         fi
