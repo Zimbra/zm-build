@@ -2127,7 +2127,9 @@ configurePackageServer() {
     fi
     echo $PLATFORM | egrep -q "UBUNTU|DEBIAN"
     if [ $? = 0 ]; then
-      if [ $PLATFORM = "UBUNTU18_64" ]; then
+      if [ $PLATFORM = "UBUNTU20_64" ]; then
+        repo="focal"
+      elif [ $PLATFORM = "UBUNTU18_64" ]; then
         repo="bionic"
       elif [ $PLATFORM = "UBUNTU16_64" ]; then
         repo="xenial"
@@ -2670,7 +2672,7 @@ getPlatformVars() {
     PACKAGEEXT='deb'
     PACKAGEVERSION="dpkg-query -W -f \${Version}"
     CONFLICT_PACKAGES="mail-transport-agent"
-    if [ $PLATFORM = "UBUNTU12_64" -o $PLATFORM = "UBUNTU14_64" -o $PLATFORM = "UBUNTU16_64" -o $PLATFORM = "UBUNTU18_64" ]; then
+    if [ $PLATFORM = "UBUNTU12_64" -o $PLATFORM = "UBUNTU14_64" -o $PLATFORM = "UBUNTU16_64" -o $PLATFORM = "UBUNTU18_64" -o $PLATFORM = "UBUNTU20_64"]; then
       STORE_PACKAGES="libreoffice"
     fi
     DumpFileDetailsFromPackage() {

@@ -159,6 +159,10 @@ if [ -f /etc/lsb-release ]; then
       echo "18${i}"
       exit 0
     fi
+    if [ "$RELEASE" = "focal" ]; then
+      echo "20${i}"
+      exit 0
+    fi
     echo "UNKNOWN${i}"
     exit 0
   fi
