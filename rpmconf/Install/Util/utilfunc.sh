@@ -368,6 +368,33 @@ checkRecentBackup() {
   fi
 }
 
+checkNGModulesInstalled() {
+		isInstalled zimbra-network-modules-ng
+		if [ x$PKGINSTALLED != "x" ]; then
+		        echo ""
+			echo "WARNING: You are about to upgrade to the ${ZM_INST_VERSION}"
+			echo "NGModules and other packages zimbra-connect, zimbra-docs, zimbra-drive and"
+			echo "zimbra-chat are removed from ${ZM_INST_VERSION}"
+			echo ""
+			if [ x$DEFAULTFILE = "x" ]; then
+			          while :; do
+			            askYN "Do you wish to continue without NGModules?" "N"
+			            if [ $response = "no" ]; then
+			              askYN "Exit?" "N"
+			              if [ $response = "yes" ]; then
+			                echo "Exiting."
+			                exit 1
+			              fi
+			            else
+			              break
+			            fi
+			          done
+			else
+			    echo "Automated install detected...continuing."
+			fi
+		fi
+}
+
 checkUbuntuRelease() {
   if [ -f "/etc/lsb-release" ]; then
     . /etc/lsb-release
@@ -539,6 +566,7 @@ EOF
 
   checkRecentBackup
   checkDatabaseIntegrity
+  checkNGModulesInstalled
 }
 
 
