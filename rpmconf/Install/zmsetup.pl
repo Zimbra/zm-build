@@ -3664,14 +3664,14 @@ sub createOnlyofficeMenu {
     #    set the server host name at server level config
     if (isEnabled("zimbra-store")) {
       $config{ONLYOFFICESTANDALONE} = "no";
-      $config{ONLYOFFICEHOSTNAME} = $config{HOSTNAME};
     } else {
       $config{ONLYOFFICESTANDALONE} = "yes";
-      if ($config{ONLYOFFICEHOSTNAME} eq "") {
-        $config{ONLYOFFICEHOSTNAME} = $config{HOSTNAME};
-      }
-
     }
+
+    if ($config{ONLYOFFICEHOSTNAME} eq "") {
+        $config{ONLYOFFICEHOSTNAME} = $config{HOSTNAME};
+    }
+
     $$lm{menuitems}{$i} = {
       "prompt" => "Onlyoffice server:",
       "var" => \$config{ONLYOFFICEHOSTNAME},
