@@ -7302,6 +7302,7 @@ sub applyConfig {
     if ($zimbraNetworkModulesNGEnabled eq "TRUE"){
        setLdapServerConfig($config{HOSTNAME}, 'zimbraNetworkModulesNGEnabled', 'FALSE');
     }
+    enableTLSv1_3();
     progress ( "Starting servers..." );
     runAsZimbra ("/opt/zimbra/bin/zmcontrol stop");
     runAsZimbra ("/opt/zimbra/bin/zmcontrol start");
@@ -7688,6 +7689,69 @@ sub resumeConfiguration {
   } else {
     %configStatus = ();
   }
+}
+
+sub enableTLSv1_3 {
+	if (isInstalled("zimbra-proxy") && isEnabled("zimbra-proxy")) {
+		progress( "Setting zimbraReverseProxySSLProtocols...");
+		my $rc = main::runAsZimbra("$ZMPROV mcf +zimbraReverseProxySSLProtocols TLSv1.3");
+		progress(($rc == 0) ? "done.\n" : "failed.\n");
+		my $proxysslciphers = getLdapConfigValue("zimbraReverseProxySSLCiphers");
+		if ($proxysslciphers eq "ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-DSS-AES128-GCM-SHA256:kEDH+AESGCM:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA:ECDHE-ECDSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-DSS-AES128-SHA256:DHE-RSA-AES256-SHA256:DHE-DSS-AES256-SHA:DHE-RSA-AES256-SHA:AES128-GCM-SHA256:AES256-GCM-SHA384:AES128:AES256:HIGH:!aNULL:!eNULL:!EXPORT:!DES:!MD5:!PSK:!RC4") {
+			progress( "Setting zimbraReverseProxySSLCiphers...");
+			my $rc = main::runAsZimbra("$ZMPROV mcf zimbraReverseProxySSLCiphers 'ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-DSS-AES128-GCM-SHA256:kEDH+AESGCM:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA:ECDHE-ECDSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-DSS-AES128-SHA256:DHE-RSA-AES256-SHA256:DHE-DSS-AES256-SHA:DHE-RSA-AES256-SHA:AES128-GCM-SHA256:AES256-GCM-SHA384:AES128:AES256:TLS_AES_256_GCM_SHA384:HIGH:!aNULL:!eNULL:!EXPORT:!DES:!MD5:!PSK:!RC4'");
+			progress(($rc == 0) ? "done.\n" : "failed.\n");
+		    }
+	}
+	if (isInstalled("zimbra-store")) {
+		progress( "Setting mailboxd_java_options...");
+		my $mailboxd_java_options=getLocalConfigRaw("mailboxd_java_options");
+		my $new_mailboxd_options="";
+		foreach my $option (split(/\s+/, $mailboxd_java_options)) {
+			if ($option =~ /-Dhttps.protocols/) {
+				$new_mailboxd_options .= " -Dhttps.protocols=TLSv1.2,TLSv1.3";
+			}
+			elsif ($option =~ /-Djdk.tls.client.protocols/) {
+				$new_mailboxd_options .= " -Djdk.tls.client.protocols=TLSv1.2,TLSv1.3";
+			}
+			else{
+				$new_mailboxd_options.=" $option";
+			}
+		      }
+		$new_mailboxd_options =~ s/^\s+//;
+		my $rc = setLocalConfig("mailboxd_java_options", $new_mailboxd_options)if ($new_mailboxd_options ne "");
+		progress(($rc == 0) ? "done.\n" : "failed.\n");
+		progress( "Setting zimbra_zmjava_options...");
+		my $zimbra_zmjava_options=getLocalConfigRaw("zimbra_zmjava_options");
+		my $new_zimbra_zmjava_options="";
+		foreach my $option (split(/\s+/, $zimbra_zmjava_options)) {
+			if ($option =~ /-Dhttps.protocols/) {
+				$new_zimbra_zmjava_options .= " -Dhttps.protocols=TLSv1.2,TLSv1.3";
+			}
+			elsif ($option =~ /-Djdk.tls.client.protocols/) {
+				$new_zimbra_zmjava_options .= " -Djdk.tls.client.protocols=TLSv1.2,TLSv1.3";
+			}
+			else{
+				$new_zimbra_zmjava_options.=" $option";
+			}
+		      }
+		$new_zimbra_zmjava_options =~ s/^\s+//;
+		my $rc = setLocalConfig("zimbra_zmjava_options", $new_zimbra_zmjava_options)if ($new_zimbra_zmjava_options ne "");
+		progress(($rc == 0) ? "done.\n" : "failed.\n");
+	}
+	if (isInstalled("zimbra-ldap")) {
+		progress( "Setting ldap_common_tlsciphersuite...");
+		my $rc = setLocalConfig("ldap_common_tlsciphersuite", "!aNULL:!eNULL:!RC4:!DES:!3DES:MEDIUM:HIGH");
+		progress(($rc == 0) ? "done.\n" : "failed.\n");
+		progress( "Setting ldap_common_tlsprotocolmin...");
+		my $rc = setLocalConfig("ldap_common_tlsprotocolmin", "3.3");
+		progress(($rc == 0) ? "done.\n" : "failed.\n");
+	  }
+	if (isInstalled("zimbra-mta")) {
+		progress( "Setting amavis_sslversion...");
+		my $rc = setLocalConfig("amavis_sslversion", "!TLSv1");
+		progress(($rc == 0) ? "done.\n" : "failed.\n");
+	}
 }
 
 ### end subs
