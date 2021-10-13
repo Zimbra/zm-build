@@ -6595,8 +6595,10 @@ sub zimletCleanup {
           if (-d "$config{mailboxd_directory}/webapps/service/zimlet/$zimlet" );
 	system("rm -rf /opt/zimbra/zimlets-deployed/$zimlet")
 	  if (-d "/opt/zimbra/zimlets-deployed/$zimlet" );
-	system("rm -rf /opt/zimbra/zimlets-network/$zimlet.zip")
-	  if (-d "/opt/zimbra/zimlets-network/$zimlet.zip" );
+	system("rm -rf /opt/zimbra/zimlets-network/${zimlet}.zip")
+	  if (-d "/opt/zimbra/zimlets-network/${zimlet}.zip" );
+	system("rm -rf /opt/zimbra/zimlets/${zimlet}.zip")
+	  if (-d "/opt/zimbra/zimlets/${zimlet}.zip" );
       }
     }
   }
