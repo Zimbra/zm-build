@@ -6593,6 +6593,10 @@ sub zimletCleanup {
         runAsZimbra("/opt/zimbra/bin/zmzimletctl -l undeploy $zimlet");
         system("rm -rf $config{mailboxd_directory}/webapps/service/zimlet/$zimlet")
           if (-d "$config{mailboxd_directory}/webapps/service/zimlet/$zimlet" );
+	system("rm -rf /opt/zimbra/zimlets-deployed/$zimlet")
+	  if (-d "/opt/zimbra/zimlets-deployed/$zimlet" );
+	system("rm -rf /opt/zimbra/zimlets-network/$zimlet.zip")
+	  if (-d "/opt/zimbra/zimlets-network/$zimlet.zip" );
       }
     }
   }
