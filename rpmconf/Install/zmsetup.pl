@@ -6596,9 +6596,9 @@ sub zimletCleanup {
 	system("rm -rf /opt/zimbra/zimlets-deployed/$zimlet")
 	  if (-d "/opt/zimbra/zimlets-deployed/$zimlet" );
 	system("rm -rf /opt/zimbra/zimlets-network/${zimlet}.zip")
-	  if (-d "/opt/zimbra/zimlets-network/${zimlet}.zip" );
+	  if (-f "/opt/zimbra/zimlets-network/${zimlet}.zip" );
 	system("rm -rf /opt/zimbra/zimlets/${zimlet}.zip")
-	  if (-d "/opt/zimbra/zimlets/${zimlet}.zip" );
+	  if (-f "/opt/zimbra/zimlets/${zimlet}.zip" );
       }
     }
   }
