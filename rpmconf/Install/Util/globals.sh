@@ -46,16 +46,16 @@ zimbra-license-tools \
 zimbra-license-extension \
 zimbra-network-store"
 
-ZEXTRAS_PACKAGES="zimbra-network-modules-ng \
-zimbra-connect \
+ZEXTRAS_PACKAGES="zimbra-connect \
 zimbra-connect-modern \
-zimbra-docs \
-zimbra-docs-modern \
 zimbra-drive \
 zimbra-drive-ng \
 zimbra-drive-modern \
+zimbra-docs \
+zimbra-docs-modern \
 zimbra-chat \
-zimbra-talk"
+zimbra-talk \
+zimbra-network-modules-ng"
 
 MYDIR="$(CDPATH= cd "$(dirname "$0")" && pwd)"
 if [ "$(cat ${MYDIR}/.BUILD_TYPE)" == "NETWORK" ]; then
