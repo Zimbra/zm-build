@@ -492,6 +492,7 @@ main()
    Copy ${repoDir}/zm-db-conf/src/db/migration/migrate20200625-MobileDevices.pl                     ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/scripts/migrate20200625-MobileDevices.pl
    Copy ${repoDir}/zm-db-conf/src/db/migration/migrate20210319-MobileDevices.pl                     ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/scripts/migrate20210319-MobileDevices.pl
    Copy ${repoDir}/zm-db-conf/src/db/migration/migrate20210809-UnsubscribeFolder.pl                 ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/scripts/migrate20210809-UnsubscribeFolder.pl
+   Copy ${repoDir}/zm-db-conf/src/db/migration/migrate20211116-MobileNotificationDevices.pl         ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/scripts/migrate20211116-MobileNotificationDevices.pl
    Copy ${repoDir}/zm-db-conf/src/db/migration/migrateAmavisLdap20050810.pl                         ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/scripts/migrateAmavisLdap20050810.pl
    Copy ${repoDir}/zm-db-conf/src/db/migration/migrateClearSpamFlag.pl                              ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/scripts/migrateClearSpamFlag.pl
    Copy ${repoDir}/zm-db-conf/src/db/migration/migrateLargeMetadata.pl                              ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/scripts/migrateLargeMetadata.pl
