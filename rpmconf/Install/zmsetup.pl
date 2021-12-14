@@ -7318,6 +7318,10 @@ sub applyConfig {
     # Initialize application server specific items
     # only after the application server is running.
     if (isEnabled("zimbra-store")) {
+      progress("Enabling jetty logging...");
+      system("/opt/zimbra/libexec/zmjettyenablelogging > /dev/null 2>&1");
+      progress("done.\n");
+
       configInstallZimlets();
 
       progress ( "Restarting mailboxd...");
