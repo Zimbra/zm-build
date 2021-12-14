@@ -337,6 +337,7 @@ main()
    Copy ${repoDir}/zm-core-utils/src/libexec/zmiostat                                               ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmiostat
    Copy ${repoDir}/zm-core-utils/src/libexec/zmiptool                                               ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmiptool
    Copy ${repoDir}/zm-core-utils/src/libexec/zmjavawatch                                            ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmjavawatch
+   Copy ${repoDir}/zm-core-utils/src/libexec/zmjettyenablelogging                                   ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmjettyenablelogging
    Copy ${repoDir}/zm-core-utils/src/libexec/zmjsprecompile                                         ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmjsprecompile
    Copy ${repoDir}/zm-core-utils/src/libexec/zmlogger                                               ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmlogger
    Copy ${repoDir}/zm-core-utils/src/libexec/zmloggerinit                                           ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmloggerinit
