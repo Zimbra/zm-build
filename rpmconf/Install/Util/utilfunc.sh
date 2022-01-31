@@ -2720,8 +2720,11 @@ getPlatformVars() {
       PACKAGEEXT='rpm'
       PACKAGEQUERY='rpm -q'
       PACKAGEVERIFY='rpm -K'
-      if [ $PLATFORM = "RHEL6_64" -o $PLATFORM = "RHEL7_64" -o $PLATFORM = "RHEL8_64" ]; then
+      if [ $PLATFORM = "RHEL6_64" ]; then
          STORE_PACKAGES="libreoffice libreoffice-headless"
+      fi
+      if [ $PLATFORM = "RHEL7_64" -o $PLATFORM = "RHEL8_64" ]; then
+         STORE_PACKAGES="libreoffice libreoffice-core"
       fi
       DumpFileDetailsFromPackage() {
          local pkg_n="$1"; shift
