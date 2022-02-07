@@ -10,6 +10,6 @@ BUILD_THIRDPARTY_SERVER = zdev-vm008.eng.zimbra.com
 
 # Example of GIT_OVERRIDES (hash)
 # %GIT_OVERRIDES          = myremote.url-prefix=ssh://git@stash.corp.synacor.com:7999/~user/zm-mailbox.git
- %GIT_OVERRIDES          = zm-mailbox.branch=ZDO-1
+# %GIT_OVERRIDES          = zm-mailbox.branch=dev
 # %GIT_OVERRIDES          = zm-mailbox.remote=myremote
 # %GIT_OVERRIDES          = zm-mailbox.tag=judaspriest-872    # .tag always overrides .branch
