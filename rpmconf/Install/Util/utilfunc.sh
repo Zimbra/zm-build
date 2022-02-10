@@ -630,6 +630,9 @@ checkStoreRequirements() {
       if [ "x$PKGINSTALLED" != "x" ]; then
         echo "     FOUND: $PKGINSTALLED"
       else
+        if [[ $ONLYOFFICE_SELECTED == "yes" && $i == libreoffice* ]]; then
+          continue
+        fi
         echo "     MISSING: $i"
         GOOD="no"
       fi
@@ -2438,6 +2441,11 @@ isOnlyofficeStandalone() {
   ## install rabbit mq
   if [ $onlyofficepkg == "yes" ]; then
     INSTALL_PACKAGES="$INSTALL_PACKAGES rabbit-mq"
+  fi
+
+  # install document editing zimlet
+  if [ $onlyofficepkg == "yes" -a $isStandAlone == "no" ]; then
+    INSTALL_PACKAGES="$INSTALL_PACKAGES zimbra-zimlet-document-editor"
   fi
 
   if [ $isStandAlone == "yes" -a $onlyofficepkg == "yes" ]; then
