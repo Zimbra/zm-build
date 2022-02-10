@@ -623,6 +623,11 @@ checkRequiredSpace() {
 checkStoreRequirements() {
   echo "Checking required packages for zimbra-store"
   GOOD="yes"
+  onlyofficeInstalled="no"
+  isInstalled "zimbra-onlyoffice"
+  if [ x$PKGINSTALLED != "x" ]; then
+    onlyofficeInstalled="yes"
+  fi
   if [ x"$ZMTYPE_INSTALLABLE" = "xNETWORK" ]; then
     for i in $STORE_PACKAGES; do
       #echo -n "    $i..."
@@ -630,6 +635,9 @@ checkStoreRequirements() {
       if [ "x$PKGINSTALLED" != "x" ]; then
         echo "     FOUND: $PKGINSTALLED"
       else
+        if [ $onlyofficeInstalled == "yes" -a $i == libreoffice* ]; then
+          continue
+        fi
         echo "     MISSING: $i"
         GOOD="no"
       fi
@@ -2438,6 +2446,11 @@ isOnlyofficeStandalone() {
   ## install rabbit mq
   if [ $onlyofficepkg == "yes" ]; then
     INSTALL_PACKAGES="$INSTALL_PACKAGES rabbit-mq"
+  fi
+
+  # install document editing zimlet
+  if [ $onlyofficepkg == "yes" -a $isStandAlone == "no" ]; then
+    INSTALL_PACKAGES="$INSTALL_PACKAGES zimbra-zimlet-document-editor"
   fi
 
   if [ $isStandAlone == "yes" -a $onlyofficepkg == "yes" ]; then
