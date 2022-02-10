@@ -623,11 +623,6 @@ checkRequiredSpace() {
 checkStoreRequirements() {
   echo "Checking required packages for zimbra-store"
   GOOD="yes"
-  onlyofficeInstalled="no"
-  isInstalled "zimbra-onlyoffice"
-  if [ x$PKGINSTALLED != "x" ]; then
-    onlyofficeInstalled="yes"
-  fi
   if [ x"$ZMTYPE_INSTALLABLE" = "xNETWORK" ]; then
     for i in $STORE_PACKAGES; do
       #echo -n "    $i..."
@@ -635,7 +630,7 @@ checkStoreRequirements() {
       if [ "x$PKGINSTALLED" != "x" ]; then
         echo "     FOUND: $PKGINSTALLED"
       else
-        if [ $onlyofficeInstalled == "yes" -a $i == libreoffice* ]; then
+        if [[ $ONLYOFFICE_SELECTED == "yes" && $i == libreoffice* ]]; then
           continue
         fi
         echo "     MISSING: $i"
