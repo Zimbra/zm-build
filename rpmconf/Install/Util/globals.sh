@@ -69,7 +69,7 @@ REMOVE="no"
 UPGRADE="no"
 HOSTNAME=`hostname --fqdn`
 ZIMBRAINTERNAL=no
-echo $HOSTNAME | egrep -qe 'eng.synacor.com$|eng.zimbra.com$|lab.zimbra.com$' > /dev/null 2>&1
+echo $HOSTNAME | egrep -qe 'eng.synacor.com$|eng.zimbra.com$|lab.zimbra.com$|zimbradev.com$' > /dev/null 2>&1
 if [ $? = 0 ]; then
   ZIMBRAINTERNAL=yes
 fi

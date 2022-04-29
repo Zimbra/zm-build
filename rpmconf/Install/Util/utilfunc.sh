@@ -870,7 +870,7 @@ verifyUpgrade() {
       if [ x"$SKIP_ACTIVATION_CHECK" = "xno" ]; then
         if [ -x "bin/checkLicense.pl" ]; then
           echo "Validating existing license is not expired and qualifies for upgrade"
-          echo $HOSTNAME | egrep -qe 'eng.vmware.com$|eng.zimbra.com$|lab.zimbra.com$' > /dev/null 2>&1
+          echo $HOSTNAME | egrep -qe 'eng.vmware.com$|eng.zimbra.com$|lab.zimbra.com$|zimbradev.com$' > /dev/null 2>&1
           if [ $? = 0 ]; then
             # echo "Running bin/checkLicense.pl -i -v $ZM_INST_VERSION"
             `bin/checkLicense.pl -i -v $ZM_INST_VERSION >/dev/null`
@@ -2236,7 +2236,7 @@ configurePackageServer() {
       USE_ZIMBRA_PACKAGE_SERVER="yes"
       PACKAGE_SERVER="repo.zimbra.com"
       response="no"
-      echo $HOSTNAME | egrep -qe 'eng.vmware.com$|eng.zimbra.com$|lab.zimbra.com$' > /dev/null 2>&1
+      echo $HOSTNAME | egrep -qe 'eng.vmware.com$|eng.zimbra.com$|lab.zimbra.com$|zimbradev.com$' > /dev/null 2>&1
       if [ $? = 0 ]; then
         askYN "Use internal development repo" "N"
         if [ $response = "yes" ]; then
@@ -2461,14 +2461,31 @@ getInstallPackages() {
 
     # askInstallPkgYN args : PROMPT REQUIRE_STORE=yes|no YES_STORE_DEFAULT=Y|N NO_STORE_DEFAULT=Y|N
 
+    ZIMBRAINTERNAL=no
+    echo $HOSTNAME | egrep -qe 'eng.zimbra.com$|lab.zimbra.com$|zimbradev.com$' > /dev/null 2>&1
+    if [ $? = 0 ]; then
+       ZIMBRAINTERNAL=yes
+    fi
     if [ $i = "zimbra-license-tools" ]; then
       response="yes"
     elif [ $i = "zimbra-patch" ]; then
-      ifStoreSelectedY
+        if [ x"$ZIMBRAINTERNAL" = "xyes" ] && [ $STORE_SELECTED = "yes" ]; then
+            askYN "Install $i" "Y"
+        else
+            ifStoreSelectedY
+        fi
     elif [ $i = "zimbra-mta-patch" ]; then
-      response="$MTA_SELECTED"
+        if [ x"$ZIMBRAINTERNAL" = "xyes" ] && [ $MTA_SELECTED = "yes" ]; then
+            askYN "Install $i" "Y"
+        else
+            response="$MTA_SELECTED"
+        fi
     elif [ $i = "zimbra-proxy-patch" ]; then
-      response="$PROXY_SELECTED"
+        if [ x"$ZIMBRAINTERNAL" = "xyes" ] && [ $PROXY_SELECTED = "yes" ]; then
+            askYN "Install $i" "Y"
+        else
+            response="$PROXY_SELECTED"
+        fi
     elif [ $i = "zimbra-license-extension" ]; then
       ifStoreSelectedY
     elif [ $i = "zimbra-network-store" ]; then
