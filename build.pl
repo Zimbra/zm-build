@@ -849,7 +849,7 @@ sub Clone($$)
                   foreach my $minus_b_arg ( split( /,/, $repo_tag_csv ) )
                   {
                      print "\n";
-                     my $r = SysExec( "git", "checkout", $minus_b_arg );
+                     my $r = SysExec( { continue_on_error => 1 }, "git", "checkout", $minus_b_arg );
                      if ( $r->{success} )
                      {
                         $s++;
