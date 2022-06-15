@@ -113,6 +113,14 @@ Create a directory for your build and check-out the `zm-build` repository:
     cd zm-build
     git checkout origin/develop
 
+To build a specific patch example 9.0.0.p25 run the following: 
+
+    mkdir installer-build
+    cd installer-build
+    git clone --depth 1 --branch 9.0.0.p25 git@github.com:Zimbra/zm-build.git
+    cd zm-build
+    ENV_CACHE_CLEAR_FLAG=true ./build.pl --ant-options -DskipTests=true --git-default-tag=9.0.0.p25,9.0.0.p24,9.0.0.p23,9.0.0.p22,9.0.0.p21,9.0.0.p20,9.0.0.p19,9.0.0.p18,9.0.0.p17,9.0.0.p16,9.0.0.p15,9.0.0.p14,9.0.0.p13,9.0.0.p12,9.0.0.p11,9.0.0.p10,9.0.0.p9,9.0.0.p8,9.0.0.p7,9.0.0.p6.1,9.0.0.p6,9.0.0.p5,9.0.0.p4,9.0.0.p3,9.0.0.p2,9.0.0.p1,9.0.0 --build-release-no=9.0.0 --git-overrides zm-network-build.tag=9.0.0.p25 --build-type=FOSS --build-release=NIKOLATESLA --build-release-candidate=GA --build-thirdparty-server=files.zimbra.com --build-no=3969 --no-interactive
+
 The `build.pl` command is used to build the product. Run it with the `-h` option for help:
 
     Usage: ./build.pl <options>
