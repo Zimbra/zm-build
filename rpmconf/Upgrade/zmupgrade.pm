@@ -41,7 +41,7 @@ chomp $rundir;
 my $scriptDir = "/opt/zimbra/libexec/scripts";
 
 my $lowVersion = 52;
-my $hiVersion = 114; # this should be set to the DB version expected by current server code
+my $hiVersion = 115; # this should be set to the DB version expected by current server code
 
 my $needSlapIndexing = 0;
 my $mysqlcnfUpdated = 0;
@@ -76,20 +76,21 @@ my %updateScripts = (
   '91' => "migrate20121009-VolumeBlobs.pl",            # 8.0.1
   '92' => "migrate20130226_alwayson.pl",               # 8.5.0
   # 93-99 skipped for possible IRONMAIDEN use
-  '100' => "migrate20140319-MailItemPrevFolders.pl",   # 8.5.0
-  '101' => "migrate20140328-EnforceTableCharset.pl",   #8.5.0
-  '102' => "migrate20140624-DropMysqlIndexes.pl",      #8.5.0
-  '103' => "migrate20150401-ZmgDevices.pl",            #8.7.0
-  '104' => "migrate20150515-DataSourcePurgeTables.pl", #8.7.0
-  '105' => "migrate20150623-ZmgDevices.pl",            #8.7.0
-  '106' => "migrate20150702-ZmgDevices.pl",            #8.7.0
-  '107' => "migrate20170301-ZimbraChat.pl",            #8.7.6
-  '108' => "migrate20180301-ZimbraChat.pl",            #8.8.8
-  '109' => "migrate20190401-ZimbraChat.pl",            #8.8.15
-  '110' => "migrate20190611-ZimbraChat.pl",            #8.8.15
-  '111' => "migrate20210506-BriefcaseApi.pl",          #9.1.0
-  '112' => "migrate20200625-MobileDevices.pl",         #Zimbra X
-  '113' => "migrate20210319-MobileDevices.pl",         #Zimbra X
+  '100' => "migrate20140319-MailItemPrevFolders.pl",         # 8.5.0
+  '101' => "migrate20140328-EnforceTableCharset.pl",         #8.5.0
+  '102' => "migrate20140624-DropMysqlIndexes.pl",            #8.5.0
+  '103' => "migrate20150401-ZmgDevices.pl",                  #8.7.0
+  '104' => "migrate20150515-DataSourcePurgeTables.pl",       #8.7.0
+  '105' => "migrate20150623-ZmgDevices.pl",                  #8.7.0
+  '106' => "migrate20150702-ZmgDevices.pl",                  #8.7.0
+  '107' => "migrate20170301-ZimbraChat.pl",                  #8.7.6
+  '108' => "migrate20180301-ZimbraChat.pl",                  #8.8.8
+  '109' => "migrate20190401-ZimbraChat.pl",                  #8.8.15
+  '110' => "migrate20190611-ZimbraChat.pl",                  #8.8.15
+  '111' => "migrate20210506-BriefcaseApi.pl",                #9.1.0
+  '112' => "migrate20200625-MobileDevices.pl",               #Zimbra X
+  '113' => "migrate20210319-MobileDevices.pl",               #Zimbra X
+  '115' => "migrate20211116-MobileNotificationDevices.pl",   #9.1.0
 );
 
 my %updateFuncs = (
