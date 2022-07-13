@@ -87,10 +87,11 @@ my %updateScripts = (
   '108' => "migrate20180301-ZimbraChat.pl",            #8.8.8
   '109' => "migrate20190401-ZimbraChat.pl",            #8.8.15
   '110' => "migrate20190611-ZimbraChat.pl",            #8.8.15
-  '111' => "migrate20210506-BriefcaseApi.pl",          #9.1.0
+  '111' => "migrate20210506-BriefcaseApi.pl",          #10.0.0
   '112' => "migrate20200625-MobileDevices.pl",         #Zimbra X
   '113' => "migrate20210319-MobileDevices.pl",         #Zimbra X
-  '114' => "migrate20220721-AddMdmUpdateTimestamp.pl", #9.1.0
+  '114' => "migrate20220721-AddMdmUpdateTimestamp.pl", #10.0.0
+  '115' => "migrate20220525-Volume.pl",                #10.0.0
 );
 
 my %updateFuncs = (
