@@ -90,6 +90,7 @@ my %updateScripts = (
   '111' => "migrate20210506-BriefcaseApi.pl",          #9.1.0
   '112' => "migrate20200625-MobileDevices.pl",         #Zimbra X
   '113' => "migrate20210319-MobileDevices.pl",         #Zimbra X
+  '114' => "migrate20220525-Volume.pl",                #9.1.0
 );
 
 my %updateFuncs = (
