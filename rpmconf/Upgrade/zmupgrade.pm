@@ -2137,6 +2137,7 @@ sub upgrade8811GA {
 
 sub upgrade8812GA {
    print "applying 8812GA upgrade changes\n";
+
    print "Updating to CA certs path\n";
 
   qx($su "zmlocalconfig -e mailboxd_truststore=/opt/zimbra/common/lib/jvm/java/lib/security/cacerts");
@@ -2146,6 +2147,7 @@ sub upgrade8812GA {
 
 sub upgrade8815GA {
    print "applying 8815GA upgrade changes\n";
+
    print "Updating OWASP LC config\n";
 
   main::deleteLocalConfig("zimbra_use_owasp_html_sanitizer");
