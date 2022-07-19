@@ -48,7 +48,7 @@ main()
        cp -f ${repoDir}/zm-sync-store/src/bin/zmdevicesstats ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmdevicesstats
        cp -f ${repoDir}/zm-sync-store/src/bin/zmgdcutil ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmgdcutil
        cp -f ${repoDir}/zm-sync-store/src/bin/zmemail ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmemail
-       cp -f ${repoDir}/zm-sync-store/src/bin/zmabqmailschedule ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmabqmailschedule
+       cp -f ${repoDir}/zm-sync-store/src/bin/zmmdmmailschedule ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmmdmmailschedule
     fi
 
 
