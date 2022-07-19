@@ -292,6 +292,7 @@ main()
    Copy ${repoDir}/zm-core-utils/src/bin/zmstatctl                                                  ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmstatctl
    Copy ${repoDir}/zm-core-utils/src/bin/zmstorectl                                                 ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmstorectl
    Copy ${repoDir}/zm-core-utils/src/bin/zmswatchctl                                                ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmswatchctl
+   Copy ${repoDir}/zm-core-utils/src/bin/zms3config                                                 ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zms3config
    Copy ${repoDir}/zm-core-utils/src/bin/zmthrdump                                                  ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmthrdump
    Copy ${repoDir}/zm-core-utils/src/bin/zmtlsctl                                                   ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmtlsctl
    Copy ${repoDir}/zm-core-utils/src/bin/zmtotp                                                     ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmtotp
