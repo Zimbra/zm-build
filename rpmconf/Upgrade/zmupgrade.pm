@@ -41,7 +41,7 @@ chomp $rundir;
 my $scriptDir = "/opt/zimbra/libexec/scripts";
 
 my $lowVersion = 52;
-my $hiVersion = 114; # this should be set to the DB version expected by current server code
+my $hiVersion = 115; # this should be set to the DB version expected by current server code
 
 my $needSlapIndexing = 0;
 my $mysqlcnfUpdated = 0;
@@ -2138,7 +2138,7 @@ sub upgrade8811GA {
 
 sub upgrade8812GA {
    print "applying 8812GA upgrade changes\n";
-   
+
    print "Updating to CA certs path\n";
 
   qx($su "zmlocalconfig -e mailboxd_truststore=/opt/zimbra/common/lib/jvm/java/lib/security/cacerts");
@@ -2148,7 +2148,7 @@ sub upgrade8812GA {
 
 sub upgrade8815GA {
    print "applying 8815GA upgrade changes\n";
-   
+
    print "Updating OWASP LC config\n";
 
   main::deleteLocalConfig("zimbra_use_owasp_html_sanitizer");
