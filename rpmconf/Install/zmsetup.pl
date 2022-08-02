@@ -7206,6 +7206,7 @@ sub applyConfig {
       setLdapServerConfig($config{HOSTNAME}, 'zimbraNetworkAdminNGEnabled', 'TRUE');
     }
 
+    addJDK17Options();
     progress ( "Starting servers..." );
     runAsZimbra ("/opt/zimbra/bin/zmcontrol stop");
     runAsZimbra ("/opt/zimbra/bin/zmcontrol start");
@@ -7524,6 +7525,23 @@ sub resumeConfiguration {
   } else {
     %configStatus = ();
   }
+}
+
+sub addJDK17Options {
+	if (isInstalled("zimbra-core")) {
+		progress( "Setting java options...");
+		my $java_options=getLocalConfigRaw("mailboxd_java_options");
+		my $new_java_options=$java_options;
+		if ($java_options !~ /-Djava.security.egd/) {
+			$new_java_options = $new_java_options." -Djava.security.egd=file:/dev/./urandom";
+		}
+		if ($java_options !~ /--add-opens java.base\/java.lang=ALL-UNNAMED/) {
+			$new_java_options = $new_java_options." --add-opens java.base/java.lang=ALL-UNNAMED";
+		}
+		$new_java_options =~ s/^\s+//;
+		my $rc = setLocalConfig("mailboxd_java_options", $new_java_options)if ($new_java_options ne $java_options);
+		progress(($rc == 0) ? "done.\n" : "failed.\n");
+	}
 }
 
 ### end subs
