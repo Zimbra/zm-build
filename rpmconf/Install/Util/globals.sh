@@ -38,7 +38,6 @@ zimbra-onlyoffice"
 SERVICES=""
 
 OPTIONAL_PACKAGES="zimbra-qatest \
-zimbra-imapd \
 zimbra-license-tools \
 zimbra-license-extension \
 zimbra-network-store"
