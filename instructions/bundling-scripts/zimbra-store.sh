@@ -231,7 +231,6 @@ main()
                      "zm-2fa-admin-zimlet" \
                      "zm-ucconfig-admin-zimlet" \
                      "zm-securemail-zimlet" \
-                     "zm-smime-applet" \
                      "zm-mobile-sync-admin-zimlet" )
       for i in "${adminZimlets[@]}"
       do
