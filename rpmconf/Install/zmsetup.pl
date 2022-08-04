@@ -6583,7 +6583,7 @@ sub zimletCleanup {
     return 1;
   } else {
     detail("ldap bind done for $ldap_dn");
-    $result = $ldap->search(base => $ldap_base, scope => 'one', filter => "(|(cn=convertd)(cn=hsm)(cn=hotbackup)(cn=zimbra_cert_manager)(cn=com_zimbra_search)(cn=zimbra_xmbxsearch)(cn=com_zimbra_domainadmin)(cn=com_zimbra_tinymce)(cn=com_zimbra_tasksreminder)(cn=com_zimbra_linkedin)(cn=com_zimbra_social)(cn=com_zimbra_dnd)(cn=com_zextras_chat_open)(cn=com_zextras_talk)(cn=com_zextras_zextras)(cn=com_zextras_client)(cn=com_zimbra_connect_classic)(cn=com_zimbra_connect_modern)(cn=com_zextras_docs)(cn=com_zimbra_docs_modern)(cn=com_zimbra_drive_modern)(cn=com_zextras_drive)(cn=com_zextras_drive_open))", attrs => ['cn']);
+    $result = $ldap->search(base => $ldap_base, scope => 'one', filter => "(|(cn=convertd)(cn=hsm)(cn=hotbackup)(cn=zimbra_cert_manager)(cn=com_zimbra_search)(cn=zimbra_xmbxsearch)(cn=com_zimbra_domainadmin)(cn=com_zimbra_tinymce)(cn=com_zimbra_tasksreminder)(cn=com_zimbra_linkedin)(cn=com_zimbra_social)(cn=com_zimbra_dnd)(cn=com_zextras_chat_open)(cn=com_zextras_talk)(cn=com_zextras_zextras)(cn=com_zextras_client)(cn=com_zimbra_connect_classic)(cn=com_zimbra_connect_modern)(cn=com_zextras_docs)(cn=com_zimbra_docs_modern)(cn=com_zimbra_drive_modern)(cn=com_zextras_drive)(cn=com_zextras_drive_open)(cn=com_zimbra_smime))", attrs => ['cn']);
     return $result if ($result->code());
     detail("Processing ldap search results");
     foreach my $entry ($result->all_entries) {
@@ -6593,6 +6593,8 @@ sub zimletCleanup {
         runAsZimbra("/opt/zimbra/bin/zmzimletctl -l undeploy $zimlet");
         system("rm -rf $config{mailboxd_directory}/webapps/service/zimlet/$zimlet")
           if (-d "$config{mailboxd_directory}/webapps/service/zimlet/$zimlet" );
+	system("rm -rf /opt/zimbra/jetty/webapps/zimbra/public/${zimlet}.jarx")
+	  if (-f "/opt/zimbra/jetty/webapps/zimbra/public/${zimlet}.jarx" );
 	system("rm -rf /opt/zimbra/zimlets-deployed/$zimlet")
 	  if (-d "/opt/zimbra/zimlets-deployed/$zimlet" );
 	system("rm -rf /opt/zimbra/zimlets-network/${zimlet}.zip")
@@ -6671,13 +6673,6 @@ sub configInstallZimlets {
       # disable click2call zimlets by default.  #73987
       setLdapCOSConfig("+zimbraZimletAvailableZimlets", "-$zimlet")
         if ($zimlet =~ /click2call/);
-      #disable old smime zimlet
-      setLdapCOSConfig("+zimbraZimletAvailableZimlets", "-$zimlet")
-        if ($zimlet =~ /smime/);
-
-      if (($rc == 0) && ($zimlet eq "com_zimbra_smime") && ($config{UIWEBAPPS} eq "yes")) {
-        system("cp /opt/zimbra/zimlets-deployed/com_zimbra_smime/com_zimbra_smime.jarx /opt/zimbra/jetty/webapps/zimbra/public/com_zimbra_smime.jarx");
-      }
     }
     progress ( "Finished installing network zimlets.\n" );
   }
