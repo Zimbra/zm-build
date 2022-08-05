@@ -2471,12 +2471,26 @@ isOnlyofficeStandalone() {
 
 }
 
+removeModernUI(){
+	isInstalled zimbra-modern-ui
+	if [ x$PKGINSTALLED != "x" ]; then
+		echo -n "Removing zimbra-modern-ui..."
+		$PACKAGERM zimbra-modern-ui >/dev/null 2>&1
+		echo "done"
+	fi
+}
 deleteWebApp() {
   WEBAPPNAME=$1
   CONTAINERDIR=$2
 
   /bin/rm -rf /opt/zimbra/$CONTAINERDIR/webapps/$WEBAPPNAME
   /bin/rm -rf /opt/zimbra/$CONTAINERDIR/webapps/$WEBAPPNAME.war
+  if [ $WEBAPPNAME == "zimbra" ]; then
+     #zimbra-modern-ui package needs to re-install
+     #because deleting /opt/zimbra/jetty/webapps/zimbra/ will remove modern directory from webapps
+     #so first uninstall zimbra-modern-ui to install it
+     removeModernUI
+  fi
 }
 
 setInstallPackages() {
