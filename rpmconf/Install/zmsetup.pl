@@ -7299,10 +7299,27 @@ sub applyConfig {
       }
     }
 
+    # Disable zextras modules
     my $zimbraNetworkModulesNGEnabled = getLdapServerValue("zimbraNetworkModulesNGEnabled");
     if ($zimbraNetworkModulesNGEnabled eq "TRUE"){
        setLdapServerConfig($config{HOSTNAME}, 'zimbraNetworkModulesNGEnabled', 'FALSE');
     }
+
+    my $zimbraNetworkAdminEnabled = getLdapServerValue("zimbraNetworkAdminEnabled");
+    if ($zimbraNetworkAdminEnabled eq "TRUE"){
+       setLdapServerConfig($config{HOSTNAME}, 'zimbraNetworkAdminEnabled', 'FALSE');
+    }
+
+    my $zimbraNetworkAdminNGEnabled = getLdapServerValue("zimbraNetworkAdminNGEnabled");
+    if ($zimbraNetworkAdminNGEnabled eq "TRUE"){
+       setLdapServerConfig($config{HOSTNAME}, 'zimbraNetworkAdminNGEnabled', 'FALSE');
+    }
+
+    my $zimbraNetworkMobileNGEnabled = getLdapServerValue("zimbraNetworkMobileNGEnabled");
+    if ($zimbraNetworkMobileNGEnabled eq "TRUE"){
+       setLdapServerConfig($config{HOSTNAME}, 'zimbraNetworkMobileNGEnabled', 'FALSE');
+    }
+
     enableTLSv1_3();
     addJDK17Options();
     progress ( "Starting servers..." );
@@ -7471,30 +7488,6 @@ sub setupSyslog {
   }
   configLog("setupSyslog");
 }
-
-sub zxsuiteIsAvailable {
-  my $checkNGstatus = 0;
-  my $trying = 0;
-  my $output;
-  my $NGbackup;
-  progress("Checking if the NG started running...");
-  while (( $checkNGstatus != 1 ) && ( $trying < 7 )) {
-        $output = qx(/opt/zimbra/bin/zxsuite backup getBackupInfo);
-        last if ($output =~ /valid/);
-        detail ("retry ".  ++$trying);
-        sleep 5;
-  }
-  progress("done. \n");
-  if ((-f "/opt/zimbra/bin/zxsuite") && ($output =~ /valid(.*)true/ )) {
-     $NGbackup = "true";
-     detail("NG backup is already initialized because /opt/zimbra/bin/zxsuite backup getBackupInfo valid has value: $NGbackup \n");
-  } else {
-    $NGbackup = "false";
-    detail("Modifying the crontab with default schedule because \"/opt/zimbra/bin/zxsuite backup getBackupInfo\" valid has value: $NGbackup \n");
-  }
-  return $NGbackup
-}
-
 
 sub setupCrontab {
   my @backupSchedule=();
