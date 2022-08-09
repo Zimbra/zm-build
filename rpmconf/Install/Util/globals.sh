@@ -42,6 +42,10 @@ zimbra-license-tools \
 zimbra-license-extension \
 zimbra-network-store"
 
+IMMAIL_PACKAGES="zimbra-zimlet-immail-classic \
+zimbra-zimlet-immail-modern \
+zimbra-extension-immail"
+
 ZEXTRAS_PACKAGES="zimbra-connect \
 zimbra-connect-modern \
 zimbra-drive \
