@@ -699,6 +699,18 @@ checkExistingInstall() {
     fi
   done
 
+  INSTD_IMMAIL_PACKAGES="0"
+  for i in $IMMAIL_PACKAGES; do
+	  isInstalled $i
+	  if [ x$PKGINSTALLED != "x" ]; then
+		  echo "    $i...FOUND $PKGINSTALLED"
+		  ((INSTD_IMMAIL_PACKAGES++))
+		  INSTALLED_PACKAGES="$INSTALLED_PACKAGES $i"
+	  else
+		  echo "    $i...NOT FOUND"
+	  fi
+  done
+
   determineVersionType
   if [ $INSTALLED = "yes" ]; then
     verifyUpgrade
@@ -2426,6 +2438,7 @@ getInstallPackages() {
     fi
 
   done
+  selectImmail
   checkRequiredSpace
 
   isInstalled zimbra-store
@@ -2444,6 +2457,20 @@ getInstallPackages() {
   done
 }
 
+selectImmail() {
+	# install imMail extension and imMail classic, modern zimlets
+	if [ $STORE_SELECTED = "yes" ] ; then
+		# Don't ask to install if Immail packages are already installed
+		if [ "${INSTD_IMMAIL_PACKAGES}" -eq 3 ]; then
+			INSTALL_PACKAGES="$INSTALL_PACKAGES $IMMAIL_PACKAGES"
+		else
+			askYN "Install chat and video features" "Y"
+			if [ $response = "yes" ]; then
+				INSTALL_PACKAGES="$INSTALL_PACKAGES $IMMAIL_PACKAGES"
+			fi
+		fi
+	fi
+}
 isOnlyofficeStandalone() {
   onlyofficepkg=$1
   # check if store is being installed too.
