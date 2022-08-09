@@ -2463,6 +2463,7 @@ isOnlyofficeStandalone() {
   # install document editing zimlet
   if [ $onlyofficepkg == "yes" -a $isStandAlone == "no" ]; then
     INSTALL_PACKAGES="$INSTALL_PACKAGES zimbra-zimlet-document-editor"
+    INSTALL_PACKAGES="$INSTALL_PACKAGES zimbra-zimlet-classic-document-editor"
   fi
 
   if [ $isStandAlone == "yes" -a $onlyofficepkg == "yes" ]; then
