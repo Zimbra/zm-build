@@ -215,8 +215,8 @@ sub upgrade {
        $isLdapMaster = 0;
   }
   my ($startBuild,$targetBuild);
-  ($startVersion,$startBuild) = $startVersion =~ /(\d+\.\d\.\d+_[^_]*)_(\d+)/;
-  ($targetVersion,$targetBuild) = $targetVersion =~ m/(\d+\.\d\.\d+_[^_]*)_(\d+)/;
+  ($startVersion,$startBuild) = $startVersion =~ /(\d+\.\d+\.\d+_[^_]*)_(\d+)/;
+  ($targetVersion,$targetBuild) = $targetVersion =~ m/(\d+\.\d+\.\d+_[^_]*)_(\d+)/;
   ($startMajor,$startMinor,$startMicro) =
     $startVersion =~ /(\d+)\.(\d+)\.(\d+_[^_]*)/;
   ($targetMajor,$targetMinor,$targetMicro) =
