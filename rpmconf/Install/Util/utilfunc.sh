@@ -1673,10 +1673,6 @@ findUbuntuExternalPackageDependencies() {
         EXTPACKAGES="$p $EXTPACKAGES"
       done
 
-      if [ $RABBITMQINSTALLED = "yes" ]; then
-        EXTPACKAGES="rabbitmq-server $EXTPACKAGES"
-      fi
-
       if [ -z "$EXTPACKAGES" ]; then
         echo "External package dependencies not found"
       else
@@ -1734,6 +1730,16 @@ removeZextrasPackagesIfInstalled() {
 	done
 }
 
+removeExternalRabbitmqIfInstalled(){
+	isInstalled rabbitmq-server
+	if [ x$PKGINSTALLED != "x" ]; then
+		echo -n "Removing external rabbitmq-server..."
+		$PACKAGERM rabbitmq-server >/dev/null 2>&1
+		echo "done"
+	fi
+
+}
+
 removeExistingInstall() {
   if [ $INSTALLED = "yes" ]; then
     echo ""
@@ -1741,13 +1747,6 @@ removeExistingInstall() {
     shutDownSystem
     if [ -f "/opt/zimbra/bin/zmiptables" ]; then
       /opt/zimbra/bin/zmiptables -u
-    fi
-
-    isInstalled "zimbra-onlyoffice"
-    if [ x$PKGINSTALLED != "x" ]; then
-      echo -n "Removing rabbitmq-server..."
-      $PACKAGERM rabbitmq-server >/dev/null 2>&1
-      echo "done"
     fi
 
     isInstalled "zimbra-ldap"
@@ -1794,6 +1793,7 @@ removeExistingInstall() {
     if [ "$UPGRADE" = "yes" -a "$POST87UPGRADE" = "true" -a "$FORCE_UPGRADE" != "yes" -a "$ZM_CUR_BUILD" != "$ZM_INST_BUILD" ]; then
       echo "Upgrading the remote packages"
       removeZextrasPackagesIfInstalled
+      removeExternalRabbitmqIfInstalled
     else
       removeExistingPackages
     fi
@@ -2495,7 +2495,7 @@ isOnlyofficeStandalone() {
   fi
   ## install rabbit mq
   if [ $onlyofficepkg == "yes" ]; then
-    INSTALL_PACKAGES="$INSTALL_PACKAGES rabbit-mq"
+    INSTALL_PACKAGES="$INSTALL_PACKAGES zimbra-rabbitmq-server"
   fi
 
   # install document editing zimlet
