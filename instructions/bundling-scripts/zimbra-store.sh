@@ -48,7 +48,6 @@ main()
        cp -f ${repoDir}/zm-sync-tools/src/bin/zmsyncreverseproxy ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmsyncreverseproxy
        cp -f ${repoDir}/zm-sync-store/src/bin/zmdevicesstats ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmdevicesstats
        cp -f ${repoDir}/zm-sync-store/src/bin/zmgdcutil ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmgdcutil
-       cp -f ${repoDir}/zm-sync-store/src/bin/zmmdmnotificationmail ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmmdmnotificationmail
        cp -f ${repoDir}/zm-sync-store/src/bin/zmmdmmailschedule ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmmdmmailschedule
     fi
 
