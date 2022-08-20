@@ -1730,15 +1730,6 @@ removeZextrasPackagesIfInstalled() {
 	done
 }
 
-removeExternalRabbitmqIfInstalled(){
-	isInstalled rabbitmq-server
-	if [ x$PKGINSTALLED != "x" ]; then
-		echo -n "Removing external rabbitmq-server..."
-		$PACKAGERM rabbitmq-server >/dev/null 2>&1
-		echo "done"
-	fi
-
-}
 
 removeExistingInstall() {
   if [ $INSTALLED = "yes" ]; then
@@ -1793,7 +1784,6 @@ removeExistingInstall() {
     if [ "$UPGRADE" = "yes" -a "$POST87UPGRADE" = "true" -a "$FORCE_UPGRADE" != "yes" -a "$ZM_CUR_BUILD" != "$ZM_INST_BUILD" ]; then
       echo "Upgrading the remote packages"
       removeZextrasPackagesIfInstalled
-      removeExternalRabbitmqIfInstalled
     else
       removeExistingPackages
     fi
