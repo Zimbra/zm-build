@@ -2274,6 +2274,7 @@ getInstallPackages() {
   STORE_SELECTED="no"
   MTA_SELECTED="no"
   PROXY_SELECTED="no"
+  LDAP_SELECTED="no"
   ONLYOFFICE_SELECTED="no"
 
   for i in $AVAILABLE_PACKAGES; do
@@ -2320,6 +2321,8 @@ getInstallPackages() {
           MTA_SELECTED="yes"
         elif [ $i = "zimbra-proxy" ]; then
           PROXY_SELECTED="yes"
+        elif [ $i = "zimbra-ldap" ]; then
+          LDAP_SELECTED="yes"
         elif [ $i = "zimbra-onlyoffice" ]; then
           ONLYOFFICE_SELECTED="yes"
         fi
@@ -2358,6 +2361,12 @@ getInstallPackages() {
         else
             response="$PROXY_SELECTED"
         fi
+    elif [ $i = "zimbra-ldap-patch" ]; then
+	if [ x"$ZIMBRAINTERNAL" = "xyes" ] && [ $LDAP_SELECTED = "yes" ]; then
+            askYN "Install $i" "Y"
+	else
+            response="$LDAP_SELECTED"
+	fi
     elif [ $i = "zimbra-license-extension" ]; then
       ifStoreSelectedY
     elif [ $i = "zimbra-network-store" ]; then
@@ -2399,6 +2408,8 @@ getInstallPackages() {
         MTA_SELECTED="yes"
       elif [ $i = "zimbra-proxy" ]; then
         PROXY_SELECTED="yes"
+      elif [ $i = "zimbra-ldap" ]; then
+        LDAP_SELECTED="yes"
       elif [ $i = "zimbra-onlyoffice" ]; then
         ONLYOFFICE_SELECTED="yes"
       fi
