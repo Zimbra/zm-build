@@ -2333,6 +2333,10 @@ getInstallPackages() {
       ifStoreSelectedY
     elif [ $i = "zimbra-modern-zimlets" ]; then
       ifStoreSelectedY
+    elif [ $i = "zimbra-zimlet-document-editor" ]; then
+      ifStoreSelectedY
+    elif [ $i = "zimbra-zimlet-classic-document-editor" ]; then
+      ifStoreSelectedY
     elif [ $i = "zimbra-patch" ]; then
         if [ x"$ZIMBRAINTERNAL" = "xyes" ] && [ $STORE_SELECTED = "yes" ]; then
             askYN "Install $i" "Y"
@@ -2486,12 +2490,6 @@ isOnlyofficeStandalone() {
   ## install rabbit mq
   if [ $onlyofficepkg == "yes" ]; then
     INSTALL_PACKAGES="$INSTALL_PACKAGES zimbra-rabbitmq-server"
-  fi
-
-  # install document editing zimlet
-  if [ $onlyofficepkg == "yes" -a $isStandAlone == "no" ]; then
-    INSTALL_PACKAGES="$INSTALL_PACKAGES zimbra-zimlet-document-editor"
-    INSTALL_PACKAGES="$INSTALL_PACKAGES zimbra-zimlet-classic-document-editor"
   fi
 
   if [ $isStandAlone == "yes" -a $onlyofficepkg == "yes" ]; then
