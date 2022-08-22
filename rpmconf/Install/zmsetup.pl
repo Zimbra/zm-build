@@ -7412,6 +7412,7 @@ sub configureOnlyoffice {
           qx(chown zimbra:zimbra /opt/zimbra/onlyoffice/bin/process_id.json);
 
           # on new install
+          if (zmupgrade::startSql()) { return 1; }
           createOnlyofficeDB();
           # configure onlyoffice
           print "Configuring Onlyoffice...\n";
