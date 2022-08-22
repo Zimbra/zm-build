@@ -2465,7 +2465,7 @@ selectImmail() {
 		if [ "${INSTD_IMMAIL_PACKAGES}" -eq 3 ]; then
 			INSTALL_PACKAGES="$INSTALL_PACKAGES $IMMAIL_PACKAGES"
 		else
-			askYN "Install chat and video features" "Y"
+			askYN "Install chat and video features" "N"
 			if [ $response = "yes" ]; then
 				INSTALL_PACKAGES="$INSTALL_PACKAGES $IMMAIL_PACKAGES"
 			fi
