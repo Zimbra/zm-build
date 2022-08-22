@@ -41,7 +41,6 @@ cp -f ${repoDir}/zm-build/rpmconf/Install/Util/globals.sh                       
 cp -f ${repoDir}/zm-build/rpmconf/Install/Util/modules/getconfig.sh                     ${ZCS_REL}/util/modules
 cp -f ${repoDir}/zm-build/rpmconf/Install/Util/modules/packages.sh                      ${ZCS_REL}/util/modules
 cp -f ${repoDir}/zm-build/rpmconf/Install/Util/modules/postinstall.sh                   ${ZCS_REL}/util/modules
-cp -f ${repoDir}/zm-build/rpmconf/Install/Util/modules/install_rabbitmq.sh              ${ZCS_REL}/util/modules
 cp -f ${repoDir}/zm-build/rpmconf/Install/Util/utilfunc.sh                              ${ZCS_REL}/util
 cp -f ${repoDir}/zm-build/rpmconf/Install/install.sh                                    ${ZCS_REL}/
 cp -f ${repoDir}/zm-core-utils/src/libexec/zmdbintegrityreport                          ${ZCS_REL}/bin
