@@ -7397,7 +7397,6 @@ sub configureOnlyoffice {
     # create onlyoffice db and configure it
   if (isEnabled("zimbra-onlyoffice") ) {
     #enable preview
-    setLocalConfig ("oo_linux_install_path", "onlyoffice");
     setLdapCOSConfig("zimbraFeatureViewInHTMLEnabled", "TRUE");
 
     if ($configStatus{configOnlyoffice} eq "CONFIGURED") {
