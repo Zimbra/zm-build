@@ -41,7 +41,7 @@ chomp $rundir;
 my $scriptDir = "/opt/zimbra/libexec/scripts";
 
 my $lowVersion = 52;
-my $hiVersion = 116; # this should be set to the DB version expected by current server code
+my $hiVersion = 117; # this should be set to the DB version expected by current server code
 
 my $needSlapIndexing = 0;
 my $mysqlcnfUpdated = 0;
@@ -92,6 +92,7 @@ my %updateScripts = (
   '113' => "migrate20210319-MobileDevices.pl",         #Zimbra X
   '114' => "migrate20220721-AddMdmUpdateTimestamp.pl", #10.0.0
   '115' => "migrate20220525-Volume.pl",                #10.0.0
+  '116' => "migrate20220729-FilesShareWithMeFolder.pl",   #10.0.0
 );
 
 my %updateFuncs = (
