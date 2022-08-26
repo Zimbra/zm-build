@@ -1730,6 +1730,21 @@ removeZextrasPackagesIfInstalled() {
 	done
 }
 
+removeUnsupportedPackagesIfInstalled() {
+	for i in $DEPRECATED_PACKAGES_IN_10; do
+		echo ""
+		echo "Remove $i if it is installed ..."
+		isInstalled $i
+		if [ x$PKGINSTALLED != "x" ]; then
+			echo -n "   $i FOUND..."
+			echo ""
+			echo -n "   Removing $i..."
+			$PACKAGERM $i >/dev/null 2>&1
+			echo "done"
+		fi
+	done
+}
+
 
 removeExistingInstall() {
   if [ $INSTALLED = "yes" ]; then
@@ -1784,6 +1799,7 @@ removeExistingInstall() {
     if [ "$UPGRADE" = "yes" -a "$POST87UPGRADE" = "true" -a "$FORCE_UPGRADE" != "yes" -a "$ZM_CUR_BUILD" != "$ZM_INST_BUILD" ]; then
       echo "Upgrading the remote packages"
       removeZextrasPackagesIfInstalled
+      removeUnsupportedPackagesIfInstalled
     else
       removeExistingPackages
     fi
