@@ -57,6 +57,10 @@ zimbra-chat \
 zimbra-talk \
 zimbra-network-modules-ng"
 
+DEPRECATED_PACKAGES_IN_10="zimbra-zimlet-briefcase-edit-lool \
+zimbra-zimlet-restore-contacts \
+zimbra-zimlet-duplicate-contacts"
+
 MYDIR="$(CDPATH= cd "$(dirname "$0")" && pwd)"
 if [ "$(cat ${MYDIR}/.BUILD_TYPE)" == "NETWORK" ]; then
    OPTIONAL_PACKAGES="${OPTIONAL_PACKAGES} zimbra-modern-ui zimbra-modern-zimlets zimbra-zimlet-document-editor zimbra-zimlet-classic-document-editor zimbra-patch zimbra-mta-patch zimbra-proxy-patch zimbra-ldap-patch"
