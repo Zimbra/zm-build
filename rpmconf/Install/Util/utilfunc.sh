@@ -368,33 +368,6 @@ checkRecentBackup() {
   fi
 }
 
-checkNGModulesInstalled() {
-		isInstalled zimbra-network-modules-ng
-		if [ x$PKGINSTALLED != "x" ]; then
-		        echo ""
-			echo "WARNING: You are about to upgrade to the ${ZM_INST_VERSION}"
-			echo "NGModules and other packages zimbra-connect, zimbra-docs, zimbra-drive and"
-			echo "zimbra-chat are removed from ${ZM_INST_VERSION}"
-			echo ""
-			if [ x$DEFAULTFILE = "x" ]; then
-			          while :; do
-			            askYN "Do you wish to continue without NGModules?" "N"
-			            if [ $response = "no" ]; then
-			              askYN "Exit?" "N"
-			              if [ $response = "yes" ]; then
-			                echo "Exiting."
-			                exit 1
-			              fi
-			            else
-			              break
-			            fi
-			          done
-			else
-			    echo "Automated install detected...continuing."
-			fi
-		fi
-}
-
 checkUbuntuRelease() {
   if [ -f "/etc/lsb-release" ]; then
     . /etc/lsb-release
@@ -566,7 +539,6 @@ EOF
 
   checkRecentBackup
   checkDatabaseIntegrity
-  checkNGModulesInstalled
 }
 
 
@@ -714,6 +686,7 @@ checkExistingInstall() {
   determineVersionType
   if [ $INSTALLED = "yes" ]; then
     verifyUpgrade
+    verifyNGModulesInstalled
   fi
   verifyLicenseActivationServer
   verifyLicenseAvailable
@@ -955,6 +928,26 @@ verifyUpgrade() {
    fi
 }
 
+verifyNGModulesInstalled() {
+	if [ x"$SKIP_NG_CHECK" = "xyes" ]; then
+		return
+	fi
+	NG_INSTALLED="no"
+	for i in $ZEXTRAS_PACKAGES; do
+		isInstalled $i
+		if [ x"$PKGINSTALLED" != "x" ]; then
+			NG_INSTALLED="yes"
+			break
+		fi
+	done
+	if [ $NG_INSTALLED = "yes" ]; then
+		echo -e "\e[1;31m NG Modules detected on this system. If you continue with this upgrade, NG module packages and the associated data will be deleted. \033[0m"
+		echo -e "\e[1;31m If you want to preserve NG data, consider migrating or a rolling upgrade strategy for upgrading your system. \033[0m"
+		echo -e "\e[1;31m For more information, please contact Zimbra Support. \033[0m"
+		echo -e "\e[1;31m If you still want to continue, start upgrade using --skip-ng-check \033[0m"
+		exit 1
+	fi
+}
 verifyLicenseActivationServer() {
 
   if [ x"$SKIP_ACTIVATION_CHECK" = "xyes" -o x"$SKIP_UPGRADE_CHECK" = "xyes" ]; then
