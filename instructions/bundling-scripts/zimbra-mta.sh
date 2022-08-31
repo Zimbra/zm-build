@@ -28,7 +28,6 @@
 main()
 {
     echo -e "\tCreate package directories" >> ${buildLogFile}
-    mkdir -p ${repoDir}/zm-build/${currentPackage}/etc/sudoers.d
     mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/common/conf
     mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/data/amavisd/mysql
     mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/data/altermime
@@ -39,7 +38,6 @@ main()
 
 
     echo -e "\tCopy package files" >> ${buildLogFile}
-    cp ${repoDir}/zm-build/rpmconf/Env/sudoers.d/02_${currentScript} ${repoDir}/zm-build/${currentPackage}/etc/sudoers.d/02_${currentScript}
     cp ${repoDir}/zm-postfix/conf/postfix/master.cf.in ${repoDir}/zm-build/${currentPackage}/opt/zimbra/common/conf/master.cf.in
     cp ${repoDir}/zm-postfix/conf/postfix/tag_as_foreign.re.in ${repoDir}/zm-build/${currentPackage}/opt/zimbra/common/conf/tag_as_foreign.re.in
     cp ${repoDir}/zm-postfix/conf/postfix/tag_as_originating.re.in ${repoDir}/zm-build/${currentPackage}/opt/zimbra/common/conf/tag_as_originating.re.in
@@ -80,8 +78,6 @@ CreateRhelPackage()
     (cd ${repoDir}/zm-build/mtabuild; find opt -maxdepth 2 -type f -o -type l \
         | sed -e 's|^|%attr(-, zimbra, zimbra) /|' >> \
         ${repoDir}/zm-build/${currentScript}.spec )
-    echo "%attr(440, root, root) /etc/sudoers.d/02_zimbra-mta" >> \
-        ${repoDir}/zm-build/${currentScript}.spec
     echo "%attr(-, zimbra, zimbra) /opt/zimbra/common/conf/master.cf.in" >> \
         ${repoDir}/zm-build/${currentScript}.spec
     echo "%attr(-, zimbra, zimbra) /opt/zimbra/common/conf/tag_as_foreign.re.in" >> \

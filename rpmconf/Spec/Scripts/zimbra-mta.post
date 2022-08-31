@@ -35,17 +35,6 @@ if [[ $PLAT == "UBUNTU"* || $PLAT == "DEBIAN"* ]]; then
   fi
 fi
 
-egrep -q '^%zimbra[[:space:]]' /etc/sudoers
-if [ $? = 0 ]; then
-  sudotmp=`mktemp -t zsudoers.XXXXXX 2> /dev/null` || { echo "Failed to create tmpfile"; exit 1; }
-  SUDOMODE=`perl -e 'my $mode=(stat("/etc/sudoers"))[2];printf("%04o\n",$mode & 07777);'`
-  egrep -v '^%zimbra[[:space:]]' /etc/sudoers > $sudotmp
-  mv -f $sudotmp /etc/sudoers
-  chmod $SUDOMODE /etc/sudoers
-fi
-chmod 440 /etc/sudoers.d/02_zimbra-mta
-chown root:root /etc/sudoers.d/02_zimbra-mta
-
 chown zimbra:zimbra /opt/zimbra/common/conf/master.cf.in
 chmod 440 /opt/zimbra/common/conf/master.cf.in
 chown zimbra:zimbra /opt/zimbra/common/conf/tag_as_*.re.in
@@ -87,6 +76,40 @@ if [ ! -e /etc/aliases -o -L /etc/aliases ]; then
     ln -s /opt/zimbra/common/conf/aliases /etc/aliases
   fi
 fi
+
+## @TODO do we need this, as this is getting repeated in zmfixperms?
+chown ${root_user}:${zimbra_group} /opt/zimbra/common/sbin/postfix
+chown ${root_user}:${zimbra_group} /opt/zimbra/common/sbin/postalias
+chown ${root_user}:${zimbra_group} /opt/zimbra/common/sbin/qshape.pl
+chown ${root_user}:${zimbra_group} /opt/zimbra/common/sbin/postconf
+chown ${root_user}:${zimbra_group} /opt/zimbra/common/sbin/postsuper
+chown ${root_user}:${zimbra_group} /opt/zimbra/common/sbin/postcat
+chown ${root_user}:${zimbra_group} /opt/zimbra/libexec/zmqstat
+chown ${root_user}:${zimbra_group} /opt/zimbra/libexec/zmmtastatus
+chown ${root_user}:${zimbra_group} /opt/zimbra/common/sbin/amavis-mc
+
+chmod 750 /opt/zimbra/common/sbin/postfix
+chmod 750 /opt/zimbra/common/sbin/postalias
+chmod 750 /opt/zimbra/common/sbin/qshape.pl
+chmod 750 /opt/zimbra/common/sbin/postconf
+chmod 750 /opt/zimbra/common/sbin/postsuper
+chmod 750 /opt/zimbra/common/sbin/postcat
+chmod 750 /opt/zimbra/libexec/zmqstat
+chmod 750 /opt/zimbra/libexec/zmmtastatus
+chmod 750 /opt/zimbra/common/sbin/amavis-mc
+
+echo "Set capability for /opt/zimbra/common/sbin/[postfix,postalias,qshape.pl,postconf,postsuper,postcat,amavis-mc]"
+setcap CAP_NET_BIND_SERVICE=+ep /opt/zimbra/common/sbin/postfix
+setcap CAP_NET_BIND_SERVICE=+ep /opt/zimbra/common/sbin/postalias
+setcap CAP_DAC_OVERRIDE=+ep /opt/zimbra/common/sbin/postalias
+setcap CAP_NET_BIND_SERVICE=+ep /opt/zimbra/common/sbin/qshape.pl
+setcap CAP_NET_BIND_SERVICE=+ep /opt/zimbra/common/sbin/postconf
+setcap CAP_NET_BIND_SERVICE=+ep /opt/zimbra/common/sbin/postsuper
+setcap CAP_NET_BIND_SERVICE=+ep /opt/zimbra/common/sbin/postcat
+echo "Set capability for /opt/zimbra/libexec/[zmqstat,zmmtastatus]"
+setcap CAP_NET_BIND_SERVICE=+ep /opt/zimbra/libexec/zmqstat
+setcap CAP_NET_BIND_SERVICE=+ep /opt/zimbra/libexec/zmmtastatus
+setcap CAP_NET_BIND_SERVICE=+ep /opt/zimbra/common/sbin/amavis-mc
 
 if [ -x "/opt/zimbra/libexec/zmfixperms" ]; then
   /opt/zimbra/libexec/zmfixperms

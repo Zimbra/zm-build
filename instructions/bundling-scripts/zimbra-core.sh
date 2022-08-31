@@ -92,10 +92,6 @@ CreateRhelPackage()
     (cd ${repoDir}/zm-build/corebuild; find opt -maxdepth 2 -type f -o -type l \
     	| sed -e 's|^|%attr(-, zimbra, zimbra) /|' >> \
     	${repoDir}/zm-build/${currentScript}.spec )
-    echo "%attr(440, root, root) /etc/sudoers.d/01_zimbra" >> \
-    	${repoDir}/zm-build/${currentScript}.spec
-    echo "%attr(440, root, root) /etc/sudoers.d/02_zimbra-core" >> \
-    	${repoDir}/zm-build/${currentScript}.spec
     echo "%attr(755, root, root) /opt/zimbra/bin" >> \
     	${repoDir}/zm-build/${currentScript}.spec
     echo "%attr(755, zimbra, zimbra) /opt/zimbra/docs" >> \
@@ -156,9 +152,6 @@ CreateRhelPackage()
 main()
 {
    set -e
-
-   Copy ${repoDir}/zm-build/rpmconf/Env/sudoers.d/01_zimbra                                         ${repoDir}/zm-build/${currentPackage}/etc/sudoers.d/01_zimbra
-   Copy ${repoDir}/zm-build/rpmconf/Env/sudoers.d/02_zimbra-core                                    ${repoDir}/zm-build/${currentPackage}/etc/sudoers.d/02_zimbra-core
 
    Copy ${repoDir}/zm-amavis/conf/amavisd.conf.in                                                   ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/amavisd.conf.in
    Copy ${repoDir}/zm-amavis/conf/amavisd/amavisd-custom.conf                                       ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/amavisd-custom.conf

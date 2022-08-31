@@ -28,14 +28,10 @@ set -e
 main()
 {
     echo -e "\tCreate package directories" >> ${buildLogFile}
-    mkdir -p ${repoDir}/zm-build/${currentPackage}/etc/sudoers.d
     mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin
     mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/templates
 
     echo -e "\tCopy package files" >> ${buildLogFile}
-
-    echo -e "\tCopy etc files" >> ${buildLogFile}
-    cp ${repoDir}/zm-build/rpmconf/Env/sudoers.d/02_${currentScript} ${repoDir}/zm-build/${currentPackage}/etc/sudoers.d/02_${currentScript}
 
     echo -e "\tCopy bin files of /opt/zimbra/" >> ${buildLogFile}
 
@@ -336,8 +332,6 @@ CreateRhelPackage()
             	-e "/^%post$/ r ${repoDir}/zm-build/rpmconf/Spec/Scripts/${currentScript}.post" > ${repoDir}/zm-build/${currentScript}.spec
 
     echo "%attr(-, root, root) /opt/zimbra/lib" >> \
-    	${repoDir}/zm-build/${currentScript}.spec
-    echo "%attr(440, root, root) /etc/sudoers.d/02_zimbra-store" >> \
     	${repoDir}/zm-build/${currentScript}.spec
     echo "%attr(755, zimbra, zimbra) /opt/zimbra/conf" >> \
     	${repoDir}/zm-build/${currentScript}.spec

@@ -1796,13 +1796,7 @@ removeExistingInstall() {
     else
       removeExistingPackages
     fi
-    if egrep -q '^%zimbra[[:space:]]' /etc/sudoers 2>/dev/null; then
-      local sudotmp=`mktemp -t zsudoers.XXXXX 2> /dev/null` || { echo "Failed to create tmpfile"; exit 1; }
-      SUDOMODE=`perl -e 'my $mode=(stat("/etc/sudoers"))[2];printf("%04o\n",$mode & 07777);'`
-      egrep -v "^\%zimbra[[:space:]]" /etc/sudoers > $sudotmp
-      mv -f $sudotmp /etc/sudoers
-      chmod $SUDOMODE /etc/sudoers
-    fi
+
     echo ""
     if [ -d "/opt/zimbra/jetty/webapps" ]; then
       echo "Removing deployed webapp directories"

@@ -109,20 +109,12 @@ chown zimbra:zimbra /opt/zimbra/.ssh
 mkdir -p /opt/zimbra/zmstat
 chown zimbra:zimbra /opt/zimbra/zmstat
 
-egrep -q '^%zimbra[[:space:]]' /etc/sudoers
-if [ $? = 0 ]; then
-  sudotmp=`mktemp -t zsudoers.XXXXXX 2> /dev/null` || { echo "Failed to create tmpfile"; exit 1; }
-  SUDOMODE=`perl -e 'my $mode=(stat("/etc/sudoers"))[2];if ($mode == "0000"){ $mode=33056 };printf("%04o\n",$mode & 07777);'`;
-  egrep -v -e '^%zimbra[[:space:]]' /etc/sudoers > $sudotmp
-  mv -f $sudotmp /etc/sudoers
-  chmod $SUDOMODE /etc/sudoers
-fi
+## @TODO do we need this, as this is getting repeated in zmfixperms?
+chown ${root_user}:${zimbra_group} /opt/zimbra/libexec/zmstat-fd
+chmod 750 /opt/zimbra/libexec/zmstat-fd
 
-chmod 440 /etc/sudoers.d/01_zimbra
-chown root:root /etc/sudoers.d/01_zimbra
-
-chmod 440 /etc/sudoers.d/02_zimbra-core
-chown root:root /etc/sudoers.d/02_zimbra-core
+echo "Set capability for /opt/zimbra/libexec/zmstat-fd"
+setcap CAP_NET_BIND_SERVICE=+ep /opt/zimbra/libexec/zmstat-fd
 
 if [ -x "/opt/zimbra/libexec/zmfixperms" ]; then
   /opt/zimbra/libexec/zmfixperms
