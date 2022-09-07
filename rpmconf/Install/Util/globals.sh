@@ -46,7 +46,8 @@ IMMAIL_PACKAGES="zimbra-zimlet-immail-classic \
 zimbra-zimlet-immail-modern \
 zimbra-extension-immail"
 
-ZEXTRAS_PACKAGES="zimbra-connect \
+ZEXTRAS_PACKAGES="zimbra-zimlet-briefcase-edit-lool \
+zimbra-connect \
 zimbra-connect-modern \
 zimbra-drive \
 zimbra-drive-ng \
@@ -55,10 +56,10 @@ zimbra-docs \
 zimbra-docs-modern \
 zimbra-chat \
 zimbra-talk \
+zimbra-zimlet-auth \
 zimbra-network-modules-ng"
 
-DEPRECATED_PACKAGES_IN_10="zimbra-zimlet-briefcase-edit-lool \
-zimbra-zimlet-restore-contacts \
+DEPRECATED_PACKAGES_IN_10="zimbra-zimlet-restore-contacts \
 zimbra-zimlet-duplicate-contacts"
 
 MYDIR="$(CDPATH= cd "$(dirname "$0")" && pwd)"
