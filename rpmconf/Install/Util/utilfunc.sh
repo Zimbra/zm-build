@@ -2444,7 +2444,9 @@ getInstallPackages() {
     fi
 
   done
-  selectImmail
+  if [ x"$ZMTYPE_INSTALLABLE" = "xNETWORK" ]; then
+     selectImmail
+  fi
   checkRequiredSpace
 
   isInstalled zimbra-store
