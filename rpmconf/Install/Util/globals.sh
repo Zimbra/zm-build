@@ -46,8 +46,7 @@ IMMAIL_PACKAGES="zimbra-zimlet-immail-classic \
 zimbra-zimlet-immail-modern \
 zimbra-extension-immail"
 
-ZEXTRAS_PACKAGES="zimbra-zimlet-briefcase-edit-lool \
-zimbra-connect \
+ZEXTRAS_PACKAGES="zimbra-connect \
 zimbra-connect-modern \
 zimbra-drive \
 zimbra-drive-ng \
@@ -57,6 +56,7 @@ zimbra-docs-modern \
 zimbra-chat \
 zimbra-talk \
 zimbra-zimlet-auth \
+zimbra-zimlet-briefcase-edit-lool \
 zimbra-network-modules-ng"
 
 DEPRECATED_PACKAGES_IN_10="zimbra-zimlet-restore-contacts \
