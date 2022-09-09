@@ -929,7 +929,7 @@ verifyUpgrade() {
 }
 
 verifyNGModulesInstalled() {
-	if [ x"$SKIP_NG_CHECK" = "xyes" ]; then
+	if [ x"$SKIP_NG_CHECK" = "xyes" ] || [ x"$UNINSTALL" = "xyes" ]; then
 		return
 	fi
 	NG_INSTALLED="no"
