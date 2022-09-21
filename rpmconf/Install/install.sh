@@ -40,6 +40,7 @@ UNINSTALL="no"
 SOFTWAREONLY="no"
 SKIP_ACTIVATION_CHECK="no"
 SKIP_UPGRADE_CHECK="no"
+SKIP_NG_CHECK="no"
 ALLOW_PLATFORM_OVERRIDE="no"
 FORCE_UPGRADE="no"
 
@@ -57,6 +58,7 @@ usage() {
   echo "--platform-override     Allows installer to continue on an unknown OS."
   echo "--skip-activation-check Allows installer to continue if license activation checks fail."
   echo "--skip-upgrade-check    Allows installer to skip upgrade validation checks."
+  echo "--skip-ng-check         Allows installer to upgrade by removing NG modules and related data."
   echo "--force-upgrade         Force upgrade to be set to YES. Used if there is package installation failure for remote packages."
   echo "[defaultsfile]          File containing default install values."
   echo ""
@@ -117,6 +119,9 @@ while [ $# -ne 0 ]; do
       ;;
     -skip-upgrade-check|--skip-upgrade-check)
       SKIP_UPGRADE_CHECK="yes"
+      ;;
+    -skip-ng-check|--skip-ng-check)
+      SKIP_NG_CHECK="yes"
       ;;
     -force-upgrade|--force-upgrade)
       FORCE_UPGRADE="yes"
@@ -190,8 +195,6 @@ if [ x$UNINSTALL = "xyes" ]; then
 fi
 
 displayLicense
-
-displayThirdPartyLicenses
 
 checkUser root
 

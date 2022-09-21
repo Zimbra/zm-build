@@ -31,8 +31,6 @@ main()
 {
     echo -e "\tCreate package directories" >> ${buildLogFile}
     mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/common/etc/openldap/zimbra
-    mkdir -p ${repoDir}/zm-build/${currentPackage}/etc/sudoers.d
-
 
     echo -e "\tCopy package files" >> ${buildLogFile}
     cp -rf ${ldapSchemaDir}/*  ${repoDir}/zm-build/${currentPackage}/opt/zimbra/common/etc/openldap/zimbra
@@ -40,7 +38,6 @@ main()
     then
       cp -f ${repoDir}/zm-convertd-native/conf/ldap/zimbra_mimehandlers.ldif ${repoDir}/zm-build/${currentPackage}/opt/zimbra/common/etc/openldap/zimbra/convertd_mimehandlers.ldif
     fi
-    cp ${repoDir}/zm-build/rpmconf/Env/sudoers.d/02_${currentScript} ${repoDir}/zm-build/${currentPackage}/etc/sudoers.d/
 
     CreatePackage "${os}"
 }
@@ -73,8 +70,6 @@ CreateRhelPackage()
             -e "s/@@RELEASE@@/${buildTimeStamp}/" \
             -e "s/^Copyright:/Copyright:/" \
             -e "/^%post$/ r ${repoDir}/zm-build/rpmconf/Spec/Scripts/${currentScript}.post" >  ${repoDir}/zm-build/${currentScript}.spec
-    echo "%attr(440, root, root) /etc/sudoers.d/02_zimbra-ldap" >> \
-        ${repoDir}/zm-build/${currentScript}.spec
     echo "%attr(-, root, root) /opt/zimbra/common/etc/openldap/zimbra" >> \
         ${repoDir}/zm-build/${currentScript}.spec
     echo "%attr(-, root, root) /opt/zimbra/common/etc/openldap/zimbra/*" >> \
@@ -88,8 +83,6 @@ CreateRhelPackage()
     echo "%attr(-, root, root) /opt/zimbra/common/etc/openldap/zimbra/config/cn=config/*" >> \
         ${repoDir}/zm-build/${currentScript}.spec
     echo "%attr(-, root, root) /opt/zimbra/common/etc/openldap/zimbra/config/cn=config/olcDatabase={2}mdb" >> \
-        ${repoDir}/zm-build/${currentScript}.spec
-    echo "%attr(-, root, root) /opt/zimbra/common/etc/openldap/zimbra/config/cn=config/olcDatabase={2}mdb/*" >> \
         ${repoDir}/zm-build/${currentScript}.spec
     echo "%attr(-, root, root) /opt/zimbra/common/etc/openldap/zimbra/schema" >> \
         ${repoDir}/zm-build/${currentScript}.spec

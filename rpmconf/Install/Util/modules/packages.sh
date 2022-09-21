@@ -88,6 +88,7 @@ installPackages() {
                printf "%48s %s\n" "$pkg" "will be downloaded and installed."
                repo_pkg_names+=( "$pkg" )
             fi
+
          else
             printf "%48s %s\n" "$pkg" "is missing.                                    ERROR";
             (( ++gather_dep_errors ))

@@ -35,36 +35,6 @@ displayLicense() {
   echo ""
 }
 
-displayThirdPartyLicenses() {
-  echo ""
-  echo ""
-  if [ -f ${MYDIR}/docs/keyview_eula.txt ]; then
-    cat $MYDIR/docs/keyview_eula.txt
-    echo ""
-    echo ""
-    if [ x$DEFAULTFILE = "x" ]; then
-      askYN "Do you agree with the terms of the software license agreement?" "N"
-      if [ $response != "yes" ]; then
-        exit
-      fi
-    fi
-    echo ""
-    echo ""
-  fi
-  #if [ -f ${MYDIR}/docs/oracle_jdk_eula.txt ]; then
-  #  cat $MYDIR/docs/oracle_jdk_eula.txt
-  #  echo ""
-  #  echo ""
-  #  if [ x$DEFAULTFILE = "x" ]; then
-  #    askYN "Do you agree with the terms of the software license agreement?" "N"
-  #    if [ $response != "yes" ]; then
-  #      exit
-  #    fi
-  #  fi
-  #fi
-  #echo ""
-}
-
 isFQDN() {
   #fqdn is > 2 dots.  because I said so.
   if [ x"$1" = "x" ]; then
@@ -408,8 +378,8 @@ checkUbuntuRelease() {
     return
   fi
 
-  if [ "x$DISTRIB_ID" = "xUbuntu" -a "x$DISTRIB_RELEASE" != "x12.04" -a "x$DISTRIB_RELEASE" != "x14.04" -a "x$DISTRIB_RELEASE" != "x16.04" -a "x$DISTRIB_RELEASE" != "x18.04" ]; then
-    echo "WARNING: ZCS is currently only supported on Ubuntu Server 12.04, 14.04, 16.04 and 18.04 LTS."
+  if [ "x$DISTRIB_ID" = "xUbuntu" -a "x$DISTRIB_RELEASE" != "x12.04" -a "x$DISTRIB_RELEASE" != "x14.04" -a "x$DISTRIB_RELEASE" != "x16.04" -a "x$DISTRIB_RELEASE" != "x18.04" -a "x$DISTRIB_RELEASE" != "x20.04" ]; then
+    echo "WARNING: ZCS is currently only supported on Ubuntu Server 12.04, 14.04, 16.04, 18.04 and 20.04 LTS."
     echo "You are attempting to install on $DISTRIB_DESCRIPTION which may not work."
     echo "Support will not be provided if you choose to continue."
     echo ""
@@ -632,6 +602,9 @@ checkStoreRequirements() {
       if [ "x$PKGINSTALLED" != "x" ]; then
         echo "     FOUND: $PKGINSTALLED"
       else
+        if [[ $ONLYOFFICE_SELECTED == "yes" && $i == libreoffice* ]]; then
+          continue
+        fi
         echo "     MISSING: $i"
         GOOD="no"
       fi
@@ -674,15 +647,6 @@ checkExistingInstall() {
     fi
   done
 
-  for i in $CHAT_PACKAGES; do
-    isInstalled $i
-    if [ x$PKGINSTALLED != "x" ]; then
-      echo "    $i...FOUND $PKGINSTALLED"
-      INSTALLED_PACKAGES="$INSTALLED_PACKAGES $i"
-    else
-      echo "    $i...NOT FOUND"
-    fi
-  done
 
   for i in $PACKAGES $CORE_PACKAGES; do
     echo -n "    $i..."
@@ -707,9 +671,22 @@ checkExistingInstall() {
     fi
   done
 
+  INSTD_IMMAIL_PACKAGES="0"
+  for i in $IMMAIL_PACKAGES; do
+	  isInstalled $i
+	  if [ x$PKGINSTALLED != "x" ]; then
+		  echo "    $i...FOUND $PKGINSTALLED"
+		  ((INSTD_IMMAIL_PACKAGES++))
+		  INSTALLED_PACKAGES="$INSTALLED_PACKAGES $i"
+	  else
+		  echo "    $i...NOT FOUND"
+	  fi
+  done
+
   determineVersionType
   if [ $INSTALLED = "yes" ]; then
     verifyUpgrade
+    verifyNGModulesInstalled
   fi
   verifyLicenseActivationServer
   verifyLicenseAvailable
@@ -870,7 +847,7 @@ verifyUpgrade() {
       if [ x"$SKIP_ACTIVATION_CHECK" = "xno" ]; then
         if [ -x "bin/checkLicense.pl" ]; then
           echo "Validating existing license is not expired and qualifies for upgrade"
-          echo $HOSTNAME | egrep -qe 'eng.vmware.com$|eng.zimbra.com$|lab.zimbra.com$' > /dev/null 2>&1
+          echo $HOSTNAME | egrep -qe 'eng.vmware.com$|eng.zimbra.com$|lab.zimbra.com$|zimbradev.com$' > /dev/null 2>&1
           if [ $? = 0 ]; then
             # echo "Running bin/checkLicense.pl -i -v $ZM_INST_VERSION"
             `bin/checkLicense.pl -i -v $ZM_INST_VERSION >/dev/null`
@@ -951,6 +928,26 @@ verifyUpgrade() {
    fi
 }
 
+verifyNGModulesInstalled() {
+	if [ x"$SKIP_NG_CHECK" = "xyes" ] || [ x"$UNINSTALL" = "xyes" ]; then
+		return
+	fi
+	NG_INSTALLED="no"
+	for i in $ZEXTRAS_PACKAGES; do
+		isInstalled $i
+		if [ x"$PKGINSTALLED" != "x" ]; then
+			NG_INSTALLED="yes"
+			break
+		fi
+	done
+	if [ $NG_INSTALLED = "yes" ]; then
+		echo -e "\e[1;31m NG Modules detected on this system. If you continue with this upgrade, NG module packages and the associated data will be deleted. \033[0m"
+		echo -e "\e[1;31m If you want to preserve NG data, consider migrating or a rolling upgrade strategy for upgrading your system. \033[0m"
+		echo -e "\e[1;31m For more information, please contact Zimbra Support. \033[0m"
+		echo -e "\e[1;31m If you still want to continue, start upgrade using --skip-ng-check \033[0m"
+		exit 1
+	fi
+}
 verifyLicenseActivationServer() {
 
   if [ x"$SKIP_ACTIVATION_CHECK" = "xyes" -o x"$SKIP_UPGRADE_CHECK" = "xyes" ]; then
@@ -1656,12 +1653,12 @@ saveExistingConfig() {
 findUbuntuExternalPackageDependencies() {
   # Handle external packages like logwatch, mailutils depends on zimbra-mta.
   if [ $INSTALLED = "yes" -a $ISUBUNTU = "true" ]; then
-    for i in $CHAT_PACKAGES; do
-      isInstalled $i
-     if [ x$PKGINSTALLED != "x" ]; then
-      INSTALLED_PACKAGES="$INSTALLED_PACKAGES $i"
-     fi
-    done
+    RABBITMQINSTALLED="no"
+    isInstalled "zimbra-onlyoffice"
+    if [ x$PKGINSTALLED != "x" ]; then
+      RABBITMQINSTALLED="yes"
+    fi
+
     $PACKAGERMSIMULATE $INSTALLED_PACKAGES > /dev/null 2>&1
     if [ $? -ne 0 ]; then
       EXTPACKAGESTMP=`$PACKAGERMSIMULATE $INSTALLED_PACKAGES 2>&1 | grep " depends on " | cut -d' ' -f2 | grep -v zimbra`
@@ -1711,35 +1708,36 @@ removeExistingPackages() {
   fi
 }
 
-removeChatIfInstalled() {
-   for i in $INSTALL_PACKAGES; do
-     if [ x$i = "xzimbra-connect" ]; then
-        echo ""
-        echo "Checking zimbra-chat already installed or not..."
-       isInstalled "zimbra-chat"
-        if [ x$PKGINSTALLED != "x" ]; then
-          echo -n "   zimbra-chat FOUND..."
-          echo ""
-          echo -n "   Removing zimbra-chat..."
-          $PACKAGERM zimbra-chat >/dev/null 2>&1
-          echo "done"
-        fi
-      fi
-    done
+removeZextrasPackagesIfInstalled() {
+	for i in $ZEXTRAS_PACKAGES; do
+		echo ""
+		echo "Remove $i if it is installed ..."
+		isInstalled $i
+		if [ x$PKGINSTALLED != "x" ]; then
+			echo -n "   $i FOUND..."
+			echo ""
+			echo -n "   Removing $i..."
+			$PACKAGERM $i >/dev/null 2>&1
+			echo "done"
+		fi
+	done
 }
 
-removeTalkIfInstalled() {
-     echo ""
-     echo "Remove zimbra-talk if it is installed ..."
-     isInstalled "zimbra-talk"
-     if [ x$PKGINSTALLED != "x" ]; then
-          echo -n "   zimbra-talk FOUND..."
-          echo ""
-          echo -n "   Removing zimbra-talk..."
-          $PACKAGERM zimbra-talk >/dev/null 2>&1
-          echo "done"
-     fi
+removeUnsupportedPackagesIfInstalled() {
+	for i in $DEPRECATED_PACKAGES_IN_10; do
+		echo ""
+		echo "Remove $i if it is installed ..."
+		isInstalled $i
+		if [ x$PKGINSTALLED != "x" ]; then
+			echo -n "   $i FOUND..."
+			echo ""
+			echo -n "   Removing $i..."
+			$PACKAGERM $i >/dev/null 2>&1
+			echo "done"
+		fi
+	done
 }
+
 
 removeExistingInstall() {
   if [ $INSTALLED = "yes" ]; then
@@ -1793,8 +1791,8 @@ removeExistingInstall() {
     fi
     if [ "$UPGRADE" = "yes" -a "$POST87UPGRADE" = "true" -a "$FORCE_UPGRADE" != "yes" -a "$ZM_CUR_BUILD" != "$ZM_INST_BUILD" ]; then
       echo "Upgrading the remote packages"
-      removeChatIfInstalled
-	  removeTalkIfInstalled
+      removeZextrasPackagesIfInstalled
+      removeUnsupportedPackagesIfInstalled
     else
       removeExistingPackages
     fi
@@ -1905,7 +1903,7 @@ removeExistingInstall() {
             if [ $? = 0 ]; then
               echo -n "Cleaning up /etc/rsyslog.conf..."
               sed -i -e '/zimbra/d' /etc/rsyslog.conf
-              if [ $PLATFORM = "RHEL6_64" -o $PLATFORM = "RHEL7_64" ]; then
+              if [ $PLATFORM = "RHEL6_64" -o $PLATFORM = "RHEL7_64" -o $PLATFORM = "RHEL8_64" ]; then
                 sed -i -e 's/^*.info;local0.none;local1.none;mail.none;auth.none/*.info/' /etc/rsyslog.conf
                 sed -i -e 's/^*.info;local0.none;local1.none;auth.none/*.info/' /etc/rsyslog.conf
               fi
@@ -2120,7 +2118,7 @@ configurePackageServer() {
       USE_ZIMBRA_PACKAGE_SERVER="yes"
       PACKAGE_SERVER="repo.zimbra.com"
       response="no"
-      echo $HOSTNAME | egrep -qe 'eng.vmware.com$|eng.zimbra.com$|lab.zimbra.com$' > /dev/null 2>&1
+      echo $HOSTNAME | egrep -qe 'eng.vmware.com$|eng.zimbra.com$|lab.zimbra.com$|zimbradev.com$' > /dev/null 2>&1
       if [ $? = 0 ]; then
         askYN "Use internal development repo" "N"
         if [ $response = "yes" ]; then
@@ -2143,7 +2141,9 @@ configurePackageServer() {
     fi
     echo $PLATFORM | egrep -q "UBUNTU|DEBIAN"
     if [ $? = 0 ]; then
-      if [ $PLATFORM = "UBUNTU18_64" ]; then
+      if [ $PLATFORM = "UBUNTU20_64" ]; then
+        repo="focal"
+      elif [ $PLATFORM = "UBUNTU18_64" ]; then
         repo="bionic"
       elif [ $PLATFORM = "UBUNTU16_64" ]; then
         repo="xenial"
@@ -2175,12 +2175,12 @@ configurePackageServer() {
       fi
 cat > /etc/apt/sources.list.d/zimbra.list << EOF
 deb     [arch=amd64] https://$PACKAGE_SERVER/apt/87 $repo zimbra
-deb     [arch=amd64] https://$PACKAGE_SERVER/apt/90 $repo zimbra
 deb-src [arch=amd64] https://$PACKAGE_SERVER/apt/87 $repo zimbra
+deb     [arch=amd64] https://$PACKAGE_SERVER/apt/1000 $repo zimbra
 EOF
 if [ x"$ZMTYPE_INSTALLABLE" = "xNETWORK" ]; then
 cat >> /etc/apt/sources.list.d/zimbra.list << EOF
-deb     [arch=amd64] https://$PACKAGE_SERVER/apt/90-ne $repo zimbra
+deb     [arch=amd64] https://$PACKAGE_SERVER/apt/1000-ne $repo zimbra
 EOF
 fi
       apt-get update >>$LOGFILE 2>&1
@@ -2194,6 +2194,8 @@ fi
         repo="rhel6"
       elif [ $PLATFORM = "RHEL7_64" ]; then
         repo="rhel7"
+     elif [ $PLATFORM = "RHEL8_64" ]; then
+        repo="rhel8"
       else
         print "Aborting, unknown platform: $PLATFORM"
         exit 1
@@ -2216,26 +2218,26 @@ name=Zimbra RPM Repository
 baseurl=https://$PACKAGE_SERVER/rpm/87/$repo
 gpgcheck=1
 enabled=1
-[zimbra-90-oss]
+[zimbra-1000-oss]
 name=Zimbra New RPM Repository
-baseurl=https://$PACKAGE_SERVER/rpm/90/$repo
+baseurl=https://$PACKAGE_SERVER/rpm/1000/$repo
 gpgcheck=1
 enabled=1
 EOF
       yum --disablerepo=* --enablerepo=zimbra clean metadata >>$LOGFILE 2>&1
       yum check-update --disablerepo=* --enablerepo=zimbra --noplugins >>$LOGFILE 2>&1
-      yum --disablerepo=* --enablerepo=zimbra-90-oss clean metadata >>$LOGFILE 2>&1
-      yum check-update --disablerepo=* --enablerepo=zimbra-90-oss --noplugins >>$LOGFILE 2>&1
+      yum --disablerepo=* --enablerepo=zimbra-1000-oss clean metadata >>$LOGFILE 2>&1
+      yum check-update --disablerepo=* --enablerepo=zimbra-1000-oss --noplugins >>$LOGFILE 2>&1
 if [ x"$ZMTYPE_INSTALLABLE" = "xNETWORK" ]; then
 cat >> /etc/yum.repos.d/zimbra.repo <<EOF
-[zimbra-90-network]
+[zimbra-1000-network]
 name=Zimbra New RPM Repository
-baseurl=https://$PACKAGE_SERVER/rpm/90-ne/$repo
+baseurl=https://$PACKAGE_SERVER/rpm/1000-ne/$repo
 gpgcheck=1
 enabled=1
 EOF
-      yum --disablerepo=* --enablerepo=zimbra-90-network clean metadata >>$LOGFILE 2>&1
-      yum check-update --disablerepo=* --enablerepo=zimbra-90-network --noplugins >>$LOGFILE 2>&1
+      yum --disablerepo=* --enablerepo=zimbra-1000-network clean metadata >>$LOGFILE 2>&1
+      yum check-update --disablerepo=* --enablerepo=zimbra-1000-network --noplugins >>$LOGFILE 2>&1
 fi
       if [ $? -ne 0 -a $? -ne 100 ]; then
         echo "ERROR: yum check-update failed"
@@ -2246,22 +2248,6 @@ fi
   fi
 }
 
-getChatOrConnectPackage() {
- if [ $response = "yes" ]; then
-    askInstallPkgYN "Install zimbra-connect" "yes" "Y" "N"
-    if [ $response = "yes" ]; then
-       INSTALL_PACKAGES="$INSTALL_PACKAGES zimbra-connect"
-    elif [ $response = "no" ]; then
-       response="yes"
-    fi
-  elif [ $response = "no" ]; then
-    askInstallPkgYN "Install zimbra-chat" "yes" "Y" "N"
-    if [ $response = "yes" ]; then
-       INSTALL_PACKAGES="$INSTALL_PACKAGES zimbra-chat"
-       response="no"
-    fi
- fi
-}
 
 getInstallPackages() {
 
@@ -2279,10 +2265,8 @@ getInstallPackages() {
   STORE_SELECTED="no"
   MTA_SELECTED="no"
   PROXY_SELECTED="no"
-
-  if [ x"$ZMTYPE_INSTALLABLE" = "xFOSS" ]; then
-     AVAILABLE_PACKAGES="$AVAILABLE_PACKAGES zimbra-chat"
-  fi
+  LDAP_SELECTED="no"
+  ONLYOFFICE_SELECTED="no"
 
   for i in $AVAILABLE_PACKAGES; do
     if [ $i = "zimbra-core" ]; then
@@ -2296,12 +2280,6 @@ getInstallPackages() {
       echo $INSTALLED_PACKAGES | grep $i > /dev/null 2>&1
       if [ $? = 0 ]; then
         echo "    Upgrading $i"
-        if [ $i = "zimbra-network-modules-ng" ]; then
-            askInstallPkgYN "Install zimbra-connect" "yes" "Y" "N"
-            if [ $response = "yes" ]; then
-                INSTALL_PACKAGES="$INSTALL_PACKAGES zimbra-connect"
-            fi
-        fi
         if [ $i = "zimbra-mta" ]; then
           CONFLICTS="no"
           for j in $CONFLICT_PACKAGES; do
@@ -2334,6 +2312,10 @@ getInstallPackages() {
           MTA_SELECTED="yes"
         elif [ $i = "zimbra-proxy" ]; then
           PROXY_SELECTED="yes"
+        elif [ $i = "zimbra-ldap" ]; then
+          LDAP_SELECTED="yes"
+        elif [ $i = "zimbra-onlyoffice" ]; then
+          ONLYOFFICE_SELECTED="yes"
         fi
         continue
       fi
@@ -2341,18 +2323,45 @@ getInstallPackages() {
 
     # askInstallPkgYN args : PROMPT REQUIRE_STORE=yes|no YES_STORE_DEFAULT=Y|N NO_STORE_DEFAULT=Y|N
 
+    ZIMBRAINTERNAL=no
+    echo $HOSTNAME | egrep -qe 'eng.zimbra.com$|lab.zimbra.com$|zimbradev.com$' > /dev/null 2>&1
+    if [ $? = 0 ]; then
+       ZIMBRAINTERNAL=yes
+    fi
     if [ $i = "zimbra-license-tools" ]; then
       response="yes"
     elif [ $i = "zimbra-modern-ui" ]; then
       ifStoreSelectedY
     elif [ $i = "zimbra-modern-zimlets" ]; then
       ifStoreSelectedY
-    elif [ $i = "zimbra-patch" ]; then
+    elif [ $i = "zimbra-zimlet-document-editor" ]; then
       ifStoreSelectedY
+    elif [ $i = "zimbra-zimlet-classic-document-editor" ]; then
+      ifStoreSelectedY
+    elif [ $i = "zimbra-patch" ]; then
+        if [ x"$ZIMBRAINTERNAL" = "xyes" ] && [ $STORE_SELECTED = "yes" ]; then
+            askYN "Install $i" "Y"
+        else
+            ifStoreSelectedY
+        fi
     elif [ $i = "zimbra-mta-patch" ]; then
-      response="$MTA_SELECTED"
+        if [ x"$ZIMBRAINTERNAL" = "xyes" ] && [ $MTA_SELECTED = "yes" ]; then
+            askYN "Install $i" "Y"
+        else
+            response="$MTA_SELECTED"
+        fi
     elif [ $i = "zimbra-proxy-patch" ]; then
-      response="$PROXY_SELECTED"
+        if [ x"$ZIMBRAINTERNAL" = "xyes" ] && [ $PROXY_SELECTED = "yes" ]; then
+            askYN "Install $i" "Y"
+        else
+            response="$PROXY_SELECTED"
+        fi
+    elif [ $i = "zimbra-ldap-patch" ]; then
+	if [ x"$ZIMBRAINTERNAL" = "xyes" ] && [ $LDAP_SELECTED = "yes" ]; then
+            askYN "Install $i" "Y"
+	else
+            response="$LDAP_SELECTED"
+	fi
     elif [ $i = "zimbra-license-extension" ]; then
       ifStoreSelectedY
     elif [ $i = "zimbra-network-store" ]; then
@@ -2360,21 +2369,8 @@ getInstallPackages() {
     elif [ $UPGRADE = "yes" ]; then
       if [ $i = "zimbra-archiving" ]; then
         askInstallPkgYN "Install $i" "yes" "N" "N"
-      elif [ $i = "zimbra-chat" ]; then
-	if [ $STORE_SELECTED = "yes" ]; then
-          askInstallPkgYN "Install $i" "yes" "N" "N"
-	fi
-      elif [ $i = "zimbra-drive" ]; then
-	if [ $STORE_SELECTED = "yes" ]; then
-          askInstallPkgYN "Install $i" "yes" "N" "N"
-	fi
       elif [ $i = "zimbra-imapd" ]; then
         askInstallPkgYN "Install $i (BETA - for evaluation only)" "no" "N" "N"
-      elif [ $i = "zimbra-network-modules-ng" ]; then
-	if [ $STORE_SELECTED = "yes" ]; then
-          askInstallPkgYN "Install $i" "yes" "N" "N"
-	  getChatOrConnectPackage
-	fi
       else
         askYN "Install $i" "N"
       fi
@@ -2383,21 +2379,8 @@ getInstallPackages() {
         askInstallPkgYN "Install $i" "yes" "N" "N"
       elif [ $i = "zimbra-convertd" ]; then
         askInstallPkgYN "Install $i" "no" "Y" "N"
-      elif [ $i = "zimbra-chat" ]; then
-	if [ $STORE_SELECTED = "yes" ]; then
-          askInstallPkgYN "Install $i" "yes" "Y" "N"
-	fi
-      elif [ $i = "zimbra-drive" ]; then
-	if [ $STORE_SELECTED = "yes" ]; then
-          askInstallPkgYN "Install $i" "yes" "Y" "N"
-	fi
       elif [ $i = "zimbra-imapd" ]; then
         askInstallPkgYN "Install $i (BETA - for evaluation only)" "no" "N" "N"
-      elif [ $i = "zimbra-network-modules-ng" ]; then
-	if [ $STORE_SELECTED = "yes" ]; then
-          askInstallPkgYN "Install $i" "yes" "Y" "N"
-	  getChatOrConnectPackage
-	fi
       elif [ $i = "zimbra-dnscache" ]; then
         if [ $MTA_SELECTED = "yes" ]; then
           askYN "Install $i" "Y"
@@ -2420,23 +2403,10 @@ getInstallPackages() {
         MTA_SELECTED="yes"
       elif [ $i = "zimbra-proxy" ]; then
         PROXY_SELECTED="yes"
-      fi
-
-      if [ $i = "zimbra-network-modules-ng" ]; then
-          echo "###WARNING###"
-          echo ""
-          echo "Network Modules NG needs to bind on TCP ports 8735 and 8736 in order"
-          echo "to operate, for inter-instance communication."
-          echo "Please verify no other service listens on these ports and that "
-          echo "ports 8735 and 8736 are properly filtered from public access "
-          echo "by your firewall."
-          echo ""
-          echo "Please remember that the Backup NG module needs to be initialized in order"
-          echo "to be functional. This is a one-time operation only that can be performed"
-          echo "by clicking the 'Initialize' button within the Backup section of the"
-          echo "Network NG Modules in the Administration Console or by running"
-          echo "\`zxsuite backup doSmartScan\` as the zimbra user."
-          echo ""
+      elif [ $i = "zimbra-ldap" ]; then
+        LDAP_SELECTED="yes"
+      elif [ $i = "zimbra-onlyoffice" ]; then
+        ONLYOFFICE_SELECTED="yes"
       fi
 
       if [ $i = "zimbra-mta" ]; then
@@ -2474,13 +2444,19 @@ getInstallPackages() {
     fi
 
   done
+  if [ x"$ZMTYPE_INSTALLABLE" = "xNETWORK" ]; then
+     selectImmail
+  fi
   checkRequiredSpace
 
   isInstalled zimbra-store
   isToBeInstalled zimbra-store
+
   if [ "x$PKGINSTALLED" != "x" -o "x$PKGTOBEINSTALLED" != "x" ]; then
     checkStoreRequirements
   fi
+
+  isOnlyofficeStandalone $ONLYOFFICE_SELECTED
 
   echo ""
   echo "Installing:"
@@ -2489,6 +2465,59 @@ getInstallPackages() {
   done
 }
 
+selectImmail() {
+	# install imMail extension and imMail classic, modern zimlets
+	if [ $STORE_SELECTED = "yes" ] ; then
+		# Don't ask to install if Immail packages are already installed
+		if [ "${INSTD_IMMAIL_PACKAGES}" -eq 3 ]; then
+			INSTALL_PACKAGES="$INSTALL_PACKAGES $IMMAIL_PACKAGES"
+		else
+			askYN "Install chat and video features" "N"
+			if [ $response = "yes" ]; then
+				INSTALL_PACKAGES="$INSTALL_PACKAGES $IMMAIL_PACKAGES"
+			fi
+		fi
+	fi
+}
+isOnlyofficeStandalone() {
+  onlyofficepkg=$1
+  # check if store is being installed too.
+  # if it is not being intsalled, add zimbra-mariadb to the list of packages to be installed
+  isInstalled zimbra-store
+  isToBeInstalled zimbra-store
+  isStandAlone="yes"
+
+  if [ "x$PKGINSTALLED" != "x" -o "x$PKGTOBEINSTALLED" != "x" ]; then
+    isStandAlone="no"
+  fi
+  ## install rabbit mq
+  if [ $onlyofficepkg == "yes" ]; then
+    INSTALL_PACKAGES="$INSTALL_PACKAGES zimbra-rabbitmq-server"
+  fi
+
+  if [ $isStandAlone == "yes" -a $onlyofficepkg == "yes" ]; then
+    INSTALL_PACKAGES="$INSTALL_PACKAGES zimbra-mariadb"
+  fi
+
+}
+
+removeZimbraPatch(){
+	isInstalled zimbra-patch
+	if [ x$PKGINSTALLED != "x" ]; then
+		echo -n "Removing zimbra-patch..."
+		$PACKAGERM zimbra-patch >/dev/null 2>&1
+		echo "done"
+	fi
+}
+
+removeModernUI(){
+	isInstalled zimbra-modern-ui
+	if [ x$PKGINSTALLED != "x" ]; then
+		echo -n "Removing zimbra-modern-ui..."
+		$PACKAGERM zimbra-modern-ui >/dev/null 2>&1
+		echo "done"
+	fi
+}
 
 deleteWebApp() {
   WEBAPPNAME=$1
@@ -2496,6 +2525,14 @@ deleteWebApp() {
 
   /bin/rm -rf /opt/zimbra/$CONTAINERDIR/webapps/$WEBAPPNAME
   /bin/rm -rf /opt/zimbra/$CONTAINERDIR/webapps/$WEBAPPNAME.war
+  if [ $WEBAPPNAME == "zimbra" ]; then
+	  #zimbra-modern-ui package needs to re-install
+	  #because deleting /opt/zimbra/jetty/webapps/zimbra/ will remove modern directory from webapps
+	  #so first uninstall zimbra-modern-ui to install it
+	  # To remove zimbra-modern-ui,first zimbra-patch needs to remove
+	  removeZimbraPatch
+	  removeModernUI
+  fi
 }
 
 setInstallPackages() {
@@ -2716,7 +2753,7 @@ getPlatformVars() {
     PACKAGEEXT='deb'
     PACKAGEVERSION="dpkg-query -W -f \${Version}"
     CONFLICT_PACKAGES="mail-transport-agent"
-    if [ $PLATFORM = "UBUNTU12_64" -o $PLATFORM = "UBUNTU14_64" -o $PLATFORM = "UBUNTU16_64" -o $PLATFORM = "UBUNTU18_64" ]; then
+    if [ $PLATFORM = "UBUNTU12_64" -o $PLATFORM = "UBUNTU14_64" -o $PLATFORM = "UBUNTU16_64" -o $PLATFORM = "UBUNTU18_64" -o $PLATFORM = "UBUNTU20_64" ]; then
       STORE_PACKAGES="libreoffice"
     fi
     DumpFileDetailsFromPackage() {
@@ -2764,8 +2801,11 @@ getPlatformVars() {
       PACKAGEEXT='rpm'
       PACKAGEQUERY='rpm -q'
       PACKAGEVERIFY='rpm -K'
-      if [ $PLATFORM = "RHEL6_64" -o $PLATFORM = "RHEL7_64" ]; then
+      if [ $PLATFORM = "RHEL6_64" ]; then
          STORE_PACKAGES="libreoffice libreoffice-headless"
+      fi
+      if [ $PLATFORM = "RHEL7_64" -o $PLATFORM = "RHEL8_64" ]; then
+         STORE_PACKAGES="libreoffice libreoffice-core"
       fi
       DumpFileDetailsFromPackage() {
          local pkg_n="$1"; shift

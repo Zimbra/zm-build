@@ -42,11 +42,13 @@ main()
     if [ "${buildType}" == "NETWORK" ]
     then
        cp -f ${repoDir}/zm-hsm/src/bin/zmhsm ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmhsm
+       cp -f ${repoDir}/zm-hsm/src/bin/zmschedulesmpolicy ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmschedulesmpolicy
        cp -f ${repoDir}/zm-archive-utils/src/bin/zmarchiveconfig ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmarchiveconfig
        cp -f ${repoDir}/zm-archive-utils/src/bin/zmarchivesearch ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmarchivesearch
        cp -f ${repoDir}/zm-sync-tools/src/bin/zmsyncreverseproxy ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmsyncreverseproxy
        cp -f ${repoDir}/zm-sync-store/src/bin/zmdevicesstats ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmdevicesstats
        cp -f ${repoDir}/zm-sync-store/src/bin/zmgdcutil ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmgdcutil
+       cp -f ${repoDir}/zm-sync-store/src/bin/zmmdmmailschedule ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmmdmmailschedule
     fi
 
 
@@ -54,8 +56,9 @@ main()
 
     cp -f ${repoDir}/zm-mailbox/store-conf/conf/owasp_policy.xml ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/owasp_policy.xml
     cp -f ${repoDir}/zm-mailbox/store-conf/conf/antisamy.xml ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/antisamy.xml
+    cp -f ${repoDir}/zm-mailbox/store-conf/conf/custom-mimetypes.xml ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/custom-mimetypes.xml
 
-    echo -e "\tCopy extensions-extra files of /op/zimbra/" >> ${buildLogFile}
+    echo -e "\tCopy extensions-extra files of /opt/zimbra/" >> ${buildLogFile}
     mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/extensions-extra/openidconsumer
     cp -rf ${repoDir}/zm-openid-consumer-store/build/dist/. ${repoDir}/zm-build/${currentPackage}/opt/zimbra/extensions-extra/openidconsumer
     rm -rf ${repoDir}/zm-build/${currentPackage}/opt/zimbra/extensions-extra/openidconsumer/extensions-extra
@@ -84,6 +87,7 @@ main()
     mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/zimbraldaputils
     mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/zm-oauth-social
     mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/zm-gql
+    mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext-common
 
     if [ "${buildType}" == "NETWORK" ]
     then
@@ -98,6 +102,7 @@ main()
       mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/convertd
       mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/zimbrahsm
       mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/smime
+      mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/zm-doc-server-ext
 
       cp -f ${repoDir}/zm-backup-store/build/dist/zm-backup-store.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/backup/zimbrabackup.jar
       cp -f ${repoDir}/zm-archive-store/build/dist/*.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/zimbra-archive/zimbra-archive.jar
@@ -112,9 +117,12 @@ main()
       cp -rf ${repoDir}/zm-convertd-store/build/dist/*jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/convertd
       cp -f ${repoDir}/zm-twofactorauth-store/build/dist/zm-twofactorauth-store*.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/twofactorauth/zimbratwofactorauth.jar
       cp -f ${repoDir}/zm-hsm-store/build/zimbrahsm.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/zimbrahsm/zimbrahsm.jar
+      cp -f ${repoDir}/zm-store-managers/build/zm-store-managers*.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/zimbrahsm/zm-store-managers.jar
       cp -f ${repoDir}/zm-freebusy-provider-store/build/zimbra-freebusyprovider.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/zimbra-freebusy/zimbra-freebusyprovider.jar
       cp -rf ${repoDir}/zm-smime-store/build/dist/*.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/smime
       cp -f ${repoDir}/zm-network-gql/build/dist/zm-network-gql*.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/zm-gql/zmnetworkgql.jar
+      cp -f ${repoDir}/zm-zcs-lib/build/dist/tika-app-1.24.1.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/convertd/
+      cp -rf ${repoDir}/zm-doc-server-ext/build/dist/*.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/zm-doc-server-ext
     fi
 
     cp -f ${repoDir}/zm-clam-scanner-store/build/dist/zm-clam-scanner-store*.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/clamscanner/clamscanner.jar
@@ -122,10 +130,12 @@ main()
     cp -f ${repoDir}/zm-openid-consumer-store/build/dist/guice*.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/openidconsumer/
     cp -f ${repoDir}/zm-versioncheck-store/build/zm-versioncheck-store*.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/zimbraadminversioncheck/zimbraadminversioncheck.jar
     cp -f ${repoDir}/zm-ldap-utils-store/build/zm-ldap-utils-*.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/zimbraldaputils/zimbraldaputils.jar
-    cp -f ${repoDir}/zm-oauth-social/build/dist/zm-oauth-social*.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/zm-oauth-social/zmoauthsocial.jar
+    
+    cp -f ${repoDir}/zm-oauth-social/build/dist/zm-oauth-social.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/zm-oauth-social/zmoauthsocial.jar
+    cp -f ${repoDir}/zm-oauth-social/build/dist/zm-oauth-social-common.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext-common/zm-oauth-social-common.jar
+    
     cp -f ${repoDir}/zm-zcs-lib/build/dist/java-jwt-3.2.0.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/zm-oauth-social/
     cp -f ${repoDir}/zm-gql/build/dist/zm-gql*.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/zm-gql/zmgql.jar
-
 
 #-------------------- Get wars content (service.war, zimbra.war and zimbraAdmin.war) ---------------------------
 
@@ -164,7 +174,7 @@ main()
     then
         set -e
         cd ${downloadsDir}
-        wget -r -nd --no-parent --reject "index.*" http://${zimbraThirdPartyServer}/ZimbraThirdParty/zco-migration-builds/current/
+        wget -r -nd --no-parent --reject-regex="/backup/" --reject "index.*" http://${zimbraThirdPartyServer}/ZimbraThirdParty/zco-migration-builds/current/
     fi
 
     echo "\t\t***** help content *****" >> ${buildLogFile}
@@ -222,7 +232,6 @@ main()
                      "zm-2fa-admin-zimlet" \
                      "zm-ucconfig-admin-zimlet" \
                      "zm-securemail-zimlet" \
-                     "zm-smime-applet" \
                      "zm-mobile-sync-admin-zimlet" )
       for i in "${adminZimlets[@]}"
       do
@@ -261,6 +270,7 @@ main()
     cp -f ${repoDir}/zm-jetty-conf/conf/jetty/modules/*.mod.in ${repoDir}/zm-build/${currentPackage}/opt/zimbra/jetty_base/modules
     cp -f ${repoDir}/zm-jetty-conf/conf/jetty/start.d/*.ini.in   ${repoDir}/zm-build/${currentPackage}/opt/zimbra/jetty_base/start.d
     cp -f ${repoDir}/zm-jetty-conf/conf/jetty/modules/npn/*.mod  ${repoDir}/zm-build/${currentPackage}/opt/zimbra/jetty_base/modules/npn
+    cp -f ${repoDir}/zm-jetty-conf/conf/jetty/jetty-logging.properties ${repoDir}/zm-build/${currentPackage}/opt/zimbra/jetty_base/etc/
 
     cp -f ${repoDir}/zm-zimlets/conf/web.xml.production ${repoDir}/zm-build/${currentPackage}/opt/zimbra/jetty_base/etc/zimlet.web.xml.in
 

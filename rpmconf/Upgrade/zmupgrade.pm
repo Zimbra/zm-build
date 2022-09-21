@@ -3,7 +3,7 @@
 #
 # ***** BEGIN LICENSE BLOCK *****
 # Zimbra Collaboration Suite Server
-# Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016 Synacor, Inc.
+# Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2021 Synacor, Inc.
 #
 # This program is free software: you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free Software Foundation,
@@ -41,7 +41,7 @@ chomp $rundir;
 my $scriptDir = "/opt/zimbra/libexec/scripts";
 
 my $lowVersion = 52;
-my $hiVersion = 111; # this should be set to the DB version expected by current server code
+my $hiVersion = 117; # this should be set to the DB version expected by current server code
 
 my $needSlapIndexing = 0;
 my $mysqlcnfUpdated = 0;
@@ -87,6 +87,12 @@ my %updateScripts = (
   '108' => "migrate20180301-ZimbraChat.pl",            #8.8.8
   '109' => "migrate20190401-ZimbraChat.pl",            #8.8.15
   '110' => "migrate20190611-ZimbraChat.pl",            #8.8.15
+  '111' => "migrate20210506-BriefcaseApi.pl",          #10.0.0
+  '112' => "migrate20200625-MobileDevices.pl",         #Zimbra X
+  '113' => "migrate20210319-MobileDevices.pl",         #Zimbra X
+  '114' => "migrate20220721-AddMdmUpdateTimestamp.pl", #10.0.0
+  '115' => "migrate20220525-Volume.pl",                #10.0.0
+  '116' => "migrate20220729-FilesShareWithMeFolder.pl",   #10.0.0
 );
 
 my %updateFuncs = (
@@ -210,8 +216,8 @@ sub upgrade {
        $isLdapMaster = 0;
   }
   my ($startBuild,$targetBuild);
-  ($startVersion,$startBuild) = $startVersion =~ /(\d\.\d\.\d+_[^_]*)_(\d+)/;
-  ($targetVersion,$targetBuild) = $targetVersion =~ m/(\d\.\d\.\d+_[^_]*)_(\d+)/;
+  ($startVersion,$startBuild) = $startVersion =~ /(\d+\.\d+\.\d+_[^_]*)_(\d+)/;
+  ($targetVersion,$targetBuild) = $targetVersion =~ m/(\d+\.\d+\.\d+_[^_]*)_(\d+)/;
   ($startMajor,$startMinor,$startMicro) =
     $startVersion =~ /(\d+)\.(\d+)\.(\d+_[^_]*)/;
   ($targetMajor,$targetMinor,$targetMicro) =
@@ -2049,9 +2055,6 @@ sub upgrade870RC1 {
 
 sub upgrade872GA {
     my ($startBuild, $targetVersion, $targetBuild) = (@_);
-    if (main::isInstalled("zimbra-convertd") && !(-l "/opt/zimbra/keyview")) {
-      symlink("/opt/zimbra/keyview-10.13.0.0", "/opt/zimbra/keyview")
-    }
     return 0;
 }
 
@@ -2136,7 +2139,7 @@ sub upgrade8811GA {
 
 sub upgrade8812GA {
    print "applying 8812GA upgrade changes\n";
-   
+
    print "Updating to CA certs path\n";
 
   qx($su "zmlocalconfig -e mailboxd_truststore=/opt/zimbra/common/lib/jvm/java/lib/security/cacerts");
@@ -2146,7 +2149,7 @@ sub upgrade8812GA {
 
 sub upgrade8815GA {
    print "applying 8815GA upgrade changes\n";
-   
+
    print "Updating OWASP LC config\n";
 
   main::deleteLocalConfig("zimbra_use_owasp_html_sanitizer");

@@ -25,6 +25,11 @@ if [ -f /etc/redhat-release ]; then
     i=""
   fi
 
+  grep "Red Hat Enterprise Linux.*release 8" /etc/redhat-release > /dev/null 2>&1
+  if [ $? = 0 ]; then
+    echo "RHEL8${i}"
+    exit 0
+  fi
   grep "Red Hat Enterprise Linux.*release 7" /etc/redhat-release > /dev/null 2>&1
   if [ $? = 0 ]; then
     echo "RHEL7${i}"
@@ -36,6 +41,11 @@ if [ -f /etc/redhat-release ]; then
     exit 0
   fi
 
+  grep "CentOS Linux release 8" /etc/redhat-release > /dev/null 2>&1
+  if [ $? = 0 ]; then
+    echo "RHEL8${i}"
+    exit 0
+  fi
   grep "CentOS Linux release 7" /etc/redhat-release > /dev/null 2>&1
   if [ $? = 0 ]; then
     echo "RHEL7${i}"
@@ -47,6 +57,17 @@ if [ -f /etc/redhat-release ]; then
     exit 0
   fi
 
+  grep "Rocky Linux release 8" /etc/redhat-release > /dev/null 2>&1
+  if [ $? = 0 ]; then
+    echo "RHEL8${i}"
+    exit 0
+  fi
+
+  grep "Scientific Linux release 8" /etc/redhat-release > /dev/null 2>&1
+  if [ $? = 0 ]; then
+    echo "RHEL8${i}"
+    exit 0
+  fi
   grep "Scientific Linux release 7" /etc/redhat-release > /dev/null 2>&1
   if [ $? = 0 ]; then
     echo "RHEL7${i}"
@@ -77,6 +98,11 @@ if [ -f /etc/redhat-release ]; then
   grep "CentOS release" /etc/redhat-release > /dev/null 2>&1
   if [ $? = 0 ]; then
     echo "CentOSUNKNOWN${i}"
+    exit 0
+  fi
+  grep "Rocky Linux release" /etc/redhat-release > /dev/null 2>&1
+  if [ $? = 0 ]; then
+    echo "RockyUNKNOWN${i}"
     exit 0
   fi
   grep "Fedora Core release" /etc/redhat-release > /dev/null 2>&1
@@ -142,6 +168,10 @@ if [ -f /etc/lsb-release ]; then
     fi
     if [ "$RELEASE" = "bionic" ]; then
       echo "18${i}"
+      exit 0
+    fi
+    if [ "$RELEASE" = "focal" ]; then
+      echo "20${i}"
       exit 0
     fi
     echo "UNKNOWN${i}"

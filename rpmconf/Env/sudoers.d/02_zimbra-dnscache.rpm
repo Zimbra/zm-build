@@ -1,2 +1,3 @@
 %zimbra ALL=NOPASSWD:/opt/zimbra/libexec/zmunbound
 %zimbra ALL=NOPASSWD:/opt/zimbra/libexec/zmdnscachealign *
+%zimbra ALL=NOPASSWD:/sbin/resolvconf *

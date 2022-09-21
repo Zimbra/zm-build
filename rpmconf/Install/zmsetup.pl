@@ -26,6 +26,8 @@ use Net::LDAP;
 use IPC::Open3;
 use Cwd;
 use Time::localtime qw(ctime);
+use File::Path qw(make_path);
+
 
 $|=1; # don't buffer stdout
 
@@ -84,6 +86,7 @@ my @packageList = (
   "zimbra-proxy",
   "zimbra-archiving",
   "zimbra-imapd",
+  "zimbra-onlyoffice",
 );
 
 my %packageServiceMap = (
@@ -110,6 +113,7 @@ my %packageServiceMap = (
   zimbra    => "zimbra-store",
   zimbraAdmin   => "zimbra-store",
   zimlet    => "zimbra-store",
+  onlyoffice    => "zimbra-onlyoffice",
 );
 
 my @webappList = (
@@ -424,6 +428,8 @@ sub checkPortConflicts {
     10028 => 'zimbra-mta',
     10029 => 'zimbra-mta',
     10030 => 'zimbra-mta',
+    7084 => 'zimbra-onlyoffice',
+    7085 => 'zimbra-onlyoffice',
   );
 
   open PORTS, "netstat -an | egrep '^tcp' | grep LISTEN | awk '{print \$4}' | sed -e 's/.*://' |";
@@ -1244,6 +1250,11 @@ sub setLdapDefaults {
   $config{EphemeralBackendURL} = getLdapConfigValue("zimbraEphemeralBackendURL");
   $config{USEEPHEMERALSTORE} = "yes" if ($config{EphemeralBackendURL} ne "");
 
+  # get the onlyoffice zimbraDocumentServerHost global config
+  if (isEnabled("zimbra-onlyoffice")) {
+    my $tmpval = getLdapConfigValue("zimbraDocumentServerHost");
+    $config{ONLYOFFICEHOSTNAME} = $tmpval;
+  }
   #
   # Load default COS
   #
@@ -2673,6 +2684,12 @@ sub setSnmpTrapHost {
       $config{SNMPTRAPHOST});
 }
 
+sub setOnlyOfficeHost {
+  $config{ONLYOFFICEHOSTNAME} =
+    askNonBlank("Onlyoffice server:",
+      $config{ONLYOFFICEHOSTNAME});
+}
+
 sub setAvUser {
   $config{AVUSER} =
     askNonBlank("Notification address for AV alerts:",
@@ -3523,6 +3540,8 @@ sub createPackageMenu {
     return createDNSCacheMenu($package);
   } elsif ($package eq "zimbra-imapd") {
     return createImapMenu($package);
+  } elsif ($package eq "zimbra-onlyoffice") {
+    return createOnlyofficeMenu($package);
   }
 }
 
@@ -3622,6 +3641,51 @@ sub createCommonMenu {
     "callback" => \&setSSLDefaultDigest
   };
   $i++;
+  return $lm;
+}
+
+sub createOnlyofficeMenu {
+  my $package = shift;
+  my $lm = genPackageMenu($package);
+
+  $$lm{title} = "Onlyoffice configuration";
+
+  $$lm{createsub} = \&createOnlyofficeMenu;
+  $$lm{createarg} = $package;
+
+  my $i = 2;
+
+  if (isEnabled($package)) {
+    # get the hostname for onlyoffice to be put into config
+    # if standalone server :
+    #    1. global config already present, do not override
+    #    2. global config not present, this server name goes as global config
+    # if not standalone:
+    #    set the server host name at server level config
+    if (isEnabled("zimbra-store")) {
+      $config{ONLYOFFICESTANDALONE} = "no";
+    } else {
+      $config{ONLYOFFICESTANDALONE} = "yes";
+    }
+
+    if ($config{ONLYOFFICEHOSTNAME} eq "") {
+        $config{ONLYOFFICEHOSTNAME} = $config{HOSTNAME};
+    }
+
+    $$lm{menuitems}{$i} = {
+      "prompt" => "Onlyoffice server:",
+      "var" => \$config{ONLYOFFICEHOSTNAME},
+      "callback" => \&setOnlyOfficeHost
+      };
+    $i++;
+
+    $$lm{menuitems}{$i} = {
+      "prompt" => "Standalone Onlyoffice:",
+      "var" => \$config{ONLYOFFICESTANDALONE}
+      };
+    $i++;
+  }
+
   return $lm;
 }
 
@@ -4660,6 +4724,7 @@ sub createMainMenu {
         if (checkLdapReplicationEnabled($config{zimbra_ldap_userdn},$config{LDAPADMINPASS}));
     }
   }
+
   return \%mm;
 }
 
@@ -5700,6 +5765,28 @@ sub configCreateCert {
     }
   }
 
+  if (isInstalled("zimbra-onlyoffice")) {
+    if ( !-f "/opt/zimbra/ssl/zimbra/server/server.crt") {
+      progress ( "Creating SSL certificate..." );
+      $rc = runAsZimbra("/opt/zimbra/bin/zmcertmgr createcrt $needNewCert");
+      if ($rc != 0) {
+        progress ( "failed.\n" );
+        exit 1;
+      } else {
+        progress ( "done.\n" );
+      }
+    } elsif ( $needNewCert ne "" && $ssl_cert_type eq "self") {
+      progress ( "Creating new SSL certificate..." );
+      $rc = runAsZimbra("/opt/zimbra/bin/zmcertmgr createcrt $needNewCert");
+      if ($rc != 0) {
+        progress ( "failed.\n" );
+        exit 1;
+      } else {
+        progress ( "done.\n" );
+      }
+    }
+  }
+
   configLog("configCreateCert");
 }
 
@@ -6496,7 +6583,7 @@ sub zimletCleanup {
     return 1;
   } else {
     detail("ldap bind done for $ldap_dn");
-    $result = $ldap->search(base => $ldap_base, scope => 'one', filter => "(|(cn=convertd)(cn=hsm)(cn=hotbackup)(cn=zimbra_cert_manager)(cn=com_zimbra_search)(cn=zimbra_xmbxsearch)(cn=com_zimbra_domainadmin)(cn=com_zimbra_tinymce)(cn=com_zimbra_tasksreminder)(cn=com_zimbra_linkedin)(cn=com_zimbra_social)(cn=com_zimbra_dnd)(cn=com_zextras_chat_open)(cn=com_zextras_talk))", attrs => ['cn']);
+    $result = $ldap->search(base => $ldap_base, scope => 'one', filter => "(|(cn=convertd)(cn=hsm)(cn=hotbackup)(cn=zimbra_cert_manager)(cn=com_zimbra_search)(cn=zimbra_xmbxsearch)(cn=com_zimbra_domainadmin)(cn=com_zimbra_tinymce)(cn=com_zimbra_tasksreminder)(cn=com_zimbra_linkedin)(cn=com_zimbra_social)(cn=com_zimbra_dnd)(cn=com_zextras_chat_open)(cn=com_zextras_talk)(cn=com_zimbra_smime)(cn=zimbra-zimlet-restore-contacts)(cn=zimbra-zimlet-duplicate-contacts))", attrs => ['cn']);
     return $result if ($result->code());
     detail("Processing ldap search results");
     foreach my $entry ($result->all_entries) {
@@ -6506,6 +6593,14 @@ sub zimletCleanup {
         runAsZimbra("/opt/zimbra/bin/zmzimletctl -l undeploy $zimlet");
         system("rm -rf $config{mailboxd_directory}/webapps/service/zimlet/$zimlet")
           if (-d "$config{mailboxd_directory}/webapps/service/zimlet/$zimlet" );
+	system("rm -rf /opt/zimbra/jetty/webapps/zimbra/public/${zimlet}.jarx")
+	  if (-f "/opt/zimbra/jetty/webapps/zimbra/public/${zimlet}.jarx" );
+	system("rm -rf /opt/zimbra/zimlets-deployed/$zimlet")
+	  if (-d "/opt/zimbra/zimlets-deployed/$zimlet" );
+	system("rm -rf /opt/zimbra/zimlets-network/${zimlet}.zip")
+	  if (-f "/opt/zimbra/zimlets-network/${zimlet}.zip" );
+	system("rm -rf /opt/zimbra/zimlets/${zimlet}.zip")
+	  if (-f "/opt/zimbra/zimlets/${zimlet}.zip" );
       }
     }
   }
@@ -6578,13 +6673,6 @@ sub configInstallZimlets {
       # disable click2call zimlets by default.  #73987
       setLdapCOSConfig("+zimbraZimletAvailableZimlets", "-$zimlet")
         if ($zimlet =~ /click2call/);
-      #disable old smime zimlet
-      setLdapCOSConfig("+zimbraZimletAvailableZimlets", "-$zimlet")
-        if ($zimlet =~ /smime/);
-
-      if (($rc == 0) && ($zimlet eq "com_zimbra_smime") && ($config{UIWEBAPPS} eq "yes")) {
-        system("cp /opt/zimbra/zimlets-deployed/com_zimbra_smime/com_zimbra_smime.jarx /opt/zimbra/jetty/webapps/zimbra/public/com_zimbra_smime.jarx");
-      }
     }
     progress ( "Finished installing network zimlets.\n" );
   }
@@ -6779,7 +6867,11 @@ sub configInitSql {
     return 0;
   }
 
-  if (!$sqlConfigured && isEnabled("zimbra-store")) {
+  if (!$sqlConfigured &&
+    (isEnabled("zimbra-store") ||
+      (isEnabled("zimbra-onlyoffice") && $newinstall && !isEnabled("zimbra-store"))
+    )
+    ) {
     progress ( "Initializing store sql database..." );
     runAsZimbra ("/opt/zimbra/libexec/zmmyinit --mysql_memory_percent $config{MYSQLMEMORYPERCENT}");
     progress ( "done.\n" );
@@ -7018,6 +7110,7 @@ sub failConfig {
 }
 
 sub applyConfig {
+
   defineInstallWebapps();
   if (!(defined ($options{c})) && $newinstall ) {
     if (askYN("Save configuration data to a file?", "Yes") eq "yes") {
@@ -7146,6 +7239,20 @@ sub applyConfig {
 
   configCreateDomain();
 
+
+  # onlyoffice
+  if (isEnabled("zimbra-onlyoffice") && !isEnabled("zimbra-store")
+    && ( $newinstall || $configStatus{configOnlyoffice} ne "CONFIGURED") ) {
+    ##create the directories required
+    createDirForStandaloneOnlyoffice();
+
+    setLocalConfig ("mysql_bind_address", '127.0.0.1');
+    if ( !-e "/etc/sudoers.d/02_zimbra-store") {
+      system("echo \"%zimbra ALL=NOPASSWD:/opt/zimbra/libexec/zmmailboxdmgr\" > /etc/sudoers.d/02_zimbra-store");
+      system("chmod 440 /etc/sudoers.d/02_zimbra-store");
+    }
+  }
+
   configInitSql();
 
   configInitLogger();
@@ -7156,7 +7263,7 @@ sub applyConfig {
 
   setupSyslog();
 
-  postinstall::configure({'zimbra-network-modules-ng'=>isInstalled("zimbra-network-modules-ng")});
+  postinstall::configure();
 
   qx(touch /opt/zimbra/.bash_history);
   qx(chown zimbra:zimbra /opt/zimbra/.bash_history);
@@ -7177,8 +7284,9 @@ sub applyConfig {
     configImap();
   }
 
-  if ($config{STARTSERVERS} eq "yes") {
+  configureOnlyoffice();
 
+  if ($config{STARTSERVERS} eq "yes") {
     # bug 6270
     if (isEnabled("zimbra-store")) {
       qx(chown zimbra:zimbra /opt/zimbra/redolog/redo.log)
@@ -7191,21 +7299,29 @@ sub applyConfig {
       }
     }
 
-    if (isInstalled("zimbra-network-modules-ng")) {
-       if ($prevVersionMajor <= 8 && $prevVersionMinor <= 7) {
-        setLdapServerConfig($config{HOSTNAME}, 'zimbraNetworkModulesNGEnabled', 'TRUE');
-        }
-    }
-    else {
-      setLdapServerConfig($config{HOSTNAME}, 'zimbraNetworkModulesNGEnabled', 'FALSE');
+    # Disable zextras modules
+    my $zimbraNetworkModulesNGEnabled = getLdapServerValue("zimbraNetworkModulesNGEnabled");
+    if ($zimbraNetworkModulesNGEnabled eq "TRUE"){
+       setLdapServerConfig($config{HOSTNAME}, 'zimbraNetworkModulesNGEnabled', 'FALSE');
     }
 
-    if (isInstalled("zimbra-network-modules-ng") && $newinstall) {
-      main::progress("Enabling zimbra network NG modules features.\n");
-      setLdapServerConfig($config{HOSTNAME}, 'zimbraNetworkMobileNGEnabled', 'TRUE');
-      setLdapServerConfig($config{HOSTNAME}, 'zimbraNetworkAdminNGEnabled', 'TRUE');
+    my $zimbraNetworkAdminEnabled = getLdapServerValue("zimbraNetworkAdminEnabled");
+    if ($zimbraNetworkAdminEnabled eq "TRUE"){
+       setLdapServerConfig($config{HOSTNAME}, 'zimbraNetworkAdminEnabled', 'FALSE');
     }
 
+    my $zimbraNetworkAdminNGEnabled = getLdapServerValue("zimbraNetworkAdminNGEnabled");
+    if ($zimbraNetworkAdminNGEnabled eq "TRUE"){
+       setLdapServerConfig($config{HOSTNAME}, 'zimbraNetworkAdminNGEnabled', 'FALSE');
+    }
+
+    my $zimbraNetworkMobileNGEnabled = getLdapServerValue("zimbraNetworkMobileNGEnabled");
+    if ($zimbraNetworkMobileNGEnabled eq "TRUE"){
+       setLdapServerConfig($config{HOSTNAME}, 'zimbraNetworkMobileNGEnabled', 'FALSE');
+    }
+
+    enableTLSv1_3();
+    addJDK17Options();
     progress ( "Starting servers..." );
     runAsZimbra ("/opt/zimbra/bin/zmcontrol stop");
     runAsZimbra ("/opt/zimbra/bin/zmcontrol start");
@@ -7215,6 +7331,10 @@ sub applyConfig {
     # Initialize application server specific items
     # only after the application server is running.
     if (isEnabled("zimbra-store")) {
+      progress("Enabling jetty logging...");
+      system("/opt/zimbra/libexec/zmjettyenablelogging > /dev/null 2>&1");
+      progress("done.\n");
+
       configInstallZimlets();
 
       progress ( "Restarting mailboxd...");
@@ -7273,6 +7393,80 @@ sub applyConfig {
   }
 }
 
+sub configureOnlyoffice {
+    # create onlyoffice db and configure it
+  if (isEnabled("zimbra-onlyoffice") ) {
+    #enable preview
+    setLdapCOSConfig("zimbraFeatureViewInHTMLEnabled", "TRUE");
+
+    if ($configStatus{configOnlyoffice} eq "CONFIGURED") {
+      configLog("configOnlyoffice");
+      return 0;
+    }
+
+    if ($configStatus{configOnlyoffice} ne "CONFIGURED" || $newinstall) {
+          qx(chmod +x /opt/zimbra/onlyoffice/bin/zmonlyofficeconfig);
+          qx(chmod 775 /opt/zimbra/onlyoffice/bin/process_id.json);
+          qx(chown -R zimbra:zimbra /opt/zimbra/onlyoffice/documentserver/);
+          qx(chown zimbra:zimbra /opt/zimbra/onlyoffice/bin/process_id.json);
+
+          # on new install
+          if (zmupgrade::startSql()) { return 1; }
+          createOnlyofficeDB();
+          # configure onlyoffice
+          print "Configuring Onlyoffice...\n";
+
+          open(my $py, "|-", "/opt/zimbra/onlyoffice/bin/zmonlyofficeconfig");
+          while (<$py>) {
+            print "$py";
+          }
+          close($py);
+
+          # set the config value zimbraDocumentServerHost
+          # if standalone server :
+          #    1. global config already present, do not override
+          #    2. global config not present, this server name goes as global config
+          # if not standalone:
+          #    set the server host name at server level config
+          if (isEnabled("zimbra-store") && $config{ONLYOFFICESTANDALONE} eq "no") {
+            setLdapServerConfig($config{HOSTNAME}, 'zimbraDocumentServerHost', $config{HOSTNAME});
+          } else {
+              my $tmpval = getLdapConfigValue("zimbraDocumentServerHost");
+              if ($tmpval eq "") {
+                setLdapGlobalConfig("zimbraDocumentServerHost", $config{HOSTNAME});
+              } else {
+                setLdapGlobalConfig("zimbraDocumentServerHost", $config{ONLYOFFICEHOSTNAME});
+              }
+          }
+          configLog("configOnlyoffice");
+    }
+  }
+}
+
+sub createDirForStandaloneOnlyoffice {
+
+  my (undef,undef,$uid,$gid) = getpwnam("zimbra");
+
+  my @dir_to_create = ('/opt/zimbra/index', '/opt/zimbra/store', '/opt/zimbra/data/tmp/mysql', '/opt/zimbra/mailboxd', 'opt/zimbra/common/conf');
+  foreach my $dir (@dir_to_create) {
+      eval { make_path($dir) };
+      if ($@) {
+        print "Couldn't create $dir: $@";
+      } else {
+        chown($uid,$gid, $dir);
+        chmod(0755, $dir);
+      }
+  }
+}
+
+sub createOnlyofficeDB {
+
+  my $mysql_root_pass = getLocalConfig ("mysql_root_password");
+  progress ( "Creating onlyoffice database..." );
+  runAsZimbra ("exec /opt/zimbra/common/bin/mysql -S /opt/zimbra/data/tmp/mysql/mysql.sock -u root --password=$mysql_root_pass < /opt/zimbra/onlyoffice/bin/createdb.sql");
+  progress ( "done.\n" );
+}
+
 sub configLog {
   my $stage = shift;
   my $msg = time().": CONFIGURED $stage\n";
@@ -7295,34 +7489,9 @@ sub setupSyslog {
   configLog("setupSyslog");
 }
 
-sub zxsuiteIsAvailable {
-  my $checkNGstatus = 0;
-  my $trying = 0;
-  my $output;
-  my $NGbackup;
-  progress("Checking if the NG started running...");
-  while (( $checkNGstatus != 1 ) && ( $trying < 7 )) {
-        $output = qx(/opt/zimbra/bin/zxsuite backup getBackupInfo);
-        last if ($output =~ /valid/);
-        detail ("retry ".  ++$trying);
-        sleep 5;
-  }
-  progress("done. \n");
-  if ((-f "/opt/zimbra/bin/zxsuite") && ($output =~ /valid(.*)true/ )) {
-     $NGbackup = "true";
-     detail("NG backup is already initialized because /opt/zimbra/bin/zxsuite backup getBackupInfo valid has value: $NGbackup \n");
-  } else {
-    $NGbackup = "false";
-    detail("Modifying the crontab with default schedule because \"/opt/zimbra/bin/zxsuite backup getBackupInfo\" valid has value: $NGbackup \n");
-  }
-  return $NGbackup
-}
-
-
 sub setupCrontab {
   my @backupSchedule=();
   my $nohsm=1;
-  my $NG_backup = zxsuiteIsAvailable();
   progress ("Setting up zimbra crontab...");
   if ( -x "/opt/zimbra/bin/zmschedulebackup") {
     detail("Getting current backup schedule in restorable format.");
@@ -7406,7 +7575,7 @@ sub setupCrontab {
         runAsZimbra("/opt/zimbra/bin/zmschedulebackup -A $backupSchedule[$i]");
       }
     }
-  } elsif ( -f "/opt/zimbra/bin/zmschedulebackup" && scalar @backupSchedule == 0 && !$newinstall && $nohsm && $NG_backup == "false") {
+  } elsif ( -f "/opt/zimbra/bin/zmschedulebackup" && scalar @backupSchedule == 0 && !$newinstall && $nohsm) {
     detail("crontab: No backup schedule found: installing default schedule.");
     qx($SU "/opt/zimbra/bin/zmschedulebackup -D" >> $logfile 2>&1);
   }
@@ -7520,6 +7689,86 @@ sub resumeConfiguration {
   } else {
     %configStatus = ();
   }
+}
+
+sub enableTLSv1_3 {
+	if (isInstalled("zimbra-proxy") && isEnabled("zimbra-proxy")) {
+		progress( "Setting zimbraReverseProxySSLProtocols...");
+		my $rc = main::runAsZimbra("$ZMPROV mcf +zimbraReverseProxySSLProtocols TLSv1.3");
+		progress(($rc == 0) ? "done.\n" : "failed.\n");
+		my $proxysslciphers = getLdapConfigValue("zimbraReverseProxySSLCiphers");
+		if ($proxysslciphers eq "ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-DSS-AES128-GCM-SHA256:kEDH+AESGCM:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA:ECDHE-ECDSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-DSS-AES128-SHA256:DHE-RSA-AES256-SHA256:DHE-DSS-AES256-SHA:DHE-RSA-AES256-SHA:AES128-GCM-SHA256:AES256-GCM-SHA384:AES128:AES256:HIGH:!aNULL:!eNULL:!EXPORT:!DES:!MD5:!PSK:!RC4") {
+			progress( "Setting zimbraReverseProxySSLCiphers...");
+			my $rc = main::runAsZimbra("$ZMPROV mcf zimbraReverseProxySSLCiphers 'ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-DSS-AES128-GCM-SHA256:kEDH+AESGCM:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA:ECDHE-ECDSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-DSS-AES128-SHA256:DHE-RSA-AES256-SHA256:DHE-DSS-AES256-SHA:DHE-RSA-AES256-SHA:AES128-GCM-SHA256:AES256-GCM-SHA384:AES128:AES256:TLS_AES_256_GCM_SHA384:HIGH:!aNULL:!eNULL:!EXPORT:!DES:!MD5:!PSK:!RC4'");
+			progress(($rc == 0) ? "done.\n" : "failed.\n");
+		    }
+	}
+	if (isInstalled("zimbra-store")) {
+		progress( "Setting mailboxd_java_options...");
+		my $mailboxd_java_options=getLocalConfigRaw("mailboxd_java_options");
+		my $new_mailboxd_options="";
+		foreach my $option (split(/\s+/, $mailboxd_java_options)) {
+			if ($option =~ /-Dhttps.protocols/) {
+				$new_mailboxd_options .= " -Dhttps.protocols=TLSv1.2,TLSv1.3";
+			}
+			elsif ($option =~ /-Djdk.tls.client.protocols/) {
+				$new_mailboxd_options .= " -Djdk.tls.client.protocols=TLSv1.2,TLSv1.3";
+			}
+			else{
+				$new_mailboxd_options.=" $option";
+			}
+		      }
+		$new_mailboxd_options =~ s/^\s+//;
+		my $rc = setLocalConfig("mailboxd_java_options", $new_mailboxd_options)if ($new_mailboxd_options ne "");
+		progress(($rc == 0) ? "done.\n" : "failed.\n");
+		progress( "Setting zimbra_zmjava_options...");
+		my $zimbra_zmjava_options=getLocalConfigRaw("zimbra_zmjava_options");
+		my $new_zimbra_zmjava_options="";
+		foreach my $option (split(/\s+/, $zimbra_zmjava_options)) {
+			if ($option =~ /-Dhttps.protocols/) {
+				$new_zimbra_zmjava_options .= " -Dhttps.protocols=TLSv1.2,TLSv1.3";
+			}
+			elsif ($option =~ /-Djdk.tls.client.protocols/) {
+				$new_zimbra_zmjava_options .= " -Djdk.tls.client.protocols=TLSv1.2,TLSv1.3";
+			}
+			else{
+				$new_zimbra_zmjava_options.=" $option";
+			}
+		      }
+		$new_zimbra_zmjava_options =~ s/^\s+//;
+		my $rc = setLocalConfig("zimbra_zmjava_options", $new_zimbra_zmjava_options)if ($new_zimbra_zmjava_options ne "");
+		progress(($rc == 0) ? "done.\n" : "failed.\n");
+	}
+	if (isInstalled("zimbra-ldap")) {
+		progress( "Setting ldap_common_tlsciphersuite...");
+		my $rc = setLocalConfig("ldap_common_tlsciphersuite", "!aNULL:!eNULL:!RC4:!DES:!3DES:MEDIUM:HIGH");
+		progress(($rc == 0) ? "done.\n" : "failed.\n");
+		progress( "Setting ldap_common_tlsprotocolmin...");
+		my $rc = setLocalConfig("ldap_common_tlsprotocolmin", "3.3");
+		progress(($rc == 0) ? "done.\n" : "failed.\n");
+	  }
+	if (isInstalled("zimbra-mta")) {
+		progress( "Setting amavis_sslversion...");
+		my $rc = setLocalConfig("amavis_sslversion", "!TLSv1");
+		progress(($rc == 0) ? "done.\n" : "failed.\n");
+	}
+}
+
+sub addJDK17Options {
+	if (isInstalled("zimbra-core")) {
+		progress( "Setting java options...");
+		my $java_options=getLocalConfigRaw("mailboxd_java_options");
+		my $new_java_options=$java_options;
+		if ($java_options !~ /-Djava.security.egd/) {
+			$new_java_options = $new_java_options." -Djava.security.egd=file:/dev/./urandom";
+		}
+		if ($java_options !~ /--add-opens java.base\/java.lang=ALL-UNNAMED/) {
+			$new_java_options = $new_java_options." --add-opens java.base/java.lang=ALL-UNNAMED";
+		}
+		$new_java_options =~ s/^\s+//;
+		my $rc = setLocalConfig("mailboxd_java_options", $new_java_options)if ($new_java_options ne $java_options);
+		progress(($rc == 0) ? "done.\n" : "failed.\n");
+	}
 }
 
 ### end subs

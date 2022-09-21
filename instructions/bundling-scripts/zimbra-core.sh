@@ -291,6 +291,7 @@ main()
    Copy ${repoDir}/zm-core-utils/src/bin/zmstatctl                                                  ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmstatctl
    Copy ${repoDir}/zm-core-utils/src/bin/zmstorectl                                                 ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmstorectl
    Copy ${repoDir}/zm-core-utils/src/bin/zmswatchctl                                                ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmswatchctl
+   Copy ${repoDir}/zm-core-utils/src/bin/zms3config                                                 ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zms3config
    Copy ${repoDir}/zm-core-utils/src/bin/zmthrdump                                                  ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmthrdump
    Copy ${repoDir}/zm-core-utils/src/bin/zmtlsctl                                                   ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmtlsctl
    Copy ${repoDir}/zm-core-utils/src/bin/zmtotp                                                     ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmtotp
@@ -299,6 +300,8 @@ main()
    Copy ${repoDir}/zm-core-utils/src/bin/zmupdateauthkeys                                           ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmupdateauthkeys
    Copy ${repoDir}/zm-core-utils/src/bin/zmvolume                                                   ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmvolume
    Copy ${repoDir}/zm-core-utils/src/bin/zmzimletctl                                                ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmzimletctl
+   Copy ${repoDir}/zm-core-utils/src/bin/zmonlyofficectl                                            ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmonlyofficectl
+   Copy ${repoDir}/zm-core-utils/src/bin/zmrabbitmqctl                                              ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmrabbitmqctl
    Copy ${repoDir}/zm-core-utils/src/contrib/zmfetchercfg                                           ${repoDir}/zm-build/${currentPackage}/opt/zimbra/contrib/zmfetchercfg
    Copy ${repoDir}/zm-core-utils/src/libexec/600.zimbra                                             ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/600.zimbra
    Copy ${repoDir}/zm-core-utils/src/libexec/client_usage_report.py                                 ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/client_usage_report.py
@@ -337,6 +340,7 @@ main()
    Copy ${repoDir}/zm-core-utils/src/libexec/zmiostat                                               ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmiostat
    Copy ${repoDir}/zm-core-utils/src/libexec/zmiptool                                               ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmiptool
    Copy ${repoDir}/zm-core-utils/src/libexec/zmjavawatch                                            ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmjavawatch
+   Copy ${repoDir}/zm-core-utils/src/libexec/zmjettyenablelogging                                   ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmjettyenablelogging
    Copy ${repoDir}/zm-core-utils/src/libexec/zmjsprecompile                                         ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmjsprecompile
    Copy ${repoDir}/zm-core-utils/src/libexec/zmlogger                                               ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmlogger
    Copy ${repoDir}/zm-core-utils/src/libexec/zmloggerinit                                           ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmloggerinit
@@ -486,6 +490,13 @@ main()
    Copy ${repoDir}/zm-db-conf/src/db/migration/migrate20180301-ZimbraChat.pl                        ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/scripts/migrate20180301-ZimbraChat.pl
    Copy ${repoDir}/zm-db-conf/src/db/migration/migrate20190401-ZimbraChat.pl                        ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/scripts/migrate20190401-ZimbraChat.pl
    Copy ${repoDir}/zm-db-conf/src/db/migration/migrate20190611-ZimbraChat.pl                        ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/scripts/migrate20190611-ZimbraChat.pl
+   Copy ${repoDir}/zm-db-conf/src/db/migration/migrate20210506-BriefcaseApi.pl                      ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/scripts/migrate20210506-BriefcaseApi.pl
+   Copy ${repoDir}/zm-db-conf/src/db/migration/migrate20200625-MobileDevices.pl                     ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/scripts/migrate20200625-MobileDevices.pl
+   Copy ${repoDir}/zm-db-conf/src/db/migration/migrate20210319-MobileDevices.pl                     ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/scripts/migrate20210319-MobileDevices.pl
+   Copy ${repoDir}/zm-db-conf/src/db/migration/migrate20210809-UnsubscribeFolder.pl                 ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/scripts/migrate20210809-UnsubscribeFolder.pl
+   Copy ${repoDir}/zm-db-conf/src/db/migration/migrate20220525-Volume.pl                            ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/scripts/migrate20220525-Volume.pl
+   Copy ${repoDir}/zm-db-conf/src/db/migration/migrate20220721-AddMdmUpdateTimestamp.pl             ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/scripts/migrate20220721-AddMdmUpdateTimestamp.pl
+   Copy ${repoDir}/zm-db-conf/src/db/migration/migrate20220729-FilesShareWithMeFolder.pl            ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/scripts/migrate20220729-FilesShareWithMeFolder.pl
    Copy ${repoDir}/zm-db-conf/src/db/migration/migrateAmavisLdap20050810.pl                         ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/scripts/migrateAmavisLdap20050810.pl
    Copy ${repoDir}/zm-db-conf/src/db/migration/migrateClearSpamFlag.pl                              ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/scripts/migrateClearSpamFlag.pl
    Copy ${repoDir}/zm-db-conf/src/db/migration/migrateLargeMetadata.pl                              ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/scripts/migrateLargeMetadata.pl
@@ -627,7 +638,6 @@ main()
       Copy ${repoDir}/zm-network-build/rpmconf/Install/postinstall.pm                                  ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/postinstall.pm
       Copy ${repoDir}/zm-network-build/rpmconf/Install/preinstall.pm                                   ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/preinstall.pm
 
-      Copy ${repoDir}/zm-network-licenses/thirdparty/keyview_eula.txt                                  ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/keyview_eula.txt
       Copy ${repoDir}/zm-network-licenses/thirdparty/oracle_jdk_eula.txt                               ${repoDir}/zm-build/${currentPackage}/opt/zimbra/docs/oracle_jdk_eula.txt
 
       Copy ${repoDir}/zm-postfixjournal/build/dist/postjournal                                         ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/postjournal
