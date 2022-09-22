@@ -182,7 +182,7 @@
       "dir"         => "zm-help",
       "ant_targets" => undef,
       "stage_cmd"   => sub {
-         SysExec("cp -f -r ../zm-help $CFG{BUILD_DIR}");
+         SysExec("(cd .. && rsync -az --relative --exclude '.git' zm-help $CFG{BUILD_DIR}/)");
       },
    },
    {
@@ -210,7 +210,7 @@
       "dir"         => "zm-downloads",
       "ant_targets" => undef,
       "stage_cmd"   => sub {
-         SysExec("cp -f -r ../zm-downloads $CFG{BUILD_DIR}");
+         SysExec("(cd .. && rsync -az --relative --exclude '.git' zm-downloads $CFG{BUILD_DIR}/)");
       },
    },
    {
