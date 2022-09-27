@@ -28,11 +28,13 @@
 main()
 {
     echo -e "\tCreate package directories" >> ${buildLogFile}
+    mkdir -p ${repoDir}/zm-build/${currentPackage}/etc/sudoers.d
     mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/nginx/includes
     mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/nginx/templates
 
 
     echo -e "\tCopy package files" >> ${buildLogFile}
+    cp ${repoDir}/zm-build/rpmconf/Env/sudoers.d/02_${currentScript} ${repoDir}/zm-build/${currentPackage}/etc/sudoers.d/02_${currentScript}
     cp ${repoDir}/zm-nginx-conf/conf/nginx/* ${repoDir}/zm-build/${currentPackage}/opt/zimbra/conf/nginx/templates/
 
     CreatePackage "${os}"
@@ -66,6 +68,8 @@ CreateRhelPackage()
                -e "s/@@RELEASE@@/${buildTimeStamp}/" \
                -e "s/^Copyright:/Copyright:/" \
                -e "/^%post$/ r ${repoDir}/zm-build/rpmconf/Spec/Scripts/${currentScript}.post" > ${repoDir}/zm-build/${currentScript}.spec
+    echo "%attr(440, root, root) /etc/sudoers.d/02_zimbra-proxy" >> \
+        ${repoDir}/zm-build/${currentScript}.spec
     echo "%attr(755, zimbra, zimbra) /opt/zimbra/conf/nginx" >> \
         ${repoDir}/zm-build/${currentScript}.spec
     echo "%attr(644, zimbra, zimbra) /opt/zimbra/conf/nginx/*" >> \
