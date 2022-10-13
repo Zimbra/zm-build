@@ -118,14 +118,27 @@ main()
       cp -f ${repoDir}/zm-network-gql/build/dist/zm-network-gql*.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/zm-gql/zmnetworkgql.jar
     fi
 
-    cp -f ${repoDir}/zm-clam-scanner-store/build/dist/zm-clam-scanner-store*.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/clamscanner/clamscanner.jar
-    cp -f ${repoDir}/zm-nginx-lookup-store/build/dist/zm-nginx-lookup-store*.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/nginx-lookup/nginx-lookup.jar
+    # cp -f ${repoDir}/zm-clam-scanner-store/build/dist/zm-clam-scanner-store*.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/clamscanner/clamscanner.jar
+    # cp -f ${repoDir}/zm-nginx-lookup-store/build/dist/zm-nginx-lookup-store*.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/nginx-lookup/nginx-lookup.jar
     cp -f ${repoDir}/zm-openid-consumer-store/build/dist/guice*.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/openidconsumer/
     cp -f ${repoDir}/zm-versioncheck-store/build/zm-versioncheck-store*.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/zimbraadminversioncheck/zimbraadminversioncheck.jar
     cp -f ${repoDir}/zm-ldap-utils-store/build/zm-ldap-utils-*.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/zimbraldaputils/zimbraldaputils.jar
     cp -f ${repoDir}/zm-oauth-social/build/dist/zm-oauth-social*.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/zm-oauth-social/zmoauthsocial.jar
     cp -f ${repoDir}/zm-zcs-lib/build/dist/java-jwt-3.2.0.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/zm-oauth-social/
     cp -f ${repoDir}/zm-gql/build/dist/zm-gql*.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/zm-gql/zmgql.jar
+
+    test_repo_array=(
+        "zm-clam-scanner-store"
+        "zm-nginx-lookup-store"
+    )
+
+    for aRepo in "${test_repo_array[@]}"; do
+        # Get artefact location and deployment location from location.map
+        locArtefact="$(cat ${repoDir}/$aRepo/deployment-locations.map | awk '{print $1}')" # Artefact location
+        locDeployment="$(cat ${repoDir}/$aRepo/deployment-locations.map | awk '{print $3}')" # Deployment location
+        # Copy the artefact
+        cp -f "${repoDir}/$aRepo/$locArtefact" "${repoDir}/zm-build/${currentPackage}/$locDeployment"
+    done
 
 
 #-------------------- Get wars content (service.war, zimbra.war and zimbraAdmin.war) ---------------------------
