@@ -27,6 +27,7 @@ set -e
 #-------------------- Build Package ---------------------------
 main()
 {
+    set -x
     echo -e "\tCreate package directories" >> ${buildLogFile}
     mkdir -p ${repoDir}/zm-build/${currentPackage}/etc/sudoers.d
     mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin
