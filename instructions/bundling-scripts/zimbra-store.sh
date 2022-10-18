@@ -128,13 +128,15 @@ main()
     cp -f ${repoDir}/zm-zcs-lib/build/dist/java-jwt-3.2.0.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/zm-oauth-social/
     cp -f ${repoDir}/zm-gql/build/dist/zm-gql*.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/zm-gql/zmgql.jar
 
-    test_repo_array=("zm-clam-scanner-store" "zm-nginx-lookup-store")
+    test_repo_array=( \
+        "zm-clam-scanner-store" \
+        "zm-nginx-lookup-store" )
 
     for aRepo in "${test_repo_array[@]}"
     do
         # Get artefact location and deployment location from location.map
-        locArtefact=`cat ${repoDir}/$aRepo/deployment-locations.map | awk '{print $1}'` # Artefact location
-        locDeployment=`cat ${repoDir}/$aRepo/deployment-locations.map | awk '{print $3}'` # Deployment location
+        locArtefact=`cat ${repoDir}/../../$aRepo/deployment-locations.map | awk '{print $1}'` # Artefact location
+        locDeployment=`cat ${repoDir}/../../$aRepo/deployment-locations.map | awk '{print $3}'` # Deployment location
         # Copy the artefact
         cp -f "${repoDir}/$aRepo/$locArtefact" "${repoDir}/zm-build/${currentPackage}/$locDeployment"
     done
