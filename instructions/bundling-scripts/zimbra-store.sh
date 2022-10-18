@@ -138,7 +138,7 @@ main()
         locArtefact=`cat ${repoDir}/../../$aRepo/deployment-locations.map | awk '{print $1}'` # Artefact location
         locDeployment=`cat ${repoDir}/../../$aRepo/deployment-locations.map | awk '{print $3}'` # Deployment location
         # Copy the artefact
-        cp -f "${repoDir}/$aRepo/$locArtefact" "${repoDir}/zm-build/${currentPackage}/$locDeployment"
+        cp -f ${repoDir}/$aRepo/$locArtefact ${repoDir}/zm-build/${currentPackage}/$locDeployment
     done
 
 
