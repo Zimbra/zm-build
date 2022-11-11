@@ -2786,7 +2786,8 @@ getPlatformVars() {
       REPORM='yum erase -y'
       PACKAGEINST='rpm -Uvh --replacefiles --replacepkgs'
       # TODO: This should kept in os-requirement.
-      yum -y install --downloadonly dummyxxxxxxx 2>&1 | grep "no such option: --downloadonly" >/dev/null 2>&1
+      LANG="en_US.UTF-8" LANGUAGE="en_US" \
+        yum -y install --downloadonly dummyxxxxxxx 2>&1 | grep "no such option: --downloadonly" >/dev/null 2>&1
       if [ $? -eq 0 ]; then
         echo "Installing yum-plugin-downloadonly."
         yum -y install yum-plugin-downloadonly
