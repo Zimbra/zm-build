@@ -174,7 +174,9 @@ main()
     then
         set -e
         cd ${downloadsDir}
-        wget -r -nd --no-parent --reject-regex="/backup/" --reject "index.*" http://${zimbraThirdPartyServer}/ZimbraThirdParty/zco-migration-builds/current/
+        # wget -r -nd --no-parent --reject-regex="/backup/" --reject "index.*" http://${zimbraThirdPartyServer}/ZimbraThirdParty/zco-migration-builds/current/
+        # zimbraThirdPartyServer Could be S3 bucket name.
+        rclone copy -v ${zimbraThirdPartyServer}:ZimbraThirdParty/zco-migration-builds/current/ ./
     fi
 
     echo "\t\t***** help content *****" >> ${buildLogFile}
