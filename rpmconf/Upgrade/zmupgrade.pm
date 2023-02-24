@@ -93,6 +93,7 @@ my %updateScripts = (
   '114' => "migrate20220721-AddMdmUpdateTimestamp.pl", #10.0.0
   '115' => "migrate20220525-Volume.pl",                #10.0.0
   '116' => "migrate20220729-FilesShareWithMeFolder.pl",   #10.0.0
+  '117' => "migrate20230224-UpdateOnlyOffice-7.2.1.pl",   #10.0.0
 );
 
 my %updateFuncs = (
