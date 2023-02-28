@@ -250,7 +250,7 @@ sub upgrade {
 
   my $curSchemaVersion;
 
-  if (main::isInstalled("zimbra-store")) {
+  if (main::isInstalled("zimbra-store") || main::isInstalled("zimbra-onlyoffice")) {
     if ($startMajor <= 7 || ($startMajor == 8 && $startMinor < 7))
     {
         # Bug 96857 - MySQL meta files (pid file, socket, ..) should not be placed in db directory
@@ -291,7 +291,7 @@ sub upgrade {
   main::runAsZimbra("/opt/zimbra/bin/zmcertmgr createca");
   main::runAsZimbra("/opt/zimbra/bin/zmcertmgr deployca -localonly");
 
-  if (main::isInstalled("zimbra-store")) {
+  if (main::isInstalled("zimbra-store") || main::isInstalled("zimbra-onlyoffice")) {
 
     doMysqlUpgrade();
 
