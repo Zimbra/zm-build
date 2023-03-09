@@ -671,12 +671,12 @@ checkExistingInstall() {
     fi
   done
 
-  INSTD_IMMAIL_PACKAGES="0"
-  for i in $IMMAIL_PACKAGES; do
+  INSTD_CHAT_VIDEO_PACKAGES="0"
+  for i in $CHAT_VIDEO_PACKAGES; do
 	  isInstalled $i
 	  if [ x$PKGINSTALLED != "x" ]; then
 		  echo "    $i...FOUND $PKGINSTALLED"
-		  ((INSTD_IMMAIL_PACKAGES++))
+		  ((INSTD_CHAT_VIDEO_PACKAGES++))
 		  INSTALLED_PACKAGES="$INSTALLED_PACKAGES $i"
 	  else
 		  echo "    $i...NOT FOUND"
@@ -1738,6 +1738,19 @@ removeUnsupportedPackagesIfInstalled() {
 	done
 }
 
+removeImmailPackagesIfInstalled() {
+	for i in $IMMAIL_PACKAGES; do
+		echo ""
+		isInstalled $i
+		if [ x$PKGINSTALLED != "x" ]; then
+			echo -n "   $i FOUND..."
+			echo ""
+			echo -n "   Removing $i..."
+			$PACKAGERM $i >/dev/null 2>&1
+			echo "done"
+		fi
+	done
+}
 
 removeExistingInstall() {
   if [ $INSTALLED = "yes" ]; then
@@ -1793,6 +1806,7 @@ removeExistingInstall() {
       echo "Upgrading the remote packages"
       removeZextrasPackagesIfInstalled
       removeUnsupportedPackagesIfInstalled
+      removeImmailPackagesIfInstalled
     else
       removeExistingPackages
     fi
@@ -2445,7 +2459,7 @@ getInstallPackages() {
 
   done
   if [ x"$ZMTYPE_INSTALLABLE" = "xNETWORK" ]; then
-     selectImmail
+     selectChatVideo
   fi
   checkRequiredSpace
 
@@ -2465,16 +2479,16 @@ getInstallPackages() {
   done
 }
 
-selectImmail() {
-	# install imMail extension and imMail classic, modern zimlets
+selectChatVideo() {
+	# install chat-video extension and chat-video classic, modern zimlets
 	if [ $STORE_SELECTED = "yes" ] ; then
-		# Don't ask to install if Immail packages are already installed
-		if [ "${INSTD_IMMAIL_PACKAGES}" -eq 3 ]; then
-			INSTALL_PACKAGES="$INSTALL_PACKAGES $IMMAIL_PACKAGES"
+		# Don't ask to install if chat-video packages are already installed
+		if [ "${INSTD_CHAT_VIDEO_PACKAGES}" -eq 3 ]; then
+			INSTALL_PACKAGES="$INSTALL_PACKAGES $CHAT_VIDEO_PACKAGES"
 		else
 			askYN "Install chat and video features" "N"
 			if [ $response = "yes" ]; then
-				INSTALL_PACKAGES="$INSTALL_PACKAGES $IMMAIL_PACKAGES"
+				INSTALL_PACKAGES="$INSTALL_PACKAGES $CHAT_VIDEO_PACKAGES"
 			fi
 		fi
 	fi
