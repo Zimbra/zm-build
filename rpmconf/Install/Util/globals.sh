@@ -46,6 +46,10 @@ IMMAIL_PACKAGES="zimbra-zimlet-immail-classic \
 zimbra-zimlet-immail-modern \
 zimbra-extension-immail"
 
+CHAT_VIDEO_PACKAGES="zimbra-zimlet-chat-video-classic \
+zimbra-zimlet-chat-video-modern \
+zimbra-extension-chat-video"
+
 ZEXTRAS_PACKAGES="zimbra-connect \
 zimbra-connect-modern \
 zimbra-drive \
