@@ -129,14 +129,6 @@
       },
    },
    {
-      "dir"         => "zm-clientuploader-admin-zimlet",
-      "ant_targets" => ["package-zimlet"],
-      "stage_cmd"   => sub {
-         SysExec("mkdir -p $CFG{BUILD_DIR}/zm-clientuploader-admin-zimlet/build/zimlet");
-         SysExec("cp -f build/zimlet/*.zip $CFG{BUILD_DIR}/zm-clientuploader-admin-zimlet/build/zimlet");
-      },
-   },
-   {
       "dir"         => "zm-proxy-config-admin-zimlet",
       "ant_targets" => ["package-zimlet"],
       "stage_cmd"   => sub {
@@ -289,14 +281,6 @@
       "stage_cmd"   => sub {
          SysExec("mkdir -p $CFG{BUILD_DIR}/zm-certificate-manager-store");
          SysExec("cp -f -r ../zm-certificate-manager-store/build $CFG{BUILD_DIR}/zm-certificate-manager-store");
-      },
-   },
-   {
-      "dir"         => "zm-clientuploader-store",
-      "ant_targets" => ["jar"],
-      "stage_cmd"   => sub {
-         SysExec("mkdir -p $CFG{BUILD_DIR}/zm-clientuploader-store");
-         SysExec("cp -f -r ../zm-clientuploader-store/build $CFG{BUILD_DIR}/zm-clientuploader-store");
       },
    },
    {

@@ -203,7 +203,6 @@ main()
     zimletsArray=( "zm-versioncheck-admin-zimlet" \
                    "zm-bulkprovision-admin-zimlet" \
                    "zm-certificate-manager-admin-zimlet" \
-                   "zm-clientuploader-admin-zimlet" \
                    "zm-proxy-config-admin-zimlet" \
                    "zm-helptooltip-zimlet" \
                    "zm-viewmail-admin-zimlet" )
