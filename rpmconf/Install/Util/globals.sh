@@ -92,7 +92,10 @@ HOSTNAME=`hostname --fqdn`
 ZIMBRAINTERNAL=no
 echo $HOSTNAME | egrep -qe 'eng.synacor.com$|eng.zimbra.com$|lab.zimbra.com$|zimbradev.com$' > /dev/null 2>&1
 if [ $? = 0 ]; then
-  ZIMBRAINTERNAL=yes
+	ZIMBRAINTERNAL=yes
+	PACKAGES="${PACKAGES} zimbra-license-daemon-dev"
+else
+	PACKAGES="${PACKAGES} zimbra-license-daemon"
 fi
 
 LDAPHOST=""
