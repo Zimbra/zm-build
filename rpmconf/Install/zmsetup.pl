@@ -87,6 +87,7 @@ my @packageList = (
   "zimbra-archiving",
   "zimbra-imapd",
   "zimbra-onlyoffice",
+  "zimbra-license-daemon",
 );
 
 my %packageServiceMap = (
@@ -114,15 +115,8 @@ my %packageServiceMap = (
   zimbraAdmin   => "zimbra-store",
   zimlet    => "zimbra-store",
   onlyoffice    => "zimbra-onlyoffice",
+  'license-daemon' => "zimbra-license-daemon",
 );
-
-if (isInstalled("zimbra-license-daemon")) {
-	push @packageList, 'zimbra-license-daemon';
-	$packageServiceMap{'license-daemon'} = 'zimbra-license-daemon';
-} else {
-	push @packageList, 'zimbra-license-daemon-dev';
-	$packageServiceMap{'license-daemon'} = 'zimbra-license-daemon-dev';
-}
 
 my @webappList = (
   "service",
@@ -5795,7 +5789,7 @@ sub configCreateCert {
     }
   }
 
-  if (isInstalled("zimbra-license-daemon") || isInstalled("zimbra-license-daemon-dev")) {
+  if (isInstalled("zimbra-license-daemon")) {
 	  if ( !-f "/opt/zimbra/ssl/zimbra/server/server.crt") {
 		  progress ( "Creating SSL certificate..." );
 		  $rc = runAsZimbra("/opt/zimbra/bin/zmcertmgr createcrt $needNewCert");
@@ -7094,7 +7088,7 @@ sub configSetEnabledServices {
     if ($p eq "zimbra-archiving") {next;}
     $p =~ s/zimbra-//;
     if ($p eq "store") {$p = "mailbox";}
-    if ($p eq "license-daemon" || $p eq "license-daemon-dev") {
+    if ($p eq "license-daemon") {
 	    if (isInstalled("zimbra-${p}")) {
 		    $p = "license-daemon";
 	    } else {
@@ -7122,7 +7116,7 @@ sub configSetEnabledServices {
           }
         }
       }
-      if ($p eq "license-daemon" || $p eq "license-daemon-dev") {
+      if ($p eq "license-daemon") {
 	      if (isInstalled("zimbra-${p}")) {
 		      $p = "license-daemon";
 	      } else {
@@ -7504,13 +7498,12 @@ sub removePackage {
 }
 
 sub configureLicenseDaemonService {
-	if (isEnabled("zimbra-license-daemon") || isEnabled("zimbra-license-daemon-dev")) {
+	if (isEnabled("zimbra-license-daemon")) {
 		progress ( "Configuring license daemon service...\n" );
 		my $licenseDaemonServerHost = getLdapConfigValue("zimbraLicenseDaemonServerHost");
 		if ($licenseDaemonServerHost ne "" && $licenseDaemonServerHost ne $config{HOSTNAME}) {
 			progress("WARNING: license-daemon service already installed on $licenseDaemonServerHost\n");
 			removePackage("zimbra-license-daemon");
-			removePackage("zimbra-license-daemon-dev");
 		} else {
 			progress("Setting zimbraLicenseDaemonServerHost...");
 			my $rc = setLdapGlobalConfig("zimbraLicenseDaemonServerHost", $config{HOSTNAME});
