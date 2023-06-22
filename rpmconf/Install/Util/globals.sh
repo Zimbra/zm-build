@@ -33,7 +33,8 @@ zimbra-convertd \
 zimbra-memcached \
 zimbra-proxy \
 zimbra-archiving \
-zimbra-onlyoffice"
+zimbra-onlyoffice \
+zimbra-license-daemon"
 
 SERVICES=""
 
@@ -92,7 +93,7 @@ HOSTNAME=`hostname --fqdn`
 ZIMBRAINTERNAL=no
 echo $HOSTNAME | egrep -qe 'eng.synacor.com$|eng.zimbra.com$|lab.zimbra.com$|zimbradev.com$' > /dev/null 2>&1
 if [ $? = 0 ]; then
-  ZIMBRAINTERNAL=yes
+	ZIMBRAINTERNAL=yes
 fi
 
 LDAPHOST=""

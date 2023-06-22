@@ -87,6 +87,7 @@ my @packageList = (
   "zimbra-archiving",
   "zimbra-imapd",
   "zimbra-onlyoffice",
+  "zimbra-license-daemon",
 );
 
 my %packageServiceMap = (
@@ -114,6 +115,7 @@ my %packageServiceMap = (
   zimbraAdmin   => "zimbra-store",
   zimlet    => "zimbra-store",
   onlyoffice    => "zimbra-onlyoffice",
+  'license-daemon' => "zimbra-license-daemon",
 );
 
 my @webappList = (
@@ -4635,7 +4637,7 @@ sub createMainMenu {
     if ($package eq "zimbra-archiving") {next;}
     if ($package eq "zimbra-memcached") {next;}
     if (defined($installedPackages{$package})) {
-      if ($package =~ /logger|spell|convertd/) {
+      if ($package =~ /logger|spell|convertd|license-daemon/) {
         $mm{menuitems}{$i} = {
           "prompt" => "$package:",
           "var" => \$enabledPackages{$package},
@@ -5787,6 +5789,27 @@ sub configCreateCert {
     }
   }
 
+  if (isInstalled("zimbra-license-daemon")) {
+	  if ( !-f "/opt/zimbra/ssl/zimbra/server/server.crt") {
+		  progress ( "Creating SSL certificate..." );
+		  $rc = runAsZimbra("/opt/zimbra/bin/zmcertmgr createcrt $needNewCert");
+		  if ($rc != 0) {
+			  progress ( "failed.\n" );
+			  exit 1;
+		  } else {
+			  progress ( "done.\n" );
+		  }
+	  } elsif ( $needNewCert ne "" && $ssl_cert_type eq "self") {
+		  progress ( "Creating new SSL certificate..." );
+		  $rc = runAsZimbra("/opt/zimbra/bin/zmcertmgr createcrt $needNewCert");
+		  if ($rc != 0) {
+			  progress ( "failed.\n" );
+			  exit 1;
+		  } else {
+			  progress ( "done.\n" );
+		  }
+	  }
+  }
   configLog("configCreateCert");
 }
 
@@ -7065,6 +7088,13 @@ sub configSetEnabledServices {
     if ($p eq "zimbra-archiving") {next;}
     $p =~ s/zimbra-//;
     if ($p eq "store") {$p = "mailbox";}
+    if ($p eq "license-daemon") {
+	    if (isInstalled("zimbra-${p}")) {
+		    $p = "license-daemon";
+	    } else {
+		    next;
+	    }
+    }
     push(@installedServiceList, ('zimbraServiceInstalled', "$p"));
   }
 
@@ -7085,6 +7115,13 @@ sub configSetEnabledServices {
             push(@enabledServiceList, 'zimbraServiceEnabled', "$app");
           }
         }
+      }
+      if ($p eq "license-daemon") {
+	      if (isInstalled("zimbra-${p}")) {
+		      $p = "license-daemon";
+	      } else {
+		      next;
+	      }
       }
       push(@enabledServiceList, 'zimbraServiceEnabled', "$p");
     }
@@ -7224,6 +7261,8 @@ sub applyConfig {
   }
 
   configInitMta();
+
+  configureLicenseDaemonService();
 
   configSetEnabledServices();
 
@@ -7441,6 +7480,37 @@ sub configureOnlyoffice {
           configLog("configOnlyoffice");
     }
   }
+}
+
+sub removePackage {
+	my $pkg = shift;
+	my $pkgrm;
+	if ($platform =~ /^DEBIAN/ || $platform =~ /^UBUNTU/) {
+		$pkgrm = "dpkg --purge";
+	} else {
+		$pkgrm = "yum -y --disablerepo=* erase -v";
+	}
+	if (isInstalled($pkg)) {
+		progress ("Removing $pkg from this host...");
+		my $rc = 0xffff & system ("$pkgrm $pkg > /dev/null 2>&1");
+		progress (($rc == 0) ? "done.\n" : "failed.\n");
+	}
+}
+
+sub configureLicenseDaemonService {
+	if (isEnabled("zimbra-license-daemon")) {
+		progress ( "Configuring license daemon service...\n" );
+		my $licenseDaemonServerHost = getLdapConfigValue("zimbraLicenseDaemonServerHost");
+		if ($licenseDaemonServerHost ne "" && $licenseDaemonServerHost ne $config{HOSTNAME}) {
+			progress("WARNING: license-daemon service already installed on $licenseDaemonServerHost\n");
+			removePackage("zimbra-license-daemon");
+		} else {
+			progress("Setting zimbraLicenseDaemonServerHost...");
+			my $rc = setLdapGlobalConfig("zimbraLicenseDaemonServerHost", $config{HOSTNAME});
+			progress(($rc == 0) ? "done.\n" : "failed.\n");
+		}
+		progress ( "done.\n" );
+	}
 }
 
 sub createDirForStandaloneOnlyoffice {
