@@ -325,6 +325,17 @@ if [ $SOFTWAREONLY = "yes" ]; then
 	exit 0
 fi
 
+# Install the zimbra-ldap-patch
+isInstalled zimbra-ldap
+if [ x$PKGINSTALLED != "x" ]; then
+        echo "Installing zimbra-ldap-patch"
+        $REPOINST zimbra-ldap-patch >>$LOGFILE 2>&1
+        if [ $? -ne 0 ]; then
+                echo "Failed to install zimbra-ldap-patch"
+                exit 1
+        fi
+fi
+
 #
 # Installation complete, now configure
 #
