@@ -1577,17 +1577,7 @@ sub setDefaults {
       $config{VIRUSQUARANTINE} .= '@'.$config{CREATEDOMAIN};
     }
 
-    # license files locations this is associated with the store
-    # for now as there is a dependancy on the store jar file.
-    if (isNetwork()) {
-      $config{DEFAULTLICENSEFILE} = "/opt/zimbra/conf/ZCSLicense.xml";
-      if (!-f $config{DEFAULTLICENSEFILE}) {
-        $config{DEFAULTLICENSEFILE} = "/opt/zimbra/conf/ZCSLicense-Trial.xml";
-      }
-    }
 
-    $config{LICENSEFILE} = $config{DEFAULTLICENSEFILE}
-      if (-f "$config{DEFAULTLICENSEFILE}" && isNetwork());
 
     if (!$newinstall) {
       $config{zimbraFeatureBriefcasesEnabled} = "Enabled"
@@ -2668,6 +2658,38 @@ sub setAdminPass {
   }
 }
 
+sub setLicenseCode {
+  if ($config{LICENSECODE} eq "") {
+    while (1) {
+      my $new = askNonBlank("Please enter the license code:",$config{LICENSECODE});
+      if (length($new) >= 18 && length($new) <= 24) {
+	      $config{LICENSECODE} = $new;
+	      return;
+      } else {
+	      print "Licensecode should be 18-24 digit!\n";
+      }
+    }
+  }
+}
+
+sub setLicenseActivationChoice {
+  while (1) {
+    my $choice = askNum("Please select one option (1. Activate license with installation 2. Activate license after installation)",$config{LICENSEACTIVATIONCHOICE});
+    if ($choice eq "1") {
+	    $config{LICENSEACTIVATIONCHOICE} = $choice;
+	    setLicenseCode();
+	    return;
+    }
+    if ($choice eq "2") {
+	    $config{LICENSEACTIVATIONCHOICE} = $choice;
+	    print "Activate license after installation using zmlincese -a {license code here} \n";
+	    return;
+    }
+    print "Please enter a valid option!\n";
+  }
+}
+
+
 sub setSmtpSource {
   $config{SMTPSOURCE} =
     askNonBlank("SMTP Source address:",
@@ -3522,7 +3544,7 @@ sub isFoss {
   return((-f "/opt/zimbra/bin/zmbackup") ? 0 : 1);
 }
 
-sub isLicenseInstalled {
+sub isLicenseActivated {
  return(runAsZimbra("/opt/zimbra/bin/zmlicense -c") ? 0 : 1);
 }
 
@@ -4460,14 +4482,14 @@ sub createStoreMenu {
     };
     $i++;
     # only prompt for license if we are network install and
-    # a license doesn't exist in /opt/zimbra/conf or ldap.
-    if (isNetwork() && !-f $config{DEFAULTLICENSEFILE} && !isLicenseInstalled() ) {
-      $$lm{menuitems}{$i} = {
-        "prompt" => "License filename:",
-        "var" => \$config{LICENSEFILE},
-        "callback" => \&setLicenseFile,
-        };
-      $i++;
+    # a license not activated
+    if (isNetwork() && $config{LICENSEACTIVATIONCHOICE} eq "" && !isLicenseActivated() ) {
+	    $$lm{menuitems}{$i} = {
+		    "prompt" => "License Activation Choice:",
+		    "var" => \$config{LICENSEACTIVATIONCHOICE},
+		    "callback" => \&setLicenseActivationChoice,
+	    };
+	    $i++;
     }
   }
   return $lm;
@@ -4976,7 +4998,7 @@ sub runAsRoot {
 
 sub runAsZimbra {
   my $cmd = shift;
-  if ($cmd =~ /ldappass/ || $cmd =~ /init/ || $cmd =~ /zmprov -r -m -l ca/) {
+  if ($cmd =~ /ldappass/ || $cmd =~ /init/ || $cmd =~ /zmprov -r -m -l ca/ || $cmd =~ /zmlicense -a/) {
     # Suppress passwords in log file
     my $c = (split ' ', $cmd)[0];
     detail ( "*** Running as zimbra user: $c\n" );
@@ -7366,6 +7388,10 @@ sub applyConfig {
     runAsZimbra ("/opt/zimbra/bin/zmcontrol start");
     qx($SU "/opt/zimbra/bin/zmcontrol status");
     progress ( "done.\n" );
+    # Activate license if user selected option 1. Activate license with installation
+    if ($config{LICENSEACTIVATIONCHOICE} eq "1") {
+	    activateLicense();
+    }
 
     # Initialize application server specific items
     # only after the application server is running.
@@ -7840,6 +7866,36 @@ sub addJDK17Options {
 		progress(($rc == 0) ? "done.\n" : "failed.\n");
 	}
 }
+
+sub activateLicense {
+	if (isNetwork() && isEnabled("zimbra-store")) {
+		progress ("Looking for valid license to activate...");
+		my $licensecode = $config{LICENSECODE};
+		my $rc = runAsZimbra("/opt/zimbra/bin/zmlicense -c");
+		if ($rc == 256) {
+			my $lic = 1;
+			if ($licensecode ne "") {
+				$rc = runAsZimbra("/opt/zimbra/bin/zmlicense -a $licensecode");
+				if ($rc != 0) {
+					progress ("failed to activate license.\n");
+					$lic = 0;
+				} else {
+					progress ("license activated.\n");
+				}
+			} else {
+				progress ("license code not found.\n");
+			}
+			if ($lic == 0){
+				progress ("\n*******ERROR\n\nFailed to activate a license - this will prevent your server from functioning properly\n");
+				progress ("Please contact Zimbra to obtain a license\n");
+				ask ("Press RETURN to continue","");
+			}
+		} else {
+			progress ("license already activated.\n");
+		}
+	}
+}
+
 
 ### end subs
 
