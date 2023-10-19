@@ -2674,7 +2674,7 @@ sub setLicenseCode {
 
 sub setLicenseActivationChoice {
   while (1) {
-    my $choice = askNum("Please select one option (1. Activate license with installation 2. Activate license after installation)",$config{LICENSEACTIVATIONCHOICE});
+    my $choice = askNum("Please select one option 1. Activate license with installation 2. Activate license after installation",$config{LICENSEACTIVATIONCHOICE});
     if ($choice eq "1") {
 	    $config{LICENSEACTIVATIONCHOICE} = $choice;
 	    setLicenseCode();
@@ -2682,7 +2682,7 @@ sub setLicenseActivationChoice {
     }
     if ($choice eq "2") {
 	    $config{LICENSEACTIVATIONCHOICE} = $choice;
-	    print "Activate license after installation using zmlincese -a {license code here} \n";
+	    print "Activate license after installation using zmlicense -a {license code here} \n";
 	    return;
     }
     print "Please enter a valid option!\n";
