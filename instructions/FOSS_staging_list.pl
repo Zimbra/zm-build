@@ -129,14 +129,6 @@
       },
    },
    {
-      "dir"         => "zm-clientuploader-admin-zimlet",
-      "ant_targets" => ["package-zimlet"],
-      "stage_cmd"   => sub {
-         SysExec("mkdir -p $CFG{BUILD_DIR}/zm-clientuploader-admin-zimlet/build/zimlet");
-         SysExec("cp -f build/zimlet/*.zip $CFG{BUILD_DIR}/zm-clientuploader-admin-zimlet/build/zimlet");
-      },
-   },
-   {
       "dir"         => "zm-proxy-config-admin-zimlet",
       "ant_targets" => ["package-zimlet"],
       "stage_cmd"   => sub {
@@ -179,13 +171,6 @@
       "deploy_pkg_into" => "bundle",
    },
    {
-      "dir"         => "zm-help",
-      "ant_targets" => undef,
-      "stage_cmd"   => sub {
-         SysExec("cp -f -r ../zm-help $CFG{BUILD_DIR}");
-      },
-   },
-   {
       "dir"         => "zm-admin-help-common",
       "ant_targets" => undef,
       "stage_cmd"   => sub {
@@ -210,7 +195,7 @@
       "dir"         => "zm-downloads",
       "ant_targets" => undef,
       "stage_cmd"   => sub {
-         SysExec("cp -f -r ../zm-downloads $CFG{BUILD_DIR}");
+         SysExec("(cd .. && rsync -az --relative --exclude '.git' zm-downloads $CFG{BUILD_DIR}/)");
       },
    },
    {
@@ -292,14 +277,6 @@
       },
    },
    {
-      "dir"         => "zm-clientuploader-store",
-      "ant_targets" => ["jar"],
-      "stage_cmd"   => sub {
-         SysExec("mkdir -p $CFG{BUILD_DIR}/zm-clientuploader-store");
-         SysExec("cp -f -r ../zm-clientuploader-store/build $CFG{BUILD_DIR}/zm-clientuploader-store");
-      },
-   },
-   {
       "dir"         => "zm-versioncheck-store",
       "ant_targets" => ["jar"],
       "stage_cmd"   => sub {
@@ -327,6 +304,16 @@
    },
    {
       "dir"         => "nekohtml-1.9.13",
+      "ant_targets" => ["jar"],
+      "stage_cmd"   => undef,
+   },
+   {
+      "dir"         => "java-html-sanitizer-release-20190610.1",
+      "ant_targets" => ["jar"],
+      "stage_cmd"   => undef,
+   },
+   {
+      "dir"         => "antisamy",
       "ant_targets" => ["jar"],
       "stage_cmd"   => undef,
    },

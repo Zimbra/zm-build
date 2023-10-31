@@ -1497,7 +1497,7 @@ sub setDefaults {
   } else {
     $config{mailboxd_keystore} = "/opt/zimbra/conf/keystore";
   }
-  $config{mailboxd_truststore} = "/opt/zimbra/common/lib/jvm/java/jre/lib/security/cacerts";
+  $config{mailboxd_truststore} = "/opt/zimbra/common/lib/jvm/java/lib/security/cacerts";
   $config{mailboxd_keystore_password} = genRandomPass();
   $config{mailboxd_truststore_password} = "changeit";
 
@@ -7206,6 +7206,7 @@ sub applyConfig {
       setLdapServerConfig($config{HOSTNAME}, 'zimbraNetworkAdminNGEnabled', 'TRUE');
     }
 
+    addJDK17Options();
     progress ( "Starting servers..." );
     runAsZimbra ("/opt/zimbra/bin/zmcontrol stop");
     runAsZimbra ("/opt/zimbra/bin/zmcontrol start");
@@ -7215,6 +7216,10 @@ sub applyConfig {
     # Initialize application server specific items
     # only after the application server is running.
     if (isEnabled("zimbra-store")) {
+      progress("Enabling jetty logging...");
+      system("/opt/zimbra/libexec/zmjettyenablelogging > /dev/null 2>&1");
+      progress("done.\n");
+
       configInstallZimlets();
 
       progress ( "Restarting mailboxd...");
@@ -7406,7 +7411,7 @@ sub setupCrontab {
         runAsZimbra("/opt/zimbra/bin/zmschedulebackup -A $backupSchedule[$i]");
       }
     }
-  } elsif ( -f "/opt/zimbra/bin/zmschedulebackup" && scalar @backupSchedule == 0 && !$newinstall && $nohsm && $NG_backup == "false") {
+  } elsif ( -f "/opt/zimbra/bin/zmschedulebackup" && scalar @backupSchedule == 0 && !$newinstall && $nohsm && $NG_backup eq "false") {
     detail("crontab: No backup schedule found: installing default schedule.");
     qx($SU "/opt/zimbra/bin/zmschedulebackup -D" >> $logfile 2>&1);
   }
@@ -7520,6 +7525,23 @@ sub resumeConfiguration {
   } else {
     %configStatus = ();
   }
+}
+
+sub addJDK17Options {
+	if (isInstalled("zimbra-core")) {
+		progress( "Setting java options...");
+		my $java_options=getLocalConfigRaw("mailboxd_java_options");
+		my $new_java_options=$java_options;
+		if ($java_options !~ /-Djava.security.egd/) {
+			$new_java_options = $new_java_options." -Djava.security.egd=file:/dev/./urandom";
+		}
+		if ($java_options !~ /--add-opens java.base\/java.lang=ALL-UNNAMED/) {
+			$new_java_options = $new_java_options." --add-opens java.base/java.lang=ALL-UNNAMED";
+		}
+		$new_java_options =~ s/^\s+//;
+		my $rc = setLocalConfig("mailboxd_java_options", $new_java_options)if ($new_java_options ne $java_options);
+		progress(($rc == 0) ? "done.\n" : "failed.\n");
+	}
 }
 
 ### end subs

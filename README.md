@@ -58,7 +58,7 @@ The following steps assume that your are starting with a clean VM and are
 logged in as a non-root user with `sudo` privileges.
 
     sudo apt-get update
-    sudo apt-get install software-properties-common openjdk-8-jdk ant ant-optional ant-contrib ruby git maven build-essential
+    sudo apt-get install software-properties-common openjdk-8-jdk ant ant-optional ant-contrib ruby git maven build-essential debhelper
 
 ### Ubuntu 14.04
 
@@ -296,6 +296,12 @@ Then, from the `common`, `soap`, `client`, and `store` sub-directories (in that 
 	ant clean compile publish-local deploy
 
 ## Adding a new LDAP Attribute
+
+**WARNING:It is absolutely imperative to avoid duplicate IDs for attributes.
+Unfortunately, that currently isn't a trivial thing to do.  Need to check
+Zimbra 8 and Zimbra X along with all development branches.
+If customers get different setups using different IDs, this makes future upgrade
+scenarios a complete nightmare**
 
 Start by cloning _both_ the `zm-ldap-utilites` and the `zm-mailbox` repositories from GitHub.
 Check out the appropriate branch of each. Then proceed as follows:

@@ -5,4 +5,4 @@ Maintainer: build@zimbra.com
 Section: Mail
 Priority: optional
 Architecture: @@ARCH@@
-Depends: zimbra-core, zimbra-store-components, zimbra-jetty-distribution (>= 9.3.5.v20151012-2.@@PKG_OS_TAG@@)@@MORE_DEPENDS@@
+Depends: zimbra-core, zimbra-store-components, zimbra-jetty-distribution (>= 9.4.46.v20220331-2.@@PKG_OS_TAG@@)@@MORE_DEPENDS@@

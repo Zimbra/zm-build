@@ -24,14 +24,10 @@ mkdir -p /opt/zimbra/data/ldap/config
 mkdir -p /opt/zimbra/data/ldap/mdb/db
 chown -R zimbra:zimbra /opt/zimbra/data/ldap
 
-egrep -q '^%zimbra[[:space:]]' /etc/sudoers
-if [ $? = 0 ]; then
-	sudotmp=`mktemp -t zsudoers.XXXXXX 2> /dev/null` || { echo "Failed to create tmpfile"; exit 1; }
-	SUDOMODE=`perl -e 'my $mode=(stat("/etc/sudoers"))[2];printf("%04o\n",$mode & 07777);'`
-	egrep -v '^%zimbra[[:space:]]' /etc/sudoers > $sudotmp
-	mv -f $sudotmp /etc/sudoers
-	chmod $SUDOMODE /etc/sudoers
-fi
-chmod 440 /etc/sudoers.d/02_zimbra-ldap
-chown root:root /etc/sudoers.d/02_zimbra-ldap
 chown -R root:root /opt/zimbra/common/etc/openldap
+
+chown root:zimbra /opt/zimbra/common/libexec/slapd
+chmod 750 /opt/zimbra/common/libexec/slapd
+
+echo "Set capability for /opt/zimbra/common/libexec/slapd"
+setcap CAP_NET_BIND_SERVICE=+ep /opt/zimbra/common/libexec/slapd
