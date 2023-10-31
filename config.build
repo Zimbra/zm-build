@@ -8,6 +8,6 @@ BUILD_RELEASE_CANDIDATE = GA
 BUILD_TYPE              = FOSS
 BUILD_THIRDPARTY_SERVER = files.zimbra.com
 BUILD_ARCH              = x86_64
-PKG_OS_TAG              = r2
+PKG_OS_TAG              = g2
 INTERACTIVE             = 0
 #ANT_OPTIONS             = -lib /usr/share/ant-junit/lib
