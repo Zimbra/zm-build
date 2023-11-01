@@ -174,6 +174,10 @@ if [ -f /etc/lsb-release ]; then
       echo "20${i}"
       exit 0
     fi
+    if [ "$RELEASE" = "jammy" ]; then
+      echo "22${i}"
+      exit 0
+    fi
     echo "UNKNOWN${i}"
     exit 0
   fi
