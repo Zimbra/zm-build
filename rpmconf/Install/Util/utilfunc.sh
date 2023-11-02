@@ -2281,7 +2281,7 @@ EOF
       yum --disablerepo=* --enablerepo=zimbra-1010-network clean metadata >>$LOGFILE 2>&1
       yum check-update --disablerepo=* --enablerepo=zimbra-1010-network --noplugins >>$LOGFILE 2>&1
       yum --disablerepo=* --enablerepo=zimbra-onlyoffice clean metadata >>$LOGFILE 2>&1
-      yum check-update --disablerepo=* --enablerepo=zimbra-onlyoffice --noplugins >>$LOGFILE 2>&
+      yum check-update --disablerepo=* --enablerepo=zimbra-onlyoffice --noplugins >>$LOGFILE 2>&1
 
 fi
       if [ $? -ne 0 -a $? -ne 100 ]; then
