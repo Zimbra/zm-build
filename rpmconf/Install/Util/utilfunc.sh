@@ -2243,7 +2243,7 @@ baseurl=https://$PACKAGE_SERVER/rpm/1000/$repo
 gpgcheck=1
 enabled=1
 [zimbra-1010-oss]
-name=Zimbra New RPM Repository
+name=Zimbra 1010 OSS RPM Repository
 baseurl=https://$PACKAGE_SERVER/rpm/1010/$repo
 gpgcheck=1
 enabled=1
@@ -2264,7 +2264,7 @@ enabled=1
 EOF
 cat >> /etc/yum.repos.d/zimbra.repo <<EOF
 [zimbra-1010-network]
-name=Zimbra New RPM Repository
+name=Zimbra 1010 NW RPM Repository
 baseurl=https://$PACKAGE_SERVER/rpm/1010-ne/$repo
 gpgcheck=1
 enabled=1
