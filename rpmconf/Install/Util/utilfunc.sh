@@ -2191,10 +2191,15 @@ cat > /etc/apt/sources.list.d/zimbra.list << EOF
 deb     [arch=amd64] https://$PACKAGE_SERVER/apt/87 $repo zimbra
 deb-src [arch=amd64] https://$PACKAGE_SERVER/apt/87 $repo zimbra
 deb     [arch=amd64] https://$PACKAGE_SERVER/apt/1000 $repo zimbra
+deb     [arch=amd64] https://$PACKAGE_SERVER/apt/1010 $repo zimbra
 EOF
 if [ x"$ZMTYPE_INSTALLABLE" = "xNETWORK" ]; then
 cat >> /etc/apt/sources.list.d/zimbra.list << EOF
 deb     [arch=amd64] https://$PACKAGE_SERVER/apt/1000-ne $repo zimbra
+deb     [arch=amd64] https://$PACKAGE_SERVER/apt/1010-ne $repo zimbra
+EOF
+cat > /etc/apt/sources.list.d/zimbra-onlyoffice.list << EOF
+deb     [arch=amd64] https://$PACKAGE_SERVER/apt/onlyoffice-1010 $repo zimbra
 EOF
 fi
       apt-get update >>$LOGFILE 2>&1
@@ -2237,11 +2242,18 @@ name=Zimbra New RPM Repository
 baseurl=https://$PACKAGE_SERVER/rpm/1000/$repo
 gpgcheck=1
 enabled=1
+[zimbra-1010-oss]
+name=Zimbra New RPM Repository
+baseurl=https://$PACKAGE_SERVER/rpm/1010/$repo
+gpgcheck=1
+enabled=1
 EOF
       yum --disablerepo=* --enablerepo=zimbra clean metadata >>$LOGFILE 2>&1
       yum check-update --disablerepo=* --enablerepo=zimbra --noplugins >>$LOGFILE 2>&1
       yum --disablerepo=* --enablerepo=zimbra-1000-oss clean metadata >>$LOGFILE 2>&1
       yum check-update --disablerepo=* --enablerepo=zimbra-1000-oss --noplugins >>$LOGFILE 2>&1
+      yum --disablerepo=* --enablerepo=zimbra-1010-oss clean metadata >>$LOGFILE 2>&1
+      yum check-update --disablerepo=* --enablerepo=zimbra-1010-oss --noplugins >>$LOGFILE 2>&1
 if [ x"$ZMTYPE_INSTALLABLE" = "xNETWORK" ]; then
 cat >> /etc/yum.repos.d/zimbra.repo <<EOF
 [zimbra-1000-network]
@@ -2250,8 +2262,27 @@ baseurl=https://$PACKAGE_SERVER/rpm/1000-ne/$repo
 gpgcheck=1
 enabled=1
 EOF
+cat >> /etc/yum.repos.d/zimbra.repo <<EOF
+[zimbra-1010-network]
+name=Zimbra New RPM Repository
+baseurl=https://$PACKAGE_SERVER/rpm/1010-ne/$repo
+gpgcheck=1
+enabled=1
+EOF
+cat > /etc/yum.repos.d/zimbra-onlyoffice.repo <<EOF
+[zimbra-onlyoffice]
+name=Zimbra Onlyoffice RPM Repository
+baseurl=https://$PACKAGE_SERVER/rpm/onlyoffice-1010/$repo
+gpgcheck=1
+enabled=1
+EOF
       yum --disablerepo=* --enablerepo=zimbra-1000-network clean metadata >>$LOGFILE 2>&1
       yum check-update --disablerepo=* --enablerepo=zimbra-1000-network --noplugins >>$LOGFILE 2>&1
+      yum --disablerepo=* --enablerepo=zimbra-1010-network clean metadata >>$LOGFILE 2>&1
+      yum check-update --disablerepo=* --enablerepo=zimbra-1010-network --noplugins >>$LOGFILE 2>&1
+      yum --disablerepo=* --enablerepo=zimbra-onlyoffice clean metadata >>$LOGFILE 2>&1
+      yum check-update --disablerepo=* --enablerepo=zimbra-onlyoffice --noplugins >>$LOGFILE 2>&
+
 fi
       if [ $? -ne 0 -a $? -ne 100 ]; then
         echo "ERROR: yum check-update failed"
