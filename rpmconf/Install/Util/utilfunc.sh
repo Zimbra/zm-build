@@ -2171,14 +2171,22 @@ configurePackageServer() {
         print "Aborting, unknown platform: $PLATFORM"
         exit 1
       fi
-      apt-key list | grep -w 9BE6ED79 >/dev/null
+      gpg --list-keys --keyring /etc/apt/trusted.gpg.d/zimbra.gpg 2>/dev/null | grep -w 254F9170B966D193D6BAD300D5CEF8BF9BE6ED79 >/dev/null
       if [ $? -ne 0 ]; then
         echo "Importing Zimbra GPG key"
-        apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 9BE6ED79 >>$LOGFILE 2>&1
+        gpg --no-default-keyring --keyring /tmp/zimbra.gpg --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 9BE6ED79 >>$LOGFILE 2>&1
         if [ $? -ne 0 ]; then
           echo "ERROR: Unable to retrive Zimbra GPG key for package validation"
           echo "Please fix system to allow normal package installation before proceeding"
           exit 1
+        else
+	  gpg --no-default-keyring --keyring /tmp/zimbra.gpg --export > /etc/apt/trusted.gpg.d/zimbra.gpg
+          if [ $? -ne 0 ]; then
+            echo "ERROR: Unable to export Zimbra GPG key for package validation"
+	    exit 1
+	  else
+	    rm -f /tmp/zimbra.gpg
+	  fi
         fi
       fi
       echo
