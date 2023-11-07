@@ -7878,6 +7878,9 @@ sub addJDK17Options {
 		if ($java_options !~ /--add-opens java.base\/java.lang=ALL-UNNAMED/) {
 			$new_java_options = $new_java_options." --add-opens java.base/java.lang=ALL-UNNAMED";
 		}
+		if ($java_options !~ /-Dcom.redhat.fips=false/) {
+			$new_java_options = $new_java_options." -Dcom.redhat.fips=false";
+		}
 		$new_java_options =~ s/^\s+//;
 		my $rc = setLocalConfig("mailboxd_java_options", $new_java_options)if ($new_java_options ne $java_options);
 		progress(($rc == 0) ? "done.\n" : "failed.\n");
