@@ -7889,7 +7889,7 @@ sub activateLicense {
 		progress ("Looking for valid license to activate...");
 		my $licensekey = $config{LICENSEKEY};
 		my $rc = runAsZimbra("/opt/zimbra/bin/zmlicense -c");
-		if ($rc == 256) {
+		if ($rc == 256 || $rc == 512) {
 			my $lic = 1;
 			if ($licensekey ne "") {
 				$rc = runAsZimbra("/opt/zimbra/bin/zmlicense -a $licensekey");
