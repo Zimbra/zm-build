@@ -48,7 +48,6 @@ usage() {
   echo "$0 [-r <dir> -l <file> -a <file> -u -s -c type -x -h] [defaultsfile]"
   echo ""
   echo "-h|--help               Usage"
-  echo "-l|--license <file>     License file to install."
   echo "-a|--activation <file>  License activation file to install. [Upgrades only]"
   echo "-r|--restore <dir>      Restore contents of <dir> to localconfig"
   echo "-s|--softwareonly       Software only installation."
@@ -70,20 +69,6 @@ while [ $# -ne 0 ]; do
     -r|--restore|--config)
       shift
       RESTORECONFIG=$1
-      ;;
-    -l|--license)
-      shift
-      LICENSE=$1
-      if [ x"$LICENSE" = "x" ]; then
-        echo "Valid license file required for -l."
-        usage
-      fi
-
-      if [ ! -f "$LICENSE" ]; then
-        echo "Valid license file required for -l."
-        echo "${LICENSE}: file not found."
-        usage
-      fi
       ;;
     -a|--activation)
       shift
@@ -158,14 +143,6 @@ else
 	AUTOINSTALL="no"
 fi
 
-if [ x"$LICENSE" != "x" ] && [ -e $LICENSE ]; then
-  if [ ! -d "/opt/zimbra/conf" ]; then
-    mkdir -p /opt/zimbra/conf
-  fi
-  cp $LICENSE /opt/zimbra/conf/ZCSLicense.xml
-  chown zimbra:zimbra /opt/zimbra/conf/ZCSLicense.xml 2> /dev/null
-  chmod 444 /opt/zimbra/conf/ZCSLicense.xml
-fi
 
 if [ x"$ACTIVATION" != "x" ] && [ -e $ACTIVATION ]; then
   if [ ! -d "/opt/zimbra/conf" ]; then
