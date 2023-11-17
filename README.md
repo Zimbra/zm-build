@@ -91,7 +91,7 @@ To build a specific patch example 10.0.2 run the following:
 ```
 mkdir installer-build
 cd installer-build
-git clone --depth 1 --branch 10.0.1 git@github.com:Zimbra/zm-build.git
+git clone --depth 1 --branch 10.0.2 git@github.com:Zimbra/zm-build.git
 cd zm-build
 ENV_CACHE_CLEAR_FLAG=true ./build.pl --ant-options -DskipTests=true --git-default-tag=10.0.2,10.0.1,10.0.0-GA,10.0.0 --build-release-no=10.0.0 --build-type=FOSS --build-release=NIKOLATESLA --build-release-candidate=GA --build-thirdparty-server=files.zimbra.com --build-no=3969 --no-interactive
 ```
