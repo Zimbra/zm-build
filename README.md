@@ -28,6 +28,12 @@ This repository contains the build script and supporting files required to creat
         $ docker build -t myuser/my-devcore-ubuntu-16 .
         $ docker run -it myuser/my-devcore-ubuntu-16 bash
 
+### Ubuntu 22.04
+
+    # build a new Docker image for Ubuntu 22.04 by yourself.
+    docker build --tag zimbra/zm-base-os:devcore-ubuntu-22.04 https://raw.githubusercontent.com/Zimbra/zm-base-os/develop/Dockerfile-devcore-ubuntu-22.04
+    docker run -it zimbra/zm-base-os:devcore-ubuntu-22.04 bash
+
 ### Ubuntu 16.04
 
     docker run -it zimbra/zm-base-os:devcore-ubuntu-16.04 bash
@@ -44,10 +50,14 @@ This repository contains the build script and supporting files required to creat
 
 ## Setup (traditional)
 
-### Ubuntu 16.04
+### Ubuntu 22.04
 
 The following steps assume that your are starting with a clean VM and are
 logged in as a non-root user with `sudo` privileges.
+
+    sudo apt-get install ant-contrib
+
+### Ubuntu 16.04
 
     sudo apt-get update
     sudo apt-get install software-properties-common openjdk-8-jdk ant ant-optional ant-contrib ruby git maven build-essential debhelper
@@ -86,15 +96,16 @@ Create a directory for your build and check-out the `zm-build` repository:
     cd zm-build
     git checkout origin/develop
 
-To build a specific patch example 10.0.2 run the following: 
+To build a specific patch example 10.0.5 run the following: 
 
 ```
 mkdir installer-build
 cd installer-build
-git clone --depth 1 --branch 10.0.2 git@github.com:Zimbra/zm-build.git
+git clone --depth 1 --branch 10.0.5 https://github.com/Zimbra/zm-build.git
 cd zm-build
-ENV_CACHE_CLEAR_FLAG=true ./build.pl --ant-options -DskipTests=true --git-default-tag=10.0.2,10.0.1,10.0.0-GA,10.0.0 --build-release-no=10.0.0 --build-type=FOSS --build-release=NIKOLATESLA --build-release-candidate=GA --build-thirdparty-server=files.zimbra.com --build-no=3969 --no-interactive
+ENV_CACHE_CLEAR_FLAG=true ./build.pl --ant-options -DskipTests=true --git-default-tag=10.0.5,10.0.4,10.0.3,10.0.2,10.0.1,10.0.0-GA,10.0.0 --build-release-no=10.0.5 --build-type=FOSS --build-release=NIKOLATESLA --build-release-candidate=GA --build-thirdparty-server=files.zimbra.com --build-no=3969 --no-interactive
 ```
+To build for Ubuntu 22.04 64bit (as your new built Docker image above) add this option: --build-os=UBUNTU22_64
 
 Or for example 9.0.0.p25 run the following: 
 
