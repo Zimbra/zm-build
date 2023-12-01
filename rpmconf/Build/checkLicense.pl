@@ -81,7 +81,7 @@ $mesg = $ldap->search(
     base   => "cn=config,cn=zimbra",
     filter => "(zimbraNetworkLicense=*)",
     scope  => "base",
-    attrs  => [ 'zimbraNetworkLicense', 'createTimestamp' ],
+    attrs  => [ 'zimbraNetworkLicense', 'createTimestamp', 'zimbraNetworkActivation' ],
 );
 
 my $size = $mesg->count;
@@ -92,7 +92,10 @@ if ( $size == 0 ) {
 
 my $entry           = $mesg->entry(0);
 my $license         = $entry->get_value("zimbraNetworkLicense");
+my $licenseActivation         = $entry->get_value("zimbraNetworkActivation");
 my $createTimestamp = $entry->get_value("createTimestamp");
+my $licenseActivationxml      = XMLin($licenseActivation);
+my $activationId = $licenseActivationxml->{item}->{ActivationId}->{value};
 my $licensexml      = XMLin($license);
 $licenseId = $licensexml->{item}->{LicenseId}->{value};
 my $ctx = Digest::MD5->new;
@@ -106,7 +109,7 @@ my $browser = LWP::UserAgent->new(@lwpargs);
 $browser->env_proxy;
 
 my $response = $browser->get(
-"https://$host/zimbraLicensePortal/public/activation?action=getActivation&licenseId=$licenseId&version=$options{version}&fingerprint=$fingerprint"
+"https://$host/zimbraLicensePortal/public/activation?action=getActivation&licenseId=$licenseId&version=$options{version}&fingerprint=$fingerprint&activationId=$activationId"
 );
 
 if ( $response->is_success ) {
