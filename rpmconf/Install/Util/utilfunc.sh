@@ -1917,7 +1917,7 @@ removeExistingInstall() {
             if [ $? = 0 ]; then
               echo -n "Cleaning up /etc/rsyslog.conf..."
               sed -i -e '/zimbra/d' /etc/rsyslog.conf
-              if [ $PLATFORM = "RHEL6_64" -o $PLATFORM = "RHEL7_64" -o $PLATFORM = "RHEL8_64" ]; then
+              if [ $PLATFORM = "RHEL6_64" -o $PLATFORM = "RHEL7_64" -o $PLATFORM = "RHEL8_64" -o $PLATFORM = "RHEL9_64" ]; then
                 sed -i -e 's/^*.info;local0.none;local1.none;mail.none;auth.none/*.info/' /etc/rsyslog.conf
                 sed -i -e 's/^*.info;local0.none;local1.none;auth.none/*.info/' /etc/rsyslog.conf
               fi
@@ -2215,6 +2215,8 @@ fi
         repo="rhel7"
      elif [ $PLATFORM = "RHEL8_64" ]; then
         repo="rhel8"
+     elif [ $PLATFORM = "RHEL9_64" ]; then
+	repo="rhel9"
       else
         print "Aborting, unknown platform: $PLATFORM"
         exit 1
@@ -2849,7 +2851,7 @@ getPlatformVars() {
       if [ $PLATFORM = "RHEL6_64" ]; then
          STORE_PACKAGES="libreoffice libreoffice-headless"
       fi
-      if [ $PLATFORM = "RHEL7_64" -o $PLATFORM = "RHEL8_64" ]; then
+      if [ $PLATFORM = "RHEL7_64" -o $PLATFORM = "RHEL8_64" -o $PLATFORM = "RHEL9_64" ]; then
          STORE_PACKAGES="libreoffice libreoffice-core"
       fi
       DumpFileDetailsFromPackage() {
