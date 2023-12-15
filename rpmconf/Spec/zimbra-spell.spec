@@ -19,6 +19,11 @@ Best email money can buy
 
 %define __spec_install_pre /bin/true
 
+%if 0%{?rhel} == 9
+%define __brp_ldconfig RPM_BUILD_ROOT="" /usr/lib/rpm/redhat/brp-ldconfig
+%define __brp_mangle_shebangs RPM_BUILD_ROOT="" /usr/lib/rpm/redhat/brp-mangle-shebangs
+%endif
+
 %prep
 
 %build
