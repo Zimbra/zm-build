@@ -25,6 +25,9 @@ use Digest::MD5;
 
 my %options;
 my ( $licenseId, $fingerprint, @license, $blah, $host );
+my $licenseActivationxml;
+my $activationId;
+my $response;
 
 GetOptions( \%options, "version=s", "internal", "help" ) or usage();
 
@@ -93,9 +96,11 @@ if ( $size == 0 ) {
 my $entry           = $mesg->entry(0);
 my $license         = $entry->get_value("zimbraNetworkLicense");
 my $licenseActivation         = $entry->get_value("zimbraNetworkActivation");
+if ($licenseActivation ne '') {
+	$licenseActivationxml      = XMLin($licenseActivation);
+	$activationId = $licenseActivationxml->{item}->{ActivationId}->{value};
+}
 my $createTimestamp = $entry->get_value("createTimestamp");
-my $licenseActivationxml      = XMLin($licenseActivation);
-my $activationId = $licenseActivationxml->{item}->{ActivationId}->{value};
 my $licensexml      = XMLin($license);
 $licenseId = $licensexml->{item}->{LicenseId}->{value};
 my $ctx = Digest::MD5->new;
@@ -108,9 +113,15 @@ my @lwpargs = -f $caf ? ( ssl_opts => { SSL_ca_file => $caf, SSL_ca_path => unde
 my $browser = LWP::UserAgent->new(@lwpargs);
 $browser->env_proxy;
 
-my $response = $browser->get(
-"https://$host/zimbraLicensePortal/public/activation?action=getActivation&licenseId=$licenseId&version=$options{version}&fingerprint=$fingerprint&activationId=$activationId"
-);
+if ($activationId ne '') {
+	$response = $browser->get(
+	"https://$host/zimbraLicensePortal/public/activation?action=getActivation&licenseId=$licenseId&version=$options{version}&fingerprint=$fingerprint&activationId=$activationId"
+	);
+} else {
+	$response = $browser->get(
+	"https://$host/zimbraLicensePortal/public/activation?action=getActivation&licenseId=$licenseId&version=$options{version}&fingerprint=$fingerprint"
+	);
+}
 
 if ( $response->is_success ) {
     myDie(0,"SUCCESS: ", $response->content, "\n");
