@@ -2216,10 +2216,18 @@ fi
         print "Aborting, unknown platform: $PLATFORM"
         exit 1
       fi
-      rpm -q gpg-pubkey-0f30c305-5564be70 > /dev/null
+      if [ $PLATFORM = "RHEL9_64" ]; then
+	      rpm -q gpg-pubkey-7c66bd84-6583eafa > /dev/null
+      else
+	      rpm -q gpg-pubkey-0f30c305-5564be70 > /dev/null
+      fi
       if [ $? -ne 0 ]; then
         echo "Importing Zimbra GPG key"
-        rpm --import https://files.zimbra.com/downloads/security/public.key >>$LOGFILE 2>&1
+	if [ $PLATFORM = "RHEL9_64" ]; then
+		rpm --import https://files.zimbra.com/downloads/security/public-sha-256.key >>$LOGFILE 2>&1
+	else
+		rpm --import https://files.zimbra.com/downloads/security/public.key >>$LOGFILE 2>&1
+	fi
         if [ $? -ne 0 ]; then
           echo "ERROR: Unable to retrive Zimbra GPG key for package validation"
           echo "Please fix system to allow normal package installation before proceeding"
