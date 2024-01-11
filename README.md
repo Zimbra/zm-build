@@ -86,14 +86,14 @@ Create a directory for your build and check-out the `zm-build` repository:
     cd zm-build
     git checkout origin/develop
 
-To build a specific patch example 10.0.2 run the following: 
+To build a specific patch example 10.0.6 run the following: 
 
 ```
 mkdir installer-build
 cd installer-build
-git clone --depth 1 --branch 10.0.1 git@github.com:Zimbra/zm-build.git
+git clone --depth 1 --branch 10.0.6 git@github.com:Zimbra/zm-build.git
 cd zm-build
-ENV_CACHE_CLEAR_FLAG=true ./build.pl --ant-options -DskipTests=true --git-default-tag=10.0.2,10.0.1,10.0.0-GA,10.0.0 --build-release-no=10.0.0 --build-type=FOSS --build-release=NIKOLATESLA --build-release-candidate=GA --build-thirdparty-server=files.zimbra.com --build-no=3969 --no-interactive
+ENV_CACHE_CLEAR_FLAG=true ./build.pl --ant-options -DskipTests=true --git-default-tag=10.0.6,10.0.5,10.0.4,10.0.3,10.0.2,10.0.1,10.0.0-GA,10.0.0 --build-release-no=10.0.0 --build-type=FOSS --build-release=NIKOLATESLA --build-release-candidate=GA --build-thirdparty-server=files.zimbra.com --build-no=3969 --no-interactive
 ```
 
 Or for example 9.0.0.p25 run the following: 
