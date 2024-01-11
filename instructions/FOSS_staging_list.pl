@@ -24,7 +24,7 @@
    },
    {
       "dir"         => "junixsocket/junixsocket-native",
-      "mvn_targets" => ["package"],
+      "mvn_targets" => ["clean","package"],
       "stage_cmd"   => sub {
          SysExec("mkdir -p $CFG{BUILD_DIR}/junixsocket/junixsocket-native/build");
          SysExec("cp -f target/nar/junixsocket-native-*/lib/*/jni/libjunixsocket-native-*.so $CFG{BUILD_DIR}/junixsocket/junixsocket-native/build/");
