@@ -772,6 +772,12 @@ sub GetBuildArch()
    return "x86_64"
      if ( $b_os =~ /RHEL[0-9]+_64/ || $b_os =~ /CENTOS[0-9]+_64/ );
 
+   return "ppc64el"
+     if ( ( (POSIX::uname)[4] eq "ppc64le" ) and ( $b_os =~ /UBUNTU[0-9]+/) );
+
+   return "ppc64le"
+     if ( ( (POSIX::uname)[4] eq "ppc64le" ) and ( $b_os =~ /RHEL[0-9]+_64/ || $b_os =~ /CENTOS[0-9]+_64/ ) );
+
    Die("Could not determine BUILD_ARCH");
 }
 
@@ -784,6 +790,13 @@ sub GetPkgOsTag()
 
    return "r$1"
      if ( $b_os =~ /RHEL([0-9]+)_/ || $b_os =~ /CENTOS([0-9]+)_/ );
+
+    # Fallback for non-x86 architectures
+   return "u$1"
+     if ( $b_os =~ /UBUNTU([0-9]+)/ );
+
+   return "r$1"
+     if ( $b_os =~ /RHEL([0-9]+)/ || $b_os =~ /CENTOS([0-9]+)/ );
 
    Die("Could not determine PKG_OS_TAG");
 }
