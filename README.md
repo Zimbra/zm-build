@@ -77,7 +77,6 @@ logged in as a non-root user with `sudo` privileges.
     echo 'export PATH="/opt/apache-ant-1.9.9/bin:$PATH"' | sudo tee -a /etc/profile.d/ant.sh
 
 ## Building
-
 Create a directory for your build and check-out the `zm-build` repository:
 
     mkdir installer-build
@@ -86,24 +85,24 @@ Create a directory for your build and check-out the `zm-build` repository:
     cd zm-build
     git checkout origin/develop
 
-To build a specific patch example 10.0.2 run the following: 
+To build a specific patch example 10.0.6 run the following: 
 
 ```
 mkdir installer-build
 cd installer-build
-git clone --depth 1 --branch 10.0.1 git@github.com:Zimbra/zm-build.git
+git clone --depth 1 --branch 10.0.6 git@github.com:Zimbra/zm-build.git
 cd zm-build
-ENV_CACHE_CLEAR_FLAG=true ./build.pl --ant-options -DskipTests=true --git-default-tag=10.0.2,10.0.1,10.0.0-GA,10.0.0 --build-release-no=10.0.0 --build-type=FOSS --build-release=NIKOLATESLA --build-release-candidate=GA --build-thirdparty-server=files.zimbra.com --build-no=3969 --no-interactive
+ENV_CACHE_CLEAR_FLAG=true ./build.pl --ant-options -DskipTests=true --git-default-tag=10.0.6,10.0.5,10.0.4,10.0.3,10.0.2,10.0.1,10.0.0-GA --build-release-no=10.0.0 --build-type=FOSS --build-release=LIBERTY --build-release-candidate=GA --build-thirdparty-server=files.zimbra.com --no-interactive
 ```
 
-Or for example 9.0.0.p25 run the following: 
+Or for example 9.0.0.p38 run the following: 
 
 ```
 mkdir installer-build
 cd installer-build
-git clone --depth 1 --branch 9.0.0.p25 git@github.com:Zimbra/zm-build.git
+git clone --depth 1 --branch 9.0.0.p38 git@github.com:Zimbra/zm-build.git
 cd zm-build
-ENV_CACHE_CLEAR_FLAG=true ./build.pl --ant-options -DskipTests=true --git-default-tag=9.0.0.p25,9.0.0.p24.1,9.0.0.p24,9.0.0.p23,9.0.0.p22,9.0.0.p21,9.0.0.p20,9.0.0.p19,9.0.0.p18,9.0.0.p17,9.0.0.p16,9.0.0.p15,9.0.0.p14,9.0.0.p13,9.0.0.p12,9.0.0.p11,9.0.0.p10,9.0.0.p9,9.0.0.p8,9.0.0.p7,9.0.0.p6.1,9.0.0.p6,9.0.0.p5,9.0.0.p4,9.0.0.p3,9.0.0.p2,9.0.0.p1,9.0.0 --build-release-no=9.0.0 --build-type=FOSS --build-release=NIKOLATESLA --build-release-candidate=GA --build-thirdparty-server=files.zimbra.com --build-no=3969 --no-interactive
+ENV_CACHE_CLEAR_FLAG=true ./build.pl --ant-options -DskipTests=true --git-default-tag=9.0.0.p38,9.0.0.p37,9.0.0.p36,9.0.0.p35,9.0.0.p34,9.0.0.p33,9.0.0.p32.1,9.0.0.p32,9.0.0.p31,9.0.0.p30,9.0.0.p29,9.0.0.p28,9.0.0.p27,9.0.0.p26,9.0.0.p25,9.0.0.p24.1,9.0.0.p24,9.0.0.p23,9.0.0.p22,9.0.0.p21,9.0.0.p20,9.0.0.p19,9.0.0.p18,9.0.0.p17,9.0.0.p16,9.0.0.p15,9.0.0.p14,9.0.0.p13,9.0.0.p12,9.0.0.p11,9.0.0.p10,9.0.0.p9,9.0.0.p8,9.0.0.p7,9.0.0.p6.1,9.0.0.p6,9.0.0.p5,9.0.0.p4,9.0.0.p3,9.0.0.p2,9.0.0.p1,9.0.0 --build-release-no=9.0.0 --build-type=FOSS --build-release=KEPLER --build-release-candidate=GA --build-thirdparty-server=files.zimbra.com --no-interactive
 ```
 
 The `build.pl` command is used to build the product. Run it with the `-h` option for help:
