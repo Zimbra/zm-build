@@ -77,6 +77,13 @@ logged in as a non-root user with `sudo` privileges.
     echo 'export PATH="/opt/apache-ant-1.9.9/bin:$PATH"' | sudo tee -a /etc/profile.d/ant.sh
 
 ## Building
+Create a directory for your build and check-out the `zm-build` repository:
+
+    mkdir installer-build
+    cd installer-build
+    git clone https://github.com/Zimbra/zm-build.git
+    cd zm-build
+    git checkout origin/develop
 
 To build a specific patch example 10.0.6 run the following: 
 
