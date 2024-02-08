@@ -378,8 +378,8 @@ checkUbuntuRelease() {
     return
   fi
 
-  if [ "x$DISTRIB_ID" = "xUbuntu" -a "x$DISTRIB_RELEASE" != "x12.04" -a "x$DISTRIB_RELEASE" != "x14.04" -a "x$DISTRIB_RELEASE" != "x16.04" -a "x$DISTRIB_RELEASE" != "x18.04" -a "x$DISTRIB_RELEASE" != "x20.04" ]; then
-    echo "WARNING: ZCS is currently only supported on Ubuntu Server 12.04, 14.04, 16.04, 18.04 and 20.04 LTS."
+  if [ "x$DISTRIB_ID" = "xUbuntu" -a "x$DISTRIB_RELEASE" != "x12.04" -a "x$DISTRIB_RELEASE" != "x14.04" -a "x$DISTRIB_RELEASE" != "x16.04" -a "x$DISTRIB_RELEASE" != "x18.04" -a "x$DISTRIB_RELEASE" != "x20.04" -a "x$DISTRIB_RELEASE" != "x22.04" ]; then
+    echo "WARNING: ZCS is currently only supported on Ubuntu Server 12.04, 14.04, 16.04, 18.04, 20.04 and 22.04 LTS."
     echo "You are attempting to install on $DISTRIB_DESCRIPTION which may not work."
     echo "Support will not be provided if you choose to continue."
     echo ""
@@ -2155,7 +2155,9 @@ configurePackageServer() {
     fi
     echo $PLATFORM | egrep -q "UBUNTU|DEBIAN"
     if [ $? = 0 ]; then
-      if [ $PLATFORM = "UBUNTU20_64" ]; then
+      if [ $PLATFORM = "UBUNTU22_64" ]; then
+        repo="jammy"	      
+      elif [ $PLATFORM = "UBUNTU20_64" ]; then
         repo="focal"
       elif [ $PLATFORM = "UBUNTU18_64" ]; then
         repo="bionic"
@@ -2169,14 +2171,22 @@ configurePackageServer() {
         print "Aborting, unknown platform: $PLATFORM"
         exit 1
       fi
-      apt-key list | grep -w 9BE6ED79 >/dev/null
+      gpg --list-keys --keyring /etc/apt/trusted.gpg.d/zimbra.gpg 2>/dev/null | grep -w 254F9170B966D193D6BAD300D5CEF8BF9BE6ED79 >/dev/null
       if [ $? -ne 0 ]; then
         echo "Importing Zimbra GPG key"
-        apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 9BE6ED79 >>$LOGFILE 2>&1
+        gpg --no-default-keyring --keyring /tmp/zimbra.gpg --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 9BE6ED79 >>$LOGFILE 2>&1
         if [ $? -ne 0 ]; then
           echo "ERROR: Unable to retrive Zimbra GPG key for package validation"
           echo "Please fix system to allow normal package installation before proceeding"
           exit 1
+        else
+	  gpg --no-default-keyring --keyring /tmp/zimbra.gpg --export > /etc/apt/trusted.gpg.d/zimbra.gpg
+          if [ $? -ne 0 ]; then
+            echo "ERROR: Unable to export Zimbra GPG key for package validation"
+	    exit 1
+	  else
+	    rm -f /tmp/zimbra.gpg
+	  fi
         fi
       fi
       echo
@@ -2798,7 +2808,7 @@ getPlatformVars() {
     PACKAGEEXT='deb'
     PACKAGEVERSION="dpkg-query -W -f \${Version}"
     CONFLICT_PACKAGES="mail-transport-agent"
-    if [ $PLATFORM = "UBUNTU12_64" -o $PLATFORM = "UBUNTU14_64" -o $PLATFORM = "UBUNTU16_64" -o $PLATFORM = "UBUNTU18_64" -o $PLATFORM = "UBUNTU20_64" ]; then
+    if [ $PLATFORM = "UBUNTU12_64" -o $PLATFORM = "UBUNTU14_64" -o $PLATFORM = "UBUNTU16_64" -o $PLATFORM = "UBUNTU18_64" -o $PLATFORM = "UBUNTU20_64" -o $PLATFORM = "UBUNTU22_64" ]; then
       STORE_PACKAGES="libreoffice"
     fi
     DumpFileDetailsFromPackage() {
