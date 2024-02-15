@@ -57,6 +57,12 @@ if [ -f /etc/redhat-release ]; then
     exit 0
   fi
 
+  grep "AlmaLinux release 8" /etc/redhat-release > /dev/null 2>&1
+  if [ $? = 0 ]; then
+    echo "RHEL8${i}"
+    exit 0
+  fi
+  
   grep "Rocky Linux release 8" /etc/redhat-release > /dev/null 2>&1
   if [ $? = 0 ]; then
     echo "RHEL8${i}"
