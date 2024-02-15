@@ -143,6 +143,7 @@ installPackages() {
    fi
 
    removeExistingInstall
+   installEPELRepo
 
    if [ "${#repo_pkg_names[@]}" -gt 0 ]
    then
