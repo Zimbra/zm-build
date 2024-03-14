@@ -2788,12 +2788,12 @@ getPlatformVars() {
   if [ $? = 0 ]; then
     ISUBUNTU=true
     checkUbuntuRelease
-    REPOINST='apt-get install -y'
-    PACKAGEDOWNLOAD='apt-get --download-only install -y --force-yes'
-    REPORM='apt-get -y --purge purge'
-    PACKAGEINST='dpkg -i --auto-deconfigure'
-    PACKAGERM='dpkg --purge'
-    PACKAGERMSIMULATE='dpkg --purge --dry-run'
+    REPOINST='apt-get install --ignore-hold --yes'
+    PACKAGEDOWNLOAD='apt-get install --ignore-hold --yes --force-yes --download-only'
+    REPORM='apt-get remove --purge --ignore-hold --yes'
+    PACKAGEINST='dpkg --install --force-hold --auto-deconfigure'
+    PACKAGERM='dpkg --purge --force-hold'
+    PACKAGERMSIMULATE='dpkg --purge --force-hold --dry-run'
     PACKAGEQUERY='dpkg -s'
     PACKAGEEXT='deb'
     PACKAGEVERSION="dpkg-query -W -f \${Version}"
