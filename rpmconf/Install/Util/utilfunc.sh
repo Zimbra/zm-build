@@ -2383,6 +2383,8 @@ getInstallPackages() {
       ifStoreSelectedY
     elif [ $i = "zimbra-zimlet-classic-document-editor" ]; then
       ifStoreSelectedY
+    elif [ $i = "zimbra-zimlet-classic-set-default-client" ]; then
+      ifStoreSelectedY
     elif [ $i = "zimbra-patch" ]; then
         if [ x"$ZIMBRAINTERNAL" = "xyes" ] && [ $STORE_SELECTED = "yes" ]; then
             askYN "Install $i" "Y"
