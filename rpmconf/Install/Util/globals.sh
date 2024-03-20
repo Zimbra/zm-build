@@ -69,7 +69,7 @@ zimbra-zimlet-duplicate-contacts"
 
 MYDIR="$(CDPATH= cd "$(dirname "$0")" && pwd)"
 if [ "$(cat ${MYDIR}/.BUILD_TYPE)" == "NETWORK" ]; then
-   OPTIONAL_PACKAGES="${OPTIONAL_PACKAGES} zimbra-modern-ui zimbra-modern-zimlets zimbra-zimlet-document-editor zimbra-zimlet-classic-document-editor zimbra-patch zimbra-mta-patch zimbra-proxy-patch zimbra-ldap-patch"
+   OPTIONAL_PACKAGES="${OPTIONAL_PACKAGES} zimbra-modern-ui zimbra-modern-zimlets zimbra-zimlet-document-editor zimbra-zimlet-classic-document-editor zimbra-zimlet-classic-set-default-client zimbra-patch zimbra-mta-patch zimbra-proxy-patch zimbra-ldap-patch"
 fi
 
 PACKAGE_DIR="$(CDPATH= cd "$(dirname "$0")" && pwd)/packages"
