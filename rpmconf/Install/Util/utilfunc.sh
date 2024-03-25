@@ -1917,7 +1917,7 @@ removeExistingInstall() {
             if [ $? = 0 ]; then
               echo -n "Cleaning up /etc/rsyslog.conf..."
               sed -i -e '/zimbra/d' /etc/rsyslog.conf
-              if [ $PLATFORM = "RHEL6_64" -o $PLATFORM = "RHEL7_64" -o $PLATFORM = "RHEL8_64" ]; then
+              if [ $PLATFORM = "RHEL6_64" -o $PLATFORM = "RHEL7_64" -o $PLATFORM = "RHEL8_64" -o $PLATFORM = "RHEL9_64" ]; then
                 sed -i -e 's/^*.info;local0.none;local1.none;mail.none;auth.none/*.info/' /etc/rsyslog.conf
                 sed -i -e 's/^*.info;local0.none;local1.none;auth.none/*.info/' /etc/rsyslog.conf
               fi
@@ -2215,14 +2215,24 @@ fi
         repo="rhel7"
      elif [ $PLATFORM = "RHEL8_64" ]; then
         repo="rhel8"
+     elif [ $PLATFORM = "RHEL9_64" ]; then
+	repo="rhel9"
       else
         print "Aborting, unknown platform: $PLATFORM"
         exit 1
       fi
-      rpm -q gpg-pubkey-0f30c305-5564be70 > /dev/null
+      if [ $PLATFORM = "RHEL9_64" ]; then
+	      rpm -q gpg-pubkey-7c66bd84-6583eafa > /dev/null
+      else
+	      rpm -q gpg-pubkey-0f30c305-5564be70 > /dev/null
+      fi
       if [ $? -ne 0 ]; then
         echo "Importing Zimbra GPG key"
-        rpm --import https://files.zimbra.com/downloads/security/public.key >>$LOGFILE 2>&1
+	if [ $PLATFORM = "RHEL9_64" ]; then
+		rpm --import https://files.zimbra.com/downloads/security/public-sha-256.key >>$LOGFILE 2>&1
+	else
+		rpm --import https://files.zimbra.com/downloads/security/public.key >>$LOGFILE 2>&1
+	fi
         if [ $? -ne 0 ]; then
           echo "ERROR: Unable to retrive Zimbra GPG key for package validation"
           echo "Please fix system to allow normal package installation before proceeding"
@@ -2494,6 +2504,7 @@ getInstallPackages() {
   if [ x"$ZMTYPE_INSTALLABLE" = "xNETWORK" ]; then
      selectChatVideo
   fi
+  isp7zipRequired
   checkRequiredSpace
 
   isInstalled zimbra-store
@@ -2512,6 +2523,83 @@ getInstallPackages() {
   done
 }
 
+isp7zipRequired() {
+	P7ZIPREQUIRED=no
+	if [[ $MTA_SELECTED == "yes" && $PLATFORM = "RHEL9_64" ]]; then
+		isInstalled p7zip-plugins
+		if [ x$PKGINSTALLED = "x" ]; then
+			askYN "Install p7zip-plugins from epel-release repository (without p7zip-plugins, some decoders for Amavis may not be available)." "Y"
+			if [ $response = "yes" ]; then
+				P7ZIPREQUIRED=yes
+			fi
+		fi
+	fi
+}
+
+installEPELRepo() {
+	if [ $P7ZIPREQUIRED = "yes" ]; then
+		OS_NAME=`grep -E '^(NAME)=' /etc/os-release | cut -d = -f 2 | tr -d '"'`
+		case "$OS_NAME" in
+			"Red Hat"*)
+				isInstalled epel-release-latest-9
+				if [ x$PKGINSTALLED = "x" ]; then
+					echo -n "Installing epel-release-latest-9..."
+					if ! yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm -y >>$LOGFILE 2>&1 ; then
+						echo "failed to install epel-release."
+						exit 1
+					else
+						echo "done."
+					fi
+				fi
+				echo -n "Installing p7zip-plugins..."
+				if ! yum install p7zip-plugins --enablerepo=epel -y >>$LOGFILE 2>&1 ; then
+					echo "failed to install p7zip-plugins."
+					exit 1
+				else
+					echo "done."
+				fi
+				;;
+			"Oracle"*)
+				isInstalled oracle-epel-release-el9
+				if [ x$PKGINSTALLED = "x" ]; then
+					echo -n "Installing oracle-epel-release-el9..."
+					if ! yum install oracle-epel-release-el9 -y >>$LOGFILE 2>&1 ; then
+						echo "failed to install epel-release."
+						exit 1
+					else
+						echo "done."
+					fi
+				fi
+				echo -n "Installing p7zip-plugins..."
+				if ! yum install p7zip-plugins --enablerepo=ol9_developer_EPEL -y >>$LOGFILE 2>&1 ; then
+					echo "failed to install p7zip-plugins."
+					exit 1
+				else
+					echo "done."
+				fi
+				;;
+			"Rocky"*|"CentOS"*)
+				isInstalled epel-release
+				if [ x$PKGINSTALLED = "x" ]; then
+					echo -n "Installing epel-release..."
+					if ! yum install epel-release -y > /dev/null >>$LOGFILE 2>&1 ; then
+						echo "failed to install epel-release."
+						exit 1
+					else
+						echo "done."
+					fi
+				fi
+				echo -n "Installing p7zip-plugins..."
+				if ! yum install p7zip-plugins --enablerepo=epel -y >>$LOGFILE 2>&1; then
+					echo "failed to install p7zip-plugins."
+					exit 1
+				else
+					echo "done."
+				fi
+				;;
+		esac
+	fi
+}
 selectChatVideo() {
 	# install chat-video extension and chat-video classic, modern zimlets
 	if [ $STORE_SELECTED = "yes" ] ; then
@@ -2851,7 +2939,7 @@ getPlatformVars() {
       if [ $PLATFORM = "RHEL6_64" ]; then
          STORE_PACKAGES="libreoffice libreoffice-headless"
       fi
-      if [ $PLATFORM = "RHEL7_64" -o $PLATFORM = "RHEL8_64" ]; then
+      if [ $PLATFORM = "RHEL7_64" -o $PLATFORM = "RHEL8_64" -o $PLATFORM = "RHEL9_64" ]; then
          STORE_PACKAGES="libreoffice libreoffice-core"
       fi
       DumpFileDetailsFromPackage() {
