@@ -115,12 +115,13 @@ if ( $response->is_success ) {
 	my $json_content = $response->content;
 	my ($status_code) = $json_content =~ /"status":\s*(\d+)/;
 	if (defined $status_code && $status_code == 2000) {
-		myDie(0,"SUCCESS: ", $response->content, "\n");
+		myDie(0, "SUCCESS: ", $response->content, "\n");
 	} else {
-		myDie(1,"ERROR: ", $response->content, "\n");
+		myDie(1, "ERROR: ", $response->content, "\n");
+
 	}
 } else {
-	myDie(1,"ERROR: ", $response->content, "\n");
+	myDie(1, "ERROR: ", $response->content, "\n");
 }
 
 sub myDie() {
