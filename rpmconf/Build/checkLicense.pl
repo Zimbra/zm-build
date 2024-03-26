@@ -21,13 +21,9 @@ use LWP::UserAgent;
 use Getopt::Long;
 use Net::LDAP;
 use XML::Simple;
-use Digest::MD5;
 
 my %options;
-my ( $licenseId, $fingerprint, @license, $blah, $host );
-my $licenseActivationxml;
-my $activationId;
-my $response;
+my ( $licenseId, @license, $blah, $host );
 
 GetOptions( \%options, "version=s", "internal", "help" ) or usage();
 
@@ -45,10 +41,10 @@ if ( $options{help} ) {
 }
 
 if ( $options{internal} ) {
-    $host = 'zimbra-stage-license.eng.zimbra.com';
+    $host = 'http://zimbra-stage-license.eng.zimbra.com';
 }
 else {
-    $host = 'license.zimbra.com';
+    $host = 'https://license.zimbra.com';
 }
 
 unless ( $options{version} ) {
@@ -84,7 +80,7 @@ $mesg = $ldap->search(
     base   => "cn=config,cn=zimbra",
     filter => "(zimbraNetworkLicense=*)",
     scope  => "base",
-    attrs  => [ 'zimbraNetworkLicense', 'createTimestamp', 'zimbraNetworkActivation' ],
+    attrs  => [ 'zimbraNetworkLicense'],
 );
 
 my $size = $mesg->count;
@@ -94,40 +90,37 @@ if ( $size == 0 ) {
 }
 
 my $entry           = $mesg->entry(0);
-my $license         = $entry->get_value("zimbraNetworkLicense");
-my $licenseActivation         = $entry->get_value("zimbraNetworkActivation");
-if ($licenseActivation ne '') {
-	$licenseActivationxml      = XMLin($licenseActivation);
-	$activationId = $licenseActivationxml->{item}->{ActivationId}->{value};
+my $license = $entry->get_value("zimbraNetworkLicense");
+if (defined $license) {
+    eval {
+        my $licensexml = XMLin($license);
+        if (exists $licensexml->{item}->{LicenseId}->{value}) {
+            $licenseId = $licensexml->{item}->{LicenseId}->{value};
+        } else {
+            $licenseId = $license;
+        }
+    };
+    if ($@) {
+        $licenseId = $license;
+    }
 }
-my $createTimestamp = $entry->get_value("createTimestamp");
-my $licensexml      = XMLin($license);
-$licenseId = $licensexml->{item}->{LicenseId}->{value};
-my $ctx = Digest::MD5->new;
-$ctx->add($createTimestamp);
-$fingerprint = $ctx->hexdigest;
-$ldap->unbind();
-
 my $caf = '/opt/zimbra/zimbramon/lib/Mozilla/CA/cacert.pem';
 my @lwpargs = -f $caf ? ( ssl_opts => { SSL_ca_file => $caf, SSL_ca_path => undef } ) : ();
 my $browser = LWP::UserAgent->new(@lwpargs);
 $browser->env_proxy;
-
-if ($activationId ne '') {
-	$response = $browser->get(
-	"https://$host/zimbraLicensePortal/public/activation?action=getActivation&licenseId=$licenseId&version=$options{version}&fingerprint=$fingerprint&activationId=$activationId"
-	);
-} else {
-	$response = $browser->get(
-	"https://$host/zimbraLicensePortal/public/activation?action=getActivation&licenseId=$licenseId&version=$options{version}&fingerprint=$fingerprint"
-	);
-}
-
+my $request = HTTP::Request->new(POST => "$host/rest/v1/public/license/$licenseId/validate?version=$options{version}");
+$request->header('Content-Type' => 'application/json');
+my $response = $browser->request($request);
 if ( $response->is_success ) {
-    myDie(0,"SUCCESS: ", $response->content, "\n");
-}
-else {
-    myDie(1,"ERROR: ", $response->content, "\n");
+	my $json_content = $response->content;
+	my ($status_code) = $json_content =~ /"status":\s*(\d+)/;
+	if (defined $status_code && $status_code == 2000) {
+		myDie(0,"SUCCESS: ", $response->content, "\n");
+	} else {
+		myDie(1,"ERROR: ", $response->content, "\n");
+	}
+} else {
+	myDie(1,"ERROR: ", $response->content, "\n");
 }
 
 sub myDie() {
