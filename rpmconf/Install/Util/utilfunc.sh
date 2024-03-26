@@ -1695,7 +1695,28 @@ removeErrorMessage() {
   exit 1
 }
 
+removeNalpeironContainer() {
+	isInstalled "zimbra-nalpeiron-offline-daemon"
+	if [ x$PKGINSTALLED != "x" ]; then
+		if su - zimbra -c "docker ps -a --format \'{{.Names}}\' | grep -q \"zimbra-nalpeiron-daemon\""; then
+			echo ""
+			imageName=$(docker inspect --format='{{.Config.Image}}' "zimbra-nalpeiron-daemon")
+			echo "Removing zimbra-nalpeiron-daemon container"
+			if ! su - zimbra -c "docker rm zimbra-nalpeiron-daemon >/dev/null"; then
+				echo "Failed to remove zimbra-nalpeiron-daemon container"
+				exit 1;
+			fi
+			echo "Removing zimbra-nalpeiron-daemon image $imageName"
+			if ! su - zimbra -c "docker rmi $imageName"; then
+				echo "Failed to remove image $imageName"
+				exit 1;
+			fi
+		fi
+	fi
+}
+
 removeExistingPackages() {
+  removeNalpeironContainer
   echo ""
   echo "Removing existing packages"
   echo ""
