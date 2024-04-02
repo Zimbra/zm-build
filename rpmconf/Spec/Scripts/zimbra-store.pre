@@ -23,3 +23,10 @@ fi
 if [ -d "/opt/zimbra/mailboxd/work/zimbraAdmin" ]; then
   rm -rf /opt/zimbra/mailboxd/work/zimbraAdmin > /dev/null 2>&1
 fi
+
+if [ -d "/opt/zimbra/jetty_base/webapps" ]; then
+	if lsattr -d /opt/zimbra/jetty_base/webapps/ | grep -qE '\b[i]\b'; then
+		echo "**** remove restrict write access for /opt/zimbra/jetty_base/webapps/ (zimbra-store) ****"
+		chattr -i -R /opt/zimbra/jetty_base/webapps/
+	fi
+fi
