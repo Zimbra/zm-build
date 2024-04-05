@@ -23,3 +23,9 @@ fi
 if [ -d "/opt/zimbra/mailboxd/work/zimbraAdmin" ]; then
   rm -rf /opt/zimbra/mailboxd/work/zimbraAdmin > /dev/null 2>&1
 fi
+
+if [ -d /opt/zimbra/lib/ext/smime ]; then
+	if [ -f /opt/zimbra/lib/ext/smime/zm-smime-store.jar ]; then
+		rm -rf /opt/zimbra/lib/ext/smime/zm-smime-store.jar > /dev/null 2>&1
+	fi
+fi
