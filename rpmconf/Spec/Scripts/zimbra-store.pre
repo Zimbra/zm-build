@@ -25,7 +25,13 @@ if [ -d "/opt/zimbra/mailboxd/work/zimbraAdmin" ]; then
 fi
 
 if [ -d /opt/zimbra/lib/ext/smime ]; then
-	if [ -f /opt/zimbra/lib/ext/smime/zm-smime-store.jar ]; then
-		rm -rf /opt/zimbra/lib/ext/smime/zm-smime-store.jar > /dev/null 2>&1
+	if [ `ls -1 /opt/zimbra/lib/ext/smime/zm-smime-*.jar 2>/dev/null | wc -l` -gt 0 ]; then
+		rm -rf /opt/zimbra/lib/ext/smime/zm-smime-*.jar > /dev/null 2>&1
+	fi
+fi
+
+if [ -d /opt/zimbra/extensions-extra/openidconsumer ]; then
+	if [ `ls -1 /opt/zimbra/extensions-extra/openidconsumer/zm-openid-consumer-store-*.jar 2>/dev/null | wc -l` -gt 0 ]; then
+		rm -rf /opt/zimbra/extensions-extra/openidconsumer/zm-openid-consumer-store-*.jar > /dev/null 2>&1
 	fi
 fi
