@@ -36,3 +36,9 @@ else
     echo "zimbra hard nofile 524288" >> /etc/security/limits.conf
     chmod 640 /etc/security/limits.conf
 fi
+
+if [ -d "/opt/zimbra/lib/ext/com_zimbra_ssdb_ephemeral_store" ]; then
+	if [ `ls -1 /opt/zimbra/lib/ext/com_zimbra_ssdb_ephemeral_store/zm-ssdb-ephemeral-store-*.jar 2>/dev/null | wc -l` -gt 0 ]; then
+		rm -rf /opt/zimbra/lib/ext/com_zimbra_ssdb_ephemeral_store/zm-ssdb-ephemeral-store-*.jar
+	fi
+fi

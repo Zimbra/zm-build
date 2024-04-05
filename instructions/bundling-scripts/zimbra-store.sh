@@ -284,6 +284,7 @@ source "$SCRIPT_DIR/utils.sh"
 CreateDebianPackage()
 {
     mkdir -p ${repoDir}/zm-build/${currentPackage}/DEBIAN
+    cat ${repoDir}/zm-build/rpmconf/Spec/Scripts/${currentScript}.pre >> ${repoDir}/zm-build/${currentPackage}/DEBIAN/preinst
     cat ${repoDir}/zm-build/rpmconf/Spec/Scripts/${currentScript}.post >> ${repoDir}/zm-build/${currentPackage}/DEBIAN/postinst
     chmod 555 ${repoDir}/zm-build/${currentPackage}/DEBIAN/*
 
