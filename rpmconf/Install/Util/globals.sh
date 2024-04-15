@@ -26,6 +26,7 @@ zimbra-logger \
 zimbra-mta \
 zimbra-dnscache \
 zimbra-snmp \
+zimbra-license-daemon \
 zimbra-store \
 zimbra-apache \
 zimbra-spell \
@@ -33,8 +34,7 @@ zimbra-convertd \
 zimbra-memcached \
 zimbra-proxy \
 zimbra-archiving \
-zimbra-onlyoffice \
-zimbra-license-daemon"
+zimbra-onlyoffice"
 
 SERVICES=""
 

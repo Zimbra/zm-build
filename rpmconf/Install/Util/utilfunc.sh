@@ -2312,6 +2312,7 @@ getInstallPackages() {
   PROXY_SELECTED="no"
   LDAP_SELECTED="no"
   ONLYOFFICE_SELECTED="no"
+  LICENSE_DAEMON_SELECTED="no"
 
   for i in $AVAILABLE_PACKAGES; do
     if [ $i = "zimbra-core" ]; then
@@ -2351,8 +2352,11 @@ getInstallPackages() {
           APACHE_SELECTED="yes"
         elif [ $i = "zimbra-logger" ]; then
           LOGGER_SELECTED="yes"
+        elif [ $i = "zimbra-license-daemon" ]; then
+          LICENSE_DAEMON_SELECTED="yes"
         elif [ $i = "zimbra-store" ]; then
           STORE_SELECTED="yes"
+          checkLicenseDaemonServiceRunning $LICENSE_DAEMON_SELECTED
         elif [ $i = "zimbra-mta" ]; then
           MTA_SELECTED="yes"
         elif [ $i = "zimbra-proxy" ]; then
@@ -2442,8 +2446,11 @@ getInstallPackages() {
     if [ $response = "yes" ]; then
       if [ $i = "zimbra-logger" ]; then
         LOGGER_SELECTED="yes"
+      elif [ $i = "zimbra-license-daemon" ]; then
+        LICENSE_DAEMON_SELECTED="yes"
       elif [ $i = "zimbra-store" ]; then
         STORE_SELECTED="yes"
+        checkLicenseDaemonServiceRunning $LICENSE_DAEMON_SELECTED
       elif [ $i = "zimbra-apache" ]; then
         APACHE_SELECTED="yes"
       elif [ $i = "zimbra-mta" ]; then
@@ -2526,6 +2533,53 @@ selectChatVideo() {
 		fi
 	fi
 }
+
+checkLicenseDaemonServiceRunning() {
+	if [ x"$ZMTYPE_INSTALLABLE" = "xNETWORK" ]; then
+		LICENSE_DAEMON_PKG=$1
+		LICENSE_DAEMON_HOST=""
+		LICENSE_DAEMON_PORT="8081"
+		if [ $LICENSE_DAEMON_PKG == "no" ]; then
+			if [ $UPGRADE = "yes" ]; then
+				echo "COMMAND: zmprov gacf zimbraLicenseDaemonServerHost" >> $LOGFILE
+				ZMPROV_OUTPUT=$(su - zimbra -c "zmprov gacf zimbraLicenseDaemonServerHost" 2>> $LOGFILE)
+				if [ $? -ne 0 ]; then
+					printWarning "Unable to get the zimbraLicenseDaemonServerHost via zmprov command."
+					exit 1
+				else
+					LICENSE_DAEMON_HOST=$(echo "$ZMPROV_OUTPUT" | awk -F': ' '/zimbraLicenseDaemonServerHost/{print $2}')
+				fi
+			fi
+			if [ -z "$LICENSE_DAEMON_HOST" ]; then
+				askYN "Have you installed zimbra-license-daemon package on different node" "N"
+				if [ $response = "yes" ]; then
+					askNonBlank "Please enter the zimbra-license-daemon host" "$LICENSE_DAEMON_HOST"
+					LICENSE_DAEMON_HOST=$response
+				else
+					printWarning "zimbra-license-daemon should be installed prior to zimbra-store"
+					exit 1
+				fi
+			fi
+			LICENSE_DAEMON_API="http://${LICENSE_DAEMON_HOST}:${LICENSE_DAEMON_PORT}/actuator/health"
+			LICENSE_DAEMON_STATUS=$(curl -s --connect-timeout 5 "$LICENSE_DAEMON_API")
+			if [ $? -ne 0 ]; then
+				printWarning "Failed to connect to $LICENSE_DAEMON_API"
+				printWarning "license-daemon should be running and healthy."
+				exit 1
+			else
+				if [[ "$LICENSE_DAEMON_STATUS" != *'"status":"UP"'* ]]; then
+					printWarning "license-daemon is not running. license-daemon should be running and healthy."
+					exit 1
+				fi
+			fi
+	    fi
+	fi
+}
+
+printWarning() {
+    echo -e "\033[0;31m$@\033[0m"
+}
+
 isOnlyofficeStandalone() {
   onlyofficepkg=$1
   # check if store is being installed too.
