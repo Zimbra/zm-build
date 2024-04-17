@@ -45,10 +45,10 @@ ALLOW_PLATFORM_OVERRIDE="no"
 FORCE_UPGRADE="no"
 
 usage() {
-  echo "$0 [-r <dir> -l <file> -a <file> -u -s -c type -x -h] [defaultsfile]"
+  echo "$0 [-r <dir> -l <licensekey> -u -s -c type -x -h] [defaultsfile]"
   echo ""
   echo "-h|--help               Usage"
-  echo "-a|--activation <file>  License activation file to install. [Upgrades only]"
+  echo "-l|--licensekey         License key to install."
   echo "-r|--restore <dir>      Restore contents of <dir> to localconfig"
   echo "-s|--softwareonly       Software only installation."
   echo "-u|--uninstall          Uninstall ZCS"
@@ -64,25 +64,26 @@ usage() {
   exit
 }
 
+validate_license_key() {
+    local new="$1"
+    if [[ ! "$new" =~ ^[A-Za-z0-9]+$ ]] || (( ${#new} < 18 )) || (( ${#new} > 24 )) || [[ -z "$new" ]]; then
+	echo "Invalid license key entered. The license key should be a non-blank alphanumeric string of 18-24 characters without any special characters!"
+        usage
+    fi
+}
+
+
 while [ $# -ne 0 ]; do
   case $1 in
     -r|--restore|--config)
       shift
       RESTORECONFIG=$1
       ;;
-    -a|--activation)
+    -l|--licensekey)
       shift
-      ACTIVATION=$1
-      if [ x"$ACTIVATION" = "x" ]; then
-        echo "Valid license activation file required for -a."
-        usage
-      fi
-
-      if [ ! -f "$ACTIVATION" ]; then
-        echo "Valid license activation file required for -a."
-        echo "${ACTIVATION}: file not found."
-        usage
-      fi
+      LICENSEKEY=$1
+      validate_license_key $LICENSEKEY
+      echo LICENSEKEY is $LICENSEKEY
       ;;
     -u|--uninstall)
       UNINSTALL="yes"
@@ -143,22 +144,17 @@ else
 	AUTOINSTALL="no"
 fi
 
-
-if [ x"$ACTIVATION" != "x" ] && [ -e $ACTIVATION ]; then
+if [ "x$LICENSEKEY" != "x" ] ; then
+  echo "Installing /opt/zimbra/conf/ZCSLicensekey"
   if [ ! -d "/opt/zimbra/conf" ]; then
     mkdir -p /opt/zimbra/conf
   fi
-  cp $ACTIVATION /opt/zimbra/conf/ZCSLicense-activated.xml
-  chown zimbra:zimbra /opt/zimbra/conf/ZCSLicense-activated.xml 2> /dev/null
-  chmod 444 /opt/zimbra/conf/ZCSLicense-activated.xml
+  echo "$LICENSEKEY" > /opt/zimbra/conf/ZCSLicensekey
+  chown zimbra:zimbra /opt/zimbra/conf/ZCSLicensekey
+  chmod 644 /opt/zimbra/conf/ZCSLicensekey
 fi
 
 checkExistingInstall
-
-if [ x"$INSTALLED" != "xyes" ] && [ x"$ACTIVATION" != "x" ]; then
-  echo "License activation file option is only available on upgrade."
-  usage
-fi
 
 if [ x$UNINSTALL = "xyes" ]; then
 	askYN "Completely remove existing installation?" "N"
@@ -274,23 +270,14 @@ if [ $UPGRADE = "yes" ]; then
   #restoreZimlets
 fi
 
-if [ "x$LICENSE" != "x" ] && [ -f "$LICENSE" ]; then
-  echo "Installing /opt/zimbra/conf/ZCSLicense.xml"
+if [ "x$LICENSEKEY" != "x" ] ; then
+  echo "Installing /opt/zimbra/conf/ZCSLicensekey"
   if [ ! -d "/opt/zimbra/conf" ]; then
     mkdir -p /opt/zimbra/conf
   fi
-  cp -f $LICENSE /opt/zimbra/conf/ZCSLicense.xml
-  chown zimbra:zimbra /opt/zimbra/conf/ZCSLicense.xml
-  chmod 644 /opt/zimbra/conf/ZCSLicense.xml
-fi
-if [ "x$ACTIVATION" != "x" ] && [ -f "$ACTIVATION" ]; then
-  echo "Installing /opt/zimbra/conf/ZCSLicense.xml"
-  if [ ! -d "/opt/zimbra/conf" ]; then
-    mkdir -p /opt/zimbra/conf
-  fi
-  cp -f $ACTIVATION /opt/zimbra/conf/ZCSLicense-activated.xml
-  chown zimbra:zimbra /opt/zimbra/conf/ZCSLicense-activated.xml
-  chmod 644 /opt/zimbra/conf/ZCSLicense-activated.xml
+  echo "$LICENSEKEY" > /opt/zimbra/conf/ZCSLicensekey
+  chown zimbra:zimbra /opt/zimbra/conf/ZCSLicensekey
+  chmod 644 /opt/zimbra/conf/ZCSLicensekey
 fi
 
 

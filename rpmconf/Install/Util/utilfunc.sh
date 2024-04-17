@@ -850,10 +850,10 @@ verifyUpgrade() {
           echo $HOSTNAME | egrep -qe 'eng.vmware.com$|eng.zimbra.com$|lab.zimbra.com$|zimbradev.com$' > /dev/null 2>&1
           if [ $? = 0 ]; then
             # echo "Running bin/checkLicense.pl -i -v $ZM_INST_VERSION"
-            `bin/checkLicense.pl -i -v $ZM_INST_VERSION >/dev/null`
+              bin/checkLicense.pl -v $ZM_INST_VERSION
           else
             # echo "Running bin/checkLicense.pl -v $ZM_INST_VERSION"
-            `bin/checkLicense.pl -v $ZM_INST_VERSION >/dev/null`
+              bin/checkLicense.pl -v $ZM_INST_VERSION
           fi
           licenseRC=$?;
           if [ $licenseRC != 0 ]; then
@@ -970,17 +970,6 @@ verifyLicenseActivationServer() {
     return
   fi
 
-  # if we specify an activation presume its valid
-  if [ x"$ACTIVATION" != "x" ] && [ -e $ACTIVATION ]; then
-    if [ ! -d "/opt/zimbra/conf" ]; then
-      mkdir -p /opt/zimbra/conf
-    fi
-    cp -f $ACTIVATION /opt/zimbra/conf/ZCSLicense-activated.xml
-    chown zimbra:zimbra /opt/zimbra/conf/ZCSLicense-activated.xml
-    chmod 444 /opt/zimbra/conf/ZCSLicense-activated.xml
-    return
-  fi
-
   # if all else fails make sure we can contact the activation server for automated activation
   if [ ${ZM_CUR_MAJOR} -ge "7" ]; then
     if [ ${ZM_CUR_MAJOR} -eq "7" -a ${ZM_CUR_MINOR} -ge "1" ]; then
@@ -1052,15 +1041,6 @@ activationWarning() {
 }
 
 verifyLicenseAvailable() {
-
-  if [ x"$LICENSE" != "x" ] && [ -e $LICENSE ]; then
-    if [ ! -d "/opt/zimbra/conf" ]; then
-      mkdir -p /opt/zimbra/conf
-    fi
-    cp -f $LICENSE /opt/zimbra/conf/ZCSLicense.xml
-    chown zimbra:zimbra /opt/zimbra/conf/ZCSLicense.xml 2> /dev/null
-    chmod 444 /opt/zimbra/conf/ZCSLicense.xml
-  fi
 
   if [ x"$AUTOINSTALL" = "xyes" ] || [ x"$UNINSTALL" = "xyes" ] || [ x"$SOFTWAREONLY" = "xyes" ]; then
     return

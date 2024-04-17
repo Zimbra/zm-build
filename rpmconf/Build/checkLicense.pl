@@ -16,14 +16,27 @@
 # ***** END LICENSE BLOCK *****
 #
 use strict;
+
 use lib qw(/opt/zimbra/common/lib/perl5 /opt/zimbra/zimbramon/lib);
 use LWP::UserAgent;
 use Getopt::Long;
 use Net::LDAP;
 use XML::Simple;
 
+# License key validation function
+sub valid_licenseID {
+    my ($licenseID) = @_;
+    return $licenseID =~ /^[A-Za-z0-9]{18,24}$/;
+}
+
+# Set permissions function
+sub set_permissions {
+    my ($file) = @_;
+    system("chown zimbra:zimbra $file");
+    system("chmod 644 $file");
+}
 my %options;
-my ( $licenseId, @license, $blah, $host );
+my ( $licenseId, $blah, $host );
 
 GetOptions( \%options, "version=s", "internal", "help" ) or usage();
 
@@ -80,7 +93,7 @@ $mesg = $ldap->search(
     base   => "cn=config,cn=zimbra",
     filter => "(zimbraNetworkLicense=*)",
     scope  => "base",
-    attrs  => [ 'zimbraNetworkLicense'],
+    attrs  => [ 'zimbraRealtimeNetworkLicense'],
 );
 
 my $size = $mesg->count;
@@ -90,25 +103,29 @@ if ( $size == 0 ) {
 }
 
 my $entry           = $mesg->entry(0);
-my $license = $entry->get_value("zimbraNetworkLicense");
-if (defined $license) {
-    eval {
-        my $licensexml = XMLin($license);
-        if (exists $licensexml->{item}->{LicenseId}->{value}) {
-            $licenseId = $licensexml->{item}->{LicenseId}->{value};
-        } else {
-            $licenseId = $license;
+my $licenseID = $entry->get_value("zimbraRealtimeNetworkLicense");
+# Check if licenseID is empty
+if (!defined($licenseID) || $licenseID eq '') {
+    my $license_file = "/opt/zimbra/conf/ZCSLicensekey";
+    if (-e $license_file) {
+        chomp($licenseID = qx(cat $license_file));
+    } else {
+        print "Enter the licenseID (an alphanumeric string of 18-24 characters without any special characters): ";
+        $licenseID = <STDIN>;
+        chomp($licenseID);
+        if (!valid_licenseID($licenseID)) {
+	    myDie(2,"Error: Invalid licenseID entered. The licenseID should be an alphanumeric string of 18-24 characters without any special characters\n");
         }
-    };
-    if ($@) {
-        $licenseId = $license;
+        system("echo \"$licenseID\" > $license_file");
+        set_permissions($license_file);
     }
 }
 my $caf = '/opt/zimbra/zimbramon/lib/Mozilla/CA/cacert.pem';
 my @lwpargs = -f $caf ? ( ssl_opts => { SSL_ca_file => $caf, SSL_ca_path => undef } ) : ();
 my $browser = LWP::UserAgent->new(@lwpargs);
 $browser->env_proxy;
-my $request = HTTP::Request->new(POST => "$host/rest/v1/public/license/$licenseId/validate?version=$options{version}");
+print "licenseID is $licenseID \n";
+my $request = HTTP::Request->new(POST => "$host/rest/v1/public/license/$licenseID/validate?version=$options{version}");
 $request->header('Content-Type' => 'application/json');
 my $response = $browser->request($request);
 if ( $response->is_success ) {
