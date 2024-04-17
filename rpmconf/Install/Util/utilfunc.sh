@@ -2548,6 +2548,10 @@ checkLicenseDaemonServiceRunning() {
 					exit 1
 				else
 					LICENSE_DAEMON_HOST=$(echo "$ZMPROV_OUTPUT" | awk -F': ' '/zimbraLicenseDaemonServerHost/{print $2}')
+					if [ -z "$LICENSE_DAEMON_HOST" ]; then
+						printWarning "zimbra-license-daemon should be installed prior to zimbra-store"
+						exit 1
+					fi
 				fi
 			fi
 			if [ -z "$LICENSE_DAEMON_HOST" ]; then
