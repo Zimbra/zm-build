@@ -51,6 +51,7 @@ our $SU = "su - zimbra -c ";
 my $filename="/opt/zimbra/conf/localconfig.xml";
 my $uid = (stat $filename)[4];
 my $user = (getpwuid $uid)[0];
+my $license_file = "/opt/zimbra/conf/ZCSLicensekey";
 
 if ($user ne "zimbra") {
     progress ("\n\nERROR\n\n");
@@ -2675,27 +2676,31 @@ sub setLicenseKey {
 }
 
 sub chooseLicenseActivationOption {
-	while (1) {
-		print "1) Activate license with installation\n";
-		print "2) Activate license after installation\n\n";
-		my $choice = askNonBlank("Select, or 'r' for previous menu","r");
-		if ($choice eq "1") {
-			setLicenseKey();
-			if ($config{LICENSEKEY} ne "") {
-				$config{LICENSEACTIVATIONOPTION} = $choice;
+			while (1) {
+				print "1) Activate license with installation\n";
+				print "2) Activate license after installation\n\n";
+				my $choice = askNonBlank("Select, or 'r' for previous menu","r");
+				if ($choice eq "1") {
+					setLicenseKey();
+					if ($config{LICENSEKEY} ne "") {
+						system("echo \"$config{LICENSEKEY}\" > $license_file");
+						system("chown zimbra:zimbra $license_file");
+						system("chmod 644 $license_file");
+						$config{LICENSEACTIVATIONOPTION} = $choice;
+					}
+					return;
+				}
+				if ($choice eq "2") {
+					system("rm -rf $license_file");
+					$config{LICENSEACTIVATIONOPTION} = $choice;
+					print "After the successful installation, use zmlicense -a <licensekey> to activate license key or contact support team for an offline activation file \n";
+					return;
+				}
+				if ($choice eq "r") {
+					return;
+				}
+				print "Please enter a valid option!\n\n";
 			}
-			return;
-		}
-		if ($choice eq "2") {
-			$config{LICENSEACTIVATIONOPTION} = $choice;
-			print "After the successful installation, use zmlicense -a <licensekey> to activate license key or contact support team for an offline activation file \n";
-			return;
-		}
-		if ($choice eq "r") {
-			return;
-		}
-		print "Please enter a valid option!\n\n";
-	}
 }
 
 
@@ -4490,6 +4495,10 @@ sub createStoreMenu {
       "arg" => "UIWEBAPPS"
     };
     $i++;
+    if (-e $license_file) {
+	    chomp($config{LICENSEKEY} = qx(cat $license_file));
+	    $config{LICENSEACTIVATIONOPTION} = "1";
+    }
     if ($config{LICENSEACTIVATIONOPTION} eq "1") {
 	    $config{LICENSEACTIVATIONOPTIONMSG} = "Activate license with installation";
     } elsif ($config{LICENSEACTIVATIONOPTION} eq "2") {
@@ -4497,7 +4506,6 @@ sub createStoreMenu {
     } else {
 	    $config{LICENSEACTIVATIONOPTIONMSG} = "UNSET";
     }
-
     # only prompt for license if we are network install and
     # a license not activated
     if (isNetwork() && !isLicenseActivated() ) {
@@ -7405,10 +7413,7 @@ sub applyConfig {
     runAsZimbra ("/opt/zimbra/bin/zmcontrol start");
     qx($SU "/opt/zimbra/bin/zmcontrol status");
     progress ( "done.\n" );
-    # Activate license if user selected option 1. Activate license with installation
-    if ($config{LICENSEACTIVATIONOPTION} eq "1") {
-	    activateLicense();
-    }
+	activateLicense();
 
     # Initialize application server specific items
     # only after the application server is running.
@@ -7889,29 +7894,47 @@ sub addJDK17Options {
 
 sub activateLicense {
 	if (isNetwork() && isEnabled("zimbra-store")) {
-		progress ("Looking for valid license to activate...");
-		my $licensekey = $config{LICENSEKEY};
-		my $rc = runAsZimbra("/opt/zimbra/bin/zmlicense -c");
-		if ($rc == 256 || $rc == 512) {
-			my $lic = 1;
+		if ($config{LICENSEACTIVATIONOPTION} eq "1") {
+			progress ("Looking for valid license to activate...");
+			my $licensekey = $config{LICENSEKEY};
+			my $rc = runAsZimbra("/opt/zimbra/bin/zmlicense -c");
+			if ($rc == 256 || $rc == 512) {
+				my $lic = 1;
+				if ($licensekey ne "") {
+					$rc = runAsZimbra("/opt/zimbra/bin/zmlicense -a $licensekey");
+					if ($rc != 0) {
+						progress ("failed to activate license.\n");
+						$lic = 0;
+					} else {
+						progress ("license successfully activated.\n");
+					}
+				} else {
+					progress ("license key not found.\n");
+				}
+				if ($lic == 0){
+					progress ("\n*******ERROR\n\nFailed to activate a license - this will prevent your server from functioning properly\n");
+					progress ("Please contact Zimbra to obtain a license\n");
+					ask ("Press RETURN to continue","");
+				}
+			} else {
+				progress ("license already activated.\n");
+			}
+		}
+		if (! $newinstall ) {
+			progress ("Activating license...");
+			if (-e $license_file) {
+				chomp($licensekey = qx(cat $license_file));
+			}
 			if ($licensekey ne "") {
 				$rc = runAsZimbra("/opt/zimbra/bin/zmlicense -a $licensekey");
 				if ($rc != 0) {
 					progress ("failed to activate license.\n");
-					$lic = 0;
 				} else {
 					progress ("license successfully activated.\n");
 				}
 			} else {
 				progress ("license key not found.\n");
 			}
-			if ($lic == 0){
-				progress ("\n*******ERROR\n\nFailed to activate a license - this will prevent your server from functioning properly\n");
-				progress ("Please contact Zimbra to obtain a license\n");
-				ask ("Press RETURN to continue","");
-			}
-		} else {
-			progress ("license already activated.\n");
 		}
 	}
 }

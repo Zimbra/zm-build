@@ -119,6 +119,10 @@ if (!defined($licenseID) || $licenseID eq '') {
         system("echo \"$licenseID\" > $license_file");
         set_permissions($license_file);
     }
+} else {
+	if (-e $license_file) {
+		chomp($licenseID = qx(cat $license_file));
+	}
 }
 my $caf = '/opt/zimbra/zimbramon/lib/Mozilla/CA/cacert.pem';
 my @lwpargs = -f $caf ? ( ssl_opts => { SSL_ca_file => $caf, SSL_ca_path => undef } ) : ();

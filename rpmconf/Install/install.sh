@@ -64,7 +64,7 @@ usage() {
   exit
 }
 
-validate_license_key() {
+validateLicensekey() {
     local new="$1"
     if [[ ! "$new" =~ ^[A-Za-z0-9]+$ ]] || (( ${#new} < 18 )) || (( ${#new} > 24 )) || [[ -z "$new" ]]; then
 	echo "Invalid license key entered. The license key should be a non-blank alphanumeric string of 18-24 characters without any special characters!"
@@ -82,7 +82,7 @@ while [ $# -ne 0 ]; do
     -l|--licensekey)
       shift
       LICENSEKEY=$1
-      validate_license_key $LICENSEKEY
+      validateLicensekey $LICENSEKEY
       echo LICENSEKEY is $LICENSEKEY
       ;;
     -u|--uninstall)
@@ -137,6 +137,9 @@ chmod 750 $SAVEDIR
 
 echo ""
 echo "Operations logged to $LOGFILE"
+if [ -e "/opt/zimbra/conf/ZCSLicensekey" ]; then
+	rm -f /opt/zimbra/conf/ZCSLicensekey
+fi
 
 if [ "x$DEFAULTFILE" != "x" ]; then
 	AUTOINSTALL="yes"
