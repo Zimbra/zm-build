@@ -7413,7 +7413,7 @@ sub applyConfig {
     runAsZimbra ("/opt/zimbra/bin/zmcontrol start");
     qx($SU "/opt/zimbra/bin/zmcontrol status");
     progress ( "done.\n" );
-	activateLicense();
+    activateLicense();
 
     # Initialize application server specific items
     # only after the application server is running.
