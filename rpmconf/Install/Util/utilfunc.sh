@@ -854,7 +854,7 @@ verifyUpgrade() {
           echo "Validating whether an existing license is expired or not and checking if it qualifies for an upgrade"
           echo $HOSTNAME | egrep -qe 'eng.vmware.com$|eng.zimbra.com$|lab.zimbra.com$|zimbradev.com$' > /dev/null 2>&1
           if [ $? = 0 ]; then
-              bin/checkLicense.pl -uv $ZM_INST_VERSION -cv $ZM_CUR_VERSION
+              bin/checkLicense.pl -i -uv $ZM_INST_VERSION -cv $ZM_CUR_VERSION
           else
               bin/checkLicense.pl -uv $ZM_INST_VERSION -cv $ZM_CUR_VERSION
           fi
