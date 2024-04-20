@@ -83,7 +83,6 @@ while [ $# -ne 0 ]; do
       shift
       LICENSEKEY=$1
       validateLicensekey $LICENSEKEY
-      echo LICENSEKEY is $LICENSEKEY
       ;;
     -u|--uninstall)
       UNINSTALL="yes"
@@ -137,9 +136,19 @@ chmod 750 $SAVEDIR
 
 echo ""
 echo "Operations logged to $LOGFILE"
-if [ -e "/opt/zimbra/conf/ZCSLicensekey" ]; then
-	rm -f /opt/zimbra/conf/ZCSLicensekey
-fi
+
+licensefiles=(
+    "/opt/zimbra/conf/ZCSLicense.xml"
+    "/opt/zimbra/conf/ZCSLicense-Trial.xml"
+    "/opt/zimbra/conf/ZCSLicense-activated.xml"
+    "/opt/zimbra/conf/ZCSLicensekey"
+)
+
+for file in "${licensefiles[@]}"; do
+    if [[ -e "$file" ]]; then
+        rm -f "$file"
+    fi
+done
 
 if [ "x$DEFAULTFILE" != "x" ]; then
 	AUTOINSTALL="yes"
@@ -148,7 +157,6 @@ else
 fi
 
 if [ "x$LICENSEKEY" != "x" ] ; then
-  echo "Installing /opt/zimbra/conf/ZCSLicensekey"
   if [ ! -d "/opt/zimbra/conf" ]; then
     mkdir -p /opt/zimbra/conf
   fi
@@ -274,7 +282,6 @@ if [ $UPGRADE = "yes" ]; then
 fi
 
 if [ "x$LICENSEKEY" != "x" ] ; then
-  echo "Installing /opt/zimbra/conf/ZCSLicensekey"
   if [ ! -d "/opt/zimbra/conf" ]; then
     mkdir -p /opt/zimbra/conf
   fi
