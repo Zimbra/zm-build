@@ -1691,8 +1691,8 @@ removeNalpeironPackages() {
 			echo "done"
 		fi
 	done
-	if [ -f /etc/sudoers.d/zimbra-nalpdaemon ]; then
-		rm /etc/sudoers.d/zimbra-nalpdaemon
+	if [ -f /etc/sudoers.d/02_zimbra-nalpdaemon ]; then
+		rm /etc/sudoers.d/02_zimbra-nalpdaemon
 	fi
 }
 
