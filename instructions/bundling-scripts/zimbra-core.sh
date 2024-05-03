@@ -516,6 +516,7 @@ main()
    Copy ${repoDir}/zm-db-conf/src/db/migration/migrateToSplitTables.pl                              ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/scripts/migrateToSplitTables.pl
    Copy ${repoDir}/zm-db-conf/src/db/migration/migrateUpdateAppointment.pl                          ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/scripts/migrateUpdateAppointment.pl
    Copy ${repoDir}/zm-db-conf/src/db/migration/optimizeMboxgroups.pl                                ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/scripts/optimizeMboxgroups.pl
+   Copy ${repoDir}/zm-db-conf/src/db/migration/zmdbupgrade.pl                                       ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/scripts/zmdbupgrade.pl
    Copy ${repoDir}/zm-db-conf/src/db/mysql/create_database.sql                                      ${repoDir}/zm-build/${currentPackage}/opt/zimbra/db/create_database.sql
    Copy ${repoDir}/zm-db-conf/src/db/mysql/db.sql                                                   ${repoDir}/zm-build/${currentPackage}/opt/zimbra/db/db.sql
 
