@@ -327,7 +327,10 @@ checkDatabaseIntegrity() {
 					fi
 				fi
 				if [ $MAILBOXDBINTEGRITYSTATUS != 0 ]; then
-					exit $?
+					askYN "Do you want to continue with database errors?" "N"
+					if [ "$response" != "yes" ]; then
+						exit $MAILBOXDBINTEGRITYSTATUS
+					fi
 				fi
 				break
 			done
