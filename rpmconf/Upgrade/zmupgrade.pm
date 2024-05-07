@@ -41,6 +41,9 @@ chomp $rundir;
 my $scriptDir = "/opt/zimbra/libexec/scripts";
 
 my $lowVersion = 52;
+
+# Ensure to update the corresponding value in the zm-db-conf repository,
+# specifically in the file src/db/migration/zmdbupgrade.pl.
 my $hiVersion = 118; # this should be set to the DB version expected by current server code
 
 my $needSlapIndexing = 0;
