@@ -1684,7 +1684,23 @@ removeErrorMessage() {
   exit 1
 }
 
+removeNalpeironPackages() {
+	nalpeironPackages="nalppgsql nalpdaemon zimbra-nalpeiron-offline-daemon"
+	for i in $nalpeironPackages; do
+		isInstalled $i
+		if [ x$PKGINSTALLED != "x" ]; then
+			echo -n "   Removing $i..."
+			$PACKAGERM $i >/dev/null 2>&1
+			echo "done"
+		fi
+	done
+	if [ -f /etc/sudoers.d/02_zimbra-nalpdaemon ]; then
+		rm /etc/sudoers.d/02_zimbra-nalpdaemon
+	fi
+}
+
 removeExistingPackages() {
+  removeNalpeironPackages
   echo ""
   echo "Removing existing packages"
   echo ""
