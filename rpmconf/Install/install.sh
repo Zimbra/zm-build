@@ -140,6 +140,7 @@ echo "Operations logged to $LOGFILE"
 licensefiles=(
     "/opt/zimbra/conf/ZCSLicense-activated.xml"
     "/opt/zimbra/conf/ZCSLicensekey"
+    "/opt/zimbra/conf/skip_activation_check"
 )
 
 for file in "${licensefiles[@]}"; do
@@ -161,6 +162,15 @@ if [ "x$LICENSEKEY" != "x" ] ; then
   echo "$LICENSEKEY" > /opt/zimbra/conf/ZCSLicensekey
   chown zimbra:zimbra /opt/zimbra/conf/ZCSLicensekey
   chmod 644 /opt/zimbra/conf/ZCSLicensekey
+fi
+
+if [ x"$SKIP_ACTIVATION_CHECK" = "xyes" ]; then
+	if [ ! -d "/opt/zimbra/conf" ]; then
+		mkdir -p /opt/zimbra/conf
+	fi
+	echo "$SKIP_ACTIVATION_CHECK" > /opt/zimbra/conf/skip_activation_check
+	chown zimbra:zimbra /opt/zimbra/conf/skip_activation_check
+	chmod 644 /opt/zimbra/conf/skip_activation_check
 fi
 
 checkExistingInstall
@@ -286,6 +296,15 @@ if [ "x$LICENSEKEY" != "x" ] ; then
   echo "$LICENSEKEY" > /opt/zimbra/conf/ZCSLicensekey
   chown zimbra:zimbra /opt/zimbra/conf/ZCSLicensekey
   chmod 644 /opt/zimbra/conf/ZCSLicensekey
+fi
+
+if [ x"$SKIP_ACTIVATION_CHECK" = "xyes" ]; then
+        if [ ! -d "/opt/zimbra/conf" ]; then
+                mkdir -p /opt/zimbra/conf
+        fi
+        echo "$SKIP_ACTIVATION_CHECK" > /opt/zimbra/conf/skip_activation_check
+        chown zimbra:zimbra /opt/zimbra/conf/skip_activation_check
+        chmod 644 /opt/zimbra/conf/skip_activation_check
 fi
 
 

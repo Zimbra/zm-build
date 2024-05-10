@@ -119,7 +119,7 @@ $mesg = $ldap->search(
 my $size = $mesg->count;
 if (compare_versions($options{currentVersion}, '10.1.0') >= 0 && $size == 0) {
 	$ldap->unbind();
-	myDie(2,"Error: license key not found\n");
+	myDie(2,"Error: License key not detected\n");
 }
 
 my $entry           = $mesg->entry(0);

@@ -52,6 +52,9 @@ my $filename="/opt/zimbra/conf/localconfig.xml";
 my $uid = (stat $filename)[4];
 my $user = (getpwuid $uid)[0];
 my $license_file = "/opt/zimbra/conf/ZCSLicensekey";
+my $skip_activation_file = "/opt/zimbra/conf/skip_activation_check";
+my $skip_activation_check = `cat $skip_activation_file 2>/dev/null`;
+chomp($skip_activation_check);
 
 if ($user ne "zimbra") {
     progress ("\n\nERROR\n\n");
@@ -3561,7 +3564,7 @@ sub isFoss {
 sub isLicenseActivated {
 	my $licenseDaemonConfigured = isEnabled("zimbra-license-daemon") && -d "/opt/zimbra/license";
 	runAsZimbra("/opt/zimbra/bin/zmlicensectl --service restart") if $licenseDaemonConfigured && !$newinstall;
-	my $status = runAsZimbra("/opt/zimbra/bin/zmlicense -c") ? 0 : 1;
+	my $status = runAsZimbra("/opt/zimbra/bin/zmlicense -c >/dev/null") ? 0 : 1;
 	runAsZimbra("/opt/zimbra/bin/zmlicensectl --service stop") if $licenseDaemonConfigured && !$newinstall;
 	return $status;
 }
@@ -4510,8 +4513,8 @@ sub createStoreMenu {
     } else {
 	    $config{LICENSEACTIVATIONOPTIONMSG} = "UNSET";
     }
-    # only prompt for license if we are network install and a license not activated
-    if (isNetwork() && !isLicenseActivated()) {
+    # only prompt for license if it is a network install, the license is not activated, and the skip_activation_check is not set to "yes".
+    if (isNetwork() && !isLicenseActivated() && $skip_activation_check ne "yes") {
 	    $$lm{menuitems}{$i} = {
 		    "prompt" => "License Activation:",
 		    "var" => \$config{LICENSEACTIVATIONOPTIONMSG},
@@ -5026,7 +5029,7 @@ sub runAsRoot {
 
 sub runAsZimbra {
   my $cmd = shift;
-  if ($cmd =~ /ldappass/ || $cmd =~ /init/ || $cmd =~ /zmprov -r -m -l ca/ || $cmd =~ /zmlicense -a/) {
+  if ($cmd =~ /ldappass/ || $cmd =~ /init/ || $cmd =~ /zmprov -r -m -l ca/ || $cmd =~ /zmlicense/) {
     # Suppress passwords in log file
     my $c = (split ' ', $cmd)[0];
     detail ( "*** Running as zimbra user: $c\n" );
@@ -7416,7 +7419,11 @@ sub applyConfig {
     runAsZimbra ("/opt/zimbra/bin/zmcontrol start");
     qx($SU "/opt/zimbra/bin/zmcontrol status");
     progress ( "done.\n" );
-    activateLicense();
+    if ($skip_activation_check =~ /^yes$/i) {
+	    progress ("Skipping license activation.\n");
+    } else {
+	    activateLicense();
+    }
 
     # Initialize application server specific items
     # only after the application server is running.
@@ -7479,6 +7486,7 @@ sub applyConfig {
   unlink($license_file) if -e $license_file;
   unlink("/opt/zimbra/conf/ZCSLicense.xml") if -e "/opt/zimbra/conf/ZCSLicense.xml";
   unlink("/opt/zimbra/conf/ZCSLicense-Trial.xml") if -e "/opt/zimbra/conf/ZCSLicense-Trial.xml";
+  unlink($skip_activation_file) if -e $skip_activation_file;
   if (!defined ($options{c})) {
     ask("Configuration complete - press return to exit", "");
     print "\n\n";
@@ -7908,7 +7916,7 @@ sub activateLicense {
 				chomp($licensekey = qx(cat $license_file)) if (-e $license_file);
 			}
 			if ($licensekey ne "") {
-				my $rc = runAsZimbra("/opt/zimbra/bin/zmlicense -l -a $licensekey");
+				my $rc = runAsZimbra("/opt/zimbra/bin/zmlicense -l -a $licensekey >/dev/null");
 				if ($rc != 0) {
 					progress ("failed to activate license.\n");
 				} else {
@@ -7921,11 +7929,11 @@ sub activateLicense {
 			if ($config{LICENSEACTIVATIONOPTION} eq "1") {
 				progress ("Looking for valid license to activate...");
 				my $licensekey = $config{LICENSEKEY};
-				my $rc = runAsZimbra("/opt/zimbra/bin/zmlicense -c");
+				my $rc = runAsZimbra("/opt/zimbra/bin/zmlicense -c >/dev/null");
 				if ($rc == 256 || $rc == 512) {
 					my $lic = 1;
 					if ($licensekey ne "") {
-						$rc = runAsZimbra("/opt/zimbra/bin/zmlicense -a $licensekey");
+						$rc = runAsZimbra("/opt/zimbra/bin/zmlicense -a $licensekey >/dev/null");
 						if ($rc != 0) {
 							 progress ("failed to activate license.\n");
 							  $lic = 0;
