@@ -72,6 +72,17 @@ validateLicensekey() {
     fi
 }
 
+checkSkipActivation() {
+	if [ x"$SKIP_ACTIVATION_CHECK" = "xyes" ]; then
+		if [ ! -d "/opt/zimbra/conf" ]; then
+			mkdir -p /opt/zimbra/conf
+		fi
+		echo "$SKIP_ACTIVATION_CHECK" > /opt/zimbra/conf/skip_activation_check
+		chown zimbra:zimbra /opt/zimbra/conf/skip_activation_check
+		chmod 644 /opt/zimbra/conf/skip_activation_check
+	fi
+}
+
 
 while [ $# -ne 0 ]; do
   case $1 in
@@ -164,15 +175,7 @@ if [ "x$LICENSEKEY" != "x" ] ; then
   chmod 644 /opt/zimbra/conf/ZCSLicensekey
 fi
 
-if [ x"$SKIP_ACTIVATION_CHECK" = "xyes" ]; then
-	if [ ! -d "/opt/zimbra/conf" ]; then
-		mkdir -p /opt/zimbra/conf
-	fi
-	echo "$SKIP_ACTIVATION_CHECK" > /opt/zimbra/conf/skip_activation_check
-	chown zimbra:zimbra /opt/zimbra/conf/skip_activation_check
-	chmod 644 /opt/zimbra/conf/skip_activation_check
-fi
-
+checkSkipActivation
 checkExistingInstall
 
 if [ x$UNINSTALL = "xyes" ]; then
@@ -298,16 +301,7 @@ if [ "x$LICENSEKEY" != "x" ] ; then
   chmod 644 /opt/zimbra/conf/ZCSLicensekey
 fi
 
-if [ x"$SKIP_ACTIVATION_CHECK" = "xyes" ]; then
-        if [ ! -d "/opt/zimbra/conf" ]; then
-                mkdir -p /opt/zimbra/conf
-        fi
-        echo "$SKIP_ACTIVATION_CHECK" > /opt/zimbra/conf/skip_activation_check
-        chown zimbra:zimbra /opt/zimbra/conf/skip_activation_check
-        chmod 644 /opt/zimbra/conf/skip_activation_check
-fi
-
-
+checkSkipActivation
 if [ $SOFTWAREONLY = "yes" ]; then
 
 	echo ""
