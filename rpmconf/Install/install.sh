@@ -138,8 +138,6 @@ echo ""
 echo "Operations logged to $LOGFILE"
 
 licensefiles=(
-    "/opt/zimbra/conf/ZCSLicense.xml"
-    "/opt/zimbra/conf/ZCSLicense-Trial.xml"
     "/opt/zimbra/conf/ZCSLicense-activated.xml"
     "/opt/zimbra/conf/ZCSLicensekey"
 )

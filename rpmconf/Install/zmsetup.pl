@@ -7417,7 +7417,6 @@ sub applyConfig {
     qx($SU "/opt/zimbra/bin/zmcontrol status");
     progress ( "done.\n" );
     activateLicense();
-    system("rm -rf $license_file") if -e $license_file;
 
     # Initialize application server specific items
     # only after the application server is running.
@@ -7476,6 +7475,10 @@ sub applyConfig {
     progress ( "Operations logged to $logfile\n" );
   }
   progress ( "\n\n" );
+  # cleanup license option files
+  unlink($license_file) if -e $license_file;
+  unlink("/opt/zimbra/conf/ZCSLicense.xml") if -e "/opt/zimbra/conf/ZCSLicense.xml";
+  unlink("/opt/zimbra/conf/ZCSLicense-Trial.xml") if -e "/opt/zimbra/conf/ZCSLicense-Trial.xml";
   if (!defined ($options{c})) {
     ask("Configuration complete - press return to exit", "");
     print "\n\n";

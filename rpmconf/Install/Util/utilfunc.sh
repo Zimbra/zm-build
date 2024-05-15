@@ -957,6 +957,7 @@ verifyNGModulesInstalled() {
 		exit 1
 	fi
 }
+
 verifyLicenseActivationServer() {
 
   if [ x"$SKIP_ACTIVATION_CHECK" = "xyes" -o x"$SKIP_UPGRADE_CHECK" = "xyes" ]; then
@@ -979,56 +980,42 @@ verifyLicenseActivationServer() {
     return
   fi
 
-  # if all else fails make sure we can contact the activation server for automated activation
-  if [ ${ZM_CUR_MAJOR} -ge "7" ]; then
-    if [ ${ZM_CUR_MAJOR} -eq "7" -a ${ZM_CUR_MINOR} -ge "1" ]; then
-      /opt/zimbra/bin/zmlicense --ping > /dev/null 2>&1
-    elif [ ${ZM_CUR_MAJOR} -gt "7" ]; then
-      /opt/zimbra/bin/zmlicense --ping > /dev/null 2>&1
-    else
-      /opt/zimbra/java/bin/java -XX:ErrorFile=/opt/zimbra/log -client -Xmx256m -Dzimbra.home=/opt/zimbra -Djava.library.path=/opt/zimbra/lib  -classpath ./lib/jars/zimbra-license-tools.jar:/opt/zimbra/lib/jars/* com.zimbra.cs.license.LicenseCLI --ping > /dev/null 2>&1
-    fi
-    if [ $? != 0 ]; then
-      activationWarning
-    fi
+  # make sure we can contact the activation server for automated activation
+  echo $HOSTNAME | egrep -qe 'vmware.com$|zimbra.com$|zimbradev.com$' > /dev/null 2>&1
+  if [ $? = 0 ]; then
+	  url='https://zimbra-stage-license.eng.zimbra.com/zimbraLicensePortal/public/activation?action=test'
   else
-    echo $HOSTNAME | egrep -qe 'vmware.com$|zimbra.com$' > /dev/null 2>&1
-    if [ $? = 0 ]; then
-      url='https://zimbra-stage-license.eng.zimbra.com/zimbraLicensePortal/public/activation?action=test'
-    else
-      url='https://license.zimbra.com/zimbraLicensePortal/public/activation?action=test'
-    fi
+	  url='https://license.zimbra.com/zimbraLicensePortal/public/activation?action=test'
+  fi
 
-    cmd=$(which curl 2>/dev/null)
-    if [ -x "$cmd" ]; then
-      output=$($cmd --connect-timeout 5 -s -f $url)
-      if [ $? != 0 ]; then
-        output=$($cmd -k --connect-timeout 5 -s -f $url)
-        if [ $? != 0 ]; then
-          activationWarning
-        else
-          return
-        fi
-      else
-        return
-      fi
-    fi
-    cmd=$(which wget 2>/dev/null)
-    if [ -x "$cmd" ]; then
-      output=$($cmd --tries 1 -T 5 -q -O /tmp/zmlicense.tmp $url)
-      if [ $? != 0 ]; then
-        output=$($cmd --no-check-certificate --tries 1 -T 5 -q -O /tmp/zmlicense.tmp $url)
-        if [ $? != 0 ]; then
-          activationWarning
-        else
-          return
-        fi
-        activationWarning
-      else
-        return
-      fi
-    fi
-    activationWarning
+  cmd=$(which curl 2>/dev/null)
+  if [ -x "$cmd" ]; then
+	  output=$($cmd --connect-timeout 5 -s -f $url)
+	  if [ $? != 0 ]; then
+		  output=$($cmd -k --connect-timeout 5 -s -f $url)
+		  if [ $? != 0 ]; then
+			  activationWarning
+		  else
+			  return
+		  fi
+	  else
+		  return
+	  fi
+  fi
+  cmd=$(which wget 2>/dev/null)
+  if [ -x "$cmd" ]; then
+	  output=$($cmd --tries 1 -T 5 -q -O /tmp/zmlicense.tmp $url)
+	  if [ $? != 0 ]; then
+		  output=$($cmd --no-check-certificate --tries 1 -T 5 -q -O /tmp/zmlicense.tmp $url)
+		  if [ $? != 0 ]; then
+			  activationWarning
+		  else
+			  return
+		  fi
+		  activationWarning
+	  else
+		  return
+	  fi
   fi
 }
 
@@ -1039,9 +1026,6 @@ activationWarning() {
   echo ""
   echo "The ZCS Network upgrade will automatically attempt to activate the"
   echo "current license as long as the activation server can be contacted."
-  echo ""
-  echo "You can obtain a manual activation key and re-run the upgrade"
-  echo "by specifying the -a activation.xml option."
   echo ""
   echo "A manual license activation key can be obtained by either visiting"
   echo "the Zimbra support portal or contacting Zimbra support or sales."
@@ -1070,14 +1054,20 @@ verifyLicenseAvailable() {
 
   # use the tool if it exists
   if [ -f "/opt/zimbra/bin/zmlicense" ]; then
-    licenseCheck=`su - zimbra -c "zmlicense -c" 2> /dev/null`
-    licensedUsers=`su - zimbra -c "zmlicense -p | grep ^AccountsLimit | sed -e 's/AccountsLimit=//'" 2> /dev/null`
-    licenseValidUntil=`su - zimbra -c "zmlicense -p | grep ^ValidUntil= | sed -e 's/ValidUntil=//'" 2> /dev/null`
-    licenseType=`su - zimbra -c "zmlicense -p | grep ^InstallType= | sed -e 's/InstallType=//'" 2> /dev/null`
+	  licenseCheck=`su - zimbra -c "zmlicense -c" 2> /dev/null`
+	  if [ "${ZM_CUR_MAJOR}" -gt "10" ] || [ "${ZM_CUR_MAJOR}" -eq "10" -a "${ZM_CUR_MINOR}" -ge "1" ]; then
+		  licensedUsers=$(su - zimbra -c "zmprov gcf zimbraNetworkRealtimeActivation 2>/dev/null | grep -o '\"licenseFeatureDetails\":{[^}]*}' | grep -o '\"totalLimit\":\"[^\"]*' | awk -F '\"' '{print \$4}'")
+		  licenseValidUntil=$(su - zimbra -c "zmprov gcf zimbraNetworkRealtimeActivation 2>/dev/null | grep -o '\"licenseActivationDetails\":{[^}]*}' | grep -o '\"ValidUntil\":[^,}]*' | sed 's/\"ValidUntil\"://; s/\"//g'")
+		  licenseType=$(su - zimbra -c "zmprov gcf zimbraNetworkRealtimeActivation 2>/dev/null | grep -o '\"licenseActivationDetails\":{[^}]*}' | grep -o '\"InstallType\":\"[^\"]*' | awk -F '\"' '{print \$4}'")
+	  else
+		  licensedUsers=`su - zimbra -c "zmlicense -p | grep ^AccountsLimit | sed -e 's/AccountsLimit=//'" 2> /dev/null`
+		  licenseValidUntil=`su - zimbra -c "zmlicense -p | grep ^ValidUntil= | sed -e 's/ValidUntil=//'" 2> /dev/null`
+		  licenseType=`su - zimbra -c "zmlicense -p | grep ^InstallType= | sed -e 's/InstallType=//'" 2> /dev/null`
+	  fi
   fi
 
   # parse files if license tool wasn't there or didn't return a valid license
-  if [ x"$licenseCheck" = "xlicense not installed" -o x"$licenseCheck" = "x" ]; then
+  if [ x"$licenseCheck" = "xlicense not installed" -o x"$licenseCheck" = "x" -o "$licenseCheck" =~ "License is not activated" ]; then
     if [ -f "/opt/zimbra/conf/ZCSLicense.xml" ]; then
       licenseCheck="license is OK"
       licensedUsers=`cat /opt/zimbra/conf/ZCSLicense.xml | grep AccountsLimit | head -1  | awk '{print $3}' | awk -F= '{print $2}' | awk -F\" '{print $2}'`
@@ -1089,11 +1079,7 @@ verifyLicenseAvailable() {
       licenseValidUntil=`cat /opt/zimbra/conf/ZCSLicense-Trial.xml | awk -F\" '{ if ($2 ~ /^ValidUntil$/) {print $4 } }'`
       licenseType=`cat /opt/zimbra/conf/ZCSLicense-Trial.xml | awk -F\" '{ if ($2 ~ /^InstallType$/) {print $4 } }'`
     else
-      echo "ERROR: The ZCS Network upgrade requires a license to be located in"
-      echo "/opt/zimbra/conf/ZCSLicense.xml or a license previously installed."
-      echo "The upgrade will not continue without a license."
-      echo ""
-      echo "Your system has not been modified."
+      echo "WARNING: The ZCS Network upgrade requires a valid license to be installed."
       echo ""
       echo "New customers wanting to purchase or obtain a trial license"
       echo "should contact Zimbra sales.  Contact information for Zimbra is"
@@ -1101,17 +1087,19 @@ verifyLicenseAvailable() {
       echo "Existing customers can obtain an updated license file via the"
       echo "Zimbra Support page located at http://www.zimbra.com/support."
       echo ""
-      exit 1;
     fi
   fi
 
-  now=`date -u "+%Y%m%d%H%M%SZ"`
+  if [ "${ZM_CUR_MAJOR}" -gt "10" ] || [ "${ZM_CUR_MAJOR}" -eq "10" -a "${ZM_CUR_MINOR}" -ge "1" ]; then
+	  now=`date -u "+%Y-%m-%d"`
+  else
+	  now=`date -u "+%Y%m%d%H%M%SZ"`
+  fi
   if [ \( x"$licenseValidUntil" \< x"$now" -o x"$licenseValidUntil" == x"$now" \) -a x"$ZMTYPE_INSTALLABLE" == x"NETWORK" ]; then
     if [ x"$licenseType" == x"perpetual" ]; then
       echo ""
       echo "ERROR: The ZCS Network upgrade requires a previously installed license"
-      echo "or the license file located in /opt/zimbra/conf/ZCSLicense.xml to be"
-      echo "valid and not expired."
+      echo "to be valid and not expired."
       echo ""
       echo "The upgrade cannot occur with an expired perpetual license.  In order"
       echo "to perform an upgrade, you will need to have a valid support contract"
@@ -1123,8 +1111,7 @@ verifyLicenseAvailable() {
     else
       echo ""
       echo "WARNING: The ZCS Network upgrade requires a previously installed license"
-      echo "or the license file located in /opt/zimbra/conf/ZCSLicense.xml to be"
-      echo "valid and not expired."
+      echo "to be valid and not expired."
       echo ""
       echo "The upgrade can continue, but there will be some loss of functionality."
       echo ""
@@ -1215,7 +1202,7 @@ verifyLicenseAvailable() {
      if [ $response = "no" ]; then
       askYN "Exit?" "N"
       if [ $response = "yes" ]; then
-        echo "Exiting - place a valid license file in /opt/zimbra/conf/ZCSLicense.xml and rerun."
+        echo "Exiting. Please install a valid license and rerun."
         exit 1
       fi
      else
@@ -1234,7 +1221,7 @@ verifyLicenseAvailable() {
      if [ $response = "no" ]; then
       askYN "Exit?" "N"
       if [ $response = "yes" ]; then
-        echo "Exiting - place a valid license file in /opt/zimbra/conf/ZCSLicense.xml and rerun."
+        echo "Exiting. Please install a valid license and rerun."
         exit 1
       fi
      else
