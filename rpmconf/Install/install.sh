@@ -313,6 +313,16 @@ if [ $SOFTWAREONLY = "yes" ]; then
 	exit 0
 fi
 
+if [ -e "$LOGFILE" ]; then
+	LOG_DIR="/opt/zimbra/log"
+	if [ ! -d "$LOG_DIR" ]; then
+		mkdir -p "$LOG_DIR"
+		chown zimbra:zimbra "$LOG_DIR"
+	fi
+	echo "Copying $LOGFILE to $LOG_DIR"
+	cp -f $LOGFILE $LOG_DIR/
+	chown zimbra:zimbra "$LOG_DIR/$(basename "$LOGFILE")"
+fi
 #
 # Installation complete, now configure
 #

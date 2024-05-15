@@ -17,6 +17,10 @@
 # 
 
 LOGFILE=`mktemp -t install.log.XXXXXXXX 2> /dev/null` || { echo "Failed to create tmpfile"; exit 1; }
+if [ -e "/tmp/install.log" ]; then
+	rm "/tmp/install.log"
+fi
+ln -sf "$LOGFILE" "/tmp/install.log"
 PLATFORM=`bin/get_plat_tag.sh`
 
 CORE_PACKAGES="zimbra-core"
