@@ -1067,7 +1067,7 @@ verifyLicenseAvailable() {
   fi
 
   # parse files if license tool wasn't there or didn't return a valid license
-  if [ x"$licenseCheck" = "xlicense not installed" -o x"$licenseCheck" = "x" -o "$licenseCheck" =~ "License is not activated" ]; then
+  if [ x"$licenseCheck" = "xlicense not installed" ] || [ x"$licenseCheck" = "x" ] || [[ "$licenseCheck" =~ "License is not activated" ]]; then
     if [ -f "/opt/zimbra/conf/ZCSLicense.xml" ]; then
       licenseCheck="license is OK"
       licensedUsers=`cat /opt/zimbra/conf/ZCSLicense.xml | grep AccountsLimit | head -1  | awk '{print $3}' | awk -F= '{print $2}' | awk -F\" '{print $2}'`
