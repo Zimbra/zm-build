@@ -855,7 +855,7 @@ verifyUpgrade() {
       if [ x"$SKIP_ACTIVATION_CHECK" = "xno" ]; then
         if [ -x "bin/checkLicense.pl" ]; then
           echo "Validating whether an existing license is expired or not and checking if it qualifies for an upgrade"
-          echo $HOSTNAME | egrep -qe 'eng.vmware.com$|eng.zimbra.com$|lab.zimbra.com$|zimbradev.com$' > /dev/null 2>&1
+          echo $HOSTNAME | egrep -qe 'eng.zimbra.com$|lab.zimbra.com$|zimbradev.com$' > /dev/null 2>&1
           if [ $? = 0 ]; then
               bin/checkLicense.pl -i -uv $ZM_INST_VERSION -cv $ZM_CUR_VERSION
           else
@@ -981,7 +981,7 @@ verifyLicenseActivationServer() {
   fi
 
   # make sure we can contact the activation server for automated activation
-  echo $HOSTNAME | egrep -qe 'vmware.com$|zimbra.com$|zimbradev.com$' > /dev/null 2>&1
+  echo $HOSTNAME | egrep -qe 'zimbra.com$|zimbradev.com$' > /dev/null 2>&1
   if [ $? = 0 ]; then
 	  url='https://zimbra-stage-license.eng.zimbra.com/zimbraLicensePortal/public/activation?action=test'
   else
@@ -2124,7 +2124,7 @@ configurePackageServer() {
       USE_ZIMBRA_PACKAGE_SERVER="yes"
       PACKAGE_SERVER="repo.zimbra.com"
       response="no"
-      echo $HOSTNAME | egrep -qe 'eng.vmware.com$|eng.zimbra.com$|lab.zimbra.com$|zimbradev.com$' > /dev/null 2>&1
+      echo $HOSTNAME | egrep -qe 'eng.zimbra.com$|lab.zimbra.com$|zimbradev.com$' > /dev/null 2>&1
       if [ $? = 0 ]; then
         askYN "Use internal development repo" "N"
         if [ $response = "yes" ]; then
