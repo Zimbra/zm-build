@@ -2631,8 +2631,8 @@ checkLicenseDaemonServiceRunning() {
 		LICENSE_DAEMON_PORT="8081"
 		if [ $LICENSE_DAEMON_PKG == "no" ]; then
 			if [ $UPGRADE = "yes" ]; then
-				echo "COMMAND: zmprov gacf zimbraLicenseDaemonServerHost" >> $LOGFILE
-				ZMPROV_OUTPUT=$(su - zimbra -c "zmprov gacf zimbraLicenseDaemonServerHost" 2>> $LOGFILE)
+				echo "COMMAND: zmprov -l gacf zimbraLicenseDaemonServerHost" >> $LOGFILE
+				ZMPROV_OUTPUT=$(su - zimbra -c "zmprov -l gacf zimbraLicenseDaemonServerHost" 2>> $LOGFILE)
 				if [ $? -ne 0 ]; then
 					printWarning "Unable to get the zimbraLicenseDaemonServerHost via zmprov command."
 					exit 1
