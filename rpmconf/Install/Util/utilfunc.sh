@@ -328,10 +328,12 @@ checkDatabaseIntegrity() {
 					fi
 				fi
 				if [ $MAILBOXDBINTEGRITYSTATUS != 0 ]; then
-					if echo "$MAILBOXDBINTEGRITYOUTPUT" | grep -q "Found mailbox record mismatch"; then
-						echo "Orphan accounts detected. Continuing with the upgrade"
-					else
+					if echo "$MAILBOXDBINTEGRITYOUTPUT" | grep -q "Database errors found" && echo "$MAILBOXDBINTEGRITYOUTPUT" | grep -q "Orphan accounts detected"; then
 						exit $MAILBOXDBINTEGRITYSTATUS
+					elif echo "$MAILBOXDBINTEGRITYOUTPUT" | grep -q "Database errors found"; then
+						exit $MAILBOXDBINTEGRITYSTATUS
+					elif echo "$MAILBOXDBINTEGRITYOUTPUT" | grep -q "Orphan accounts detected"; then
+						echo "Orphan accounts detected. Continuing with the upgrade."
 					fi
 				fi
 				break
