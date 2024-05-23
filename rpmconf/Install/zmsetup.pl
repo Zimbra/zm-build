@@ -7500,6 +7500,13 @@ sub configureOnlyoffice {
   if (isEnabled("zimbra-onlyoffice") ) {
     #enable preview
     setLdapCOSConfig("zimbraFeatureViewInHTMLEnabled", "TRUE");
+    # configure onlyoffice
+    print "Configuring Onlyoffice...\n";
+    open(my $py, "|-", "/opt/zimbra/onlyoffice/bin/zmonlyofficeconfig");
+    while (<$py>) {
+	     print "$py";
+    }
+    close($py);
 
     if ($configStatus{configOnlyoffice} eq "CONFIGURED") {
       configLog("configOnlyoffice");
@@ -7515,14 +7522,6 @@ sub configureOnlyoffice {
           # on new install
           if (zmupgrade::startSql()) { return 1; }
           createOnlyofficeDB();
-          # configure onlyoffice
-          print "Configuring Onlyoffice...\n";
-
-          open(my $py, "|-", "/opt/zimbra/onlyoffice/bin/zmonlyofficeconfig");
-          while (<$py>) {
-            print "$py";
-          }
-          close($py);
 
           # set the config value zimbraDocumentServerHost
           # if standalone server :

@@ -660,7 +660,7 @@ checkExistingInstall() {
     isInstalled $i
     if [ x"$PKGINSTALLED" != "x" ]; then
       echo "FOUND $PKGINSTALLED"
-      if [ "$i" != "zimbra-memcached" ]; then
+      if [ "$i" != "zimbra-memcached" ] && [ "$i" != "zimbra-license-daemon" ] && [ "$i" != "zimbra-onlyoffice" ]; then
          INSTALLED="yes"
       fi
       INSTALLED_PACKAGES="$INSTALLED_PACKAGES $i"
