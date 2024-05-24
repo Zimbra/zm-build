@@ -678,18 +678,6 @@ checkExistingInstall() {
     fi
   done
 
-  INSTD_CHAT_VIDEO_PACKAGES="0"
-  for i in $CHAT_VIDEO_PACKAGES; do
-	  isInstalled $i
-	  if [ x$PKGINSTALLED != "x" ]; then
-		  echo "    $i...FOUND $PKGINSTALLED"
-		  ((INSTD_CHAT_VIDEO_PACKAGES++))
-		  INSTALLED_PACKAGES="$INSTALLED_PACKAGES $i"
-	  else
-		  echo "    $i...NOT FOUND"
-	  fi
-  done
-
   determineVersionType
   if [ $INSTALLED = "yes" ]; then
     verifyUpgrade
@@ -1734,19 +1722,6 @@ removeUnsupportedPackagesIfInstalled() {
 	done
 }
 
-removeImmailPackagesIfInstalled() {
-	for i in $IMMAIL_PACKAGES; do
-		echo ""
-		isInstalled $i
-		if [ x$PKGINSTALLED != "x" ]; then
-			echo -n "   $i FOUND..."
-			echo ""
-			echo -n "   Removing $i..."
-			$PACKAGERM $i >/dev/null 2>&1
-			echo "done"
-		fi
-	done
-}
 
 removeExistingInstall() {
   if [ $INSTALLED = "yes" ]; then
@@ -1802,7 +1777,6 @@ removeExistingInstall() {
       echo "Upgrading the remote packages"
       removeZextrasPackagesIfInstalled
       removeUnsupportedPackagesIfInstalled
-      removeImmailPackagesIfInstalled
     else
       removeExistingPackages
     fi
@@ -2514,9 +2488,6 @@ getInstallPackages() {
     fi
 
   done
-  if [ x"$ZMTYPE_INSTALLABLE" = "xNETWORK" ]; then
-     selectChatVideo
-  fi
   isp7zipRequired
   checkRequiredSpace
 
@@ -2611,20 +2582,6 @@ installEPELRepo() {
 				fi
 				;;
 		esac
-	fi
-}
-selectChatVideo() {
-	# install chat-video extension and chat-video classic, modern zimlets
-	if [ $STORE_SELECTED = "yes" ] ; then
-		# Don't ask to install if chat-video packages are already installed
-		if [ "${INSTD_CHAT_VIDEO_PACKAGES}" -eq 3 ]; then
-			INSTALL_PACKAGES="$INSTALL_PACKAGES $CHAT_VIDEO_PACKAGES"
-		else
-			askYN "Install chat and video features" "N"
-			if [ $response = "yes" ]; then
-				INSTALL_PACKAGES="$INSTALL_PACKAGES $CHAT_VIDEO_PACKAGES"
-			fi
-		fi
 	fi
 }
 
