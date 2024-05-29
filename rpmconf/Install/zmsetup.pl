@@ -3561,11 +3561,14 @@ sub isFoss {
   return((-f "/opt/zimbra/bin/zmbackup") ? 0 : 1);
 }
 
+sub isLicenseDaemonConfigured {
+	return isInstalled("zimbra-license-daemon") && isEnabled("zimbra-license-daemon") && -d "/opt/zimbra/license";
+}
+
 sub isLicenseActivated {
-	my $licenseDaemonConfigured = isEnabled("zimbra-license-daemon") && -d "/opt/zimbra/license";
-	runAsZimbra("/opt/zimbra/bin/zmlicensectl --service restart") if $licenseDaemonConfigured && !$newinstall;
+	runAsZimbra("/opt/zimbra/bin/zmlicensectl --service restart") if isLicenseDaemonConfigured() && !$newinstall;
 	my $status = runAsZimbra("/opt/zimbra/bin/zmlicense -c >/dev/null") ? 0 : 1;
-	runAsZimbra("/opt/zimbra/bin/zmlicensectl --service stop") if $licenseDaemonConfigured && !$newinstall;
+	runAsZimbra("/opt/zimbra/bin/zmlicensectl --service stop") if isLicenseDaemonConfigured() && !$newinstall;
 	return $status;
 }
 
@@ -7414,8 +7417,15 @@ sub applyConfig {
 
     enableTLSv1_3();
     addJDK17Options();
-    progress ( "Starting servers..." );
-    runAsZimbra ("/opt/zimbra/bin/zmcontrol stop");
+    runAsZimbra ("/opt/zimbra/bin/zmcontrol stop" );
+    if (isInstalled("zimbra-license-daemon")) {
+	    runAsZimbra ("/opt/zimbra/bin/zmlicensectl --service stop");
+    }
+    if (isInstalled("zimbra-ldap") && isEnabled("zimbra-ldap")) {
+	    startLdap();
+    }
+    progress ("Starting servers...");
+    runAsZimbra ("/opt/zimbra/bin/zmlicensectl --service start") if isLicenseDaemonConfigured();
     runAsZimbra ("/opt/zimbra/bin/zmcontrol start");
     qx($SU "/opt/zimbra/bin/zmcontrol status");
     progress ( "done.\n" );

@@ -2163,9 +2163,16 @@ sub upgrade8815GA {
 
 sub stopZimbra {
   main::progress("Stopping zimbra services...");
-  my $rc = main::runAsZimbra("/opt/zimbra/bin/zmcontrol stop");
-  main::progress(($rc == 0) ? "done.\n" : "failed. exiting.\n");
-  return $rc;
+  my $rc1 = main::runAsZimbra("/opt/zimbra/bin/zmcontrol stop");
+  main::progress(($rc1 == 0) ? "done.\n" : "failed. exiting.\n");
+  my $rc2 = 0;
+  if (main::isInstalled("zimbra-license-daemon")) {
+	  main::progress("Stopping license daemon service...");
+	  $rc2 = main::runAsZimbra("/opt/zimbra/bin/zmlicensectl --service stop");
+	  main::progress(($rc2 == 0) ? "done.\n" : "failed. exiting.\n");
+  }
+  my $exit_code = ($rc1 == 0 && $rc2 == 0) ? 0 : 1;
+  return $exit_code;
 }
 
 sub startLdap {

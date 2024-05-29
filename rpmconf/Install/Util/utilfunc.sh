@@ -1265,6 +1265,10 @@ runAsZimbra() {
 
 shutDownSystem() {
   runAsZimbra "zmcontrol shutdown"
+  isInstalled "zimbra-license-daemon"
+  if [ x$PKGINSTALLED != "x" ]; then
+	  [ -x "/opt/zimbra/bin/zmlicensectl" ] && runAsZimbra "/opt/zimbra/bin/zmlicensectl --service stop"
+  fi
   # stop all zimbra process that may have been orphaned
   local OS=$(uname -s | tr A-Z a-z)
   if [ x"$OS" = "xlinux" ]; then
