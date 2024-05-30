@@ -1668,7 +1668,7 @@ removeErrorMessage() {
 }
 
 removeNalpeironPackages() {
-	nalpeironPackages="nalppgsql nalpdaemon zimbra-nalpeiron-offline-daemon"
+	nalpeironPackages="zimbra-nalpeiron-offline-daemon nalpdaemon nalppgsql"
 	for i in $nalpeironPackages; do
 		isInstalled $i
 		if [ x$PKGINSTALLED != "x" ]; then
