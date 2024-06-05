@@ -7379,6 +7379,12 @@ sub applyConfig {
     configImap();
   }
 
+  if (getLdapConfigValue("zimbraLicenseNotificationEmail") eq "") {
+          progress("Setting zimbraLicenseNotificationEmail...");
+          setLdapGlobalConfig("zimbraLicenseNotificationEmail", $config{CREATEADMIN});
+          progress("done.\n");
+  }
+
   configureOnlyoffice();
 
   if ($config{STARTSERVERS} eq "yes") {
