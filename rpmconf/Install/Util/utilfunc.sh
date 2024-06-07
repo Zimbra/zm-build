@@ -600,6 +600,9 @@ checkRequiredSpace() {
 }
 
 checkStoreRequirements() {
+  if [[ $ONLYOFFICE_SELECTED == "yes" ]]; then
+	  return
+  fi
   echo "Checking required packages for zimbra-store"
   GOOD="yes"
   if [ x"$ZMTYPE_INSTALLABLE" = "xNETWORK" ]; then
