@@ -720,8 +720,8 @@ sub upgrade800BETA2 {
       SET PASSWORD FOR 'root'\@'localhost.localdomain' = PASSWORD('${mysql_root_password}');
 FIX_RIGHTS_EOF
 
-    qx(/opt/zimbra/common/bin/mysql -S '$mysql_socket' -u root --password='$mysql_root_password' -e "$sql");
-    qx(/opt/zimbra/common/bin/mysql -S '$mysql_socket' -u root --password='$mysql_root_password' -e "DROP USER ''\@'localhost'; DROP USER ''\@'${host}'");
+    qx(/opt/zimbra/common/bin/mariadb -S '$mysql_socket' -u root --password='$mysql_root_password' -e "$sql");
+    qx(/opt/zimbra/common/bin/mariadb -S '$mysql_socket' -u root --password='$mysql_root_password' -e "DROP USER ''\@'localhost'; DROP USER ''\@'${host}'");
     stopSql();
 
     # 66663
@@ -2487,7 +2487,7 @@ sub doMysqlUpgrade {
     my $zimbra_tmp = main::getLocalConfig("zimbra_tmp_directory") || "/opt/zimbra/data/tmp";
     my $mysql_socket = main::getLocalConfig("mysql_socket");
     my $mysql_mycnf = main::getLocalConfig("mysql_mycnf");
-    my $mysqlUpgrade = "/opt/zimbra/common/bin/mysql_upgrade";
+    my $mysqlUpgrade = "/opt/zimbra/common/bin/mariadb-upgrade";
     my $cmd = "$mysqlUpgrade --defaults-file=$mysql_mycnf -S $mysql_socket --user=root --password=$db_pass";
     main::progress("Running mysql_upgrade...");
     main::runAsZimbra("$cmd > ${zimbra_tmp}/mysql_upgrade.out 2>&1");

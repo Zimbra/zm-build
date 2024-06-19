@@ -7611,7 +7611,7 @@ sub createOnlyofficeDB {
 
   my $mysql_root_pass = getLocalConfig ("mysql_root_password");
   progress ( "Creating onlyoffice database..." );
-  runAsZimbra ("exec /opt/zimbra/common/bin/mysql -S /opt/zimbra/data/tmp/mysql/mysql.sock -u root --password=$mysql_root_pass < /opt/zimbra/onlyoffice/bin/createdb.sql");
+  runAsZimbra ("exec /opt/zimbra/common/bin/mariadb -S /opt/zimbra/data/tmp/mysql/mysql.sock -u root --password=$mysql_root_pass < /opt/zimbra/onlyoffice/bin/createdb.sql");
   progress ( "done.\n" );
 }
 
