@@ -375,6 +375,27 @@ checkRecentBackup() {
   fi
 }
 
+checkCAKeyLength() {
+	isInstalled "zimbra-ldap"
+	if [ x$PKGINSTALLED != "x" ]; then
+		openssl_cmd=""
+		keyfile="/opt/zimbra/conf/ca/ca.key"
+		if [[ -x "/opt/zimbra/common/bin/openssl" ]]; then
+			openssl_cmd="/opt/zimbra/common/bin/openssl"
+		else
+			openssl_cmd=$(which openssl 2>/dev/null)
+		fi
+		if [[ -f "$keyfile" && -x "$openssl_cmd" ]]; then
+			echo "Checking the keysize of $keyfile ..."
+			key_length=$("$openssl_cmd" rsa -in "$keyfile" -noout -text 2>/dev/null | grep -oP 'Private-Key: \(\K\d+' | head -1)
+			if [[ -n "$key_length" && "$key_length" -lt 2048 ]]; then
+				 echo "$keyfile has a key size of $key_length bits. The minimum key size is 2048. Please fix it to proceed with the upgrade."
+				 exit 1
+			fi
+		fi
+	fi
+}
+
 checkUbuntuRelease() {
   if [ -f "/etc/lsb-release" ]; then
     . /etc/lsb-release
@@ -544,6 +565,7 @@ EOF
     fi
   fi
 
+  checkCAKeyLength
   checkRecentBackup
   checkDatabaseIntegrity
 }
