@@ -85,6 +85,16 @@ Create a directory for your build and check-out the `zm-build` repository:
     cd zm-build
     git checkout origin/develop
 
+Build 10.1.0
+
+```
+mkdir installer-build
+cd installer-build
+git clone --depth 1 --branch 10.1.0 git@github.com:Zimbra/zm-build.git
+cd zm-build
+ENV_CACHE_CLEAR_FLAG=true ./build.pl --ant-options -DskipTests=true --git-default-tag=10.1.0 --build-release-no=10.1.0 --build-type=FOSS --build-release=LIBERTY --build-release-candidate=GA --build-thirdparty-server=files.zimbra.com --no-interactive
+```
+
 To build a specific patch example 10.0.8 run the following:
 
 ```
