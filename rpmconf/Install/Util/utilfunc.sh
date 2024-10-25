@@ -686,7 +686,7 @@ checkExistingInstall() {
   determineVersionType
   if [ $INSTALLED = "yes" ]; then
     verifyUpgrade
-    verifyNGModulesInstalled
+    #verifyNGModulesInstalled
   fi
   verifyLicenseActivationServer
   verifyLicenseAvailable
@@ -1804,7 +1804,7 @@ removeExistingInstall() {
     fi
     if [ "$UPGRADE" = "yes" -a "$POST87UPGRADE" = "true" -a "$FORCE_UPGRADE" != "yes" -a "$ZM_CUR_BUILD" != "$ZM_INST_BUILD" ]; then
       echo "Upgrading the remote packages"
-      removeZextrasPackagesIfInstalled
+      #removeZextrasPackagesIfInstalled
       removeUnsupportedPackagesIfInstalled
       removeImmailPackagesIfInstalled
     else
@@ -2262,6 +2262,22 @@ fi
   fi
 }
 
+getChatOrConnectPackage() {
+	if [ $response = "yes" ]; then
+		askInstallPkgYN "Install zimbra-connect" "yes" "Y" "N"
+		if [ $response = "yes" ]; then
+			INSTALL_PACKAGES="$INSTALL_PACKAGES zimbra-connect"
+		elif [ $response = "no" ]; then
+				response="yes"
+		fi
+	elif [ $response = "no" ]; then
+		askInstallPkgYN "Install zimbra-chat" "yes" "Y" "N"
+		if [ $response = "yes" ]; then
+			INSTALL_PACKAGES="$INSTALL_PACKAGES zimbra-chat"
+			response="no"
+		fi
+	fi
+}
 
 getInstallPackages() {
 
@@ -2294,6 +2310,12 @@ getInstallPackages() {
       echo $INSTALLED_PACKAGES | grep $i > /dev/null 2>&1
       if [ $? = 0 ]; then
         echo "    Upgrading $i"
+	if [ $i = "zimbra-network-modules-ng" ]; then
+		askInstallPkgYN "Install zimbra-connect" "yes" "Y" "N"
+		if [ $response = "yes" ]; then
+			INSTALL_PACKAGES="$INSTALL_PACKAGES zimbra-connect"
+		fi
+	fi
         if [ $i = "zimbra-mta" ]; then
           CONFLICTS="no"
           for j in $CONFLICT_PACKAGES; do
@@ -2385,6 +2407,11 @@ getInstallPackages() {
         askInstallPkgYN "Install $i" "yes" "N" "N"
       elif [ $i = "zimbra-imapd" ]; then
         askInstallPkgYN "Install $i (BETA - for evaluation only)" "no" "N" "N"
+      elif [ $i = "zimbra-network-modules-ng" ]; then
+        if [ $STORE_SELECTED = "yes" ]; then
+		askInstallPkgYN "Install $i" "yes" "N" "N"
+		getChatOrConnectPackage
+	fi
       else
         askYN "Install $i" "N"
       fi
@@ -2395,6 +2422,11 @@ getInstallPackages() {
         askInstallPkgYN "Install $i" "no" "Y" "N"
       elif [ $i = "zimbra-imapd" ]; then
         askInstallPkgYN "Install $i (BETA - for evaluation only)" "no" "N" "N"
+      elif [ $i = "zimbra-network-modules-ng" ]; then
+        if [ $STORE_SELECTED = "yes" ]; then
+		askInstallPkgYN "Install $i" "yes" "Y" "N"
+		getChatOrConnectPackage
+	fi
       elif [ $i = "zimbra-dnscache" ]; then
         if [ $MTA_SELECTED = "yes" ]; then
           askYN "Install $i" "Y"
@@ -2421,6 +2453,23 @@ getInstallPackages() {
         LDAP_SELECTED="yes"
       elif [ $i = "zimbra-onlyoffice" ]; then
         ONLYOFFICE_SELECTED="yes"
+      fi
+
+      if [ $i = "zimbra-network-modules-ng" ]; then
+	      echo "###WARNING###"
+	      echo ""
+	      echo "Network Modules NG needs to bind on TCP ports 8735 and 8736 in order"
+	      echo "to operate, for inter-instance communication."
+	      echo "Please verify no other service listens on these ports and that "
+	      echo "ports 8735 and 8736 are properly filtered from public access "
+	      echo "by your firewall."
+	      echo ""
+	      echo "Please remember that the Backup NG module needs to be initialized in order"
+	      echo "to be functional. This is a one-time operation only that can be performed"
+	      echo "by clicking the 'Initialize' button within the Backup section of the"
+	      echo "Network NG Modules in the Administration Console or by running"
+	      echo "\`zxsuite backup doSmartScan\` as the zimbra user."
+	      echo ""
       fi
 
       if [ $i = "zimbra-mta" ]; then
@@ -2458,9 +2507,6 @@ getInstallPackages() {
     fi
 
   done
-  if [ x"$ZMTYPE_INSTALLABLE" = "xNETWORK" ]; then
-     selectChatVideo
-  fi
   checkRequiredSpace
 
   isInstalled zimbra-store

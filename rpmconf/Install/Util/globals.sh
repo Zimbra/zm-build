@@ -50,18 +50,15 @@ CHAT_VIDEO_PACKAGES="zimbra-zimlet-chat-video-classic \
 zimbra-zimlet-chat-video-modern \
 zimbra-extension-chat-video"
 
-ZEXTRAS_PACKAGES="zimbra-connect \
-zimbra-connect-modern \
+ZEXTRAS_PACKAGES="zimbra-drive \
 zimbra-drive \
 zimbra-drive-ng \
 zimbra-drive-modern \
 zimbra-docs \
 zimbra-docs-modern \
-zimbra-chat \
 zimbra-talk \
 zimbra-zimlet-auth \
-zimbra-zimlet-briefcase-edit-lool \
-zimbra-network-modules-ng"
+zimbra-zimlet-briefcase-edit-lool"
 
 DEPRECATED_PACKAGES_IN_10="zimbra-zimlet-restore-contacts \
 zimbra-zimlet-duplicate-contacts"

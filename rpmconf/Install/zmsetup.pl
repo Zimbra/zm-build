@@ -6583,7 +6583,7 @@ sub zimletCleanup {
     return 1;
   } else {
     detail("ldap bind done for $ldap_dn");
-    $result = $ldap->search(base => $ldap_base, scope => 'one', filter => "(|(cn=convertd)(cn=hsm)(cn=hotbackup)(cn=zimbra_cert_manager)(cn=com_zimbra_search)(cn=zimbra_xmbxsearch)(cn=com_zimbra_domainadmin)(cn=com_zimbra_tinymce)(cn=com_zimbra_tasksreminder)(cn=com_zimbra_linkedin)(cn=com_zimbra_social)(cn=com_zimbra_dnd)(cn=com_zextras_chat_open)(cn=com_zextras_talk)(cn=com_zimbra_smime)(cn=zimbra-zimlet-restore-contacts)(cn=zimbra-zimlet-duplicate-contacts))", attrs => ['cn']);
+    $result = $ldap->search(base => $ldap_base, scope => 'one', filter => "(|(cn=convertd)(cn=hsm)(cn=hotbackup)(cn=zimbra_cert_manager)(cn=com_zimbra_search)(cn=zimbra_xmbxsearch)(cn=com_zimbra_domainadmin)(cn=com_zimbra_tinymce)(cn=com_zimbra_tasksreminder)(cn=com_zimbra_linkedin)(cn=com_zimbra_social)(cn=com_zimbra_dnd)(cn=com_zextras_talk)(cn=com_zimbra_smime)(cn=zimbra-zimlet-restore-contacts)(cn=zimbra-zimlet-duplicate-contacts))", attrs => ['cn']);
     return $result if ($result->code());
     detail("Processing ldap search results");
     foreach my $entry ($result->all_entries) {
@@ -7298,28 +7298,18 @@ sub applyConfig {
         return 1;
       }
     }
-
-    # Disable zextras modules
-    my $zimbraNetworkModulesNGEnabled = getLdapServerValue("zimbraNetworkModulesNGEnabled");
-    if ($zimbraNetworkModulesNGEnabled eq "TRUE"){
-       setLdapServerConfig($config{HOSTNAME}, 'zimbraNetworkModulesNGEnabled', 'FALSE');
+    if (isInstalled("zimbra-network-modules-ng")) {
+	    if ($prevVersionMajor <= 8 && $prevVersionMinor <= 7) {
+		    setLdapServerConfig($config{HOSTNAME}, 'zimbraNetworkModulesNGEnabled', 'TRUE');
+	    }
+    } else {
+	    setLdapServerConfig($config{HOSTNAME}, 'zimbraNetworkModulesNGEnabled', 'FALSE');
     }
-
-    my $zimbraNetworkAdminEnabled = getLdapServerValue("zimbraNetworkAdminEnabled");
-    if ($zimbraNetworkAdminEnabled eq "TRUE"){
-       setLdapServerConfig($config{HOSTNAME}, 'zimbraNetworkAdminEnabled', 'FALSE');
+    if (isInstalled("zimbra-network-modules-ng") && $newinstall) {
+	    main::progress("Enabling zimbra network NG modules features.\n");
+	    setLdapServerConfig($config{HOSTNAME}, 'zimbraNetworkMobileNGEnabled', 'TRUE');
+	    setLdapServerConfig($config{HOSTNAME}, 'zimbraNetworkAdminNGEnabled', 'TRUE');
     }
-
-    my $zimbraNetworkAdminNGEnabled = getLdapServerValue("zimbraNetworkAdminNGEnabled");
-    if ($zimbraNetworkAdminNGEnabled eq "TRUE"){
-       setLdapServerConfig($config{HOSTNAME}, 'zimbraNetworkAdminNGEnabled', 'FALSE');
-    }
-
-    my $zimbraNetworkMobileNGEnabled = getLdapServerValue("zimbraNetworkMobileNGEnabled");
-    if ($zimbraNetworkMobileNGEnabled eq "TRUE"){
-       setLdapServerConfig($config{HOSTNAME}, 'zimbraNetworkMobileNGEnabled', 'FALSE');
-    }
-
     enableTLSv1_3();
     addJDK17Options();
     progress ( "Starting servers..." );
