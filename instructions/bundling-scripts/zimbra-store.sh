@@ -41,6 +41,7 @@ main()
 
     if [ "${buildType}" == "NETWORK" ]
     then
+       cp -f ${repoDir}/zm-hsm-store/src/bin/zmmoveblobs ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmmoveblobs
        cp -f ${repoDir}/zm-hsm/src/bin/zmhsm ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmhsm
        cp -f ${repoDir}/zm-hsm/src/bin/zmschedulesmpolicy ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmschedulesmpolicy
        cp -f ${repoDir}/zm-archive-utils/src/bin/zmarchiveconfig ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmarchiveconfig
