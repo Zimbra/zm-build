@@ -31,3 +31,7 @@
 # Run zmgsaupdate util to trickeSync galsync accounts
 #
 49 0 * * 7	/opt/zimbra/libexec/zmgsaupdate > /dev/null 2>&1
+#
+# Password expiry reminders
+#
+0 0 * * * /opt/zimbra/bin/zmpasswordexpiryreminder
