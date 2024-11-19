@@ -303,6 +303,7 @@ main()
    Copy ${repoDir}/zm-core-utils/src/bin/zmrabbitmqctl                                              ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmrabbitmqctl
    Copy ${repoDir}/zm-core-utils/src/bin/zmonlyofficeinstall                                        ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmonlyofficeinstall
    Copy ${repoDir}/zm-core-utils/src/bin/zmlicensectl                                               ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmlicensectl
+   Copy ${repoDir}/zm-core-utils/src/bin/zmacl                                                      ${repoDir}/zm-build/${currentPackage}/opt/zimbra/bin/zmacl
    Copy ${repoDir}/zm-core-utils/src/contrib/zmfetchercfg                                           ${repoDir}/zm-build/${currentPackage}/opt/zimbra/contrib/zmfetchercfg
    Copy ${repoDir}/zm-core-utils/src/libexec/600.zimbra                                             ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/600.zimbra
    Copy ${repoDir}/zm-core-utils/src/libexec/client_usage_report.py                                 ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/client_usage_report.py
