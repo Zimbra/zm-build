@@ -150,6 +150,7 @@ sub InitGlobalBuildVars()
          { name => "BUILD_DIR",                  type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return &$build_dir_func; }, },
          { name => "DEPLOY_URL_PREFIX",          type => "=s",  hash_src => \%cmd_hash, default_sub => sub { $CFG{LOCAL_DEPLOY} = 1; return "http://" . Net::Domain::hostfqdn . ":8008/$CFG{DESTINATION_NAME}"; }, },
          { name => "DUMP_CONFIG_TO",             type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return undef; }, },
+         { name => "BUILD_LDS",             type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return "no"; }, },
       );
 
       {
@@ -351,6 +352,9 @@ sub LoadRepos()
    map { $exclusions{$_} = 1; } split(/,/, $CFG{EXCLUDE_GIT_REPOS});
 
    push( @agg_repos, grep { !exists $exclusions{$_->{name}} } @{ EvalFile("instructions/$CFG{BUILD_TYPE}_repo_list.pl") } );
+   if (lc($CFG{BUILD_LDS}) ne 'yes') {
+	   @agg_repos = grep { $_->{name} ne 'zm-license-daemon-service' } @agg_repos;
+   }
 
    return \@agg_repos;
 }
@@ -550,7 +554,9 @@ sub Build($)
                      {
                         if ( my $targets = $build_info->{ $tool . "_targets" } )    #Known values are: ant_targets, mvn_targets, make_targets
                         {
-                           eval { SysExec( $tool, "clean" ) if ( !$ENV{ENV_SKIP_CLEAN_FLAG} ); };
+                           my @clean_args = ("clean");
+                           push @clean_args, "-f", "Makefile.classic" if $tool eq 'make' && $dir eq 'zm-license-daemon-service';
+                           eval { SysExec( $tool, @clean_args ) if ( !$ENV{ENV_SKIP_CLEAN_FLAG} ); };
 
                            SysExec( $tool, @{ $tool_attributes->{$tool} || [] }, @$targets );
                         }
