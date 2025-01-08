@@ -140,6 +140,7 @@ sub InitGlobalBuildVars()
          { name => "GIT_DEFAULT_TAG",            type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return undef; }, },
          { name => "GIT_DEFAULT_REMOTE",         type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return undef; }, },
          { name => "GIT_DEFAULT_BRANCH",         type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return undef; }, },
+         { name => "GIT_DEFAULT_REPO_NAME_SUFFIX", type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return undef; }, },
          { name => "STOP_AFTER_CHECKOUT",        type => "!",   hash_src => \%cmd_hash, default_sub => sub { return 0; }, },
          { name => "ANT_OPTIONS",                type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return undef; }, },
          { name => "BUILD_HOSTNAME",             type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return Net::Domain::hostfqdn; }, },
@@ -801,25 +802,30 @@ sub Clone($$)
    my $repo_tag_csv    = $CFG{GIT_OVERRIDES}->{"$repo_name.tag"} || $repo_details->{tag} || $CFG{GIT_DEFAULT_TAG} if ( $CFG{GIT_OVERRIDES}->{"$repo_name.tag"} || !$CFG{GIT_OVERRIDES}->{"$repo_name.branch"} );
    my $repo_remote     = $CFG{GIT_OVERRIDES}->{"$repo_name.remote"} || $repo_details->{remote} || $CFG{GIT_DEFAULT_REMOTE} || "gh-zm";
    my $repo_url_prefix = $CFG{GIT_OVERRIDES}->{"$repo_remote.url-prefix"} || $repo_remote_details->{$repo_remote}->{'url-prefix'} || Die( "unresolved url-prefix for remote='$repo_remote'", "" );
+   my $repo_name_suffix     = $CFG{GIT_OVERRIDES}->{"$repo_name.repo_name_suffix"} || $repo_details->{repo_name_suffix} || $CFG{GIT_DEFAULT_REPO_NAME_SUFFIX};
 
    $repo_url_prefix =~ s,/*$,,;
 
    my $repo_dir = "$CFG{BUILD_SOURCES_BASE_DIR}/$repo_name";
+   my $repo_source = $repo_url_prefix . "/" .
+                  ($repo_name_suffix ? "$repo_name$repo_name_suffix.git" : "$repo_name.git");
 
    if ( !-d $repo_dir )
    {
       my $s = 0;
       foreach my $minus_b_arg ( split( /,/, $repo_tag_csv ? $repo_tag_csv : $repo_branch_csv ) )
       {
-         my $r = SysExec( "git", "ls-remote", $repo_tag_csv ? "--tags" : "--heads", "$repo_url_prefix/$repo_name.git", "$minus_b_arg" );
+         my $r = SysExec("git", "ls-remote",
+                $repo_tag_csv ? "--tags" : "--heads",
+                $repo_source,
+                "$minus_b_arg");
          if ( $r->{success} && "@{$r->{out}}" =~ /$minus_b_arg$/ )
          {
             my @clone_cmd_args = ( "git", "clone" );
 
             push( @clone_cmd_args, "--depth=1" ) if ( not $ENV{ENV_GIT_FULL_CLONE} and $repo_name ne "zm-mailbox");
             push( @clone_cmd_args, "-b", $minus_b_arg );
-            push( @clone_cmd_args, "$repo_url_prefix/$repo_name.git", "$repo_dir" );
-
+            push( @clone_cmd_args, $repo_source, "$repo_dir");
             print "\n";
             my $r = SysExec(@clone_cmd_args);
             if ( $r->{success} )
