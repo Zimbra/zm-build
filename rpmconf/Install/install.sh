@@ -83,6 +83,16 @@ checkSkipActivation() {
 	fi
 }
 
+# Function to check for rsyslog or syslog-ng package
+check_logging_prerequisites() {
+  if command -v rsyslogd >/dev/null 2>&1 || command -v syslog-ng >/dev/null 2>&1; then
+    return 0
+  else
+    echo "Zimbra installation requires rsyslog or syslog-ng package to be installed."
+    exit 1
+  fi
+}
+
 
 while [ $# -ne 0 ]; do
   case $1 in
@@ -192,6 +202,9 @@ fi
 displayLicense
 
 checkUser root
+
+# prerequisite check
+check_logging_prerequisites
 
 if [ $AUTOINSTALL = "yes" ]; then
 	loadConfig $DEFAULTFILE
