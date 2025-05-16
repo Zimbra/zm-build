@@ -29,7 +29,7 @@ if [ ! -x "/usr/bin/perl" ]; then
 fi
 
 # Function to check for rsyslog or syslog-ng package
-is_rsyslog_or_syslog-ng_present(){
+is_rsyslog_or_syslog-ng_present() {
   if command -v rsyslogd >/dev/null 2>&1 || command -v syslog-ng >/dev/null 2>&1; then
     return 0
   else
