@@ -2657,17 +2657,38 @@ checkLicenseDaemonServiceRunning() {
 		LICENSE_DAEMON_PORT="8081"
 		if [ $LICENSE_DAEMON_PKG == "no" ]; then
 			if [ $UPGRADE = "yes" ]; then
-				echo "COMMAND: zmprov -l gacf zimbraLicenseDaemonServerHost" >> $LOGFILE
-				ZMPROV_OUTPUT=$(su - zimbra -c "zmprov -l gacf zimbraLicenseDaemonServerHost" 2>> $LOGFILE)
-				if [ $? -ne 0 ]; then
-					printWarning "Unable to get the zimbraLicenseDaemonServerHost via zmprov command."
-					exit 1
-				else
-					LICENSE_DAEMON_HOST=$(echo "$ZMPROV_OUTPUT" | awk -F': ' '/zimbraLicenseDaemonServerHost/{print $2}')
-					if [ -z "$LICENSE_DAEMON_HOST" ]; then
-						printWarning "zimbra-license-daemon should be installed prior to zimbra-store"
-						exit 1
+				LDAP_URL_LIST=$(su - zimbra -c "zmlocalconfig -m nokey -s ldap_url")
+				LDAP_STARTTLS_SUPPORTED=$(su - zimbra -c "zmlocalconfig -m nokey -s ldap_starttls_supported")
+				LDAP_BIND_DN=$(su - zimbra -c "zmlocalconfig -m nokey -s zimbra_ldap_userdn")
+				LDAP_BIND_PASSWORD=$(su - zimbra -c "zmlocalconfig -m nokey -s zimbra_ldap_password")
+				LICENSE_DAEMON_FOUND=0
+				for ldap_url in $LDAP_URL_LIST; do
+					if [[ "$ldap_url" =~ ^ldap:// ]] && [[ "$LDAP_STARTTLS_SUPPORTED" == "true" || "$LDAP_STARTTLS_SUPPORTED" == "1" ]]; then
+						echo "Trying ldapsearch on $ldap_url with -ZZ" >> $LOGFILE
+						LDAP_RESULT=$(su - zimbra -c "ldapsearch -x -H \"$ldap_url\" -ZZ -D \"$LDAP_BIND_DN\" -w \"$LDAP_BIND_PASSWORD\" -b \"cn=config,cn=zimbra\" \"(objectClass=zimbraGlobalConfig)\" zimbraLicenseDaemonServerHost" 2>>"$LOGFILE")
+						LDAP_EXIT_CODE=$?
+					else
+						echo "Trying ldapsearch on $ldap_url without -ZZ" >> $LOGFILE
+						LDAP_RESULT=$(su - zimbra -c "ldapsearch -x -H \"$ldap_url\" -D \"$LDAP_BIND_DN\" -w \"$LDAP_BIND_PASSWORD\" -b \"cn=config,cn=zimbra\" \"(objectClass=zimbraGlobalConfig)\" zimbraLicenseDaemonServerHost" 2>>"$LOGFILE")
+						LDAP_EXIT_CODE=$?
 					fi
+
+					if [ $LDAP_EXIT_CODE -ne 0 ]; then
+						echo "ldapsearch failed on $ldap_url with exit code $LDAP_EXIT_CODE" >> $LOGFILE
+						continue
+					fi
+
+					LICENSE_DAEMON_HOST=$(echo "$LDAP_RESULT" | awk '/^zimbraLicenseDaemonServerHost: /{print $2}')
+					if [ -n "$LICENSE_DAEMON_HOST" ]; then
+						echo "Found zimbraLicenseDaemonServerHost: $LICENSE_DAEMON_HOST via $ldap_url" >> $LOGFILE
+						LICENSE_DAEMON_FOUND=1
+						break
+					fi
+				done
+
+				if [ $LICENSE_DAEMON_FOUND -eq 0 ]; then
+					printWarning "zimbra-license-daemon should be installed prior to zimbra-store"
+					exit 1
 				fi
 			fi
 			if [ -z "$LICENSE_DAEMON_HOST" ]; then
@@ -2692,7 +2713,7 @@ checkLicenseDaemonServiceRunning() {
 					exit 1
 				fi
 			fi
-	    fi
+		fi
 	fi
 }
 
