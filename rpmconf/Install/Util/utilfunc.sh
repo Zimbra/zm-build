@@ -2432,6 +2432,18 @@ getInstallPackages() {
 	else
             response="$LDAP_SELECTED"
 	fi
+    elif [ $i = "zimbra-onlyoffice-patch" ]; then
+        if [ x"$ZIMBRAINTERNAL" = "xyes" ] && [ $ONLYOFFICE_SELECTED = "yes" ]; then
+            askYN "Install $i" "Y"
+        else
+            response="$ONLYOFFICE_SELECTED"
+        fi
+    elif [ $i = "zimbra-lds-patch" ]; then
+        if [ x"$ZIMBRAINTERNAL" = "xyes" ] && [ $LICENSE_DAEMON_SELECTED = "yes" ]; then
+            askYN "Install $i" "Y"
+        else
+            response="$LICENSE_DAEMON_SELECTED"
+        fi
     elif [ $i = "zimbra-license-extension" ]; then
       ifStoreSelectedY
     elif [ $i = "zimbra-network-store" ]; then
