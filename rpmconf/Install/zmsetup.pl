@@ -7581,6 +7581,7 @@ sub configureLicenseDaemonService {
 		my $licenseDaemonServerHost = getLdapConfigValue("zimbraLicenseDaemonServerHost");
 		if ($licenseDaemonServerHost ne "" && $licenseDaemonServerHost ne $config{HOSTNAME}) {
 			progress("WARNING: license-daemon service already installed on $licenseDaemonServerHost\n");
+			removePackage("zimbra-lds-patch");
 			removePackage("zimbra-license-daemon");
 		} else {
 			progress("Setting zimbraLicenseDaemonServerHost...");
