@@ -198,6 +198,10 @@ if [ -f /etc/lsb-release ]; then
       echo "22${i}"
       exit 0
     fi
+    if [ "$RELEASE" = "noble" ]; then
+      echo "24${i}"
+      exit 0
+    fi
     echo "UNKNOWN${i}"
     exit 0
   fi
