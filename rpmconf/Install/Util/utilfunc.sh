@@ -406,8 +406,8 @@ checkUbuntuRelease() {
     return
   fi
 
-  if [ "x$DISTRIB_ID" = "xUbuntu" -a "x$DISTRIB_RELEASE" != "x12.04" -a "x$DISTRIB_RELEASE" != "x14.04" -a "x$DISTRIB_RELEASE" != "x16.04" -a "x$DISTRIB_RELEASE" != "x18.04" -a "x$DISTRIB_RELEASE" != "x20.04" -a "x$DISTRIB_RELEASE" != "x22.04" ]; then
-    echo "WARNING: ZCS is currently only supported on Ubuntu Server 12.04, 14.04, 16.04, 18.04, 20.04 and 22.04 LTS."
+  if [ "x$DISTRIB_ID" = "xUbuntu" -a "x$DISTRIB_RELEASE" != "x12.04" -a "x$DISTRIB_RELEASE" != "x14.04" -a "x$DISTRIB_RELEASE" != "x16.04" -a "x$DISTRIB_RELEASE" != "x18.04" -a "x$DISTRIB_RELEASE" != "x20.04" -a "x$DISTRIB_RELEASE" != "x22.04" -a "x$DISTRIB_RELEASE" != "x24.04" ]; then
+    echo "WARNING: ZCS is currently only supported on Ubuntu Server 12.04, 14.04, 16.04, 18.04, 20.04, 22.04 and 24.04 LTS."
     echo "You are attempting to install on $DISTRIB_DESCRIPTION which may not work."
     echo "Support will not be provided if you choose to continue."
     echo ""
@@ -2154,7 +2154,9 @@ configurePackageServer() {
     fi
     echo $PLATFORM | egrep -q "UBUNTU|DEBIAN"
     if [ $? = 0 ]; then
-      if [ $PLATFORM = "UBUNTU22_64" ]; then
+      if [ $PLATFORM = "UBUNTU24_64" ]; then
+        repo="noble"
+      elif [ $PLATFORM = "UBUNTU22_64" ]; then
         repo="jammy"	      
       elif [ $PLATFORM = "UBUNTU20_64" ]; then
         repo="focal"
@@ -2196,20 +2198,76 @@ configurePackageServer() {
         echo "Please fix system to allow normal package installation before proceeding"
         exit 1
       fi
-cat > /etc/apt/sources.list.d/zimbra.list << EOF
+if [ "$PLATFORM" = "UBUNTU24_64" ]; then
+  cat > /etc/apt/sources.list.d/zimbra.sources << EOF
+Types: deb deb-src
+URIs: https://$PACKAGE_SERVER/apt/87
+Suites: $repo
+Components: zimbra
+Architectures: amd64
+Signed-By: /etc/apt/trusted.gpg.d/zimbra.gpg
+
+Types: deb
+URIs: https://$PACKAGE_SERVER/apt/1000
+Suites: $repo
+Components: zimbra
+Architectures: amd64
+Signed-By: /etc/apt/trusted.gpg.d/zimbra.gpg
+
+Types: deb
+URIs: https://$PACKAGE_SERVER/apt/1010
+Suites: $repo
+Components: zimbra
+Architectures: amd64
+Signed-By: /etc/apt/trusted.gpg.d/zimbra.gpg
+EOF
+
+  if [ "x$ZMTYPE_INSTALLABLE" = "xNETWORK" ]; then
+    cat >> /etc/apt/sources.list.d/zimbra.sources << EOF
+
+Types: deb
+URIs: https://$PACKAGE_SERVER/apt/1000-ne
+Suites: $repo
+Components: zimbra
+Architectures: amd64
+Signed-By: /etc/apt/trusted.gpg.d/zimbra.gpg
+
+Types: deb
+URIs: https://$PACKAGE_SERVER/apt/1010-ne
+Suites: $repo
+Components: zimbra
+Architectures: amd64
+Signed-By: /etc/apt/trusted.gpg.d/zimbra.gpg
+EOF
+
+    cat > /etc/apt/sources.list.d/zimbra-onlyoffice.sources << EOF
+Types: deb
+URIs: https://$PACKAGE_SERVER/apt/onlyoffice-1010
+Suites: $repo
+Components: zimbra
+Architectures: amd64
+Signed-By: /etc/apt/trusted.gpg.d/zimbra.gpg
+EOF
+  fi
+
+else
+  cat > /etc/apt/sources.list.d/zimbra.list << EOF
 deb     [arch=amd64] https://$PACKAGE_SERVER/apt/87 $repo zimbra
 deb-src [arch=amd64] https://$PACKAGE_SERVER/apt/87 $repo zimbra
 deb     [arch=amd64] https://$PACKAGE_SERVER/apt/1000 $repo zimbra
 deb     [arch=amd64] https://$PACKAGE_SERVER/apt/1010 $repo zimbra
 EOF
-if [ x"$ZMTYPE_INSTALLABLE" = "xNETWORK" ]; then
-cat >> /etc/apt/sources.list.d/zimbra.list << EOF
+
+  if [ "x$ZMTYPE_INSTALLABLE" = "xNETWORK" ]; then
+    cat >> /etc/apt/sources.list.d/zimbra.list << EOF
 deb     [arch=amd64] https://$PACKAGE_SERVER/apt/1000-ne $repo zimbra
 deb     [arch=amd64] https://$PACKAGE_SERVER/apt/1010-ne $repo zimbra
 EOF
-cat > /etc/apt/sources.list.d/zimbra-onlyoffice.list << EOF
+
+    cat > /etc/apt/sources.list.d/zimbra-onlyoffice.list << EOF
 deb     [arch=amd64] https://$PACKAGE_SERVER/apt/onlyoffice-1010 $repo zimbra
 EOF
+  fi
 fi
       apt-get update >>$LOGFILE 2>&1
       if [ $? -ne 0 ]; then
@@ -2432,6 +2490,18 @@ getInstallPackages() {
 	else
             response="$LDAP_SELECTED"
 	fi
+    elif [ $i = "zimbra-onlyoffice-patch" ]; then
+        if [ x"$ZIMBRAINTERNAL" = "xyes" ] && [ $ONLYOFFICE_SELECTED = "yes" ]; then
+            askYN "Install $i" "Y"
+        else
+            response="$ONLYOFFICE_SELECTED"
+        fi
+    elif [ $i = "zimbra-lds-patch" ]; then
+        if [ x"$ZIMBRAINTERNAL" = "xyes" ] && [ $LICENSE_DAEMON_SELECTED = "yes" ]; then
+            askYN "Install $i" "Y"
+        else
+            response="$LICENSE_DAEMON_SELECTED"
+        fi
     elif [ $i = "zimbra-license-extension" ]; then
       ifStoreSelectedY
     elif [ $i = "zimbra-network-store" ]; then
@@ -2959,7 +3029,7 @@ getPlatformVars() {
     PACKAGEEXT='deb'
     PACKAGEVERSION="dpkg-query -W -f \${Version}"
     CONFLICT_PACKAGES="mail-transport-agent"
-    if [ $PLATFORM = "UBUNTU12_64" -o $PLATFORM = "UBUNTU14_64" -o $PLATFORM = "UBUNTU16_64" -o $PLATFORM = "UBUNTU18_64" -o $PLATFORM = "UBUNTU20_64" -o $PLATFORM = "UBUNTU22_64" ]; then
+    if [ $PLATFORM = "UBUNTU12_64" -o $PLATFORM = "UBUNTU14_64" -o $PLATFORM = "UBUNTU16_64" -o $PLATFORM = "UBUNTU18_64" -o $PLATFORM = "UBUNTU20_64" -o $PLATFORM = "UBUNTU22_64" -o $PLATFORM = "UBUNTU24_64" ]; then
       STORE_PACKAGES="libreoffice"
     fi
     DumpFileDetailsFromPackage() {
