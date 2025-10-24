@@ -143,6 +143,7 @@ sub InitGlobalBuildVars()
          { name => "GIT_DEFAULT_REPO_NAME_SUFFIX", type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return undef; }, },
          { name => "STOP_AFTER_CHECKOUT",        type => "!",   hash_src => \%cmd_hash, default_sub => sub { return 0; }, },
          { name => "ANT_OPTIONS",                type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return undef; }, },
+         { name => "MVN_OPTIONS",                type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return undef; }, },
          { name => "BUILD_HOSTNAME",             type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return Net::Domain::hostfqdn; }, },
          { name => "BUILD_ARCH",                 type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return GetBuildArch(); }, },
          { name => "PKG_OS_TAG",                 type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return GetPkgOsTag(); }, },
@@ -509,6 +510,9 @@ sub Build($)
 
    push( @{ $tool_attributes->{ant} }, $CFG{ANT_OPTIONS} )
      if ( $CFG{ANT_OPTIONS} );
+
+   push( @{ $tool_attributes->{mvn} }, $CFG{MVN_OPTIONS} )
+     if ( $CFG{MVN_OPTIONS} );
 
    my $cnt = 0;
    for my $build_info (@ALL_BUILDS)
