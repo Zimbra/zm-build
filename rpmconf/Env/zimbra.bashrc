@@ -53,7 +53,6 @@ check_license_expiry() {
         output=$(cat "$zm_license_cache")
 	else
 		output=$(zmprov gcf zimbraNetworkRealtimeActivation 2>/dev/null) || return 0
-		[ -n "$output" ] || return 0
 		if [ -d "$cache_dir" ]; then
 			tmp_cache="$zm_license_cache.$$"
 			echo "$output" > "$tmp_cache" && mv -f "$tmp_cache" "$zm_license_cache"
