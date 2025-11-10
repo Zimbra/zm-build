@@ -45,8 +45,21 @@ export HISTTIMEFORMAT="%y%m%d %T "
 
 check_license_expiry() {
     local output json timestamp timestamp_no_z formatted_timestamp timestamp_epoch current_epoch remaining_days
+    local zm_license_cache="/opt/zimbra/log/.zm_license_cache"
+    local cache_dir
+    cache_dir="$(dirname "$zm_license_cache")"
 
-    output=$(zmprov gcf zimbraNetworkRealtimeActivation 2>/dev/null) || return 0
+    if [ -f "$zm_license_cache" ] && [ "$(date +%Y-%m-%d -r "$zm_license_cache")" == "$(date +%Y-%m-%d)" ]; then
+        output=$(cat "$zm_license_cache")
+	else
+		output=$(zmprov gcf zimbraNetworkRealtimeActivation 2>/dev/null) || return 0
+		[ -n "$output" ] || return 0
+		if [ -d "$cache_dir" ]; then
+			tmp_cache="$zm_license_cache.$$"
+			echo "$output" > "$tmp_cache" && mv -f "$tmp_cache" "$zm_license_cache"
+		fi
+    fi
+
     [ -z "$output" ] && return 0
 
     json=${output#zimbraNetworkRealtimeActivation: }
