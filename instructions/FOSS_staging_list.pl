@@ -66,7 +66,7 @@
    },
    {
       "dir"         => "zm-ssdb-ephemeral-store",
-      "ant_targets" => ["publish-local", "test"],
+      "ant_targets" => ["publish-local", "test", "coverage"],
       "stage_cmd"   => sub {
          SysExec("mkdir -p $CFG{BUILD_DIR}/zm-ssdb-ephemeral-store/build/dist");
          SysExec("cp -f build/zm-ssdb-ephemeral-store*.jar $CFG{BUILD_DIR}/zm-ssdb-ephemeral-store/build/dist");
@@ -74,7 +74,7 @@
    },
    {
       "dir"         => "zm-openid-consumer-store",
-      "ant_targets" => ["dist-package", "test"],
+      "ant_targets" => ["dist-package", "test", "coverage"],
       "stage_cmd"   => sub {
          SysExec("mkdir -p $CFG{BUILD_DIR}/zm-openid-consumer-store/build/dist");
          SysExec("cp -f -r build/dist $CFG{BUILD_DIR}/zm-openid-consumer-store/build/");
@@ -82,7 +82,7 @@
    },
    {
       "dir"         => "zm-clam-scanner-store",
-      "ant_targets" => ["publish-local", "test"],
+      "ant_targets" => ["publish-local", "test", "coverage"],
       "stage_cmd"   => sub {
          SysExec("mkdir -p $CFG{BUILD_DIR}/zm-clam-scanner-store/build/dist");
          SysExec("cp -f -rp build/zm-clam-scanner-store-*.jar $CFG{BUILD_DIR}/zm-clam-scanner-store/build/dist");
@@ -98,7 +98,7 @@
    },
    {
       "dir"         => "zm-nginx-lookup-store",
-      "ant_targets" => ["publish-local", "test"],
+      "ant_targets" => ["publish-local", "test", "coverage"],
       "stage_cmd"   => sub {
          SysExec("mkdir -p $CFG{BUILD_DIR}/zm-nginx-lookup-store/build/dist");
          SysExec("cp -f -rp build/zm-nginx-lookup-store-*.jar $CFG{BUILD_DIR}/zm-nginx-lookup-store/build/dist");
@@ -369,7 +369,7 @@
    
    {
       "dir"         => "zm-oauth-social",
-      "ant_targets" => ["publish-local", "oauth-social-common-jar", "oauth-social-jar", "test"],
+      "ant_targets" => ["publish-local", "oauth-social-common-jar", "oauth-social-jar", "test", "coverage"],
       "stage_cmd"   => sub {
          SysExec("mkdir -p $CFG{BUILD_DIR}/zm-oauth-social/build/dist");
          SysExec("cp -f -rp build/zm-oauth-social*.jar $CFG{BUILD_DIR}/zm-oauth-social/build/dist");
@@ -378,7 +378,7 @@
    
    {
       "dir"         => "zm-gql",
-      "ant_targets" => ["publish-local", "test"],
+      "ant_targets" => ["publish-local", "test", "coverage"],
       "stage_cmd"   => sub {
          SysExec("mkdir -p $CFG{BUILD_DIR}/zm-gql/build/dist");
          SysExec("cp -f -rp build/zm-gql-*.jar $CFG{BUILD_DIR}/zm-gql/build/dist");
