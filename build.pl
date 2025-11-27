@@ -144,6 +144,7 @@ sub InitGlobalBuildVars()
          { name => "STOP_AFTER_CHECKOUT",        type => "!",   hash_src => \%cmd_hash, default_sub => sub { return 0; }, },
          { name => "ANT_OPTIONS",                type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return undef; }, },
          { name => "MVN_OPTIONS",                type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return undef; }, },
+         { name => "NO_COVERAGE",                type => "!",   hash_src => \%cmd_hash, default_sub => sub { return 0; }, },
          { name => "BUILD_HOSTNAME",             type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return Net::Domain::hostfqdn; }, },
          { name => "BUILD_ARCH",                 type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return GetBuildArch(); }, },
          { name => "PKG_OS_TAG",                 type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return GetPkgOsTag(); }, },
@@ -555,9 +556,13 @@ sub Build($)
                      {
                         if ( my $targets = $build_info->{ $tool . "_targets" } )    #Known values are: ant_targets, mvn_targets, make_targets
                         {
+                           my @filtered_targets = @$targets;
+                           if ($tool eq 'ant' && $CFG{NO_COVERAGE}) {
+                              @filtered_targets = grep { $_ ne 'coverage' } @filtered_targets;
+                           }
                            eval { SysExec( $tool, "clean" ) if ( !$ENV{ENV_SKIP_CLEAN_FLAG} ); };
-
-                           SysExec( $tool, @{ $tool_attributes->{$tool} || [] }, @$targets );
+                           
+                           SysExec( $tool, @{ $tool_attributes->{$tool} || [] }, @filtered_targets );
                         }
                      }
                   }
