@@ -11,7 +11,7 @@
    },
    {
       "dir"         => "zm-mailbox/store",
-      "ant_targets" => ["publish-store-test", "test"],
+      "ant_targets" => ["publish-store-test", "test", "coverage"],
       "stage_cmd"   => undef,
    },
    {
