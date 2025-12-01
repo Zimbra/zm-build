@@ -106,6 +106,8 @@ main()
       mkdir -p ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/zm-doc-server-ext
 
       cp -f ${repoDir}/zm-backup-store/build/dist/zm-backup-store.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/backup/zimbrabackup.jar
+      cp -f ${repoDir}/zm-backup-store/build/dist/rocksdbjni-8.1.1.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/backup/rocksdbjni-8.1.1.jar
+      cp -f ${repoDir}/zm-backup-store/build/dist/zstd-jni-1.5.5-9.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/backup/zstd-jni-1.5.5-9.jar
       cp -f ${repoDir}/zm-archive-store/build/dist/*.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/zimbra-archive/zimbra-archive.jar
       cp -rf ${repoDir}/zm-voice-store/build/dist/zm-voice-store.jar  ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/voice/zimbravoice.jar
       cp -rf ${repoDir}/zm-voice-mitel-store/build/dist/zm-voice-mitel-store.jar ${repoDir}/zm-build/${currentPackage}/opt/zimbra/lib/ext/mitel
