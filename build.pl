@@ -565,7 +565,7 @@ sub Build($)
                            }
                            eval { SysExec( $tool, "clean" ) if ( !$ENV{ENV_SKIP_CLEAN_FLAG} ); };
                            
-                           SysExec( $tool, @{ $tool_attributes->{$tool} || [] }, @filtered_targets );
+                           SysExec( $tool, @{ $tool_attributes->{$tool} || [] }, @$targets );
                         }
                      }
                   }
