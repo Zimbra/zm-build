@@ -508,7 +508,7 @@ sub Build($)
       ],
    };
 
-   push( @{ $tool_attributes->{ant} }, $CFG{ANT_OPTIONS} )
+   push( @{ $tool_attributes->{ant} }, split(/\s+/, $CFG{ANT_OPTIONS}) )
      if ( $CFG{ANT_OPTIONS} );
 
    push( @{ $tool_attributes->{mvn} }, $CFG{MVN_OPTIONS} )
@@ -555,15 +555,8 @@ sub Build($)
                      {
                         if ( my $targets = $build_info->{ $tool . "_targets" } )    #Known values are: ant_targets, mvn_targets, make_targets
                         {
-                           if ($tool eq 'ant' && $CFG{ANT_OPTIONS}) {
-                               my $opts = $CFG{ANT_OPTIONS};
-                               if ($opts =~ /-DskipCoverage=true/) {
-                                   @$targets = grep { $_ ne 'coverage' } @$targets;
-                                   print "Skipping coverage target due to -DskipCoverage=true\n";
-                               }
-                           }
                            eval { SysExec( $tool, "clean" ) if ( !$ENV{ENV_SKIP_CLEAN_FLAG} ); };
-                           
+
                            SysExec( $tool, @{ $tool_attributes->{$tool} || [] }, @$targets );
                         }
                      }
