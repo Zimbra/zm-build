@@ -99,8 +99,14 @@ sub LoadConfiguration($)
       else
       {
          $CFG{$cfg_name} = $val;
-
-         printf( " %-35s: %-17s : %s\n", $cfg_name, $cmd_hash ? $src : "detected", $val );
+         if (ref($val) eq 'ARRAY')
+         {
+            printf( " %-35s: %-17s : %s\n", $cfg_name, $cmd_hash ? $src : "detected", join(' ', @$val) );
+         }
+         else
+         {
+            printf( " %-35s: %-17s : %s\n", $cfg_name, $cmd_hash ? $src : "detected", $val );
+         }
       }
    }
 }
@@ -142,7 +148,7 @@ sub InitGlobalBuildVars()
          { name => "GIT_DEFAULT_BRANCH",         type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return undef; }, },
          { name => "GIT_DEFAULT_REPO_NAME_SUFFIX", type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return undef; }, },
          { name => "STOP_AFTER_CHECKOUT",        type => "!",   hash_src => \%cmd_hash, default_sub => sub { return 0; }, },
-         { name => "ANT_OPTIONS",                type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return undef; }, },
+         { name => "ANT_OPTIONS",                type => "=s@",  hash_src => \%cmd_hash, default_sub => sub { return undef; }, },
          { name => "MVN_OPTIONS",                type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return undef; }, },
          { name => "BUILD_HOSTNAME",             type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return Net::Domain::hostfqdn; }, },
          { name => "BUILD_ARCH",                 type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return GetBuildArch(); }, },
@@ -167,13 +173,17 @@ sub InitGlobalBuildVars()
             print "   --" . "$_->{opt}$_->{opt_s}\n" foreach (@cmd_opts);
             exit(0);
          };
-
+         Getopt::Long::Configure("pass_through");
          if ( !GetOptions( \%cmd_hash, ( map { $_->{opt} . $_->{opt_s} } @cmd_opts ), help => $help_func ) )
          {
             print Die("wrong commandline options, use --help");
          }
       }
-
+      if ( $cmd_hash{'ant-options'} ) {
+          foreach my $extra (@ARGV) {
+              push @{ $cmd_hash{'ant-options'} }, $extra if $extra =~ /^-D/;
+          }
+      }
       print "=========================================================================================================\n";
       LoadConfiguration($_) foreach (@cmd_args);
       print "=========================================================================================================\n";
@@ -508,7 +518,7 @@ sub Build($)
       ],
    };
 
-   push( @{ $tool_attributes->{ant} }, split(/\s+/, $CFG{ANT_OPTIONS}) )
+   push( @{ $tool_attributes->{ant} }, @{ $CFG{ANT_OPTIONS} } )
      if ( $CFG{ANT_OPTIONS} );
 
    push( @{ $tool_attributes->{mvn} }, $CFG{MVN_OPTIONS} )
