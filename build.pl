@@ -173,16 +173,10 @@ sub InitGlobalBuildVars()
             print "   --" . "$_->{opt}$_->{opt_s}\n" foreach (@cmd_opts);
             exit(0);
          };
-         Getopt::Long::Configure("pass_through");
          if ( !GetOptions( \%cmd_hash, ( map { $_->{opt} . $_->{opt_s} } @cmd_opts ), help => $help_func ) )
          {
             print Die("wrong commandline options, use --help");
          }
-      }
-      if ( $cmd_hash{'ant-options'} ) {
-          foreach my $extra (@ARGV) {
-              push @{ $cmd_hash{'ant-options'} }, $extra if $extra =~ /^-D/;
-          }
       }
       print "=========================================================================================================\n";
       LoadConfiguration($_) foreach (@cmd_args);
@@ -518,11 +512,12 @@ sub Build($)
       ],
    };
 
-   push( @{ $tool_attributes->{ant} }, @{ $CFG{ANT_OPTIONS} } )
-     if ( $CFG{ANT_OPTIONS} );
-
+   push @{ $tool_attributes->{ant} },
+       ref $CFG{ANT_OPTIONS} eq 'ARRAY' ? @{ $CFG{ANT_OPTIONS} } : ($CFG{ANT_OPTIONS})
+       if defined $CFG{ANT_OPTIONS};
+     
    push( @{ $tool_attributes->{mvn} }, $CFG{MVN_OPTIONS} )
-     if ( $CFG{MVN_OPTIONS} );
+       if ( $CFG{MVN_OPTIONS} );
 
    my $cnt = 0;
    for my $build_info (@ALL_BUILDS)
