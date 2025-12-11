@@ -85,7 +85,7 @@ Build from develop branch
     git clone https://github.com/Zimbra/zm-build.git
     cd zm-build
     git checkout origin/develop
-	ENV_CACHE_CLEAR_FLAG=true ./build.pl --ant-options -DskipTests=true --ant-options -DskipCoverage=true --git-default-branch=develop --build-release-no=10.1.0 --build-         type=FOSS --build-release=LIBERTY --build-release-candidate=GA --build-thirdparty-server=files.zimbra.com --no-interactive
+	ENV_CACHE_CLEAR_FLAG=true ./build.pl --ant-options -DskipTests=true --ant-options -DskipCoverage=true --git-default-branch=develop --build-release-no=10.1.0 --build-type=FOSS --build-release=LIBERTY --build-release-candidate=GA --build-thirdparty-server=files.zimbra.com --no-interactive
 
 Build 10.1.0
 
