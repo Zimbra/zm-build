@@ -78,12 +78,14 @@ logged in as a non-root user with `sudo` privileges.
 
 ## Building
 Create a directory for your build and check-out the `zm-build` repository:
+Build from develop branch
 
     mkdir installer-build
     cd installer-build
     git clone https://github.com/Zimbra/zm-build.git
     cd zm-build
     git checkout origin/develop
+	ENV_CACHE_CLEAR_FLAG=true ./build.pl --ant-options -DskipTests=true --ant-options -DskipCoverage=true --git-default-branch=develop --build-release-no=10.1.0 --build-         type=FOSS --build-release=LIBERTY --build-release-candidate=GA --build-thirdparty-server=files.zimbra.com --no-interactive
 
 Build 10.1.0
 
