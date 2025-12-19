@@ -11,7 +11,7 @@
    },
    {
       "dir"         => "zm-mailbox/store",
-      "ant_targets" => ["publish-store-test", "test", "coverage"],
+      "ant_targets" => ["publish-store-test", "test", "coverage", "sonar-scan"],
       "stage_cmd"   => undef,
    },
    {
@@ -19,7 +19,7 @@
       # This cannot be done unless the packages from zm-timezones are pushed to public repo
       # This is already excluded in CircleCI builds
       "dir"             => "zm-timezones",
-      "ant_targets"     => ["pkg"],
+      "ant_targets"     => ["pkg", "sonar-scan"],
       "deploy_pkg_into" => "bundle",
    },
    {
@@ -33,7 +33,7 @@
    },
    {
       "dir"         => "zm-taglib",
-      "ant_targets" => ["publish-local"],
+      "ant_targets" => ["publish-local", "sonar-scan"],
       "stage_cmd"   => sub {
          SysExec("mkdir -p $CFG{BUILD_DIR}/zm-taglib/build");
          SysExec("cp -f build/zm-taglib*.jar  $CFG{BUILD_DIR}/zm-taglib/build/");
@@ -41,7 +41,7 @@
    },
    {
       "dir"         => "zm-charset",
-      "ant_targets" => ["publish-local"],
+      "ant_targets" => ["publish-local", "sonar-scan"],
       "stage_cmd"   => undef,
    },
    {
@@ -56,17 +56,17 @@
    },
    {
       "dir"         => "zm-ajax",
-      "ant_targets" => ["publish-local"],
+      "ant_targets" => ["publish-local", "sonar-scan"],
       "stage_cmd"   => undef,
    },
    {
       "dir"         => "zm-admin-ajax",
-      "ant_targets" => ["publish-local"],
+      "ant_targets" => ["publish-local", "sonar-scan"],
       "stage_cmd"   => undef,
    },
    {
       "dir"         => "zm-ssdb-ephemeral-store",
-      "ant_targets" => ["publish-local", "test", "coverage"],
+      "ant_targets" => ["publish-local", "test", "coverage", "sonar-scan"],
       "stage_cmd"   => sub {
          SysExec("mkdir -p $CFG{BUILD_DIR}/zm-ssdb-ephemeral-store/build/dist");
          SysExec("cp -f build/zm-ssdb-ephemeral-store*.jar $CFG{BUILD_DIR}/zm-ssdb-ephemeral-store/build/dist");
@@ -74,7 +74,7 @@
    },
    {
       "dir"         => "zm-openid-consumer-store",
-      "ant_targets" => ["dist-package", "test", "coverage"],
+      "ant_targets" => ["dist-package", "test", "coverage", "sonar-scan"],
       "stage_cmd"   => sub {
          SysExec("mkdir -p $CFG{BUILD_DIR}/zm-openid-consumer-store/build/dist");
          SysExec("cp -f -r build/dist $CFG{BUILD_DIR}/zm-openid-consumer-store/build/");
@@ -82,7 +82,7 @@
    },
    {
       "dir"         => "zm-clam-scanner-store",
-      "ant_targets" => ["publish-local", "test", "coverage"],
+      "ant_targets" => ["publish-local", "test", "coverage", "sonar-scan"],
       "stage_cmd"   => sub {
          SysExec("mkdir -p $CFG{BUILD_DIR}/zm-clam-scanner-store/build/dist");
          SysExec("cp -f -rp build/zm-clam-scanner-store-*.jar $CFG{BUILD_DIR}/zm-clam-scanner-store/build/dist");
@@ -98,7 +98,7 @@
    },
    {
       "dir"         => "zm-nginx-lookup-store",
-      "ant_targets" => ["publish-local", "test", "coverage"],
+      "ant_targets" => ["publish-local", "test", "coverage", "sonar-scan"],
       "stage_cmd"   => sub {
          SysExec("mkdir -p $CFG{BUILD_DIR}/zm-nginx-lookup-store/build/dist");
          SysExec("cp -f -rp build/zm-nginx-lookup-store-*.jar $CFG{BUILD_DIR}/zm-nginx-lookup-store/build/dist");
@@ -154,7 +154,7 @@
    },
    {
       "dir"         => "zm-zimlets",
-      "ant_targets" => [ "package-zimlets", "jar" ],
+      "ant_targets" => [ "package-zimlets", "jar", "sonar-scan" ],
       "stage_cmd"   => sub {
          SysExec("mkdir -p $CFG{BUILD_DIR}/zm-zimlets/conf");
          SysExec("cp -f conf/zimbra.tld $CFG{BUILD_DIR}/zm-zimlets/conf");
@@ -262,7 +262,7 @@
    },
    {
       "dir"         => "zm-bulkprovision-store",
-      "ant_targets" => ["jar"],
+      "ant_targets" => ["jar", "sonar-scan"],
       "stage_cmd"   => sub {
          SysExec("mkdir -p $CFG{BUILD_DIR}/zm-bulkprovision-store");
          SysExec("cp -f -r ../zm-bulkprovision-store/build $CFG{BUILD_DIR}/zm-bulkprovision-store");
@@ -270,7 +270,7 @@
    },
    {
       "dir"         => "zm-certificate-manager-store",
-      "ant_targets" => ["jar"],
+      "ant_targets" => ["jar", "sonar-scan"],
       "stage_cmd"   => sub {
          SysExec("mkdir -p $CFG{BUILD_DIR}/zm-certificate-manager-store");
          SysExec("cp -f -r ../zm-certificate-manager-store/build $CFG{BUILD_DIR}/zm-certificate-manager-store");
@@ -278,7 +278,7 @@
    },
    {
       "dir"         => "zm-versioncheck-store",
-      "ant_targets" => ["jar"],
+      "ant_targets" => ["jar", "sonar-scan"],
       "stage_cmd"   => sub {
          SysExec("mkdir -p $CFG{BUILD_DIR}/zm-versioncheck-store");
          SysExec("cp -f -r ../zm-versioncheck-store/build $CFG{BUILD_DIR}/zm-versioncheck-store");
@@ -286,7 +286,7 @@
    },
    {
       "dir"         => "zm-ldap-utils-store",
-      "ant_targets" => ["jar"],
+      "ant_targets" => ["jar", "sonar-scan"],
       "stage_cmd"   => sub {
          SysExec("mkdir -p $CFG{BUILD_DIR}/zm-ldap-utils-store");
          SysExec("cp -f -r ../zm-ldap-utils-store/build $CFG{BUILD_DIR}/zm-ldap-utils-store");
@@ -294,32 +294,32 @@
    },
    {
       "dir"         => "ant-1.7.0-ziputil-patched",
-      "ant_targets" => ["jar"],
+      "ant_targets" => ["jar", "sonar-scan"],
       "stage_cmd"   => undef,
    },
    {
       "dir"         => "ant-tar-patched",
-      "ant_targets" => ["jar"],
+      "ant_targets" => ["jar", "sonar-scan"],
       "stage_cmd"   => undef,
    },
    {
       "dir"         => "nekohtml-1.9.13",
-      "ant_targets" => ["jar"],
+      "ant_targets" => ["jar", "sonar-scan"],
       "stage_cmd"   => undef,
    },
    {
       "dir"         => "java-html-sanitizer-release-20190610.1",
-      "ant_targets" => ["jar"],
+      "ant_targets" => ["jar", "sonar-scan"],
       "stage_cmd"   => undef,
    },
    {
       "dir"         => "antisamy",
-      "ant_targets" => ["jar"],
+      "ant_targets" => ["jar", "sonar-scan"],
       "stage_cmd"   => undef,
    },
    {
       "dir"         => "ical4j-0.9.16-patched",
-      "ant_targets" => [ "clean-compile", "package" ],
+      "ant_targets" => [ "clean-compile", "package", "sonar-scan" ],
       "stage_cmd"   => undef,
    },
    {
@@ -369,7 +369,7 @@
    
    {
       "dir"         => "zm-oauth-social",
-      "ant_targets" => ["publish-local", "oauth-social-common-jar", "oauth-social-jar", "test", "coverage"],
+      "ant_targets" => ["publish-local", "oauth-social-common-jar", "oauth-social-jar", "test", "coverage", "sonar-scan"],
       "stage_cmd"   => sub {
          SysExec("mkdir -p $CFG{BUILD_DIR}/zm-oauth-social/build/dist");
          SysExec("cp -f -rp build/zm-oauth-social*.jar $CFG{BUILD_DIR}/zm-oauth-social/build/dist");
@@ -378,7 +378,7 @@
    
    {
       "dir"         => "zm-gql",
-      "ant_targets" => ["publish-local", "test", "coverage"],
+      "ant_targets" => ["publish-local", "test", "coverage", "sonar-scan"],
       "stage_cmd"   => sub {
          SysExec("mkdir -p $CFG{BUILD_DIR}/zm-gql/build/dist");
          SysExec("cp -f -rp build/zm-gql-*.jar $CFG{BUILD_DIR}/zm-gql/build/dist");
