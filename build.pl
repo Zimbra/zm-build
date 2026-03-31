@@ -8,6 +8,7 @@ use Cwd;
 use Data::Dumper;
 use File::Basename;
 use File::Copy;
+use File::Path qw/make_path/;
 use Getopt::Long;
 use IPC::Cmd qw/run/;
 use Net::Domain;
@@ -32,6 +33,20 @@ BEGIN
 chdir($GLOBAL_PATH_TO_TOP);
 
 ##############################################################################################
+
+sub _env_truthy
+{
+   my ($k) = @_;
+   return 0 unless defined $ENV{$k};
+   return $ENV{$k} =~ /^(1|true|yes)$/i ? 1 : 0;
+}
+
+sub _nexus_repo_base_default
+{
+   my $b = $ENV{NEXUS_MAVEN_REPO_BASE} || 'https://test-artifactory.zimbraeng.com/repository/develop-snapshot/';
+   $b =~ s,/*$,,;
+   return "$b/";
+}
 
 sub LoadConfiguration($)
 {
@@ -158,6 +173,9 @@ sub InitGlobalBuildVars()
          { name => "BUILD_DIR",                  type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return &$build_dir_func; }, },
          { name => "DEPLOY_URL_PREFIX",          type => "=s",  hash_src => \%cmd_hash, default_sub => sub { $CFG{LOCAL_DEPLOY} = 1; return "http://" . Net::Domain::hostfqdn . ":8008/$CFG{DESTINATION_NAME}"; }, },
          { name => "DUMP_CONFIG_TO",             type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return undef; }, },
+         { name => "NEXUS_REUSE",                type => "!",   hash_src => \%cmd_hash, default_sub => sub { return _env_truthy("NEXUS_REUSE_ENABLE"); }, },
+         { name => "NEXUS_FORCE_FRESH",          type => "!",   hash_src => \%cmd_hash, default_sub => sub { return _env_truthy("NEXUS_FORCE_FRESH"); }, },
+         { name => "NEXUS_MAVEN_REPO_BASE",      type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return _nexus_repo_base_default(); }, },
       );
 
       {
@@ -477,6 +495,206 @@ EOM_DUMP
 }
 
 
+sub LoadJavaJarReuseMap
+{
+   my $f = "$GLOBAL_PATH_TO_SCRIPT_DIR/instructions/java_jar_reuse_map.pl";
+   return {} unless ( -f $f );
+
+   local $@;
+   my $hr = do $f;
+   if ( $@ || ref($hr) ne "HASH" )
+   {
+      print color('yellow') . "WARNING: java_jar_reuse_map.pl: $@" . color('reset') . "\n";
+      return {};
+   }
+   return $hr;
+}
+
+sub TopLevelGitRepoForDir
+{
+   my $dir = shift;
+   my ($top) = split( m{/}, $dir, 2 );
+
+   return $top;
+}
+
+sub GitOverridesBlockJavaReuse
+{
+   my $repo = shift;
+
+   return 0 unless ( ref( $CFG{GIT_OVERRIDES} ) eq "HASH" );
+
+   return 1 if ( $CFG{GIT_OVERRIDES}->{"$repo.branch"} );
+   return 1 if ( $CFG{GIT_OVERRIDES}->{"$repo.tag"} );
+   return 0;
+}
+
+sub GitHeadForRepo
+{
+   my $repo = shift;
+   my $rd   = "$CFG{BUILD_SOURCES_BASE_DIR}/$repo";
+
+   return undef unless ( -d $rd );
+   chomp( my $sha = qx{cd '$rd' && git rev-parse HEAD 2>/dev/null} );
+   return ( $sha =~ /^[0-9a-f]{40}$/ ) ? $sha : undef;
+}
+
+sub NexusReuseMavenVersion
+{
+   my $v = $CFG{BUILD_RELEASE_NO};
+   my $c = uc $CFG{BUILD_RELEASE_CANDIDATE};
+   $v .= "-" . lc $CFG{BUILD_RELEASE_CANDIDATE} if ( $c ne "GA" );
+
+   return $v;
+}
+
+sub NexusMavenGroupPath
+{
+   my $g = shift;
+
+   return join( "/", split( /[.]/, $g ) );
+}
+
+sub NexusArtifactFilename
+{
+   my ( $art, $ver, $classifier, $pack ) = @_;
+
+   my $mid = $classifier ? "-$classifier" : "";
+   return "$art-$ver$mid.$pack";
+}
+
+sub NexusMavenArtifactUrl
+{
+   my ( $base, $groupId, $artifactId, $version, $classifier, $packaging ) = @_;
+
+   $packaging ||= "jar";
+   my $gpath = NexusMavenGroupPath($groupId);
+   my $fn    = NexusArtifactFilename( $artifactId, $version, $classifier, $packaging );
+   return "$base$gpath/$artifactId/$version/$fn";
+}
+
+sub NexusCurlToFile
+{
+   my ( $url, $dest ) = @_;
+
+   my @cmd = ( "curl", "-sfS", "--connect-timeout", "15", "--max-time", "600", "-o", $dest, $url );
+
+   if ( $ENV{NEXUS_USERNAME} && defined $ENV{NEXUS_PASSWORD} )
+   {
+      splice @cmd, 1, 0, ( "-u", "$ENV{NEXUS_USERNAME}:$ENV{NEXUS_PASSWORD}" );
+   }
+
+   $! = 0;
+   my ( $success, $error_message, $full_buf, $stdout_buf, $stderr_buf ) = run( command => \@cmd, verbose => 0 );
+
+   return $success;
+}
+
+sub NexusParseBuildinfoGitSha
+{
+   my $body = shift;
+   return $1 if ( $body =~ /"gitSha"\s*:\s*"([0-9a-f]{7,40})"/i );
+
+   return undef;
+}
+
+sub NexusMaybeVerifyBuildinfo
+{
+   my ( $base_url, $groupId, $artifactId, $version, $expected_sha ) = @_;
+
+   my $fn      = "$artifactId-$version.buildinfo.json";
+   my $gpath   = NexusMavenGroupPath($groupId);
+   my $url     = "$base_url$gpath/$artifactId/$version/$fn";
+   my $tmp     = "$ENV{HOME}/.zcs-nexus-cache/buildinfo-$$.json";
+
+   make_path( dirname($tmp) );
+   unlink $tmp if ( -e $tmp );
+
+   return ( 0, "buildinfo_download_failed" ) unless NexusCurlToFile( $url, $tmp );
+
+   open( my $fh, "<", $tmp ) or return ( 0, "buildinfo_read_failed" );
+   local $/;
+   my $raw = <$fh>;
+   close($fh);
+   unlink $tmp;
+
+   my $sha = NexusParseBuildinfoGitSha($raw);
+   return ( 0, "buildinfo_no_gitSha" ) unless $sha;
+   $sha = lc $sha;
+   return ( 0, "buildinfo_gitSha_mismatch" ) if ( $expected_sha ne $sha );
+
+   return ( 1, "" );
+}
+
+# Returns ( $reused_boolean, $reason_if_not_reused )
+sub NexusJavaJarReuseAttempt
+{
+   my ( $dir, $build_info, $repo_list ) = @_;
+
+   return ( 0, "reuse_disabled" ) unless $CFG{NEXUS_REUSE};
+   return ( 0, "force_fresh" ) if $CFG{NEXUS_FORCE_FRESH};
+
+   my $map = LoadJavaJarReuseMap();
+   my $ent = $map->{$dir};
+   return ( 0, "not_allowlisted" ) unless $ent;
+
+   my $git_repo = $ent->{git_repo} || TopLevelGitRepoForDir($dir);
+   return ( 0, "git_override" ) if GitOverridesBlockJavaReuse($git_repo);
+
+   my $head = GitHeadForRepo($git_repo);
+   return ( 0, "no_git_head" ) unless $head;
+
+   my $base = $CFG{NEXUS_MAVEN_REPO_BASE};
+   $base =~ s,/*$,,;
+   $base .= "/";
+
+   my $version = NexusReuseMavenVersion();
+   my $cache_d = "$ENV{HOME}/.zcs-nexus-cache/$dir";
+   make_path($cache_d);
+
+   my $artlist = $ent->{artifacts};
+   return ( 0, "no_artifacts_config" ) unless ( ref($artlist) eq "ARRAY" && @$artlist );
+
+   if ( $ent->{require_git_sha_match} )
+   {
+      my $first = $artlist->[0];
+      my ( $ok, $why ) = NexusMaybeVerifyBuildinfo( $base, $first->{groupId}, $first->{artifactId}, $version, $head );
+      return ( 0, $why ) unless $ok;
+   }
+
+   my @downloads = ();
+   for my $spec (@$artlist)
+   {
+      my $u = NexusMavenArtifactUrl(
+         $base, $spec->{groupId},
+         $spec->{artifactId}, $version,
+         $spec->{classifier} // "",
+         $spec->{packaging}  // "jar"
+      );
+      my $fn = basename($u);
+      my $df = "$cache_d/$fn";
+      unlink $df if ( -e $df );
+      return ( 0, "nexus_fetch_failed:$fn" ) unless NexusCurlToFile( $u, $df );
+      return ( 0, "empty_jar:$fn" ) unless ( -s $df );
+      push @downloads, { path => $df, name => $fn };
+   }
+
+   my $paths = $ent->{install_paths} || [ { into => "build" } ];
+   for my $dl (@downloads)
+   {
+      for my $ip (@$paths)
+      {
+         my $into = $ip->{into} || "build";
+         make_path("$ENV{PWD}/$into");
+         SysExec( "cp", "-f", $dl->{path}, "$into/" );
+      }
+   }
+
+   print color('green') . "[ARTIFACT_REUSE] component=$dir version=$version repo=$git_repo sha=$head nexus=" . $base . color('reset') . "\n";
+
+   return ( 1, "" );
+}
+
 sub Build($)
 {
    my $repo_list = shift;
@@ -554,15 +772,28 @@ sub Build($)
 
                   my $abs_dir = Cwd::abs_path();
 
-                  if ( my $tool_seq = $build_info->{tool_seq} || [ "ant", "mvn", "make" ] )
+                  my ( $reused, $reuse_reason ) = ( 0, "" );
+                  if ( $CFG{NEXUS_REUSE} )
                   {
-                     for my $tool (@$tool_seq)
+                     ( $reused, $reuse_reason ) = NexusJavaJarReuseAttempt( $dir, $build_info, $repo_list );
+                     if ( !$reused && $reuse_reason ne "reuse_disabled" && $reuse_reason ne "not_allowlisted" )
                      {
-                        if ( my $targets = $build_info->{ $tool . "_targets" } )    #Known values are: ant_targets, mvn_targets, make_targets
-                        {
-                           eval { SysExec( $tool, "clean" ) if ( !$ENV{ENV_SKIP_CLEAN_FLAG} ); };
+                        print color('cyan') . "[FRESH_BUILD] component=$dir reason=$reuse_reason" . color('reset') . "\n";
+                     }
+                  }
 
-                           SysExec( $tool, @{ $tool_attributes->{$tool} || [] }, @$targets );
+                  if ( !$reused )
+                  {
+                     if ( my $tool_seq = $build_info->{tool_seq} || [ "ant", "mvn", "make" ] )
+                     {
+                        for my $tool (@$tool_seq)
+                        {
+                           if ( my $targets = $build_info->{ $tool . "_targets" } )    #Known values are: ant_targets, mvn_targets, make_targets
+                           {
+                              eval { SysExec( $tool, "clean" ) if ( !$ENV{ENV_SKIP_CLEAN_FLAG} ); };
+
+                              SysExec( $tool, @{ $tool_attributes->{$tool} || [] }, @$targets );
+                           }
                         }
                      }
                   }
