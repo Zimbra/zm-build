@@ -8,8 +8,12 @@
 #                same as Ant dev.version / Ivy pubrevision (matches zimbra-jar output).
 #   release_no — BUILD_RELEASE_NO only (set when Nexus stores e.g. 10.1.0 without timestamp).
 #
-# Publishing: deploy jars to NEXUS_MAVEN_REPO_BASE as
+# Publishing (build.pl): after a fresh compile, jars are PUT to NEXUS_MAVEN_REPO_BASE as
 #   <group path>/<artifactId>/<version>/<artifactId>-<version>.jar
+# plus <artifactId>-<version>.buildinfo.json when NEXUS_PUBLISH is on (see Jenkins NEXUS_PUBLISH*).
+#
+# publish_globs: optional list of globs (relative to repo dir) if the default
+#   build/<artifactId>*.jar, build/<artifactId>-*.jar, build/dist/... misses the jar.
 
 use strict;
 use warnings;

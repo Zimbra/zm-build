@@ -41,6 +41,13 @@ sub _env_truthy
    return $ENV{$k} =~ /^(1|true|yes)$/i ? 1 : 0;
 }
 
+# Nexus publish default: on unless NEXUS_PUBLISH is explicitly false/no/0.
+sub _env_publish_enabled
+{
+   return 0 if ( defined $ENV{NEXUS_PUBLISH} && $ENV{NEXUS_PUBLISH} =~ /^(0|false|no)$/i );
+   return 1;
+}
+
 sub _nexus_repo_base_default
 {
    my $b = $ENV{NEXUS_MAVEN_REPO_BASE} || 'https://test-artifactory.zimbraeng.com/repository/develop-snapshot/';
@@ -176,6 +183,7 @@ sub InitGlobalBuildVars()
          { name => "NEXUS_REUSE",                type => "!",   hash_src => \%cmd_hash, default_sub => sub { return 1; }, },
          { name => "NEXUS_FORCE_FRESH",          type => "!",   hash_src => \%cmd_hash, default_sub => sub { return _env_truthy("NEXUS_FORCE_FRESH"); }, },
          { name => "NEXUS_MAVEN_REPO_BASE",      type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return _nexus_repo_base_default(); }, },
+         { name => "NEXUS_PUBLISH",              type => "!",   hash_src => \%cmd_hash, default_sub => sub { return _env_publish_enabled(); }, },
       );
 
       {
@@ -682,6 +690,189 @@ sub NexusCurlToFile
    return wantarray ? ( 0, $detail ) : 0;
 }
 
+# Credentials for PUT/uploads. Prefer NEXUS_PUBLISH_* when using a read-only versus deploy user in CI.
+sub NexusPublishAuthPair
+{
+   if ( $ENV{NEXUS_PUBLISH_USERNAME} && defined $ENV{NEXUS_PUBLISH_PASSWORD} )
+   {
+      return ( $ENV{NEXUS_PUBLISH_USERNAME}, $ENV{NEXUS_PUBLISH_PASSWORD} );
+   }
+   return ( $ENV{NEXUS_USERNAME}, $ENV{NEXUS_PASSWORD} );
+}
+
+# Empty NEXUS_PUBLISH_ALLOWED_BRANCHES => any branch may publish. Otherwise GIT_DEFAULT_BRANCH must be listed (comma-separated).
+sub NexusPublishBranchAllowed
+{
+   my $list = $ENV{NEXUS_PUBLISH_ALLOWED_BRANCHES};
+   return 1 unless ( defined $list && $list ne "" );
+
+   my $b = $CFG{GIT_DEFAULT_BRANCH} || "";
+   return 0 if ( $b eq "" );
+
+   my %ok = map { $_ => 1 } grep { $_ ne "" } split( /\s*,\s*/, $list );
+   return $ok{$b} ? 1 : 0;
+}
+
+# PUT $path to $url. Returns ( $ok, $detail ) with HTTP code or error token.
+sub NexusCurlPutFile
+{
+   my ( $url, $path ) = @_;
+
+   return ( 0, "missing_file" ) unless ( $path && -f $path && -s $path );
+
+   my ( $user, $pass ) = NexusPublishAuthPair();
+   return ( 0, "no_credentials" ) unless ( $user && defined $pass );
+
+   my @cmd = ( "curl", "-sS", "--connect-timeout", "15", "--max-time", "600", "-o", "/dev/null", "-w", "%{http_code}", "-T", $path, $url );
+   splice @cmd, 1, 0, ( "-u", "$user:$pass" );
+
+   $! = 0;
+   my ( $success, $error_message, $full_buf, $stdout_buf, $stderr_buf ) = run( command => \@cmd, verbose => 0 );
+
+   my $code= "";
+   if ( defined $stdout_buf )
+   {
+      $code = ref($stdout_buf) eq "ARRAY" ? join( "", @$stdout_buf ) : "$stdout_buf";
+   }
+   $code =~ s/\s+//g;
+
+   return ( 1, $code ) if ( $success && ( $code eq "200" || $code eq "201" ) );
+
+   my $detail = $code ne "" ? $code : "";
+   my $errtxt = "";
+   if ( defined $stderr_buf )
+   {
+      $errtxt = ref($stderr_buf) eq "ARRAY" ? join( "", @$stderr_buf ) : "$stderr_buf";
+   }
+   if ( !$detail && $errtxt ne "" )
+   {
+      $detail = $errtxt;
+   }
+   elsif ( !$detail && $error_message )
+   {
+      $detail = $error_message;
+   }
+   $detail = "curl_failed" if ( $detail eq "" );
+   chomp $detail;
+
+   return ( 0, $detail );
+}
+
+sub NexusFindBuiltJar
+{
+   my ( $ent, $spec ) = @_;
+   my $id = $spec->{artifactId} || "";
+
+   my @globs;
+   if ( ref( $ent->{publish_globs} ) eq "ARRAY" )
+   {
+      @globs = @{ $ent->{publish_globs} };
+   }
+   else
+   {
+      @globs = (
+         "build/${id}*.jar",
+         "build/${id}-*.jar",
+         "build/dist/${id}*.jar",
+         "build/dist/${id}-*.jar",
+      );
+   }
+
+   for my $g (@globs)
+   {
+      my @m = grep { -s $_ && $_ !~ /-(sources|javadoc)\.jar$/i } glob($g);
+      @m = sort { -s $b <=> -s $a } @m;
+      return $m[0] if @m;
+   }
+   return undef;
+}
+
+# After a fresh Ant/Maven compile, push JARs (+ optional .buildinfo.json) so the next run can curl them (Maven layout).
+sub NexusJavaJarPublishAfterFreshBuild
+{
+   my ($dir) = @_;
+
+   return unless $CFG{NEXUS_PUBLISH};
+   return unless NexusPublishBranchAllowed();
+
+   my $map = LoadJavaJarReuseMap();
+   my $ent = $map->{$dir};
+   return unless $ent;
+
+   my $git_repo = $ent->{git_repo} || TopLevelGitRepoForDir($dir);
+   return if GitOverridesBlockJavaReuse($git_repo);
+
+   my $head = GitHeadForRepo($git_repo);
+   unless ($head)
+   {
+      print color('yellow') . "[NEXUS_PUBLISH] skip component=$dir (no git HEAD)" . color('reset') . "\n";
+      return;
+   }
+
+   my ( $pu, $pp ) = NexusPublishAuthPair();
+   unless ( $pu && defined $pp )
+   {
+      print color('yellow') . "[NEXUS_PUBLISH] skip component=$dir (no deploy credentials; set NEXUS_PUBLISH_USERNAME/PASSWORD or NEXUS_USERNAME/PASSWORD with deploy permission)" . color('reset') . "\n";
+      return;
+   }
+
+   my $base = $CFG{NEXUS_MAVEN_REPO_BASE};
+   $base =~ s,/*$,,;
+   $base .= "/";
+
+   my $version = NexusArtifactVersionForReuse( $ent, $git_repo );
+   my $artlist = $ent->{artifacts};
+   return unless ( ref($artlist) eq "ARRAY" && @$artlist );
+
+   make_path("$ENV{HOME}/.zcs-nexus-cache");
+
+   for my $spec (@$artlist)
+   {
+      my $src = NexusFindBuiltJar( $ent, $spec );
+      unless ($src)
+      {
+         print color('yellow') . "[NEXUS_PUBLISH] skip component=$dir artifact=$spec->{artifactId} (no local jar; set publish_globs in java_jar_reuse_map.pl if non-standard)" . color('reset') . "\n";
+         next;
+      }
+
+      my $u = NexusMavenArtifactUrl(
+         $base, $spec->{groupId},
+         $spec->{artifactId}, $version,
+         $spec->{classifier} // "",
+         $spec->{packaging}  // "jar"
+      );
+      my ( $ok_p, $detail_p ) = NexusCurlPutFile( $u, $src );
+      if ($ok_p)
+      {
+         print color('green') . "[NEXUS_PUBLISH] pushed jar $spec->{artifactId}-$version http=$detail_p url=$u" . color('reset') . "\n";
+      }
+      else
+      {
+         print color('yellow') . "[NEXUS_PUBLISH] jar upload failed $spec->{artifactId}-$version http=$detail_p url=$u (readonly user? need deploy permission on repo)" . color('reset') . "\n";
+      }
+
+      my $bio = qq({"gitSha":"$head","component":"$dir","version":"$version"}\n);
+      my $bt  = "$ENV{HOME}/.zcs-nexus-cache/buildinfo-publish-$$-" . ( $spec->{artifactId} || "artifact" ) . ".json";
+      open( my $bfh, ">", $bt ) or next;
+      print $bfh $bio;
+      close($bfh);
+
+      my $bf    = "$spec->{artifactId}-$version.buildinfo.json";
+      my $gpath = NexusMavenGroupPath( $spec->{groupId} );
+      my $bu    = "$base$gpath/$spec->{artifactId}/$version/$bf";
+      my ( $ok_b, $detail_b ) = NexusCurlPutFile( $bu, $bt );
+      if ($ok_b)
+      {
+         print color('green') . "[NEXUS_PUBLISH] pushed buildinfo $bf http=$detail_b" . color('reset') . "\n";
+      }
+      else
+      {
+         print color('yellow') . "[NEXUS_PUBLISH] buildinfo upload failed $bf http=$detail_b url=$bu" . color('reset') . "\n";
+      }
+      unlink $bt if ( -e $bt );
+   }
+}
+
 sub NexusParseBuildinfoGitSha
 {
    my $body = shift;
@@ -904,6 +1095,15 @@ sub Build($)
                            }
                         }
                      }
+                  }
+
+                  if ( !$reused && $CFG{NEXUS_PUBLISH} && !exists $build_info->{partial} )
+                  {
+                     eval { NexusJavaJarPublishAfterFreshBuild($dir); 1 } or do {
+                        my $err = $@ || "unknown";
+                        chomp $err;
+                        print color('yellow') . "[NEXUS_PUBLISH] error component=$dir: $err" . color('reset') . "\n";
+                     };
                   }
 
                   if ( my $stage_cmd = $build_info->{stage_cmd} )
