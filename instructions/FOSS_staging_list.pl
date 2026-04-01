@@ -1,7 +1,7 @@
 @ENTRIES = (
    {
       "dir"             => "zm-mailbox",
-      "ant_targets"     => ["pkg-after-plough-through-tests", "publish-artifact-all"],
+      "ant_targets"     => ["pkg-after-plough-through-tests", "publish-remote-all"],
       "deploy_pkg_into" => "bundle",
       "stage_cmd"       => sub {
          SysExec("mkdir -p                                 $CFG{BUILD_DIR}/zm-mailbox/store-conf/");
@@ -11,7 +11,7 @@
    },
    {
       "dir"         => "zm-mailbox/store",
-      "ant_targets" => ["publish-store-test", "test", "coverage", "sonar-scan", "publish-artifact"],
+      "ant_targets" => ["publish-store-test", "test", "coverage", "sonar-scan", "publish-remote"],
       "stage_cmd"   => undef,
    },
    {
@@ -33,7 +33,7 @@
    },
    {
       "dir"         => "zm-taglib",
-      "ant_targets" => ["publish-local", "sonar-scan", "publish-artifact"],
+      "ant_targets" => ["publish-local", "sonar-scan", "publish-remote"],
       "stage_cmd"   => sub {
          SysExec("mkdir -p $CFG{BUILD_DIR}/zm-taglib/build");
          SysExec("cp -f build/zm-taglib*.jar  $CFG{BUILD_DIR}/zm-taglib/build/");
@@ -41,7 +41,7 @@
    },
    {
       "dir"         => "zm-charset",
-      "ant_targets" => ["publish-local", "sonar-scan", "publish-artifact"],
+      "ant_targets" => ["publish-local", "sonar-scan", "publish-remote"],
       "stage_cmd"   => undef,
    },
    {
@@ -56,17 +56,17 @@
    },
    {
       "dir"         => "zm-ajax",
-      "ant_targets" => ["publish-local", "sonar-scan", "publish-artifact"],
+      "ant_targets" => ["publish-local", "sonar-scan", "publish-remote"],
       "stage_cmd"   => undef,
    },
    {
       "dir"         => "zm-admin-ajax",
-      "ant_targets" => ["publish-local", "sonar-scan", "publish-artifact"],
+      "ant_targets" => ["publish-local", "sonar-scan", "publish-remote"],
       "stage_cmd"   => undef,
    },
    {
       "dir"         => "zm-ssdb-ephemeral-store",
-      "ant_targets" => ["publish-local", "test", "coverage", "sonar-scan", "publish-artifact"],
+      "ant_targets" => ["publish-local", "test", "coverage", "sonar-scan", "publish-remote"],
       "stage_cmd"   => sub {
          SysExec("mkdir -p $CFG{BUILD_DIR}/zm-ssdb-ephemeral-store/build/dist");
          SysExec("cp -f build/zm-ssdb-ephemeral-store*.jar $CFG{BUILD_DIR}/zm-ssdb-ephemeral-store/build/dist");
@@ -74,7 +74,7 @@
    },
    {
       "dir"         => "zm-openid-consumer-store",
-      "ant_targets" => ["dist-package", "test", "coverage", "sonar-scan", "publish-artifact"],
+      "ant_targets" => ["dist-package", "test", "coverage", "sonar-scan", "publish-remote"],
       "stage_cmd"   => sub {
          SysExec("mkdir -p $CFG{BUILD_DIR}/zm-openid-consumer-store/build/dist");
          SysExec("cp -f -r build/dist $CFG{BUILD_DIR}/zm-openid-consumer-store/build/");
@@ -82,7 +82,7 @@
    },
    {
       "dir"         => "zm-clam-scanner-store",
-      "ant_targets" => ["publish-local", "test", "coverage", "sonar-scan", "publish-artifact"],
+      "ant_targets" => ["publish-local", "test", "coverage", "sonar-scan", "publish-remote"],
       "stage_cmd"   => sub {
          SysExec("mkdir -p $CFG{BUILD_DIR}/zm-clam-scanner-store/build/dist");
          SysExec("cp -f -rp build/zm-clam-scanner-store-*.jar $CFG{BUILD_DIR}/zm-clam-scanner-store/build/dist");
@@ -98,7 +98,7 @@
    },
    {
       "dir"         => "zm-nginx-lookup-store",
-      "ant_targets" => ["publish-local", "test", "coverage", "sonar-scan", "publish-artifact"],
+      "ant_targets" => ["publish-local", "test", "coverage", "sonar-scan", "publish-remote"],
       "stage_cmd"   => sub {
          SysExec("mkdir -p $CFG{BUILD_DIR}/zm-nginx-lookup-store/build/dist");
          SysExec("cp -f -rp build/zm-nginx-lookup-store-*.jar $CFG{BUILD_DIR}/zm-nginx-lookup-store/build/dist");
@@ -262,7 +262,7 @@
    },
    {
       "dir"         => "zm-bulkprovision-store",
-      "ant_targets" => ["jar", "sonar-scan", "publish-artifact"],
+      "ant_targets" => ["jar", "sonar-scan", "publish-remote"],
       "stage_cmd"   => sub {
          SysExec("mkdir -p $CFG{BUILD_DIR}/zm-bulkprovision-store");
          SysExec("cp -f -r ../zm-bulkprovision-store/build $CFG{BUILD_DIR}/zm-bulkprovision-store");
@@ -270,7 +270,7 @@
    },
    {
       "dir"         => "zm-certificate-manager-store",
-      "ant_targets" => ["jar", "sonar-scan", "publish-artifact"],
+      "ant_targets" => ["jar", "sonar-scan", "publish-remote"],
       "stage_cmd"   => sub {
          SysExec("mkdir -p $CFG{BUILD_DIR}/zm-certificate-manager-store");
          SysExec("cp -f -r ../zm-certificate-manager-store/build $CFG{BUILD_DIR}/zm-certificate-manager-store");
@@ -278,7 +278,7 @@
    },
    {
       "dir"         => "zm-versioncheck-store",
-      "ant_targets" => ["jar", "sonar-scan", "publish-artifact"],
+      "ant_targets" => ["jar", "sonar-scan", "publish-remote"],
       "stage_cmd"   => sub {
          SysExec("mkdir -p $CFG{BUILD_DIR}/zm-versioncheck-store");
          SysExec("cp -f -r ../zm-versioncheck-store/build $CFG{BUILD_DIR}/zm-versioncheck-store");
@@ -286,7 +286,7 @@
    },
    {
       "dir"         => "zm-ldap-utils-store",
-      "ant_targets" => ["jar", "sonar-scan", "publish-artifact"],
+      "ant_targets" => ["jar", "sonar-scan", "publish-remote"],
       "stage_cmd"   => sub {
          SysExec("mkdir -p $CFG{BUILD_DIR}/zm-ldap-utils-store");
          SysExec("cp -f -r ../zm-ldap-utils-store/build $CFG{BUILD_DIR}/zm-ldap-utils-store");
@@ -369,7 +369,7 @@
    
    {
       "dir"         => "zm-oauth-social",
-      "ant_targets" => ["publish-local", "oauth-social-common-jar", "oauth-social-jar", "test", "coverage", "sonar-scan", "publish-artifact"],
+      "ant_targets" => ["publish-local", "oauth-social-common-jar", "oauth-social-jar", "test", "coverage", "sonar-scan", "publish-remote"],
       "stage_cmd"   => sub {
          SysExec("mkdir -p $CFG{BUILD_DIR}/zm-oauth-social/build/dist");
          SysExec("cp -f -rp build/zm-oauth-social*.jar $CFG{BUILD_DIR}/zm-oauth-social/build/dist");
@@ -378,7 +378,7 @@
    
    {
       "dir"         => "zm-gql",
-      "ant_targets" => ["publish-local", "test", "coverage", "sonar-scan", "publish-artifact"],
+      "ant_targets" => ["publish-local", "test", "coverage", "sonar-scan", "publish-remote"],
       "stage_cmd"   => sub {
          SysExec("mkdir -p $CFG{BUILD_DIR}/zm-gql/build/dist");
          SysExec("cp -f -rp build/zm-gql-*.jar $CFG{BUILD_DIR}/zm-gql/build/dist");
