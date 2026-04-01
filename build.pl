@@ -630,11 +630,15 @@ sub NexusMavenArtifactUrl
    return "$base$gpath/$artifactId/$version/$fn";
 }
 
+# Downloads $url to $dest. Without -f, curl exits 0 on HTTP 404, so we require status 200 and non-empty file.
+# In list context: ( $ok, $http_code_or_err ).
 sub NexusCurlToFile
 {
    my ( $url, $dest ) = @_;
 
-   my @cmd = ( "curl", "-sfS", "--connect-timeout", "15", "--max-time", "600", "-o", $dest, $url );
+   unlink $dest if ( -e $dest );
+
+   my @cmd = ( "curl", "-sS", "--connect-timeout", "15", "--max-time", "600", "-o", $dest, "-w", "%{http_code}", $url );
 
    if ( $ENV{NEXUS_USERNAME} && defined $ENV{NEXUS_PASSWORD} )
    {
@@ -644,7 +648,29 @@ sub NexusCurlToFile
    $! = 0;
    my ( $success, $error_message, $full_buf, $stdout_buf, $stderr_buf ) = run( command => \@cmd, verbose => 0 );
 
-   return $success;
+   my $code = defined $stdout_buf ? $stdout_buf : "";
+   $code =~ s/\s+//g;
+
+   if ( $success && $code eq "200" && -s $dest )
+   {
+      return wantarray ? ( 1, $code ) : 1;
+   }
+
+   unlink $dest if ( -e $dest );
+
+   my $detail = $code ne "" ? $code : "";
+   if ( !$detail && defined $stderr_buf && $stderr_buf ne "" )
+   {
+      $detail = $stderr_buf;
+   }
+   elsif ( !$detail && $error_message )
+   {
+      $detail = $error_message;
+   }
+   $detail = "curl_failed" if ( $detail eq "" );
+   chomp $detail;
+
+   return wantarray ? ( 0, $detail ) : 0;
 }
 
 sub NexusParseBuildinfoGitSha
@@ -667,7 +693,8 @@ sub NexusMaybeVerifyBuildinfo
    make_path( dirname($tmp) );
    unlink $tmp if ( -e $tmp );
 
-   return ( 0, "buildinfo_download_failed" ) unless NexusCurlToFile( $url, $tmp );
+   my ( $bio_ok, $bio_err ) = NexusCurlToFile( $url, $tmp );
+   return ( 0, "buildinfo_download_failed:$bio_err" ) unless $bio_ok;
 
    open( my $fh, "<", $tmp ) or return ( 0, "buildinfo_read_failed" );
    local $/;
@@ -731,7 +758,8 @@ sub NexusJavaJarReuseAttempt
       my $fn = basename($u);
       my $df = "$cache_d/$fn";
       unlink $df if ( -e $df );
-      return ( 0, "nexus_fetch_failed:$fn" ) unless NexusCurlToFile( $u, $df );
+      my ( $ok_dl, $dl_err ) = NexusCurlToFile( $u, $df );
+      return ( 0, "nexus_fetch_failed:$fn http=$dl_err url=$u" ) unless $ok_dl;
       return ( 0, "empty_jar:$fn" ) unless ( -s $df );
       push @downloads, { path => $df, name => $fn };
    }
@@ -793,6 +821,20 @@ sub Build($)
      
    push( @{ $tool_attributes->{mvn} }, $CFG{MVN_OPTIONS} )
        if ( $CFG{MVN_OPTIONS} );
+
+   if ( $CFG{NEXUS_REUSE} )
+   {
+      my $map = LoadJavaJarReuseMap();
+      my @reuse_dirs = sort keys %$map;
+      if (@reuse_dirs)
+      {
+         print color('magenta') . "[NEXUS_REUSE] map entries=" . scalar(@reuse_dirs) . " dirs=" . join( ",", @reuse_dirs ) . color('reset') . "\n";
+      }
+      else
+      {
+         print color('yellow') . "[NEXUS_REUSE] java_jar_reuse_map.pl empty or invalid; only full builds" . color('reset') . "\n";
+      }
+   }
 
    my $cnt = 0;
    for my $build_info (@ALL_BUILDS)
