@@ -539,6 +539,63 @@ sub GitHeadForRepo
    return ( $sha =~ /^[0-9a-f]{40}$/ ) ? $sha : undef;
 }
 
+# Same as Ant set-dev-version git.timestamp (epoch seconds of HEAD commit).
+sub GitCommitEpochForRepo
+{
+   my $repo = shift;
+   my $rd   = "$CFG{BUILD_SOURCES_BASE_DIR}/$repo";
+
+   return undef unless ( -d $rd );
+   chomp( my $ts = qx{cd '$rd' && git log -1 --pretty=format:%at 2>/dev/null} );
+   return ( $ts =~ /^\d+$/ ) ? $ts : undef;
+}
+
+# First three numeric segments of BUILD_RELEASE_NO (matches Ivy dev.version prefix before git timestamp).
+sub NexusIvyDevVersionPrefix
+{
+   my $rno = $CFG{BUILD_RELEASE_NO};
+   return undef unless ( defined $rno && $rno ne "" );
+
+   my @p = split( /\./, $rno );
+   return join( ".", @p[ 0 .. 2 ] ) if ( @p >= 3 );
+   return join( ".", $p[0], $p[1], 0 )   if ( @p == 2 );
+   return undef;
+}
+
+# version_style in java_jar_reuse_map.pl:
+#   ivy_dev     — major.minor.micro.<git epoch>[ -candidate ] (default; matches zimbra-jar / Ivy pubrevision)
+#   release_no  — BUILD_RELEASE_NO / candidate only (use when Nexus publishes flat product versions)
+sub NexusArtifactVersionForReuse
+{
+   my ( $ent, $git_repo ) = @_;
+
+   return $ent->{maven_version} if ( $ent->{maven_version} );
+
+   my $style = $ent->{version_style} || "ivy_dev";
+
+   if ( $style eq "release_no" )
+   {
+      return NexusReuseMavenVersion();
+   }
+
+   if ( $style eq "ivy_dev" )
+   {
+      my $prefix = NexusIvyDevVersionPrefix();
+      my $epoch  = GitCommitEpochForRepo($git_repo);
+      if ( !$prefix || !$epoch )
+      {
+         return NexusReuseMavenVersion();
+      }
+      my $v = "$prefix.$epoch";
+      my $c = uc $CFG{BUILD_RELEASE_CANDIDATE};
+      $v .= "-" . lc $CFG{BUILD_RELEASE_CANDIDATE} if ( $c ne "GA" );
+
+      return $v;
+   }
+
+   return NexusReuseMavenVersion();
+}
+
 sub NexusReuseMavenVersion
 {
    my $v = $CFG{BUILD_RELEASE_NO};
@@ -648,7 +705,7 @@ sub NexusJavaJarReuseAttempt
    $base =~ s,/*$,,;
    $base .= "/";
 
-   my $version = NexusReuseMavenVersion();
+   my $version = NexusArtifactVersionForReuse( $ent, $git_repo );
    my $cache_d = "$ENV{HOME}/.zcs-nexus-cache/$dir";
    make_path($cache_d);
 
