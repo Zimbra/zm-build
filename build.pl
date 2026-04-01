@@ -648,7 +648,11 @@ sub NexusCurlToFile
    $! = 0;
    my ( $success, $error_message, $full_buf, $stdout_buf, $stderr_buf ) = run( command => \@cmd, verbose => 0 );
 
-   my $code = defined $stdout_buf ? $stdout_buf : "";
+   my $code = "";
+   if ( defined $stdout_buf )
+   {
+      $code = ref($stdout_buf) eq "ARRAY" ? join( "", @$stdout_buf ) : "$stdout_buf";
+   }
    $code =~ s/\s+//g;
 
    if ( $success && $code eq "200" && -s $dest )
@@ -659,9 +663,14 @@ sub NexusCurlToFile
    unlink $dest if ( -e $dest );
 
    my $detail = $code ne "" ? $code : "";
-   if ( !$detail && defined $stderr_buf && $stderr_buf ne "" )
+   my $errtxt = "";
+   if ( defined $stderr_buf )
    {
-      $detail = $stderr_buf;
+      $errtxt = ref($stderr_buf) eq "ARRAY" ? join( "", @$stderr_buf ) : "$stderr_buf";
+   }
+   if ( !$detail && $errtxt ne "" )
+   {
+      $detail = $errtxt;
    }
    elsif ( !$detail && $error_message )
    {
