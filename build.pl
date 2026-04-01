@@ -173,7 +173,7 @@ sub InitGlobalBuildVars()
          { name => "BUILD_DIR",                  type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return &$build_dir_func; }, },
          { name => "DEPLOY_URL_PREFIX",          type => "=s",  hash_src => \%cmd_hash, default_sub => sub { $CFG{LOCAL_DEPLOY} = 1; return "http://" . Net::Domain::hostfqdn . ":8008/$CFG{DESTINATION_NAME}"; }, },
          { name => "DUMP_CONFIG_TO",             type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return undef; }, },
-         { name => "NEXUS_REUSE",                type => "!",   hash_src => \%cmd_hash, default_sub => sub { return _env_truthy("NEXUS_REUSE_ENABLE"); }, },
+         { name => "NEXUS_REUSE",                type => "!",   hash_src => \%cmd_hash, default_sub => sub { return 1; }, },
          { name => "NEXUS_FORCE_FRESH",          type => "!",   hash_src => \%cmd_hash, default_sub => sub { return _env_truthy("NEXUS_FORCE_FRESH"); }, },
          { name => "NEXUS_MAVEN_REPO_BASE",      type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return _nexus_repo_base_default(); }, },
       );
