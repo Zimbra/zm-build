@@ -48,9 +48,10 @@ sub _env_publish_enabled
    return 1;
 }
 
+# Fixed Artifactory Maven repo for Java reuse/publish (override only via --nexus-maven-repo-base).
 sub _nexus_repo_base_default
 {
-   my $b = $ENV{NEXUS_MAVEN_REPO_BASE} || 'https://test-artifactory.zimbraeng.com/repository/develop-snapshot/';
+   my $b = 'https://test-artifactory.zimbraeng.com/repository/develop-snapshot';
    $b =~ s,/*$,,;
    return "$b/";
 }
@@ -180,8 +181,7 @@ sub InitGlobalBuildVars()
          { name => "BUILD_DIR",                  type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return &$build_dir_func; }, },
          { name => "DEPLOY_URL_PREFIX",          type => "=s",  hash_src => \%cmd_hash, default_sub => sub { $CFG{LOCAL_DEPLOY} = 1; return "http://" . Net::Domain::hostfqdn . ":8008/$CFG{DESTINATION_NAME}"; }, },
          { name => "DUMP_CONFIG_TO",             type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return undef; }, },
-         { name => "NEXUS_REUSE",                type => "!",   hash_src => \%cmd_hash, default_sub => sub { return 1; }, },
-         { name => "NEXUS_FORCE_FRESH",          type => "!",   hash_src => \%cmd_hash, default_sub => sub { return _env_truthy("NEXUS_FORCE_FRESH"); }, },
+         { name => "NEXUS_REUSE",                type => "!",   hash_src => \%cmd_hash, default_sub => sub { return 0; }, },
          { name => "NEXUS_MAVEN_REPO_BASE",      type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return _nexus_repo_base_default(); }, },
          { name => "NEXUS_PUBLISH",              type => "!",   hash_src => \%cmd_hash, default_sub => sub { return _env_publish_enabled(); }, },
       );
@@ -503,21 +503,6 @@ EOM_DUMP
 }
 
 
-sub LoadJavaJarReuseMap
-{
-   my $f = "$GLOBAL_PATH_TO_SCRIPT_DIR/instructions/java_jar_reuse_map.pl";
-   return {} unless ( -f $f );
-
-   local $@;
-   my $hr = do $f;
-   if ( $@ || ref($hr) ne "HASH" )
-   {
-      print color('yellow') . "WARNING: java_jar_reuse_map.pl: $@" . color('reset') . "\n";
-      return {};
-   }
-   return $hr;
-}
-
 sub TopLevelGitRepoForDir
 {
    my $dir = shift;
@@ -570,7 +555,7 @@ sub NexusIvyDevVersionPrefix
    return undef;
 }
 
-# version_style in java_jar_reuse_map.pl:
+# version_style in java_jar_reuse (see instructions/*_staging_list.pl):
 #   ivy_dev     — major.minor.micro.<git epoch>[ -candidate ] (default; matches zimbra-jar / Ivy pubrevision)
 #   release_no  — BUILD_RELEASE_NO / candidate only (use when Nexus publishes flat product versions)
 sub NexusArtifactVersionForReuse
@@ -602,6 +587,31 @@ sub NexusArtifactVersionForReuse
    }
 
    return NexusReuseMavenVersion();
+}
+
+# Artifactory tree like: zimbra/<artifactId>/develop-snapshot/<artifactId>-develop-snapshot.jar
+# (UI "version" folder + JAR basename share the same label.) Use java_jar_reuse:
+#   nexus_layout => "branch_jar", nexus_branch_label => "develop-snapshot"
+# or env NEXUS_JAR_BRANCH_LABEL when label is omitted on the entry.
+# Default nexus_layout "maven" uses version_style / ivy_dev timestamps in the path (full Maven GAV layout).
+sub NexusEffectiveReuseVersion
+{
+   my ( $ent, $git_repo ) = @_;
+
+   my $layout = $ent->{nexus_layout} || "maven";
+   if ( $layout eq "branch_jar" )
+   {
+      my $lbl = $ent->{nexus_branch_label};
+      if ( !defined $lbl || $lbl eq "" )
+      {
+         $lbl = $ENV{NEXUS_JAR_BRANCH_LABEL};
+      }
+      return "" unless defined $lbl;
+      $lbl =~ s/^\s+|\s+$//g;
+      return $lbl;
+   }
+
+   return NexusArtifactVersionForReuse( $ent, $git_repo );
 }
 
 sub NexusReuseMavenVersion
@@ -790,14 +800,13 @@ sub NexusFindBuiltJar
 # After a fresh Ant/Maven compile, push JARs (+ optional .buildinfo.json) so the next run can curl them (Maven layout).
 sub NexusJavaJarPublishAfterFreshBuild
 {
-   my ($dir) = @_;
+   my ( $dir, $build_info ) = @_;
 
    return unless $CFG{NEXUS_PUBLISH};
    return unless NexusPublishBranchAllowed();
 
-   my $map = LoadJavaJarReuseMap();
-   my $ent = $map->{$dir};
-   return unless $ent;
+   my $ent = $build_info->{java_jar_reuse};
+   return unless ( ref($ent) eq "HASH" );
 
    my $git_repo = $ent->{git_repo} || TopLevelGitRepoForDir($dir);
    return if GitOverridesBlockJavaReuse($git_repo);
@@ -820,7 +829,9 @@ sub NexusJavaJarPublishAfterFreshBuild
    $base =~ s,/*$,,;
    $base .= "/";
 
-   my $version = NexusArtifactVersionForReuse( $ent, $git_repo );
+   my $version = NexusEffectiveReuseVersion( $ent, $git_repo );
+   return if ( ( $ent->{nexus_layout} || "maven" ) eq "branch_jar" && $version eq "" );
+
    my $artlist = $ent->{artifacts};
    return unless ( ref($artlist) eq "ARRAY" && @$artlist );
 
@@ -831,7 +842,7 @@ sub NexusJavaJarPublishAfterFreshBuild
       my $src = NexusFindBuiltJar( $ent, $spec );
       unless ($src)
       {
-         print color('yellow') . "[NEXUS_PUBLISH] skip component=$dir artifact=$spec->{artifactId} (no local jar; set publish_globs in java_jar_reuse_map.pl if non-standard)" . color('reset') . "\n";
+         print color('yellow') . "[NEXUS_PUBLISH] skip component=$dir artifact=$spec->{artifactId} (no local jar; set java_jar_reuse.publish_globs on this staging entry if non-standard)" . color('reset') . "\n";
          next;
       }
 
@@ -916,11 +927,9 @@ sub NexusJavaJarReuseAttempt
    my ( $dir, $build_info, $repo_list ) = @_;
 
    return ( 0, "reuse_disabled" ) unless $CFG{NEXUS_REUSE};
-   return ( 0, "force_fresh" ) if $CFG{NEXUS_FORCE_FRESH};
 
-   my $map = LoadJavaJarReuseMap();
-   my $ent = $map->{$dir};
-   return ( 0, "not_allowlisted" ) unless $ent;
+   my $ent = $build_info->{java_jar_reuse};
+   return ( 0, "not_allowlisted" ) unless ( ref($ent) eq "HASH" );
 
    my $git_repo = $ent->{git_repo} || TopLevelGitRepoForDir($dir);
    return ( 0, "git_override" ) if GitOverridesBlockJavaReuse($git_repo);
@@ -932,7 +941,12 @@ sub NexusJavaJarReuseAttempt
    $base =~ s,/*$,,;
    $base .= "/";
 
-   my $version = NexusArtifactVersionForReuse( $ent, $git_repo );
+   my $version = NexusEffectiveReuseVersion( $ent, $git_repo );
+   if ( ( $ent->{nexus_layout} || "maven" ) eq "branch_jar" && $version eq "" )
+   {
+      return ( 0, "branch_jar_missing_nexus_branch_label" );
+   }
+
    my $cache_d = "$ENV{HOME}/.zcs-nexus-cache/$dir";
    make_path($cache_d);
 
@@ -1024,15 +1038,14 @@ sub Build($)
 
    if ( $CFG{NEXUS_REUSE} )
    {
-      my $map = LoadJavaJarReuseMap();
-      my @reuse_dirs = sort keys %$map;
+      my @reuse_dirs = sort map { $_->{dir} } grep { ref( $_->{java_jar_reuse} ) eq "HASH" } @ALL_BUILDS;
       if (@reuse_dirs)
       {
-         print color('magenta') . "[NEXUS_REUSE] map entries=" . scalar(@reuse_dirs) . " dirs=" . join( ",", @reuse_dirs ) . color('reset') . "\n";
+         print color('magenta') . "[NEXUS_REUSE] staging entries with java_jar_reuse=" . scalar(@reuse_dirs) . " dirs=" . join( ",", @reuse_dirs ) . color('reset') . "\n";
       }
       else
       {
-         print color('yellow') . "[NEXUS_REUSE] java_jar_reuse_map.pl empty or invalid; only full builds" . color('reset') . "\n";
+         print color('yellow') . "[NEXUS_REUSE] no java_jar_reuse blocks in staging list; only full builds" . color('reset') . "\n";
       }
    }
 
@@ -1099,7 +1112,7 @@ sub Build($)
 
                   if ( !$reused && $CFG{NEXUS_PUBLISH} && !exists $build_info->{partial} )
                   {
-                     eval { NexusJavaJarPublishAfterFreshBuild($dir); 1 } or do {
+                     eval { NexusJavaJarPublishAfterFreshBuild( $dir, $build_info ); 1 } or do {
                         my $err = $@ || "unknown";
                         chomp $err;
                         print color('yellow') . "[NEXUS_PUBLISH] error component=$dir: $err" . color('reset') . "\n";

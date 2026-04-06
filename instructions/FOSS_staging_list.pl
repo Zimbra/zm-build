@@ -1,3 +1,9 @@
+# Optional "java_jar_reuse" => { ... } on a row: Nexus/Artifactory JAR reuse + publish for that staging "dir"
+# (see build.pl NexusJavaJarReuseAttempt / NexusJavaJarPublishAfterFreshBuild). Omit => always compile.
+#
+# nexus_layout "branch_jar" + nexus_branch_label: path zimbra/<artifactId>/<label>/<artifactId>-<label>.jar
+# (matches hosted repo browse tree). Override label with env NEXUS_JAR_BRANCH_LABEL if needed.
+
 @ENTRIES = (
    {
       "dir"             => "zm-mailbox",
@@ -33,6 +39,17 @@
    },
    {
       "dir"         => "zm-taglib",
+      "java_jar_reuse" => {
+         nexus_layout          => "branch_jar",
+         nexus_branch_label    => "develop-snapshot",
+         git_repo              => "zm-taglib",
+         require_git_sha_match => 0,
+         version_style         => "ivy_dev",
+         groupId               => "zimbra",
+         artifactId            => "zm-taglib",
+         artifacts             => [ { groupId => "zimbra", artifactId => "zm-taglib", packaging => "jar", classifier => "" }, ],
+         install_paths         => [ { into => "build" }, ],
+      },
       "ant_targets" => ["publish-local", "sonar-scan"],
       "stage_cmd"   => sub {
          SysExec("mkdir -p $CFG{BUILD_DIR}/zm-taglib/build");
@@ -41,11 +58,34 @@
    },
    {
       "dir"         => "zm-charset",
+      "java_jar_reuse" => {
+         nexus_layout          => "branch_jar",
+         nexus_branch_label    => "develop-snapshot",
+         git_repo              => "zm-charset",
+         require_git_sha_match => 0,
+         version_style         => "ivy_dev",
+         groupId               => "zimbra",
+         artifactId            => "zm-charset",
+         artifacts             => [ { groupId => "zimbra", artifactId => "zm-charset", packaging => "jar", classifier => "" }, ],
+         install_paths         => [ { into => "build" }, ],
+      },
       "ant_targets" => ["publish-local", "sonar-scan"],
       "stage_cmd"   => undef,
    },
    {
       "dir"         => "zm-ldap-utilities",
+      "java_jar_reuse" => {
+         nexus_layout          => "branch_jar",
+         nexus_branch_label    => "develop-snapshot",
+         git_repo              => "zm-ldap-utilities",
+         require_git_sha_match => 0,
+         version_style         => "ivy_dev",
+         groupId               => "zimbra",
+         artifactId            => "zm-ldap-utilities",
+         artifacts             => [ { groupId => "zimbra", artifactId => "zm-ldap-utilities", packaging => "jar", classifier => "" }, ],
+         install_paths         => [ { into => "build" }, ],
+         publish_globs         => [ "build/dist/zm-ldap-utilities*.jar", "build/zm-ldap-utilities*.jar" ],
+      },
       "ant_targets" => ["build-dist"],
       "stage_cmd"   => sub {
          SysExec("(cd .. && rsync -az --relative zm-ldap-utilities/build/dist $CFG{BUILD_DIR}/)");
@@ -56,16 +96,49 @@
    },
    {
       "dir"         => "zm-ajax",
+      "java_jar_reuse" => {
+         nexus_layout          => "branch_jar",
+         nexus_branch_label    => "develop-snapshot",
+         git_repo              => "zm-ajax",
+         require_git_sha_match => 0,
+         version_style         => "ivy_dev",
+         groupId               => "zimbra",
+         artifactId            => "zm-ajax",
+         artifacts             => [ { groupId => "zimbra", artifactId => "zm-ajax", packaging => "jar", classifier => "" }, ],
+         install_paths         => [ { into => "build" }, ],
+      },
       "ant_targets" => ["publish-local", "sonar-scan"],
       "stage_cmd"   => undef,
    },
    {
       "dir"         => "zm-admin-ajax",
+      "java_jar_reuse" => {
+         nexus_layout          => "branch_jar",
+         nexus_branch_label    => "develop-snapshot",
+         git_repo              => "zm-admin-ajax",
+         require_git_sha_match => 0,
+         version_style         => "ivy_dev",
+         groupId               => "zimbra",
+         artifactId            => "zm-admin-ajax",
+         artifacts             => [ { groupId => "zimbra", artifactId => "zm-admin-ajax", packaging => "jar", classifier => "" }, ],
+         install_paths         => [ { into => "build" }, ],
+      },
       "ant_targets" => ["publish-local", "sonar-scan"],
       "stage_cmd"   => undef,
    },
    {
       "dir"         => "zm-ssdb-ephemeral-store",
+      "java_jar_reuse" => {
+         nexus_layout          => "branch_jar",
+         nexus_branch_label    => "develop-snapshot",
+         git_repo              => "zm-ssdb-ephemeral-store",
+         require_git_sha_match => 0,
+         version_style         => "ivy_dev",
+         groupId               => "zimbra",
+         artifactId            => "zm-ssdb-ephemeral-store",
+         artifacts             => [ { groupId => "zimbra", artifactId => "zm-ssdb-ephemeral-store", packaging => "jar", classifier => "" }, ],
+         install_paths         => [ { into => "build" }, { into => "build/dist" }, ],
+      },
       "ant_targets" => ["publish-local", "test", "coverage", "sonar-scan"],
       "stage_cmd"   => sub {
          SysExec("mkdir -p $CFG{BUILD_DIR}/zm-ssdb-ephemeral-store/build/dist");
@@ -74,6 +147,17 @@
    },
    {
       "dir"         => "zm-openid-consumer-store",
+      "java_jar_reuse" => {
+         nexus_layout          => "branch_jar",
+         nexus_branch_label    => "develop-snapshot",
+         git_repo              => "zm-openid-consumer-store",
+         require_git_sha_match => 0,
+         version_style         => "ivy_dev",
+         groupId               => "zimbra",
+         artifactId            => "zm-openid-consumer-store",
+         artifacts             => [ { groupId => "zimbra", artifactId => "zm-openid-consumer-store", packaging => "jar", classifier => "" }, ],
+         install_paths         => [ { into => "build" }, { into => "build/dist" }, ],
+      },
       "ant_targets" => ["dist-package", "test", "coverage", "sonar-scan"],
       "stage_cmd"   => sub {
          SysExec("mkdir -p $CFG{BUILD_DIR}/zm-openid-consumer-store/build/dist");
@@ -82,6 +166,17 @@
    },
    {
       "dir"         => "zm-clam-scanner-store",
+      "java_jar_reuse" => {
+         nexus_layout          => "branch_jar",
+         nexus_branch_label    => "develop-snapshot",
+         git_repo              => "zm-clam-scanner-store",
+         require_git_sha_match => 0,
+         version_style         => "ivy_dev",
+         groupId               => "zimbra",
+         artifactId            => "zm-clam-scanner-store",
+         artifacts             => [ { groupId => "zimbra", artifactId => "zm-clam-scanner-store", packaging => "jar", classifier => "" }, ],
+         install_paths         => [ { into => "build" }, { into => "build/dist" }, ],
+      },
       "ant_targets" => ["publish-local", "test", "coverage", "sonar-scan"],
       "stage_cmd"   => sub {
          SysExec("mkdir -p $CFG{BUILD_DIR}/zm-clam-scanner-store/build/dist");
@@ -98,6 +193,17 @@
    },
    {
       "dir"         => "zm-nginx-lookup-store",
+      "java_jar_reuse" => {
+         nexus_layout          => "branch_jar",
+         nexus_branch_label    => "develop-snapshot",
+         git_repo              => "zm-nginx-lookup-store",
+         require_git_sha_match => 0,
+         version_style         => "ivy_dev",
+         groupId               => "zimbra",
+         artifactId            => "zm-nginx-lookup-store",
+         artifacts             => [ { groupId => "zimbra", artifactId => "zm-nginx-lookup-store", packaging => "jar", classifier => "" }, ],
+         install_paths         => [ { into => "build" }, { into => "build/dist" }, ],
+      },
       "ant_targets" => ["publish-local", "test", "coverage", "sonar-scan"],
       "stage_cmd"   => sub {
          SysExec("mkdir -p $CFG{BUILD_DIR}/zm-nginx-lookup-store/build/dist");
@@ -270,6 +376,17 @@
    },
    {
       "dir"         => "zm-certificate-manager-store",
+      "java_jar_reuse" => {
+         nexus_layout          => "branch_jar",
+         nexus_branch_label    => "develop-snapshot",
+         git_repo              => "zm-certificate-manager-store",
+         require_git_sha_match => 0,
+         version_style         => "ivy_dev",
+         groupId               => "zimbra",
+         artifactId            => "zm-certificate-manager-store",
+         artifacts             => [ { groupId => "zimbra", artifactId => "zm-certificate-manager-store", packaging => "jar", classifier => "" }, ],
+         install_paths         => [ { into => "build" }, ],
+      },
       "ant_targets" => ["jar", "sonar-scan"],
       "stage_cmd"   => sub {
          SysExec("mkdir -p $CFG{BUILD_DIR}/zm-certificate-manager-store");
@@ -286,6 +403,17 @@
    },
    {
       "dir"         => "zm-ldap-utils-store",
+      "java_jar_reuse" => {
+         nexus_layout          => "branch_jar",
+         nexus_branch_label    => "develop-snapshot",
+         git_repo              => "zm-ldap-utils-store",
+         require_git_sha_match => 0,
+         version_style         => "ivy_dev",
+         groupId               => "zimbra",
+         artifactId            => "zm-ldap-utils-store",
+         artifacts             => [ { groupId => "zimbra", artifactId => "zm-ldap-utils-store", packaging => "jar", classifier => "" }, ],
+         install_paths         => [ { into => "build" }, ],
+      },
       "ant_targets" => ["jar", "sonar-scan"],
       "stage_cmd"   => sub {
          SysExec("mkdir -p $CFG{BUILD_DIR}/zm-ldap-utils-store");
@@ -369,6 +497,17 @@
    
    {
       "dir"         => "zm-oauth-social",
+      "java_jar_reuse" => {
+         nexus_layout          => "branch_jar",
+         nexus_branch_label    => "develop-snapshot",
+         git_repo              => "zm-oauth-social",
+         require_git_sha_match => 0,
+         version_style         => "ivy_dev",
+         groupId               => "zimbra",
+         artifactId            => "zm-oauth-social",
+         artifacts             => [ { groupId => "zimbra", artifactId => "zm-oauth-social", packaging => "jar", classifier => "" }, ],
+         install_paths         => [ { into => "build" }, { into => "build/dist" }, ],
+      },
       "ant_targets" => ["publish-local", "oauth-social-common-jar", "oauth-social-jar", "test", "coverage", "sonar-scan"],
       "stage_cmd"   => sub {
          SysExec("mkdir -p $CFG{BUILD_DIR}/zm-oauth-social/build/dist");
@@ -378,6 +517,17 @@
    
    {
       "dir"         => "zm-gql",
+      "java_jar_reuse" => {
+         nexus_layout          => "branch_jar",
+         nexus_branch_label    => "develop-snapshot",
+         git_repo              => "zm-gql",
+         require_git_sha_match => 0,
+         version_style         => "ivy_dev",
+         groupId               => "zimbra",
+         artifactId            => "zm-gql",
+         artifacts             => [ { groupId => "zimbra", artifactId => "zm-gql", packaging => "jar", classifier => "" }, ],
+         install_paths         => [ { into => "build" }, { into => "build/dist" }, ],
+      },
       "ant_targets" => ["publish-local", "test", "coverage", "sonar-scan"],
       "stage_cmd"   => sub {
          SysExec("mkdir -p $CFG{BUILD_DIR}/zm-gql/build/dist");
