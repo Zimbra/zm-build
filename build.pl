@@ -517,9 +517,18 @@ sub GitOverridesBlockJavaReuse
 
    return 0 unless ( ref( $CFG{GIT_OVERRIDES} ) eq "HASH" );
 
-   return 1 if ( $CFG{GIT_OVERRIDES}->{"$repo.branch"} );
+   # Pinning by tag: always build from sources for that repo
    return 1 if ( $CFG{GIT_OVERRIDES}->{"$repo.tag"} );
-   return 0;
+
+   my $ovb = $CFG{GIT_OVERRIDES}->{"$repo.branch"};
+   return 0 unless ( defined $ovb && $ovb ne "" );
+
+   # Jenkins often passes repo.branch=develop together with --git-default-branch=develop.
+   # That is not a "custom branch" pin — allow Nexus reuse in that case.
+   my $def = $CFG{GIT_DEFAULT_BRANCH} // "";
+   return 0 if ( $def ne "" && $ovb eq $def );
+
+   return 1;
 }
 
 sub GitHeadForRepo
@@ -648,6 +657,15 @@ sub NexusMavenArtifactUrl
    return "$base$gpath/$artifactId/$version/$fn";
 }
 
+# IPC::Cmd::run may return ARRAY refs for stdout/stderr and sometimes error_message; normalize for logs.
+sub IpcRunBufStr
+{
+   my ($buf) = @_;
+   return "" unless defined $buf;
+   return join( "", @$buf ) if ref($buf) eq "ARRAY";
+   return "$buf";
+}
+
 # Downloads $url to $dest. Without -f, curl exits 0 on HTTP 404, so we require status 200 and non-empty file.
 # In list context: ( $ok, $http_code_or_err ).
 sub NexusCurlToFile
@@ -666,11 +684,7 @@ sub NexusCurlToFile
    $! = 0;
    my ( $success, $error_message, $full_buf, $stdout_buf, $stderr_buf ) = run( command => \@cmd, verbose => 0 );
 
-   my $code = "";
-   if ( defined $stdout_buf )
-   {
-      $code = ref($stdout_buf) eq "ARRAY" ? join( "", @$stdout_buf ) : "$stdout_buf";
-   }
+   my $code = IpcRunBufStr($stdout_buf);
    $code =~ s/\s+//g;
 
    if ( $success && $code eq "200" && -s $dest )
@@ -681,18 +695,15 @@ sub NexusCurlToFile
    unlink $dest if ( -e $dest );
 
    my $detail = $code ne "" ? $code : "";
-   my $errtxt = "";
-   if ( defined $stderr_buf )
-   {
-      $errtxt = ref($stderr_buf) eq "ARRAY" ? join( "", @$stderr_buf ) : "$stderr_buf";
-   }
+   my $errtxt = IpcRunBufStr($stderr_buf);
    if ( !$detail && $errtxt ne "" )
    {
       $detail = $errtxt;
    }
-   elsif ( !$detail && $error_message )
+   elsif ( !$detail )
    {
-      $detail = $error_message;
+      my $em = IpcRunBufStr($error_message);
+      $detail = $em if $em ne "";
    }
    $detail = "curl_failed" if ( $detail eq "" );
    chomp $detail;
@@ -739,28 +750,21 @@ sub NexusCurlPutFile
    $! = 0;
    my ( $success, $error_message, $full_buf, $stdout_buf, $stderr_buf ) = run( command => \@cmd, verbose => 0 );
 
-   my $code= "";
-   if ( defined $stdout_buf )
-   {
-      $code = ref($stdout_buf) eq "ARRAY" ? join( "", @$stdout_buf ) : "$stdout_buf";
-   }
+   my $code = IpcRunBufStr($stdout_buf);
    $code =~ s/\s+//g;
 
    return ( 1, $code ) if ( $success && ( $code eq "200" || $code eq "201" ) );
 
    my $detail = $code ne "" ? $code : "";
-   my $errtxt = "";
-   if ( defined $stderr_buf )
-   {
-      $errtxt = ref($stderr_buf) eq "ARRAY" ? join( "", @$stderr_buf ) : "$stderr_buf";
-   }
+   my $errtxt = IpcRunBufStr($stderr_buf);
    if ( !$detail && $errtxt ne "" )
    {
       $detail = $errtxt;
    }
-   elsif ( !$detail && $error_message )
+   elsif ( !$detail )
    {
-      $detail = $error_message;
+      my $em = IpcRunBufStr($error_message);
+      $detail = $em if $em ne "";
    }
    $detail = "curl_failed" if ( $detail eq "" );
    chomp $detail;
@@ -1092,6 +1096,13 @@ sub Build($)
                      {
                         print color('cyan') . "[FRESH_BUILD] component=$dir reason=$reuse_reason" . color('reset') . "\n";
                      }
+                  }
+
+                  # Reuse skips Ant, so Ivy publish-local never ran; seed ~/.zcs-deps for later modules.
+                  if ( $reused && ref( $build_info->{ant_targets} ) eq "ARRAY" && grep { $_ eq "publish-local" } @{ $build_info->{ant_targets} } )
+                  {
+                     print color('magenta') . "[ARTIFACT_REUSE] component=$dir ivy publish-local (local resolver cache)" . color('reset') . "\n";
+                     SysExec( "ant", @{ $tool_attributes->{ant} || [] }, "publish-local" );
                   }
 
                   if ( !$reused )
