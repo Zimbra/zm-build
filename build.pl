@@ -133,6 +133,7 @@ sub InitGlobalBuildVars()
          { name => "BUILD_RELEASE",              type => "=s",  hash_src => \%cmd_hash, default_sub => sub { Die("@_ not specified"); }, },
          { name => "BUILD_RELEASE_NO",           type => "=s",  hash_src => \%cmd_hash, default_sub => sub { Die("@_ not specified"); }, },
          { name => "BUILD_RELEASE_CANDIDATE",    type => "=s",  hash_src => \%cmd_hash, default_sub => sub { Die("@_ not specified"); }, },
+         { name => "BUILD_REVISION",             type => "=s",  hash_src => \%cmd_hash, default_sub => sub { "1"; }, },
          { name => "BUILD_TYPE",                 type => "=s",  hash_src => \%cmd_hash, default_sub => sub { Die("@_ not specified"); }, },
          { name => "BUILD_THIRDPARTY_SERVER",    type => "=s",  hash_src => \%cmd_hash, default_sub => sub { Die("@_ not specified"); }, },
          { name => "BUILD_PROD_FLAG",            type => "!",   hash_src => \%cmd_hash, default_sub => sub { return 1; }, },
@@ -153,6 +154,7 @@ sub InitGlobalBuildVars()
          { name => "BUILD_HOSTNAME",             type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return Net::Domain::hostfqdn; }, },
          { name => "BUILD_ARCH",                 type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return GetBuildArch(); }, },
          { name => "PKG_OS_TAG",                 type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return GetPkgOsTag(); }, },
+         { name => "BUILD_REVISION_NORMALIZED",  type => "=s",  hash_src => \%cmd_hash, default_sub => sub { NormalizeBuildRevision($CFG{BUILD_REVISION}) }, },
          { name => "BUILD_RELEASE_NO_SHORT",     type => "=s",  hash_src => \%cmd_hash, default_sub => sub { my $x = $CFG{BUILD_RELEASE_NO}; $x =~ s/[.]//g; return $x; }, },
          { name => "DESTINATION_NAME",           type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return &$destination_name_func; }, },
          { name => "BUILD_DIR",                  type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return &$build_dir_func; }, },
@@ -490,6 +492,7 @@ sub Build($)
          "-Dzimbra.buildinfo.platform=$CFG{BUILD_OS}",
          "-Dzimbra.buildinfo.pkg_os_tag=$CFG{PKG_OS_TAG}",
          "-Dzimbra.buildinfo.version=$CFG{BUILD_RELEASE_NO}_$CFG{BUILD_RELEASE_CANDIDATE}_$CFG{BUILD_NO}",
+         "-Dzimbra.buildinfo.revision=$CFG{BUILD_REVISION_NORMALIZED}",
          "-Dzimbra.buildinfo.type=$CFG{BUILD_TYPE}",
          "-Dzimbra.buildinfo.release=$CFG{BUILD_TS}",
          "-Dzimbra.buildinfo.date=$CFG{BUILD_TS}",
@@ -502,6 +505,7 @@ sub Build($)
          "zimbra.buildinfo.platform=$CFG{BUILD_OS}",
          "zimbra.buildinfo.pkg_os_tag=$CFG{PKG_OS_TAG}",
          "zimbra.buildinfo.version=$CFG{BUILD_RELEASE_NO}_$CFG{BUILD_RELEASE_CANDIDATE}_$CFG{BUILD_NO}",
+         "zimbra.buildinfo.revision=$CFG{BUILD_REVISION_NORMALIZED}",
          "zimbra.buildinfo.type=$CFG{BUILD_TYPE}",
          "zimbra.buildinfo.release=$CFG{BUILD_TS}",
          "zimbra.buildinfo.date=$CFG{BUILD_TS}",
@@ -1076,6 +1080,21 @@ sub Die($;$$)
 
       die "END"
    }
+}
+
+sub NormalizeBuildRevision {
+    my ($val) = @_;
+    return $val unless defined $val;
+
+    if ($CFG{PKG_OS_TAG} =~ /^r/) {
+        return $val if $val =~ /^[\w]+$/;
+        $val =~ s/[~-]/_/g;
+        $val =~ s/_+/_/g;
+        $val =~ s/^_//;
+        $val =~ s/_$//;
+    }
+
+    return $val;
 }
 
 ##############################################################################################
