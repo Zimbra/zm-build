@@ -1,7 +1,7 @@
 @ENTRIES = (
    {
       "dir"             => "zm-mailbox",
-      "ant_targets"     => ["pkg-after-plough-through-tests"],
+      "ant_targets"     => ["pkg-after-plough-through-tests", "publish-remote-package"],
       "deploy_pkg_into" => "bundle",
       "stage_cmd"       => sub {
          SysExec("mkdir -p                                 $CFG{BUILD_DIR}/zm-mailbox/store-conf/");
@@ -19,7 +19,7 @@
       # This cannot be done unless the packages from zm-timezones are pushed to public repo
       # This is already excluded in CircleCI builds
       "dir"             => "zm-timezones",
-      "ant_targets"     => ["pkg", "sonar-scan"],
+      "ant_targets"     => ["pkg", "sonar-scan", "publish-remote-package"],
       "deploy_pkg_into" => "bundle",
    },
    {
@@ -167,7 +167,7 @@
    },
    {
       "dir"         => "zm-web-client",
-      "ant_targets"     => ["pkg"],
+      "ant_targets"     => ["pkg", "publish-remote-package"],
       "deploy_pkg_into" => "bundle",
    },
    {
@@ -208,7 +208,7 @@
    },
    {
       "dir"         => "zm-admin-console",
-      "ant_targets" => ["pkg"],
+      "ant_targets" => ["pkg", "publish-remote-package"],
       "deploy_pkg_into" => "bundle",
    },
    {
@@ -324,7 +324,7 @@
    },
    {
       "dir"         => "zm-zcs-lib",
-      "ant_targets" => ["dist", "pkg"],
+      "ant_targets" => ["dist", "pkg", "publish-remote-package"],
       "stage_cmd"   => sub {
          SysExec("(cd .. && rsync -az --relative zm-zcs-lib $CFG{BUILD_DIR}/)");
       },
