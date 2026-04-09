@@ -19,7 +19,7 @@
       # This cannot be done unless the packages from zm-timezones are pushed to public repo
       # This is already excluded in CircleCI builds
       "dir"             => "zm-timezones",
-      "ant_targets"     => ["pkg", "sonar-scan", "publish-remote-package"],
+      "ant_targets"     => ["pkg", "sonar-scan"],
       "deploy_pkg_into" => "bundle",
    },
    {
@@ -167,7 +167,7 @@
    },
    {
       "dir"         => "zm-web-client",
-      "ant_targets"     => ["pkg", "publish-remote-package"],
+      "ant_targets"     => ["pkg"],
       "deploy_pkg_into" => "bundle",
    },
    {
@@ -208,7 +208,7 @@
    },
    {
       "dir"         => "zm-admin-console",
-      "ant_targets" => ["pkg", "publish-remote-package"],
+      "ant_targets" => ["pkg"],
       "deploy_pkg_into" => "bundle",
    },
    {
@@ -324,7 +324,7 @@
    },
    {
       "dir"         => "zm-zcs-lib",
-      "ant_targets" => ["dist", "pkg", "publish-remote-package"],
+      "ant_targets" => ["dist", "pkg"],
       "stage_cmd"   => sub {
          SysExec("(cd .. && rsync -az --relative zm-zcs-lib $CFG{BUILD_DIR}/)");
       },
