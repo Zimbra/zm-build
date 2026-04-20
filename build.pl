@@ -19,6 +19,7 @@ my $GLOBAL_PATH_TO_TOP;
 my $CWD;
 
 my %CFG = ();
+our %NEXUS_BUILD_LOG = ();
 
 BEGIN
 {
@@ -105,7 +106,8 @@ sub LoadConfiguration($)
          }
          else
          {
-            printf( " %-35s: %-17s : %s\n", $cfg_name, $cmd_hash ? $src : "detected", $val );
+            my $display_val = ( $cfg_name =~ /PASSWORD/i ) ? '********' : $val;
+            printf( " %-35s: %-17s : %s\n", $cfg_name, $cmd_hash ? $src : "detected", $display_val );
          }
       }
    }
@@ -160,6 +162,14 @@ sub InitGlobalBuildVars()
          { name => "BUILD_DIR",                  type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return &$build_dir_func; }, },
          { name => "DEPLOY_URL_PREFIX",          type => "=s",  hash_src => \%cmd_hash, default_sub => sub { $CFG{LOCAL_DEPLOY} = 1; return "http://" . Net::Domain::hostfqdn . ":8008/$CFG{DESTINATION_NAME}"; }, },
          { name => "DUMP_CONFIG_TO",             type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return undef; }, },
+         { name => "NEXUS_ENABLED",              type => "!",   hash_src => \%cmd_hash, default_sub => sub { return 0; }, },
+         { name => "NEXUS_BASE_URL",             type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return undef; }, },
+         { name => "NEXUS_USER",                 type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return undef; }, },
+         { name => "NEXUS_PASSWORD",             type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return undef; }, },
+         { name => "NEXUS_JAR_REPO",             type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return "develop-snapshot"; }, },
+         { name => "NEXUS_APT_REPO",             type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return "package-repo-apt"; }, },
+         { name => "NEXUS_YUM_REPO",             type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return "package-repo-yum"; }, },
+         { name => "NEXUS_THIRDPARTY_REPO",      type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return "thirdparty"; }, },
       );
 
       {
@@ -551,13 +561,35 @@ sub Build($)
          else
          {
             unlink glob "$target_dir/.built.*";
+            my $nexus_result = 'noop';
+            if ( $CFG{NEXUS_ENABLED} )
+            {
+               ( my $parent_repo = $dir ) =~ s|/.*||;
+               if ( $dir =~ m|/| && ( $NEXUS_BUILD_LOG{$parent_repo} // '' ) eq 'skip' )
+               {
+                  print color('blue')
+                     . "  [NEXUS] $dir — parent $parent_repo fetched from Nexus, skipping sub-entry\n"
+                     . color('reset');
+                  $nexus_result = 'skip';
+               }
+               else
+               {
+                  $nexus_result = NexusPrefetch( $build_info );
+               }
+            }
+
+            if    ( $nexus_result eq 'skip'     ) { $NEXUS_BUILD_LOG{ $build_info->{dir} } = 'skip';     }
+            elsif ( $nexus_result eq 'provided' ) { $NEXUS_BUILD_LOG{ $build_info->{dir} } = 'provided'; }
+            elsif ( $nexus_result eq 'fallback' ) { $NEXUS_BUILD_LOG{ $build_info->{dir} } = 'fallback'; }
+            elsif ( $CFG{NEXUS_ENABLED} )         { $NEXUS_BUILD_LOG{ $build_info->{dir} } = 'compiled'; }
 
             RunInDir(
                cd    => $dir,
                child => sub {
 
                   my $abs_dir = Cwd::abs_path();
-
+                  unless ( $nexus_result eq 'skip' || $nexus_result eq 'provided' )
+                  {
                   if ( my $tool_seq = $build_info->{tool_seq} || [ "ant", "mvn", "make" ] )
                   {
                      for my $tool (@$tool_seq)
@@ -569,6 +601,7 @@ sub Build($)
                            SysExec( $tool, @{ $tool_attributes->{$tool} || [] }, @$targets );
                         }
                      }
+                  }
                   }
 
                   if ( my $stage_cmd = $build_info->{stage_cmd} )
@@ -596,6 +629,8 @@ sub Build($)
          }
       }
    }
+
+   NexusSummary() if $CFG{NEXUS_ENABLED};
 
    RunInDir(
       cd    => "$GLOBAL_PATH_TO_SCRIPT_DIR",
@@ -1102,6 +1137,28 @@ sub NormalizeBuildRevision {
 sub main()
 {
    InitGlobalBuildVars();
+
+   if ( $CFG{NEXUS_ENABLED} )
+   {
+      my @missing_params;
+      push @missing_params, "NEXUS_BASE_URL" unless $CFG{NEXUS_BASE_URL};
+      push @missing_params, "NEXUS_USER"     unless $CFG{NEXUS_USER};
+      push @missing_params, "NEXUS_PASSWORD" unless $CFG{NEXUS_PASSWORD};
+      Die(
+         "NEXUS_ENABLED=1 but required parameters are missing: " . join( ", ", @missing_params )
+         . "\nSet all required Nexus parameters or set NEXUS_ENABLED=0 to disable."
+      ) if @missing_params;
+
+      my $prefetch = "$GLOBAL_PATH_TO_SCRIPT_DIR/nexus-prefetch.pl";
+      Die( "nexus-prefetch.pl not found at: $prefetch" ) unless -f $prefetch;
+      eval `cat '$prefetch'`;
+      Die( "Error loading nexus-prefetch.pl", "$@" ) if $@;
+
+      $ENV{NEXUS_BASE_URL} = $CFG{NEXUS_BASE_URL};
+      $ENV{NEXUS_REPO}     = $CFG{NEXUS_JAR_REPO};
+      $ENV{NEXUS_USER}     = $CFG{NEXUS_USER};
+      $ENV{NEXUS_PASSWORD} = $CFG{NEXUS_PASSWORD};
+   }
 
    my $all_repos = LoadRepos();
 
