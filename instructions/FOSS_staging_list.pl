@@ -8,6 +8,56 @@
          SysExec("rsync -az store-conf/conf                $CFG{BUILD_DIR}/zm-mailbox/store-conf/");
          SysExec("install -T -D store/build/dist/versions-init.sql $CFG{BUILD_DIR}/zm-mailbox/store/build/dist/versions-init.sql");
       },
+      "nexus_artifacts" => {
+         type     => 'package',
+         packages => [
+            { name => "zimbra-common-core-jar"         },
+            { name => "zimbra-common-mbox-conf-attrs"  },
+            { name => "zimbra-common-mbox-conf-msgs"   },
+            { name => "zimbra-common-mbox-conf-rights" },
+            { name => "zimbra-common-mbox-conf"        },
+            { name => "zimbra-common-mbox-db"          },
+            { name => "zimbra-common-mbox-docs"        },
+            { name => "zimbra-common-mbox-native-lib"  },
+            { name => "zimbra-mbox-conf"               },
+            { name => "zimbra-mbox-service"            },
+            { name => "zimbra-mbox-war"                },
+         ],
+         post_fetch => sub {
+            my $pkg_os_tag  = $CFG{PKG_OS_TAG};
+            my $sources_dir = $CFG{BUILD_SOURCES_BASE_DIR};
+            my $extract_dir = "/tmp/zimbra-common-mbox-db-extract-$$";
+            my $pkg_ext = ( $CFG{BUILD_OS} =~ /UBUNTU/i ) ? 'deb' : 'rpm';
+            my $glob_pattern = ( $pkg_ext eq 'deb' )
+                ? "$sources_dir/zm-mailbox/build/dist/$pkg_os_tag/zimbra-common-mbox-db_*.$pkg_ext"
+                : "$sources_dir/zm-mailbox/build/dist/$pkg_os_tag/zimbra-common-mbox-db-[0-9]*.$pkg_ext";
+            my ($pkg_file) = glob($glob_pattern);
+
+            unless ( $pkg_file && -f $pkg_file ) {
+               _Warn("post_fetch: zimbra-common-mbox-db.$pkg_ext not found in $sources_dir/zm-mailbox/build/dist/$pkg_os_tag/");
+               return 0;
+            }
+
+            eval { SysExec( "mkdir", "-p", $extract_dir ); };
+            if ($@) { _Warn("post_fetch: mkdir failed: $@"); return 0; }
+            if ( $CFG{BUILD_OS} =~ /UBUNTU/i ) {
+               eval { SysExec( "dpkg-deb", "-x", $pkg_file, $extract_dir ); };
+            }
+            else {
+               eval { SysExec( "bash", "-c", "cd '$extract_dir' && rpm2cpio '$pkg_file' | cpio -idm 2>/dev/null" ); };
+            }
+            if ($@) { _Warn("post_fetch: package extraction failed: $@"); SysExec( "rm", "-rf", $extract_dir ); return 0; }
+
+            eval { SysExec( "install", "-T", "-D",
+               "$extract_dir/opt/zimbra/db/versions-init.sql",
+               "$sources_dir/zm-mailbox/store/build/dist/versions-init.sql"
+            ); };
+            if ($@) { _Warn("post_fetch: install versions-init.sql failed: $@"); SysExec( "rm", "-rf", $extract_dir ); return 0; }
+
+            SysExec( "rm", "-rf", $extract_dir );
+            return 1;
+         },
+      },
    },
    {
       "dir"         => "zm-mailbox/store",
@@ -21,6 +71,10 @@
       "dir"             => "zm-timezones",
       "ant_targets"     => ["pkg", "sonar-scan"],
       "deploy_pkg_into" => "bundle",
+      "nexus_artifacts" => {
+         type     => 'package',
+         packages => [ { name => "zimbra-timezone-data" } ],
+      },
    },
    {
       "dir"         => "junixsocket/junixsocket-native",
@@ -38,11 +92,23 @@
          SysExec("mkdir -p $CFG{BUILD_DIR}/zm-taglib/build");
          SysExec("cp -f build/zm-taglib*.jar  $CFG{BUILD_DIR}/zm-taglib/build/");
       },
+      "nexus_artifacts" => {
+         type => 'jar',
+         jars => [
+            { name => "zm-taglib", dest_subdir => "build" },
+         ],
+      },
    },
    {
       "dir"         => "zm-charset",
       "ant_targets" => ["publish-local", "sonar-scan"],
       "stage_cmd"   => undef,
+      "nexus_artifacts" => {
+         type => 'jar',
+         jars => [
+            { name => "zm-charset" },
+         ],
+      },
    },
    {
       "dir"         => "zm-ldap-utilities",
@@ -58,11 +124,23 @@
       "dir"         => "zm-ajax",
       "ant_targets" => ["publish-local", "sonar-scan"],
       "stage_cmd"   => undef,
+      "nexus_artifacts" => {
+         type => 'jar',
+         jars => [
+            { name => "zm-ajax" },
+         ],
+      },
    },
    {
       "dir"         => "zm-admin-ajax",
       "ant_targets" => ["publish-local", "sonar-scan"],
       "stage_cmd"   => undef,
+      "nexus_artifacts" => {
+         type => 'jar',
+         jars => [
+            { name => "zm-admin-ajax" },
+         ],
+      },
    },
    {
       "dir"         => "zm-ssdb-ephemeral-store",
@@ -70,6 +148,12 @@
       "stage_cmd"   => sub {
          SysExec("mkdir -p $CFG{BUILD_DIR}/zm-ssdb-ephemeral-store/build/dist");
          SysExec("cp -f build/zm-ssdb-ephemeral-store*.jar $CFG{BUILD_DIR}/zm-ssdb-ephemeral-store/build/dist");
+      },
+      "nexus_artifacts" => {
+         type => 'jar',
+         jars => [
+            { name => "zm-ssdb-ephemeral-store", dest_subdir => "build" },
+         ],
       },
    },
    {
@@ -79,6 +163,13 @@
          SysExec("mkdir -p $CFG{BUILD_DIR}/zm-openid-consumer-store/build/dist");
          SysExec("cp -f -r build/dist $CFG{BUILD_DIR}/zm-openid-consumer-store/build/");
       },
+      "nexus_artifacts" => {
+         type => 'jar',
+         jars => [
+            { name => "zm-openid-consumer-store" },
+            { name => "guice", org => "com.google.inject", nexus_repo => "thirdparty", keep_versioned => 1 },
+         ],
+      },
    },
    {
       "dir"         => "zm-clam-scanner-store",
@@ -86,6 +177,12 @@
       "stage_cmd"   => sub {
          SysExec("mkdir -p $CFG{BUILD_DIR}/zm-clam-scanner-store/build/dist");
          SysExec("cp -f -rp build/zm-clam-scanner-store-*.jar $CFG{BUILD_DIR}/zm-clam-scanner-store/build/dist");
+      },
+      "nexus_artifacts" => {
+         type => 'jar',
+         jars => [
+            { name => "zm-clam-scanner-store", dest_subdir => "build", keep_versioned => 1  },
+         ],
       },
    },
    {
@@ -102,6 +199,12 @@
       "stage_cmd"   => sub {
          SysExec("mkdir -p $CFG{BUILD_DIR}/zm-nginx-lookup-store/build/dist");
          SysExec("cp -f -rp build/zm-nginx-lookup-store-*.jar $CFG{BUILD_DIR}/zm-nginx-lookup-store/build/dist");
+      },
+      "nexus_artifacts" => {
+         type => 'jar',
+         jars => [
+            { name => "zm-nginx-lookup-store", dest_subdir => "build", keep_versioned => 1  },
+         ],
       },
    },
    {
@@ -166,9 +269,13 @@
       },
    },
    {
-      "dir"         => "zm-web-client",
+      "dir"             => "zm-web-client",
       "ant_targets"     => ["pkg"],
       "deploy_pkg_into" => "bundle",
+      "nexus_artifacts" => {
+         type     => 'package',
+         packages => [ { name => "zimbra-mbox-webclient-war" } ],
+      },
    },
    {
       "dir"         => "zm-admin-help-common",
@@ -207,9 +314,13 @@
       },
    },
    {
-      "dir"         => "zm-admin-console",
-      "ant_targets" => ["pkg"],
+      "dir"             => "zm-admin-console",
+      "ant_targets"     => ["pkg"],
       "deploy_pkg_into" => "bundle",
+      "nexus_artifacts" => {
+         type     => 'package',
+         packages => [ { name => "zimbra-mbox-admin-console-war" } ],
+      },
    },
    {
       "dir"         => "zm-aspell",
@@ -267,6 +378,13 @@
          SysExec("mkdir -p $CFG{BUILD_DIR}/zm-bulkprovision-store");
          SysExec("cp -f -r ../zm-bulkprovision-store/build $CFG{BUILD_DIR}/zm-bulkprovision-store");
       },
+      "nexus_artifacts" => {
+         type => 'jar',
+         jars => [
+            { name => "zm-bulkprovision-store" },
+            { name => "commons-csv", org => "org.apache.commons", nexus_repo => "thirdparty", keep_versioned => 1 },
+         ],
+      },
    },
    {
       "dir"         => "zm-certificate-manager-store",
@@ -274,6 +392,12 @@
       "stage_cmd"   => sub {
          SysExec("mkdir -p $CFG{BUILD_DIR}/zm-certificate-manager-store");
          SysExec("cp -f -r ../zm-certificate-manager-store/build $CFG{BUILD_DIR}/zm-certificate-manager-store");
+      },
+      "nexus_artifacts" => {
+         type => 'jar',
+         jars => [
+            { name => "zm-certificate-manager-store", dest_subdir => "build" },
+         ],
       },
    },
    {
@@ -283,6 +407,12 @@
          SysExec("mkdir -p $CFG{BUILD_DIR}/zm-versioncheck-store");
          SysExec("cp -f -r ../zm-versioncheck-store/build $CFG{BUILD_DIR}/zm-versioncheck-store");
       },
+      "nexus_artifacts" => {
+         type => 'jar',
+         jars => [
+            { name => "zm-versioncheck-store", dest_subdir => "build" },
+         ],
+      },
    },
    {
       "dir"         => "zm-ldap-utils-store",
@@ -291,44 +421,74 @@
          SysExec("mkdir -p $CFG{BUILD_DIR}/zm-ldap-utils-store");
          SysExec("cp -f -r ../zm-ldap-utils-store/build $CFG{BUILD_DIR}/zm-ldap-utils-store");
       },
+      "nexus_artifacts" => {
+         type => 'jar',
+         jars => [
+            { name => "zm-ldap-utils-store", dest_subdir => "build" },
+         ],
+      },
    },
    {
       "dir"         => "ant-1.7.0-ziputil-patched",
       "ant_targets" => ["jar", "sonar-scan"],
       "stage_cmd"   => undef,
+      "nexus_artifacts" => { type => 'provided' },
    },
    {
       "dir"         => "ant-tar-patched",
       "ant_targets" => ["jar", "sonar-scan"],
       "stage_cmd"   => undef,
+      "nexus_artifacts" => { type => 'provided' },
    },
    {
       "dir"         => "nekohtml-1.9.13",
       "ant_targets" => ["jar", "sonar-scan"],
       "stage_cmd"   => undef,
+      "nexus_artifacts" => { type => 'provided' },
    },
    {
       "dir"         => "java-html-sanitizer-release-20190610.1",
       "ant_targets" => ["jar", "sonar-scan"],
       "stage_cmd"   => undef,
+      "nexus_artifacts" => { type => 'provided' },
    },
    {
       "dir"         => "antisamy",
       "ant_targets" => ["jar", "sonar-scan"],
       "stage_cmd"   => undef,
+      "nexus_artifacts" => { type => 'provided' },
    },
    {
       "dir"         => "ical4j-0.9.16-patched",
       "ant_targets" => [ "clean-compile", "package", "sonar-scan" ],
       "stage_cmd"   => undef,
+      "nexus_artifacts" => { type => 'provided' },
    },
    {
-      "dir"         => "zm-zcs-lib",
-      "ant_targets" => ["dist", "pkg"],
-      "stage_cmd"   => sub {
+      "dir"             => "zm-zcs-lib",
+      "ant_targets"     => ["dist", "pkg"],
+      "stage_cmd"       => sub {
          SysExec("(cd .. && rsync -az --relative zm-zcs-lib $CFG{BUILD_DIR}/)");
       },
       "deploy_pkg_into" => "bundle",
+      "nexus_artifacts" => {
+         type     => ['jar', 'package'],
+         packages => [
+            { name => "zimbra-common-core-libs" },
+            { name => "zimbra-mbox-store-libs"  },
+         ],
+         jars => [
+            { name => "oauth",              org => "oauth", keep_versioned => 1 },
+            { name => "jedis",              org => "redis.clients",        nexus_repo => "thirdparty", keep_versioned => 1 },
+            { name => "commons-pool2",      org => "org.apache.commons",   nexus_repo => "thirdparty", keep_versioned => 1 },
+            { name => "java-jwt",           org => "com.auth0",            nexus_repo => "thirdparty", keep_versioned => 1 },
+            { name => "tika-app",           org => "org.apache.tika",      nexus_repo => "thirdparty", keep_versioned => 1 },
+            { name => "bcpkix-jdk15on",     org => "org.bouncycastle",     nexus_repo => "thirdparty", keep_versioned => 1 },
+            { name => "bcmail-jdk15on",     org => "org.bouncycastle",     nexus_repo => "thirdparty", keep_versioned => 1 },
+            { name => "bcprov-jdk15on",     org => "org.bouncycastle",     nexus_repo => "thirdparty", keep_versioned => 1 },
+            { name => "saaj-impl",          org => "com.sun.xml.messaging.saaj", nexus_repo => "thirdparty", keep_versioned => 1 },
+         ],
+      },
    },
    {
       "dir"         => "zm-jython",
@@ -366,7 +526,6 @@
          SysExec("cp -f -r ../zm-jetty-conf $CFG{BUILD_DIR}");
       },
    },
-   
    {
       "dir"         => "zm-oauth-social",
       "ant_targets" => ["publish-local", "oauth-social-common-jar", "oauth-social-jar", "test", "coverage", "sonar-scan"],
@@ -374,14 +533,26 @@
          SysExec("mkdir -p $CFG{BUILD_DIR}/zm-oauth-social/build/dist");
          SysExec("cp -f -rp build/zm-oauth-social*.jar $CFG{BUILD_DIR}/zm-oauth-social/build/dist");
       },
+      "nexus_artifacts" => {
+         type => 'jar',
+         jars => [
+            { name => "zm-oauth-social", dest_subdir => "build", jar_filename => "zm-oauth-social.jar" },
+            { name => "zm-oauth-social-common", dest_subdir => "build", jar_filename => "zm-oauth-social-common.jar" },
+         ],
+      },
    },
-   
    {
       "dir"         => "zm-gql",
       "ant_targets" => ["publish-local", "test", "coverage", "sonar-scan"],
       "stage_cmd"   => sub {
          SysExec("mkdir -p $CFG{BUILD_DIR}/zm-gql/build/dist");
          SysExec("cp -f -rp build/zm-gql-*.jar $CFG{BUILD_DIR}/zm-gql/build/dist");
+      },
+      "nexus_artifacts" => {
+         type => 'jar',
+         jars => [
+            { name => "zm-gql", dest_subdir => "build", keep_versioned => 1   },
+         ],
       },
    },
 );
