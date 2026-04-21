@@ -161,6 +161,7 @@ sub InitGlobalBuildVars()
          { name => "DESTINATION_NAME",           type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return &$destination_name_func; }, },
          { name => "BUILD_DIR",                  type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return &$build_dir_func; }, },
          { name => "DEPLOY_URL_PREFIX",          type => "=s",  hash_src => \%cmd_hash, default_sub => sub { $CFG{LOCAL_DEPLOY} = 1; return "http://" . Net::Domain::hostfqdn . ":8008/$CFG{DESTINATION_NAME}"; }, },
+         { name => "CLONE_WORKERS",              type => "=i", hash_src => \%cmd_hash, default_sub => sub { return 8; }, },
          { name => "DUMP_CONFIG_TO",             type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return undef; }, },
          { name => "NEXUS_ENABLED",              type => "!",   hash_src => \%cmd_hash, default_sub => sub { return 0; }, },
          { name => "NEXUS_BASE_URL",             type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return undef; }, },
@@ -399,7 +400,6 @@ sub LoadBuilds($)
    return \@filtered_builds;
 }
 
-
 sub Checkout($)
 {
    my $repo_list = shift;
@@ -411,13 +411,58 @@ sub Checkout($)
    print "\n";
 
    my $repo_remote_details = LoadRemotes();
+   my $workers             = $CFG{CLONE_WORKERS} || 8;
 
-   for my $repo_details (@$repo_list)
+   my @repo_queue = @$repo_list;
+   my %running    = ();
+
+   while ( @repo_queue || %running )
    {
-      Clone( $repo_details, $repo_remote_details );
+      while ( @repo_queue && scalar(keys %running) < $workers )
+      {
+         my $repo_details = shift @repo_queue;
+         my $repo_name    = $repo_details->{name};
+
+         pipe( my $pipe_read, my $pipe_write ) or Die("pipe failed for $repo_name");
+
+         my $pid = fork();
+         Die("FAILURE while forking for $repo_name") if !defined $pid;
+
+         if ( $pid == 0 )
+         {
+            close($pipe_read);
+            open( STDOUT, ">&", $pipe_write ) or die "Cannot redirect STDOUT: $!";
+            open( STDERR, ">&", $pipe_write ) or die "Cannot redirect STDERR: $!";
+            close($pipe_write);
+            Clone( $repo_details, $repo_remote_details );
+            exit(0);
+         }
+
+         close($pipe_write);
+         $running{$pid} = { repo_name => $repo_name, pipe_fh => $pipe_read };
+      }
+
+      my $finished_pid = waitpid( -1, 0 );
+      if ( $finished_pid > 0 && exists $running{$finished_pid} )
+      {
+         my $repo_name = $running{$finished_pid}{repo_name};
+         my $pipe_fh   = $running{$finished_pid}{pipe_fh};
+         my $exit_code = $?;
+         delete $running{$finished_pid};
+
+         local $/;
+         my $log = <$pipe_fh>;
+         close($pipe_fh);
+         $log //= '';
+         print $log;
+
+         if ( $exit_code != 0 )
+         {
+            Die("Clone failed for $repo_name");
+         }
+      }
    }
 }
-
 
 sub RemoveTargetInDir($$)
 {
