@@ -9,8 +9,10 @@ use Data::Dumper;
 use File::Basename;
 use File::Copy;
 use Getopt::Long;
+use IO::Select;
 use IPC::Cmd qw/run/;
 use Net::Domain;
+use POSIX qw(WNOHANG);
 use Term::ANSIColor;
 
 my $GLOBAL_PATH_TO_SCRIPT_FILE;
@@ -170,6 +172,7 @@ sub InitGlobalBuildVars()
          { name => "NEXUS_APT_REPO",             type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return "package-repo-apt"; }, },
          { name => "NEXUS_YUM_REPO",             type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return "package-repo-yum"; }, },
          { name => "NEXUS_THIRDPARTY_REPO",      type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return "thirdparty"; }, },
+         { name => "CLONE_WORKERS",              type => "=i",  hash_src => \%cmd_hash, default_sub => sub { return 8; }, },
       );
 
       {
@@ -411,10 +414,102 @@ sub Checkout($)
    print "\n";
 
    my $repo_remote_details = LoadRemotes();
+   my $workers             = $CFG{CLONE_WORKERS};
 
-   for my $repo_details (@$repo_list)
+   my @repo_queue = @$repo_list;
+   my %running    = ();
+   my $sel        = IO::Select->new();
+
+   while ( @repo_queue || %running )
    {
-      Clone( $repo_details, $repo_remote_details );
+      while ( @repo_queue && scalar( keys %running ) < $workers )
+      {
+         my $repo_details = shift @repo_queue;
+         my $repo_name    = $repo_details->{name};
+
+         pipe( my $pipe_read, my $pipe_write ) or Die("pipe failed for $repo_name");
+
+         my $pid = fork();
+         Die("FAILURE while forking for $repo_name") if !defined $pid;
+
+         if ( $pid == 0 )
+         {
+            for my $other_pid ( keys %running )
+            {
+               close( $running{$other_pid}{pipe_fh} );
+            }
+            close($pipe_read);
+
+            open( STDOUT, ">&", $pipe_write ) or die "Cannot redirect STDOUT: $!";
+            open( STDERR, ">&", $pipe_write ) or die "Cannot redirect STDERR: $!";
+            close($pipe_write);
+
+            Clone( $repo_details, $repo_remote_details );
+            exit(0);
+         }
+
+         close($pipe_write);
+         $sel->add($pipe_read);
+         $running{$pid} = { repo_name => $repo_name, pipe_fh => $pipe_read, buffer => '' };
+      }
+
+      for my $fh ( $sel->can_read(0.1) )
+      {
+         my $data  = '';
+         my $bytes = sysread( $fh, $data, 65536 );
+         if ( !defined $bytes || $bytes == 0 )
+         {
+            $sel->remove($fh);
+         }
+         else
+         {
+            for my $pid ( keys %running )
+            {
+               if ( fileno( $running{$pid}{pipe_fh} ) == fileno($fh) )
+               {
+                  $running{$pid}{buffer} .= $data;
+                  last;
+               }
+            }
+         }
+      }
+
+      my $finished_pid = waitpid( -1, WNOHANG );
+      next unless $finished_pid > 0 && exists $running{$finished_pid};
+
+      my $repo_name = $running{$finished_pid}{repo_name};
+      my $pipe_fh   = $running{$finished_pid}{pipe_fh};
+      my $exit_code = $?;
+
+      for my $fh ( $sel->can_read(0.1) )
+      {
+         next unless fileno($fh) == fileno($pipe_fh);
+         my $data  = '';
+         my $bytes = sysread( $fh, $data, 65536 );
+         if ( !defined $bytes || $bytes == 0 )
+         {
+            $sel->remove($fh);
+            last;
+         }
+         $running{$finished_pid}{buffer} .= $data;
+      }
+
+      my $log = $running{$finished_pid}{buffer};
+      delete $running{$finished_pid};
+      close($pipe_fh);
+
+      print $log;
+
+      if ( $exit_code != 0 )
+      {
+         for my $pid ( keys %running )
+         {
+            kill( 'TERM', $pid );
+            waitpid( $pid, 0 );
+            close( $running{$pid}{pipe_fh} );
+         }
+         Die("Clone failed for $repo_name");
+      }
    }
 }
 
