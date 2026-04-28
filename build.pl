@@ -9,8 +9,10 @@ use Data::Dumper;
 use File::Basename;
 use File::Copy;
 use Getopt::Long;
+use IO::Select;
 use IPC::Cmd qw/run/;
 use Net::Domain;
+use POSIX qw(WNOHANG);
 use Term::ANSIColor;
 
 my $GLOBAL_PATH_TO_SCRIPT_FILE;
@@ -153,6 +155,7 @@ sub InitGlobalBuildVars()
          { name => "BUILD_DIR",                  type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return &$build_dir_func; }, },
          { name => "DEPLOY_URL_PREFIX",          type => "=s",  hash_src => \%cmd_hash, default_sub => sub { $CFG{LOCAL_DEPLOY} = 1; return "http://" . Net::Domain::hostfqdn . ":8008/$CFG{DESTINATION_NAME}"; }, },
          { name => "DUMP_CONFIG_TO",             type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return undef; }, },
+         { name => "CLONE_WORKERS",              type => "=i",  hash_src => \%cmd_hash, default_sub => sub { return 8; }, },
       );
 
       {
@@ -396,10 +399,109 @@ sub Checkout($)
    print "\n";
 
    my $repo_remote_details = LoadRemotes();
-
-   for my $repo_details (@$repo_list)
+   my $workers = $CFG{CLONE_WORKERS};
+   if ( $workers > 8 )
    {
-      Clone( $repo_details, $repo_remote_details );
+      print color('yellow')
+         . "  WARNING: CLONE_WORKERS=$workers exceeds maximum allowed (8) — resetting to 8\n"
+         . color('reset');
+      $workers = 8;
+   }
+
+   my @repo_queue = @$repo_list;
+   my %running    = ();
+   my $sel        = IO::Select->new();
+
+   while ( @repo_queue || %running )
+   {
+      while ( @repo_queue && scalar( keys %running ) < $workers )
+      {
+         my $repo_details = shift @repo_queue;
+         my $repo_name    = $repo_details->{name};
+
+         pipe( my $pipe_read, my $pipe_write ) or Die("pipe failed for $repo_name");
+
+         my $pid = fork();
+         Die("FAILURE while forking for $repo_name") if !defined $pid;
+
+         if ( $pid == 0 )
+         {
+            for my $other_pid ( keys %running )
+            {
+               close( $running{$other_pid}{pipe_fh} );
+            }
+            close($pipe_read);
+
+            open( STDOUT, ">&", $pipe_write ) or die "Cannot redirect STDOUT: $!";
+            open( STDERR, ">&", $pipe_write ) or die "Cannot redirect STDERR: $!";
+            close($pipe_write);
+
+            Clone( $repo_details, $repo_remote_details );
+            exit(0);
+         }
+
+         close($pipe_write);
+         $sel->add($pipe_read);
+         $running{$pid} = { repo_name => $repo_name, pipe_fh => $pipe_read, buffer => '' };
+      }
+
+      for my $fh ( $sel->can_read(0.1) )
+      {
+         my $data  = '';
+         my $bytes = sysread( $fh, $data, 65536 );
+         if ( !defined $bytes || $bytes == 0 )
+         {
+            $sel->remove($fh);
+         }
+         else
+         {
+            for my $pid ( keys %running )
+            {
+               if ( fileno( $running{$pid}{pipe_fh} ) == fileno($fh) )
+               {
+                  $running{$pid}{buffer} .= $data;
+                  last;
+               }
+            }
+         }
+      }
+
+      my $finished_pid = waitpid( -1, WNOHANG );
+      next unless $finished_pid > 0 && exists $running{$finished_pid};
+
+      my $repo_name = $running{$finished_pid}{repo_name};
+      my $pipe_fh   = $running{$finished_pid}{pipe_fh};
+      my $exit_code = $?;
+
+      for my $fh ( $sel->can_read(0.1) )
+      {
+         next unless fileno($fh) == fileno($pipe_fh);
+         my $data  = '';
+         my $bytes = sysread( $fh, $data, 65536 );
+         if ( !defined $bytes || $bytes == 0 )
+         {
+            $sel->remove($fh);
+            last;
+         }
+         $running{$finished_pid}{buffer} .= $data;
+      }
+
+      my $log = $running{$finished_pid}{buffer};
+      delete $running{$finished_pid};
+      close($pipe_fh);
+
+      print $log;
+
+      if ( $exit_code != 0 )
+      {
+         for my $pid ( keys %running )
+         {
+            kill( 'TERM', $pid );
+            waitpid( $pid, 0 );
+            close( $running{$pid}{pipe_fh} );
+         }
+         Die("Clone failed for $repo_name");
+      }
    }
 }
 
