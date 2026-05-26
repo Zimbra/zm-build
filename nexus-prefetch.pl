@@ -53,6 +53,11 @@ sub NexusPrefetch {
         $ok = _FetchJars( $dir, $repo_name, $artifacts ) && $ok;
     }
 
+    if ( grep { $_ eq 'sql'     } @types ) {
+        $ok = _FetchSqls( $dir, $repo_name, $artifacts ) && $ok;
+
+    }
+    
     if ( grep { $_ eq 'package' } @types ) {
         $ok = _FetchPackages( $dir, $repo_name, $artifacts ) && $ok;
     }
@@ -134,6 +139,63 @@ sub _FetchJars {
     return 1;
 }
 
+sub _FetchSqls {
+    my ( $dir, $repo_name, $artifacts ) = @_;
+
+    my $sqls = $artifacts->{sqls};
+    unless ( $sqls && @$sqls ) {
+        _Warn("No sqls defined for $dir in nexus_artifacts");
+        return 0;
+    }
+
+    for my $sql (@$sqls) {
+        my $name        = $sql->{name}        or do { _Warn("sql entry missing 'name' for $dir");       return 0; };
+        my $classifier  = $sql->{classifier}  or do { _Warn("sql entry missing 'classifier' for $dir"); return 0; };
+        my $extension   = $sql->{extension}   // 'sql';
+        my $org         = $sql->{org}         // 'zimbra';
+        my $nexus_repo  = $sql->{nexus_repo}  // $CFG{NEXUS_JAR_REPO};
+        my $dest_subdir = $sql->{dest_subdir} // 'build/dist';
+
+        my ( $url, $filename ) = _ResolveLatestAsset(
+            repo       => $nexus_repo,
+            name       => $name,
+            org        => $org,
+            extension  => $extension,
+            classifier => $classifier,
+        );
+
+        unless ( $url && $filename ) {
+            _Warn("Could not resolve sql: org=$org name=$name classifier=$classifier in repo=$nexus_repo");
+            return 0;
+        }
+
+        my $dest_dir  = "$CFG{BUILD_SOURCES_BASE_DIR}/$repo_name/$dest_subdir";
+        my $dest_file = "$dest_dir/$filename";
+
+        make_path($dest_dir) unless -d $dest_dir;
+        unlink glob "$dest_dir/${name}-*.$extension";
+
+        my $final_name = $sql->{sql_filename}
+              ? $sql->{sql_filename}
+              : "$name-$classifier.$extension";
+        my $final_file = "$dest_dir/$final_name";
+
+        unless ( _Download( $url, $dest_file ) ) {
+            _Warn("Download failed for $name-$classifier.$extension");
+            return 0;
+        }
+
+        unless ( rename( $dest_file, $final_file ) ) {
+            _Warn("Could not rename $dest_file to $final_file: $!");
+            return 0;
+        }
+
+        print "  [NEXUS] sql  OK: $repo_name/$dest_subdir/$final_name\n";
+    }
+
+    return 1;
+}
+
 sub _FetchPackages {
     my ( $dir, $repo_name, $artifacts ) = @_;
 
@@ -206,7 +268,8 @@ sub _ResolveLatestAsset {
     my $repo      = $args{repo}      or return ( undef, undef );
     my $name      = $args{name}      or return ( undef, undef );
     my $extension = $args{extension} or return ( undef, undef );
-    my $org       = $args{org};
+    my $org        = $args{org};
+    my $classifier = $args{classifier};
 
     my $base = _NexusBase();
     my $user = _NexusUser();
@@ -221,6 +284,12 @@ sub _ResolveLatestAsset {
         $search_url .= "&name="            . _enc($name);
         $search_url .= "&maven.extension=jar";
         $search_url .= "&maven.groupId="   . _enc($org) if defined $org;
+    }
+    elsif ( $extension eq 'sql' ) {
+        $search_url .= "&name="             . _enc($name);
+        $search_url .= "&maven.extension=sql";
+        $search_url .= "&maven.groupId="    . _enc($org)        if defined $org;
+        $search_url .= "&maven.classifier=" . _enc($classifier) if defined $classifier;
     }
     else {
         $search_url .= "&name=" . _enc($name);
@@ -241,7 +310,7 @@ sub _ResolveLatestAsset {
     }
 
     my $asset_path;
-    if ( $extension eq 'jar' ) {
+    if ( $extension eq 'jar' || $extension eq 'sql' ) {
         $asset_path = $paths[0];
     }
     else {
