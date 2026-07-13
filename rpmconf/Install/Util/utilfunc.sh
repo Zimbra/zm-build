@@ -50,6 +50,13 @@ isFQDN() {
   fi
 }
 
+# Returns 0 if running on an internal Zimbra host, non-zero otherwise.
+# Add new internal domains here only — used everywhere via isInternalHost
+isInternalHost() {
+  echo $HOSTNAME | egrep -qe 'lab.zimbra.com$|eng.zimbra.com$|zimbradev.com$|zimbraeng.com$' > /dev/null 2>&1
+  return $?
+}
+
 verifyIPv6() {
     IP=$1
     BAD_IP=`echo $IP | awk -F: '{ RES=0; SHORT=0; LSHORT=0; if (NF > 8) { RES=1 } else { for (BLK = 1; BLK <= NF; BLK++) { if ($BLK !~ /^[0-9a-fA-F]$|^[0-9a-fA-F][0-9a-fA-F]$|^[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F]$|^[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F]$/) { if ($BLK == "") { if (SHORT > 0) { if ((BLK - LSHORT) != 1) { RES = 1 } } SHORT++; LSHORT = BLK } else { RES = 1 } } } } if ((NF == 3) && ($2 != "")) { RES = 1 } if (((SHORT > 2) && (NF != 3)) || ((SHORT == 2) && (!(($2 == "") || ($(NF-1) == ""))))) { RES = 1 } if ((NF - SHORT) > 6 ) { RES = 1 } if ((SHORT == 0) && (NF < 8)) { RES = 1 } print RES }'`
@@ -872,8 +879,7 @@ verifyUpgrade() {
       if [ x"$SKIP_ACTIVATION_CHECK" = "xno" ]; then
         if [ -x "bin/checkLicense.pl" ]; then
           echo "Validating whether an existing license is expired or not and checking if it qualifies for an upgrade"
-          echo $HOSTNAME | egrep -qe 'eng.zimbra.com$|lab.zimbra.com$|zimbradev.com$' > /dev/null 2>&1
-          if [ $? = 0 ]; then
+          if isInternalHost; then
               bin/checkLicense.pl -i -uv $ZM_INST_VERSION -cv $ZM_CUR_VERSION
           else
               bin/checkLicense.pl -uv $ZM_INST_VERSION -cv $ZM_CUR_VERSION
@@ -998,8 +1004,7 @@ verifyLicenseActivationServer() {
   fi
 
   # make sure we can contact the activation server for automated activation
-  echo $HOSTNAME | egrep -qe 'zimbra.com$|zimbradev.com$' > /dev/null 2>&1
-  if [ $? = 0 ]; then
+  if isInternalHost; then
 	  url='https://zimbra-stage-license.eng.zimbra.com/zimbraLicensePortal/public/activation?action=test'
   else
 	  url='https://license.zimbra.com/zimbraLicensePortal/public/activation?action=test'
@@ -2131,8 +2136,7 @@ configurePackageServer() {
       USE_ZIMBRA_PACKAGE_SERVER="yes"
       PACKAGE_SERVER="repo.zimbra.com"
       response="no"
-      echo $HOSTNAME | egrep -qe 'eng.zimbra.com$|lab.zimbra.com$|zimbradev.com$' > /dev/null 2>&1
-      if [ $? = 0 ]; then
+      if isInternalHost; then
         askYN "Use internal development repo" "N"
         if [ $response = "yes" ]; then
           PACKAGE_SERVER="repo-dev.eng.zimbra.com"
@@ -2141,6 +2145,17 @@ configurePackageServer() {
           askYN "Use internal production mirror" "N"
           if [ $response = "yes" ]; then
             PACKAGE_SERVER="repo.eng.zimbra.com"
+          else
+            response="no"
+            askYN "Use internal SIT repo" "N"
+            if [ $response = "yes" ]; then
+              USE_SIT_REPO="yes"
+              GPG_KEY_URL=""
+              APT_AUTH_FILE="/etc/apt/auth.conf.d/zimbra-sit-repo.conf"
+              DNF_SERVER_FILE="/etc/dnf/vars/zimbra_sit_repo_server"
+              DNF_USER_FILE="/etc/dnf/vars/zimbra_sit_repo_user"
+              DNF_PASS_FILE="/etc/dnf/vars/zimbra_sit_repo_pass"
+            fi
           fi
         fi
       fi
@@ -2157,7 +2172,7 @@ configurePackageServer() {
       if [ $PLATFORM = "UBUNTU24_64" ]; then
         repo="noble"
       elif [ $PLATFORM = "UBUNTU22_64" ]; then
-        repo="jammy"	      
+        repo="jammy"
       elif [ $PLATFORM = "UBUNTU20_64" ]; then
         repo="focal"
       elif [ $PLATFORM = "UBUNTU18_64" ]; then
@@ -2172,24 +2187,79 @@ configurePackageServer() {
         print "Aborting, unknown platform: $PLATFORM"
         exit 1
       fi
-      gpg --list-keys --keyring /etc/apt/trusted.gpg.d/zimbra.gpg 2>/dev/null | grep -w 254F9170B966D193D6BAD300D5CEF8BF9BE6ED79 >/dev/null
-      if [ $? -ne 0 ]; then
-        echo "Importing Zimbra GPG key"
-        gpg --no-default-keyring --keyring /tmp/zimbra.gpg --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 9BE6ED79 >>$LOGFILE 2>&1
-        if [ $? -ne 0 ]; then
-          echo "ERROR: Unable to retrive Zimbra GPG key for package validation"
-          echo "Please fix system to allow normal package installation before proceeding"
+
+      if [ x"$USE_SIT_REPO" = "xyes" ]; then
+        echo "Validating package repository credential file..."
+        if [ ! -f "$APT_AUTH_FILE" ] || [ ! -s "$APT_AUTH_FILE" ]; then
+          echo "ERROR: package repository credential file not found or empty: $APT_AUTH_FILE"
+          echo "Please create this file before proceeding. Example:"
+          echo "  machine ${PACKAGE_SERVER}"
+          echo "  login <username>"
+          echo "  password <your-password>"
+          echo "Save as: $APT_AUTH_FILE"
+          echo "Then run: chmod 600 $APT_AUTH_FILE"
           exit 1
-        else
-	  gpg --no-default-keyring --keyring /tmp/zimbra.gpg --export > /etc/apt/trusted.gpg.d/zimbra.gpg
+        fi
+        echo "Package repository credential file validated."
+        PACKAGE_SERVER=$(awk '/machine/{print $2}' "$APT_AUTH_FILE")
+        REPO_USER=$(awk '/login/{print $2}' "$APT_AUTH_FILE")
+        REPO_PASS=$(awk '/password/{print $2}' "$APT_AUTH_FILE")
+
+        if [ -z "$PACKAGE_SERVER" ] || [ -z "$REPO_USER" ] || [ -z "$REPO_PASS" ]; then
+          echo "ERROR: $APT_AUTH_FILE is missing required fields."
+          echo "Expected format:"
+          echo "  machine <repo-hostname>"
+          echo "  login <username>"
+          echo "  password <password>"
+          exit 1
+        fi
+        GPG_KEY_URL="https://${PACKAGE_SERVER}/repository/gpg-keys/public.asc"
+
+        echo "Importing Zimbra GPG key"
+        curl -u "$REPO_USER:$REPO_PASS" -s -o /tmp/zimbra-sit.asc \
+          "$GPG_KEY_URL" >>$LOGFILE 2>&1
+        if [ $? -ne 0 ] || [ ! -s /tmp/zimbra-sit.asc ]; then
+          echo "ERROR: Unable to retrieve GPG key from $GPG_KEY_URL"
+          echo "Please check repository connectivity and credentials before proceeding"
+          rm -f /tmp/zimbra-sit.asc
+          exit 1
+        fi
+        gpg --no-default-keyring --keyring /tmp/zimbra-sit.gpg \
+          --import /tmp/zimbra-sit.asc >>$LOGFILE 2>&1
+        if [ $? -ne 0 ]; then
+          echo "ERROR: Unable to import GPG key for package validation"
+          rm -f /tmp/zimbra-sit.asc /tmp/zimbra-sit.gpg
+          exit 1
+        fi
+        gpg --no-default-keyring --keyring /tmp/zimbra-sit.gpg \
+          --export > /etc/apt/trusted.gpg.d/zimbra-sit.gpg
+        if [ $? -ne 0 ]; then
+          echo "ERROR: Unable to export GPG key for package validation"
+          rm -f /tmp/zimbra-sit.asc /tmp/zimbra-sit.gpg
+          exit 1
+        fi
+        rm -f /tmp/zimbra-sit.asc /tmp/zimbra-sit.gpg
+      else
+        gpg --list-keys --keyring /etc/apt/trusted.gpg.d/zimbra.gpg 2>/dev/null | grep -w 254F9170B966D193D6BAD300D5CEF8BF9BE6ED79 >/dev/null
+        if [ $? -ne 0 ]; then
+          echo "Importing Zimbra GPG key"
+          gpg --no-default-keyring --keyring /tmp/zimbra.gpg --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 9BE6ED79 >>$LOGFILE 2>&1
           if [ $? -ne 0 ]; then
-            echo "ERROR: Unable to export Zimbra GPG key for package validation"
-	    exit 1
-	  else
-	    rm -f /tmp/zimbra.gpg
-	  fi
+            echo "ERROR: Unable to retrive Zimbra GPG key for package validation"
+            echo "Please fix system to allow normal package installation before proceeding"
+            exit 1
+          else
+	    gpg --no-default-keyring --keyring /tmp/zimbra.gpg --export > /etc/apt/trusted.gpg.d/zimbra.gpg
+            if [ $? -ne 0 ]; then
+              echo "ERROR: Unable to export Zimbra GPG key for package validation"
+	      exit 1
+	    else
+	      rm -f /tmp/zimbra.gpg
+	    fi
+          fi
         fi
       fi
+
       echo
       echo "Configuring package repository"
       apt-get install -y apt-transport-https >>$LOGFILE 2>&1
@@ -2198,8 +2268,61 @@ configurePackageServer() {
         echo "Please fix system to allow normal package installation before proceeding"
         exit 1
       fi
+
 if [ "$PLATFORM" = "UBUNTU24_64" ]; then
-  cat > /etc/apt/sources.list.d/zimbra.sources << EOF
+  if [ x"$USE_SIT_REPO" = "xyes" ]; then
+    cat > /etc/apt/sources.list.d/zimbra.sources << EOF
+Types: deb
+URIs: https://$PACKAGE_SERVER/repository/87-${repo}
+Suites: ${repo}
+Components: main
+Architectures: amd64
+Signed-By: /etc/apt/trusted.gpg.d/zimbra-sit.gpg
+
+Types: deb
+URIs: https://$PACKAGE_SERVER/repository/1000-${repo}
+Suites: ${repo}
+Components: main
+Architectures: amd64
+Signed-By: /etc/apt/trusted.gpg.d/zimbra-sit.gpg
+
+Types: deb
+URIs: https://$PACKAGE_SERVER/repository/1010-${repo}
+Suites: ${repo}
+Components: main
+Architectures: amd64
+Signed-By: /etc/apt/trusted.gpg.d/zimbra-sit.gpg
+EOF
+
+    if [ "x$ZMTYPE_INSTALLABLE" = "xNETWORK" ]; then
+      cat >> /etc/apt/sources.list.d/zimbra.sources << EOF
+
+Types: deb
+URIs: https://$PACKAGE_SERVER/repository/1000-ne-${repo}
+Suites: ${repo}
+Components: main
+Architectures: amd64
+Signed-By: /etc/apt/trusted.gpg.d/zimbra-sit.gpg
+
+Types: deb
+URIs: https://$PACKAGE_SERVER/repository/1010-ne-${repo}
+Suites: ${repo}
+Components: main
+Architectures: amd64
+Signed-By: /etc/apt/trusted.gpg.d/zimbra-sit.gpg
+EOF
+
+      cat > /etc/apt/sources.list.d/zimbra-onlyoffice.sources << EOF
+Types: deb
+URIs: https://$PACKAGE_SERVER/repository/onlyoffice-1010-${repo}
+Suites: ${repo}
+Components: main
+Architectures: amd64
+Signed-By: /etc/apt/trusted.gpg.d/zimbra-sit.gpg
+EOF
+    fi
+  else
+    cat > /etc/apt/sources.list.d/zimbra.sources << EOF
 Types: deb deb-src
 URIs: https://$PACKAGE_SERVER/apt/87
 Suites: $repo
@@ -2222,8 +2345,8 @@ Architectures: amd64
 Signed-By: /etc/apt/trusted.gpg.d/zimbra.gpg
 EOF
 
-  if [ "x$ZMTYPE_INSTALLABLE" = "xNETWORK" ]; then
-    cat >> /etc/apt/sources.list.d/zimbra.sources << EOF
+    if [ "x$ZMTYPE_INSTALLABLE" = "xNETWORK" ]; then
+      cat >> /etc/apt/sources.list.d/zimbra.sources << EOF
 
 Types: deb
 URIs: https://$PACKAGE_SERVER/apt/1000-ne
@@ -2240,7 +2363,7 @@ Architectures: amd64
 Signed-By: /etc/apt/trusted.gpg.d/zimbra.gpg
 EOF
 
-    cat > /etc/apt/sources.list.d/zimbra-onlyoffice.sources << EOF
+      cat > /etc/apt/sources.list.d/zimbra-onlyoffice.sources << EOF
 Types: deb
 URIs: https://$PACKAGE_SERVER/apt/onlyoffice-1010
 Suites: $repo
@@ -2248,25 +2371,45 @@ Components: zimbra
 Architectures: amd64
 Signed-By: /etc/apt/trusted.gpg.d/zimbra.gpg
 EOF
+    fi
   fi
 
 else
-  cat > /etc/apt/sources.list.d/zimbra.list << EOF
+  if [ x"$USE_SIT_REPO" = "xyes" ]; then
+    cat > /etc/apt/sources.list.d/zimbra.list << EOF
+deb     [arch=amd64] https://$PACKAGE_SERVER/repository/87-${repo} ${repo} main
+deb     [arch=amd64] https://$PACKAGE_SERVER/repository/1000-${repo} ${repo} main
+deb     [arch=amd64] https://$PACKAGE_SERVER/repository/1010-${repo} ${repo} main
+EOF
+
+    if [ "x$ZMTYPE_INSTALLABLE" = "xNETWORK" ]; then
+      cat >> /etc/apt/sources.list.d/zimbra.list << EOF
+deb     [arch=amd64] https://$PACKAGE_SERVER/repository/1000-ne-${repo} ${repo} main
+deb     [arch=amd64] https://$PACKAGE_SERVER/repository/1010-ne-${repo} ${repo} main
+EOF
+
+      cat > /etc/apt/sources.list.d/zimbra-onlyoffice.list << EOF
+deb     [arch=amd64] https://$PACKAGE_SERVER/repository/onlyoffice-1010-${repo} ${repo} main
+EOF
+    fi
+  else
+    cat > /etc/apt/sources.list.d/zimbra.list << EOF
 deb     [arch=amd64] https://$PACKAGE_SERVER/apt/87 $repo zimbra
 deb-src [arch=amd64] https://$PACKAGE_SERVER/apt/87 $repo zimbra
 deb     [arch=amd64] https://$PACKAGE_SERVER/apt/1000 $repo zimbra
 deb     [arch=amd64] https://$PACKAGE_SERVER/apt/1010 $repo zimbra
 EOF
 
-  if [ "x$ZMTYPE_INSTALLABLE" = "xNETWORK" ]; then
-    cat >> /etc/apt/sources.list.d/zimbra.list << EOF
+    if [ "x$ZMTYPE_INSTALLABLE" = "xNETWORK" ]; then
+      cat >> /etc/apt/sources.list.d/zimbra.list << EOF
 deb     [arch=amd64] https://$PACKAGE_SERVER/apt/1000-ne $repo zimbra
 deb     [arch=amd64] https://$PACKAGE_SERVER/apt/1010-ne $repo zimbra
 EOF
 
-    cat > /etc/apt/sources.list.d/zimbra-onlyoffice.list << EOF
+      cat > /etc/apt/sources.list.d/zimbra-onlyoffice.list << EOF
 deb     [arch=amd64] https://$PACKAGE_SERVER/apt/onlyoffice-1010 $repo zimbra
 EOF
+    fi
   fi
 fi
       apt-get update >>$LOGFILE 2>&1
@@ -2288,26 +2431,126 @@ fi
         print "Aborting, unknown platform: $PLATFORM"
         exit 1
       fi
-      if [ $PLATFORM = "RHEL9_64" ]; then
-	      rpm -q gpg-pubkey-7c66bd84-6583eafa > /dev/null
-      else
-	      rpm -q gpg-pubkey-0f30c305-5564be70 > /dev/null
-      fi
-      if [ $? -ne 0 ]; then
+
+      if [ x"$USE_SIT_REPO" = "xyes" ]; then
+        echo "Validating package repository credential files..."
+        if [ ! -f "$DNF_USER_FILE" ] || [ ! -s "$DNF_USER_FILE" ] || \
+           [ ! -f "$DNF_PASS_FILE" ] || [ ! -s "$DNF_PASS_FILE" ] || \
+           [ ! -f "$DNF_SERVER_FILE" ] || [ ! -s "$DNF_SERVER_FILE" ]; then
+            echo "ERROR: One or more package repository credential files are missing or empty."
+            if [ ! -f "$DNF_USER_FILE" ] || [ ! -s "$DNF_USER_FILE" ]; then
+              echo "  - Username file missing or empty: $DNF_USER_FILE"
+              echo "    Create with: echo -n '<username>' > $DNF_USER_FILE"
+            fi
+            if [ ! -f "$DNF_PASS_FILE" ] || [ ! -s "$DNF_PASS_FILE" ]; then
+              echo "  - Password file missing or empty: $DNF_PASS_FILE"
+              echo "    Create with: echo -n '<password>' > $DNF_PASS_FILE"
+              echo "    Then run:    chmod 600 $DNF_PASS_FILE"
+            fi
+            if [ ! -f "$DNF_SERVER_FILE" ] || [ ! -s "$DNF_SERVER_FILE" ]; then
+              echo "ERROR: repo server file not found or empty: $DNF_SERVER_FILE"
+              echo "  Create with: echo -n '<repo server>' > $DNF_SERVER_FILE"
+            fi
+            exit 1
+       fi
+        echo "Package repository credential files validated."
+        PACKAGE_SERVER=$(cat "$DNF_SERVER_FILE")
+        REPO_USER=$(cat "$DNF_USER_FILE")
+        REPO_PASS=$(cat "$DNF_PASS_FILE")
+        GPG_KEY_URL="https://${PACKAGE_SERVER}/repository/gpg-keys/public.asc"
+
         echo "Importing Zimbra GPG key"
-	if [ $PLATFORM = "RHEL9_64" ]; then
-		rpm --import https://files.zimbra.com/downloads/security/public-sha-256.key >>$LOGFILE 2>&1
-	else
-		rpm --import https://files.zimbra.com/downloads/security/public.key >>$LOGFILE 2>&1
-	fi
-        if [ $? -ne 0 ]; then
-          echo "ERROR: Unable to retrive Zimbra GPG key for package validation"
-          echo "Please fix system to allow normal package installation before proceeding"
+        curl -u "$REPO_USER:$REPO_PASS" -s -o /tmp/sit-public.asc \
+          "$GPG_KEY_URL" >>$LOGFILE 2>&1
+        if [ $? -ne 0 ] || [ ! -s /tmp/sit-public.asc ]; then
+          echo "ERROR: Unable to retrieve GPG key from $GPG_KEY_URL"
+          echo "Please check repo connectivity and credentials before proceeding"
+          rm -f /tmp/sit-public.asc
           exit 1
         fi
+        rpm --import /tmp/sit-public.asc >>$LOGFILE 2>&1
+        if [ $? -ne 0 ]; then
+          echo "ERROR: Unable to import GPG key for package validation"
+          rm -f /tmp/sit-public.asc
+          exit 1
+        fi
+        rm -f /tmp/sit-public.asc
+      else
+        if [ $PLATFORM = "RHEL9_64" ]; then
+	        rpm -q gpg-pubkey-7c66bd84-6583eafa > /dev/null
+        else
+	        rpm -q gpg-pubkey-0f30c305-5564be70 > /dev/null
+        fi
+        if [ $? -ne 0 ]; then
+          echo "Importing Zimbra GPG key"
+	  if [ $PLATFORM = "RHEL9_64" ]; then
+		  rpm --import https://files.zimbra.com/downloads/security/public-sha-256.key >>$LOGFILE 2>&1
+	  else
+		  rpm --import https://files.zimbra.com/downloads/security/public.key >>$LOGFILE 2>&1
+	  fi
+          if [ $? -ne 0 ]; then
+            echo "ERROR: Unable to retrive Zimbra GPG key for package validation"
+            echo "Please fix system to allow normal package installation before proceeding"
+            exit 1
+          fi
+        fi
       fi
+
       echo
       echo "Configuring package repository"
+
+      if [ x"$USE_SIT_REPO" = "xyes" ]; then
+cat > /etc/yum.repos.d/zimbra.repo <<EOF
+[zimbra]
+name=Zimbra RPM Repository
+baseurl=https://$PACKAGE_SERVER/repository/87/$repo
+username=\$zimbra_sit_repo_user
+password=\$zimbra_sit_repo_pass
+gpgcheck=1
+enabled=1
+[zimbra-1000-oss]
+name=Zimbra New RPM Repository
+baseurl=https://$PACKAGE_SERVER/repository/1000/$repo
+username=\$zimbra_sit_repo_user
+password=\$zimbra_sit_repo_pass
+gpgcheck=1
+enabled=1
+[zimbra-1010-oss]
+name=Zimbra 1010 OSS RPM Repository
+baseurl=https://$PACKAGE_SERVER/repository/1010/$repo
+username=\$zimbra_sit_repo_user
+password=\$zimbra_sit_repo_pass
+gpgcheck=1
+enabled=1
+EOF
+        if [ x"$ZMTYPE_INSTALLABLE" = "xNETWORK" ]; then
+cat >> /etc/yum.repos.d/zimbra.repo <<EOF
+[zimbra-1000-network]
+name=Zimbra New RPM Repository
+baseurl=https://$PACKAGE_SERVER/repository/1000-ne/$repo
+username=\$zimbra_sit_repo_user
+password=\$zimbra_sit_repo_pass
+gpgcheck=1
+enabled=1
+[zimbra-1010-network]
+name=Zimbra 1010 NW RPM Repository
+baseurl=https://$PACKAGE_SERVER/repository/1010-ne/$repo
+username=\$zimbra_sit_repo_user
+password=\$zimbra_sit_repo_pass
+gpgcheck=1
+enabled=1
+EOF
+cat > /etc/yum.repos.d/zimbra-onlyoffice.repo <<EOF
+[zimbra-onlyoffice]
+name=Zimbra Onlyoffice RPM Repository
+baseurl=https://$PACKAGE_SERVER/repository/onlyoffice-1010/$repo
+username=\$zimbra_sit_repo_user
+password=\$zimbra_sit_repo_pass
+gpgcheck=1
+enabled=1
+EOF
+        fi
+      else
 cat > /etc/yum.repos.d/zimbra.repo <<EOF
 [zimbra]
 name=Zimbra RPM Repository
@@ -2325,13 +2568,7 @@ baseurl=https://$PACKAGE_SERVER/rpm/1010/$repo
 gpgcheck=1
 enabled=1
 EOF
-      yum --disablerepo=* --enablerepo=zimbra clean metadata >>$LOGFILE 2>&1
-      yum check-update --disablerepo=* --enablerepo=zimbra --noplugins >>$LOGFILE 2>&1
-      yum --disablerepo=* --enablerepo=zimbra-1000-oss clean metadata >>$LOGFILE 2>&1
-      yum check-update --disablerepo=* --enablerepo=zimbra-1000-oss --noplugins >>$LOGFILE 2>&1
-      yum --disablerepo=* --enablerepo=zimbra-1010-oss clean metadata >>$LOGFILE 2>&1
-      yum check-update --disablerepo=* --enablerepo=zimbra-1010-oss --noplugins >>$LOGFILE 2>&1
-if [ x"$ZMTYPE_INSTALLABLE" = "xNETWORK" ]; then
+        if [ x"$ZMTYPE_INSTALLABLE" = "xNETWORK" ]; then
 cat >> /etc/yum.repos.d/zimbra.repo <<EOF
 [zimbra-1000-network]
 name=Zimbra New RPM Repository
@@ -2353,6 +2590,16 @@ baseurl=https://$PACKAGE_SERVER/rpm/onlyoffice-1010/$repo
 gpgcheck=1
 enabled=1
 EOF
+        fi
+      fi
+
+      yum --disablerepo=* --enablerepo=zimbra clean metadata >>$LOGFILE 2>&1
+      yum check-update --disablerepo=* --enablerepo=zimbra --noplugins >>$LOGFILE 2>&1
+      yum --disablerepo=* --enablerepo=zimbra-1000-oss clean metadata >>$LOGFILE 2>&1
+      yum check-update --disablerepo=* --enablerepo=zimbra-1000-oss --noplugins >>$LOGFILE 2>&1
+      yum --disablerepo=* --enablerepo=zimbra-1010-oss clean metadata >>$LOGFILE 2>&1
+      yum check-update --disablerepo=* --enablerepo=zimbra-1010-oss --noplugins >>$LOGFILE 2>&1
+if [ x"$ZMTYPE_INSTALLABLE" = "xNETWORK" ]; then
       yum --disablerepo=* --enablerepo=zimbra-1000-network clean metadata >>$LOGFILE 2>&1
       yum check-update --disablerepo=* --enablerepo=zimbra-1000-network --noplugins >>$LOGFILE 2>&1
       yum --disablerepo=* --enablerepo=zimbra-1010-network clean metadata >>$LOGFILE 2>&1
@@ -2369,7 +2616,6 @@ fi
     fi
   fi
 }
-
 
 getInstallPackages() {
 
@@ -2450,8 +2696,7 @@ getInstallPackages() {
     # askInstallPkgYN args : PROMPT REQUIRE_STORE=yes|no YES_STORE_DEFAULT=Y|N NO_STORE_DEFAULT=Y|N
 
     ZIMBRAINTERNAL=no
-    echo $HOSTNAME | egrep -qe 'eng.zimbra.com$|lab.zimbra.com$|zimbradev.com$' > /dev/null 2>&1
-    if [ $? = 0 ]; then
+    if isInternalHost; then
        ZIMBRAINTERNAL=yes
     fi
     if [ $i = "zimbra-license-tools" ]; then
