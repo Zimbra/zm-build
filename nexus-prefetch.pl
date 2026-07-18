@@ -207,12 +207,34 @@ sub _FetchPackages {
 
     my ( $pkg_ext, $default_pkg_repo );
     if ( $CFG{BUILD_OS} =~ /UBUNTU/i ) {
-        $pkg_ext          = 'deb';
-        $default_pkg_repo = $CFG{NEXUS_APT_REPO};
+        $pkg_ext = 'deb';
+
+        my %os_to_distro = (
+            UBUNTU18_64 => 'bionic',
+            UBUNTU20_64 => 'focal',
+            UBUNTU22_64 => 'jammy',
+            UBUNTU24_64 => 'noble',
+        );
+        my $distro = $os_to_distro{ $CFG{BUILD_OS} };
+        unless ( $distro ) {
+            _Warn("Unknown Ubuntu BUILD_OS '$CFG{BUILD_OS}' — cannot compute Nexus APT repo suffix");
+            return 0;
+        }
+
+        my $apt_base = $CFG{NEXUS_APT_REPO};
+        unless ( $apt_base ) {
+            _Warn("NEXUS_APT_REPO not set — cannot fetch packages for $dir");
+            return 0;
+        }
+        $default_pkg_repo = "$apt_base-$distro";
     }
     elsif ( $CFG{BUILD_OS} =~ /RHEL|CENTOS|ROCKY|ALMA/i ) {
         $pkg_ext          = 'rpm';
         $default_pkg_repo = $CFG{NEXUS_YUM_REPO};
+        unless ( $default_pkg_repo ) {
+            _Warn("NEXUS_YUM_REPO not set — cannot fetch packages for $dir");
+            return 0;
+        }
     }
     else {
         _Warn("Unknown BUILD_OS '$CFG{BUILD_OS}' — cannot fetch packages for $dir");
