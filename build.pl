@@ -170,6 +170,7 @@ sub InitGlobalBuildVars()
          { name => "NEXUS_USER",                 type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return undef; }, },
          { name => "NEXUS_PASSWORD",             type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return undef; }, },
          { name => "NEXUS_JAR_REPO",             type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return "develop-snapshot"; }, },
+         { name => "NEXUS_RAW_REPO",             type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return "raw-artifacts"; }, },
          { name => "NEXUS_APT_REPO",             type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return "package-repo-apt"; }, },
          { name => "NEXUS_YUM_REPO",             type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return "package-repo-yum"; }, },
          { name => "NEXUS_THIRDPARTY_REPO",      type => "=s",  hash_src => \%cmd_hash, default_sub => sub { return "thirdparty"; }, },
@@ -1258,6 +1259,7 @@ sub main()
 
       $ENV{NEXUS_BASE_URL} = $CFG{NEXUS_BASE_URL};
       $ENV{NEXUS_REPO}     = $CFG{NEXUS_JAR_REPO};
+      $ENV{NEXUS_RAW_REPO} = $CFG{NEXUS_RAW_REPO};
       $ENV{NEXUS_USER}     = $CFG{NEXUS_USER};
       $ENV{NEXUS_PASSWORD} = $CFG{NEXUS_PASSWORD};
    }
