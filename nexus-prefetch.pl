@@ -57,6 +57,14 @@ sub NexusPrefetch {
         $ok = _FetchSqls( $dir, $repo_name, $artifacts ) && $ok;
 
     }
+
+    if ( grep { $_ eq 'zip'     } @types ) {
+        $ok = _FetchZips( $dir, $repo_name, $artifacts ) && $ok;
+    }
+
+    if ( grep { $_ eq 'bin'     } @types ) {
+    $ok = _FetchBins( $dir, $repo_name, $artifacts ) && $ok;
+    }
     
     if ( grep { $_ eq 'package' } @types ) {
         $ok = _FetchPackages( $dir, $repo_name, $artifacts ) && $ok;
@@ -195,6 +203,91 @@ sub _FetchSqls {
 
     return 1;
 }
+sub _FetchZips {
+    my ( $dir, $repo_name, $artifacts ) = @_;
+
+    my $zips = $artifacts->{zips};
+    unless ( $zips && @$zips ) {
+        _Warn("No zips defined for $dir in nexus_artifacts");
+        return 0;
+    }
+
+    my $overall_ok = 1;
+
+    for my $zip (@$zips) {
+        my $name        = $zip->{name}       // $repo_name;
+        my $nexus_repo  = $zip->{nexus_repo} // $CFG{NEXUS_RAW_REPO};
+        my $dest_subdir = $zip->{dest_subdir} // 'build/zimlet';
+
+        my ( $url, $filename ) = _ResolveLatestAsset(
+            repo      => $nexus_repo,
+            name      => $name,
+            extension => 'zip',
+        );
+
+        unless ( $url && $filename ) {
+            _Warn("Could not resolve zip: name=$name in repo=$nexus_repo");
+            $overall_ok = 0;
+            next;
+        }
+
+        my $dest_dir  = "$CFG{BUILD_SOURCES_BASE_DIR}/$dir/$dest_subdir";
+        my $dest_file = "$dest_dir/$filename";
+
+        make_path($dest_dir) unless -d $dest_dir;
+
+        unless ( _Download( $url, $dest_file ) ) {
+            _Warn("Download failed for $filename");
+            $overall_ok = 0;
+            next;
+        }
+
+        print "  [NEXUS] zip  OK: $dir/$dest_subdir/$filename\n";
+    }
+
+    return $overall_ok;
+}
+
+sub _FetchBins {
+    my ( $dir, $repo_name, $artifacts ) = @_;
+
+    my $bins = $artifacts->{bins};
+    unless ( $bins && @$bins ) {
+        _Warn("No bins defined for $dir in nexus_artifacts");
+        return 0;
+    }
+
+    my $base = _NexusBase();
+
+    my $overall_ok = 1;
+
+    for my $bin (@$bins) {
+        my $name        = $bin->{name}       or do { _Warn("bin entry missing 'name' for $dir"); $overall_ok = 0; next; };
+        my $nexus_repo  = $bin->{nexus_repo} // $CFG{NEXUS_RAW_REPO};
+        my $nexus_path  = $bin->{nexus_path} // "$repo_name/$name";
+        my $dest_subdir = $bin->{dest_subdir} // 'build/dist';
+        my $filename    = $bin->{filename}    // $name;
+
+        my $download_url = "$base/repository/$nexus_repo/$nexus_path";
+
+        my $dest_dir  = "$CFG{BUILD_SOURCES_BASE_DIR}/$dir/$dest_subdir";
+        my $dest_file = "$dest_dir/$filename";
+
+        make_path($dest_dir) unless -d $dest_dir;
+
+        unless ( _Download( $download_url, $dest_file ) ) {
+            _Warn("Download failed for $nexus_path");
+            $overall_ok = 0;
+            next;
+        }
+
+        chmod 0755, $dest_file;
+
+        print "  [NEXUS] bin  OK: $dir/$dest_subdir/$filename\n";
+    }
+
+    return $overall_ok;
+}
 
 sub _FetchPackages {
     my ( $dir, $repo_name, $artifacts ) = @_;
@@ -313,6 +406,10 @@ sub _ResolveLatestAsset {
         $search_url .= "&maven.groupId="    . _enc($org)        if defined $org;
         $search_url .= "&maven.classifier=" . _enc($classifier) if defined $classifier;
     }
+    
+    elsif ( $extension eq 'zip' ) {
+        $search_url .= "&q=" . _enc($name);
+    }
     else {
         $search_url .= "&name=" . _enc($name);
     }
@@ -332,7 +429,7 @@ sub _ResolveLatestAsset {
     }
 
     my $asset_path;
-    if ( $extension eq 'jar' || $extension eq 'sql' ) {
+    if ( $extension eq 'jar' || $extension eq 'sql' || $extension eq 'zip' ) {
         $asset_path = $paths[0];
     }
     else {

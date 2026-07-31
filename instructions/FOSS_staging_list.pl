@@ -214,6 +214,12 @@
          SysExec("mkdir -p $CFG{BUILD_DIR}/zm-versioncheck-admin-zimlet/build/zimlet");
          SysExec("cp -f build/zimlet/*.zip $CFG{BUILD_DIR}/zm-versioncheck-admin-zimlet/build/zimlet");
       },
+      "nexus_artifacts" => {
+         type => 'zip',
+         zips => [
+            { dest_subdir => "build/zimlet" },
+         ],
+      }
    },
    {
       "dir"         => "zm-bulkprovision-admin-zimlet",
@@ -221,6 +227,12 @@
       "stage_cmd"   => sub {
          SysExec("mkdir -p $CFG{BUILD_DIR}/zm-bulkprovision-admin-zimlet/build/zimlet");
          SysExec("cp -f build/zimlet/*.zip $CFG{BUILD_DIR}/zm-bulkprovision-admin-zimlet/build/zimlet");
+      },
+      "nexus_artifacts" => {
+         type => 'zip',
+         zips => [
+            { dest_subdir => "build/zimlet" },
+         ],
       },
    },
    {
@@ -230,6 +242,12 @@
          SysExec("mkdir -p $CFG{BUILD_DIR}/zm-certificate-manager-admin-zimlet/build/zimlet");
          SysExec("cp -f build/zimlet/*.zip $CFG{BUILD_DIR}/zm-certificate-manager-admin-zimlet/build/zimlet");
       },
+      "nexus_artifacts" => {
+         type => 'zip',
+         zips => [
+            { dest_subdir => "build/zimlet" },
+         ],
+      },
    },
    {
       "dir"         => "zm-proxy-config-admin-zimlet",
@@ -237,6 +255,12 @@
       "stage_cmd"   => sub {
          SysExec("mkdir -p $CFG{BUILD_DIR}/zm-proxy-config-admin-zimlet/build/zimlet");
          SysExec("cp -f build/zimlet/*.zip $CFG{BUILD_DIR}/zm-proxy-config-admin-zimlet/build/zimlet");
+      },
+      "nexus_artifacts" => {
+         type => 'zip',
+         zips => [
+            { dest_subdir => "build/zimlet" },
+         ],
       },
    },
    {
@@ -246,6 +270,12 @@
          SysExec("mkdir -p $CFG{BUILD_DIR}/zm-helptooltip-zimlet/build/zimlet");
          SysExec("cp -f build/zimlet/*.zip $CFG{BUILD_DIR}/zm-helptooltip-zimlet/build/zimlet");
       },
+      "nexus_artifacts" => {
+         type => 'zip',
+         zips => [
+            { dest_subdir => "build/zimlet" },
+         ],
+      },
    },
    {
       "dir"         => "zm-viewmail-admin-zimlet",
@@ -253,6 +283,12 @@
       "stage_cmd"   => sub {
          SysExec("mkdir -p $CFG{BUILD_DIR}/zm-viewmail-admin-zimlet/build/zimlet");
          SysExec("cp -f build/zimlet/*.zip $CFG{BUILD_DIR}/zm-viewmail-admin-zimlet/build/zimlet");
+      },
+      "nexus_artifacts" => {
+         type => 'zip',
+         zips => [
+            { dest_subdir => "build/zimlet" },
+         ],
       },
    },
    {
@@ -266,6 +302,25 @@
          SysExec("cp -f build/dist/zimlets/*.zip $CFG{BUILD_DIR}/zm-zimlets/build/dist/zimlets");
          SysExec("mkdir -p $CFG{BUILD_DIR}/zm-zimlets/build/dist");
          SysExec("cp -f build/dist/lib/zimlettaglib.jar $CFG{BUILD_DIR}/zm-zimlets/build/dist/zimlettaglib.jar");
+      },
+      "nexus_artifacts" => {
+         type => ['jar', 'zip'],
+         jars => [
+            { name => "zm-zimlets", dest_subdir => "build/dist/lib", jar_filename => "zimlettaglib.jar" },
+         ],
+         zips => [
+            { name => "com_zimbra_attachcontacts",     dest_subdir => "build/dist/zimlets" },
+            { name => "com_zimbra_attachmail",         dest_subdir => "build/dist/zimlets" },
+            { name => "com_zimbra_date",               dest_subdir => "build/dist/zimlets" },
+            { name => "com_zimbra_email",              dest_subdir => "build/dist/zimlets" },
+            { name => "com_zimbra_gotourl",            dest_subdir => "build/dist/zimlets" },
+            { name => "com_zimbra_mailarchive",        dest_subdir => "build/dist/zimlets" },
+            { name => "com_zimbra_phone",              dest_subdir => "build/dist/zimlets" },
+            { name => "com_zimbra_srchhighlighter",    dest_subdir => "build/dist/zimlets" },
+            { name => "com_zimbra_url",                dest_subdir => "build/dist/zimlets" },
+            { name => "com_zimbra_webex",              dest_subdir => "build/dist/zimlets" },
+            { name => "com_zimbra_ymemoticons",        dest_subdir => "build/dist/zimlets" },
+         ],
       },
    },
    {
@@ -517,6 +572,13 @@
       "stage_cmd"    => sub {
          SysExec("mkdir -p $CFG{BUILD_DIR}/zm-launcher/build/dist");
          SysExec("cp -f build/zmmailboxd* $CFG{BUILD_DIR}/zm-launcher/build/dist");
+      },
+      "nexus_artifacts" => {
+         type => 'bin',
+         bins => [
+            { name => "zmmailboxdmgr",              dest_subdir => "build" },
+            { name => "zmmailboxdmgr.unrestricted",  dest_subdir => "build" },
+         ],
       },
    },
    {
