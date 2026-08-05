@@ -248,6 +248,9 @@ sub _FetchZips {
     return $overall_ok;
 }
 
+# ==========================================================================
+# _FetchBins: fetches "raw" binary artifacts
+# ==========================================================================
 sub _FetchBins {
     my ( $dir, $repo_name, $artifacts ) = @_;
 
@@ -257,18 +260,26 @@ sub _FetchBins {
         return 0;
     }
 
-    my $base = _NexusBase();
-
     my $overall_ok = 1;
 
     for my $bin (@$bins) {
         my $name        = $bin->{name}       or do { _Warn("bin entry missing 'name' for $dir"); $overall_ok = 0; next; };
         my $nexus_repo  = $bin->{nexus_repo} // $CFG{NEXUS_RAW_REPO};
-        my $nexus_path  = $bin->{nexus_path} // "$repo_name/$name";
+        my $nexus_group = $bin->{nexus_group} // $repo_name;
         my $dest_subdir = $bin->{dest_subdir} // 'build/dist';
         my $filename    = $bin->{filename}    // $name;
 
-        my $download_url = "$base/repository/$nexus_repo/$nexus_path";
+        my ( $download_url, $resolved_filename ) = _ResolveLatestRawAsset(
+            repo        => $nexus_repo,
+            repo_name   => $nexus_group,
+            name_prefix => $name,
+        );
+
+        unless ( $download_url ) {
+            _Warn("Could not resolve bin: $nexus_group/$name in repo=$nexus_repo");
+            $overall_ok = 0;
+            next;
+        }
 
         my $dest_dir  = "$CFG{BUILD_SOURCES_BASE_DIR}/$dir/$dest_subdir";
         my $dest_file = "$dest_dir/$filename";
@@ -276,14 +287,14 @@ sub _FetchBins {
         make_path($dest_dir) unless -d $dest_dir;
 
         unless ( _Download( $download_url, $dest_file ) ) {
-            _Warn("Download failed for $nexus_path");
+            _Warn("Download failed for $name (resolved: $resolved_filename)");
             $overall_ok = 0;
             next;
         }
 
         chmod 0755, $dest_file;
 
-        print "  [NEXUS] bin  OK: $dir/$dest_subdir/$filename\n";
+        print "  [NEXUS] bin  OK: $dir/$dest_subdir/$filename (from $resolved_filename)\n";
     }
 
     return $overall_ok;
@@ -446,6 +457,56 @@ sub _ResolveLatestAsset {
     my $filename     = basename($asset_path);
 
     print "  [NEXUS] Resolved $name.$extension -> $filename\n";
+    return ( $download_url, $filename );
+}
+sub _ResolveLatestRawAsset {
+    my (%args) = @_;
+
+    my $repo        = $args{repo}        or return ( undef, undef );
+    my $repo_name   = $args{repo_name}   or return ( undef, undef );
+    my $name_prefix = $args{name_prefix} or return ( undef, undef );
+
+    # Strip a trailing compressed-archive extension for the search term,
+    # e.g. "appmonitor-dist.tar.gz" -> "appmonitor-dist"
+    ( my $search_prefix = $name_prefix ) =~ s/(\.tar\.gz|\.tgz|\.zip|\.gz)$//i;
+
+    my $base = _NexusBase();
+    my $user = _NexusUser();
+    my $pass = _NexusPass();
+
+    my $search_url =
+        "$base/service/rest/v1/search/assets"
+      . "?repository=" . _enc($repo)
+      . "&q="           . _enc($search_prefix);
+
+    my $json = _CurlGet( $search_url, $user, $pass );
+    return ( undef, undef ) unless defined $json && $json ne '';
+
+    my @paths = $json =~ /"path"\s*:\s*"([^"]+)"/g;
+    unless (@paths) {
+        _Warn("No raw assets found for prefix=$search_prefix in repo=$repo");
+        return ( undef, undef );
+    }
+
+    # Only keep assets that live under <repo_name>/<version>/<search_prefix>-...
+    my @matches = grep {
+        m{^/?\Q$repo_name\E/[^/]+/\Q$search_prefix\E-}
+    } @paths;
+
+    unless (@matches) {
+        _Warn("No raw assets under $repo_name/ matching prefix=$search_prefix in repo=$repo — available: "
+              . join(", ", map { basename($_) } @paths));
+        return ( undef, undef );
+    }
+
+    @matches = sort { $b cmp $a } @matches;
+    my $asset_path = $matches[0];
+
+    $asset_path =~ s|^/||;
+    my $download_url = "$base/repository/$repo/$asset_path";
+    my $filename      = basename($asset_path);
+
+    print "  [NEXUS] Resolved $name_prefix -> $filename\n";
     return ( $download_url, $filename );
 }
 
