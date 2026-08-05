@@ -247,10 +247,6 @@ sub _FetchZips {
 
     return $overall_ok;
 }
-
-# ==========================================================================
-# _FetchBins: fetches "raw" binary artifacts
-# ==========================================================================
 sub _FetchBins {
     my ( $dir, $repo_name, $artifacts ) = @_;
 
