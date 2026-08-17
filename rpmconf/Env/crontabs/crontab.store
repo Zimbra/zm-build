@@ -35,3 +35,7 @@
 # Password expiry reminders
 #
 0 0 * * * /opt/zimbra/bin/zmpasswordexpiryreminder
+#
+# Clean up orphaned apache-tika tmp files
+#
+0 1 * * * /opt/zimbra/libexec/zmcleantika > /opt/zimbra/log/zmcleantika.log 2>&1
