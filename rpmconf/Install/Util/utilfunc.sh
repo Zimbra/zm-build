@@ -2774,6 +2774,8 @@ getInstallPackages() {
       response="yes"
     elif [ $i = "zimbra-modern-ui" ]; then
       ifStoreSelectedY
+    elif [ $i = "zimbra-modern-admin" ]; then
+      ifStoreSelectedY
     elif [ $i = "zimbra-modern-zimlets" ]; then
       ifStoreSelectedY
     elif [ $i = "zimbra-zimlet-document-editor" ]; then
@@ -3111,6 +3113,15 @@ removeModernUI(){
 	fi
 }
 
+removeModernAdmin(){
+	isInstalled zimbra-modern-admin
+	if [ x$PKGINSTALLED != "x" ]; then
+		echo -n "Removing zimbra-modern-admin..."
+		$PACKAGERM zimbra-modern-admin >/dev/null 2>&1
+		echo "done"
+	fi
+}
+
 deleteWebApp() {
   WEBAPPNAME=$1
   CONTAINERDIR=$2
@@ -3124,6 +3135,11 @@ deleteWebApp() {
 	  # To remove zimbra-modern-ui,first zimbra-patch needs to remove
 	  removeZimbraPatch
 	  removeModernUI
+  fi
+  if [ $WEBAPPNAME == "zimbraAdmin" ]; then
+	  #zimbra-modern-admin lives in /opt/zimbra/jetty/webapps/zimbraAdmin/modern, which deleting zimbraAdmin removes,
+	  #so it is uninstalled first and installed again with the other packages
+	  removeModernAdmin
   fi
 }
 
