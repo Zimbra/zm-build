@@ -44,7 +44,7 @@ my $lowVersion = 52;
 
 # Ensure to update the corresponding value in the zm-db-conf repository,
 # specifically in the file src/db/migration/zmdbupgrade.pl.
-my $hiVersion = 119; # this should be set to the DB version expected by current server code
+my $hiVersion = 120; # this should be set to the DB version expected by current server code
 
 my $needSlapIndexing = 0;
 my $mysqlcnfUpdated = 0;
@@ -98,6 +98,7 @@ my %updateScripts = (
   '116' => "migrate20220729-FilesShareWithMeFolder.pl",   #10.0.0
   '117' => "migrate20230224-UpdateOnlyOffice-7.2.1.pl",   #10.0.0
   '118' => "migrate20260728-RopcTokenStore.pl",   #10.1.21
+  '119' => "migrate20261024-ZmgDevices-10.1.22.pl",       #10.1.22
 );
 
 my %updateFuncs = (
