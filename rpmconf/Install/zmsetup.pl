@@ -7374,6 +7374,7 @@ sub applyConfig {
   setLdapServerConfig($config{HOSTNAME}, 'zimbraServerVersionMicro', $curVersionMicroMicro);
   setLdapServerConfig($config{HOSTNAME}, 'zimbraServerVersionType', $curVersionType);
   setLdapServerConfig($config{HOSTNAME}, 'zimbraServerVersionBuild', $curVersionBuild);
+  setZimbraGlobalVersion();
 
   if (isEnabled("zimbra-imapd")) {
     configImap();
@@ -7971,6 +7972,91 @@ sub activateLicense {
 	}
 }
 
+sub getInstalledPatchMicro {
+  my ($version) = @_;
+  return 0 if (!defined $version || $version eq "");
+
+  if ($version =~ /P(\d+)/) {
+    return int($1);
+  }
+  $version =~ s/^(\d+\.\d+\.[^_]*_[^_]+_[^.]+).*/$1/;
+  my ($maj, $min, $mic) = $version =~ m/^(\d+)\.(\d+)\.(\d+)/;
+  return int($mic || 0);
+}
+
+# Highest patch number recorded in .install_history since the last
+# INSTALL SESSION START.
+sub getHighestInstalledPatch {
+  my %patch = map { $_ => "" } qw(zimbra proxy mta ldap lds onlyoffice);
+
+  if (open(my $fh, "<", "/opt/zimbra/.install_history")) {
+    while (my $hline = <$fh>) {
+      chomp($hline);
+      my (undef, $entry) = split(': ', $hline, 2);
+      next unless defined $entry;
+
+      if    ($entry =~ /CONFIGURED ldap-patch /)       { $patch{ldap}       = substr($entry, 22); }
+      elsif ($entry =~ /CONFIGURED mta-patch /)        { $patch{mta}        = substr($entry, 21); }
+      elsif ($entry =~ /CONFIGURED proxy-patch /)      { $patch{proxy}      = substr($entry, 23); }
+      elsif ($entry =~ /CONFIGURED patch /)            { $patch{zimbra}     = substr($entry, 17); }
+      elsif ($entry =~ /CONFIGURED lds-patch /)        { $patch{lds}        = substr($entry, 21); }
+      elsif ($entry =~ /CONFIGURED onlyoffice-patch /) { $patch{onlyoffice} = substr($entry, 28); }
+      elsif ($entry =~ /INSTALL SESSION START/)        { $patch{$_} = "" foreach keys %patch; }
+    }
+    close($fh);
+  }
+
+  my $highest = 0;
+  foreach my $p (values %patch) {
+    my $micro = getInstalledPatchMicro($p);
+    $highest = $micro if ($micro > $highest);
+  }
+  return $highest;
+}
+
+# Version to store: <major>.<minor>.<highest of patch number and core micro>
+sub determineGlobalVersionString {
+  my $patch = getHighestInstalledPatch();
+  my $core  = int($curVersionMicroMicro || 0);
+  my $micro = ($patch > $core) ? $patch : $core;
+  return "$curVersionMajor.$curVersionMinor.$micro";
+}
+
+sub setZimbraGlobalVersion {
+  my $script  = "/opt/zimbra/libexec/zmupdateglobalversion";
+  my $version = determineGlobalVersionString();
+
+  progress("Setting zimbraGlobalVersion to '$version'...");
+
+  if (! -x $script) {
+    progress("skipped ($script not found).\n");
+    return;
+  }
+  if ($version !~ /^\d+\.\d+\.\d+$/) {
+    progress("skipped (could not determine version, got '$version').\n");
+    return;
+  }
+
+  # Script output goes to the setup log file; only a summary is shown on screen.
+  my @out = qx($script $version 2>&1);
+  my $rc  = $? >> 8;
+  foreach my $line (@out) {
+    chomp($line);
+    detail($line);
+  }
+
+  # Exit codes: 0 updated, 2 nothing to do, 3 skipped (LDAP not ready), 4/1 failed
+  if ($rc == 0) {
+    progress("done.\n");
+  } elsif ($rc == 2) {
+    my ($cur) = join("\n", @out) =~ /is (?:already|now) (\d+\.\d+\.\d+)/;
+    progress(defined $cur ? "already '$cur'; skipping.\n" : "already up to date; skipping.\n");
+  } elsif ($rc == 3) {
+    progress("skipped (see $logfile).\n");
+  } else {
+    progress("failed (see $logfile).\n");
+  }
+}
 
 ### end subs
 
