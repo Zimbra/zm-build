@@ -302,6 +302,7 @@ setLdapServerConfig($config{HOSTNAME}, 'zimbraServerVersionMinor', $curVersionMi
 setLdapServerConfig($config{HOSTNAME}, 'zimbraServerVersionMicro', $curVersionMicroMicro);
 setLdapServerConfig($config{HOSTNAME}, 'zimbraServerVersionType', $curVersionType);
 setLdapServerConfig($config{HOSTNAME}, 'zimbraServerVersionBuild', $curVersionBuild);
+setZimbraGlobalVersion();
 
 close LOGFILE;
 chmod 0600, $logfile;
@@ -7969,6 +7970,205 @@ sub activateLicense {
 			}
 		}
 	}
+}
+
+sub getInstalledPatchMicro {
+  my ($version) = @_;
+  return 0 if (!defined $version || $version eq "");
+
+  if ($version =~ /P(\d+)/) {
+    return int($1);
+  } else {
+    $version =~ s/^(\d+\.\d+\.[^_]*_[^_]+_[^.]+).*/\1/;
+    my ($maj, $min, $mic) = $version =~ m/^(\d+)\.(\d+)\.(\d+)/;
+    return int($mic || 0);
+  }
+}
+
+sub getHighestInstalledPatch {
+  my $patch = 0;
+  my $zimbra_patch     = "";
+  my $proxy_patch      = "";
+  my $mta_patch        = "";
+  my $ldap_patch       = "";
+  my $lds_patch        = "";
+  my $onlyoffice_patch = "";
+
+  my $hist_file = "/opt/zimbra/.install_history";
+  if (open(my $fh, "<", $hist_file)) {
+    while (my $hline = <$fh>) {
+      chomp($hline);
+      my (undef, $entry) = split(': ', $hline, 2);
+      next unless defined $entry;
+
+      if ($entry =~ /CONFIGURED ldap-patch /) {
+        $ldap_patch = substr($entry, 22);
+      } elsif ($entry =~ /CONFIGURED mta-patch /) {
+        $mta_patch = substr($entry, 21);
+      } elsif ($entry =~ /CONFIGURED proxy-patch /) {
+        $proxy_patch = substr($entry, 23);
+      } elsif ($entry =~ /CONFIGURED patch /) {
+        $zimbra_patch = substr($entry, 17);
+      } elsif ($entry =~ /CONFIGURED lds-patch /) {
+        $lds_patch = substr($entry, 21);
+      } elsif ($entry =~ /CONFIGURED onlyoffice-patch /) {
+        $onlyoffice_patch = substr($entry, 28);
+      } elsif ($entry =~ /INSTALL SESSION START/) {
+        $zimbra_patch     = "";
+        $proxy_patch      = "";
+        $mta_patch        = "";
+        $ldap_patch       = "";
+        $lds_patch        = "";
+        $onlyoffice_patch = "";
+      }
+    }
+    close($fh);
+  }
+
+  my @patches = (
+    getInstalledPatchMicro($zimbra_patch),
+    getInstalledPatchMicro($proxy_patch),
+    getInstalledPatchMicro($mta_patch),
+    getInstalledPatchMicro($ldap_patch),
+    getInstalledPatchMicro($lds_patch),
+    getInstalledPatchMicro($onlyoffice_patch)
+  );
+
+  foreach my $p (@patches) {
+    $patch = $p if ($p > $patch);
+  }
+
+  return $patch;
+}
+
+sub determineGlobalVersionString {
+  my $patch = getHighestInstalledPatch();
+
+  if ($patch != 0) {
+    return "$curVersionMajor.$curVersionMinor.$patch";
+  }
+
+  return "$curVersionMajor.$curVersionMinor.$curVersionMicro";
+}
+
+# Compares semantic versions (X.Y.Z)
+# Returns:  1 if $v1 > $v2
+#           0 if $v1 == $v2
+#          -1 if $v1 < $v2
+sub compareSemanticVersions {
+  my ($v1, $v2) = @_;
+  return 1  if (!defined $v2 || $v2 eq "");
+  return -1 if (!defined $v1 || $v1 eq "");
+
+  my @a = split(/\./, $v1);
+  my @b = split(/\./, $v2);
+
+  for (my $i = 0; $i < 3; $i++) {
+    my $numA = int($a[$i] || 0);
+    my $numB = int($b[$i] || 0);
+    return 1  if ($numA > $numB);
+    return -1 if ($numA < $numB);
+  }
+  return 0;
+}
+
+sub getLdapTlsOption {
+  my ($ldap_host) = @_;
+  my $starttls = getLocalConfig("ldap_starttls_supported")
+              || $config{ldap_starttls_supported}
+              || "0";
+
+  if (($starttls eq "1" || lc($starttls) eq "true") && $ldap_host =~ /^ldap:\/\//i) {
+    return "-ZZ";
+  }
+  return "";
+}
+
+sub getZimbraGlobalVersion {
+  my $ldap_master = getLocalConfig("ldap_master_url")
+                 || $config{ldap_master_url}
+                 || getLocalConfig("ldap_url")
+                 || $config{ldap_url};
+
+  my $ldap_user   = getLocalConfig("zimbra_ldap_userdn")   || "uid=zimbra,cn=admins,cn=zimbra";
+  my $ldap_pass   = getLocalConfig("zimbra_ldap_password") || $config{ldap_root_password};
+
+  return "" unless $ldap_master;
+
+  my $ldapsearch_bin = -x "/opt/zimbra/common/bin/ldapsearch"
+                     ? "/opt/zimbra/common/bin/ldapsearch"
+                     : "ldapsearch";
+
+  my $tls_opt = getLdapTlsOption($ldap_master);
+  my $cmd = "$ldapsearch_bin -x $tls_opt -H '$ldap_master' -D '$ldap_user' -w '$ldap_pass' "
+          . "-b 'cn=config,cn=zimbra' -s base '(objectClass=*)' zimbraGlobalVersion 2>/dev/null";
+
+  my $current_version = "";
+  if (open(my $pipe, "-|", $cmd)) {
+    while (my $line = <$pipe>) {
+      chomp($line);
+      if ($line =~ /^zimbraGlobalVersion:\s*(.+)$/i) {
+        $current_version = $1;
+        $current_version =~ s/^\s+|\s+$//g;
+        last;
+      }
+    }
+    close($pipe);
+  }
+
+  return $current_version;
+}
+
+sub setZimbraGlobalVersion {
+  my $target_version = determineGlobalVersionString();
+  my $current_version = getZimbraGlobalVersion();
+  if ($current_version ne "") {
+    my $cmp = compareSemanticVersions($target_version, $current_version);
+    if ($cmp <= 0) {
+      progress("zimbraGlobalVersion is already '$current_version' (current node is '$target_version'); skipping.\n");
+      return;
+    }
+    progress("Updating zimbraGlobalVersion from '$current_version' to '$target_version'...");
+  } else {
+    progress("Setting zimbraGlobalVersion to '$target_version'...");
+  }
+
+  my $ldap_master = getLocalConfig("ldap_master_url") || $config{ldap_master_url};
+  if (!$ldap_master) {
+    $ldap_master = getLocalConfig("ldap_url") || $config{ldap_url};
+  }
+
+  my $ldap_user = getLocalConfig("zimbra_ldap_userdn")   || "uid=zimbra,cn=admins,cn=zimbra";
+  my $ldap_pass = getLocalConfig("zimbra_ldap_password") || $config{ldap_root_password};
+
+  if (!$ldap_master) {
+    progress("skipped (no writable LDAP master host found).\n");
+    return;
+  }
+
+  my $ldif = "dn: cn=config,cn=zimbra\n"
+           . "changetype: modify\n"
+           . "replace: zimbraGlobalVersion\n"
+           . "zimbraGlobalVersion: $target_version\n";
+
+  my $ldapmodify_bin = -x "/opt/zimbra/common/bin/ldapmodify"
+                     ? "/opt/zimbra/common/bin/ldapmodify"
+                     : "ldapmodify";
+
+  my $tls_opt = getLdapTlsOption($ldap_master);
+  my $cmd = "$ldapmodify_bin -x $tls_opt -H '$ldap_master' -D '$ldap_user' -w '$ldap_pass' >/dev/null 2>&1";
+
+  if (open(my $pipe, "|-", $cmd)) {
+    print $pipe $ldif;
+    close($pipe);
+    if ($? == 0) {
+      progress("done.\n");
+    } else {
+      progress("warning (ldapmodify exited with code $?).\n");
+    }
+  } else {
+    progress("failed (could not execute ldapmodify).\n");
+  }
 }
 
 
