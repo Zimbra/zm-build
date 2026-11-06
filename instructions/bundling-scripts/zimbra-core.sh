@@ -388,6 +388,7 @@ main()
    Copy ${repoDir}/zm-core-utils/src/libexec/zmthreadcpu                                            ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmthreadcpu
    Copy ${repoDir}/zm-core-utils/src/libexec/zmunbound                                              ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmunbound
    Copy ${repoDir}/zm-core-utils/src/libexec/zmupdatedownload                                       ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmupdatedownload
+   Copy ${repoDir}/zm-core-utils/src/libexec/zmupdateglobalversion                                  ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmupdateglobalversion
    Copy ${repoDir}/zm-core-utils/src/libexec/zmupdatezco                                            ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmupdatezco
    Copy ${repoDir}/zm-core-utils/src/libexec/zmcleantika                                            ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/zmcleantika
    Copy ${repoDir}/zm-core-utils/src/perl/migrate20131014-removezca.pl                              ${repoDir}/zm-build/${currentPackage}/opt/zimbra/libexec/scripts/migrate20131014-removezca.pl
