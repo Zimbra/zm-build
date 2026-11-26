@@ -97,7 +97,7 @@ my %updateScripts = (
   '115' => "migrate20220525-Volume.pl",                #10.0.0
   '116' => "migrate20220729-FilesShareWithMeFolder.pl",   #10.0.0
   '117' => "migrate20230224-UpdateOnlyOffice-7.2.1.pl",   #10.0.0
-  '118' => "migrate20260728-RopcTokenStore.pl",   #10.1.21
+  '118' => "migrate20260728-RopcTokenStore.pl",   #10.1.22
   '119' => "migrate20261024-ZmgDevices-10.1.22.pl",       #10.1.22
 );
 
